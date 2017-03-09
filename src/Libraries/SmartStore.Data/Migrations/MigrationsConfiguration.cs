@@ -617,8 +617,9 @@ namespace SmartStore.Data.Migrations
             
             builder.AddOrUpdate("Offcanvas.Menu.Categories", "Categories", "Sortiment");
             builder.AddOrUpdate("Offcanvas.Menu.Brands", "Brands", "Marken");
-            builder.AddOrUpdate("Offcanvas.Menu.Help", "Help", "Hilfe");
-
+            builder.AddOrUpdate("Offcanvas.Menu.Service", "Service", "Service");
+            builder.AddOrUpdate("Offcanvas.Menu.ShowCurrentCat", "Show {0}", "{0} anzeigen");
+            
 			var aliasHintEn = "Seo-compliant URL alias for search filters. If empty, the attribute's ID is used in page URLs.";
 			var aliasHintDe = "SEO-konformer URL-Alias für Suchfilter. Wenn leer, wird die Attribut-ID in Seiten-URLs verwendet.";
 			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias.Hint", aliasHintEn, aliasHintDe);

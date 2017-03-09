@@ -44,12 +44,15 @@ var AjaxMenu = (function ($, window, document, undefined) {
             if (item.find(".nav-link").is("#manufacturer-tab")) {
                 navigateToManufacturer();
             }
-            else if (item.find(".nav-link").is("#help-tab")) {
-                navigateToHelp();
+            else if (item.find(".nav-link").is("#service-tab")) {
+                navigateToService();
+            }
+            else if (item.find(".nav-link").is("#category-tab")) {
+                navigateToHomeLayer();
             }
             else if (item.parents(".tab-pane").is("#ocm-categories") || item.parents('.category-container').length) {
-                
-                navigateToMenuItem(entityId ? entityId : 0, item.hasClass("back-to-parent-cat") ? "right" : "left");
+
+                navigateToMenuItem(entityId ? entityId : 0, item.hasClass("navigate-back") ? "left" : "right");
             }
 
             // for stopping event propagation
@@ -60,7 +63,6 @@ var AjaxMenu = (function ($, window, document, undefined) {
     function navigateToMenuItem(entityId, direction) {
 
         // TODO: show throbber while elements are being loaded
-
 	    $.ajax({
 	        cache: false,
 	        url: menu.data("url-item"),
@@ -69,9 +71,9 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        success: function (response) {
 
 	            // replace current menu content with response 
-	            var categoryContainer = $(".category-container");
+	            var categoryContainer = menu.find(".category-container");
 	            var firstCall = categoryContainer.length == 0;
-	            var categoryTab = entityId != 0 ? menu : $("#ocm-categories");
+	            var categoryTab = entityId != 0 ? menu : menu.find("#ocm-categories");
 
 	            if (firstCall) {
 
@@ -96,8 +98,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	                    return;
 	                }
 	                
-	                
-	                var categoryContainerSlideOut = $(".ocm-home-layer").length != 0 ? $(".ocm-home-layer") : $(".ocm-nav-layer:first");
+	                var categoryContainerSlideOut = menu.find(".ocm-home-layer").length != 0 ? menu.find(".ocm-home-layer") : menu.find(".ocm-nav-layer:first");
 
 	                _.delay(function () {
 	                    categoryContainerSlideIn.addClass("in");
@@ -105,6 +106,8 @@ var AjaxMenu = (function ($, window, document, undefined) {
                             .removeClass("in")
                             .addClass("out to-" + direction);
 	                }, 100);
+
+
 
 	                if (direction == "left") {
                         
@@ -133,11 +136,10 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        url: menu.data("url-home"),
 	        type: 'POST',
 	        success: function (response) {
-	            var ocMenu = $("#menu-container");
-	            ocMenu.html(response);
 
-	            $('#offcanvas-menu #category-tab').tab('show');
-
+	            menu.html(response);
+	            menu.find("#category-tab").tab('show');
+	            
 	            // navigate to home
 	            navigateToMenuItem(0);
 
@@ -150,34 +152,25 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	    });
 	}
 
-    function wrapAjaxResponse(response, direction, first) {
-        var responseHtml = "";
-
-        responseHtml += '<div class="ocm-nav-layer offcanvas-scrollable slide-in-from-' + direction + first + '">';
-        responseHtml += '   <div class="offcanvas-menu-subcat-header text-xs-right">';
-        responseHtml += '       <button class="btn btn-secondary btn-flat btn-to-danger btn-lg btn-icon offcanvas-closer fs-h2">&#215;</button>';
-        responseHtml += '   </div>';
-        responseHtml += response;
-        responseHtml += '</div>';
-
-        return responseHtml;
-    }
-
-    // TODO: mit home layer zusammenlegen
     function navigateToManufacturer() {
+
+        var tabContent = menu.find("#manufacturer-tab");
+        var manuTab = $("#ocm-manufacturers");
+        var isInitialized = tabContent.data("initialized");
+
+        if (isInitialized) {
+            tabContent.tab('show');
+            return;
+        }
 
         $.ajax({
             cache: false,
             url: menu.data("url-manufacturer"),
             type: 'POST',
             success: function (response) {
-
-                var manuTab = $("#ocm-manufacturers");
                 manuTab.html(response);
-
-                $('#offcanvas-menu #manufacturer-tab').tab('show');
-
-                // TODO: set initialized var and don't do requests twice
+                tabContent.tab('show');
+                tabContent.data("initialized", true);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
@@ -186,11 +179,11 @@ var AjaxMenu = (function ($, window, document, undefined) {
         });
     }
 
-    function navigateToHelp() {
+    function navigateToService() {
 
         var menuContent = $(".menubar-section .menubar").clone();
-        var tabContent = menu.find("#help-tab");
-        var helpTab = $("#ocm-help");
+        var tabContent = menu.find("#service-tab");
+        var serviceTab = $("#ocm-service");
         var isInitialized = tabContent.data("initialized");
         
         if (isInitialized) {
@@ -201,13 +194,24 @@ var AjaxMenu = (function ($, window, document, undefined) {
         // hide currency & language selectors 
         menuContent.find(".currency-selector, .language-selector").addClass("hidden-xs-up");
 
-        menuContent.addClass("offcanvas-scrollable");
+        // open dropdown elements initially
+        menuContent.find(".dropdown").addClass("open");
 
-        helpTab.html(menuContent);
+        serviceTab.html(menuContent);
         tabContent.data("initialized", true);
         tabContent.tab('show');
 
         return;
+    }
+
+    function wrapAjaxResponse(response, direction, first) {
+        var responseHtml = "";
+
+        responseHtml += '<div class="ocm-nav-layer offcanvas-scrollable slide-in-from-' + direction + first + '">';
+        responseHtml += response;
+        responseHtml += '</div>';
+
+        return responseHtml;
     }
 
 	return {
@@ -218,8 +222,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        var menuContent = $(".menubar-section .menubar");
 	        var selectedMenuItemId = $(".megamenu .navbar-nav").data("selected-menu-item");
 
-	        if (selectedMenuItemId == 0)
-	        {
+	        if (selectedMenuItemId == 0) {
 	            navigateToHomeLayer();
 	        }
 	        else {
@@ -231,8 +234,6 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	    },
 
 	    initFooter: function () {
-
-	        // TODO: don't forget to adapt elems or even blend them out when there's just one or no elem
 
 	        var footer = $(".offcanvas-menu-footer");
 	        var languageSelector = $(".menubar-section .language-selector");

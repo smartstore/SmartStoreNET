@@ -7,12 +7,6 @@
 <div class="ocm-home-layer">
 
     <div class="offcanvas-menu-header">
-        <div class="text-xs-right">
-            <button class="btn btn-secondary btn-flat btn-to-danger btn-lg btn-icon offcanvas-closer fs-h2" style="border-radius: 0">
-				<i class="lnr lnr-cross"></i>
-            </button>
-        </div>
-
         <ul class="nav nav-tabs nav-tabs-line row no-gutters flex-nowrap" role="tablist">
             <li class="nav-item col-xs">
                 <a id="category-tab" class="nav-link" data-toggle="tab" href="#ocm-categories" role="tab" data-url="@Url.Action("OffCanvasMenuCategories", "Catalog")" data-initialized="false">
@@ -25,31 +19,28 @@
                 </a>
             </li>
             <li class="nav-item col-xs">
-                <a id="help-tab" class="nav-link" data-toggle="tab" href="#ocm-help" role="tab" data-initialized="false">
-                    <span class="title">@T("Offcanvas.Menu.Help")</span>
+                <a id="service-tab" class="nav-link" data-toggle="tab" href="#ocm-service" role="tab" data-initialized="false">
+                    <span class="title">@T("Offcanvas.Menu.Service")</span>
                 </a>
             </li>
         </ul>
     </div>
 
-    <div class="tab-content">
+    <div class="tab-content offcanvas-scrollable">
         <div class="tab-pane fade" id="ocm-categories" role="tabpanel"></div>
-
         <div class="tab-pane fade" id="ocm-manufacturers" role="tabpanel"></div>
-
-        <div class="tab-pane fade" id="ocm-help" role="tabpanel"></div>
+        <div class="tab-pane fade" id="ocm-service" role="tabpanel"></div>
     </div>
 
     @if (Model.DisplayCurrencySelector || Model.DisplayLanguageSelector)
     {
         <div class="offcanvas-menu-footer">
             <div class="row xs-gutters justify-content-around flex-nowrap">
-
                 @if (Model.DisplayCurrencySelector)
                 {
                     <div class="col-xs">
                         <div id="ocm-currency-selector" class="mf-dropdown">
-                            <button class="btn btn-secondary btn-labeled icon-right btn-block text-xs-left">
+                            <button class="btn btn-grey btn-labeled icon-right btn-block text-xs-left">
                                 <span data-bind="name"></span>
                                 <b><i class="fa fa-caret-down"></i></b>
                             </button>
@@ -62,7 +53,7 @@
                 {
                     <div class="col-xs">
                         <div id="ocm-language-selector" class="mf-dropdown">
-                            <button class="btn btn-secondary btn-labeled icon-right btn-block text-xs-left">
+                            <button class="btn btn-grey btn-labeled icon-right btn-block text-xs-left">
                                 <span data-bind="name"></span>
                                 <b><i class="fa fa-caret-down"></i></b>
                             </button>
@@ -70,7 +61,6 @@
                         </div>
                     </div>
                 }
-
             </div>
         </div>
     }

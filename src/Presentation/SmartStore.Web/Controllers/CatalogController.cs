@@ -948,7 +948,7 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult OffCanvasMenuCategories(int categoryId)
         {
-            var model = new AjaxCategoryModel();
+            var model = new AjaxMenuItemModel();
 
             if (categoryId != 0)
             {    
@@ -990,7 +990,7 @@ namespace SmartStore.Web.Controllers
                     var subCatName = x.GetLocalized(y => y.Name);
                     var subSubCats = _categoryService.GetAllCategoriesByParentCategoryId(x.Id);
 
-                    var subCatModel = new AjaxCategoryModel
+                    var subCatModel = new AjaxMenuItemModel
                     {
                         Id = x.Id,
                         Name = subCatName,
@@ -1019,18 +1019,21 @@ namespace SmartStore.Web.Controllers
 
             // TODO: caching berücksichtigen
 
-            var model = new AjaxCategoryModel();
+            var model = new AjaxMenuItemModel();
+            model.IsManufacturerTab = true;
+
             var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id)
                 .Take(_catalogSettings.ManufacturersBlockItemsToDisplay);
 
             foreach (var manufacturer in manufacturers)
             {
                 var manuName = manufacturer.GetLocalized(x => x.Name);
-                var modelMan = new AjaxCategoryModel {
+                var modelMan = new AjaxMenuItemModel {
                     Id = manufacturer.Id,
                     Name = manuName,
                     SeName = manufacturer.GetSeName(),
-                    HasChildren = false
+                    HasChildren = false,
+                    PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, true)
                 };
 
                 model.SubCategories.Add(modelMan);

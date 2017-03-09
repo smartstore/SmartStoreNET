@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    public partial class AjaxCategoryModel : EntityModelBase
+    public partial class AjaxMenuItemModel : EntityModelBase
     {
-        public AjaxCategoryModel()
+        public AjaxMenuItemModel()
         {
-            SubCategories = new List<AjaxCategoryModel>();
+            SubCategories = new List<AjaxMenuItemModel>();
             ParentCategory = new AjaxParentCategoryModel();
         }
 
@@ -19,7 +19,11 @@ namespace SmartStore.Web.Models.Catalog
 
         public bool HasChildren { get; set; }
 
-        public IList<AjaxCategoryModel> SubCategories { get; set; }
+        public string PictureUrl { get; set; }
+
+        public bool IsManufacturerTab { get; set; }
+
+        public IList<AjaxMenuItemModel> SubCategories { get; set; }
 
         public AjaxParentCategoryModel ParentCategory { get; set; }
     }

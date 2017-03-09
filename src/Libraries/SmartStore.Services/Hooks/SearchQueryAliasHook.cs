@@ -121,17 +121,72 @@ namespace SmartStore.Services.Hooks
 			return false;
 		}
 
+		private bool HasAliasDuplicate<T1, T2>(HookedEntity entry, BaseEntity baseEntity) where T1 : BaseEntity where T2 : BaseEntity
+		{
+			if (entry.InitialState == EntityState.Added || entry.InitialState == EntityState.Modified)
+			{
+				var entity = baseEntity as ISearchAlias;
+				if (entity != null)
+				{
+					entity.Alias = SeoExtensions.GetSeName(entity.Alias);
+					if (entity.Alias.HasValue())
+					{
+						var entities1 = _ctx.Resolve<IRepository<T1>>().TableUntracked as IQueryable<ISearchAlias>;
+						var entities2 = _ctx.Resolve<IRepository<T2>>().TableUntracked as IQueryable<ISearchAlias>;
+
+						var duplicate1 = entities1.FirstOrDefault(x => x.Alias == entity.Alias);
+						var duplicate2 = entities2.FirstOrDefault(x => x.Alias == entity.Alias);
+
+						if (duplicate1 != null || duplicate2 != null)
+						{
+							var type = baseEntity.GetUnproxiedType();
+
+							if (duplicate1 != null && duplicate1.Id == entity.Id && type == typeof(T1))
+								return false;
+							if (duplicate2 != null && duplicate2.Id == entity.Id && type == typeof(T2))
+								return false;
+
+							RevertChanges(entry, string.Concat(T("Common.Error.AliasAlreadyExists", entity.Alias), " ", T("Common.Error.ChooseDifferentValue")));
+							return true;
+						}
+					}
+				}
+			}
+
+			return false;
+		}
+
 		private bool HasAliasDuplicate(LocalizedProperty property)
 		{
 			var existingProperties = _localizedPropertyRepository.Value.Table.Where(x =>
-				x.Id != property.Id &&
-				x.LocaleKey == "Alias" &&
-				x.LocaleKeyGroup == property.LocaleKeyGroup &&
-				x.LanguageId == property.LanguageId &&
-				x.LocaleValue == property.LocaleValue).ToList();
+				 x.Id != property.Id &&
+				 x.LocaleKey == "Alias" &&
+				 x.LocaleKeyGroup == property.LocaleKeyGroup &&
+				 x.LanguageId == property.LanguageId &&
+				 x.LocaleValue == property.LocaleValue).ToList();
 
 			if (existingProperties.Count == 0)
-				return false;
+			{
+				// Check cases where alias has to be globally unique.
+				string otherKeyGroup = null;
+
+				if (property.LocaleKeyGroup.IsCaseInsensitiveEqual("SpecificationAttribute"))
+					otherKeyGroup = "ProductAttribute";
+				else if (property.LocaleKeyGroup.IsCaseInsensitiveEqual("ProductAttribute"))
+					otherKeyGroup = "SpecificationAttribute";
+
+				if (otherKeyGroup.HasValue())
+				{
+					existingProperties = _localizedPropertyRepository.Value.Table.Where(x =>
+						x.LocaleKey == "Alias" &&
+						x.LocaleKeyGroup == otherKeyGroup &&
+						x.LanguageId == property.LanguageId &&
+						x.LocaleValue == property.LocaleValue).ToList();
+				}
+
+				if (existingProperties.Count == 0)
+					return false;
+			}
 
 			var toDelete = new List<LocalizedProperty>();
 
@@ -247,7 +302,7 @@ namespace SmartStore.Services.Hooks
 
 			if (type == typeof(SpecificationAttribute))
 			{
-				if (HasAliasDuplicate<SpecificationAttribute>(entry, baseEntity))
+				if (HasAliasDuplicate<ProductAttribute, SpecificationAttribute>(entry, baseEntity))
 					return;
 
 				if (IsPropertyModified(entry, "Alias"))
@@ -277,7 +332,7 @@ namespace SmartStore.Services.Hooks
 			}
 			else if (type == typeof(ProductAttribute))
 			{
-				if (HasAliasDuplicate<ProductAttribute>(entry, baseEntity))
+				if (HasAliasDuplicate<ProductAttribute, SpecificationAttribute>(entry, baseEntity))
 					return;
 
 				if (IsPropertyModified(entry, "Alias"))

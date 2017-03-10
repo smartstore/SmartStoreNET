@@ -1,41 +1,47 @@
-﻿@model AjaxMenuItemModel
-
+﻿@model NavigationModel
 @using SmartStore.Web.Models.Catalog;
 
 @{
     Layout = "";
+
+    var currentNode = Model.SelectedMenuItem != null ?
+        Model.Root.SelectNode(x => x.Value.EntityId == Model.SelectedMenuItem.EntityId)
+        : Model.Root;
 }
 
 <div class="category-container">
-	@if (Model.Name.HasValue())
+	@if (Model.SelectedMenuItem != null)
 	{
 		<div class="category-info">
-			<div class="category-name">@Model.Name</div>
+			<div class="category-name">@Model.SelectedMenuItem.Text</div>
 		</div>
 	}
 
     <ul class="nav navbar-nav">
-        @if (Model.Id != 0)
+
+        @if (Model.SelectedMenuItem != null)
         {
-            <li class="navigate-back nav-item" data-id="@Model.ParentCategory.Id">
-                <a href="@Url.RouteUrl("Category", new { SeName = Model.ParentCategory.SeName })" class="nav-link">
+            <li class="navigate-back nav-item" data-id="@currentNode.Parent.Value.EntityId" data-ajax="true">
+                <a href="@currentNode.Parent.Value.GenerateUrl(this.Url)" class="nav-link">
                     <i class="fa fa-chevron-left"></i>
-					<span>@T("Common.Back")</span>
+                    <span>@T("Common.Back")</span>
                 </a>
             </li>
 
-            <li class="show-current-cat nav-item" data-id="@Model.Id" data-ajax="false">
-                <a href="@Url.RouteUrl("Category", new { SeName = Model.SeName })" class="nav-link">
-                    @T("Offcanvas.Menu.ShowCurrentCat", Model.Name)
+            <li class="show-current-cat nav-item" data-id="@currentNode.Value.EntityId" data-ajax="false">
+                <a href="@currentNode.Value.GenerateUrl(this.Url)" class="nav-link">
+                    @T("Offcanvas.Menu.ShowCurrentCat", currentNode.Value.Text)
                 </a>
             </li>
         }
 
-        @foreach (var cat in Model.SubCategories)
+        @foreach (var node in currentNode.Children)
         {
-            <li class="nav-item@(cat.HasChildren ? " has-children" : "")" data-id="@cat.Id" data-ajax="@(cat.HasChildren ? "true" : "false")">
-                <a href="@Url.RouteUrl("Category", new { SeName = cat.SeName })" class="nav-link">
-                    @cat.Name
+            var cat = node.Value;
+
+            <li class="nav-item@(node.HasChildren ? " has-children" : "")" data-id="@cat.EntityId" data-ajax="@(node.HasChildren ? "true" : "false")">
+                <a href="@node.Value.GenerateUrl(this.Url)" class="nav-link">
+                    @cat.Text
                 </a>
             </li>
         }

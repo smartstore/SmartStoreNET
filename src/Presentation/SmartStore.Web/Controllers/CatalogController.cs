@@ -916,65 +916,8 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult OffCanvasMenuCategories(int categoryId)
         {
-            var model = new AjaxMenuItemModel();
-
-            if (categoryId != 0)
-            {    
-                var category = _categoryService.GetCategoryById(categoryId);
-                
-                model.Id = category.Id;
-                model.Name = category.GetLocalized(x => x.Name);
-                model.SeName = category.GetSeName();
-                model.SortDescription = category.GetLocalized(x => x.Description);
-
-                if (category.ParentCategoryId != 0)
-                {
-                    var parentCategory = _categoryService.GetCategoryById(category.ParentCategoryId);
-                
-                    // TODO: cachen ???
-                    model.ParentCategory = new AjaxParentCategoryModel
-                    {
-                        Id = parentCategory.Id,
-                        Name = parentCategory.GetLocalized(x => x.Name),
-                        SeName = parentCategory.GetSeName(),
-                        // won't be needed in this context, so we set it to null
-                        //ParentCategory = null,
-                        //SubCategories = null
-                        //HasChildren = true,
-                    };
-                }
-            }
-            else
-            {
-                model.Id = 0;
-            }
-
-            // subcategories
-            model.SubCategories = _categoryService
-                .GetAllCategoriesByParentCategoryId(categoryId)
-                .Select(x =>
-                {
-                    // TODO: cachen ???
-                    var subCatName = x.GetLocalized(y => y.Name);
-                    var subSubCats = _categoryService.GetAllCategoriesByParentCategoryId(x.Id);
-
-                    var subCatModel = new AjaxMenuItemModel
-                    {
-                        Id = x.Id,
-                        Name = subCatName,
-                        SeName = x.GetSeName(),
-                        HasChildren = subSubCats.Count > 0,
-                        //ParentCategory = model
-                        //SubCategories
-                    };
-
-                    return subCatModel;
-
-                }).ToList();
-
-            model.HasChildren = model.SubCategories.Count > 0;
-            
-            return PartialView(model);
+            var newModel = _helper.PrepareCategoryNavigationModel(categoryId, 0);
+            return PartialView(newModel);
         }
 
         // ajax

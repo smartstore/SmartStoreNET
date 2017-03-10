@@ -585,7 +585,7 @@ namespace SmartStore.Data.Migrations
 				"Enums.SmartStore.Core.Domain.Common.FulltextSearchMode.Or"
 			);
 
-			builder.AddOrUpdate("Common.Options.Count", "Number options", "Anzahl Optionen");
+			builder.AddOrUpdate("Common.Options.Count", "Number options", "Anzahl Optionen"); 
 			builder.AddOrUpdate("Common.Options.Add", "Add option", "Option hinzufügen");
 			builder.AddOrUpdate("Common.Options.Edit", "Edit option", "Option bearbeiten");
 
@@ -600,12 +600,12 @@ namespace SmartStore.Data.Migrations
 				"Set Optionen übernehmen");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptionsHint",
-				"Would you like to copy the options of set \"{0}\"?",
-				"Möchten Sie die Optionen von Set \"{0}\" übernehmen?");
+				"Would you like to copy all options from set \"{0}\"?",
+				"Möchten Sie alle Optionen von Set \"{0}\" übernehmen?");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AskExistingValues",
-				"What should be done with the existing options?",
-				"Was soll mit den vorhandenen Optionen geschehen?");
+				"What should be done with already existing options?",
+				"Was soll mit den bereits vorhandenen Optionen geschehen?");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.MergeExistingValues",
 				"Merge all options",
@@ -618,7 +618,7 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Offcanvas.Menu.Categories", "Categories", "Sortiment");
             builder.AddOrUpdate("Offcanvas.Menu.Brands", "Brands", "Marken");
             builder.AddOrUpdate("Offcanvas.Menu.Service", "Service", "Service");
-            builder.AddOrUpdate("Offcanvas.Menu.ShowCurrentCat", "Show {0}", "{0} anzeigen");
+            builder.AddOrUpdate("Offcanvas.Menu.ShowCurrentCat", "Show {0}", "{0} anzeigen"); 
             
 			var aliasHintEn = "Seo-compliant URL alias for search filters. If empty, the attribute's ID is used in page URLs.";
 			var aliasHintDe = "SEO-konformer URL-Alias für Suchfilter. Wenn leer, wird die Attribut-ID in Seiten-URLs verwendet.";
@@ -627,7 +627,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
 
-			builder.AddOrUpdate("Admin.Catalog.Attributes.OptionsSets", "Options sets", "Options-Sets");
+			builder.AddOrUpdate("Admin.Catalog.Attributes.OptionsSets", "Option sets", "Options-Sets");
 
 			builder.Delete(
 				"Products.Filter.Remove",

@@ -179,6 +179,10 @@
 
 .menubar-section {
     border-bottom: 1px solid #ddd;
+
+    .abbreviation {
+        text-transform: uppercase;
+    }
 }
 
 .menubar {

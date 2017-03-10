@@ -23,6 +23,7 @@
 
                 <a href="@href" class="dropdown-item" title="@curr.Name" rel="nofollow" data-selected="@(curr.Equals(activeCurr) ? "true" : "false")">
                     @curr.Name
+                    <span class="abbreviation"> - @curr.ISOCode (@curr.Symbol)</span>
                 </a>
             }
         </div>

@@ -55,51 +55,6 @@
     }
 }
 
-.offcanvas-menu-header,
-.offcanvas-cart-header {
-    position: relative;
-    background: $gray-lightest;
-    flex-grow: 0;
-
-    .offcanvas-closer {
-        border-radius: 0;
-    }
-
-    .nav-tabs {
-        display: flex;
-        flex-direction: row;
-        overflow-x: auto;
-        overflow-y: hidden;
-    }
-
-    .nav-item {
-        display: block;
-        flex-wrap: nowrap;
-        white-space: nowrap;
-
-        .nav-link {
-            background: transparent !important;
-            max-width: 100%;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-
-            .label {
-                position: relative;
-                right: 0;
-                top: 0;
-                vertical-align: super;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .nav-link {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-            }
-        }
-    }
-}
-
 .offcanvas-cart-content {
     position: relative;
     flex-grow: 1;

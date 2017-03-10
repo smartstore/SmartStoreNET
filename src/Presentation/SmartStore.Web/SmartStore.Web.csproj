@@ -342,7 +342,6 @@
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />
-    <Compile Include="Models\Catalog\AjaxCategoryModel.cs" />
     <Compile Include="Models\Catalog\SearchBoxModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
     <Compile Include="Models\Catalog\PopularProductTagsModel.cs" />

@@ -170,97 +170,48 @@ body.canvas-blocking .canvas-blocker {
 }
 
 
-/* OFFCANVAS MENU
+/* OFFCANVAS TABS
 --------------------------------------------*/
-
-#offcanvas-nav {
-    background-color: $offcanvas-menu-bg;
-    color: $body-color;
-}
-
-.ocm-panels {
-    position: absolute;
-    left: 0;
-    top: 50px;
-    right: 0;
-    bottom: 0;
-}
-
-.ocm-menu,
-.ocm-menu > ul {
-    transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-.ocm-menu {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    padding: 0;
-    background-color: $offcanvas-menu-bg;
-    transform: translate3d(100%, 0, 0);
-    z-index: 90;
-
-    &.expanded {
-        z-index: 95;
-        transform: translate3d(-35%, 0, 0);
-    }
-    &.current {
-        z-index: 99;
-        transform: translate3d(0, 0, 0);
-    }
-    &.out {
-        z-index: 100;
-    }
-}
-
-.ocm-menu > ul {
-    @include list-unstyled;
-    transform: scale(0.8);
-    opacity: 0.5;
-    transform-origin: center center;
-}
-.ocm-menu.current > ul {
-    transform: scale(1);
-    opacity: 1;
-}
-
-.ocm-menu > ul > li {
-    border-bottom: 1px solid rgba(255,255,255, 0.08);
-}
-
-.ocm-menu .ocm-link {
-    display: block;
+.offcanvas-tabs {
     position: relative;
-    padding: 0.8rem 3rem 0.8rem 1.5rem;
-    text-transform: uppercase;
-    color: $body-color; // $clr-blue-grey-300;
-    text-decoration: none !important;
-    transition: color 0.15s ease;
-    border-right: 3px solid transparent;
-    @include text-truncate;
+    background: $gray-lightest;
+    flex-grow: 0;
 
-    &.ocm-back {
-        font-weight: 600;
+    .offcanvas-closer {
+        border-radius: 0;
     }
 
-    &:hover, &:active {
-        color: #fff;
-    }
-    &.active {
-        border-right-color: $brand-warning;
+    .nav-tabs {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
     }
 
-    &.has-children:after {
-        position: absolute;
-        font-family: FontAwesome;
-        content: "\f105"; // fa-angle-right
-        color: inherit;
-        right: 1.5rem;
-        font-size: 1.2em;
-        line-height: 1;
-        top: 50%;
-        margin-top: -0.6em;
+    .nav-item {
+        display: block;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+
+        .nav-link {
+            background: transparent !important;
+            max-width: 100%;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+
+            .label {
+                position: relative;
+                right: 0;
+                top: 0;
+                vertical-align: super;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-link {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+        }
     }
 }

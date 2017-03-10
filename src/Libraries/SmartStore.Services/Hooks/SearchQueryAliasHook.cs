@@ -96,7 +96,11 @@ namespace SmartStore.Services.Hooks
 			}
 		}
 
-		private bool HasAliasDuplicate<TEntity>(HookedEntity entry, BaseEntity baseEntity) where TEntity : BaseEntity
+		private bool HasAliasDuplicate<TEntity>(
+			HookedEntity entry,
+			BaseEntity baseEntity,
+			Func<IQueryable<TEntity>, TEntity, bool> hasDuplicate = null) 
+			where TEntity : BaseEntity
 		{
 			if (entry.InitialState == EntityState.Added || entry.InitialState == EntityState.Modified)
 			{
@@ -109,10 +113,18 @@ namespace SmartStore.Services.Hooks
 						var repository = _ctx.Resolve<IRepository<TEntity>>();
 						var allEntities = repository.TableUntracked as IQueryable<ISearchAlias>;
 
-						if (allEntities != null && allEntities.Any(x => x.Id != entity.Id && x.Alias == entity.Alias))
+						//if (allEntities != null && allEntities.Any(x => x.Id != entity.Id && x.Alias == entity.Alias))
+						if (allEntities != null)
 						{
-							RevertChanges(entry, string.Concat(T("Common.Error.AliasAlreadyExists", entity.Alias), " ", T("Common.Error.ChooseDifferentValue")));
-							return true;
+							var duplicateExists = hasDuplicate == null
+								? allEntities.Any(x => x.Id != entity.Id && x.Alias == entity.Alias)
+								: hasDuplicate(repository.TableUntracked, (TEntity)entity);
+
+							if (duplicateExists)
+							{
+								RevertChanges(entry, string.Concat(T("Common.Error.AliasAlreadyExists", entity.Alias), " ", T("Common.Error.ChooseDifferentValue")));
+								return true;
+							}
 						}
 					}
 				}
@@ -211,10 +223,10 @@ namespace SmartStore.Services.Hooks
 				{
 					relatedEntityExists = _ctx.Resolve<IRepository<ProductAttributeOption>>().GetById(prop.EntityId) != null;
 				}
-				else if (prop.LocaleKeyGroup.IsCaseInsensitiveEqual("ProductVariantAttributeValue"))
-				{
-					relatedEntityExists = _ctx.Resolve<IRepository<ProductVariantAttributeValue>>().GetById(prop.EntityId) != null;
-				}
+				//else if (prop.LocaleKeyGroup.IsCaseInsensitiveEqual("ProductVariantAttributeValue"))
+				//{
+				//	relatedEntityExists = _ctx.Resolve<IRepository<ProductVariantAttributeValue>>().GetById(prop.EntityId) != null;
+				//}
 
 				if (relatedEntityExists)
 				{
@@ -366,7 +378,8 @@ namespace SmartStore.Services.Hooks
 					x => x.ProductVariantAttributeId == entity.ProductVariantAttributeId && x.Name == entity.Name))
 					return;
 
-				if (HasAliasDuplicate<ProductVariantAttributeValue>(entry, baseEntity))
+				if (HasAliasDuplicate<ProductVariantAttributeValue>(entry, baseEntity, 
+					(all, e) => all.Any(x => x.Id != e.Id && x.ProductVariantAttributeId == e.ProductVariantAttributeId && x.Alias == e.Alias)))
 					return;
 
 				if (IsPropertyModified(entry, "Alias"))
@@ -382,11 +395,11 @@ namespace SmartStore.Services.Hooks
 				if (!prop.LocaleKey.IsCaseInsensitiveEqual("Alias"))
 					return;
 
+				// validating ProductVariantAttributeValue goes too far here.
 				if (!keyGroup.IsCaseInsensitiveEqual("SpecificationAttribute") &&
 					!keyGroup.IsCaseInsensitiveEqual("SpecificationAttributeOption") &&
 					!keyGroup.IsCaseInsensitiveEqual("ProductAttribute") &&
-					!keyGroup.IsCaseInsensitiveEqual("ProductAttributeOption") &&
-					!keyGroup.IsCaseInsensitiveEqual("ProductVariantAttributeValue"))
+					!keyGroup.IsCaseInsensitiveEqual("ProductAttributeOption"))
 				{
 					return;
 				}

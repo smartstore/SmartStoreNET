@@ -627,7 +627,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
 
-			builder.AddOrUpdate("Admin.Catalog.Attributes.OptionsSets", "Options sets", "Optionen Sets");
+			builder.AddOrUpdate("Admin.Catalog.Attributes.OptionsSets", "Options sets", "Options-Sets");
 
 			builder.Delete(
 				"Products.Filter.Remove",

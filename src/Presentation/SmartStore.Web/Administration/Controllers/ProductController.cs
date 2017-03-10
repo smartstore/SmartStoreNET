@@ -3047,7 +3047,7 @@ namespace SmartStore.Admin.Controllers
 				}
 				catch (Exception exception)
 				{
-					Services.Notifier.Error(exception.Message);
+					NotifyError(exception.Message);
 				}
 			}
 			else
@@ -3100,12 +3100,23 @@ namespace SmartStore.Admin.Controllers
 			{
 				var pva = _productAttributeService.GetProductVariantAttributeById(productVariantAttributeId);
 				if (pva == null)
-					throw new ArgumentException(T("Products.Variants.NotFound", productVariantAttributeId));
+				{
+					NotifyError(T("Products.Variants.NotFound", productVariantAttributeId));
+				}
+				else
+				{
+					try
+					{
+						var numberOfCopiedOptions = _productAttributeService.CopyAttributeOptions(pva, optionsSetId, deleteExistingValues);
 
-				var numberOfCopiedOptions = _productAttributeService.CopyAttributeOptions(pva, optionsSetId, deleteExistingValues);
-
-				NotifySuccess(string.Concat(T("Admin.Common.TaskSuccessfullyProcessed"), " ",
-					T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.NumberOfCopiedOptions", numberOfCopiedOptions)));
+						NotifySuccess(string.Concat(T("Admin.Common.TaskSuccessfullyProcessed"), " ",
+							T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.NumberOfCopiedOptions", numberOfCopiedOptions)));
+					}
+					catch (Exception exception)
+					{
+						NotifyError(exception.Message);
+					}
+				}
 			}
 			else
 			{

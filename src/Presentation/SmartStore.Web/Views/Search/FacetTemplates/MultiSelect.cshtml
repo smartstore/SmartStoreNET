@@ -5,8 +5,8 @@
 
 @if (Model.Facets.Count() > 7)
 {
-	<div class="facet-search has-icon has-icon-right input-group-sm p-b-1">
-		<input type="text" class="form-control facet-search-control" placeholder="@T("Search.Facet.FindPlaceholder", Model.Label)" />
+	<div class="facet-local-search has-icon has-icon-right input-group-sm p-b-1">
+		<input type="text" class="form-control facet-local-search-input" placeholder="@T("Search.Facet.FindPlaceholder", Model.Label)" />
 		<span class="input-group-icon">
 			<i class="fa fa-search text-muted"></i>
 		</span>
@@ -16,11 +16,13 @@
 <div class="facet-body-inner scrollable">
 	@foreach (var facet in Model.Facets)
 	{
-		<div class="facet-check" data-href="@Url.FacetToggle(facet)">
+		<div class="facet-check facet-item" data-href="@Url.FacetToggle(facet)">
 			<label>
 				<input class="facet-control-native" type="checkbox" value="@facet.Value.ToString()" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
 				<span class="facet-control-ui"></span>
-				<span class="facet-label" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>@(facet.Value.Label ?? facet.Value.ToString())</span>
+				<span class="facet-label" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>
+					@(facet.Value.Label ?? facet.Value.ToString())
+				</span>
 			</label>
 		</div>
 	}

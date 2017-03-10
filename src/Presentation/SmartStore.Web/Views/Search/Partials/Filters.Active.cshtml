@@ -21,14 +21,14 @@
 		@foreach (var filter in activeFilters)
 		{
 			<li class="active-filter-item" data-key="@filter.Key" data-group="@filter.FacetGroup.Key">
-				<a class="btn btn-grey btn-sm active-filter-link" href='@Url.FacetRemove(filter)' title="Filter aufheben: @filter.FacetGroup.Label &gt; @filter.Value.Label">
+				<a class="btn btn-grey btn-sm active-filter-link" href='@Url.FacetRemove(filter)' title="@T("Search.Facet.RemoveFilter", filter.FacetGroup.Label, filter.Value.Label)">
 					<span class="active-filter-label">@filter.Value.Label</span>
 				</a>
 			</li>
 		}
 		<li class="active-filter-item active-filter-item-clear">
 			<a class="btn btn-secondary btn-to-danger btn-flat btn-sm active-filter-link" href='@Url.FacetRemove(activeFilters)'>
-				<span class="active-filter-label fw-600">Alle Filter aufheben</span>
+				<span class="active-filter-label fw-600">@T("Search.Facet.RemoveAllFilters")</span>
 			</a>
 		</li>
 	</ul>

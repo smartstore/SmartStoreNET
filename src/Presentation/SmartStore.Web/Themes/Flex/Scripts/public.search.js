@@ -183,13 +183,15 @@
 		if (widget.length === 0)
 			return;
 
-		// Handle facet widget events
+		//
+		//	Handle facet widget filter events
+		// =============================================
 		(function () {
 			// Handle checkboxes
-			$('.faceted-search').on('change', ':input[type=checkbox].facet-control-native', facetControlClickHandler);
+			widget.on('change', ':input[type=checkbox].facet-control-native', facetControlClickHandler);
 
 			// Handle radio buttons
-			$('.faceted-search').on('click', ':input[type=radio].facet-control-native', facetControlClickHandler);
+			widget.on('click', ':input[type=radio].facet-control-native', facetControlClickHandler);
 
 			function facetControlClickHandler(e) {
 				var href = $(this).closest('[data-href]').data('href');
@@ -210,63 +212,104 @@
 			});
 		})();
 
-		var btn = $('.btn-toggle-filter-widget');
-		if (btn.length === 0)
-			return;
 
-		var viewport = ResponsiveBootstrapToolkit;
+		//
+		//	Handle local search
+		// =============================================
+		(function () {
+			widget.on('input propertychange paste', '.facet-local-search-input', function (e) {
+				var el = $(this);
 
-		function collapseWidget() {
-			if (btn.data('offcanvas')) return;
+				// Retrieve the input field text and reset the count to zero
+				var filter = el.val(),
+					rg = new RegExp(filter, "i");
 
-			// create offcanvas wrapper
-			var offcanvas = $('<aside class="offcanvas offcanvas-left offcanvas-overlay" data-overlay="true"><div class="offcanvas-content offcanvas-scrollable"></div></aside>').appendTo('body');
+				// Loop through the facet items
+				el.closest('.facet-body').find('.facet-item').each(function () {
+					var item = $(this);
 
-			// handle .offcanvas-closer click
-			offcanvas.one('click', '.offcanvas-closer', function (e) {
-				offcanvas.offcanvas('hide');
+					// If the facet item does not contain the text phrase hide it
+					if (filter.length > 0 && item.text().search(rg) < 0) {
+						item.hide();
+					}
+						// Show the facet item if the phrase matches
+					else {
+						item.show();
+					}
+				});
+			});
+		})();
+
+
+		//
+		//	Handle widget responsiveness (offcanvas)
+		// =============================================
+		(function () {
+			var btn = $('.btn-toggle-filter-widget');
+			if (btn.length === 0)
+				return;
+
+			var viewport = ResponsiveBootstrapToolkit;
+
+			function collapseWidget(afterResize) {
+				if (btn.data('offcanvas')) return;
+
+				// create offcanvas wrapper
+				var offcanvas = $('<aside class="offcanvas offcanvas-left offcanvas-overlay" data-overlay="true"><div class="offcanvas-content offcanvas-scrollable"></div></aside>').appendTo('body');
+
+				// handle .offcanvas-closer click
+				offcanvas.one('click', '.offcanvas-closer', function (e) {
+					offcanvas.offcanvas('hide');
+				});
+
+				// put widget into offcanvas wrapper
+				widget.appendTo(offcanvas.children().first());
+
+				btn.data('offcanvas', offcanvas)
+				   .attr('data-toggle', 'offcanvas')
+				   .attr('data-placement', 'left')
+				   .attr('data-disablescrolling', 'true')
+				   .data('target', offcanvas);
+
+				if (!afterResize) {
+					console.log("collapseWidget", widget.find('.facet-toggle:not(.collapsed)'));
+					// Collapse all groups on initial page load
+					widget.find('.facet-toggle:not(.collapsed)').addClass('collapsed');
+					widget.find('.facet-body.in').removeClass('in');
+				}
+			}
+
+			function restoreWidget() {
+				if (!btn.data('offcanvas')) return;
+
+				// move widget back to its origin
+				var offcanvas = btn.data('offcanvas');
+				widget.appendTo($('.faceted-search-container'));
+				offcanvas.remove();
+
+				btn.removeData('offcanvas')
+				   .removeAttr('data-toggle')
+				   .removeAttr('data-placement')
+				   .removeAttr('data-disablescrolling')
+				   .removeData('target');
+			}
+
+			function toggleOffCanvas(afterResize) {
+				var breakpoint = '<lg';
+				if (viewport.is(breakpoint)) {
+					collapseWidget(afterResize);
+				}
+				else {
+					restoreWidget();
+				}
+			}
+
+			EventBroker.subscribe("page.resized", function (msg, viewport) {
+				toggleOffCanvas(true);
 			});
 
-			// put widget into offcanvas wrapper
-			widget.appendTo(offcanvas.children().first());
-			btn.data('offcanvas', offcanvas);
-
-			btn.attr('data-toggle', 'offcanvas')
-		       .attr('data-placement', 'left')
-		       .attr('data-disablescrolling', 'true')
-               .data('target', offcanvas);
-		}
-
-		function restoreWidget() {
-			if (!btn.data('offcanvas')) return;
-
-			// move widget back to its origin
-			var offcanvas = btn.data('offcanvas');
-			widget.appendTo($('.faceted-search-container'));
-			offcanvas.remove();
-
-			btn.removeData('offcanvas')
-		       .removeAttr('data-toggle')
-		       .removeAttr('data-placement')
-		       .removeAttr('data-disablescrolling')
-		       .removeData('target');
-		}
-
-		function toggleOffCanvas() {
-			var breakpoint = '<lg';
-			if (viewport.is(breakpoint)) {
-				collapseWidget();
-			}
-			else {
-				restoreWidget();
-			}
-		}
-
-		EventBroker.subscribe("page.resized", function (msg, viewport) {
-			toggleOffCanvas();
-		});
-
-		_.delay(toggleOffCanvas, 10);
+			_.delay(toggleOffCanvas, 10);
+		})();
 	});
 
 })(jQuery, this, document);

@@ -285,7 +285,7 @@
 		}, 800);
 
 		var mainContainer = $('#local-plugins');
-		$('#filter-query').on('keyup', function (e) {
+		$('#filter-query').on('input propertychange paste', function (e) {
 			var el = $(this);
 
 			// Retrieve the input field text and reset the count to zero

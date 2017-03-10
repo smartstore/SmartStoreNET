@@ -9,6 +9,8 @@ $searchbox-border-color:            rgba(0,0,0, 0.12);
 $searchbox-border-active-color:     rgba(0,0,0, 0.2);
 $searchbox-hit-tag-color:           darken($brand-warning, 10%);
 
+$facet-selection-color:             darken($brand-success, 15%);
+
 .instasearch-form {
     position: relative;
 }
@@ -175,7 +177,7 @@ $searchbox-hit-tag-color:           darken($brand-warning, 10%);
 	position: relative;
 	display: block;
     padding: 0.75rem 0;
-    font-size: 16px;
+    font-size: $font-size-root;
 	font-weight: 600;
 	color: $body-color !important;
 	text-decoration: none !important;
@@ -187,15 +189,20 @@ $searchbox-hit-tag-color:           darken($brand-warning, 10%);
 	    font-size: 1.2rem;
 	    line-height: 1;
 	    content: "\f106";
+        color: $body-color;
 	    //content: "\f077";
         right: 0;
 	    top: 50%;
-	    margin-top: -9px;
+	    margin-top: -7px;
 	    transition: transform 0.3s ease-in-out;
     }
 
     &.collapsed:after {
 	    transform: rotate(180deg);
+    }
+
+    .facet-selection {
+        display: none;
     }
 }
 
@@ -211,6 +218,11 @@ $searchbox-hit-tag-color:           darken($brand-warning, 10%);
 	    max-height: 215px;
 	    overflow-y: auto;
     }
+}
+
+.btn-remove-group-filters {
+    display: block;
+    margin-top: 0.5rem;
 }
 
 
@@ -241,7 +253,6 @@ $facet-control-size:        20px;
         @include fontawesome("\f00c");
         display: block;
         opacity: 0;
-        transform: scale(0.2);
         transition: all 0.2s ease-in;
         width: $facet-control-size;
         height: $facet-control-size;
@@ -251,7 +262,7 @@ $facet-control-size:        20px;
         font-size: 14px;
         margin-top: -1px;
         margin-left: -1px;
-        color: $brand-warning;
+        color: $facet-selection-color;
     }
 
     *:checked + & {
@@ -392,6 +403,22 @@ $facet-control-size:        20px;
 
     .facet-toggle:after {
         right: 1rem;
+    }
+
+    .facet-toggle.has-selection {
+        color: $facet-selection-color !important;
+
+        .facet-selection {
+            display: inline;
+            color: rgba(#000, 0.4);
+            font-size: $font-size-base;
+            position: absolute;
+            text-align: right;
+            right: 2.5rem;
+            vertical-align: middle;
+            line-height: 28px;
+            font-weight: 400;
+        }
     }
 
     .facet-body-inner {

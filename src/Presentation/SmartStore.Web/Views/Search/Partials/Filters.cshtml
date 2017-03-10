@@ -25,15 +25,30 @@
 			}
 
 			i++;
-			var hasSelection = group.Facets.Any(x => x.Value.IsSelected);
-			var expanded = i <= 3 || hasSelection;
+			var selectedFilters = group.Facets.Where(x => x.Value.IsSelected).ToArray();
+			var selectedCount = selectedFilters.Length;
+			var expanded = i <= 3 || selectedCount > 0;
 
 			<div class="facet-group" data-key="@group.Key">
-				<a class="facet-toggle@(!expanded ? " collapsed" : "")" data-toggle="collapse" href="#facet-body-@(group.Key)" aria-expanded="@expanded" aria-controls="facet-body-@(group.Key)">
+				<a class="facet-toggle@(!expanded ? " collapsed" : "")@(selectedCount > 0 ? " has-selection" : "")" 
+				   data-toggle="collapse" 
+				   href="#facet-body-@(group.Key)" 
+				   aria-expanded="@expanded" 
+				   aria-controls="facet-body-@(group.Key)" @Html.Attr("data-selections", selectedCount.ToString(), selectedCount > 0)>
+					@if (selectedCount > 0)
+					{
+						<span class="facet-selection">@T("Search.Facet.SelectedCount", selectedCount)</span>
+					}
 					@(group.Label ?? group.Key)
 				</a>
 				<div id="facet-body-@(group.Key)" class="facet-body collapse@(expanded ? " in" : "")" aria-expanded="@expanded">
 					@{ Html.RenderAction(templateRoute.Action, templateRoute.Controller, templateRoute.RouteValues); }
+					@if (selectedCount > 0)
+					{
+						<a href="@Url.FacetRemove(selectedFilters)" class="btn-remove-group-filters">
+							@T("Search.Facet.RemoveGroupFilters")
+						</a>
+					}
 				</div>
 			</div>
 		}

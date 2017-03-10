@@ -398,7 +398,11 @@ a.pretty-link {
     }
 }
 
+.d-block            { display: block; }
+.d-inline           { display: inline; }
+.d-inline-block     { display: inline-block; }
 .d-flex             { display: flex; }
+
 .flex-nowrap        { flex-wrap: nowrap !important; }
 .flex-wrap          { flex-wrap: wrap !important; }
 .flex-row           { flex-direction: row !important; }

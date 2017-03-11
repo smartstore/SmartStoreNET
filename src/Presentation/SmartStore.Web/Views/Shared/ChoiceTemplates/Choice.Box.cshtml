@@ -20,6 +20,7 @@
 
 			<li class="choice-box@(item.IsPreSelected ? " selected" : "")@(item.IsDisabled ? " disabled" : "")">
 				<label class="choice-box-label">
+					<input type="radio" class="choice-box-control-native" id="@(controlId)_@(item.Id)" name="@(controlId)" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
 					<span class="choice-box-content tooltip-toggle" title="@item.GetItemLabel()">
 						<span class="choice-box-element" @Html.Attr("style", css, css.HasValue())>
 							@if (item.ImageUrl.HasValue())
@@ -32,18 +33,10 @@
 							}
 						</span>
 					</span>
-					<input type="radio" class="choice-box-radio" id="@(controlId)_@(item.Id)" name="@(controlId)" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
 				</label>
 			</li>
 		}
 	</ul>
 </div>
 
-<script>
-	$(function () {
-		$('#choice-boxes-@(Model.Id)').on('click', 'input', function (event) {
-			$('#choice-boxes-@(Model.Id)').find('li').removeClass('selected');
-			$(this).closest('li').addClass('selected');
-		});
-	});
-</script>
+

@@ -1646,3 +1646,126 @@ table.payment-method-features td {
 		}
 	}
 }
+
+//
+// Choice Boxes
+// TODO: (mc) DELETE this stuff after SASSifying the backend theme,
+// 'cause choice-boxes are already contained in shared scss files.
+// ================================================================
+
+.choice-box-group {
+  padding: 0;
+  list-style-type: none;
+  position: relative;
+  margin: 0 -0.4rem;
+  box-sizing: border-box;
+
+  * { box-sizing: border-box }
+}
+
+.choice-box-group::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.choice-box-group .choice-box {
+  position: relative;
+  float: left;
+  display: block;
+  padding: 0.2rem;
+}
+
+.choice-box-group .choice-box-label {
+  margin: 0;
+}
+
+.choice-box-group .choice-box-content {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.choice-box-group .choice-box-element {
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background-color: #fff;
+  -webkit-transition: border-color 0.1s linear;
+  transition: border-color 0.1s linear;
+  height: 2.8rem;
+  line-height: 2.8rem;
+  min-width: 2.8rem;
+  vertical-align: middle;
+  text-align: center;
+  overflow: hidden;
+  font-weight: 600;
+}
+
+.choice-box-group .choice-box-element:hover {
+  border-color: rgba(0, 0, 0, 0.7);
+}
+
+.choice-box-group .choice-box-element .choice-box-img {
+  display: block;
+  position: relative;
+  max-width: ~"calc(2.8rem - 4px)";
+  max-height: ~"calc(100% - 4px)";
+  margin: auto;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.choice-box-group .choice-box-element .choice-box-text {
+  padding: 0 0.4rem;
+}
+
+.choice-box-control-native:checked + .choice-box-content:after {
+  box-sizing: content-box;
+  position: absolute;
+  z-index: 1;
+  display: block;
+  right: -6px;
+  top: -6px;
+  background-color: #ff9800;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  vertical-align: middle;
+  font-family: FontAwesome;
+  content: "\f00c";
+  color: #fff;
+  font-size: 10px;
+}
+
+.choice-box-control-native:checked + .choice-box-content .choice-box-element {
+  border-color: rgba(0, 0, 0, 0.7);
+}
+
+.choice-box-group .choice-box-control-native {
+  display: none !important;
+}
+
+.choice-box-group.choice-box-group-xl .choice-box-element {
+  height: 6rem;
+  line-height: 6rem;
+  min-width: 6rem;
+  .choice-box-img { max-width: ~"calc(6rem - 8px)"; }
+}
+
+.choice-box-group.choice-box-group-lg .choice-box-element {
+  height: 4rem;
+  line-height: 4rem;
+  min-width: 4rem;
+  .choice-box-img { max-width: ~"calc(4rem - 6px)"; }
+}
+
+.choice-box-group.choice-box-group-sm .choice-box-element {
+  height: 1.5rem;
+  line-height: 1.5rem;
+  min-width: 1.5rem;
+  .choice-box-img { max-width: ~"calc(1.5rem - 4px)"; }
+}

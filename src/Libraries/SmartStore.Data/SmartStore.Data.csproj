@@ -887,7 +887,7 @@
     <EmbeddedResource Include="Sql\StoredProcedures.Inverse.sql" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Caching\Creadits.txt" />
+    <Content Include="Caching\Credits.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

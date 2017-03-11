@@ -68,15 +68,18 @@ namespace SmartStore.Core.Logging
 				// Ignore components known to be without logger dependencies
 				if (!hasCtorLogger && !hasPropertyLogger)
 					return;
-			}
 
-			var componentType = registration.Activator.LimitType;
+				if (hasPropertyLogger)
+				{
+					registration.Metadata.Add("LoggerProperties", loggerProperties);
+				}
+			}
 
 			if (hasCtorLogger)
 			{
 				registration.Preparing += (sender, args) =>
 				{
-					var logger = GetLoggerFor(componentType, args.Context);
+					var logger = GetLoggerFor(args.Component.Activator.LimitType, args.Context);
 					args.Parameters = new[] { TypedParameter.From(logger) }.Concat(args.Parameters);
 				};
 			}
@@ -85,10 +88,14 @@ namespace SmartStore.Core.Logging
 			{
 				registration.Activating += (sender, args) =>
 				{
-					var logger = GetLoggerFor(componentType, args.Context);
-					foreach (var prop in loggerProperties)
+					var logger = GetLoggerFor(args.Component.Activator.LimitType, args.Context);
+					var loggerProps = args.Component.Metadata.Get("LoggerProperties") as FastProperty[];
+					if (loggerProps != null)
 					{
-						prop.SetValue(args.Instance, logger);
+						foreach (var prop in loggerProps)
+						{
+							prop.SetValue(args.Instance, logger);
+						}
 					}
 				};
 			}

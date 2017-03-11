@@ -49,7 +49,10 @@ namespace SmartStore.DevTools
 			}
 
 			var url = app.Context.Request.AppRelativeCurrentExecutionFilePath;
-			if (url.StartsWith("~/admin", StringComparison.InvariantCultureIgnoreCase) || url.StartsWith("~/mini-profiler", StringComparison.InvariantCultureIgnoreCase) || url.StartsWith("~/bundles", StringComparison.InvariantCultureIgnoreCase))
+			if (url.StartsWith("~/admin", StringComparison.InvariantCultureIgnoreCase) 
+				|| url.StartsWith("~/mini-profiler", StringComparison.InvariantCultureIgnoreCase) 
+				|| url.StartsWith("~/bundles", StringComparison.InvariantCultureIgnoreCase)
+				|| url.StartsWith("~/taskscheduler", StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}

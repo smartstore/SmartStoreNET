@@ -78,7 +78,7 @@ namespace SmartStore.Services.Catalog
             {
                 //we use this property ("HasDiscountsApplied") for performance optimziation to avoid unnecessary database calls
 				IEnumerable<Discount> appliedDiscounts = null;
-
+				
 				if (context == null)
 					appliedDiscounts = product.AppliedDiscounts;
 				else

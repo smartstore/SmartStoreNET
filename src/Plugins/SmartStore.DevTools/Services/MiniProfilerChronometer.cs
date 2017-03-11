@@ -63,6 +63,8 @@ namespace SmartStore.DevTools.Services
 					step.Dispose();
 				}
 			}
+
+			_steps.Clear();
 		}
 
 		public void Dispose()

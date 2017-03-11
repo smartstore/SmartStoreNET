@@ -271,14 +271,15 @@ namespace SmartStore.Web.Framework
 			if (servicesProperty == null)
 				return;
 
-			var fastProperty = new FastProperty(servicesProperty);
+			registration.Metadata.Add("Property.ICommonServices", new FastProperty(servicesProperty));
 
 			registration.Activated += (sender, e) =>
 			{
 				if (DataSettings.DatabaseIsInstalled())
 				{
+					var prop = e.Component.Metadata.Get("Property.ICommonServices") as FastProperty;
 					var services = e.Context.Resolve<ICommonServices>();
-					fastProperty.SetValue(e.Instance, services);
+					prop.SetValue(e.Instance, services);
 				}
 			};
 		}
@@ -431,14 +432,18 @@ namespace SmartStore.Web.Framework
 			if (querySettingsProperty == null)
 				return;
 
-			var fastProperty = new FastProperty(querySettingsProperty);
+			registration.Metadata.Add("Property.DbQuerySettings", new FastProperty(querySettingsProperty));
 
 			registration.Activated += (sender, e) =>
 			{
 				if (DataSettings.DatabaseIsInstalled())
 				{
-					var querySettings = e.Context.Resolve<DbQuerySettings>();
-					fastProperty.SetValue(e.Instance, querySettings);
+					var prop = e.Component.Metadata.Get("Property.DbQuerySettings") as FastProperty;
+					if (prop != null)
+					{
+						var querySettings = e.Context.Resolve<DbQuerySettings>();
+						prop.SetValue(e.Instance, querySettings);
+					}
 				}
 			};
 		}
@@ -470,14 +475,18 @@ namespace SmartStore.Web.Framework
 			if (userProperty == null)
 				return;
 
-			var fastProperty = new FastProperty(userProperty);
+			registration.Metadata.Add("Property.T", new FastProperty(userProperty));
 
 			registration.Activated += (sender, e) =>
 			{
 				if (DataSettings.DatabaseIsInstalled())
 				{
-					Localizer localizer = e.Context.Resolve<IText>().Get;
-					fastProperty.SetValue(e.Instance, localizer);
+					var prop = e.Component.Metadata.Get("Property.T") as FastProperty;
+					if (prop != null)
+					{
+						Localizer localizer = e.Context.Resolve<IText>().Get;
+						prop.SetValue(e.Instance, localizer);
+					}
 				}
 			};
 		}

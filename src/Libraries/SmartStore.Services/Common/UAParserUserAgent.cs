@@ -7,7 +7,6 @@ using uap = UAParser;
 
 namespace SmartStore.Services.Common
 {
-	
 	public class UAParserUserAgent : IUserAgent
 	{
 		private readonly static uap.Parser s_uap;

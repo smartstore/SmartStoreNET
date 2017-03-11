@@ -354,12 +354,13 @@ namespace SmartStore.Services.Search.Modelling
 
 				if (minPrice.HasValue)
 				{
-					minPrice = _currencyService.ConvertToPrimaryStoreCurrency(minPrice.Value, currency);
+					// TODO: (mc) Why the heck did I convert this??!!
+					//minPrice = _currencyService.ConvertToPrimaryStoreCurrency(minPrice.Value, currency);
 				}
 
 				if (maxPrice.HasValue)
 				{
-					maxPrice = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice.Value, currency);
+					//maxPrice = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice.Value, currency);
 				}
 
 				if (minPrice.HasValue && maxPrice.HasValue && minPrice > maxPrice)

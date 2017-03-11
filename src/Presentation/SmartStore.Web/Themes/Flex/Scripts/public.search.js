@@ -272,7 +272,6 @@
 				   .data('target', offcanvas);
 
 				if (!afterResize) {
-					console.log("collapseWidget", widget.find('.facet-toggle:not(.collapsed)'));
 					// Collapse all groups on initial page load
 					widget.find('.facet-toggle:not(.collapsed)').addClass('collapsed');
 					widget.find('.facet-body.in').removeClass('in');

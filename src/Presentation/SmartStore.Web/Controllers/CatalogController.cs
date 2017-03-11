@@ -595,10 +595,11 @@ namespace SmartStore.Web.Controllers
 			// Products
 			query.WithProductTagIds(new int[] { productTagId });
 
-			var productsResult = _catalogSearchService.Search(query);
+			var searchResult = _catalogSearchService.Search(query);
+			model.SearchResult = searchResult;
 
 			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
-			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
+			model.Products = _helper.MapProductSummaryModel(searchResult.Hits, mappingSettings);
 
 			// Prepare paging/sorting/mode stuff
 			_helper.MapListActions(model.Products, null, _catalogSettings.DefaultPageSizeOptions);

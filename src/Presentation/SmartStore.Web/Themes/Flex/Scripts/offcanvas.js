@@ -73,7 +73,14 @@
 
     OffCanvas.prototype._makeTouchy = function (fn) {
         var self = this;
-    	var el = this.el;
+        var el = this.el;
+
+    	// Move offcanvas on pan[left|right] and close on swipe
+    	var onRight = el.hasClass('offcanvas-right'),
+			canPan = el.hasClass('offcanvas-overlay'),
+			panning = false,
+			scrolling = false,
+			nodeScrollable = null;
 
     	function getDelta(g) {
     		return onRight
@@ -85,11 +92,12 @@
     		if (nodeScrollable == null || nodeScrollable.length == 0)
     			return false;
 
-    		var initialScrollTop = nodeScrollable.data('initial-scroll-top');
-    		if (!_.isNumber(initialScrollTop))
+
+    		var initialScrollDelta = nodeScrollable.data('initial-scroll-top');
+    		if (!_.isNumber(initialScrollDelta))
     			return false;
 
-    		return nodeScrollable.scrollTop() != initialScrollTop;
+    		return nodeScrollable.scrollTop() != initialScrollDelta;
     	}
 
     	function handleMove(e, g) {
@@ -108,15 +116,20 @@
     		}
     	}
 
-    	// Move offcanvas on pan[left|right] and close on swipe
-    	var onRight = el.hasClass('offcanvas-right'),
-			canPan = el.hasClass('offcanvas-overlay'),
-			panning = false,
-			scrolling = false,
-			nodeScrollable = null;
-
     	el.on('tapstart', function (e, gesture) {
     		if (canPan) {
+    			var tabs = $(e.target).closest('.offcanvas-tabs');
+    			if (tabs.length > 0) {
+    				var tabsWidth = 0;
+    				var cntWidth = el.width();
+    				tabs.find('.nav-item').each(function () { tabsWidth += $(this).width(); });
+    				if (tabsWidth > cntWidth) {
+						// Header tabs width exceed offcanvas width. Let it scroll, don't move offcanvas.
+    					scrolling = true;
+    					return;
+    				}
+    			}
+
     			nodeScrollable = $(e.target).closest('.offcanvas-scrollable');
     			if (nodeScrollable.length > 0) {
     				nodeScrollable.data('initial-scroll-top', nodeScrollable.scrollTop());

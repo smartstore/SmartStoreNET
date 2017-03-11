@@ -232,10 +232,6 @@ $facet-selection-color:             darken($brand-success, 15%);
 
 $facet-control-size:        20px;
 
-@keyframes facet-control-borderscale {
-    50% { box-shadow: 0 0 0 2px rgba(#000, 0.4); }
-}
-
 .facet-control-ui {
     position: absolute;
     display: block;
@@ -270,7 +266,6 @@ $facet-control-size:        20px;
         vertical-align: middle;
         text-align: center;
         box-shadow: none;
-        animation: facet-control-borderscale 0.3s ease-in;
 
         &:after {
             opacity: 1;

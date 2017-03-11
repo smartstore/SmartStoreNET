@@ -243,26 +243,22 @@ $facet-control-size:        20px;
     border: 1px solid rgba(#000, 0.15);
     border-radius: 2px;
     box-shadow: none;
-    transition: border-color 0.2s ease-in;
 
     &:after {
         @include fontawesome("\f00c");
         display: block;
         opacity: 0;
         transition: all 0.2s ease-in;
-        width: $facet-control-size;
-        height: $facet-control-size;
-        line-height: inherit;
+        width: $facet-control-size - 1px;
+        height: $facet-control-size - 1px;
+        line-height: $facet-control-size - 1px;
         text-align: center;
         vertical-align: middle;
         font-size: 14px;
-        margin-top: -1px;
-        margin-left: -1px;
         color: $facet-selection-color;
     }
 
     *:checked + & {
-        border-color: rgba(#000, 0.4);
         vertical-align: middle;
         text-align: center;
         box-shadow: none;
@@ -272,6 +268,11 @@ $facet-control-size:        20px;
             transform: scale(1);
         }
     }
+}
+
+.facet-item input:checked + .facet-control-ui,
+.facet-item:hover .facet-control-ui {
+    border-color: rgba(#000, 0.35);
 }
 
 .facet-check,
@@ -308,7 +309,12 @@ $facet-control-size:        20px;
         border-radius: 50%;
 
         &:after {
-            content: "\f111";
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: $facet-selection-color;
+            margin: 3px 0 0 3px;
         }
     }
 }
@@ -365,16 +371,16 @@ $facet-control-size:        20px;
     font-weight: 400;
     padding: 0.2rem 0.6rem;
     max-width: 12rem;
-    padding-right: 25px;
+    padding-right: 1.5rem;
     border-width: 0;
 
     &:after {
         position: absolute;
         display: block;
         content: '\00d7';
-        right: 6px;
-        top: 3px;
-        font-size: 20px;
+        right: 0.375rem;
+        top: 0.2rem;
+        font-size: 1.25rem;
         line-height: 1;
     }
 }

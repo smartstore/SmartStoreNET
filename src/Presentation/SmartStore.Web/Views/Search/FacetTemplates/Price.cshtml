@@ -12,7 +12,7 @@
 	{
 		if (facet.HitCount > 0)
 		{
-			<div class="facet-radio" data-href="@Url.FacetToggle(facet)">
+			<div class="facet-item facet-radio" data-href="@Url.FacetToggle(facet)">
 				<label>
 					<input class="facet-control-native" type="radio" name="optradio" value="@facet.Value.ToString()" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
 					<span class="facet-control-ui"></span>

@@ -35,6 +35,7 @@
 	* #1064 Deleting all product categories/manufacturers per product in one go
 	* #1063 Adding product category/manufacturer ignores any other property like DisplayOrder
 	* Added endpoint "Infos" for order and order item entity for additional information like aggregated data.
+	* Swagger integration
 * Added setting to specify whether the product manufacturer should be displayed in product detail
 * #271 Implemented support for attribute images/icons
 * #330 Implement 'attribute option sets'

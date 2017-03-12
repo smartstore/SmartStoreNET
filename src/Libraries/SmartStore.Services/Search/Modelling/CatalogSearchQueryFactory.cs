@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 using System.Web.Routing;
@@ -12,7 +11,6 @@ using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Core.Search.Filter;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Directory;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Search.Modelling
@@ -41,7 +39,6 @@ namespace SmartStore.Services.Search.Modelling
 		protected readonly HttpContextBase _httpContext;
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;
-		protected readonly ICurrencyService _currencyService;
 		protected readonly ICommonServices _services;
 		// field name to display order
 		protected Dictionary<string, int> _globalFilters;
@@ -51,13 +48,11 @@ namespace SmartStore.Services.Search.Modelling
 			HttpContextBase httpContext,
 			CatalogSettings catalogSettings,
 			SearchSettings searchSettings,
-			ICurrencyService currencyService,
 			ICommonServices services)
 		{
 			_httpContext = httpContext;
 			_catalogSettings = catalogSettings;
 			_searchSettings = searchSettings;
-			_currencyService = currencyService;
 			_services = services;
 
 			_globalFilters = new Dictionary<string, int>();
@@ -81,9 +76,29 @@ namespace SmartStore.Services.Search.Modelling
 			var controller = routeData.GetRequiredString("controller");
 			var action = routeData.GetRequiredString("action");
 			var origin = "{0}{1}/{2}".FormatInvariant(area == null ? "" : area + "/", controller, action);
+			var fields = new List<string> { "name" };
+			var term = GetValueFor<string>("q");
+			var isInstantSearch = origin.IsCaseInsensitiveEqual("Search/InstantSearch");
 
-			if (!origin.IsCaseInsensitiveEqual("Search/InstantSearch"))
+			if (isInstantSearch)
 			{
+				fields.Add("shortdescription");
+				fields.Add("tagname");
+
+				if (_searchSettings.SearchFields.Contains("sku"))
+					fields.Add("sku");
+
+				if (_searchSettings.SearchFields.Contains("gtin"))
+					fields.Add("gtin");
+
+				if (_searchSettings.SearchFields.Contains("mpn"))
+					fields.Add("mpn");
+			}
+			else
+			{
+				fields.AddRange(_searchSettings.SearchFields);
+
+				// get field names of global filters together with display order
 				_globalFilters.Add(_catalogSettings.IncludeFeaturedProductsInNormalLists ? "categoryid" : "notfeaturedcategoryid", 0);
 
 				if (_searchSettings.GlobalFilters.HasValue())
@@ -101,17 +116,12 @@ namespace SmartStore.Services.Search.Modelling
 				}
 			}
 
-			var term = GetValueFor<string>("q");
-
-			var fields = new List<string> { "name" };
-			fields.AddRange(_searchSettings.SearchFields);
-
 			var query = new CatalogSearchQuery(fields.ToArray(), term, _searchSettings.SearchMode)
 				.OriginatesFrom(origin)
 				.WithLanguage(_services.WorkContext.WorkingLanguage)
 				.WithCurrency(_services.WorkContext.WorkingCurrency)
 				.VisibleIndividuallyOnly(true)
-				.BuildFacetMap(true);
+				.BuildFacetMap(!isInstantSearch);
 
 			// Visibility
 			query.VisibleOnly(!QuerySettings.IgnoreAcl ? _services.WorkContext.CurrentCustomer : null);
@@ -122,13 +132,17 @@ namespace SmartStore.Services.Search.Modelling
 				query.HasStoreId(_services.StoreContext.CurrentStore.Id);
 			}
 
-			ConvertPagingSorting(query, routeData, origin);
-			ConvertPrice(query, routeData, origin);
-			ConvertCategory(query, routeData, origin);
-			ConvertManufacturer(query, routeData, origin);
-			ConvertRating(query, routeData, origin);
-			ConvertStock(query, routeData, origin);
-			ConvertDeliveryTime(query, routeData, origin);
+			// Instant-Search never uses these filter parameters
+			if (!isInstantSearch)
+			{
+				ConvertPagingSorting(query, routeData, origin);
+				ConvertPrice(query, routeData, origin);
+				ConvertCategory(query, routeData, origin);
+				ConvertManufacturer(query, routeData, origin);
+				ConvertRating(query, routeData, origin);
+				ConvertStock(query, routeData, origin);
+				ConvertDeliveryTime(query, routeData, origin);
+			}
 
 			OnConverted(query, routeData, origin);
 

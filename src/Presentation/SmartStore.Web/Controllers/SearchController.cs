@@ -67,23 +67,9 @@ namespace SmartStore.Web.Controllers
 
 		[HttpPost]
 		public ActionResult InstantSearch(CatalogSearchQuery query)
-		{
+		{		
 			if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
 				return Content(string.Empty);
-
-			// Overwrite search fields
-			var searchFields = new List<string> { "name", "shortdescription", "tagname" };
-
-			if (_searchSettings.SearchFields.Contains("sku"))
-				searchFields.Add("sku");
-
-			if (_searchSettings.SearchFields.Contains("gtin"))
-				searchFields.Add("gtin");
-
-			if (_searchSettings.SearchFields.Contains("mpn"))
-				searchFields.Add("mpn");
-
-			query.Fields = searchFields.ToArray();
 
 			query
 				.BuildFacetMap(false)

@@ -63,6 +63,49 @@ var AjaxMenu = (function ($, window, document, undefined) {
     function navigateToMenuItem(entityId, direction) {
 
         // TODO: show throbber while elements are being loaded
+
+        var categoryContainer = menu.find(".category-container");
+        var firstCall = categoryContainer.length == 0;
+        var categoryTab = entityId != 0 ? menu : menu.find("#ocm-categories");
+
+        var currentLayer = $(".layer.in", menu);
+        var nextLayer = currentLayer.next();
+        var prevLayer = currentLayer.prev();
+
+        if (direction == "left") {
+            // check whether a previous layer exists (if it exists, its always the right one to navigate to)
+            if (prevLayer.length > 0) {
+                
+                // special treatment when navigating back to home layer
+                var isHome = prevLayer.hasClass("ocm-home-layer");
+
+                if (isHome) {
+                    prevLayer
+                        .find(".ocm-nav-layer")
+                        .removeClass("offcanvas-scrollable ocm-nav-layer layer");
+                }
+                
+                currentLayer.removeClass("in");
+                prevLayer.addClass("in");
+                return;
+            }
+
+            // if no previous layer exists, make ajax call and prepend response
+        }
+        else if (direction == "right") {
+            
+            // check whether a next layer exists and if it has the same id as the element to which the user is navigating to
+            if (nextLayer.data("id") == entityId) {
+                currentLayer.removeClass("in");
+                nextLayer.addClass("in");
+                return;
+            }
+            else {
+                // the layer to navigate to doesn't exist, so we remove all subsequent layers to build a new clean chain
+                currentLayer.nextAll().remove();
+            }
+        }
+
 	    $.ajax({
 	        cache: false,
 	        url: menu.data("url-item"),
@@ -71,14 +114,10 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        success: function (response) {
 
 	            // replace current menu content with response 
-	            var categoryContainer = menu.find(".category-container");
-	            var firstCall = categoryContainer.length == 0;
-	            var categoryTab = entityId != 0 ? menu : menu.find("#ocm-categories");
-
 	            if (firstCall) {
 
 	                if (entityId != 0)
-	                    categoryTab.append(wrapAjaxResponse(response, direction, " in"));
+	                    categoryTab.append(wrapAjaxResponse(response, " in", entityId));
                     else 
 	                    categoryTab.append(response);
 	            }
@@ -86,40 +125,33 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	                var categoryContainerSlideIn;
 
-	                if (entityId != 0)
-	                {   
-	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, direction, "")).appendTo(categoryTab);
+	                if (direction == "left") {
+                        
+	                    if (entityId == 0) {
+	                        navigateToHomeLayer();
+	                        return;
+	                    }
+	                    
+	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, "", entityId)).prependTo(categoryTab);
 	                }
-	                else
-	                {
-	                    // TODO: get rid of this call
-	                    categoryContainer.remove();
-	                    navigateToHomeLayer();
-	                    return;
+	                else {
+	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, "", entityId)).appendTo(categoryTab);
 	                }
 	                
-	                var categoryContainerSlideOut = menu.find(".ocm-home-layer").length != 0 ? menu.find(".ocm-home-layer") : menu.find(".ocm-nav-layer:first");
+	                var categoryContainerSlideOut = currentLayer;
 
 	                _.delay(function () {
 	                    categoryContainerSlideIn.addClass("in");
-	                    categoryContainerSlideOut
-                            .removeClass("in")
-                            .addClass("out to-" + direction);
+	                    if (direction !== undefined)
+	                        categoryContainerSlideOut.removeClass("in");
 	                }, 100);
 
-
-
-	                if (direction == "left") {
-                        
-	                }
-	                else {
-	                    
-	                }
-
-	                // remove slid container after transition
+	                // remove in class of slid container after transition
 	                categoryContainerSlideIn.one(Prefixer.event.transitionEnd, function (e) {
-	                    categoryContainerSlideOut.remove();
+	                    if (direction !== undefined)
+	                        categoryContainerSlideOut.removeClass("in");
 	                });
+                    
 	            }
 	        },
 	        error: function (jqXHR, textStatus, errorThrown) {
@@ -137,12 +169,10 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        type: 'POST',
 	        success: function (response) {
 
-	            menu.html(response);
+	            menu.prepend(response);
 	            menu.find("#category-tab").tab('show');
-	            
-	            // navigate to home
-	            navigateToMenuItem(0);
 
+	            navigateToMenuItem(0);
 	            AjaxMenu.initFooter();
 	        },
 	        error: function (jqXHR, textStatus, errorThrown) {
@@ -204,10 +234,10 @@ var AjaxMenu = (function ($, window, document, undefined) {
         return;
     }
 
-    function wrapAjaxResponse(response, direction, first) {
+    function wrapAjaxResponse(response, addClasses, id) {
         var responseHtml = "";
 
-        responseHtml += '<div class="ocm-nav-layer offcanvas-scrollable slide-in-from-' + direction + first + '">';
+        responseHtml += '<div class="ocm-nav-layer layer offcanvas-scrollable ' + addClasses + '" data-id="' + id + '">';
         responseHtml += response;
         responseHtml += '</div>';
 
@@ -218,8 +248,6 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	    initMenu: function () {
 
-	        var offcanvasMenu = $('#offcanvas-menu');
-	        var menuContent = $(".menubar-section .menubar");
 	        var selectedMenuItemId = $(".megamenu .navbar-nav").data("selected-menu-item");
 
 	        if (selectedMenuItemId == 0) {

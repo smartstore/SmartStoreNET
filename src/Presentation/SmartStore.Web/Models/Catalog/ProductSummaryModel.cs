@@ -8,7 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    public partial class ProductSummaryModel : ModelBase, IListActions
+    public partial class ProductSummaryModel : ModelBase, IListActions, IDisposable
     {
 		public static ProductSummaryModel Empty = new ProductSummaryModel(new PagedList<Product>(new List<Product>(), 0, int.MaxValue));
 
@@ -60,13 +60,24 @@ namespace SmartStore.Web.Models.Catalog
 		public IEnumerable<int> AvailablePageSizes { get; set; }
 		public IPageable PagedList { get; set; }
 
+		public void Dispose()
+		{
+			if (Items != null)
+			{
+				Items.Clear();
+			}
+		}
+
 		#endregion
 
 		public class SummaryItem : EntityModelBase
 		{
+			private readonly WeakReference<ProductSummaryModel> _parent;
+
 			public SummaryItem(ProductSummaryModel parent)
 			{
-				Parent = parent;
+				//Parent = parent;
+				_parent = new WeakReference<ProductSummaryModel>(parent);
 
 				Weight = "";
 				TransportSurcharge = "";
@@ -77,7 +88,16 @@ namespace SmartStore.Web.Models.Catalog
 				Badges = new List<Badge>();
 			}
 
-			public ProductSummaryModel Parent { get; private set; }
+			//public ProductSummaryModel Parent { get; private set; }
+			public ProductSummaryModel Parent
+			{
+				get
+				{
+					ProductSummaryModel parent;
+					_parent.TryGetTarget(out parent);
+					return parent;
+				}
+			}
 
 			public string Name { get; set; }
 			public string ShortDescription { get; set; }

@@ -18,12 +18,6 @@ namespace SmartStore.Core.Search.Facets
 	[Serializable]
 	public class FacetDescriptor
 	{
-		//public enum ValueOperator
-		//{
-		//	And,
-		//	Or
-		//}
-
 		private readonly List<FacetValue> _values;
 
 		public FacetDescriptor(string key)
@@ -35,27 +29,23 @@ namespace SmartStore.Core.Search.Facets
 		}
 
 		/// <summary>
-		/// Gets the string resource key for a facet field name
+		/// Gets the string resource key for a facet group kind
 		/// </summary>
-		/// <param name="fieldName">Field name</param>
+		/// <param name="kind">Facet group kind</param>
 		/// <returns>Resource key</returns>
-		public static string GetLabelResourceKey(string fieldName)
+		public static string GetLabelResourceKey(FacetGroupKind kind)
 		{
-			switch (fieldName)
+			switch (kind)
 			{
-				case "categoryid":
-				case "featuredcategoryid":
-				case "notfeaturedcategoryid":
+				case FacetGroupKind.Category:
 					return "Search.Facet.Category";
-				case "manufacturerid":
-				case "featuredmanufacturerid":
-				case "notfeaturedmanufacturerid":
+				case FacetGroupKind.Brand:
 					return "Search.Facet.Manufacturer";
-				case "price":
+				case FacetGroupKind.Price:
 					return "Search.Facet.Price";
-				case "rate":
+				case FacetGroupKind.Rating:
 					return "Search.Facet.Rating";
-				case "deliveryid":
+				case FacetGroupKind.DeliveryTime:
 					return "Search.Facet.DeliveryTime";
 				default:
 					return null;

@@ -73,7 +73,7 @@
 						.Width(200)
 						.ClientTemplate(
 							"<a id='EditOptionsLink<#= Id #>' href='<#= ViewEditUrl #>'><#= ViewEditText #></a>" +
-							"<div id='OptionsSetsContainer<#= Id #>' class='hide'><select id='OptionsSetsChoice<#= Id #>'><#= OptionsSets #></select></div>"
+							"<div id='OptionsSetsContainer<#= Id #>' class='hide'><select id='OptionsSetsChoice<#= Id #>' data-valcount='<#= ValueCount #>'><#= OptionsSets #></select></div>"
 						)
 						.ReadOnly()
 						.Title(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text);

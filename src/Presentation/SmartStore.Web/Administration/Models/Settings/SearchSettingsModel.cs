@@ -2,7 +2,6 @@
 using System.Web.Mvc;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
-using SmartStore.Core.Search.Filter;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
@@ -11,7 +10,7 @@ namespace SmartStore.Admin.Models.Settings
 	{
 		public SearchSettingsModel()
 		{
-			GlobalFilters = new List<GlobalSearchFilterDescriptor>();
+			CommonFacets = new List<CommonFacetOption>();
 		}
 
 		public string SearchFieldsNote { get; set; }
@@ -36,7 +35,7 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.InstantSearchTermMinLength")]
 		public int InstantSearchTermMinLength { get; set; }
 
-		public List<GlobalSearchFilterDescriptor> GlobalFilters { get; set; }
+		public List<CommonFacetOption> CommonFacets { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterMinHitCount")]
 		public int FilterMinHitCount { get; set; }

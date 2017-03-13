@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Web;
+using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core;
+using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Search.Modelling;
 
@@ -16,10 +17,12 @@ namespace SmartStore.Services.Search.Extensions
 		private readonly ICatalogSearchQueryAliasMapper _mapper;
 		private readonly IWorkContext _workContext;
 		private readonly HttpRequestBase _httpRequest;
+		private readonly SearchSettings _searchSettings;
 
 		private readonly int _languageId;
 		private readonly string _url;
 		private readonly QueryString _initialQuery;
+		private Dictionary<FacetGroupKind, string> _commonFacetAliases;
 
 		private readonly static IDictionary<FacetGroupKind, string> _queryNames = new Dictionary<FacetGroupKind, string>
 		{
@@ -34,11 +37,13 @@ namespace SmartStore.Services.Search.Extensions
 		public FacetUrlHelper(
 			ICatalogSearchQueryAliasMapper mapper,
 			IWorkContext workContext,
-			HttpRequestBase httpRequest)
+			HttpRequestBase httpRequest,
+			SearchSettings searchSettings)
 		{
 			_mapper = mapper;
 			_workContext = workContext;
 			_httpRequest = httpRequest;
+			_searchSettings = searchSettings;
 
 			_languageId = _workContext.WorkingLanguage.Id;
 			_url = _httpRequest.CurrentExecutionFilePath;
@@ -104,16 +109,33 @@ namespace SmartStore.Services.Search.Extensions
 			return _url + qs.ToString(false);
 		}
 
+		protected virtual Dictionary<FacetGroupKind, string> CommonFacetAliases
+		{
+			get
+			{
+				if (_commonFacetAliases == null)
+				{
+					_commonFacetAliases = new Dictionary<FacetGroupKind, string>();
+
+					if (_searchSettings.CommonFacets.HasValue())
+					{
+						var commonFacets = JsonConvert.DeserializeObject<List<CommonFacetOption>>(_searchSettings.CommonFacets);
+
+						commonFacets.Where(x => !x.Disabled && x.Alias.HasValue()).Each(x => _commonFacetAliases.Add(x.Kind, x.Alias));
+					}
+				}
+
+				return _commonFacetAliases;
+			}
+		}
+
 		protected virtual NameValueCollection GetQueryParts(Facet facet)
 		{
-			var group = facet.FacetGroup;
-
-			// TODO: (mc) > (mg) Implement alias mapping for common facet groups like category, price etc.
-
 			string name = null;
 			string value = null;
 			int entityId;
 
+			var group = facet.FacetGroup;
 			var val = facet.Value;
 
 			var result = new NameValueCollection(2);
@@ -121,7 +143,7 @@ namespace SmartStore.Services.Search.Extensions
 			switch (group.Kind)
 			{
 				case FacetGroupKind.Attribute:
-					// TODO: (mc) > (mh) Handle range type attributes also!
+					// TODO: (mc) > (mg) Handle range type attributes also!
 					entityId = val.Value.Convert<int>();
 					name = _mapper.GetAttributeAliasById(val.ParentId, _languageId) ?? "attr" + val.ParentId;
 					value = _mapper.GetAttributeOptionAliasById(entityId, _languageId) ?? "opt" + entityId;
@@ -142,7 +164,10 @@ namespace SmartStore.Services.Search.Extensions
 					value = val.ToString();
 					if (value.HasValue())
 					{
-						result.Add(_queryNames[group.Kind], value);
+						if (!CommonFacetAliases.TryGetValue(group.Kind, out name) || name.IsEmpty())
+							name = _queryNames[group.Kind];
+
+						result.Add(name, value);
 					}
 
 					break;

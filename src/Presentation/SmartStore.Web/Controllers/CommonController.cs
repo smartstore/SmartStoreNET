@@ -1025,6 +1025,7 @@ namespace SmartStore.Web.Controllers
 						var hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
 						var storeLocation = _services.WebHelper.GetStoreLocation(false);
 						var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
+						var disableIfGroupedProduct = disableIf.Contains("groupedproduct");
 						var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;
 						var labelTextBundled = T("Admin.Catalog.Products.ProductType.BundledProduct.Label").Text;
 						var sku = T("Products.Sku").Text;
@@ -1085,6 +1086,10 @@ namespace SmartStore.Web.Controllers
 								if (disableIfNotSimpleProduct)
 								{
 									item.Disable = (x.ProductTypeId != (int)ProductType.SimpleProduct);
+								}
+								else if (disableIfGroupedProduct)
+								{
+									item.Disable = (x.ProductTypeId == (int)ProductType.GroupedProduct);
 								}
 
 								if (!item.Disable && disableIds.Contains(x.Id))

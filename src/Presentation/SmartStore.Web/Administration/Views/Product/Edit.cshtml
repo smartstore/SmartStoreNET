@@ -106,15 +106,21 @@
 
         	var select = $(e.currentTarget),
 				form = $('#CopyOptionsForm'),
+				valueCount = parseInt(select.attr('data-valcount')),
 				productVariantAttributeId = select.attr('id').replace('OptionsSetsChoice', '');
 
         	form.find('input[name=productVariantAttributeId]').val(productVariantAttributeId);
         	form.find('input[name=optionsSetId]').val(select.val());
 
-        	var hint = $('#CopyOptionsHintTemplate').text().replace('{0}', select.find(':selected').text());
-        	$('#CopyOptionsHint').text(hint);
+        	if (valueCount > 0) {
+        		var hint = $('#CopyOptionsHintTemplate').text().replace('{0}', select.find(':selected').text());
+        		$('#CopyOptionsHint').text(hint);
 
-        	$('#CopyAttributeOptionsDialog').modal('show');
+        		$('#CopyAttributeOptionsDialog').modal('show');
+        	}
+        	else {
+        		$('#btnCopyAttributeOptions').trigger('click');
+        	}
         });
 
     	// Copy attribute options

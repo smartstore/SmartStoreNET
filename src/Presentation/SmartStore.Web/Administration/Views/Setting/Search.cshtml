@@ -1,4 +1,5 @@
-﻿@using SmartStore.Core.Search
+﻿@using SmartStore.Core.Search;
+@using SmartStore.Core.Search.Facets;
 @model SearchSettingsModel
 @{
     ViewBag.Title = T("Search.Title").Text;
@@ -109,39 +110,6 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">
-
-				<table class="table admin-table" style="width: 560px;">
-					<thead>
-						<tr>
-							<th>@T("Search.FilterBy")</th>
-							<th class="ac">@T("Common.Deactivated")</th>
-							<th>@T("Common.DisplayOrder")</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var filter in Model.GlobalFilters.OrderByDescending(x => !x.Disabled).ThenBy(x => x.DisplayOrder))
-						{
-							var filterIndex = Model.GlobalFilters.IndexOf(filter);
-							<tr>
-								<td>
-									@(filter.FriendlyName ?? filter.FieldName)
-									@Html.HiddenFor(model => model.GlobalFilters[filterIndex].FieldName)
-								</td>
-								<td class="ac">
-									@Html.SettingEditorFor(model => model.GlobalFilters[filterIndex].Disabled)
-								</td>
-								<td>
-									@Html.SettingEditorFor(model => model.GlobalFilters[filterIndex].DisplayOrder, null, new { small = true })
-								</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-
-			</td>
-		</tr>
-		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FilterMinHitCount)
 			</td>
@@ -157,6 +125,50 @@
 			<td class="adminData">
 				@Html.SettingEditorFor(model => model.FilterMaxChoicesCount, null, new { small = true })
 				@Html.ValidationMessageFor(model => model.FilterMaxChoicesCount)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+
+				<table class="table admin-table" style="width: 700px; margin-top: 12px;">
+					<thead>
+						<tr>
+							<th>@T("Search.FilterBy")</th>
+							<th>@T("Common.Alias")</th>
+							<th class="ac">@T("Common.Deactivated")</th>
+							<th>@T("Common.DisplayOrder")</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var facet in Model.CommonFacets.OrderBy(x => x.DisplayOrder))
+						{
+							var facetIndex = Model.CommonFacets.IndexOf(facet);
+							<tr @Html.Attr("class", "muted", facet.Disabled)>
+								<td style="vertical-align: middle;">
+									@(facet.FriendlyName ?? facet.Kind.ToString())
+									@Html.HiddenFor(model => model.CommonFacets[facetIndex].Kind)
+								</td>
+								<td>
+									@Html.SettingEditorFor(model => model.CommonFacets[facetIndex].Alias)
+								</td>
+								@if (facet.Kind == FacetGroupKind.Category)
+								{
+									<td colspan="2">&nbsp;</td>
+								}
+								else
+								{
+									<td class="ac" style="vertical-align: middle;">
+										@Html.SettingEditorFor(model => model.CommonFacets[facetIndex].Disabled)
+									</td>
+									<td>
+										@Html.SettingEditorFor(model => model.CommonFacets[facetIndex].DisplayOrder, null, new { small = true })
+									</td>
+								}
+							</tr>
+						}
+					</tbody>
+				</table>
+
 			</td>
 		</tr>
 	</table>

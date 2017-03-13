@@ -612,20 +612,21 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.IsRequired")]
 			public bool IsRequired { get; set; }
 
-			public int AttributeControlTypeId { get; set; }
             [SmartResourceDisplayName("Admin.Catalog.Attributes.AttributeControlType")]
 			[UIHint("AttributeControlType")]
 			public string AttributeControlType { get; set; }
+			public int AttributeControlTypeId { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.DisplayOrder")]
 			//we don't name it DisplayOrder because Telerik has a small bug 
 			//"if we have one more editor with the same name on a page, it doesn't allow editing"
 			//in our case it's category.DisplayOrder
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.DisplayOrder")]
 			public int DisplayOrder1 { get; set; }
 
 			public string ViewEditUrl { get; set; }
 			public string ViewEditText { get; set; }
 			public string OptionsSets { get; set; }
+			public int ValueCount { get; set; }
 		}
 
 		public class ProductVariantAttributeValueListModel : ModelBase

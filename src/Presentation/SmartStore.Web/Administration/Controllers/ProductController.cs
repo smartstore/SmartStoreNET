@@ -2962,9 +2962,9 @@ namespace SmartStore.Admin.Controllers
 
 						if (x.ShouldHaveValues())
 						{
+							pvaModel.ValueCount = x.ProductVariantAttributeValues != null ? x.ProductVariantAttributeValues.Count : 0;
 							pvaModel.ViewEditUrl = Url.Action("EditAttributeValues", "Product", new { productVariantAttributeId = x.Id });
-							pvaModel.ViewEditText = T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.ViewLink",
-								x.ProductVariantAttributeValues != null ? x.ProductVariantAttributeValues.Count : 0);
+							pvaModel.ViewEditText = T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.ViewLink", pvaModel.ValueCount);
 
 							if (x.ProductAttribute.ProductAttributeOptionsSets.Any())
 							{

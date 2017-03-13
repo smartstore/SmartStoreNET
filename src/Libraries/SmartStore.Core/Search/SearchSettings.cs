@@ -48,9 +48,9 @@ namespace SmartStore.Core.Search
 		public int InstantSearchTermMinLength { get; set; }
 
 		/// <summary>
-		/// Json serialized information about global search filters
+		/// Json serialized information about common search facet
 		/// </summary>
-		public string GlobalFilters { get; set; }
+		public string CommonFacets { get; set; }
 
 		/// <summary>
 		/// Gets or sets the minimum hit count for a filter value. Values with a lower hit count are not displayed.

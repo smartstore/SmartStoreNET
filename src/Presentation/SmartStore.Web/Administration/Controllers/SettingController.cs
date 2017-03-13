@@ -26,7 +26,6 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
-using SmartStore.Core.Search.Filter;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Common;
@@ -38,6 +37,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
+using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
@@ -1569,24 +1569,45 @@ namespace SmartStore.Admin.Controllers
 				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ManufacturerPartNumber"), Value = "mpn" }
 			};
 
-			// global filters
-			var globalFilters = settings.GlobalFilters.HasValue()
-				? JsonConvert.DeserializeObject<List<GlobalSearchFilterDescriptor>>(settings.GlobalFilters)
-				: new List<GlobalSearchFilterDescriptor>();
+			// Common facets.
+			var commonFacets = settings.CommonFacets.HasValue()
+				? JsonConvert.DeserializeObject<List<CommonFacetOption>>(settings.CommonFacets)
+				: new List<CommonFacetOption>();
 
-			var displayOrder = (globalFilters.Any() ? globalFilters.Max(x => x.DisplayOrder) : 0);
+			var facetDisplayOrder = (commonFacets.Any() ? commonFacets.Max(x => x.DisplayOrder) : 0);
 
-			foreach (var fieldName in new string[] { "manufacturerid", "price", "rate", "deliveryid" })
+			foreach (FacetGroupKind kind in Enum.GetValues(typeof(FacetGroupKind)))
 			{
-				var filter = globalFilters.FirstOrDefault(x => x.FieldName.IsCaseInsensitiveEqual(fieldName));
-
-				model.GlobalFilters.Add(new GlobalSearchFilterDescriptor
+				switch (kind)
 				{
-					FieldName = fieldName,
-					Disabled = filter != null ? filter.Disabled : false,
-					DisplayOrder = filter != null ? filter.DisplayOrder : ++displayOrder,
-					FriendlyName = T(FacetDescriptor.GetLabelResourceKey(fieldName))
-				});
+					case FacetGroupKind.Category:
+					case FacetGroupKind.Brand:
+					case FacetGroupKind.Price:
+					case FacetGroupKind.Rating:
+					case FacetGroupKind.DeliveryTime:
+						var facet = commonFacets.FirstOrDefault(x => x.Kind == kind);
+						if (facet != null)
+						{
+							model.CommonFacets.Add(new CommonFacetOption
+							{
+								Kind = kind,
+								Alias = facet.Alias,
+								Disabled = facet.Disabled,
+								DisplayOrder = facet.DisplayOrder,
+								FriendlyName = T(FacetDescriptor.GetLabelResourceKey(kind))
+							});
+						}
+						else
+						{
+							model.CommonFacets.Add(new CommonFacetOption
+							{
+								Kind = kind,
+								DisplayOrder = (kind == FacetGroupKind.Category ? 0 : ++facetDisplayOrder),
+								FriendlyName = T(FacetDescriptor.GetLabelResourceKey(kind))
+							});
+						}
+						break;
+				}
 			}
 
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);
@@ -1622,9 +1643,11 @@ namespace SmartStore.Admin.Controllers
 			settings.InstantSearchNumberOfProducts = model.InstantSearchNumberOfProducts;
 			settings.InstantSearchTermMinLength = model.InstantSearchTermMinLength;
 			settings.ShowProductImagesInInstantSearch = model.ShowProductImagesInInstantSearch;
-			settings.GlobalFilters = JsonConvert.SerializeObject(model.GlobalFilters);
 			settings.FilterMinHitCount = model.FilterMinHitCount;
 			settings.FilterMaxChoicesCount = model.FilterMaxChoicesCount;
+
+			model.CommonFacets.Each(x => x.Alias = SeoExtensions.GetSeName(x.Alias));
+			settings.CommonFacets = JsonConvert.SerializeObject(model.CommonFacets);
 
 			StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
 
@@ -1636,7 +1659,6 @@ namespace SmartStore.Admin.Controllers
 		}
 
 
-		//all settings
 		public ActionResult AllSettings()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))

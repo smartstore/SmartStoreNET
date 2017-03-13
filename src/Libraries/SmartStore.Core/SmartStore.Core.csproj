@@ -427,7 +427,7 @@
     <Compile Include="Search\Facets\FacetDescriptor.cs" />
     <Compile Include="Search\Facets\FacetValue.cs" />
     <Compile Include="Search\Filter\CombinedSearchFilter.cs" />
-    <Compile Include="Search\Filter\GlobalSearchFilterDescriptor.cs" />
+    <Compile Include="Search\Facets\CommonFacetOption.cs" />
     <Compile Include="Search\Filter\RangeSearchFilter.cs" />
     <Compile Include="Search\Filter\SearchFilterBase.cs" />
     <Compile Include="Search\IIndexDocument.cs" />

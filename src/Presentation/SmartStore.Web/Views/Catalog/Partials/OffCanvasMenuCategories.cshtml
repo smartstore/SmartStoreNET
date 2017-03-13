@@ -18,7 +18,6 @@
 	}
 
     <ul class="nav navbar-nav">
-
         @if (Model.SelectedMenuItem != null)
         {
             <li class="navigate-back nav-item" data-id="@currentNode.Parent.Value.EntityId" data-ajax="true">
@@ -39,9 +38,12 @@
         {
             var cat = node.Value;
 
-            <li class="nav-item@(node.HasChildren ? " has-children" : "")" data-id="@cat.EntityId" data-ajax="@(node.HasChildren ? "true" : "false")">
+			@* TODO: (mh) render elements count per CSS (data-count) *@
+            <li class="nav-item@(node.HasChildren ? " has-children" : "")" 
+				data-id="@cat.EntityId" 
+				data-ajax="@(node.HasChildren ? "true" : "false")" @Html.Attr("data-count", cat.ElementsCount.ToString(), cat.ElementsCount.HasValue)>
                 <a href="@node.Value.GenerateUrl(this.Url)" class="nav-link">
-                    @cat.Text
+					<span>@cat.Text</span>
                 </a>
             </li>
         }

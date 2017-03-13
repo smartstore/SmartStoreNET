@@ -478,6 +478,8 @@ namespace SmartStore.Services.Search.Modelling
 			{
 				if (fromRate.HasValue)
 				{
+					descriptor.MinHitCount = 0;
+					descriptor.MaxChoicesCount = 5;
 					descriptor.AddValue(new FacetValue(fromRate.Value) { IsSelected = true });
 				}
 			});

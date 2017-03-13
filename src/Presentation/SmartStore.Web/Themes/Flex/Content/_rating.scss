@@ -27,7 +27,8 @@
 	background-repeat: repeat-x;
 	background-position: 0 50%;
 }
-.rating > div {
+.rating > * {
+    display: inline-block;
 	height: 16px;
 	background-image: url('images/star-on.png');
 }
@@ -37,7 +38,7 @@
 	padding: 1px 0;
 	background-image: url('images/star-off-12.png');
 }
-.rating.rating-small > div {
+.rating.rating-small > * {
 	height: 11px;
 	background-image: url('images/star-on-12.png');
 }

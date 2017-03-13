@@ -2,9 +2,23 @@
 
 @using SmartStore.Core.Search.Facets;
 
-@{ 
-}
+@using SmartStore.Core.Search.Facets
+@using SmartStore.Services.Search.Extensions;
 
-<div class="facet-body-inner">
-	<span>Rating</span>
+<div class="facet-body-inner facet-body-rating">
+	@foreach (var facet in Model.Facets.Reverse().Skip(1))
+	{
+		<div class="facet-item facet-radio" data-href="@Url.FacetToggle(facet)" title="@facet.Value.Label">
+			<label>
+				<input class="facet-control-native" type="radio" name="optradio" value="@facet.Value.ToString()" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+				<span class="facet-control-ui"></span>
+				<span class="facet-label" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>
+					<span class="rating">
+						<span style="width: @(facet.Value.Value.Convert<int>() * 20)%"></span>
+					</span>
+					<span>@T("Search.Facet.StarsAndMore")</span>
+				</span>
+			</label>
+		</div>
+	}
 </div>

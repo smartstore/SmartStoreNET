@@ -825,14 +825,17 @@ namespace SmartStore.Services.Search
 
 				totalCount = query.Count();
 
-				query = query
-					.Skip(searchQuery.PageIndex * searchQuery.Take)
-					.Take(searchQuery.Take);
+				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
+				{
+					query = query
+						.Skip(searchQuery.PageIndex * searchQuery.Take)
+						.Take(searchQuery.Take);
 
-				var ids = query.Select(x => x.Id).ToArray();
-				hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
+					var ids = query.Select(x => x.Id).ToArray();
+					hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
+				}
 
-				if (totalCount > 0 && searchQuery.BuildFacets && searchQuery.FacetDescriptors.Any())
+				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets) && searchQuery.FacetDescriptors.Any())
 				{
 					facets = GetFacets(searchQuery);
 				}

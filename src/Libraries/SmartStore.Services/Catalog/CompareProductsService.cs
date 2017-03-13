@@ -96,10 +96,11 @@ namespace SmartStore.Services.Catalog
 
 			var searchQuery = new CatalogSearchQuery()
 				.VisibleOnly()
-				.WithProductIds(productIds.ToArray());
+				.WithProductIds(productIds.ToArray())
+				.BuildHits(false);
 
-			var query = _catalogSearchService.PrepareQuery(searchQuery);
-            return query.Count();
+			var result = _catalogSearchService.Search(searchQuery);
+            return result.TotalHitsCount;
         }
 
 

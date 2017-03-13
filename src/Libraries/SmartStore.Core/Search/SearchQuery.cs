@@ -7,6 +7,14 @@ using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
+	public enum SearchResultFlags
+	{
+		WithHits = 1 << 0,
+		WithFacets = 1 << 1,
+		WithSuggestions = 1 << 2,
+		Full = WithHits | WithFacets | WithSuggestions
+	}
+
 	public class SearchQuery : SearchQuery<SearchQuery>
 	{
 		/// <summary>
@@ -49,6 +57,8 @@ namespace SmartStore.Core.Search
 
 			SpellCheckerMinQueryLength = 4;
 			SpellCheckerMaxHitCount = 3;
+
+			ResultFlags = SearchResultFlags.WithHits;
 		}
 
 		// Language, Currency & Store
@@ -68,7 +78,6 @@ namespace SmartStore.Core.Search
 		public ICollection<ISearchFilter> Filters { get; }
 
 		// Facets
-		public bool BuildFacets { get; protected set; }
 		public IReadOnlyDictionary<string, FacetDescriptor> FacetDescriptors
 		{
 			get { return _facetDescriptors; }
@@ -95,6 +104,9 @@ namespace SmartStore.Core.Search
 		public int SpellCheckerMaxSuggestions { get; protected set; }
 		public int SpellCheckerMinQueryLength { get; protected set; }
 		public int SpellCheckerMaxHitCount { get; protected set; }
+
+		// Result control
+		public SearchResultFlags ResultFlags { get; protected set; }
 
 		// Misc
 		public string Origin { get; protected set; }
@@ -156,6 +168,8 @@ namespace SmartStore.Core.Search
 			Guard.IsPositive(minQueryLength, nameof(minQueryLength));
 			Guard.IsPositive(maxHitCount, nameof(maxHitCount));
 
+			ResultFlags = ResultFlags | SearchResultFlags.WithSuggestions;
+
 			SpellCheckerMaxSuggestions = maxSuggestions;
 			SpellCheckerMinQueryLength = minQueryLength;
 			SpellCheckerMaxHitCount = maxHitCount;
@@ -181,9 +195,32 @@ namespace SmartStore.Core.Search
 			return (this as TQuery);
 		}
 
+		public TQuery BuildHits(bool build)
+		{
+			if (build)
+			{
+				ResultFlags = ResultFlags | SearchResultFlags.WithHits;
+			}
+			else
+			{
+				ResultFlags &= ~SearchResultFlags.WithHits;
+			}
+
+
+			return (this as TQuery);
+		}
+
 		public TQuery BuildFacetMap(bool build)
 		{
-			BuildFacets = build;
+			if (build)
+			{
+				ResultFlags = ResultFlags | SearchResultFlags.WithFacets;
+			}
+			else
+			{
+				ResultFlags &= ~SearchResultFlags.WithFacets;
+			}
+			
 
 			return (this as TQuery);
 		}

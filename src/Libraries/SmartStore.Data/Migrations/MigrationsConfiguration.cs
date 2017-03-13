@@ -663,6 +663,9 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.RemoveAllFilters", "Remove all filters", "Alle Filter aufheben");
 			builder.AddOrUpdate("Search.Facet.RemoveFilter", "Remove filter: {0} &gt; {1}", "Filter aufheben: {0} &gt; {1}");
 			builder.AddOrUpdate("Search.Facet.RemoveGroupFilters", "Remove filters", "Filter aufheben");
+			builder.AddOrUpdate("Search.Facet.1StarAndMore", "1 star & more", "1 Stern & mehr");
+			builder.AddOrUpdate("Search.Facet.XStarsAndMore", "{0} stars & more", "{0} Sterne & mehr");
+			builder.AddOrUpdate("Search.Facet.StarsAndMore", "& more", "& mehr");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.ForceSslForAllPages",
 				"Always use SSL",

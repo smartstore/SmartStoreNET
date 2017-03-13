@@ -1234,42 +1234,49 @@ namespace SmartStore.Web.Controllers
 		{
 			try
 			{
-				// Perf: only resolve counts for categories in the current path.
-				while (curNode != null)
+				using (_services.Chronometer.Step("ResolveCategoryProductsCount for {0}".FormatInvariant(curNode.Value.Text.EmptyNull())))
 				{
-					if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
+					// Perf: only resolve counts for categories in the current path.
+					while (curNode != null)
 					{
-						lock (s_lock)
+						if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
 						{
-							if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
+							lock (s_lock)
 							{
-								foreach (var node in curNode.Children)
+								if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
 								{
-									var categoryIds = new List<int>();
-
-									if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
+									foreach (var node in curNode.Children)
 									{
-										// include subcategories
-										node.Traverse(x => categoryIds.Add(x.Value.EntityId));
-									}
-									else
-									{
-										categoryIds.Add(node.Value.EntityId);
-									}
+										var categoryIds = new List<int>();
 
-									var context = new CatalogSearchQuery()
-										.VisibleOnly()
-										.WithCategoryIds(null, categoryIds.ToArray())
-										.HasStoreId(_services.StoreContext.CurrentStoreIdIfMultiStoreMode);
+										if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
+										{
+											// Include subcategories
+											node.Traverse(x =>
+											{
+												categoryIds.Add(x.Value.EntityId);
+											}, true);
+										}
+										else
+										{
+											categoryIds.Add(node.Value.EntityId);
+										}
 
-									var query = _catalogSearchService.PrepareQuery(context);
-									node.Value.ElementsCount = query.Distinct().Count();
+										var context = new CatalogSearchQuery()
+											.VisibleOnly()
+											.VisibleIndividuallyOnly(true)
+											.WithCategoryIds(null, categoryIds.ToArray())
+											.HasStoreId(_services.StoreContext.CurrentStoreIdIfMultiStoreMode)
+											.BuildHits(false);
+
+										node.Value.ElementsCount = _catalogSearchService.Search(context).TotalHitsCount;
+									}
 								}
 							}
 						}
-					}
 
-					curNode = curNode.Parent;
+						curNode = curNode.Parent;
+					}
 				}
 			}
 			catch (Exception ex)

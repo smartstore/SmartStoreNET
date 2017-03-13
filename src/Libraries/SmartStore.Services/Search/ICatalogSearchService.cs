@@ -19,7 +19,7 @@ namespace SmartStore.Services.Search
 		/// Builds a product query using linq search
 		/// </summary>
 		/// <param name="searchQuery">Search term, filters and other parameters used for searching</param>
-		/// <param name="baseQuery">Optional query to use to build the product query.</param>
+		/// <param name="baseQuery">Optional query used to build the product query.</param>
 		/// <returns>Product queryable</returns>
 		IQueryable<Product> PrepareQuery(CatalogSearchQuery searchQuery, IQueryable<Product> baseQuery = null);
 	}

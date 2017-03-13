@@ -61,7 +61,10 @@ namespace SmartStore.Services.Search
 			return result;
 		}
 
-		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
+		public CatalogSearchResult Search(
+			CatalogSearchQuery searchQuery, 
+			ProductLoadFlags loadFlags = ProductLoadFlags.None, 
+			bool direct = false)
 		{
 			Guard.NotNull(searchQuery, nameof(searchQuery));
 			Guard.NotNegative(searchQuery.Take, nameof(searchQuery.Take));
@@ -87,23 +90,23 @@ namespace SmartStore.Services.Search
 
 						if (searchQuery.Take > 0)
 						{
-							using (_chronometer.Step("Get total count"))
-							{
-								totalCount = searchEngine.Count();
-							}
+							totalCount = searchEngine.Count();
 
 							using (_chronometer.Step("Get hits"))
 							{
 								searchHits = searchEngine.Search();
 							}
 
-							using (_chronometer.Step("Collect from DB"))
+							if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
 							{
-								var productIds = searchHits.Select(x => x.EntityId).ToArray();
-								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
+								using (_chronometer.Step("Collect from DB"))
+								{
+									var productIds = searchHits.Select(x => x.EntityId).ToArray();
+									hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
+								}
 							}
 
-							if (searchQuery.BuildFacets)
+							if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets))
 							{
 								try
 								{
@@ -120,17 +123,20 @@ namespace SmartStore.Services.Search
 							}
 						}
 
-						try
+						if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithSuggestions))
 						{
-							using (_chronometer.Step("Spell checking"))
+							try
 							{
-								spellCheckerSuggestions = searchEngine.CheckSpelling();
+								using (_chronometer.Step("Spell checking"))
+								{
+									spellCheckerSuggestions = searchEngine.CheckSpelling();
+								}
 							}
-						}
-						catch (Exception exception)
-						{
-							// spell checking should not break the search
-							_logger.Error(exception);
+							catch (Exception exception)
+							{
+								// spell checking should not break the search
+								_logger.Error(exception);
+							}
 						}
 
 						var result = new CatalogSearchResult(
@@ -195,18 +201,14 @@ namespace SmartStore.Services.Search
 							FormatPrice(val.UpperValue.Convert<decimal>()));
 					}
 				}
-
-				//// handle individual price filter
-				//var individualPrice = group.Facets.FirstOrDefault(x => x.HitCount == 0);
-				//if (individualPrice != null)
-				//{
-				//	var value = individualPrice.Value;
-				//	if (value.IncludesLower && value != null)
-				//		model.IndividualPriceFrom = ((double)value.Value).ToString("F0", CultureInfo.InvariantCulture);
-
-				//	if (value.IncludesUpper && value.UpperValue != null)
-				//		model.IndividualPriceTo = ((double)value.UpperValue).ToString("F0", CultureInfo.InvariantCulture);
-				//}
+			}
+			
+			if (facets.TryGetValue("rate", out group))
+			{
+				foreach (var facet in group.Facets)
+				{
+					facet.Value.Label = T(facet.Key == "1" ? "Search.Facet.1StarAndMore" : "Search.Facet.XStarsAndMore", facet.Value.Value).Text;
+				}
 			}
 		}
 

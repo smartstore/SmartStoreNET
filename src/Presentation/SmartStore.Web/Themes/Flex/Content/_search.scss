@@ -240,7 +240,7 @@ $facet-control-size:        20px;
     height: $facet-control-size;
     line-height: $facet-control-size;
 
-    border: 1px solid rgba(#000, 0.15);
+    border: 1px solid rgba(#000, 0.2);
     border-radius: 2px;
     box-shadow: none;
 
@@ -343,6 +343,11 @@ $facet-control-size:        20px;
     .facet-control-native:checked ~ & {
         font-weight: 600;
     }
+}
+
+.facet-body-rating .rating {
+    vertical-align: sub;
+    margin-right: 3px;
 }
 
 

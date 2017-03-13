@@ -44,7 +44,7 @@ namespace SmartStore.Web.Infrastructure
 				case FacetGroupKind.Price:
 					return prefix + "Price";
 				case FacetGroupKind.Rating:
-					return prefix + "SingleSelect";
+					return prefix + "Rating";
 			}
 
 			return null;

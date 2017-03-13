@@ -10,7 +10,7 @@
 <div class="facet-body-inner">
 	@foreach (var facet in Model.Facets)
 	{
-		if (facet.HitCount > 0)
+		if (facet.Key != "custom")
 		{
 			<div class="facet-item facet-radio" data-href="@Url.FacetToggle(facet)">
 				<label>

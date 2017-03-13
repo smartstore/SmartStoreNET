@@ -3,8 +3,8 @@
 @using SmartStore.Core.Search.Facets
 @using SmartStore.Services.Search.Extensions;
 
-@{ 
-	var facets = Model.Facets.Where(x => x.HitCount > 0).ToList();
+@{
+	var facets = Model.Facets.ToList();
 }
 
 @if (facets.Count > 7)

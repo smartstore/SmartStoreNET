@@ -91,8 +91,32 @@ namespace SmartStore.Services.Search.Extensions
 				var parts = GetQueryParts(facet);
 				foreach (var name in parts.AllKeys)
 				{
-					var currentValues = qs.Get(name)?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
-					qs.Remove(name);
+					var qsName = name;
+
+					if (!qs.AllKeys.Contains(name))
+					{
+						// Query string does not contain that name. Try the unmapped name.
+						switch (facet.FacetGroup.Kind)
+						{
+							case FacetGroupKind.Attribute:
+								qsName = "attr" + facet.Value.ParentId;
+								break;
+							case FacetGroupKind.Variant:
+								qsName = "vari" + facet.Value.ParentId;
+								break;
+							case FacetGroupKind.Category:
+							case FacetGroupKind.Brand:
+							case FacetGroupKind.Rating:
+							case FacetGroupKind.DeliveryTime:
+							case FacetGroupKind.Stock:
+							case FacetGroupKind.Price:
+								qsName = _queryNames[facet.FacetGroup.Kind];
+								break;
+						}
+					}
+
+					var currentValues = qs.Get(qsName)?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
+					qs.Remove(qsName);
 
 					if (currentValues != null)
 					{

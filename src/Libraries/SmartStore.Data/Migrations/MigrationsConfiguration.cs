@@ -672,6 +672,24 @@ namespace SmartStore.Data.Migrations
 				"Immer SSL verwenden",
 				"Specifies whether to SSL secure all request.",
 				"Legt fest, dass alle Anfragen SSL gesichert werden sollen.");
-		}
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage",
+                "Display manufacturers lists",
+                "Zeige Herstellerlisten",
+                "Specifies whether manufacturers lists will be displayed. This setting effects all partial manufacturer lists in the shop (e.g. homepage, mobile menu).",
+                "Legt fest, ob Herstellerlisten angezeigt werden. Diese Einstellung betrifft alle partiellen Herstellerlisten im Shop (z.B. Homepage, Mobile-Menu).");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay",
+                "Amount of manufacturers to display in lists",
+                "Anzahl der anzuzeigenden Hersteller in Listen",
+                "Specifies the amount of manufacturers to display in lists. This setting effects all partial manufacturer lists in the shop (e.g. homepage, mobile menu).",
+                "Bestimmt die Anzahl der anzuzeigenden Hersteller in  Listen. Diese Einstellung betrifft alle partiellen Herstellerlisten im Shop (z.B. Homepage, Mobile-Menu).");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerPictures",
+                "Display manufacturer pictures in lists",
+                "Herstellerbilder in Listen anzeigen",
+                "Specifies whether manufacturer pictures will be displayed in lists. This setting effects all partial manufacturer lists in the shop (e.g. homepage, mobile menu).",
+                "Bestimmt ob Herstellerbilder in Listen angezeigt werden sollen. Diese Einstellung betrifft alle partiellen Herstellerlisten im Shop (z.B. Homepage, Mobile-Menu).");
+        }
 	}
 }

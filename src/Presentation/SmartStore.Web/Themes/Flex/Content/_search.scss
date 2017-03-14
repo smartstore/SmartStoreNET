@@ -331,15 +331,6 @@ $facet-control-size:        20px;
     padding-top: 1px;
     padding-right: 8px;
 
-    &[data-count]:after {
-        content: "(" attr(data-count) ")";
-        position: relative;
-        display: inline-block;
-	    color: rgba($body-color, 0.6);
-	    padding-left: 0.2rem;
-        font-weight: 400;
-    }
-
     .facet-control-native:checked ~ & {
         font-weight: 600;
     }

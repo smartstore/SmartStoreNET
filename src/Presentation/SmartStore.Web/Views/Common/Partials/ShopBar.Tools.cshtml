@@ -13,7 +13,7 @@
 	<div class="shopbar-tool hidden-lg-up" id="shopbar-menu">
 		<a class="shopbar-button" href="#" data-toggle="offcanvas" data-autohide="true" data-placement="left" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-menu">
 			<span class="shopbar-button-icon">
-				<i class="@(useFa ? "fa fa-bars" : "lnr lnr-menu")"></i>
+				<i class="@(useFa ? "fa fa-bars" : "icm icm-menu")"></i>
 			</span>
 			<span class="shopbar-button-label-sm">
 				@T("Common.Menu")
@@ -25,7 +25,7 @@
 	<div class="shopbar-tool hidden-lg-up" id="shopbar-user">
 		<a class="shopbar-button" href="@accountUrl">
 			<span class="shopbar-button-icon">
-				<i class="@(useFa ? "fa fa-user" : "lnr lnr-user")"></i>
+				<i class="@(useFa ? "fa fa-user" : "icm icm-user")"></i>
 			</span>
 			<span class="shopbar-button-label-sm">
 				@T(Model.IsAuthenticated ? "Account.MyAccount" : "Account.Login")
@@ -39,7 +39,7 @@
 			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
 				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
-					<i class="@(useFa ? "fa fa-heart-o" : "lnr lnr-heart")"></i>
+					<i class="@(useFa ? "fa fa-heart-o" : "icm icm-heart")"></i>
 					<span class='label label-pill label-cart-amount label-@labelStyle @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
 				</span>
 				<span class="shopbar-button-label">
@@ -59,7 +59,7 @@
 			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
 				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
-					<i class="@(useFa ? "fa fa-retweet" : "lnr lnr-sync")"></i>
+					<i class="@(useFa ? "fa fa-retweet" : "icm icm-repeat")"></i>
 					<span class='label label-pill label-cart-amount label-@labelStyle @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
 				</span>
 				<span class="shopbar-button-label">
@@ -79,7 +79,7 @@
 			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
-					<i class="@(useFa ? "fa fa-shopping-basket" : "lnr lnr-cart")"></i>
+					<i class="@(useFa ? "fa fa-shopping-basket" : "icm icm-bag")"></i>
 					<span class='label label-pill label-cart-amount label-@(labelStyle)@(Model.ShoppingCartItems == 0 ? " hidden-xs-up" : "")' data-bind-to="TotalProducts">
 						@Model.ShoppingCartItems
 					</span>

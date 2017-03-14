@@ -665,7 +665,6 @@
     <Content Include="Content\editors\summernote\summernote.css" />
     <Content Include="Content\editors\summernote\summernote.js" />
     <Content Include="Content\editors\summernote\summernote.min.js" />
-    <Content Include="Themes\Flex\Content\css\fonts\Linearicons-Free.svg" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="App_GlobalResources\MvcLocalization.de.resx">
@@ -812,10 +811,6 @@
     <Content Include="Content\bootstrap\custom\spinner.less" />
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />
-    <Content Include="Themes\Flex\Content\css\fonts\Linearicons-Free.eot" />
-    <Content Include="Themes\Flex\Content\css\fonts\Linearicons-Free.ttf" />
-    <Content Include="Themes\Flex\Content\css\fonts\Linearicons-Free.woff" />
-    <Content Include="Themes\Flex\Content\css\fonts\Linearicons-Free.woff2" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-AE.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-BH.js" />
@@ -931,7 +926,8 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\public.product-detail.mobile.js" />
-    <Content Include="Themes\Flex\Content\css\linearicons.css" />
+    <Content Include="Themes\Flex\Content\css\fontastic.css" />
+    <Content Include="Themes\Flex\Content\css\fonts\fontastic.svg" />
     <Content Include="Themes\Flex\Content\shared\_pnotify.scss" />
     <Content Include="Themes\Flex\Content\shared\_mixins.scss" />
     <Content Include="Themes\Flex\Content\shared\_select2.scss" />
@@ -971,6 +967,8 @@
     <Content Include="Themes\Flex\Content\css\smartstore.smartgallery.css" />
     <Content Include="Themes\Flex\Content\bs4\js\bootstrap.js" />
     <Content Include="Themes\Flex\Content\bs4\js\bootstrap.min.js" />
+    <Content Include="Themes\Flex\Content\css\fonts\fontastic.ttf" />
+    <Content Include="Themes\Flex\Content\css\fonts\fontastic.woff" />
     <None Include="Themes\Flex\Content\photoswipe\LICENSE" />
     <None Include="Themes\Flex\Content\drift\LICENSE" />
     <Content Include="Themes\Flex\Content\photoswipe\photoswipe-ui-default.js" />

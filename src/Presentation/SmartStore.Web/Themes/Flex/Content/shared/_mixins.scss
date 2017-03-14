@@ -62,9 +62,9 @@
     }
 }
 
-@mixin linearicon($content, $size: 20px) {
+@mixin fontastic($content, $size: 20px) {
     display: inline-block;
-    font: normal normal normal #{$font-size-root}/1 'Linearicons-Free';
+    font: normal normal normal #{$font-size-root}/1 'fontastic';
     font-size: $size;
     speak: none;
     text-transform: none;

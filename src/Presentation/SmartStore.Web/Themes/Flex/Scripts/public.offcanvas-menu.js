@@ -50,7 +50,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
             else if (item.find(".nav-link").is("#category-tab")) {
                 navigateToHomeLayer();
             }
-            else if (item.parents(".tab-pane").is("#ocm-categories") || item.parents('.category-container').length) {
+            else if (item.parents(".tab-pane").is("#ocm-categories") || item.parents('.category-container').length > 0) {
 
                 navigateToMenuItem(entityId ? entityId : 0, item.hasClass("navigate-back") ? "left" : "right");
             }
@@ -224,8 +224,17 @@ var AjaxMenu = (function ($, window, document, undefined) {
         // hide currency & language selectors 
         menuContent.find(".currency-selector, .language-selector").addClass("hidden-xs-up");
 
-        // open dropdown elements initially
-        menuContent.find(".dropdown").addClass("open");
+        var myAccount = menuContent.find("#menubar-my-account");
+
+        // open MyAccount dropdown initially
+        myAccount.find(".dropdown").addClass("open");
+
+        // place MyAccount menu on top
+        menuContent.prepend(myAccount);
+
+        menuContent.find(".dropdown-item").one("click", function (e) {
+            e.stopPropagation();
+        });
 
         serviceTab.html(menuContent);
         tabContent.data("initialized", true);

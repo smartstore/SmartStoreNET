@@ -12,7 +12,7 @@
             <li class="nav-item" data-ajax="false">
                 <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="nav-link">
 
-                    @if (manufacturer.PictureUrl.HasValue())
+                    @if (manufacturer.PictureUrl.HasValue() && Model.DisplayImages)
                     {
                         <img src="@manufacturer.PictureUrl" alt="@manufacturer.Name" title="@manufacturer.Name" />
                     }

@@ -11,11 +11,14 @@
                     <span class="title">@T("Offcanvas.Menu.Categories")</span>
                 </a>
             </li>
-            <li class="nav-item col-xs">
-                <a id="manufacturer-tab" class="nav-link" data-toggle="tab" href="#ocm-manufacturers" role="tab" data-initialized="false">
-                    <span class="title">@T("Offcanvas.Menu.Brands")</span>
-                </a>
-            </li>
+            @if (ViewBag.ShowManufacturersOnHomepage == true)
+            {
+                <li class="nav-item col-xs">
+                    <a id="manufacturer-tab" class="nav-link" data-toggle="tab" href="#ocm-manufacturers" role="tab" data-initialized="false">
+                        <span class="title">@T("Offcanvas.Menu.Brands")</span>
+                    </a>
+                </li>
+            }
             <li class="nav-item col-xs">
                 <a id="service-tab" class="nav-link" data-toggle="tab" href="#ocm-service" role="tab" data-initialized="false">
                     <span class="title">@T("Offcanvas.Menu.Service")</span>
@@ -26,7 +29,10 @@
 
     <div class="tab-content offcanvas-scrollable">
         <div class="tab-pane fade" id="ocm-categories" role="tabpanel"></div>
-        <div class="tab-pane fade" id="ocm-manufacturers" role="tabpanel"></div>
+        @if (ViewBag.ShowManufacturersOnHomepage == true)
+        {
+            <div class="tab-pane fade" id="ocm-manufacturers" role="tabpanel"></div>
+        }
         <div class="tab-pane fade" id="ocm-service" role="tabpanel"></div>
     </div>
 

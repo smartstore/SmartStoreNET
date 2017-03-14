@@ -925,9 +925,6 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult OffCanvasMenuManufacturers()
         {
-            // TODO: setting berücksichtigen
-            // _catalogSettings.ShowManufacturersOnHomepage
-            
             var model = _helper.PreprareManufacturerNavigationModel(0);
 
             return PartialView("OffCanvasMenuManufacturers", model);
@@ -936,6 +933,8 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult OffCanvasMenu()
         {
+            ViewBag.ShowManufacturersOnHomepage = _catalogSettings.ShowManufacturersOnHomepage;
+            
             return PartialView();
         }
         

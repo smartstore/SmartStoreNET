@@ -43,9 +43,9 @@ $ocm-horizontal-padding:                1.6rem;
             }
         }
     }
-
+    
     .menubar-link,
-    .nav-item {
+    .category-container .nav-item {
         margin: 0;
         float: none;
         border-bottom: 1px solid $ocm-border-color;
@@ -109,44 +109,6 @@ $ocm-horizontal-padding:                1.6rem;
     }
 }
 
-
-// animation 
-/*
-#offcanvas-menu {
-    .layer {
-        transition: transform 0.25s ease-out;
-        background: #fff;
-        &.out {
-            transform: translateX(-30%);
-            z-index: 1;
-        }
-        &.in {
-            transform: translateX(0);
-            z-index: 2;
-        }
-    }
-
-    .ocm-nav-layer {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        transform: translateX(100%);
-        z-index: 0;
-
-        &.out.to-left {
-            transform: translateX(100%);
-        }
-    }
-
-    .slide-in-from-left {
-        transform: translateX(-70%);
-        z-index: 2;
-    }
-}
-*/
-
 // animation 
 #offcanvas-menu {
     .layer {
@@ -184,9 +146,12 @@ $ocm-horizontal-padding:                1.6rem;
         display: block;
         margin-left: 0;
         text-align: left;
+        border-bottom: 1px solid $ocm-border-color;
+
         .menubar-link {
             text-transform: initial;
             padding: 1rem 2rem;
+            border-bottom: none;
         }
     }
 
@@ -200,14 +165,15 @@ $ocm-horizontal-padding:                1.6rem;
         border-radius: initial;
         box-shadow: initial;
     }
+    .fa:not(.fa-caret-down) {
+        display: none;
+    }
     .dropdown .menubar-link {
         position: relative;
         
-        &:after {
+        .fa-caret-down:before {
             font-weight: bold;
-            display: block;
             position: absolute;
-            font-family: FontAwesome;
             font-size: 1.2rem;
             line-height: 1;
             content: "\f106";
@@ -217,20 +183,14 @@ $ocm-horizontal-padding:                1.6rem;
         }
     }
     
-    .dropdown.open .menubar-link:after { 
+    .dropdown.open .menubar-link .fa-caret-down:before  { 
         content: "\f107";
-    }
-    .dropdown.open .dropdown-menu {
-        border-bottom: 1px solid $ocm-border-color;
-    } 
-    .fa {
-        display: none;
     }
     .menubar-link span {
         padding-left: 0;
     }
     .dropdown-item {
-        padding-left: 2rem;
+        padding-left: $ocm-horizontal-padding;
         font-size: 1rem;
     }
 }

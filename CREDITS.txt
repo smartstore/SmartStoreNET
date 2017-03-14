@@ -56,6 +56,13 @@ Copyright:    Copyright Andrey Taritsyn 2014
 License:      Apache License 2.0 (Apache)
 
 
+CKEditor
+---------------------------------------------
+WebSite:      http://ckeditor.com/
+Copyright:    &copy 2014 CKSource - Frederico Knabben
+License:      GNU Library General Public License (LGPL)
+
+
 DotNetOpenAuth
 ---------------------------------------------
 Website:      http://dotnetopenauth.net/
@@ -82,12 +89,6 @@ EPPlus
 Website:      https://epplus.codeplex.com/
 Copyright:    Copyright (C) 2011  Jan Källman
 License:      GNU Library General Public License (LGPL)
-
-
-Fasterflect
----------------------------------------------
-Website:      https://fasterflect.codeplex.com/
-License:      Apache License 2.0 (Apache)
 
 
 Fluent Validation
@@ -131,7 +132,7 @@ Copyright:    Copyright (c) 2007-2009 Ariel Flesler
 License:      MIT
 
 
-jQuery UI (Core, Widget, Datepicker)
+jQuery UI (Core)
 ---------------------------------------------
 Website:      http://docs.jquery.com/UI
 Copyright:    Copyright (c) 2010 lib/jquery.ui/AUTHORS.txt (http://jqueryui.com/about)
@@ -150,6 +151,13 @@ GeoLite Free by MaxMind
 Website:      http://www.maxmind.com
 Copyright:    Copyright (c) 2014 Maxmind
 License:      Creative Commons Attribution-ShareAlike 3.0 Unported License
+
+
+Linearicons by Perxis
+---------------------------------------------
+Website:      https://linearicons.com
+Copyright:    Copyright (c) 2015 Linearicons.com (https://perxis.com/)
+License:      Dual (CC BY-SA 4.0 and commercial)
 
 
 Microsoft SQL Server Compact 4.0
@@ -186,22 +194,36 @@ Copyright:    Copyright (c) 2002-2007 NUnit.org
 License:      Derived from zlib: http://nunit.org/index.php?p=license&r=2.4
 
 
+PhotoSwipe
+---------------------------------------------
+Website:      http://photoswipe.com/
+Copyright:    Copyright (c) 2014-2016 Dmitry Semenov, http://dimsemenov.com
+License:      MIT
+
+
+slick carousel
+---------------------------------------------
+Website:      http://kenwheeler.github.io/slick/
+Copyright:    Copyright (c) 2014 Ken Wheeler
+License:      MIT
+
+
 Telerik MVC Extensions
 ---------------------------------------------
 Website:      http://www.telerik.com/
 License:      GPL v3.0
 
 
-TinyMCE
----------------------------------------------
-WebSite:      http://tinymce.moxiecode.com/
-Copyright:    Copyright (c) 2003-2009 Moxiecode Systems AB
-License:      LGPL 2.1
-
-
 Twitter Bootstrap
 ---------------------------------------------
 Website:      http://twitter.github.io/bootstrap/
+License:      Apache License v2.0
+
+
+ua_parser
+---------------------------------------------
+Website:      https://github.com/ua-parser/uap-csharp
+Copyright:    Copyright 2012 Søren Enemærke
 License:      Apache License v2.0
 
 

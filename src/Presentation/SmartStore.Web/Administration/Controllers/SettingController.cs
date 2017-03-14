@@ -36,6 +36,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
@@ -78,6 +79,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly PluginMediator _pluginMediator;
 		private readonly IPluginFinder _pluginFinder;
 		private readonly IMediaMover _mediaMover;
+		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
 
 		private StoreDependingSettingHelper _storeDependingSettings;
 		private IDisposable _settingsWriteBatch;
@@ -107,7 +109,8 @@ namespace SmartStore.Admin.Controllers
 			IProviderManager providerManager,
 			PluginMediator pluginMediator,
 			IPluginFinder pluginFinder,
-			IMediaMover mediaMover)
+			IMediaMover mediaMover,
+			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper)
         {
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
@@ -130,6 +133,7 @@ namespace SmartStore.Admin.Controllers
 			_pluginMediator = pluginMediator;
 			_pluginFinder = pluginFinder;
 			_mediaMover = mediaMover;
+			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
         }
 
 		#endregion
@@ -150,6 +154,34 @@ namespace SmartStore.Admin.Controllers
 		{
 			string value = _services.Localization.GetResource(resourceKey).EmptyNull();
 			return new SelectListItem() { Text = value, Value = value };
+		}
+
+		private string CreateCommonFacetSettingKey(FacetGroupKind kind, int languageId)
+		{
+			return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}";
+		}
+
+		private void UpdateLocalizedFacetSetting(CommonFacetSettingsModel model, FacetGroupKind kind, ref bool clearCache)
+		{
+			foreach (var localized in model.Locales)
+			{
+				var key = CreateCommonFacetSettingKey(kind, localized.LanguageId);
+				var existingAlias = _services.Settings.GetSettingByKey<string>(key);
+
+				if (existingAlias.IsCaseInsensitiveEqual(localized.Alias))
+					continue;
+
+				if (localized.Alias.HasValue())
+				{
+					_services.Settings.SetSetting(key, localized.Alias, 0, false);
+				}
+				else
+				{
+					_services.Settings.DeleteSetting(key);
+				}
+
+				clearCache = true;
+			}
 		}
 
 		#endregion
@@ -1569,45 +1601,44 @@ namespace SmartStore.Admin.Controllers
 				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ManufacturerPartNumber"), Value = "mpn" }
 			};
 
-			// Common facets.
-			var commonFacets = settings.CommonFacets.HasValue()
-				? JsonConvert.DeserializeObject<List<CommonFacetOption>>(settings.CommonFacets)
-				: new List<CommonFacetOption>();
+			// Common facets
+			// TODO: StoreDependingSettings.GetOverrideKeys does not work here
+			model.BrandFacet.Disabled = settings.BrandDisabled;
+			model.BrandFacet.DisplayOrder = settings.BrandDisplayOrder;
+			model.PriceFacet.Disabled = settings.PriceDisabled;
+			model.PriceFacet.DisplayOrder = settings.PriceDisplayOrder;
+			model.RatingFacet.Disabled = settings.RatingDisabled;
+			model.RatingFacet.DisplayOrder = settings.RatingDisplayOrder;
+			model.DeliveryTimeFacet.Disabled = settings.DeliveryTimeDisabled;
+			model.DeliveryTimeFacet.DisplayOrder = settings.DeliveryTimeDisplayOrder;
 
-			var facetDisplayOrder = (commonFacets.Any() ? commonFacets.Max(x => x.DisplayOrder) : 0);
-
-			foreach (FacetGroupKind kind in Enum.GetValues(typeof(FacetGroupKind)))
+			foreach (var language in _languageService.GetAllLanguages(true))
 			{
-				switch (kind)
+				model.CategoryFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
 				{
-					case FacetGroupKind.Category:
-					case FacetGroupKind.Brand:
-					case FacetGroupKind.Price:
-					case FacetGroupKind.Rating:
-					case FacetGroupKind.DeliveryTime:
-						var facet = commonFacets.FirstOrDefault(x => x.Kind == kind);
-						if (facet != null)
-						{
-							model.CommonFacets.Add(new CommonFacetOption
-							{
-								Kind = kind,
-								Alias = facet.Alias,
-								Disabled = facet.Disabled,
-								DisplayOrder = facet.DisplayOrder,
-								FriendlyName = T(FacetDescriptor.GetLabelResourceKey(kind))
-							});
-						}
-						else
-						{
-							model.CommonFacets.Add(new CommonFacetOption
-							{
-								Kind = kind,
-								DisplayOrder = (kind == FacetGroupKind.Category ? 0 : ++facetDisplayOrder),
-								FriendlyName = T(FacetDescriptor.GetLabelResourceKey(kind))
-							});
-						}
-						break;
-				}
+					LanguageId = language.Id,
+					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Category, language.Id))
+				});
+				model.BrandFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
+				{
+					LanguageId = language.Id,
+					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Brand, language.Id))
+				});
+				model.PriceFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
+				{
+					LanguageId = language.Id,
+					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Price, language.Id))
+				});
+				model.RatingFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
+				{
+					LanguageId = language.Id,
+					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Rating, language.Id))
+				});
+				model.DeliveryTimeFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
+				{
+					LanguageId = language.Id,
+					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.DeliveryTime, language.Id))
+				});
 			}
 
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);
@@ -1646,10 +1677,33 @@ namespace SmartStore.Admin.Controllers
 			settings.FilterMinHitCount = model.FilterMinHitCount;
 			settings.FilterMaxChoicesCount = model.FilterMaxChoicesCount;
 
-			model.CommonFacets.Each(x => x.Alias = SeoExtensions.GetSeName(x.Alias));
-			settings.CommonFacets = JsonConvert.SerializeObject(model.CommonFacets);
+			// Common facets
+			// TODO: StoreDependingSettings.UpdateSettings does not work here
+			settings.BrandDisabled = model.BrandFacet.Disabled;
+			settings.BrandDisplayOrder = model.BrandFacet.DisplayOrder;
+			settings.PriceDisabled = model.PriceFacet.Disabled;
+			settings.PriceDisplayOrder = model.PriceFacet.DisplayOrder;
+			settings.RatingDisabled = model.RatingFacet.Disabled;
+			settings.RatingDisplayOrder = model.RatingFacet.DisplayOrder;
+			settings.DeliveryTimeDisabled = model.DeliveryTimeFacet.Disabled;
+			settings.DeliveryTimeDisplayOrder = model.DeliveryTimeFacet.DisplayOrder;
 
 			StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
+
+			var clearCache = false;
+			using (_services.Settings.BeginScope())
+			{
+				UpdateLocalizedFacetSetting(model.CategoryFacet, FacetGroupKind.Category, ref clearCache);
+				UpdateLocalizedFacetSetting(model.BrandFacet, FacetGroupKind.Brand, ref clearCache);
+				UpdateLocalizedFacetSetting(model.PriceFacet, FacetGroupKind.Price, ref clearCache);
+				UpdateLocalizedFacetSetting(model.RatingFacet, FacetGroupKind.Rating, ref clearCache);
+				UpdateLocalizedFacetSetting(model.DeliveryTimeFacet, FacetGroupKind.DeliveryTime, ref clearCache);
+			}
+
+			if (clearCache)
+			{
+				_catalogSearchQueryAliasMapper.Value.ClearCommonFacetCache();
+			}
 
 			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 

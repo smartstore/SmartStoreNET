@@ -1,16 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Search;
-using SmartStore.Core.Search.Facets;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public partial class SearchSettingsModel
+	public partial class SearchSettingsModel : ModelBase
 	{
 		public SearchSettingsModel()
 		{
-			CommonFacets = new List<CommonFacetOption>();
+			CategoryFacet = new CommonFacetSettingsModel();
+			BrandFacet = new CommonFacetSettingsModel();
+			PriceFacet = new CommonFacetSettingsModel();
+			RatingFacet = new CommonFacetSettingsModel();
+			DeliveryTimeFacet = new CommonFacetSettingsModel();
 		}
 
 		public string SearchFieldsNote { get; set; }
@@ -35,12 +41,42 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.InstantSearchTermMinLength")]
 		public int InstantSearchTermMinLength { get; set; }
 
-		public List<CommonFacetOption> CommonFacets { get; set; }
-
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterMinHitCount")]
 		public int FilterMinHitCount { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterMaxChoicesCount")]
 		public int FilterMaxChoicesCount { get; set; }
+
+		public CommonFacetSettingsModel CategoryFacet { get; set; }
+		public CommonFacetSettingsModel BrandFacet { get; set; }
+		public CommonFacetSettingsModel PriceFacet { get; set; }
+		public CommonFacetSettingsModel RatingFacet { get; set; }
+		public CommonFacetSettingsModel DeliveryTimeFacet { get; set; }
+	}
+
+	public class CommonFacetSettingsModel : ModelBase, ILocalizedModel<CommonFacetSettingsLocalizedModel>
+	{
+		public CommonFacetSettingsModel()
+		{
+			Locales = new List<CommonFacetSettingsLocalizedModel>();
+		}
+
+		public int LanguageId { get; set; }
+
+		[SmartResourceDisplayName("Common.Deactivated")]
+		public bool Disabled { get; set; }
+
+		[SmartResourceDisplayName("Common.DisplayOrder")]
+		public int DisplayOrder { get; set; }
+
+		public IList<CommonFacetSettingsLocalizedModel> Locales { get; set; }
+	}
+
+	public class CommonFacetSettingsLocalizedModel : ILocalizedModelLocal
+	{
+		public int LanguageId { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.CommonFacet.Alias")]
+		public string Alias { get; set; }
 	}
 }

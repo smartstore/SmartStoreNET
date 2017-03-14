@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Routing;
-using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -39,53 +38,23 @@ namespace SmartStore.Services.Search.Modelling
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;
 		protected readonly ICommonServices _services;
-		protected Dictionary<FacetGroupKind, CommonFacetOption> _commonFacets;
+		protected readonly ICatalogSearchQueryAliasMapper _catalogSearchQueryAliasMapper;
 		private Multimap<string, string> _aliases;
 
 		public CatalogSearchQueryFactory(
 			HttpContextBase httpContext,
 			CatalogSettings catalogSettings,
 			SearchSettings searchSettings,
-			ICommonServices services)
+			ICommonServices services,
+			ICatalogSearchQueryAliasMapper catalogSearchQueryAliasMapper)
 		{
 			_httpContext = httpContext;
 			_catalogSettings = catalogSettings;
 			_searchSettings = searchSettings;
 			_services = services;
+			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
 
 			QuerySettings = DbQuerySettings.Default;
-		}
-
-		protected Dictionary<FacetGroupKind, CommonFacetOption> CommonFacets
-		{
-			get
-			{
-				if (_commonFacets == null)
-				{
-					_commonFacets = new Dictionary<FacetGroupKind, CommonFacetOption>();
-
-					if (_searchSettings.CommonFacets.HasValue())
-					{
-						var commonFacets = JsonConvert.DeserializeObject<List<CommonFacetOption>>(_searchSettings.CommonFacets);
-
-						commonFacets.Where(x => !x.Disabled).Each(x => _commonFacets.Add(x.Kind, x));
-					}
-					else
-					{
-						_commonFacets.Add(FacetGroupKind.Brand, new CommonFacetOption { Kind = FacetGroupKind.Brand, DisplayOrder = 1 });
-						_commonFacets.Add(FacetGroupKind.Price, new CommonFacetOption { Kind = FacetGroupKind.Price, DisplayOrder = 2 });
-						_commonFacets.Add(FacetGroupKind.Rating, new CommonFacetOption { Kind = FacetGroupKind.Rating, DisplayOrder = 3 });
-						_commonFacets.Add(FacetGroupKind.DeliveryTime, new CommonFacetOption { Kind = FacetGroupKind.DeliveryTime, DisplayOrder = 4 });
-					}
-
-					if (!_commonFacets.ContainsKey(FacetGroupKind.Category))
-					{
-						_commonFacets.Add(FacetGroupKind.Category, new CommonFacetOption { Kind = FacetGroupKind.Category });
-					}
-				}
-
-				return _commonFacets;
-			}
 		}
 
 		public DbQuerySettings QuerySettings { get; set; }
@@ -311,10 +280,7 @@ namespace SmartStore.Services.Search.Modelling
 			Action<FacetDescriptor> addValues)
 		{
 			string fieldName;
-			CommonFacetOption facet;
-
-			if (!CommonFacets.TryGetValue(kind, out facet))
-				return;
+			var displayOrder = 0;
 
 			switch (kind)
 			{
@@ -322,16 +288,28 @@ namespace SmartStore.Services.Search.Modelling
 					fieldName = _catalogSettings.IncludeFeaturedProductsInNormalLists ? "categoryid" : "notfeaturedcategoryid";
 					break;
 				case FacetGroupKind.Brand:
+					if (_searchSettings.BrandDisabled)
+						return;
 					fieldName = "manufacturerid";
+					displayOrder = _searchSettings.BrandDisplayOrder;
 					break;
 				case FacetGroupKind.Price:
+					if (_searchSettings.PriceDisabled)
+						return;
 					fieldName = "price";
+					displayOrder = _searchSettings.PriceDisplayOrder;
 					break;
 				case FacetGroupKind.Rating:
+					if (_searchSettings.RatingDisabled)
+						return;
 					fieldName = "rate";
+					displayOrder = _searchSettings.RatingDisplayOrder;
 					break;
 				case FacetGroupKind.DeliveryTime:
+					if (_searchSettings.DeliveryTimeDisabled)
+						return;
 					fieldName = "deliveryid";
+					displayOrder = _searchSettings.DeliveryTimeDisplayOrder;
 					break;
 				default:
 					throw new SmartException($"Unknown field name for facet group '{kind.ToString()}'");
@@ -340,7 +318,7 @@ namespace SmartStore.Services.Search.Modelling
 			var descriptor = new FacetDescriptor(fieldName);
 			descriptor.Label = _services.Localization.GetResource(FacetDescriptor.GetLabelResourceKey(kind) ?? kind.ToString());
 			descriptor.IsMultiSelect = isMultiSelect;
-			descriptor.DisplayOrder = facet.DisplayOrder;
+			descriptor.DisplayOrder = displayOrder;
 			descriptor.OrderBy = sorting;
 
 			if (kind != FacetGroupKind.Rating)
@@ -357,7 +335,7 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			List<int> ids;
 
-			if (GetValueFor("c", FacetGroupKind.Category, out ids) && ids != null && ids.Any())
+			if (GetValueFor(query, "c", FacetGroupKind.Category, out ids) && ids != null && ids.Any())
 			{
 				// TODO; (mc) Get deep ids (???) Make a low-level version of CatalogHelper.GetChildCategoryIds()
 				query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, ids.ToArray());
@@ -377,7 +355,7 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			List<int> ids;
 
-			if (GetValueFor("m", FacetGroupKind.Brand, out ids) && ids != null && ids.Any())
+			if (GetValueFor(query, "m", FacetGroupKind.Brand, out ids) && ids != null && ids.Any())
 			{
 				query.WithManufacturerIds(null, ids.ToArray());
 			}
@@ -398,7 +376,7 @@ namespace SmartStore.Services.Search.Modelling
 			decimal? minPrice = null;
 			decimal? maxPrice = null;
 
-			if (GetValueFor("p", FacetGroupKind.Price, out price) && TryParsePriceRange(price, out minPrice, out maxPrice))
+			if (GetValueFor(query, "p", FacetGroupKind.Price, out price) && TryParsePriceRange(price, out minPrice, out maxPrice))
 			{
 				var currency = _services.WorkContext.WorkingCurrency;
 
@@ -469,7 +447,7 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			double? fromRate;
 
-			if (GetValueFor("r", FacetGroupKind.Rating, out fromRate) && fromRate.HasValue)
+			if (GetValueFor(query, "r", FacetGroupKind.Rating, out fromRate) && fromRate.HasValue)
 			{
 				query.WithRating(fromRate, null);
 			}
@@ -499,7 +477,7 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			List<int> ids;
 
-			if (GetValueFor("d", FacetGroupKind.DeliveryTime, out ids) && ids != null && ids.Any())
+			if (GetValueFor(query, "d", FacetGroupKind.DeliveryTime, out ids) && ids != null && ids.Any())
 			{
 				query.WithDeliveryTimeIds(ids.ToArray());
 			}
@@ -543,16 +521,9 @@ namespace SmartStore.Services.Search.Modelling
 			return false;
 		}
 
-		protected bool GetValueFor<T>(string key, FacetGroupKind kind, out T value)
+		protected bool GetValueFor<T>(CatalogSearchQuery query, string key, FacetGroupKind kind, out T value)
 		{
-			CommonFacetOption facet;
-
-			if (CommonFacets.TryGetValue(kind, out facet) && facet.Alias.HasValue() && GetValueFor(facet.Alias, out value))
-			{
-				return true;
-			}
-
-			return GetValueFor(key, out value);
+			return GetValueFor(_catalogSearchQueryAliasMapper.GetCommonFacetAliasByGroupKind(kind, query.LanguageId ?? 0) ?? key, out value);
 		}
 
 		protected Multimap<string, string> Aliases
@@ -567,19 +538,18 @@ namespace SmartStore.Services.Search.Modelling
 					{
 						var form = _httpContext.Request.Form;
 						var query = _httpContext.Request.QueryString;
-						var commonFacetAliases = new HashSet<string>(_commonFacets.Values.Where(x => !x.Disabled && x.Alias.HasValue()).Select(x => x.Alias));
 
 						if (form != null)
 						{
 							form.AllKeys
-								.Where(x => !_tokens.Contains(x) && !commonFacetAliases.Contains(x))
+								.Where(x => !_tokens.Contains(x))
 								.Each(key => _aliases.AddRange(key, form[key].SplitSafe(",")));
 						}
 
 						if (query != null)
 						{
 							query.AllKeys
-								.Where(x => !_tokens.Contains(x) && !commonFacetAliases.Contains(x))
+								.Where(x => !_tokens.Contains(x))
 								.Each(key => _aliases.AddRange(key, query[key].SplitSafe(",")));
 						}
 					}

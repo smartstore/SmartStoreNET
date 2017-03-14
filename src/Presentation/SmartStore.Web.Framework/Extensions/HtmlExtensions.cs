@@ -67,20 +67,26 @@ namespace SmartStore.Web.Framework
                     writer.Write("<div class='well well-small'>");
                     var tabStrip = helper.SmartStore().TabStrip().Name(name).SmartTabSelection(false).Style(TabsStyle.Pills).Items(x =>
                     {
-                        x.Add().Text("Standard").Content(standardTemplate(helper.ViewData.Model).ToHtmlString()).Selected(true);
+						if (standardTemplate != null)
+						{
+							x.Add().Text("Standard").Content(standardTemplate(helper.ViewData.Model).ToHtmlString()).Selected(true);
+						}
+
                         for (int i = 0; i < helper.ViewData.Model.Locales.Count; i++)
                         {
                             var locale = helper.ViewData.Model.Locales[i];
                             var language = EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(locale.LanguageId);
-                            x.Add().Text(language.Name)
-                                .Content(localizedTemplate(i).ToHtmlString())
-                                .ImageUrl("~/Content/images/flags/" + language.FlagImageFileName);
+
+ 							x.Add().Text(language.Name)
+								.Content(localizedTemplate(i).ToHtmlString())
+								.ImageUrl("~/Content/images/flags/" + language.FlagImageFileName)
+								.Selected(i == 0 && standardTemplate == null);
                         }
                     }).ToHtmlString();
                     writer.Write(tabStrip);
                     writer.Write("</div>");
                 }
-                else
+                else if (standardTemplate != null)
                 {
                     standardTemplate(helper.ViewData.Model).WriteTo(writer);
                 }

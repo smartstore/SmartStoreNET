@@ -427,18 +427,6 @@ namespace SmartStore.Data.Migrations
 				"According to display order",
 				"Gemäß Reihenfolge");
 
-			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias",
-				"Alias",
-				"Alias",
-				"An optional reference name for internal use.",
-				"Ein optionaler Referenzwert für interne Zwecke.");
-
-			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias",
-				"Alias",
-				"Alias",
-				"An optional reference name for internal use.",
-				"Ein optionaler Referenzwert für interne Zwecke.");
-
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting",
 				"Sorting of search filters",
 				"Sortierung der Suchfilter",
@@ -620,12 +608,17 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Offcanvas.Menu.Service", "Service", "Service");
             builder.AddOrUpdate("Offcanvas.Menu.ShowCurrentCat", "Show {0}", "{0} anzeigen"); 
             
-			var aliasHintEn = "Seo-compliant URL alias for search filters. If empty, the attribute's ID is used in page URLs.";
-			var aliasHintDe = "SEO-konformer URL-Alias für Suchfilter. Wenn leer, wird die Attribut-ID in Seiten-URLs verwendet.";
+			var aliasHintEn = "Seo-compliant URL alias for search filters (optional).";
+			var aliasHintDe = "SEO-konformer URL-Alias für Suchfilter (optional).";
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias", "Alias", "Alias", aliasHintEn,	aliasHintDe);
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias", "Alias", "Alias", aliasHintEn, aliasHintDe);
+
 			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
-			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.CommonFacet.Alias", "Alias", "Alias", aliasHintEn, aliasHintDe);
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.OptionsSets", "Option sets", "Options-Sets");
 

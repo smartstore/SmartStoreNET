@@ -6,7 +6,10 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Configuration;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Search.Modelling
 {
@@ -14,6 +17,7 @@ namespace SmartStore.Services.Search.Modelling
 	{
 		private const string ALL_ATTRIBUTE_ID_BY_ALIAS_KEY = "search.attribute.id.alias.mappings.all";
 		private const string ALL_ATTRIBUTE_ALIAS_BY_ID_KEY = "search.attribute.alias.id.mappings.all";
+		private const string ALL_COMMONFACET_ALIAS_BY_KIND_KEY = "search.commonfacet.alias.kind.mappings.all";
 
 		private const string ALL_VARIANT_ID_BY_ALIAS_KEY = "search.variant.id.alias.mappings.all";
 		private const string ALL_VARIANT_ALIAS_BY_ID_KEY = "search.variant.alias.id.mappings.all";
@@ -22,17 +26,23 @@ namespace SmartStore.Services.Search.Modelling
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
 		private readonly ISpecificationAttributeService _specificationAttributeService;
+		private readonly ISettingService _settingService;
+		private readonly ILanguageService _languageService;
 
 		public CatalogSearchQueryAliasMapper(
 			ICacheManager cacheManager,
 			IRepository<LocalizedProperty> localizedPropertyRepository,
 			IRepository<ProductVariantAttributeValue> productVariantAttributeValueRepository,
-			ISpecificationAttributeService specificationAttributeService)
+			ISpecificationAttributeService specificationAttributeService,
+			ISettingService settingService,
+			ILanguageService languageService)
 		{
 			_cacheManager = cacheManager;
 			_localizedPropertyRepository = localizedPropertyRepository;
 			_productVariantAttributeValueRepository = productVariantAttributeValueRepository;
 			_specificationAttributeService = specificationAttributeService;
+			_settingService = settingService;
+			_languageService = languageService;
 		}
 
 		protected string CreateKey(string prefix, int languageId, string alias)
@@ -51,6 +61,11 @@ namespace SmartStore.Services.Search.Modelling
 		protected string CreateOptionKey(string prefix, int languageId, int optionId)
 		{
 			return $"{prefix}.{languageId}.{optionId}";
+		}
+
+		protected string CreateSettingKey(FacetGroupKind kind, int languageId)
+		{
+			return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}";
 		}
 
 		protected void CachedLocalizedAlias(string localeKeyGroup, Action<LocalizedProperty> caching)
@@ -398,6 +413,54 @@ namespace SmartStore.Services.Search.Modelling
 			}
 
 			return result;
+		}
+
+		#endregion
+
+		#region Common Facets
+
+		protected virtual IDictionary<string, string> GetCommonFacetAliasByGroupKindMappings()
+		{
+			return _cacheManager.Get(ALL_COMMONFACET_ALIAS_BY_KIND_KEY, () =>
+			{
+				var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+				var groupKinds = new FacetGroupKind[]
+				{
+					FacetGroupKind.Category,
+					FacetGroupKind.Brand,
+					FacetGroupKind.Price,
+					FacetGroupKind.Rating,
+					FacetGroupKind.DeliveryTime
+				};
+
+				foreach (var language in _languageService.GetAllLanguages())
+				{
+					foreach (var groupKind in groupKinds)
+					{
+						var key = CreateSettingKey(groupKind, language.Id);
+						var value = _settingService.GetSettingByKey<string>(key);
+						if (value.HasValue())
+						{
+							result.Add(key, value);
+						}
+					}
+				}
+
+				return result;
+			});
+		}
+
+		public void ClearCommonFacetCache()
+		{
+			_cacheManager.RemoveByPattern(ALL_COMMONFACET_ALIAS_BY_KIND_KEY);
+		}
+
+		public string GetCommonFacetAliasByGroupKind(FacetGroupKind kind, int languageId)
+		{
+			var mappings = GetCommonFacetAliasByGroupKindMappings();
+
+			return mappings.Get(CreateSettingKey(kind, languageId));
 		}
 
 		#endregion

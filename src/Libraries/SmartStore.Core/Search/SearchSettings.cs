@@ -15,6 +15,11 @@ namespace SmartStore.Core.Search
 			InstantSearchTermMinLength = 2;
 			FilterMinHitCount = 1;
 			FilterMaxChoicesCount = 20;
+
+			BrandDisplayOrder = 1;
+			PriceDisplayOrder = 2;
+			RatingDisplayOrder = 3;
+			DeliveryTimeDisplayOrder = 4;
 		}
 
 		/// <summary>
@@ -48,11 +53,6 @@ namespace SmartStore.Core.Search
 		public int InstantSearchTermMinLength { get; set; }
 
 		/// <summary>
-		/// Json serialized information about common search facet
-		/// </summary>
-		public string CommonFacets { get; set; }
-
-		/// <summary>
 		/// Gets or sets the minimum hit count for a filter value. Values with a lower hit count are not displayed.
 		/// </summary>
 		public int FilterMinHitCount { get; set; }
@@ -63,5 +63,19 @@ namespace SmartStore.Core.Search
 		public int FilterMaxChoicesCount { get; set; }
 
 		// TBD: what about area specific searchin setting (product, blog, etc.)
+
+		#region Common facet settings
+
+		public bool BrandDisabled { get; set; }
+		public bool PriceDisabled { get; set; }
+		public bool RatingDisabled { get; set; }
+		public bool DeliveryTimeDisabled { get; set; }
+
+		public int BrandDisplayOrder { get; set; }
+		public int PriceDisplayOrder { get; set; }
+		public int RatingDisplayOrder { get; set; }
+		public int DeliveryTimeDisplayOrder { get; set; }
+
+		#endregion
 	}
 }

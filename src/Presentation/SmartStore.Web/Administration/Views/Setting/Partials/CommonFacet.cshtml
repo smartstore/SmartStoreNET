@@ -1,0 +1,46 @@
+﻿@model CommonFacetSettingsModel
+@{
+	var fieldPrefix = ViewData.TemplateInfo.HtmlFieldPrefix;
+}
+
+@if (fieldPrefix != "CategoryFacet")
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Disabled)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.Disabled)
+				@Html.ValidationMessageFor(model => model.Disabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DisplayOrder)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.DisplayOrder, null, new { small = true })
+				@Html.ValidationMessageFor(model => model.DisplayOrder)
+			</td>
+		</tr>
+	</table>
+}
+
+@(Html.LocalizedEditor<CommonFacetSettingsModel, CommonFacetSettingsLocalizedModel>(fieldPrefix + "-localized",
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Alias)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.Locales[item].Alias)
+				@Html.ValidationMessageFor(model => model.Locales[item].Alias)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+			</td>
+		</tr>
+	</table>, null))

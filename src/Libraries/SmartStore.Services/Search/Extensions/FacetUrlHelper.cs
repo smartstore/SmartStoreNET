@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
-using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Search;
@@ -22,7 +21,6 @@ namespace SmartStore.Services.Search.Extensions
 		private readonly int _languageId;
 		private readonly string _url;
 		private readonly QueryString _initialQuery;
-		private Dictionary<FacetGroupKind, string> _commonFacetAliases;
 
 		private readonly static IDictionary<FacetGroupKind, string> _queryNames = new Dictionary<FacetGroupKind, string>
 		{
@@ -133,26 +131,6 @@ namespace SmartStore.Services.Search.Extensions
 			return _url + qs.ToString(false);
 		}
 
-		protected virtual Dictionary<FacetGroupKind, string> CommonFacetAliases
-		{
-			get
-			{
-				if (_commonFacetAliases == null)
-				{
-					_commonFacetAliases = new Dictionary<FacetGroupKind, string>();
-
-					if (_searchSettings.CommonFacets.HasValue())
-					{
-						var commonFacets = JsonConvert.DeserializeObject<List<CommonFacetOption>>(_searchSettings.CommonFacets);
-
-						commonFacets.Where(x => !x.Disabled && x.Alias.HasValue()).Each(x => _commonFacetAliases.Add(x.Kind, x.Alias));
-					}
-				}
-
-				return _commonFacetAliases;
-			}
-		}
-
 		protected virtual NameValueCollection GetQueryParts(Facet facet)
 		{
 			string name = null;
@@ -188,9 +166,7 @@ namespace SmartStore.Services.Search.Extensions
 					value = val.ToString();
 					if (value.HasValue())
 					{
-						if (!CommonFacetAliases.TryGetValue(group.Kind, out name) || name.IsEmpty())
-							name = _queryNames[group.Kind];
-
+						name = _mapper.GetCommonFacetAliasByGroupKind(group.Kind, _languageId) ?? _queryNames[group.Kind];
 						result.Add(name, value);
 					}
 

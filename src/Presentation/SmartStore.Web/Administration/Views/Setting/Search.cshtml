@@ -1,5 +1,4 @@
 ﻿@using SmartStore.Core.Search;
-@using SmartStore.Core.Search.Facets;
 @model SearchSettingsModel
 @{
     ViewBag.Title = T("Search.Title").Text;
@@ -109,6 +108,33 @@
 				</div>
 			</td>
 		</tr>
+	</table>
+
+@Html.SmartStore().TabStrip().Name("common-facets-settings").Style(TabsStyle.Tabs).Position(TabsPosition.Left).Items(x =>
+{
+	x.Add()
+		.Text(T("Search.Facet.Category").Text)
+		.Content(Html.Partial("Partials/CommonFacet", Model.CategoryFacet, CreateFacetViewData("CategoryFacet")).ToHtmlString())
+		.Selected(true);
+
+	x.Add()
+		.Text(T("Search.Facet.Manufacturer").Text)
+		.Content(Html.Partial("Partials/CommonFacet", Model.BrandFacet, CreateFacetViewData("BrandFacet")).ToHtmlString());
+
+	x.Add()
+		.Text(T("Search.Facet.Price").Text)
+		.Content(Html.Partial("Partials/CommonFacet", Model.PriceFacet, CreateFacetViewData("PriceFacet")).ToHtmlString());
+
+	x.Add()
+		.Text(T("Search.Facet.Rating").Text)
+		.Content(Html.Partial("Partials/CommonFacet", Model.RatingFacet, CreateFacetViewData("RatingFacet")).ToHtmlString());
+
+	x.Add()
+		.Text(T("Search.Facet.DeliveryTime").Text)
+		.Content(Html.Partial("Partials/CommonFacet", Model.DeliveryTimeFacet, CreateFacetViewData("DeliveryTimeFacet")).ToHtmlString());
+})
+	<p></p>
+	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FilterMinHitCount)
@@ -127,51 +153,17 @@
 				@Html.ValidationMessageFor(model => model.FilterMaxChoicesCount)
 			</td>
 		</tr>
-		<tr>
-			<td colspan="2">
-
-				<table class="table admin-table" style="width: 700px; margin-top: 12px;">
-					<thead>
-						<tr>
-							<th>@T("Search.FilterBy")</th>
-							<th>@T("Common.Alias")</th>
-							<th class="ac">@T("Common.Deactivated")</th>
-							<th>@T("Common.DisplayOrder")</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var facet in Model.CommonFacets.OrderBy(x => x.DisplayOrder))
-						{
-							var facetIndex = Model.CommonFacets.IndexOf(facet);
-							<tr @Html.Attr("class", "muted", facet.Disabled)>
-								<td style="vertical-align: middle;">
-									@(facet.FriendlyName ?? facet.Kind.ToString())
-									@Html.HiddenFor(model => model.CommonFacets[facetIndex].Kind)
-								</td>
-								<td>
-									@Html.SettingEditorFor(model => model.CommonFacets[facetIndex].Alias)
-								</td>
-								@if (facet.Kind == FacetGroupKind.Category)
-								{
-									<td colspan="2">&nbsp;</td>
-								}
-								else
-								{
-									<td class="ac" style="vertical-align: middle;">
-										@Html.SettingEditorFor(model => model.CommonFacets[facetIndex].Disabled)
-									</td>
-									<td>
-										@Html.SettingEditorFor(model => model.CommonFacets[facetIndex].DisplayOrder, null, new { small = true })
-									</td>
-								}
-							</tr>
-						}
-					</tbody>
-				</table>
-
-			</td>
-		</tr>
 	</table>
+}
+
+@functions
+{
+	private ViewDataDictionary CreateFacetViewData(string fieldPrefix)
+	{
+		var viewData = new ViewDataDictionary();
+		viewData.TemplateInfo.HtmlFieldPrefix = fieldPrefix;
+		return viewData;
+	}
 }
 
 <script type="text/javascript">

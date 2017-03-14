@@ -820,6 +820,7 @@
     <Content Include="Views\ProductAttribute\OptionCreatePopup.cshtml" />
     <Content Include="Views\ProductAttribute\OptionEditPopup.cshtml" />
     <Content Include="Views\ProductAttribute\_CreateOrUpdateOption.cshtml" />
+    <Content Include="Views\Setting\Partials\CommonFacet.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

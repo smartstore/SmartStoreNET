@@ -674,9 +674,9 @@ namespace SmartStore.Data.Migrations
 				"Legt fest, dass alle Anfragen SSL gesichert werden sollen.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage",
-                "Display manufacturers lists",
+                "Display manufacturer lists",
                 "Zeige Herstellerlisten",
-                "Specifies whether manufacturers lists will be displayed. This setting effects all partial manufacturer lists in the shop (e.g. homepage, mobile menu).",
+                "Specifies whether manufacturer lists will be displayed. This setting effects all partial manufacturer lists in the shop (e.g. homepage, mobile menu).",
                 "Legt fest, ob Herstellerlisten angezeigt werden. Diese Einstellung betrifft alle partiellen Herstellerlisten im Shop (z.B. Homepage, Mobile-Menu).");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay",

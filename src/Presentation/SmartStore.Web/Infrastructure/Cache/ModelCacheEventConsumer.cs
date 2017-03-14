@@ -126,12 +126,11 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// Key for ManufacturerNavigationModel caching
 		/// </summary>
 		/// <remarks>
-		/// {0} : current manufacturer id
-		/// {1} : value indicating whether a default picture is displayed in case if no real picture exists
-		/// {2} : language id
-		/// {3} : current store ID
+		/// {0} : value indicating whether a default picture is displayed in case if no real picture exists
+		/// {1} : language id
+		/// {2} : current store ID
 		/// </remarks>
-		public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "pres:manufacturer:navigation-{0}-{1}-{2}-{3}";
+		public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "pres:manufacturer:navigation-{0}-{1}-{2}";
         public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "pres:manufacturer:navigation";
 
 		/// <summary>

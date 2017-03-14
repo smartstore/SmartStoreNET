@@ -20,7 +20,7 @@
         Html.RenderAction("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
         Html.RenderWidget("left_side_column_after_category_navigation");
 
-        Html.RenderAction("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId, area = "" });
+        Html.RenderAction("ManufacturerNavigation", "Catalog", new { area = "" });
         Html.RenderWidget("left_side_column_after_manufacturer_navigation");
 
         Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "RightColumnPoll", area = "" });

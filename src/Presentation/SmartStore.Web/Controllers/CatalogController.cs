@@ -466,12 +466,12 @@ namespace SmartStore.Web.Controllers
 
         // TODO: remove, won't be needed anymore???
         [ChildActionOnly]
-        public ActionResult ManufacturerNavigation(int currentManufacturerId)
+        public ActionResult ManufacturerNavigation()
         {
 			if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
 				return Content("");
 
-            var model = _helper.PreprareManufacturerNavigationModel(currentManufacturerId);
+            var model = _helper.PrepareManufacturerNavigationModel();
 
             if (model.Manufacturers.Count == 0)
 				return Content("");
@@ -925,7 +925,7 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult OffCanvasMenuManufacturers()
         {
-            var model = _helper.PreprareManufacturerNavigationModel(0);
+            var model = _helper.PrepareManufacturerNavigationModel();
 
             return PartialView("OffCanvasMenuManufacturers", model);
         }

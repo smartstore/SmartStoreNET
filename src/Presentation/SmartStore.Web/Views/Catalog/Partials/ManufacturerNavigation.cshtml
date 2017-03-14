@@ -10,7 +10,7 @@
             <ul class="list-unstyled">
                 @foreach (var manufacturer in Model.Manufacturers)
                 {
-                    <li class="@(manufacturer.IsActive ? "active" : "inactive") @(Model.DisplayImages ? "manufacturer-pic" : "")">
+                    <li class="@(Model.DisplayImages ? "manufacturer-pic" : "")">
 
                         @if (Model.DisplayImages && manufacturer.PictureUrl.HasValue())
                         {

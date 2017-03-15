@@ -304,7 +304,7 @@ namespace SmartStore.Services.Search
 				Guard.InRange(toRate.Value, 0.0, 5.0, nameof(toRate.Value));
 			}
 
-			return WithFilter(SearchFilter.ByRange("rate", fromRate, toRate, fromRate.HasValue, toRate.HasValue).Mandatory().ExactMatch().NotAnalyzed());
+			return WithFilter(SearchFilter.ByRange("rating", fromRate, toRate, fromRate.HasValue, toRate.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
 		public CatalogSearchQuery WithDeliveryTimeIds(params int[] ids)

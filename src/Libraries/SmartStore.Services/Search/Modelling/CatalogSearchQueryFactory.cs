@@ -302,7 +302,7 @@ namespace SmartStore.Services.Search.Modelling
 				case FacetGroupKind.Rating:
 					if (_searchSettings.RatingDisabled)
 						return;
-					fieldName = "rate";
+					fieldName = "rating";
 					displayOrder = _searchSettings.RatingDisplayOrder;
 					break;
 				case FacetGroupKind.DeliveryTime:

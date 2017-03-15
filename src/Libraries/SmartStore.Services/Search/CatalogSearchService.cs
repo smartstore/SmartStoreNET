@@ -203,7 +203,7 @@ namespace SmartStore.Services.Search
 				}
 			}
 			
-			if (facets.TryGetValue("rate", out group))
+			if (facets.TryGetValue("rating", out group))
 			{
 				foreach (var facet in group.Facets)
 				{

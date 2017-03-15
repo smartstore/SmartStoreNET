@@ -121,7 +121,7 @@ namespace SmartStore.Core.Search.Facets
 					{
 						_kind = FacetGroupKind.Price;
 					}
-					else if (Key == "rate")
+					else if (Key == "rating")
 					{
 						_kind = FacetGroupKind.Rating;
 					}

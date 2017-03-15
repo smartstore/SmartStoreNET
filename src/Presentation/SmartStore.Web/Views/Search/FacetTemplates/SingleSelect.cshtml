@@ -6,14 +6,17 @@
 <div class="facet-body-inner scrollable">
 	@foreach (var facet in Model.Facets)
 	{
-		<div class="facet-item facet-radio" data-href="@Url.FacetToggle(facet)">
-			<label>
-				<input class="facet-control-native" type="radio" name="optradio" value="@facet.Value.ToString()" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
-				<span class="facet-control-ui"></span>
-				<span class="facet-label has-count" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>
-					@(facet.Value.Label ?? facet.Value.ToString())
-				</span>
-			</label>
-		</div>
+		if (facet.HitCount > 0 || facet.Value.IsSelected)
+		{
+			<div class="facet-item facet-radio" data-href="@Url.FacetToggle(facet)">
+				<label>
+					<input class="facet-control-native" type="radio" name="optradio" value="@facet.Value.ToString()" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+					<span class="facet-control-ui"></span>
+					<span class="facet-label has-count" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>
+						@(facet.Value.Label ?? facet.Value.ToString())
+					</span>
+				</label>
+			</div>
+		}
 	}
 </div>

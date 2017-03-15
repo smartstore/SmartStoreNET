@@ -646,7 +646,7 @@ namespace SmartStore.Services.Search
 
 					#endregion
 				}
-				else if (key == "rate")
+				else if (key == "rating")
 				{
 					#region ratings
 

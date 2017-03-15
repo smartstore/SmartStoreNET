@@ -11,8 +11,7 @@ using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Core.Data
-{
-    
+{  
 	public partial class DataSettings
     {
 		private static readonly ReaderWriterLockSlim s_rwLock = new ReaderWriterLockSlim();
@@ -93,18 +92,39 @@ namespace SmartStore.Core.Data
 
 		public static void Delete()
 		{
-			using (s_rwLock.GetWriteLock())
+			if (s_current?.TenantPath != null)
 			{
-				string filePath = Path.Combine(CommonHelper.MapPath("~/App_Data/"), FILENAME);
-				File.Delete(filePath);
-				s_current = null;
-				s_installed = null;
+				using (s_rwLock.GetWriteLock())
+				{
+					string filePath = Path.Combine(CommonHelper.MapPath(s_current.TenantPath), FILENAME);
+					try
+					{
+						File.Delete(filePath);
+					}
+					finally
+					{
+						s_current = null;
+						s_installed = null;
+					}			
+				}
 			}
 		}
 
 		#endregion
 
 		#region Instance members
+
+		public string TenantName
+		{
+			get;
+			private set;
+		}
+
+		public string TenantPath
+		{
+			get;
+			private set;
+		}
 
 		public Version AppVersion
 		{
@@ -177,9 +197,14 @@ namespace SmartStore.Core.Data
 		{
 			using (s_rwLock.GetWriteLock())
 			{
-				string filePath = Path.Combine(CommonHelper.MapPath("~/App_Data/"), FILENAME);
-
 				this.Reset();
+
+				var curTenant = ResolveTenant();
+				var tenantPath = "~/App_Data/Tenants/" + curTenant;
+				string filePath = Path.Combine(CommonHelper.MapPath(tenantPath), FILENAME);
+
+				this.TenantName = curTenant;
+				this.TenantPath = tenantPath;
 
 				if (File.Exists(filePath))
 				{
@@ -217,10 +242,13 @@ namespace SmartStore.Core.Data
 			using (s_rwLock.GetWriteLock())
 			{
 				this.RawDataSettings.Clear();
+				this.TenantName = null;
+				this.TenantPath = null;
 				this.AppVersion = null;
 				this.DataProvider = null;
 				this.DataConnectionString = null;
 				this.DataConnectionType = null;
+
 				s_installed = null;
 			}
 		}
@@ -232,7 +260,7 @@ namespace SmartStore.Core.Data
 
 			using (s_rwLock.GetWriteLock())
 			{
-				string filePath = Path.Combine(CommonHelper.MapPath("~/App_Data/"), FILENAME);
+				string filePath = Path.Combine(CommonHelper.MapPath(this.TenantPath), FILENAME);
 				if (!File.Exists(filePath))
 				{
 					using (File.Create(filePath))
@@ -251,6 +279,42 @@ namespace SmartStore.Core.Data
 		#endregion
 
 		#region Instance helpers
+
+		protected virtual string ResolveTenant()
+		{
+			var tenantsBaseDir = CommonHelper.MapPath("~/App_Data/Tenants");
+			var curTenantFile = Path.Combine(tenantsBaseDir, "current.txt");
+
+			string curTenant = null;
+
+			if (File.Exists(curTenantFile))
+			{
+				curTenant = File.ReadAllText(curTenantFile).EmptyNull().Trim().NullEmpty();
+				if (curTenant != curTenant.EmptyNull().ToValidPath())
+				{
+					// File contains invalid path string
+					curTenant = null;
+				}
+
+				if (curTenant != null && !Directory.Exists(Path.Combine(tenantsBaseDir, curTenant)))
+				{
+					// Specified Tenant directory does not exist
+					curTenant = null;
+				}
+			}
+
+			curTenant = curTenant ?? "Default";
+
+			var tenantPath = Path.Combine(tenantsBaseDir, curTenant);
+
+			if (curTenant.IsCaseInsensitiveEqual("Default") && !Directory.Exists(tenantPath))
+			{
+				// The Default tenant dir should be created if it doesn't exist
+				Directory.CreateDirectory(tenantPath);
+			}
+
+			return curTenant.TrimEnd('/');
+		}
 
 		protected virtual IDictionary<string, string> ParseSettings(string text)
 		{

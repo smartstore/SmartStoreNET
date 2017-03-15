@@ -1,0 +1,672 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Article/Product list & item styles
+// --------------------------------------------------
+
+$art-font-size:                 $font-size-base;
+$art-font-size-sm:              $font-size-sm;
+$art-font-size-xs:              $font-size-xs;
+$art-line-height:               1.3;
+$art-price-color:               $body-color;
+$art-price-offer-color:         $brand-danger;
+$art-border-color:              #ddd;
+$art-active-bg-color:           #fff;
+$art-active-border-color:       rgba(0,0,0, 0.2);
+
+@mixin make-art-col($cols) {
+    $w: percentage(1 / $cols);
+
+    .art {
+        flex: 0 0 $w;
+        max-width: $w;
+        color: yellow;
+    }
+
+    &.artlist-boxed .art {
+        flex-basis: calc(#{$w} - 1rem);
+        max-width: calc(#{$w} - 1rem);
+    }
+}
+
+// Action Bar
+
+.artlist-actions {
+    margin-bottom: 1rem;
+}
+
+.artlist-action {
+    padding: 0 0.25rem;
+
+    &:not(:last-child) {
+        //margin-right: 0.5rem;
+    }
+
+    label {
+        font-size: $font-size-sm;
+        margin-bottom: 0.35rem;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .btn 
+    { 
+        border-radius: 0; 
+        transition: none; 
+    }
+
+    .mf-dropdown {
+        display: block;
+    }
+}
+
+.artlist-action-group {
+    padding-bottom: 1rem;
+    display: flex;
+    flex-wrap: nowrap;
+    margin: 0 -0.25rem;
+}
+
+.artlist-action--pager {
+    > * { position: relative; display: block; float: left; }
+    > *:not(:first-child) { margin-left: -1px; }
+    .btn-pager-prev { border-top-left-radius: 3px; border-bottom-left-radius: 3px }   
+    .btn-pager-next { border-top-right-radius: 3px; border-bottom-right-radius: 3px }    
+}
+
+@media (max-width: 360px) {
+    .artlist-actions--top .artlist-action--pagesize .mf-dropdown {
+        // Don't show the top pagesize chooser on too small displays (< 360px, e.g. iPhone 4)
+        display: none !important;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .btn-artlist-action,
+    .btn-artlist-action span { font-weight: 400 !important; }
+
+    .artlist-action-group--filtersort {
+        .btn { 
+            font-size: 1rem; text-align: left; border-radius: $btn-border-radius;
+            > b { background: transparent; } 
+        }
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .btn-artlist-action { font-weight: 600; }
+}
+
+.artlist-actions--top { 
+    border-bottom: 1px solid $art-border-color; 
+    display: flex;
+    flex-wrap: wrap;
+    .artlist-action-group { width: 100%; }
+
+    @include media-breakpoint-up(lg) {
+        flex-wrap: nowrap;
+        .artlist-action-group { width: auto; }
+        .artlist-action-group--page { margin-left: auto; }
+    }
+}
+
+
+// List
+
+.artlist {
+    position: relative;
+    margin-bottom: 1.5rem;
+    font-size: $art-font-size;
+    line-height: $art-line-height; 
+    z-index: 3;
+    border-collapse: collapse;
+}
+
+.art {
+    position: relative;
+    //float: none;
+    min-height: 1px;
+
+    @include make-col();
+    @include make-col-span(12, $grid-columns);
+    
+    padding-top: $grid-gutter-width / 2; 
+    padding-bottom: $grid-gutter-width / 2;
+    
+    border: 1px solid transparent;
+    background: transparent;   
+
+    margin-top: -1px;
+    margin-left: -1px;
+
+    border-collapse: collapse;
+    //z-index: 1;
+
+    &.active {
+        background: $art-active-bg-color;
+        border-color: $art-active-border-color !important;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.art-picture-block {
+    position: relative;
+    margin-bottom: 0.8rem;
+    overflow: hidden;
+}
+
+.art-picture.no-picture {
+    &:before {
+        display: block;
+        content: attr(data-content);
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        text-align: center;
+        color: $gray-light;
+    }
+}
+
+.art-badges {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    z-index: 10;
+}
+
+.art-badge {
+    display: block;
+    float: left;
+    clear: both;
+    position: relative;
+    //text-transform: uppercase;
+    font-weight: normal;
+    font-size: 0.85rem;
+    border-radius: 0 0.85rem 0.85rem 0;
+    padding-right: 0.85rem;
+    margin-bottom: 0.2rem;
+}
+
+.art-data-block,
+.art-info-block {
+    position: relative;
+}
+
+.art-rating {
+    @include text-truncate();
+    margin-bottom: 0.25rem;
+}
+
+.art-brand {
+    font-size: $art-font-size-sm;
+    color: $text-muted;
+    text-transform: uppercase;
+}
+
+.art-name {
+    box-sizing: content-box;
+    font-size: $art-font-size;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    > a { color: $body-color; }
+}
+
+.art-genericname {
+    font-size: $art-font-size;
+    font-weight: 600;
+    text-align: center;
+    > a { color: $body-color; }
+}
+
+.art-description {
+    font-size: $art-font-size-sm;
+    color: $text-muted;
+    margin-bottom: 0.4rem;
+}
+
+.art-price-block {
+    position: relative;
+    margin-top: 0.5rem;
+}
+
+.art-price {
+    display: inline-block;  
+    font-weight: 600;
+    font-size: 1rem;
+    color: $art-price-color;
+
+    &.art-price--offer {
+        color: $art-price-offer-color;
+    }
+}
+
+.art-oldprice {
+    display: inline-block;
+    padding-left: 0.25rem;
+    color: $text-muted;
+    text-decoration: line-through;
+}
+
+.art-pangv {
+    font-size: $art-font-size-sm;
+    color: $text-muted;
+    padding-top: 0.25rem;
+}
+
+.art-shipsurcharge {
+    font-size: $art-font-size-sm;
+    color: $brand-danger;
+    padding-top: 0.4rem;
+    @include text-truncate();
+}
+
+.art-legalinfo {
+    font-size: $art-font-size-xs;
+    color: $text-muted;
+}
+
+.art-info-group {
+    margin-bottom: 0.5rem;
+}
+
+.art-drop {
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    bottom: 0;
+    background: $art-active-bg-color;
+    border: 1px solid $art-active-border-color;
+    border-top-color: #fff;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    z-index: -1;  
+
+    .art.active & { 
+        opacity: 1;
+        visibility: visible;
+        z-index: $zindex-popover - 1;
+    }
+}
+
+.art-btn-group {
+    margin: 0;
+
+    .art-btn {
+        display: block;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        transition: none;
+        width: auto;
+        height: 2.75rem;
+        line-height: 2.75rem;
+
+        &.btn-secondary {
+            color: #666;
+        }
+    }
+}
+
+.art-variant-info {
+    margin-bottom: 0.75rem;
+}
+
+.art-color-opts {
+    position: relative;
+    @include clearfix();
+}
+
+.art-color-opt {
+    float: left;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    text-decoration: none;
+
+    &:hover {
+        outline: 1px solid rgba(0,0,0, 0.3);
+    }
+}
+
+.art-more-opts {
+    font-size: $art-font-size-sm;
+    color: $text-muted;
+    
+    > a { font-weight: bold; }  
+}
+
+.art-variant-info > * + * {
+    margin-top: 0.4rem;
+}
+
+.art-attrs {
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+    font-size: $art-font-size-sm;
+
+    td { padding: 1px 0; }
+    td:first-child { 
+        padding-right: 0.5rem; 
+        font-weight: 600; 
+        //color: $text-muted;
+    }
+}
+
+
+// List style
+// ---------------------------------------------
+
+.artlist-lines {
+    .art {
+        @include make-row();
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+        border-bottom-color: $art-border-color;
+    }
+
+    .art-data-block {
+        @include make-row();
+        padding-left: $grid-gutter-width / 1.5;
+        padding-right: 0;
+        margin-left: 0;
+        margin-right: 0;
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+    }
+
+    .art-picture-block {
+        width: 200px;
+        max-width: 200px;
+    }
+
+    .art-actions-block {
+        width: 220px;
+        padding-left: $grid-gutter-width / 1.5;
+    }
+
+    .art-description {
+        margin-bottom: 1rem;
+    }
+
+    .art-info-block {
+        // TODO: (mc) Get col-xs from BS4 mixin here
+        display: block;
+        position: relative;
+        min-height: 1px;
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+    }
+
+    .art-brand,
+    .art-rating {
+        position: relative;
+        margin-bottom: 0;
+    }
+
+    .art-brand-picture {
+        display: inline-block;
+        max-width: 100%;
+        height: auto;
+        max-height: 24px;
+    }
+
+    .floating > .art-brand {
+        padding-right: 90px; // ratings width + 10px
+        min-height: 20px; // Height of rating widget
+    }
+
+    .floating > .art-rating {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    .art-name {
+        font-size: 1rem;
+        margin-bottom: 0.5em;
+    }
+
+    .art-price {
+        font-size: 1.6rem;
+        font-weight: 500;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .art-price--call {
+        font-size: 1rem;
+        color: $text-muted;
+        font-weight: 400;
+    }
+
+    .art-oldprice {
+        //display: block;
+    }
+
+    .art-variant-info {
+        margin-bottom: 1rem;
+    }
+
+    @include media-breakpoint-down(lg) {
+        .art-picture-block { max-width: 180px; }
+        .art-actions-block { width: 200px; }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .art-actions-block { 
+            // Put right hand action block below info block
+            display: block;
+            padding-left: 0;
+            padding-top: 1rem;
+            width: 100%;
+        }
+    }
+
+    @include media-breakpoint-down(xs) {
+        .art-picture-block { max-width: 30%; }
+    }
+}
+
+
+// Grid style
+// ---------------------------------------------
+
+.artlist-grid {
+    @include make-row();
+    margin-left: 0;
+    margin-right: 0;
+
+    &:not(.artlist-boxed).artlist::after {
+        // Make continous line after last row
+        position: relative;
+        content: '';
+        width: 100%;
+        height: 1px;
+        background: $art-border-color;
+        bottom: 1px;
+    }
+    
+    .art {
+        border-bottom-color: $art-border-color;
+    }
+
+    // Grid has always 2 cols per row at least, even on xs
+    @include make-art-col(2);
+
+    // Ensure equal height for some elements in grid style lists
+    .art-name,
+    .art-description {
+        // At least 2 lines height for name & description
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .art-name {
+        // At least 2 lines height for name
+        height: ($art-font-size * $art-line-height) * 2;
+    }
+
+    .art-description {
+        // At least 2 lines height for description
+        height: ($art-font-size-sm * $art-line-height) * 2;
+    }
+
+    .art-delivery-info,
+    .art-pangv {
+        // Always 1 line height, even if empty
+        box-sizing: content-box;
+        min-height: $art-font-size * $art-line-height;
+        @include text-truncate();
+    }
+
+    .art-brand,
+    .art-pangv,
+    .art-shipsurcharge,
+    .art-more-opts {
+        // Always 1 small line height, even if empty
+        box-sizing: content-box;
+        min-height: $art-font-size-sm * $art-line-height;
+        @include text-truncate();
+    }
+
+    /*.art-price-block {
+        margin-top: 0.5rem;
+    }*/
+
+    .art-oldprice {
+        font-size: $art-font-size * 0.925;
+    }
+
+    .art-variant-info {
+        padding-left: $grid-gutter-width / 2;
+        padding-right: $grid-gutter-width / 2;
+    }
+
+    @include media-breakpoint-up(sm) {
+        &.artlist-4-cols,
+        &.artlist-5-cols,
+        &.artlist-6-cols {
+            @include make-art-col(3);
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+        &.artlist-5-cols {
+            @include make-art-col(3);
+        }
+        &.artlist-6-cols {
+            @include make-art-col(4);
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        &.artlist-3-cols,
+        &.artlist-4-cols {
+            @include make-art-col(3);
+        }
+        &.artlist-5-cols,
+        &.artlist-6-cols {
+            @include make-art-col(4);
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+        &.artlist-4-cols {
+            @include make-art-col(4);
+        }
+        &.artlist-5-cols {
+            @include make-art-col(5);
+        }
+        &.artlist-6-cols {
+            @include make-art-col(6);
+        }
+    }
+
+    &.artlist-boxed {
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+
+        .art {
+            background: $art-active-bg-color;
+            border-color: $art-border-color;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+            margin: 0 0.5rem 1rem 0.5rem;
+        }
+    }
+}
+
+
+// Carousel
+// ---------------------------------------------
+
+.artlist-carousel {
+    position: relative;
+    overflow: hidden;
+
+    .artlist-grid {
+        flex-wrap: nowrap;
+    }
+
+    .artlist {
+        margin-bottom: 0;
+    }
+
+    .art {
+        border-bottom: none;
+    }
+
+    .art-drop {
+        display: none;
+    }
+}
+
+.slick-slider {
+    &.artlist-grid {
+        display: block !important;
+        flex: initial !important;
+        flex-wrap: nowrap;
+    }
+
+    .art {
+        display: inline-block !important;
+        max-width: initial !important;
+        //width: 180px; // avoids flickering during initial load
+    }
+}
+
+
+/*@include media-breakpoint-between(xs, md) {
+    .art-rowdiv:nth-of-type(2n+0) {
+        display: block;
+    }   
+    .art:nth-of-type(2n+0) {
+        border-right-color: transparent;
+    }  
+}
+@include media-breakpoint-only(lg) {
+    .art-rowdiv:nth-of-type(3n+0) {
+        display: block;
+    } 
+    .art:nth-of-type(3n+0) {
+        border-right-color: transparent;
+    }    
+}
+@include media-breakpoint-only(xl) { 
+    .art-rowdiv:nth-of-type(4n+0) {
+        display: block;
+    } 
+    .art:nth-of-type(4n+0) {
+        border-right-color: transparent;
+    }    
+}*/

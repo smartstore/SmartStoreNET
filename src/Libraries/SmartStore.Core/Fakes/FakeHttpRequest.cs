@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace SmartStore.Core.Fakes
 {
@@ -15,6 +16,7 @@ namespace SmartStore.Core.Fakes
         private readonly Uri _url;
         private readonly Uri _urlReferrer;
         private readonly string _httpMethod;
+		private RequestContext _requestContext;
 
 		public FakeHttpRequest(string relativeUrl, Uri url, Uri urlReferrer)
 			: this(relativeUrl, HttpVerbs.Get.ToString("g"), url, urlReferrer, null, null, null, null)
@@ -159,5 +161,18 @@ namespace SmartStore.Core.Fakes
 				return new string[] { };
 			}
 		}
-    }
+
+		public override RequestContext RequestContext
+		{
+			get
+			{
+				return _requestContext ?? new RequestContext();
+			}
+
+			set
+			{
+				_requestContext = value;
+			}
+		}
+	}
 }

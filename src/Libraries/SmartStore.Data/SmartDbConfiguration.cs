@@ -17,7 +17,10 @@ namespace SmartStore.Data
 			{
 				provider = (new EfDataProviderFactory(DataSettings.Current).LoadDataProvider()) as IEfDataProvider;
 			}
-			catch { /* SmartStore is not installed yet! */ }
+			catch
+			{
+				/* SmartStore is not installed yet! */
+			}
 
 			if (provider != null)
 			{
@@ -25,22 +28,25 @@ namespace SmartStore.Data
 
 				if (HostingEnvironment.IsHosted && DataSettings.DatabaseIsInstalled())
 				{
-					// prepare EntityFramework 2nd level cache
-					IDbCache cache = null;
-					try
-					{
-						cache = EngineContext.Current.Resolve<IDbCache>();
-					}
-					catch
-					{
-						cache = new NullDbCache();
-					}
+					// TODO: (mc) Either CacheTransactionInterceptor or CachingProviderServices has serious mem leaks.
+					// Investigate, resolve and activate again!
 
-					var cacheInterceptor = new CacheTransactionInterceptor(cache);
-					AddInterceptor(cacheInterceptor);
+					//// prepare EntityFramework 2nd level cache
+					//IDbCache cache = null;
+					//try
+					//{
+					//	cache = EngineContext.Current.Resolve<IDbCache>();
+					//}
+					//catch
+					//{
+					//	cache = new NullDbCache();
+					//}
 
-					Loaded +=
-					  (sender, args) => args.ReplaceService<DbProviderServices>((s, _) => new CachingProviderServices(s, cacheInterceptor));
+					//var cacheInterceptor = new CacheTransactionInterceptor(cache);
+					//AddInterceptor(cacheInterceptor);
+
+					//Loaded +=
+					//  (sender, args) => args.ReplaceService<DbProviderServices>((s, _) => new CachingProviderServices(s, cacheInterceptor));
 				}
 			}
 		}

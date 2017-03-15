@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -20,7 +19,7 @@ namespace SmartStore
 	        if (type.AssemblyQualifiedName != null)
 	        {
 		        var strArray = type.AssemblyQualifiedName.Split(new char[] { ',' });
-		        return string.Format("{0}, {1}", strArray[0], strArray[1]);
+		        return string.Format("{0}, {1}", strArray[0].Trim(), strArray[1].Trim());
 	        }
 
 	        return null;

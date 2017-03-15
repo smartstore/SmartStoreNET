@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Localization;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Search;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
@@ -30,85 +29,58 @@ namespace SmartStore.Web.Controllers
 {
     public partial class HomeController : PublicControllerBase
 	{
-		#region Fields
-
 		private readonly ICommonServices _services;
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
+		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
+		private readonly Lazy<CatalogHelper> _catalogHelper;
 		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<IQueuedEmailService> _queuedEmailService;
 		private readonly Lazy<IEmailAccountService> _emailAccountService;
-		private readonly Lazy<ISitemapGenerator> _sitemapGenerator;
+		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
 		private readonly Lazy<CaptchaSettings> _captchaSettings;
 		private readonly Lazy<CommonSettings> _commonSettings;
-        private readonly Lazy<CustomerSettings> _customerSettings;
-
-		#endregion
-
-		#region Constructors
+		private readonly Lazy<SeoSettings> _seoSettings;
+		private readonly Lazy<CustomerSettings> _customerSettings;
 
 		public HomeController(
 			ICommonServices services,
 			Lazy<ICategoryService> categoryService,
 			Lazy<IProductService> productService,
 			Lazy<IManufacturerService> manufacturerService,
+			Lazy<ICatalogSearchService> catalogSearchService,
+			Lazy<CatalogHelper> catalogHelper,
 			Lazy<ITopicService> topicService,
 			Lazy<IQueuedEmailService> queuedEmailService,
 			Lazy<IEmailAccountService> emailAccountService,
-			Lazy<ISitemapGenerator> sitemapGenerator,
+			Lazy<IXmlSitemapGenerator> sitemapGenerator,
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
-            Lazy<CustomerSettings> customerSettings)
+			Lazy<SeoSettings> seoSettings,
+			Lazy<CustomerSettings> customerSettings)
         {
 			this._services = services;
 			this._categoryService = categoryService;
 			this._productService = productService;
 			this._manufacturerService = manufacturerService;
+			this._catalogSearchService = catalogSearchService;
+			this._catalogHelper = catalogHelper;
 			this._topicService = topicService;
 			this._queuedEmailService = queuedEmailService;
 			this._emailAccountService = emailAccountService;
 			this._sitemapGenerator = sitemapGenerator;
 			this._captchaSettings = captchaSettings;
 			this._commonSettings = commonSettings;
+			this._seoSettings = seoSettings;
             this._customerSettings = customerSettings;
         }
-        
-        #endregion
+
 
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
         public ActionResult Index()
         {
 			return View();
-        }
-
-
-        [ChildActionOnly]
-        public ActionResult ContentSlider()
-        {
-			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			var settings = _services.Settings.LoadSetting<ContentSliderSettings>();
-
-            settings.BackgroundPictureUrl = pictureService.GetPictureUrl(settings.BackgroundPictureId, 0, false);
-            
-            var slides = settings.Slides
-				.Where(s => 
-					s.LanguageCulture == _services.WorkContext.WorkingLanguage.LanguageCulture && 
-					(!s.LimitedToStores || (s.SelectedStoreIds != null && s.SelectedStoreIds.Contains(_services.StoreContext.CurrentStore.Id)))
-				)
-				.OrderBy(s => s.DisplayOrder);
-            
-            foreach (var slide in slides)
-            {
-                slide.PictureUrl = pictureService.GetPictureUrl(slide.PictureId, 0, false);
-                slide.Button1.Url = CheckButtonUrl(slide.Button1.Url);
-                slide.Button2.Url = CheckButtonUrl(slide.Button2.Url);
-                slide.Button3.Url = CheckButtonUrl(slide.Button3.Url);
-            }
-
-            settings.Slides = slides.ToList();
-
-            return PartialView(settings);
         }
 
 		public ActionResult StoreClosed()
@@ -119,13 +91,18 @@ namespace SmartStore.Web.Controllers
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult ContactUs()
 		{
-			var model = new ContactUsModel()
+            var topic = _topicService.Value.GetTopicBySystemName("ContactUs", _services.StoreContext.CurrentStore.Id);
+
+            var model = new ContactUsModel()
 			{
 				Email = _services.WorkContext.CurrentCustomer.Email,
 				FullName = _services.WorkContext.CurrentCustomer.GetFullName(),
 				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
-                DisplayPrivacyAgreement = _customerSettings.Value.DisplayPrivacyAgreementOnContactUs
-			};
+                DisplayPrivacyAgreement = _customerSettings.Value.DisplayPrivacyAgreementOnContactUs,
+                MetaKeywords = topic.GetLocalized(x => x.MetaKeywords),
+                MetaDescription = topic.GetLocalized(x => x.MetaDescription),
+                MetaTitle = topic.GetLocalized(x => x.MetaTitle),
+            };
 
 			return View(model);
 		}
@@ -194,29 +171,35 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult SitemapSeo()
+		public ActionResult SitemapSeo(int? index = null)
 		{
-			if (!_commonSettings.Value.SitemapEnabled)
+			if (!_seoSettings.Value.XmlSitemapEnabled)
 				return HttpNotFound();
+			
+			string content = _sitemapGenerator.Value.GetSitemap(index);
 
-			var roleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-			string cacheKey = ModelCacheEventConsumer.SITEMAP_XML_MODEL_KEY.FormatInvariant(_services.WorkContext.WorkingLanguage.Id, string.Join(",", roleIds), _services.StoreContext.CurrentStore.Id);
-			var sitemap = _services.Cache.Get(cacheKey, () =>
+			if (content == null)
 			{
-				return _sitemapGenerator.Value.Generate(this.Url);
-			}, TimeSpan.FromHours(2));
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Sitemap index is out of range.");
+			}
 
-			return Content(sitemap, "text/xml");
+			return Content(content, "text/xml", Encoding.UTF8);
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult Sitemap()
+		public ActionResult Sitemap(CatalogSearchQuery query)
 		{
 			if (!_commonSettings.Value.SitemapEnabled)
+			{
 				return HttpNotFound();
-
+			}
+				
 			var roleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-			string cacheKey = ModelCacheEventConsumer.SITEMAP_PAGE_MODEL_KEY.FormatInvariant(_services.WorkContext.WorkingLanguage.Id, string.Join(",", roleIds), _services.StoreContext.CurrentStore.Id);
+
+			string cacheKey = ModelCacheEventConsumer.SITEMAP_PAGE_MODEL_KEY.FormatInvariant(
+				_services.WorkContext.WorkingLanguage.Id, 
+				string.Join(",", roleIds), 
+				_services.StoreContext.CurrentStore.Id);
 
 			var result = _services.Cache.Get(cacheKey, () =>
 			{
@@ -235,27 +218,19 @@ namespace SmartStore.Web.Controllers
 
 				if (_commonSettings.Value.SitemapIncludeProducts)
 				{
-					//limit product to 200 until paging is supported on this page
-					IList<int> filterableSpecificationAttributeOptionIds = null;
+					// Limit product to 200 until paging is supported on this page
+					query = query.Slice(0, 200).SortBy(ProductSortingEnum.Relevance);
+					var searchResult = _catalogSearchService.Value.Search(query);
 
-					var productSearchContext = new ProductSearchContext();
-
-					productSearchContext.OrderBy = ProductSortingEnum.Position;
-					productSearchContext.PageSize = 200;
-					productSearchContext.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
-					productSearchContext.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
-					productSearchContext.VisibleIndividuallyOnly = true;
-
-					var products = _productService.Value.SearchProducts(productSearchContext);
-
-					model.Products = products.Select(product => new ProductOverviewModel()
+					var settings = _catalogHelper.Value.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
 					{
-						Id = product.Id,
-						Name = product.GetLocalized(x => x.Name).EmptyNull(),
-						ShortDescription = product.GetLocalized(x => x.ShortDescription),
-						SeName = product.GetSeName(),
-					}).ToList();
+						x.MapPrices = false;
+						x.MapPictures = false;
+					});
+
+					model.Products = _catalogHelper.Value.MapProductSummaryModel(searchResult.Hits, settings);
 				}
+
 				if (_commonSettings.Value.SitemapIncludeTopics)
 				{
 					var topics = _topicService.Value.GetAllTopics(_services.StoreContext.CurrentStore.Id)
@@ -277,36 +252,5 @@ namespace SmartStore.Web.Controllers
 
 			return View(result);
 		}
-
-        #region helper functions
-        
-        private string CheckButtonUrl(string url) 
-        {
-            if (!String.IsNullOrEmpty(url))
-            {
-				if (url.StartsWith("//") || url.StartsWith("/") || url.StartsWith("http://") || url.StartsWith("https://"))
-                {
-                    //  //www.domain.de/dir
-                    //  http://www.domain.de/dir
-                    // nothing needs to be done
-					return url;
-                }
-                else if (url.StartsWith("~/"))
-                {
-                    //  ~/directory
-                    return Url.Content(url);
-                }
-                else
-                {
-                    //  directory
-                    return Url.Content("~/" + url);
-                }
-            }
-
-            return url.EmptyNull();
-        }
-        
-        #endregion helper functions
-
     }
 }

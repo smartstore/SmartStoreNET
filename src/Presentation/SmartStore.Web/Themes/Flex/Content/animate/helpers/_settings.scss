@@ -1,0 +1,164 @@
+/////////////////////////////////////////////////////////
+// Animation Default Settings                          //
+/////////////////////////////////////////////////////////
+
+
+// Base module settings
+$base-duration					: 1s !default;           // used in 1-base module
+$base-origin 					: top center !default;
+$base-degrees 					: 30deg !default;        // used in lightspeed & special modules
+$base-fill-mode					: both !default;
+$base-iteration-count			: infinite !default;
+
+$base-timing-function-in		: ease-in !default;
+$base-timing-function-out		: ease-out !default;
+$base-timing-function-in-out	: ease-in-out !default;
+
+$base-distance					: 10px !default; 		// used in fade, shake and bounce modules
+$base-distance-big				: 1000px !default;       // used in fadeBig and bounce modules
+
+
+// Rotate module settings
+$rotate-degrees 				: 90deg !default;
+$rotate-degrees-max 			: 200deg !default;
+$rotate-origin 					: center center !default;
+
+// Flipper module settings
+$flipper-perspective			: 400px !default;
+$flipper-translate 				: 150px !default;
+$flipper-degrees 				: 10deg !default;
+$flipper-degrees-max 			: 90deg !default;
+
+
+// Hinge module settings
+$hinge-origin 					: top left !default;
+$hinge-degrees-max 				: 80deg !default;
+$hinge-translate 				: 700px !default;
+
+
+//==================================================================================================//
+// Module loading                                                                                   //
+//==================================================================================================//
+// To include an animation module in the compiled css file, simply set it's attribute below to true //
+// (all modules set to false will not be included)                                                  //
+// The idea here is to only load the animations you want to use on a per project basis              //
+// This helps keep the compiled css file at its leanest                                             //
+//==================================================================================================//
+// Hugely influenced and inspired by @csswizardry's inuit.css _vars.scss file                       //
+//==================================================================================================//
+
+// Fade Enter
+$use-fadeIn 			:	false !default;
+$use-fadeInUp 			:	false !default;
+$use-fadeInUpBig 		:	false !default;
+$use-fadeInDown 		:	false !default;
+$use-fadeInDownBig 		:	false !default;
+$use-fadeInLeft 		:	false !default;
+$use-fadeInLeftBig 		:	false !default;
+$use-fadeInRight 		:	false !default;
+$use-fadeInRightBig 	:	false !default;
+
+
+// Fade Exit
+$use-fadeOut			:   false !default;
+$use-fadeOutUp			:	false !default;
+$use-fadeOutUpBig   	:	false !default;
+$use-fadeOutDown		:	false !default;
+$use-fadeOutDownBig 	:	false !default;
+$use-fadeOutLeft		:	false !default;
+$use-fadeOutLeftBig 	:	false !default;
+$use-fadeOutRight		:	false !default;
+$use-fadeOutRightBig	:	false !default;
+
+
+// Bounce Enter
+$use-bounceIn			:	false !default;
+$use-bounceInUp			: 	false !default;
+$use-bounceInDown 		: 	false !default;
+$use-bounceInLeft 		: 	false !default;
+$use-bounceInRight 		: 	false !default;
+
+
+// Bounce Exit
+$use-bounceOut			:	false !default;
+$use-bounceOutUp		: 	false !default;
+$use-bounceOutDown 		: 	false !default;
+$use-bounceOutLeft 		: 	false !default;
+$use-bounceOutRight 	: 	false !default;
+
+
+
+// Rotate Enter
+$use-rotateIn 			:	false !default;
+$use-rotateInUpLeft 	: 	false !default;
+$use-rotateInUpRight 	: 	false !default;
+$use-rotateInDownLeft 	: 	false !default;
+$use-rotateInDownRight 	: 	false !default;
+
+
+// Rotate Exit
+$use-rotateOut 			:	false !default;
+$use-rotateOutUpLeft 	: 	false !default;
+$use-rotateOutUpRight 	: 	false !default;
+$use-rotateOutDownLeft 	: 	false !default;
+$use-rotateOutDownRight : 	false !default;
+
+
+// Slide Enter
+$use-slideIn			:   false !default;
+$use-slideInUp			:   false !default;
+$use-slideInDown		:   false !default;
+$use-slideInLeft		:   false !default;
+$use-slideInRight		:   false !default;
+
+// Slide Exit
+$use-slideOut			:   false !default;
+$use-slideOutUp			:   false !default;
+$use-slideOutDown		:   false !default;
+$use-slideOutLeft		:   false !default;
+$use-slideOutRight		:   false !default;
+
+// Flippers
+$use-flip				:	false !default;
+$use-flipInX			:	false !default;
+$use-flipInY			:	false !default;
+$use-flipOutX			:	false !default;
+$use-flipOutY			:	false !default;
+
+
+// Lightspeed
+$use-lightSpeedIn 		:	false !default;
+$use-lightSpeedOut 		:	false !default;
+
+
+// Attention Seekers
+$use-bounce				:	false !default;
+$use-flash				:	false !default;
+$use-pulse				:	false !default;
+$use-wiggle				:	false !default;
+$use-swing				:	false !default;
+$use-shake				:	false !default;
+$use-tada				:	false !default;
+$use-wobble				:	false !default;
+
+
+// Special
+$use-hinge				:	false !default;
+$use-rollIn				: 	false !default;
+$use-rollOut 			:	false !default;
+
+
+// Zoom In
+$use-zoomIn 			:	false !default;
+$use-zoomInDown 		:	false !default;
+$use-zoomInLeft 		:	false !default;
+$use-zoomInRight 		:	false !default;
+$use-zoomInUp 			:	false !default;
+
+
+// Zoom Out
+$use-zoomOut			:	false !default;
+$use-zoomOutDown		:	false !default;
+$use-zoomOutLeft		:	false !default;
+$use-zoomOutRight		:	false !default;
+$use-zoomOutUp			:	false !default;

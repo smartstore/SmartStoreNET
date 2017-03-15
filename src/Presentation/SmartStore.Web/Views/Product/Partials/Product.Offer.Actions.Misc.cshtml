@@ -1,0 +1,141 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Orders;
+
+@{
+	var miscActions = new Dictionary<string, RouteValueDictionary>();
+
+	if (Model.HasSampleDownload)
+	{
+		miscActions["sample"] = new RouteValueDictionary(new
+		{
+			title = T("Products.DownloadSample").Text,
+			icon = "fa fa-download",
+			@class = "action-download-sample",
+			href = Url.Action("Sample", "Download", new { id = Model.Id })
+		});
+	}
+
+	if (!Model.AddToCart.DisableWishlistButton)
+	{
+		miscActions["wishlist"] = new RouteValueDictionary(new
+		{
+			title = T("ShoppingCart.AddToWishlist").Text,
+			icon = "fa fa-heart-o",
+			@class = "ajax-cart-link action-add-to-wishlist",
+			href = Url.Action("AddProduct", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })
+		});
+	}
+
+	if (Model.AskQuestionEnabled && !Model.ProductPrice.CallForPrice)
+	{
+		miscActions["ask"] = new RouteValueDictionary(new
+		{
+			title = T("Products.AskQuestion").Text,
+			icon = "fa fa-envelope",
+			@class = "action-ask-question",
+			href = Url.Action("AskQuestion", new { id = Model.Id })
+		});
+	}
+
+	if (Model.TellAFriendEnabled)
+	{
+		miscActions["tell"] = new RouteValueDictionary(new
+		{
+			title = T("Products.EmailAFriend").Text,
+			icon = "fa fa-bullhorn",
+			@class = "action-tell",
+			href = Url.Action("EmailAFriend", new { id = Model.Id })
+		});
+	}
+
+	if (Model.CompareEnabled)
+	{
+		miscActions["compare"] = new RouteValueDictionary(new
+		{
+			title = T("Products.Compare.AddToCompareList").Text,
+			icon = "fa fa-retweet",
+			@class = "action-compare ajax-cart-link",
+			href = Url.Action("AddProductToCompare", "Catalog", new { id = Model.Id })
+		});
+	}
+
+	if (miscActions.Count == 0)
+	{
+		return;
+	}
+}
+
+<div class="col-xs flex-grow-0">
+	@if (miscActions.Count == 1)
+	{
+		@RenderActionLink(miscActions.First().Key, miscActions.First().Value, false)
+	}
+	else
+	{
+		<div class="btn-group">
+			<button type="button" class="btn btn-warning btn-lg btn-icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<i class="fa fa-@miscActions.First().Value["icon"]"></i>
+			</button>
+			<div class="dropdown-menu dropdown-menu-right">
+				@foreach (var kvp in miscActions)
+				{
+					var action = kvp.Value;
+					@RenderActionLink(kvp.Key, action, true)
+					if (kvp.Key == "wishlist")
+					{
+						<div class="dropdown-divider"></div>
+					}
+				}
+			</div>
+		</div>
+	}
+</div>
+
+@helper RenderActionLink(string key, RouteValueDictionary action, bool isDropdownItem) {{
+	var isSpecial = key == "wishlist" || key == "compare";
+	if (isDropdownItem)
+	{
+		if (isSpecial)
+		{
+			<a data-href='@action["href"]' @Html.Attr("data-form-selector", "#pd-form", key == "wishlist")
+				href="#"
+				class="dropdown-item @action["class"]"
+				rel="nofollow"
+				data-type="@key"
+				data-action="add">
+				<i class="@action["icon"]"></i>
+				<span>@action["title"]</span>
+			</a>
+		}
+		else
+		{
+			<a class="dropdown-item @(action["class"])" href="@action["href"]" rel="nofollow">
+				<i class="@action["icon"]"></i>
+				<span>@action["title"]</span>
+			</a>
+		}
+	}
+	else
+	{
+		if (isSpecial)
+		{
+			<a data-href="@action["href"]" @Html.Attr("data-form-selector", "#pd-form", key == "wishlist")
+			   href="#" 
+			   class="btn btn-warning btn-lg btn-icon @(action["class"])" 
+			   rel="nofollow"
+			   data-type="@key"
+			   data-action="add" 
+			   title="@action["title"]">
+				<i class="@action["icon"]"></i>
+			</a>
+		}
+		else
+		{
+			<a href="@action["href"]" class="btn btn-warning btn-lg btn-icon @(action["class"])" rel="nofollow" title="@action["title"]">
+				<i class="@action["icon"]"></i>
+			</a>
+		}
+	}
+}}

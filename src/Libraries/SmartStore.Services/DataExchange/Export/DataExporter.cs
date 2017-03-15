@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
@@ -25,11 +26,11 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export.Deployment;
 using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
@@ -47,8 +48,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private readonly ICommonServices _services;
 		private readonly IDbContext _dbContext;
+		private readonly HttpContextBase _httpContext;
 		private readonly Lazy<IPriceFormatter> _priceFormatter;
-		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
 		private readonly Lazy<IExportProfileService> _exportProfileService;
         private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
 		private readonly Lazy<ILanguageService> _languageService;
@@ -75,6 +76,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<IEmailSender> _emailSender;
 		private readonly Lazy<IDeliveryTimeService> _deliveryTimeService;
 		private readonly Lazy<IQuantityUnitService> _quantityUnitService;
+		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
 
 		private readonly Lazy<IRepository<Customer>>_customerRepository;
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
@@ -84,12 +86,13 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
 		private readonly Lazy<CatalogSettings> _catalogSettings;
+		private readonly Lazy<LocalizationSettings> _localizationSettings;
 
 		public DataExporter(
 			ICommonServices services,
 			IDbContext dbContext,
-            Lazy<IPriceFormatter> priceFormatter,
-			Lazy<IDateTimeHelper> dateTimeHelper,
+			HttpContextBase httpContext,
+			Lazy<IPriceFormatter> priceFormatter,
 			Lazy<IExportProfileService> exportProfileService,
 			Lazy<ILocalizedEntityService> localizedEntityService,
 			Lazy<ILanguageService> languageService,
@@ -116,18 +119,20 @@ namespace SmartStore.Services.DataExchange.Export
             Lazy<IEmailSender> emailSender,
 			Lazy<IDeliveryTimeService> deliveryTimeService,
 			Lazy<IQuantityUnitService> quantityUnitService,
-            Lazy<IRepository<Customer>> customerRepository,
+			Lazy<ICatalogSearchService> catalogSearchService,
+			Lazy<IRepository<Customer>> customerRepository,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Order>> orderRepository,
 			Lazy<MediaSettings> mediaSettings,
 			Lazy<ContactDataSettings> contactDataSettings,
 			Lazy<CustomerSettings> customerSettings,
-			Lazy<CatalogSettings> catalogSettings)
+			Lazy<CatalogSettings> catalogSettings,
+			Lazy<LocalizationSettings> localizationSettings)
 		{
 			_services = services;
 			_dbContext = dbContext;
+			_httpContext = httpContext;
 			_priceFormatter = priceFormatter;
-			_dateTimeHelper = dateTimeHelper;
 			_exportProfileService = exportProfileService;
 			_localizedEntityService = localizedEntityService;
 			_languageService = languageService;
@@ -154,6 +159,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_emailSender = emailSender;
 			_deliveryTimeService = deliveryTimeService;
 			_quantityUnitService = quantityUnitService;
+			_catalogSearchService = catalogSearchService;
 
 			_customerRepository = customerRepository;
 			_subscriptionRepository = subscriptionRepository;
@@ -163,6 +169,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_contactDataSettings = contactDataSettings;
 			_customerSettings = customerSettings;
 			_catalogSettings = catalogSettings;
+			_localizationSettings = localizationSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -279,7 +286,7 @@ namespace SmartStore.Services.DataExchange.Export
 			var limit = (ctx.IsPreview ? PageSize : Math.Max(ctx.Request.Profile.Limit, 0));
 			var recordsPerSegment = (ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0));
 			var totalCount = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
-
+			
 			switch (ctx.Request.Provider.Value.EntityType)
 			{
 				case ExportEntityType.Product:
@@ -289,18 +296,7 @@ namespace SmartStore.Services.DataExchange.Export
 						entities =>
 						{
 							// load data behind navigation properties for current queue in one go
-							ctx.ProductExportContext = new ProductExportContext(entities,
-								x => _productAttributeService.Value.GetProductVariantAttributesByProductIds(x, null),
-								x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
-								x => _productService.Value.GetTierPricesByProductIds(x, (ctx.Projection.CurrencyId ?? 0) != 0 ? ctx.ContextCustomer : null, ctx.Store.Id),
-								x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, true),
-								x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
-								x => _productService.Value.GetProductPicturesByProductIds(x),
-								x => _productService.Value.GetProductTagsByProductIds(x),
-								x => _productService.Value.GetAppliedDiscountsByProductIds(x),
-								x => _productService.Value.GetProductSpecificationAttributesByProductIds(x),
-								x => _productService.Value.GetBundleItemsByProductIds(x, true)
-							);
+							ctx.ProductExportContext = CreateProductExportContext(entities, ctx.ContextCustomer, ctx.Store.Id);
 						},
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalCount
@@ -315,6 +311,7 @@ namespace SmartStore.Services.DataExchange.Export
 						{
 							ctx.OrderExportContext = new OrderExportContext(entities,
 								x => _customerService.GetCustomersByIds(x),
+								x => _genericAttributeService.Value.GetAttributesForEntity(x, "Customer"),
 								x => _customerService.GetRewardPointsHistoriesByCustomerIds(x),
 								x => _addressService.Value.GetAddressByIds(x),
 								x => _orderService.Value.GetOrderItemsByOrderIds(x),
@@ -394,7 +391,9 @@ namespace SmartStore.Services.DataExchange.Export
 		private bool CallProvider(DataExporterContext ctx, string streamId, string method, string path)
 		{
 			if (method != "Execute" && method != "OnExecuted")
-				throw new SmartException("Unknown export method {0}.".FormatInvariant(method.NaIfEmpty()));
+			{
+				throw new SmartException($"Unknown export method {method.NaIfEmpty()}.");
+			}
 
 			try
 			{
@@ -423,7 +422,7 @@ namespace SmartStore.Services.DataExchange.Export
 						using (_rwLock.GetWriteLock())
 						using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
 						{
-							ctx.Log.Info("Creating file {0}.".FormatInvariant(path));
+							ctx.Log.Info($"Creating file {path}.");
 							ctx.ExecuteContext.DataStream.CopyTo(fileStream);
 						}
 					}
@@ -432,7 +431,7 @@ namespace SmartStore.Services.DataExchange.Export
 			catch (Exception exception)
 			{
 				ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
-				ctx.Log.ErrorFormat(exception, "The provider failed at the {0} method.", method);
+				ctx.Log.ErrorFormat(exception, $"The provider failed at the {method.NaIfEmpty()} method.");
 				ctx.Result.LastError = exception.ToString();
 			}
 			finally
@@ -601,47 +600,76 @@ namespace SmartStore.Services.DataExchange.Export
 
 		#region Getting data
 
+		public virtual ProductExportContext CreateProductExportContext(
+			IEnumerable<Product> products = null,
+			Customer customer = null,
+			int? storeId = null)
+		{
+			if (customer == null)
+				customer = _services.WorkContext.CurrentCustomer;
+
+			if (!storeId.HasValue)
+				storeId = _services.StoreContext.CurrentStore.Id;
+
+			var context = new ProductExportContext(products,
+				x => _productAttributeService.Value.GetProductVariantAttributesByProductIds(x, null),
+				x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
+				x => _productService.Value.GetProductSpecificationAttributesByProductIds(x),
+				x => _productService.Value.GetTierPricesByProductIds(x, customer, storeId.GetValueOrDefault()),
+				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, true),
+				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
+				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
+				x => _productService.Value.GetBundleItemsByProductIds(x, true),
+				x => _pictureService.Value.GetPicturesByProductIds(x, withBlobs: true),
+				x => _productService.Value.GetProductPicturesByProductIds(x),
+				x => _productService.Value.GetProductTagsByProductIds(x)
+			);
+
+			return context;
+		}
+
 		private IQueryable<Product> GetProductQuery(DataExporterContext ctx, int skip, int take)
 		{
 			IQueryable<Product> query = null;
 
 			if (ctx.Request.ProductQuery == null)
 			{
-				var searchContext = new ProductSearchContext
-				{
-					OrderBy = ProductSortingEnum.CreatedOn,
-					ProductIds = ctx.Request.EntitiesToExport,
-					StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
-					VisibleIndividuallyOnly = true,
-					PriceMin = ctx.Filter.PriceMinimum,
-					PriceMax = ctx.Filter.PriceMaximum,
-					IsPublished = ctx.Filter.IsPublished,
-					WithoutCategories = ctx.Filter.WithoutCategories,
-					WithoutManufacturers = ctx.Filter.WithoutManufacturers,
-					ManufacturerId = ctx.Filter.ManufacturerId ?? 0,
-					FeaturedProducts = ctx.Filter.FeaturedProducts,
-					ProductType = ctx.Filter.ProductType,
-					ProductTagId = ctx.Filter.ProductTagId ?? 0,
-					IdMin = ctx.Filter.IdMinimum ?? 0,
-					IdMax = ctx.Filter.IdMaximum ?? 0,
-					AvailabilityMinimum = ctx.Filter.AvailabilityMinimum,
-					AvailabilityMaximum = ctx.Filter.AvailabilityMaximum
-				};
+				var f = ctx.Filter;
+				var createdFrom = f.CreatedFrom.HasValue ? (DateTime?)_services.DateTimeHelper.ConvertToUtcTime(f.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone) : null;
+				var createdTo = f.CreatedTo.HasValue ? (DateTime?)_services.DateTimeHelper.ConvertToUtcTime(f.CreatedTo.Value, _services.DateTimeHelper.CurrentTimeZone) : null;
 
-				if (!ctx.Filter.IsPublished.HasValue)
-					searchContext.ShowHidden = true;
+				var searchQuery = new CatalogSearchQuery()
+					.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : f.StoreId)
+					.VisibleIndividuallyOnly(true)
+					.PriceBetween(f.PriceMinimum, f.PriceMaximum)
+					.WithStockQuantity(f.AvailabilityMinimum, f.AvailabilityMaximum)
+					.CreatedBetween(createdFrom, createdTo);
 
-				if (ctx.Filter.CategoryIds != null && ctx.Filter.CategoryIds.Length > 0)
-					searchContext.CategoryIds = ctx.Filter.CategoryIds.ToList();
+				if (f.IsPublished.HasValue)
+					searchQuery = searchQuery.PublishedOnly(f.IsPublished.Value);
 
-				if (ctx.Filter.CreatedFrom.HasValue)
-					searchContext.CreatedFromUtc = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				if (f.ProductType.HasValue)
+					searchQuery = searchQuery.IsProductType(f.ProductType.Value);
 
-				if (ctx.Filter.CreatedTo.HasValue)
-					searchContext.CreatedToUtc = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				if (f.ProductTagId.HasValue)
+					searchQuery = searchQuery.WithProductTagIds(f.ProductTagId.Value);
 
-				query = _productService.Value.PrepareProductSearchQuery(searchContext);
+				if (f.WithoutManufacturers.HasValue)
+					searchQuery = searchQuery.HasAnyManufacturer(!f.WithoutManufacturers.Value);
+				else if (f.ManufacturerId.HasValue)
+					searchQuery = searchQuery.WithManufacturerIds(f.FeaturedProducts, f.ManufacturerId.Value);
 
+				if (f.WithoutCategories.HasValue)
+					searchQuery = searchQuery.HasAnyCategory(!f.WithoutCategories.Value);
+				else if (f.CategoryIds != null && f.CategoryIds.Length > 0)
+					searchQuery = searchQuery.WithCategoryIds(f.FeaturedProducts, f.CategoryIds);
+
+				if (ctx.Request.EntitiesToExport.Count > 0)
+					searchQuery = searchQuery.WithProductIds(ctx.Request.EntitiesToExport.ToArray());
+				else
+					searchQuery = searchQuery.WithProductId(f.IdMinimum, f.IdMaximum);
+
+				query = _catalogSearchService.Value.PrepareQuery(searchQuery);
 				query = query.OrderByDescending(x => x.CreatedOnUtc);
 			}
 			else
@@ -680,16 +708,18 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					if (ctx.Projection.NoGroupedProducts && !ctx.IsPreview)
 					{
-						var associatedSearchContext = new ProductSearchContext
-						{
-							OrderBy = ProductSortingEnum.Position,
-							PageSize = int.MaxValue,
-							StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
-							VisibleIndividuallyOnly = ctx.Projection.OnlyIndividuallyVisibleAssociated,
-							ParentGroupedProductId = product.Id
-						};
+						var searchQuery = new CatalogSearchQuery()
+							.VisibleIndividuallyOnly(ctx.Projection.OnlyIndividuallyVisibleAssociated)
+							.HasParentGroupedProductId(product.Id)
+							.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
 
-						foreach (var associatedProduct in _productService.Value.SearchProducts(associatedSearchContext))
+						if (ctx.Filter.IsPublished.HasValue)
+							searchQuery = searchQuery.PublishedOnly(ctx.Filter.IsPublished.Value);
+
+						var query = _catalogSearchService.Value.PrepareQuery(searchQuery);
+						var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();
+
+						foreach (var associatedProduct in associatedProducts)
 						{
 							if (!ctx.EntityIdsPerSegment.Contains(associatedProduct.Id))
 							{
@@ -719,8 +749,8 @@ namespace SmartStore.Services.DataExchange.Export
 			var query = _orderService.Value.GetOrders(
 				ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId,
 				ctx.Projection.CustomerId ?? 0,
-				ctx.Filter.CreatedFrom.HasValue ? (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _dateTimeHelper.Value.CurrentTimeZone) : null,
-				ctx.Filter.CreatedTo.HasValue ? (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _dateTimeHelper.Value.CurrentTimeZone) : null,
+				ctx.Filter.CreatedFrom.HasValue ? (DateTime?)_services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone) : null,
+				ctx.Filter.CreatedTo.HasValue ? (DateTime?)_services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _services.DateTimeHelper.CurrentTimeZone) : null,
 				ctx.Filter.OrderStatusIds,
 				ctx.Filter.PaymentStatusIds,
 				ctx.Filter.ShippingStatusIds,
@@ -845,13 +875,13 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Filter.LastActivityFrom.HasValue)
 			{
-				var activityFrom = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.LastActivityFrom.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				var activityFrom = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.LastActivityFrom.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => activityFrom <= x.LastActivityDateUtc);
 			}
 
 			if (ctx.Filter.LastActivityTo.HasValue)
 			{
-				var activityTo = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.LastActivityTo.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				var activityTo = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.LastActivityTo.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => activityTo >= x.LastActivityDateUtc);
 			}
 
@@ -920,13 +950,13 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Filter.CreatedFrom.HasValue)
 			{
-				var createdFrom = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				var createdFrom = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => createdFrom <= x.CreatedOnUtc);
 			}
 
 			if (ctx.Filter.CreatedTo.HasValue)
 			{
-				var createdTo = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				var createdTo = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => createdTo >= x.CreatedOnUtc);
 			}
 
@@ -1226,7 +1256,8 @@ namespace SmartStore.Services.DataExchange.Export
 							ctx.Categories = allCategories.ToDictionary(x => x.Id);
 						}
 
-						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
+						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product ||
+							ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
 						{
 							ctx.Countries = _countryService.Value.GetAllCountries(true).ToDictionary(x => x.Id, x => x);
 						}

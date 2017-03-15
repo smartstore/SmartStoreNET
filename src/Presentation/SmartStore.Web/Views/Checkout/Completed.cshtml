@@ -3,13 +3,13 @@
 @using SmartStore.Web.Models.Checkout;
 @using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_Checkout.cshtml";
+    Layout = "_Checkout";
 
     //title
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Complete })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Complete }); }
 }
 
 <div class="page checkout-completed-page">
@@ -24,7 +24,7 @@
     
     <div class="page-body checkout-data">
         <div class="order-completed">
-            @Html.Widget("checkout_completed_top")
+            @{ Html.RenderWidget("checkout_completed_top"); }
             <div class="body">
                 <p>
                     @T("Checkout.OrderNumber"): 
@@ -36,12 +36,12 @@
 					<i class="fa fa-fw fa-list-alt"></i>
 					@T("Checkout.PlacedOrderDetails")
 				</a>
-                <a href="@Url.RouteUrl("HomePage")" class="btn order-completed-continue-button">
+                <a href="@Url.RouteUrl("HomePage")" class="btn btn-secondary order-completed-continue-button">
                     <i class="fa fa-fw fa-home"></i>
                     @T("Checkout.Continue")
                 </a>
             </p>
-            @Html.Widget("checkout_completed_bottom")
+            @{ Html.RenderWidget("checkout_completed_bottom"); }
         </div>
     </div>
 </div>

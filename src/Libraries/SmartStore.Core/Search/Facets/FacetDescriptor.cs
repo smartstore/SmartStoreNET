@@ -5,32 +5,51 @@ using System.Text;
 
 namespace SmartStore.Core.Search.Facets
 {
+	public enum FacetSorting
+	{
+		HitsDesc,
+		ValueAsc,
+		DisplayOrder
+	}
+
 	/// <summary>
 	/// A filter and its selection to be applied, e.g. Color=Red.
 	/// </summary>
 	[Serializable]
 	public class FacetDescriptor
 	{
-		public enum ValueOperator
-		{
-			Or,
-			And	
-		}
-
-		public enum Sorting
-		{
-			HitsDesc,
-			ValueAsc
-		}
-
-		private readonly List<string> _selectedValues;
+		private readonly List<FacetValue> _values;
 
 		public FacetDescriptor(string key)
 		{
 			Guard.NotEmpty(key, nameof(key));
 
-			_selectedValues = new List<string>();
+			_values = new List<FacetValue>();
 			Key = key;
+		}
+
+		/// <summary>
+		/// Gets the string resource key for a facet group kind
+		/// </summary>
+		/// <param name="kind">Facet group kind</param>
+		/// <returns>Resource key</returns>
+		public static string GetLabelResourceKey(FacetGroupKind kind)
+		{
+			switch (kind)
+			{
+				case FacetGroupKind.Category:
+					return "Search.Facet.Category";
+				case FacetGroupKind.Brand:
+					return "Search.Facet.Manufacturer";
+				case FacetGroupKind.Price:
+					return "Search.Facet.Price";
+				case FacetGroupKind.Rating:
+					return "Search.Facet.Rating";
+				case FacetGroupKind.DeliveryTime:
+					return "Search.Facet.DeliveryTime";
+				default:
+					return null;
+			}
 		}
 
 		/// <summary>
@@ -43,30 +62,48 @@ namespace SmartStore.Core.Search.Facets
 		}
 
 		/// <summary>
-		/// Gets the initially selected values for this facet.
+		/// Gets or sets the label.
 		/// </summary>
-		public ICollection<string> SelectedValues
+		public string Label
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets the values for this facet.
+		/// </summary>
+		public ICollection<FacetValue> Values
 		{
 			get
 			{
-				return _selectedValues;
+				return _values;
 			}
 		}
 
 		/// <summary>
-		/// Adds a selection value.
+		/// Adds a facet value.
 		/// </summary>
-		/// <param name="value">Value to select</param>
-		public FacetDescriptor AddSelectedValue(params string[] values)
+		/// <param name="value">Facet value</param>
+		public FacetDescriptor AddValue(params FacetValue[] values)
 		{
-			_selectedValues.AddRange(values);
+			_values.AddRange(values);
 			return this;
 		}
 
 		/// <summary>
 		/// Gets or sets the boolean value operator.
 		/// </summary>
-		public ValueOperator Operator
+		//public ValueOperator Operator
+		//{
+		//	get;
+		//	set;
+		//}
+
+		/// <summary>
+		/// Gets or sets whether selection of multiple values is allowed.
+		/// </summary>
+		public bool IsMultiSelect
 		{
 			get;
 			set;
@@ -93,7 +130,16 @@ namespace SmartStore.Core.Search.Facets
 		/// <summary>
 		/// Gets or sets the result choices sort order.
 		/// </summary>
-		public Sorting OrderBy
+		public FacetSorting OrderBy
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the display order.
+		/// </summary>
+		public int DisplayOrder
 		{
 			get;
 			set;
@@ -104,8 +150,7 @@ namespace SmartStore.Core.Search.Facets
 			var sb = new StringBuilder();
 
 			sb.Append("FieldName: ").Append(Key).Append(" ");
-			sb.Append("Values: " + string.Join(",", _selectedValues.ToArray())).Append(" ");
-			sb.Append("op: " + Operator.ToString()).Append(" ");
+			sb.Append("Values: " + string.Join(",", _values.Select(x => x.Value.ToString()))).Append(" ");
 
 			return sb.ToString();
 		}

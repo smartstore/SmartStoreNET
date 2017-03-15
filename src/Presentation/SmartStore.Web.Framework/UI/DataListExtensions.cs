@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SmartStore.Core.Infrastructure;
+using SmartStore.Web.Framework.Theming;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
@@ -10,24 +12,28 @@ namespace SmartStore.Web.Framework.UI
     public static class DataListExtensions
     {
         public static IHtmlString DataList<T>(this HtmlHelper helper, IEnumerable<T> items, int columns,
-            Func<T, HelperResult> template, int gridColumns = 24)
+            Func<T, HelperResult> template, int gridColumns = 12)
             where T : class
         {
             if (items == null)
                 return new HtmlString("");
-
+            
+            var spanClassPrefix = "col-md-";
+            var rowClass = "row";
+            
             Guard.Against<ArgumentOutOfRangeException>(gridColumns % columns != 0, "Wrong column count. Ensure that gridColumns is divisible by columns.");
 
             var sb = new StringBuilder();
             sb.Append("<div class='data-list data-list-grid'>");
 
             int cellIndex = 0;
-            string spanClass = String.Format("span{0}", gridColumns / columns);
+
+            string spanClass = spanClassPrefix + (gridColumns / columns).ToString();
 
             foreach (T item in items)
             {
                 if (cellIndex == 0)
-                    sb.Append("<div class='data-list-row row-fluid'>");
+                    sb.Append("<div class='data-list-row " + rowClass + "'>");
 
                 sb.Append("<div class='{0} data-list-item equalized-column' data-equalized-deep='true'>".FormatInvariant(spanClass));
                 sb.Append(template(item).ToHtmlString());

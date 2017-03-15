@@ -9,9 +9,6 @@ using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Services.Security
 {
-    /// <summary>
-    /// ACL service
-    /// </summary>
     public partial class AclService : IAclService
     {
         #region Constants
@@ -77,7 +74,7 @@ namespace SmartStore.Services.Security
 
             _aclRecordRepository.Delete(aclRecord);
 
-            //cache
+            // cache
             _cacheManager.RemoveByPattern(ACLRECORD_PATTERN_KEY);
         }
 

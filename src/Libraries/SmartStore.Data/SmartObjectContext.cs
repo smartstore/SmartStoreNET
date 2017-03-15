@@ -13,13 +13,13 @@ using SmartStore.Data.Setup;
 
 namespace SmartStore.Data
 {	
-	/// <summary>
-    /// Object context
-    /// </summary>
 	public class SmartObjectContext : ObjectContextBase
     {
 		static SmartObjectContext()
 		{
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+
 			var initializer = new MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>
 			{
 				TablesToCheck = new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem" }

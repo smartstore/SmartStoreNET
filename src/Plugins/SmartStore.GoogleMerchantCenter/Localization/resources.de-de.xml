@@ -22,6 +22,15 @@
 </ul>]]>
 		</Value>
 	</LocaleResource>
+  <LocaleResource Name="GeneralSettings">
+    <Value>Allgemeine Einstellungen</Value>
+  </LocaleResource>
+  <LocaleResource Name="DefaultValueSettings">
+    <Value>Standardwerte</Value>
+  </LocaleResource>
+  <LocaleResource Name="DefaultValueSettingsNote">
+    <Value>Standardwerte werden exportiert, wenn die entsprechende Information für das jeweilge Produkt nicht gepflegt wurde. Für einzelne Produkte können diese Werte sowohl in der Plugin-Konfiguration als auch direkt auf der Bearbeitungsseite des Produktes eingegeben werden.</Value>
+  </LocaleResource>
 	<LocaleResource Name="MissingDefaultCategory">
 		<Value>Standard-Google-Kategorie fehlt</Value>
 	</LocaleResource>
@@ -29,7 +38,7 @@
 		<Value>Standard-Google-Kategorie</Value>
 	</LocaleResource>
 	<LocaleResource Name="DefaultGoogleCategory.Hint">
-		<Value>Wird verwendet, falls auf Produktebene keine Kategorie angegeben ist.</Value>
+		<Value>Wird verwendet, falls auf Produktebene keine Google-Kategorie angegeben ist.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductName">
 		<Value>Produkt</Value>

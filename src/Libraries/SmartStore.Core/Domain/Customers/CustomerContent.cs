@@ -6,8 +6,9 @@ namespace SmartStore.Core.Domain.Customers
     /// <summary>
     /// Represents a customer generated content
     /// </summary>
-    public partial class CustomerContent : BaseEntity
-    {
+    public partial class CustomerContent : BaseEntity, IAuditable
+
+	{
         /// <summary>
         /// Gets or sets the customer identifier
         /// </summary>

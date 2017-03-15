@@ -550,12 +550,12 @@
             var dfd = $.Deferred();
             if ($.support.transition && node.hasClass('fade')) {
                 node.bind(
-                    $.support.transition.end,
+                    $.support.transitionEnd,
                     function (e) {
                         // Make sure we don't respond to other transitions events
                         // in the container element, e.g. from button elements:
                         if (e.target === node[0]) {
-                            node.unbind($.support.transition.end);
+                        	node.unbind($.support.transitionEnd);
                             dfd.resolveWith(node);
                         }
                     }

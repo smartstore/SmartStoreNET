@@ -71,28 +71,39 @@ namespace SmartStore.Web.Framework.UI
             renderer.ViewData = this.HtmlHelper.ViewData;
         }
 
-        public TBuilder WithRenderer<T>()
-            where T : ComponentRenderer<TComponent>
-        {
-            return this.WithRenderer(typeof(T));
-        }
+		public TBuilder WithRenderer(ComponentRenderer<TComponent> instance)
+		{
+			Guard.NotNull(instance, nameof(instance));
 
-        public TBuilder WithRenderer<T>(ComponentRenderer<TComponent> instance) 
+			return this.WithRenderer<ComponentRenderer<TComponent>>(instance);
+		}
+
+		public TBuilder WithRenderer<T>(ComponentRenderer<TComponent> instance) 
             where T : ComponentRenderer<TComponent>
         {
             Guard.NotNull(instance, nameof(instance));
-            return this.WithRenderer(typeof(T));
-        }
 
-        public TBuilder WithRenderer(Type rendererType)
+			this.Renderer = instance;
+			return this as TBuilder;
+		}
+
+		public TBuilder WithRenderer<T>()
+			where T : ComponentRenderer<TComponent>
+		{
+			return this.WithRenderer(typeof(T));
+		}
+
+		public TBuilder WithRenderer(Type rendererType)
         {
             Guard.NotNull(rendererType, nameof(rendererType));
             Guard.Implements<ComponentRenderer<TComponent>>(rendererType);
+
             var renderer = Activator.CreateInstance(rendererType) as ComponentRenderer<TComponent>;
             if (renderer != null)
             {
                 this.Renderer = renderer;
             }
+
             return this as TBuilder;
         }
 

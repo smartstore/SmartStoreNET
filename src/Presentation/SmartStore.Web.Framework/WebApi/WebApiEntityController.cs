@@ -9,6 +9,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
+using System.Web.Http.OData.Extensions;
+using System.Web.Http.OData.Formatter;
 using System.Web.Http.OData.Routing;
 using Autofac;
 using SmartStore.ComponentModel;
@@ -59,6 +61,13 @@ namespace SmartStore.Web.Framework.WebApi
 					// we ignore standard odata path cause they differ:
 					// ~/entityset/key/$links/navigation (odata 3 "link"), ~/entityset/key/navigation/$ref (odata 4 "reference")
 
+					return UnmappedGetNavigation(odataPath);
+				}
+			}
+			else if (odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/navigation"))
+			{
+				if (Request.Method == HttpMethod.Delete)
+				{
 					return UnmappedGetNavigation(odataPath);
 				}
 			}
@@ -116,7 +125,7 @@ namespace SmartStore.Web.Framework.WebApi
 			if (navigationProperty.IsEmpty())
 				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.NoNavigationFromPath);
 
-			if (!odataPath.GetNormalizedKey(3, out relatedKey))
+			if (!odataPath.GetNormalizedKey(3, out relatedKey) && Request.Method != HttpMethod.Delete)
 				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.NoRelatedKeyFromPath);
 
 			var methodName = string.Concat("Navigation", navigationProperty);
@@ -129,7 +138,6 @@ namespace SmartStore.Web.Framework.WebApi
 				this.ProcessEntity(() =>
 				{
 					response = (HttpResponseMessage)methodInfo.Invoke(this, new object[] { key, relatedKey });
-					return null;
 				});
 
 				return response;
@@ -342,7 +350,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			try
 			{
-				var entityUrl = Url.ODataLink(
+				var entityUrl = Url.CreateODataLink(
 					new EntitySetPathSegment(entity.GetType().Name.EnsureEndsWith("s")),
 					new KeyValuePathSegment(entity.Id.ToString())
 				);
@@ -505,6 +513,14 @@ namespace SmartStore.Web.Framework.WebApi
 			}
 
 			return entity;
+		}
+
+		protected internal virtual T ReadContent<T>()
+		{
+			var formatters = ODataMediaTypeFormatters.Create()
+				.Select(formatter => formatter.GetPerRequestFormatterInstance(typeof(T), Request, Request.Content.Headers.ContentType));
+
+			return Request.Content.ReadAsAsync<T>(formatters).Result;
 		}
 	}
 }

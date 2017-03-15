@@ -104,15 +104,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PriceRanges)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.PriceRanges)
-                @Html.ValidationMessageFor(model => model.PriceRanges)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Published)
             </td>
             <td class="adminData">
@@ -235,9 +226,9 @@
                        <td class="adminData">
                            @Html.TextAreaFor(x => x.SeName)
 							@if (Model.Id != 0)
-							{
-								@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Manufacturer", entityId = @Model.Id })
-							}
+                            {
+                                @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Manufacturer", entityId = @Model.Id })
+                            }
                            @Html.ValidationMessageFor(model => model.SeName)
                        </td>
                    </tr>

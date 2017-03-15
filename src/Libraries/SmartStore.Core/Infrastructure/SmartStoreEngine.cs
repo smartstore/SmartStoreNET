@@ -95,7 +95,9 @@ namespace SmartStore.Core.Infrastructure
 			// Logging dependencies should be available very early
 			builder.RegisterModule(new LoggingModule());
 
+#pragma warning disable 612, 618
 			builder.Update(container);
+#pragma warning restore 612, 618
 
 			// Propagate logger
 			var logger = container.Resolve<ILoggerFactory>().GetLogger("SmartStore.Bootstrapper");
@@ -120,7 +122,9 @@ namespace SmartStore.Core.Infrastructure
 				registrar.Register(builder, typeFinder, PluginManager.IsActivePluginAssembly(type.Assembly));
 			}
 
+#pragma warning disable 612, 618
 			builder.Update(container);
+#pragma warning restore 612, 618
 
 			return _containerManager;
 		}

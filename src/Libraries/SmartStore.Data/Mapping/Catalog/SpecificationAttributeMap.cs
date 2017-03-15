@@ -10,6 +10,7 @@ namespace SmartStore.Data.Mapping.Catalog
             this.ToTable("SpecificationAttribute");
             this.HasKey(sa => sa.Id);
             this.Property(sa => sa.Name).IsRequired();
-        }
+			this.Property(sa => sa.Alias).HasMaxLength(30);
+		}
     }
 }

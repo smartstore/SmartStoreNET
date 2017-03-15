@@ -6,16 +6,6 @@
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.SpecificationAttributeId)
 
-
-@if (ViewBag.RefreshPage == true)
-{
-    <script type="text/javascript">
-        try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-        catch (e){} 
-        window.close();
-    </script>
-}
-
 @(Html.LocalizedEditor<SpecificationAttributeOptionModel, SpecificationAttributeOptionLocalizedModel>("specificationattribute-localized",
 @<table class="adminContent">
     <tr>
@@ -25,6 +15,15 @@
         <td class="adminData">
             @Html.EditorFor(model => Model.Locales[item].Name)
             @Html.ValidationMessageFor(model => model.Locales[item].Name)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Locales[item].Alias)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => Model.Locales[item].Alias)
+            @Html.ValidationMessageFor(model => model.Locales[item].Alias)
         </td>
     </tr>
     <tr>
@@ -42,6 +41,15 @@
         <td class="adminData">
             @Html.EditorFor(model => model.Name)
             @Html.ValidationMessageFor(model => model.Name)
+        </td>
+    </tr>
+	    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Alias)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Alias)
+            @Html.ValidationMessageFor(model => model.Alias)
         </td>
     </tr>
 </table>

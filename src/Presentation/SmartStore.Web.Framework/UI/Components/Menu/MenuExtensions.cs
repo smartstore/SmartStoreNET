@@ -9,19 +9,24 @@ namespace SmartStore.Web.Framework.UI
 {	
 	public static class MenuExtensions
 	{
-		public static IList<MenuItem> GetBreadcrumb(this TreeNode<MenuItem> node)
+		public static IEnumerable<TreeNode<MenuItem>> GetBreadcrumb(this TreeNode<MenuItem> node)
 		{
-			//var breadcrumb = new List<MenuItem>();
-			//while (node != null && !node.IsRoot)
-			//{
-			//	breadcrumb.Add(node.Value);
-			//	node = node.Parent;
-			//}
-			//breadcrumb.Reverse();
-
-			var breadcrumb = node.Trail.Where(x => !x.IsRoot).Select(x => x.Value).ToList();
-
+			var breadcrumb = node.Trail.Where(x => !x.IsRoot);
 			return breadcrumb;
+		}
+
+		/// <summary>
+		/// Gets the state of <c>node</c> within the passed <c>currentPath</c>, which is the navigation breadcrumb.
+		/// </summary>
+		/// <param name="node">The node to get the state for</param>
+		/// <param name="currentPath">The current path/breadcrumb</param>
+		/// <returns>
+		///		<see cref="NodePathState" /> enumeration indicating whether the node is in the current path (<c>Selected</c> or <c>Expanded</c>)
+		///		and whether it has children (<c>Parent</c>)
+		///	</returns>
+		public static NodePathState GetNodePathState(this TreeNode<MenuItem> node, IEnumerable<TreeNode<MenuItem>> currentPath)
+		{
+			return GetNodePathState(node, currentPath.Select(x => x.Value).ToList());
 		}
 
 		/// <summary>

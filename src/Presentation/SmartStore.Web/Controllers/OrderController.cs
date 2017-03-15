@@ -125,6 +125,7 @@ namespace SmartStore.Web.Controllers
 			model.MerchantCompanyInfo = companyInfoSettings;
             model.Id = order.Id;
 			model.StoreId = order.StoreId;
+            model.CustomerComment = order.CustomerOrderComment;
             model.OrderNumber = order.GetOrderNumber();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc);
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_services.Localization, _services.WorkContext);
@@ -158,8 +159,7 @@ namespace SmartStore.Web.Controllers
                     model.Shipments.Add(shipmentModel);
                 }
             }
-
-
+            
             //billing info
 			model.BillingAddress.PrepareModel(order.BillingAddress, false, addressSettings);
 

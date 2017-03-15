@@ -17,6 +17,9 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Seo;
+using System.Collections.Generic;
+using SmartStore.Services.DataExchange.Import.Events;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -31,6 +34,8 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
 		private readonly Lazy<DataExchangeSettings> _dataExchangeSettings;
 		private readonly IDbCache _dbCache;
+		private readonly IUrlRecordService _urlRecordService;
+		private readonly ILocalizedEntityService _localizedEntityService;
 
 		public DataImporter(
 			ICommonServices services,
@@ -41,7 +46,9 @@ namespace SmartStore.Services.DataExchange.Import
 			Lazy<IEmailSender> emailSender,
 			Lazy<ContactDataSettings> contactDataSettings,
 			Lazy<DataExchangeSettings> dataExchangeSettings,
-			IDbCache dbCache)
+			IDbCache dbCache,
+			IUrlRecordService urlRecordService,
+			ILocalizedEntityService localizedEntityService)
 		{
 			_services = services;
 			_importProfileService = importProfileService;
@@ -52,6 +59,8 @@ namespace SmartStore.Services.DataExchange.Import
 			_contactDataSettings = contactDataSettings;
 			_dataExchangeSettings = dataExchangeSettings;
 			_dbCache = dbCache;
+			_urlRecordService = urlRecordService;
+			_localizedEntityService = localizedEntityService;
 
 			T = NullLocalizer.Instance;
 		}
@@ -256,12 +265,17 @@ namespace SmartStore.Services.DataExchange.Import
 
 			using (var logger = new TraceLogger(logPath))
 			{
+				var scopes = new List<IDisposable>();
+
 				try
 				{
 					_dbCache.Enabled = false;
+					scopes.Add(_localizedEntityService.BeginScope());
+					scopes.Add(_urlRecordService.BeginScope());
 
 					ctx.Log = logger;
 
+					ctx.ExecuteContext.Request = ctx.Request;
 					ctx.ExecuteContext.DataExchangeSettings = _dataExchangeSettings.Value;
 					ctx.ExecuteContext.Services = _services;
 					ctx.ExecuteContext.Log = logger;
@@ -284,7 +298,9 @@ namespace SmartStore.Services.DataExchange.Import
 					if (!HasPermission(ctx))
 						throw new SmartException("You do not have permission to perform the selected import.");
 
-					ctx.Importer = _importerFactory(ctx.Request.Profile.EntityType);	
+					ctx.Importer = _importerFactory(ctx.Request.Profile.EntityType);
+
+					_services.EventPublisher.Publish(new ImportExecutingEvent(ctx.ExecuteContext));
 
 					files.ForEach(x => ImportCoreInner(ctx, x));
 				}
@@ -294,7 +310,17 @@ namespace SmartStore.Services.DataExchange.Import
 				}
 				finally
 				{
-					_dbCache.Enabled = true;
+					try
+					{
+						_dbCache.Enabled = true;
+						scopes.Each(x => x.Dispose());
+
+						_services.EventPublisher.Publish(new ImportExecutedEvent(ctx.ExecuteContext));
+					}
+					catch (Exception exception)
+					{
+						ctx.ExecuteContext.Result.AddError(exception);
+					}
 
 					try
 					{
@@ -321,7 +347,6 @@ namespace SmartStore.Services.DataExchange.Import
 					try
 					{
 						ctx.ExecuteContext.Result.EndDateUtc = DateTime.UtcNow;
-
 						LogResult(ctx);
 					}
 					catch (Exception exception)
@@ -332,7 +357,6 @@ namespace SmartStore.Services.DataExchange.Import
 					try
 					{
 						ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.ExecuteContext.Result.Clone());
-
 						_importProfileService.UpdateImportProfile(ctx.Request.Profile);
 					}
 					catch (Exception exception)

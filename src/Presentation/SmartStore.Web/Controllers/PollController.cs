@@ -104,6 +104,7 @@ namespace SmartStore.Web.Controllers
             //But first we need to clone the cached model (the updated one should not be cached)
             var model = (PollModel)cachedModel.Clone();
             model.AlreadyVoted = _pollService.AlreadyVoted(model.Id, _workContext.CurrentCustomer.Id);
+            model.SystemKeyword = systemKeyword;
 
             return PartialView(model);
         }
@@ -140,9 +141,7 @@ namespace SmartStore.Web.Controllers
                     PollAnswerId = pollAnswer.Id,
                     CustomerId = _workContext.CurrentCustomer.Id,
                     IpAddress = _webHelper.GetCurrentIpAddress(),
-                    IsApproved = true,
-                    CreatedOnUtc = DateTime.UtcNow,
-                    UpdatedOnUtc = DateTime.UtcNow,
+                    IsApproved = true
                 });
 
                 //update totals
@@ -176,6 +175,7 @@ namespace SmartStore.Web.Controllers
             {
                 var pollModel = (PollModel)p.Clone();
                 pollModel.AlreadyVoted = _pollService.AlreadyVoted(pollModel.Id, _workContext.CurrentCustomer.Id);
+                pollModel.SystemKeyword = "Homepage";
                 model.Add(pollModel);
             }
 

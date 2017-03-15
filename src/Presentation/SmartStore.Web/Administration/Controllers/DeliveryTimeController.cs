@@ -175,16 +175,22 @@ namespace SmartStore.Admin.Controllers
 
             var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(model.Id);
             if (deliveryTime == null)
-                //No currency found with the specified id
+                //No delivery time  found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
                 deliveryTime = model.ToEntity(deliveryTime);
-                
+
+                // if this is the default delivery time set all other delivery times to non default
+                if (model.IsDefault)
+                {
+                    _deliveryTimeService.SetToDefault(deliveryTime);
+                }
+
                 UpdateLocales(deliveryTime, model);
 				_deliveryTimeService.UpdateDeliveryTime(deliveryTime);
-
+                
                 NotifySuccess(_localizationService.GetResource("Admin.Configuration.DeliveryTimes.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = deliveryTime.Id }) : RedirectToAction("List");
             }

@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using Autofac;
-using Autofac.Core;
-using Autofac.Integration.Mvc;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Data.Setup;
+using SmartStore.Services.Search.Rendering;
 using SmartStore.Web.Controllers;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Installation;
@@ -16,24 +14,15 @@ namespace SmartStore.Web.Infrastructure
     {
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
-			//// we cache presentation models between requests
-			//builder.RegisterType<BlogController>();
-			//builder.RegisterType<CatalogController>();
-			//builder.RegisterType<CountryController>();
-			//builder.RegisterType<CommonController>();
-			//builder.RegisterType<NewsController>();
-			//builder.RegisterType<PollController>();
-			//builder.RegisterType<ShoppingCartController>();
-			//builder.RegisterType<TopicController>();
-
 			builder.RegisterType<CatalogHelper>().InstancePerRequest();
 
 			builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().InstancePerRequest();
-            
-            // installation localization service
-            builder.RegisterType<InstallationLocalizationService>().As<IInstallationLocalizationService>().InstancePerRequest();
+			builder.RegisterType<DefaultFacetTemplateSelector>().As<IFacetTemplateSelector>().SingleInstance();
 
-            // register app languages for installation
+			// Installation localization service
+			builder.RegisterType<InstallationLocalizationService>().As<IInstallationLocalizationService>().InstancePerRequest();
+
+            // Register app languages for installation
 			builder.RegisterType<EnUSSeedData>()
                 .As<InvariantSeedData>()
                 .WithMetadata<InstallationAppLanguageMetadata>(m =>

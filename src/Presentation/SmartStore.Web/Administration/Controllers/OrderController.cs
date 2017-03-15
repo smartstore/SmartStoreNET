@@ -16,6 +16,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Search;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
@@ -29,10 +30,12 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Pdf;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -82,6 +85,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
 		private readonly ICustomerActivityService _customerActivityService;
+		private readonly ICatalogSearchService _catalogSearchService;
 
 		private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -90,6 +94,7 @@ namespace SmartStore.Admin.Controllers
         private readonly PdfSettings _pdfSettings;
         private readonly AddressSettings _addressSettings;
 		private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly SearchSettings _searchSettings;
 
 		private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
         private readonly IPdfConverter _pdfConverter;
@@ -123,55 +128,59 @@ namespace SmartStore.Admin.Controllers
 			PluginMediator pluginMediator,
 			IAffiliateService affiliateService,
 			ICustomerActivityService customerActivityService,
+			ICatalogSearchService catalogSearchService,
 			CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings,
 			AdminAreaSettings adminAreaSettings,
+			SearchSettings searchSettings,
 			IPdfConverter pdfConverter, ICommonServices services, Lazy<IPictureService> pictureService)
 		{
-            this._orderService = orderService;
-            this._orderReportService = orderReportService;
-            this._orderProcessingService = orderProcessingService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._priceFormatter = priceFormatter;
-            this._localizationService = localizationService;
-            this._workContext = workContext;
-            this._currencyService = currencyService;
-            this._encryptionService = encryptionService;
-            this._paymentService = paymentService;
-            this._measureService = measureService;
-            this._addressService = addressService;
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._productService = productService;
-            this._permissionService = permissionService;
-            this._workflowMessageService = workflowMessageService;
-            this._categoryService = categoryService;
-            this._manufacturerService = manufacturerService;
-            this._productAttributeService = productAttributeService;
-            this._productAttributeParser = productAttributeParser;
-            this._productAttributeFormatter = productAttributeFormatter;
-            this._shoppingCartService = shoppingCartService;
-            this._giftCardService = giftCardService;
-            this._downloadService = downloadService;
-            this._shipmentService = shipmentService;
-			this._storeService = storeService;
-			this._taxService = taxService;
-			this._priceCalculationService = priceCalculationService;
-			this._eventPublisher = eventPublisher;
-			this._customerService = customerService;
-			this._pluginMediator = pluginMediator;
-			this._affiliateService = affiliateService;
-			this._customerActivityService = customerActivityService;
+            _orderService = orderService;
+            _orderReportService = orderReportService;
+            _orderProcessingService = orderProcessingService;
+            _dateTimeHelper = dateTimeHelper;
+            _priceFormatter = priceFormatter;
+            _localizationService = localizationService;
+            _workContext = workContext;
+            _currencyService = currencyService;
+            _encryptionService = encryptionService;
+            _paymentService = paymentService;
+            _measureService = measureService;
+            _addressService = addressService;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
+            _productService = productService;
+            _permissionService = permissionService;
+            _workflowMessageService = workflowMessageService;
+            _categoryService = categoryService;
+            _manufacturerService = manufacturerService;
+            _productAttributeService = productAttributeService;
+            _productAttributeParser = productAttributeParser;
+            _productAttributeFormatter = productAttributeFormatter;
+            _shoppingCartService = shoppingCartService;
+            _giftCardService = giftCardService;
+            _downloadService = downloadService;
+            _shipmentService = shipmentService;
+			_storeService = storeService;
+			_taxService = taxService;
+			_priceCalculationService = priceCalculationService;
+			_eventPublisher = eventPublisher;
+			_customerService = customerService;
+			_pluginMediator = pluginMediator;
+			_affiliateService = affiliateService;
+			_customerActivityService = customerActivityService;
+			_catalogSearchService = catalogSearchService;
 
-			this._catalogSettings = catalogSettings;
-            this._currencySettings = currencySettings;
-            this._taxSettings = taxSettings;
-            this._measureSettings = measureSettings;
-            this._pdfSettings = pdfSettings;
-            this._addressSettings = addressSettings;
-			this._adminAreaSettings = adminAreaSettings;
+			_catalogSettings = catalogSettings;
+            _currencySettings = currencySettings;
+            _taxSettings = taxSettings;
+            _measureSettings = measureSettings;
+            _pdfSettings = pdfSettings;
+            _addressSettings = addressSettings;
+			_adminAreaSettings = adminAreaSettings;
+			_searchSettings = searchSettings;
 
-            this._checkoutAttributeFormatter = checkoutAttributeFormatter;
+            _checkoutAttributeFormatter = checkoutAttributeFormatter;
             _pdfConverter = pdfConverter;
             _services = services;
             _pictureService = pictureService;
@@ -457,10 +466,23 @@ namespace SmartStore.Admin.Controllers
                 model.ShippingAddress.FaxRequired = _addressSettings.FaxRequired;
 
                 model.ShippingMethod = order.ShippingMethod;
+				model.CanAddNewShipments = order.CanAddItemsToShipment();
 
-                model.ShippingAddressGoogleMapsUrl = string.Format("http://maps.google.com/maps?f=q&hl=en&ie=UTF8&oe=UTF8&geocode=&q={0}", Server.UrlEncode(order.ShippingAddress.Address1 + " " + order.ShippingAddress.ZipPostalCode + " " + order.ShippingAddress.City + " " + (order.ShippingAddress.Country != null ? order.ShippingAddress.Country.Name : "")));
-                model.CanAddNewShipments = order.HasItemsToAddToShipment();
-            }
+				var googleAddressQuery = string.Concat(
+					order.ShippingAddress.Address1,
+					" ",
+					order.ShippingAddress.ZipPostalCode,
+					" ",
+					order.ShippingAddress.City,
+					" ",
+					order.ShippingAddress.Country != null ? order.ShippingAddress.Country.Name : "");
+
+				var googleMapsUrl = CommonHelper.GetAppSetting<string>("g:MapsUrl");
+
+				model.ShippingAddressGoogleMapsUrl = googleMapsUrl.FormatInvariant(
+					Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower(),
+					Server.UrlEncode(googleAddressQuery));
+			}
 
             #endregion
 
@@ -699,9 +721,9 @@ namespace SmartStore.Admin.Controllers
 
                     //quantities
                     var qtyInThisShipment = shipmentItem.Quantity;
-                    var maxQtyToAdd = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
+                    var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
                     var qtyOrdered = orderItem.Quantity;
-                    var qtyInAllShipments = orderItem.GetTotalNumberOfItemsInAllShipment();
+                    var qtyInAllShipments = orderItem.GetShipmentItemsCount();
 
                     orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
                     var shipmentItemModel = new ShipmentModel.ShipmentItemModel()
@@ -713,6 +735,7 @@ namespace SmartStore.Admin.Controllers
 						ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
 						ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
                         Sku = orderItem.Product.Sku,
+                        Gtin = orderItem.Product.Gtin,
                         AttributeInfo = orderItem.AttributeDescription,
                         ItemWeight = orderItem.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", orderItem.ItemWeight, baseWeightIn) : "",
                         ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", orderItem.Product.Length, orderItem.Product.Width, orderItem.Product.Height, baseDimensionIn),
@@ -1475,7 +1498,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (orderItem.Quantity > 0)
 			{
-				var returnRequest = new ReturnRequest()
+				var returnRequest = new ReturnRequest
 				{
 					StoreId = order.StoreId,
 					OrderItemId = orderItem.Id,
@@ -1484,9 +1507,7 @@ namespace SmartStore.Admin.Controllers
 					ReasonForReturn = "",
 					RequestedAction = "",
 					StaffNotes = "",
-					ReturnRequestStatus = ReturnRequestStatus.Pending,
-					CreatedOnUtc = DateTime.UtcNow,
-					UpdatedOnUtc = DateTime.UtcNow
+					ReturnRequestStatus = ReturnRequestStatus.Pending
 				};
 
 				order.Customer.ReturnRequests.Add(returnRequest);
@@ -1684,18 +1705,25 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 			{
-				var searchContext = new ProductSearchContext
-				{
-					CategoryIds = new List<int> { model.SearchCategoryId },
-					ManufacturerId = model.SearchManufacturerId,
-					Keywords = model.SearchProductName,
-					PageIndex = command.Page - 1,
-					PageSize = command.PageSize,
-					ShowHidden = true,
-					ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
-				};
+				var fields = new List<string> { "name" };
+				if (_searchSettings.SearchFields.Contains("sku"))
+					fields.Add("sku");
+				if (_searchSettings.SearchFields.Contains("shortdescription"))
+					fields.Add("shortdescription");
 
-				var products = _productService.SearchProducts(searchContext);
+				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName);
+
+				if (model.SearchCategoryId != 0)
+					searchQuery = searchQuery.WithCategoryIds(null, model.SearchCategoryId);
+
+				if (model.SearchManufacturerId != 0)
+					searchQuery = searchQuery.WithManufacturerIds(null, model.SearchManufacturerId);
+
+				if (model.SearchProductTypeId > 0)
+					searchQuery = searchQuery.IsProductType((ProductType)model.SearchProductTypeId);
+
+				var query = _catalogSearchService.PrepareQuery(searchQuery);
+				var products = new PagedList<Product>(query.OrderBy(x => x.Name), command.Page - 1, command.PageSize);
 
 				gridModel.Data = products.Select(x =>
 				{
@@ -2089,9 +2117,9 @@ namespace SmartStore.Admin.Controllers
 
                 //quantities
                 var qtyInThisShipment = 0;
-                var maxQtyToAdd = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
+                var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
                 var qtyOrdered = orderItem.Quantity;
-                var qtyInAllShipments = orderItem.GetTotalNumberOfItemsInAllShipment();
+                var qtyInAllShipments = orderItem.GetShipmentItemsCount();
 
                 //ensure that this product can be added to a shipment
                 if (maxQtyToAdd <= 0)
@@ -2106,6 +2134,7 @@ namespace SmartStore.Admin.Controllers
 					ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
 					ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
                     Sku = orderItem.Product.Sku,
+                    Gtin = orderItem.Product.Gtin,
                     AttributeInfo = orderItem.AttributeDescription,
                     ItemWeight = orderItem.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", orderItem.ItemWeight, baseWeightIn) : "",
                     ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", orderItem.Product.Length, orderItem.Product.Width, orderItem.Product.Height, baseDimensionIn),
@@ -2265,7 +2294,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("ShipmentDetails", new { id = shipment.Id });
             }
         }
-
+        
 		public ActionResult PdfPackagingSlips(bool all, string selectedIds = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -2321,7 +2350,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
 				Margins = new PdfPageMargins { Top = 35, Bottom = 35 },
-				Page = new PdfViewContent("ShipmentDetails.Print", model, this.ControllerContext),
+				Page = new PdfViewContent("~/Administration/Views/Order/ShipmentDetails.Print.cshtml", model, this.ControllerContext),
 				Header = new PdfRouteContent("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
 				Footer = new PdfRouteContent("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
 			};

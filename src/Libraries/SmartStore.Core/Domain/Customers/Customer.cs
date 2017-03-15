@@ -123,13 +123,13 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets the last IP address
         /// </summary>
-		[DataMember]
+		[DataMember, Index("IX_Customer_LastIpAddress")]
 		public string LastIpAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of entity creation
         /// </summary>
-		[DataMember]
+		[DataMember, Index("IX_Customer_CreatedOn")]
 		public DateTime CreatedOnUtc { get; set; }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets the date and time of last activity
         /// </summary>
-		[DataMember]
+		[DataMember, Index("IX_Customer_LastActivity")]
 		public DateTime LastActivityDateUtc { get; set; }
         
         #region Navigation properties

@@ -1,30 +1,29 @@
 ﻿@model TopicModel
 @using SmartStore.Web.Models.Topics;
 @{
-    var isPopup = ViewBag.IsPopup;
-    if (isPopup == null || isPopup == false)
-    {
-        Layout = "~/Views/Shared/_ColumnsThree.cshtml";
-    }
-    else
-    {
-        /*pop-up windows*/
-        Layout = "~/Views/Shared/_RootPopup.cshtml";
-    }
+	var isPopup = ViewBag.IsPopup;
+	if (isPopup == null || isPopup == false)
+	{
+		Layout = "_ColumnsTwo";
+	}
+	else
+	{
+		Layout = "_Layout.Popup";
+	}
 
-    if (!Model.IsPasswordProtected)
-    {
-        Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
-        Html.AddMetaDescriptionParts(Model.MetaDescription);
-        Html.AddMetaKeywordParts(Model.MetaKeywords);
-    }
+	if (!Model.IsPasswordProtected)
+	{
+		Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
+		Html.AddMetaDescriptionParts(Model.MetaDescription);
+		Html.AddMetaKeywordParts(Model.MetaKeywords);
+	}
 }
 @if (Model.IsPasswordProtected)
 {
     // For popup topics, use a minimal layout that includes the Ajax and jQuery scripts
     if (isPopup != null && isPopup == true)
     {
-        Layout = "~/Views/Shared/_RootPopup.cshtml";
+        Layout = "_RootPopup";
     }    
     <script type="text/javascript">
         $(document).ready(function () {

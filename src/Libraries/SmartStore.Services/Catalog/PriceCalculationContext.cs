@@ -15,6 +15,7 @@ namespace SmartStore.Services.Catalog
 		protected List<int> _productIds;
 		private List<int> _productIdsTierPrices;
 		private List<int> _productIdsAppliedDiscounts;
+		private List<int> _productIdsBundleItems;
 
 		private Func<int[], Multimap<int, ProductVariantAttribute>> _funcAttributes;
 		private Func<int[], Multimap<int, ProductVariantAttributeCombination>> _funcAttributeCombinations;
@@ -22,6 +23,7 @@ namespace SmartStore.Services.Catalog
 		private Func<int[], Multimap<int, ProductCategory>> _funcProductCategories;
 		private Func<int[], Multimap<int, ProductManufacturer>> _funcProductManufacturers;
 		private Func<int[], Multimap<int, Discount>> _funcAppliedDiscounts;
+		private Func<int[], Multimap<int, ProductBundleItem>> _funcProductBundleItems;
 
 		private LazyMultimap<ProductVariantAttribute> _attributes;
 		private LazyMultimap<ProductVariantAttributeCombination> _attributeCombinations;
@@ -29,6 +31,7 @@ namespace SmartStore.Services.Catalog
 		private LazyMultimap<ProductCategory> _productCategories;
 		private LazyMultimap<ProductManufacturer> _productManufacturers;
 		private LazyMultimap<Discount> _appliedDiscounts;
+		private LazyMultimap<ProductBundleItem> _productBundleItems;
 
 		public PriceCalculationContext(IEnumerable<Product> products,
 			Func<int[], Multimap<int, ProductVariantAttribute>> attributes,
@@ -36,19 +39,22 @@ namespace SmartStore.Services.Catalog
 			Func<int[], Multimap<int, TierPrice>> tierPrices,
 			Func<int[], Multimap<int, ProductCategory>> productCategories,
 			Func<int[], Multimap<int, ProductManufacturer>> productManufacturers,
-			Func<int[], Multimap<int, Discount>> appliedDiscounts)
+			Func<int[], Multimap<int, Discount>> appliedDiscounts,
+			Func<int[], Multimap<int, ProductBundleItem>> productBundleItems)
 		{
 			if (products == null)
 			{
 				_productIds = new List<int>();
 				_productIdsTierPrices = new List<int>();
 				_productIdsAppliedDiscounts = new List<int>();
+				_productIdsBundleItems = new List<int>();
 			}
 			else
 			{
 				_productIds = new List<int>(products.Select(x => x.Id));
 				_productIdsTierPrices = new List<int>(products.Where(x => x.HasTierPrices).Select(x => x.Id));
 				_productIdsAppliedDiscounts = new List<int>(products.Where(x => x.HasDiscountsApplied).Select(x => x.Id));
+				_productIdsBundleItems = new List<int>(products.Where(x => x.ProductType == ProductType.BundledProduct).Select(x => x.Id));
 			}
 
 			_funcAttributes = attributes;
@@ -57,6 +63,7 @@ namespace SmartStore.Services.Catalog
 			_funcProductCategories = productCategories;
 			_funcProductManufacturers = productManufacturers;
 			_funcAppliedDiscounts = appliedDiscounts;
+			_funcProductBundleItems = productBundleItems;
 		}
 
 		public void Clear()
@@ -73,6 +80,10 @@ namespace SmartStore.Services.Catalog
 				_productManufacturers.Clear();
 			if (_appliedDiscounts != null)
 				_appliedDiscounts.Clear();
+			if (_productBundleItems != null)
+				_productBundleItems.Clear();
+
+			_productIdsBundleItems.Clear();
 		}
 
 		public LazyMultimap<ProductVariantAttribute> Attributes
@@ -147,6 +158,18 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
+		public LazyMultimap<ProductBundleItem> ProductBundleItems
+		{
+			get
+			{
+				if (_productBundleItems == null)
+				{
+					_productBundleItems = new LazyMultimap<ProductBundleItem>(keys => _funcProductBundleItems(keys), _productIdsBundleItems);
+				}
+				return _productBundleItems;
+			}
+		}
+
 		public void Collect(IEnumerable<int> productIds)
 		{
 			Attributes.Collect(productIds);
@@ -154,6 +177,7 @@ namespace SmartStore.Services.Catalog
 			TierPrices.Collect(productIds);
 			ProductCategories.Collect(productIds);
 			AppliedDiscounts.Collect(productIds);
+			ProductBundleItems.Collect(productIds);
 		}
 	}
 }

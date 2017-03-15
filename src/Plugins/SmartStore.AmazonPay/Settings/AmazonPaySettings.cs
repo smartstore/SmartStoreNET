@@ -80,7 +80,7 @@ namespace SmartStore.AmazonPay.Settings
 			if (marketplace.IsCaseInsensitiveEqual("uk"))
 				marketplace = "co.uk";
 
-			string buttonSize = (view == AmazonPayRequestType.MiniShoppingCart ? "medium" : AmazonButtonSize);
+			string buttonSize = (view == AmazonPayRequestType.MiniShoppingCart ? "large" : AmazonButtonSize);
 
 			string url = (UseSandbox ? AmazonPayCore.UrlButtonSandbox : AmazonPayCore.UrlButtonProduction);
 			url = url.FormatWith(marketplace);

@@ -88,7 +88,6 @@ namespace SmartStore.Core.Packaging
 		/// <returns>An instance of <see cref="PackageInfo"/> type</returns>
 		protected PackageInfo InstallPackage(IPackage package, IPackageRepository packageRepository, string location, string applicationPath)
 		{
-
 			bool previousInstalled;
 
 			// 1. See if extension was previous installed and backup its folder if so

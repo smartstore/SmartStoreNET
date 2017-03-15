@@ -204,9 +204,9 @@ namespace SmartStore.Shipping
                     
                     var shippingOption = new ShippingOption();
 					shippingOption.ShippingMethodId = shippingMethod.Id;
-                    shippingOption.Name = shippingMethod.Name;
-                    shippingOption.Description = shippingMethod.Description;
-                    shippingOption.Rate = rate.Value;
+                    shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
+					shippingOption.Description = shippingMethod.GetLocalized(x => x.Description);
+					shippingOption.Rate = rate.Value;
                     response.ShippingOptions.Add(shippingOption);
                 }
             }

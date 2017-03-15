@@ -9,8 +9,8 @@ namespace SmartStore.Services.Localization
     /// <summary>
     /// Localized entity service interface
     /// </summary>
-    public partial interface ILocalizedEntityService
-    {
+    public partial interface ILocalizedEntityService : IScopedService
+	{
         /// <summary>
         /// Deletes a localized property
         /// </summary>

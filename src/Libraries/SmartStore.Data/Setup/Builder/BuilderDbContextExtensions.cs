@@ -22,7 +22,6 @@ namespace SmartStore.Data.Setup
 
 		#endregion
 
-
 		#region Settings building
 
 		public static void MigrateSettings(this SmartObjectContext ctx, Action<SettingsBuilder> fn)

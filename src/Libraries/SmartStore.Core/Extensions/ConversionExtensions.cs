@@ -99,19 +99,6 @@ namespace SmartStore
 
         #region String
 
-        public static T ToEnum<T>(this string value, T defaultValue) where T : IComparable, IFormattable
-        {
-			Guard.IsEnumType(typeof(T), nameof(T));
-
-			T result;
-			if (CommonHelper.TryConvert(value, out result))
-			{
-				return result;
-			}
-
-            return defaultValue;
-        }
-
         public static int ToInt(this string value, int defaultValue = 0)
         {
             int result;

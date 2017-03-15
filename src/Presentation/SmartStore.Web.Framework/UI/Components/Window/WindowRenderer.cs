@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.UI;
-using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.UI
 {
-   
-    public class WindowRenderer : ComponentRenderer<Window>
+	// TODO: (mc) make modal window renderer BS4 ready (after backend has been updated to BS4)
+	public class WindowRenderer : ComponentRenderer<Window>
     {
-
         protected override void WriteHtmlCore(HtmlTextWriter writer)
         {
             var win = base.Component;
@@ -69,8 +64,7 @@ namespace SmartStore.Web.Framework.UI
                 this.RenderFooter(writer);
             }
 
-            writer.RenderEndTag(); // div.modal
-            
+            writer.RenderEndTag(); // div.modal        
         }
 
         protected virtual void RenderHeader(HtmlTextWriter writer)
@@ -124,8 +118,5 @@ namespace SmartStore.Web.Framework.UI
 
             writer.RenderEndTag(); // div.modal-body
         }
-
-
     }
-
 }

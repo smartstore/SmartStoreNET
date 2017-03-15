@@ -49,7 +49,8 @@
 			</button>
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdate", Model)
+
+    Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("specificationattribute-delete")
 

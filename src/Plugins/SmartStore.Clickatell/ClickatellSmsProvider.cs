@@ -1,100 +1,133 @@
 ﻿using System;
-using System.ServiceModel;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
 using System.Web.Routing;
-using SmartStore.Clickatell.Clickatell;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Clickatell
 {
-	/// <summary>
-	/// Represents the Clickatell SMS provider
-	/// </summary>
 	public class ClickatellSmsProvider : BasePlugin, IConfigurable
     {
-        private readonly ILogger _logger;
         private readonly ClickatellSettings _clickatellSettings;
         private readonly ILocalizationService _localizationService;
+		private readonly ILogger _logger;
 
-        public ClickatellSmsProvider(ClickatellSettings clickatellSettings,
-            ILogger logger,
-            ILocalizationService localizationService)
+		public ClickatellSmsProvider(
+			ClickatellSettings clickatellSettings,
+            ILocalizationService localizationService,
+			ILogger logger)
         {
-            this._clickatellSettings = clickatellSettings;
-            this._logger = logger;
+            _clickatellSettings = clickatellSettings;
             _localizationService = localizationService;
-        }
+			_logger = logger;			
+		}
 
-        /// <summary>
-        /// Sends SMS
-        /// </summary>
-        /// <param name="text">Text</param>
-        public bool SendSms(string text)
-        {
-            try
-            {
-                using (var svc = new PushServerWSPortTypeClient(new BasicHttpBinding(), new EndpointAddress("http://api.clickatell.com/soap/webservice_vs.php")))
-                {
-                    string authRsp = svc.auth(Int32.Parse(_clickatellSettings.ApiId), _clickatellSettings.Username, _clickatellSettings.Password);
+		public static string SystemName
+		{
+			get
+			{
+				return "SmartStore.Clickatell";
+			}
+		}
 
-                    if (!authRsp.ToUpperInvariant().StartsWith("OK"))
-                    {
-                        throw new SmartException(authRsp);
-                    }
-
-                    string ssid = authRsp.Substring(4);
-                    string[] sndRsp = svc.sendmsg(ssid,
-                        Int32.Parse(_clickatellSettings.ApiId), _clickatellSettings.Username,
-                        _clickatellSettings.Password, new string[1] { _clickatellSettings.PhoneNumber },
-                        String.Empty, text, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        String.Empty, 0, String.Empty, String.Empty, String.Empty, 0);
-
-                    if (!sndRsp[0].ToUpperInvariant().StartsWith("ID"))
-                    {
-                        throw new SmartException(sndRsp[0]);
-                    }
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Gets a route for provider configuration
-        /// </summary>
-        /// <param name="actionName">Action name</param>
-        /// <param name="controllerName">Controller name</param>
-        /// <param name="routeValues">Route values</param>
-        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
             controllerName = "SmsClickatell";
-			routeValues = new RouteValueDictionary() { { "area", "SmartStore.Clickatell" } };
+			routeValues = new RouteValueDictionary { { "area", SystemName } };
         }
 
-        /// <summary>
-        /// Install plugin
-        /// </summary>
         public override void Install()
         {
-            _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
+            _localizationService.ImportPluginResourcesFromXml(PluginDescriptor);
 
             base.Install();
         }
 
-        /// <summary>
-        /// Uninstall plugin
-        /// </summary>
         public override void Uninstall()
         {
-            _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
+            _localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
             base.Uninstall();
         }
-    }
+
+		public void SendSms(string text)
+		{
+			if (text.IsEmpty())
+				return;
+
+			string error = null;
+			HttpWebResponse webResponse = null;
+
+			try
+			{
+				// https://www.clickatell.com/developers/api-documentation/rest-api-request-parameters/
+				var request = (HttpWebRequest)WebRequest.Create("https://platform.clickatell.com/messages");
+				request.Method = "POST";
+				request.Accept = "application/json";
+				request.ContentType = "application/json";
+				request.Headers["Authorization"] = _clickatellSettings.ApiId;
+
+				var data = new Dictionary<string, object>
+				{
+					{ "content", text },
+					{ "to", _clickatellSettings.PhoneNumber.SplitSafe(";") }
+				};
+
+				var json = JsonConvert.SerializeObject(data);
+
+				// UTF8 is default encoding
+				var bytes = Encoding.UTF8.GetBytes(json);
+				request.ContentLength = bytes.Length;
+
+				using (var stream = request.GetRequestStream())
+				{
+					stream.Write(bytes, 0, bytes.Length);
+				}
+
+				webResponse = request.GetResponse() as HttpWebResponse;
+			}
+			catch (WebException wexc)
+			{
+				webResponse = wexc.Response as HttpWebResponse;
+			}
+			catch (Exception exception)
+			{
+				error = exception.ToString();
+			}
+
+			if (webResponse != null)
+			{
+				using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
+				{
+					var rawResponse = reader.ReadToEnd();
+
+					if (webResponse.StatusCode == HttpStatusCode.OK || webResponse.StatusCode == HttpStatusCode.Accepted)
+					{
+						dynamic response = JObject.Parse(rawResponse);
+
+						error = (string)response.error;
+						if (error.IsEmpty() && response.messages != null)
+							error = response.messages[0].error;
+					}
+					else
+					{
+						error = rawResponse;
+					}
+				}
+			}
+
+			if (error.HasValue())
+			{
+				_logger.Error(error);
+				throw new SmartException(error);
+			}
+		}
+	}
 }

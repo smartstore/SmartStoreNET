@@ -66,7 +66,7 @@ namespace SmartStore.Services.Events
 						var ex = t.Exception;
 						if (ex != null)
 						{
-							ex.InnerExceptions.Each(x => LogError(x));
+							ex.InnerExceptions.Each(x => Logger.Error(x));
 						}
 					}
 				});
@@ -88,13 +88,9 @@ namespace SmartStore.Services.Events
 			}
 			catch (Exception ex)
 			{
-				LogError(ex);
+				Logger.Error(ex);
+				throw;
 			}
-		}
-
-		private void LogError(Exception exception)
-		{
-			Logger.Error(exception);
 		}
 
 		private void RemoveFromQueue(object eventMessage)

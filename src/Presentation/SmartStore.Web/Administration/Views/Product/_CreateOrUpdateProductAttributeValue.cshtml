@@ -1,22 +1,12 @@
-﻿@model ProductModel.ProductVariantAttributeValueModel
-
-@using SmartStore.Core.Domain.Catalog;
+﻿@using SmartStore.Core.Domain.Catalog;
 @using Telerik.Web.Mvc.UI;
+@model ProductModel.ProductVariantAttributeValueModel
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.ProductVariantAttributeId)
 
 <script type="text/javascript">
-	@if (ViewBag.RefreshPage == true)
-	{
-		<text>
-		try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-		catch (e){}
-		window.close();
-		</text>
-	}
-
 	$(document).ready(function () {
 
 		$('#@Html.FieldIdFor(model => model.ValueTypeId)').change(function () {
@@ -133,6 +123,15 @@
         </td>
     </tr>
     <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Locales[item].Alias)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => Model.Locales[item].Alias)
+            @Html.ValidationMessageFor(model => model.Locales[item].Alias)
+        </td>
+    </tr>
+    <tr>
         <td colspan="2">
             @Html.HiddenFor(model => model.Locales[item].LanguageId)
         </td>
@@ -149,11 +148,6 @@
             @Html.ValidationMessageFor(model => model.Name)
         </td>
     </tr>
-</table>
-))
-
-@Html.HiddenFor(model => model.DisplayColorSquaresRgb)
-<table class="adminContent">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Alias)
@@ -163,8 +157,23 @@
             @Html.ValidationMessageFor(model => model.Alias)
         </td>
     </tr>
-    @if (Model.DisplayColorSquaresRgb)
+</table>
+))
+
+@Html.HiddenFor(model => model.IsListTypeAttribute)
+
+<table class="adminContent">
+    @if (Model.IsListTypeAttribute)
     {
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PictureId)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.PictureId, new { transientUpload = true })
+            @Html.ValidationMessageFor(model => model.PictureId)
+        </td>
+    </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.ColorSquaresRgb)

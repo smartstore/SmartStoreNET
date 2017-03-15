@@ -126,12 +126,6 @@ namespace SmartStore.Core.Themes
 			protected internal set; 
 		}
 
-        public bool MobileTheme 
-		{ 
-			get; 
-			protected internal set; 
-		}
-
 		[ObjectSignature]
         public string ThemeName 
 		{ 

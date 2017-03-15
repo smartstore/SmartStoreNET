@@ -125,7 +125,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 
-			using (_services.Settings.BeginBatch())
+			using (_services.Settings.BeginScope())
 			{
 				if (value != null)
 				{

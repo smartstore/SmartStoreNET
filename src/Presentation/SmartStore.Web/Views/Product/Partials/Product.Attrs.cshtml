@@ -1,0 +1,78 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	var showDimensions = Model.ShowDimensions && (Model.Length.HasValue() || Model.Width.HasValue() || Model.Height.HasValue());
+	var showAttrs = (Model.ShowSku && Model.Sku.HasValue())
+		|| (Model.ShowWeight && Model.Weight.HasValue())
+		|| showDimensions
+		|| (Model.ShowGtin && Model.Gtin.HasValue())
+		|| (Model.ShowManufacturerPartNumber && Model.ManufacturerPartNumber.HasValue());
+
+	if (!showAttrs)
+	{
+		return;
+	}
+}
+
+<table class="pd-attrs pd-group">
+	@if (Model.ShowSku && Model.Sku.HasValue())
+	{
+		<tr class="pd-attr-sku">
+			<td>@T("Products.Sku"):</td>
+			<td itemprop="sku">@Model.Sku</td>
+		</tr>
+	}
+
+	@if (Model.ShowGtin && Model.Gtin.HasValue())
+	{
+		<tr class="pd-attr-gtin">
+			<td>@T("Products.GTIN"):</td>
+			<td itemprop="gtin13">@Model.Gtin</td>
+		</tr>
+	}
+
+	@if (Model.ShowManufacturerPartNumber && Model.ManufacturerPartNumber.HasValue())
+	{
+		<tr class="pd-attr-mpn">
+			<td>@T("Products.ManufacturerPartNumber"):</td>
+			<td itemprop="mpn">@Model.ManufacturerPartNumber</td>
+		</tr>
+	}
+
+	@if (Model.ShowWeight && Model.Weight.HasValue())
+	{
+		<tr class="pd-attr-weight">
+			<td>@T("Products.Weight"):</td>
+			<td itemprop="weight">@Model.Weight</td>
+		</tr>
+	}
+
+	@if (showDimensions)
+	{
+		if (Model.Width.HasValue())
+		{
+			<tr class="pd-attr-width">
+				<td>@T("Products.Width"):</td>
+				<td itemprop="width">@Model.Width</td>
+			</tr>
+		}
+		if (Model.Length.HasValue())
+		{
+			<tr class="pd-attr-length">
+				<td>@T("Products.Length"):</td>
+				<td itemprop="length">@Model.Length</td>
+			</tr>
+		}
+		if (Model.Height.HasValue())
+		{
+			<tr class="pd-attr-height">
+				<td>@T("Products.Height"):</td>
+				<td itemprop="height">@Model.Height</td>
+			</tr>
+		}
+	}
+</table>
+
+

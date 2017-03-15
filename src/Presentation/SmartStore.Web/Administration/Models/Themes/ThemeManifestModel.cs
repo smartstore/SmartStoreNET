@@ -28,8 +28,6 @@ namespace SmartStore.Admin.Models.Themes
 
         public bool SupportsRtl { get; set; }
 
-        public bool IsMobileTheme { get; set; }
-
         public bool IsConfigurable { get; set; }
 
         public bool IsActive { get; set; }

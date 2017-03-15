@@ -48,7 +48,7 @@ namespace SmartStore.PayPal.Filters
 			var controller = filterContext.RouteData.Values["controller"] as string;
 			var action = filterContext.RouteData.Values["action"] as string;
 
-			if (action.IsCaseInsensitiveEqual("FlyoutShoppingCart") && controller.IsCaseInsensitiveEqual("ShoppingCart"))
+			if (action.IsCaseInsensitiveEqual("OffCanvasShoppingCart") && controller.IsCaseInsensitiveEqual("ShoppingCart"))
 			{
 				var model = filterContext.Controller.ViewData.Model as MiniShoppingCartModel;
 
@@ -56,7 +56,7 @@ namespace SmartStore.PayPal.Filters
 				{
 					if (_paymentService.Value.IsPaymentMethodActive(PayPalExpressProvider.SystemName, _services.Value.StoreContext.CurrentStore.Id))
 					{
-						_widgetProvider.Value.RegisterAction("mini_shopping_cart_bottom", "MiniShoppingCart", "PayPalExpress", new { area = "SmartStore.PayPal" });
+						_widgetProvider.Value.RegisterAction("offcanvas_cart_summary", "MiniShoppingCart", "PayPalExpress", new { area = "SmartStore.PayPal" });
 					}
 				}
 			}

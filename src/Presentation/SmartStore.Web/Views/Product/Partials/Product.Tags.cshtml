@@ -1,0 +1,24 @@
+﻿@model IList<ProductTagModel>
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	if (Model == null || Model.Count == 0)
+	{
+		return;
+	}
+}
+
+<div class="pd-tags block">
+    <div class="block-title">
+        <h4>@T("Products.Tags")</h4>
+    </div>
+    <div class="block-body p-t-1">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <a href="@Url.RouteUrl("ProductsByTag", new { productTagId = Model[i].Id, SeName = Model[i].SeName })" class="pd-tag">
+				@Model[i].Name <span class="pd-tag-count">@Model[i].ProductCount</span>
+            </a>
+        }
+    </div>
+</div>

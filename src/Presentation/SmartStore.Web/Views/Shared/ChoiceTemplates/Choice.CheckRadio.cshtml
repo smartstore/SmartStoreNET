@@ -1,0 +1,42 @@
+﻿@model ChoiceModel
+
+@using SmartStore.Web.Framework.UI.Choices;
+@using SmartStore.Core.Domain.Catalog;
+
+@{
+	var controlId = Model.BuildControlId();
+	var items = Model.Values ?? new List<ChoiceItemModel>();
+	var type = Model.AttributeControlType == AttributeControlType.Checkboxes ? "checkbox" : "radio";
+	// TODO: (mc) Replace .checkbox with .form-check
+}
+
+@foreach (var item in items)
+{
+	var checkId = controlId + "_" + item.Id;
+	var hasColor = item.ColorSquaresRgb.HasValue() && item.ColorSquaresRgb != "transparent";
+	<div class="@type">
+		<label class="form-check-label">
+			<input class="form-check-input" type="@type" id="@checkId" name="@controlId" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
+			
+			@if (item.ImageUrl.HasValue())
+			{
+				if (item.SeName.HasValue())
+				{
+					<a class="choice-item-img" href="@Url.RouteUrl("Product", new { SeName = item.SeName })">
+						<img src="@item.ImageUrl" alt="" />
+					</a>
+				}
+				else
+				{
+					<img class="choice-item-img" src="@item.ImageUrl" alt="" />
+				}
+			}
+			else if (hasColor)
+			{
+				<span class="choice-item-color" style="background-color: @item.ColorSquaresRgb"></span>
+			}
+
+			@item.GetItemLabel()
+		</label>
+	</div>
+}

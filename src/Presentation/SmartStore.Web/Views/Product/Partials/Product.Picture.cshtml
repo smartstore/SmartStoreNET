@@ -1,0 +1,113 @@
+﻿@model ProductDetailsPictureModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	Html.AddScriptParts("~/bundles/smart-gallery");
+	var defaultPicture = Model.DefaultPictureModel;
+}
+
+<div id="pd-gallery-container-inner">
+	<div id="pd-gallery" class="gal-box m-b-1">
+		<!-- Thumbnail navigation -->
+		<div class="gal-nav-cell@(Model.PictureModels.Count <= 1 ? " gal-nav-hidden" : " ")">
+			<div class="gal-nav">
+				<div class="gal-list">
+					<div class="gal-track" itemscope itemtype="http://schema.org/ImageGallery">
+						@for (int i = 0; i < Model.PictureModels.Count; i++)
+						{
+							var picture = Model.PictureModels[i];
+							<figure class="gal-item" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+								<a class="gal-item-viewport" 
+								   itemprop="contentUrl" 
+								   href="@picture.FullSizeImageUrl" 
+								   data-width="@picture.FullSizeImageWidth" 
+								   data-height="@picture.FullSizeImageHeight" 
+								   data-medium-image="@picture.ImageUrl" 
+								   title="@Model.Name" 
+								   data-picture-id="@picture.PictureId">
+									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+								</a>
+							</figure>
+						}
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<!-- Picture -->
+		<div class="gal-cell">
+			<div class="gal">
+				@if (Model.PictureModels.Count > 0)
+				{
+					for (int i = 0; i < Model.PictureModels.Count; i++)
+					{
+						var picture = Model.PictureModels[i];
+						<div class="gal-item">
+							<a class="gal-item-viewport" href="@picture.FullSizeImageUrl" data-thumg-image="@picture.ThumbImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-picture-id="@picture.PictureId">
+								@if (i == Model.GalleryStartIndex)
+								{
+									<img class="gal-item-content" src="@picture.ImageUrl" data-zoom="@picture.FullSizeImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+								}
+								else
+								{
+									<img class="gal-item-content" data-lazy="@picture.ImageUrl" data-zoom="@picture.FullSizeImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+								}
+							</a>
+						</div>
+					}
+				}
+				else if (defaultPicture.ImageUrl.HasValue())
+				{
+					<div class="gal-item">
+						<div class="gal-item-viewport no-picture" data-content="@T("Common.NoImageAvail")">
+							<img class="gal-item-content" src="@defaultPicture.ImageUrl" alt="@defaultPicture.AlternateText" title="@defaultPicture.Title" />
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+</div>
+
+@using (Html.BeginZoneContent("end", key: "pswp"))
+{
+	<!-- Root element of PhotoSwipe -->
+	<div id="pswp" class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="pswp__bg"></div>
+		<div class="pswp__scroll-wrap">
+			<div class="pswp__container">
+				<div class="pswp__item"></div>
+				<div class="pswp__item"></div>
+				<div class="pswp__item"></div>
+			</div>
+			<div class="pswp__ui pswp__ui--hidden">
+				<div class="pswp__top-bar clearfix">
+					<div class="pswp__counter"></div>
+					<div class="pswp__zoom-controls">
+						<button class="pswp__button pswp-action pswp__button--zoom" title="Zoom in/out"></button>
+						<button class="pswp__button pswp-action pswp__button--fs" title="Toggle fullscreen"></button>
+					</div>
+					<button class="pswp__button pswp__button--close" title="Close (Esc)">&#215;</button>
+					<!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+					<!-- element will get class pswp__preloader--active when preloader is running -->
+					<div class="pswp__preloader">
+						<div class="pswp__preloader__icn">
+							<div class="pswp__preloader__cut">
+								<div class="pswp__preloader__donut"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				@*<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+						<div class="pswp__share-tooltip"></div>
+					</div>*@
+				<button class="pswp__button pswp-arrow pswp__button--arrow--left" title="Previous (arrow left)"></button>
+				<button class="pswp__button pswp-arrow pswp__button--arrow--right" title="Next (arrow right)"></button>
+				<div class="pswp__caption">
+					<div class="pswp__caption__center"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+}

@@ -2,22 +2,22 @@
 @using SmartStore.PayPal.Models;
 @model PayPalPlusCheckoutModel
 @{
-	Layout = "~/Views/Shared/_Checkout.cshtml";
-	Html.AddTitleParts(T("PageTitle.Checkout").Text);
+    Layout = "_Checkout";
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 @section orderProgress
 {
-	@Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment })
+	@{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment }); }
 }
 
-@Html.Partial("PaymentWallScripting")
+@{ Html.RenderPartial("PaymentWallScripting"); }
 
 <div id="PayPalPlusPage" class="page payment-method-page">
 	<div class="page-title">
 		<h1>@T("Checkout.SelectPaymentMethod")</h1>
 	</div>
 	<div class="page-body checkout-data" style="padding-bottom: 20px;">
-		@Html.Widget("checkout_payment_method_top")
+		@{ Html.RenderWidget("checkout_payment_method_top"); }
 
 		@if (Model.ErrorMessage.HasValue())
 		{
@@ -64,6 +64,6 @@
 			</button>
 		</div>
 
-		@Html.Widget("checkout_payment_method_bottom")
+		@{ Html.RenderWidget("checkout_payment_method_bottom"); }
 	</div>
 </div>

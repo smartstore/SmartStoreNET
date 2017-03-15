@@ -19,13 +19,18 @@ namespace SmartStore.Collections
             FillFromString(queryString);
         }
 
-        public static QueryString Current
+		public QueryString(NameValueCollection queryString)
+			: base(queryString)
+		{
+		}
+
+		public static QueryString Current
         {
             get { return new QueryString().FromCurrent(); }
         }
 
         /// <summary>
-        /// extracts a querystring from a full URL
+        /// Extracts a querystring from a full URL
         /// </summary>
         /// <param name="s">the string to extract the querystring from</param>
         /// <returns>a string representing only the querystring</returns>
@@ -94,7 +99,7 @@ namespace SmartStore.Collections
         }
 
         /// <summary>
-        /// adds a name value pair to the collection
+        /// Adds a name value pair to the collection
         /// </summary>
         /// <param name="name">the name</param>
         /// <param name="value">the value associated to the name</param>
@@ -115,15 +120,16 @@ namespace SmartStore.Collections
             {
                 base[name] += "," + HttpUtility.UrlEncode(value);
             }
+
             return this;
         }
 
-        /// <summary>
-        /// removes a name value pair from the querystring collection
-        /// </summary>
-        /// <param name="name">name of the querystring value to remove</param>
-        /// <returns>the QueryString object</returns>
-        public new QueryString Remove(string name)
+		/// <summary>
+		/// Removes a name value pair from the querystring collection
+		/// </summary>
+		/// <param name="name">name of the querystring value to remove</param>
+		/// <returns>the QueryString object</returns>
+		public new QueryString Remove(string name)
         {
             string existingValue = base[name];
             if (!string.IsNullOrEmpty(existingValue))
@@ -175,24 +181,46 @@ namespace SmartStore.Collections
         }
 
         /// <summary>
-        /// outputs the querystring object to a string
+        /// Outputs the querystring object to a string
         /// </summary>
         /// <returns>the encoded querystring as it would appear in a browser</returns>
         public override string ToString()
         {
-            var builder = new StringBuilder();
-            for (var i = 0; i < base.Keys.Count; i++)
-            {
-                if (!string.IsNullOrEmpty(base.Keys[i]))
-                {
-					foreach (string val in base[base.Keys[i]].EmptyNull().Split(','))
-                    {
-                        builder.Append((builder.Length == 0) ? "?" : "&").Append(
-                            HttpUtility.UrlEncode(base.Keys[i])).Append("=").Append(val);
-                    }
-                }
-            }
-            return builder.ToString();
+			return ToString(true);
         }
-    }
+
+		/// <summary>
+		/// Outputs the querystring object to a string
+		/// </summary>
+		/// <param name="splitValues">Whether to create entries for each comma-separated value</param>
+		/// <returns>the encoded querystring as it would appear in a browser</returns>
+		public string ToString(bool splitValues)
+		{
+			var builder = new StringBuilder();
+			for (var i = 0; i < base.Keys.Count; i++)
+			{
+				var key = base.Keys[i];
+				var value = base[key];
+
+				if (!string.IsNullOrEmpty(key))
+				{
+					builder.Append((builder.Length == 0) ? "?" : "&");
+
+					if (splitValues)
+					{
+						foreach (string val in value.EmptyNull().Split(','))
+						{
+							builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(val);
+						}
+					}
+					else
+					{
+						builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(value);
+					}
+				}
+			}
+
+			return builder.ToString();
+		}
+	}
 }

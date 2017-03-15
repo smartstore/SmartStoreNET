@@ -3,17 +3,17 @@
 @using SmartStore.Web.Models.Checkout;
 @using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_Checkout.cshtml";
+	Layout = "_Checkout";
 
-    //title
-    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+	//title
+	Html.AddTitleParts(T("PageTitle.Checkout").Text);
 
-    string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
-    string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
-    string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
+	string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
+	string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
+	string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
 }
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Confirm })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Confirm }); }
 }
 <div class="page checkout-confirm-page">
     <div class="page-title">
@@ -21,8 +21,9 @@
     </div>
     <div class="page-body checkout-data">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "confirm-order-form" }))
-        {
-            @Html.Widget("checkout_confirm_top")
+		{
+			Html.RenderWidget("checkout_confirm_top");
+
             <div class="page-intro">
                 @Html.Raw(@T("Checkout.ConfirmHint"))
             </div>
@@ -46,10 +47,12 @@
                         });
                     });
                 </script>
-                <label class="checkbox">
-                    <input id="termsofservice" type="checkbox" name="termsofservice" />
-                    @Html.Raw(terms)
-                </label>
+                <div class="checkbox">
+                    <label>
+                        <input id="termsofservice" type="checkbox" name="termsofservice" />
+                        @Html.Raw(terms)
+                    </label>
+                </div>
 
                 <!-- Terms of service -->
                 <div id="terms-of-service-modal" class="modal modal-flex hide fade" tabindex="-1" style="width: 650px">
@@ -60,8 +63,8 @@
                 </div>
 
             </div>
-            }
-            
+			}
+
             <script type="text/javascript">
                 $(document).ready(function () {
                     $('#confirm-order-form').submit(function () {
@@ -69,12 +72,12 @@
                     });
                 });
             </script>
-            
+
             <div class="confirm-order">
                 @if (Model.Warnings.Count > 0)
-                {
+				{
 					<p>
-						<div class="alert alert-error">
+						<div class="alert alert-danger">
 							<ul>
 								@for (int i = 0; i < Model.Warnings.Count; i++)
 								{
@@ -83,14 +86,14 @@
 							</ul>
 						</div>
 					</p>
-                }
+				}
             </div>  
-        }
+		}
         
-        @Html.Widget("checkout_confirm_before_summary")
+        @{ Html.RenderWidget("checkout_confirm_before_summary"); }
 
         <div class="order-summary-body">
-            @Html.Action("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true })
+            @{ Html.RenderAction("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true }); }
         </div>
 
         @if (Model.ShowConfirmOrderLegalHint) 
@@ -185,7 +188,7 @@
                         });
                     </script>
                     
-                    <a class="btn pull-left" href="@Url.Action("PaymentMethod")">
+                    <a class="btn btn-secondary pull-left" href="@Url.Action("PaymentMethod")">
                         <i class="fa fa-caret-left"></i>&nbsp;
                         @T("Common.Back")
                     </a>
@@ -198,6 +201,6 @@
             </div>
         </div>
 
-		@Html.Widget("checkout_confirm_bottom")
+		@{ Html.RenderWidget("checkout_confirm_bottom"); }
     </div>
 </div>

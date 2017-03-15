@@ -9,16 +9,14 @@ using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.Seo
 {
-    /// <summary>
-    /// Provides information about URL records
-    /// </summary>
-    public partial class UrlRecordService : IUrlRecordService
+    public partial class UrlRecordService : ScopedServiceBase, IUrlRecordService
     {
 		/// <summary>
 		/// 0 = segment (EntityName.IdRange), 1 = language id
 		/// </summary>
 		const string URLRECORD_SEGMENT_KEY = "urlrecord:{0}-lang-{1}";
 		const string URLRECORD_SEGMENT_PATTERN = "urlrecord:{0}";
+		const string URLRECORD_ALL_PATTERN = "urlrecord:";
 		const string URLRECORD_ALL_ACTIVESLUGS_KEY = "urlrecord:all-active-slugs";
 
 		private readonly IRepository<UrlRecord> _urlRecordRepository;
@@ -32,6 +30,11 @@ namespace SmartStore.Services.Seo
 			this._seoSettings = seoSettings;
         }
 
+		protected override void OnClearCache()
+		{
+			_cacheManager.Remove(URLRECORD_ALL_PATTERN);
+		}
+
 		public virtual void DeleteUrlRecord(UrlRecord urlRecord)
         {
 			Guard.NotNull(urlRecord, nameof(urlRecord));
@@ -40,6 +43,7 @@ namespace SmartStore.Services.Seo
 			{
 				// cache
 				ClearCachedSlugsSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
+				HasChanges = true;
 
 				// db
 				_urlRecordRepository.Delete(urlRecord);
@@ -76,6 +80,7 @@ namespace SmartStore.Services.Seo
 			{
 				// db
 				_urlRecordRepository.Insert(urlRecord);
+				HasChanges = true;
 
 				// cache
 				ClearCachedSlugsSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
@@ -91,6 +96,7 @@ namespace SmartStore.Services.Seo
 			{
 				// db
 				_urlRecordRepository.Update(urlRecord);
+				HasChanges = true;
 
 				// cache
 				ClearCachedSlugsSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
@@ -155,6 +161,11 @@ namespace SmartStore.Services.Seo
 
         public virtual string GetActiveSlug(int entityId, string entityName, int languageId)
         {
+			if (IsInScope)
+			{
+				return GetActiveSlugUncached(entityId, entityName, languageId);
+			}
+
 			string slug = null;
 
 			if (_seoSettings.LoadAllUrlAliasesOnStartup)
@@ -193,7 +204,21 @@ namespace SmartStore.Services.Seo
 			return slug;
         }
 
-        public virtual UrlRecord SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported
+		protected string GetActiveSlugUncached(int entityId, string entityName, int languageId)
+		{
+			var query = from x in _urlRecordRepository.TableUntracked
+						where 
+							x.EntityId == entityId && 
+							x.EntityName == entityName && 
+							x.LanguageId == languageId && 
+							x.IsActive
+						orderby x.Id descending
+						select x.Slug;
+
+			return query.FirstOrDefault().EmptyNull();
+		}
+
+		public virtual UrlRecord SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported
         {
 			Guard.NotNull(entity, nameof(entity));
 
@@ -394,6 +419,9 @@ namespace SmartStore.Services.Seo
 		/// </summary>
 		protected virtual void ClearCachedSlugsSegment(string entityName, int entityId, int? languageId = null)
 		{
+			if (IsInScope)
+				return;
+
 			var segmentKey = GetSegmentKey(entityName, entityId);
 
 			if (languageId.HasValue && languageId.Value > 0)

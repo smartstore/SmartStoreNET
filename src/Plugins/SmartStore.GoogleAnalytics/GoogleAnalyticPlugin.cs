@@ -31,12 +31,11 @@ namespace SmartStore.GoogleAnalytics
         /// <returns>Widget zones</returns>
         public IList<string> GetWidgetZones()
         {
-            var zones = new List<string>() { "head_html_tag", "mobile_head_html_tag" };
+            var zones = new List<string>() { "head_html_tag" };
             if(!string.IsNullOrWhiteSpace(_googleAnalyticsSettings.WidgetZone))
             {
                 zones = new List<string>() { 
-                    _googleAnalyticsSettings.WidgetZone, 
-                    _googleAnalyticsSettings.WidgetZone == "head_html_tag" ? "mobile_head_html_tag" : "mobile_body_end_html_tag_after"
+                    _googleAnalyticsSettings.WidgetZone
                 };
             }
 

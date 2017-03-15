@@ -53,7 +53,7 @@ namespace SmartStore.Services.Customers
         }
 
         /// <summary>
-        /// Gets a value indicating whether customer a search engine
+        /// Gets a value indicating whether customer is a search engine
         /// </summary>
         /// <param name="customer">Customer</param>
         /// <returns>Result</returns>

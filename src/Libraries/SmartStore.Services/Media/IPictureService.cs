@@ -18,6 +18,15 @@ namespace SmartStore.Services.Media
         byte[] ValidatePicture(byte[] pictureBinary);
 
 		/// <summary>
+		/// Validates input picture dimensions and prevents that the image size exceeds global max size
+		/// </summary>
+		/// <param name="pictureBinary">Picture binary</param>
+		/// <param name="mimeType">MIME type</param>
+		/// <param name="size">The size of the original input OR the resized picture</param>
+		/// <returns>Picture binary or throws an exception</returns>
+		byte[] ValidatePicture(byte[] pictureBinary, out Size size);
+
+		/// <summary>
 		/// Finds an equal picture by comparing the binary buffer
 		/// </summary>
 		/// <param name="pictureBinary">Binary picture data</param>
@@ -165,15 +174,17 @@ namespace SmartStore.Services.Media
 		/// </summary>
 		/// <param name="productIds">The ids of products to retrieve pictures for</param>
 		/// <param name="maxPicturesPerProduct">Max number of pictures to retrieve per product</param>
+		/// <param name="withBlobs">Whether the blob in MediaStorage table should be eager loaded</param>
 		/// <returns>A lookup map of product ids and pictures</returns>
-		Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1);
+		Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1, bool withBlobs = false);
 
 		/// <summary>
 		/// Gets pictures by picture identifier
 		/// </summary>
 		/// <param name="pictureIds">Picture identifier</param>
+		/// <param name="withBlobs">Whether the blob in MediaStorage table should be eager loaded</param>
 		/// <returns>Pictures</returns>
-		IList<Picture> GetPicturesByIds(int[] pictureIds);
+		IList<Picture> GetPicturesByIds(int[] pictureIds, bool withBlobs = false);
 
 		/// <summary>
 		/// Deletes a picture

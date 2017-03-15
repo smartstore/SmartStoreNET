@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Collections;
 
 namespace SmartStore.Services.Messages
 {
@@ -54,6 +55,10 @@ namespace SmartStore.Services.Messages
         string[] GetListOfCampaignAllowedTokens();
 
         string[] GetListOfAllowedTokens();
+
+        TreeNode<string> GetTreeOfCampaignAllowedTokens();
+
+        TreeNode<string> GetTreeOfAllowedTokens();
 
         void AddBankConnectionTokens(IList<Token> tokens);
         

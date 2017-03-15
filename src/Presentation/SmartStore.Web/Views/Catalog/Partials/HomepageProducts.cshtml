@@ -1,0 +1,21 @@
+﻿@model ProductSummaryModel
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	if (Model.PagedList.TotalCount == 0)
+	{
+		return;
+	}
+}
+
+<div class="product-grid home-page-product-grid block">
+    <div class="block-title">
+        @T("HomePage.Products")
+    </div>
+
+    <div class="block-body">
+		@{ 
+			Html.RenderPartial("Product.List", Model);
+		}
+    </div>
+</div>

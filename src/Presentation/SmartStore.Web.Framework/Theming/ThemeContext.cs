@@ -8,9 +8,6 @@ using SmartStore.Services.Common;
 
 namespace SmartStore.Web.Framework.Theming
 {
-    /// <summary>
-    /// Theme context
-    /// </summary>
     public partial class ThemeContext : IThemeContext
     {
 		internal const string OverriddenThemeNameKey = "OverriddenThemeName";
@@ -23,11 +20,9 @@ namespace SmartStore.Web.Framework.Theming
         private readonly IMobileDeviceHelper _mobileDeviceHelper;
 		private readonly HttpContextBase _httpContext;
 
-        private bool _desktopThemeIsCached;
-        private string _cachedDesktopThemeName;
+        private bool _themeIsCached;
+        private string _cachedThemeName;
 
-        private bool _mobileThemeIsCached;
-        private string _cachedMobileThemeName;
         private ThemeManifest _currentTheme;
 
         public ThemeContext(
@@ -48,16 +43,13 @@ namespace SmartStore.Web.Framework.Theming
 			this._httpContext = httpContext;
         }
 
-        /// <summary>
-        /// Get or set current theme for desktops (e.g. Alpha)
-        /// </summary>
-        public string WorkingDesktopTheme
+        public string WorkingThemeName
         {
             get
             {
-                if (_desktopThemeIsCached)
+                if (_themeIsCached)
                 {
-                    return _cachedDesktopThemeName;
+                    return _cachedThemeName;
                 }
 
 				var customer = _workContext.CurrentCustomer;
@@ -73,7 +65,7 @@ namespace SmartStore.Web.Framework.Theming
 					{
 						if (customer != null)
 						{
-							theme = customer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName, _genericAttributeService, _storeContext.CurrentStore.Id);
+							theme = customer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingThemeName, _genericAttributeService, _storeContext.CurrentStore.Id);
 						}
 					}
 
@@ -83,17 +75,17 @@ namespace SmartStore.Web.Framework.Theming
                 // default store theme
                 if (string.IsNullOrEmpty(theme))
                 {
-                    theme = _themeSettings.DefaultDesktopTheme;
+                    theme = _themeSettings.DefaultTheme;
                 }
 
                 // ensure that theme exists
                 if (!_themeRegistry.ThemeManifestExists(theme))
                 {
-                    var manifest = _themeRegistry.GetThemeManifests().Where(x => !x.MobileTheme).FirstOrDefault();
+                    var manifest = _themeRegistry.GetThemeManifests().FirstOrDefault();
 					if (manifest == null)
 					{
 						// no active theme in system. Throw!
-						throw Error.Application("At least one desktop theme must be in active state, but the theme registry does not contain a valid theme package.");
+						throw Error.Application("At least one theme must be in active state, but the theme registry does not contain a valid theme package.");
 					}
 					theme = manifest.ThemeName;
                     if (isUserSpecific)
@@ -102,14 +94,14 @@ namespace SmartStore.Web.Framework.Theming
 						_httpContext.SetUserThemeChoiceInCookie(null);
 						if (customer != null)
 						{
-							_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.WorkingDesktopThemeName, string.Empty, _storeContext.CurrentStore.Id);
+							_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.WorkingThemeName, string.Empty, _storeContext.CurrentStore.Id);
 						}
                     }
                 }
                 
                 // cache theme
-                this._cachedDesktopThemeName = theme;
-                this._desktopThemeIsCached = true;
+                this._cachedThemeName = theme;
+                this._themeIsCached = true;
                 return theme;
             }
             set
@@ -124,38 +116,11 @@ namespace SmartStore.Web.Framework.Theming
 
 				if (_workContext.CurrentCustomer != null)
 				{
-					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, value.EmptyNull(), _storeContext.CurrentStore.Id);
+					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingThemeName, value.EmptyNull(), _storeContext.CurrentStore.Id);
 				}
 
                 // clear cache
-                this._desktopThemeIsCached = false;
-            }
-        }
-
-        /// <summary>
-        /// Get current theme for mobile (e.g. Mobile)
-        /// </summary>
-        public string WorkingMobileTheme
-        {
-            get
-            {
-                if (_mobileThemeIsCached)
-                    return _cachedMobileThemeName;
-
-                // default store theme
-                string theme = _themeSettings.DefaultMobileTheme;
-
-                // ensure that theme exists
-                if (!_themeRegistry.ThemeManifestExists(theme))
-                    theme = _themeRegistry.GetThemeManifests()
-                        .Where(x => x.MobileTheme)
-                        .FirstOrDefault()
-                        .ThemeName;
-
-                // cache theme
-                this._cachedMobileThemeName = theme;
-                this._mobileThemeIsCached = true;
-                return theme;
+                this._themeIsCached = false;
             }
         }
 
@@ -232,18 +197,7 @@ namespace SmartStore.Web.Framework.Theming
 					}
 					else
 					{
-						bool useMobileDevice = _mobileDeviceHelper.IsMobileDevice()
-							&& _mobileDeviceHelper.MobileDevicesSupported()
-							&& !_mobileDeviceHelper.CustomerDontUseMobileVersion();
-
-						if (useMobileDevice)
-						{
-							_currentTheme = _themeRegistry.GetThemeManifest(this.WorkingMobileTheme);
-						}
-						else
-						{
-							_currentTheme = _themeRegistry.GetThemeManifest(this.WorkingDesktopTheme);
-						}
+						_currentTheme = _themeRegistry.GetThemeManifest(this.WorkingThemeName);
 					}
 
                 }

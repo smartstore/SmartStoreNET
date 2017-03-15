@@ -1,13 +1,19 @@
 ﻿@model TopicModel
 @using SmartStore.Web.Models.Topics;
 
+@if (!Model.Body.HasValue())
+{
+    return;
+}
+
 @if (Model.IsPasswordProtected)
 {
     <script type="text/javascript">    
         $(document).ready(function () {
             $('#ph-topic-@Model.Id').hide();            
             $('#ph-password-@Model.Id #password-@Model.Id').select().focus();
-        });    
+        });
+
         function OnAuthenticateSuccess@(Model.Id)(context) {
             if (context.Authenticated)
             {
@@ -55,7 +61,7 @@
 
 @if (ViewBag.BodyOnly)
 {
-    <div class="topic-html-content-body" id="ph-topic-body-@Model.Id">
+    <div class="topic-html-content-body text-body" id="ph-topic-body-@Model.Id">
         @Html.Raw(Html.CollapsedText(Model.Body))
     </div>
 }
@@ -64,10 +70,10 @@ else {
         @if (!string.IsNullOrEmpty(Model.Title))
         {
             <div class="block-title" id="ph-title-@Model.Id">
-                @Model.Title
+				<h3>@Model.Title</h3>
             </div>
         }
-        <div class="block-body topic-html-content-body">
+        <div class="block-body topic-html-content-body text-body">
             @Html.Raw(Html.CollapsedText(Model.Body))
         </div>
     </div>

@@ -1,0 +1,70 @@
+﻿@model ChoiceModel
+
+@using SmartStore.Web.Framework.UI.Choices;
+@using SmartStore.Core.Domain.Catalog;
+
+@{
+	var controlId = Model.BuildControlId();
+	var label = Model.GetLabel();
+	var description = Model.GetDescription();
+
+	var isTextInput = Model.AttributeControlType == AttributeControlType.TextBox || Model.AttributeControlType != AttributeControlType.MultilineTextbox;
+	string templateSuffix = null;
+	switch (Model.AttributeControlType)
+	{
+		case AttributeControlType.DropdownList:
+			{
+				templateSuffix = "Dropdown";
+				break;
+			}
+		case AttributeControlType.Checkboxes:
+		case AttributeControlType.RadioList:
+			{
+				templateSuffix = "CheckRadio";
+				break;
+			}
+		case AttributeControlType.TextBox:
+			{
+				templateSuffix = "TextBox";
+				break;
+			}
+		case AttributeControlType.MultilineTextbox:
+			{
+				templateSuffix = "TextArea";
+				break;
+			}
+		case AttributeControlType.Datepicker:
+			{
+				templateSuffix = "Date";
+				break;
+			}
+		case AttributeControlType.FileUpload:
+			{
+				templateSuffix = "FileUpload";
+				break;
+			}
+		case AttributeControlType.ColorSquares:
+			{
+				templateSuffix = "Box";
+				break;
+			}
+	}
+
+}
+
+<div class="form-group choice">
+	<label class="choice-label@(Model.IsRequired ? " required" : "")" for="@controlId">@label</label>
+
+	@if (!isTextInput && description.HasValue())
+	{
+		<div class="choice-description">
+			@Html.Raw(description)
+		</div>
+	}
+
+	<div class="choice-control">
+		@{ 
+			Html.RenderPartial("ChoiceTemplates/Choice." + templateSuffix, Model);
+		}
+	</div>
+</div>

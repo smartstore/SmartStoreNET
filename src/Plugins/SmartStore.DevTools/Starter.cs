@@ -4,8 +4,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.DevTools
-{
-	
+{	
 	public class ProfilerPreApplicationStart : IPreApplicationStart
 	{
 		public void Start()
@@ -27,5 +26,4 @@ namespace SmartStore.DevTools
 			get { return int.MinValue; }
 		}
 	}
-
 }

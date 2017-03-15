@@ -1,8 +1,8 @@
 ﻿@model EditForumTopicModel
 @using SmartStore.Web.Models.Boards;
 @{    
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    Layout = "_ColumnsOne";
 
-    Html.AddTitleParts(T("Forum.PageTitle.TopicNew").Text);    
+    Html.AddTitleParts(T("Forum.PageTitle.TopicNew").Text);
 }
-@Html.Partial("_CreateUpdateTopic", @Model)
+@{ Html.RenderPartial("_CreateUpdateTopic", @Model); }

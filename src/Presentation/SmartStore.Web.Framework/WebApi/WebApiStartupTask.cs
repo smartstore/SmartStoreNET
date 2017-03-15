@@ -3,6 +3,7 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.OData.Builder;
+using System.Web.Http.OData.Extensions;
 using System.Web.Http.OData.Routing;
 using System.Web.Http.OData.Routing.Conventions;
 using SmartStore.Core.Infrastructure;
@@ -31,19 +32,13 @@ namespace SmartStore.Web.Framework.WebApi
 			config.Formatters.JsonFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "json", "application/json"));
 			config.Formatters.XmlFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "xml", "application/xml"));
 
-			var queryAttribute = new WebApiQueryableAttribute
-			{
-				MaxTop = WebApiGlobal.MaxTop,
-				MaxExpansionDepth = WebApiGlobal.MaxExpansionDepth
-			};
-			config.EnableQuerySupport(queryAttribute);
+			config.AddODataQueryFilter(new WebApiQueryableAttribute());
 
 			var corsAttribute = new EnableCorsAttribute("*", "*", "*", WebApiGlobal.Header.CorsExposed);
 			config.EnableCors(corsAttribute);
 
 			config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 
-			//var configPublisher = EngineContext.Current.Resolve<IWebApiConfigurationPublisher>();
 			var configPublisher = (IWebApiConfigurationPublisher)config.DependencyResolver.GetService(typeof(IWebApiConfigurationPublisher));
 			configPublisher.Configure(configBroadcaster);
 
@@ -70,7 +65,7 @@ namespace SmartStore.Web.Framework.WebApi
 			{
 				if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultOdata))
 				{
-					config.Routes.MapODataRoute(WebApiGlobal.RouteNameDefaultOdata, WebApiGlobal.MostRecentOdataPath,
+					config.Routes.MapODataServiceRoute(WebApiGlobal.RouteNameDefaultOdata, WebApiGlobal.MostRecentOdataPath,
 						configBroadcaster.ModelBuilder.GetEdmModel(), new DefaultODataPathHandler(), configBroadcaster.RoutingConventions);
 				}
 			}

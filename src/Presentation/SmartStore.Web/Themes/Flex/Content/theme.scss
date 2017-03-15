@@ -1,0 +1,765 @@
+/*@import url(https://fonts.googleapis.com/css?family=Roboto:400,400italic,500,500italic,700,700italic,300,300italic);*/
+
+
+/* Theme: ALPHA 
+------------------------------ */
+
+@import '~/.app/themevars.scss';
+
+$enable-flex:                   true;
+$enable-rounded:                true;
+$enable-shadows:                true;
+$enable-gradients:              false;
+$enable-transitions:            true;
+$enable-hover-media-query:      false; 
+$enable-grid-classes:           true;
+
+$body-color:                    #333;
+$link-color:                    #08c;
+
+$brand-primary:                 #3f51b5; // #0275d8
+$brand-danger:                  #f44336; // #d9534f;
+$brand-warning:                 #ff9800; // #f0ad4e;
+$brand-info:                    #78909c; // #5bc0de;
+
+$headings-line-height:          1.3;
+
+$font-family-sans-serif:        -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
+$font-family-serif:             Georgia, "Times New Roman", Times, serif !default;
+$font-family-monospace:         Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$font-family-base:              $font-family-sans-serif !default;
+
+$font-size-root:                16px;
+$font-size-base:                0.875rem; // 14px
+$font-size-lg:                  1rem; // 1.25rem (16px)
+$font-size-sm:                  0.8125rem; // .875rem (13px)
+$font-size-xs:                  0.75rem; // .75rem (12px)
+$line-height:                   1.8;
+$line-height-sm:                1.8;
+$line-height-lg:                1.5;
+
+$font-size-h1:                  2.25rem; // 2.5rem
+$font-size-h2:                  1.75rem; // 2rem
+$font-size-h3:                  1.5rem; // 1.75rem
+$font-size-h4:                  1.25rem; // 1.5rem
+$font-size-h5:                  1rem; // 1.25rem
+$font-size-h6:                  $font-size-base; // 1rem;
+
+$display1-size:                 5rem; // 6rem
+$display2-size:                 5rem; // 5.5rem
+$display3-size:                 4.5rem; // 4.5rem
+$display4-size:                 3rem; // 3.5rem
+
+$border-radius:                 3px;
+$border-radius-lg:              4px; 
+$border-radius-sm:              2px;
+
+$btn-border-radius:             2px;
+$btn-border-radius-lg:          3px;
+$btn-border-radius-sm:          2px;
+
+$input-border-radius:           $btn-border-radius;
+$input-border-radius-lg:        $btn-border-radius-lg;
+$input-border-radius-sm:        $btn-border-radius-sm;
+
+$btn-font-weight:               600;
+$btn-padding-x:                 1rem; // 1rem
+$btn-padding-y:                 0.5rem; // 0.375rem
+$btn-padding-x-sm:              0.75rem; // 0.75rem
+$btn-padding-y-sm:              0.375rem; // 0.25rem
+$btn-padding-x-lg:              1.5rem; // 1.25rem
+$btn-padding-y-lg:              0.8725rem; // 0.75rem
+
+// Equalize input vertical paddings with button paddings
+$input-padding-y:               $btn-padding-y;
+$input-padding-y-sm:            $btn-padding-y-sm;
+$input-padding-y-lg:            $btn-padding-y-lg;
+$input-box-shadow:              none;
+$input-box-shadow-focus:        none;
+
+
+/*$dropdown-border-color:     #ddd;
+$popover-border-color:      #ddd;
+$card-border-color:         rgba(0,0,0, 0.12);*/
+
+// Pagination
+
+$pagination-padding-x:          12px;
+$pagination-padding-y:          2px;
+$pagination-padding-x-sm:       8px;
+$pagination-padding-y-sm:       0;
+$pagination-padding-x-lg:       16px;
+$pagination-padding-y-lg:       4px;
+
+
+$pagination-color:              $body-color;
+$pagination-bg:                 transparent;
+$pagination-border-width:       1px;
+$pagination-border-color:       #ddd;
+
+$pagination-hover-color:        $pagination-color;
+$pagination-hover-bg:           rgba(0,0,0, 0.06);
+$pagination-hover-border:       #ddd;
+
+$pagination-active-color:       $pagination-color;
+$pagination-active-bg:          transparent;
+$pagination-active-border:      $pagination-border-color;
+
+$alert-border-radius:           0;
+
+
+// Pre Bootstrap
+@import "shared/_spacers.scss"; 
+
+// Bootstrap
+@import "bs4/scss/bootstrap.scss"; 
+
+// Global
+@import 'shared/_mixins.scss'; 
+@import 'shared/_colors.scss'; 
+@import 'shared/_typo.scss';
+@import 'shared/_buttons.scss';
+@import 'shared/_forms.scss';
+@import 'shared/_nav.scss';
+@import 'shared/_accordion.scss';
+@import "shared/_modal-flex.scss";
+@import "shared/_throbber.scss";
+@import "shared/_spinner.scss";
+@import "shared/_star-rating.scss";
+@import "shared/_sortable-grip.scss";
+@import "shared/_utils.scss";
+@import "select2/scss/core.scss";
+@import "shared/_select2.scss";
+@import "shared/_offcanvas.scss";
+@import "shared/_animate.scss";
+@import "shared/_touchspin.scss";
+@import "shared/_pnotify.scss";
+@import "photoswipe/photoswipe.scss";
+@import "slick/slick.scss";
+
+// Main
+@import "_shopbar.scss";
+@import "_search.scss";
+@import "_footer.scss";
+@import "_misc.scss";
+@import "_blog.scss";
+@import "_forum.scss";
+@import "_checkout.scss";
+@import "_pages.scss";
+@import "_login.scss";
+@import "_rating.scss";
+@import "_artlist.scss";
+@import "_product.scss";
+@import "_gallery.scss";
+@import "_cart.scss";
+@import "_megamenu.scss";
+@import "_menu.scss";
+
+@import "_photoswipe-theme.scss";
+@import "_slick-theme.scss";
+@import "_drift-theme.scss";
+
+// Custom imports from plugins
+@import '~/.app/moduleimports.scss';
+
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body { 
+    background: $body-bg;
+}
+
+//
+// TODO: (mc) Move all later (!)
+// ------------------------------------------------------
+
+#page {
+    background: $body-bg;
+    overflow-x: hidden;    
+}
+
+.page-main {
+    position: relative;
+    z-index: 1;
+    background: $body-bg;
+    box-shadow: 0 0 24px rgba(#000, 0.2);
+}
+
+.page-title {
+    margin-bottom: 1.5rem;
+}
+
+.text-body {
+    // TODO: (mc) Make variable for this
+    // TODO: (mc) > (mh) Apply to all elems with long text/description (news, blogs, forum etc.)
+    font-size: 1rem;
+}
+
+
+.block {
+    &:not(:last-child) {
+        margin-bottom: 1.8rem;
+    }   
+
+    .block-title {
+        font-size: $font-size-h3;
+        line-height: 1.3;
+        border-bottom: 1px dotted rgba(0,0,0, 0.2);
+
+        > * {
+            // Most probably a heading tag
+            margin: 0;
+            padding: 0.5em 0;
+        }
+    }
+
+    &.block-boxed {
+        border: 1px dotted rgba(0,0,0, 0.2);
+    }
+
+    &.block-boxed .block-title {
+        color: $gray-light;
+        margin-left: 1.5rem;
+        margin-right: 1.5rem;
+    }
+}
+
+h4, h5, h6, .h4, .h5, .h6 {
+    font-weight: $font-weight-medium;
+}
+
+
+
+.pagination {
+    .page-nav {
+        background-color: #fff;
+        &:hover { background-color: $pagination-hover-bg; }
+        &:first-of-type { margin-right: 0.25rem; }
+        &:last-of-type { margin-left: 0.25rem; }
+    }
+
+    .page-link {
+        border-radius: 2px !important;
+        margin-left: 0;
+        text-decoration: none !important;
+    }
+
+    .shrinked .page-link {
+        padding-left: 2px;
+        padding-right: 2px;
+        background-color: transparent !important;
+    }
+
+    .page-link:not(.page-nav) {
+        border-color: transparent !important;
+    }
+
+    .active .page-link {
+        font-weight: bold;
+    }
+
+    &.pagination-xs {
+        .page-link {
+            line-height: 1.4;
+            font-size: $font-size-xs;
+            padding: 0 6px;
+        }
+    }
+}
+
+.tooltip {
+    font-size: $font-size-sm;
+}
+
+.label {
+    border: 1px solid #fff;
+}
+
+a.pretty-link {
+    color: $body-color;
+    text-decoration: none;
+    font-weight: 600;
+
+    > i { padding-right: 1.2rem; }
+    > span {
+        color: #aaa;
+        &:hover, &:active { color: inherit; }
+    }
+}
+
+.has-count[data-count]:after {
+    content: "(" attr(data-count) ")";
+    position: relative;
+    display: inline-block;
+	color: rgba($body-color, 0.6);
+	padding-left: 0.2rem;
+    font-weight: 400;
+}
+
+
+
+//
+// Text expander / collapser (Move later!)
+// ------------------------------------------------------
+
+.more-less {
+    display: block;
+    position: relative;
+    max-height: 260px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+
+    .btn-text-expander {
+        display: none;
+        position: absolute;
+        font-weight: 600;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        text-decoration: none !important;
+
+        .fa { padding-right: 0.4rem }
+    }
+
+    .btn-text-expander--expand::after {
+        content: '';
+        position: absolute;
+        z-index: -1;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: ($font-size-base * $line-height) * 3;
+        background: linear-gradient(to bottom, rgba($body-bg, 0), $body-bg 70%, $body-bg 100%);
+    }
+
+    .btn-text-expander--collapse {
+        position: relative;
+        font-weight: normal;
+    }
+
+    &.collapsed {
+        .btn-text-expander--expand { display: block; }
+    }
+
+    &.expanded {
+        max-height: none !important;
+        .btn-text-expander--collapse { display: block; }
+    }
+}
+
+
+// Icon margins (Move later!)
+// ------------------------------------------------------
+
+.btn,
+.menubar-link,
+.nav-link,
+.dropdown-item {
+    > .fa + span, .fa + em { padding-left: 0.4em; }
+    > span + .fa, em + .fa { margin-left: 0.4em; }
+}
+
+
+// Data binding 3d rotate
+// ------------------------------------------------------
+@keyframes data-binding {
+    0%      { transform: rotateY(0deg); }
+    50%     { transform: rotateY(180deg); color: transparent; }
+    100%    { transform: rotateY(360deg); }
+}
+
+.data-binding {
+    animation: data-binding 0.5s ease-in-out;
+}
+
+
+//
+// Bootstrap 4 Alpha 1 fixes & surrogates (DELETE later!)
+// ------------------------------------------------------
+
+.ml-auto    { margin-left: auto !important }
+.mr-auto    { margin-right: auto !important }
+.mt-auto    { margin-top: auto !important }
+.mb-auto    { margin-bottom: auto !important }
+.m-auto     { margin: auto !important }
+.mx-auto    { margin-left: auto !important; margin-right: auto !important }
+.my-auto    { margin-top: auto !important; margin-bottom: auto !important }
+
+.col-xs, .col-sm, .col-md, .col-lg, .col-xl {
+    display: block;
+    position: relative;
+    min-height: 1px;
+    width: 100%;
+    padding-left: $grid-gutter-width / 2;
+    padding-right: $grid-gutter-width / 2;
+}
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+    @include media-breakpoint-up($breakpoint) {
+        .col-#{$breakpoint} {  
+            flex-basis: 0;
+            flex-grow: 1;
+            max-width: 100%;
+        }
+    }
+}
+
+.d-block            { display: block; }
+.d-inline           { display: inline; }
+.d-inline-block     { display: inline-block; }
+.d-flex             { display: flex; }
+
+.flex-nowrap        { flex-wrap: nowrap !important; }
+.flex-wrap          { flex-wrap: wrap !important; }
+.flex-row           { flex-direction: row !important; }
+.flex-column        { flex-direction: column !important; }
+
+.justify-content-start      { justify-content: flex-start; }
+.justify-content-center     { justify-content: center; }
+.justify-content-around     { justify-content: space-around; }
+.justify-content-between    { justify-content: space-between; }
+.justify-content-end        { justify-content: flex-end; }
+
+.align-items-start          { align-items: flex-start; }
+.align-items-end            { align-items: flex-end; }
+.align-items-center         { align-items: center; }
+.align-items-baseline       { align-items: baseline; }
+.align-items-stretch        { align-items: stretch; }
+
+
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+    > .col, > [class*="col-"] {
+        padding-right: 0;
+        padding-left: 0;
+    }
+}
+
+
+//
+// Some layout utils
+// ------------------------------------------------------
+
+.sm-gutters {
+    $gw: 0.5rem;
+    margin-right: $gw * -1;
+    margin-left: $gw * -1;
+    > .col, > [class*="col-"] {
+        padding-right: $gw;
+        padding-left: $gw;
+    }
+}
+
+.xs-gutters {
+    $gw: 0.25rem;
+    margin-right: $gw * -1;
+    margin-left: $gw * -1;
+    > .col, > [class*="col-"] {
+        padding-right: $gw;
+        padding-left: $gw;
+    }
+}
+
+
+//
+// Some Flex utils
+// ------------------------------------------------------
+
+.flex-grow-0        { flex-grow: 0 !important }
+.flex-grow-1        { flex-grow: 1 !important }
+
+
+//
+// Profiler sucks on small screens
+// ------------------------------------------------------
+
+@include media-breakpoint-down(sm) {
+    .profiler-results {
+        display: none !important;
+    }
+}
+
+
+//
+// Fontastic utils (ensure crisp icons with 20/40...px)
+// ------------------------------------------------------
+
+.icm        { font-size: 20px; display: inline-block; }
+.icm-2x     { font-size: 40px; }
+.icm-3x     { font-size: 60px; }
+.icm-4x     { font-size: 80px; }
+.icm-5x     { font-size: 100px; }
+
+
+// Imaging
+// ------------------------------------------------------
+
+.img-center-container {
+    display: block;
+    position: relative;
+    height: 0;
+    width: 100%;
+    padding-top: 100%;
+    text-decoration: none !important;
+    outline: none !important;
+
+    > img {
+        position: absolute;
+        max-width: 100%;
+        max-height: 100%;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+}
+
+
+//
+// Validation
+// ------------------------------------------------------
+
+.validation-summary-errors > ul {
+    margin: 0;
+}
+
+.field-validation-error {
+    display: block;
+    color: $state-danger-text;
+    margin-top: 0.25rem;
+}
+
+
+
+//
+// Alerts
+// ------------------------------------------------------
+
+.alert {
+    position: relative;
+    padding-left: 4rem;
+    line-height: 1.5;
+    border-width: 0;
+
+    &:before {
+        display: block; 
+        position: absolute;
+        content: ' ';
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3rem;
+        z-index: 1;
+    }
+    &.alert-danger:before    { background-color: $brand-danger; }
+    &.alert-info:before      { background-color: $brand-info; }
+    &.alert-success:before   { background-color: $brand-success; }
+    &.alert-warning:before   { background-color: $brand-warning; }
+
+    &:after {
+        display: block; 
+        position: absolute;
+        color: #fff;
+        font-family: FontAwesome;
+        left: 0;
+        top: 50%;
+        font-size: 1.25em;
+        width: 3rem;
+        text-align: center;
+        transform: translateY(-50%);
+        z-index: 2;
+    }
+    &.alert-danger:after   { content: "\f071"; } // exclamation-triangle
+    &.alert-info:after     { content: "\f06a"; } // info
+    &.alert-success:after  { content: "\f00c"; } // check
+    &.alert-warning:after  { content: "\f06a"; } // exclamation-circle
+}
+
+.alert > ul {
+    padding-left: 1.2rem;
+}
+
+.alert > *:first-child {
+	margin-top: 0;
+}
+
+.alert > *:last-child {
+	margin-bottom: 0;
+}
+
+
+
+//
+// Choice-Styles (Variants etc.)
+// ------------------------------------------------------
+
+.choice {
+    margin-bottom: 1rem;
+}
+
+.form-control-label.required,
+.choice-label.required {
+	color: inherit;
+	font-weight: bold;
+	&:after { content: ' *' }
+}
+
+.choice-item-img,
+.choice-item-color {
+    display: inline-block;
+    text-decoration: none !important;
+    margin-right: 0.25rem;
+    overflow: hidden;
+}
+
+.choice-item-img {
+    max-width: 20px;
+    max-height: 1em;
+
+    > img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+.choice-item-color {
+    width: 1em;
+    height: 1em;
+    padding: 0;
+}
+
+.choice-description {
+    color: $text-muted;
+    font-size: $font-size-sm;
+    margin-bottom: 0.5rem;
+    > *:first-child { margin-top: 0; }
+    > *:last-child { margin-bottom: 0; }
+}
+
+.choice-box-group {
+    $choice-box-padding:        0.2rem;
+    $choice-box-size:           2.8rem;
+    $choice-box-size-lg:        4rem;
+    $choice-box-size-sm:        1.5rem;
+    $choice-box-size-xl:        6rem;
+
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+    position: relative;
+    margin: 0 ($choice-box-padding * -1);
+
+    @include clearfix();
+
+	.choice-box {
+        position: relative;
+        float: left;
+        display: block;
+        //padding: 0;
+        padding: $choice-box-padding;
+        //padding-bottom: $choice-box-padding * 2;
+	}
+
+    .choice-box-label {
+        margin: 0;
+    }
+
+	.choice-box-content {
+        position: relative;
+		display: block;
+        cursor: pointer;
+	}
+
+	.choice-box-element {
+        display: inline-block;
+        border: 1px solid rgba(0,0,0, .3);
+        background-color: #fff;
+        transition: border-color 0.1s linear;
+
+        height: $choice-box-size;
+        line-height: $choice-box-size;
+        min-width: $choice-box-size;
+        vertical-align: middle;
+        text-align: center;
+        overflow: hidden;
+
+        font-weight: 600;
+
+        &:hover { border-color: rgba(0,0,0, 0.7); }
+
+        .choice-box-img {
+            display: block;
+            position: relative;
+            max-width: calc(#{$choice-box-size} - 4px);
+            max-height: calc(100% - 4px);
+            margin: auto;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .choice-box-text {
+            padding: 0 0.4rem;
+        }
+	}
+
+	.choice-box-control-native:checked + .choice-box-content {
+        .choice-box-element {
+            border-color: rgba(0,0,0, 0.7);
+        }
+
+        &:after {
+            box-sizing: content-box;
+            position: absolute;
+            z-index: 1;
+            display: block;
+            right: -6px;
+            top: -6px;
+            background-color: $brand-warning;
+            border-radius: 50%;
+            border: 1px solid #fff;
+
+            width: 16px;
+            height: 16px;
+            line-height: 16px;
+            text-align: center;
+            vertical-align: middle;
+
+            font-family: FontAwesome;
+            content: "\f00c"; // check
+            color: #fff;
+            font-size: 10px;
+        }
+	}
+
+	.choice-box-control-native {
+		display: none !important;
+	}
+
+    // Choice box sizing
+    &.choice-box-group-xl .choice-box-element {
+        height: $choice-box-size-xl;
+        line-height: $choice-box-size-xl;
+        min-width: $choice-box-size-xl;
+        .choice-box-img { max-width: calc(#{$choice-box-size-xl} - 4px); }       
+    }
+
+    &.choice-box-group-lg .choice-box-element {
+        height: $choice-box-size-lg;
+        line-height: $choice-box-size-lg;
+        min-width: $choice-box-size-lg;
+        .choice-box-img { max-width: calc(#{$choice-box-size-lg} - 4px); }          
+    }
+
+    &.choice-box-group-sm .choice-box-element {
+        height: $choice-box-size-sm;
+        line-height: $choice-box-size-sm;
+        min-width: $choice-box-size-sm;
+        .choice-box-img { max-width: calc(#{$choice-box-size-sm} - 4px); }          
+    }
+}
+

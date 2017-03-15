@@ -1,0 +1,49 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Orders;
+
+@{
+	var addModel = Model.AddToCart;
+	var showBuyAction = Model.IsAvailable && !Model.AddToCart.DisableBuyButton;
+}
+
+<div class="row pd-offer-actions flex-nowrap">
+	@if (showBuyAction)
+	{
+		if (Model.ProductPrice.CallForPrice)
+		{
+			<div class="col-xs">
+				<a class="btn btn-secondary btn-lg btn-block" rel="nofollow" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
+					<i class="fa fa-envelope"></i>
+					<span>@T("Products.CallForPrice.GoToForm")</span>
+				</a>
+			</div>
+		}
+		else
+		{
+			if (!Model.AddToCart.HideQuantityControl)
+			{
+				<div class="col-xs pd-offer-action-qty">
+					@Html.EditorFor(model => model.AddToCart, "QtyInput", new { large = true })
+				</div>
+			}
+
+			<div class="col-xs flex-grow-1">
+				<a class="btn btn-primary btn-lg btn-block btn-add-to-cart ajax-cart-link"
+					href="#"
+					rel="nofollow"
+					data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })'
+					data-form-selector="#pd-form"
+					data-type="cart"
+					data-action="add"
+					data-toggle="offcanvas" data-target="#offcanvas-cart">
+					<i class="fa fa-cart-arrow-down"></i>
+					<span>@(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))</span>
+				</a>
+			</div>
+		}
+
+		Html.RenderPartial("Product.Offer.Actions.Misc", Model);
+	}
+</div>

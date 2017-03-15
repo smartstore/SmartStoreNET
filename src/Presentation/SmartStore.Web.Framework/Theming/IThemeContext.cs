@@ -8,14 +8,9 @@ namespace SmartStore.Web.Framework.Theming
     public interface IThemeContext
     {
         /// <summary>
-        /// Get or set current theme for desktops (e.g. Alpha)
+        /// Gets or sets the name of the current theme (e.g. Flex)
         /// </summary>
-        string WorkingDesktopTheme { get; set; }
-
-        /// <summary>
-        /// Get current theme for mobile (e.g. Mobile)
-        /// </summary>
-        string WorkingMobileTheme { get; }
+        string WorkingThemeName { get; set; }
 
 		/// <summary>
 		/// Sets a theme override to be used for the current request

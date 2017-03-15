@@ -3,7 +3,7 @@
 
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
+
     ViewBag.Title = T("Admin.ContentManagement.News.NewsItems").Text;
 }
 
@@ -13,7 +13,7 @@
         @T("Admin.ContentManagement.News.NewsItems")
     </div>
     <div class="options">
-		@Html.Widget("admin_button_toolbar_before")
+		@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
 		<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
 			<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")
@@ -21,7 +21,7 @@
 
         <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
 
-		@Html.Widget("admin_button_toolbar_after")
+		@{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
 </div>
 

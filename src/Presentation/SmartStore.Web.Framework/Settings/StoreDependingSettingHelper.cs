@@ -116,7 +116,7 @@ namespace SmartStore.Web.Framework.Settings
             var settingName = settings.GetType().Name;
             var properties = FastProperty.GetProperties(localized == null ? settings.GetType() : localized.GetType()).Values;
 
-			using (settingService.BeginBatch())
+			using (settingService.BeginScope())
 			{
 				foreach (var prop in properties)
 				{

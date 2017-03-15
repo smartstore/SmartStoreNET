@@ -16,20 +16,22 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-    
-	@Html.Action("StoreScopeConfiguration", "Setting")
-    @Html.ValidationSummary(false)
-    
-    @Html.SmartStore().TabStrip().Name("customersettings-edit").Items(x =>
-	{
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerSettings").Text).Content(TabCustomerSettings()).Selected(true);
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields").Text).Content(TabCustomerFormFields().ToHtmlString());
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.AddressFormFields").Text).Content(TabAddressFormFields().ToHtmlString());
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.DateTimeSettings").Text).Content(TabDateTimeSettings());
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
 
-		//generate an event
-		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
+    @Html.ValidationSummary(false)
+
+
+    @Html.SmartStore().TabStrip().Name("customersettings-edit").Items(x =>
+    {
+    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerSettings").Text).Content(TabCustomerSettings()).Selected(true);
+    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields").Text).Content(TabCustomerFormFields().ToHtmlString());
+    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.AddressFormFields").Text).Content(TabAddressFormFields().ToHtmlString());
+    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.DateTimeSettings").Text).Content(TabDateTimeSettings());
+    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
+
+    //generate an event
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
 	})
 }
 

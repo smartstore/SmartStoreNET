@@ -1,0 +1,69 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Events;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Web.Framework.Events;
+
+@Html.SmartStore().TabStrip().Name("pd-tabs").HtmlAttributes(new { @class = "pd-tabs" }).SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
+{
+	var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
+
+	if (Model.FullDescription.HasValue())
+	{
+		var summary = Model.FullDescription.RemoveHtml().Truncate(300, "...");
+		x.Add().Text(@T("Products.Details"))
+				.Summary(summary)
+				.Content(Html.Raw("<div itemprop='description' class='text-body'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+				.Selected(true);
+	}
+
+	if (specificationAttributes.HasValue())
+	{
+		x.Add().Text(@T("Products.Specs"))
+				.Content(specificationAttributes)
+				.Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
+	}
+
+	if (Model.DisplayProductReviews)
+	{
+		x.Add().Text(@T("Reviews"))
+				.Content(TabReviews())
+				.Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning : BadgeStyle.Default, true)
+				.Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+	}
+
+	// Generate an event
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
+}).TabContentHeaderContent(TabContentHeader())
+
+@helper TabReviews() {{
+	var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
+	<p class="m-b-2">
+		@if (reviews.HasValue())
+		{
+			<a class="btn btn-warning" href="@Url.Action("Reviews", new { id = Model.Id })">
+				<span>@T("Reviews.Overview.AddNew")</span>
+			</a>
+		}
+		else
+		{
+			<a class="btn btn-warning" href="@Url.Action("Reviews", new { id = Model.Id })">
+				<span>@T("Reviews.Overview.First")</span>
+			</a>
+		}
+	</p>
+
+	@Html.Raw(reviews);
+}}
+
+@helper TabContentHeader() {{
+	<a href="javascript:void()" class="btn btn-secondary btn-flat btn-lg offcanvas-closer">
+		<i class="fa fa-chevron-left"></i>
+		<span>@T("Common.Close")</span>
+	</a>
+}}
+
+
+

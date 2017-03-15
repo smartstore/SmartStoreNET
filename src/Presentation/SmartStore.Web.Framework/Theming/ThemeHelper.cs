@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -15,6 +16,7 @@ namespace SmartStore.Web.Framework.Theming
     {
 		private static readonly Regex s_inheritableThemeFilePattern;
 		private static readonly Regex s_themeVarsPattern;
+		private static readonly Regex s_moduleImportsPattern;
 		private static readonly Regex s_extensionlessPathPattern;
 
 		public static readonly string ThemesBasePath;
@@ -23,11 +25,11 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			ThemesBasePath = CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 
-			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|less|js|cshtml|svg|json)$".FormatInvariant(ThemesBasePath);
+			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|scss|less|js|cshtml|svg|json)$".FormatInvariant(ThemesBasePath);
 			s_inheritableThemeFilePattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-			s_themeVarsPattern = new Regex(@"^~/\.db/themevars.less$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-			s_extensionlessPathPattern = new Regex(@"/(.+)/([^/.]*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-
+			s_themeVarsPattern = new Regex(@"^~/\.(db|app)/themevars(.scss|.less)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			s_moduleImportsPattern = new Regex(@"^~/\.app/moduleimports.scss$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			s_extensionlessPathPattern = new Regex(@"~/(.+)/([^/.]*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 		}
 
         internal static bool PathListContainsThemeVars(IEnumerable<string> pathes)
@@ -39,16 +41,44 @@ namespace SmartStore.Web.Framework.Theming
 
         internal static bool PathIsThemeVars(string virtualPath)
         {
-            if (string.IsNullOrEmpty(virtualPath))
-                return false;
+			string extension = null;
+			return PathIsThemeVars(virtualPath, out extension);
+        }
+
+		internal static bool PathIsThemeVars(string virtualPath, out string extension)
+		{
+			extension = null;
+
+			if (string.IsNullOrEmpty(virtualPath))
+				return false;
 
 			if (virtualPath[0] != '~')
 			{
 				virtualPath = VirtualPathUtility.ToAppRelative(virtualPath);
 			}
 
-			return s_themeVarsPattern.IsMatch(virtualPath);
-        }
+			var match = s_themeVarsPattern.Match(virtualPath);
+			if (match.Success)
+			{
+				extension = match.Groups[2].Value;
+				return true;
+			}
+
+			return false;
+		}
+
+		internal static bool PathIsModuleImports(string virtualPath)
+		{
+			if (string.IsNullOrEmpty(virtualPath))
+				return false;
+
+			if (virtualPath[0] != '~')
+			{
+				virtualPath = VirtualPathUtility.ToAppRelative(virtualPath);
+			}
+
+			return s_moduleImportsPattern.IsMatch(virtualPath);
+		}
 
 		internal static bool PathIsInheritableThemeFile(string virtualPath)
 		{
@@ -73,32 +103,37 @@ namespace SmartStore.Web.Framework.Theming
 			return false;
 		}
 
-		internal static bool IsStyleSheet(string path, out bool isLess, out bool isBundle)
+		internal static IsStyleSheetResult IsStyleSheet(string path)
 		{
-			bool isCss = false;
-			isBundle = false;
-			isLess = path.EndsWith(".less", StringComparison.OrdinalIgnoreCase);
+			var extension = Path.GetExtension(path).ToLowerInvariant();
 
-			if (!isLess)
+			if (extension == ".css")
 			{
-				isCss = path.EndsWith(".css", StringComparison.OrdinalIgnoreCase);
-				if (!isCss && s_extensionlessPathPattern.IsMatch(path))
+				return new IsStyleSheetResult { Path = path, IsCss = true };
+			}
+			else if (extension == ".scss")
+			{
+				return new IsStyleSheetResult { Path = path, IsSass = true };
+			}
+			else if (extension == ".less")
+			{
+				return new IsStyleSheetResult { Path = path, IsLess = true };
+			}
+			else if (extension.IsEmpty())
+			{
+				// StyleBundles are  extension-less, so we have to ask 'BundleTable' 
+				// if a style bundle has been registered for the given path.
+				if (s_extensionlessPathPattern.IsMatch(path))
 				{
-					// StyleBundles are  extension-less, so we have to ask 'BundleTable' 
-					// if a style bundle has been registered for the given path.
 					var bundle = BundleTable.Bundles.GetBundleFor(path);
-					if (bundle != null)
+					if (bundle != null && ((bundle is SmartStyleBundle || bundle is StyleBundle)))
 					{
-						isBundle = true;
-						if (bundle is SmartStyleBundle || bundle is StyleBundle)
-						{
-							isCss = true;
-						}
+						return new IsStyleSheetResult { Path = path, IsBundle = true };
 					}
 				}
 			}
 
-			return isLess || isCss;
+			return null;
 		}
 
 		internal static ThemeManifest ResolveCurrentTheme()
@@ -111,5 +146,43 @@ namespace SmartStore.Web.Framework.Theming
 			return EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
 		}
 
-    }
+		internal class IsStyleSheetResult
+		{
+			public string Path { get; set; }
+			public bool IsCss { get; set; }
+			public bool IsLess { get; set; }
+			public bool IsSass { get; set; }
+			public bool IsBundle { get; set; }
+
+			public string Extension
+			{
+				get
+				{
+					if (IsSass)
+						return ".scss";
+					else if (IsLess)
+						return ".less";
+					else if (IsBundle)
+						return "";
+
+					return ".css";
+				}
+			}
+
+			public bool IsPreprocessor
+			{
+				get { return IsLess || IsSass; }
+			}
+
+			public bool IsThemeVars
+			{
+				get { return IsPreprocessor && ThemeHelper.PathIsThemeVars(Path); }
+			}
+
+			public bool IsModuleImports
+			{
+				get { return IsSass && ThemeHelper.PathIsModuleImports(Path); }
+			}
+		}
+	}
 }

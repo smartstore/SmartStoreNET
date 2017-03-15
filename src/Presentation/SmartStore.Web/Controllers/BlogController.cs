@@ -320,15 +320,13 @@ namespace SmartStore.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var comment = new BlogComment()
+                var comment = new BlogComment
                 {
                     BlogPostId = blogPost.Id,
                     CustomerId = _workContext.CurrentCustomer.Id,
                     IpAddress = _webHelper.GetCurrentIpAddress(),
                     CommentText = model.AddNewComment.CommentText,
-                    IsApproved = true,
-                    CreatedOnUtc = DateTime.UtcNow,
-                    UpdatedOnUtc = DateTime.UtcNow,
+                    IsApproved = true
                 };
                 _customerContentService.InsertCustomerContent(comment);
 

@@ -1,7 +1,5 @@
-﻿@model Telerik.Web.Mvc.GridModel<ProductAttributeModel>
-@using Telerik.Web.Mvc.UI
+﻿@using Telerik.Web.Mvc.UI
 @{  
-    //page title
     ViewBag.Title = T("Admin.Catalog.Attributes.ProductAttributes").Text;
 }
 <div class="section-header">
@@ -15,24 +13,28 @@
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid<ProductAttributeModel>(Model.Data)
-                    .Name("productattributes-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name)
-                            .Width(300)
-                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-                        columns.Bound(x => x.Alias);
-                        columns.Bound(x => x.Id)
-                            .Width(50)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                    })
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ProductAttribute"))
-                    .EnableCustomBinding(true))
+            @(Html.Telerik().Grid<ProductAttributeModel>()
+					.Name("productattributes-grid")
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Name)
+							.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+						columns.Bound(x => x.Alias);
+						columns.Bound(x => x.AllowFiltering)
+							.Width(200)
+							.ClientTemplate(@Html.SymbolForBool("AllowFiltering"))
+							.Centered();
+						columns.Bound(x => x.OptionCount)
+							.Width(200)
+							.Centered();
+						columns.Bound(x => x.DisplayOrder)
+							.Width(200)
+							.Centered();
+					})
+					.Pageable(settings => settings.PageSize((int)ViewData["GridPageSize"]).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ProductAttribute"))
+					.PreserveGridState()
+					.EnableCustomBinding(true))
         </td>
     </tr>
 </table>

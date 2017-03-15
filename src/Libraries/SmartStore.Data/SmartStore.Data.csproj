@@ -62,8 +62,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.3.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -130,6 +130,9 @@
     <Compile Include="Caching\DbCacheExtensions.cs" />
     <Compile Include="Caching\QueryRegistrar.cs" />
     <Compile Include="Caching\SingletonQueries.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Mapping\Catalog\ProductAttributeOptionMap.cs" />
+    <Compile Include="Mapping\Catalog\ProductAttributeOptionsSetMap.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
@@ -433,6 +436,46 @@
     <Compile Include="Migrations\201609281549565_CategoryBadges.cs" />
     <Compile Include="Migrations\201609281549565_CategoryBadges.Designer.cs">
       <DependentUpon>201609281549565_CategoryBadges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611261017137_Search.cs" />
+    <Compile Include="Migrations\201611261017137_Search.Designer.cs">
+      <DependentUpon>201611261017137_Search.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612061904083_ListPaging.cs" />
+    <Compile Include="Migrations\201612061904083_ListPaging.Designer.cs">
+      <DependentUpon>201612061904083_ListPaging.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201701121659419_PictureSize.cs" />
+    <Compile Include="Migrations\201701121659419_PictureSize.Designer.cs">
+      <DependentUpon>201701121659419_PictureSize.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201701251835419_SpecificationAttributeAlias.cs" />
+    <Compile Include="Migrations\201701251835419_SpecificationAttributeAlias.Designer.cs">
+      <DependentUpon>201701251835419_SpecificationAttributeAlias.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702061557351_DefaultDeliveryTime.cs" />
+    <Compile Include="Migrations\201702061557351_DefaultDeliveryTime.Designer.cs">
+      <DependentUpon>201702061557351_DefaultDeliveryTime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702081502539_QuantityEnhancements.cs" />
+    <Compile Include="Migrations\201702081502539_QuantityEnhancements.Designer.cs">
+      <DependentUpon>201702081502539_QuantityEnhancements.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702091426405_ProductSellingAbroad.cs" />
+    <Compile Include="Migrations\201702091426405_ProductSellingAbroad.Designer.cs">
+      <DependentUpon>201702091426405_ProductSellingAbroad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702141336312_VariantAttributeValuePictures.cs" />
+    <Compile Include="Migrations\201702141336312_VariantAttributeValuePictures.Designer.cs">
+      <DependentUpon>201702141336312_VariantAttributeValuePictures.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702202112266_VariantAttributeAllowFiltering.cs" />
+    <Compile Include="Migrations\201702202112266_VariantAttributeAllowFiltering.Designer.cs">
+      <DependentUpon>201702202112266_VariantAttributeAllowFiltering.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703021146527_ProductAttributeOptionsSet.cs" />
+    <Compile Include="Migrations\201703021146527_ProductAttributeOptionsSet.Designer.cs">
+      <DependentUpon>201703021146527_ProductAttributeOptionsSet.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -798,6 +841,36 @@
     <EmbeddedResource Include="Migrations\201609281549565_CategoryBadges.resx">
       <DependentUpon>201609281549565_CategoryBadges.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611261017137_Search.resx">
+      <DependentUpon>201611261017137_Search.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612061904083_ListPaging.resx">
+      <DependentUpon>201612061904083_ListPaging.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701121659419_PictureSize.resx">
+      <DependentUpon>201701121659419_PictureSize.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701251835419_SpecificationAttributeAlias.resx">
+      <DependentUpon>201701251835419_SpecificationAttributeAlias.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702061557351_DefaultDeliveryTime.resx">
+      <DependentUpon>201702061557351_DefaultDeliveryTime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702081502539_QuantityEnhancements.resx">
+      <DependentUpon>201702081502539_QuantityEnhancements.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702091426405_ProductSellingAbroad.resx">
+      <DependentUpon>201702091426405_ProductSellingAbroad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702141336312_VariantAttributeValuePictures.resx">
+      <DependentUpon>201702141336312_VariantAttributeValuePictures.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702202112266_VariantAttributeAllowFiltering.resx">
+      <DependentUpon>201702202112266_VariantAttributeAllowFiltering.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703021146527_ProductAttributeOptionsSet.resx">
+      <DependentUpon>201703021146527_ProductAttributeOptionsSet.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />
   </ItemGroup>
@@ -814,10 +887,7 @@
     <EmbeddedResource Include="Sql\StoredProcedures.Inverse.sql" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\LatestProductLoadAllPaged.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Caching\Creadits.txt" />
+    <Content Include="Caching\Credits.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

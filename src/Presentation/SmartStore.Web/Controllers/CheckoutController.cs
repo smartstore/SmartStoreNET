@@ -54,7 +54,6 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderService _orderService;
         private readonly IWebHelper _webHelper;
         private readonly HttpContextBase _httpContext;
-        private readonly IMobileDeviceHelper _mobileDeviceHelper;
 		private readonly ISettingService _settingService;
 
         private readonly OrderSettings _orderSettings;
@@ -104,7 +103,6 @@ namespace SmartStore.Web.Controllers
             this._orderService = orderService;
             this._webHelper = webHelper;
             this._httpContext = httpContext;
-            this._mobileDeviceHelper = mobileDeviceHelper;
 			this._settingService = settingService;
 
             this._orderSettings = orderSettings;
@@ -625,7 +623,13 @@ namespace SmartStore.Web.Controllers
                     shippingOptions.FirstOrDefault(), 
                     _storeContext.CurrentStore.Id);
 
-                return RedirectToAction("PaymentMethod");
+				var referrer = Services.WebHelper.GetUrlReferrer();
+				if (referrer.EndsWith("/PaymentMethod") || referrer.EndsWith("/Confirm"))
+				{
+					return RedirectToAction("ShippingAddress");
+				}
+
+				return RedirectToAction("PaymentMethod");
             }
 
             //model
@@ -725,6 +729,12 @@ namespace SmartStore.Web.Controllers
 					_storeContext.CurrentStore.Id);
 
 				_httpContext.GetCheckoutState().IsPaymentSelectionSkipped = true;
+
+				var referrer = Services.WebHelper.GetUrlReferrer();
+				if (referrer.EndsWith("/Confirm"))
+				{
+					return RedirectToAction("ShippingMethod");
+				}
 
 				return RedirectToAction("Confirm");
             }

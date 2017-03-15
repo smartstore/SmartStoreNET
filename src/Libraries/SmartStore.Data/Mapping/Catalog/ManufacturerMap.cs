@@ -13,8 +13,7 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Property(m => m.Description).IsMaxLength();
             this.Property(m => m.MetaKeywords).HasMaxLength(400);
             this.Property(m => m.MetaTitle).HasMaxLength(400);
-            this.Property(m => m.PriceRanges).HasMaxLength(400);
-            this.Property(m => m.PageSizeOptions).HasMaxLength(200);
+            this.Property(m => m.PageSizeOptions).HasMaxLength(200).IsOptional();
 			this.HasOptional(p => p.Picture)
 				.WithMany()
 				.HasForeignKey(p => p.PictureId)

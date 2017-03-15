@@ -9,7 +9,6 @@ using Telerik.Web.Mvc.UI.Fluent;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public static class ScaffoldExtensions
     {
         public static string SymbolForBool<T>(this HtmlHelper<T> helper, string boolFieldName)

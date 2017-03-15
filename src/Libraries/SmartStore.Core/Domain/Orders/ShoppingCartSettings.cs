@@ -23,7 +23,6 @@ namespace SmartStore.Core.Domain.Orders
 			EmailWishlistEnabled = true;
 			MiniShoppingCartEnabled = true;
 			ShowProductImagesInMiniShoppingCart = true;
-			MiniShoppingCartProductNumber = 5;
 			//RoundPricesDuringCalculation = false;
             ShowBasePrice = true;
             ShowDeliveryTimes = true;
@@ -143,10 +142,6 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets a value indicating whether to show product images in the mini-shopping cart block
         /// </summary>
         public bool ShowProductImagesInMiniShoppingCart { get; set; }
-
-        /// <summary>Gets or sets a maximum number of products which can be displayed in the mini-shopping cart block
-        /// </summary>
-        public int MiniShoppingCartProductNumber { get; set; }
         
         //Round is already an issue. 
         /// <summary>

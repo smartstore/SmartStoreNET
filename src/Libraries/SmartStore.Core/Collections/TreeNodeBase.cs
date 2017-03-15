@@ -556,7 +556,7 @@ namespace SmartStore.Collections
 			if (_children != null)
 			{
 				foreach (var child in _children)
-					child.Traverse(action);
+					child.Traverse(action, true);
 			}
 		}
 

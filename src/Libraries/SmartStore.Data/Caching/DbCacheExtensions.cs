@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using SmartStore.Core;
@@ -16,7 +14,14 @@ namespace SmartStore.Data.Caching
 	{
 		internal static IDbCache GetDbCacheInstance()
 		{
-			return EngineContext.Current.Resolve<IDbCache>();
+			try
+			{
+				return EngineContext.Current.Resolve<IDbCache>();
+			}
+			catch
+			{
+				return new NullDbCache();
+			}
 		}
 
 		#region Request Cache

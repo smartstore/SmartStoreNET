@@ -7,7 +7,6 @@ using uap = UAParser;
 
 namespace SmartStore.Services.Common
 {
-	
 	public class UAParserUserAgent : IUserAgent
 	{
 		private readonly static uap.Parser s_uap;
@@ -205,7 +204,8 @@ namespace SmartStore.Services.Common
 			{
 				if (!_isBot.HasValue)
 				{
-					_isBot = _httpContext.Request.Browser.Crawler || this.Device.IsBot || this.UserAgent.IsBot;
+					// empty useragent > bad bot!
+					_isBot = this.RawValue.IsEmpty() || _httpContext.Request.Browser.Crawler || this.Device.IsBot || this.UserAgent.IsBot;
 				}
 				return _isBot.Value;
 			}

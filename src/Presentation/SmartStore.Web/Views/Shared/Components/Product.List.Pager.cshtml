@@ -1,0 +1,45 @@
+﻿@model Pager
+
+@{ 
+	// TODO: (mc) Delete later (?)
+	var pageable = Model.Model;
+
+	if (pageable.TotalPages <= 1)
+	{
+		return;
+	}
+}
+
+@functions 
+{
+	private string GenerateUrl(int pageNumber)
+	{
+		Model.ModifyParam(pageNumber);
+		return Model.GenerateUrl(this.ViewContext.RequestContext);
+	}
+}
+
+<nav class="paginator">
+	<form method="get" action="@Request.RawUrl" class="form-inline">
+		<div class="form-group">
+			@if (pageable.PageNumber > 1)
+			{
+				<a href="#" class="btn btn-secondary btn-icon btn-sm"><i class="fa fa-angle-left"></i></a>
+			}
+
+			<select name="i" class="paginator-select form-control form-control-sm noskin">
+			@for (var i = 1; i <= pageable.TotalPages; i++)
+			{
+				<option value="@GenerateUrl(i)" @Html.Attr("selected", "selected", i == pageable.PageNumber)>Seite @i von @pageable.TotalPages</option>
+			}
+			</select>
+
+			<input type="text" class="form-control form-control-sm" />
+
+			@if (pageable.PageNumber < pageable.TotalPages)
+			{
+				<a href="#" class="btn btn-secondary btn-icon btn-sm"><i class="fa fa-angle-right"></i></a>
+			}
+		</div>
+	</form>
+</nav>

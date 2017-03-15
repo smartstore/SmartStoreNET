@@ -1,0 +1,33 @@
+﻿@model FacetGroup
+
+@using SmartStore.Core.Search.Facets
+@using SmartStore.Services.Search.Extensions;
+
+@{
+	var facets = Model.Facets.Where(x => x.HitCount > 0 || x.Value.IsSelected).ToList();
+}
+
+@if (facets.Count > 7)
+{
+	<div class="facet-local-search has-icon has-icon-right input-group-sm p-b-1">
+		<input type="text" class="form-control facet-local-search-input" placeholder="@T("Search.Facet.FindPlaceholder", Model.Label)" />
+		<span class="input-group-icon">
+			<i class="fa fa-search text-muted"></i>
+		</span>
+	</div>
+}
+
+<div class="facet-body-inner scrollable">
+	@foreach (var facet in facets)
+	{
+		<div class="facet-item facet-check" data-href="@Url.FacetToggle(facet)">
+			<label>
+				<input class="facet-control-native" type="checkbox" value="@facet.Value.ToString()" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+				<span class="facet-control-ui"></span>
+				<span class="facet-label has-count" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>
+					@(facet.Value.Label ?? facet.Value.ToString())
+				</span>
+			</label>
+		</div>
+	}
+</div>

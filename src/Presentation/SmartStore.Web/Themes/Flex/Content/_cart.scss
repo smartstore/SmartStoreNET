@@ -1,0 +1,185 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+// General
+// =================================
+
+.label-cart-amount {
+    font-weight: 400;
+    font-size: 9px;
+    width: 18px;
+    height: 18px;
+    line-height: 16px;
+    padding: 0;
+
+    position: absolute;
+    right: -5px;
+    top: -9px;
+}
+
+
+// OffCanvas Cart
+// =================================
+
+#offcanvas-cart {
+    .offcanvas-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tab-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .tab-pane {
+        padding: 0;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        > * { width: 100%; z-index: 1; }
+    }
+
+    .price {
+        white-space: nowrap;
+        font-weight: 600;
+    }
+}
+
+.offcanvas-cart-content {
+    position: relative;
+    flex-grow: 1;
+}
+
+.offcanvas-cart-body {
+    position: relative;
+    flex-grow: 1;
+	min-height: 100px;
+    line-height: 1.5;
+
+    .no-items {
+	    margin: 2rem 1rem;
+	    text-align: center;
+
+        .no-item-title, .no-item-icon { margin-bottom: 1rem; }
+
+        .no-item-title  { font-size: $font-size-h2; font-weight: 400; }
+        .no-item-icon   { color: rgba(0,0,0, 0.15); }
+        .no-item-info   { color: $text-muted; .fa { color: $body-color; } }
+    }
+}
+
+.offcanvas-cart-item {
+    border-bottom: 1px solid rgba(#000, 0.15);
+    padding: $grid-gutter-width / 1.5;
+
+    &:last-child { border-width: 0; }
+
+    .col-alpha {
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
+    }
+
+    .col-data > * {
+        //display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .name { color: $body-color; }
+
+    .unit-price { font-size: 1.25rem; line-height: 1.8; }
+
+	.qty-input .form-control {
+		border-color: transparent;
+	}
+    .mb-bundle-pictures {
+        a, .fa {
+            padding-right: 3px;
+        }
+        .fa {
+            font-size: 0.625rem;
+        }
+        a:hover {
+            text-decoration: none;
+        }
+    }
+
+        @media (max-width: 360px) {
+            .unit-price { font-size: 1rem; }
+        }
+}
+
+.offcanvas-cart-footer-row {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    line-height: 1.1;
+
+    background-color: $brand-success;
+    color: #fff;
+    padding: 1rem;
+
+    .sub-total-caption {
+        text-transform: uppercase; 
+        font-size: 0.8rem; 
+    }
+
+    .sub-total {
+        font-size: 1.5rem;
+    }
+}
+
+.offcanvas-cart-external-checkout {
+    background: #fff; 
+    padding: 0.5rem 1rem;
+
+    .external-checkout-button {
+        margin: 2px 4px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+
+        img {
+            cursor: pointer;
+            max-height: 40px;
+            max-width: 150px;
+
+            @include media-breakpoint-up(sm) {
+                max-width: 170px;
+            }
+        }
+    }
+}
+
+// Full Cart
+// =================================
+
+.order-summary-content .selected-checkout-attributes,
+.order-details .checkout-attributes {
+	.attr-caption {
+		font-weight: bold;
+		padding-right: 10px;
+		&:after {
+			content: ': ' 
+		}
+	}
+	.attr-value {
+		text-align: left;
+	}
+}
+
+.table-order-products .productpicture,
+.table-order-products .remove,
+.table-order-products .addtocart {
+    text-align: center;
+}

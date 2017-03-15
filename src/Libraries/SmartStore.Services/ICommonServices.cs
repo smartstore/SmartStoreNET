@@ -100,6 +100,11 @@ namespace SmartStore.Services
 		{
 			get;
 		}
+
+		IChronometer Chronometer
+		{
+			get;
+		}
 	}
 
 	public static class ICommonServicesExtensions

@@ -50,16 +50,17 @@
         }
         
     </script>
-    
-	@Html.Action("StoreScopeConfiguration", "Setting")
-	@Html.ValidationSummary(false)
+
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
+    @Html.ValidationSummary(false)
     
     @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Items(x =>
-	{
-		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.CartSettings").Text).Content(@TabCartSettings()).Selected(true);
-        x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.Checkout").Text).Content(@TabCheckoutSettings());
-		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.WishlistSettings").Text).Content(@TabWishlistSettings());
-    }))
+     {
+         x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.CartSettings").Text).Content(@TabCartSettings()).Selected(true);
+         x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.Checkout").Text).Content(@TabCheckoutSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.WishlistSettings").Text).Content(@TabWishlistSettings());
+     }))
 }
 
 @helper TabCartSettings()

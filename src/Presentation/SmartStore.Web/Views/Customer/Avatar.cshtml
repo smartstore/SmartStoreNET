@@ -5,7 +5,7 @@
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Core.Infrastructure;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_ColumnsTwo";
 
     //title
     Html.AddTitleParts(T("PageTitle.Account").Text);
@@ -19,17 +19,17 @@
 }
 @section left
 {
-    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+    @{ Html.RenderPartial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary()); }
 }
 @using (Html.BeginForm("Avatar", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="page account-page avatar-page">
-        <h4 class="muted">@T("Account.MyAccount")</h4>
+
         <div class="page-title">
             <h1>@T("Account.Avatar")</h1>
         </div>
 
-        <div id="@clientId" class="fileupload page-body" style="display: inline-block;">
+        <div id="@clientId" class="fileupload page-body">
             @if (!ViewData.ModelState.IsValid)
             {
                 @Html.ValidationSummary(true)
@@ -42,7 +42,7 @@
 
             @if (!String.IsNullOrEmpty(Model.AvatarUrl))
             {
-                <img src="@(Model.AvatarUrl + "?" + random)" class="img-polaroid" alt="avatar" />
+                <img src="@(Model.AvatarUrl + "?" + random)" class="img-thumbnail" alt="avatar" />
             }
             
             <button class="btn remove" @Html.Attr("style", "display:none", String.IsNullOrEmpty(Model.AvatarUrl))>

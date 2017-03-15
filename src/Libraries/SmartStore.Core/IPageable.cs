@@ -4,14 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace SmartStore.Core
-{
-    
+{   
     /// <summary>
     /// A collection of objects that has been split into pages.
     /// </summary>
     public interface IPageable : IEnumerable
     {
-
         /// <summary>
         /// The 0-based current page index
         /// </summary>
@@ -82,7 +80,6 @@ namespace SmartStore.Core
 	/// </summary>
 	public interface IPagedList<T> : IPageable, IList<T>
 	{
-		// codehint: sm-delete (members of IPageable now)
 	}
 
 }

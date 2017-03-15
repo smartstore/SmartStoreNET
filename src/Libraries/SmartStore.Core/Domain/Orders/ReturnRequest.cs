@@ -8,8 +8,8 @@ namespace SmartStore.Core.Domain.Orders
     /// Represents a return request
     /// </summary>
 	[DataContract]
-	public partial class ReturnRequest : BaseEntity
-    {
+	public partial class ReturnRequest : BaseEntity, IAuditable
+	{
 		/// <summary>
 		/// Gets or sets the store identifier
 		/// </summary>

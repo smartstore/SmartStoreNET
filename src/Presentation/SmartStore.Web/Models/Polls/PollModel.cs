@@ -13,6 +13,8 @@ namespace SmartStore.Web.Models.Polls
 
         public string Name { get; set; }
 
+        public string SystemKeyword { get; set; }
+
         public bool AlreadyVoted { get; set; }
 
         public int TotalVotes { get; set; }

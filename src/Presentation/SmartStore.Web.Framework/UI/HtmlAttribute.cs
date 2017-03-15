@@ -1,11 +1,7 @@
 ﻿/*
  * Source: http://stackoverflow.com/questions/3800473/how-to-concisely-create-optional-html-attributes-with-razor-view-engine/4232630#4232630
 */
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web;
 
 namespace SmartStore.Web.Framework
@@ -24,10 +20,10 @@ namespace SmartStore.Web.Framework
         {
         }
 
-        public HtmlAttribute(string name, string seperator)
+        public HtmlAttribute(string name, string separator)
         {
             Name = name;
-            _seperator = seperator ?? " ";
+            _seperator = separator ?? " ";
         }
 
         public HtmlAttribute Add(string value)
@@ -47,6 +43,7 @@ namespace SmartStore.Web.Framework
         {
             if (!String.IsNullOrWhiteSpace(_internalValue))
                 _internalValue = String.Format("{0}=\"{1}\"", Name, _internalValue.Substring(0, _internalValue.Length - _seperator.Length));
+
             return _internalValue;
         }
 

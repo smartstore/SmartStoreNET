@@ -13,7 +13,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
@@ -133,15 +132,16 @@ namespace SmartStore.PayPal.Services
 			decimal redeemedRewardPointsAmount;
 			decimal orderDiscountInclTax;
 			decimal totalOrderItems = decimal.Zero;
+			var taxTotal = decimal.Zero;
 
-			var shipping = (_orderTotalCalculationService.GetShoppingCartShippingTotal(cart) ?? decimal.Zero);
+			var shipping = Math.Round(_orderTotalCalculationService.GetShoppingCartShippingTotal(cart) ?? decimal.Zero, 2);
 
 			var additionalHandlingFee = _paymentService.GetAdditionalHandlingFee(cart, providerSystemName);
 			var paymentFeeBase = _taxService.GetPaymentMethodAdditionalFee(additionalHandlingFee, customer);
-			var paymentFee = _currencyService.ConvertFromPrimaryStoreCurrency(paymentFeeBase, currency);
+			var paymentFee = Math.Round(_currencyService.ConvertFromPrimaryStoreCurrency(paymentFeeBase, currency), 2);
 
-			var total = (_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
-				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero);
+			var total = Math.Round(_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
+				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero, 2);
 
 			// line items
 			foreach (var item in cart)
@@ -161,14 +161,39 @@ namespace SmartStore.PayPal.Services
 					items.Add(line);
 				}
 
-				totalOrderItems += (productPrice * item.Item.Quantity);
+				totalOrderItems += (Math.Round(productPrice, 2) * item.Item.Quantity);
 			}
 
-			var itemsPlusMisc = (totalOrderItems + shipping + paymentFee);
+			if (items != null && paymentFee != decimal.Zero)
+			{
+				var line = new Dictionary<string, object>();
+				line.Add("quantity", "1");
+				line.Add("name", T("Order.PaymentMethodAdditionalFee").Text.Truncate(127));
+				line.Add("price", paymentFee.FormatInvariant());
+				line.Add("currency", currencyCode);
+				items.Add(line);
+
+				totalOrderItems += Math.Round(paymentFee, 2);
+			}
+
+			if (!includingTax)
+			{
+				// "To avoid rounding errors we recommend not submitting tax amounts on line item basis. 
+				// Calculated tax amounts for the entire shopping basket may be submitted in the amount objects.
+				// In this case the item amounts will be treated as amounts excluding tax.
+				// In a B2C scenario, where taxes are included, no taxes should be submitted to PayPal."
+
+				SortedDictionary<decimal, decimal> taxRates = null;
+				taxTotal = Math.Round(_orderTotalCalculationService.GetTaxTotal(cart, out taxRates), 2);
+
+				amountDetails.Add("tax", taxTotal.FormatInvariant());
+			}
+
+			var itemsPlusMisc = (totalOrderItems + taxTotal + shipping);
 
 			if (total != itemsPlusMisc)
 			{
-				var otherAmount = (total - itemsPlusMisc);
+				var otherAmount = Math.Round(total - itemsPlusMisc, 2);
 				totalOrderItems += otherAmount;
 
 				if (items != null && otherAmount != decimal.Zero)
@@ -186,22 +211,11 @@ namespace SmartStore.PayPal.Services
 			// fill amount object
 			amountDetails.Add("shipping", shipping.FormatInvariant());
 			amountDetails.Add("subtotal", totalOrderItems.FormatInvariant());
-			if (!includingTax)
-			{
-				// "To avoid rounding errors we recommend not submitting tax amounts on line item basis. 
-				// Calculated tax amounts for the entire shopping basket may be submitted in the amount objects.
-				// In this case the item amounts will be treated as amounts excluding tax.
-				// In a B2C scenario, where taxes are included, no taxes should be submitted to PayPal."
 
-				SortedDictionary<decimal, decimal> taxRates = null;
-				var taxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
-
-				amountDetails.Add("tax", taxTotal.FormatInvariant());
-			}
-			if (paymentFee != decimal.Zero)
-			{
-				amountDetails.Add("handling_fee", paymentFee.FormatInvariant());
-			}
+			//if (paymentFee != decimal.Zero)
+			//{
+			//	amountDetails.Add("handling_fee", paymentFee.FormatInvariant());
+			//}
 
 			amount.Add("total", total.FormatInvariant());
 			amount.Add("currency", currencyCode);
@@ -304,37 +318,6 @@ namespace SmartStore.PayPal.Services
 				_orderService.AddOrderNote(order, sb.ToString());
 			}
 			catch { }
-		}
-
-		public void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null, bool isWarning = false)
-		{
-			try
-			{
-				if (exception != null)
-				{
-					shortMessage = exception.Message;
-				}
-
-				if (shortMessage.HasValue())
-				{
-					shortMessage = "PayPal. " + shortMessage;
-					Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, exception, shortMessage, null);
-
-					if (notify)
-					{
-						if (isWarning)
-							_services.Notifier.Warning(new LocalizedString(shortMessage));
-						else
-							_services.Notifier.Error(new LocalizedString(shortMessage));
-					}
-				}
-			}
-			catch (Exception) { }
-
-			if (errors != null && shortMessage.HasValue())
-			{
-				errors.Add(shortMessage);
-			}
 		}
 
 		public PayPalPaymentInstruction ParsePaymentInstruction(dynamic json)
@@ -580,19 +563,20 @@ namespace SmartStore.PayPal.Services
 			{
 				result.Success = false;
 				result.ErrorMessage = exception.ToString();
-				LogError(exception);
+				Logger.Log(LogLevel.Error, exception, null, null);
 			}
 
 			try
 			{
 				if (webResponse != null)
 				{
+					string rawResponse = null;
 					using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
 					{
-						var rawResponse = reader.ReadToEnd();
+						rawResponse = reader.ReadToEnd();
 						if (rawResponse.HasValue())
 						{
-							if (webResponse.ContentType.IsCaseInsensitiveEqual("application/json"))
+							try
 							{
 								if (rawResponse.StartsWith("["))
 									result.Json = JArray.Parse(rawResponse);
@@ -616,9 +600,10 @@ namespace SmartStore.PayPal.Services
 									}
 								}
 							}
-							else if (!result.Success)
-							{							
-								result.ErrorMessage = rawResponse;
+							catch
+							{
+								if (!result.Success)
+									result.ErrorMessage = rawResponse;
 							}
 						}
 					}
@@ -628,13 +613,38 @@ namespace SmartStore.PayPal.Services
 						if (result.ErrorMessage.IsEmpty())
 							result.ErrorMessage = webResponse.StatusDescription;
 
-						LogError(null, result.ErrorMessage, string.Concat(data.NaIfEmpty(), "\r\n\r\n", result.Json == null ? "" : result.Json.ToString()), false);
+						var sb = new StringBuilder();
+
+						try
+						{
+							sb.AppendLine();
+							request.Headers.AllKeys.Each(x => sb.AppendLine($"{x}: {request.Headers[x]}"));
+							if (data.HasValue())
+							{
+								sb.AppendLine();
+								sb.AppendLine(JObject.Parse(data).ToString(Formatting.Indented));
+							}
+							sb.AppendLine();
+							webResponse.Headers.AllKeys.Each(x => sb.AppendLine($"{x}: {webResponse.Headers[x]}"));
+							sb.AppendLine();
+							if (result.Json != null)
+							{
+								sb.AppendLine(result.Json.ToString());
+							}
+							else if (rawResponse.HasValue())
+							{
+								sb.AppendLine(rawResponse);
+							}
+						}
+						catch { }
+
+						Logger.Log(LogLevel.Error, new Exception(sb.ToString()), result.ErrorMessage, null);
 					}
 				}
 			}
 			catch (Exception exception)
 			{
-				LogError(exception);
+				Logger.Log(LogLevel.Error, exception, null, null);
 			}
 			finally
 			{
@@ -1029,7 +1039,12 @@ namespace SmartStore.PayPal.Services
 			var paymentId = (string)json.resource.parent_payment;
 			if (paymentId.IsEmpty())
 			{
-				LogError(null, T("Plugins.SmartStore.PayPal.FoundOrderForPayment", 0, "".NaIfEmpty()), JsonConvert.SerializeObject(json, Formatting.Indented), isWarning: true);
+				Logger.Log(
+					LogLevel.Warning,
+					new Exception(JsonConvert.SerializeObject(json, Formatting.Indented)),
+					T("Plugins.SmartStore.PayPal.FoundOrderForPayment", 0, "".NaIfEmpty()),
+					null);
+
 				return HttpStatusCode.OK;
 			}
 
@@ -1039,7 +1054,12 @@ namespace SmartStore.PayPal.Services
 
 			if (orders.Count != 1)
 			{
-				LogError(null, T("Plugins.SmartStore.PayPal.FoundOrderForPayment", orders.Count, paymentId), JsonConvert.SerializeObject(json, Formatting.Indented), isWarning: true);
+				Logger.Log(
+					LogLevel.Warning,
+					new Exception(JsonConvert.SerializeObject(json, Formatting.Indented)),
+					T("Plugins.SmartStore.PayPal.FoundOrderForPayment", orders.Count, paymentId),
+					null);
+
 				return HttpStatusCode.OK;
 			}
 
@@ -1052,7 +1072,12 @@ namespace SmartStore.PayPal.Services
 
 			if (!primaryCurrency.IsCaseInsensitiveEqual(currency))
 			{
-				LogError(null, T("Plugins.SmartStore.PayPal.CurrencyNotEqual", currency.NaIfEmpty(), primaryCurrency), JsonConvert.SerializeObject(json, Formatting.Indented), isWarning: true);
+				Logger.Log(
+					LogLevel.Warning,
+					new Exception(JsonConvert.SerializeObject(json, Formatting.Indented)),
+					T("Plugins.SmartStore.PayPal.CurrencyNotEqual", currency.NaIfEmpty(), primaryCurrency),
+					null);
+
 				return HttpStatusCode.OK;
 			}
 

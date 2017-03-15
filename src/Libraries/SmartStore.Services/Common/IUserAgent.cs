@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SmartStore.Services.Common
-{
-	
+{	
 	public interface IUserAgent
 	{
 		string RawValue { get; set; }

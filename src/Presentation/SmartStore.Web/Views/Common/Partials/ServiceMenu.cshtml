@@ -1,0 +1,39 @@
+﻿@model InfoBlockModel
+@using SmartStore.Web.Models.Common;
+
+@{ Html.RenderWidget("servicemenu_before"); }
+
+@if(Model.TopicPageUrls.ContainsKey("aboutus"))
+{
+	<a href="@Model.TopicPageUrls["aboutus"]" class="dropdown-item">@T("AboutUs")</a>
+}
+@if (Model.RecentlyAddedProductsEnabled)
+{
+    <a href="@Url.RouteUrl("RecentlyAddedProducts")" class="dropdown-item">@T("Products.NewProducts")</a>
+}
+@if (Model.RecentlyViewedProductsEnabled)
+{
+    <a href="@Url.RouteUrl("RecentlyViewedProducts")" class="dropdown-item">@T("Products.RecentlyViewedProducts")</a>
+}
+@if (Model.CompareProductsEnabled)
+{
+    <a href="@Url.RouteUrl("CompareProducts")" class="dropdown-item">@T("Products.Compare.List")</a>
+}
+@if (Model.SitemapEnabled)
+{
+    <a href="@Url.RouteUrl("Sitemap")" class="dropdown-item">@T("Sitemap")</a>
+}
+@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
+{
+	<a href="@Model.TopicPageUrls["shippinginfo"]" class="dropdown-item">@T("ShippingReturns")</a>
+}
+@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
+{
+	<a href="@Model.TopicPageUrls["privacyinfo"]" class="dropdown-item">@T("PrivacyNotice")</a>
+}
+@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
+{
+	<a href="@Model.TopicPageUrls["conditionsofuse"]" class="dropdown-item">@T("ConditionsOfUse")</a>
+}
+
+@{ Html.RenderWidget("servicemenu_after"); }

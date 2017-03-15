@@ -4,7 +4,6 @@ using AutoMapper;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Common;
-using SmartStore.Admin.Models.ContentSlider;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Admin.Models.Discounts;
@@ -172,8 +171,8 @@ namespace SmartStore.Admin.Infrastructure
             //campaign
 			Mapper.CreateMap<Campaign, CampaignModel>()
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-				.ForMember(dest => dest.AllowedTokens, mo => mo.Ignore())
-				.ForMember(dest => dest.TestEmail, mo => mo.Ignore())
+                .ForMember(dest => dest.TokensTree, mo => mo.Ignore())
+                .ForMember(dest => dest.TestEmail, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
             Mapper.CreateMap<CampaignModel, Campaign>()
@@ -213,6 +212,9 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
                 .ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore())
+#pragma warning disable 612, 618
+				.ForMember(dest => dest.PriceRanges, mo => mo.Ignore())
+#pragma warning restore 612, 618
 				.ForMember(dest => dest.Picture, mo => mo.Ignore());
             //manufacturer
 			Mapper.CreateMap<Manufacturer, ManufacturerModel>()
@@ -232,6 +234,9 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
 				.ForMember(dest => dest.Picture, mo => mo.Ignore())
 				.ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore())
+#pragma warning disable 612, 618
+				.ForMember(dest => dest.PriceRanges, mo => mo.Ignore())
+#pragma warning restore 612, 618
 				.ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore());
             //products
 			Mapper.CreateMap<Product, ProductModel>()
@@ -271,7 +276,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailableQuantityUnits, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductSelectCheckboxClass, mo => mo.Ignore())
-				.ForMember(dest => dest.ProductUrl, mo => mo.Ignore());
+				.ForMember(dest => dest.ProductUrl, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableCountries, mo => mo.Ignore());
 			Mapper.CreateMap<ProductModel, Product>()
 				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())
@@ -306,15 +312,17 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
-                .ForMember(dest => dest.QuantityUnit, mo => mo.Ignore())
+				.ForMember(dest => dest.QuantityUnit, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataIgnore, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataValues, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductBundleItems, mo => mo.Ignore())
-				.ForMember(dest => dest.SampleDownload, mo => mo.Ignore());
+				.ForMember(dest => dest.SampleDownload, mo => mo.Ignore())
+				.ForMember(dest => dest.CountryOfOrigin, mo => mo.Ignore());
 			//logs
             Mapper.CreateMap<Log, LogModel>()
                 .ForMember(dest => dest.CustomerEmail, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.LoggerShort, mo => mo.Ignore())
 				.ForMember(dest => dest.LogLevelHint, mo => mo.Ignore());
             Mapper.CreateMap<LogModel, Log>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
@@ -355,23 +363,6 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Locales, mo => mo.Ignore());
             Mapper.CreateMap<QuantityUnitModel, QuantityUnit>()
 				.ForMember(dest => dest.DisplayLocale, mo => mo.Ignore());
-
-            // ContentSlider slides
-            Mapper.CreateMap<ContentSliderSettings, ContentSliderSettingsModel>()
-                .ForMember(dest => dest.Id, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SearchStoreId, mo => mo.Ignore());
-            Mapper.CreateMap<ContentSliderSettingsModel, ContentSliderSettings>();
-
-			Mapper.CreateMap<ContentSliderSlideSettings, ContentSliderSlideModel>()
-				.ForMember(dest => dest.Id, mo => mo.Ignore())
-				.ForMember(dest => dest.SlideIndex, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
-            Mapper.CreateMap<ContentSliderSlideModel, ContentSliderSlideSettings>();
-
-            Mapper.CreateMap<ContentSliderButtonSettings, ContentSliderButtonModel>()
-                .ForMember(dest => dest.Id, mo => mo.Ignore());
-            Mapper.CreateMap<ContentSliderButtonModel, ContentSliderButtonSettings>();
 
             // attribute combinations
             Mapper.CreateMap<ProductVariantAttributeCombination, ProductVariantAttributeCombinationModel>()
@@ -501,21 +492,42 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Language, mo => mo.Ignore())
                 .ForMember(dest => dest.StartDateUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.EndDateUtc, mo => mo.Ignore());
-            //customer roles
-            Mapper.CreateMap<CustomerRole, CustomerRoleModel>()
-                .ForMember(dest => dest.TaxDisplayTypes, mo => mo.Ignore())
+			//customer roles
+			Mapper.CreateMap<CustomerRole, CustomerRoleModel>()
+				.ForMember(dest => dest.TaxDisplayTypes, mo => mo.Ignore());
 				/*.ForMember(dest => dest.TaxDisplayType, mo => mo.MapFrom((src) => src.TaxDisplayType))*/;
 			Mapper.CreateMap<CustomerRoleModel, CustomerRole>()
-				.ForMember(dest => dest.PermissionRecords, mo => mo.Ignore())
+				.ForMember(dest => dest.PermissionRecords, mo => mo.Ignore());
 				/*.ForMember(dest => dest.TaxDisplayType, mo => mo.MapFrom((src) => src.TaxDisplayType))*/;
 
-            //product attributes
-            Mapper.CreateMap<ProductAttribute, ProductAttributeModel>()
-                .ForMember(dest => dest.Locales, mo => mo.Ignore());
-            Mapper.CreateMap<ProductAttributeModel, ProductAttribute>();
-            //specification attributes
-            Mapper.CreateMap<SpecificationAttribute, SpecificationAttributeModel>()
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+			//product attributes
+			Mapper.CreateMap<ProductAttribute, ProductAttributeModel>()
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.OptionCount, mo => mo.Ignore());
+			Mapper.CreateMap<ProductAttributeModel, ProductAttribute>()
+				.ForMember(dest => dest.ProductAttributeOptionsSets, mo => mo.Ignore());
+
+			Mapper.CreateMap<ProductAttributeOption, ProductAttributeOptionModel>()
+				.ForMember(dest => dest.ProductVariantAttributeId, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductId, mo => mo.Ignore())
+				.ForMember(dest => dest.IsListTypeAttribute, mo => mo.Ignore())
+				.ForMember(dest => dest.NameString, mo => mo.Ignore())
+				.ForMember(dest => dest.PriceAdjustmentString, mo => mo.Ignore())
+				.ForMember(dest => dest.WeightAdjustmentString, mo => mo.Ignore())
+				.ForMember(dest => dest.TypeName, mo => mo.Ignore())
+				.ForMember(dest => dest.TypeNameClass, mo => mo.Ignore())
+				.ForMember(dest => dest.LinkedProductName, mo => mo.Ignore())
+				.ForMember(dest => dest.LinkedProductTypeName, mo => mo.Ignore())
+				.ForMember(dest => dest.LinkedProductTypeLabelHint, mo => mo.Ignore())
+				.ForMember(dest => dest.QuantityInfo, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore());
+			Mapper.CreateMap<ProductAttributeOptionModel, ProductAttributeOption>()
+				.ForMember(dest => dest.ValueType, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductAttributeOptionsSet, mo => mo.Ignore());
+
+			//specification attributes
+			Mapper.CreateMap<SpecificationAttribute, SpecificationAttributeModel>()
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.OptionCount, mo => mo.Ignore());
             Mapper.CreateMap<SpecificationAttributeModel, SpecificationAttribute>()
                 .ForMember(dest => dest.SpecificationAttributeOptions, mo => mo.Ignore());
@@ -523,7 +535,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
                 .ForMember(dest => dest.Multiple, mo => mo.Ignore());
             Mapper.CreateMap<SpecificationAttributeOptionModel, SpecificationAttributeOption>()
-                .ForMember(dest => dest.SpecificationAttribute, mo => mo.Ignore())
+				.ForMember(dest => dest.SpecificationAttribute, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductSpecificationAttributes, mo => mo.Ignore());
 			//checkout attributes
 			Mapper.CreateMap<CheckoutAttribute, CheckoutAttributeModel>()
@@ -638,16 +650,13 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<CatalogSettingsModel, CatalogSettings>()
                 .ForMember(dest => dest.PageShareCode, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultProductRatingValue, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductSearchTermMinimumLength, mo => mo.Ignore())
                 .ForMember(dest => dest.UseSmallProductBoxOnHomePage, mo => mo.Ignore())
-                .ForMember(dest => dest.DefaultCategoryPageSizeOptions, mo => mo.Ignore())
-                .ForMember(dest => dest.DefaultManufacturerPageSizeOptions, mo => mo.Ignore())
                 .ForMember(dest => dest.MaximumBackInStockSubscriptions, mo => mo.Ignore())
                 .ForMember(dest => dest.DisplayTierPricesWithDiscounts, mo => mo.Ignore())
                 .ForMember(dest => dest.FileUploadMaximumSizeBytes, mo => mo.Ignore())
                 .ForMember(dest => dest.FileUploadAllowedExtensions, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductSearchPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.MostRecentlyUsedCategoriesMaxSize, mo => mo.Ignore())
+				.ForMember(dest => dest.AllowCustomersToSelectPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.MostRecentlyUsedManufacturersMaxSize, mo => mo.Ignore());
             Mapper.CreateMap<RewardPointsSettings, RewardPointsSettingsModel>()
                 .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
@@ -664,6 +673,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore())
 				.ForMember(dest => dest.Id, mo => mo.Ignore());
 			Mapper.CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>()
+				.ForMember(dest => dest.MiniShoppingCartProductNumber, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableNewsLetterSubscriptions, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableThirdPartyEmailHandOver, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore());
@@ -678,7 +688,8 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<MediaSettingsModel, MediaSettings>()
                 .ForMember(dest => dest.DefaultImageQuality, mo => mo.Ignore())
                 .ForMember(dest => dest.MultipleThumbDirectories, mo => mo.Ignore())
-                .ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
+				.ForMember(dest => dest.DefaultThumbnailAspectRatio, mo => mo.Ignore())
+				.ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
 			Mapper.CreateMap<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>()
 				.ForMember(dest => dest.AvailableCustomerNumberMethods, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCustomerNumberVisibilities, mo => mo.Ignore())
@@ -697,12 +708,10 @@ namespace SmartStore.Admin.Infrastructure
 
 			Mapper.CreateMap<ThemeSettings, ThemeListModel>()
 				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
-				.ForMember(dest => dest.DesktopThemes, mo => mo.Ignore())
-				.ForMember(dest => dest.MobileThemes, mo => mo.Ignore())
+				.ForMember(dest => dest.Themes, mo => mo.Ignore())
 				.ForMember(dest => dest.StoreId, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
-            Mapper.CreateMap<ThemeListModel, ThemeSettings>()
-                .ForMember(dest => dest.EmulateMobileDevice, mo => mo.Ignore());
+            Mapper.CreateMap<ThemeListModel, ThemeSettings>();
         }
         
         public int Order

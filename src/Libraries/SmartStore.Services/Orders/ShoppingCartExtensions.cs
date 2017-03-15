@@ -154,6 +154,7 @@ namespace SmartStore.Services.Orders
 
 			return enumerable;
 		}
+
 		public static IList<OrganizedShoppingCartItem> Organize(this IList<ShoppingCartItem> cart)
 		{
 			var result = new List<OrganizedShoppingCartItem>();

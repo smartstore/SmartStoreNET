@@ -9,6 +9,7 @@ using ImageResizer;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Media
 {
@@ -37,6 +38,14 @@ namespace SmartStore.Services.Media
 			_imageResizerService = imageResizerService;
 
 			_thumbsRootDir = "Thumbs/";
+
+			Logger = NullLogger.Instance;
+		}
+
+		public ILogger Logger
+		{
+			get;
+			set;
 		}
 
 		public byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, int targetSize)
@@ -223,10 +232,12 @@ namespace SmartStore.Services.Media
                     {
 						_fileSystem.DeleteFolder(dir.Path);
 					}
+
                     return;
                 }
-                catch
+                catch (Exception ex)
                 {
+					Logger.Error(ex);
                 }
             }
         }

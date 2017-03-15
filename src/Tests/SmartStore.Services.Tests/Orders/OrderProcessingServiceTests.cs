@@ -133,7 +133,6 @@ namespace SmartStore.Services.Tests.Orders
 
             _shippingService = new ShippingService(
                 _shippingMethodRepository,
-                _logger,
                 _productAttributeParser,
 				_productService,
                 _checkoutAttributeParser,

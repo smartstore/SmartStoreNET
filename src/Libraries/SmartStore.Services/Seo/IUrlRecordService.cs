@@ -9,7 +9,7 @@ namespace SmartStore.Services.Seo
     /// <summary>
     /// Provides information about URL records
     /// </summary>
-    public partial interface  IUrlRecordService
+    public partial interface  IUrlRecordService : IScopedService
     {
         /// <summary>
         /// Deletes an URL record

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Search;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -8,8 +9,8 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a product variant attribute value
     /// </summary>
     [DataContract]
-	public partial class ProductVariantAttributeValue : BaseEntity, ILocalizedEntity
-    {
+	public partial class ProductVariantAttributeValue : BaseEntity, ILocalizedEntity, ISearchAlias
+	{
         /// <summary>
         /// Gets or sets the product variant attribute mapping identifier
         /// </summary>
@@ -29,6 +30,12 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
 		public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Picture Id
+        /// </summary>
+		[DataMember]
+        public int PictureId { get; set; }
 
         /// <summary>
         /// Gets or sets the color RGB value (used with "Color squares" attribute type)

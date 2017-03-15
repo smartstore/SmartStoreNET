@@ -12,6 +12,7 @@ namespace SmartStore.Core.Search
 		double GetDouble(string name);
 		bool GetBoolean(string name);
 		string GetString(string name);
+		string GetString(string name, string languageSeoCode);
 		DateTime GetDateTime(string name);
 
 		IEnumerable<string> GetStoredFieldNames();

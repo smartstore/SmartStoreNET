@@ -6,6 +6,7 @@ using System.Web.Routing;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.Localization
 {

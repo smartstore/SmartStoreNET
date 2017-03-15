@@ -159,10 +159,7 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-				var utcNow = DateTime.UtcNow;
 				var forumGroup = model.ToEntity();
-                forumGroup.CreatedOnUtc = utcNow;
-                forumGroup.UpdatedOnUtc = utcNow;
 
                 _forumService.InsertForumGroup(forumGroup);
 
@@ -213,8 +210,6 @@ namespace SmartStore.Admin.Controllers
             {
 				var utcNow = DateTime.UtcNow;
                 var forum = model.ToEntity();
-                forum.CreatedOnUtc = utcNow;
-                forum.UpdatedOnUtc = utcNow;
 
                 _forumService.InsertForum(forum);
 
@@ -275,7 +270,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 forumGroup = model.ToEntity(forumGroup);
-                forumGroup.UpdatedOnUtc = DateTime.UtcNow;
 
                 _forumService.UpdateForumGroup(forumGroup);
 
@@ -337,7 +331,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 forum = model.ToEntity(forum);
-                forum.UpdatedOnUtc = DateTime.UtcNow;
 
                 _forumService.UpdateForum(forum);
 

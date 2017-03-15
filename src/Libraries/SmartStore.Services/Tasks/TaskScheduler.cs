@@ -16,7 +16,7 @@ namespace SmartStore.Services.Tasks
 {
 	public class DefaultTaskScheduler : DisposableObject, ITaskScheduler, IRegisteredObject
     {
-		private readonly ILogger _logger;
+		private readonly IAsyncState _asyncState;
 
 		private bool _intervalFixed;
 		private int _sweepInterval;
@@ -25,16 +25,23 @@ namespace SmartStore.Services.Tasks
         private bool _shuttingDown;
 		private int _errCount;
 
-        public DefaultTaskScheduler(ILogger logger)
+        public DefaultTaskScheduler(IAsyncState asyncState)
         {
-			_logger = logger;
+			_asyncState = asyncState;
 
 			_sweepInterval = 1;
 			_timer = new System.Timers.Timer();
             _timer.Elapsed += Elapsed;
 
+			Logger = NullLogger.Instance;
             HostingEnvironment.RegisterObject(this);
         }
+
+		public ILogger Logger
+		{
+			get;
+			set;
+		}
 
 		public int SweepIntervalMinutes
         {
@@ -89,10 +96,9 @@ namespace SmartStore.Services.Tasks
             get { return _timer.Enabled; }
         }
 
-		public CancellationTokenSource GetCancelTokenSourceFor(int scheduleTaskId)
+		public string GetAsyncStateKey(int scheduleTaskId)
 		{
-			var cts = AsyncState.Current.GetCancelTokenSource<ScheduleTask>(scheduleTaskId.ToString());
-			return cts;
+			return scheduleTaskId.ToString();
 		}
 
 		private string CreateAuthToken()
@@ -188,7 +194,7 @@ namespace SmartStore.Services.Tasks
 					{
 						// 10 failed attempts in succession. Stop the timer!
 						this.Stop();
-						_logger.Info("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
+						Logger.Info("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
 					}
 				}
 				else
@@ -210,11 +216,11 @@ namespace SmartStore.Services.Tasks
 
 			if (wex == null)
 			{
-				_logger.Error(exception.InnerException, msg);
+				Logger.Error(exception.InnerException, msg);
 			}
 			else if (wex.Response == null)
 			{
-				_logger.Error(wex, msg);
+				Logger.Error(wex, msg);
 			}
 			else
 			{
@@ -224,7 +230,7 @@ namespace SmartStore.Services.Tasks
 					{
 						msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
 					}
-					_logger.Error(msg);
+					Logger.Error(msg);
 				}
 			}
 		}

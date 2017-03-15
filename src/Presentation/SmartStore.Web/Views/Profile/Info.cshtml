@@ -5,11 +5,11 @@
         @if (Model.AvatarEnabled && !String.IsNullOrEmpty(Model.AvatarUrl))
         {
             <div class="avatar">
-                <img src="@(Model.AvatarUrl)" class="avatar-img img-polaroid" alt="Avatar" />
+                <img src="@(Model.AvatarUrl)" class="avatar-img img-thumbnail" alt="Avatar" />
             </div>         
         }
         @if (Model.LocationEnabled)
-        {            
+        {
             <div class="profile-stat">
                 @T("Profile.Country"): <span class="profile-stat-value">@Model.Location</span>
             </div>  
@@ -22,7 +22,9 @@
                 </div>
             </div>  
         }
-        @Html.Widget("profile_page_info_userdetails")
+        
+        @{ Html.RenderWidget("profile_page_info_userdetails"); }
+
     </div>
     <div class="user-stats pull-left">
         <div class="title">
@@ -35,7 +37,7 @@
             </div>         
         }
         @if (Model.JoinDateEnabled)
-        {        
+        {
             <div class="profile-stat">
                 @T("Profile.JoinDate"): <span class="profile-stat-value">@Model.JoinDate</span>
             </div>
@@ -46,6 +48,7 @@
                 @T("Profile.DateOfBirth"): <span class="profile-stat-value">@Model.DateOfBirth</span>
             </div>
         }
-        @Html.Widget("profile_page_info_userstats")
+
+        @{ Html.RenderWidget("profile_page_info_userstats"); }
     </div>
 </div>

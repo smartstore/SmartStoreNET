@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -219,15 +220,18 @@ namespace SmartStore.Services.Catalog.Importer
 									if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
 										currentPictures.Add(picture);
 
-									pictureBinary = _pictureService.ValidatePicture(pictureBinary);
+									var size = Size.Empty;
+
+									pictureBinary = _pictureService.ValidatePicture(pictureBinary, out size);
 									pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 									if (pictureBinary != null && pictureBinary.Length > 0)
 									{
 										if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false)) != null)
 										{
+											picture.Width = size.Width;
+											picture.Height = size.Height;
 											category.PictureId = picture.Id;
-
 											_categoryRepository.Update(category);
 										}
 									}
@@ -397,10 +401,9 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.MetaKeywords);
 				row.SetProperty(context.Result, (x) => x.MetaDescription);
 				row.SetProperty(context.Result, (x) => x.MetaTitle);
-				row.SetProperty(context.Result, (x) => x.PageSize, 12);
-				row.SetProperty(context.Result, (x) => x.AllowCustomersToSelectPageSize, true);
+				row.SetProperty(context.Result, (x) => x.PageSize);
+				row.SetProperty(context.Result, (x) => x.AllowCustomersToSelectPageSize);
 				row.SetProperty(context.Result, (x) => x.PageSizeOptions);
-				row.SetProperty(context.Result, (x) => x.PriceRanges);
 				row.SetProperty(context.Result, (x) => x.ShowOnHomePage);
 				row.SetProperty(context.Result, (x) => x.HasDiscountsApplied);
 				row.SetProperty(context.Result, (x) => x.Published, true);
@@ -416,9 +419,6 @@ namespace SmartStore.Services.Catalog.Importer
 				{
 					category.CategoryTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
 				}
-
-				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
-				category.UpdatedOnUtc = UtcNow;
 
 				if (id != 0 && !srcToDestId.ContainsKey(id))
 				{

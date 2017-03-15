@@ -1,5 +1,6 @@
 ﻿@model String
 @using SmartStore.Web.Framework.UI;
+@using SmartStore.Web.Framework.Theming;
 
 @functions {
 	private bool FullPage
@@ -25,6 +26,8 @@
     }
 
     Html.AddScriptParts(true, "~/Content/editors/ckeditor/ckeditor.js");
+
+    var themeCssPath = Url.ThemeAwareContent("Content/theme.scss");
 }
 
 <script type="text/javascript">
@@ -40,6 +43,7 @@
             fullPage: (fullPage === true) ? true : false,
 			entities: false,
 			removePlugins: 'divarea',
+			contentsCss: ["@themeCssPath", "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"],
 			on: {
 				instanceReady: function (evt) {
 					// Fix native context menu

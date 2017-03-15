@@ -56,6 +56,12 @@ namespace SmartStore.Core.Search
 			return this;
 		}
 
+		public IndexField Boost(float factor)
+		{
+			Boosted = factor;
+			return this;
+		}
+
 		public string Name
 		{
 			get;
@@ -92,9 +98,15 @@ namespace SmartStore.Core.Search
 			private set;
 		}
 
+		public float Boosted
+		{
+			get;
+			private set;
+		}
+
 		public override string ToString()
 		{
-			return Name + ": " + Value.ToString();
+			return Name + ": " + Value.ToString().NaIfEmpty();
 		}
 	}
 

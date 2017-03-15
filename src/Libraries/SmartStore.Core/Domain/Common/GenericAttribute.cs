@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 namespace SmartStore.Core.Domain.Common
 {
@@ -22,7 +23,7 @@ namespace SmartStore.Core.Domain.Common
         /// <summary>
         /// Gets or sets the key
         /// </summary>
-		[DataMember]
+		[DataMember, Index("IX_GenericAttribute_Key")]
 		public string Key { get; set; }
 
         /// <summary>

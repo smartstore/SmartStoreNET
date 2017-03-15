@@ -37,7 +37,7 @@ namespace SmartStore.Services.Directory
 
             if (lastUpdateTime.AddHours(1) < DateTime.UtcNow)
             {
-                //update rates each one hour
+                // update rates every hour
                 var exchangeRates = _currencyService.GetCurrencyLiveRates(_services.StoreContext.CurrentStore.PrimaryExchangeRateCurrency.CurrencyCode);
 
                 foreach (var exchageRate in exchangeRates)
@@ -45,13 +45,15 @@ namespace SmartStore.Services.Directory
                     var currency = _currencyService.GetCurrencyByCode(exchageRate.CurrencyCode);
                     if (currency != null)
                     {
-                        currency.Rate = exchageRate.Rate;
-                        currency.UpdatedOnUtc = DateTime.UtcNow;
-                        _currencyService.UpdateCurrency(currency);
+						if (currency.Rate != exchageRate.Rate)
+						{
+							currency.Rate = exchageRate.Rate;
+							_currencyService.UpdateCurrency(currency);
+						}
                     }
                 }
 
-                //save new update time value
+                // save new update time value
                 _currencySettings.LastUpdateTime = DateTime.UtcNow.ToBinary();
 				_services.Settings.SaveSetting(_currencySettings);
             }

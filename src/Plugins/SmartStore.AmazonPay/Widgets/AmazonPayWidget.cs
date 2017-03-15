@@ -24,9 +24,9 @@ namespace SmartStore.AmazonPay.Widgets
 		{
 			return new List<string>()
 			{
-				"order_summary_content_before", "mobile_order_summary_content_before", 
-				"mini_shopping_cart_bottom",
-				"head_html_tag", "mobile_head_html_tag"
+				"order_summary_content_before",
+                "offcanvas_cart_summary",
+				"head_html_tag"
 			};
 		}
 
@@ -34,11 +34,11 @@ namespace SmartStore.AmazonPay.Widgets
 		{
 			bool renderAmazonPayView = true;
 
-			if (widgetZone.IsCaseInsensitiveEqual("head_html_tag") || widgetZone.IsCaseInsensitiveEqual("mobile_head_html_tag"))
+			if (widgetZone.IsCaseInsensitiveEqual("head_html_tag"))
 			{
 				actionName = "WidgetLibrary";
 			}
-			else if (widgetZone.IsCaseInsensitiveEqual("mini_shopping_cart_bottom"))
+			else if (widgetZone.IsCaseInsensitiveEqual("offcanvas_cart_summary"))
 			{
 				actionName = "MiniShoppingCart";
 

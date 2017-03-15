@@ -2,41 +2,69 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Directory;
 
 namespace SmartStore.Services.Search
 {
 	public partial class LinqCatalogSearchService : ICatalogSearchService
 	{
+		private readonly IProductService _productService;
 		private readonly IRepository<Product> _productRepository;
+		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
+		private readonly IRepository<ProductCategory> _productCategoryRepository;
+		private readonly IRepository<Manufacturer> _manufacturerRepository;
+		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IRepository<AclRecord> _aclRepository;
+		private readonly IEventPublisher _eventPublisher;
 		private readonly ICommonServices _services;
+		private readonly IDeliveryTimeService _deliveryTimeService;
 
 		public LinqCatalogSearchService(
+			IProductService productService,
 			IRepository<Product> productRepository,
+			IRepository<ProductManufacturer> productManufacturerRepository,
+			IRepository<ProductCategory> productCategoryRepository,
+			IRepository<Manufacturer> manufacturerRepository,	
+			IRepository<Category> categoryRepository,
 			IRepository<LocalizedProperty> localizedPropertyRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IRepository<AclRecord> aclRepository,
-			ICommonServices services)
+			IEventPublisher eventPublisher,
+			ICommonServices services,
+			IDeliveryTimeService deliveryTimeService)
 		{
+			_productService = productService;
 			_productRepository = productRepository;
+			_productManufacturerRepository = productManufacturerRepository;
+			_productCategoryRepository = productCategoryRepository;
+			_manufacturerRepository = manufacturerRepository;
+			_categoryRepository = categoryRepository;
 			_localizedPropertyRepository = localizedPropertyRepository;
 			_storeMappingRepository = storeMappingRepository;
 			_aclRepository = aclRepository;
+			_eventPublisher = eventPublisher;
 			_services = services;
+			_deliveryTimeService = deliveryTimeService;
 
 			QuerySettings = DbQuerySettings.Default;
+			Logger = NullLogger.Instance;
 		}
 
 		public DbQuerySettings QuerySettings { get; set; }
+
+		public ILogger Logger { get; set; }
 
 		#region Utilities
 
@@ -69,22 +97,24 @@ namespace SmartStore.Services.Search
 			return result;
 		}
 
-		private IOrderedQueryable<Product> OrderBy<TKey>(IQueryable<Product> query, Expression<Func<Product, TKey>> keySelector, bool descending = false)
+		private IOrderedQueryable<Product> OrderBy<TKey>(ref bool ordered, IQueryable<Product> query, Expression<Func<Product, TKey>> keySelector, bool descending = false)
 		{
-			var ordered = query as IOrderedQueryable<Product>;
-
-			if (ordered == null)
+			if (ordered)
 			{
+				if (descending)
+					return ((IOrderedQueryable<Product>)query).ThenByDescending(keySelector);
+
+				return ((IOrderedQueryable<Product>)query).ThenBy(keySelector);
+			}
+			else
+			{
+				ordered = true;
+
 				if (descending)
 					return query.OrderByDescending(keySelector);
 
 				return query.OrderBy(keySelector);
 			}
-
-			if (descending)
-				return ordered.ThenByDescending(keySelector);
-
-			return ordered.ThenBy(keySelector);
 		}
 
 		private IQueryable<Product> QueryCategories(IQueryable<Product> query, List<int> ids, bool? featuredOnly)
@@ -115,72 +145,68 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		private IQueryable<Product> QueryLocalizedProperties(IQueryable<Product> query, string keyGroup, string key, int languageId, string term)
+		private Facet CreateFacet(FacetDescriptor descriptor, object value, IndexTypeCode typeCode, string label, int displayOrder)
 		{
-			if (languageId != 0)
+			var newValue = new FacetValue(value, typeCode)
 			{
-				query =
-					from p in query
-					join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
-					from lp in plp.DefaultIfEmpty()
-					where lp.LanguageId == languageId && lp.LocaleKeyGroup == keyGroup && lp.LocaleKey == key && lp.LocaleValue.Contains(term)
-					select p;
+				IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(value)),
+				Label = label,
+				DisplayOrder = displayOrder
+			};
+
+			return new Facet(newValue);
+		}
+
+		protected virtual IQueryable<Product> ApplySearchTerm(IQueryable<Product> query, CatalogSearchQuery searchQuery)
+		{
+			var term = searchQuery.Term;
+			var fields = searchQuery.Fields;
+			var languageId = searchQuery.LanguageId ?? 0;
+
+			if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
+			{
+				// SearchMode.ExactMatch doesn't make sense here
+				if (searchQuery.Mode == SearchMode.StartsWith)
+				{
+					query =
+						from p in query
+						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
+						from lp in plp.DefaultIfEmpty()
+						where
+						(fields.Contains("name") && p.Name.StartsWith(term)) ||
+						(fields.Contains("sku") && p.Sku.StartsWith(term)) ||
+						(fields.Contains("shortdescription") && p.ShortDescription.StartsWith(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.StartsWith(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.StartsWith(term))
+						select p;
+				}
+				else
+				{
+					query =
+						from p in query
+						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
+						from lp in plp.DefaultIfEmpty()
+						where
+						(fields.Contains("name") && p.Name.Contains(term)) ||
+						(fields.Contains("sku") && p.Sku.Contains(term)) ||
+						(fields.Contains("shortdescription") && p.ShortDescription.Contains(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(term))
+						select p;
+				}
 			}
 
 			return query;
 		}
 
-		protected virtual IQueryable<Product> GetProducts(CatalogSearchQuery searchQuery)
+		protected virtual IQueryable<Product> GetProductQuery(CatalogSearchQuery searchQuery, IQueryable<Product> baseQuery)
 		{
+			var ordered = false;
 			var utcNow = DateTime.UtcNow;
-			var term = searchQuery.Term;
-			var languageId = searchQuery.LanguageId ?? 0;
+			var query = baseQuery ?? _productRepository.Table;
 
-			var query = _productRepository.Table
-				.Where(x => !x.Deleted);
-
-			#region Search Term
-
-			if (term.HasValue() && searchQuery.Fields != null && searchQuery.Fields.Length != 0 && searchQuery.Fields.Any(x => x.HasValue()))
-			{
-				foreach (var field in searchQuery.Fields)
-				{
-					if (field == "sku")
-					{
-						query = query.Where(x => x.Sku.Contains(term));
-					}
-					else if (field == "name")
-					{
-						query = query.Where(x => x.Name.Contains(term));
-
-						query = QueryLocalizedProperties(query, "Product", "Name", languageId, term);
-					}
-					else if (field == "shortdescription")
-					{
-						query = query.Where(x => x.ShortDescription.Contains(term));
-
-						query = QueryLocalizedProperties(query, "Product", "ShortDescription", languageId, term);
-					}
-					else if (field == "fulldescription")
-					{
-						query = query.Where(x => x.FullDescription.Contains(term));
-
-						query = QueryLocalizedProperties(query, "Product", "FullDescription", languageId, term);
-					}
-					else if (field == "tagname")
-					{
-						query =
-							from p in query
-							from pt in p.ProductTags.DefaultIfEmpty()
-							where pt.Name.Contains(term)
-							select p;
-
-						query = QueryLocalizedProperties(query, "ProductTag", "Name", languageId, term);
-					}
-				}
-			}
-
-			#endregion
+			query = query.Where(x => !x.Deleted);
+			query = ApplySearchTerm(query, searchQuery);
 
 			#region Filters
 
@@ -386,7 +412,7 @@ namespace SmartStore.Services.Search
 						}
 					}
 				}
-				else if (filter.FieldName == "price")
+				else if (filter.FieldName.StartsWith("price"))
 				{
 					if (rangeFilter != null)
 					{
@@ -456,17 +482,23 @@ namespace SmartStore.Services.Search
 				{
 					if (!QuerySettings.IgnoreMultiStore)
 					{
-						query =
-							from p in query
-							join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
-							from sm in psm.DefaultIfEmpty()
-							where !p.LimitedToStores || sm.StoreId == (int)filter.Term
-							select p;
+						var storeId = (int)filter.Term;
+						if (storeId != 0)
+						{
+							query =
+								from p in query
+								join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
+								from sm in psm.DefaultIfEmpty()
+								where !p.LimitedToStores || sm.StoreId == storeId
+								select p;
+						}
 					}
 				}
 			}
 
 			#endregion
+
+			query = query.GroupBy(x => x.Id).Select(x => x.FirstOrDefault());
 
 			#region Sorting
 
@@ -478,57 +510,43 @@ namespace SmartStore.Services.Search
 					if (categoryIds.Any())
 					{
 						var categoryId = categoryIds.First();
-						query = OrderBy(query, x => x.ProductCategories.Where(pc => pc.CategoryId == categoryId).FirstOrDefault().DisplayOrder);
+						query = OrderBy(ref ordered, query, x => x.ProductCategories.Where(pc => pc.CategoryId == categoryId).FirstOrDefault().DisplayOrder);
 					}
 					else if (manufacturerIds.Any())
 					{
 						var manufacturerId = manufacturerIds.First();
-						query = OrderBy(query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
+						query = OrderBy(ref ordered, query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
 					}
 					else if (searchQuery.Filters.OfType<IAttributeSearchFilter>().Any(x => x.FieldName == "parentid"))
 					{
-						query = OrderBy(query, x => x.DisplayOrder);
+						query = OrderBy(ref ordered, query, x => x.DisplayOrder);
 					}
 					else
 					{
-						query = OrderBy(query, x => x.Name);
+						query = OrderBy(ref ordered, query, x => x.Name);
 					}
 				}
 				else if (sort.FieldName == "createdon")
 				{
-					query = OrderBy(query, x => x.CreatedOnUtc, sort.Descending);
+					query = OrderBy(ref ordered, query, x => x.CreatedOnUtc, sort.Descending);
 				}
 				else if (sort.FieldName == "name")
 				{
-					query = OrderBy(query, x => x.Name, sort.Descending);
+					query = OrderBy(ref ordered, query, x => x.Name, sort.Descending);
 				}
 				else if (sort.FieldName == "price")
 				{
-					query = OrderBy(query, x => x.Price, sort.Descending);
+					query = OrderBy(ref ordered, query, x => x.Price, sort.Descending);
 				}
 				else
 				{
-					query = OrderBy(query, x => x.Name);
+					query = OrderBy(ref ordered, query, x => x.Name);
 				}
 			}
 
-			if ((query as IOrderedQueryable<Product>) == null)
+			if (!ordered)
 			{
 				query = query.OrderBy(x => x.Id);
-			}
-
-			#endregion
-
-			#region Paging
-
-			if (searchQuery.Skip > 0)
-			{
-				query = query.Skip(searchQuery.Skip);
-			}
-
-			if (searchQuery.Take != int.MaxValue)
-			{
-				query = query.Take(searchQuery.Take);
 			}
 
 			#endregion
@@ -536,14 +554,309 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
+		protected virtual IDictionary<string, FacetGroup> GetFacets(CatalogSearchQuery searchQuery)
+		{
+			var result = new Dictionary<string, FacetGroup>();
+			var languageId = searchQuery.LanguageId ?? _services.WorkContext.WorkingLanguage.Id;
+
+			foreach (var key in searchQuery.FacetDescriptors.Keys)
+			{
+				var descriptor = searchQuery.FacetDescriptors[key];
+				var facets = new List<Facet>();
+
+				if (key == "categoryid" || key == "featuredcategoryid" || key == "notfeaturedcategoryid")
+				{
+					#region categories
+
+					// order by product count
+					var categoryQuery =
+						from c in _categoryRepository.TableUntracked
+						where !c.Deleted && c.Published
+						join pc in _productCategoryRepository.TableUntracked on c.Id equals pc.CategoryId into pcm
+						from pc in pcm.DefaultIfEmpty()
+						group c by c.Id into grp
+						orderby grp.Count() descending
+						select new
+						{
+							Id = grp.FirstOrDefault().Id,
+							Name = grp.FirstOrDefault().Name,
+							DisplayOrder = grp.FirstOrDefault().DisplayOrder
+						};
+
+					if (descriptor.MaxChoicesCount > 0)
+					{
+						categoryQuery = categoryQuery.Take(descriptor.MaxChoicesCount);
+					}
+
+					var categories = categoryQuery.ToList();
+
+					var nameQuery = _localizedPropertyRepository.TableUntracked
+						.Where(x => x.LocaleKeyGroup == "Category" && x.LocaleKey == "Name" && x.LanguageId == languageId);
+
+					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
+
+					foreach (var category in categories)
+					{
+						string label = null;
+						names.TryGetValue(category.Id, out label);
+
+						facets.Add(CreateFacet(descriptor, category.Id, IndexTypeCode.Int32, label.HasValue() ? label : category.Name, category.DisplayOrder));
+					}
+
+					#endregion
+				}
+				else if (key == "manufacturerid")
+				{
+					#region manufacturers
+
+					// order by product count
+					var manufacturerQuery =
+						from m in _manufacturerRepository.TableUntracked
+						where !m.Deleted && m.Published
+						join pm in _productManufacturerRepository.TableUntracked on m.Id equals pm.ManufacturerId into pmm
+						from pm in pmm.DefaultIfEmpty()
+						group m by m.Id into grp
+						orderby grp.Count() descending
+						select new
+						{
+							Id = grp.FirstOrDefault().Id,
+							Name = grp.FirstOrDefault().Name,
+							DisplayOrder = grp.FirstOrDefault().DisplayOrder
+						};
+
+					if (descriptor.MaxChoicesCount > 0)
+					{
+						manufacturerQuery = manufacturerQuery.Take(descriptor.MaxChoicesCount);
+					}
+
+					var manufacturers = manufacturerQuery.ToList();
+
+					var nameQuery = _localizedPropertyRepository.TableUntracked
+						.Where(x => x.LocaleKeyGroup == "Manufacturer" && x.LocaleKey == "Name" && x.LanguageId == languageId);
+
+					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
+
+					foreach (var manu in manufacturers)
+					{
+						string label = null;
+						names.TryGetValue(manu.Id, out label);
+
+						facets.Add(CreateFacet(descriptor, manu.Id, IndexTypeCode.Int32, label.HasValue() ? label : manu.Name, manu.DisplayOrder));
+					}
+
+					#endregion
+				}
+				else if (key == "rating")
+				{
+					#region ratings
+
+					var count = 0;
+					for (double rate = 1.0; rate <= 5.0; ++rate)
+					{
+						facets.Add(CreateFacet(descriptor, rate, IndexTypeCode.Double, rate.ToString(), ++count));
+					}
+
+					#endregion
+				}
+				else if (key == "deliveryid")
+				{
+					#region delivery times
+
+					var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
+
+					var nameQuery = _localizedPropertyRepository.TableUntracked
+						.Where(x => x.LocaleKeyGroup == "DeliveryTime" && x.LocaleKey == "Name" && x.LanguageId == languageId);
+
+					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
+
+					foreach (var deliveryTime in deliveryTimes)
+					{
+						string label = null;
+						names.TryGetValue(deliveryTime.Id, out label);
+
+						facets.Add(CreateFacet(descriptor, deliveryTime.Id, IndexTypeCode.Int32, label.HasValue() ? label : deliveryTime.Name, deliveryTime.DisplayOrder));
+					}
+
+					#endregion
+				}
+				else if (key == "price")
+				{
+					#region prices
+
+					// provide 'up to' price suggestions
+					List<double> existingPrices = null;
+
+					try
+					{
+						var productQuery = ApplySearchTerm(_productRepository.TableUntracked.Where(x => !x.Deleted), searchQuery);
+						existingPrices = productQuery
+							.Select(x => (double)Decimal.Round(x.Price))
+							.Where(x => x != 0.0)
+							.Distinct()
+							.ToList();
+					}
+					catch (Exception exception)
+					{
+						Logger.Error(exception);
+					}
+
+					if (existingPrices != null && existingPrices.Any())
+					{
+						var count = 0;
+						var maxPrice = existingPrices.Max();
+
+						for (double price = GetNextMaxPrice(0.0);
+							price < double.MaxValue;
+							price = GetNextMaxPrice(price))
+						{
+							if ((descriptor.MaxChoicesCount > 0 && count >= descriptor.MaxChoicesCount) || price > maxPrice)
+								break;
+
+							if (!existingPrices.Any(x => x < price))
+								continue;
+
+							var newValue = new FacetValue(null, price, IndexTypeCode.Double, false, true)
+							{
+								IsSelected = descriptor.Values.Any(x => x.IsSelected && x.UpperValue != null && (double)x.UpperValue == price),
+								Label = price.ToString(),
+								DisplayOrder = ++count
+							};
+
+							facets.Add(new Facet(newValue));
+						}
+					}
+
+					// remove too granular price ranges
+					if (facets.Count > 3 && facets.Any(x => x.Value.UpperValue != null && (double)x.Value.UpperValue == 25.0))
+					{
+						facets.RemoveFacet(5.0, true);
+						facets.RemoveFacet(10.0, true);
+					}
+
+					// Add facet for custome price range
+					var hasActivePredefinedFacet = facets.Any(x => x.Value.IsSelected);
+					var priceDescriptorValue = descriptor.Values.FirstOrDefault();
+
+					var customPriceFacetValue = new FacetValue(
+						priceDescriptorValue != null && !hasActivePredefinedFacet ? priceDescriptorValue.Value : null,
+						priceDescriptorValue != null && !hasActivePredefinedFacet ? priceDescriptorValue.UpperValue : null,
+						IndexTypeCode.Double,
+						true,
+						true);
+					customPriceFacetValue.IsSelected = customPriceFacetValue.Value != null || customPriceFacetValue.UpperValue != null;
+
+					facets.Insert(0, new Facet("custom", customPriceFacetValue));
+
+					#endregion
+				}
+
+				if (!facets.Any())
+					continue;
+
+				//facets.Each(x => $"{key} {x.Value.ToString()}".Dump());
+
+				result.Add(key, new FacetGroup(
+					key,
+					descriptor.Label,
+					descriptor.IsMultiSelect,
+					descriptor.DisplayOrder,
+					facets.OrderBy(descriptor)));
+			}
+			
+			return result;
+		}
+
+		protected static double GetNextMaxPrice(double price)
+		{
+			if (price < 10)
+				return price + 5;
+			if (price < 25)
+				return price + 15;
+			if (price < 200)
+				return price + 25;
+			if (price < 500)
+				return price + 50;
+			if (price < 1000)
+				return price + 100;
+			if (price < 2000)
+				return price + 250;
+			if (price < 5000)
+				return price + 500;
+			if (price < 10000)
+				return price + 1000;
+			if (price < 20000)
+				return price + 2500;
+			if (price < 50000)
+				return price + 5000;
+			if (price < 100000)
+				return price + 10000;
+			if (price < 200000)
+				return price + 25000;
+			if (price < 500000)
+				return price + 50000;
+			if (price < 1000000)
+				return price + 100000;
+			if (price < 2000000)
+				return price + 250000;
+			if (price < 5000000)
+				return price + 500000;
+			if (price < 10000000)
+				return price + 1000000;
+			if (price < 20000000)
+				return price + 2500000;
+			if (price < 50000000)
+				return price + 5000000;
+			return double.MaxValue;
+		}
+
 		#endregion
 
-		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
+		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
 		{
-			var productQuery = GetProducts(searchQuery);
-			var hits = new PagedList<Product>(productQuery, searchQuery.PageIndex, searchQuery.Take);
+			_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
 
-			return new CatalogSearchResult(hits, searchQuery, null);
+			int totalCount = 0;
+			Func<IList<Product>> hitsFactory = null;
+			IDictionary<string, FacetGroup> facets = null;
+
+			if (searchQuery.Take > 0)
+			{
+				var query = GetProductQuery(searchQuery, null);
+
+				totalCount = query.Count();
+
+				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
+				{
+					query = query
+						.Skip(searchQuery.PageIndex * searchQuery.Take)
+						.Take(searchQuery.Take);
+
+					var ids = query.Select(x => x.Id).ToArray();
+					hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
+				}
+
+				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets) && searchQuery.FacetDescriptors.Any())
+				{
+					facets = GetFacets(searchQuery);
+				}
+			}
+
+			var result = new CatalogSearchResult(
+				null,
+				searchQuery,
+				totalCount,
+				hitsFactory,
+				null,
+				facets);
+
+			_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
+
+			return result;
+		}
+
+		public IQueryable<Product> PrepareQuery(CatalogSearchQuery searchQuery, IQueryable<Product> baseQuery = null)
+		{
+			return GetProductQuery(searchQuery, baseQuery);
 		}
 	}
 }

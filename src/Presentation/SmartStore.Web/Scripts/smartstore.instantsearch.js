@@ -11,14 +11,15 @@
 
 		var searchResult,
 			minLength = searchBox.data("minlength"),
-			showThumbs = searchBox.data("showthumbs"),
+			//showThumbs = searchBox.data("showthumbs"),
 			url = searchBox.data("url");
 
 		searchBox.typeahead({
 			items: 16,
 			minLength: minLength,
 			keyUpDelay: 400,
-			menu: '<ul class="typeahead dropdown-menu dropdown-instantsearch{0}"></ul>'.format(showThumbs ? " rich" : ""),
+			//menu: '<ul class="typeahead dropdown-menu dropdown-instantsearch{0}"></ul>'.format(showThumbs ? " rich" : ""),
+			menu: '<ul class="typeahead dropdown-menu dropdown-instantsearch"></ul>',
 			autoSelectFirstItem: false,
 			source: function (query, process) {
 			    var spinner = $('#instantsearch-progress');
@@ -34,10 +35,10 @@
 					type: 'GET',
 					success: function (json) {
 						searchResult = json;
-						var items = $.map(json, function (val, i) {
-							return val.label;
-						});
-						process(items);
+						//var items = $.map(json, function (val, i) {
+						//	return val.label;
+						//});
+						process(json);
 					},
 					error: function () {
 						searchResult = null;
@@ -51,8 +52,10 @@
 				if (!searchResult)
 					return;
 
-				var item = _.find(searchResult, function (x) { return x.label == label });
-				setLocation(item.producturl);
+				//var item = _.find(searchResult, function (x) { return x.label == label });
+				//setLocation(item.producturl);
+				searchBox.val(label);
+				searchBox.closest("form").submit();
 			},
 			matcher: function (item) {
 				// items are filtered already. Do not filter again!
@@ -60,20 +63,27 @@
 			},
 			highlighter: function (label) {
 				var inner = _baseHighlighter.call(this, label);
-				if (!showThumbs) {
-					return inner;
-				}
+				//if (!showThumbs) {
+				//	return inner;
+				//}
 
-				var item = _.find(searchResult, function (x) { return x.label == label });
+				//var item = _.find(searchResult, function (x) { return x.label == label });
 
-				var html = ''
-					+ "<div class='item-wrapper'>"
-					+ "<div class='item-thumb'><img src='" + item.productpictureurl + "' /></div>"
+				var html =
+					"<div class='item-wrapper'>"
 					+ "<div class='item-labels'>"
 					+ "<div class='item-primary text-overflow'>" + inner + "</div>"
-					+ "<div class='item-secondary text-overflow'>" + item.secondary + "</div>"
 					+ "</div>"
 					+ "</div>";
+
+				//var html = ''
+				//	+ "<div class='item-wrapper'>"
+				//	+ "<div class='item-thumb'><img src='" + item.productpictureurl + "' /></div>"
+				//	+ "<div class='item-labels'>"
+				//	+ "<div class='item-primary text-overflow'>" + inner + "</div>"
+				//	+ "<div class='item-secondary text-overflow'>" + item.secondary + "</div>"
+				//	+ "</div>"
+				//	+ "</div>";
 
 				return html;
 			}

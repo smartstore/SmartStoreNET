@@ -5,8 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Web;
-using SmartStore.Core;
-using SmartStore.Core.Domain;
+using System.Web.Mvc;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -18,10 +17,10 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Events;
 using SmartStore.Core.Html;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -29,108 +28,105 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
-using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
-using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
+using SmartStore.Collections;
 
 namespace SmartStore.Services.Messages
 {
 	public partial class MessageTokenProvider : IMessageTokenProvider
     {
-        #region Fields
+		#region Fields
 
-        private readonly ILanguageService _languageService;
-        private readonly ILocalizationService _localizationService;
-        private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly UrlHelper _urlHelper;
+		private readonly IPriceFormatter _priceFormatter;
+		private readonly ICommonServices _services;
+		private readonly ILanguageService _languageService;
         private readonly IEmailAccountService _emailAccountService;
-        private readonly IPriceFormatter _priceFormatter;
         private readonly ICurrencyService _currencyService;
-        private readonly IWebHelper _webHelper;
-        private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
         private readonly IDownloadService _downloadService;
         private readonly IOrderService _orderService;
 		private readonly IProviderManager _providerManager;
         private readonly IProductAttributeParser _productAttributeParser;
-        private readonly StoreInformationSettings _storeSettings;
-        private readonly MessageTemplatesSettings _templatesSettings;
-        private readonly EmailAccountSettings _emailAccountSettings;
-        private readonly CatalogSettings _catalogSettings;
-        private readonly TaxSettings _taxSettings;
-        private readonly IEventPublisher _eventPublisher;
-        private readonly CompanyInformationSettings _companyInfoSettings;
-        private readonly BankConnectionSettings _bankConnectionSettings;
-        private readonly ContactDataSettings _contactDataSettings;
         private readonly ITopicService _topicService;
-        private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
         private readonly IQuantityUnitService _quantityUnitService;
         private readonly IUrlRecordService _urlRecordService;
-        private readonly IStoreService _storeService;
-        private readonly IGenericAttributeService _attrService;
+        private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IPictureService _pictureService;
+
 		private readonly MediaSettings _mediaSettings;
+		private readonly ContactDataSettings _contactDataSettings;
+		private readonly MessageTemplatesSettings _templatesSettings;
+		private readonly CatalogSettings _catalogSettings;
+		private readonly TaxSettings _taxSettings;
+		private readonly CompanyInformationSettings _companyInfoSettings;
+		private readonly BankConnectionSettings _bankConnectionSettings;
+		private readonly ShoppingCartSettings _shoppingCartSettings;
+		private readonly SecuritySettings _securitySettings;
 
 		#endregion
 
 		#region Ctor
 
-		public MessageTokenProvider(ILanguageService languageService,
-            ILocalizationService localizationService, IDateTimeHelper dateTimeHelper,
-            IEmailAccountService emailAccountService,
-            IPriceFormatter priceFormatter, ICurrencyService currencyService, IWebHelper webHelper,
-            IWorkContext workContext, IStoreContext storeContext,
-			IDownloadService downloadService, ShoppingCartSettings shoppingCartSettings,
-            IOrderService orderService, IProviderManager providerManager,
+		public MessageTokenProvider(
+			UrlHelper urlHelper,
+			IPriceFormatter priceFormatter,
+			ICommonServices services,
+			ILanguageService languageService,
+            IEmailAccountService emailAccountService,            
+			ICurrencyService currencyService,
+			IDownloadService downloadService,
+            IOrderService orderService, 
+			IProviderManager providerManager,
             IProductAttributeParser productAttributeParser,
-            StoreInformationSettings storeSettings, MessageTemplatesSettings templatesSettings,
-            EmailAccountSettings emailAccountSettings, CatalogSettings catalogSettings,
-            TaxSettings taxSettings, IEventPublisher eventPublisher,
-            CompanyInformationSettings companyInfoSettings, BankConnectionSettings bankConnectionSettings,
-            ContactDataSettings contactDataSettings, ITopicService topicService,
-            IDeliveryTimeService deliveryTimeService, IQuantityUnitService quantityUnitService,
-            IUrlRecordService urlRecordService, IStoreService storeService,
-            IGenericAttributeService attrService,
+            ITopicService topicService,
+            IDeliveryTimeService deliveryTimeService,
+			IQuantityUnitService quantityUnitService,
+            IUrlRecordService urlRecordService,
+            IGenericAttributeService genericAttributeService,
 			IPictureService pictureService,
-			MediaSettings mediaSettings)
+			MediaSettings mediaSettings,
+			ContactDataSettings contactDataSettings,
+			MessageTemplatesSettings templatesSettings,
+			CatalogSettings catalogSettings,
+			TaxSettings taxSettings,
+			CompanyInformationSettings companyInfoSettings,
+			BankConnectionSettings bankConnectionSettings,
+			ShoppingCartSettings shoppingCartSettings,
+			SecuritySettings securitySettings)
         {
-            this._languageService = languageService;
-            this._localizationService = localizationService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._emailAccountService = emailAccountService;
-            this._priceFormatter = priceFormatter;
-            this._currencyService = currencyService;
-            this._webHelper = webHelper;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._downloadService = downloadService;
-            this._orderService = orderService;
-			this._providerManager = providerManager;
-            this._productAttributeParser = productAttributeParser;
-            this._storeSettings = storeSettings;
-            this._templatesSettings = templatesSettings;
-            this._emailAccountSettings = emailAccountSettings;
-            this._catalogSettings = catalogSettings;
-            this._taxSettings = taxSettings;
-            this._eventPublisher = eventPublisher;
-            this._companyInfoSettings = companyInfoSettings;
-            this._bankConnectionSettings = bankConnectionSettings;
-            this._contactDataSettings = contactDataSettings;
-            this._topicService = topicService;
-            this._shoppingCartSettings = shoppingCartSettings;
-			this._deliveryTimeService = deliveryTimeService;
-            this._quantityUnitService = quantityUnitService;
-            this._urlRecordService = urlRecordService;
-            this._storeService = storeService;
-            this._attrService = attrService;
-			this._pictureService = pictureService;
-			this._mediaSettings = mediaSettings;
-        }
+			_urlHelper = urlHelper;
+			_priceFormatter = priceFormatter;
+			_services = services;
+            _languageService = languageService;
+            _emailAccountService = emailAccountService;
+            _currencyService = currencyService;
+            _downloadService = downloadService;
+            _orderService = orderService;
+			_providerManager = providerManager;
+            _productAttributeParser = productAttributeParser;
+            _topicService = topicService;
+			_deliveryTimeService = deliveryTimeService;
+            _quantityUnitService = quantityUnitService;
+            _urlRecordService = urlRecordService;
+            _genericAttributeService = genericAttributeService;
+			_pictureService = pictureService;
+
+			_mediaSettings = mediaSettings;
+			_contactDataSettings = contactDataSettings;
+			_templatesSettings = templatesSettings;
+			_catalogSettings = catalogSettings;
+			_taxSettings = taxSettings;
+			_companyInfoSettings = companyInfoSettings;
+			_bankConnectionSettings = bankConnectionSettings;
+			_shoppingCartSettings = shoppingCartSettings;
+			_securitySettings = securitySettings;
+		}
 
 		#endregion
 
@@ -172,8 +168,8 @@ namespace SmartStore.Services.Messages
 				var imageUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.MessageProductThumbPictureSize, false, storeLocation);
 				if (imageUrl.HasValue())
 				{
-					var title = _localizationService.GetResource("Media.Product.ImageLinkTitleFormat", language.Id).FormatInvariant(productName);
-					var alternate = _localizationService.GetResource("Media.Product.ImageAlternateTextFormat", language.Id).FormatInvariant(productName);
+					var title = _services.Localization.GetResource("Media.Product.ImageLinkTitleFormat", language.Id).FormatInvariant(productName);
+					var alternate = _services.Localization.GetResource("Media.Product.ImageAlternateTextFormat", language.Id).FormatInvariant(productName);
 
 					var polaroid = "padding: 3px; background-color: #fff; border: 1px solid #ccc; border: 1px solid rgba(0,0,0,.2);";
 					var style = "max-width: {0}px; max-height: {0}px; {1}".FormatInvariant(_mediaSettings.MessageProductThumbPictureSize, polaroid);
@@ -198,17 +194,17 @@ namespace SmartStore.Services.Messages
 		protected virtual string ProductListToHtmlTable(Order order, Language language)
         {
             var sb = new StringBuilder();
-			var storeLocation = _webHelper.GetStoreLocation(false);
+			var storeLocation = _services.WebHelper.GetStoreLocation(false);
 
 			sb.AppendLine("<table style=\"width: 100%; border: none;\">");
 
             #region Products
 
             sb.AppendLine(string.Format("<tr style=\"background-color: {0}; text-align: center;\">", _templatesSettings.Color1));
-            sb.AppendLine(string.Format("<th>{0}</th>", _localizationService.GetResource("Messages.Order.Product(s).Name", language.Id)));
-            sb.AppendLine(string.Format("<th>{0}</th>", _localizationService.GetResource("Messages.Order.Product(s).Price", language.Id)));
-            sb.AppendLine(string.Format("<th>{0}</th>", _localizationService.GetResource("Messages.Order.Product(s).Quantity", language.Id)));
-            sb.AppendLine(string.Format("<th>{0}</th>", _localizationService.GetResource("Messages.Order.Product(s).Total", language.Id)));
+            sb.AppendLine(string.Format("<th>{0}</th>", _services.Localization.GetResource("Messages.Order.Product(s).Name", language.Id)));
+            sb.AppendLine(string.Format("<th>{0}</th>", _services.Localization.GetResource("Messages.Order.Product(s).Price", language.Id)));
+            sb.AppendLine(string.Format("<th>{0}</th>", _services.Localization.GetResource("Messages.Order.Product(s).Quantity", language.Id)));
+            sb.AppendLine(string.Format("<th>{0}</th>", _services.Localization.GetResource("Messages.Order.Product(s).Total", language.Id)));
             sb.AppendLine("</tr>");
 
             var table = order.OrderItems.ToList();
@@ -251,7 +247,7 @@ namespace SmartStore.Services.Messages
                 {
                     //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
                     string downloadUrl = string.Format("{0}download/getdownload/{1}", storeLocation, orderItem.OrderItemGuid);
-                    string downloadLink = string.Format("<a class=\"link\" href=\"{0}\">{1}</a>", downloadUrl, _localizationService.GetResource("Messages.Order.Product(s).Download", language.Id));
+                    string downloadLink = string.Format("<a class=\"link\" href=\"{0}\">{1}</a>", downloadUrl, _services.Localization.GetResource("Messages.Order.Product(s).Download", language.Id));
                     sb.AppendLine("&nbsp;&nbsp;(");
                     sb.AppendLine(downloadLink);
                     sb.AppendLine(")");
@@ -264,7 +260,7 @@ namespace SmartStore.Services.Messages
 
                     sb.AppendLine("<br />");
                     sb.AppendLine("<div class=\"delivery-time\">");
-                    sb.AppendLine("<span class=\"delivery-time-label\">" + _localizationService.GetResource("Products.DeliveryTime", language.Id) + "</span>");
+                    sb.AppendLine("<span class=\"delivery-time-label\">" + _services.Localization.GetResource("Products.DeliveryTime", language.Id) + "</span>");
                     sb.AppendLine("<span class=\"delivery-time-color\" style=\"background-color:" + deliveryTime.ColorHexValue + "\" title=\"" + deliveryTimeName + "\"></span>");
                     sb.AppendLine("<span class=\"delivery-time-value\">" + deliveryTimeName + "</span>");
                     sb.AppendLine("</div>");
@@ -282,7 +278,7 @@ namespace SmartStore.Services.Messages
                     if (!String.IsNullOrEmpty(product.Sku))
                     {
                         sb.AppendLine("<br />");
-						sb.AppendLine(string.Format(_localizationService.GetResource("Messages.Order.Product(s).SKU", language.Id), HttpUtility.HtmlEncode(product.Sku)));
+						sb.AppendLine(string.Format(_services.Localization.GetResource("Messages.Order.Product(s).SKU", language.Id), HttpUtility.HtmlEncode(product.Sku)));
                     }
                 }
                 sb.AppendLine("</td>");
@@ -455,25 +451,25 @@ namespace SmartStore.Services.Messages
             cusTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, order.CustomerCurrencyCode, false, language);
 
             //subtotal
-            sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _localizationService.GetResource("Messages.Order.SubTotal", language.Id), cusSubTotal));
+            sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _services.Localization.GetResource("Messages.Order.SubTotal", language.Id), cusSubTotal));
 
             //discount (applied to order subtotal)
             if (dislaySubTotalDiscount)
             {
-                sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _localizationService.GetResource("Messages.Order.SubTotalDiscount", language.Id), cusSubTotalDiscount));
+                sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _services.Localization.GetResource("Messages.Order.SubTotalDiscount", language.Id), cusSubTotalDiscount));
             }
 
 
             //shipping
             if (dislayShipping)
             {
-                sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _localizationService.GetResource("Messages.Order.Shipping", language.Id), cusShipTotal));
+                sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _services.Localization.GetResource("Messages.Order.Shipping", language.Id), cusShipTotal));
             }
 
             //payment method fee
             if (displayPaymentMethodFee)
             {
-                string paymentMethodFeeTitle = _localizationService.GetResource("Messages.Order.PaymentMethodAdditionalFee", language.Id);
+                string paymentMethodFeeTitle = _services.Localization.GetResource("Messages.Order.PaymentMethodAdditionalFee", language.Id);
 
                 sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", paymentMethodFeeTitle, cusPaymentMethodAdditionalFee));
             }
@@ -481,13 +477,13 @@ namespace SmartStore.Services.Messages
             //tax
             if (displayTax)
             {
-                sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _localizationService.GetResource("Messages.Order.Tax", language.Id), cusTaxTotal));
+                sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _services.Localization.GetResource("Messages.Order.Tax", language.Id), cusTaxTotal));
             }
             if (displayTaxRates)
             {
                 foreach (var item in taxRates)
                 {
-                    string taxRate = String.Format(_localizationService.GetResource("Messages.Order.TaxRateLine"), _priceFormatter.FormatTaxRate(item.Key));
+                    string taxRate = String.Format(_services.Localization.GetResource("Messages.Order.TaxRateLine"), _priceFormatter.FormatTaxRate(item.Key));
                     string taxValue = _priceFormatter.FormatPrice(item.Value, true, order.CustomerCurrencyCode, false, language);
 
                     sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", taxRate, taxValue));
@@ -497,19 +493,19 @@ namespace SmartStore.Services.Messages
             //discount
             if (dislayDiscount)
             {
-                sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _localizationService.GetResource("Messages.Order.TotalDiscount", language.Id), cusDiscount));
+                sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _services.Localization.GetResource("Messages.Order.TotalDiscount", language.Id), cusDiscount));
             }
 
             //gift cards
             var gcuhC = order.GiftCardUsageHistory;
             foreach (var gcuh in gcuhC)
             {
-                string giftCardText = String.Format(_localizationService.GetResource("Messages.Order.GiftCardInfo", language.Id), HttpUtility.HtmlEncode(gcuh.GiftCard.GiftCardCouponCode));
+                string giftCardText = String.Format(_services.Localization.GetResource("Messages.Order.GiftCardInfo", language.Id), HttpUtility.HtmlEncode(gcuh.GiftCard.GiftCardCouponCode));
                 string giftCardAmount = _priceFormatter.FormatPrice(-(_currencyService.ConvertCurrency(gcuh.UsedValue, order.CurrencyRate)), true, order.CustomerCurrencyCode, false, language);
 
 				var remaining = _currencyService.ConvertCurrency(gcuh.GiftCard.GetGiftCardRemainingAmount(), order.CurrencyRate);
 				var remainingFormatted = _priceFormatter.FormatPrice(remaining, true, false);
-				var remainingText = _localizationService.GetResource("ShoppingCart.Totals.GiftCardInfo.Remaining", language.Id).FormatInvariant(remainingFormatted);
+				var remainingText = _services.Localization.GetResource("ShoppingCart.Totals.GiftCardInfo.Remaining", language.Id).FormatInvariant(remainingFormatted);
 
 				sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong><br />{1}</td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{2}</td></tr>",
 					giftCardText, remainingText, giftCardAmount));
@@ -518,14 +514,14 @@ namespace SmartStore.Services.Messages
             //reward points
             if (order.RedeemedRewardPointsEntry != null)
             {
-                string rpTitle = string.Format(_localizationService.GetResource("Messages.Order.RewardPoints", language.Id), -order.RedeemedRewardPointsEntry.Points);
+                string rpTitle = string.Format(_services.Localization.GetResource("Messages.Order.RewardPoints", language.Id), -order.RedeemedRewardPointsEntry.Points);
                 string rpAmount = _priceFormatter.FormatPrice(-(_currencyService.ConvertCurrency(order.RedeemedRewardPointsEntry.UsedAmount, order.CurrencyRate)), true, order.CustomerCurrencyCode, false, language);
 
                 sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", rpTitle, rpAmount));
             }
 
             //total
-            sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"background-color: {0};padding:8px;border-top:1px solid #ddd;\"><strong>{1}</strong></td><td style=\"background-color: {0};padding:8px;border-top:1px solid #ddd;\"><strong>{2}</strong></td></tr>", _templatesSettings.Color3, _localizationService.GetResource("Messages.Order.OrderTotal", language.Id), cusTotal));
+            sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"background-color: {0};padding:8px;border-top:1px solid #ddd;\"><strong>{1}</strong></td><td style=\"background-color: {0};padding:8px;border-top:1px solid #ddd;\"><strong>{2}</strong></td></tr>", _templatesSettings.Color3, _services.Localization.GetResource("Messages.Order.OrderTotal", language.Id), cusTotal));
             
 			#endregion
 
@@ -549,8 +545,8 @@ namespace SmartStore.Services.Messages
             #region Products
 
             sb.AppendLine(string.Format("<tr style=\"background-color:{0};text-align:center;\">", _templatesSettings.Color1));
-            sb.AppendLine(string.Format("<th>{0}</th>", _localizationService.GetResource("Messages.Order.Product(s).Name", language.Id)));
-            sb.AppendLine(string.Format("<th>{0}</th>", _localizationService.GetResource("Messages.Order.Product(s).Quantity", language.Id)));
+            sb.AppendLine(string.Format("<th>{0}</th>", _services.Localization.GetResource("Messages.Order.Product(s).Name", language.Id)));
+            sb.AppendLine(string.Format("<th>{0}</th>", _services.Localization.GetResource("Messages.Order.Product(s).Quantity", language.Id)));
             sb.AppendLine("</tr>");
 
             var table = shipment.ShipmentItems.ToList();
@@ -587,7 +583,7 @@ namespace SmartStore.Services.Messages
                     if (!String.IsNullOrEmpty(product.Sku))
                     {
                         sb.AppendLine("<br />");
-						sb.AppendLine(string.Format(_localizationService.GetResource("Messages.Order.Product(s).SKU", language.Id), HttpUtility.HtmlEncode(product.Sku)));
+						sb.AppendLine(string.Format(_services.Localization.GetResource("Messages.Order.Product(s).SKU", language.Id), HttpUtility.HtmlEncode(product.Sku)));
                     }
                 }
                 sb.AppendLine("</td>");
@@ -611,7 +607,7 @@ namespace SmartStore.Services.Messages
             sb.AppendLine("<table border=\"0\" style=\"width:100%;\" class=\"legal-infos\">");
 
 			//load by store
-			var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id);
+			var topic = _topicService.GetTopicBySystemName(systemName, _services.StoreContext.CurrentStore.Id);
 			if (topic == null)
 				//not found. let's find topic assigned to all stores
 				topic = _topicService.GetTopicBySystemName(systemName, 0);
@@ -681,9 +677,9 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td class=\"smaller\" width=\"33%\">");
             
-            if (!String.IsNullOrEmpty(_storeContext.CurrentStore.Url)) 
+            if (!String.IsNullOrEmpty(_services.StoreContext.CurrentStore.Url)) 
             {
-				sb.AppendLine(String.Format("Url: <a href=\"{0}\">{0}</a><br>", _storeContext.CurrentStore.Url));
+				sb.AppendLine(String.Format("Url: <a href=\"{0}\">{0}</a><br>", _services.StoreContext.CurrentStore.Url));
             }
             if (!String.IsNullOrEmpty(_contactDataSettings.CompanyEmailAddress)) 
             {
@@ -742,7 +738,16 @@ namespace SmartStore.Services.Messages
 
 		protected virtual string GetBoolResource(bool value, int languageId)
 		{
-			return _localizationService.GetResource(value ? "Common.Yes" : "Common.No", languageId);
+			return _services.Localization.GetResource(value ? "Common.Yes" : "Common.No", languageId);
+		}
+
+		protected virtual string GetRouteUrl(string routeName, object routeValues)
+		{
+			Guard.NotEmpty(routeName, nameof(routeName));
+
+			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
+			var url = _urlHelper.RouteUrl(routeName, routeValues, protocol);
+			return url;
 		}
 
 		#endregion
@@ -809,8 +814,8 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.CustomerEmail", order.BillingAddress.Email));
 
             tokens.Add(new Token("Order.BillingFullSalutation", string.Format("{0}{1}", 
-                order.BillingAddress.Salutation,
-                !String.IsNullOrEmpty(order.BillingAddress.Title) ? " " + order.BillingAddress.Title : "")));
+                order.BillingAddress.Salutation.EmptyNull(),
+                order.BillingAddress.Title.HasValue() ? " " + order.BillingAddress.Title : "")));
 
             tokens.Add(new Token("Order.BillingSalutation", order.BillingAddress.Salutation));
             tokens.Add(new Token("Order.BillingTitle", order.BillingAddress.Title));
@@ -828,9 +833,17 @@ namespace SmartStore.Services.Messages
 			tokens.Add(new Token("Order.BillingCountry", order.BillingAddress.Country != null ? order.BillingAddress.Country.GetLocalized(x => x.Name) : ""));
 
             tokens.Add(new Token("Order.ShippingMethod", order.ShippingMethod));
-            tokens.Add(new Token("Order.ShippingFullSalutation", string.Format("{0}{1}",
-                order.ShippingAddress.Salutation,
-                !String.IsNullOrEmpty(order.ShippingAddress.Title) ? " " + order.ShippingAddress.Title : "")));
+
+			if (order.ShippingAddress != null)
+			{
+				tokens.Add(new Token("Order.ShippingFullSalutation", string.Format("{0}{1}",
+					order.ShippingAddress.Salutation.EmptyNull(),
+					order.ShippingAddress.Title.HasValue() ? " " + order.ShippingAddress.Title : "")));
+			}
+			else
+			{
+				tokens.Add(new Token("Order.ShippingFullSalutation", ""));
+			}
 
             tokens.Add(new Token("Order.ShippingSalutation", order.ShippingAddress != null ? order.ShippingAddress.Salutation : ""));
             tokens.Add(new Token("Order.ShippingTitle", order.ShippingAddress != null ? order.ShippingAddress.Title : ""));
@@ -865,7 +878,7 @@ namespace SmartStore.Services.Messages
 
             if (language != null && !String.IsNullOrEmpty(language.LanguageCulture))
             {
-                DateTime createdOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, TimeZoneInfo.Utc, _dateTimeHelper.GetCustomerTimeZone(order.Customer));
+                DateTime createdOn = _services.DateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, TimeZoneInfo.Utc, _services.DateTimeHelper.GetCustomerTimeZone(order.Customer));
                 tokens.Add(new Token("Order.CreatedOn", createdOn.ToString("D", new CultureInfo(language.LanguageCulture))));
             }
             else
@@ -873,15 +886,21 @@ namespace SmartStore.Services.Messages
                 tokens.Add(new Token("Order.CreatedOn", order.CreatedOnUtc.ToString("D")));
             }
 
-            // TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-            tokens.Add(new Token("Order.OrderURLForCustomer", string.Format("{0}order/details/{1}", _webHelper.GetStoreLocation(false), order.Id), true));
+			var orderDetailUrl = "";
+			if (order.Customer != null && !order.Customer.IsGuest())
+			{
+				// TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
+				orderDetailUrl = string.Format("{0}order/details/{1}", _services.WebHelper.GetStoreLocation(), order.Id);
+			}
+
+            tokens.Add(new Token("Order.OrderURLForCustomer", orderDetailUrl, true));
 
             tokens.Add(new Token("Order.Disclaimer", TopicToHtml("Disclaimer", language.Id), true));
             tokens.Add(new Token("Order.ConditionsOfUse", TopicToHtml("ConditionsOfUse", language.Id), true));
 			tokens.Add(new Token("Order.AcceptThirdPartyEmailHandOver", GetBoolResource(order.AcceptThirdPartyEmailHandOver, language.Id)));
 
 			//event notification
-			_eventPublisher.EntityTokensAdded(order, tokens);
+			_services.EventPublisher.EntityTokensAdded(order, tokens);
         }
 
 		private string GetLocalizedValue(ProviderMetadata metadata, string propertyName, Expression<Func<ProviderMetadata, string>> fallback)
@@ -891,9 +910,9 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(metadata, nameof(metadata));
 
 			string systemName = metadata.SystemName;
-			var languageId = _workContext.WorkingLanguage.Id;
+			var languageId = _services.WorkContext.WorkingLanguage.Id;
 			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
-			string result = _localizationService.GetResource(resourceName, languageId, false, "", true);
+			string result = _services.Localization.GetResource(resourceName, languageId, false, "", true);
 
 			if (result.IsEmpty())
 				result = fallback.Compile()(metadata);
@@ -906,10 +925,10 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Shipment.ShipmentNumber", shipment.Id.ToString()));
             tokens.Add(new Token("Shipment.TrackingNumber", shipment.TrackingNumber));
             tokens.Add(new Token("Shipment.Product(s)", ProductListToHtmlTable(shipment, language), true));
-            tokens.Add(new Token("Shipment.URLForCustomer", string.Format("{0}order/shipmentdetails/{1}", _webHelper.GetStoreLocation(false), shipment.Id), true));
+            tokens.Add(new Token("Shipment.URLForCustomer", string.Format("{0}order/shipmentdetails/{1}", _services.WebHelper.GetStoreLocation(), shipment.Id), true));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(shipment, tokens);
+            _services.EventPublisher.EntityTokensAdded(shipment, tokens);
         }
 
         public virtual void AddOrderNoteTokens(IList<Token> tokens, OrderNote orderNote)
@@ -917,7 +936,7 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.NewNoteText", orderNote.FormatOrderNoteText(), true));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(orderNote, tokens);
+            _services.EventPublisher.EntityTokensAdded(orderNote, tokens);
         }
 
         public virtual void AddRecurringPaymentTokens(IList<Token> tokens, RecurringPayment recurringPayment)
@@ -925,7 +944,7 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("RecurringPayment.ID", recurringPayment.Id.ToString()));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(recurringPayment, tokens);
+            _services.EventPublisher.EntityTokensAdded(recurringPayment, tokens);
         }
 
         public virtual void AddReturnRequestTokens(IList<Token> tokens, ReturnRequest returnRequest, OrderItem orderItem)
@@ -937,10 +956,10 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("ReturnRequest.RequestedAction", returnRequest.RequestedAction));
             tokens.Add(new Token("ReturnRequest.CustomerComment", HtmlUtils.FormatText(returnRequest.CustomerComments, false, true, false, false, false, false), true));
             tokens.Add(new Token("ReturnRequest.StaffNotes", HtmlUtils.FormatText(returnRequest.StaffNotes, false, true, false, false, false, false), true));
-            tokens.Add(new Token("ReturnRequest.Status", returnRequest.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext)));
+            tokens.Add(new Token("ReturnRequest.Status", returnRequest.ReturnRequestStatus.GetLocalizedEnum(_services.Localization, _services.WorkContext)));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(returnRequest, tokens);
+            _services.EventPublisher.EntityTokensAdded(returnRequest, tokens);
         }
 
         public virtual void AddGiftCardTokens(IList<Token> tokens, GiftCard giftCard)
@@ -971,7 +990,7 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("GiftCard.Message", giftCardMesage, true));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(giftCard, tokens);
+            _services.EventPublisher.EntityTokensAdded(giftCard, tokens);
         }
 
         public virtual void AddCustomerTokens(IList<Token> tokens, Customer customer)
@@ -982,38 +1001,37 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Customer.FullName", customer.GetFullName()));
 			tokens.Add(new Token("Customer.VatNumber", customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber)));
 			tokens.Add(new Token("Customer.VatNumberStatus", ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId)).ToString()));
-
+            tokens.Add(new Token("Customer.CustomerNumber", customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber)));
+            
             //note: we do not use SEO friendly URLS because we can get errors caused by having .(dot) in the URL (from the emauk address)
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-			string passwordRecoveryUrl = string.Format("{0}customer/passwordrecoveryconfirm?token={1}&email={2}", _webHelper.GetStoreLocation(), 
+            string passwordRecoveryUrl = string.Format("{0}customer/passwordrecoveryconfirm?token={1}&email={2}", _services.WebHelper.GetStoreLocation(), 
 				customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), HttpUtility.UrlEncode(customer.Email));
 
-			string accountActivationUrl = string.Format("{0}customer/activation?token={1}&email={2}", _webHelper.GetStoreLocation(), 
+			string accountActivationUrl = string.Format("{0}customer/activation?token={1}&email={2}", _services.WebHelper.GetStoreLocation(), 
 				customer.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), HttpUtility.UrlEncode(customer.Email));
 
-            var wishlistUrl = string.Format("{0}wishlist/{1}", _webHelper.GetStoreLocation(), customer.CustomerGuid);
+            var wishlistUrl = string.Format("{0}wishlist/{1}", _services.WebHelper.GetStoreLocation(), customer.CustomerGuid);
             tokens.Add(new Token("Customer.PasswordRecoveryURL", passwordRecoveryUrl, true));
             tokens.Add(new Token("Customer.AccountActivationURL", accountActivationUrl, true));
             tokens.Add(new Token("Wishlist.URLForCustomer", wishlistUrl, true));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(customer, tokens);
+            _services.EventPublisher.EntityTokensAdded(customer, tokens);
         }
 
         public virtual void AddNewsLetterSubscriptionTokens(IList<Token> tokens, NewsLetterSubscription subscription)
         {
             tokens.Add(new Token("NewsLetterSubscription.Email", subscription.Email));
 
-            const string urlFormat = "{0}newsletter/subscriptionactivation/{1}/{2}";
-
-            var activationUrl = String.Format(urlFormat, _webHelper.GetStoreLocation(false), subscription.NewsLetterSubscriptionGuid, "true");
+			var activationUrl = GetRouteUrl("NewsletterActivation", new { token = subscription.NewsLetterSubscriptionGuid, active = true });
             tokens.Add(new Token("NewsLetterSubscription.ActivationUrl", activationUrl, true));
 
-            var deActivationUrl = String.Format(urlFormat, _webHelper.GetStoreLocation(false), subscription.NewsLetterSubscriptionGuid, "false");
-            tokens.Add(new Token("NewsLetterSubscription.DeactivationUrl", deActivationUrl, true));
+            var deactivationUrl = GetRouteUrl("NewsletterActivation", new { token = subscription.NewsLetterSubscriptionGuid, active = false });
+			tokens.Add(new Token("NewsLetterSubscription.DeactivationUrl", deactivationUrl, true));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(subscription, tokens);
+            _services.EventPublisher.EntityTokensAdded(subscription, tokens);
         }
 
         public virtual void AddProductReviewTokens(IList<Token> tokens, ProductReview productReview)
@@ -1021,7 +1039,7 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("ProductReview.ProductName", productReview.Product.Name));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(productReview, tokens);
+            _services.EventPublisher.EntityTokensAdded(productReview, tokens);
         }
 
         public virtual void AddBlogCommentTokens(IList<Token> tokens, BlogComment blogComment)
@@ -1029,7 +1047,7 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("BlogComment.BlogPostTitle", blogComment.BlogPost.Title));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(blogComment, tokens);
+            _services.EventPublisher.EntityTokensAdded(blogComment, tokens);
         }
 
         public virtual void AddNewsCommentTokens(IList<Token> tokens, NewsComment newsComment)
@@ -1037,14 +1055,13 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("NewsComment.NewsTitle", newsComment.NewsItem.Title));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(newsComment, tokens);
+            _services.EventPublisher.EntityTokensAdded(newsComment, tokens);
         }
 
 		public virtual void AddProductTokens(IList<Token> tokens, Product product, Language language)
         {
-			// TODO: add a method for getting URL (use routing because it handles all SEO friendly URLs)
-			var storeLocation = _webHelper.GetStoreLocation(false);
-			var productUrl = storeLocation + product.GetSeName();
+			var storeLocation = _services.WebHelper.GetStoreLocation();
+			var productUrl = GetRouteUrl("Product", new { SeName = product.GetSeName() });
 			var productName = product.GetLocalized(x => x.Name, language.Id);
 
 			tokens.Add(new Token("Product.ID", product.Id.ToString()));
@@ -1054,7 +1071,7 @@ namespace SmartStore.Services.Messages
 			tokens.Add(new Token("Product.StockQuantity", product.StockQuantity.ToString()));
             tokens.Add(new Token("Product.ProductURLForCustomer", productUrl, true));
 
-			var currency = _workContext.WorkingCurrency;
+			var currency = _services.WorkContext.WorkingCurrency;
 
 			var additionalShippingCharge = _currencyService.ConvertFromPrimaryStoreCurrency(product.AdditionalShippingCharge, currency);
 			var additionalShippingChargeFormatted = _priceFormatter.FormatPrice(additionalShippingCharge, false, currency.CurrencyCode, false, language);
@@ -1069,25 +1086,37 @@ namespace SmartStore.Services.Messages
 			}
 
 			//event notification
-			_eventPublisher.EntityTokensAdded(product, tokens);
+			_services.EventPublisher.EntityTokensAdded(product, tokens);
         }
 
-        public virtual void AddForumTopicTokens(IList<Token> tokens, ForumTopic forumTopic,
-            int? friendlyForumTopicPageIndex = null, int? appendedPostIdentifierAnchor = null)
+        public virtual void AddForumTopicTokens(
+			IList<Token> tokens,
+			ForumTopic forumTopic,
+			int? friendlyForumTopicPageIndex = null,
+			int? appendedPostIdentifierAnchor = null)
         {
-            //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
             string topicUrl = null;
-            if (friendlyForumTopicPageIndex.HasValue && friendlyForumTopicPageIndex.Value > 1)
-                topicUrl = string.Format("{0}boards/topic/{1}/{2}/page/{3}", _webHelper.GetStoreLocation(false), forumTopic.Id, forumTopic.GetSeName(), friendlyForumTopicPageIndex.Value);
-            else
-                topicUrl = string.Format("{0}boards/topic/{1}/{2}", _webHelper.GetStoreLocation(false), forumTopic.Id, forumTopic.GetSeName());
-            if (appendedPostIdentifierAnchor.HasValue && appendedPostIdentifierAnchor.Value > 0)
-                topicUrl = string.Format("{0}#{1}", topicUrl, appendedPostIdentifierAnchor.Value);
+
+			if (friendlyForumTopicPageIndex.HasValue && friendlyForumTopicPageIndex.Value > 1)
+			{
+				topicUrl = GetRouteUrl("TopicSlugPaged", new { id = forumTopic.Id, slug = forumTopic.GetSeName(), page = friendlyForumTopicPageIndex.Value });
+			}
+			else
+			{
+				topicUrl = GetRouteUrl("TopicSlug", new { id = forumTopic.Id, slug = forumTopic.GetSeName() });
+			}
+
+			if (appendedPostIdentifierAnchor.HasValue && appendedPostIdentifierAnchor.Value > 0)
+			{
+				topicUrl = string.Format("{0}#{1}", topicUrl, appendedPostIdentifierAnchor.Value);
+
+			}
+
             tokens.Add(new Token("Forums.TopicURL", topicUrl, true));
             tokens.Add(new Token("Forums.TopicName", forumTopic.Subject));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(forumTopic, tokens);
+            _services.EventPublisher.EntityTokensAdded(forumTopic, tokens);
         }
 
         public virtual void AddForumPostTokens(IList<Token> tokens, ForumPost forumPost)
@@ -1096,18 +1125,18 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Forums.PostBody", forumPost.FormatPostText(), true));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(forumPost, tokens);
+            _services.EventPublisher.EntityTokensAdded(forumPost, tokens);
         }
 
 		public virtual void AddForumTokens(IList<Token> tokens, Forum forum, Language language)
         {
-            //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-            var forumUrl = string.Format("{0}boards/forum/{1}/{2}", _webHelper.GetStoreLocation(false), forum.Id, forum.GetSeName(language.Id));
+			var forumUrl = GetRouteUrl("ForumSlug", new { id = forum.Id, slug = forum.GetSeName(language.Id) });
+
             tokens.Add(new Token("Forums.ForumURL", forumUrl, true));
             tokens.Add(new Token("Forums.ForumName", forum.GetLocalized(x => x.Name, language.Id)));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(forum, tokens);
+            _services.EventPublisher.EntityTokensAdded(forum, tokens);
         }
 
         public virtual void AddPrivateMessageTokens(IList<Token> tokens, PrivateMessage privateMessage)
@@ -1116,23 +1145,23 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("PrivateMessage.Text", privateMessage.FormatPrivateMessageText(), true));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(privateMessage, tokens);
+            _services.EventPublisher.EntityTokensAdded(privateMessage, tokens);
         }
 
         public virtual void AddBackInStockTokens(IList<Token> tokens, BackInStockSubscription subscription)
         {
             var customerLangId = subscription.Customer.GetAttribute<int>(
                         SystemCustomerAttributeNames.LanguageId,
-                        _attrService,
-                        _storeContext.CurrentStore.Id);
+                        _genericAttributeService,
+						_services.StoreContext.CurrentStore.Id);
 
-            var store = _storeService.GetStoreById(subscription.StoreId);
+            var store = _services.StoreService.GetStoreById(subscription.StoreId);
             var productLink = "{0}{1}".FormatWith(store.Url, subscription.Product.GetSeName(customerLangId, _urlRecordService, _languageService));
 
             tokens.Add(new Token("BackInStockSubscription.ProductName", "<a href='{0}'>{1}</a>".FormatWith(productLink, subscription.Product.Name), true));
 
             //event notification
-            _eventPublisher.EntityTokensAdded(subscription, tokens);
+            _services.EventPublisher.EntityTokensAdded(subscription, tokens);
         }
 
         /// <summary>
@@ -1231,7 +1260,8 @@ namespace SmartStore.Services.Messages
                 "%Customer.Username%", 
                 "%Customer.FullName%", 
                 "%Customer.VatNumber%",
-                "%Customer.VatNumberStatus%", 
+                "%Customer.VatNumberStatus%",
+                "%Customer.CustomerNumber%",
                 "%Customer.PasswordRecoveryURL%", 
                 "%Customer.AccountActivationURL%", 
                 "%Wishlist.URLForCustomer%", 
@@ -1287,6 +1317,48 @@ namespace SmartStore.Services.Messages
                 
             };
             return allowedTokens.ToArray();
+        }
+
+        public virtual TreeNode<string> GetTreeOfCampaignAllowedTokens()
+        {
+            var tokensTree = new TreeNode<string>("_ROOT_");
+            FillTokensTree(tokensTree, GetListOfCampaignAllowedTokens());
+            return tokensTree;
+        }
+
+        public virtual TreeNode<string> GetTreeOfAllowedTokens()
+        {
+            var tokensTree = new TreeNode<string>("_ROOT_");
+            FillTokensTree(tokensTree, GetListOfAllowedTokens());
+            return tokensTree;
+        }
+        
+        private void FillTokensTree(TreeNode<string> root, string[] tokens)
+        {
+            root.Clear();
+
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                // remove '%'
+                string token = tokens[i].Trim('%');
+                // split 'Order.ID' to [ Order, ID ] parts
+                var parts = token.Split('.');
+
+                var node = root;
+                // iterate parts
+                foreach (var part in parts)
+                {
+                    var found = node.SelectNode(x => x.Value == part);
+                    if (found == null)
+                    {
+                        node = node.Append(part);
+                    }
+                    else
+                    {
+                        node = found;
+                    }
+                }
+            }
         }
 
         #endregion

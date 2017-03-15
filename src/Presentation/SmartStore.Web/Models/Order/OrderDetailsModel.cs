@@ -68,6 +68,7 @@ namespace SmartStore.Web.Models.Order
         public int RedeemedRewardPoints { get; set; }
         public string RedeemedRewardPointsAmount { get; set; }
         public string OrderTotal { get; set; }
+        public string CustomerComment { get; set; }
 
         public IList<GiftCard> GiftCards { get; set; }
 

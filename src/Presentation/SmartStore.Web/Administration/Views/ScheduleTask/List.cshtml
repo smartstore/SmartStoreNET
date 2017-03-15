@@ -25,7 +25,7 @@
 	</thead>
 	<tbody>
 		@foreach (var task in Model)
-		{
+        {
 			<tr data-task-id='@task.Id' style='@(task.Enabled ? "" : "background: #fafafa")'>
 				<td>
 					<a href='@task.EditUrl'>@task.Name</a>
@@ -34,20 +34,20 @@
 				<td>
 					<div>@task.CronExpression</div>
 					@if (task.CronDescription.HasValue())
-					{
+                    {
 						<div class="muted">@task.CronDescription</div>
-					}
+                    }
 				</td>
 				<!-- LastStart -->
 				<td style="min-width: 300px">
 					<div class="last-run-info">
-						@Html.Partial("_LastRun", task)
+						@{ Html.RenderPartial("_LastRun", task); }
 					</div>
 				</td>
 				<!-- NextRun -->
 				<td style="min-width: 150px">
 					<div class="next-run-info">
-						@Html.Partial("_NextRun", task)
+						@{ Html.RenderPartial("_NextRun", task); }
 					</div>
 					<div class='task-progress text-success@(task.IsRunning ? "" : " hide")' data-task-id='@task.Id' data-running='@(task.IsRunning ? "true" : "false")'></div>
 				</td>

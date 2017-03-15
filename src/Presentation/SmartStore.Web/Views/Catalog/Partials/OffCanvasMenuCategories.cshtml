@@ -1,0 +1,47 @@
+﻿@model NavigationModel
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	Layout = "";
+
+	var currentNode = Model.SelectedNode;
+}
+
+<div class="category-container">
+	@if (currentNode.Depth > 0)
+	{
+		<div class="category-info">
+			<div class="category-name">@currentNode.Value.Text</div>
+		</div>
+	}
+
+    <ul class="nav navbar-nav">
+        @if (currentNode.Depth > 0)
+        {
+            <li class="navigate-back nav-item" data-id="@currentNode.Parent.Value.EntityId" data-ajax="true">
+                <a href="@currentNode.Parent.Value.GenerateUrl(this.Url)" class="nav-link">
+                    <i class="fa fa-chevron-left"></i>
+                    <span>@T("Common.Back")</span>
+                </a>
+            </li>
+
+            <li class="show-current-cat nav-item" data-id="@currentNode.Value.EntityId" data-ajax="false">
+                <a href="@currentNode.Value.GenerateUrl(this.Url)" class="nav-link">
+                    @T("Offcanvas.Menu.ShowCurrentCat", currentNode.Value.Text)
+                </a>
+            </li>
+        }
+
+        @foreach (var node in currentNode.Children)
+        {
+            var cat = node.Value;
+            <li class="nav-item@(node.HasChildren ? " has-children" : "")" 
+				data-id="@cat.EntityId" 
+				data-ajax="@(node.HasChildren ? "true" : "false")">
+                <a href="@node.Value.GenerateUrl(this.Url)" class="nav-link has-count" @Html.Attr("data-count", cat.ElementsCount.ToString(), cat.ElementsCount > 0)>
+					<span>@cat.Text</span>
+                </a>
+            </li>
+        }
+    </ul>
+</div>

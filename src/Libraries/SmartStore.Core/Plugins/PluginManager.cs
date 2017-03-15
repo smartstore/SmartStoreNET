@@ -33,20 +33,21 @@ namespace SmartStore.Core.Plugins
     /// </summary>
     public class PluginManager
     {
-        #region Fields
-
         private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
         private static DirectoryInfo _shadowCopyFolder;
-        //private static readonly string _installedPluginsFilePath = CommonHelper.MapPath("~/App_Data/InstalledPlugins.txt");
         private static readonly string _pluginsPath = "~/Plugins";
         private static readonly string _shadowCopyPath = "~/Plugins/bin";
         private static bool _clearShadowDirectoryOnStartup;
 		private static readonly ConcurrentDictionary<string, PluginDescriptor> _referencedPlugins = new ConcurrentDictionary<string, PluginDescriptor>(StringComparer.OrdinalIgnoreCase);
         private static HashSet<Assembly> _inactiveAssemblies = new HashSet<Assembly>();
 
-        #endregion
-
-        #region Methods
+		/// <summary>
+		/// Returns the virtual path of the plugins folder relative to the application
+		/// </summary>
+		public static string PluginsLocation
+		{
+			get { return _pluginsPath; }
+		}
 
 		/// <summary> 
 		/// Returns a collection of all referenced plugin assemblies that have been shadow copied
@@ -462,14 +463,21 @@ namespace SmartStore.Core.Plugins
             return !_inactiveAssemblies.Contains(assembly);
         }
 
-        #endregion
-
-        #region Utilities
-
 		private static void SetPrivateEnvPath()
 		{
-			string dir = Environment.Is64BitProcess ? "amd64" : "x86";
-			string envPath = String.Concat(Environment.GetEnvironmentVariable("PATH"), ";", Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, dir));
+			string envPath = Environment.GetEnvironmentVariable("PATH");
+
+			if (Environment.Is64BitProcess)
+			{
+				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "amd64");
+				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "x64");
+			}
+			else
+			{
+				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "x86");
+			}
+			
+
 			Environment.SetEnvironmentVariable("PATH", envPath, EnvironmentVariableTarget.Process);
 		}
 
@@ -646,7 +654,5 @@ namespace SmartStore.Core.Plugins
             if (!folder.Parent.Name.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
-
-        #endregion
     }
 }

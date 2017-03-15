@@ -9,11 +9,10 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public enum PagerSize
     {
-        Mini,
-        Small,
+		Mini,
+		Small,
         Medium,
         Large
     }
@@ -65,7 +64,7 @@ namespace SmartStore.Web.Framework.UI
             this.Alignment = PagerAlignment.Centered;
             this.Size = PagerSize.Medium;
             this.RouteValues = new RouteValueDictionary();
-            this.ModifiedParam = new ModifiedParameter("page");
+            this.ModifiedParam = new ModifiedParameter("i");
         }
 
         public IPageable Model { get; internal set; }

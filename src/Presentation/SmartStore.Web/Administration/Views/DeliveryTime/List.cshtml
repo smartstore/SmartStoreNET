@@ -31,6 +31,9 @@
                             .Centered();
                         columns.Bound(x => x.DisplayOrder)
                             .Centered();
+                        columns.Bound(x => x.IsDefault)
+                            .Template(x => Html.SymbolForBool(x.IsDefault))
+                            .Centered();
                     })     
                )
         </td>

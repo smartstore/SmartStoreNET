@@ -52,5 +52,18 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="deliveryTime">DeliveryTime</param>
 		void UpdateDeliveryTime(DeliveryTime deliveryTime);
+
+        /// <summary>
+        /// Updates a delivery time
+        /// </summary>
+        /// <param name="deliveryTime">DeliveryTime</param>
+        void SetToDefault(DeliveryTime deliveryTime);
+
+        /// <summary>
+        /// Gets the default delivery time 
+        /// </summary>
+        /// <param name="product">The product</param>
+        /// <returns>Delivery time</returns>
+        DeliveryTime GetDefaultDeliveryTime();
     }
 }

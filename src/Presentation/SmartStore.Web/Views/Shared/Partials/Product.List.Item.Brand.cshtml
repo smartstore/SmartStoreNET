@@ -1,0 +1,24 @@
+﻿@model ProductSummaryModel.SummaryItem
+
+@using SmartStore.Web.Models.Catalog;
+
+<div class="art-brand">
+	@if (Model.Manufacturer != null)
+	{
+		if (Model.Manufacturer.Picture != null && Model.Parent.ViewMode == ProductSummaryViewMode.List)
+		{
+			// TODO: (mc) (low) Whether to link or not > make setting.
+			var picture = Model.Manufacturer.Picture;
+			<a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary { { "SeName", Model.Manufacturer.SeName } })" title="@picture.Title">
+				<img src="@picture.ImageUrl" alt="@picture.AlternateText" class="art-brand-picture" />
+			</a>
+		}
+		else
+		{
+			<span>@Model.Manufacturer.Name</span>
+		}
+	}
+</div>
+
+
+

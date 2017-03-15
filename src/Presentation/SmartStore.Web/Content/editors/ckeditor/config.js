@@ -63,8 +63,8 @@ CKEDITOR.editorConfig = function( config ) {
     config.qtCellPadding = '0'; // Cell padding of the inserted table (default: '1')
     config.qtCellSpacing = '0'; // Cell spacing of the inserted table (default: '1')
 
-	config.removePlugins = 'placeholder';
-		
+    config.removePlugins = 'placeholder';
+	
 	config.codemirror = {
 	    // Set this to the theme you wish to use (codemirror themes)
 	    theme: 'eclipse',

@@ -15,6 +15,8 @@ namespace SmartStore.Core.Logging
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterType<NullChronometer>().As<IChronometer>().SingleInstance();
+
 			builder.RegisterType<Log4netLoggerFactory>().As<ILoggerFactory>().SingleInstance();
 
 			// call GetLogger in response to the request for an ILogger implementation
@@ -66,15 +68,18 @@ namespace SmartStore.Core.Logging
 				// Ignore components known to be without logger dependencies
 				if (!hasCtorLogger && !hasPropertyLogger)
 					return;
-			}
 
-			var componentType = registration.Activator.LimitType;
+				if (hasPropertyLogger)
+				{
+					registration.Metadata.Add("LoggerProperties", loggerProperties);
+				}
+			}
 
 			if (hasCtorLogger)
 			{
 				registration.Preparing += (sender, args) =>
 				{
-					var logger = GetLoggerFor(componentType, args.Context);
+					var logger = GetLoggerFor(args.Component.Activator.LimitType, args.Context);
 					args.Parameters = new[] { TypedParameter.From(logger) }.Concat(args.Parameters);
 				};
 			}
@@ -83,10 +88,14 @@ namespace SmartStore.Core.Logging
 			{
 				registration.Activating += (sender, args) =>
 				{
-					var logger = GetLoggerFor(componentType, args.Context);
-					foreach (var prop in loggerProperties)
+					var logger = GetLoggerFor(args.Component.Activator.LimitType, args.Context);
+					var loggerProps = args.Component.Metadata.Get("LoggerProperties") as FastProperty[];
+					if (loggerProps != null)
 					{
-						prop.SetValue(args.Instance, logger);
+						foreach (var prop in loggerProps)
+						{
+							prop.SetValue(args.Instance, logger);
+						}
 					}
 				};
 			}
@@ -102,9 +111,22 @@ namespace SmartStore.Core.Logging
 			// return an ILogger in response to Resolve<ILogger>(componentTypeParameter)
 			var loggerFactory = context.Resolve<ILoggerFactory>();
 
+			Type containingType = null;
+
 			if (parameters != null && parameters.Any())
 			{
-				var containingType = parameters.TypedAs<Type>();
+				if (parameters.Any(x => x is TypedParameter))
+				{
+					containingType = parameters.TypedAs<Type>();
+				}
+				else if (parameters.Any(x => x is NamedParameter))
+				{
+					containingType = parameters.Named<Type>("Autofac.AutowiringPropertyInjector.InstanceType");
+				}			
+			}
+
+			if (containingType != null)
+			{
 				return loggerFactory.GetLogger(containingType);
 			}
 			else

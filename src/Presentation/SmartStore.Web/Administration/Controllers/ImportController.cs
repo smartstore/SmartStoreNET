@@ -370,7 +370,7 @@ namespace SmartStore.Admin.Controllers
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			var importFile = Path.Combine(FileSystemHelper.TempDir(), model.TempFileName.EmptyNull());
+			var importFile = Path.Combine(FileSystemHelper.TempDirTenant(), model.TempFileName.EmptyNull());
 
 			if (System.IO.File.Exists(importFile))
 			{
@@ -592,7 +592,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					if (id == 0)
 					{
-						var path = Path.Combine(FileSystemHelper.TempDir(), postedFile.FileName);
+						var path = Path.Combine(FileSystemHelper.TempDirTenant(), postedFile.FileName);
 						FileSystemHelper.Delete(path);
 
 						success = postedFile.Stream.ToFile(path);

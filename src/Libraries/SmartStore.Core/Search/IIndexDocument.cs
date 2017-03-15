@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SmartStore.Core.Search
 {
@@ -13,6 +12,11 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		/// <remarks>Implementors: the id must be persisted internally as an <see cref="IndexField"/></remarks>
 		int Id { get; }
+
+		/// <summary>
+		/// Identifies the type of a document, can be <c>null</c>
+		/// </summary>
+		SearchDocumentType? DocumentType { get; }
 
 		/// <summary>
 		/// The number of fields in this document

@@ -13,7 +13,7 @@
             @T("Admin.Catalog.Products.Manage")
         </div>
         <div class="options btn-toolbar">
-			@Html.Widget("admin_button_toolbar_before")
+			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
             <a href="@Url.Action("Create")" class="btn btn-primary">
                 <i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")
@@ -23,7 +23,7 @@
 				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")
 			</button>
 
-			@Html.Widget("admin_button_toolbar_after")
+			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
 

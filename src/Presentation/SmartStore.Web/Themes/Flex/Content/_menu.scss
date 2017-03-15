@@ -1,0 +1,203 @@
+﻿/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="shared/_mixins.scss" />
+
+$ocm-border-color:                      rgba(#000, 0.15);
+$ocm-horizontal-padding:                1.6rem;
+
+//
+// Sidebar Navigation Menus (Category menu etc.)
+// --------------------------------------------------
+
+
+
+
+#offcanvas-menu {
+    .tab-pane {
+        padding: 0;
+    }
+
+    .ocm-home-layer {
+        padding: 0;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        > * { width: 100%; z-index: 1; }
+    }
+
+    .tab-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .offcanvas-menu-footer {
+        padding: 1rem;
+        border-top: 1px solid  $ocm-border-color;
+
+        .mf-dropdown {
+            display: block;
+            
+            .btn-labeled > b {
+                background: transparent;
+            }
+        }
+    }
+    
+    .menubar-link,
+    .category-container .nav-item {
+        margin: 0;
+        float: none;
+        border-bottom: 1px solid $ocm-border-color;
+        display: block;
+        font-size: 1rem;
+
+        .nav-link {
+            display: block;
+            color: $body-color;
+            line-height: 1.3;
+            padding: 1rem 2.5rem 1rem 2rem;
+                
+            &:active { background-color: rgba(#000, 0.05); }   
+               
+            img {
+                width: 100px;
+                max-width: 100px;
+                max-height: 100px;
+                padding-right: 0.75rem;
+            }
+        }
+        
+        &.has-children:after {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+
+            @include fontastic('\e93c');
+            //@include fontawesome('\f054');
+        }
+    }
+    
+    .show-all-manufacturers {
+        padding: 1rem;
+        border-bottom: 0;
+    }
+
+    .navbar-nav .navigate-back {
+        padding-left: 0;
+    }
+
+    .navbar-nav .show-current-cat {
+        font-weight: 600;
+    }
+
+    .button-bar {
+        background: $gray-lightest;
+        padding: 1rem $ocm-horizontal-padding;    
+        span {
+            margin-right: 1rem;
+        }
+    }
+    .category-info {
+        padding: 0 $ocm-horizontal-padding;
+
+        .category-name {
+            font-size: 1.5rem;
+            padding-top: 1rem;
+        }
+    }
+}
+
+// animation 
+#offcanvas-menu {
+    .layer {
+        transition: transform 0.25s ease-out;
+        background: #fff;
+        transform: translateX(-30%);
+        z-index: 0;
+
+        &.in {
+            transform: translateX(0);
+            z-index: 2;
+        }
+
+        &.in ~ .layer {
+            transform: translateX(100%);
+            z-index: 1;
+        }
+    }
+
+    .ocm-nav-layer {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+}
+
+
+
+// service menu 
+#ocm-service {
+    .menubar-group {
+        display: block;
+        margin-left: 0;
+        text-align: left;
+        border-bottom: 1px solid $ocm-border-color;
+
+        .menubar-link {
+            text-transform: initial;
+            padding: 1rem 2rem;
+            border-bottom: none;
+        }
+    }
+
+    .dropdown-menu {
+        position: relative;
+        float: initial;
+        min-width: initial;
+        padding: initial;
+        margin: initial;
+        border: none;
+        border-radius: initial;
+        box-shadow: initial;
+    }
+    .fa:not(.fa-caret-down) {
+        display: none;
+    }
+    .dropdown .menubar-link {
+        position: relative;
+        
+        .fa-caret-down:before {
+            font-weight: bold;
+            position: absolute;
+            font-size: 1.2rem;
+            line-height: 1;
+            content: "\f106";
+            right: 1rem;
+            top: 50%;
+            margin-top: -9px;
+        }
+    }
+    
+    .dropdown.open .menubar-link .fa-caret-down:before  { 
+        content: "\f107";
+    }
+    .menubar-link span {
+        padding-left: 0;
+    }
+    .dropdown-item {
+        padding-left: $ocm-horizontal-padding;
+        font-size: 1rem;
+    }
+}
+
+

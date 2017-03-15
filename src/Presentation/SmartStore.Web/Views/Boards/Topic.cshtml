@@ -7,7 +7,7 @@
 @using SmartStore.Web.Framework.UI;
 
 @{
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    Layout = "_ColumnsOne";
 
     Html.AddTitleParts(Model.Subject);
     Html.AddMetaDescriptionParts(Model.Subject);
@@ -19,9 +19,9 @@
     }
 </script>
 <div class="page forum-topic">
-    @Html.Action("ForumBreadcrumb", new { forumTopicId = Model.Id })
+    @{ Html.RenderAction("ForumBreadcrumb", new { forumTopicId = Model.Id }); }
     
-    @Html.Partial("_SearchBox")
+    @{ Html.RenderPartial("_SearchBox"); }
     
     <div class="title clearfix">
         <h2>

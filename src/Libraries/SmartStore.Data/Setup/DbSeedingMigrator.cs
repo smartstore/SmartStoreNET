@@ -57,7 +57,7 @@ namespace SmartStore.Data.Setup
 			var pendingMigrations = GetPendingMigrations().ToList();
 			if (!pendingMigrations.Any())
 				return 0;
-			
+		
 			var coreSeeders = new List<SeederEntry>();
 			var externalSeeders = new List<SeederEntry>();
 			var isCoreMigration = context is SmartObjectContext;

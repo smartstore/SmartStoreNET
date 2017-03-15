@@ -246,7 +246,7 @@ namespace SmartStore.Web.Controllers
 
 			foreach (var news in newsItems)
 			{
-				var newsUrl = Url.RouteUrl("NewsItem", new { SeName = news.GetSeName(news.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
+				var newsUrl = Url.RouteUrl("NewsItem", new { SeName = news.GetSeName(news.LanguageId, ensureTwoPublishedLanguages: false) }, protocol);
 
 				var item = feed.CreateItem(news.Title, news.Short, newsUrl, news.CreatedOnUtc, news.Full);
 
@@ -312,9 +312,7 @@ namespace SmartStore.Web.Controllers
                     IpAddress = _webHelper.GetCurrentIpAddress(),
                     CommentTitle = model.AddNewComment.CommentTitle,
                     CommentText = model.AddNewComment.CommentText,
-                    IsApproved = true,
-                    CreatedOnUtc = DateTime.UtcNow,
-                    UpdatedOnUtc = DateTime.UtcNow,
+                    IsApproved = true
                 };
                 _customerContentService.InsertCustomerContent(comment);
 

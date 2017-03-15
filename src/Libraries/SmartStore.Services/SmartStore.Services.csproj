@@ -62,8 +62,12 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.3.0\lib\net45\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.Mvc5.4.0.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CronExpressionDescriptor">
@@ -192,6 +196,8 @@
     <Compile Include="DataExchange\Export\ExportConfigurationInfo.cs" />
     <Compile Include="DataExchange\Import\DataImporter.cs" />
     <Compile Include="DataExchange\Import\EntityImporterBase.cs" />
+    <Compile Include="DataExchange\Import\Events\ImportExecutingEvent.cs" />
+    <Compile Include="DataExchange\Import\Events\ImportExecutedEvent.cs" />
     <Compile Include="DataExchange\Import\IEntityImporter.cs" />
     <Compile Include="DataExchange\Import\ImportExtraData.cs" />
     <Compile Include="DataExchange\Import\ImportExecuteContext.cs" />
@@ -219,7 +225,7 @@
     <Compile Include="DataExchange\ISyncMappingService.cs" />
     <Compile Include="DataExchange\SyncMappingService.cs" />
     <Compile Include="DataExchange\Export\Internal\OrderExportContext.cs" />
-    <Compile Include="DataExchange\Export\Internal\ProductExportContext.cs" />
+    <Compile Include="DataExchange\Export\ProductExportContext.cs" />
     <Compile Include="DataExchange\Export\ExportExecuteContext.cs" />
     <Compile Include="DataExchange\Export\ExportExtensions.cs" />
     <Compile Include="DataExchange\Export\ExportFeaturesAttribute.cs" />
@@ -235,8 +241,13 @@
     <Compile Include="Events\DefaultMessageBus.cs" />
     <Compile Include="Events\IMessageBroker.cs" />
     <Compile Include="Events\IMessageBus.cs" />
-    <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
-    <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
+    <Compile Include="Hooks\LocalizedEntityRelationHook.cs" />
+    <Compile Include="Hooks\SearchQueryAliasHook.cs" />
+    <Compile Include="Hooks\SlugSupportedHook.cs" />
+    <Compile Include="Hooks\AuditableHook.cs" />
+    <Compile Include="Hooks\StoreMappingEntityHook.cs" />
+    <Compile Include="IScopedService.cs" />
+    <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />
@@ -263,7 +274,7 @@
     <Compile Include="Pdf\IPdfConverter.cs" />
     <Compile Include="Directory\EcbExchangeRateProvider.cs" />
     <Compile Include="Catalog\AdjustInventoryResult.cs" />
-    <Compile Include="Hooks\SoftDeletablePreUpdateHook.cs" />
+    <Compile Include="Hooks\SoftDeletableHook.cs" />
     <Compile Include="Affiliates\AffiliateService.cs" />
     <Compile Include="Affiliates\IAffiliateService.cs" />
     <Compile Include="Authentication\External\AuthorizeState.cs" />
@@ -296,16 +307,14 @@
     <Compile Include="Catalog\ManufacturerTemplateService.cs" />
     <Compile Include="Catalog\ICategoryTemplateService.cs" />
     <Compile Include="Catalog\IProductTemplateService.cs" />
-    <Compile Include="Catalog\ProductSearchContext.cs" />
-    <Compile Include="Catalog\ProductsSearchingEvent.cs" />
     <Compile Include="Catalog\ProductTemplateService.cs" />
     <Compile Include="Catalog\ICopyProductService.cs" />
     <Compile Include="Catalog\CopyProductService.cs" />
     <Compile Include="Catalog\IProductTagService.cs" />
     <Compile Include="Catalog\ProductTagService.cs" />
     <Compile Include="Catalog\IRecentlyViewedProductsService.cs" />
-    <Compile Include="Hooks\ProductVariantAttributePostDeleteHook.cs" />
-    <Compile Include="Hooks\ProductVariantAttributeValuePostDeleteHook.cs" />
+    <Compile Include="Hooks\ProductVariantAttributeHook.cs" />
+    <Compile Include="Hooks\ProductVariantAttributeValueHook.cs" />
     <Compile Include="Catalog\RecentlyViewedProductsService.cs" />
     <Compile Include="Catalog\TierPriceExtensions.cs" />
     <Compile Include="Catalog\ProductExtensions.cs" />
@@ -324,8 +333,6 @@
     <Compile Include="CommonServices.cs" />
     <Compile Include="Common\AddressService.cs" />
     <Compile Include="Common\AddressExtentions.cs" />
-    <Compile Include="Common\FulltextService.cs" />
-    <Compile Include="Common\IFulltextService.cs" />
     <Compile Include="Common\IGenericAttributeService.cs" />
     <Compile Include="Common\GenericAttributeService.cs" />
     <Compile Include="Common\IMaintenanceService.cs" />
@@ -347,15 +354,9 @@
     <Compile Include="Events\EventPublisher.cs" />
     <Compile Include="Events\DefaultConsumerFactory.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
-    <Compile Include="Filter\FilterCriteria.cs" />
-    <Compile Include="Filter\FilterExtensions.cs" />
-    <Compile Include="Filter\FilterMisc.cs" />
-    <Compile Include="Filter\FilterOperator.cs" />
-    <Compile Include="Filter\FilterService.cs" />
-    <Compile Include="Filter\IFilterService.cs" />
     <Compile Include="Forums\ForumExtensions.cs" />
     <Compile Include="ICommonServices.cs" />
-    <Compile Include="Hooks\LocalizedEntityPostDeleteHook.cs" />
+    <Compile Include="Hooks\LocalizedEntityHook.cs" />
     <Compile Include="Logging\DeleteLogsTask.cs" />
     <Compile Include="Media\CachedImageResult.cs" />
     <Compile Include="Media\IImageCache.cs" />
@@ -486,12 +487,24 @@
     </Compile>
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
-    <Compile Include="Hooks\AclEntityPostDeleteHook.cs" />
+    <Compile Include="Hooks\AclEntityHook.cs" />
+    <Compile Include="ScopedServiceBase.cs" />
     <Compile Include="Search\CatalogSearchQuery.cs" />
+    <Compile Include="Search\Extensions\UrlHelperExtensions.cs" />
+    <Compile Include="Search\Modelling\CatalogSearchQueryAliasMapper.cs" />
+    <Compile Include="Search\Modelling\CatalogSearchQueryFactory.cs" />
     <Compile Include="Search\CatalogSearchResult.cs" />
     <Compile Include="Search\CatalogSearchService.cs" />
+    <Compile Include="Search\Modelling\CatalogSearchQueryModelBinder.cs" />
+    <Compile Include="Search\Extensions\FacetUrlHelper.cs" />
+    <Compile Include="Search\Modelling\ICatalogSearchQueryAliasMapper.cs" />
+    <Compile Include="Search\Modelling\ICatalogSearchQueryFactory.cs" />
     <Compile Include="Search\ICatalogSearchService.cs" />
     <Compile Include="Search\LinqCatalogSearchService.cs" />
+    <Compile Include="Search\CatalogSearchEvents.cs" />
+    <Compile Include="Search\Rendering\FacetTemplateProvider.cs" />
+    <Compile Include="Search\Rendering\IFacetTemplateProvider.cs" />
+    <Compile Include="Search\Rendering\IFacetTemplateSelector.cs" />
     <Compile Include="Security\AclService.cs" />
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />
@@ -503,12 +516,12 @@
     <Compile Include="Customers\CustomerRegistrationResult.cs" />
     <Compile Include="Directory\StateProvinceService.cs" />
     <Compile Include="Security\StandardPermissionProvider.cs" />
-    <Compile Include="Seo\BaseSitemapGenerator.cs" />
     <Compile Include="Seo\IUrlRecordService.cs" />
     <Compile Include="Seo\SeoExtensions.cs" />
-    <Compile Include="Seo\ISitemapGenerator.cs" />
-    <Compile Include="Seo\SitemapGenerator.cs" />
-    <Compile Include="Seo\UpdateFrequency.cs" />
+    <Compile Include="Seo\IXmlSitemapGenerator.cs" />
+    <Compile Include="Seo\Tasks\RebuildXmlSitemapTask.cs" />
+    <Compile Include="Seo\XmlSitemapGenerator.cs" />
+    <Compile Include="Seo\XmlSitemapNode.cs" />
     <Compile Include="Seo\UrlRecordService.cs" />
     <Compile Include="ServiceCacheConsumer.cs" />
     <Compile Include="Shipping\IShipmentService.cs" />
@@ -621,7 +634,9 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Seo\Hooks\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>

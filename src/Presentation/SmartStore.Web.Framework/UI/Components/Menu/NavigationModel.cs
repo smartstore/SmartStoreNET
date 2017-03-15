@@ -5,22 +5,26 @@ using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
 {
-	
 	public class NavigationModel
 	{
-		public TreeNode<MenuItem> Root { get; set; }
-		public IList<MenuItem> Path { get; set; }
+		private TreeNode<MenuItem> _selectedNode;
+		private bool _seekedSelectedNode;
 
-		public MenuItem SelectedMenuItem
+		public TreeNode<MenuItem> Root { get; set; }
+		public IList<TreeNode<MenuItem>> Path { get; set; }
+
+		public TreeNode<MenuItem> SelectedNode
 		{
 			get
 			{
-				if (Path == null || Path.Count == 0)
-					return null;
+				if (!_seekedSelectedNode)
+				{
+					_selectedNode = Path?.LastOrDefault() ?? Root;
+					_seekedSelectedNode = true;
+				}
 
-				return Path.Last();
+				return _selectedNode;
 			}
 		}
 	}
-
 }

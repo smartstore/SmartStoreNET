@@ -1,16 +1,10 @@
 ﻿@model StateProvinceModel
 @using Telerik.Web.Mvc.UI;
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.CountryId)
-@if (ViewBag.RefreshPage == true)
-{
-    <script type="text/javascript">
-        try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-        catch (e){} 
-        window.close();
-    </script>
-}
+
 @(Html.LocalizedEditor<StateProvinceModel, StateProvinceLocalizedModel>("state-localized",
 @<table class="adminContent">
     <tr>

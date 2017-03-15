@@ -1,7 +1,5 @@
 ﻿@model CampaignModel
 
-@using Telerik.Web.Mvc.UI;
-@Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 
 @if (Model.Id > 0)
@@ -34,7 +32,6 @@
             </td>
         </tr>
     </table>
-	<p>&nbsp;</p>
 }
 
 @Html.SmartStore().TabStrip().Name("campaign-edit").Items(x =>
@@ -67,21 +64,21 @@
 				@Html.ValidationMessageFor(model => model.Subject)
 			</td>
 		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TokensTree)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.TokensTree, "TokenSelector")
+            </td>
+        </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Body)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Body, Html.RichEditorFlavor())
+				@Html.EditorFor(model => model.Body, "RichEditor")
 				@Html.ValidationMessageFor(model => model.Body)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AllowedTokens)
-			</td>
-			<td class="adminData">
-				@Html.DisplayFor(model => model.AllowedTokens)
 			</td>
 		</tr>
 	</table>
@@ -90,9 +87,9 @@
 @helper TabStores()
 {
     <script type="text/javascript">
-    	$(document).ready(function () {
+        $(document).ready(function () {
 
-    		$('#@Html.FieldIdFor(model => model.LimitedToStores)').change(function () {
+            $('#@Html.FieldIdFor(model => model.LimitedToStores)').change(function () {
     			$('#pnl-available-stores').toggle($(this).is(':checked'));
     		}).trigger('change');
 
@@ -127,7 +124,8 @@
                 else
                 {
                     <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }</td>
+                }
+            </td>
         </tr>
     </table>
 }

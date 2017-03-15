@@ -58,8 +58,9 @@ namespace SmartStore.Services.Orders
         /// Get active gift cards that are applied by a customer
         /// </summary>
         /// <param name="customer">Customer</param>
+		/// <param name="storeId">Store identifier</param>
         /// <returns>Active gift cards</returns>
-        IList<GiftCard> GetActiveGiftCardsAppliedByCustomer(Customer customer);
+        IList<GiftCard> GetActiveGiftCardsAppliedByCustomer(Customer customer, int storeId);
 
         /// <summary>
         /// Generate new gift card code

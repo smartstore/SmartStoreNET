@@ -952,7 +952,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				appPath + @"Content\files\exportimport\",
 				appPath + @"Exchange\",
-				appPath + @"App_Data\ExportProfiles\"
+				appPath + @"App_Data\Tenants\{0}\ExportProfiles\".FormatInvariant(DataSettings.Current.TenantName)
 			};
 
 			foreach (var path in paths)
@@ -1001,7 +1001,7 @@ namespace SmartStore.Admin.Controllers
 				.Select(x => x.FolderName)
 				.ToList();
 
-			var infoImportProfiles = new DirectoryInfo(CommonHelper.MapPath("~/App_Data/ImportProfiles"));
+			var infoImportProfiles = new DirectoryInfo(CommonHelper.MapPath(DataSettings.Current.TenantPath + "/" + "ImportProfiles"));
 
 			foreach (var infoSubFolder in infoImportProfiles.GetDirectories())
 			{

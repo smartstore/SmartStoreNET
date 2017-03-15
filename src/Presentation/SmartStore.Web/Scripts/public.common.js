@@ -19,7 +19,7 @@
     var _commonPluginFactories = [
         // select2
         function (ctx) {
-            if (!Modernizr.touch) {
+            if (!Modernizr.touchevents) {
                 if ($.fn.select2 === undefined || $.fn.selectWrapper === undefined)
                     return;
                 ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
@@ -29,7 +29,7 @@
         function (ctx) {
             if ($.fn.tooltip === undefined)
                 return;
-            if (!Modernizr.touch) {
+            if (!Modernizr.touchevents) {
                 ctx.tooltip({ selector: "a[rel=tooltip], .tooltip-toggle" });
             }
         },

@@ -14,7 +14,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Discounts;
-using SmartStore.Services.Filter;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -56,7 +55,6 @@ namespace SmartStore.Admin.Controllers
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
 		private readonly IEventPublisher _eventPublisher;
-        private readonly IFilterService _filterService;
 
 		#endregion
 
@@ -74,8 +72,7 @@ namespace SmartStore.Admin.Controllers
 			IDateTimeHelper dateTimeHelper,
 			AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings,
-            IEventPublisher eventPublisher, 
-			IFilterService filterService)
+            IEventPublisher eventPublisher)
         {
             this._categoryService = categoryService;
             this._categoryTemplateService = categoryTemplateService;
@@ -98,7 +95,6 @@ namespace SmartStore.Admin.Controllers
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
 			this._eventPublisher = eventPublisher;
-            this._filterService = filterService;
         }
 
         #endregion
@@ -511,15 +507,10 @@ namespace SmartStore.Admin.Controllers
 
             PrepareTemplatesModel(model);
             PrepareCategoryModel(model, null, true);
-
 			PrepareAclModel(model, null, false);
-
 			PrepareStoresMappingModel(model, null, false);
 
-            model.PageSize = 12;
             model.Published = true;
-
-            model.AllowCustomersToSelectPageSize = true;
 
             return View(model);
         }
@@ -534,8 +525,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var category = model.ToEntity();
-                category.CreatedOnUtc = DateTime.UtcNow;
-                category.UpdatedOnUtc = DateTime.UtcNow;
 
 				MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
 
@@ -661,7 +650,6 @@ namespace SmartStore.Admin.Controllers
 
 				MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
 
-                category.UpdatedOnUtc = DateTime.UtcNow;
                 _categoryService.UpdateCategory(category);
 
                 //search engine name

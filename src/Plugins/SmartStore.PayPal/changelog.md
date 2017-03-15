@@ -1,5 +1,19 @@
 ﻿#Release Notes
 
+##Paypal 2.6.0.6
+###Bugfixes
+* PayPal PLUS: Skip payment if cart total is zero.
+###Improvements
+* PayPal PLUS: Log more information in case of a request failure
+
+##Paypal 2.6.0.5
+###Bugfixes
+* PayPal PLUS: Fixes "Cannot perform runtime binding on a null reference" when rendering the payment wall.
+
+##Paypal 2.6.0.4
+###Bugfixes
+* PayPal PLUS: Excluding tax issue. Fixes "Transaction amount details (subtotal, tax, shipping) must add up to specified amount total".
+
 ##Paypal 2.6.0.3
 ###Bugfixes
 * PayPal PLUS: Integration review through PayPal

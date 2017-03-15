@@ -154,11 +154,8 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product picture</returns>
         public static Picture GetDefaultProductPicture(this Product source, IPictureService pictureService)
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
-
-            if (pictureService == null)
-                throw new ArgumentNullException("pictureService");
+			Guard.NotNull(source, nameof(source));
+			Guard.NotNull(pictureService, nameof(pictureService));
 
             var picture = pictureService.GetPicturesByProductId(source.Id, 1).FirstOrDefault();
             return picture;
@@ -166,8 +163,7 @@ namespace SmartStore.Services.Catalog
 
 		public static bool IsAvailableByStock(this Product product)
 		{
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
 			{
@@ -215,16 +211,9 @@ namespace SmartStore.Services.Catalog
             return stockMessage;
         }
 
-        /// <summary>
-        /// Formats the stock availability/quantity message
-        /// </summary>
-        /// <param name="product">Product</param>
-        /// <param name="localizationService">Localization service</param>
-        /// <returns>The stock message</returns>
         public static bool DisplayDeliveryTimeAccordingToStock(this Product product, CatalogSettings catalogSettings)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
 			{
@@ -233,6 +222,7 @@ namespace SmartStore.Services.Catalog
 
 				return (product.StockQuantity > 0);
 			}
+
             return true;
         }
 

@@ -77,6 +77,7 @@
             dataType: 'json',
             //acceptFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+        	pasteZone: null,
 
             done: function (e, data) {
                 var result = data.result;
@@ -95,7 +96,7 @@
         });
 
         elRemove.click(function (e) {
-            img.attr('src', '@pictureService.GetDefaultPictureUrl()');
+            img.attr('src', '@pictureService.GetDefaultPictureUrl(100)');
             elHidden.val(0);
             $(this).hide();
             e.preventDefault();

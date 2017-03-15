@@ -23,7 +23,6 @@ namespace SmartStore.Data.Tests.Catalog
                 PageSize = 4,
                 AllowCustomersToSelectPageSize = true,
                 PageSizeOptions = "4, 2, 8, 12",
-                PriceRanges = "1-3;",
                 ShowOnHomePage = false,
                 HasDiscountsApplied = true,
                 Published = true,
@@ -46,7 +45,6 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.PageSize.ShouldEqual(4);
             fromDb.AllowCustomersToSelectPageSize.ShouldEqual(true);
             fromDb.PageSizeOptions.ShouldEqual("4, 2, 8, 12");
-            fromDb.PriceRanges.ShouldEqual("1-3;");
             fromDb.ShowOnHomePage.ShouldEqual(false);
             fromDb.HasDiscountsApplied.ShouldEqual(true);
             fromDb.Published.ShouldEqual(true);

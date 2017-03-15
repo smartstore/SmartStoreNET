@@ -1,0 +1,23 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	if (!Model.Items.Any())
+	{
+		return;
+	}
+}
+
+<div class="pd-related-products block block-boxed m-b-1">
+    <div class="block-title">
+        <h3>@T("Products.RelatedProducts")</h3>
+    </div>
+    <div class="block-body">
+		<div class="artlist-carousel">
+			@{
+				Html.RenderPartial("Product.List", Model);
+			}
+		</div>
+    </div>
+</div>

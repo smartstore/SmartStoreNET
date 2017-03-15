@@ -1,0 +1,89 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Catalog;
+
+@{
+	var isBundleItem = Model.IsBundlePart;
+
+	var displayStock = Model.StockAvailability.HasValue();
+	// Never show delivery time when product is out of stock AND stock is displayed
+	var displayDeliveryTime = !isBundleItem && (Model.DisplayDeliveryTime && Model.IsShipEnabled) && (!displayStock || (displayStock && Model.IsAvailable));
+
+	var showAttrs = displayDeliveryTime || displayStock || Model.DisplayBackInStockSubscription;
+	if (!showAttrs)
+	{
+		return;
+	}
+
+	var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailability;
+	var statusColor = Model.DisplayDeliveryTimeAccordingToStock && !displayStock ? Model.DeliveryTimeHexValue : "";
+}
+
+<div class="pd-stock-info@(isBundleItem ? "" : " pd-group")">
+	@if (displayStock)
+	{
+		if (!isBundleItem)
+		{
+			<meta itemprop="availability" content="http://schema.org/@(Model.IsAvailable ? "InStock" : "OutOfStock")" />
+		}
+		<div class="pd-stock @(Model.IsAvailable ? "pd-instock" : "pd-outofstock")">@Model.StockAvailability</div>
+	}
+
+
+	@if (displayDeliveryTime)
+	{
+		<div class="deliverytime-group">
+			<span>@T("Products.DeliveryTime")</span>
+			<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color: " + statusColor, statusColor.HasValue())>
+				@if (!displayStock)
+				{
+					<i class="fa fa-circle delivery-time-status"></i>
+				}
+				@statusLabel
+			</span>
+		</div>
+	}
+
+	@if (Model.DisplayBackInStockSubscription)
+	{
+		<div class="pd-stocksub">
+			@if (!Model.IsCurrentCustomerRegistered)
+			{
+				<a href='@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })' rel="nofollow">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
+			}
+			else
+			{
+				<a class="stock-subscriber" data-toggle="modal" href="#backinstock-subscription-modal" rel="nofollow">
+					@T("BackInStockSubscriptions.NotifyMeWhenAvailable")
+				</a>
+				<script>
+					$(function () {
+						$(".stock-subscriber").on('click', function (e) {
+							$("#backinstock-subscription-modal .modal-body").html('<iframe id="iframe-backinstocksubsription" src="@Url.Action("BackInStockSubscribe", new { id = @Model.Id })" width="600" height="170" scrolling="no" frameBorder="0" />');
+						});
+					});
+				</script>
+			}
+		</div>
+	}
+</div>
+
+@if (Model.DisplayBackInStockSubscription && Model.IsCurrentCustomerRegistered)
+{
+	using (Html.BeginZoneContent("end", key: "backinstock-subscription-modal"))
+	{
+		<div id="backinstock-subscription-modal" class="modal fade" tabindex="-1">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-body">
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
+						<button class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}

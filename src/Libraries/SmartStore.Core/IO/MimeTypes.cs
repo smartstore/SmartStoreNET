@@ -2,15 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Security;
-using System.Text;
 using System.Web;
 using Microsoft.Win32;
 
 namespace SmartStore.Core.IO
-{
-    
+{ 
     public static class MimeTypes
     {
 		private static readonly ConcurrentDictionary<string, string> _mimeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -63,7 +59,5 @@ namespace SmartStore.Core.IO
 				return result;
 			});
         }
-
     }
-
 }

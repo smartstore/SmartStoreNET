@@ -1,0 +1,97 @@
+﻿@model ChoiceModel
+
+@using SmartStore.Web.Framework.UI.Choices;
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	// TODO: (mc) Update fileupload stuff to BS4
+
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
+
+	var storeUrl = EngineContext.Current.Resolve<IWebHelper>().GetStoreLocation(false);
+
+	var controlId = Model.BuildControlId();
+	var disabled = Model.IsDisabled;
+
+	var random = CommonHelper.GenerateRandomInteger();
+	var clientId = "upload" + CommonHelper.GenerateRandomInteger();
+
+	//ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+	var allowedFileExtensions = string.Join("|", Model.AllowedFileExtensions.Select(x => x.Trim()).ToList());
+}
+
+
+<div id="@clientId" class="fileupload">
+	<input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />
+
+	<button class="btn btn-secondary btn-to-danger remove" style="display: none">
+		<i class="fa fa-trash-o"></i>
+		@T("Common.Remove")
+	</button>
+
+	<span class="btn btn-primary fileinput-button@(disabled ? " disabled" : "")" @Html.Attr("disabled", "disabled", disabled)>
+		<i class="fa fa-upload"></i>
+		<span>@T("Common.Fileuploader.Upload")</span>
+		<input id="fileupload-@random" type="file" name="file" class="@(disabled ? "disabled" : "")" @Html.Attr("disabled", "disabled", disabled) />
+	</span>
+
+	<button class="btn btn-warning cancel">
+		<i class="fa fa-times"></i>
+		<span>@T("Common.Fileuploader.Cancel")</span>
+	</button>
+
+	<!-- The global progress information -->
+	<div class="fileupload-progress fade" style="width: 200px">
+		<!-- The global progress bar -->
+		<div class="progress active">
+			<div class="progress-bar bg-success progress-bar-striped" style="width:0%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+		</div>
+		<!-- The extended global progress information -->
+		<div class="progress-extended">&nbsp;</div>
+	</div>
+
+	<div class="uploaded-file hidden-xs-up"></div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var el = $('#@clientId'),
+            elHidden = el.find('.hidden'),
+            elRemove = el.find('.remove'),
+            elFile = el.find('.uploaded-file');
+
+        $('#@clientId').fileupload({
+            url: '@Html.Raw(Model.GetFileUploadUrl(Url))',
+            dataType: 'json',
+            acceptFileTypes: new RegExp('@(allowedFileExtensions)', 'i'),
+            done: function (e, data) {
+                var result = data.result;
+                elHidden.val(result.downloadGuid);
+
+                var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + result.downloadGuid;
+                var fileName = data.files[0].name;
+                var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
+
+                elFile.html(fileLink).removeClass("hidden-xs-up");
+
+                if (result.message) {
+                    displayNotification(result.message, "success");
+                }
+                elRemove.show();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (errorThrown === 'abort') {
+                    displayNotification('File Upload has been canceled', "error");
+                }
+            }
+        });
+
+        elRemove.click(function (e) {
+            elFile.html("").addClass("hidden-xs-up");
+            elHidden.val(0);
+            $(this).hide();
+            e.preventDefault();
+        });
+    });
+</script>

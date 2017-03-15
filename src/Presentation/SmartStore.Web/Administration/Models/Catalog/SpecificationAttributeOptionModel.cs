@@ -22,15 +22,19 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Name { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias")]
+		public string Alias { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.DisplayOrder")]
         public int DisplayOrder {get;set;}
         
         public IList<SpecificationAttributeOptionLocalizedModel> Locales { get; set; }
 
-		// codehint: sm-add
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Multiple")]
 		public bool Multiple { get; set; }
-    }
+
+		public int RangeFilterId { get; set; }
+	}
 
     public class SpecificationAttributeOptionLocalizedModel : ILocalizedModelLocal
     {
@@ -39,5 +43,8 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
-    }
+
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias")]
+		public string Alias { get; set; }
+	}
 }

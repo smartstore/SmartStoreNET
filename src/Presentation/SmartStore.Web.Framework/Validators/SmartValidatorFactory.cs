@@ -33,7 +33,6 @@ namespace SmartStore.Web.Framework.Validators
             }
 
             return null;
-
         }
     }
 }

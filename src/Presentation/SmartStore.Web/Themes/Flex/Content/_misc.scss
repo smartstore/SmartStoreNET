@@ -1,0 +1,260 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Misc Styles
+// --------------------------------------------------
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-weight: initial;
+}
+
+// had to be to align menus to their menuitems
+.navbar-nav .nav-item {
+    position: relative;
+}
+
+// make heading on homepage bigger and center them
+/*.page.home-page .block-title {
+    font-size: 2.3rem;
+    padding: 2rem 0 1rem 0;
+    line-height: 1.3;
+}*/
+
+
+// homepage news
+.link-rss:hover {
+    text-decoration: none;
+}
+.news-date {
+    float: right; 
+    font-size: $font-size-sm;
+    font-weight: bold;
+}
+.news-item {
+    margin-bottom: 2rem;
+}
+
+.deliverytime-group .delivery-time { 
+    vertical-align: top; 
+    padding-left: 0.25rem;
+} 
+.delivery-time {
+    display: inline-block;
+    color: $brand-danger;
+    vertical-align: middle;
+    max-width: 100%;
+    @include text-truncate();
+
+    .delivery-time-status {
+        padding-right: 0.2rem;
+        font-size: 0.85em;
+    }
+}
+
+//
+// Breadcrumb Styles
+// --------------------------------------------------
+#breadcrumb {
+    padding: 0;
+    background: none;
+}
+
+
+#iframe-backinstocksubsription {
+    max-width: 100%;
+}
+
+// generic:
+//      block titles
+.contact-page .block .block-title {
+    padding: 0 0 1.5rem 0;
+    font-size: 2rem;
+}
+
+fieldset legend {
+    padding: 2rem 0 1rem 0;
+}
+
+
+
+//polls
+
+.todays-poll-box-block input {
+    margin-right: .5rem;
+}
+
+//
+// List Scroller Styles
+// --------------------------------------------------
+
+.product-list.scroll {
+	position: relative;
+}
+
+.product-list .pl-slider {
+	overflow: hidden;
+	position: relative;
+
+    //new
+    padding-left: 15px;
+}
+
+.product-list.scroll .pl-row {
+	width: 30000px;
+}
+
+.product-list.scroll .pl-controls {
+	text-align: center !important;
+}
+
+.product-list.scroll .pl-forward,
+.product-list.scroll .pl-backward {
+	display: inline-block;
+	margin-right: 5px;
+}
+
+.product-list.scroll .pl-scroll-prev,
+.product-list.scroll .pl-scroll-next{
+	position: absolute;
+}
+
+.product-list.scroll article {
+    text-align: center;
+    min-width: 220px;
+    max-width: 220px;
+    margin-right: 20px;
+}
+
+
+/* Manufacturers in left column
+================================================ */
+.block-manufacturer-navigation .manufacturer-pic {
+    float: left;
+    width: 50px;
+    height: 50px;
+    margin: 0 0 10px 10px;
+
+    img {
+        max-width: 50px;
+        max-height: 50px;
+    }
+}
+
+/* All manufacturers
+================================================ */
+.manufacturer-nav {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2rem;
+}
+.manufacturer-nav .navbar-nav .nav-item {
+    margin: 0 1rem;
+}
+.manufacturer-nav .navbar-nav .nav-link {
+    font-size: 1.25rem;
+}
+.manufacturer-list-title {
+    font-weight: bold;
+    padding-bottom: 0.5rem;
+}
+
+/* recently viewed products
+================================================ */
+.block-recently-viewed-products li {
+	padding: 3px;
+	border-bottom: 1px solid #e5e5e5;
+	.product-name {
+		//.smaller();
+		text-align: left;
+		margin-left: 40px;
+		display: block;
+	}
+	.picture img {
+		max-width: 32px;
+		max-height: 50px;
+	}
+	figure.picture {
+		margin: 0;
+		text-align: center;
+		width: 40px;
+	}
+}
+.block-recently-viewed-products .omega {
+	border: none;
+}
+.block-recently-viewed-products .listbox {
+	padding: 2px;
+}
+
+
+
+// temp: will probably not be needed in the final release
+
+.product-grid .btn-group .fa {
+    margin-right: 0 !important;
+}
+.product-box-button-bar {
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 10px;
+}
+.product-grid .product-box-big {
+    padding-bottom: 50px;
+}
+
+.price.text-success {
+    font-weight: bold;
+}
+
+
+
+//Tags
+.block-popular-tags li, 
+.block-popular-blogtags li {
+    display: inline;
+}
+
+// menu
+.dropdown {
+    display: inline;
+    /*a {
+        font-size: $font-size-sm;
+    }*/
+    .label {
+        font-size: $font-size-xs;
+    }
+}
+
+
+/* Sitemap
+================================================ */
+
+.sitemap-page .entity { 
+    margin: 5px 0 30px; 
+}
+.sitemap-page .topic-box,
+.sitemap-page .manufacturer-box,
+.sitemap-page .category-box,
+.sitemap-page .product-box {
+    text-align: center;
+    vertical-align:bottom;
+
+    .item {
+        text-align: left; 
+        margin: 3px 10px;
+        width: 180px;
+        border-bottom: 1px dotted #ADACAC;
+    }
+}
+
+
+.data-list-row {
+    margin-bottom: 2rem;
+}
+
+.text-smaller,
+.text-smaller a {
+    font-size: $font-size-sm;
+}
+

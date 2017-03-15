@@ -27,6 +27,7 @@ namespace SmartStore.Web.Framework.Theming
         private IThemeRegistry _themeRegistry;
         private IThemeContext _themeContext;
 		private IMobileDeviceHelper _mobileDeviceHelper;
+		private IWebHelper _webHelper;
 		private ExpandoObject _themeVars;
         private bool? _isHomePage;
 		private bool? _isMobileDevice;
@@ -42,7 +43,9 @@ namespace SmartStore.Web.Framework.Theming
 				{
 					int id = 0;
 					var routeValues = this.Url.RequestContext.RouteData.Values;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") && routeValues["action"].ToString().IsCaseInsensitiveEqual("category"))
+					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") 
+						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("category") 
+						&& routeValues.ContainsKey("categoryId"))
 					{
 						id = Convert.ToInt32(routeValues["categoryId"].ToString());
 					}
@@ -61,7 +64,9 @@ namespace SmartStore.Web.Framework.Theming
 				{
 					var routeValues = this.Url.RequestContext.RouteData.Values;
 					int id = 0;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") && routeValues["action"].ToString().IsCaseInsensitiveEqual("manufacturer"))
+					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") 
+						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("manufacturer")
+						&& routeValues.ContainsKey("manufacturerId"))
 					{
 						id = Convert.ToInt32(routeValues["manufacturerId"].ToString());
 					}
@@ -80,7 +85,9 @@ namespace SmartStore.Web.Framework.Theming
 				{
 					var routeValues = this.Url.RequestContext.RouteData.Values;
 					int id = 0;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("product") && routeValues["action"].ToString().IsCaseInsensitiveEqual("productdetails"))
+					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("product") 
+						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("productdetails")
+						&& routeValues.ContainsKey("productId"))
 					{
 						id = Convert.ToInt32(routeValues["productId"].ToString());
 					}
@@ -112,9 +119,7 @@ namespace SmartStore.Web.Framework.Theming
 			{
 				if (!_isMobileDevice.HasValue)
 				{
-					_isMobileDevice = _mobileDeviceHelper.MobileDevicesSupported()
-						 && _mobileDeviceHelper.IsMobileDevice()
-						 && !_mobileDeviceHelper.CustomerDontUseMobileVersion(); ;
+					_isMobileDevice = _mobileDeviceHelper.IsMobileDevice();
 				}
 
 				return _isMobileDevice.Value;
@@ -200,7 +205,7 @@ namespace SmartStore.Web.Framework.Theming
 				_text = EngineContext.Current.Resolve<IText>();
                 _workContext = EngineContext.Current.Resolve<IWorkContext>();
 				_mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
-
+				_webHelper = EngineContext.Current.Resolve<IWebHelper>();
 			}
         }
 
@@ -289,7 +294,7 @@ namespace SmartStore.Web.Framework.Theming
             get
             {
                 EnsureThemeContextInitialized();
-                return _themeContext.WorkingDesktopTheme;
+                return _themeContext.WorkingThemeName;
             }
         }
 
@@ -340,6 +345,26 @@ namespace SmartStore.Web.Framework.Theming
 
             return defaultValue;
         }
+
+		/// <summary>
+		/// Modifies a URL (appends/updates a query string part and optionally removes another query string).
+		/// </summary>
+		/// <param name="url">The URL to modifiy. If <c>null</c>, the current page's URL is resolved.</param>
+		/// <param name="query">The new query string part.</param>
+		/// <param name="removeQueryName">A query string name to remove.</param>
+		/// <returns>The modified URL.</returns>
+		public string ModifyUrl(string url, string query, string removeQueryName = null)
+		{
+			url = url.NullEmpty() ?? _webHelper.GetThisPageUrl(true);
+			var url2 =  _webHelper.ModifyQueryString(url, query, null);
+
+			if (removeQueryName.HasValue())
+			{
+				url2 = _webHelper.RemoveQueryString(url2, removeQueryName);
+			}
+
+			return url2;
+		}
 
 		public string GenerateHelpUrl(string path)
 		{

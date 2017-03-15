@@ -240,7 +240,6 @@ namespace SmartStore.Admin.Controllers
             if (currency != null)
             {
                 currency.Rate = rate;
-                currency.UpdatedOnUtc = DateTime.UtcNow;
 
                 _currencyService.UpdateCurrency(currency);
 
@@ -316,8 +315,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var currency = model.ToEntity();
-                currency.CreatedOnUtc = DateTime.UtcNow;
-                currency.UpdatedOnUtc = DateTime.UtcNow;
                 
 				_currencyService.InsertCurrency(currency);
                 
@@ -388,8 +385,6 @@ namespace SmartStore.Admin.Controllers
 
 				if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores(), false))
 				{
-					currency.UpdatedOnUtc = DateTime.UtcNow;
-    
 					_currencyService.UpdateCurrency(currency);
                 
 					//locales

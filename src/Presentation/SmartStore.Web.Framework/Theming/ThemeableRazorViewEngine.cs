@@ -14,27 +14,31 @@ namespace SmartStore.Web.Framework.Theming
 			var areaBasePaths = areaBasePathsSetting.Split(',').Select(x => x.Trim().EnsureEndsWith("/")).ToArray();
 
 			// 0: view, 1: controller, 2: area
-			var areaFormats = new string[] { "{2}/Views/{1}/{0}", "{2}/Views/Shared/{0}" };
-			var areaViewLocationFormats = ExpandLocationFormats(areaBasePaths.SelectMany(x => areaFormats.Select(f => x + f)));
+			var areaFormats = new[] 
+			{
+				"{2}/Views/{1}/{0}",
+				"{2}/Views/Shared/{0}"
+			};
+			var areaLocationFormats = areaBasePaths.SelectMany(x => areaFormats.Select(f => x + f));
 
-			AreaViewLocationFormats = areaViewLocationFormats.ToArray();
-			AreaMasterLocationFormats = areaViewLocationFormats.ToArray();
-			AreaPartialViewLocationFormats = areaViewLocationFormats.ToArray();
+			AreaViewLocationFormats = ExpandLocationFormats(areaLocationFormats, ViewType.Layout).ToArray();
+			AreaMasterLocationFormats = ExpandLocationFormats(areaLocationFormats, ViewType.Layout).ToArray();
+			AreaPartialViewLocationFormats = ExpandLocationFormats(areaLocationFormats, ViewType.Partial).ToArray();
 
-            // 0: view, 1: controller, 2: theme
-            var locationFormats = ExpandLocationFormats(new[]
+			// 0: view, 1: controller, 2: theme
+			var locationFormats = new[]
             {
-                "~/Themes/{2}/Views/{1}/{0}",
-                "~/Views/{1}/{0}",
-                "~/Themes/{2}/Views/Shared/{0}",
-                "~/Views/Shared/{0}"
-            });
+				"~/Themes/{2}/Views/{1}/{0}",
+				"~/Views/{1}/{0}",
+				"~/Themes/{2}/Views/Shared/{0}",
+				"~/Views/Shared/{0}"
+			};
 
-            ViewLocationFormats = locationFormats.ToArray();
-            MasterLocationFormats = locationFormats.ToArray();
-            PartialViewLocationFormats = locationFormats.ToArray();
+            ViewLocationFormats = ExpandLocationFormats(locationFormats, ViewType.Layout).ToArray();
+            MasterLocationFormats = ExpandLocationFormats(locationFormats, ViewType.Layout).ToArray();
+			PartialViewLocationFormats = ExpandLocationFormats(locationFormats, ViewType.Partial).ToArray();
 
-            if (EnableVbViews)
+			if (EnableVbViews)
             {
                 FileExtensions = new[] { "cshtml", "vbhtml" };
             }

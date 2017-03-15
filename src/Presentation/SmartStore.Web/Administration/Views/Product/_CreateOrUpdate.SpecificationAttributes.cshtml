@@ -16,7 +16,7 @@
                     var selectedItem = $(this).val();
                     var ddlSpecOptions = $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeOptionId)")
                     $.ajax({
-                        cache:false,
+                        cache: false,
                         type: "GET",
                         url: "@(Url.Action("GetOptionsByAttributeId", "SpecificationAttribute"))",
                         data: { "attributeId": selectedItem },
@@ -27,7 +27,7 @@
                             });
                             ddlSpecOptions.trigger("change");
                         },
-                        error:function (xhr, ajaxOptions, thrownError){
+                        error: function (xhr, ajaxOptions, thrownError) {
                             alert('Failed to retrieve specification options.')
                         }
                     });
@@ -41,18 +41,23 @@
                     var showOnProductPage = $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.ShowOnProductPage)").is(':checked');
                     var displayOrder = $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.DisplayOrder)").val();
 
-                    $('#addProductSpec').attr('disabled', true);
+                	$('#addProductSpec').attr('disabled', true);
+
                     $.ajax({
-                        cache:false,
+                        cache: false,
                         type: "POST",
                         url: "@(Url.Action("ProductSpecificationAttributeAdd", "Product"))",
                         data: { "specificationAttributeOptionId": specificationAttributeOptionId, "allowFiltering": allowFiltering, "showOnProductPage": showOnProductPage, "displayOrder": displayOrder, "productId": @Model.Id },
-                        success: function (data) {
-                                var specificationAttributesGrid = $("#specificationattributes-grid");
-                                specificationAttributesGrid.data('tGrid').ajaxRequest();
-                                $('#addProductSpec').attr('disabled', false);
+                    	success: function (data) {
+                    		$('#addProductSpec').attr('disabled', false);
+                    		if (data.success) {
+                    			$("#specificationattributes-grid").data('tGrid').ajaxRequest();
+                    		}
+                    		else {
+                    			displayNotification(data.message, 'warning');
+                    		}
                         },
-                        error:function (xhr, ajaxOptions, thrownError){
+                        error: function (xhr, ajaxOptions, thrownError) {
                             alert('Failed to add specification attribute.')
                             $('#addProductSpec').attr('disabled', false);
                         }
@@ -170,20 +175,26 @@
                                 }
                             }
                         },
-                        success: function(response, newValue)
-                        {
-                            // we have to overwrite grid data so the correct values are displayed when a value was saved with xeditable
-                            // else the data that initialy populated the client template would be displayed
-                            var grid = $('#specificationattributes-grid').data('tGrid');
+                        success: function (response, newValue)
+                        {                       	
+                        	if (response.success) {
+                        		// we have to overwrite grid data so the correct values are displayed when a value was saved with xeditable
+                        		// else the data that initialy populated the client template would be displayed
+                        		var grid = $('#specificationattributes-grid').data('tGrid');
 
-                            // get the index of the tr holding the updated value because the data is stored in an array
-                            var index = link.closest("tr").index();
-                            var data = grid.data[index];
+                        		// get the index of the tr holding the updated value because the data is stored in an array
+                        		var index = link.closest("tr").index();
+                        		var data = grid.data[index];
 
-                            // overwrite data of option id and name
-                            data.SpecificationAttributeOptionId = newValue;
-                            data.SpecificationAttributeOptionName = response.name;
+                        		// overwrite data of option id and name
+                        		data.SpecificationAttributeOptionId = newValue;
+                        		data.SpecificationAttributeOptionName = response.name;                        		
+                        	}
+                        	else {
+                        		displayNotification(response.message, 'warning');
 
+                        		$("#specificationattributes-grid").data('tGrid').ajaxRequest();
+                        	}
                         }
                     });
 

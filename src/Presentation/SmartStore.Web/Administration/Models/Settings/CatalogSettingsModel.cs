@@ -9,8 +9,8 @@ namespace SmartStore.Admin.Models.Settings
     {
         public CatalogSettingsModel()
         {
-            this.AvailableDefaultViewModes = new List<SelectListItem>();
-			this.AvailableDeliveryTimes = new List<SelectListItem>();
+            AvailableDefaultViewModes = new List<SelectListItem>();
+			AvailableDeliveryTimes = new List<SelectListItem>();
         }
 
         #region General
@@ -63,6 +63,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDefaultQuantityUnit")]
         public bool ShowDefaultQuantityUnit { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDefaultDeliveryTime")]
+        public bool ShowDefaultDeliveryTime { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage")]
         public bool ShowManufacturersOnHomepage { get; set; }
 
@@ -75,7 +78,10 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideManufacturerDefaultPictures")]
 		public bool HideManufacturerDefaultPictures { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideCategoryDefaultPictures")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SortManufacturersAlphabetically")]
+        public bool SortManufacturersAlphabetically { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideCategoryDefaultPictures")]
 		public bool HideCategoryDefaultPictures { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideProductDefaultPictures")]
@@ -87,7 +93,6 @@ namespace SmartStore.Admin.Models.Settings
 
 		#region Navigation
 
-		//filter
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductsFromSubcategories")]
         public bool ShowProductsFromSubcategories { get; set; }
 
@@ -103,27 +108,15 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.CategoryBreadcrumbEnabled")]
         public bool CategoryBreadcrumbEnabled { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.FilterEnabled")]
-        public bool FilterEnabled { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay")]
-        public int MaxFilterItemsToDisplay { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria")]
-        public bool ExpandAllFilterCriteria { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SortFilterResultsByMatches")]
-		public bool SortFilterResultsByMatches { get; set; }
-
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SubCategoryDisplayType")]
 		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
 		public SelectList AvailableSubCategoryDisplayTypes { get; set; }
 
-        #endregion 
+		#endregion
 
-        #region Product list
+		#region Product list
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowProductSorting")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowProductSorting")]
         public bool AllowProductSorting { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultViewMode")]
@@ -137,18 +130,36 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowProductViewModeChanging")]
         public bool AllowProductViewModeChanging { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultProductListPageSize")]
+		public int DefaultProductListPageSize { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions")]
         public string DefaultPageSizeOptions { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.PriceDisplayType")]
 		public PriceDisplayType PriceDisplayType { get; set; }
 		public SelectList AvailablePriceDisplayTypes { get; set; }
 
-        #endregion
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.GridStyleListColumnSpan")]
+		public GridColumnSpan GridStyleListColumnSpan { get; set; }
 
-        #region Products
-        
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists")]
+		#endregion
+
+		#region Products
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowShortDescriptionInGridStyleLists")]
+		public bool ShowShortDescriptionInGridStyleLists { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerInGridStyleLists")]
+		public bool ShowManufacturerInGridStyleLists { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerLogoInLists")]
+		public bool ShowManufacturerLogoInLists { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductOptionsInLists")]
+		public bool ShowProductOptionsInLists { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists")]
         public bool ShowDeliveryTimesInProductLists { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowBasePriceInProductLists")]
@@ -170,22 +181,13 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.NumberOfProductTags")]
         public int NumberOfProductTags { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsByTagPageSize")]
-        public int ProductsByTagPageSize { get; set; }
+		#endregion
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsByTagAllowCustomersToSelectPageSize")]
-        public bool ProductsByTagAllowCustomersToSelectPageSize { get; set; }
+		#endregion
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsByTagPageSizeOptions")]
-        public string ProductsByTagPageSizeOptions { get; set; }
+		#region Customers 
 
-        #endregion
-
-        #endregion
-
-        #region Customers 
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductLists")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductLists")]
         public bool ShowProductReviewsInProductLists { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductDetail")]
@@ -237,10 +239,13 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DisplayAllImagesNumber")]
         public int DisplayAllImagesNumber { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerPicturesInProductDetail")]
-		public bool ShowManufacturerPicturesInProductDetail { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerInProductDetail")]
+        public bool ShowManufacturerInProductDetail { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerPicturesInProductDetail")]
+		public bool ShowManufacturerPicturesInProductDetail { get; set; }
+        
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail")]
         public bool ShowDeliveryTimesInProductDetail { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimeIdForEmptyStock")]
@@ -263,34 +268,5 @@ namespace SmartStore.Admin.Models.Settings
         public bool ShowLinkedAttributeValueImage { get; set; }
 
         #endregion 
-
-        #region Search
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SearchPageProductsPerPage")]
-        public int SearchPageProductsPerPage { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAllowCustomersToSelectPageSize")]
-        public bool ProductSearchAllowCustomersToSelectPageSize { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchPageSizeOptions")]
-        public string ProductSearchPageSizeOptions { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteEnabled")]
-        public bool ProductSearchAutoCompleteEnabled { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductImagesInSearchAutoComplete")]
-		public bool ShowProductImagesInSearchAutoComplete { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteNumberOfProducts")]
-        public int ProductSearchAutoCompleteNumberOfProducts { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SuppressSkuSearch")]
-        public bool SuppressSkuSearch { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SearchDescriptions")]
-		public bool SearchDescriptions { get; set; }
-
-		#endregion
-
 	}
 }

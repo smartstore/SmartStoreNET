@@ -17,6 +17,7 @@
             <button type="submit" id="checkoutattribute-delete" name="checkoutattribute-delete" value="save-continue" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdate", Model)
+
+    Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("checkoutattribute-delete")

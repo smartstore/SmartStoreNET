@@ -278,7 +278,7 @@ namespace SmartStore.PayPal
             if (!cart.IsRecurring())
             {
                 //we don't apply gift cards for recurring products
-                var giftCards = _giftCardService.GetActiveGiftCardsAppliedByCustomer(customer);
+                var giftCards = _giftCardService.GetActiveGiftCardsAppliedByCustomer(customer, Services.StoreContext.CurrentStore.Id);
                 if (giftCards != null)
                 {
                     foreach (var gc in giftCards)

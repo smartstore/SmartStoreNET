@@ -33,7 +33,7 @@
 					@Html.SmartLabel("ProfileScheduleTask" + Model.Profiles.IndexOf(profile).ToString(), T("Common.Execution"))
 				</td>
 				<td class="adminData">
-					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = profile.ScheduleTaskId.Value, returnUrl = Model.ReturnUrl, cancellable = true, area = "admin" })
+					@{ Html.RenderAction("MinimalTask", "ScheduleTask", new { taskId = profile.ScheduleTaskId.Value, returnUrl = Model.ReturnUrl, cancellable = true, area = "admin" });}
 				</td>
 			</tr>
 		}

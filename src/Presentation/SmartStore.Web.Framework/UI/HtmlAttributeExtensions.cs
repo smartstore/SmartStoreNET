@@ -18,9 +18,9 @@ namespace SmartStore.Web.Framework
             return Css(html, null, value, condition);
         }
 
-        public static HtmlAttribute Css(this HtmlHelper html, string seperator, string value, bool condition)
+        public static HtmlAttribute Css(this HtmlHelper html, string separator, string value, bool condition)
         {
-            return new HtmlAttribute("class", seperator).Add(value, condition);
+            return new HtmlAttribute("class", separator).Add(value, condition);
         }
 
         public static HtmlAttribute Attr(this HtmlHelper html, string name, string value)
@@ -33,9 +33,9 @@ namespace SmartStore.Web.Framework
             return Attr(html, name, null, value, condition);
         }
 
-        public static HtmlAttribute Attr(this HtmlHelper html, string name, string seperator, string value, bool condition)
+        public static HtmlAttribute Attr(this HtmlHelper html, string name, string separator, string value, bool condition)
         {
-            return new HtmlAttribute(name, seperator).Add(value, condition);
+            return new HtmlAttribute(name, separator).Add(value, condition);
         }
     }
 }

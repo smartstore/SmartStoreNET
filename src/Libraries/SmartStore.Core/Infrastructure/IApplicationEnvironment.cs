@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SmartStore.Core.IO;
 
 namespace SmartStore.Core
@@ -13,5 +12,6 @@ namespace SmartStore.Core
 		IVirtualFolder AppDataFolder { get; }
 		IVirtualFolder ThemesFolder { get; }
 		IVirtualFolder PluginsFolder { get; }
+		IVirtualFolder TenantFolder { get; }
 	}
 }

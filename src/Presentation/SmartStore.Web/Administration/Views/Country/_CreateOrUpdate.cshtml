@@ -155,7 +155,7 @@
 							columns.Bound(x => x.Id)
 								.Centered()
 								.Width(120)
-								.ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Country/StateEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=country-form', 800, 250, true); return false;\" class='t-button' />")
+								.ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:openPopup('" + @Url.Content("~/Admin/Country/StateEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=country-form'); return false;\" class='t-button' />")
 								.Title("");
 							columns.Command(commands =>
 							{
@@ -169,7 +169,7 @@
 			<tr>
 				<td>
 					<button type="submit" id="btnAddNewState" name="btnAddNewState" class="btn btn-below"
-						onclick="javascript:OpenWindow('@(Url.Action("StateCreatePopup", "Country", new { countryId = Model.Id, btnId = "btnRefresh", formId = "country-form" }))', 800, 250, true); return false;">
+						onclick="javascript:openPopup('@(Url.Action("StateCreatePopup", "Country", new { countryId = Model.Id, btnId = "btnRefresh", formId = "country-form" }))'); return false;">
 						<i class="fa fa-plus"></i>&nbsp;@T("Admin.Configuration.Countries.States.AddNew")
 					</button>
 					<input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />

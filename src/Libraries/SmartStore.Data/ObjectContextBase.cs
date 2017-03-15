@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
@@ -11,6 +12,7 @@ using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Events;
 
 namespace SmartStore.Data
@@ -37,6 +39,25 @@ namespace SmartStore.Data
 			this.HooksEnabled = true;
 			this.AutoCommitEnabled = true;
             this.Alias = null;
+			this.DbHookHandler = NullDbHookHandler.Instance;
+
+			if (DataSettings.DatabaseIsInstalled())
+			{
+				// listen to 'ObjectMaterialized' for load hooking
+				((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectMaterialized;
+			}
+		}
+
+		private void ObjectMaterialized(object sender, ObjectMaterializedEventArgs e)
+		{
+			var entity = e.Entity as BaseEntity;
+			if (entity == null)
+				return;
+
+			var hookHandler = this.DbHookHandler;
+			var importantHooksOnly = !this.HooksEnabled && hookHandler.HasImportantLoadHooks();
+
+			hookHandler.TriggerLoadHooks(entity, importantHooksOnly);
 		}
 
 		public bool HooksEnabled
@@ -249,7 +270,7 @@ namespace SmartStore.Data
 			{
 				var modifiedProperties = from p in entry.CurrentValues.PropertyNames
 										 let prop = entry.Property(p)
-										 where prop.IsModified
+										 where PropIsModified(prop) // prop.IsModified seems to return true even if values are equal
 										 select prop;
 
 				foreach (var prop in modifiedProperties)
@@ -259,6 +280,24 @@ namespace SmartStore.Data
 			}
 
 			return props;
+		}
+
+		private static bool PropIsModified(DbPropertyEntry prop)
+		{
+			// TODO: "CurrentValues cannot be used for entities in the Deleted state."
+			var cur = prop.CurrentValue;
+			// TODO: "OriginalValues cannot be used for entities in the Added state."
+			var orig = prop.OriginalValue;
+
+			if (cur == null && orig == null)
+				return false;
+
+			if (orig != null)
+			{
+				return !orig.Equals(cur);
+			}
+
+			return !cur.Equals(orig);	
 		}
 
         // required for UoW implementation
@@ -337,7 +376,7 @@ namespace SmartStore.Data
 		/// Resolves the connection string from the <c>Settings.txt</c> file
 		/// </summary>
 		/// <returns>The connection string</returns>
-		/// <remarks>This helper is called from parameterless DbContext constructors which are required for EF tooling support.</remarks>
+		/// <remarks>This helper is called from parameterless DbContext constructors which are required for EF tooling support or during installation.</remarks>
 		public static string GetConnectionString()
 		{
 			if (DataSettings.Current.IsValid())

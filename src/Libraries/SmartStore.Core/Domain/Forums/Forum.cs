@@ -7,7 +7,7 @@ namespace SmartStore.Core.Domain.Forums
     /// <summary>
     /// Represents a forum
     /// </summary>
-	public partial class Forum : BaseEntity, ILocalizedEntity, ISlugSupported
+	public partial class Forum : BaseEntity, IAuditable, ILocalizedEntity, ISlugSupported
     {
         /// <summary>
         /// Gets or sets the forum group identifier

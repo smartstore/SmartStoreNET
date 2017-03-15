@@ -4206,9 +4206,6 @@ namespace SmartStore.Data.Setup
 
 		public IList<ISettings> Settings()
 		{
-			var seName = GetSeName("slider-bg");
-			var imgContentSliderBg = _ctx.Set<Picture>().Where(x => x.SeoFilename == seName).FirstOrDefault();
-
 			var entities = new List<ISettings>
 			{
 				new PdfSettings
@@ -4296,10 +4293,6 @@ namespace SmartStore.Data.Setup
 				new EmailAccountSettings()
 				{
 					DefaultEmailAccountId = _ctx.Set<EmailAccount>().First().Id
-				},
-				new ContentSliderSettings()
-				{
-					BackgroundPictureId = imgContentSliderBg.Id,
 				},
 				new ThemeSettings()
 				{
@@ -4795,7 +4788,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Clear cache",
-					CronExpression = "0 */4 * * *", // Every 04 hours
+					CronExpression = "0 */12 * * *", // Every 12 hours
 					Type = "SmartStore.Services.Caching.ClearCacheTask, SmartStore.Services",
 					Enabled = false,
 					StopOnError = false,
@@ -4803,9 +4796,9 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Update currency exchange rates",
-					CronExpression = "0/15 * * * *", // Every 15 minutes
+					CronExpression = "0 */6 * * *", // Every 6 hours
 					Type = "SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services",
-					Enabled = true,
+					Enabled = false,
 					StopOnError = false,
 				},
 				new ScheduleTask
@@ -6132,14 +6125,9 @@ namespace SmartStore.Data.Setup
 				Name = "Books",
                 Alias = "Books",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "emblem_library.png"), "image/jpeg", GetSeName("Books")),
 				Published = true,
 				DisplayOrder = 1,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Books"
 			};
 
@@ -6148,14 +6136,9 @@ namespace SmartStore.Data.Setup
 				Name = "Computers",
                 Alias = "Computers",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_computers.png"), "image/png", GetSeName("Computers")),
 				Published = true,
 				DisplayOrder = 2,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Computers"
 			};
 
@@ -6164,14 +6147,9 @@ namespace SmartStore.Data.Setup
 				Name = "Gaming",
 				Alias = "Gaming",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming.png"), "image/png", GetSeName("Gaming")),
 				Published = true,
 				DisplayOrder = 3,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Gaming"
 			};
 
@@ -6180,16 +6158,10 @@ namespace SmartStore.Data.Setup
 				Name = "Cell phones",
                 Alias = "Cell phones",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
-
 				//ParentCategoryId = categoryElectronics.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_cellphone.png"), "image/png", GetSeName("Cell phones")),
 				Published = true,
 				DisplayOrder = 4,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Cell phones"
 			};
 
@@ -6198,14 +6170,9 @@ namespace SmartStore.Data.Setup
 				Name = "Instant music",
                 Alias = "Instant music",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitaldownloads.jpg"), "image/jpeg", GetSeName("Digital downloads")),
 				Published = true,
 				DisplayOrder = 6,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Instant music"
 			};
 
@@ -6214,14 +6181,9 @@ namespace SmartStore.Data.Setup
 				Name = "Gift Cards",
                 Alias = "Gift Cards",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_giftcards.png"), "image/png", GetSeName("Gift Cards")),
 				Published = true,
 				DisplayOrder = 12,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Gift cards"
 			};
 
@@ -6230,14 +6192,9 @@ namespace SmartStore.Data.Setup
 				Name = "Watches",
                 Alias = "Watches",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_watches.png"), "image/png", GetSeName("Watches")),
 				Published = true,
 				DisplayOrder = 10,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Watches"
 			};
 
@@ -6269,15 +6226,10 @@ namespace SmartStore.Data.Setup
 				Name = "SPIEGEL-Bestseller",
                 Alias = "SPIEGEL-Bestseller",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000930_spiegel-bestseller.png"), "image/png", GetSeName("SPIEGEL-Bestseller")),
 				Published = true,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
 				DisplayOrder = 1,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "SPIEGEL-Bestseller"
 			};
 
@@ -6286,15 +6238,10 @@ namespace SmartStore.Data.Setup
 				Name = "Cook and enjoy",
                 Alias = "Cook and enjoy",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000936_kochen-geniesen.jpeg"), "image/jpeg", GetSeName("Cook and enjoy")),
 				Published = true,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
 				DisplayOrder = 2,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Cook and enjoy"
 			};
 
@@ -6303,16 +6250,10 @@ namespace SmartStore.Data.Setup
 				Name = "Desktops",
                 Alias = "Desktops",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_desktops.png"), "image/png", GetSeName("Desktops")),
-				PriceRanges = "-1000;1000-1200;1200-;",
 				Published = true,
 				DisplayOrder = 1,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Desktops"
 			};
 
@@ -6321,15 +6262,10 @@ namespace SmartStore.Data.Setup
 				Name = "Notebooks",
                 Alias = "Notebooks",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_notebooks.png"), "image/png", GetSeName("Notebooks")),
 				Published = true,
 				DisplayOrder = 2,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Notebooks"
 			};
 
@@ -6338,15 +6274,10 @@ namespace SmartStore.Data.Setup
 				Name = "Gaming Accessories",
 				Alias = "Gaming Accessories",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.png"), "image/png", GetSeName("Gaming Accessories")),
 				Published = true,
 				DisplayOrder = 2,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Gaming Accessories"
 			};
 
@@ -6355,15 +6286,10 @@ namespace SmartStore.Data.Setup
 				Name = "Games",
 				Alias = "Games",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.png"), "image/png", GetSeName("Games")),
 				Published = true,
 				DisplayOrder = 3,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Games"
 			};
 
@@ -6397,14 +6323,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Apple",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_apple.png"), "image/png", GetSeName("Apple")),
 				Published = true,
-				DisplayOrder = 1,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 1
 			};
 
 			#endregion Apple
@@ -6415,14 +6336,9 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Android",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-android.png"), "image/png", GetSeName("Android")),
                 Published = true,
-                DisplayOrder = 2,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow
+                DisplayOrder = 2
             };
 
             #endregion Android
@@ -6433,14 +6349,9 @@ namespace SmartStore.Data.Setup
             {
                 Name = "LG",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-lg.png"), "image/png", GetSeName("LG")),
                 Published = true,
-                DisplayOrder = 3,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow
+                DisplayOrder = 3
             };
 
             #endregion LG
@@ -6451,14 +6362,9 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Dell",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-dell.png"), "image/png", GetSeName("Dell")),
                 Published = true,
-                DisplayOrder = 4,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow
+                DisplayOrder = 4
             };
 
             #endregion Dell
@@ -6469,14 +6375,9 @@ namespace SmartStore.Data.Setup
             {
                 Name = "HP",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-hp.png"), "image/png", GetSeName("HP")),
                 Published = true,
-                DisplayOrder = 5,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow
+                DisplayOrder = 5
             };
 
             #endregion HP
@@ -6487,14 +6388,9 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Microsoft",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-microsoft.png"), "image/png", GetSeName("Microsoft")),
                 Published = true,
-                DisplayOrder = 6,
-                CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc = DateTime.UtcNow
+                DisplayOrder = 6
             };
 
             #endregion Microsoft
@@ -6505,14 +6401,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Samsung",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-samsung.png"), "image/png", GetSeName("Samsung")),
 				Published = true,
-				DisplayOrder = 7,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 7
 			};
 
 			#endregion Samsung
@@ -6523,14 +6414,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Acer",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "acer-logo.jpg"), "image/pjpeg", GetSeName("Acer")),
 				Published = true,
-				DisplayOrder = 8,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 8
 			};
 
 			#endregion Acer
@@ -6541,14 +6427,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "TrekStor",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-trekstor.png"), "image/png", GetSeName("TrekStor")),
 				Published = true,
-				DisplayOrder = 9,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 9
 			};
 
 			#endregion TrekStor
@@ -6559,14 +6440,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Western Digital",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-westerndigital.png"), "image/png", GetSeName("Western Digital")),
 				Published = true,
-				DisplayOrder = 10,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 10
 			};
 
 			#endregion Western Digital
@@ -6577,14 +6453,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "MSI",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-msi.png"), "image/png", GetSeName("MSI")),
 				Published = true,
-				DisplayOrder = 11,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 11
 			};
 
 			#endregion MSI
@@ -6595,14 +6466,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Canon",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-canon.png"), "image/png", GetSeName("Canon")),
 				Published = true,
-				DisplayOrder = 12,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 12
 			};
 
 			#endregion Canon
@@ -6613,14 +6479,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Casio",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-casio.png"), "image/png", GetSeName("Casio")),
 				Published = true,
-				DisplayOrder = 13,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 13
 			};
 
 			#endregion Casio
@@ -6631,14 +6492,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Panasonic",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-panasonic.png"), "image/png", GetSeName("Panasonic")),
 				Published = true,
-				DisplayOrder = 14,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 14
 			};
 
 			#endregion Panasonic
@@ -6649,14 +6505,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "BlackBerry",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-blackberry.png"), "image/png", GetSeName("BlackBerry")),
 				Published = true,
-				DisplayOrder = 15,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 15
 			};
 
 			#endregion BlackBerry
@@ -6667,14 +6518,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "HTC",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-htc.png"), "image/png", GetSeName("HTC")),
 				Published = true,
-				DisplayOrder = 16,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 16
 			};
 
 			#endregion HTC
@@ -6685,14 +6531,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Festina",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_festina.png"), "image/png", GetSeName("Festina")),
 				Published = true,
-				DisplayOrder = 17,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 17
 			};
 
 			#endregion Festina
@@ -6703,14 +6544,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Certina",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-certina.png"), "image/png", GetSeName("Certina")),
 				Published = true,
-				DisplayOrder = 18,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 18
 			};
 
 			#endregion Certina
@@ -6721,14 +6557,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Sony",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_sony.png"), "image/png", GetSeName("Sony")),
 				Published = true,
-				DisplayOrder = 19,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 19
 			};
 
 			#endregion Sony
@@ -6739,14 +6570,9 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Ubisoft",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ubisoft.png"), "image/png", GetSeName("Ubisoft")),
 				Published = true,
-				DisplayOrder = 20,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
+				DisplayOrder = 20
 			};
 
 			#endregion Ubisoft
@@ -6766,13 +6592,13 @@ namespace SmartStore.Data.Setup
 		{
 			#region definitions
 
-			//pictures
+			// Pictures
 			var sampleImagesPath = this._sampleImagesPath;
 
-			//downloads
+			// Downloads
 			var sampleDownloadsPath = this._sampleDownloadsPath;
 
-			//templates
+			// Templates
 			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "ProductTemplate.Simple");
 			var productTemplateGrouped = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "ProductTemplate.Grouped");
 
@@ -6798,8 +6624,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "$5 Virtual Gift Card",
 				Price = 5M,
 				IsGiftCard = true,
@@ -6841,8 +6665,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "$25 Virtual Gift Card",
 				Price = 25M,
 				IsGiftCard = true,
@@ -6879,8 +6701,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "$50 Virtual Gift Card",
 				Price = 50M,
 				IsGiftCard = true,
@@ -6924,8 +6744,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Überman: The novel",
 				Price = 16.99M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -6983,8 +6801,6 @@ namespace SmartStore.Data.Setup
                 Sku = "P-1004",
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "The Prisoner of Heaven: A Novel",
 				Price = 22.99M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7048,8 +6864,6 @@ namespace SmartStore.Data.Setup
                 Sku = "P-1005",
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Best Grilling Recipes",
 				Price = 27.00M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7112,8 +6926,6 @@ namespace SmartStore.Data.Setup
                 Sku = "P-1006",
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Cooking for Two",
 				Price = 27.00M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7176,8 +6988,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Car of superlatives",
 				Price = 14.95M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7241,8 +7051,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Picture Atlas Motorcycles",
 				Price = 14.99M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7305,8 +7113,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "The Car Book",
 				Price = 29.95M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7369,8 +7175,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Fast Cars",
 				Price = 16.95M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7433,8 +7237,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Motorcycle Adventures",
 				Price = 24.90M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7505,8 +7307,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Dell Inspiron One 23",
 				Price = 589.00M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7613,8 +7413,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Dell Optiplex 3010 DT Base",
 				Price = 419.00M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7720,8 +7518,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Acer Aspire One 8.9",
 				ShowOnHomePage = true,
 				Price = 210.6M,
@@ -7815,8 +7611,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Apple iPhone 6",
 				ShowOnHomePage = true,
 				Price = 579.00M,
@@ -7926,8 +7720,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Antonio Vivaldi: spring",
 				Price = 1.99M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8003,8 +7795,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Ludwig van Beethoven: Für Elise",
 				ShowOnHomePage = true,
 				Price = 1.89M,
@@ -8086,8 +7876,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Certina DS Podium Big Size",
 				ShowOnHomePage = true,
 				Price = 479.00M,
@@ -8186,8 +7974,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Playstation 3 Super Slim",
 				Price = 189.00M,
 				OldPrice = 199.99M,
@@ -8227,8 +8013,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "DUALSHOCK 3 Wireless Controller",
 				Price = 54.90M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8262,8 +8046,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Assassin's Creed III",
 				Price = 49.90M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8298,8 +8080,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "PlayStation 3 Assassin's Creed III Bundle",
 				Price = 269.97M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8340,8 +8120,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "PlayStation 4",
 				Price = 399.99M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8375,8 +8153,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "DUALSHOCK 4 Wireless Controller",
 				Price = 59.99M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8410,8 +8186,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "PlayStation 4 Camera",
 				Price = 59.99M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8446,8 +8220,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "PlayStation 4 Bundle",
 				Price = 429.99M,
 				OldPrice = 449.99M,
@@ -8486,8 +8258,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateGrouped.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Accessories for unlimited gaming experience",
 				Price = 0.0M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8524,8 +8294,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Watch Dogs",
 				Price = 49.90M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8559,8 +8327,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Prince of Persia",
 				Price = 39.90M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8593,8 +8359,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Driver San Francisco",
 				Price = 39.90M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8627,8 +8391,6 @@ namespace SmartStore.Data.Setup
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "PlayStation 3 plus game cheaper",
 				Price = 160.00M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -8685,9 +8447,7 @@ namespace SmartStore.Data.Setup
 				Discount = 20.0M,
 				Visible = true,
 				Published = true,
-				DisplayOrder = 1,
-				CreatedOnUtc = utcNow,
-				UpdatedOnUtc = utcNow
+				DisplayOrder = 1
 			};
 
 			var bundleItemPs3AssassinCreed2 = new ProductBundleItem()
@@ -8698,9 +8458,7 @@ namespace SmartStore.Data.Setup
 				Discount = 30.0M,
 				Visible = true,
 				Published = true,
-				DisplayOrder = 2,
-				CreatedOnUtc = utcNow,
-				UpdatedOnUtc = utcNow
+				DisplayOrder = 2
 			};
 
 			var bundleItemPs3AssassinCreed3 = new ProductBundleItem()
@@ -8711,48 +8469,40 @@ namespace SmartStore.Data.Setup
 				Discount = 20.0M,
 				Visible = true,
 				Published = true,
-				DisplayOrder = 3,
-				CreatedOnUtc = utcNow,
-				UpdatedOnUtc = utcNow
+				DisplayOrder = 3
 			};
 
 
 			var bundlePs4 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410099");
 
-			var bundleItemPs41 = new ProductBundleItem()
+			var bundleItemPs41 = new ProductBundleItem
 			{
 				BundleProduct = bundlePs4,
 				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410034"),
 				Quantity = 1,
 				Visible = true,
 				Published = true,
-				DisplayOrder = 1,
-				CreatedOnUtc = utcNow,
-				UpdatedOnUtc = utcNow
+				DisplayOrder = 1
 			};
 
-			var bundleItemPs42 = new ProductBundleItem()
+			var bundleItemPs42 = new ProductBundleItem
 			{
 				BundleProduct = bundlePs4,
 				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410037"),
 				Quantity = 1,
 				Visible = true,
 				Published = true,
-				DisplayOrder = 2,
-				CreatedOnUtc = utcNow,
-				UpdatedOnUtc = utcNow
+				DisplayOrder = 2
 			};
 
-			var bundleItemPs43 = new ProductBundleItem()
+			var bundleItemPs43 = new ProductBundleItem
 			{
 				BundleProduct = bundlePs4,
 				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410040"),
 				Quantity = 1,
 				Visible = true,
 				Published = true,
-				DisplayOrder = 3,
-				CreatedOnUtc = utcNow,
-				UpdatedOnUtc = utcNow
+				DisplayOrder = 3
 			};
 
 			#endregion gaming
@@ -8789,13 +8539,11 @@ namespace SmartStore.Data.Setup
 		#region ForumGroups
 		public IList<ForumGroup> ForumGroups()
 		{
-			var forumGroupGeneral = new ForumGroup()
+			var forumGroupGeneral = new ForumGroup
 			{
 				Name = "General",
 				Description = "",
-				DisplayOrder = 1,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
+				DisplayOrder = 1
 			};
 
 			var entities = new List<ForumGroup>
@@ -8811,7 +8559,7 @@ namespace SmartStore.Data.Setup
 		#region Forums
 		public IList<Forum> Forums()
 		{
-			var newProductsForum = new Forum()
+			var newProductsForum = new Forum
 			{
 				ForumGroup = _ctx.Set<ForumGroup>().Where(c => c.DisplayOrder == 1).Single(),
 				Name = "New Products",
@@ -8820,12 +8568,10 @@ namespace SmartStore.Data.Setup
 				NumPosts = 0,
 				LastPostCustomerId = 0,
 				LastPostTime = null,
-				DisplayOrder = 1,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
+				DisplayOrder = 1
 			};
 
-			var packagingShippingForum = new Forum()
+			var packagingShippingForum = new Forum
 			{
 				ForumGroup = _ctx.Set<ForumGroup>().Where(c => c.DisplayOrder == 1).Single(),
 				Name = "Packaging & Shipping",
@@ -8833,9 +8579,7 @@ namespace SmartStore.Data.Setup
 				NumTopics = 0,
 				NumPosts = 0,
 				LastPostTime = null,
-				DisplayOrder = 20,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
+				DisplayOrder = 20
 			};
 
 
@@ -9418,8 +9162,6 @@ namespace SmartStore.Data.Setup
 					currency.CustomFormatting = formatting;
 					currency.Published = published;
 					currency.DisplayOrder = order;
-					currency.CreatedOnUtc = DateTime.UtcNow;
-					currency.UpdatedOnUtc = DateTime.UtcNow;
 				}
 			}
 			catch

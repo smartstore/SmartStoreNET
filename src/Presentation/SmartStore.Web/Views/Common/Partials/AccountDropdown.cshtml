@@ -1,0 +1,81 @@
+﻿@model AccountDropdownModel
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Web.Models.Customer;
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+@{
+    //register URL with return URL (if specified)
+    var registerUrl = Url.RouteUrl("Register");
+    if (!String.IsNullOrEmpty(this.Context.Request.QueryString["returnUrl"]))
+    {
+        var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+        registerUrl = webHelper.ModifyQueryString(registerUrl, "returnurl=" + HttpUtility.UrlEncode(this.Context.Request.QueryString["returnUrl"]), null);
+    }    
+}
+
+@if (Model.IsAuthenticated)
+{
+    <div class="dropdown-menu dropdown-menu-right shopbar-flyout-container">
+        
+        @{ Html.RenderWidget("account_dropdown_before"); }
+
+		<a class="dropdown-item" href="@Url.Action("Info", "Customer")" rel="nofollow">
+			<i class="fa fa-fw fa-user"></i>
+			<span>@T("Account.MyAccount")</span>
+		</a>
+
+        @if (Model.DisplayAdminLink)
+        {
+            <a class="dropdown-item" href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
+                <i class="fa fa-fw fa-cog"></i> 
+				<span>@T("Account.Administration")</span>
+            </a>
+        }
+        
+        @if (Model.AllowPrivateMessages)
+        {
+			<a class="dropdown-item" href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow">
+				<i class="fa fa-fw fa-envelope"></i>
+				<span>@T("PrivateMessages.Inbox")</span>
+				@if (Model.UnreadPrivateMessages != "")
+				{
+					<span class="label label-pill label-success">@Model.UnreadPrivateMessages</span>
+				}
+			</a>
+			if (!string.IsNullOrEmpty(Model.AlertMessage))
+            {
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        displayNotification('@(Model.AlertMessage)', 'info');
+                    });
+                </script>
+            }
+        }
+        
+        @*<li class="divider"></li>*@
+
+        @if (Model.WishlistEnabled)
+        {
+            <a class="dropdown-item" href="@Url.RouteUrl("Wishlist")">
+                <i class="fa fa-fw fa-heart"></i>
+				<span>@T("Wishlist")</span> <span class="wishlist-qty label label-pill @(Model.WishlistItems > 0 ? "label-success" : "")">@Model.WishlistItems</span>
+			</a> 
+        }
+        @if (Model.ShoppingCartEnabled)
+        {
+            <a id="topcartlink" class="dropdown-item" href="@Url.RouteUrl("ShoppingCart")">
+                <i class="fa fa-fw fa-shopping-cart"></i>
+				<span>@T("ShoppingCart")</span> <span class="cart-qty label label-pill @(Model.ShoppingCartItems > 0 ? "label-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
+			</a>
+        }
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="@Url.RouteUrl("Logout")" rel="nofollow">
+            <i class="fa fa-fw fa-sign-out"></i>
+			<span>@T("Account.Logout")</span>
+		</a>
+
+        @{ Html.RenderWidget("account_dropdown_after"); }
+
+    </div>
+}

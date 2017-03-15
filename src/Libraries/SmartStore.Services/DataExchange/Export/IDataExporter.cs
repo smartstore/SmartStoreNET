@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 
@@ -16,6 +17,15 @@ namespace SmartStore.Services.DataExchange.Export
 		IList<dynamic> Preview(DataExportRequest request, int pageIndex, int? totalRecords = null);
 
 		int GetDataCount(DataExportRequest request);
+
+		/// <summary>
+		/// Creates a product export context for fast retrieval (eager loading) of product navigation properties
+		/// </summary>
+		/// <param name="products">Products. <c>null</c> to lazy load data if required.</param>
+		/// <param name="customer">Customer, <c>null</c> to use current customer.</param>
+		/// <param name="storeId">Store identifier, <c>null</c> to use current store.</param>
+		/// <returns>Product export context</returns>
+		ProductExportContext CreateProductExportContext(IEnumerable<Product> products = null, Customer customer = null, int? storeId = null);
 	}
 
 

@@ -2,7 +2,7 @@
 
 namespace SmartStore.Core.Search
 {
-	public abstract class IndexProviderBase : DisposableObject, IIndexProvider
+	public abstract class IndexProviderBase : IIndexProvider
 	{
 		public virtual bool IsActive
 		{
@@ -14,18 +14,15 @@ namespace SmartStore.Core.Search
 
 		public abstract IEnumerable<string> EnumerateIndexes();
 
-		public virtual IIndexDocument CreateDocument(int id)
+		public virtual IIndexDocument CreateDocument(int id, SearchDocumentType? documentType)
 		{
 			Guard.IsPositive(id, nameof(id));
-			return new IndexDocument(id);
+
+			return new IndexDocument(id, documentType);
 		}
 
 		public abstract IIndexStore GetIndexStore(string scope);
 
 		public abstract ISearchEngine GetSearchEngine(IIndexStore store, ISearchQuery query);
-
-		protected override void OnDispose(bool disposing)
-		{
-		}
 	}
 }

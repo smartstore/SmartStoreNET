@@ -16,6 +16,7 @@ namespace SmartStore.Data
 {
 	public abstract partial class ObjectContextBase
 	{
+		private IDbHookHandler _dbHookHandler;
 		private SaveChangesOperation _currentSaveOperation;
 
 		enum SaveStage
@@ -29,11 +30,10 @@ namespace SmartStore.Data
 			return ChangeTracker.Entries().Where(x => x.State > System.Data.Entity.EntityState.Unchanged);
 		}
 
-		private IHookHandler GetHookHandler()
+		public IDbHookHandler DbHookHandler
 		{
-			return HostingEnvironment.IsHosted
-				? EngineContext.Current.Resolve<IHookHandler>()
-				: NullHookHandler.Instance; // never trigger hooks during tooling or tests
+			get;
+			set;
 		}
 
 		public override int SaveChanges()
@@ -58,7 +58,7 @@ namespace SmartStore.Data
 				}
 			}
 
-			_currentSaveOperation = new SaveChangesOperation(this, GetHookHandler());
+			_currentSaveOperation = new SaveChangesOperation(this, this.DbHookHandler);
 
 			using (new ActionDisposable(() => _currentSaveOperation = null))
 			{
@@ -88,7 +88,7 @@ namespace SmartStore.Data
 				}
 			}
 
-			_currentSaveOperation = new SaveChangesOperation(this, GetHookHandler());
+			_currentSaveOperation = new SaveChangesOperation(this, this.DbHookHandler);
 
 			using (new ActionDisposable(() => _currentSaveOperation = null))
 			{
@@ -100,26 +100,11 @@ namespace SmartStore.Data
 		/// Just calls <c>DbContext.SaveChanges()</c> without any sugar
 		/// </summary>
 		/// <returns>The number of affected records</returns>
-		protected internal int SaveChangesCore(bool? validate = null)
+		protected internal int SaveChangesCore()
 		{
 			var changedEntries = _currentSaveOperation?.ChangedEntries ?? GetChangedEntries();
 
-			var validationEnabled = this.Configuration.ValidateOnSaveEnabled;
-			if (validate != null)
-			{
-				Configuration.ValidateOnSaveEnabled = validate.Value;
-			}
-
-			var onDispose = new Action(() => 
-			{
-				if (validate != null)
-				{
-					Configuration.ValidateOnSaveEnabled = validationEnabled;
-				}
-				IgnoreMergedData(changedEntries, false);
-			});
-
-			using (new ActionDisposable(onDispose))
+			using (new ActionDisposable(() => IgnoreMergedData(changedEntries, false)))
 			{
 				IgnoreMergedData(changedEntries, true);
 				return base.SaveChanges();
@@ -130,26 +115,11 @@ namespace SmartStore.Data
 		/// Just calls <c>DbContext.SaveChangesAsync()</c> without any sugar
 		/// </summary>
 		/// <returns>The number of affected records</returns>
-		protected internal Task<int> SaveChangesCoreAsync(CancellationToken cancellationToken, bool? validate = null)
+		protected internal Task<int> SaveChangesCoreAsync(CancellationToken cancellationToken)
 		{
 			var changedEntries = _currentSaveOperation?.ChangedEntries ?? GetChangedEntries();
 
-			var validationEnabled = this.Configuration.ValidateOnSaveEnabled;
-			if (validate != null)
-			{
-				Configuration.ValidateOnSaveEnabled = validate.Value;
-			}
-
-			var onDispose = new Action(() =>
-			{
-				if (validate != null)
-				{
-					Configuration.ValidateOnSaveEnabled = validationEnabled;
-				}
-				IgnoreMergedData(changedEntries, false);
-			});
-
-			using (new ActionDisposable(onDispose))
+			using (new ActionDisposable(() => IgnoreMergedData(changedEntries, false)))
 			{
 				IgnoreMergedData(changedEntries, true);
 				return base.SaveChangesAsync(cancellationToken);
@@ -158,7 +128,7 @@ namespace SmartStore.Data
 
 		private void IgnoreMergedData(IEnumerable<DbEntityEntry> entries, bool ignore)
 		{
-			foreach (var entry in entries.OfType<IMergedData>())
+			foreach (var entry in entries.Select(x => x.Entity).OfType<IMergedData>())
 			{
 				entry.MergedDataIgnore = ignore;
 			}
@@ -169,9 +139,9 @@ namespace SmartStore.Data
 			private SaveStage _stage;
 			private IList<DbEntityEntry> _changedEntries;
 			private ObjectContextBase _ctx;
-			private IHookHandler _hookHandler;
+			private IDbHookHandler _hookHandler;
 
-			public SaveChangesOperation(ObjectContextBase ctx, IHookHandler hookHandler)
+			public SaveChangesOperation(ObjectContextBase ctx, IDbHookHandler hookHandler)
 			{
 				_ctx = ctx;
 				_hookHandler = hookHandler;
@@ -191,11 +161,11 @@ namespace SmartStore.Data
 			public int Execute()
 			{
 				// pre
-				HookedEntityEntry[] changedHookEntries;
+				HookedEntity[] changedHookEntries;
 				PreExecute(out changedHookEntries);
 
 				// save
-				var result = _ctx.SaveChangesCore(false);
+				var result = _ctx.SaveChangesCore();
 
 				// post
 				PostExecute(changedHookEntries);
@@ -206,11 +176,11 @@ namespace SmartStore.Data
 			public Task<int> ExecuteAsync(CancellationToken cancellationToken)
 			{
 				// pre
-				HookedEntityEntry[] changedHookEntries;
+				HookedEntity[] changedHookEntries;
 				PreExecute(out changedHookEntries);
 
 				// save
-				var result = _ctx.SaveChangesCoreAsync(cancellationToken, false);
+				var result = _ctx.SaveChangesCoreAsync(cancellationToken);
 
 				// post
 				result.ContinueWith((t) =>
@@ -224,7 +194,7 @@ namespace SmartStore.Data
 				return result;
 			}
 
-			private void PreExecute(out HookedEntityEntry[] changedHookEntries)
+			private void PreExecute(out HookedEntity[] changedHookEntries)
 			{
 				bool enableHooks = false;
 				bool importantHooksOnly = false;
@@ -237,7 +207,7 @@ namespace SmartStore.Data
 				{
 					// despite the fact that hooking can be disabled, we MUST determine if any "important" pre hook exists.
 					// If yes, but hooking is disabled, we'll trigger only the important ones.
-					importantHooksOnly = !_ctx.HooksEnabled && _hookHandler.HasImportantPreHooks();
+					importantHooksOnly = !_ctx.HooksEnabled && _hookHandler.HasImportantSaveHooks();
 
 					// we'll enable hooking for this unit of work only when it's generally enabled,
 					// OR we have "important" hooks in the pipeline.
@@ -247,33 +217,11 @@ namespace SmartStore.Data
 				if (enableHooks)
 				{
 					changedHookEntries = _changedEntries
-						.Select(x => new HookedEntityEntry { Entry = x, PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State) })
+						.Select(x => new HookedEntity(x))
 						.ToArray();
 
 					// Regardless of validation (possible fixing validation errors too)
-					anyStateChanged = _hookHandler.TriggerPreActionHooks(changedHookEntries, false, importantHooksOnly);
-				}
-
-				if (_ctx.Configuration.ValidateOnSaveEnabled)
-				{
-					var results = from entry in _ctx.ChangeTracker.Entries()
-								  where _ctx.ShouldValidateEntity(entry)
-								  let validationResult = entry.GetValidationResult()
-								  where !validationResult.IsValid
-								  select validationResult;
-
-					if (results.Any())
-					{
-
-						var ex = new DbEntityValidationException(FormatValidationExceptionMessage(results), results);
-						//Debug.WriteLine(ex.Message, ex);
-						throw ex;
-					}
-				}
-
-				if (enableHooks)
-				{
-					anyStateChanged = _hookHandler.TriggerPreActionHooks(changedHookEntries, true, importantHooksOnly);
+					anyStateChanged = _hookHandler.TriggerPreSaveHooks(changedHookEntries, importantHooksOnly);
 				}
 
 				if (anyStateChanged)
@@ -281,12 +229,12 @@ namespace SmartStore.Data
 					// because the state of at least one entity has been changed during pre hooking
 					// we have to further reduce the set of hookable entities (for the POST hooks)
 					changedHookEntries = changedHookEntries
-						.Where(x => x.PreSaveState > SmartStore.Core.Data.EntityState.Unchanged)
+						.Where(x => x.InitialState > SmartStore.Core.Data.EntityState.Unchanged)
 						.ToArray();
 				}
 			}
 
-			private void PostExecute(HookedEntityEntry[] changedHookEntries)
+			private void PostExecute(HookedEntity[] changedHookEntries)
 			{
 				if (changedHookEntries == null || changedHookEntries.Length == 0)
 					return;
@@ -295,9 +243,9 @@ namespace SmartStore.Data
 
 				_stage = SaveStage.PostSave;
 
-				var importantHooksOnly = !_ctx.HooksEnabled && _hookHandler.HasImportantPostHooks();
+				var importantHooksOnly = !_ctx.HooksEnabled && _hookHandler.HasImportantSaveHooks();
 
-				_hookHandler.TriggerPostActionHooks(changedHookEntries, importantHooksOnly);
+				_hookHandler.TriggerPostSaveHooks(changedHookEntries, importantHooksOnly);
 			}
 
 			private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)

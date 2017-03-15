@@ -8,62 +8,73 @@ namespace SmartStore.Web.Framework.UI
 {
     public static class LayoutExtensions
     {
-
         #region TitleParts
+
         public static void AddTitleParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder  = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AddTitleParts(parts);
         }
+
         public static void AppendTitleParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder  = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AppendTitleParts(parts);
         }
+
         public static MvcHtmlString SmartTitle(this HtmlHelper html, bool addDefaultTitle, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             html.AppendTitleParts(parts);
             return MvcHtmlString.Create(html.Encode(pageAssetsBuilder.GenerateTitle(addDefaultTitle)));
         }
+
         #endregion
 
         #region MetaDescriptionParts
+
         public static void AddMetaDescriptionParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AddMetaDescriptionParts(parts);
         }
+
         public static void AppendMetaDescriptionParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AppendMetaDescriptionParts(parts);
         }
+
         public static MvcHtmlString SmartMetaDescription(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             html.AppendMetaDescriptionParts(parts);
             return MvcHtmlString.Create(html.Encode(pageAssetsBuilder.GenerateMetaDescription()));
         }
+
         #endregion
 
         #region MetaKeywordParts
+
         public static void AddMetaKeywordParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AddMetaKeywordParts(parts);
         }
+
         public static void AppendMetaKeywordParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AppendMetaKeywordParts(parts);
         }
+
         public static MvcHtmlString SmartMetaKeywords(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             html.AppendMetaKeywordParts(parts);
             return MvcHtmlString.Create(html.Encode(pageAssetsBuilder.GenerateMetaKeywords()));
         }
+
 		#endregion
 
 		#region MetaMisc
@@ -77,6 +88,7 @@ namespace SmartStore.Web.Framework.UI
 		#endregion
 
 		#region ScriptParts
+
 		public static void AddScriptParts(this HtmlHelper html, params string[] parts)
         {
             AddScriptParts(html, ResourceLocation.Foot, false, parts);
@@ -124,9 +136,11 @@ namespace SmartStore.Web.Framework.UI
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             return MvcHtmlString.Create(pageAssetsBuilder.GenerateScripts(urlHelper, location, enableBundling));
         }
+
         #endregion
 
         #region CssFileParts
+
         public static void AddCssFileParts(this HtmlHelper html, params string[] parts)
         {
             AddCssFileParts(html, ResourceLocation.Head, false, parts);
@@ -174,70 +188,85 @@ namespace SmartStore.Web.Framework.UI
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             return MvcHtmlString.Create(pageAssetsBuilder.GenerateCssFiles(urlHelper, location, enableBundling));
         }
+
         #endregion
 
         #region CustomHeadParts
+
         public static void AddCustomHeadParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AddCustomHeadParts(parts);
         }
+
         public static void AppendCustomHeadParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			pageAssetsBuilder.AppendCustomHeadParts(parts);
         }
+
         public static MvcHtmlString CustomHead(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			html.AppendCustomHeadParts(parts);
             return MvcHtmlString.Create(pageAssetsBuilder.GenerateCustomHead());
-        }
+		}
+
         #endregion
 
 		#region CanonicalUrlParts
+
 		public static void AddCanonicalUrlParts(this HtmlHelper html, params string[] parts)
 		{
 			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			pageAssetsBuilder.AddCanonicalUrlParts(parts);
 		}
+
 		public static void AppendCanonicalUrlParts(this HtmlHelper html, params string[] parts)
 		{
 			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			pageAssetsBuilder.AppendCanonicalUrlParts(parts);
 		}
+
 		public static MvcHtmlString CanonicalUrls(this HtmlHelper html, params string[] parts)
 		{
 			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			html.AppendCanonicalUrlParts(parts);
 			return MvcHtmlString.Create(pageAssetsBuilder.GenerateCanonicalUrls());
 		}
+
 		#endregion
 
 		#region LinkParts
+
 		public static void AddLinkPart(this HtmlHelper html, string rel, string href, string type = null, string media = null, string sizes = null, string hreflang = null)
 		{
 			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			pageAssetsBuilder.AddLinkPart(rel, href, type, media, sizes, hreflang);
 		}
+
 		public static void AddLinkPart(this HtmlHelper html, string rel, string href, object htmlAttributes)
 		{
 			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			pageAssetsBuilder.AddLinkPart(rel, href, htmlAttributes);
 		}
+
 		public static void AddLinkPart(this HtmlHelper html, string rel, string href, RouteValueDictionary htmlAttributes)
 		{
 			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			pageAssetsBuilder.AddLinkPart(rel, href, htmlAttributes);
 		}
+
 		public static MvcHtmlString LinkRels(this HtmlHelper html)
 		{
 			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			return MvcHtmlString.Create(pageAssetsBuilder.GenerateLinkRels());
 		}
+
 		#endregion
 
 		#region Body
+
 		public static void AddBodyCssClass(this HtmlHelper html, string cssClassName)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
@@ -263,6 +292,7 @@ namespace SmartStore.Web.Framework.UI
 
 			return MvcHtmlString.Create(result);
         }
+
         #endregion
     }
 }

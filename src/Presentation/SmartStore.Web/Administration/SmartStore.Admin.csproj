@@ -64,12 +64,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Autofac.4.3.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+    <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Autofac.Mvc5.4.0.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
@@ -104,9 +104,9 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Client.5.1.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="Microsoft.CSharp" />
@@ -176,7 +176,6 @@
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\CheckoutAttributeController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
-    <Compile Include="Controllers\ContentSliderController.cs" />
     <Compile Include="Controllers\CountryController.cs" />
     <Compile Include="Controllers\CurrencyController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
@@ -235,6 +234,8 @@
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
     <Compile Include="Models\Catalog\CategoryTreeModel.cs" />
+    <Compile Include="Models\Catalog\ProductAttributeOptionModel.cs" />
+    <Compile Include="Models\Catalog\ProductAttributeOptionsSetModel.cs" />
     <Compile Include="Models\Catalog\ProductBundleItemModel.cs" />
     <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />
     <Compile Include="Models\Catalog\BulkEditProductModel.cs" />
@@ -272,10 +273,10 @@
     <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
+    <Compile Include="Models\Settings\SearchSettingsModel.cs" />
     <Compile Include="Models\Settings\DataExchangeSettingsModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
-    <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />
     <Compile Include="Models\Directory\DeliveryTimeModel.cs" />
     <Compile Include="Models\ExternalAuthentication\AuthenticationMethodModel.cs" />
@@ -378,9 +379,9 @@
     <Compile Include="Validators\Catalog\CategoryValidator.cs" />
     <Compile Include="Validators\Catalog\ProductTagValidator.cs" />
     <Compile Include="Validators\Catalog\ManufacturerValidator.cs" />
+    <Compile Include="Validators\Catalog\ProductAttributeOptionModelValidator.cs" />
     <Compile Include="Validators\Common\AddressValidator.cs" />
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
-    <Compile Include="Validators\ContentSlider\ContentSliderValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
     <Compile Include="Validators\DataExchange\CsvConfigurationValidator.cs" />
     <Compile Include="Validators\DataExchange\ImportProfileValidator.cs" />
@@ -397,6 +398,7 @@
     <Compile Include="Validators\Polls\PollValidator.cs" />
     <Compile Include="Validators\Settings\GeneralCommonSettingsValidator.cs" />
     <Compile Include="Validators\Settings\OrderSettingsValidator.cs" />
+    <Compile Include="Validators\Settings\SearchSettingValidator.cs" />
     <Compile Include="Validators\Settings\SettingValidator.cs" />
     <Compile Include="Validators\Settings\RewardPointsSettingsValidator.cs" />
     <Compile Include="Validators\Stores\StoreValidator.cs" />
@@ -766,11 +768,11 @@
     <Content Include="Views\Product\_CreateOrUpdate.Inventory.cshtml" />
     <Content Include="Views\Product\_Create.SaveFirst.cshtml" />
     <Content Include="Views\Plugin\ConfigureProvider.cshtml" />
-    <Content Include="Views\Shared\_Providers.cshtml" />
+    <Content Include="Views\Shared\Partials\_Providers.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\RichEditor.cshtml" />
     <Content Include="Views\Plugin\EditProviderPopup.cshtml" />
     <Content Include="Views\Theme\PreviewTool.cshtml" />
-    <Content Include="Views\Shared\_AdminRoot.cshtml" />
+    <Content Include="Views\Shared\Layouts\_AdminRoot.cshtml" />
     <Content Include="Views\Home\MarketplaceFeed.cshtml" />
     <Content Include="Views\Order\ShipmentDetails.Print.cshtml" />
     <Content Include="Views\QuantityUnit\_CreateOrUpdate.cshtml" />
@@ -808,11 +810,17 @@
     <Content Include="Views\Import\List.cshtml" />
     <Content Include="Views\Import\_Update.cshtml" />
     <Content Include="Views\Import\Edit.cshtml" />
-    <Content Include="Views\Shared\CsvConfiguration.cshtml" />
+    <Content Include="Views\Shared\Partials\CsvConfiguration.cshtml" />
     <Content Include="Views\Import\_ColumnMappings.cshtml" />
     <Content Include="Views\Import\ProfileImportResult.cshtml" />
     <Content Include="Views\Setting\DataExchange.cshtml" />
     <Content Include="Views\Export\_ProfileList.cshtml" />
+    <Content Include="Views\Setting\Search.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\TokenSelector.cshtml" />
+    <Content Include="Views\ProductAttribute\OptionCreatePopup.cshtml" />
+    <Content Include="Views\ProductAttribute\OptionEditPopup.cshtml" />
+    <Content Include="Views\ProductAttribute\_CreateOrUpdateOption.cshtml" />
+    <Content Include="Views\Setting\Partials\CommonFacet.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -834,15 +842,15 @@
     <Content Include="Views\Language\Resources.cshtml" />
     <Content Include="Views\Language\_CreateOrUpdate.cshtml" />
     <Content Include="Views\Log\List.cshtml" />
-    <Content Include="Views\Shared\Delete.cshtml" />
+    <Content Include="Views\Shared\Partials\Delete.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
-    <Content Include="Views\Shared\Menu.cshtml" />
-    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\Shared\Partials\Menu.cshtml" />
+    <Content Include="Views\Shared\Layouts\_AdminLayout.cshtml" />
     <Content Include="Views\Web.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Navbar.cshtml" />
+    <Content Include="Views\Shared\Partials\Navbar.cshtml" />
     <Content Include="Views\ScheduleTask\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1008,7 +1016,7 @@
     <Content Include="Views\SpecificationAttribute\OptionEditPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\_AdminPopupLayout.cshtml" />
+    <Content Include="Views\Shared\Layouts\_AdminPopupLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\EditorTemplates\ProductCategory.cshtml" />
@@ -1407,18 +1415,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\DeliveryTime\Edit.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ContentSlider\CreateSlide.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ContentSlider\_CreateOrUpdate.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ContentSlider\EditSlide.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ContentSlider\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\AttributeCombinationCreatePopup.cshtml" />

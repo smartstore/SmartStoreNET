@@ -16,8 +16,7 @@ namespace SmartStore.Services.Directory
         private readonly IRepository<Product> _productRepository;
         private readonly IEventPublisher _eventPublisher;
 		private readonly CatalogSettings _catalogSettings;
-
-
+        
         public QuantityUnitService(
             IRepository<QuantityUnit> quantityUnitRepository,
             IRepository<Product> productRepository,

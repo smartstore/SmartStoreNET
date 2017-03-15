@@ -42,7 +42,7 @@ namespace SmartStore.Core.IO
 					return false;
 				}
 
-				lockFile = new LockFile(_env.AppDataFolder, path, DateTime.UtcNow.ToString("u"), _rwLock);
+				lockFile = new LockFile(_env.TenantFolder, path, DateTime.UtcNow.ToString("u"), _rwLock);
 				return true;
 			}
 			catch
@@ -74,9 +74,9 @@ namespace SmartStore.Core.IO
 
 		private bool IsLockedInternal(string path)
 		{
-			if (_env.AppDataFolder.FileExists(path))
+			if (_env.TenantFolder.FileExists(path))
 			{
-				var content = _env.AppDataFolder.ReadFile(path);
+				var content = _env.TenantFolder.ReadFile(path);
 
 				DateTime creationUtc;
 				if (DateTime.TryParse(content, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out creationUtc))

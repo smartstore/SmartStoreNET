@@ -1,10 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Media.Storage
 {
 	public interface IMediaStorageProvider : IProvider
 	{
+		/// <summary>
+		/// Opens the media item for reading
+		/// </summary>
+		/// <param name="media">Media storage item</param>
+		Stream OpenRead(MediaItem media);
+
 		/// <summary>
 		/// Loads media item data
 		/// </summary>

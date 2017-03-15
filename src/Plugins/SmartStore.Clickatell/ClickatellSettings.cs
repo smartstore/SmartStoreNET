@@ -1,5 +1,4 @@
-﻿
-using SmartStore.Core.Configuration;
+﻿using SmartStore.Core.Configuration;
 
 namespace SmartStore.Clickatell
 {
@@ -19,15 +18,5 @@ namespace SmartStore.Clickatell
         /// Gets or sets the Clickatell API ID
         /// </summary>
         public string ApiId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Clickatell username
-        /// </summary>
-        public string Username { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Clickatell password
-        /// </summary>
-        public string Password { get; set; }
     }
 }

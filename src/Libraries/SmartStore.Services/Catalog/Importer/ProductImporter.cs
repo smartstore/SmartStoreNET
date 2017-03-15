@@ -243,9 +243,9 @@ namespace SmartStore.Services.Catalog.Importer
 
 			Product lastInserted = null;
 			Product lastUpdated = null;
-			var defaultTemplateId = templateViewPaths["ProductTemplate.Simple"];
-
-			foreach (var row in batch)
+			var defaultTemplateId = templateViewPaths["Product"];
+            
+            foreach (var row in batch)
 			{
 				Product product = null;
 				var id = row.GetDataValue<int>("Id");

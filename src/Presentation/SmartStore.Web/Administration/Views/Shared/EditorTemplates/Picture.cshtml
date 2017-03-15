@@ -4,18 +4,31 @@
 @using SmartStore.Utilities;
 
 @functions {
-	private bool TransientUpload
-	{
-		get
-		{
-			if (ViewData.ContainsKey("transientUpload"))
-			{
-				var x = ViewData["transientUpload"].Convert<bool>();
-				return x;
-			}
-			return false;
-		}
-	}
+    private bool TransientUpload
+    {
+        get
+        {
+            if (ViewData.ContainsKey("transientUpload"))
+            {
+                var x = ViewData["transientUpload"].Convert<bool>();
+                return x;
+            }
+            return false;
+        }
+    }
+
+    private bool ValidatePicture
+    {
+        get
+        {
+            if (ViewData.ContainsKey("validate"))
+            {
+                var x = ViewData["validate"].Convert<bool>();
+                return x;
+            }
+            return true;
+        }
+    }
 }
 
 @{
@@ -29,7 +42,7 @@
     Html.AddCssFileParts("~/css/fileupload");
 }
 
-<div id="@clientId" class="fileupload" style="display: inline-block;" data-upload-url='@Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, area = "Admin" })'>
+<div id="@clientId" class="fileupload" style="display: inline-block;" data-upload-url='@Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, validate = ValidatePicture, area = "Admin" })'>
     
     @Html.HiddenFor(x => x, new { @class = "hidden"} )
 

@@ -23,14 +23,14 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult AsyncUpload(bool isTransient = false)
+        public ActionResult AsyncUpload(bool isTransient = false, bool validate = true)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.UploadPictures))
                 return Json(new { success = false, error = "You do not have the required permissions" });
 
 			var postedFile = Request.ToPostedFileResult();
 
-			var picture = _pictureService.InsertPicture(postedFile.Buffer, postedFile.ContentType, null, true, isTransient);
+			var picture = _pictureService.InsertPicture(postedFile.Buffer, postedFile.ContentType, null, true, isTransient, validate);
 
             return Json(
                 new { 

@@ -8,9 +8,6 @@ $ocm-horizontal-padding:                1.6rem;
 // Sidebar Navigation Menus (Category menu etc.)
 // --------------------------------------------------
 
-
-
-
 #offcanvas-menu {
     .tab-pane {
         padding: 0;
@@ -51,20 +48,26 @@ $ocm-horizontal-padding:                1.6rem;
     }
     
     .menubar-link,
-    .category-container .nav-item {
+    .manufacturer-container .ocm-item,
+    .category-container .ocm-item {
         margin: 0;
-        float: none;
         border-bottom: 1px solid $ocm-border-color;
         display: block;
         font-size: 1rem;
+        position: relative;
 
-        .nav-link {
+        .ocm-link {
             display: block;
             color: $body-color;
             line-height: 1.3;
             padding: 1rem 2.5rem 1rem 2rem;
                 
-            &:active { background-color: rgba(#000, 0.05); }   
+            &:active,
+            &:focus,
+            &:hover { 
+                text-decoration: none;
+                background-color: rgba(#000, 0.05);
+            }   
                
             img {
                 width: 100px;

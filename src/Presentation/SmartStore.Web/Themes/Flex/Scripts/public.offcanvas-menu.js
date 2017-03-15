@@ -27,8 +27,26 @@ var AjaxMenu = (function ($, window, document, undefined) {
             })
         );
 
-        // listen to clicks inside of #offcanvas-menu
+        // tab click events
         menu.on('click', '.nav-item', function (e) {
+            
+            var item = $(this);
+
+            if (item.find(".nav-link").is("#manufacturer-tab")) {
+                navigateToManufacturer();
+            }
+            else if (item.find(".nav-link").is("#service-tab")) {
+                navigateToService();
+            }
+            else if (item.find(".nav-link").is("#category-tab")) {
+                navigateToHomeLayer();
+            }
+
+            return false;
+        });
+
+        // menu click events
+        menu.on('click', '.ocm-item', function (e) {
             
             var item = $(this);
             var entityId = item.data("id");
@@ -41,16 +59,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
             
             e.preventDefault();
 
-            if (item.find(".nav-link").is("#manufacturer-tab")) {
-                navigateToManufacturer();
-            }
-            else if (item.find(".nav-link").is("#service-tab")) {
-                navigateToService();
-            }
-            else if (item.find(".nav-link").is("#category-tab")) {
-                navigateToHomeLayer();
-            }
-            else if (item.parents(".tab-pane").is("#ocm-categories") || item.parents('.category-container').length > 0) {
+            if (item.parents(".tab-pane").is("#ocm-categories") || item.parents('.category-container').length > 0) {
 
                 navigateToMenuItem(entityId ? entityId : 0, item.hasClass("navigate-back") ? "left" : "right");
             }

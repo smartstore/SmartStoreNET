@@ -15,18 +15,18 @@
 		</div>
 	}
 
-    <ul class="nav navbar-nav">
+    <ul class="ocm-nav list-unstyled">
         @if (currentNode.Depth > 0)
         {
-            <li class="navigate-back nav-item" data-id="@currentNode.Parent.Value.EntityId" data-ajax="true">
-                <a href="@currentNode.Parent.Value.GenerateUrl(this.Url)" class="nav-link">
+            <li class="navigate-back ocm-item" data-id="@currentNode.Parent.Value.EntityId" data-ajax="true">
+                <a href="@currentNode.Parent.Value.GenerateUrl(this.Url)" class="ocm-link">
                     <i class="fa fa-chevron-left"></i>
                     <span>@T("Common.Back")</span>
                 </a>
             </li>
 
-            <li class="show-current-cat nav-item" data-id="@currentNode.Value.EntityId" data-ajax="false">
-                <a href="@currentNode.Value.GenerateUrl(this.Url)" class="nav-link">
+            <li class="show-current-cat ocm-item" data-id="@currentNode.Value.EntityId" data-ajax="false">
+                <a href="@currentNode.Value.GenerateUrl(this.Url)" class="ocm-link">
                     @T("Offcanvas.Menu.ShowCurrentCat", currentNode.Value.Text)
                 </a>
             </li>
@@ -35,10 +35,10 @@
         @foreach (var node in currentNode.Children)
         {
             var cat = node.Value;
-            <li class="nav-item@(node.HasChildren ? " has-children" : "")" 
+            <li class="ocm-item@(node.HasChildren ? " has-children" : "")" 
 				data-id="@cat.EntityId" 
 				data-ajax="@(node.HasChildren ? "true" : "false")">
-                <a href="@node.Value.GenerateUrl(this.Url)" class="nav-link has-count" @Html.Attr("data-count", cat.ElementsCount.ToString(), cat.ElementsCount > 0)>
+                <a href="@node.Value.GenerateUrl(this.Url)" class="ocm-link has-count" @Html.Attr("data-count", cat.ElementsCount.ToString(), cat.ElementsCount > 0)>
 					<span>@cat.Text</span>
                 </a>
             </li>

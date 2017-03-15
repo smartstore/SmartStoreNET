@@ -4,13 +4,12 @@
     Layout = "";
 }
 
-<div class="category-container">
-    <ul class="nav navbar-nav">
-
+<div class="manufacturer-container">
+    <ul class="ocm-nav list-unstyled">
         @foreach (var manufacturer in Model.Manufacturers)
         {
-            <li class="nav-item" data-ajax="false">
-                <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="nav-link">
+            <li class="ocm-item" data-ajax="false">
+                <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link">
 
                     @if (manufacturer.PictureUrl.HasValue() && Model.DisplayImages)
                     {
@@ -24,7 +23,7 @@
 
         @if (Model.DisplayAllManufacturersLink)
         {
-            <li class="show-all-manufacturers nav-item" data-ajax="false">
+            <li class="show-all-manufacturers ocm-item" data-ajax="false">
                 <a href="@Url.RouteUrl("ManufacturerList")" class="btn btn-block btn-warning">@T("Manufacturers.ViewAll")</a>
             </li>
         }

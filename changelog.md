@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.0
 
@@ -67,6 +67,7 @@
 * #696 Added textual resources for meta title and description for blog per month and by tag pages and enriched them with corresponding month plus year respectivly tag name
 * #1025 Added token for customer number to MessageTokenProvider 
 * #1016 Implemented choosing of MessageTokens for newsletter campaigns with dropdown menu
+* #1107 OpenTrans: Added option to exclude long description of products from export
 
 
 ### Bugfixes

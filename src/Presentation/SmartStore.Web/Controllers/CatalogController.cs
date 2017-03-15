@@ -512,6 +512,7 @@ namespace SmartStore.Web.Controllers
 			});
 
 			var model = _helper.MapProductSummaryModel(products, settings);
+			model.GridColumnSpan = GridColumnSpan.Max6Cols;
 
 			return PartialView(model);
 		}
@@ -532,6 +533,7 @@ namespace SmartStore.Web.Controllers
 			});			
 
 			var model = _helper.MapProductSummaryModel(products, settings);
+			model.GridColumnSpan = GridColumnSpan.Max6Cols;
 
 			return PartialView(model);
 		}

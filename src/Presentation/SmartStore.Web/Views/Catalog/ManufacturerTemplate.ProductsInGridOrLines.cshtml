@@ -5,7 +5,8 @@
 
 @model ManufacturerModel
 @{
-	Layout = "_ColumnsTwo";
+	Layout = "_Layout";
+
 	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
 	Html.AddMetaDescriptionParts(Model.MetaDescription);
 	Html.AddMetaKeywordParts(Model.MetaKeywords);
@@ -16,8 +17,6 @@
 		var manufacturerUrl = Url.RouteUrl("Manufacturer", new { SeName = Model.SeName }, this.Request.Url.Scheme);
 		Html.AddCanonicalUrlParts(manufacturerUrl);
 	}
-
-	Layout = Model.SearchResult.Facets.Count > 0 ? "_ColumnsTwo" : "_ColumnsOne";
 }
 
 @if (Model.SearchResult.Facets.Count > 0)

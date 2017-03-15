@@ -3,11 +3,11 @@
 @using SmartStore.Web.Models.News;
 @using SmartStore.Web.Framework.UI;
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "_Layout";
 
-    //title
     Html.AddTitleParts(T("PageTitle.NewsArchive").Text);
 }
+
 <div class="page news-list-page">
     <div class="page-title">
         <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("News.RSS.Hint")">

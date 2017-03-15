@@ -1,10 +1,13 @@
 ﻿@model PrivateMessageModel
+
 @using SmartStore.Web.Models.PrivateMessages;
+
 @{
-    Layout = "_ColumnsOne";
+    Layout = "_Layout";
 
     Html.AddTitleParts(T("PageTitle.ViewPM").Text);
 }
+
 <div class="page private-message-view-page">
     <h2>
         @T("PrivateMessages.View.ViewMessage")

@@ -1,15 +1,17 @@
 ﻿@model CustomerOrderListModel
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "_Layout";
 
     //title
     Html.AddTitleParts(T("PageTitle.Account").Text);
 }
 @using SmartStore.Web.Models.Customer;
+
 @section left
 {
     @{ Html.RenderPartial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary()); }
 }
+
 <div class="page account-page order-list-page container">
     
     <div class="page-title">

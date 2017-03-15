@@ -1,14 +1,16 @@
 ﻿@model CustomerReturnRequestsModel
 @using SmartStore.Web.Models.Customer;
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "_Layout";
 
     Html.AddTitleParts(T("PageTitle.Account").Text);
 }
+
 @section left
 {
     @{ Html.RenderPartial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary()); }
 }
+
 <div class="page account-page return-request-list-page">
     <div class="page-title">
         <h1>@T("Account.MyAccount") - @T("Account.CustomerReturnRequests")</h1>

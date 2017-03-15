@@ -1,9 +1,28 @@
 ﻿@{
-    Layout = "_Document";
+	Layout = "_Document";
+
+	Html.RenderWidget("body_start_html_tag_after");
+	Html.RenderPartial("_Notifications");
+
+	var hasLeftSideBar = IsSectionDefined("left");
+	var hasRightSideBar = IsSectionDefined("right");
+
+	int mainColspan = 12;
+	int cols = 1;
+	if (hasLeftSideBar)
+	{
+		mainColspan -= 3;
+		cols += 1;
+	}
+	if (hasRightSideBar)
+	{
+		mainColspan -= 3;
+		cols += 1;
+	}
+
+	Html.AddBodyCssClass("lyt-cols-" + cols);
 }
 
-@{ Html.RenderWidget("body_start_html_tag_after"); }
-@{ Html.RenderPartial("_Notifications"); }
 <div id="page">
     <div class="canvas-blocker canvas-slidable"></div>
 
@@ -39,21 +58,52 @@
 					</nav>
 				</div>
 			</header>
-                                }
+        }
 
         @{ 
             Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
+			Html.RenderWidget("content_before");
 		}
-
-        @{ Html.RenderWidget("content_before"); }
 
         <div id="content-wrapper">
             <section id="content" class="container m-t-1">
-                @RenderSection("teaser", required: false)
-				@{ Html.RenderZone("teaser"); }
-				@{ Html.RenderWidget("after_teaser"); }
+				@{ 
+					RenderSection("teaser", required: false);
+					Html.RenderZone("teaser");
+					Html.RenderWidget("after_teaser");
+				}
                 <div id="content-body" class="row">
-                    @RenderBody()
+
+					@if (hasLeftSideBar)
+					{
+						<aside id="content-left" class="col-lg-3 hidden-md-down">
+							@{
+								Html.RenderWidget("aside_left_before");
+								@RenderSection("left");
+								Html.RenderWidget("aside_left_after");
+							}
+						</aside>
+					}
+
+					<div id="content-center" class="col-lg-@mainColspan">
+						@{ 
+							Html.RenderWidget("main_column_before");
+							@RenderBody();
+							Html.RenderWidget("main_column_after");
+						}
+					</div>
+
+					@if (hasRightSideBar)
+					{
+						<aside id="content-right" class="col-lg-3">
+							@{
+								Html.RenderWidget("aside_right_before");
+								@RenderSection("right");
+								Html.RenderWidget("aside_right_after");
+							}
+						</aside>
+					}
+
                     @{ Html.RenderWidget("content_after"); }
                 </div>
             </section>

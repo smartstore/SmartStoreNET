@@ -1,15 +1,17 @@
 ﻿@model CustomerAddressEditModel
 @using SmartStore.Web.Models.Customer;
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "_Layout";
 
     //title
     Html.AddTitleParts(T("PageTitle.Account").Text);
 }
+
 @section left
 {
     @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
 }
+
 @using (Html.BeginForm())
 {
     <div class="page account-page address-edit-page">

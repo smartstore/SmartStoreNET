@@ -1,7 +1,7 @@
 ﻿@model BlogPostModel
 @using SmartStore.Web.Models.Blogs;
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "_Layout";
 
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
     Html.AddMetaDescriptionParts(Model.MetaDescription);

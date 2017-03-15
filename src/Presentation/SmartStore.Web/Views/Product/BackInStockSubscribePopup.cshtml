@@ -1,8 +1,11 @@
 ﻿@model BackInStockSubscribeModel
+
 @using SmartStore.Web.Models.Catalog;
+
 @{
     Layout = "_Layout.Popup.cshtml";
 }
+
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "back-in-stock-subscription-form" }))
 {
     <div class="page back-in-stock-subscription-page">

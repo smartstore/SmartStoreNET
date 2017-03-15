@@ -1,9 +1,8 @@
 ﻿@model ProductAskQuestionModel
 @using SmartStore.Web.Models.Catalog;
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "_Layout";
 
-    //title
     Html.AddTitleParts(Model.ProductName);
     Html.AddTitleParts(T("Products.AskQuestion.Title").Text);
     Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");

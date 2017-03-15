@@ -1,11 +1,14 @@
 ﻿@model SendPrivateMessageModel
+
 @using SmartStore.Web;
 @using SmartStore.Web.Models.PrivateMessages;
+
 @{    
-    Layout = "_ColumnsOne";
+    Layout = "_Layout";
 
     Html.AddTitleParts(T("PageTitle.SendPM").Text);
 }
+
 @using (Html.BeginForm())
 {
     <div class="page private-message-send-page">

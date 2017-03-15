@@ -1,9 +1,11 @@
 ﻿@model ShoppingCartModel
+
 @using SmartStore.Core.Domain.Orders
 @using SmartStore.Web.Models.Checkout
 @using SmartStore.Web.Models.ShoppingCart;
+
 @{
-    Layout = "_ColumnsOne";
+    Layout = "_Layout";
     Html.AddBodyCssClass("order-summary-page");
     Html.AddTitleParts(T("PageTitle.ShoppingCart").Text);
     Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Cart });

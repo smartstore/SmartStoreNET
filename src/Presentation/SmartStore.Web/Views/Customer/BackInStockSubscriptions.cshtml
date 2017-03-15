@@ -3,14 +3,16 @@
 @using SmartStore.Web.Models.Customer;
 @using SmartStore.Web.Framework.UI;
 @{    
-    Layout = "_ColumnsTwo";
+    Layout = "_Layout";
 
     Html.AddTitleParts(T("PageTitle.BackInStockSubscriptions").Text);
 }
+
 @section left
 {
     @{ Html.RenderPartial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary()); }
 }
+
 <div class="page account-page back-in-stock-subscription-list-page">
 
     <div class="page-title">

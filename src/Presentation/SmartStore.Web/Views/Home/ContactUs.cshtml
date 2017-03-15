@@ -1,12 +1,13 @@
 ﻿@model ContactUsModel
 @using SmartStore.Web.Models.Common;
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "_Layout";
 
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
+
 <div class="page contact-page">
     @{ Html.RenderAction("TopicBlock", "Topic", new { systemName = "ContactUs" }); }
 

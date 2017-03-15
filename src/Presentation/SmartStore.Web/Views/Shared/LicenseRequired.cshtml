@@ -3,11 +3,12 @@
 @{
 	if (false == (bool)Model["IsChildAction"])
 	{
-		Layout = "_ColumnsOne";
+		Layout = "_Layout";
 
 		Html.AddTitleParts(T("Admin.Plugins.AddOnLicensing").Text);
 	}
 }
+
 @if (Model["Message"] != null && ((string)Model["Message"]).HasValue())
 {
 	<div class="page">

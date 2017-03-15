@@ -21,7 +21,7 @@
 		Html.AddCanonicalUrlParts(byTagUrl);
 	}
 
-	Layout = Model.SearchResult.Facets.Count > 0 ? "_ColumnsTwo" : "_ColumnsOne";
+	Layout = "_Layout";
 }
 
 @if (Model.SearchResult.Facets.Count > 0)

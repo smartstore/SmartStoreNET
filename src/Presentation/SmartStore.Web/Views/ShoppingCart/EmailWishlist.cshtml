@@ -1,11 +1,13 @@
 ﻿@model WishlistEmailAFriendModel
-@using SmartStore.Web.Models.ShoppingCart;
-@{
-    Layout = "_ColumnsTwo";
 
-    //title
+@using SmartStore.Web.Models.ShoppingCart;
+
+@{
+    Layout = "_Layout";
+
     Html.AddTitleParts(T("PageTitle.WishlistEmailAFriend").Text);
 }
+
 <div class="page email-a-friend-page">
     <div class="page-title">
         <h1>@T("Wishlist.EmailAFriend.Title")</h1>

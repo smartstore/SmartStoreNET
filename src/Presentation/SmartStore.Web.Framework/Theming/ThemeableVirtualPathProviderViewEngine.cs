@@ -334,22 +334,11 @@ namespace SmartStore.Web.Framework.Theming
 			// Appends razor view file extensions to location formats
 			Guard.NotNull(formats, nameof(formats));
 
+			var subfolder = viewType == ViewType.Layout ? "Layouts" : "Partials";
+
 			foreach (var format in formats)
 			{
-				yield return format + ".cshtml";
-
-				if (EnableVbViews)
-				{
-					yield return format + ".vbhtml";
-				}
-			}
-
-			if (viewType > ViewType.View)
-			{
-				// Inserts special location formats for layouts and partials
-				var subfolder = viewType == ViewType.Layout ? "Layouts" : "Partials";
-
-				foreach (var format in formats)
+				if (viewType > ViewType.View)
 				{
 					yield return format.Replace("{0}", subfolder + "/{0}.cshtml");
 
@@ -357,6 +346,13 @@ namespace SmartStore.Web.Framework.Theming
 					{
 						yield return format.Replace("{0}", subfolder + "/{0}.vbhtml");
 					}
+				}
+
+				yield return format + ".cshtml";
+
+				if (EnableVbViews)
+				{
+					yield return format + ".vbhtml";
 				}
 			}
 		}

@@ -453,6 +453,7 @@ namespace SmartStore.Web.Controllers
                 }
                 return model;
             });
+
             return PartialView(cachedModel);
         }
 

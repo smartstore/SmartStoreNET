@@ -5,7 +5,7 @@
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Core.Infrastructure;
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "_Layout";
 
     //title
     Html.AddTitleParts(T("PageTitle.Account").Text);
@@ -17,10 +17,12 @@
     var clientId = "picture" + random;
     var pictureService = EngineContext.Current.Resolve<SmartStore.Services.Media.IPictureService>();
 }
+
 @section left
 {
     @{ Html.RenderPartial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary()); }
 }
+
 @using (Html.BeginForm("Avatar", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="page account-page avatar-page">

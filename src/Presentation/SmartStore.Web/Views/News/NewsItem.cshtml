@@ -1,9 +1,9 @@
 ﻿@model NewsItemModel
+
 @using SmartStore.Web.Models.News;
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "NewsPagingFilteringModel";
 
-    //title
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
@@ -12,7 +12,6 @@
 }
 
 <article class="page news-item-page">
-
     <div class="news-date text-muted">
         @Model.CreatedOn.ToString("D")
     </div>

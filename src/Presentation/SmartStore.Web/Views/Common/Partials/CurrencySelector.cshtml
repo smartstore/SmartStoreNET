@@ -21,7 +21,8 @@
             {
                 var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = curr.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
 
-                <a href="@href" class="dropdown-item" title="@curr.Name" rel="nofollow" data-selected="@(curr.Equals(activeCurr) ? "true" : "false")">
+                <a href="@href" class="dropdown-item" title="@curr.Name" rel="nofollow" 
+                   data-selected="@(curr.Equals(activeCurr) ? "true" : "false")" data-abbreviation="@("{0} ({1})".FormatWith(curr.ISOCode, curr.Symbol))">
                     @curr.Name
                     <span class="abbreviation"> - @curr.ISOCode (@curr.Symbol)</span>
                 </a>

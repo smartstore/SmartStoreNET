@@ -304,7 +304,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	            $(currencySelector).find(".dropdown-item").each(function () {
 	                var link = $(this);
 	                var selected = link.data("selected") ? ' selected="selected" ' : '';
-	                currencyOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.text() + '</option>';
+	                currencyOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.data("abbreviation") + '</option>';
 	            });
 
 	            $("span", ocmCurrencySelector).text(selectTitleCurrency);
@@ -317,7 +317,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	            $(languageSelector).find(".dropdown-item").each(function () {
 	                var link = $(this);
 	                var selected = link.data("selected") ? ' selected="selected" ' : '';
-	                languageOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.text() + '</option>';
+	                languageOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.data("abbreviation") + '</option>';
 	            });
 
 	            $("span", ocmLanguageSelector).text(selectTitleLanguage);

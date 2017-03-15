@@ -14,6 +14,8 @@
 	int i = 0;
 }
 
+@{ Html.RenderWidget("search_filters_before"); }
+
 <div class="faceted-search-container">
 	<div class="faceted-search" id="faceted-search">
 		@foreach (var group in facetGroups)
@@ -30,7 +32,7 @@
 			var expanded = i <= 3 || selectedCount > 0;
 
 			<div class="facet-group" data-key="@group.Key">
-				<a class="facet-toggle@(!expanded ? " collapsed" : "")@(selectedCount > 0 ? " has-selection" : "")" 
+				<a class="facet-group-header facet-toggle@(!expanded ? " collapsed" : "")@(selectedCount > 0 ? " has-selection" : "")" 
 				   data-toggle="collapse" 
 				   href="#facet-body-@(group.Key)" 
 				   aria-expanded="@expanded" 
@@ -54,3 +56,5 @@
 		}
 	</div>
 </div>
+
+@{ Html.RenderWidget("search_filters_after"); }

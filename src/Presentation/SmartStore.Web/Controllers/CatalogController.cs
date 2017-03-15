@@ -142,7 +142,7 @@ namespace SmartStore.Web.Controllers
             model.DisplayCategoryBreadcrumb = _catalogSettings.CategoryBreadcrumbEnabled;
             if (model.DisplayCategoryBreadcrumb)
             {
-				model.CategoryBreadcrumb = _helper.GetCategoryBreadCrumb(category.Id, 0);
+				model.CategoryBreadcrumb = _helper.GetCategoryBreadCrumb(category.Id, 0).Select(x => x.Value).ToList();
             }
 
 			model.SubCategoryDisplayType = _catalogSettings.SubCategoryDisplayType;
@@ -290,7 +290,7 @@ namespace SmartStore.Web.Controllers
 				ProductSeName = product.GetSeName()
 			};
 
-			var breadcrumb = _helper.GetCategoryBreadCrumb(0, productId);
+			var breadcrumb = _helper.GetCategoryBreadCrumb(0, productId).Select(x => x.Value).ToList();
 			model.CategoryBreadcrumb = breadcrumb;
 
 			return PartialView(model);

@@ -52,7 +52,7 @@
         <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-left"></i></a>
     </div>
 
-	<ul class="nav navbar-nav" data-selected-menu-item="@(Model.SelectedMenuItem != null ? Model.SelectedMenuItem.EntityId : 0)">
+	<ul class="nav navbar-nav" data-selected-menu-item="@Model.SelectedNode.Value.EntityId">
 
 		@{ Html.RenderWidget("megamenu_before_first_item"); }
 

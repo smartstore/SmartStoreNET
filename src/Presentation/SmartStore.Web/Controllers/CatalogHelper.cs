@@ -1148,7 +1148,7 @@ namespace SmartStore.Web.Controllers
 			});
 		}
 
-		public IList<MenuItem> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
+		public IList<TreeNode<MenuItem>> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
 		{
 			var requestCache = EngineContext.Current.Resolve<IRequestCache>();
 			string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
@@ -1175,11 +1175,11 @@ namespace SmartStore.Web.Controllers
 
 				if (node != null)
 				{
-					var path = node.GetBreadcrumb();
+					var path = node.GetBreadcrumb().ToList();
 					return path;
 				}
 
-				return new List<MenuItem>();
+				return new List<TreeNode<MenuItem>>();
 			});
 
 			return breadcrumb;
@@ -1213,19 +1213,17 @@ namespace SmartStore.Web.Controllers
 		
 			var breadcrumb = GetCategoryBreadCrumb(currentCategoryId, currentProductId);
 
-			// resolve number of products
-			if (_catalogSettings.ShowCategoryProductNumber)
-			{
-				var curItem = breadcrumb.LastOrDefault();
-				var curNode = curItem == null ? root.Root : root.SelectNode(x => x.Value == curItem);
-				this.ResolveCategoryProductsCount(curNode);
-			}
-
 			var model = new NavigationModel
 			{
 				Root = root,
-				Path = breadcrumb,
+				Path = breadcrumb
 			};
+
+			// Resolve number of products
+			if (_catalogSettings.ShowCategoryProductNumber)
+			{
+				this.ResolveCategoryProductsCount(model.SelectedNode);
+			}
 
 			return model;
 		}

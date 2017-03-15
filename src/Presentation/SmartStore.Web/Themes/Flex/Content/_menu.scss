@@ -4,8 +4,14 @@
 $ocm-border-color:                      rgba(#000, 0.15);
 $ocm-horizontal-padding:                1.6rem;
 
-#offcanvas-menu {
+//
+// Sidebar Navigation Menus (Category menu etc.)
+// --------------------------------------------------
 
+
+
+
+#offcanvas-menu {
     .tab-pane {
         padding: 0;
     }
@@ -141,7 +147,6 @@ $ocm-horizontal-padding:                1.6rem;
 
 // service menu 
 #ocm-service {
-
     .menubar-group {
         display: block;
         margin-left: 0;

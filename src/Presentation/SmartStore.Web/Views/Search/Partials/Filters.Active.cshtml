@@ -16,6 +16,8 @@
 	}
 }
 
+@{ Html.RenderWidget("active_filters_before"); }
+
 <div class="active-filters-container">
 	<ul class="list-unstyled clearfix active-filters">
 		@foreach (var filter in activeFilters)
@@ -33,4 +35,6 @@
 		</li>
 	</ul>
 </div>
+
+@{ Html.RenderWidget("active_filters_after"); }
 

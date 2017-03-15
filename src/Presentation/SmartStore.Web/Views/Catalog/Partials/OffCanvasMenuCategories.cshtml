@@ -2,23 +2,21 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
-    Layout = "";
+	Layout = "";
 
-    var currentNode = Model.SelectedMenuItem != null ?
-        Model.Root.SelectNode(x => x.Value.EntityId == Model.SelectedMenuItem.EntityId)
-        : Model.Root;
+	var currentNode = Model.SelectedNode;
 }
 
 <div class="category-container">
-	@if (Model.SelectedMenuItem != null)
+	@if (currentNode.Depth > 0)
 	{
 		<div class="category-info">
-			<div class="category-name">@Model.SelectedMenuItem.Text</div>
+			<div class="category-name">@currentNode.Value.Text</div>
 		</div>
 	}
 
     <ul class="nav navbar-nav">
-        @if (Model.SelectedMenuItem != null)
+        @if (currentNode.Depth > 0)
         {
             <li class="navigate-back nav-item" data-id="@currentNode.Parent.Value.EntityId" data-ajax="true">
                 <a href="@currentNode.Parent.Value.GenerateUrl(this.Url)" class="nav-link">

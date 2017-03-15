@@ -12,7 +12,7 @@
 		Html.AddCanonicalUrlParts(categoryUrl);
 	}
 
-	Layout = Model.SearchResult.Facets.Count > 0 ? "_ColumnsTwo" : "_ColumnsOne";
+	Layout = "_ColumnsTwo";
 }
 
 @using SmartStore.Core.Domain.Catalog;
@@ -75,10 +75,10 @@
     }
 }
 
-@if (Model.SearchResult.Facets.Count > 0)
-{
-	@section left {
-		@{ Html.RenderAction("Filters", "Search", new { model = Model }); }
+@section left {
+	@{ 
+		Html.RenderAction("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
+		Html.RenderAction("Filters", "Search", new { model = Model });
 	}
 }
 

@@ -333,6 +333,12 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected virtual void ConvertCategory(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
+			if (origin == "Catalog/Category")
+			{
+				// we don't need category facetting in category pages
+				return;
+			}
+
 			List<int> ids;
 
 			if (GetValueFor(query, "c", FacetGroupKind.Category, out ids) && ids != null && ids.Any())
@@ -353,6 +359,12 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected virtual void ConvertManufacturer(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
+			if (origin == "Catalog/Manufacturer")
+			{
+				// we don't need brand facetting in brand pages
+				return;
+			}
+
 			List<int> ids;
 
 			if (GetValueFor(query, "m", FacetGroupKind.Brand, out ids) && ids != null && ids.Any())

@@ -1,7 +1,27 @@
 ﻿@model NavigationModel
+
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Collections;
+
+@{ 
+	if (Model.SelectedNode.IsRoot || !Model.Root.HasChildren)
+	{
+		return;
+	}
+
+	var selectedNode = Model.SelectedNode;
+	var path = Model.Path.Take(Model.Path.Count - 1).ToList();
+
+	var items = selectedNode.Depth == 1
+		? Model.SelectedNode.Children
+		: Model.SelectedNode.Parent.Children;
+
+	if (!path.Any() && !items.Any())
+	{
+		return;
+	}
+}
 
 @functions {
     private string GetCssClassForNode(NodePathState state) 
@@ -40,19 +60,24 @@
     }
 }
 
-@if (Model.Root.HasChildren)
-{
-    <div class="block block-bordered block-category-navigation card">
-        <div class="card-header">
-            @T("Categories")
-        </div>
-        <div class="block-body listbox card-block">
-            <nav class="nav-category">
-                @CreateMenu(Model.Root.Children, "level-1 list-unstyled")
-            </nav>
-        </div>
-    </div>
-}
+<nav class="block menu category-menu">
+	@if (path.Count > 0)
+	{
+		foreach (var node in path)
+		{
+			<a class="d-block fw-600 fs-h6 expanded" href="@node.Value.GenerateUrl(this.Url)">@node.Value.Text</a>
+		}
+		<hr class="m-y-05" />
+	}
+
+	@foreach (var node in items)
+	{
+		var state = node.GetNodePathState(Model.Path);
+		var isSelected = (state & NodePathState.Selected) == NodePathState.Selected;
+		<a class="d-block has-count fs-h6@(isSelected ? " fw-600" : "")" 
+		   href="@node.Value.GenerateUrl(this.Url)" @Html.Attr("data-count", node.Value.ElementsCount.ToString(), node.Value.ElementsCount.HasValue)>@node.Value.Text</a>
+	}
+</nav>
 
 @helper CreateMenu(IEnumerable<TreeNode<MenuItem>> nodes, string menuSelector) {
     <ul class="@menuSelector">

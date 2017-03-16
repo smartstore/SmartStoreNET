@@ -97,6 +97,15 @@
 				@Html.ValidationMessageFor(model => model.FacetSorting)
 			</td>
 		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FacetTemplateHint)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.FacetTemplateHint, Model.FacetTemplateHint.ToSelectList().ToList())
+				@Html.ValidationMessageFor(model => model.FacetTemplateHint)
+			</td>
+		</tr>
     </table>
 }
 

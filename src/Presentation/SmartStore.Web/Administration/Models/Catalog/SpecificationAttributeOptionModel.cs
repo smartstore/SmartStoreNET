@@ -33,7 +33,7 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Multiple")]
 		public bool Multiple { get; set; }
 
-		public int RangeFilterId { get; set; }
+		public decimal NumberValue { get; set; }
 	}
 
     public class SpecificationAttributeOptionLocalizedModel : ILocalizedModelLocal

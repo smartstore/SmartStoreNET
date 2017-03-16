@@ -427,12 +427,6 @@ namespace SmartStore.Data.Migrations
 				"According to display order",
 				"Gemäß Reihenfolge");
 
-			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting",
-				"Sorting of search filters",
-				"Sortierung der Suchfilter",
-				"Specifies the sorting of the search filters. This setting is only effective by using the Mega-Search-Plus plugin. Changes will take effect after a renewal of the search index.",
-				"Legt die Sortierung der Suchfilter fest. Diese Einstellung ist nur unter Verwendung mit des Mega-Search-Plus Plugins wirksam. Änderungen werden erst nach einer Erneuerung des Suchindex wirksam.");
-
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.ViewLink",
 				"Edit Options (Total: {0})",
 				"Optionen bearbeiten (Anzahl: {0})");
@@ -547,12 +541,6 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Error.ChooseDifferentValue",
 				"Please choose a different value.",
 				"Bitte wählen Sie einen anderen Wert.");
-
-			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering",
-				"Allow filtering",
-				"Filtern zulassen",
-				"Specifies whether search results can be filtered by this attribute.",
-				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können.");
 
 			builder.AddOrUpdate("Common.Menu", "Menu", "Menü");
 
@@ -683,6 +671,49 @@ namespace SmartStore.Data.Migrations
                 "Herstellerbilder in Listen anzeigen",
                 "Specifies whether manufacturer pictures will be displayed in lists. This setting effects all partial manufacturer lists in the shop (e.g. homepage, mobile menu).",
                 "Bestimmt ob Herstellerbilder in Listen angezeigt werden sollen. Diese Einstellung betrifft alle partiellen Herstellerlisten im Shop (z.B. Homepage, Mobile-Menu).");
-        }
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.Checkboxes",
+				"Checkboxes",
+				"Kontrollkästchen");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.Custom",
+				"Custom (Color squares, thumbnail...)",
+				"Spezifisch (Farbflächen, Thumbnail...)");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.NumericRange",
+				"Numeric range",
+				"Numerischer Bereich");
+
+			var megaSearchPlusHintEn = "This setting is only effective by using the Mega-Search-Plus plugin. Changes will take effect after next update of the search index.";
+			var megaSearchPlusHintDe = "Diese Einstellung ist nur unter Verwendung des Mega-Search-Plus Plugins wirksam. Änderungen werden nach der nächsten Aktualisierung des Suchindex wirksam.";
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting",
+				"Sorting of search filters",
+				"Sortierung der Suchfilter",
+				"Specifies the sorting of the search filters. " + megaSearchPlusHintEn,
+				"Legt die Sortierung der Suchfilter fest. " + megaSearchPlusHintDe);
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetTemplateHint",
+				"Search filter presentation",
+				"Darstellug der Suchfilter",
+				"Specifies the presentation of search filters. " + megaSearchPlusHintEn,
+				"Legt die Darstellung der Suchfilter fest. " + megaSearchPlusHintDe);
+
+			builder.AddOrUpdate("Admin.Catalog.Products.SpecificationAttributes.Fields.AllowFiltering",
+				"Allow filtering",
+				"Filtern zulassen",
+				"Specifies whether search results can be filtered by this attribute. " + megaSearchPlusHintEn,
+				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können. " + megaSearchPlusHintDe);
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering",
+				"Allow filtering",
+				"Filtern zulassen",
+				"Specifies whether search results can be filtered by this attribute. " + megaSearchPlusHintEn,
+				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können. " + megaSearchPlusHintDe);
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint",
+				"Search filter presentation",
+				"Darstellug der Suchfilter",
+				"Specifies the presentation of search filters. " + megaSearchPlusHintEn,
+				"Legt die Darstellung der Suchfilter fest. " + megaSearchPlusHintDe);
+		}
 	}
 }

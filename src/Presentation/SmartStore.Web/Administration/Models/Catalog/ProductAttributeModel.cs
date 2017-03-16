@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Catalog;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -29,6 +30,9 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering")]
 		public bool AllowFiltering { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint")]
+		public FacetTemplateHint FacetTemplateHint { get; set; }
 
 		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }

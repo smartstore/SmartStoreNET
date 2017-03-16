@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
-using SmartStore.Core.Domain.Localization;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Search;
 
 namespace SmartStore.Core.Domain.Catalog
 {
-    /// <summary>
-    /// Represents a specification attribute option
-    /// </summary>
+	/// <summary>
+	/// Represents a specification attribute option
+	/// </summary>
 	[DataContract]
 	public partial class SpecificationAttributeOption : BaseEntity, ILocalizedEntity, ISearchAlias
 	{
@@ -38,10 +38,10 @@ namespace SmartStore.Core.Domain.Catalog
 		public int DisplayOrder { get; set; }
 
 		/// <summary>
-		/// Gets or sets the identifier for range filtering
+		/// Gets or sets the number value for range filtering
 		/// </summary>
 		[DataMember]
-		public int RangeFilterId { get; set; }
+		public decimal NumberValue { get; set; }
 
 		/// <summary>
 		/// Gets or sets the specification attribute

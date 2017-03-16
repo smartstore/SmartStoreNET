@@ -30,6 +30,9 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting")]
 		public FacetSorting FacetSorting { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetTemplateHint")]
+		public FacetTemplateHint FacetTemplateHint { get; set; }
+
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.OptionsCount")]
 		public int OptionCount { get; set; }
 

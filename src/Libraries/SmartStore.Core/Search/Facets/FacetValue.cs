@@ -119,6 +119,8 @@ namespace SmartStore.Core.Search.Facets
 
 		public FacetSorting? Sorting { get; set; }
 
+		public FacetTemplateHint? TemplateHint { get; set; }
+
 		public string PictureUrl { get; set; }
 
 		public string Color { get; set; }

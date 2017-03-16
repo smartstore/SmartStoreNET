@@ -97,7 +97,7 @@
 		</table>
 	))
 
-	<table class="adminContent">
+	<table id="ProductAttributeTable" class="adminContent">
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.DisplayOrder)
@@ -116,7 +116,27 @@
 				@Html.ValidationMessageFor(model => model.AllowFiltering)
 			</td>
 		</tr>
+		<tr class="allow-filtering">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FacetTemplateHint)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.FacetTemplateHint, Model.FacetTemplateHint.ToSelectList().ToList())
+				@Html.ValidationMessageFor(model => model.FacetTemplateHint)
+			</td>
+		</tr>
 	</table>
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+			// allow filtering changed
+			$('#@(Html.FieldIdFor(x => x.AllowFiltering))').change(function () {
+				$('#ProductAttributeTable').find('.allow-filtering').toggle($(this).is(':checked'));
+			}).trigger('change');
+
+		});
+	</script>
 }
 
 @helper TabOptionsSets()

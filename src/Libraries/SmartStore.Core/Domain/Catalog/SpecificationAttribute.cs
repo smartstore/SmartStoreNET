@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using SmartStore.Core.Domain.Localization;
 using System.Runtime.Serialization;
-using SmartStore.Core.Search.Facets;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Domain.Catalog
 {
-    /// <summary>
-    /// Represents a specification attribute
-    /// </summary>
+	/// <summary>
+	/// Represents a specification attribute
+	/// </summary>
 	[DataContract]
 	public partial class SpecificationAttribute : BaseEntity, ILocalizedEntity, ISearchAlias
 	{
@@ -37,6 +37,12 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		[DataMember]
 		public FacetSorting FacetSorting { get; set; }
+
+		/// <summary>
+		/// Gets or sets the facet template hint
+		/// </summary>
+		[DataMember]
+		public FacetTemplateHint FacetTemplateHint { get; set; }
 
 		/// <summary>
 		/// Gets or sets the specification attribute options

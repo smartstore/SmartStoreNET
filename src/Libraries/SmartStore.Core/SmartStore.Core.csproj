@@ -425,6 +425,7 @@
     <Compile Include="Search\Facets\FacetExtensions.cs" />
     <Compile Include="Search\Facets\FacetGroup.cs" />
     <Compile Include="Search\Facets\FacetDescriptor.cs" />
+    <Compile Include="Search\Facets\FacetEnums.cs" />
     <Compile Include="Search\Facets\FacetValue.cs" />
     <Compile Include="Search\Filter\CombinedSearchFilter.cs" />
     <Compile Include="Search\Filter\RangeSearchFilter.cs" />

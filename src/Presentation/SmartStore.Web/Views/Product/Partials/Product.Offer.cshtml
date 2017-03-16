@@ -15,7 +15,9 @@
 		}
 		else
 		{
-			Html.RenderPartial("Product.Offer.Price", Model);
+			<div class="pd-offer-price-container" data-partial="Price">
+				@{ Html.RenderPartial("Product.Offer.Price", Model); }
+			</div>
 		}
 	}
 

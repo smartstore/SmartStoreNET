@@ -293,7 +293,7 @@ a.pretty-link {
     content: "(" attr(data-count) ")";
     position: relative;
     display: inline-block;
-	color: rgba($body-color, 0.6);
+    opacity: 0.6;
 	padding-left: 0.2rem;
     font-weight: 400;
 }
@@ -777,10 +777,9 @@ a.pretty-link {
 .catmenu-link {
     position: relative;
     display: block;
-    color: $body-color;
+    color: $body-color !important;
     line-height: 1.3;
     padding: 0.25rem 0;
-    text-decoration: none !important;
 
     .selected & {
         font-weight: 700;
@@ -802,10 +801,6 @@ a.pretty-link {
     .expanded &:before {
         content: '\f102';
     }
-}
-
-a.catmenu-link:hover {
-    color: $gray-light;
 }
 
 .catmenu-path .catmenu-link {

@@ -7,9 +7,10 @@ namespace SmartStore.Utilities
 	{
 		public static int GetPerceivedBrightness(string htmlColor)
 		{
-			Guard.NotEmpty(htmlColor, nameof(htmlColor));
-
-			return GetPerceivedBrightness(ColorTranslator.FromHtml(htmlColor));
+            if (String.IsNullOrEmpty(htmlColor))
+                htmlColor = "#ffffff";
+            
+            return GetPerceivedBrightness(ColorTranslator.FromHtml(htmlColor));
 		}
 
 		/// <summary>

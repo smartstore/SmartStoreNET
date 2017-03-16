@@ -277,7 +277,8 @@ namespace SmartStore.Services.Search.Modelling
 			FacetGroupKind kind,
 			bool isMultiSelect,
 			FacetSorting sorting,
-			Action<FacetDescriptor> addValues)
+			Action<FacetDescriptor> addValues,
+			int? minHitCount = null)
 		{
 			string fieldName;
 			var displayOrder = 0;
@@ -323,7 +324,7 @@ namespace SmartStore.Services.Search.Modelling
 
 			if (kind != FacetGroupKind.Rating)
 			{
-				descriptor.MinHitCount = _searchSettings.FilterMinHitCount;
+				descriptor.MinHitCount = minHitCount ?? _searchSettings.FilterMinHitCount;
 				descriptor.MaxChoicesCount = _searchSettings.FilterMaxChoicesCount;
 			}
 
@@ -359,7 +360,27 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected virtual void ConvertManufacturer(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
-			if (origin == "Catalog/Manufacturer")
+			//List<int> ids = null;
+			//int? minHitCount = null;
+
+			//GetValueFor(query, "m", FacetGroupKind.Brand, out ids);
+
+			//// Preselect manufacturer on manufacturer page.... and then?
+			//if (origin.IsCaseInsensitiveEqual("Catalog/Manufacturer"))
+			//{
+			//	minHitCount = 0;
+
+			//	var manufacturerId = routeData.Values["manufacturerid"].ToString().ToInt();
+			//	if (manufacturerId != 0)
+			//	{
+			//		if (ids == null)
+			//			ids = new List<int> { manufacturerId };
+			//		else if (!ids.Contains(manufacturerId))
+			//			ids.Add(manufacturerId);
+			//	}
+			//}
+
+			if (origin.IsCaseInsensitiveEqual("Catalog/Manufacturer"))
 			{
 				// we don't need brand facetting in brand pages
 				return;
@@ -472,7 +493,7 @@ namespace SmartStore.Services.Search.Modelling
 					descriptor.MaxChoicesCount = 5;
 					descriptor.AddValue(new FacetValue(fromRate.Value) { IsSelected = true });
 				}
-			});
+			}, 0);
 		}
 
 		protected virtual void ConvertStock(CatalogSearchQuery query, RouteData routeData, string origin)

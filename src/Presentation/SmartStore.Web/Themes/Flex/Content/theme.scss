@@ -645,7 +645,7 @@ a.pretty-link {
     $choice-box-padding:        0.2rem;
     $choice-box-size:           2.8rem;
     $choice-box-size-lg:        4rem;
-    $choice-box-size-sm:        1.5rem;
+    $choice-box-size-sm:        2.3rem;
     $choice-box-size-xl:        6rem;
 
 	margin: 0;
@@ -660,9 +660,7 @@ a.pretty-link {
         position: relative;
         float: left;
         display: block;
-        //padding: 0;
         padding: $choice-box-padding;
-        //padding-bottom: $choice-box-padding * 2;
 	}
 
     .choice-box-label {

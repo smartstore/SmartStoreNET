@@ -1681,7 +1681,7 @@
     <Content Include="Views\Boards\Partials\_ForumGroupPartial.cshtml" />
     <Content Include="Views\Boards\Partials\_ForumPost.cshtml" />
     <Content Include="Views\Boards\Partials\_SearchBox.cshtml" />
-    <Content Include="Views\Catalog\Partials\CategoryNavigation.cshtml" />
+    <Content Include="Views\Catalog\Partials\CategoryMenu.cshtml" />
     <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
     <Content Include="Views\Catalog\CompareProducts.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageBestSellers.cshtml" />

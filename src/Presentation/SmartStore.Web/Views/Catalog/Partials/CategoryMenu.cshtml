@@ -1,0 +1,71 @@
+﻿@model NavigationModel
+
+@using SmartStore.Collections;
+
+@{ 
+	if (Model.SelectedNode.IsRoot || !Model.Root.HasChildren)
+	{
+		return;
+	}
+
+	var selectedNode = Model.SelectedNode;
+
+	var path = selectedNode.HasChildren
+		? Model.Path
+		: Model.Path.Take(Model.Path.Count - 1).ToList();
+
+	var items = selectedNode.HasChildren
+		? Model.SelectedNode.Children
+		: Model.SelectedNode.Parent.Children;
+
+	if (!path.Any() && !items.Any())
+	{
+		return;
+	}
+}
+
+<div class="block block-catmenu m-b-0">
+	<nav class="catmenu">
+		<ul class="catmenu-path list-unstyled">
+			@if (path.Count > 0)
+			{
+				foreach (var node in path)
+				{
+					@CreateMenuItem(node, selectedNode, true)
+				}
+			}
+			else
+			{
+				<li class="catmenu-item selected">
+					<span class="catmenu-link">@T("Categories")</span>
+				</li>
+			}
+		</ul>
+
+		<ul class="catmenu-body list-unstyled">
+			@foreach (var node in items)
+			{
+				@CreateMenuItem(node, selectedNode, false)
+			}
+		</ul>
+	</nav>
+</div>
+
+@helper CreateMenuItem(TreeNode<MenuItem> node, TreeNode<MenuItem> curNode, bool isPathItem)
+{
+	var isSelected = node == curNode;
+	var attrCount = Html.Attr("data-count", node.Value.ElementsCount.ToString(), node.Value.ElementsCount.HasValue);
+
+	<li class="catmenu-item@(isSelected ? " selected" : "")@(!isPathItem && node.HasChildren ? " parent" : "")@(isPathItem && !isSelected ? " expanded" : "")">
+		@if (isSelected)
+		{
+			<span class="catmenu-link has-count" @Html.Raw(attrCount)>@node.Value.Text</span>
+		}
+		else
+		{
+			<a class="catmenu-link has-count" href="@node.Value.GenerateUrl(this.Url)" @Html.Raw(attrCount)>@node.Value.Text</a>
+		}
+
+	</li>
+}
+

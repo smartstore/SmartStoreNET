@@ -77,80 +77,81 @@ namespace SmartStore.Services.Search
 				if (indexStore.Exists)
 				{
 					var searchEngine = provider.GetSearchEngine(indexStore, searchQuery);
+					var stepPrefix = searchEngine.GetType().Name + " - ";
 
-					using (_chronometer.Step("Search (" + searchEngine.GetType().Name + ")"))
+					int totalCount = 0;
+					string[] spellCheckerSuggestions = null;
+					IEnumerable<ISearchHit> searchHits;
+					Func<IList<Product>> hitsFactory = null;
+					IDictionary<string, FacetGroup> facets = null;
+
+					_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
+
+					if (searchQuery.Take > 0)
 					{
-						int totalCount = 0;
-						string[] spellCheckerSuggestions = null;
-						IEnumerable<ISearchHit> searchHits;
-						Func<IList<Product>> hitsFactory = null;
-						IDictionary<string, FacetGroup> facets = null;
-
-						_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
-
-						if (searchQuery.Take > 0)
+						using (_chronometer.Step(stepPrefix + "Count"))
 						{
 							totalCount = searchEngine.Count();
+						}
 
-							using (_chronometer.Step("Get hits"))
-							{
-								searchHits = searchEngine.Search();
-							}
+						using (_chronometer.Step(stepPrefix + "Hits"))
+						{
+							searchHits = searchEngine.Search();
+						}
 
-							if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
+						if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
+						{
+							using (_chronometer.Step(stepPrefix + "Collect"))
 							{
-								using (_chronometer.Step("Collect from DB"))
-								{
-									var productIds = searchHits.Select(x => x.EntityId).ToArray();
-									hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
-								}
-							}
-
-							if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets))
-							{
-								try
-								{
-									using (_chronometer.Step("Get facets"))
-									{
-										facets = searchEngine.GetFacetMap();
-										ApplyFacetLabels(facets);
-									}
-								}
-								catch (Exception exception)
-								{
-									_logger.Error(exception);
-								}
+								var productIds = searchHits.Select(x => x.EntityId).ToArray();
+								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
 							}
 						}
 
-						if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithSuggestions))
+						if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets))
 						{
 							try
 							{
-								using (_chronometer.Step("Spell checking"))
+								using (_chronometer.Step(stepPrefix + "Facets"))
 								{
-									spellCheckerSuggestions = searchEngine.CheckSpelling();
+									facets = searchEngine.GetFacetMap();
+									ApplyFacetLabels(facets);
 								}
 							}
 							catch (Exception exception)
 							{
-								// spell checking should not break the search
 								_logger.Error(exception);
 							}
 						}
-
-						var result = new CatalogSearchResult(
-							searchEngine,
-							searchQuery,
-							totalCount,
-							hitsFactory,
-							spellCheckerSuggestions,
-							facets);
-
-						_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
-
-						return result;
 					}
+
+					if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithSuggestions))
+					{
+						try
+						{
+							using (_chronometer.Step(stepPrefix + "Spellcheck"))
+							{
+								spellCheckerSuggestions = searchEngine.CheckSpelling();
+							}
+						}
+						catch (Exception exception)
+						{
+							// spell checking should not break the search
+							_logger.Error(exception);
+						}
+					}
+
+					var result = new CatalogSearchResult(
+						searchEngine,
+						searchQuery,
+						totalCount,
+						hitsFactory,
+						spellCheckerSuggestions,
+						facets);
+
+					_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
+
+					return result;
 				}
 			}
 

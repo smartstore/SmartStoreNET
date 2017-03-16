@@ -77,7 +77,7 @@
 
 @section left {
 	@{ 
-		Html.RenderAction("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
+		Html.RenderAction("CategoryMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, area = "" });
 		Html.RenderAction("Filters", "Search", new { model = Model });
 	}
 }

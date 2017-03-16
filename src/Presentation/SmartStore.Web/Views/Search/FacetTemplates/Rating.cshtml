@@ -5,8 +5,17 @@
 @using SmartStore.Core.Search.Facets
 @using SmartStore.Services.Search.Extensions;
 
+@{ 
+	var facets = Model.Facets.Where(x => x.HitCount > 0).Reverse().Skip(1);
+
+	if (!facets.Any())
+	{
+		return;
+	}
+}
+
 <div class="facet-body-inner facet-body-rating">
-	@foreach (var facet in Model.Facets.Reverse().Skip(1))
+	@foreach (var facet in facets)
 	{
 		<div class="facet-item facet-radio" data-href="@Url.FacetToggle(facet)" title="@facet.Value.Label">
 			<label>

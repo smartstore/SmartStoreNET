@@ -471,17 +471,13 @@ namespace SmartStore.Web.Controllers
 			}
 
 			// New Badge
-			if (model.ShowNewBadge)
+			if (product.IsNew(_catalogSettings))
 			{
-				var isNew = ((DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value);
-				if (isNew)
+				item.Badges.Add(new ProductSummaryModel.Badge
 				{
-					item.Badges.Add(new ProductSummaryModel.Badge
-					{
-						Label = T("Common.New"),
-						Style = BadgeStyle.Success
-					});
-				}
+					Label = T("Common.New"),
+					Style = BadgeStyle.Success
+				});
 			}
 
 			model.Items.Add(item);

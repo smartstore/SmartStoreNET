@@ -226,8 +226,23 @@ namespace SmartStore.Services.Catalog
             return true;
         }
 
+		/// <summary>
+		/// Indicates whether the product is labeled as NEW.
+		/// </summary>
+		/// <param name="product">Product entity</param>
+		/// <param name="catalogSettings">Catalog settings</param>
+		/// <returns>Whether the product is labeled as NEW</returns>
+		public static bool IsNew(this Product product, CatalogSettings catalogSettings)
+		{
+			if (catalogSettings.LabelAsNewForMaxDays.HasValue)
+			{
+				return ((DateTime.UtcNow - product.CreatedOnUtc).Days <= catalogSettings.LabelAsNewForMaxDays.Value);
+			}
 
-        public static bool ProductTagExists(this Product product, int productTagId)
+			return false;
+		}
+
+		public static bool ProductTagExists(this Product product, int productTagId)
         {
             if (product == null)
                 throw new ArgumentNullException("product");

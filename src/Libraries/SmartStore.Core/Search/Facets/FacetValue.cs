@@ -61,10 +61,14 @@ namespace SmartStore.Core.Search.Facets
 			IncludesUpper = value.IncludesUpper;
 			IsRange = value.IsRange;
 			IsSelected = value.IsSelected;
+
 			Label = value.Label;
 			ParentId = value.ParentId;
 			DisplayOrder = value.DisplayOrder;
 			Sorting = value.Sorting;
+			TemplateHint = value.TemplateHint;
+			PictureUrl = value.PictureUrl;
+			Color = value.Color;
 		}
 
 		public object Value

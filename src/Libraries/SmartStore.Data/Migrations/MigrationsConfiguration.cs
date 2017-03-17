@@ -634,6 +634,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.Price", "Price", "Preis");
 			builder.AddOrUpdate("Search.Facet.Rating", "Rating", "Bewertung");
 			builder.AddOrUpdate("Search.Facet.DeliveryTime", "Delivery Time", "Lieferzeit");
+			builder.AddOrUpdate("Search.Facet.Availability", "Availability", "Verfügbarkeit");
+			builder.AddOrUpdate("Search.Facet.NewArrivals", "New Arrivals", "Neuheiten");
 
 			builder.AddOrUpdate("Search.Facet.PriceMin", "from {0}", "ab {0}");
 			builder.AddOrUpdate("Search.Facet.PriceMax", "up to {0}", "bis {0}");
@@ -647,6 +649,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.1StarAndMore", "1 star & more", "1 Stern & mehr");
 			builder.AddOrUpdate("Search.Facet.XStarsAndMore", "{0} stars & more", "{0} Sterne & mehr");
 			builder.AddOrUpdate("Search.Facet.StarsAndMore", "& more", "& mehr");
+			builder.AddOrUpdate("Search.Facet.LastDays", "Last {0} days", "Letzten {0} Tage");
+			builder.AddOrUpdate("Search.Facet.IncludeOutOfStock", "Include Out of Stock", "Nicht verfügbare Artikel einschließen");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.ForceSslForAllPages",
 				"Always use SSL",
@@ -714,6 +718,7 @@ namespace SmartStore.Data.Migrations
 				"Darstellug der Suchfilter",
 				"Specifies the presentation of search filters. " + megaSearchPlusHintEn,
 				"Legt die Darstellung der Suchfilter fest. " + megaSearchPlusHintDe);
+
 		}
 	}
 }

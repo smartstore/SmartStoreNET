@@ -17,6 +17,8 @@ namespace SmartStore.Admin.Models.Settings
 			PriceFacet = new CommonFacetSettingsModel();
 			RatingFacet = new CommonFacetSettingsModel();
 			DeliveryTimeFacet = new CommonFacetSettingsModel();
+			AvailabilityFacet = new CommonFacetSettingsModel();
+			NewArrivalsFacet = new CommonFacetSettingsModel();
 		}
 
 		public string SearchFieldsNote { get; set; }
@@ -52,6 +54,8 @@ namespace SmartStore.Admin.Models.Settings
 		public CommonFacetSettingsModel PriceFacet { get; set; }
 		public CommonFacetSettingsModel RatingFacet { get; set; }
 		public CommonFacetSettingsModel DeliveryTimeFacet { get; set; }
+		public CommonFacetSettingsModel AvailabilityFacet { get; set; }
+		public CommonFacetSettingsModel NewArrivalsFacet { get; set; }
 	}
 
 	public class CommonFacetSettingsModel : ModelBase, ILocalizedModel<CommonFacetSettingsLocalizedModel>

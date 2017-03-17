@@ -20,6 +20,8 @@ namespace SmartStore.Core.Search
 			PriceDisplayOrder = 2;
 			RatingDisplayOrder = 3;
 			DeliveryTimeDisplayOrder = 4;
+			AvailabilityDisplayOrder = 5;
+			NewArrivalsDisplayOrder = 6;
 		}
 
 		/// <summary>
@@ -70,11 +72,15 @@ namespace SmartStore.Core.Search
 		public bool PriceDisabled { get; set; }
 		public bool RatingDisabled { get; set; }
 		public bool DeliveryTimeDisabled { get; set; }
+		public bool AvailabilityDisabled { get; set; }
+		public bool NewArrivalsDisabled { get; set; }
 
 		public int BrandDisplayOrder { get; set; }
 		public int PriceDisplayOrder { get; set; }
 		public int RatingDisplayOrder { get; set; }
 		public int DeliveryTimeDisplayOrder { get; set; }
+		public int AvailabilityDisplayOrder { get; set; }
+		public int NewArrivalsDisplayOrder { get; set; }
 
 		#endregion
 	}

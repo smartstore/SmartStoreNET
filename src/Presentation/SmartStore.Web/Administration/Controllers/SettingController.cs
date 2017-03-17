@@ -1611,6 +1611,10 @@ namespace SmartStore.Admin.Controllers
 			model.RatingFacet.DisplayOrder = settings.RatingDisplayOrder;
 			model.DeliveryTimeFacet.Disabled = settings.DeliveryTimeDisabled;
 			model.DeliveryTimeFacet.DisplayOrder = settings.DeliveryTimeDisplayOrder;
+			model.AvailabilityFacet.Disabled = settings.AvailabilityDisabled;
+			model.AvailabilityFacet.DisplayOrder = settings.AvailabilityDisplayOrder;
+			model.NewArrivalsFacet.Disabled = settings.NewArrivalsDisabled;
+			model.NewArrivalsFacet.DisplayOrder = settings.NewArrivalsDisplayOrder;
 
 			foreach (var language in _languageService.GetAllLanguages(true))
 			{
@@ -1638,6 +1642,16 @@ namespace SmartStore.Admin.Controllers
 				{
 					LanguageId = language.Id,
 					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.DeliveryTime, language.Id))
+				});
+				model.AvailabilityFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
+				{
+					LanguageId = language.Id,
+					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Availability, language.Id))
+				});
+				model.NewArrivalsFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
+				{
+					LanguageId = language.Id,
+					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.NewArrivals, language.Id))
 				});
 			}
 
@@ -1687,6 +1701,10 @@ namespace SmartStore.Admin.Controllers
 			settings.RatingDisplayOrder = model.RatingFacet.DisplayOrder;
 			settings.DeliveryTimeDisabled = model.DeliveryTimeFacet.Disabled;
 			settings.DeliveryTimeDisplayOrder = model.DeliveryTimeFacet.DisplayOrder;
+			settings.AvailabilityDisabled = model.AvailabilityFacet.Disabled;
+			settings.AvailabilityDisplayOrder = model.AvailabilityFacet.DisplayOrder;
+			settings.NewArrivalsDisabled = model.NewArrivalsFacet.Disabled;
+			settings.NewArrivalsDisplayOrder = model.NewArrivalsFacet.DisplayOrder;
 
 			StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
 
@@ -1698,6 +1716,8 @@ namespace SmartStore.Admin.Controllers
 				UpdateLocalizedFacetSetting(model.PriceFacet, FacetGroupKind.Price, ref clearCache);
 				UpdateLocalizedFacetSetting(model.RatingFacet, FacetGroupKind.Rating, ref clearCache);
 				UpdateLocalizedFacetSetting(model.DeliveryTimeFacet, FacetGroupKind.DeliveryTime, ref clearCache);
+				UpdateLocalizedFacetSetting(model.AvailabilityFacet, FacetGroupKind.Availability, ref clearCache);
+				UpdateLocalizedFacetSetting(model.NewArrivalsFacet, FacetGroupKind.NewArrivals, ref clearCache);
 			}
 
 			if (clearCache)

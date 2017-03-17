@@ -132,6 +132,14 @@
 	x.Add()
 		.Text(T("Search.Facet.DeliveryTime").Text)
 		.Content(Html.Partial("Partials/CommonFacet", Model.DeliveryTimeFacet, CreateFacetViewData("DeliveryTimeFacet")).ToHtmlString());
+
+	x.Add()
+		.Text(T("Search.Facet.Availability").Text)
+		.Content(Html.Partial("Partials/CommonFacet", Model.AvailabilityFacet, CreateFacetViewData("AvailabilityFacet")).ToHtmlString());
+
+	x.Add()
+		.Text(T("Search.Facet.NewArrivals").Text)
+		.Content(Html.Partial("Partials/CommonFacet", Model.NewArrivalsFacet, CreateFacetViewData("NewArrivalsFacet")).ToHtmlString());
 })
 	<p></p>
 	<table class="adminContent">

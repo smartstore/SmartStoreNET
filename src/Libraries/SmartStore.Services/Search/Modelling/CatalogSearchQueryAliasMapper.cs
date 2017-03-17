@@ -431,7 +431,9 @@ namespace SmartStore.Services.Search.Modelling
 					FacetGroupKind.Brand,
 					FacetGroupKind.Price,
 					FacetGroupKind.Rating,
-					FacetGroupKind.DeliveryTime
+					FacetGroupKind.DeliveryTime,
+					FacetGroupKind.Availability,
+					FacetGroupKind.NewArrivals
 				};
 
 				foreach (var language in _languageService.GetAllLanguages())

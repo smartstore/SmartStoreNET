@@ -24,7 +24,8 @@ namespace SmartStore.Services.Search.Modelling
 		c	-	Categories
 		m	-	Manufacturers
 		r	-	Min Rating
-		sq	-	Stock Quantity
+		a	-	Availability
+		n	-	New Arrivals
 		d	-	Delivery Time
 		v	-	View Mode
 		
@@ -33,7 +34,7 @@ namespace SmartStore.Services.Search.Modelling
 
 	public class CatalogSearchQueryFactory : ICatalogSearchQueryFactory
 	{
-		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "p", "c", "m", "r", "sq", "d", "v" };
+		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "p", "c", "m", "r", "a", "n", "d", "v" };
 		protected readonly HttpContextBase _httpContext;
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;
@@ -112,6 +113,9 @@ namespace SmartStore.Services.Search.Modelling
 				query.HasStoreId(_services.StoreContext.CurrentStore.Id);
 			}
 
+			// Availability
+			ConvertAvailability(query, routeData, origin);
+
 			// Instant-Search never uses these filter parameters
 			if (!isInstantSearch)
 			{
@@ -120,7 +124,7 @@ namespace SmartStore.Services.Search.Modelling
 				ConvertCategory(query, routeData, origin);
 				ConvertManufacturer(query, routeData, origin);
 				ConvertRating(query, routeData, origin);
-				ConvertStock(query, routeData, origin);
+				ConvertNewArrivals(query, routeData, origin);
 				ConvertDeliveryTime(query, routeData, origin);
 			}
 
@@ -277,8 +281,7 @@ namespace SmartStore.Services.Search.Modelling
 			FacetGroupKind kind,
 			bool isMultiSelect,
 			FacetSorting sorting,
-			Action<FacetDescriptor> addValues,
-			int? minHitCount = null)
+			Action<FacetDescriptor> addValues)
 		{
 			string fieldName;
 			var displayOrder = 0;
@@ -312,6 +315,18 @@ namespace SmartStore.Services.Search.Modelling
 					fieldName = "deliveryid";
 					displayOrder = _searchSettings.DeliveryTimeDisplayOrder;
 					break;
+				case FacetGroupKind.Availability:
+					if (_searchSettings.AvailabilityDisabled)
+						return;
+					fieldName = "available";
+					displayOrder = _searchSettings.AvailabilityDisplayOrder;
+					break;
+				case FacetGroupKind.NewArrivals:
+					if (_searchSettings.NewArrivalsDisabled)
+						return;
+					fieldName = "createdon";
+					displayOrder = _searchSettings.NewArrivalsDisplayOrder;
+					break;
 				default:
 					throw new SmartException($"Unknown field name for facet group '{kind.ToString()}'");
 			}
@@ -321,12 +336,8 @@ namespace SmartStore.Services.Search.Modelling
 			descriptor.IsMultiSelect = isMultiSelect;
 			descriptor.DisplayOrder = displayOrder;
 			descriptor.OrderBy = sorting;
-
-			if (kind != FacetGroupKind.Rating)
-			{
-				descriptor.MinHitCount = minHitCount ?? _searchSettings.FilterMinHitCount;
-				descriptor.MaxChoicesCount = _searchSettings.FilterMaxChoicesCount;
-			}
+			descriptor.MinHitCount = _searchSettings.FilterMinHitCount;
+			descriptor.MaxChoicesCount = _searchSettings.FilterMaxChoicesCount;
 
 			addValues(descriptor);
 			query.WithFacet(descriptor);
@@ -487,23 +498,66 @@ namespace SmartStore.Services.Search.Modelling
 
 			AddFacet(query, FacetGroupKind.Rating, false, FacetSorting.DisplayOrder, descriptor =>
 			{
+				descriptor.MinHitCount = 0;
+				descriptor.MaxChoicesCount = 5;
+
 				if (fromRate.HasValue)
 				{
-					descriptor.MinHitCount = 0;
-					descriptor.MaxChoicesCount = 5;
 					descriptor.AddValue(new FacetValue(fromRate.Value) { IsSelected = true });
 				}
-			}, 0);
+			});
 		}
 
-		protected virtual void ConvertStock(CatalogSearchQuery query, RouteData routeData, string origin)
+		protected virtual void ConvertAvailability(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
-			var fromQuantity = GetValueFor<int?>("sq");
+			bool? includeNotAvailable = null;
+			GetValueFor(query, "a", FacetGroupKind.Availability, out includeNotAvailable);
 
-			if (fromQuantity.HasValue)
+			var availableOnly = !(includeNotAvailable ?? false);
+			if (availableOnly)
 			{
-				query.WithStockQuantity(fromQuantity, null);
+				query.AvailableOnly(availableOnly);
 			}
+
+			AddFacet(query, FacetGroupKind.Availability, true, FacetSorting.ValueAsc, descriptor =>
+			{
+				descriptor.MinHitCount = 0;
+
+				descriptor.AddValue(new FacetValue(null, IndexTypeCode.Empty)
+				{
+					IsSelected = includeNotAvailable ?? false,
+					Label = _services.Localization.GetResource("Search.Facet.IncludeOutOfStock")
+				});
+			});
+		}
+
+		protected virtual void ConvertNewArrivals(CatalogSearchQuery query, RouteData routeData, string origin)
+		{
+			var newForMaxDays = _catalogSettings.LabelAsNewForMaxDays ?? 0;
+			if (newForMaxDays <= 0)
+			{
+				// we cannot filter without it
+				return;
+			}
+
+			bool? newArrivalsOnly = null;
+			var fromUtc = DateTime.UtcNow.Subtract(TimeSpan.FromDays(newForMaxDays));
+
+			if (GetValueFor(query, "n", FacetGroupKind.NewArrivals, out newArrivalsOnly) && (newArrivalsOnly ?? false))
+			{
+				query.CreatedBetween(fromUtc, null);
+			}
+
+			AddFacet(query, FacetGroupKind.NewArrivals, true, FacetSorting.ValueAsc, descriptor =>
+			{
+				descriptor.MinHitCount = 0;
+
+				descriptor.AddValue(new FacetValue(fromUtc, null, IndexTypeCode.DateTime, true, false)
+				{
+					IsSelected = newArrivalsOnly ?? false,
+					Label = _services.Localization.GetResource("Search.Facet.LastDays").FormatInvariant(newForMaxDays)
+				});
+			});
 		}
 
 		protected virtual void ConvertDeliveryTime(CatalogSearchQuery query, RouteData routeData, string origin)

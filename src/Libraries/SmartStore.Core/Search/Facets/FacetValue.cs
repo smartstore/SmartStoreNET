@@ -33,8 +33,6 @@ namespace SmartStore.Core.Search.Facets
 
 		public FacetValue(object value, IndexTypeCode typeCode)
 		{
-			Guard.NotNull(value, nameof(value));
-
 			Value = value;
 			TypeCode = typeCode;
 			IsRange = false;
@@ -51,8 +49,14 @@ namespace SmartStore.Core.Search.Facets
 		}
 
 		public FacetValue(FacetValue value)
+			: this(value, value)
+		{
+		}
+
+		public FacetValue(FacetValue value, FacetValue metadata)
 		{
 			Guard.NotNull(value, nameof(value));
+			Guard.NotNull(metadata, nameof(metadata));
 
 			Value = value.Value;
 			UpperValue = value.UpperValue;
@@ -62,13 +66,13 @@ namespace SmartStore.Core.Search.Facets
 			IsRange = value.IsRange;
 			IsSelected = value.IsSelected;
 
-			Label = value.Label;
-			ParentId = value.ParentId;
-			DisplayOrder = value.DisplayOrder;
-			Sorting = value.Sorting;
-			TemplateHint = value.TemplateHint;
-			PictureUrl = value.PictureUrl;
-			Color = value.Color;
+			Label = metadata.Label;
+			ParentId = metadata.ParentId;
+			DisplayOrder = metadata.DisplayOrder;
+			Sorting = metadata.Sorting;
+			TemplateHint = metadata.TemplateHint;
+			PictureUrl = metadata.PictureUrl;
+			Color = metadata.Color;
 		}
 
 		public object Value
@@ -111,6 +115,14 @@ namespace SmartStore.Core.Search.Facets
 		{
 			get;
 			set;
+		}
+
+		public bool IsEmpty
+		{
+			get
+			{
+				return TypeCode == IndexTypeCode.Empty && Value == null;
+			}
 		}
 
 		#region Metadata
@@ -173,6 +185,11 @@ namespace SmartStore.Core.Search.Facets
 				{
 					return other.UpperValue != null && other.UpperValue.Equals(UpperValue);
 				}
+			}
+
+			if (other.Value == null && Value == null)
+			{
+				return true;
 			}
 
 			return other.Value != null && other.Value.Equals(Value);

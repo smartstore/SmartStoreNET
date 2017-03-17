@@ -12,7 +12,8 @@ namespace SmartStore.Core.Search.Facets
 		Price,
 		Rating,
 		DeliveryTime,
-		Stock,
+		Availability,
+		NewArrivals,
 		Attribute,
 		Variant
 	}
@@ -128,6 +129,14 @@ namespace SmartStore.Core.Search.Facets
 					else if (Key == "deliveryid")
 					{
 						_kind = FacetGroupKind.DeliveryTime;
+					}
+					else if (Key == "available")
+					{
+						_kind = FacetGroupKind.Availability;
+					}
+					else if (Key == "createdon")
+					{
+						_kind = FacetGroupKind.NewArrivals;
 					}
 					else
 					{

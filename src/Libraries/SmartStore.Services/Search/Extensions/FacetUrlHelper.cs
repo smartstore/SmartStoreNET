@@ -26,10 +26,11 @@ namespace SmartStore.Services.Search.Extensions
 		{
 			{ FacetGroupKind.Brand, "m" },
 			{ FacetGroupKind.Category, "c" },
-			{ FacetGroupKind.DeliveryTime, "d" },
-			{ FacetGroupKind.Stock, "sq" },
 			{ FacetGroupKind.Price, "p" },
-			{ FacetGroupKind.Rating, "r" }
+			{ FacetGroupKind.Rating, "r" },
+			{ FacetGroupKind.DeliveryTime, "d" },
+			{ FacetGroupKind.Availability, "a" },
+			{ FacetGroupKind.NewArrivals, "n" }
 		};
 
 		public FacetUrlHelper(
@@ -104,10 +105,11 @@ namespace SmartStore.Services.Search.Extensions
 								break;
 							case FacetGroupKind.Category:
 							case FacetGroupKind.Brand:
+							case FacetGroupKind.Price:
 							case FacetGroupKind.Rating:
 							case FacetGroupKind.DeliveryTime:
-							case FacetGroupKind.Stock:
-							case FacetGroupKind.Price:
+							case FacetGroupKind.Availability:
+							case FacetGroupKind.NewArrivals:
 								qsName = _queryNames[facet.FacetGroup.Kind];
 								break;
 						}
@@ -159,10 +161,11 @@ namespace SmartStore.Services.Search.Extensions
 					break;
 				case FacetGroupKind.Category:
 				case FacetGroupKind.Brand:
+				case FacetGroupKind.Price:
 				case FacetGroupKind.Rating:
 				case FacetGroupKind.DeliveryTime:
-				case FacetGroupKind.Stock:
-				case FacetGroupKind.Price:
+				case FacetGroupKind.Availability:
+				case FacetGroupKind.NewArrivals:
 					value = val.ToString();
 					if (value.HasValue())
 					{

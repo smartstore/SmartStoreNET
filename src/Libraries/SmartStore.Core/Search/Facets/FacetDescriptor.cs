@@ -47,6 +47,10 @@ namespace SmartStore.Core.Search.Facets
 					return "Search.Facet.Rating";
 				case FacetGroupKind.DeliveryTime:
 					return "Search.Facet.DeliveryTime";
+				case FacetGroupKind.Availability:
+					return "Search.Facet.Availability";
+				case FacetGroupKind.NewArrivals:
+					return "Search.Facet.NewArrivals";
 				default:
 					return null;
 			}

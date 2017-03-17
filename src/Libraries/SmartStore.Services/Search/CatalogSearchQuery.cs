@@ -260,6 +260,11 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByRange("stockquantity", fromQuantity, toQuantity, fromQuantity.HasValue, toQuantity.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
+		public CatalogSearchQuery AvailableOnly(bool value)
+		{
+			return WithFilter(SearchFilter.ByField("available", value).Mandatory().ExactMatch().NotAnalyzed());
+		}
+
 		public CatalogSearchQuery PriceBetween(decimal? fromPrice, decimal? toPrice)
 		{
 			if (fromPrice == null && toPrice == null)

@@ -19,10 +19,6 @@
 {
     <a href="@Url.RouteUrl("CompareProducts")" class="dropdown-item">@T("Products.Compare.List")</a>
 }
-@if (Model.SitemapEnabled)
-{
-    <a href="@Url.RouteUrl("Sitemap")" class="dropdown-item">@T("Sitemap")</a>
-}
 @if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
 {
 	<a href="@Model.TopicPageUrls["shippinginfo"]" class="dropdown-item">@T("ShippingReturns")</a>

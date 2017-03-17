@@ -14675,9 +14675,6 @@
 	<LocaleResource Name="PageTitle.ShoppingCart">
 		<Value>Warenkorb</Value>
 	</LocaleResource>
-	<LocaleResource Name="PageTitle.Sitemap">
-		<Value>Sitemap</Value>
-	</LocaleResource>
 	<LocaleResource Name="PageTitle.StoreClosed">
 		<Value>Der Shop ist geschloßen.</Value>
 	</LocaleResource>
@@ -15907,18 +15904,6 @@
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.WishlistDisabled">
 		<Value>Der Wunschzettel ist für dieses Produkt deaktiviert.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Sitemap">
-		<Value>Sitemap</Value>
-	</LocaleResource>
-	<LocaleResource Name="Sitemap.Categories">
-		<Value>Kategorien</Value>
-	</LocaleResource>
-	<LocaleResource Name="Sitemap.Manufacturers">
-		<Value>Hersteller</Value>
-	</LocaleResource>
-	<LocaleResource Name="Sitemap.Products">
-		<Value>Produkte</Value>
 	</LocaleResource>
 	<LocaleResource Name="SmartStore.Core.Domain.Seo.PageTitleSeoAdjustment.PagenameAfterStorename">
 		<Value>Seitenname kommt nach Shop-Name</Value>

@@ -662,7 +662,6 @@ namespace SmartStore.Web.Controllers
                 RecentlyViewedProductsEnabled = _catalogSettings.RecentlyViewedProductsEnabled,
                 CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
                 BlogEnabled = _blogSettings.Enabled,
-                SitemapEnabled = _commonSettings.SitemapEnabled,
                 ForumEnabled = _forumSettings.ForumsEnabled,
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
             };

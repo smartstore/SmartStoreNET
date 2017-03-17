@@ -377,7 +377,6 @@
     <Compile Include="Models\Common\PagerModel.cs" />
     <Compile Include="Models\Common\StoreThemeModel.cs" />
     <Compile Include="Models\Common\LanguageSelectorModel.cs" />
-    <Compile Include="Models\Common\SitemapModel.cs" />
     <Compile Include="Models\Customer\BackInStockSubscriptionModel.cs" />
     <Compile Include="Models\Customer\CustomerBackInStockSubscriptionsModel.cs" />
     <Compile Include="Models\Customer\CustomerForumSubscriptionsModel.cs" />
@@ -1747,7 +1746,6 @@
     <Content Include="Views\ExternalAuthentication\Partials\ExternalMethods.cshtml" />
     <Content Include="Views\Home\ContactUs.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Home\Sitemap.cshtml" />
     <Content Include="Views\Home\StoreClosed.cshtml" />
     <Content Include="Views\Install\Index.cshtml" />
     <Content Include="Views\News\Partials\HomePageNews.cshtml" />

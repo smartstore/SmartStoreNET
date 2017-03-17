@@ -39,10 +39,6 @@
             {
                 <li><a href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>            
             }
-            @if (Model.SitemapEnabled)
-            {
-                <li><a href="@Url.RouteUrl("Sitemap")">@T("Sitemap")</a></li>
-            }
 			@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
 			{
 				<li><a href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>

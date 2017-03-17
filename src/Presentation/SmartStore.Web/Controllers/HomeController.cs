@@ -187,70 +187,9 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult Sitemap(CatalogSearchQuery query)
+		public ActionResult Sitemap()
 		{
-			if (!_commonSettings.Value.SitemapEnabled)
-			{
-				return HttpNotFound();
-			}
-				
-			var roleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-
-			string cacheKey = ModelCacheEventConsumer.SITEMAP_PAGE_MODEL_KEY.FormatInvariant(
-				_services.WorkContext.WorkingLanguage.Id, 
-				string.Join(",", roleIds), 
-				_services.StoreContext.CurrentStore.Id);
-
-			var result = _services.Cache.Get(cacheKey, () =>
-			{
-				var model = new SitemapModel();
-				if (_commonSettings.Value.SitemapIncludeCategories)
-				{
-					var categories = _categoryService.Value.GetAllCategories();
-					model.Categories = categories.Select(x => x.ToModel()).ToList();
-				}
-
-				if (_commonSettings.Value.SitemapIncludeManufacturers)
-				{
-					var manufacturers = _manufacturerService.Value.GetAllManufacturers();
-					model.Manufacturers = manufacturers.Select(x => x.ToModel()).ToList();
-				}
-
-				if (_commonSettings.Value.SitemapIncludeProducts)
-				{
-					// Limit product to 200 until paging is supported on this page
-					query = query.Slice(0, 200).SortBy(ProductSortingEnum.Relevance);
-					var searchResult = _catalogSearchService.Value.Search(query);
-
-					var settings = _catalogHelper.Value.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
-					{
-						x.MapPrices = false;
-						x.MapPictures = false;
-					});
-
-					model.Products = _catalogHelper.Value.MapProductSummaryModel(searchResult.Hits, settings);
-				}
-
-				if (_commonSettings.Value.SitemapIncludeTopics)
-				{
-					var topics = _topicService.Value.GetAllTopics(_services.StoreContext.CurrentStore.Id)
-						 .ToList()
-						 .FindAll(t => t.IncludeInSitemap);
-
-					model.Topics = topics.Select(topic => new TopicModel()
-					{
-						Id = topic.Id,
-						SystemName = topic.SystemName,
-						IncludeInSitemap = topic.IncludeInSitemap,
-						IsPasswordProtected = topic.IsPasswordProtected,
-						Title = topic.GetLocalized(x => x.Title),
-					})
-					.ToList();
-				}
-				return model;
-			});
-
-			return View(result);
+            return RedirectPermanent(_services.StoreContext.CurrentStore.Url);
 		}
     }
 }

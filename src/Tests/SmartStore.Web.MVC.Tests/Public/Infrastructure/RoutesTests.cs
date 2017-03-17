@@ -161,7 +161,6 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         public void Common_routes()
         {
             "~/contactus".ShouldMapTo<HomeController>(c => c.ContactUs());
-			"~/sitemap".ShouldMapTo<HomeController>(c => c.Sitemap(null));
 			"~/sitemap.xml".ShouldMapTo<HomeController>(c => c.SitemapSeo(1));
             "~/settings".ShouldMapTo<CommonController>(c => c.Settings());
         }

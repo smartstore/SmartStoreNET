@@ -89,7 +89,9 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<IProductService> _productService;
         private readonly Lazy<IShoppingCartService> _shoppingCartService;
 
-        public CommonController(
+		private readonly IBreadcrumb _breadcrumb;
+
+		public CommonController(
 			ICommonServices services,
 			ITopicService topicService,
             Lazy<ILanguageService> languageService,
@@ -125,7 +127,8 @@ namespace SmartStore.Web.Controllers
 			Lazy<IManufacturerService> manufacturerService,
 			Lazy<ICategoryService> categoryService,
 			Lazy<IProductService> productService,
-            Lazy<IShoppingCartService> shoppingCartService)
+            Lazy<IShoppingCartService> shoppingCartService,
+			IBreadcrumb breadcrumb)
         {
 			_services = services;
 			_topicService = topicService;
@@ -164,6 +167,8 @@ namespace SmartStore.Web.Controllers
 			_categoryService = categoryService;
 			_productService = productService;
             _shoppingCartService = shoppingCartService;
+
+			_breadcrumb = breadcrumb;
         }
 
         #region Utilities
@@ -675,6 +680,17 @@ namespace SmartStore.Web.Controllers
 
             return PartialView(model);
         }
+
+		[ChildActionOnly]
+		public ActionResult Breadcrumb()
+		{
+			if (_breadcrumb.Trail == null || _breadcrumb.Trail.Count == 0)
+			{
+				return Content("");
+			}
+
+			return PartialView(_breadcrumb.Trail);
+		}
 
         [ChildActionOnly]
         public ActionResult StoreThemeSelector()

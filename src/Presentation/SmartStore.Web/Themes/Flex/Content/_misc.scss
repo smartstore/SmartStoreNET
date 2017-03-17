@@ -55,9 +55,14 @@ h1, h2, h3, h4, h5, h6,
 //
 // Breadcrumb Styles
 // --------------------------------------------------
-#breadcrumb {
+
+.breadcrumb {
     padding: 0;
     background: none;
+}
+
+.breadcrumb > li + li::before {
+    content: '|';
 }
 
 

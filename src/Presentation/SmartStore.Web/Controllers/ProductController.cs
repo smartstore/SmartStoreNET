@@ -27,6 +27,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
@@ -64,6 +65,7 @@ namespace SmartStore.Web.Controllers
 		private readonly CatalogHelper _helper;
         private readonly IDownloadService _downloadService;
         private readonly ILocalizationService _localizationService;
+		private readonly IBreadcrumb _breadcrumb;
 
 		public ProductController(
 			ICommonServices services,
@@ -94,37 +96,39 @@ namespace SmartStore.Web.Controllers
 			CaptchaSettings captchaSettings,
 			CatalogHelper helper,
             IDownloadService downloadService,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+			IBreadcrumb breadcrumb)
         {
-			this._services = services;
-			this._manufacturerService = manufacturerService;
-			this._productService = productService;
-			this._productAttributeService = productAttributeService;
-			this._productAttributeParser = productAttributeParser;
-			this._taxService = taxService;
-			this._currencyService = currencyService;
-			this._pictureService = pictureService;
-			this._priceCalculationService = priceCalculationService;
-			this._priceFormatter = priceFormatter;
-			this._customerContentService = customerContentService;
-			this._customerService = customerService;
-			this._shoppingCartService = shoppingCartService;
-			this._recentlyViewedProductsService = recentlyViewedProductsService;
-			this._workflowMessageService = workflowMessageService;
-			this._productTagService = productTagService;
-			this._orderReportService = orderReportService;
-			this._backInStockSubscriptionService = backInStockSubscriptionService;
-			this._aclService = aclService;
-			this._storeMappingService = storeMappingService;
-			this._mediaSettings = mediaSettings;
-			this._seoSettings = seoSettings;
-			this._catalogSettings = catalogSettings;
-			this._shoppingCartSettings = shoppingCartSettings;
-			this._localizationSettings = localizationSettings;
-			this._captchaSettings = captchaSettings;
-			this._helper = helper;
-			this._downloadService = downloadService;
-			this._localizationService = localizationService;
+			_services = services;
+			_manufacturerService = manufacturerService;
+			_productService = productService;
+			_productAttributeService = productAttributeService;
+			_productAttributeParser = productAttributeParser;
+			_taxService = taxService;
+			_currencyService = currencyService;
+			_pictureService = pictureService;
+			_priceCalculationService = priceCalculationService;
+			_priceFormatter = priceFormatter;
+			_customerContentService = customerContentService;
+			_customerService = customerService;
+			_shoppingCartService = shoppingCartService;
+			_recentlyViewedProductsService = recentlyViewedProductsService;
+			_workflowMessageService = workflowMessageService;
+			_productTagService = productTagService;
+			_orderReportService = orderReportService;
+			_backInStockSubscriptionService = backInStockSubscriptionService;
+			_aclService = aclService;
+			_storeMappingService = storeMappingService;
+			_mediaSettings = mediaSettings;
+			_seoSettings = seoSettings;
+			_catalogSettings = catalogSettings;
+			_shoppingCartSettings = shoppingCartSettings;
+			_localizationSettings = localizationSettings;
+			_captchaSettings = captchaSettings;
+			_helper = helper;
+			_downloadService = downloadService;
+			_localizationService = localizationService;
+			_breadcrumb = breadcrumb;
         }
 
 		#region Products
@@ -191,6 +195,18 @@ namespace SmartStore.Web.Controllers
 
 			// Activity log
 			_services.CustomerActivity.InsertActivity("PublicStore.ViewProduct", T("ActivityLog.PublicStore.ViewProduct"), product.Name);
+
+			// Breadcrumb
+			if (_catalogSettings.CategoryBreadcrumbEnabled)
+			{
+				_helper.GetCategoryBreadCrumb(0, productId).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
+				_breadcrumb.Track(new MenuItem
+				{
+					Text = model.Name,
+					EntityId = product.Id,
+					Url = Url.RouteUrl("Product", new { productId = product.Id, SeName = model.SeName })
+				});
+			}
 
 			return View(model.ProductTemplateViewPath, model);
 		}

@@ -325,7 +325,6 @@
     <Compile Include="Models\Boards\ForumRowModel.cs" />
     <Compile Include="Models\Boards\ForumTopicRowModel.cs" />
     <Compile Include="Models\Boards\EditForumPostModel.cs" />
-    <Compile Include="Models\Boards\ForumBreadcrumbModel.cs" />
     <Compile Include="Models\Boards\ForumGroupModel.cs" />
     <Compile Include="Models\Boards\ForumPageModel.cs" />
     <Compile Include="Models\Boards\ForumPostModel.cs" />
@@ -1664,7 +1663,6 @@
     <Content Include="Views\Boards\ActiveDiscussions.cshtml" />
     <Content Include="Views\Boards\Partials\ActiveDiscussionsSmall.cshtml" />
     <Content Include="Views\Boards\Forum.cshtml" />
-    <Content Include="Views\Boards\Partials\ForumBreadcrumb.cshtml" />
     <Content Include="Views\Boards\ForumGroup.cshtml" />
     <Content Include="Views\Boards\Index.cshtml" />
     <Content Include="Views\Boards\Partials\LastPost.cshtml" />
@@ -1692,7 +1690,6 @@
     <Content Include="Views\Catalog\ManufacturerTemplate.ProductsInGridOrLines.cshtml" />
     <Content Include="Views\Catalog\Partials\MegaMenu.cshtml" />
     <Content Include="Views\Catalog\Partials\PopularProductTags.cshtml" />
-    <Content Include="Views\Catalog\Partials\ProductBreadcrumb.cshtml" />
     <Content Include="Views\Catalog\ProductsByTag.cshtml" />
     <Content Include="Views\Catalog\ProductTagsAll.cshtml" />
     <Content Include="Views\Catalog\RecentlyAddedProducts.cshtml" />
@@ -1890,6 +1887,7 @@
     <Content Include="Views\Search\FacetTemplates\Rating.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Category.cshtml" />
     <Content Include="Views\Catalog\Partials\OffCanvasMenuManufacturers.cshtml" />
+    <Content Include="Views\Common\Partials\Breadcrumb.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

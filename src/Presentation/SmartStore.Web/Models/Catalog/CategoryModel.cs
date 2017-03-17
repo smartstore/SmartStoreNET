@@ -14,7 +14,6 @@ namespace SmartStore.Web.Models.Catalog
         {
 			PictureModel = new PictureModel();
             SubCategories = new List<SubCategoryModel>();
-            CategoryBreadcrumb = new List<MenuItem>();
         }
 
 		public CatalogSearchResult SearchResult
@@ -35,7 +34,6 @@ namespace SmartStore.Web.Models.Catalog
         public PictureModel PictureModel { get; set; }
 
         public bool DisplayCategoryBreadcrumb { get; set; }
-        public IList<MenuItem> CategoryBreadcrumb { get; set; }
 
 		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
         

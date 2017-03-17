@@ -69,6 +69,7 @@
             <section id="content" class="container m-t-1">
 				@{ 
 					RenderSection("teaser", required: false);
+					Html.RenderAction("Breadcrumb", "Common", new { area = "" });
 					Html.RenderZone("teaser");
 					Html.RenderWidget("after_teaser");
 				}

@@ -35,9 +35,6 @@
 }
 
 <div class="page product-details-page">
-	<!-- Breadcrumb -->
-	@{ Html.RenderAction("ProductBreadcrumb", "Catalog", new { productId = Model.Id }); }
-
 	@{ Html.RenderWidget("productdetails_top"); }
 
 	<article class="pd page-body">

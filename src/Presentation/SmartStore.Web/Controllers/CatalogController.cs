@@ -27,6 +27,7 @@ using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Common;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Controllers
 {
@@ -54,8 +55,9 @@ namespace SmartStore.Web.Controllers
 		private readonly ICompareProductsService _compareProductsService;
         private readonly Lazy<ILanguageService> _languageService;
         private readonly CatalogHelper _helper;
+		private readonly IBreadcrumb _breadcrumb;
 
-        public CatalogController(
+		public CatalogController(
 			ICommonServices services,
 			ICategoryService categoryService,
             IManufacturerService manufacturerService, 
@@ -77,7 +79,8 @@ namespace SmartStore.Web.Controllers
 			MediaSettings mediaSettings, 
 			CatalogSettings catalogSettings,
             Lazy<ILanguageService> languageService,
-             CatalogHelper helper)
+            CatalogHelper helper,
+			IBreadcrumb breadcrumb)
         {
 			_services = services;
 			_categoryService = categoryService;
@@ -101,6 +104,7 @@ namespace SmartStore.Web.Controllers
             _catalogSettings = catalogSettings;
             _languageService = languageService;
             _helper = helper;
+			_breadcrumb = breadcrumb;
         }
 
         #region Categories
@@ -138,12 +142,11 @@ namespace SmartStore.Web.Controllers
 
 			_services.DisplayControl.Announce(category);
 
-            // category breadcrumb
-            model.DisplayCategoryBreadcrumb = _catalogSettings.CategoryBreadcrumbEnabled;
-            if (model.DisplayCategoryBreadcrumb)
-            {
-				model.CategoryBreadcrumb = _helper.GetCategoryBreadCrumb(category.Id, 0).Select(x => x.Value).ToList();
-            }
+            // Category breadcrumb
+			if (_catalogSettings.CategoryBreadcrumbEnabled)
+			{
+				_helper.GetCategoryBreadCrumb(category.Id, 0).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
+			}
 
 			model.SubCategoryDisplayType = _catalogSettings.SubCategoryDisplayType;
 
@@ -272,29 +275,6 @@ namespace SmartStore.Web.Controllers
 			var model = _helper.PrepareCategoryNavigationModel(currentCategoryId, currentProductId);
             return PartialView(model);
         }
-
-		[ChildActionOnly]
-		public ActionResult ProductBreadcrumb(int productId)
-		{
-			if (!_catalogSettings.CategoryBreadcrumbEnabled)
-				return Content("");
-
-			var product = _productService.GetProductById(productId);
-			if (product == null)
-				throw new ArgumentException(T("Products.NotFound", productId));
-
-			var model = new ProductDetailsModel.ProductBreadcrumbModel
-			{
-				ProductId = product.Id,
-				ProductName = product.GetLocalized(x => x.Name),
-				ProductSeName = product.GetSeName()
-			};
-
-			var breadcrumb = _helper.GetCategoryBreadCrumb(0, productId).Select(x => x.Value).ToList();
-			model.CategoryBreadcrumb = breadcrumb;
-
-			return PartialView(model);
-		}
 
         [ChildActionOnly]
         public ActionResult HomepageCategories()

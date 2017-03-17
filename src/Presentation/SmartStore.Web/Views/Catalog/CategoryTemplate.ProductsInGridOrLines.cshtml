@@ -47,34 +47,6 @@
 	</div>
 }
 
-@if (Model.DisplayCategoryBreadcrumb)
-{
-    using (Html.BeginZoneContent("teaser", injectMode: ZoneInjectMode.Prepend))
-    {
-		<ul id="breadcrumb" class="breadcrumb">
-			<li>
-				<a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")"><i class="fa fa-home"></i></a>
-			</li>
-
-			@for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++)
-            {
-                var menuItem = Model.CategoryBreadcrumb[i];
-                var isLastCategory = menuItem.EntityId == Model.Id;
-				<li>
-					@if (isLastCategory)
-                    {
-						@menuItem.Text
-                    }
-                    else
-                    {
-						<a href="@menuItem.GenerateUrl(this.Url)" title="@menuItem.Text">@menuItem.Text</a>
-                    }
-				</li>
-            }
-		</ul>
-    }
-}
-
 @section left {
 	@{ 
 		Html.RenderAction("CategoryMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, area = "" });

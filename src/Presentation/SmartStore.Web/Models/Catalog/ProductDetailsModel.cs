@@ -123,19 +123,6 @@ namespace SmartStore.Web.Models.Catalog
 
 		#region Nested Classes
 
-		public partial class ProductBreadcrumbModel : ModelBase
-        {
-            public ProductBreadcrumbModel()
-            {
-				CategoryBreadcrumb = new List<MenuItem>();
-            }
-
-            public int ProductId { get; set; }
-            public string ProductName { get; set; }
-            public string ProductSeName { get; set; }
-            public IList<MenuItem> CategoryBreadcrumb { get; set; }
-        }
-
 		public partial class AddToCartModel : ModelBase, IQuantityInput
 		{
 			public AddToCartModel()

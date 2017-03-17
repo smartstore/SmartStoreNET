@@ -1,15 +1,13 @@
 ﻿@model CheckoutPaymentMethodModel
-@using SmartStore.Core.Domain.Orders;
 @using SmartStore.Web.Models.Checkout;
-@using SmartStore.Web.Models.Common;
 @{
     Layout = "_Checkout";
-
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 
-@section orderProgress{
-    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment }); }
+@using (Html.BeginZoneContent("orderProgress"))
+{
+    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment })
 }
 
 <div class="page payment-method-page">

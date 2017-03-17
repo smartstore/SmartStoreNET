@@ -7,8 +7,9 @@
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 
-@section orderProgress{
-    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address }); }
+@using (Html.BeginZoneContent("orderProgress"))
+{
+    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address  })
 }
 
 <div class="page billing-address-page">

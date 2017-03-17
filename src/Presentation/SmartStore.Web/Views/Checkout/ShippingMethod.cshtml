@@ -1,14 +1,13 @@
 ﻿@model CheckoutShippingMethodModel
 @using SmartStore.Web.Models.Checkout;
-
 @{
     Layout = "_Checkout";
-
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 
-@section orderProgress{
-    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Shipping }); }
+@using (Html.BeginZoneContent("orderProgress"))
+{
+    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Shipping })
 }
 
 <div class="page shipping-method-page">

@@ -12,9 +12,12 @@
 	string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
 	string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
 }
-@section orderProgress{
-    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Confirm }); }
+
+@using (Html.BeginZoneContent("orderProgress"))
+{
+    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Confirm })
 }
+
 <div class="page checkout-confirm-page">
     <div class="page-title">
         <h1>@T("Checkout.ConfirmYourOrder")</h1>

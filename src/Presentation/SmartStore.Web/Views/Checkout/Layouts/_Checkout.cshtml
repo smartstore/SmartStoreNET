@@ -3,8 +3,9 @@
     Html.AddBodyCssClass("checkout-page");
 }
 
-@section teaser {
-    @RenderSection("orderProgress")
+@using (Html.BeginZoneContent("teaser", injectMode: ZoneInjectMode.Prepend))
+{
+    Html.RenderZone("orderProgress");
 }
 
 @RenderBody()

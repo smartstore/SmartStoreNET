@@ -2,19 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Services.Media
-{
-	
+{	
 	public static class MediaHelper
 	{
-
 		public static void UpdateDownloadTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int>> downloadIdProp, bool save = false) where TEntity : BaseEntity
 		{
 			Guard.NotNull(entity, nameof(entity));
@@ -180,8 +176,6 @@ namespace SmartStore.Services.Media
 				rs.AutoCommitEnabled = autoCommit;
 			}
 		}
-
-
 	}
 
 }

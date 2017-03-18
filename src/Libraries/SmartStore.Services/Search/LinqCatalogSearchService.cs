@@ -412,6 +412,13 @@ namespace SmartStore.Services.Search
 						}
 					}
 				}
+				else if (filter.FieldName == "available")
+				{
+					query = query.Where(x => !(
+						x.StockQuantity <= 0 && x.BackorderModeId == (int)BackorderMode.NoBackorders && 
+						(x.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock || x.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes)
+					));
+				}
 				else if (filter.FieldName.StartsWith("price"))
 				{
 					if (rangeFilter != null)

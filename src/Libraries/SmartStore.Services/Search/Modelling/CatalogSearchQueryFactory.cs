@@ -510,24 +510,26 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected virtual void ConvertAvailability(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
-			bool? includeNotAvailable = null;
+			bool includeNotAvailable;
 			GetValueFor(query, "a", FacetGroupKind.Availability, out includeNotAvailable);
 
-			var availableOnly = !(includeNotAvailable ?? false);
-			if (availableOnly)
+			if (!includeNotAvailable)
 			{
-				query.AvailableOnly(availableOnly);
+				query.AvailableOnly(true);
 			}
 
 			AddFacet(query, FacetGroupKind.Availability, true, FacetSorting.ValueAsc, descriptor =>
 			{
 				descriptor.MinHitCount = 0;
 
-				descriptor.AddValue(new FacetValue(null, IndexTypeCode.Empty)
-				{
-					IsSelected = includeNotAvailable ?? false,
-					Label = _services.Localization.GetResource("Search.Facet.IncludeOutOfStock")
-				});
+				var newValue = includeNotAvailable
+					? new FacetValue(true)
+					: new FacetValue(null, IndexTypeCode.Empty);
+
+				newValue.IsSelected = includeNotAvailable;
+				newValue.Label = _services.Localization.GetResource("Search.Facet.IncludeOutOfStock");
+
+				descriptor.AddValue(newValue);
 			});
 		}
 
@@ -540,10 +542,10 @@ namespace SmartStore.Services.Search.Modelling
 				return;
 			}
 
-			bool? newArrivalsOnly = null;
+			bool newArrivalsOnly;
 			var fromUtc = DateTime.UtcNow.Subtract(TimeSpan.FromDays(newForMaxDays));
 
-			if (GetValueFor(query, "n", FacetGroupKind.NewArrivals, out newArrivalsOnly) && (newArrivalsOnly ?? false))
+			if (GetValueFor(query, "n", FacetGroupKind.NewArrivals, out newArrivalsOnly) && newArrivalsOnly)
 			{
 				query.CreatedBetween(fromUtc, null);
 			}
@@ -554,7 +556,7 @@ namespace SmartStore.Services.Search.Modelling
 
 				descriptor.AddValue(new FacetValue(fromUtc, null, IndexTypeCode.DateTime, true, false)
 				{
-					IsSelected = newArrivalsOnly ?? false,
+					IsSelected = newArrivalsOnly,
 					Label = _services.Localization.GetResource("Search.Facet.LastDays").FormatInvariant(newForMaxDays)
 				});
 			});

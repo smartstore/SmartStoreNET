@@ -553,6 +553,31 @@ namespace SmartStore.Services.Tests.Search
 			Assert.That(result.Hits.Count(), Is.EqualTo(5));
 		}
 
+		[Test]
+		public void LinqSearch_filter_available_only()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(1),
+				new SearchProduct(2)
+				{
+					StockQuantity = 0,
+					ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+					BackorderMode = BackorderMode.NoBackorders
+				},
+				new SearchProduct(3)
+				{
+					StockQuantity = 0,
+					ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+					BackorderMode = BackorderMode.AllowQtyBelow0AndNotifyCustomer
+				}
+			};
+
+			var result = Search(new CatalogSearchQuery().AvailableOnly(true), products);
+
+			Assert.That(result.Hits.Count, Is.EqualTo(2));
+		}
+
 		#endregion
 
 		#region SearchProduct

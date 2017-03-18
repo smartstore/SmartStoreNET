@@ -384,6 +384,34 @@
 		if ($.fn.moreLess) {
 			$('.more-less').moreLess();
 		}
+
+		// scroll top
+		(function () {
+			$('#scroll-top').click(function (e) {
+				e.preventDefault();
+				$(window).scrollTo(0, 600);
+				return false;
+			});
+
+			var prevY;
+
+			var throttledScroll = _.throttle(function (e) {
+				var y = $(window).scrollTop();
+				if (_.isNumber(prevY)) {
+					// Show scroll button only when scrolled up
+					if (y < prevY && y > 500) {
+						$('#scroll-top').addClass("in");
+					}
+					else {
+						$('#scroll-top').removeClass("in");
+					}
+				}
+
+				prevY = y;
+			}, 100);
+
+			$(window).on("scroll", throttledScroll);
+		})();
 		
 		// fixes bootstrap 2 bug: non functional links on mobile devices
 		// TODO: (mc) delete this later

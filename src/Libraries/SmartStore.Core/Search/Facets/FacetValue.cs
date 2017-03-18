@@ -70,7 +70,6 @@ namespace SmartStore.Core.Search.Facets
 			ParentId = metadata.ParentId;
 			DisplayOrder = metadata.DisplayOrder;
 			Sorting = metadata.Sorting;
-			TemplateHint = metadata.TemplateHint;
 			PictureUrl = metadata.PictureUrl;
 			Color = metadata.Color;
 		}
@@ -134,8 +133,6 @@ namespace SmartStore.Core.Search.Facets
 		public int DisplayOrder { get; set; }
 
 		public FacetSorting? Sorting { get; set; }
-
-		public FacetTemplateHint? TemplateHint { get; set; }
 
 		public string PictureUrl { get; set; }
 

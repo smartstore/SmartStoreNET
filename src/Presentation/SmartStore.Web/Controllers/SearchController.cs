@@ -88,6 +88,7 @@ namespace SmartStore.Web.Controllers
 			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
 			{
 				x.MapPrices = false;
+				x.MapShortDescription = true;
 			});
 
 			// TODO: (mc) actually SHOW pictures in InstantSearch (???)

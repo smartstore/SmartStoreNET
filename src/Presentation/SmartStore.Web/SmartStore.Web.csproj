@@ -1878,7 +1878,6 @@
     <Content Include="Views\Product\Partials\Product.CustomerPrice.cshtml" />
     <Content Include="Views\Search\Partials\Filters.cshtml" />
     <Content Include="Views\Search\Partials\Filters.Active.cshtml" />
-    <Content Include="Views\Search\Partials\Filters.OLD.cshtml" />
     <Content Include="Views\Search\FacetTemplates\MultiSelect.cshtml" />
     <Content Include="Views\Search\FacetTemplates\SingleSelect.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Price.cshtml" />

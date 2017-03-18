@@ -3,8 +3,32 @@
 @using SmartStore.Core.Search.Facets
 @using SmartStore.Services.Search.Extensions;
 
+@functions {
+	private ICollection<Facet> FlattenFacets(IEnumerable<Facet> facets)
+	{
+		var flattened = new List<Facet>();
+
+		foreach (var facet in facets)
+		{
+			if (facet.IsChoice)
+			{
+				if (facet.HitCount > 0 || facet.Value.IsSelected)
+				{
+					flattened.Add(facet);
+				}
+			}
+			else if (facet.Children.Count > 0)
+			{
+				flattened.AddRange(FlattenFacets(facet.Children));
+			}
+		}
+
+		return flattened.OrderByDescending(x => x.Value.IsSelected).ThenByDescending(x => x.HitCount).ToList();
+	}
+}
+
 @{
-	var facets = Model.Facets.Where(x => x.HitCount > 0 || x.Value.IsSelected).ToList();
+	var facets = FlattenFacets(Model.Facets);
 }
 
 @if (facets.Count > 7)

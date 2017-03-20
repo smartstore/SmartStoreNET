@@ -686,8 +686,8 @@ namespace SmartStore.Data.Migrations
 				"Numeric range",
 				"Numerischer Bereich");
 
-			var megaSearchPlusHintEn = "This setting is only effective by using the Mega-Search-Plus plugin. Changes will take effect after next update of the search index.";
-			var megaSearchPlusHintDe = "Diese Einstellung ist nur unter Verwendung des Mega-Search-Plus Plugins wirksam. Änderungen werden nach der nächsten Aktualisierung des Suchindex wirksam.";
+			var megaSearchPlusHintEn = "This setting is only effective by using the 'MegaSearchPlus' plugin. Changes will take effect after next update of the search index.";
+			var megaSearchPlusHintDe = "Diese Einstellung ist nur unter Verwendung des 'MegaSearchPlus' Plugins wirksam. Änderungen werden nach der nächsten Aktualisierung des Suchindex wirksam.";
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting",
 				"Sorting of search filters",
@@ -714,9 +714,9 @@ namespace SmartStore.Data.Migrations
 				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können. " + megaSearchPlusHintDe);
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint",
-				"Search filter presentation",
-				"Darstellug der Suchfilter",
-				"Specifies the presentation of search filters. " + megaSearchPlusHintEn,
+				"Search filter UI type",
+				"Suchfilter Darstellug",
+				"Specifies the search filter UI type. " + megaSearchPlusHintEn,
 				"Legt die Darstellung der Suchfilter fest. " + megaSearchPlusHintDe);
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.NumberValue",

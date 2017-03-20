@@ -303,7 +303,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        var currencySelector = $(".menubar-section .currency-selector");
 	        var ocmLanguageSelector = $("#ocm-language-selector", footer);
 	        var ocmCurrencySelector = $("#ocm-currency-selector", footer);
-	        var selectTitleLanguage = $(".menubar-link > span", languageSelector).text();
+	        var selectTitleLanguage = languageSelector.find(".dropdown-item[data-selected='true']").data("abbreviation");
 	        var selectTitleCurrency = $(".menubar-link > span", currencySelector).text();
 	        var displayCurrencySelector = currencySelector.length > 0;
 	        var displayLanguageSelector = languageSelector.length > 0;

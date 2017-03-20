@@ -538,7 +538,7 @@ namespace SmartStore.Services.Catalog
 			{
 				var copyOf = _localizationService.GetResource("Admin.Common.CopyOf");
 				var searchQuery = new CatalogSearchQuery()
-					.HasParentGroupedProductId(product.Id);
+					.HasParentGroupedProduct(product.Id);
 
 				var query = _catalogSearchService.PrepareQuery(searchQuery);
 				var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();

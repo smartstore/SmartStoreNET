@@ -1895,7 +1895,7 @@ namespace SmartStore.Admin.Controllers
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
 				var searchQuery = new CatalogSearchQuery()
-					.HasParentGroupedProductId(productId);
+					.HasParentGroupedProduct(productId);
 
 				var query = _catalogSearchService.PrepareQuery(searchQuery);
 				var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();
@@ -1966,7 +1966,7 @@ namespace SmartStore.Admin.Controllers
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
 				var searchQuery = new CatalogSearchQuery()
-					.HasParentGroupedProductId(productId);
+					.HasParentGroupedProduct(productId);
 
 				var query = _catalogSearchService.PrepareQuery(searchQuery);
 				var maxDisplayOrder = query

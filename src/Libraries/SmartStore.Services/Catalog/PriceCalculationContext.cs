@@ -66,6 +66,11 @@ namespace SmartStore.Services.Catalog
 			_funcProductBundleItems = productBundleItems;
 		}
 
+		public IReadOnlyList<int> ProductIds
+		{
+			get { return _productIds; }
+		}
+
 		public void Clear()
 		{
 			if (_attributes != null)

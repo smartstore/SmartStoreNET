@@ -278,7 +278,7 @@ namespace SmartStore.Services.Tests.Search
 				new SearchProduct(5) { ParentGroupedProductId = 36 }
 			};
 
-			var result = Search(new CatalogSearchQuery().HasParentGroupedProductId(36), products);
+			var result = Search(new CatalogSearchQuery().HasParentGroupedProduct(36), products);
 
 			Assert.That(result.Hits.Count, Is.EqualTo(2));
 		}

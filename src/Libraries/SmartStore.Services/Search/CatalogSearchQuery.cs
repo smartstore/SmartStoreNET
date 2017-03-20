@@ -122,9 +122,16 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByField("showonhomepage", value).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery HasParentGroupedProductId(int id)
+		public CatalogSearchQuery HasParentGroupedProduct(params int[] parentProductIds)
 		{
-			return WithFilter(SearchFilter.ByField("parentid", id).Mandatory().ExactMatch().NotAnalyzed());
+			//return WithFilter(SearchFilter.ByField("parentid", ids).Mandatory().ExactMatch().NotAnalyzed());
+
+			if (parentProductIds.Length == 0)
+			{
+				return this;
+			}
+
+			return WithFilter(SearchFilter.Combined(parentProductIds.Select(x => SearchFilter.ByField("parentid", x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 
 		public override CatalogSearchQuery HasStoreId(int id)

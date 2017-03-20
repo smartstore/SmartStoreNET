@@ -87,7 +87,8 @@
 
     .shopbar-button-label-sm {
         display: none;
-        color: #aaa;
+        //color: #aaa;
+        color: $text-muted;
         font-size: 10px;
         line-height: 1.3;
         vertical-align: middle;

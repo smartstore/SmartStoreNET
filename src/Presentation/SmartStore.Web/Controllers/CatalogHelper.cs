@@ -271,7 +271,7 @@ namespace SmartStore.Web.Controllers
 						.VisibleOnly(_services.WorkContext.CurrentCustomer)
 						.VisibleIndividuallyOnly(false)
 						.HasStoreId(_services.StoreContext.CurrentStore.Id)
-						.HasParentGroupedProductId(product.Id);
+						.HasParentGroupedProduct(product.Id);
 
 					var associatedProducts = _catalogSearchService.Search(searchQuery).Hits;
 

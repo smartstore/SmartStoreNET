@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -499,18 +500,29 @@ namespace SmartStore.Web.Controllers
 			if (product.ProductType == ProductType.GroupedProduct)
 			{
 				#region Grouped product
+				
+				if (ctx.GroupedProducts == null)
+				{
+					// One-time batched retrieval of all associated products
+					var searchQuery = new CatalogSearchQuery()
+						.VisibleOnly(ctx.Customer)
+						.VisibleIndividuallyOnly(false)
+						.HasStoreId(ctx.Store.Id)
+						.HasParentGroupedProduct(ctx.BatchContext.ProductIds.ToArray());
+
+					// Get all associated products for this batch grouped by ParentGroupedProductId
+					var allAssociatedProducts = _catalogSearchService.Search(searchQuery).Hits
+						.OrderBy(x => x.ParentGroupedProductId)
+						.ThenBy(x => x.DisplayOrder);
+
+					ctx.GroupedProducts = allAssociatedProducts.ToMultimap(x => x.ParentGroupedProductId, x => x);
+				}
+
+				var associatedProducts = ctx.GroupedProducts[product.Id];
 
 				priceModel.DisableBuyButton = true;
 				priceModel.DisableWishlistButton = true;
 				priceModel.AvailableForPreOrder = false;
-
-				var searchQuery = new CatalogSearchQuery()
-					.VisibleOnly(ctx.Customer)
-					.VisibleIndividuallyOnly(false)
-					.HasStoreId(ctx.Store.Id)
-					.HasParentGroupedProductId(product.Id);
-
-				var associatedProducts = _catalogSearchService.Search(searchQuery).Hits;
 
 				if (associatedProducts.Count > 0)
 				{
@@ -720,6 +732,7 @@ namespace SmartStore.Web.Controllers
 			public ProductSummaryModel Model { get; set; }
 			public ProductSummaryMappingSettings Settings { get; set; }
 			public ProductExportContext BatchContext { get; set; }
+			public Multimap<int, Product> GroupedProducts { get; set; }
 			public Dictionary<int, ManufacturerOverviewModel> CachedManufacturerModels { get; set; }
 			public Dictionary<string, LocalizedString> Resources { get; set; }
 			public string LegalInfo { get; set; }

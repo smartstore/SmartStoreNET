@@ -283,6 +283,12 @@ namespace SmartStore.Services.Search
 				query = query.Where(x => x.DeliveryTimeId != null && deliverTimeIds.Contains(x.DeliveryTimeId.Value));
 			}
 
+			var parentProductIds = GetIdList(filters, "parentid");
+			if (parentProductIds.Any())
+			{
+				query = query.Where(x => parentProductIds.Contains(x.ParentGroupedProductId));
+			}
+
 			foreach (IAttributeSearchFilter filter in filters)
 			{
 				var rangeFilter = filter as IRangeSearchFilter;
@@ -387,10 +393,10 @@ namespace SmartStore.Services.Search
 				{
 					query = query.Where(p => p.ShowOnHomePage == (bool)filter.Term);
 				}
-				else if (filter.FieldName == "parentid")
-				{
-					query = query.Where(x => x.ParentGroupedProductId == (int)filter.Term);
-				}
+				//else if (filter.FieldName == "parentid")
+				//{
+				//	query = query.Where(x => x.ParentGroupedProductId == (int)filter.Term);
+				//}
 				else if (filter.FieldName == "typeid")
 				{
 					query = query.Where(x => x.ProductTypeId == (int)filter.Term);

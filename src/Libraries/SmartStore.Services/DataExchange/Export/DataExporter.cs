@@ -710,7 +710,7 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						var searchQuery = new CatalogSearchQuery()
 							.VisibleIndividuallyOnly(ctx.Projection.OnlyIndividuallyVisibleAssociated)
-							.HasParentGroupedProductId(product.Id)
+							.HasParentGroupedProduct(product.Id)
 							.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
 
 						if (ctx.Filter.IsPublished.HasValue)

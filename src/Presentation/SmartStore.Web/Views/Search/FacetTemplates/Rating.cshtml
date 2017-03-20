@@ -6,7 +6,7 @@
 @using SmartStore.Services.Search.Extensions;
 
 @{ 
-	var facets = Model.Facets.Where(x => x.HitCount > 0).Reverse().Skip(1);
+	var facets = Model.Facets.Where(x => x.Published).Reverse().Skip(1);
 
 	if (!facets.Any())
 	{

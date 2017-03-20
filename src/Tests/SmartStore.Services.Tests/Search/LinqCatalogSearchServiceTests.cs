@@ -574,8 +574,55 @@ namespace SmartStore.Services.Tests.Search
 			};
 
 			var result = Search(new CatalogSearchQuery().AvailableOnly(true), products);
-
 			Assert.That(result.Hits.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_rating()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(1),
+				new SearchProduct(2)
+				{
+					ApprovedTotalReviews = 3,
+					ApprovedRatingSum = 12
+				},
+				new SearchProduct(3)
+				{
+					ApprovedTotalReviews = 1,
+					ApprovedRatingSum = 3
+				},
+				new SearchProduct(4)
+				{
+					ApprovedTotalReviews = 1,
+					ApprovedRatingSum = 2
+				}
+			};
+
+			var result = Search(new CatalogSearchQuery().WithRating(3.0, null), products);
+			Assert.That(result.Hits.Count, Is.EqualTo(2));
+
+			result = Search(new CatalogSearchQuery().WithRating(4.0, null), products);
+			Assert.That(result.Hits.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_deliverytime_ids()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(1),
+				new SearchProduct(2) { DeliveryTimeId = 16 },
+				new SearchProduct(3) { DeliveryTimeId = 16 },
+				new SearchProduct(4) { DeliveryTimeId = 9 }
+			};
+
+			var result = Search(new CatalogSearchQuery().WithDeliveryTimeIds(new int[] { 16, 9 }), products);
+			Assert.That(result.Hits.Count, Is.EqualTo(3));
+
+			result = Search(new CatalogSearchQuery().WithDeliveryTimeIds(new int[] { 9 }), products);
+			Assert.That(result.Hits.Count, Is.EqualTo(1));
 		}
 
 		#endregion

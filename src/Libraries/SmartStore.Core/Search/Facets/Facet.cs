@@ -20,6 +20,7 @@ namespace SmartStore.Core.Search.Facets
 			Value = value;
 			Children = new List<Facet>();
 			IsChoice = true;
+			Published = true;
 		}
 
 		public string Key
@@ -38,6 +39,12 @@ namespace SmartStore.Core.Search.Facets
 		/// Gets or sets whether the facet can be selected
 		/// </summary>
 		public bool IsChoice
+		{
+			get;
+			set;
+		}
+
+		public bool Published
 		{
 			get;
 			set;

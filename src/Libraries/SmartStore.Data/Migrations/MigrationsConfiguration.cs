@@ -719,6 +719,12 @@ namespace SmartStore.Data.Migrations
 				"Specifies the presentation of search filters. " + megaSearchPlusHintEn,
 				"Legt die Darstellung der Suchfilter fest. " + megaSearchPlusHintDe);
 
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.NumberValue",
+				"Numeric value",
+				"Numerischer Wert",
+				"Specifies a numeric value to enbale range filtering (e.g. light red to dark red). \"Numeric range\" must be specified as search filter presentation for the attribute. " + megaSearchPlusHintEn,
+				"Legt einen numerischen Wert fest, um eine Bereichsfilterung zu ermöglichen (z.B. hellrot bis dunkelrot). Für das Attribut muss \"Numerischer Bereich\" als Suchfilterdarstellung festgelegt sein. " + megaSearchPlusHintDe);
+
 		}
 	}
 }

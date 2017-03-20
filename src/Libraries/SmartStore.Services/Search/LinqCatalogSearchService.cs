@@ -13,6 +13,7 @@ using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Search.Extensions;
 
 namespace SmartStore.Services.Search
 {
@@ -276,6 +277,12 @@ namespace SmartStore.Services.Search
 				}
 			}
 
+			var deliverTimeIds = GetIdList(filters, "deliveryid");
+			if (deliverTimeIds.Any())
+			{
+				query = query.Where(x => x.DeliveryTimeId != null && deliverTimeIds.Contains(x.DeliveryTimeId.Value));
+			}
+
 			foreach (IAttributeSearchFilter filter in filters)
 			{
 				var rangeFilter = filter as IRangeSearchFilter;
@@ -412,10 +419,14 @@ namespace SmartStore.Services.Search
 						}
 					}
 				}
+				else if (filter.FieldName == "rating")
+				{
+					query = query.Where(x => x.ApprovedTotalReviews != 0 && ((double)x.ApprovedRatingSum / (double)x.ApprovedTotalReviews) >= (double)filter.Term);
+				}
 				else if (filter.FieldName == "available")
 				{
 					query = query.Where(x => !(
-						x.StockQuantity <= 0 && x.BackorderModeId == (int)BackorderMode.NoBackorders && 
+						x.StockQuantity <= 0 && x.BackorderModeId == (int)BackorderMode.NoBackorders &&
 						(x.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock || x.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes)
 					));
 				}
@@ -570,10 +581,11 @@ namespace SmartStore.Services.Search
 			{
 				var descriptor = searchQuery.FacetDescriptors[key];
 				var facets = new List<Facet>();
+				var kind = FacetGroup.GetKindByKey(key);
 
-				if (key == "categoryid" || key == "featuredcategoryid" || key == "notfeaturedcategoryid")
+				if (kind == FacetGroupKind.Category)
 				{
-					#region categories
+					#region Category
 
 					// order by product count
 					var categoryQuery =
@@ -612,9 +624,9 @@ namespace SmartStore.Services.Search
 
 					#endregion
 				}
-				else if (key == "manufacturerid")
+				else if (kind == FacetGroupKind.Brand)
 				{
-					#region manufacturers
+					#region Brand
 
 					// order by product count
 					var manufacturerQuery =
@@ -653,21 +665,9 @@ namespace SmartStore.Services.Search
 
 					#endregion
 				}
-				else if (key == "rating")
+				else if (kind == FacetGroupKind.DeliveryTime)
 				{
-					#region ratings
-
-					var count = 0;
-					for (double rate = 1.0; rate <= 5.0; ++rate)
-					{
-						facets.Add(CreateFacet(descriptor, rate, IndexTypeCode.Double, rate.ToString(), ++count));
-					}
-
-					#endregion
-				}
-				else if (key == "deliveryid")
-				{
-					#region delivery times
+					#region Delivery time
 
 					var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
 
@@ -686,51 +686,24 @@ namespace SmartStore.Services.Search
 
 					#endregion
 				}
-				else if (key == "price")
+				else if (kind == FacetGroupKind.Price)
 				{
-					#region prices
+					#region Price
 
-					// provide 'up to' price suggestions
-					List<double> existingPrices = null;
+					var maxPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Max(x => (double)x.Price);
+					var minPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Min(x => (double)x.Price);
+					minPrice = FacetUtility.MakePriceEven(minPrice);
+					maxPrice = FacetUtility.MakePriceEven(maxPrice);
 
-					try
+					foreach (var priceValue in FacetUtility.GetPrices(minPrice, maxPrice))
 					{
-						var productQuery = ApplySearchTerm(_productRepository.TableUntracked.Where(x => !x.Deleted), searchQuery);
-						existingPrices = productQuery
-							.Select(x => (double)Decimal.Round(x.Price))
-							.Where(x => x != 0.0)
-							.Distinct()
-							.ToList();
-					}
-					catch (Exception exception)
-					{
-						Logger.Error(exception);
-					}
+						var price = (double)priceValue.UpperValue;
+						if (price > maxPrice || (descriptor.MaxChoicesCount > 0 && facets.Count >= descriptor.MaxChoicesCount))
+							break;
 
-					if (existingPrices != null && existingPrices.Any())
-					{
-						var count = 0;
-						var maxPrice = existingPrices.Max();
+						priceValue.IsSelected = descriptor.Values.Any(x => x.IsSelected && x.UpperValue != null && (double)x.UpperValue == price);
 
-						for (double price = GetNextMaxPrice(0.0);
-							price < double.MaxValue;
-							price = GetNextMaxPrice(price))
-						{
-							if ((descriptor.MaxChoicesCount > 0 && count >= descriptor.MaxChoicesCount) || price > maxPrice)
-								break;
-
-							if (!existingPrices.Any(x => x < price))
-								continue;
-
-							var newValue = new FacetValue(null, price, IndexTypeCode.Double, false, true)
-							{
-								IsSelected = descriptor.Values.Any(x => x.IsSelected && x.UpperValue != null && (double)x.UpperValue == price),
-								Label = price.ToString(),
-								DisplayOrder = ++count
-							};
-
-							facets.Add(new Facet(newValue));
-						}
+						facets.Add(new Facet(priceValue));
 					}
 
 					// remove too granular price ranges
@@ -750,71 +723,50 @@ namespace SmartStore.Services.Search
 						IndexTypeCode.Double,
 						true,
 						true);
+
 					customPriceFacetValue.IsSelected = customPriceFacetValue.Value != null || customPriceFacetValue.UpperValue != null;
 
 					facets.Insert(0, new Facet("custom", customPriceFacetValue));
 
 					#endregion
 				}
+				else if (kind == FacetGroupKind.Rating)
+				{
+					foreach (var rating in FacetUtility.GetRatings())
+					{
+						var newFacet = new Facet(rating);
+						newFacet.Value.IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(rating.Value));
 
-				if (!facets.Any())
-					continue;
+						facets.Add(newFacet);
+					}
+				}
+				else if (kind == FacetGroupKind.Availability || kind == FacetGroupKind.NewArrivals)
+				{
+					var value = descriptor.Values.FirstOrDefault();
+					if (value != null)
+					{					
+						var newValue = new FacetValue(new FacetValue(true), value);
+						newValue.IsSelected = value.IsSelected;
 
-				//facets.Each(x => $"{key} {x.Value.ToString()}".Dump());
+						facets.Add(new Facet(newValue));
+					}
+				}
 
-				result.Add(key, new FacetGroup(
-					key,
-					descriptor.Label,
-					descriptor.IsMultiSelect,
-					descriptor.DisplayOrder,
-					facets.OrderBy(descriptor),
-					FacetTemplateHint.Checkboxes));
+				if (facets.Any(x => x.Published))
+				{
+					//facets.Each(x => $"{key} {x.Value.ToString()}".Dump());
+
+					result.Add(key, new FacetGroup(
+						key,
+						descriptor.Label,
+						descriptor.IsMultiSelect,
+						descriptor.DisplayOrder,
+						facets.OrderBy(descriptor),
+						FacetTemplateHint.Checkboxes));
+				}
 			}
 			
 			return result;
-		}
-
-		protected static double GetNextMaxPrice(double price)
-		{
-			if (price < 10)
-				return price + 5;
-			if (price < 25)
-				return price + 15;
-			if (price < 200)
-				return price + 25;
-			if (price < 500)
-				return price + 50;
-			if (price < 1000)
-				return price + 100;
-			if (price < 2000)
-				return price + 250;
-			if (price < 5000)
-				return price + 500;
-			if (price < 10000)
-				return price + 1000;
-			if (price < 20000)
-				return price + 2500;
-			if (price < 50000)
-				return price + 5000;
-			if (price < 100000)
-				return price + 10000;
-			if (price < 200000)
-				return price + 25000;
-			if (price < 500000)
-				return price + 50000;
-			if (price < 1000000)
-				return price + 100000;
-			if (price < 2000000)
-				return price + 250000;
-			if (price < 5000000)
-				return price + 500000;
-			if (price < 10000000)
-				return price + 1000000;
-			if (price < 20000000)
-				return price + 2500000;
-			if (price < 50000000)
-				return price + 5000000;
-			return double.MaxValue;
 		}
 
 		#endregion

@@ -1,6 +1,5 @@
-﻿@model SpecificationAttributeOptionModel
-
-@using Telerik.Web.Mvc.UI;
+﻿@using Telerik.Web.Mvc.UI;
+@model SpecificationAttributeOptionModel
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
@@ -55,6 +54,15 @@
 </table>
 ))
 <table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.NumberValue)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.NumberValue)
+			@Html.ValidationMessageFor(model => model.NumberValue)
+		</td>
+	</tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.DisplayOrder)
@@ -64,7 +72,6 @@
             @Html.ValidationMessageFor(model => model.DisplayOrder)
         </td>
     </tr>
-@*codehint: sm-add*@
 @if (ViewBag.MultipleEnabled == true)
 {
    <tr>

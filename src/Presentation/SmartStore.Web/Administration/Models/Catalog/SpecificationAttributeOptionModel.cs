@@ -33,6 +33,7 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Multiple")]
 		public bool Multiple { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.NumberValue")]
 		public decimal NumberValue { get; set; }
 	}
 

@@ -59,6 +59,50 @@ namespace SmartStore.Core.Search.Facets
 			});
 		}
 
+		public static FacetGroupKind GetKindByKey(string key)
+		{
+			if (key.StartsWith("attrid"))
+			{
+				return FacetGroupKind.Attribute;
+			}
+			else if (key.StartsWith("variantid"))
+			{
+				return FacetGroupKind.Variant;
+			}
+			else if (key == "categoryid" || key == "notfeaturedcategoryid")
+			{
+				return FacetGroupKind.Category;
+			}
+			else if (key == "manufacturerid")
+			{
+				return FacetGroupKind.Brand;
+			}
+			else if (key == "price")
+			{
+				return FacetGroupKind.Price;
+			}
+			else if (key == "rating")
+			{
+				return FacetGroupKind.Rating;
+			}
+			else if (key == "deliveryid")
+			{
+				return FacetGroupKind.DeliveryTime;
+			}
+			else if (key == "available")
+			{
+				return FacetGroupKind.Availability;
+			}
+			else if (key == "createdon")
+			{
+				return FacetGroupKind.NewArrivals;
+			}
+			else
+			{
+				return FacetGroupKind.Unknown;
+			}
+		}
+
 		public string Key
 		{
 			get;
@@ -104,46 +148,7 @@ namespace SmartStore.Core.Search.Facets
 			{
 				if (_kind == null)
 				{
-					if (Key.StartsWith("attrid"))
-					{
-						_kind = FacetGroupKind.Attribute;
-					}
-					else if (Key.StartsWith("variantid"))
-					{
-						_kind = FacetGroupKind.Variant;
-					}
-					else if (Key == "categoryid" || Key == "notfeaturedcategoryid")
-					{
-						_kind = FacetGroupKind.Category;
-					}
-					else if (Key == "manufacturerid")
-					{
-						_kind = FacetGroupKind.Brand;
-					}
-					else if (Key == "price")
-					{
-						_kind = FacetGroupKind.Price;
-					}
-					else if (Key == "rating")
-					{
-						_kind = FacetGroupKind.Rating;
-					}
-					else if (Key == "deliveryid")
-					{
-						_kind = FacetGroupKind.DeliveryTime;
-					}
-					else if (Key == "available")
-					{
-						_kind = FacetGroupKind.Availability;
-					}
-					else if (Key == "createdon")
-					{
-						_kind = FacetGroupKind.NewArrivals;
-					}
-					else
-					{
-						_kind = FacetGroupKind.Unknown;
-					}
+					_kind = GetKindByKey(Key);
 				}
 
 				return _kind.Value;

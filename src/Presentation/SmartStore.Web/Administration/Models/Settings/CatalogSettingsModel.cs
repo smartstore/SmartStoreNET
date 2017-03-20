@@ -2,10 +2,13 @@
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
+using FluentValidation.Attributes;
+using SmartStore.Admin.Validators.Settings;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class CatalogSettingsModel
+    [Validator(typeof(CatalogSettingsValidator))]
+    public class CatalogSettingsModel
     {
         public CatalogSettingsModel()
         {

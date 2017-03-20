@@ -636,8 +636,13 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			// Load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+            if (!ModelState.IsValid)
+                return Catalog();
+
+            ModelState.Clear();
+
+            // Load settings for a chosen store scope
+            var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			var catalogSettings = _services.Settings.LoadSetting<CatalogSettings>(storeScope);
 			catalogSettings = model.ToEntity(catalogSettings);
 

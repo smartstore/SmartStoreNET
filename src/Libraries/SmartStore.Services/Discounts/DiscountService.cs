@@ -227,23 +227,23 @@ namespace SmartStore.Services.Discounts
 
         public virtual bool IsDiscountValid(Discount discount, Customer customer)
         {
-            if (discount == null)
-                throw new ArgumentNullException("discount");
+			Guard.NotNull(discount, nameof(discount));
 
             var couponCodeToValidate = "";
             if (customer != null)
+			{
 				couponCodeToValidate = customer.GetAttribute<string>(SystemCustomerAttributeNames.DiscountCouponCode, _genericAttributeService);
+			}			
 
             return IsDiscountValid(discount, customer, couponCodeToValidate);
         }
 
         public virtual bool IsDiscountValid(Discount discount, Customer customer, string couponCodeToValidate)
         {
-            if (discount == null)
-                throw new ArgumentNullException("discount");
+			Guard.NotNull(discount, nameof(discount));
 
-            //check coupon code
-            if (discount.RequiresCouponCode)
+			// Check coupon code
+			if (discount.RequiresCouponCode)
             {
                 if (String.IsNullOrEmpty(discount.CouponCode))
                     return false;
@@ -297,7 +297,7 @@ namespace SmartStore.Services.Discounts
 					Store = store
                 };
 
-				// TODO: cache result... CheckRequirement is very often called
+				// TODO: cache result... CheckRequirement is called very often
 				if (!requirementRule.Value.CheckRequirement(request))
                     return false;
             }

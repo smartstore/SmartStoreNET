@@ -190,7 +190,7 @@ namespace SmartStore.Web.Controllers
 						batchContext.AppliedDiscounts.LoadAll();
 						batchContext.TierPrices.LoadAll();
 					}
-
+					
 					if (settings.MapAttributes || settings.MapColorAttributes)
 					{
 						batchContext.Attributes.LoadAll();
@@ -516,6 +516,11 @@ namespace SmartStore.Web.Controllers
 						.ThenBy(x => x.DisplayOrder);
 
 					ctx.GroupedProducts = allAssociatedProducts.ToMultimap(x => x.ParentGroupedProductId, x => x);
+
+					if (ctx.GroupedProducts.Any())
+					{
+						ctx.BatchContext.AppliedDiscounts.Collect(allAssociatedProducts.Select(x => x.Id));
+					}
 				}
 
 				var associatedProducts = ctx.GroupedProducts[product.Id];

@@ -393,10 +393,6 @@ namespace SmartStore.Services.Search
 				{
 					query = query.Where(p => p.ShowOnHomePage == (bool)filter.Term);
 				}
-				//else if (filter.FieldName == "parentid")
-				//{
-				//	query = query.Where(x => x.ParentGroupedProductId == (int)filter.Term);
-				//}
 				else if (filter.FieldName == "typeid")
 				{
 					query = query.Where(x => x.ProductTypeId == (int)filter.Term);

@@ -645,8 +645,8 @@ namespace SmartStore.Services.Catalog
 		public virtual Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
-
-			var query = _productRepository.TableUntracked
+						
+			var query = _productRepository.Table // .TableUntracked does not seem to eager load
 				.Expand(x => x.AppliedDiscounts.Select(y => y.DiscountRequirements))
 				.Where(x => productIds.Contains(x.Id))
 				.Select(x => new
@@ -659,8 +659,7 @@ namespace SmartStore.Services.Catalog
 
 			foreach (var item in query.ToList())
 			{
-				foreach (var discount in item.Discounts)
-					map.Add(item.ProductId, discount);
+				map.AddRange(item.ProductId, item.Discounts);
 			}
 
 			return map;

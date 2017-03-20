@@ -76,13 +76,21 @@ namespace SmartStore.Services.Catalog
 			// check discounts assigned to the product
 			if (product.HasDiscountsApplied)
             {
-                //we use this property ("HasDiscountsApplied") for performance optimziation to avoid unnecessary database calls
+                // We use this property ("HasDiscountsApplied") for performance optimziation to avoid unnecessary database calls
 				IEnumerable<Discount> appliedDiscounts = null;
 				
 				if (context == null)
+				{
 					appliedDiscounts = product.AppliedDiscounts;
+				}	
 				else
+				{
+					if (!context.AppliedDiscounts.FullyLoaded)
+					{
+						context.AppliedDiscounts.LoadAll();
+					}
 					appliedDiscounts = context.AppliedDiscounts.GetOrLoad(product.Id);
+				}		
 
 				if (appliedDiscounts != null)
 				{

@@ -124,8 +124,6 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery HasParentGroupedProduct(params int[] parentProductIds)
 		{
-			//return WithFilter(SearchFilter.ByField("parentid", ids).Mandatory().ExactMatch().NotAnalyzed());
-
 			if (parentProductIds.Length == 0)
 			{
 				return this;

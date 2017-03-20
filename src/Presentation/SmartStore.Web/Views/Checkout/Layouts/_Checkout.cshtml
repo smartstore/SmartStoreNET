@@ -3,7 +3,7 @@
     Html.AddBodyCssClass("checkout-page");
 }
 
-@using (Html.BeginZoneContent("teaser", injectMode: ZoneInjectMode.Prepend))
+@using (Html.BeginZoneContent("teaser", injectMode: ZoneInjectMode.Append))
 {
     Html.RenderZone("orderProgress");
 }

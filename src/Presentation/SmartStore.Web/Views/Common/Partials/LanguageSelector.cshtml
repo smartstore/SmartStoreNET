@@ -12,7 +12,7 @@
     <div class="dropdown language-selector">
         <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
 			<span>@activeLang.SeoCode.ToUpper()</span>
-            <i class="fa fa-caret-down"></i>
+            <i class="fa fa-angle-down"></i>
         </a>
         
         <div class="dropdown-menu" aria-labelledby="dLabel">
@@ -20,7 +20,7 @@
             {
                 var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null);
                 
-                <a href="@href" title="@lang.NativeName" data-toggle="tooltip" rel="nofollow" class="dropdown-item" 
+                <a href="@href" title="@lang.NativeName" rel="nofollow" class="dropdown-item" 
                    data-selected="@(lang.Equals(activeLang) ? "true" : "false")" data-abbreviation="@lang.Name">
                     @lang.Name
                     <span class="abbreviation">(@lang.SeoCode.ToUpper())</span>

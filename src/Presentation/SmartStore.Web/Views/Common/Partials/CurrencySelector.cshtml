@@ -13,10 +13,10 @@
     <div class="dropdown currency-selector">
         <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
 			<span>@activeCurr.ISOCode (@activeCurr.Symbol)</span>
-            <i class="fa fa-caret-down"></i>
+            <i class="fa fa-angle-down"></i>
         </a>
 
-        <div class="dropdown-menu" aria-labelledby="dLabel">
+        <div class="dropdown-menu">
             @foreach (var curr in Model.AvailableCurrencies)
             {
                 var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = curr.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);

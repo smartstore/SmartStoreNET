@@ -746,8 +746,11 @@ namespace SmartStore.Services.Search
 				{
 					var value = descriptor.Values.FirstOrDefault();
 					if (value != null)
-					{					
-						var newValue = new FacetValue(new FacetValue(true), value);
+					{
+						var newValue = value.Clone();
+						newValue.Value = true;
+						newValue.TypeCode = IndexTypeCode.Boolean;
+						newValue.IsRange = false;
 						newValue.IsSelected = value.IsSelected;
 
 						facets.Add(new Facet(newValue));

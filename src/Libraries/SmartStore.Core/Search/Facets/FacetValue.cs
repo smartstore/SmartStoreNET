@@ -4,30 +4,9 @@ using SmartStore.Utilities;
 namespace SmartStore.Core.Search.Facets
 {
 	[Serializable]
-	public class FacetValue : IEquatable<FacetValue>
+	public class FacetValue : IEquatable<FacetValue>, ICloneable<FacetValue>
 	{
-		public FacetValue(bool value)
-			: this(value, IndexTypeCode.Boolean)
-		{
-		}
-
-		public FacetValue(int value)
-			: this(value, IndexTypeCode.Int32)
-		{
-		}
-
-		public FacetValue(double value)
-			: this(value, IndexTypeCode.Double)
-		{
-		}
-
-		public FacetValue(DateTime value)
-			: this(value, IndexTypeCode.DateTime)
-		{
-		}
-
-		public FacetValue(string value)
-			: this(value, IndexTypeCode.String)
+		public FacetValue()
 		{
 		}
 
@@ -48,66 +27,40 @@ namespace SmartStore.Core.Search.Facets
 			IsRange = true;
 		}
 
-		public FacetValue(FacetValue value)
-			: this(value, value)
-		{
-		}
-
-		public FacetValue(FacetValue value, FacetValue metadata)
-		{
-			Guard.NotNull(value, nameof(value));
-			Guard.NotNull(metadata, nameof(metadata));
-
-			Value = value.Value;
-			UpperValue = value.UpperValue;
-			TypeCode = value.TypeCode;
-			IncludesLower = value.IncludesLower;
-			IncludesUpper = value.IncludesUpper;
-			IsRange = value.IsRange;
-			IsSelected = value.IsSelected;
-
-			Label = metadata.Label;
-			ParentId = metadata.ParentId;
-			DisplayOrder = metadata.DisplayOrder;
-			Sorting = metadata.Sorting;
-			PictureUrl = metadata.PictureUrl;
-			Color = metadata.Color;
-		}
-
 		public object Value
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public object UpperValue
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public IndexTypeCode TypeCode
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public bool IncludesLower
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public bool IncludesUpper
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public bool IsRange 
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public bool IsSelected
@@ -220,6 +173,16 @@ namespace SmartStore.Core.Search.Facets
 			}
 
 			return result;
+		}
+
+		public FacetValue Clone()
+		{
+			return (FacetValue)this.MemberwiseClone();
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.MemberwiseClone();
 		}
 	}
 }

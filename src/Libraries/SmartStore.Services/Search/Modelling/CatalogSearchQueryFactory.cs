@@ -361,10 +361,15 @@ namespace SmartStore.Services.Search.Modelling
 
 			AddFacet(query, FacetGroupKind.Category, true, FacetSorting.HitsDesc, descriptor =>
 			{
-				if (ids != null && ids.Any())
+				if (ids != null)
 				{
-					ids.Select(x => new FacetValue(x) { IsSelected = true })
-						.Each(x => descriptor.AddValue(x));
+					foreach (var id in ids)
+					{
+						descriptor.AddValue(new FacetValue(id, IndexTypeCode.Int32)
+						{
+							IsSelected = true
+						});
+					}
 				}
 			});
 		}
@@ -406,10 +411,15 @@ namespace SmartStore.Services.Search.Modelling
 
 			AddFacet(query, FacetGroupKind.Brand, true, FacetSorting.ValueAsc, descriptor =>
 			{
-				if (ids != null && ids.Any())
+				if (ids != null)
 				{
-					ids.Select(x => new FacetValue(x) { IsSelected = true })
-						.Each(x => descriptor.AddValue(x));
+					foreach (var id in ids)
+					{
+						descriptor.AddValue(new FacetValue(id, IndexTypeCode.Int32)
+						{
+							IsSelected = true
+						});
+					}
 				}
 			});
 		}
@@ -503,7 +513,10 @@ namespace SmartStore.Services.Search.Modelling
 
 				if (fromRate.HasValue)
 				{
-					descriptor.AddValue(new FacetValue(fromRate.Value) { IsSelected = true });
+					descriptor.AddValue(new FacetValue(fromRate.Value, IndexTypeCode.Double)
+					{
+						IsSelected = true
+					});
 				}
 			});
 		}
@@ -523,7 +536,7 @@ namespace SmartStore.Services.Search.Modelling
 				descriptor.MinHitCount = 0;
 
 				var newValue = includeNotAvailable
-					? new FacetValue(true)
+					? new FacetValue(true, IndexTypeCode.Boolean)
 					: new FacetValue(null, IndexTypeCode.Empty);
 
 				newValue.IsSelected = includeNotAvailable;
@@ -573,10 +586,15 @@ namespace SmartStore.Services.Search.Modelling
 
 			AddFacet(query, FacetGroupKind.DeliveryTime, true, FacetSorting.DisplayOrder, descriptor =>
 			{
-				if (ids != null && ids.Any())
+				if (ids != null)
 				{
-					ids.Select(x => new FacetValue(x) { IsSelected = true })
-						.Each(x => descriptor.AddValue(x));
+					foreach (var id in ids)
+					{
+						descriptor.AddValue(new FacetValue(id, IndexTypeCode.Int32)
+						{
+							IsSelected = true
+						});
+					}
 				}
 			});
 		}

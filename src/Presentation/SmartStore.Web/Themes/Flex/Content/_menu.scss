@@ -66,14 +66,7 @@ $ocm-horizontal-padding:                1.6rem;
             &:active,
             &:focus { 
                 background-color: rgba(#000, 0.05);
-            }   
-               
-            img {
-                width: 100px;
-                max-width: 100px;
-                max-height: 100px;
-                padding-right: 0.75rem;
-            }
+            } 
         }
         
         &.has-children:after {
@@ -81,27 +74,24 @@ $ocm-horizontal-padding:                1.6rem;
             right: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            @include fontastic('\e93c');
+            @include fontawesome('\f105');
+            color: #646464;
         }
+
         &.has-children.animated:after {
             animation: fa-spin .6s infinite linear;
             margin-top: -9px;
-            @include fontastic('\e8d3');   
+            @include fontastic('\e8d3');
         }
     }
-    
-    .show-all-manufacturers {
-        padding: 1rem;
-        border-bottom: 0;
-    }
-
+   
     .ocm-nav .navigate-back {
         padding-left: 0;
 
         .fa {
             font-size: 1.375rem;
             vertical-align: text-bottom;
-            padding-right: .125rem;
+            padding-right: .425rem;
         }
     }
 
@@ -120,6 +110,32 @@ $ocm-horizontal-padding:                1.6rem;
         padding: 0 $ocm-horizontal-padding;
         .category-name {
             padding-top: 1rem;
+        }
+    }
+
+    // manufacturer tab
+    .manufacturer-container {
+        
+        .ocm-item {
+            padding: 0 1.25rem;
+            
+            .col-img {
+                width: 100px;
+                min-width: 100px;
+                max-width: 100px;
+
+                .ocm-link {
+                    padding-top: 100%;
+                }
+            }
+        }
+
+        .ocm-nav {
+            margin-bottom: 0;
+        }
+        .show-all-manufacturers {
+            padding: 1rem;
+            border-bottom: 0;
         }
     }
 }
@@ -199,7 +215,7 @@ $ocm-horizontal-padding:                1.6rem;
     
     .dropdown.open > .menubar-link {
         
-        font-weight: bold;
+        font-weight: 600;
     
         .fa-caret-down:before  { 
             content: "\f107";
@@ -217,5 +233,3 @@ $ocm-horizontal-padding:                1.6rem;
         }
     }
 }
-
-

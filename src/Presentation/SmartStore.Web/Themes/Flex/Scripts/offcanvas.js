@@ -101,8 +101,6 @@
     	}
 
     	function handleMove(e, g) {
-    		e.stopPropagation();
-
     		// when scrolling started, do NOT attempt to pan left/right.
     		if (scrolling || (scrolling = isScrolling(e, g)))
     			return;
@@ -173,6 +171,10 @@
 
         this.state = 'slide-in';
 
+        //var scrollTop = body.scrollTop();
+        //body.data('initial-scroll-top', scrollTop);
+        //$('.page-main').css('top', scrollTop * -1);
+
         if (this.options.blocker) {
             body.addClass('canvas-blocking');
         }
@@ -225,6 +227,9 @@
             body.removeClass('canvas-sliding-out');
             self.state = null;
             self.el.trigger('hidden.sm.offcanvas');
+
+            //body.scrollTop(body.data('initial-scroll-top'));
+            //$('.page-main').css('top', '');
         });
     }
 
@@ -280,5 +285,4 @@
     $('.canvas-blocker').on('touchmove', function (e) {
     	e.preventDefault();
     });
-
 })(jQuery, window, document);

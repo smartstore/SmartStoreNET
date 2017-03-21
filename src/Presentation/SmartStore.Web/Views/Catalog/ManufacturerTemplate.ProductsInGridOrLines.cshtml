@@ -73,7 +73,7 @@
 		@{ Html.RenderWidget("categorydetails_before_product_list"); }
 
 		<div class="product-list-container">
-			@if (Model.Products != null && Model.Products.Items.Count > 0)
+			@if (Model.Products != null)
             {
                 Html.RenderPartial("Product.List", Model.Products);
             }

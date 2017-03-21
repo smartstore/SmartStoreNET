@@ -64,7 +64,7 @@
 	}
 }
 
-@if (hasActions)
+@if (Model.PagedList.TotalCount > 0 && hasActions)
 {
 	<div class="artlist-actions artlist-actions--top d-flex flex-wrap">
 		@if (Model.AllowSorting || Model.AllowFiltering)
@@ -95,12 +95,15 @@
 
 @{ Html.RenderAction("ActiveFilters", "Search", new { area = "" }); }
 
-<div id="@id" class='@String.Join(" ", listCssClasses)'>
-	@foreach (var product in Model.Items)
-	{
-		Html.RenderPartial("Product.List.Item", product);
-	}
-</div>
+@if (Model.PagedList.TotalCount > 0)
+{
+	<div id="@id" class='@String.Join(" ", listCssClasses)'>
+		@foreach (var product in Model.Items)
+		{
+			Html.RenderPartial("Product.List.Item", product);
+		}
+	</div>
+}
 
 @if (Model.PagedList.TotalPages > 1 && pagerHtml.HasValue())
 {	

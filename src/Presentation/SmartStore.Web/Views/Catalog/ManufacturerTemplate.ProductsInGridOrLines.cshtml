@@ -5,8 +5,6 @@
 
 @model ManufacturerModel
 @{
-	Layout = "_Layout";
-
 	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
 	Html.AddMetaDescriptionParts(Model.MetaDescription);
 	Html.AddMetaKeywordParts(Model.MetaKeywords);
@@ -17,6 +15,16 @@
 		var manufacturerUrl = Url.RouteUrl("Manufacturer", new { SeName = Model.SeName }, this.Request.Url.Scheme);
 		Html.AddCanonicalUrlParts(manufacturerUrl);
 	}
+
+	int firstItemIndex = 0;
+	int lastItemIndex = 0;
+	if (Model.SearchResult.TotalHitsCount > 0)
+	{
+		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
+		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
+	}
+
+	Layout = "_Layout";
 }
 
 @if (Model.SearchResult.Facets.Count > 0)
@@ -29,6 +37,10 @@
 <div class="page manufacturer-page">
     <div class="page-title">
         <h1 class="h3">@Model.Name</h1>
+		@if (Model.SearchResult.TotalHitsCount > 0)
+		{
+			<h5 class="search-hitcount">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0")), Model.SearchResult.TotalHitsCount.ToString("N0"))</h5>
+		}
     </div>
 
     <div class="page-body">

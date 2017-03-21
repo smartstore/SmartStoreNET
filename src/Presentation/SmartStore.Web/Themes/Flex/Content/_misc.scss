@@ -59,10 +59,15 @@ h1, h2, h3, h4, h5, h6,
 .breadcrumb {
     padding: 0;
     background: none;
+    font-size: $font-size-sm;
 }
 
 .breadcrumb > li + li::before {
     content: '|';
+}
+
+.breadcrumb-item > a {
+    color: $body-color !important;
 }
 
 

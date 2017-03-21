@@ -2,7 +2,7 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
 $offcanvas-width:                   320px;
-$offcanvas-width-lg:                570px;
+$offcanvas-width-lg:                480px;
 $offcanvas-easing:                  ease-out;
 $offcanvas-duration:                0.3s;
 $offcanvas-offset:                  0.3;
@@ -72,6 +72,8 @@ body.canvas-noscroll {
     transition: opacity $offcanvas-duration $offcanvas-easing,
                 transform $offcanvas-duration $offcanvas-easing,
                 z-index 0s linear $offcanvas-duration;
+
+    overflow: hidden;
 }
 
 body.canvas-blocking .canvas-blocker {

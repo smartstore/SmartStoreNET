@@ -41,14 +41,14 @@
         });
 
         if (this.options.autohide) {
-            $(document).on('click', $.proxy(this.autohide, this));
+            $('body').on('tapend', $.proxy(this.autohide, this));
         }  
 
         if (this.options.toggle) {
             this.toggle();
         }
 
-		// set up events to properly handle (touch) gestures
+		// Set up events to properly handle (touch) gestures
         this._makeTouchy();
     }
 
@@ -101,7 +101,9 @@
     	}
 
     	function handleMove(e, g) {
-			// when scrolling started, do NOT attempt to pan left/right.
+    		e.stopPropagation();
+
+    		// when scrolling started, do NOT attempt to pan left/right.
     		if (scrolling || (scrolling = isScrolling(e, g)))
     			return;
 
@@ -183,7 +185,8 @@
         	body.addClass('canvas-overlay');
         }
 
-        body.one("click", ".offcanvas-closer", function (e) {
+        body.one("tapend", ".offcanvas-closer", function (e) {
+        	e.preventDefault();
             self.hide();
         });
 
@@ -273,5 +276,9 @@
 
         return false;
     })
+
+    $('.canvas-blocker').on('touchmove', function (e) {
+    	e.preventDefault();
+    });
 
 })(jQuery, window, document);

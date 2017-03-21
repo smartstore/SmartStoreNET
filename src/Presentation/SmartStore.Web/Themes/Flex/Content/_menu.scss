@@ -76,6 +76,9 @@ $ocm-horizontal-padding:                1.6rem;
             transform: translateY(-50%);
             @include fontawesome('\f105');
             color: #646464;
+            font-size: 20px;
+            width: 20px;
+            text-align: center;
         }
 
         &.has-children.animated:after {
@@ -232,4 +235,9 @@ $ocm-horizontal-padding:                1.6rem;
             padding-left: 0;
         }
     }
+}
+
+// very weird hack to prevent loading icon from wobbling :-/ font-size is 20px
+.touchevents .category-container .ocm-item.has-children.animated:after {
+    max-height: 18px;
 }

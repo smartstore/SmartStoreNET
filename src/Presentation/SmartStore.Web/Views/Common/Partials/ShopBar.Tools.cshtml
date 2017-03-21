@@ -33,6 +33,26 @@
 		</a>
 	</div>
 
+	@if (Model.CompareProductsEnabled)
+	{
+		<div class="shopbar-tool" id="shopbar-compare" data-target="#compare-tab">
+			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
+			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+				<span class="shopbar-button-icon">
+					<i class="@(useFa ? "fa fa-retweet" : "icm icm-repeat")"></i>
+					<span class='label label-pill label-cart-amount label-@labelStyle @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
+				</span>
+				<span class="shopbar-button-label">
+					<span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
+					<span style="font-weight: bold; color: #333">@T("Common.Shopbar.CompareProductsPartTwo")</span>
+				</span>
+				<span class="shopbar-button-label-sm">
+					@T("Common.Shopbar.Compare")
+				</span>
+			</a>
+		</div>
+	}
+
 	@if (Model.WishlistEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-wishlist" data-target="#wishlist-tab">
@@ -48,26 +68,6 @@
 				</span>
 				<span class="shopbar-button-label-sm">
 					@T("Wishlist")
-				</span>
-			</a>
-		</div>
-	}
-
-	@if (Model.CompareProductsEnabled)
-	{
-		<div class="shopbar-tool" id="shopbar-compare" data-target="#compare-tab">
-			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
-				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
-				<span class="shopbar-button-icon">
-					<i class="@(useFa ? "fa fa-retweet" : "icm icm-repeat")"></i>
-					<span class='label label-pill label-cart-amount label-@labelStyle @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
-				</span>
-				<span class="shopbar-button-label">
-					<span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
-					<span style="font-weight: bold; color: #333">@T("Common.Shopbar.CompareProductsPartTwo")</span>
-				</span>
-				<span class="shopbar-button-label-sm">
-					@T("Common.Shopbar.Compare")
 				</span>
 			</a>
 		</div>

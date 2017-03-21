@@ -37,7 +37,7 @@ $ocm-horizontal-padding:                1.6rem;
     .offcanvas-menu-footer {
         padding: 1rem;
         border-top: 1px solid  $ocm-border-color;
-
+        
         .mf-dropdown {
             display: block;
             
@@ -171,8 +171,6 @@ $ocm-horizontal-padding:                1.6rem;
     }
 }
 
-
-
 // service menu 
 #ocm-service {
     .menubar-group {
@@ -209,7 +207,7 @@ $ocm-horizontal-padding:                1.6rem;
             position: absolute;
             font-size: 1.2rem;
             line-height: 1;
-            content: "\f106";
+            content: "\f107";
             right: 1rem;
             top: 50%;
             margin-top: -9px;
@@ -221,7 +219,7 @@ $ocm-horizontal-padding:                1.6rem;
         font-weight: 600;
     
         .fa-caret-down:before  { 
-            content: "\f107";
+            content: "\f106";
         }
     }
     .menubar-link span {

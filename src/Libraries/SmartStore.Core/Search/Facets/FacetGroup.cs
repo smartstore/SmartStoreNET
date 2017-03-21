@@ -29,8 +29,7 @@ namespace SmartStore.Core.Search.Facets
 			string label,
 			bool isMultiSelect,
 			int displayOrder,
-			IEnumerable<Facet> facets,
-			FacetTemplateHint templateHint)
+			IEnumerable<Facet> facets)
 		{
 			Guard.NotNull(key, nameof(key));
 			Guard.NotNull(facets, nameof(facets));
@@ -39,7 +38,6 @@ namespace SmartStore.Core.Search.Facets
 			Label = label;
 			IsMultiSelect = isMultiSelect;
 			DisplayOrder = displayOrder;
-			TemplateHint = templateHint;
 
 			_facets = new Dictionary<string, Facet>(StringComparer.OrdinalIgnoreCase);
 
@@ -158,7 +156,7 @@ namespace SmartStore.Core.Search.Facets
 		public FacetTemplateHint TemplateHint
 		{
 			get;
-			private set;
+			set;
 		}
 	}
 }

@@ -26,7 +26,14 @@
 				continue;
 			}
 
-			var templateHtml = Html.Action(templateRoute.Action, templateRoute.Controller, templateRoute.RouteValues).ToHtmlString();
+			string templateHtml = null;
+			try
+			{
+				templateHtml = Html.Action(templateRoute.Action, templateRoute.Controller, templateRoute.RouteValues).ToHtmlString();
+			}
+			catch
+			{
+			}
 			if (!templateHtml.HasValue())
 			{
 				continue;

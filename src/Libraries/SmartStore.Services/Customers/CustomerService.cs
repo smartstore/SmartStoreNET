@@ -274,8 +274,8 @@ namespace SmartStore.Services.Customers
 		private IQueryable<Customer> IncludeShoppingCart(IQueryable<Customer> query)
 		{
 			return query
-				.Expand(x => x.ShoppingCartItems.Select(y => y.Product))
-				.Expand(x => x.ShoppingCartItems.Select(y => y.BundleItem));
+				.Expand(x => x.ShoppingCartItems.Select(y => y.BundleItem))
+				.Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.DiscountRequirements)));
 		}
 
         public virtual IList<Customer> GetCustomersByIds(int[] customerIds)
@@ -348,7 +348,7 @@ namespace SmartStore.Services.Customers
                 return null;
 
             var query = from c in IncludeShoppingCart(_customerRepository.Table)
-                        orderby c.Id
+						orderby c.Id
                         where c.Username == username
                         select c;
 

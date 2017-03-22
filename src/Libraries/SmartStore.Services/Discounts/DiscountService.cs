@@ -274,8 +274,8 @@ namespace SmartStore.Services.Discounts
 			// better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
 			if (discount.DiscountType == DiscountType.AssignedToOrderTotal || discount.DiscountType == DiscountType.AssignedToOrderSubTotal)
 			{
-				var cart = customer.ShoppingCartItems
-					.Filter(ShoppingCartType.ShoppingCart, store.Id)
+				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id)
+					.Select(x => x.Item)
 					.ToList();
 
 				if (cart.Any(x => x.Product.IsGiftCard))

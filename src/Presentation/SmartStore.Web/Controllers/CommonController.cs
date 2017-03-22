@@ -479,7 +479,6 @@ namespace SmartStore.Web.Controllers
             }
 
 			var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
-			decimal subtotal = 0; _shoppingCartService.Value.GetCurrentCartSubTotal(cart);
             
             var model = new ShopBarModel
             {
@@ -488,7 +487,6 @@ namespace SmartStore.Web.Controllers
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
 				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
-                ShoppingCartAmount = _priceFormatter.FormatPrice(subtotal, true, false),
 				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,

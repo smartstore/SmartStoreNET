@@ -733,6 +733,9 @@ namespace SmartStore.Data.Migrations
 				"Legt einen numerischen Wert fest, um eine Bereichsfilterung zu ermöglichen (z.B. hellrot bis dunkelrot). Für das Attribut muss \"Numerischer Bereich\" als Suchfilterdarstellung festgelegt sein. " + megaSearchPlusHintDe);
 
 			builder.AddOrUpdate("Account.Administration", "Admin", "Admin");
+
+			builder.AddOrUpdate("Common.Shopbar.BasketPartOne", "Shopping", "Waren");
+			builder.AddOrUpdate("Common.Shopbar.BasketPartTwo", "Basket", "Korb");
 		}
 	}
 }

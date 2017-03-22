@@ -280,12 +280,8 @@
     .shopbar-button-label {
         font-size: $font-size-xs;
         line-height: 1.2;
-        color: $body-color;
-        color: rgba($body-color, 0.5);
-        color: #999;
-        color: #b0bec5;
-        color: #90a4ae;
         vertical-align: top;
-        //display: none;
+
+        span { color: $text-muted; }
     }
 }

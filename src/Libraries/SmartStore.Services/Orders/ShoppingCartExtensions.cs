@@ -155,12 +155,12 @@ namespace SmartStore.Services.Orders
 			return enumerable;
 		}
 
-		public static IList<OrganizedShoppingCartItem> Organize(this IList<ShoppingCartItem> cart)
+		public static List<OrganizedShoppingCartItem> Organize(this IEnumerable<ShoppingCartItem> cart)
 		{
 			var result = new List<OrganizedShoppingCartItem>();
 			var productAttributeParser = EngineContext.Current.Resolve<IProductAttributeParser>();
 
-			if (cart == null || cart.Count <= 0)
+			if (cart == null || !cart.Any())
 				return result;
 
 			foreach (var parent in cart.Where(x => x.ParentItemId == null))

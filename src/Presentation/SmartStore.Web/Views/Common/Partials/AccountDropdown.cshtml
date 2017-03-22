@@ -66,7 +66,7 @@
         @if (Model.ShoppingCartEnabled)
         {
             <a id="topcartlink" class="dropdown-item" href="@Url.RouteUrl("ShoppingCart")">
-                <i class="fa fa-fw fa-shopping-cart"></i>
+                <i class="fa fa-fw fa-shopping-bag"></i>
 				<span>@T("ShoppingCart")</span> <span class="cart-qty label label-pill @(Model.ShoppingCartItems > 0 ? "label-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
 			</a>
         }

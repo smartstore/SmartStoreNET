@@ -1144,6 +1144,7 @@ namespace SmartStore.Web.Controllers
 					var ids = node.Flatten(false).Select(x => x.EntityId).ToList();
 					return ids;
 				}
+
 				return new List<int>();
 			});
 		}

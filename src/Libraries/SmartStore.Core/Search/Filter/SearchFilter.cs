@@ -39,6 +39,12 @@ namespace SmartStore.Core.Search
 			protected set;
 		}
 
+		public int ParentId
+		{
+			get;
+			protected set;
+		}
+
 		#region Fluent builder
 
 		/// <summary>
@@ -74,6 +80,16 @@ namespace SmartStore.Core.Search
 		public SearchFilter NotAnalyzed()
 		{
 			IsNotAnalyzed = true;
+			return this;
+		}
+
+		/// <summary>
+		/// Applies a parent identifier.
+		/// </summary>
+		/// <param name="parentId">Parent identifier</param>
+		public SearchFilter HasParent(int parentId)
+		{
+			ParentId = parentId;
 			return this;
 		}
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using SmartStore.Collections;
@@ -133,6 +134,12 @@ namespace SmartStore.Services.Search.Extensions
 			return _url + qs.ToString(false);
 		}
 
+		public string GetQueryName(Facet facet)
+		{
+			var parts = GetQueryParts(facet);
+			return parts.GetKey(0);
+		}
+
 		protected virtual NameValueCollection GetQueryParts(Facet facet)
 		{
 			string name = null;
@@ -147,10 +154,18 @@ namespace SmartStore.Services.Search.Extensions
 			switch (group.Kind)
 			{
 				case FacetGroupKind.Attribute:
-					// TODO: (mc) > (mg) Handle range type attributes also!
-					entityId = val.Value.Convert<int>();
+					if (facet.Value.TypeCode == IndexTypeCode.Double)
+					{
+						value = "{0}~{1}".FormatInvariant(
+							val.Value != null ? ((double)val.Value).ToString(CultureInfo.InvariantCulture) : "",
+							val.UpperValue != null ? ((double)val.UpperValue).ToString(CultureInfo.InvariantCulture) : "");
+					}
+					else
+					{
+						entityId = val.Value.Convert<int>();
+						value = _mapper.GetAttributeOptionAliasById(entityId, _languageId) ?? "opt" + entityId;
+					}
 					name = _mapper.GetAttributeAliasById(val.ParentId, _languageId) ?? "attr" + val.ParentId;
-					value = _mapper.GetAttributeOptionAliasById(entityId, _languageId) ?? "opt" + entityId;
 					result.Add(name, value);
 					break;
 				case FacetGroupKind.Variant:

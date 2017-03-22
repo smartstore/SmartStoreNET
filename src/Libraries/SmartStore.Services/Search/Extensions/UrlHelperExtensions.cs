@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Search.Facets;
 
@@ -23,6 +22,12 @@ namespace SmartStore.Services.Search.Extensions
 		{
 			var facetUrlHelper = EngineContext.Current.Resolve<FacetUrlHelper>();
 			return facetUrlHelper.Remove(facets);
+		}
+
+		public static string GetFacetQueryName(this UrlHelper urlHelper, Facet facet)
+		{
+			var facetUrlHelper = EngineContext.Current.Resolve<FacetUrlHelper>();
+			return facetUrlHelper.GetQueryName(facet);
 		}
 	}
 }

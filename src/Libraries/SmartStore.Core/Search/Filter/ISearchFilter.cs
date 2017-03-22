@@ -21,6 +21,7 @@ namespace SmartStore.Core.Search
 		object Term { get; }
 		bool IsExactMatch { get; }
 		bool IsNotAnalyzed { get; }
+		int ParentId { get; }
 	}
 
 	public interface IRangeSearchFilter : IAttributeSearchFilter

@@ -41,7 +41,7 @@
         });
 
         if (this.options.autohide) {
-            $('body').on('tapend', $.proxy(this.autohide, this));
+            $('body, .canvas-blocker').on('tap', $.proxy(this.autohide, this));
         }  
 
         if (this.options.toggle) {
@@ -105,7 +105,6 @@
     			return;
 
     		var delta = getDelta(g);
-    		console.log(delta);
     		panning = !scrolling && delta != 0;
 
     		if (panning) {

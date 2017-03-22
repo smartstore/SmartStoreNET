@@ -29,12 +29,12 @@ $ocm-horizontal-padding:                1.6rem;
     }
 
     .tab-content {
+        flex-grow: 1;
         overflow-y: auto;
         overflow-x: hidden;
     }
 
     .offcanvas-menu-footer {
-        flex: 0 1 auto;
         padding: 1rem;
         border-top: 1px solid  $ocm-border-color;
         

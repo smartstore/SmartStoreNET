@@ -242,3 +242,12 @@ body.canvas-blocking .canvas-blocker {
         }
     }
 }
+
+
+/* LAYOUT OVERRIDES
+--------------------------------------------*/
+
+.canvas-overlay {
+    .page-main      { box-shadow: none; }
+    .canvas-blocker { width: 200%; left: -50% }
+}

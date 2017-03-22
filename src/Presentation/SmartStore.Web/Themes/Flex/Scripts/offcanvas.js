@@ -127,7 +127,7 @@
     		}
     	}
 
-    	el.on('tapstart.offcanvas', function (e, gesture) {
+    	el.on('tapstart', function (e, gesture) {
     		if (canPan) {
     			var tabs = $(e.target).closest('.offcanvas-tabs');
     			if (tabs.length > 0) {
@@ -151,7 +151,7 @@
     		}
     	});
 
-    	el.on('tapend.offcanvas', function (e, gesture) {
+    	el.on('tapend', function (e, gesture) {
     		el.off('tapmove.offcanvas')
 				.css(Prefixer.css('transform'), '')
 				.css(Prefixer.css('transition'), '');

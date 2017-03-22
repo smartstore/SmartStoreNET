@@ -152,10 +152,13 @@ $ocm-horizontal-padding:                1.6rem;
         background: #fff;
         transform: translateX(-30%);
         z-index: 0;
+        border-left: 1px solid $ocm-border-color;
+        border-right: 1px solid $ocm-border-color;
 
         &.in {
             transform: translateX(0);
             z-index: 1;
+            border-color: none;
         }
 
         &.in ~ .layer {

@@ -116,7 +116,15 @@ namespace SmartStore.Services.Search.Extensions
 						}
 					}
 
-					var currentValues = qs.Get(qsName)?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
+					string[] currentValues = null;
+
+					// The query string value is not necessarily equal to the facet value.
+					// We must skip subsequent lines here to not add the removed value again and again.
+					if (facet.FacetGroup.Kind != FacetGroupKind.Availability && facet.FacetGroup.Kind != FacetGroupKind.NewArrivals)
+					{
+						currentValues = qs.Get(qsName)?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
+					}
+
 					qs.Remove(qsName);
 
 					if (currentValues != null)

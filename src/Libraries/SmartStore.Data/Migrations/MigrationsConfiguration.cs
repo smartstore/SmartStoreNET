@@ -346,8 +346,8 @@ namespace SmartStore.Data.Migrations
 				"Der Wildcard-Modus kann bei einer großen Anzahl an Produkten die Suche verlangsamen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchFieldsNote",
-				"The standard search searches the fields name, SKU and short description. For more fields, a search plugin like <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>Mega Search Plugin</a> is required.",
-				"In der Standardsuche werden die Felder Name, SKU und Kurzbeschreibung durchsucht. Für weitere Felder ist ein Such-Plugin wie bspw. dem <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>Mega Search Plugin</a> notwendig.");
+				"The standard search searches the fields name, SKU and short description. For more fields, a search plugin like <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>MegaSearch Plugin</a> is required.",
+				"In der Standardsuche werden die Felder Name, SKU und Kurzbeschreibung durchsucht. Für weitere Felder ist ein Such-Plugin wie bspw. dem <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>MegaSearch Plugin</a> notwendig.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchMode",
 				"Search mode",
@@ -641,6 +641,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.PriceMin", "from {0}", "ab {0}");
 			builder.AddOrUpdate("Search.Facet.PriceMax", "up to {0}", "bis {0}");
 			builder.AddOrUpdate("Search.Facet.PriceBetween", "{0} - {1}", "{0} - {1}");
+			builder.AddOrUpdate("Search.Facet.RangeFrom", "{0} from", "{0} von");
+			builder.AddOrUpdate("Search.Facet.RangeTo", "{0} to", "{0} bis");
 
 			builder.AddOrUpdate("Search.Facet.FindPlaceholder", "Find {0}...", "{0} suchen...");
 			builder.AddOrUpdate("Search.Facet.SelectedCount", "{0} selected", "{0} ausgewählt");

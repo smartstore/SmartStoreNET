@@ -565,8 +565,6 @@ namespace SmartStore.Services.Search.Modelling
 
 			AddFacet(query, FacetGroupKind.NewArrivals, true, FacetSorting.ValueAsc, descriptor =>
 			{
-				descriptor.MinHitCount = 0;
-
 				descriptor.AddValue(new FacetValue(fromUtc, null, IndexTypeCode.DateTime, true, false)
 				{
 					IsSelected = newArrivalsOnly,

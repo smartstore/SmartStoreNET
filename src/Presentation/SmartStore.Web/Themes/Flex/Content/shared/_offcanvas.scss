@@ -172,9 +172,7 @@ body.canvas-blocking .canvas-blocker {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    overflow: scroll;
     -webkit-overflow-scrolling: touch;
-    //touch-action: none;
 }
 
 .offcanvas-scrollable {

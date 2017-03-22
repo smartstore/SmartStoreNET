@@ -469,11 +469,21 @@ a.pretty-link {
 
 
 //
+// Some BS 4 fixes
+// ------------------------------------------------------
+
+.input-group .form-control {
+    // Inputs too wide on FF otherwise
+    flex-basis: auto;
+}
+
+
+//
 // Some Flex utils
 // ------------------------------------------------------
 
-.flex-grow-0        { flex-grow: 0 !important }
-.flex-grow-1        { flex-grow: 1 !important }
+.flex-grow-0        { flex-grow: 0 !important; }
+.flex-grow-1        { flex-grow: 1 !important; }
 
 
 //

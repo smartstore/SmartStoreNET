@@ -6,18 +6,8 @@ using System.Data.Entity.Infrastructure;
 
 namespace SmartStore.Core
 {
-    /// <summary>
-    /// Paged list
-    /// </summary>
-    /// <typeparam name="T">T</typeparam>
     public class PagedList<T> : List<T>, IPagedList<T> 
     {
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="source">source</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
         public PagedList(IQueryable<T> source, int pageIndex, int pageSize)
         {
             Guard.NotNull(source, "source");
@@ -29,25 +19,19 @@ namespace SmartStore.Core
 			}
 			else
 			{
+				var skip = pageIndex * pageSize;
 				if (source.Provider is IDbAsyncQueryProvider)
 				{
 					// the Lambda overloads for Skip() and Take() let EF use cached query plans, thus slightly increasing performance.
-					var skip = pageIndex * pageSize;
 					Init(source.Skip(() => skip).Take(() => pageSize), pageIndex, pageSize, source.Count());
 				}
 				else
 				{
-					Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count());
+					Init(source.Skip(skip).Take(pageSize), pageIndex, pageSize, source.Count());
 				}
             }
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="source">source</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
         public PagedList(IList<T> source, int pageIndex, int pageSize)
         {
             Guard.NotNull(source, "source");
@@ -55,13 +39,6 @@ namespace SmartStore.Core
             Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count);
         }
 		
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="source">source</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="totalCount">Total count</param>
         public PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
         {
             Guard.NotNull(source, "source");
@@ -78,7 +55,7 @@ namespace SmartStore.Core
 
             this.AddRange(source);
         }
-
+		
         #region IPageable Members
 
         public int PageIndex
@@ -173,6 +150,5 @@ namespace SmartStore.Core
         }
 
         #endregion
-
     }
 }

@@ -205,8 +205,10 @@ body.canvas-blocking .canvas-blocker {
     .nav-tabs {
         display: flex;
         flex-direction: row;
-        overflow-x: auto;
+        overflow-x: hidden;
         overflow-y: hidden;
+
+        .touchevents & { overflow-x: auto; }
     }
 
     .nav-item {
@@ -221,6 +223,7 @@ body.canvas-blocking .canvas-blocker {
         padding-top: 1rem;
         padding-bottom: 1rem;
         color: $body-color;
+        font-size: inherit;
 
         &.active {
             color: $brand-warning !important;

@@ -8,7 +8,6 @@ namespace SmartStore.Web.Models.Common
         public string CustomerEmailUsername { get; set; }
         public bool IsCustomerImpersonated { get; set; }
 
-
         public bool DisplayAdminLink { get; set; }
 
         public bool ShoppingCartEnabled { get; set; }

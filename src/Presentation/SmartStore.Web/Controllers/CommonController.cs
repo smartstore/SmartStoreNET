@@ -446,47 +446,6 @@ namespace SmartStore.Web.Controllers
             return PartialView();
         }
 
-        // header links
-        [ChildActionOnly]
-        public ActionResult HeaderLinks()
-        {
-			var customer = _services.WorkContext.CurrentCustomer;
-
-            var unreadMessageCount = GetUnreadPrivateMessages();
-            var unreadMessage = string.Empty;
-            var alertMessage = string.Empty;
-            if (unreadMessageCount > 0)
-            {
-                unreadMessage = T("PrivateMessages.TotalUnread", unreadMessageCount);
-
-                //notifications here
-				var notifiedAboutNewPrivateMessagesAttributeKey = string.Format(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _services.StoreContext.CurrentStore.Id);
-				if (_forumSettings.ShowAlertForPM &&
-					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _services.StoreContext.CurrentStore.Id))
-                {
-					_genericAttributeService.Value.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _services.StoreContext.CurrentStore.Id);
-					alertMessage = T("PrivateMessages.YouHaveUnreadPM", unreadMessageCount);
-                }
-            }
-
-            var model = new HeaderLinksModel
-            {
-                IsAuthenticated = customer.IsRegistered(),
-                CustomerEmailUsername = customer.IsRegistered() ? (_customerSettings.UsernamesEnabled ? customer.Username : customer.Email) : "",
-				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
-                DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart),
-				ShoppingCartItems = customer.CountProductsInCart(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id),
-				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
-				WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id),
-                AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
-                UnreadPrivateMessages = unreadMessage,
-                AlertMessage = alertMessage,
-            };
-
-            return PartialView(model);
-        }
-
         [ChildActionOnly]
         public ActionResult ShopBar()
         {
@@ -520,7 +479,7 @@ namespace SmartStore.Web.Controllers
             }
 
 			var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
-            decimal subtotal = _shoppingCartService.Value.GetCurrentCartSubTotal(cart);
+			decimal subtotal = 0; _shoppingCartService.Value.GetCurrentCartSubTotal(cart);
             
             var model = new ShopBarModel
             {
@@ -538,15 +497,15 @@ namespace SmartStore.Web.Controllers
             };
 
 			if (model.ShoppingCartEnabled || model.WishlistEnabled)
-            {
+			{
 				if (model.ShoppingCartEnabled)
 					model.ShoppingCartItems = cart.GetTotalProducts();
 
-                if (model.WishlistEnabled)
+				if (model.WishlistEnabled)
 					model.WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
-            }
+			}
 
-            if (_catalogSettings.CompareProductsEnabled)
+			if (_catalogSettings.CompareProductsEnabled)
             {
                 model.CompareItems = _compareProductsService.Value.GetComparedProductsCount();
             }

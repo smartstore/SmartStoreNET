@@ -413,7 +413,6 @@
     <Compile Include="Models\Common\TaxTypeSelectorModel.cs" />
     <Compile Include="Models\Common\CurrencyModel.cs" />
     <Compile Include="Models\Common\CurrencySelectorModel.cs" />
-    <Compile Include="Models\Common\HeaderLinksModel.cs" />
     <Compile Include="Models\Common\LanguageModel.cs" />
     <Compile Include="Models\Common\StoreThemeSelectorModel.cs" />
     <Compile Include="Models\Media\PictureModel.cs" />

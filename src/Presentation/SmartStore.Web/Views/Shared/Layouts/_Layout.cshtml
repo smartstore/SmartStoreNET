@@ -41,7 +41,7 @@
 						}
                     </div>
                 </div>
-                <div class="shopbar-section">
+                <div class="shopbar-section"> 
                     <div class="container shopbar-container">
                         @{ 
                             Html.RenderAction("ShopBar", "Common", new { area = "" });
@@ -68,7 +68,7 @@
         <div id="content-wrapper">
             <section id="content" class="container m-t-1">
 				@{ 
-					RenderSection("teaser", required: false);
+					@RenderSection("teaser", required: false);
 					Html.RenderAction("Breadcrumb", "Common", new { area = "" });
 					Html.RenderZone("teaser");
 					Html.RenderWidget("after_teaser");

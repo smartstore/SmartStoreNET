@@ -179,6 +179,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.DidYouMean", "Did you mean?", "Meinten Sie?");
 			builder.AddOrUpdate("Search.Hits", "Hits", "Treffer");
 			builder.AddOrUpdate("Search.NoResultsText", "Your search did not match any products.", "Ihre Suche ergab leider keine Produkttreffer.");
+			builder.AddOrUpdate("Search.FilterNoResultsText", "Your filter did not match any products.", "Ihr Filter ergab leider keine Produkttreffer.");
 			builder.AddOrUpdate("Search.NumHits", "{0} Hits", "{0} Treffer");
 			builder.AddOrUpdate("Search.InstantSearch", "Instant Search", "Instantsuche");
 			builder.AddOrUpdate("Search.ResultFiltering", "Result filtering", "Ergebnisfilterung");

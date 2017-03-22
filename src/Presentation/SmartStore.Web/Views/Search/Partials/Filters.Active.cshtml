@@ -9,32 +9,37 @@
 
 	var result = Model.SearchResult;
 	var activeFilters = result.Facets.SelectMany(x => x.Value.Facets).Where(x => x.Value.IsSelected).ToArray();
-
-	if (activeFilters.Length == 0)
-	{
-		return;
-	}
 }
 
 @{ Html.RenderWidget("active_filters_before"); }
 
-<div class="active-filters-container">
-	<ul class="list-unstyled clearfix active-filters">
-		@foreach (var filter in activeFilters)
-		{
-			<li class="active-filter-item" data-key="@filter.Key" data-group="@filter.FacetGroup.Key">
-				<a class="btn btn-grey btn-sm active-filter-link" href='@Url.FacetRemove(filter)' title="@T("Search.Facet.RemoveFilter", filter.FacetGroup.Label, filter.Value.Label)">
-					<span class="active-filter-label">@(filter.Value.Label ?? filter.Value.ToString())</span>
+@if (activeFilters.Length > 0)
+{
+	<div class="active-filters-container">
+		<ul class="list-unstyled clearfix active-filters">
+			@foreach (var filter in activeFilters)
+			{
+				<li class="active-filter-item" data-key="@filter.Key" data-group="@filter.FacetGroup.Key">
+					<a class="btn btn-grey btn-sm active-filter-link" href='@Url.FacetRemove(filter)' title="@T("Search.Facet.RemoveFilter", filter.FacetGroup.Label, filter.Value.Label)">
+						<span class="active-filter-label">@(filter.Value.Label ?? filter.Value.ToString())</span>
+					</a>
+				</li>
+			}
+			<li class="active-filter-item active-filter-item-clear">
+				<a class="btn btn-secondary btn-to-danger btn-flat btn-sm active-filter-link" href='@Url.FacetRemove(activeFilters)'>
+					<span class="active-filter-label">@T("Search.Facet.RemoveAllFilters")</span>
 				</a>
 			</li>
-		}
-		<li class="active-filter-item active-filter-item-clear">
-			<a class="btn btn-secondary btn-to-danger btn-flat btn-sm active-filter-link" href='@Url.FacetRemove(activeFilters)'>
-				<span class="active-filter-label">@T("Search.Facet.RemoveAllFilters")</span>
-			</a>
-		</li>
-	</ul>
-</div>
+		</ul>
+	</div>
+}
+
+@if (activeFilters.Length > 0 && Model.SearchResult.TotalHitsCount == 0)
+{
+	<div class="alert alert-warning">
+		@T("Search.FilterNoResultsText")
+	</div>
+}
 
 @{ Html.RenderWidget("active_filters_after"); }
 

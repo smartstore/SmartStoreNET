@@ -60,9 +60,21 @@ h1, h2, h3, h4, h5, h6,
     padding: 0;
     background: none;
     font-size: $font-size-sm;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.breadcrumb-item:after {
+    content: '|';
+    padding: 0 0.5rem;
+}
+
+.breadcrumb-item:last-of-type:after { 
+    display: none; 
 }
 
 .breadcrumb > li + li::before {
+    display: none;
     content: '|';
 }
 

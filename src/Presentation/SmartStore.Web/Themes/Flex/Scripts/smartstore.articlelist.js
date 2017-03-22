@@ -6,6 +6,9 @@
 ; (function ($, window, document, undefined) {
 
 	$('.artlist-grid').on('mouseenter', '.art', function (e) {
+		if (Modernizr.touchevents)
+			return;
+
 		var art = $(this);
 		var list = art.closest('.artlist');
 

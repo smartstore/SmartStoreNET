@@ -118,7 +118,6 @@ $ocm-horizontal-padding:                1.6rem;
 
     // manufacturer tab
     .manufacturer-container {
-        
         .ocm-item {
             padding: 0 1.25rem;
             
@@ -143,7 +142,10 @@ $ocm-horizontal-padding:                1.6rem;
     }
 }
 
-// animation 
+
+// Animation
+// ===============================================
+
 #offcanvas-menu {
     .layer {
         transition: transform 0.3s ease-out;
@@ -171,19 +173,38 @@ $ocm-horizontal-padding:                1.6rem;
     }
 }
 
-// service menu 
+// Service menu 
+// ===============================================
+
 #ocm-service {
+    .menubar {
+        flex-direction: column;
+    }
+
     .menubar-group {
-        display: block;
-        margin-left: 0;
-        text-align: left;
-        
-        .menubar-link {
-            text-transform: initial;
-            padding: 1rem 2rem;
-            border-bottom: none;
-            border-bottom: 1px solid $ocm-border-color;
-        }
+        margin-left: 0 !important;
+        flex-direction: column;
+    }
+
+    .menubar-link {
+        text-transform: initial;
+        padding: 1rem 2rem;
+        border-bottom: 1px solid $ocm-border-color;
+    }
+
+    .menubar-icon {
+        display: none;
+    }
+
+    .menubar-caret {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .open .menubar-caret:before {
+        content: "\f106";
     }
 
     .dropdown-menu {
@@ -193,40 +214,25 @@ $ocm-horizontal-padding:                1.6rem;
         padding: initial;
         margin: initial;
         border: none;
+        border-bottom: 1px solid $ocm-border-color;
         border-radius: initial;
         box-shadow: initial;
     }
-    .fa:not(.fa-caret-down) {
+
+    .dropdown-divider {
         display: none;
-    }
-    .dropdown .menubar-link {
-        position: relative;
-        
-        .fa-caret-down:before {
-            font-weight: bold;
-            position: absolute;
-            font-size: 1.2rem;
-            line-height: 1;
-            content: "\f107";
-            right: 1rem;
-            top: 50%;
-            margin-top: -9px;
-        }
     }
     
     .dropdown.open > .menubar-link {
-        
         font-weight: 600;
-    
-        .fa-caret-down:before  { 
-            content: "\f106";
-        }
     }
+
     .menubar-link span {
         padding-left: 0;
     }
+
     .dropdown-item {
-        padding-left: 2rem;
+        padding-left: 2.75rem;
         font-size: 1rem;
 
         span:not(.label) {

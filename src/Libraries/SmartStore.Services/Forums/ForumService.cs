@@ -741,31 +741,41 @@ namespace SmartStore.Services.Forums
             return privateMessage;
         }
 
-		public virtual IPagedList<PrivateMessage> GetAllPrivateMessages(int storeId, int fromCustomerId,
-            int toCustomerId, bool? isRead, bool? isDeletedByAuthor, bool? isDeletedByRecipient,
-            string keywords, int pageIndex, int pageSize)
+		public virtual IPagedList<PrivateMessage> GetAllPrivateMessages(
+			int storeId, 
+			int fromCustomerId,
+            int toCustomerId, 
+			bool? isRead, 
+			bool? isDeletedByAuthor, 
+			bool? isDeletedByRecipient,
+            string keywords, 
+			int pageIndex, 
+			int pageSize)
         {
 			var query = _forumPrivateMessageRepository.Table;
+
 			if (storeId > 0)
 				query = query.Where(pm => storeId == pm.StoreId);
-            if (fromCustomerId > 0)
-                query = query.Where(pm => fromCustomerId == pm.FromCustomerId);
-            if (toCustomerId > 0)
-                query = query.Where(pm => toCustomerId == pm.ToCustomerId);
-            if (isRead.HasValue)
-                query = query.Where(pm => isRead.Value == pm.IsRead);
-            if (isDeletedByAuthor.HasValue)
-                query = query.Where(pm => isDeletedByAuthor.Value == pm.IsDeletedByAuthor);
-            if (isDeletedByRecipient.HasValue)
-                query = query.Where(pm => isDeletedByRecipient.Value == pm.IsDeletedByRecipient);
-            if (!String.IsNullOrEmpty(keywords))
-            {
-                query = query.Where(pm => pm.Subject.Contains(keywords));
-                query = query.Where(pm => pm.Text.Contains(keywords));
-            }
-            query = query.OrderByDescending(pm => pm.CreatedOnUtc);
+			if (fromCustomerId > 0)
+				query = query.Where(pm => fromCustomerId == pm.FromCustomerId);
+			if (toCustomerId > 0)
+				query = query.Where(pm => toCustomerId == pm.ToCustomerId);
+			if (isRead.HasValue)
+				query = query.Where(pm => isRead.Value == pm.IsRead);
+			if (isDeletedByAuthor.HasValue)
+				query = query.Where(pm => isDeletedByAuthor.Value == pm.IsDeletedByAuthor);
+			if (isDeletedByRecipient.HasValue)
+				query = query.Where(pm => isDeletedByRecipient.Value == pm.IsDeletedByRecipient);
 
-            var privateMessages = new PagedList<PrivateMessage>(query, pageIndex, pageSize);
+			if (!String.IsNullOrEmpty(keywords))
+			{
+				query = query.Where(pm => pm.Subject.Contains(keywords));
+				query = query.Where(pm => pm.Text.Contains(keywords));
+			}
+
+			query = query.OrderByDescending(pm => pm.CreatedOnUtc);
+
+			var privateMessages = new PagedList<PrivateMessage>(query, pageIndex, pageSize);
 
             return privateMessages;
         }

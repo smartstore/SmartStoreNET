@@ -2,10 +2,10 @@
 
 @{ Html.RenderWidget("breadcrumb_before"); }
 
-<div class="breadcrumb-container">
+<div class="breadcrumb-container hidden-sm-down">
 	<ol class="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
 		<li class="breadcrumb-item" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-			<a href="@Url.RouteUrl("HomePage")" title="@T("HomePage")" itemprop="url">
+			<a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")" itemprop="url">
 				<meta itemprop="title" content="@T("HomePage")">
 				<i class="fa fa-home"></i>
 			</a>

@@ -17,19 +17,16 @@ var AjaxMenu = (function ($, window, document, undefined) {
         if (viewport.is('<lg')) {
             AjaxMenu.initMenu();
         }
-        
-        // listen to viewport changed event and init if appropriate
-        $(window).resize(
-            viewport.changed(function () {
-                if (viewport.is('<lg') && !isInitialised) {
-                    AjaxMenu.initMenu();
-                }
-            })
-        );
+
+    	// listen to viewport changed event and init if appropriate
+        EventBroker.subscribe("page.resized", function (msg, viewport) {
+        	if (viewport.is('<lg') && !isInitialised) {
+        		AjaxMenu.initMenu();
+        	}
+        });
 
         // tab click events
-        menu.on('click', '.nav-item', function (e) {
-            
+        menu.on('click', '.nav-item', function (e) {        
             var item = $(this);
 
             if (item.find(".nav-link").is("#manufacturer-tab")) {
@@ -46,8 +43,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
         });
 
         // menu click events
-        menu.on('click', '.ocm-item', function (e) {
-            
+        menu.on('click', '.ocm-item', function (e) {  
             var item = $(this);
             var entityId = item.data("id");
             var isAjaxNavigation = item.data("ajax");

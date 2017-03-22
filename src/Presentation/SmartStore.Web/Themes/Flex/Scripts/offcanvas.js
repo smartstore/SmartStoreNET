@@ -92,7 +92,6 @@
     		if (nodeScrollable == null || nodeScrollable.length == 0)
     			return false;
 
-
     		var initialScrollDelta = nodeScrollable.data('initial-scroll-top');
     		if (!_.isNumber(initialScrollDelta))
     			return false;
@@ -106,6 +105,7 @@
     			return;
 
     		var delta = getDelta(g);
+    		console.log(delta);
     		panning = !scrolling && delta != 0;
 
     		if (panning) {
@@ -113,6 +113,18 @@
     			e.preventDefault();
 
     			$(e.currentTarget).css(Prefixer.css('transform'), 'translate3d(' + delta + 'px, 0, 0)');
+    		}
+    		else {
+    			if (nodeScrollable != null && nodeScrollable.length > 0) {
+    				if (nodeScrollable.height() >= nodeScrollable[0].scrollHeight) {
+						// Content is NOT scrollable. Don't let iOS Safari scroll the body.
+    					e.preventDefault();
+    				}
+    			}
+    			else {
+					// Touch occurs outside of any scrollable element. Again: prevent body scrolling.
+    				e.preventDefault();
+    			}
     		}
     	}
 
@@ -171,10 +183,6 @@
 
         this.state = 'slide-in';
 
-        //var scrollTop = body.scrollTop();
-        //body.data('initial-scroll-top', scrollTop);
-        //$('.page-main').css('top', scrollTop * -1);
-
         if (this.options.blocker) {
             body.addClass('canvas-blocking');
         }
@@ -227,9 +235,6 @@
             body.removeClass('canvas-sliding-out');
             self.state = null;
             self.el.trigger('hidden.sm.offcanvas');
-
-            //body.scrollTop(body.data('initial-scroll-top'));
-            //$('.page-main').css('top', '');
         });
     }
 

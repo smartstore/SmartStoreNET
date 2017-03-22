@@ -61,7 +61,7 @@ body.canvas-noscroll {
 /* TOGGLER
 --------------------------------------------*/
 
-.navbar-toggler {
+.navbar-toggler { 
     position: relative;
     background-color: transparent;
     outline: none;
@@ -194,8 +194,9 @@ body.canvas-blocking .canvas-blocker {
 --------------------------------------------*/
 .offcanvas-tabs {
     position: relative;
-    background: $gray-lightest;
     flex-grow: 0;
+
+    padding: 0 5%;
 
     .offcanvas-closer {
         border-radius: 0;
@@ -204,34 +205,42 @@ body.canvas-blocking .canvas-blocker {
     .nav-tabs {
         display: flex;
         flex-direction: row;
-        overflow-x: auto;
+        overflow-x: hidden;
         overflow-y: hidden;
+
+        .touchevents & { overflow-x: auto; }
     }
 
     .nav-item {
         display: block;
         flex-wrap: nowrap;
         white-space: nowrap;
+    }
 
-        .nav-link {
-            background: transparent !important;
-            max-width: 100%;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
+    .nav-link {
+        background: transparent !important;
+        max-width: 100%;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        color: $body-color;
+        font-size: inherit;
 
-            .label {
-                position: relative;
-                right: 0;
-                top: 0;
-                vertical-align: super;
-            }
+        &.active {
+            color: $brand-warning !important;
         }
 
-        @media (max-width: 480px) {
-            .nav-link {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-            }
+        .label {
+            position: relative;
+            right: 0;
+            top: 0;
+            vertical-align: super;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-link {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
         }
     }
 }

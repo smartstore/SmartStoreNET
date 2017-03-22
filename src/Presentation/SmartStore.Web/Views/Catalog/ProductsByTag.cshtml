@@ -21,6 +21,14 @@
 		Html.AddCanonicalUrlParts(byTagUrl);
 	}
 
+	int firstItemIndex = 0;
+	int lastItemIndex = 0;
+	if (Model.SearchResult.TotalHitsCount > 0)
+	{
+		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
+		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
+	}
+
 	Layout = "_Layout";
 }
 
@@ -33,14 +41,18 @@
 
 <div class="page product-tag-page">
     <div class="page-title">
-        <h1 class="h3">@T("Products.Tags.ProductsTaggedWith", "<small class='search-term'>" + Model.TagName + "</small>")</h1>	
+        <h1 class="h3">@T("Products.Tags.ProductsTaggedWith", "<small class='search-term'>" + Model.TagName + "</small>")</h1>
+		@if (Model.SearchResult.TotalHitsCount > 0)
+		{
+			<h5 class="search-hitcount">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0")), Model.SearchResult.TotalHitsCount.ToString("N0"))</h5>
+		}
     </div>
 
     <div class="page-body">
         @{ Html.RenderWidget("productsbytag_top"); }
 
 		<div class="product-list-container">
-			@if (Model.Products != null && Model.Products.Items.Count > 0)
+			@if (Model.Products != null)
             {
                 Html.RenderPartial("Product.List", Model.Products);
             }

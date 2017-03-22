@@ -207,6 +207,7 @@
 }
 
 .menubar-link:hover,
+.menubar-link:active,
 .open .menubar-link {
     background-color: #f5f5f5;
     color: $body-color;

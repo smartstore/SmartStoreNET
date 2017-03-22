@@ -81,11 +81,11 @@
     <nav id="menubar-my-account" class="menubar-group">
         <div class="dropdown">
             <a class="menubar-link" @(Model.IsAuthenticated ? "data-toggle=dropdown" : "") aria-haspopup="true" aria-expanded="false" href="@accountUrl" rel="nofollow">
-                <i class="fa fa-user menubar-icon"></i>
+                <i class="fa fa-@(Model.IsAuthenticated ? "user" : "user-o") menubar-icon"></i>
 
                 @if (Model.IsAuthenticated)
                 {
-					<span>@T("Account.MyAccount")</span>
+					<span title="@Model.CustomerEmailUsername">@Model.CustomerEmailUsername.Truncate(25, "...")</span>
                     <i class="fa fa-angle-down menubar-caret"></i>
                 }
                 else

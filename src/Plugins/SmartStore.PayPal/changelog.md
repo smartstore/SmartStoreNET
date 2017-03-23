@@ -3,8 +3,9 @@
 ##Paypal 2.6.0.6
 ###Bugfixes
 * PayPal PLUS: Skip payment if cart total is zero.
+* PayPal PLUS: Do not display payment wall if method is filtered
 ###Improvements
-* PayPal PLUS: Log more information in case of a request failure
+* PayPal PLUS: Log more information in case of a request failure.
 
 ##Paypal 2.6.0.5
 ###Bugfixes

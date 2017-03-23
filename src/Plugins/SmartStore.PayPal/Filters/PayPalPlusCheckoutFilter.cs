@@ -38,12 +38,24 @@ namespace SmartStore.PayPal.Filters
 			var store = _services.StoreContext.CurrentStore;
 			var customer = _services.WorkContext.CurrentCustomer;
 
-			if (!_paymentService.IsPaymentMethodActive(PayPalPlusProvider.SystemName, store.Id))
+			var paymentProvider = _paymentService.LoadPaymentMethodBySystemName(PayPalPlusProvider.SystemName, true, store.Id);
+			if (paymentProvider == null)
 				return;
 
-			// skip payment if the cart total is zero. paypal would return an error "Amount cannot be zero".
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
+			var filterRequest = new PaymentFilterRequest
+			{
+				PaymentMethod = paymentProvider,
+				Customer = customer,
+				StoreId = store.Id,
+				Cart = cart
+			};
+
+			if (_paymentService.IsPaymentMethodFiltered(filterRequest))
+				return;
+
+			// Skip payment if the cart total is zero. PayPal would return an error "Amount cannot be zero".
 			var cartTotal = _orderTotalCalculationService.Value.GetShoppingCartTotal(cart, true);
 			if (cartTotal.HasValue && cartTotal.Value == decimal.Zero)
 				return;

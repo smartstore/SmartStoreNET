@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.0
 
@@ -79,7 +79,10 @@
 	* Associated products that are not individually visible are not exported anymore. GMC rejects them because the frontend redirects to the grouped product.
 * #999 Export: Projected customer id ignored during price calculation
 * Awarded reward points for a placed order sometimes wrong calculated
-* PayPal PLUS: A changed shipping address/costs was not transmitted to PayPal
+* PayPal PLUS:
+	* A changed shipping address/costs was not transmitted to PayPal
+	* Skip payment if cart total is zero
+	* Do not display payment wall if method is filtered
 * Bundle item cannot be deleted if it's in a shopping cart
 * Fixed SSL issue for news items in RSS feed
 * #1030: Order export: does not export the data of the attribute combination

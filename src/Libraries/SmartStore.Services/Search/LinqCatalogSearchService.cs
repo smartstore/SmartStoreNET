@@ -19,6 +19,8 @@ namespace SmartStore.Services.Search
 {
 	public partial class LinqCatalogSearchService : ICatalogSearchService
 	{
+		private static int[] _priceThresholds = new int[] { 10, 25, 50, 100, 250, 500, 1000 };
+
 		private readonly IProductService _productService;
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
@@ -692,27 +694,31 @@ namespace SmartStore.Services.Search
 				{
 					#region Price
 
-					var maxPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Max(x => (double)x.Price);
+					var count = 0;
 					var minPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Min(x => (double)x.Price);
+					var maxPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Max(x => (double)x.Price);
 					minPrice = FacetUtility.MakePriceEven(minPrice);
 					maxPrice = FacetUtility.MakePriceEven(maxPrice);
 
-					foreach (var priceValue in FacetUtility.GetPrices(minPrice, maxPrice))
+					for (var i = 0; i < _priceThresholds.Length; ++i)
 					{
-						var price = (double)priceValue.UpperValue;
-						if (price > maxPrice || (descriptor.MaxChoicesCount > 0 && facets.Count >= descriptor.MaxChoicesCount))
+						if (descriptor.MaxChoicesCount > 0 && facets.Count >= descriptor.MaxChoicesCount)
 							break;
 
-						priceValue.IsSelected = descriptor.Values.Any(x => x.IsSelected && x.UpperValue != null && (double)x.UpperValue == price);
+						var price = _priceThresholds[i];
+						if (price < minPrice)
+							continue;
+
+						if (price >= maxPrice)
+							i = int.MaxValue - 1;
+
+						var priceValue = new FacetValue(null, price, IndexTypeCode.Double, false, true)
+						{
+							DisplayOrder = ++count,
+							IsSelected = descriptor.Values.Any(x => x.IsSelected && x.UpperValue != null && (double)x.UpperValue == price)
+						};
 
 						facets.Add(new Facet(priceValue));
-					}
-
-					// remove too granular price ranges
-					if (facets.Count > 3 && facets.Any(x => x.Value.UpperValue != null && (double)x.Value.UpperValue == 25.0))
-					{
-						facets.RemoveFacet(5.0, true);
-						facets.RemoveFacet(10.0, true);
 					}
 
 					// Add facet for custome price range

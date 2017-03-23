@@ -226,6 +226,11 @@ namespace SmartStore.Services.DataExchange.Export
 
 			profile.FolderName = FileSystemHelper.ValidateRootPath(profile.FolderName);
 
+			if (profile.FolderName == "~/")
+			{
+				throw new SmartException("Invalid export folder name.");
+			}
+
 			_exportProfileRepository.Update(profile);
 
 			_eventPublisher.EntityUpdated(profile);
@@ -348,6 +353,11 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			if (deployment == null)
 				throw new ArgumentNullException("deployment");
+
+			if (deployment.DeploymentType == ExportDeploymentType.FileSystem && deployment.FileSystemPath == "~/")
+			{
+				throw new SmartException("Invalid deployment path.");
+			}
 
 			_exportDeploymentRepository.Update(deployment);
 

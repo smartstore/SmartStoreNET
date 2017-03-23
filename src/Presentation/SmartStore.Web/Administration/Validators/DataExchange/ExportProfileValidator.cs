@@ -17,7 +17,14 @@ namespace SmartStore.Admin.Validators.DataExchange
 			RuleFor(x => x.FolderName)
 				.Must(x =>
 				{
-					if (x.HasValue() && !x.IsCaseInsensitiveEqual("con") && x.IndexOfAny(Path.GetInvalidPathChars()) == -1)
+					var isValidPath = 
+						x.HasValue() &&
+						!x.IsCaseInsensitiveEqual("con") &&
+						x != "~/" &&
+						x != "~" &&
+						x.IndexOfAny(Path.GetInvalidPathChars()) == -1;
+
+					if (isValidPath)
 					{
 						try
 						{
@@ -26,6 +33,7 @@ namespace SmartStore.Admin.Validators.DataExchange
 						}
 						catch {	}
 					}
+
 					return false;
 				})
 				.WithMessage(localization.GetResource("Admin.DataExchange.Export.FolderName.Validate"));

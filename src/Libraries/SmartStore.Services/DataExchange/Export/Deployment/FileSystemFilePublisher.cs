@@ -11,6 +11,9 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 		{
 			var targetFolder = deployment.GetDeploymentFolder(true);
 
+			if (targetFolder.IsEmpty())
+				return;
+
 			if (!FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(targetFolder)))
 			{
 				context.Result.LastError = context.T("Admin.DataExchange.Export.Deployment.CopyFileFailed");

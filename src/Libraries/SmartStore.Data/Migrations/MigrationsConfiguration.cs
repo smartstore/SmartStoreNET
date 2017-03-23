@@ -263,6 +263,10 @@ namespace SmartStore.Data.Migrations
 				"The value must be greater than {0}.",
 				"Der Wert muss größer als {0} sein.");
 
+			builder.AddOrUpdate("Admin.Validation.InvalidPath",
+				"The path \"{0}\" is invalid. Please enter a valid path.",
+				"Der Pfad \"{0}\" ist ungültig. Bitte geben Sie einen gültigen Pfad ein.");
+
 			builder.AddOrUpdate("Common.AdditionalShippingSurcharge",
 				"zzgl. <b>{0}</b> zusätzlicher Versandgebühr",
 				"Plus <b>{0}</b> shipping surcharge");

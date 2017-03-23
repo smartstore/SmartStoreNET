@@ -221,13 +221,12 @@ namespace SmartStore.Services.Catalog.Importer
 										currentPictures.Add(picture);
 
 									var size = Size.Empty;
-
 									pictureBinary = _pictureService.ValidatePicture(pictureBinary, out size);
 									pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 									if (pictureBinary != null && pictureBinary.Length > 0)
 									{
-										if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, true)) != null)
+										if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false)) != null)
 										{
 											category.PictureId = picture.Id;
 											_categoryRepository.Update(category);

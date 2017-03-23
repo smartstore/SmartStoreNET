@@ -625,14 +625,42 @@ namespace SmartStore.Services.Media
 			string mimeType,
 			string seoFilename,
 			bool isNew,
+			int width,
+			int height,
+			bool isTransient = true)
+		{
+			var picture = _pictureRepository.Create();
+			picture.MimeType = mimeType.EmptyNull().Truncate(20);
+			picture.SeoFilename = seoFilename.Truncate(100);
+			picture.IsNew = isNew;
+			picture.IsTransient = isTransient;
+			picture.UpdatedOnUtc = DateTime.UtcNow;
+
+			if (width > 0 && height > 0)
+			{
+				picture.Width = width;
+				picture.Height = height;
+			}
+
+			_pictureRepository.Insert(picture);
+
+			// Save to storage.
+			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
+
+			// Event notification.
+			_eventPublisher.EntityInserted(picture);
+
+			return picture;
+		}
+
+		public virtual Picture InsertPicture(
+			byte[] pictureBinary,
+			string mimeType,
+			string seoFilename,
+			bool isNew,
 			bool isTransient = true,
 			bool validateBinary = true)
         {
-			mimeType = mimeType.EmptyNull();
-			mimeType = mimeType.Truncate(20);
-
-			seoFilename = seoFilename.Truncate(100);
-
 			var size = Size.Empty;
 
             if (validateBinary)
@@ -640,28 +668,7 @@ namespace SmartStore.Services.Media
                 pictureBinary = ValidatePicture(pictureBinary, out size);
             }
 
-            var picture = _pictureRepository.Create();
-            picture.MimeType = mimeType;
-            picture.SeoFilename = seoFilename;
-            picture.IsNew = isNew;
-			picture.IsTransient = isTransient;
-			picture.UpdatedOnUtc = DateTime.UtcNow;
-
-			if (!size.IsEmpty)
-			{
-				picture.Width = size.Width;
-				picture.Height = size.Height;
-			}
-
-            _pictureRepository.Insert(picture);
-
-			// save to storage
-			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
-
-			// event notification
-			_eventPublisher.EntityInserted(picture);
-
-            return picture;
+			return InsertPicture(pictureBinary, mimeType, seoFilename, isNew, size.Width, size.Height, isTransient);
         }
 
         public virtual void UpdatePicture(

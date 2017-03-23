@@ -549,7 +549,7 @@ namespace SmartStore.Services.Customers.Importer
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
-							if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, true)) != null)
+							if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false)) != null)
 							{
 								SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
 							}

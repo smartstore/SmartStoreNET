@@ -199,6 +199,26 @@ namespace SmartStore.Services.Media
 		/// <param name="mimeType">The picture MIME type</param>
 		/// <param name="seoFilename">The SEO filename</param>
 		/// <param name="isNew">A value indicating whether the picture is new</param>
+		/// <param name="width">Picture width</param>
+		/// <param name="height">Picture height</param>
+		/// <param name="isTransient">A value indicating whether the picture is initially in transient state</param>
+		/// <returns>Picture</returns>
+		Picture InsertPicture(
+			byte[] pictureBinary,
+			string mimeType,
+			string seoFilename,
+			bool isNew,
+			int width = 0,
+			int height = 0,
+			bool isTransient = true);
+
+		/// <summary>
+		/// Inserts a picture
+		/// </summary>
+		/// <param name="pictureBinary">The picture binary</param>
+		/// <param name="mimeType">The picture MIME type</param>
+		/// <param name="seoFilename">The SEO filename</param>
+		/// <param name="isNew">A value indicating whether the picture is new</param>
 		/// <param name="isTransient">A value indicating whether the picture is initially in transient state</param>
 		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
 		/// <returns>Picture</returns>

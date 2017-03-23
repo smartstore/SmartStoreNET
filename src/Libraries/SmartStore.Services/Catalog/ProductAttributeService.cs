@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 
 namespace SmartStore.Services.Catalog
@@ -27,7 +28,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
         private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
 		private readonly IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilterRepository;
-		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
+		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IEventPublisher _eventPublisher;
         private readonly IRequestCache _requestCache;
 		private readonly IPictureService _pictureService;
@@ -41,7 +42,7 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductVariantAttributeCombination> pvacRepository,
             IRepository<ProductVariantAttributeValue> productVariantAttributeValueRepository,
 			IRepository<ProductBundleItemAttributeFilter> productBundleItemAttributeFilterRepository,
-			IRepository<LocalizedProperty> localizedPropertyRepository,
+			ILocalizedEntityService localizedEntityService,
 			IEventPublisher eventPublisher,
 			IPictureService pictureService)
         {
@@ -53,7 +54,7 @@ namespace SmartStore.Services.Catalog
             _pvacRepository = pvacRepository;
             _productVariantAttributeValueRepository = productVariantAttributeValueRepository;
 			_productBundleItemAttributeFilterRepository = productBundleItemAttributeFilterRepository;
-			_localizedPropertyRepository = localizedPropertyRepository;
+			_localizedEntityService = localizedEntityService;
             _eventPublisher = eventPublisher;
 			_pictureService = pictureService;
 
@@ -402,35 +403,35 @@ namespace SmartStore.Services.Catalog
 
 			ProductVariantAttributeValue productVariantAttributeValue = null;
 
-			foreach (var option in attributeOptions)
+			using (_localizedEntityService.BeginScope())
 			{
-				if (existingValueNames.Contains(option.Name))
-					continue;
+				foreach (var option in attributeOptions)
+				{
+					if (existingValueNames.Contains(option.Name))
+						continue;
 
-				productVariantAttributeValue = option.Clone();
-				productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
+					productVariantAttributeValue = option.Clone();
+					productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
 
-				// No scope commit, we need new entity id.
-				_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
-				++result;
+					// No scope commit, we need new entity id.
+					_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
+					++result;
 
-				// Copy localized properties too.
-				var optionProperties = _localizedPropertyRepository.TableUntracked
-					.Where(x => x.LocaleKeyGroup == "ProductAttributeOption" && x.EntityId == option.Id)
-					.ToList();
+					// Copy localized properties too.
+					var optionProperties = _localizedEntityService.GetLocalizedProperties(option.Id, "ProductAttributeOption");
 
-				var newLocalizedProperties = optionProperties
-					.Select(x => new LocalizedProperty
+					foreach (var property in optionProperties)
 					{
-						EntityId = productVariantAttributeValue.Id,
-						LocaleKeyGroup = "ProductVariantAttributeValue",
-						LocaleKey = x.LocaleKey,
-						LocaleValue = x.LocaleValue,
-						LanguageId = x.LanguageId
-					})
-					.ToList();
-
-				_localizedPropertyRepository.InsertRange(newLocalizedProperties, 0);
+						_localizedEntityService.InsertLocalizedProperty(new LocalizedProperty
+						{
+							EntityId = productVariantAttributeValue.Id,
+							LocaleKeyGroup = "ProductVariantAttributeValue",
+							LocaleKey = property.LocaleKey,
+							LocaleValue = property.LocaleValue,
+							LanguageId = property.LanguageId
+						});
+					}
+				}
 			}
 
 			if (productVariantAttributeValue != null)

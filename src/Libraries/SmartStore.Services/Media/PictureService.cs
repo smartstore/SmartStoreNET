@@ -471,18 +471,22 @@ namespace SmartStore.Services.Media
 		{
 			if (picture.Width == null && picture.Height == null)
 			{
-				using (var stream = _storageProvider.Value.OpenRead(picture.ToMedia()))
-				{
-					var size = GetPictureSize(stream, true);
-					picture.Width = size.Width;
-					picture.Height = size.Height;
-					picture.UpdatedOnUtc = DateTime.UtcNow;
+                var mediaItem = picture.ToMedia();
+                if (mediaItem != null)
+                {
+                    using (var stream = _storageProvider.Value.OpenRead(mediaItem))
+                    {
+                        var size = GetPictureSize(stream, true);
+                        picture.Width = size.Width;
+                        picture.Height = size.Height;
+                        picture.UpdatedOnUtc = DateTime.UtcNow;
 
-					if (saveOnResolve)
-					{
-						_pictureRepository.Update(picture);
-					}
-				}
+                        if (saveOnResolve)
+                        {
+                            _pictureRepository.Update(picture);
+                        }
+                    }
+                }
 			}
 		}
 

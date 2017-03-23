@@ -5,9 +5,9 @@
     Layout = "_Checkout";
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
-@section orderProgress
+@using (Html.BeginZoneContent("orderProgress"))
 {
-	@{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment }); }
+	@Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment })
 }
 
 @{ Html.RenderPartial("PaymentWallScripting"); }

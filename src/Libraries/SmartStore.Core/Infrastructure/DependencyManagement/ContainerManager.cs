@@ -90,6 +90,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				{
 					TryResolveAll(activator.ParameterTypes, out parameterInstances, scope);
                 }
+
 				if (parameterInstances != null)
 				{
 					return activator.Activate(parameterInstances);

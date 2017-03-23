@@ -641,8 +641,7 @@ namespace SmartStore.Services.Payments
 				{
 					if (_paymentMethodFilterTypes == null)
 					{
-						_paymentMethodFilterTypes = _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true)
-							.ToList();
+						_paymentMethodFilterTypes = _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true).ToList();
 					}
 				}
 			}

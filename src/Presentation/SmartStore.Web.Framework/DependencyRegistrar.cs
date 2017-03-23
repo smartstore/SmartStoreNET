@@ -761,8 +761,16 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
 			builder.RegisterType<MenuPublisher>().As<IMenuPublisher>().InstancePerRequest();
-
 			builder.RegisterType<DefaultBreadcrumb>().As<IBreadcrumb>().InstancePerRequest();
+
+			// Sitemaps
+			builder.RegisterType<SiteMapService>().As<ISiteMapService>().InstancePerRequest();
+
+			var siteMapTypes = _typeFinder.FindClassesOfType<ISiteMap>(ignoreInactivePlugins: true);
+			foreach (var type in siteMapTypes)
+			{
+				builder.RegisterType(type).As<ISiteMap>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
+			}
 		}
 	}
 

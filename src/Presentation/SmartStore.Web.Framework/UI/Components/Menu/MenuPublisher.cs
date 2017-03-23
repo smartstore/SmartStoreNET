@@ -21,8 +21,8 @@ namespace SmartStore.Web.Framework.UI
 
 		public MenuPublisher(ITypeFinder typeFinder, IRequestCache requestCache)
 		{
-			this._typeFinder = typeFinder;
-			this._requestCache = requestCache;
+			_typeFinder = typeFinder;
+			_requestCache = requestCache;
 		}
 
 		public void RegisterMenus(TreeNode<MenuItem> rootNode, string menuName)
@@ -41,7 +41,7 @@ namespace SmartStore.Web.Framework.UI
 					{
 						try
 						{
-							var provider = Activator.CreateInstance(type) as IMenuProvider;
+							var provider = EngineContext.Current.ContainerManager.ResolveUnregistered(type) as IMenuProvider;
 							instances.Add(provider);
 						}
 						catch { }

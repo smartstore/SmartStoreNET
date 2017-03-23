@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
 {
-
 	/// <summary>
 	/// Enables (plugins) developers to inject menu items to menus
 	/// </summary>

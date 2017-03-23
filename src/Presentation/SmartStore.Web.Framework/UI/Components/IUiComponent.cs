@@ -2,10 +2,8 @@
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public interface IUiComponent : IHtmlAttributesContainer
     {
-
         string Id
         {
             get;
@@ -20,7 +18,5 @@ namespace SmartStore.Web.Framework.UI
         {
             get;
         }
-
     }
-
 }

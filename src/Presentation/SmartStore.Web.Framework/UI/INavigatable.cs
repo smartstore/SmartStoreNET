@@ -6,7 +6,6 @@ using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public class ModifiedParameter
     {
         public ModifiedParameter()  : this(null)

@@ -297,6 +297,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\Cache\ModelCacheEventConsumer.cs" />
+    <Compile Include="Infrastructure\CatalogSiteMap.cs" />
     <Compile Include="Infrastructure\DefaultBundles.cs" />
     <Compile Include="Infrastructure\DefaultWidgetSelector.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
@@ -337,7 +338,6 @@
     <Compile Include="Models\Catalog\CategoryModel.cs" />
     <Compile Include="Models\Catalog\IQuantityInput.cs" />
     <Compile Include="Models\Catalog\IListActions.cs" />
-    <Compile Include="Models\Catalog\NavigationModelBuiltEvent.cs" />
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />

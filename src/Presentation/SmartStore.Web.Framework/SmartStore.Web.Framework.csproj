@@ -282,11 +282,12 @@
     <Compile Include="UI\Choices\ChoiceItemModel.cs" />
     <Compile Include="UI\Choices\GenericChoiceModel.cs" />
     <Compile Include="UI\Choices\ChoiceModel.cs" />
+    <Compile Include="UI\Components\Menu\CatalogMenuProvider.cs" />
     <Compile Include="UI\Components\ViewBasedComponentRenderer.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />
     <Compile Include="UI\Components\Menu\MenuPublisher.cs" />
     <Compile Include="UI\HtmlAttribute.cs" />
-    <Compile Include="UI\HtmlAttributeExtensions.cs" />
+    <Compile Include="UI\Extensions\HtmlAttributeExtensions.cs" />
     <Compile Include="Localization\LanguageSeoCodeAttribute.cs" />
     <Compile Include="Localization\IText.cs" />
     <Compile Include="Localization\Text.cs" />
@@ -320,7 +321,7 @@
     <Compile Include="UI\IWidgetProvider.cs" />
     <Compile Include="UI\IWidgetSelector.cs" />
     <Compile Include="UI\BundleBuilder.cs" />
-    <Compile Include="UI\ScaffoldExtensions.cs" />
+    <Compile Include="UI\Extensions\ScaffoldExtensions.cs" />
     <Compile Include="Security\AdminValidateIpAddressAttribute.cs" />
     <Compile Include="Security\FilePermissionHelper.cs" />
     <Compile Include="Filters\StoreClosedAttribute.cs" />
@@ -347,6 +348,11 @@
     <Compile Include="Modelling\SmartMetadataProvider.cs" />
     <Compile Include="Modelling\SmartModelBinder.cs" />
     <Compile Include="Localization\SmartResourceDisplayName.cs" />
+    <Compile Include="UI\SiteMap\ISiteMap.cs" />
+    <Compile Include="UI\SiteMap\ISiteMapService.cs" />
+    <Compile Include="UI\SiteMap\SiteMapBase.cs" />
+    <Compile Include="UI\SiteMap\SiteMapBuiltEvent.cs" />
+    <Compile Include="UI\SiteMap\SiteMapService.cs" />
     <Compile Include="UI\WidgetZoneModel.cs" />
     <Compile Include="Validators\SmartBaseValidator.cs" />
     <Compile Include="Validators\SmartValidatorFactory.cs" />
@@ -370,28 +376,28 @@
     <Compile Include="UI\Captcha\HtmlExtensions.cs" />
     <Compile Include="UI\Captcha\CaptchaValidatorAttribute.cs" />
     <Compile Include="UI\ResourceLocation.cs" />
-    <Compile Include="UI\LayoutExtensions.cs" />
+    <Compile Include="UI\Extensions\LayoutExtensions.cs" />
     <Compile Include="UI\IPageAssetsBuilder.cs" />
     <Compile Include="UI\PageAssetsBuilder.cs" />
-    <Compile Include="UI\DataListExtensions.cs" />
+    <Compile Include="UI\Extensions\DataListExtensions.cs" />
     <Compile Include="UI\Components\HtmlHelperExtensions.cs" />
     <Compile Include="UI\Components\IUiComponent.cs" />
     <Compile Include="UI\Components\IContentContainer.cs" />
     <Compile Include="UI\Components\IHtmlAttributesContainer.cs" />
-    <Compile Include="UI\Components\INavigatable.cs" />
+    <Compile Include="UI\INavigatable.cs" />
     <Compile Include="UI\Components\Menu\IMenuProvider.cs" />
     <Compile Include="UI\Components\Menu\MenuItem.cs" />
     <Compile Include="UI\Components\Menu\MenuItemBuilder.cs" />
     <Compile Include="UI\Components\NavigationItemBuilder.cs" />
     <Compile Include="UI\Components\NavigatableComponentBuilder.cs" />
-    <Compile Include="UI\Components\NavigatableExtensions.cs" />
+    <Compile Include="UI\Extensions\NavigatableExtensions.cs" />
     <Compile Include="UI\Components\NavigationItem.cs" />
     <Compile Include="UI\Components\Pager\ForumTopicPagerRenderer.cs" />
     <Compile Include="UI\Components\Pager\Pager.cs" />
     <Compile Include="UI\Components\Pager\PagerBuilder.cs" />
     <Compile Include="UI\Components\Pager\PagerItem.cs" />
     <Compile Include="UI\Components\Pager\PagerRenderer.cs" />
-    <Compile Include="UI\Components\RouteValueDictionaryExtensions.cs" />
+    <Compile Include="UI\Extensions\RouteValueDictionaryExtensions.cs" />
     <Compile Include="UI\Components\TabStrip\TabStrip.cs" />
     <Compile Include="UI\Components\TabStrip\TabStripBuilder.cs" />
     <Compile Include="UI\Components\TabStrip\Tab.cs" />
@@ -442,6 +448,7 @@
       <Name>SmartStore.Data</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

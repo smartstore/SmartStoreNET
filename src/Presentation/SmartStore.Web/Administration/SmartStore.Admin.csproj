@@ -227,6 +227,7 @@
     <Compile Include="Controllers\WidgetController.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="Extensions\ScheduleTaskExtensions.cs" />
+    <Compile Include="Infrastructure\AdminSiteMap.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
     <Compile Include="Infrastructure\PreviewModeFilter.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />

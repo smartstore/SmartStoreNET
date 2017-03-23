@@ -41,8 +41,6 @@ namespace SmartStore.Web.Controllers
 {
 	public partial class CatalogHelper
 	{
-		private static object s_lock = new object();
-		
 		private readonly ICommonServices _services;
 		private readonly ICategoryService _categoryService;
 		private readonly IManufacturerService _manufacturerService;
@@ -71,11 +69,11 @@ namespace SmartStore.Web.Controllers
 		private readonly MeasureSettings _measureSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
 		private readonly ISettingService _settingService;
-		private readonly Lazy<IMenuPublisher> _menuPublisher;
 		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<IDataExporter> _dataExporter;
 		private readonly ICatalogSearchService _catalogSearchService;
 		private readonly ICatalogSearchQueryFactory _catalogSearchQueryFactory;
+		private readonly ISiteMapService _siteMapService;
 
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
@@ -113,6 +111,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<IDataExporter> dataExporter,
 			ICatalogSearchService catalogSearchService,
 			ICatalogSearchQueryFactory catalogSearchQueryFactory,
+			ISiteMapService siteMapService,
 			HttpRequestBase httpRequest,
 			UrlHelper urlHelper)
 		{
@@ -144,11 +143,11 @@ namespace SmartStore.Web.Controllers
 			this._catalogSettings = catalogSettings;
 			this._customerSettings = customerSettings;
 			this._captchaSettings = captchaSettings;
-			this._menuPublisher = _menuPublisher;
 			this._topicService = topicService;
 			this._dataExporter = dataExporter;
 			this._catalogSearchService = catalogSearchService;
 			this._catalogSearchQueryFactory = catalogSearchQueryFactory;
+			this._siteMapService = siteMapService;
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
 
@@ -1126,27 +1125,18 @@ namespace SmartStore.Web.Controllers
 			return model;
 		}
 
-		public List<int> GetChildCategoryIds(int parentCategoryId)
+		public IEnumerable<int> GetChildCategoryIds(int parentCategoryId, bool deep = true)
 		{
-			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-			string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_CHILD_IDENTIFIERS_MODEL_KEY,
-				parentCategoryId,
-				false,
-				string.Join(",", customerRolesIds),
-				_services.StoreContext.CurrentStore.Id);
-
-			return _services.Cache.Get(cacheKey, () =>
+			var root = GetCategoryMenu();
+			var node = root.SelectNode(x => x.Value.EntityId == parentCategoryId);
+			if (node != null)
 			{
-				var root = GetCategoryMenu();
-				var node = root.SelectNode(x => x.Value.EntityId == parentCategoryId);
-				if (node != null)
-				{
-					var ids = node.Flatten(false).Select(x => x.EntityId).ToList();
-					return ids;
-				}
+				var children = deep ? node.Flatten(false) : node.Children.Select(x => x.Value);
+				var ids = children.Select(x => x.EntityId);
+				return ids;
+			}
 
-				return new List<int>();
-			});
+			return Enumerable.Empty<int>();
 		}
 
 		public IList<TreeNode<MenuItem>> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
@@ -1223,150 +1213,15 @@ namespace SmartStore.Web.Controllers
 			// Resolve number of products
 			if (_catalogSettings.ShowCategoryProductNumber)
 			{
-				this.ResolveCategoryProductsCount(model.SelectedNode);
+				_siteMapService.ResolveElementCounts("catalog", model.SelectedNode, false);
 			}
 
 			return model;
-		}
-
-		protected void ResolveCategoryProductsCount(TreeNode<MenuItem> curNode)
-		{
-			try
-			{
-				using (_services.Chronometer.Step("ResolveCategoryProductsCount for {0}".FormatInvariant(curNode.Value.Text.EmptyNull())))
-				{
-					// Perf: only resolve counts for categories in the current path.
-					while (curNode != null)
-					{
-						if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
-						{
-							lock (s_lock)
-							{
-								if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
-								{
-									foreach (var node in curNode.Children)
-									{
-										var categoryIds = new List<int>();
-
-										if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
-										{
-											// Include subcategories
-											node.Traverse(x =>
-											{
-												categoryIds.Add(x.Value.EntityId);
-											}, true);
-										}
-										else
-										{
-											categoryIds.Add(node.Value.EntityId);
-										}
-
-										var context = new CatalogSearchQuery()
-											.VisibleOnly()
-											.VisibleIndividuallyOnly(true)
-											.WithCategoryIds(null, categoryIds.ToArray())
-											.HasStoreId(_services.StoreContext.CurrentStoreIdIfMultiStoreMode)
-											.BuildHits(false);
-
-										node.Value.ElementsCount = _catalogSearchService.Search(context).TotalHitsCount;
-									}
-								}
-							}
-						}
-
-						curNode = curNode.Parent;
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.Error(ex);
-			}
 		}
 
 		public TreeNode<MenuItem> GetCategoryMenu()
 		{
-			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-			string cacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_NAVIGATION_MODEL_KEY,
-				_services.WorkContext.WorkingLanguage.Id,
-				string.Join(",", customerRolesIds),
-				_services.StoreContext.CurrentStore.Id);
-
-			var model = _services.Cache.Get(cacheKey, () =>
-			{
-				using (_services.Chronometer.Step("GetCategoryMenu"))
-				{
-					var curParent = new TreeNode<MenuItem>(new MenuItem
-					{
-						EntityId = 0,
-						Text = "Home",
-						RouteName = "HomePage"
-					});
-
-					Category prevCat = null;
-
-					var categories = _categoryService.GetAllCategories();
-					foreach (var category in categories)
-					{
-						var menuItem = new MenuItem
-						{
-							EntityId = category.Id,
-							Text = category.GetLocalized(x => x.Name),
-							BadgeText = category.GetLocalized(x => x.BadgeText),
-							BadgeStyle = (BadgeStyle)category.BadgeStyle,
-							RouteName = "Category"
-						};
-						menuItem.RouteValues.Add("SeName", category.GetSeName());
-
-                        if (category.ParentCategoryId == 0 && category.Published && category.PictureId != null)
-                        {
-                            menuItem.ImageUrl = _pictureService.GetPictureUrl(category.PictureId.Value);
-                        }
-
-                        // determine parent
-                        if (prevCat != null)
-						{
-							if (category.ParentCategoryId != curParent.Value.EntityId)
-							{
-								if (category.ParentCategoryId == prevCat.Id)
-								{
-									// level +1
-									curParent = curParent.LastChild;
-								}
-								else
-								{
-									// level -x
-									while (!curParent.IsRoot)
-									{
-										if (curParent.Value.EntityId == category.ParentCategoryId)
-										{
-											break;
-										}
-										curParent = curParent.Parent;
-									}
-								}
-							}
-						}
-
-						// add to parent
-						curParent.Append(menuItem);
-
-						prevCat = category;
-					}
-
-					var root = curParent.Root;
-
-					// menu publisher
-					_menuPublisher.Value.RegisterMenus(root, "catalog");
-
-					// event
-					_services.EventPublisher.Publish(new NavigationModelBuiltEvent(root));
-
-					return root;
-				}
-			});
-
-			return model;
+			return _siteMapService.GetRootNode("catalog");
 		}
 
 		public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(

@@ -8,21 +8,19 @@ using System.Web;
 using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
-{
-    
+{  
     public static class NavigatableExtensions
     {
-
         public static bool HasValue(this INavigatable navigatable)
         {
             return (((navigatable.ActionName.HasValue() && navigatable.ControllerName.HasValue()) || navigatable.ActionName.HasValue() || navigatable.RouteName.HasValue()) || navigatable.Url.HasValue());
         }
 
-        public static bool IsCurrent(this INavigatable navigatable, ViewContext viewContext)
+        public static bool IsCurrent(this INavigatable navigatable, ControllerContext controllerContext)
         {
-            string pathAndQuery = viewContext.HttpContext.Request.Url.PathAndQuery;
-            string url = navigatable.GenerateUrl(viewContext.RequestContext);
-            string comparing = new UrlHelper(viewContext.RequestContext).RouteUrl(viewContext.RequestContext.RouteData.Values);
+            string pathAndQuery = controllerContext.HttpContext.Request.Url.PathAndQuery;
+            string url = navigatable.GenerateUrl(controllerContext.RequestContext);
+            string comparing = new UrlHelper(controllerContext.RequestContext).RouteUrl(controllerContext.RequestContext.RouteData.Values);
             return (url.IsCaseInsensitiveEqual(pathAndQuery) || url.IsCaseInsensitiveEqual(comparing));
         }
 

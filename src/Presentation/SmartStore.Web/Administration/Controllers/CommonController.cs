@@ -63,16 +63,12 @@ namespace SmartStore.Admin.Controllers
         private readonly ILanguageService _languageService;
         private readonly ILocalizationService _localizationService;
         private readonly Lazy<IImageCache> _imageCache;
-        private readonly Lazy<SecuritySettings> _securitySettings;
-		private readonly Lazy<IMenuPublisher> _menuPublisher;
-        private readonly Lazy<IPluginFinder> _pluginFinder;
 		private readonly Lazy<IImportProfileService> _importProfileService;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IDbCache _dbCache;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly ICommonServices _services;
-
-		private readonly static object s_lock = new object();
+		private readonly Lazy<ISiteMapService> _siteMapService;
 
         public CommonController(
 			Lazy<IPaymentService> paymentService,
@@ -87,14 +83,12 @@ namespace SmartStore.Admin.Controllers
             ILanguageService languageService,
 			ILocalizationService localizationService,
             Lazy<IImageCache> imageCache,
-			Lazy<SecuritySettings> securitySettings,
-			Lazy<IMenuPublisher> menuPublisher,
-            Lazy<IPluginFinder> pluginFinder,
 			Lazy<IImportProfileService> importProfileService,
 			IGenericAttributeService genericAttributeService,
 			IDbCache dbCache,
 			ITaskScheduler taskScheduler,
-			ICommonServices services)
+			ICommonServices services,
+			Lazy<ISiteMapService> siteMapService)
         {
             this._paymentService = paymentService;
             this._shippingService = shippingService;
@@ -108,14 +102,12 @@ namespace SmartStore.Admin.Controllers
             this._languageService = languageService;
             this._localizationService = localizationService;
             this._imageCache = imageCache;
-            this._securitySettings = securitySettings;
-            this._menuPublisher = menuPublisher;
-			this._pluginFinder = pluginFinder;
 			this._importProfileService = importProfileService;
             this._genericAttributeService = genericAttributeService;
 			this._dbCache = dbCache;
 			this._taskScheduler = taskScheduler;
 			this._services = services;
+			this._siteMapService = siteMapService;
         }
 
         #region Navbar & Menu
@@ -138,126 +130,8 @@ namespace SmartStore.Admin.Controllers
         [ChildActionOnly]
         public ActionResult Menu()
         {
-			var cacheManager = _services.Cache;
-
-			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-			string cacheKey = string.Format("pres:adminmenu:navigation-{0}-{1}", _services.WorkContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
-
-            var rootNode = cacheManager.Get(cacheKey, () =>
-            {
-				lock (s_lock) {
-					return PrepareAdminMenu();
-				}
-            });
-
+			var rootNode = _siteMapService.Value.GetRootNode("admin");
             return PartialView(rootNode);
-        }
-
-        private TreeNode<MenuItem> PrepareAdminMenu()
-        {
-            XmlSiteMap siteMap = new XmlSiteMap();
-			siteMap.LoadFrom("~/Administration/sitemap.config");
-            
-            var rootNode = ConvertSitemapNodeToMenuItemNode(siteMap.RootNode);
-
-			_menuPublisher.Value.RegisterMenus(rootNode, "admin");
-
-			// hide based on permissions
-            rootNode.Traverse(x => {
-                if (!x.IsRoot)
-                {
-					if (!MenuItemAccessPermitted(x.Value))
-                    {
-                        x.Value.Visible = false;
-                    }
-                }
-            });
-
-            // hide dropdown nodes when no child is visible
-			rootNode.Traverse(x =>
-			{
-				if (!x.IsRoot)
-				{
-					var item = x.Value;
-					if (!item.IsGroupHeader && !item.HasRoute())
-					{
-						if (!x.Children.Any(child => child.Value.Visible))
-						{
-							item.Visible = false;
-						}
-					}
-				}
-			});
-
-            return rootNode;
-        }
-
-        private TreeNode<MenuItem> ConvertSitemapNodeToMenuItemNode(SiteMapNode node)
-        {
-            var item = new MenuItem();
-            var treeNode = new TreeNode<MenuItem>(item);
-
-            if (node.RouteName.HasValue())
-            {
-                item.RouteName = node.RouteName;
-            }
-            else if (node.ActionName.HasValue() && node.ControllerName.HasValue())
-            {
-                item.ActionName = node.ActionName;
-                item.ControllerName = node.ControllerName;
-            }
-            else if (node.Url.HasValue())
-            {
-                item.Url = node.Url;
-            }
-            item.RouteValues = node.RouteValues;
-            
-            item.Visible = node.Visible;
-            item.Text = node.Title;
-            item.Attributes.Merge(node.Attributes);
-
-            if (node.Attributes.ContainsKey("permissionNames"))
-                item.PermissionNames = node.Attributes["permissionNames"] as string;
-
-            if (node.Attributes.ContainsKey("id"))
-                item.Id = node.Attributes["id"] as string;
-
-            if (node.Attributes.ContainsKey("resKey"))
-                item.ResKey = node.Attributes["resKey"] as string;
-
-			if (node.Attributes.ContainsKey("iconClass"))
-				item.Icon = node.Attributes["iconClass"] as string;
-
-            if (node.Attributes.ContainsKey("imageUrl"))
-                item.ImageUrl = node.Attributes["imageUrl"] as string;
-
-            if (node.Attributes.ContainsKey("isGroupHeader"))
-                item.IsGroupHeader = Boolean.Parse(node.Attributes["isGroupHeader"] as string);
-
-            // iterate children recursively
-            foreach (var childNode in node.ChildNodes)
-            {
-                var childTreeNode = ConvertSitemapNodeToMenuItemNode(childNode);
-                treeNode.Append(childTreeNode);
-            }
-            
-            return treeNode;
-        }
-
-        private bool MenuItemAccessPermitted(MenuItem item)
-        {
-            var result = true;
-
-			if (_securitySettings.Value.HideAdminMenuItemsBasedOnPermissions && item.PermissionNames.HasValue())
-            {
-				var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => _services.Permissions.Authorize(x.Trim()));
-                if (!permitted)
-                {
-                    result = false;
-                }
-            }
-
-            return result;
         }
 
 		#endregion

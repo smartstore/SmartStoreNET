@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Plugins;
@@ -74,6 +75,9 @@ namespace SmartStore.Services.Media.Storage
 					}
 
 					media.Entity.MediaStorageId = newStorage.Id;
+
+					// Required because during import the ChangeTracker doesn't treat media.Entity as changed entry.
+					_dbContext.ChangeState((BaseEntity)media.Entity, System.Data.Entity.EntityState.Modified);
 
 					_dbContext.SaveChanges();
 				}

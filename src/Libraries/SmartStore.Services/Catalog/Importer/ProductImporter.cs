@@ -562,12 +562,9 @@ namespace SmartStore.Services.Catalog.Importer
 								if (pictureBinary != null && pictureBinary.Length > 0)
 								{
 									// no equal picture found in sequence
-									var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
+									var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, true);
 									if (newPicture != null)
 									{
-										newPicture.Width = size.Width;
-										newPicture.Height = size.Height;
-
 										var mapping = new ProductPicture
 										{
 											ProductId = row.Entity.Id,

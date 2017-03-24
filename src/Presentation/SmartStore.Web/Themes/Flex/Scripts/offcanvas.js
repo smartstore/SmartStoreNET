@@ -146,6 +146,8 @@
     				nodeScrollable.data('initial-scroll-top', nodeScrollable.scrollTop());
     			}
 
+    			$(".select2-hidden-accessible", el).select2("close");
+
     			el.css(Prefixer.css('transition'), 'none');
     			el.on('tapmove.offcanvas', handleMove);
     		}
@@ -218,6 +220,8 @@
 
         var self = this;
         var body = $('body');
+
+        $(".select2-hidden-accessible", this.el).select2("close");
 
         var startEvent = $.Event('hide.sm.offcanvas');
         this.el.trigger(startEvent);

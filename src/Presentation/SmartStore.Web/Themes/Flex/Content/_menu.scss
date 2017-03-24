@@ -1,5 +1,6 @@
 ﻿/// <reference path="bs4/scss/bootstrap.scss" />
 /// <reference path="shared/_mixins.scss" />
+/// <reference path="shared/_offcanvas.scss" />
 
 $ocm-border-color:                      rgba(#000, 0.15);
 $ocm-horizontal-padding:                1.6rem;
@@ -247,4 +248,9 @@ $ocm-horizontal-padding:                1.6rem;
 // very weird hack to prevent loading icon from wobbling :-/ font-size is 20px
 .touchevents .category-container .ocm-item.has-children.animated:after {
     max-height: 18px;
+}
+
+// one more then .offcanvas-overlay
+.select2-container {
+    z-index: $offcanvas-z-index + 1;
 }

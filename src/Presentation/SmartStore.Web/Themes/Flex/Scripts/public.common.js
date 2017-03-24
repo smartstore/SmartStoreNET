@@ -129,9 +129,6 @@
         }
         
         applyCommonPlugins($("body"));
-
-        //$("select:not(.noskin), input:hidden[data-select]").selectWrapper();
-
     });
 
 })( jQuery, this, document );

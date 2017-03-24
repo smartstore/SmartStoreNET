@@ -180,18 +180,16 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	}
 
     function navigateToHomeLayer(isBackward) {
-
 	    $.ajax({
 	        cache: false,
 	        url: menu.data("url-home"),
 	        type: 'POST',
 	        success: function (response) {
-
 	            if (isBackward)
 	                response = response.replace("ocm-home-layer layer in", "ocm-home-layer layer");
 
 	            menu.prepend(response);
-	            
+
 	            menu.find("#category-tab").tab('show');
 
 	            navigateToMenuItem(0);
@@ -205,7 +203,6 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	}
 
     function navigateToManufacturer() {
-
         var tabContent = menu.find("#manufacturer-tab");
         var manuTab = $("#ocm-manufacturers");
         var isInitialized = tabContent.data("initialized");
@@ -232,7 +229,6 @@ var AjaxMenu = (function ($, window, document, undefined) {
     }
 
     function navigateToService() {
-
         var menuContent = $(".menubar-section .menubar").clone();
         var tabContent = menu.find("#service-tab");
         var serviceTab = $("#ocm-service");
@@ -278,7 +274,6 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	return {
 
 	    initMenu: function () {
-
 	        var selectedMenuItemId = $(".megamenu .navbar-nav").data("selected-menu-item");
 	        
 	        if (selectedMenuItemId == 0) {
@@ -293,14 +288,11 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	    },
 
 	    initFooter: function () {
-
 	        var footer = $(".offcanvas-menu-footer");
 	        var languageSelector = $(".menubar-section .language-selector");
 	        var currencySelector = $(".menubar-section .currency-selector");
 	        var ocmLanguageSelector = $("#ocm-language-selector", footer);
 	        var ocmCurrencySelector = $("#ocm-currency-selector", footer);
-	        var selectTitleLanguage = languageSelector.find(".dropdown-item[data-selected='true']").data("abbreviation");
-	        var selectTitleCurrency = $(".menubar-link > span", currencySelector).text();
 	        var displayCurrencySelector = currencySelector.length > 0;
 	        var displayLanguageSelector = languageSelector.length > 0;
 	        var languageOptions = "";
@@ -312,7 +304,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	            footer.removeClass("hidden-xs-up");
 	        
 	        if (displayCurrencySelector) {
-	            ocmCurrencySelector.parent().removeClass("hidden-xs-up");
+	            ocmCurrencySelector.removeClass("hidden-xs-up");
 
 	            $(currencySelector).find(".dropdown-item").each(function () {
 	                var link = $(this);
@@ -320,12 +312,11 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	                currencyOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.data("abbreviation") + '</option>';
 	            });
 
-	            $("span", ocmCurrencySelector).text(selectTitleCurrency);
 	            $(".form-control", ocmCurrencySelector).append(currencyOptions);
 	        }
 
 	        if (displayLanguageSelector) {
-	            ocmLanguageSelector.parent().removeClass("hidden-xs-up");
+	            ocmLanguageSelector.removeClass("hidden-xs-up");
 
 	            $(languageSelector).find(".dropdown-item").each(function () {
 	                var link = $(this);
@@ -333,9 +324,11 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	                languageOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.data("abbreviation") + '</option>';
 	            });
 
-	            $("span", ocmLanguageSelector).text(selectTitleLanguage);
 	            $(".form-control", ocmLanguageSelector).append(languageOptions);
 	        }
+
+            // skin select 
+	        applyCommonPlugins(footer);
 
             // on change navigate to value 
 	        $(footer).find(".form-control").on("change", function (e) {

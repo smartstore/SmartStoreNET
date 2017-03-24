@@ -9,8 +9,8 @@ $offcanvas-offset:                  0.3;
 $offcanvas-offset-p:                $offcanvas-offset * 100%;
 $offcanvas-offset-p-neg:            ($offcanvas-offset * 100) * -1%;
 
-$offcanvas-menu-bg: $gray-lightest; // $clr-blue-grey-900;
-
+$offcanvas-menu-bg:                 $gray-lightest; // $clr-blue-grey-900;
+$offcanvas-z-index:                 99999;
 
 /* PARENT CANVAS
 --------------------------------------------*/
@@ -141,7 +141,7 @@ body.canvas-blocking .canvas-blocker {
     }
 
     &.offcanvas-overlay {
-        z-index: 99999;
+        z-index: $offcanvas-z-index;
     }
 
     &.offcanvas-shadow {

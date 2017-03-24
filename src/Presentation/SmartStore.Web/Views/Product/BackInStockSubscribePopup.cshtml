@@ -1,5 +1,4 @@
 ﻿@model BackInStockSubscribeModel
-
 @using SmartStore.Web.Models.Catalog;
 
 @{
@@ -10,16 +9,7 @@
 {
     <div class="page back-in-stock-subscription-page">
         <div class="page-title">
-            <h4>
-                @if (Model.AlreadySubscribed)
-                {
-                    @T("BackInStockSubscriptions.AlreadySubscribed")
-                }
-                else
-                {
-                    @T("BackInStockSubscriptions.PopupTitle")
-                }
-            </h4>
+            <h4>@(Model.AlreadySubscribed ? @T("BackInStockSubscriptions.AlreadySubscribed").Text : @T("BackInStockSubscriptions.PopupTitle").Text)</h4>
         </div>
         <div class="page-body">
             @if (!Model.SubscriptionAllowed)

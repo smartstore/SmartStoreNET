@@ -34,35 +34,41 @@
 
 			if (Model.TermsOfServiceEnabled)
 			{
-            <div class="terms-of-service alert alert-info">
-                <script type="text/javascript">
-                    $(document).ready(function () {
-                        $("#terms-of-service-trigger").click(function (event) {
-                            event.preventDefault();
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" class="modal-flex-fill-area" />');
+                <div class="terms-of-service alert alert-info">
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $("#terms-of-service-trigger").click(function (event) {
+                                event.preventDefault();
+                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" />');
+                            });
+                            $("#disclaimer-trigger").click(function (event) {
+                                event.preventDefault();
+                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" />');
+                            });
                         });
-                        $("#disclaimer-trigger").click(function (event) {
-                            event.preventDefault();
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" class="modal-flex-fill-area" />');
-                        });
-                    });
-                </script>
-                <div class="checkbox">
-                    <label>
-                        <input id="termsofservice" type="checkbox" name="termsofservice" />
-                        @Html.Raw(terms)
-                    </label>
-                </div>
-
-                <!-- Terms of service -->
-                <div id="terms-of-service-modal" class="modal modal-flex hide fade" tabindex="-1" style="width: 650px">
-                    <div class="modal-body"></div>
-                    <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal">@T("Common.Confirm")</button>
+                    </script>
+                    <div class="checkbox">
+                        <label>
+                            <input id="termsofservice" type="checkbox" name="termsofservice" />
+                            @Html.Raw(terms)
+                        </label>
                     </div>
-                </div>
 
-            </div>
+                    <!-- Terms of service -->
+                    @using (Html.BeginZoneContent("end", key: "terms-of-service-modal"))
+                    {
+                        <div id="terms-of-service-modal" class="modal modal-flex hide fade" tabindex="-1">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-body"></div>
+                                    <div class="modal-footer">
+                                        <button class="btn" data-dismiss="modal">@T("Common.Confirm")</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
 			}
 
             <script type="text/javascript">

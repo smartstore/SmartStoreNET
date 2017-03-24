@@ -208,7 +208,6 @@
 }
 .reward-points.alert,
 .terms-of-service.alert {
-    padding-bottom: 4px !important;
     a.read {
         font-weight: bold;
         &:hover {
@@ -216,6 +215,15 @@
         }
     }
 }
+
+#terms-of-service-modal .modal-body {
+    padding-right: 0px;
+}
+#iframe-terms-of-service {
+    min-height: 100%;
+    flex: 1;
+}
+
 .checkout-data .change-checkout-data {
 	font-weight: normal;
 	text-transform: none;

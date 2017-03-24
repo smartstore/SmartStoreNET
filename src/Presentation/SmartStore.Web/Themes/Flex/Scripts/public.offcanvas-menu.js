@@ -180,20 +180,29 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	}
 
     function navigateToHomeLayer(isBackward) {
+        var tabContent = menu.find("#category-tab");
+
+        if (tabContent.data("initialized")) {
+            tabContent.tab('show');
+            return;
+        }
+
 	    $.ajax({
 	        cache: false,
 	        url: menu.data("url-home"),
 	        type: 'POST',
 	        success: function (response) {
-	            if (isBackward)
+	            if (isBackward) {
 	                response = response.replace("ocm-home-layer layer in", "ocm-home-layer layer");
-
+	            }
+	            
 	            menu.prepend(response);
 
-	            menu.find("#category-tab").tab('show');
-
+	            tabContent = menu.find("#category-tab");
+	            tabContent.tab('show');
 	            navigateToMenuItem(0);
 	            AjaxMenu.initFooter();
+	            tabContent.data("initialized", true);
 	        },
 	        error: function (jqXHR, textStatus, errorThrown) {
 	            console.log(errorThrown);

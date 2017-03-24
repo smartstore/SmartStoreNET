@@ -285,9 +285,16 @@ namespace SmartStore.Web.Infrastructure
 			else if (entity is AclRecord)
 			{
 				var acl = entity as AclRecord;
-				if (!acl.IsIdle && acl.EntityName == "Product")
+				if (!acl.IsIdle)
 				{
-					Invalidate(true);
+					if (acl.EntityName == "Product")
+					{
+						Invalidate(true);
+					}
+					else if (acl.EntityName == "Category")
+					{
+						Invalidate(false);
+					}
 				}
 			}
 			else if (entity is StoreMapping)
@@ -296,6 +303,10 @@ namespace SmartStore.Web.Infrastructure
 				if (stm.EntityName == "Product")
 				{
 					Invalidate(true);
+				}
+				else if (stm.EntityName == "Category")
+				{
+					Invalidate(false);
 				}
 			}
 			else if (entity is LocalizedProperty)

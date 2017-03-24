@@ -472,9 +472,11 @@ namespace SmartStore.Services.Media
 			if (picture.Width == null && picture.Height == null)
 			{
                 var mediaItem = picture.ToMedia();
-                if (mediaItem != null)
+                var stream = _storageProvider.Value.OpenRead(mediaItem);
+
+                if (stream != null)
                 {
-                    using (var stream = _storageProvider.Value.OpenRead(mediaItem))
+                    try
                     {
                         var size = GetPictureSize(stream, true);
                         picture.Width = size.Width;
@@ -485,6 +487,10 @@ namespace SmartStore.Services.Media
                         {
                             _pictureRepository.Update(picture);
                         }
+                    }
+                    finally
+                    {
+                        stream.Dispose();
                     }
                 }
 			}

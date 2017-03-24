@@ -126,7 +126,7 @@ namespace SmartStore.Services.Tests.Customers
 			_services.Expect(x => x.Cache).Return(NullCache.Instance);
 
 			_customerService = new CustomerService(_customerRepo, _customerRoleRepo,
-                _genericAttributeRepo, _rewardPointsHistoryRepo, _genericAttributeService, _services, _rewardPointsSettings, new FakeHttpContext("~/"), _userAgent);
+                _genericAttributeRepo, _rewardPointsHistoryRepo, _genericAttributeService, _services, NullCache.Instance, _rewardPointsSettings, new FakeHttpContext("~/"), _userAgent);
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
                 _encryptionService, _newsLetterSubscriptionService, _rewardPointsSettings, _customerSettings, _storeContext, _eventPublisher);

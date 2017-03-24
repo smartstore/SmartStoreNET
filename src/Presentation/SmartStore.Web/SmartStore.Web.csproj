@@ -1643,7 +1643,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\LicenseRequired.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
-    <Content Include="Views\Checkout\Layouts\_Checkout.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Checkout.cshtml" />
     <Content Include="Views\Shared\Partials\_ClientRes.cshtml" />
     <Content Include="Views\Shared\Partials\_CreateOrUpdateAddress.cshtml" />
     <Content Include="Views\Shared\Partials\_Notifications.cshtml" />

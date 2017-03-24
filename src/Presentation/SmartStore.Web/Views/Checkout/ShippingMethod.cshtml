@@ -5,9 +5,8 @@
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 
-@using (Html.BeginZoneContent("orderProgress"))
-{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Shipping })
+@section orderProgress{
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Shipping }); }
 }
 
 <div class="page shipping-method-page">

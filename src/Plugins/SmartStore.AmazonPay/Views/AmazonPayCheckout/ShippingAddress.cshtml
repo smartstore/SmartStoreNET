@@ -9,9 +9,8 @@
     Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 }
 
-@using (Html.BeginZoneContent("orderProgress"))
-{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address, area = "" })
+@section orderProgress{
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address, area = "" }); }
 }
 
 <div class="page shipping-address-page">

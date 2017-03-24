@@ -11,9 +11,8 @@
 	Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 
-@using (Html.BeginZoneContent("orderProgress"))
-{
-	@Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address, area = "" })
+@section orderProgress{
+	@{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address, area = "" }); }
 }
 
 <h1>Hallo Welt</h1>

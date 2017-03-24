@@ -29,8 +29,6 @@
 "use strict";
 
 (function ($) {
-	$.attrFn = $.attrFn || {};
-
 	// navigator.userAgent.toLowerCase() isn't reliable for Chrome installs
 	// on mobile devices. As such, we will create a boolean isChromeDesktop
 	// The reason that we need to do this is because Chrome annoyingly
@@ -71,8 +69,6 @@
 		$.fn[name] = function (fn) {
 			return fn ? this.on(name, fn) : this.trigger(name);
 		};
-
-		$.attrFn[name] = true;
 	});
 
 	function addDeltaProps(start, current) {

@@ -922,7 +922,6 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
-    <Content Include="Scripts\public.product-detail.mobile.js" />
     <Content Include="Themes\Flex\Content\css\fontastic.css" />
     <Content Include="Themes\Flex\Content\css\fonts\fontastic.svg" />
     <Content Include="Themes\Flex\Content\shared\_pnotify.scss" />
@@ -950,7 +949,6 @@
     <Content Include="Scripts\public.reviews.js" />
     <Content Include="Scripts\smartstore.shrinkmenu.js" />
     <Content Include="Scripts\smartstore.column-equalizer.js" />
-    <Content Include="Scripts\public.product-list-scroller.js" />
     <Content Include="Scripts\jquery.scrollTo.js" />
     <Content Include="Scripts\jquery.serialScroll.js" />
     <Content Include="Scripts\underscore.js" />
@@ -1371,7 +1369,6 @@
     <Content Include="Content\jquery.pnotify.default.icons.css" />
     <Content Include="Content\bootstrap\custom\scrollbutton.less" />
     <Content Include="Scripts\jquery.pnotify.js" />
-    <Content Include="Scripts\public.product-detail.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
@@ -1426,7 +1423,6 @@
     <Content Include="Themes\Flex\Scripts\jquery.ba-outside-events.js" />
     <Content Include="Themes\Flex\Scripts\jquery.ba-outside-events.min.js" />
     <Content Include="Themes\Flex\Scripts\jquery.bootstrap-touchspin.js" />
-    <Content Include="Themes\Flex\Scripts\jquery.requestAnimationFrame.js" />
     <Content Include="Themes\Flex\Scripts\jquery.scrollTo.js" />
     <Content Include="Themes\Flex\Scripts\jquery.sortable.js" />
     <Content Include="Themes\Flex\Scripts\jquery.transit.js" />

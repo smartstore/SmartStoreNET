@@ -35,8 +35,8 @@
                     top = offset.top,
                     width = img.width(),
                     height = img.height(),
-                    realWidth = img[0].naturalWidth,
-                    realHeight = img[0].naturalHeight;
+                    realWidth = Math.min(120, img[0].naturalWidth),
+                    realHeight = Math.min(120, img[0].naturalHeight);
 
                 if (realWidth <= width - 5 && realHeight <= height - 5) {
                     // don't scale if thumb real size is insignificantly greater

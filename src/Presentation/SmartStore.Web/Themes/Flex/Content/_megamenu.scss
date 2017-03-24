@@ -6,6 +6,7 @@ $mm-light-color:                        $body-color;
 $mm-light-hover-color:                  scale-color($mm-bg, $lightness: -5%); //darken($mm-bg, 7%); // rgba(0, 0, 0, 0.06)
 $mm-dark-color:                         #fff;
 $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //lighten($mm-bg, 7%); // rgba(255,255,255, 0.1)
+$mm-zindex-base:                        ($zindex-dropdown - 20);
 
 .megamenu-section .navbar {
     background: $mm-bg;
@@ -93,7 +94,7 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
             border-right: 17px solid transparent;
             border-left: 17px solid transparent;
             bottom: -1px;
-            z-index: 1010;
+            z-index: ($mm-zindex-base + 3);
         }
         &.active:after {
             content: "";
@@ -103,7 +104,7 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
             border-right: 19px solid transparent;
             border-left: 19px solid transparent;
             bottom: -2px;
-            z-index: 1008;
+            z-index: ($mm-zindex-base + 2);
         }
     }
 }
@@ -118,7 +119,7 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
     bottom: 0;
     transition: opacity .5s ease-in-out .1s;
     opacity: 0;
-    z-index: 1001;
+    z-index: $mm-zindex-base;
     display: none;
 
     &.megamenu-nav--prev a { padding-right: 10px; }
@@ -131,7 +132,7 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
         border: none;
         box-shadow: none;
         position: relative;
-        z-index: 10000;
+        z-index: ($mm-zindex-base + 10);
         padding: 0px;
         width: 40px;
         height: 98%;
@@ -168,14 +169,12 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
 .touchevents .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i,
 .touchevents .megamenu-section .megamenu-nav-btn i,
 .megamenu .megamenu-nav i {
-    // TODO: (mh) adapt $mm-(light|dark)-color
-    color: #000;
+    color: $mm-light-color;
     display: none;
 }
 .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i {
     display: block;
 }
-
 
 .megamenu-container {
     position: relative;
@@ -210,7 +209,7 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
     }
 
     .mega-menu-dropdown {
-        z-index: 1007;
+        z-index: ($mm-zindex-base + 1);
         width: 100%;
         top: -3px;
         background-repeat: no-repeat;

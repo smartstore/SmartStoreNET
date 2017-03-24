@@ -106,7 +106,7 @@ namespace SmartStore.Web.Framework
 		{
 			if (key.HasValue() && DocumentZone.HasUniqueKey(key))
 			{
-				return new ActionDisposable();
+				return ActionDisposable.Empty;
 			}
 
 			return new DocumentZone((WebViewPage)helper.ViewDataContainer, targetZone, injectMode, key);

@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartStore.Core
 {   
@@ -80,6 +81,19 @@ namespace SmartStore.Core
 	/// </summary>
 	public interface IPagedList<T> : IPageable, IList<T>
 	{
+		/// <summary>
+		/// Return the original query without any paging applied
+		/// </summary>
+		IQueryable<T> SourceQuery { get; }
+
+		/// <summary>
+		/// Applies the initial paging arguments to the passed query
+		/// </summary>
+		/// <param name="query">The query</param>
+		/// <returns>A query with applied paging args</returns>
+		IQueryable<T> ApplyPaging(IQueryable<T> query);
+
+		IPagedList<T> Load(bool force = false);
 	}
 
 }

@@ -14,14 +14,6 @@ h1, h2, h3, h4, h5, h6,
     position: relative;
 }
 
-// make heading on homepage bigger and center them
-/*.page.home-page .block-title {
-    font-size: 2.3rem;
-    padding: 2rem 0 1rem 0;
-    line-height: 1.3;
-}*/
-
-
 // homepage news
 .link-rss:hover {
     text-decoration: none;
@@ -88,7 +80,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 // generic:
-//      block titles
+// block titles
 .contact-page .block .block-title {
     padding: 0 0 1.5rem 0;
     font-size: 2rem;
@@ -98,56 +90,10 @@ fieldset legend {
     padding: 2rem 0 1rem 0;
 }
 
-
-
-//polls
-
+// polls
 .todays-poll-box-block input {
     margin-right: .5rem;
 }
-
-//
-// List Scroller Styles
-// --------------------------------------------------
-
-.product-list.scroll {
-	position: relative;
-}
-
-.product-list .pl-slider {
-	overflow: hidden;
-	position: relative;
-
-    //new
-    padding-left: 15px;
-}
-
-.product-list.scroll .pl-row {
-	width: 30000px;
-}
-
-.product-list.scroll .pl-controls {
-	text-align: center !important;
-}
-
-.product-list.scroll .pl-forward,
-.product-list.scroll .pl-backward {
-	display: inline-block;
-	margin-right: 5px;
-}
-
-.product-list.scroll .pl-scroll-prev,
-.product-list.scroll .pl-scroll-next{
-	position: absolute;
-}
-
-.product-list.scroll article {
-    text-align: center;
-    min-width: 220px;
-    max-width: 220px;
-    margin-right: 20px;
-}
-
 
 /* Manufacturers in left column
 ================================================ */
@@ -180,57 +126,6 @@ fieldset legend {
     padding-bottom: 0.5rem;
 }
 
-/* recently viewed products
-================================================ */
-.block-recently-viewed-products li {
-	padding: 3px;
-	border-bottom: 1px solid #e5e5e5;
-	.product-name {
-		//.smaller();
-		text-align: left;
-		margin-left: 40px;
-		display: block;
-	}
-	.picture img {
-		max-width: 32px;
-		max-height: 50px;
-	}
-	figure.picture {
-		margin: 0;
-		text-align: center;
-		width: 40px;
-	}
-}
-.block-recently-viewed-products .omega {
-	border: none;
-}
-.block-recently-viewed-products .listbox {
-	padding: 2px;
-}
-
-
-
-// temp: will probably not be needed in the final release
-
-.product-grid .btn-group .fa {
-    margin-right: 0 !important;
-}
-.product-box-button-bar {
-    position: absolute;
-    right: 0;
-    left: 0;
-    bottom: 10px;
-}
-.product-grid .product-box-big {
-    padding-bottom: 50px;
-}
-
-.price.text-success {
-    font-weight: bold;
-}
-
-
-
 //Tags
 .block-popular-tags li, 
 .block-popular-blogtags li {
@@ -246,10 +141,6 @@ fieldset legend {
     .label {
         font-size: $font-size-xs;
     }
-}
-
-.data-list-row {
-    margin-bottom: 2rem;
 }
 
 .text-smaller,

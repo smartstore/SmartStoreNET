@@ -52,7 +52,7 @@
                     <nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark" : "navbar-light")'>
                         <div class="container megamenu-container">
                             @{ 
-                                Html.RenderAction("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
+                                Html.RenderAction("CatalogMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
 							}
 						</div>
 					</nav>

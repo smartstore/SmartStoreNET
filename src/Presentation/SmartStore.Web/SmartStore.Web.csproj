@@ -1682,7 +1682,7 @@
     <Content Include="Views\Catalog\ManufacturerAll.cshtml" />
     <Content Include="Views\Catalog\Partials\ManufacturerNavigation.cshtml" />
     <Content Include="Views\Catalog\ManufacturerTemplate.ProductsInGridOrLines.cshtml" />
-    <Content Include="Views\Catalog\Partials\MegaMenu.cshtml" />
+    <Content Include="Views\Catalog\Partials\CatalogMenu.cshtml" />
     <Content Include="Views\Catalog\Partials\PopularProductTags.cshtml" />
     <Content Include="Views\Catalog\ProductsByTag.cshtml" />
     <Content Include="Views\Catalog\ProductTagsAll.cshtml" />
@@ -1880,6 +1880,7 @@
     <Content Include="Views\Search\FacetTemplates\Category.cshtml" />
     <Content Include="Views\Catalog\Partials\OffCanvasMenuManufacturers.cshtml" />
     <Content Include="Views\Common\Partials\Breadcrumb.cshtml" />
+    <Content Include="Views\Catalog\Partials\CatalogMenu.Navbar.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

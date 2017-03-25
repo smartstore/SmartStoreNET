@@ -120,7 +120,9 @@ namespace SmartStore.Services.Search.Extensions
 
 					// The query string value is not necessarily equal to the facet value.
 					// We must skip subsequent lines here to not add the removed value again and again.
-					if (facet.FacetGroup.Kind != FacetGroupKind.Availability && facet.FacetGroup.Kind != FacetGroupKind.NewArrivals)
+					if (facet.FacetGroup.Kind != FacetGroupKind.Price &&
+						facet.FacetGroup.Kind != FacetGroupKind.Availability &&
+						facet.FacetGroup.Kind != FacetGroupKind.NewArrivals)
 					{
 						currentValues = qs.Get(qsName)?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
 					}

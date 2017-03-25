@@ -695,6 +695,7 @@ namespace SmartStore.Services.Search
 					#region Price
 
 					var count = 0;
+					var hasActivePredefinedFacet = false;
 					var minPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Min(x => (double)x.Price);
 					var maxPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Max(x => (double)x.Price);
 					minPrice = FacetUtility.MakePriceEven(minPrice);
@@ -715,14 +716,16 @@ namespace SmartStore.Services.Search
 						var priceValue = new FacetValue(null, price, IndexTypeCode.Double, false, true)
 						{
 							DisplayOrder = ++count,
-							IsSelected = descriptor.Values.Any(x => x.IsSelected && x.UpperValue != null && (double)x.UpperValue == price)
+							IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value == null && x.UpperValue != null && (double)x.UpperValue == price)
 						};
+
+						if (priceValue.IsSelected)
+							hasActivePredefinedFacet = true;
 
 						facets.Add(new Facet(priceValue));
 					}
 
 					// Add facet for custome price range
-					var hasActivePredefinedFacet = facets.Any(x => x.Value.IsSelected);
 					var priceDescriptorValue = descriptor.Values.FirstOrDefault();
 
 					var customPriceFacetValue = new FacetValue(

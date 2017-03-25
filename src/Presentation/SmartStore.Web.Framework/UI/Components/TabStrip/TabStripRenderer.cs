@@ -270,7 +270,7 @@ namespace SmartStore.Web.Framework.UI
 
 			if (!item.Selected && !item.Visible)
 			{
-				item.HtmlAttributes.AppendCssClass("hide");
+				item.HtmlAttributes.AppendCssClass("d-none");
 			}
 
 			if (item.Pull == TabPull.Right)
@@ -353,9 +353,9 @@ namespace SmartStore.Web.Framework.UI
 						writer.WriteEncodedText(item.Text);
 						writer.RenderEndTag(); // span > badge
 
-						// label
-						temp = "m-l-05 label";
-						temp += " label-" + item.BadgeStyle.ToString().ToLower();
+						// label/badge
+						temp = "ml-2 badge";
+						temp += " badge-" + item.BadgeStyle.ToString().ToLower();
 						if (base.Component.Position == TabsPosition.Left)
 						{
 							temp += " pull-right"; // looks nicer 
@@ -409,7 +409,7 @@ namespace SmartStore.Web.Framework.UI
 			{
 				if (base.Component.Fade)
 				{
-					item.ContentHtmlAttributes.AppendCssClass("in");
+					item.ContentHtmlAttributes.AppendCssClass("show");
 				}
 				item.ContentHtmlAttributes.AppendCssClass("active");
 			}

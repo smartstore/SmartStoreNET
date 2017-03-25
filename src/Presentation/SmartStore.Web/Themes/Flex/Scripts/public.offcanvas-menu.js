@@ -249,12 +249,12 @@ var AjaxMenu = (function ($, window, document, undefined) {
         }
 
         // hide currency & language selectors 
-        menuContent.find(".currency-selector, .language-selector").addClass("hidden-xs-up");
+        menuContent.find(".currency-selector, .language-selector").addClass("d-none");
 
         var myAccount = menuContent.find("#menubar-my-account");
 
         // open MyAccount dropdown initially
-        myAccount.find(".dropdown").addClass("open");
+        myAccount.find(".dropdown").addClass("show");
 
         // place MyAccount menu on top
         menuContent.prepend(myAccount);
@@ -310,10 +310,10 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        if (!displayCurrencySelector && !displayCurrencySelector)
 	            return;
 	        else
-	            footer.removeClass("hidden-xs-up");
+	            footer.removeClass("d-none");
 	        
 	        if (displayCurrencySelector) {
-	            ocmCurrencySelector.removeClass("hidden-xs-up");
+	            ocmCurrencySelector.removeClass("d-none");
 
 	            $(currencySelector).find(".dropdown-item").each(function () {
 	                var link = $(this);
@@ -325,7 +325,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        }
 
 	        if (displayLanguageSelector) {
-	            ocmLanguageSelector.removeClass("hidden-xs-up");
+	            ocmLanguageSelector.removeClass("d-none");
 
 	            $(languageSelector).find(".dropdown-item").each(function () {
 	                var link = $(this);

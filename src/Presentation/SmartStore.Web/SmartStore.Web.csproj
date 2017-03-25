@@ -964,6 +964,90 @@
     <Content Include="Themes\Flex\Content\bs4\js\bootstrap.min.js" />
     <Content Include="Themes\Flex\Content\css\fonts\fontastic.ttf" />
     <Content Include="Themes\Flex\Content\css\fonts\fontastic.woff" />
+    <Content Include="Themes\Flex\Content\bs4\scss\bootstrap-grid.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\bootstrap-reboot.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\bootstrap.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_alert.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_badge.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_breadcrumb.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_button-group.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_buttons.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_card.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_carousel.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_close.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_code.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_custom-forms.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_custom.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_dropdown.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_forms.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_grid.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_images.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_input-group.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_jumbotron.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_list-group.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_media.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_mixins.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_modal.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_nav.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_navbar.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_pagination.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_popover.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_print.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_progress.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_reboot.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_responsive-embed.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_tables.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_tooltip.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_transitions.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_type.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_utilities.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\_variables.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\.scss-lint.yml" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_align.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_background.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_borders.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_clearfix.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_display.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_flex.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_float.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_position.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_screenreaders.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_sizing.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_spacing.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_text.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\utilities\_visibility.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_alert.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_background-variant.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_badge.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_border-radius.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_box-shadow.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_breakpoints.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_buttons.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_cards.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_clearfix.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_float.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_forms.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_gradients.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_grid-framework.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_grid.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_hover.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_image.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_list-group.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_lists.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_nav-divider.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_navbar-align.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_pagination.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_reset-text.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_resize.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_screen-reader.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_size.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_table-row.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_text-emphasis.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_text-hide.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_text-truncate.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_transforms.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_transition.scss" />
+    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_visibility.scss" />
     <None Include="Themes\Flex\Content\photoswipe\LICENSE" />
     <None Include="Themes\Flex\Content\drift\LICENSE" />
     <Content Include="Themes\Flex\Content\photoswipe\photoswipe-ui-default.js" />
@@ -978,7 +1062,7 @@
     <Content Include="Themes\Flex\Content\images\star-off.png" />
     <Content Include="Themes\Flex\Content\images\star-on-12.png" />
     <Content Include="Themes\Flex\Content\images\star-on.png" />
-    <Content Include="Themes\Flex\Content\compiled\theme.css" />
+    <None Include="Themes\Flex\Content\compiled\theme.css" />
     <Content Include="Themes\Flex\Content\shared\img\grippy.png" />
     <Content Include="Themes\Flex\Content\animate\_animate.scss" />
     <Content Include="Themes\Flex\Content\animate\helpers\_base.scss" />
@@ -1493,82 +1577,9 @@
     <Content Include="Themes\AlphaOld\Content\skin.less" />
     <Content Include="Themes\AlphaOld\Content\typo.less" />
     <Content Include="Themes\Web.config" />
-    <Content Include="Themes\Flex\Content\bs4\scss\bootstrap-flex.scss">
-      <Compile>False</Compile>
-      <Minify>True</Minify>
-      <IgnoreWarnings>True</IgnoreWarnings>
-      <IgnoreErrors>True</IgnoreErrors>
-      <CompileStyle>Nested</CompileStyle>
-      <DebugInfo>False</DebugInfo>
-    </Content>
-    <Content Include="Themes\Flex\Content\bs4\scss\bootstrap-grid.scss">
-      <Compile>False</Compile>
-      <Minify>True</Minify>
-      <IgnoreWarnings>True</IgnoreWarnings>
-      <IgnoreErrors>True</IgnoreErrors>
-      <CompileStyle>Nested</CompileStyle>
-      <DebugInfo>False</DebugInfo>
-    </Content>
-    <Content Include="Themes\Flex\Content\bs4\scss\bootstrap-reboot.scss">
-      <Compile>False</Compile>
-      <Minify>True</Minify>
-      <IgnoreWarnings>True</IgnoreWarnings>
-      <IgnoreErrors>True</IgnoreErrors>
-      <CompileStyle>Nested</CompileStyle>
-      <DebugInfo>False</DebugInfo>
-    </Content>
-    <Content Include="Themes\Flex\Content\bs4\scss\bootstrap.scss">
-      <Compile>False</Compile>
-      <Minify>True</Minify>
-      <OutputFolder>.</OutputFolder>
-      <IgnoreWarnings>True</IgnoreWarnings>
-      <IgnoreErrors>True</IgnoreErrors>
-      <CompileStyle>Nested</CompileStyle>
-      <DebugInfo>False</DebugInfo>
-    </Content>
-    <Content Include="Themes\Flex\Content\bs4\scss\_alert.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_animation.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_breadcrumb.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_button-group.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_buttons.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_card.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_carousel.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_close.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_code.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_custom-forms.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_dropdown.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_forms.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_grid.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_images.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_input-group.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_jumbotron.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_labels.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_list-group.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_media.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_mixins.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_modal.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_nav.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_navbar.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_normalize.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_pager.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_pagination.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_popover.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_print.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_progress.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_reboot.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_responsive-embed.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_tables.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_tooltip.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_type.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_utilities-background.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_utilities-responsive.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_utilities-spacing.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_utilities.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\_variables.scss" />
     <Content Include="Themes\Flex\Content\shared\_utils.scss" />
     <Content Include="Themes\Flex\Content\shared\_buttons.scss" />
     <Content Include="Themes\Flex\Content\shared\_forms.scss" />
-    <Content Include="Themes\Flex\Content\shared\_accordion.scss" />
     <Content Include="Themes\Flex\Content\shared\_colors.scss" />
     <Content Include="Themes\Flex\Content\css\fonts\fontawesome-webfont.eot" />
     <Content Include="Themes\Flex\Content\css\fonts\fontawesome-webfont.ttf" />
@@ -1576,39 +1587,6 @@
     <Content Include="Themes\Flex\Content\css\fonts\fontawesome-webfont.woff2" />
     <Content Include="Themes\Flex\Content\css\fonts\FontAwesome.otf" />
     <Content Include="Themes\Flex\Content\shared\_typo.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_alert.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_background-variant.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_border-radius.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_breakpoints.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_buttons.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_cards.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_center-block.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_clearfix.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_forms.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_gradients.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_grid-framework.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_grid.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_hover.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_image.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_label.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_list-group.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_lists.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_nav-divider.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_navbar-align.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_pagination.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_progress.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_pulls.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_reset-filter.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_reset-text.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_resize.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_screen-reader.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_size.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_tab-focus.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_table-row.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_text-emphasis.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_text-hide.scss" />
-    <Content Include="Themes\Flex\Content\bs4\scss\mixins\_text-truncate.scss" />
-    <Content Include="Themes\Flex\Content\shared\_spacers.scss" />
     <Content Include="Themes\Flex\Content\shared\_modal-flex.scss" />
     <Content Include="Themes\Flex\Content\shared\_throbber.scss" />
     <Content Include="Themes\Flex\Content\shared\_spinner.scss" />
@@ -1643,7 +1621,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\LicenseRequired.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
-    <Content Include="Views\Shared\Layouts\_Checkout.cshtml" />
+    <Content Include="Views\Checkout\Layouts\_Checkout.cshtml" />
     <Content Include="Views\Shared\Partials\_ClientRes.cshtml" />
     <Content Include="Views\Shared\Partials\_CreateOrUpdateAddress.cshtml" />
     <Content Include="Views\Shared\Partials\_Notifications.cshtml" />
@@ -1682,7 +1660,7 @@
     <Content Include="Views\Catalog\ManufacturerAll.cshtml" />
     <Content Include="Views\Catalog\Partials\ManufacturerNavigation.cshtml" />
     <Content Include="Views\Catalog\ManufacturerTemplate.ProductsInGridOrLines.cshtml" />
-    <Content Include="Views\Catalog\Partials\CatalogMenu.cshtml" />
+    <Content Include="Views\Catalog\Partials\MegaMenu.cshtml" />
     <Content Include="Views\Catalog\Partials\PopularProductTags.cshtml" />
     <Content Include="Views\Catalog\ProductsByTag.cshtml" />
     <Content Include="Views\Catalog\ProductTagsAll.cshtml" />
@@ -1880,6 +1858,8 @@
     <Content Include="Views\Search\FacetTemplates\Category.cshtml" />
     <Content Include="Views\Catalog\Partials\OffCanvasMenuManufacturers.cshtml" />
     <Content Include="Views\Common\Partials\Breadcrumb.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Checkout.cshtml" />
+    <Content Include="Views\Catalog\Partials\CatalogMenu.cshtml" />
     <Content Include="Views\Catalog\Partials\CatalogMenu.Navbar.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>

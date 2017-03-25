@@ -905,7 +905,7 @@
                 @if (Model.CustomerComment.HasValue())
                 {
                     <h4>@T("Admin.Order.CustomerComment.Heading")</h4>
-                    <div class="alert alert-info fade in">
+                    <div class="alert alert-info fade show">
                         @Model.CustomerComment
                     </div>
                 }
@@ -1378,7 +1378,7 @@
 	
 	if (Model.AutoUpdateOrderItemInfo.HasValue())
 	{
-		<div class="alert alert-info fade in">
+		<div class="alert alert-info fade show">
 			<button class="close" data-dismiss="alert">&#215;</button>
 			@Html.Raw(Model.AutoUpdateOrderItemInfo)
 		</div>

@@ -8,7 +8,7 @@
     <tr class="cart-item-row">
 		@if (Model.IsEditable)
 		{
-			<td class="remove text-xs-center">
+			<td class="remove text-center">
                 <a class="remove ajax-cart-link btn btn-secondary btn-sm"
                    href="#"
                    rel="nofollow"
@@ -17,7 +17,7 @@
                    data-type="cart"
                    data-action="remove"
                    title='@T("Common.Remove")'>
-                    <i class="fa fa-trash-o m-r-0"></i>
+                    <i class="fa fa-trash-o mr-0"></i>
                 </a>
 
                 <script type="text/javascript">
@@ -310,7 +310,7 @@
 
     @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
     {
-        <div class="selected-checkout-attributes card card-block text-xs-left">
+        <div class="selected-checkout-attributes card card-block text-left">
             @Html.Raw(Model.CheckoutAttributeInfo)
         </div>
     }
@@ -402,7 +402,7 @@
 			</div>
         }
 
-		<div class="cart-footer row m-t-3">
+		<div class="cart-footer row mt-5">
 
 			<div class="col-sm-8 order-totals-left">
 
@@ -483,7 +483,7 @@
 	}
 	else
 	{
-		<div class="alert alert-info fade in">
+		<div class="alert alert-info fade show">
 			@T("ShoppingCart.CartIsEmpty")
 		</div>
 	}

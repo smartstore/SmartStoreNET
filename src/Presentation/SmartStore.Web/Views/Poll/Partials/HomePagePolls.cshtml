@@ -4,7 +4,7 @@
 
 @if (Model.Count > 0)
 {
-    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 todays-poll-box-block m-t-3">
+    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 todays-poll-box-block mt-5">
         @foreach (var poll in Model)
         {
             Html.RenderPartial("_Poll", poll);

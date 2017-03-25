@@ -8,7 +8,7 @@
 @{ Html.RenderWidget("header_menu_before"); }
 
 <nav class="menubar">
-    <nav class="menubar-group m-l-0">
+    <nav class="menubar-group ml-0">
         @{ 
 			Html.RenderAction("LanguageSelector", "Common");
 			Html.RenderAction("CurrencySelector", "Common");
@@ -104,7 +104,7 @@
 
     @if (Model.DisplayAdminLink)
     {
-        <nav class="menubar-group menubar-group--special hidden-lg-down">
+        <nav class="menubar-group menubar-group--special d-none d-xl-block">
             <a class="menubar-link" href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
                 <i class="fa fa-cog menubar-icon"></i>
 				<span>@T("Account.Administration")</span>  

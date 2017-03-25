@@ -40,7 +40,7 @@
     <a href = "#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-left"></i></a>
 </div>
 
-<ul class="nav navbar-nav" data-selected-menu-item="@currentNavItem">
+<ul class="navbar-nav flex-row flex-nowrap" data-selected-menu-item="@currentNavItem">
 
     @{ Html.RenderWidget("mainmenu_before_first_item"); }
 
@@ -72,7 +72,7 @@
 
             @if(!String.IsNullOrEmpty(item.BadgeText))
             {
-                <label class="label label-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
+                <label class="badge badge-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
             }
         </li>
     }

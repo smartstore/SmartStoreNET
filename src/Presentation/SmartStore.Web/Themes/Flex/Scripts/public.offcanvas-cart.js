@@ -228,8 +228,8 @@ var ShopBar = (function($) {
         var button = buttons[data.type];
         var badge = $("span.label", button);
         
-        if (badge.hasClass("hidden-xs-up")) {
-            badge.removeClass("hidden-xs-up");
+        if (badge.hasClass("d-none")) {
+        	badge.removeClass("d-none");
         }
 
         ShopBar.loadHtml(tool, function () {

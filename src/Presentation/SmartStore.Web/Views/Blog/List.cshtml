@@ -61,7 +61,7 @@
             {
                 <article class="blogpost row">
 
-                    <div class="blogpost-info col-xs-3">
+                    <div class="blogpost-info col-3">
                         @if (item.AllowComments)
                         {
                             <a class="blogpost-comments@(item.NumberOfComments > 0 ? " vivid" : "")" 
@@ -91,7 +91,7 @@
                         }
                     </div>
 
-                    <div class="blogpost-content col-xs-9">
+                    <div class="blogpost-content col-9">
                         <h3 class="blogpost-title">
                             <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
                                 @item.Title

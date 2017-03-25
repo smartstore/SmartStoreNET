@@ -243,7 +243,7 @@
 				</td>
 			</tr>
 		}
-		<tr @Html.Raw(Model.AvailableProductTemplates.Count < 2 ? "hidden class='hide hidden-xs-up'" : "")>
+		<tr @Html.Raw(Model.AvailableProductTemplates.Count < 2 ? "hidden class='hide d-none'" : "")>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.ProductTemplateId)
 			</td>

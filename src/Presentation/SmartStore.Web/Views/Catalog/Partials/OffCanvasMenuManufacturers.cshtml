@@ -10,7 +10,7 @@
         {
             <li class="ocm-item" data-ajax="false">
                 <div class="row sm-gutters align-items-center">
-                    <div class="col-xs col-img">
+                    <div class="col col-img">
                         <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link img-center-container">
                             @if (manufacturer.PictureUrl.HasValue() && Model.DisplayImages)
                             {
@@ -18,7 +18,7 @@
                             }
                         </a>
                     </div>
-                    <div class="col-xs col-data">
+                    <div class="col col-data">
                         @manufacturer.Name
                     </div>
                 </div>

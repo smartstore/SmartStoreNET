@@ -35,8 +35,8 @@
 			{
 				@Html.ValidationSummary("", new { @class = "alert alert-danger m-b-0" })
 			}
-			<div class="write-review m-b-2" id="review-form">
-                <h4 class="hidden-xs-up">@T("Reviews.Overview.AddNew")</h4>
+			<div class="write-review mb-4" id="review-form">
+                <h4 class="d-none">@T("Reviews.Overview.AddNew")</h4>
                 @using (Html.BeginForm())
 				{
 					@Html.AntiForgeryToken()
@@ -96,7 +96,7 @@
                 <div class="block-title">
                     <h3>@T("Reviews.ExistingReviews") <small class="text-muted">(@Model.Items.Count)</small></h3>
                 </div>
-                <div class="block-body p-t-2">
+                <div class="block-body pt-3">
 					@{ Html.RenderPartial("Product.Reviews", Model); }
                 </div>
             </div>

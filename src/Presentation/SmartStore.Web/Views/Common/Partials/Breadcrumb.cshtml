@@ -2,7 +2,7 @@
 
 @{ Html.RenderWidget("breadcrumb_before"); }
 
-<div class="breadcrumb-container hidden-sm-down">
+<div class="breadcrumb-container d-none d-md-block">
 	<ol class="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
 		<li class="breadcrumb-item" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
 			<a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")" itemprop="url">

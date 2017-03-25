@@ -87,7 +87,7 @@ body.canvas-noscroll {
 }
 
 body.canvas-blocking .canvas-blocker {
-    z-index: $zindex-navbar-fixed+1 !important;
+    z-index: $zindex-fixed+1 !important;
     opacity: 0.3;
     transition: opacity $offcanvas-duration $offcanvas-easing,
                 transform $offcanvas-duration $offcanvas-easing,

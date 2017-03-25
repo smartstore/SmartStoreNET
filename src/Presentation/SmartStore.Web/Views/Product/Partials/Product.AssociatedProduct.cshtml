@@ -14,7 +14,7 @@
 <hr />
 
 <article class="pd-variant row update-container" data-url="@updateUrl" itemscope itemtype="http://schema.org/Product">
-	<div class="col-xs-4 col-sm-6 col-lg-3">
+	<div class="col-4 col-sm-6 col-lg-3">
 		<div class="pd-variant-picture img-center-container">
 			@if (Model.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue())
 			{
@@ -25,7 +25,7 @@
 			}
 		</div>
 	</div>
-	<div class="col-xs-8 col-sm-6 col-lg-4">
+	<div class="col-8 col-sm-6 col-lg-4">
 		<!-- Title/Brand/ReviewSummary -->
 		@{ Html.RenderPartial("Product.Info", Model); }
 
@@ -34,7 +34,7 @@
 			@{ Html.RenderPartial("Product.Attrs", Model); }
 		</div>
 	</div>
-	<div class="col-xs-12 col-lg-5 d-flex">
+	<div class="col col-lg-5 d-flex">
 		<!-- Offer box -->
 		@{ Html.RenderPartial("Product.Offer", Model); }
 	</div>

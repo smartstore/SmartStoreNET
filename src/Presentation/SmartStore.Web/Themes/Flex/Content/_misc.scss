@@ -66,8 +66,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .breadcrumb > li + li::before {
-    display: none;
-    content: '|';
+    display: none !important;
 }
 
 .breadcrumb-item > a {

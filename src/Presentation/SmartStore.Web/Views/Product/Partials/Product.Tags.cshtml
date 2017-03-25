@@ -13,7 +13,7 @@
     <div class="block-title">
         <h4>@T("Products.Tags")</h4>
     </div>
-    <div class="block-body p-t-1">
+    <div class="block-body pt-3">
         @for (int i = 0; i < Model.Count; i++)
         {
             <a href="@Url.RouteUrl("ProductsByTag", new { productTagId = Model[i].Id, SeName = Model[i].SeName })" class="pd-tag">

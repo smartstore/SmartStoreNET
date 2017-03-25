@@ -30,7 +30,7 @@
                 }
 
                 function closeNow(link) {
-                    $(link.data("target")).removeClass("open");
+                    $(link.data("target")).removeClass("show");
 
                     if (link.hasClass("dropdown-toggle")) {
                         link.closest("li").removeClass("active");
@@ -46,14 +46,14 @@
                     }
 
                     // just open if there are no open menus, else wait and try again as long as there is a menu open
-                    if (navElems.hasClass('active') || megamenuDropdownContainer.hasClass('open')) {
+                    if (navElems.hasClass('active') || megamenuDropdownContainer.hasClass('show')) {
                         tempLink = link;
                         openTimeout = setTimeout(function () { tryOpen(link); }, 50);
                     }
                     else {
                     	clearTimeout(openTimeout);
 
-                    	$(link.data("target")).addClass("open");
+                    	$(link.data("target")).addClass("show");
 
                     	if (link.hasClass("dropdown-toggle")) {
                     		link.closest("li").addClass("active");
@@ -406,7 +406,7 @@
                                 	// Init carousel
                                     applyCommonPlugins(container);
 
-                                    if (container.hasClass("open")) {
+                                    if (container.hasClass("show")) {
                                         container.data("display-rotator", false);
                                     }
                                 }

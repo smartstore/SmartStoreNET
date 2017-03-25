@@ -22,14 +22,14 @@
 			<div class="pd-bundle-item-top row no-gutters">
 				@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
 				{
-					<div class="pd-bundle-item-image col-xs" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">
+					<div class="pd-bundle-item-image col" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">
 						<img src="@item.DetailsPictureModel.DefaultPictureModel.ImageUrl"
 							 class="img-fluid pd-dyn-thumb" 
 							 alt="@item.DetailsPictureModel.AlternateText" 
 							 title="@item.DetailsPictureModel.DefaultPictureModel.Title" />
 					</div>
 				}
-				<div class="pd-bundle-item-body col-xs p-l-1">
+				<div class="pd-bundle-item-body col pl-3">
 					<div class="pd-bundle-item-name">
 						@if (item.BundleItem.Quantity > 1)
 						{
@@ -55,7 +55,7 @@
 
 					@if (displayAttrs || displayPrice || displayStock)
 					{
-						<div class="pd-bundle-item-offer p-t-1">
+						<div class="pd-bundle-item-offer pt-3">
 							@if (displayAttrs)
 							{
 								<div class="pd-bundle-item-attribute-info">
@@ -81,7 +81,7 @@
 
 			@if (item.ProductVariantAttributes.ShouldBeRendered())
 			{
-				<div class="pd-bundle-item-variants@(item.BundleItem.IsBundleItemPricing ? "" : " hidden-xs-up") p-t-1">
+				<div class="pd-bundle-item-variants@(item.BundleItem.IsBundleItemPricing ? "" : " d-none") pt-3">
 					@{ Html.RenderPartial("Product.Variants", item.ProductVariantAttributes, new ViewDataDictionary()); }
 				</div>
 			}
@@ -90,7 +90,7 @@
 			{
 				var dataDictBundleItemGiftCard = new ViewDataDictionary();
 				dataDictBundleItemGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_{1}", item.Id, item.BundleItem.Id);
-				<div class="pd-bundle-item-giftcard p-t-1">
+				<div class="pd-bundle-item-giftcard pt-3">
 					@Html.Partial("Product.GiftCard", item.GiftCard, dataDictBundleItemGiftCard)
 				</div>
 			}

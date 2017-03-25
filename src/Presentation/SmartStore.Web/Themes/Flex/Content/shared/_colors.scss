@@ -772,66 +772,6 @@ $clr-white-list: (
 $clr-white: map-get($clr-white-list, "base");
 
 
-
-//
-// Brand
-//
-
-$clr-brand-facebook:      #3b5998;
-$clr-brand-twitter:       #55acee;
-$clr-brand-github:        #bd2c00;
-$clr-brand-github2:       #ff9933;
-$clr-brand-github3:       #4183c4;
-$clr-brand-google:        #4285f4;
-$clr-brand-google2:       #db4437;
-$clr-brand-google3:       #f4b400;
-$clr-brand-google4:       #0f9d58;
-$clr-brand-google5:       #e7e6dd;
-$clr-brand-googleplus:    #dd4b39;
-$clr-brand-amazon:        #ff9900;
-$clr-brand-atlassian:     #003366;
-$clr-brand-dropbox:       #007ee5;
-$clr-brand-ebay:          #e53238;
-$clr-brand-flickr:        #0063dc;
-$clr-brand-html5:         #ec6231;
-$clr-brand-instagram:     #3f729b;
-$clr-brand-linkedin:      #007bb6;
-$clr-brand-paypal:        #3b7bbf;
-$clr-brand-pinterest:     #cc2127;
-$clr-brand-rss:           #ee802f;
-$clr-brand-skype:         #00aff0;
-$clr-brand-stackoverflow: #ef8236;
-$clr-brand-xing:          #126567;
-$clr-brand-youtube:       #cd201f;
-$clr-brand-microsoft:     #f65314;
-$clr-brand-windows:       #00bcf2;
-$clr-brand-bitbucket:     #205081;
-
-$clr-brand-list: (
-    "facebook": $clr-brand-facebook,
-    "twitter": $clr-brand-twitter,
-    "github": $clr-brand-github,
-    "github2": $clr-brand-github2,
-    "github3": $clr-brand-github3,
-    "google": $clr-brand-google,
-    "googleplus": $clr-brand-googleplus,
-    "amazon": $clr-brand-amazon,
-    "ebay": $clr-brand-ebay,
-    "html5": $clr-brand-html5,
-    "instagram": $clr-brand-instagram,
-    "linkedin": $clr-brand-linkedin,
-    "paypal": $clr-brand-paypal,
-    "rss": $clr-brand-rss,
-    "pinterest": $clr-brand-pinterest,
-    "xing": $clr-brand-xing,
-    "skype": $clr-brand-skype,
-    "youtube": $clr-brand-youtube,
-    "microsoft": $clr-brand-microsoft,
-    "windows": $clr-brand-windows,
-    "bitbucket": $clr-brand-bitbucket
-);
-
-
 //
 // List for all Colors for looping
 //
@@ -857,8 +797,7 @@ $clr-list-all: (
   "grey":        $clr-grey-list,
   "blue-grey":   $clr-blue-grey-list,
   "black":       $clr-black-list,
-  "white":       $clr-white-list,
-  "brand":       $clr-brand-list
+  "white":       $clr-white-list
 );
 
 

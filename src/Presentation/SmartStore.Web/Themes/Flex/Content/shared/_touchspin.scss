@@ -80,6 +80,7 @@ $touchspin-btn-width:                1.6rem;
     }
 
     .form-control ~ .bootstrap-touchspin-postfix {
+        display: inline-block;
         position: absolute;
         background: transparent;
         border: none;

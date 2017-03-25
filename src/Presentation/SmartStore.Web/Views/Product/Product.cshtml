@@ -44,13 +44,13 @@
 			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
 				<section class="row pd-section pd-section-top">
 					<!-- Picture -->
-					<div class="col-xs-12 col-md-6 col-lg-7 pd-data-col">
+					<div class="col-12 col-md-6 col-lg-7 pd-data-col">
 						<div id="pd-gallery-container">
 							@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
 						</div>
 					</div>
 					<!-- Sidebar: Info, Price, Buttons etc. -->
-					<aside class="col-xs-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
+					<aside class="col-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
 						<!-- Title/Brand/ReviewSummary -->
 						@{ Html.RenderPartial("Product.Info", Model); }
 
@@ -118,7 +118,7 @@
 						<!-- social share -->
 						@if (Model.ProductShareCode.HasValue())
 						{
-							<div class="pd-share d-flex justify-content-@(Model.ProductType == ProductType.GroupedProduct ? "start m-t-2" : "center m-t-1")">
+							<div class="pd-share d-flex justify-content-@(Model.ProductType == ProductType.GroupedProduct ? "start mt-4" : "center mt-3")">
 								@Html.Raw(Model.ProductShareCode)
 							</div>
 						}

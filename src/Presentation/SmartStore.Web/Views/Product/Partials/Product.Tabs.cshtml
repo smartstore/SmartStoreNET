@@ -40,7 +40,7 @@
 
 @helper TabReviews() {{
 	var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
-	<p class="m-b-2">
+	<p class="mb-4">
 		@if (reviews.HasValue())
 		{
 			<a class="btn btn-warning" href="@Url.Action("Reviews", new { id = Model.Id })">

@@ -43,7 +43,7 @@ $mm-zindex-base:                        ($zindex-dropdown - 20);
 } 
 
 // horizontal main navbar 
-.megamenu .nav {
+.megamenu .navbar-nav {
 	position: relative;
 	white-space: nowrap;
 	/* overwrites inline width */
@@ -62,11 +62,7 @@ $mm-zindex-base:                        ($zindex-dropdown - 20);
     }
 
     .nav-item {
-	    float: none !important;
-	    display: inline-block;
-        position: relative;
- 
-        .label {
+        .badge {
             position: absolute;
             right: 3px;
             top: 7px;
@@ -74,10 +70,10 @@ $mm-zindex-base:                        ($zindex-dropdown - 20);
         }
 
         /* TODO: (mc) > (mh) correct enum BadgeStyle, determine valid entries for bs4 */
-        .label-important {
+        .badge-important {
             background: #0275d8; /* $brand-primary */
         }
-        .label-inverse {
+        .badge-inverse {
             background: #d9534f; /* $brand-danger */
         }
 

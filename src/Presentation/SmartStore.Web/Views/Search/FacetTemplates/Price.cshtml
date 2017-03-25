@@ -29,17 +29,17 @@
 		string value = customRangeFacet.Value.Value != null ? customRangeFacet.Value.Value.ToString() : "";
 		string upperValue = customRangeFacet.Value.UpperValue != null ? customRangeFacet.Value.UpperValue.ToString() : "";
 
-		<div class="d-flex flex-nowrap align-items-center m-t-05">
-			<div class="flex-grow-1 p-r-05">
+		<div class="d-flex flex-nowrap align-items-center mt-2">
+			<div class="flex-grow-1 pr-2">
 				<input type="number" maxlength="7" id="price-range-from" class="form-control form-control-sm" value="@value" placeholder="@T("Search.PriceRange.From")" />
 			</div>
-			<div class="flex-grow-0 fw-700">
+			<div class="flex-grow-0 font-weight-700">
 				<span>-</span>
 			</div>
-			<div class="flex-grow-1 p-l-05">
+			<div class="flex-grow-1 pl-2">
 				<input type="number" maxlength="7" id="price-range-to" class="form-control form-control-sm" value="@upperValue" placeholder="@T("Search.PriceRange.To")" />
 			</div>
-			<div class="flex-grow-0 p-l-1">
+			<div class="flex-grow-0 pl-3">
 				<button type="button" class="btn btn-primary btn-sm btn-icon" id="btn-custom-price-range">
 					<i class="fa fa-angle-right fs-h5"></i>
 				</button>

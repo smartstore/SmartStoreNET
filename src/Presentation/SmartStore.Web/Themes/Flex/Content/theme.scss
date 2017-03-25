@@ -1,12 +1,8 @@
-/*@import url(https://fonts.googleapis.com/css?family=Roboto:400,400italic,500,500italic,700,700italic,300,300italic);*/
-
-
 /* Theme: ALPHA 
 ------------------------------ */
 
 @import '~/.app/themevars.scss';
 
-$enable-flex:                   true;
 $enable-rounded:                true;
 $enable-shadows:                true;
 $enable-gradients:              false;
@@ -17,60 +13,72 @@ $enable-grid-classes:           true;
 $body-color:                    #333;
 $link-color:                    #08c;
 
-$brand-primary:                 #3f51b5; // #0275d8
-$brand-danger:                  #f44336; // #d9534f;
-$brand-warning:                 #ff9800; // #f0ad4e;
-$brand-info:                    #78909c; // #5bc0de;
+$red:                           #f44336;
+$orange:                        #ff9800;
+$yellow:                        #ffeb3b;
+$green:                         #4caf50;
+$blue:                          #0275d8;
+$bluegrey:                      #78909c;
+$indigo:                        #3f51b5;
+$teal:                          #009688;
+$pink:                          #ff5b77;
+$purple:                        #9c27b0;
 
-$headings-line-height:          1.3;
+$brand-primary:                 $indigo;
+$brand-success:                 $green;
+$brand-danger:                  $red;
+$brand-warning:                 $orange;
+$brand-info:                    $bluegrey;
 
-$font-family-sans-serif:        -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
-$font-family-serif:             Georgia, "Times New Roman", Times, serif !default;
-$font-family-monospace:         Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
-$font-family-base:              $font-family-sans-serif !default;
+$headings-line-height:          1.2;
 
-$font-size-root:                16px;
+$font-family-sans-serif:        -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-family-monospace:         Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+$font-family-base:              $font-family-sans-serif;
+
 $font-size-base:                0.875rem; // 14px
-$font-size-lg:                  1rem; // 1.25rem (16px)
-$font-size-sm:                  0.8125rem; // .875rem (13px)
-$font-size-xs:                  0.75rem; // .75rem (12px)
-$line-height:                   1.8;
+$font-size-lg:                  1rem; // 16px
+$font-size-sm:                  0.8125rem; // 13px
+$font-size-xs:                  0.75rem; // 2px
+$line-height-base:              1.8;
 $line-height-sm:                1.8;
 $line-height-lg:                1.5;
 
-$font-size-h1:                  2.25rem; // 2.5rem
-$font-size-h2:                  1.75rem; // 2rem
-$font-size-h3:                  1.5rem; // 1.75rem
-$font-size-h4:                  1.25rem; // 1.5rem
-$font-size-h5:                  1rem; // 1.25rem
-$font-size-h6:                  $font-size-base; // 1rem;
+$font-size-h1:                  2.25rem;
+$font-size-h2:                  1.75rem;
+$font-size-h3:                  1.5rem;
+$font-size-h4:                  1.25rem;
+$font-size-h5:                  1rem;
+$font-size-h6:                  $font-size-base;
 
-$display1-size:                 5rem; // 6rem
-$display2-size:                 5rem; // 5.5rem
-$display3-size:                 4.5rem; // 4.5rem
-$display4-size:                 3rem; // 3.5rem
+$display1-size:                 5.5rem;
+$display2-size:                 5rem;
+$display3-size:                 4.5rem;
+$display4-size:                 3rem;
 
-$border-radius:                 3px;
-$border-radius-lg:              4px; 
-$border-radius-sm:              2px;
+$border-radius:                 .25rem; // 3px
+$border-radius-lg:              .3rem; // 4px
+$border-radius-sm:              .2rem; // 2px
 
-$btn-border-radius:             2px;
-$btn-border-radius-lg:          3px;
-$btn-border-radius-sm:          2px;
+$btn-border-radius:             .125rem;
+$btn-border-radius-lg:          .1875rem;
+$btn-border-radius-sm:          .125rem;
 
 $input-border-radius:           $btn-border-radius;
 $input-border-radius-lg:        $btn-border-radius-lg;
 $input-border-radius-sm:        $btn-border-radius-sm;
 
 $btn-font-weight:               600;
-$btn-padding-x:                 1rem; // 1rem
-$btn-padding-y:                 0.5rem; // 0.375rem
-$btn-padding-x-sm:              0.75rem; // 0.75rem
-$btn-padding-y-sm:              0.375rem; // 0.25rem
-$btn-padding-x-lg:              1.5rem; // 1.25rem
-$btn-padding-y-lg:              0.8725rem; // 0.75rem
+$btn-line-height:               1.8;
+$btn-padding-x:                 1rem;
+$btn-padding-y:                 0.5rem;
+$btn-padding-x-sm:              0.75rem;
+$btn-padding-y-sm:              0.375rem;
+$btn-padding-x-lg:              1.5rem;
+$btn-padding-y-lg:              0.8725rem;
 
 // Equalize input vertical paddings with button paddings
+$input-line-height:             1.8;
 $input-padding-y:               $btn-padding-y;
 $input-padding-y-sm:            $btn-padding-y-sm;
 $input-padding-y-lg:            $btn-padding-y-lg;
@@ -78,23 +86,18 @@ $input-box-shadow:              none;
 $input-box-shadow-focus:        none;
 
 
-/*$dropdown-border-color:     #ddd;
-$popover-border-color:      #ddd;
-$card-border-color:         rgba(0,0,0, 0.12);*/
-
 // Pagination
 
-$pagination-padding-x:          12px;
-$pagination-padding-y:          2px;
-$pagination-padding-x-sm:       8px;
+$pagination-padding-x:          .75rem;
+$pagination-padding-y:          .125rem;
+$pagination-padding-x-sm:       .5rem;
 $pagination-padding-y-sm:       0;
-$pagination-padding-x-lg:       16px;
-$pagination-padding-y-lg:       4px;
+$pagination-padding-x-lg:       1rem;
+$pagination-padding-y-lg:       .25rem;
 
 
 $pagination-color:              $body-color;
 $pagination-bg:                 transparent;
-$pagination-border-width:       1px;
 $pagination-border-color:       #ddd;
 
 $pagination-hover-color:        $pagination-color;
@@ -108,20 +111,48 @@ $pagination-active-border:      $pagination-border-color;
 $alert-border-radius:           0;
 
 
-// Pre Bootstrap
-@import "shared/_spacers.scss"; 
+// Brand color variables
+
+$clr-brand-facebook:            #3b5998;
+$clr-brand-twitter:             #55acee;
+$clr-brand-github:              #bd2c00;
+$clr-brand-github2:             #ff9933;
+$clr-brand-github3:             #4183c4;
+$clr-brand-google:              #4285f4;
+$clr-brand-google2:             #db4437;
+$clr-brand-google3:             #f4b400;
+$clr-brand-google4:             #0f9d58;
+$clr-brand-google5:             #e7e6dd;
+$clr-brand-googleplus:          #dd4b39;
+$clr-brand-amazon:              #ff9900;
+$clr-brand-atlassian:           #003366;
+$clr-brand-dropbox:             #007ee5;
+$clr-brand-ebay:                #e53238;
+$clr-brand-flickr:              #0063dc;
+$clr-brand-html5:               #ec6231;
+$clr-brand-instagram:           #3f729b;
+$clr-brand-linkedin:            #007bb6;
+$clr-brand-paypal:              #3b7bbf;
+$clr-brand-pinterest:           #cc2127;
+$clr-brand-rss:                 #ee802f;
+$clr-brand-skype:               #00aff0;
+$clr-brand-stackoverflow:       #ef8236;
+$clr-brand-xing:                #126567;
+$clr-brand-youtube:             #cd201f;
+$clr-brand-microsoft:           #f65314;
+$clr-brand-windows:             #00bcf2;
+$clr-brand-bitbucket:           #205081;
 
 // Bootstrap
-@import "bs4/scss/bootstrap.scss"; 
+@import "bs4/scss/bootstrap.scss";
 
 // Global
+/*@import 'shared/_colors.scss';*/ // <-- uncomment this for convenient prototyping
 @import 'shared/_mixins.scss'; 
-@import 'shared/_colors.scss'; 
 @import 'shared/_typo.scss';
 @import 'shared/_buttons.scss';
 @import 'shared/_forms.scss';
 @import 'shared/_nav.scss';
-@import 'shared/_accordion.scss';
 @import "shared/_modal-flex.scss";
 @import "shared/_throbber.scss";
 @import "shared/_spinner.scss";
@@ -334,7 +365,7 @@ a.pretty-link {
         left: 0;
         right: 0;
         bottom: 0;
-        height: ($font-size-base * $line-height) * 3;
+        height: ($font-size-base * $line-height-base) * 3;
         background: linear-gradient(to bottom, rgba($body-bg, 0), $body-bg 70%, $body-bg 100%);
     }
 
@@ -376,70 +407,6 @@ a.pretty-link {
 
 .data-binding {
     animation: data-binding 0.5s ease-in-out;
-}
-
-
-//
-// Bootstrap 4 Alpha 1 fixes & surrogates (DELETE later!)
-// ------------------------------------------------------
-
-.ml-auto    { margin-left: auto !important }
-.mr-auto    { margin-right: auto !important }
-.mt-auto    { margin-top: auto !important }
-.mb-auto    { margin-bottom: auto !important }
-.m-auto     { margin: auto !important }
-.mx-auto    { margin-left: auto !important; margin-right: auto !important }
-.my-auto    { margin-top: auto !important; margin-bottom: auto !important }
-
-.col-xs, .col-sm, .col-md, .col-lg, .col-xl {
-    display: block;
-    position: relative;
-    min-height: 1px;
-    width: 100%;
-    padding-left: $grid-gutter-width / 2;
-    padding-right: $grid-gutter-width / 2;
-}
-
-@each $breakpoint in map-keys($grid-breakpoints) {
-    @include media-breakpoint-up($breakpoint) {
-        .col-#{$breakpoint} {  
-            flex-basis: 0;
-            flex-grow: 1;
-            max-width: 100%;
-        }
-    }
-}
-
-.d-block                    { display: block !important; }
-.d-inline                   { display: inline !important; }
-.d-inline-block             { display: inline-block !important; }
-.d-flex                     { display: flex !important; }
-
-.flex-nowrap                { flex-wrap: nowrap !important; }
-.flex-wrap                  { flex-wrap: wrap !important; }
-.flex-row                   { flex-direction: row !important; }
-.flex-column                { flex-direction: column !important; }
-
-.justify-content-start      { justify-content: flex-start; }
-.justify-content-center     { justify-content: center; }
-.justify-content-around     { justify-content: space-around; }
-.justify-content-between    { justify-content: space-between; }
-.justify-content-end        { justify-content: flex-end; }
-
-.align-items-start          { align-items: flex-start; }
-.align-items-end            { align-items: flex-end; }
-.align-items-center         { align-items: center; }
-.align-items-baseline       { align-items: baseline; }
-.align-items-stretch        { align-items: stretch; }
-
-
-.no-gutters {
-    margin-right: 0;
-    margin-left: 0;
-    > .col, > [class*="col-"] {
-        padding-right: 0;
-        padding-left: 0;
-    }
 }
 
 

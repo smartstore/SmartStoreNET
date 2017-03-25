@@ -207,7 +207,7 @@ $ocm-horizontal-padding:                1.6rem;
         transform: translateY(-50%);
     }
 
-    .open .menubar-caret:before {
+    .show .menubar-caret:before {
         content: "\f106";
     }
 
@@ -227,7 +227,7 @@ $ocm-horizontal-padding:                1.6rem;
         display: none;
     }
     
-    .dropdown.open > .menubar-link {
+    .dropdown.show > .menubar-link {
         font-weight: 600;
     }
 

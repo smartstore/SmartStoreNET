@@ -13,7 +13,7 @@
 	{
 		if (Model.ProductPrice.CallForPrice)
 		{
-			<div class="col-xs">
+			<div class="col">
 				<a class="btn btn-secondary btn-lg btn-block" rel="nofollow" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
 					<i class="fa fa-envelope"></i>
 					<span>@T("Products.CallForPrice.GoToForm")</span>
@@ -24,12 +24,12 @@
 		{
 			if (!Model.AddToCart.HideQuantityControl)
 			{
-				<div class="col-xs pd-offer-action-qty">
+				<div class="col pd-offer-action-qty">
 					@Html.EditorFor(model => model.AddToCart, "QtyInput", new { large = true })
 				</div>
 			}
 
-			<div class="col-xs flex-grow-1">
+			<div class="col flex-grow-1">
 				<a class="btn btn-primary btn-lg btn-block btn-add-to-cart ajax-cart-link"
 					href="#"
 					rel="nofollow"

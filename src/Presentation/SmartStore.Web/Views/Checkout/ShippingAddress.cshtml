@@ -20,7 +20,7 @@
         @if (Model.ExistingAddresses.Count > 0)
         {
             <div class="block">
-                <div class="block-title fs-h4 m-b-1 m-t-2">
+                <div class="block-title fs-h4 mb-3 mt-4">
                     @T("Checkout.SelectShippingAddress")
                 </div>
                 <div class="block-body">
@@ -110,7 +110,7 @@
         @{ Html.RenderWidget("checkout_shipping_address_middle"); }
 
         <div class="block">
-            <div class="block-title fs-h4 m-b-1 m-t-2">
+            <div class="block-title fs-h4 mb-3 mt-4">
                 @(Model.ExistingAddresses.Count > 0 ? T("Checkout.OrEnterNewAddress") : T("Checkout.EnterShippingAddress"))
             </div>
 

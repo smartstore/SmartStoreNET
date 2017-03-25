@@ -178,11 +178,11 @@ namespace SmartStore.Web.Framework.UI
 			// Alignment
 			if (pager.Alignment == PagerAlignment.Right)
 			{
-				pager.HtmlAttributes.AppendCssClass("text-xs-right");
+				pager.HtmlAttributes.AppendCssClass("text-right");
 			}
 			else if (pager.Alignment == PagerAlignment.Centered)
 			{
-				pager.HtmlAttributes.AppendCssClass("text-xs-center");
+				pager.HtmlAttributes.AppendCssClass("text-center");
 			}
 
 			writer.AddAttributes(pager.HtmlAttributes);

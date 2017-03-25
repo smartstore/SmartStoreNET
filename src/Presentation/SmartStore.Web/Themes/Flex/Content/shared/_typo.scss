@@ -9,22 +9,9 @@ $font-weight-medium:      600;
 $font-weight-bold:        700;
 
 @each $weight, $var in (unset, 100, 200, 300, 400, 500, 600, 700, 800, 900) {
-    .fw-#{$weight} {
+    .font-weight-#{$weight} {
         font-weight: $weight !important;
     }
-}
-
-.fw-light {
-    font-weight: $font-weight-light !important;
-}
-.fw-normal {
-    font-weight: $font-weight-normal !important;
-}
-.fw-medium {
-    font-weight: $font-weight-medium !important;
-}
-.fw-bold {
-    font-weight: $font-weight-bold !important;
 }
 
 

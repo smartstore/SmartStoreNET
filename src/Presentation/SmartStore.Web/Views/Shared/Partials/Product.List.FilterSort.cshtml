@@ -3,7 +3,7 @@
 @using SmartStore.Web.Models.Catalog;
 
 <!-- Filter -->
-<div class="artlist-action artlist-action--filter flex-grow-1 hidden-lg-up">
+<div class="artlist-action artlist-action--filter flex-grow-1 d-lg-none">
 	<div class="mf-dropdown">
 		<button class="btn btn-warning btn-labeled icon-right btn-no-border btn-block btn-toggle-filter-widget">
 			<span>@T("Products.ToFilter")</span>
@@ -15,13 +15,13 @@
 <!-- Sort -->
 <div class="artlist-action artlist-action--sort flex-grow-1">
 	<div class="mf-dropdown">
-		<button class="btn btn-secondary btn-artlist-action hidden-md-down" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
-			<i class="fa fa-sort hidden-xl-up"></i>
-			<span class="hidden-xl-up">@Model.CurrentSortOrderName</span>
-			<em class="hidden-lg-down">@T("Products.SortByX", "<span>" + Model.CurrentSortOrderName + "</span>")</em>	
+		<button class="btn btn-secondary btn-artlist-action d-none d-lg-block" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
+			<i class="fa fa-sort d-xl-none"></i>
+			<span class="d-xl-none">@Model.CurrentSortOrderName</span>
+			<em class="d-none d-xl-inline">@T("Products.SortByX", "<span>" + Model.CurrentSortOrderName + "</span>")</em>	
 			<i class="fa fa-caret-down"></i>
 		</button>
-		<button class="btn btn-grey btn-no-border btn-labeled icon-right btn-block hidden-lg-up">
+		<button class="btn btn-grey btn-no-border btn-labeled icon-right btn-block d-lg-none">
 			<span>@T("Products.ToSort")</span>
 			<b><i class="fa fa-fw fa-sort"></i></b>
 		</button>

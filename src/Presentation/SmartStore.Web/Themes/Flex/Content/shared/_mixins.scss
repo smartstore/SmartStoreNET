@@ -64,7 +64,7 @@
 
 @mixin fontastic($content, $size: 20px) {
     display: inline-block;
-    font: normal normal normal #{$font-size-root}/1 'fontastic';
+    font: normal normal normal 16px/1 'fontastic';
     font-size: $size;
     speak: none;
     text-transform: none;
@@ -73,7 +73,7 @@
 
 @mixin fontawesome($content, $size: inherit) {
     display: inline-block;
-    font: normal normal normal #{$font-size-root}/1 'FontAwesome';
+    font: normal normal normal 16px/1 'FontAwesome';
     font-size: $size;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;

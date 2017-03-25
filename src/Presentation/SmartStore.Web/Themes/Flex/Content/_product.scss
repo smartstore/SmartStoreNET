@@ -159,7 +159,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 
 .pd-offer {
     background: $pd-offer-bg;
-    padding: $grid-gutter-width / 2;
+    padding: $grid-gutter-width-base / 2;
     line-height: $pd-line-height;
     width: 100%;
 }

@@ -4,7 +4,7 @@ $btn-wide-padding-x:    1.8rem;
 $btn-wide-padding-x-lg: 2.5rem;
 $btn-wide-padding-x-sm: 1.2rem;
 
-$btn-size:              ($btn-padding-y * 2) + ($font-size-base * $line-height);
+$btn-size:              ($btn-padding-y * 2) + ($font-size-base * $line-height-base);
 $btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-lg * $line-height-lg);
 $btn-size-sm:           ($btn-padding-y-sm * 2) + ($font-size-sm * $line-height-sm);
 
@@ -37,14 +37,6 @@ $btn-size-sm:           $input-height-sm;*/
 .btn-secondary:focus, .btn-secondary.focus {
     background-color: #f2f2f2;
     border-color: rgba(0,0,0,.2) rgba(0,0,0,.2) rgba(0,0,0,.3)
-}
-
-.btn-lg:not(.btn-icon):not(.btn-circle), 
-.btn-group-lg > .btn:not(.btn-icon):not(.btn-circle) {
-    // make lg button font-size a bit larger (~16px)
-    @if $font-size-root < 16px {
-        font-size: 1.143rem;
-    }   
 }
 
 .btn-link {
@@ -230,7 +222,7 @@ $btn-grey-border:   rgba(0,0,0, 0.15);
             width: 1.25em;
             text-align: left;
             opacity: 0;
-            line-height: $line-height;
+            line-height: $line-height-base;
             transition: opacity 0.2s ease-out;
             transform: translateX(-100%);
         }

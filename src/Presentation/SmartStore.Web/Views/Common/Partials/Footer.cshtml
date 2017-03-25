@@ -32,8 +32,8 @@
 @if (Model.ShowSocialLinks && socialLinks.Any())
 {
 	<div class="row">
-		<div class="col-xs-12">
-			<div class="footer-social text-xs-center">
+		<div class="col">
+			<div class="footer-social text-center">
 				@foreach (var link in socialLinks)
                 {
 					<a href="@link.Item1" target="_blank" class="btn btn-secondary btn-circle btn-lg btn-social btn-social-@link.Item2">
@@ -49,7 +49,7 @@
     <div class="col-md-3">
         @if (Model.ShowThemeSelector)
         {
-			<div class="theme-selector hidden-sm-down">
+			<div class="theme-selector d-none d-md-block">
 				<h4>@T("Footer.Themes")</h4>
 				<div class="content">
 					@{ 
@@ -60,7 +60,7 @@
                         }
     </div>
 
-    <div class="col-md-3 col-xs-6">
+    <div class="col-6 col-md-3">
         <nav class="footer-quicklinks">
             <h4>@T("Footer.Service")</h4>
             <ul class="list-unstyled">
@@ -84,7 +84,7 @@
         </nav>
     </div>
 
-	<div class="col-md-3 col-xs-6">
+	<div class="col-6 col-md-3">
 		<nav class="footer-quicklinks company">
 			<h4>@T("Footer.Company")</h4>
 			<ul class="list-unstyled">
@@ -126,7 +126,7 @@
 
                 <div id="newsletter-subscribe-block">
 
-					<div class="input-group m-b-05">
+					<div class="input-group mb-2">
 						@Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email", @class = "form-control", placeholder = T("Newsletter.Email") })
 						<span class="input-group-btn">
 							<button id="newsletter-subscribe-button" class="btn btn-icon btn-success" title="@T("Newsletter.Button")">
@@ -158,7 +158,7 @@
 
 <div class="footer-disclaimer container text-muted">
     <div class="row">
-		<div class="col-md-4 text-xs-center text-md-left">
+		<div class="col-md-4 text-center text-md-left">
 			@if (Model.ShowLegalInfo)
 			{
 				<div class="footer-legal">
@@ -167,11 +167,11 @@
 			}
 		</div>
 
-		<div class="col-md-4 text-xs-center text-md-center">
+		<div class="col-md-4 text-center text-md-center">
 			@Html.Raw(Model.SmartStoreHint)
 		</div>
 
-		<div class="col-md-4 text-xs-center text-md-right">
+		<div class="col-md-4 text-center text-md-right">
 			<div>
 				@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)
 			</div>

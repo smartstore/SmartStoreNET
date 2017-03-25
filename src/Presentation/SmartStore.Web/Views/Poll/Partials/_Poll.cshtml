@@ -7,7 +7,7 @@
 }
 
 <div id="poll-block-@(Model.Id)" class="@(Model.SystemKeyword.Equals("RightColumnPoll") ? "" : "card") poll-item equalized-column" data-equalized-deep="true">
-    <div class="@(Model.SystemKeyword.Equals("RightColumnPoll") ? "fs-h6 m-b-1" : "card-header")" data-equalized-part="name">
+    <div class="@(Model.SystemKeyword.Equals("RightColumnPoll") ? "fs-h6 mb-3" : "card-header")" data-equalized-part="name">
         @Model.Name
     </div>
     @if (Model.AlreadyVoted)

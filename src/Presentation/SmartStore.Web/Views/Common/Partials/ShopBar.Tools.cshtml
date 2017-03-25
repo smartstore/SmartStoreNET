@@ -9,7 +9,7 @@
 
 <div class="shopbar-col shopbar-tools">
 	<!-- Hamburger Menu -->
-	<div class="shopbar-tool hidden-lg-up" id="shopbar-menu">
+	<div class="shopbar-tool d-lg-none" id="shopbar-menu">
 		<a class="shopbar-button" href="#" data-toggle="offcanvas" data-autohide="true" data-placement="left" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-menu">
 			<span class="shopbar-button-icon">
 				<i class="icm icm-menu"></i>
@@ -21,7 +21,7 @@
 	</div>
 
 	<!-- User -->
-	<div class="shopbar-tool hidden-lg-up" id="shopbar-user">
+	<div class="shopbar-tool d-lg-none" id="shopbar-user">
 		<a class="shopbar-button" href="@accountUrl">
 			<span class="shopbar-button-icon">
 				<i class="icm icm-user"></i>
@@ -39,7 +39,7 @@
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-repeat"></i>
-					<span class='label label-pill label-cart-amount label-@labelStyle @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
+					<span class='badge badge-pill label-cart-amount badge-@labelStyle @(Model.CompareItems == 0 ? "d-none" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
 				</span>
 				<span class="shopbar-button-label">
 					<span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
@@ -59,7 +59,7 @@
 				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-heart"></i>
-					<span class='label label-pill label-cart-amount label-@labelStyle @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
+					<span class='badge badge-pill label-cart-amount badge-@labelStyle @(Model.WishlistItems == 0 ? "d-none" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
 				</span>
 				<span class="shopbar-button-label">
 					<span>@T("Common.Shopbar.WishlistPartOne")</span><br />
@@ -79,7 +79,7 @@
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-bag"></i>
-					<span class='label label-pill label-cart-amount label-@(labelStyle)@(Model.ShoppingCartItems == 0 ? " hidden-xs-up" : "")' data-bind-to="TotalProducts">
+					<span class='badge badge-pill label-cart-amount badge-@(labelStyle)@(Model.ShoppingCartItems == 0 ? " d-none" : "")' data-bind-to="TotalProducts">
 						@Model.ShoppingCartItems
 					</span>
 				</span>

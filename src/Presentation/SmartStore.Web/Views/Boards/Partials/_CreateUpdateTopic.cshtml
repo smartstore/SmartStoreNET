@@ -23,14 +23,14 @@
         @Html.HiddenFor(model => model.ForumId)
 
         <div class="form-group row">
-            <label class="col-sm-2 text-xs-right form-control-label">@T("Forum.ForumName")</label>
+            <label class="col-sm-2 text-right form-control-label">@T("Forum.ForumName")</label>
             <div class="col-sm-10">
                 <span>@Model.ForumName</span>
             </div>
         </div>
 
         <div class="form-group row">
-            <label class="col-sm-2 text-xs-right form-control-label">@T("Forum.TopicTitle")</label>
+            <label class="col-sm-2 text-right form-control-label">@T("Forum.TopicTitle")</label>
             <div class="col-sm-10">
                 @Html.TextBoxFor(model => model.Subject, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Subject)
@@ -38,7 +38,7 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-push-2 col-sm-10 m-t-1">
+            <div class="col-sm-push-2 col-sm-10 mt-3">
                 @if (Model.ForumEditor == EditorType.BBCodeEditor)
                 {
                     @Html.BBCodeEditor("Text");
@@ -51,7 +51,7 @@
         @if (Model.IsCustomerAllowedToSetTopicPriority)
         {
             <div class="form-group row">
-                <label class="col-sm-2 text-xs-right form-control-label">@T("Forum.Priority")</label>
+                <label class="col-sm-2 text-right form-control-label">@T("Forum.Priority")</label>
                 <div class="col-sm-10">
                     @Html.DropDownList("TopicTypeId", new SelectList(@Model.TopicPriorities, "Value", "Text", @Model.TopicTypeId))
                 </div>
@@ -61,7 +61,7 @@
         @if (Model.IsCustomerAllowedToSubscribe)
         {
             <div class="row">
-                <div class="col-sm-push-2 col-sm-10 m-t-1">
+                <div class="col-sm-push-2 col-sm-10 mt-3">
                     <label>
                         @Html.CheckBox("Subscribed", @Model.Subscribed)
                         @T("Forum.NotifyWhenSomeonePostsInThisTopic")
@@ -71,7 +71,7 @@
         }
 
         <div class="row">
-            <div class="col-sm-push-2 col-sm-10 m-t-1">
+            <div class="col-sm-push-2 col-sm-10 mt-3">
                 <button type="submit" class="btn btn-primary"><i class="fa fa-reply"></i>@T("Forum.Submit")</button>
                 <button class="btn" onclick="setLocation('@Url.RouteUrl("ForumSlug", new { id = Model.ForumId, slug = Model.ForumSeName }) '); return false;">
                     <i class="fa fa-times"></i>

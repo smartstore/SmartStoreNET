@@ -79,9 +79,9 @@
 
 		<div class="mf-dropdown">
 			<button class="btn btn-secondary btn-artlist-action">
-				<em class="hidden-md-up"><span>@pageable.PageNumber</span>/<span>@pageable.TotalPages</span></em>
-				<em class="hidden-md-up hidden-sm-down">@T("Pager.PageXOfYShort", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
-				<em class="hidden-sm-down">@T("Pager.PageXOfY", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
+				<em class="d-md-none"><span>@pageable.PageNumber</span>/<span>@pageable.TotalPages</span></em>
+				<em class="d-none d-sm-inline d-md-none">@T("Pager.PageXOfYShort", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
+				<em class="d-none d-md-inline">@T("Pager.PageXOfY", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
 				<i class="fa fa-caret-down"></i>
 			</button>
 			<select class="artlist-action-select form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="i" title="@T("Pager.PageXOfY", pageable.PageNumber, pageable.TotalPages)">

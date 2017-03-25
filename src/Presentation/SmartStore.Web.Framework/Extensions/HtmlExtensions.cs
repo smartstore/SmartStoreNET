@@ -272,13 +272,13 @@ namespace SmartStore.Web.Framework
 			row.AddCssClass("row no-space");
 
 			var daysCol = new TagBuilder("div");
-			daysCol.AddCssClass("col-xs p-r-05");
+			daysCol.AddCssClass("col pr-2");
 
 			var monthsCol = new TagBuilder("div");
-			monthsCol.AddCssClass("col-xs p-r-05");
+			monthsCol.AddCssClass("col pr-2");
 
 			var yearsCol = new TagBuilder("div");
-			yearsCol.AddCssClass("col-xs");
+			yearsCol.AddCssClass("col");
 
 			var daysList = new TagBuilder("select");
             var monthsList = new TagBuilder("select");

@@ -1,10 +1,12 @@
-﻿//
+﻿/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
 // Blog Styles
 // --------------------------------------------------
 
 .link-rss {
     float: right;
-    color: $clr-green;
+    color: $green;
 }
 
 .blog-page .blogpost {

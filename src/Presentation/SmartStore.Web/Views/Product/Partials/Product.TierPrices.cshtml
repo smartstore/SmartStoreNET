@@ -18,7 +18,7 @@
 }
 
 <div class="pd-tierprices pd-group">
-	<h6 class="fw-600 m-b-05">
+	<h6 class="font-weight-600 mb-2">
 		@T("Products.TierPrices")
 	</h6>
     <div class="table-responsive">
@@ -30,7 +30,7 @@
 					</th>
 					@foreach (var tierPrice in Model.Take(200))
 					{
-						<th class="pd-tierprice-qty text-xs-center">    
+						<th class="pd-tierprice-qty text-center">    
 							@(tierPrice.Quantity)+
 						</th>
 					}
@@ -43,7 +43,7 @@
                     </th>
                     @foreach (var tierPrice in Model.Take(200))
                     {
-						<td class="pd-tierprice-price text-nowrap text-xs-center">
+						<td class="pd-tierprice-price text-nowrap text-center">
 							@tierPrice.Price
 						</td>
                     }

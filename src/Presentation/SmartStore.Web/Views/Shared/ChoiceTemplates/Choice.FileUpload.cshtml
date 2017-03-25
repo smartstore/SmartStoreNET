@@ -51,7 +51,7 @@
 		<div class="progress-extended">&nbsp;</div>
 	</div>
 
-	<div class="uploaded-file hidden-xs-up"></div>
+	<div class="uploaded-file d-none"></div>
 </div>
 
 <script type="text/javascript">
@@ -73,7 +73,7 @@
                 var fileName = data.files[0].name;
                 var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
 
-                elFile.html(fileLink).removeClass("hidden-xs-up");
+                elFile.html(fileLink).removeClass("d-none");
 
                 if (result.message) {
                     displayNotification(result.message, "success");
@@ -88,7 +88,7 @@
         });
 
         elRemove.click(function (e) {
-            elFile.html("").addClass("hidden-xs-up");
+            elFile.html("").addClass("d-none");
             elHidden.val(0);
             $(this).hide();
             e.preventDefault();

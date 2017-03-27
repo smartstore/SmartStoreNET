@@ -31,7 +31,7 @@
 			@foreach (var badge in Model.Badges.OrderBy(x => x.DisplayOrder))
 			{
 				@* TODO: (mc) Move BS4 label/tag class definitions to art-badge.art-badge-[style] (?)  *@
-				<span class="label label-@badge.Style.ToString().ToLowerInvariant() art-badge">@Html.Raw(badge.Label)</span>
+				<span class="badge badge-@badge.Style.ToString().ToLowerInvariant() art-badge">@Html.Raw(badge.Label)</span>
 			}
 		</div>
 	}

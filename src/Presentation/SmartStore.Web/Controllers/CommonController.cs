@@ -1072,12 +1072,12 @@ namespace SmartStore.Web.Controllers
 								if (x.ProductTypeId == (int)ProductType.GroupedProduct)
 								{
 									item.LabelText = labelTextGrouped;
-									item.LabelClassName = "label-success";
+									item.LabelClassName = "badge-success";
 								}
 								else if (x.ProductTypeId == (int)ProductType.BundledProduct)
 								{
 									item.LabelText = labelTextBundled;
-									item.LabelClassName = "label-info";
+									item.LabelClassName = "badge-info";
 								}
 
 								var productPicture = pictures.FirstOrDefault(y => y.Key == x.Id);

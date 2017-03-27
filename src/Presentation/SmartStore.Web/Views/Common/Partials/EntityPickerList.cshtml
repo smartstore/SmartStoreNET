@@ -25,7 +25,7 @@
                 <div class="title" title="@item.Title">
                     @if (item.LabelText.HasValue())
                     {
-                        <span class="label @item.LabelClassName">@item.LabelText</span>
+                        <span class="badge @item.LabelClassName">@item.LabelText</span>
                     }
                     <span>@HighlightSearchTermInTitle(item)</span>
                 </div>

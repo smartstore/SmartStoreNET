@@ -19,7 +19,7 @@
                 var megamenuNext = $(".megamenu-nav--next", megamenuContainer);
                 var megamenuPrev = $(".megamenu-nav--prev", megamenuContainer);
                 var megamenuDropdownContainer = $('.megamenu-dropdown-container');
-                var navElems = megamenu.find(".nav .nav-item");	// li
+                var navElems = megamenu.find(".navbar-nav .nav-item");	// li
                 var zoomContainer = $(".zoomContainer");		// needed to fix elevateZoom z-index problem e.g. in product detail gallery
                 var closingTimeout = 0;							// timeout to handle delay of dropdown closing
                 var openTimeout;								// timeout to handle opening attempts in tryOpen
@@ -164,7 +164,7 @@
                     // 
                     getCurrentNavigationElements();
 
-                    var nav = $('.megamenu .nav');
+                    var nav = $('.megamenu .navbar-nav');
                     var navSlider = $('.megamenu .nav-slider');
                     updateNavState();
 

@@ -113,13 +113,21 @@ fieldset legend {
 .manufacturer-nav {
     border-bottom: 1px solid #ddd;
     margin-bottom: 2rem;
+
+    .navbar {
+        padding: 0;
+        margin-bottom: .5rem;
+
+        .nav-item {
+            margin: 0 1rem;
+        }
+        .nav-link {
+            font-size: 1.25rem;
+            padding: 0;
+        }
+    }
 }
-.manufacturer-nav .navbar-nav .nav-item {
-    margin: 0 1rem;
-}
-.manufacturer-nav .navbar-nav .nav-link {
-    font-size: 1.25rem;
-}
+
 .manufacturer-list-title {
     font-weight: bold;
     padding-bottom: 0.5rem;
@@ -137,7 +145,7 @@ fieldset legend {
     /*a {
         font-size: $font-size-sm;
     }*/
-    .label {
+    .badge {
         font-size: $font-size-xs;
     }
 }

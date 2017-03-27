@@ -301,23 +301,34 @@ namespace SmartStore.Services.Configuration
             Guard.NotEmpty(key, nameof(key));
 
 			var str = value.Convert<string>();
-
 			var allSettings = GetAllCachedSettings();
-
 			var cacheKey = CreateCacheKey(key, storeId);
 			CachedSetting cachedSetting;
+			var insert = false;
 
 			if (allSettings.TryGetValue(cacheKey, out cachedSetting))
 			{
-				// Update
 				var setting = GetSettingById(cachedSetting.Id);
-				if (setting != null && setting.Value != str)
+				if (setting != null)
 				{
-					setting.Value = str;
-					UpdateSetting(setting, clearCache);
+					// Update
+					if (setting.Value != str)
+					{
+						setting.Value = str;
+						UpdateSetting(setting, clearCache);
+					}
+				}
+				else
+				{
+					insert = true;
 				}
 			}
 			else
+			{
+				insert = true;
+			}
+
+			if (insert)
 			{
 				// Insert
 				var setting = new Setting

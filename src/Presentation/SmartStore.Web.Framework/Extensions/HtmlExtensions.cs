@@ -609,39 +609,45 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(sb.ToString());
 		}
 
-		public static MvcHtmlString SettingOverrideCheckbox<TModel, TValue>(this HtmlHelper<TModel> helper,
-			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
+		public static MvcHtmlString SettingOverrideCheckbox<TModel, TValue>(
+			this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression,
+			string parentSelector = null)
 		{
 			var data = helper.ViewData[StoreDependingSettingHelper.ViewDataKey] as StoreDependingSettingData;
 
-			if (data != null && data.ActiveStoreScopeConfiguration > 0)
-			{
-				var settingKey = ExpressionHelper.GetExpressionText(expression);
-				var localizeService = EngineContext.Current.Resolve<ILocalizationService>();
+			if (data == null || data.ActiveStoreScopeConfiguration <= 0)
+				return MvcHtmlString.Empty;
 
-				if (!settingKey.Contains("."))
-					settingKey = data.RootSettingClass + "." + settingKey;
+			var fieldPrefix = helper.ViewData.TemplateInfo.HtmlFieldPrefix;
+			var settingKey = ExpressionHelper.GetExpressionText(expression);
+			var localizeService = EngineContext.Current.Resolve<ILocalizationService>();
 
-				var overrideForStore = (data.OverrideSettingKeys.FirstOrDefault(x => x.IsCaseInsensitiveEqual(settingKey)) != null);
-				var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
+			if (fieldPrefix.HasValue())
+				settingKey = string.Concat(fieldPrefix, ".", settingKey);
+			else if (!settingKey.Contains("."))
+				settingKey = string.Concat(data.RootSettingClass, ".", settingKey);
 
-				var sb = new StringBuilder();
-				sb.Append("<div class=\"onoffswitch-container\"><div class=\"onoffswitch\">");
+			var overrideForStore = (data.OverrideSettingKeys.FirstOrDefault(x => x.IsCaseInsensitiveEqual(settingKey)) != null);
+			var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
 
-				sb.AppendFormat("<input type=\"checkbox\" id=\"{0}\" name=\"{0}\" class=\"onoffswitch-checkbox multi-store-override-option\"", fieldId);
-				sb.AppendFormat(" onclick=\"Admin.checkOverriddenStoreValue(this)\" data-parent-selector=\"{0}\"{1} />", parentSelector.EmptyNull(), overrideForStore ? " checked=\"checked\"" : "");
+			var sb = new StringBuilder();
+			sb.Append("<div class=\"onoffswitch-container\"><div class=\"onoffswitch\">");
 
-				sb.AppendFormat("<label class=\"onoffswitch-label\" for=\"{0}\">", fieldId);
-				sb.AppendFormat("<span class=\"onoffswitch-on\">{0}</span>", localizeService.GetResource("Common.On").Truncate(3).ToUpper());
-				sb.AppendFormat("<span class=\"onoffswitch-off\">{0}</span>", localizeService.GetResource("Common.Off").Truncate(3).ToUpper());
-				sb.Append("<span class=\"onoffswitch-switch\"></span>");
-				sb.Append("<span class=\"onoffswitch-inner\"></span>");
-				sb.Append("</label>");
-				sb.Append("</div></div>\r\n");		// controls are not floating, so line-break prevents different distances between them
+			sb.AppendFormat("<input type=\"checkbox\" id=\"{0}\" name=\"{0}\" class=\"onoffswitch-checkbox multi-store-override-option\"", fieldId);
+			sb.AppendFormat(" onclick=\"Admin.checkOverriddenStoreValue(this)\" data-parent-selector=\"{0}\"{1} />", 
+				parentSelector.EmptyNull(), overrideForStore ? " checked=\"checked\"" : "");
 
-				return MvcHtmlString.Create(sb.ToString());
-			}
-			return MvcHtmlString.Empty;
+			sb.AppendFormat("<label class=\"onoffswitch-label\" for=\"{0}\">", fieldId);
+			sb.AppendFormat("<span class=\"onoffswitch-on\">{0}</span>", localizeService.GetResource("Common.On").Truncate(3).ToUpper());
+			sb.AppendFormat("<span class=\"onoffswitch-off\">{0}</span>", localizeService.GetResource("Common.Off").Truncate(3).ToUpper());
+			sb.Append("<span class=\"onoffswitch-switch\"></span>");
+			sb.Append("<span class=\"onoffswitch-inner\"></span>");
+			sb.Append("</label>");
+			// Controls are not floating, so line-break prevents different distances between them.
+			sb.Append("</div></div>\r\n");
+
+			return MvcHtmlString.Create(sb.ToString());
 		}
 
 		public static MvcHtmlString SettingEditorFor<TModel, TValue>(

@@ -168,7 +168,7 @@
 {
 	private ViewDataDictionary CreateFacetViewData(string fieldPrefix)
 	{
-		var viewData = new ViewDataDictionary();
+		var viewData = new ViewDataDictionary(ViewData);
 		viewData.TemplateInfo.HtmlFieldPrefix = fieldPrefix;
 		return viewData;
 	}

@@ -1607,7 +1607,6 @@ namespace SmartStore.Admin.Controllers
 			};
 
 			// Common facets
-			// TODO: StoreDependingSettings.GetOverrideKeys does not work here
 			model.BrandFacet.Disabled = settings.BrandDisabled;
 			model.BrandFacet.DisplayOrder = settings.BrandDisplayOrder;
 			model.PriceFacet.Disabled = settings.PriceDisabled;
@@ -1662,6 +1661,13 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);
 
+			var keyPrefixes = new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" };
+			foreach (var prefix in keyPrefixes)
+			{
+				StoreDependingSettings.GetOverrideKey(prefix + "Facet.Disabled", prefix + "Disabled", settings, storeScope, Services.Settings);
+				StoreDependingSettings.GetOverrideKey(prefix + "Facet.DisplayOrder", prefix + "DisplayOrder", settings, storeScope, Services.Settings);
+			}
+
 			return View(model);
 		}
 
@@ -1697,7 +1703,6 @@ namespace SmartStore.Admin.Controllers
 			settings.FilterMaxChoicesCount = model.FilterMaxChoicesCount;
 
 			// Common facets
-			// TODO: StoreDependingSettings.UpdateSettings does not work here
 			settings.BrandDisabled = model.BrandFacet.Disabled;
 			settings.BrandDisplayOrder = model.BrandFacet.DisplayOrder;
 			settings.PriceDisabled = model.PriceFacet.Disabled;
@@ -1714,8 +1719,15 @@ namespace SmartStore.Admin.Controllers
 			StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
 
 			var clearCache = false;
-			using (_services.Settings.BeginScope())
+			using (Services.Settings.BeginScope())
 			{
+				var keyPrefixes = new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" };
+				foreach (var prefix in keyPrefixes)
+				{
+					storeDependingSettingHelper.UpdateSetting(prefix + "Facet.Disabled", prefix + "Disabled", settings, form, storeScope, Services.Settings);
+					storeDependingSettingHelper.UpdateSetting(prefix + "Facet.DisplayOrder", prefix + "DisplayOrder", settings, form, storeScope, Services.Settings);
+				}
+
 				UpdateLocalizedFacetSetting(model.CategoryFacet, FacetGroupKind.Category, ref clearCache);
 				UpdateLocalizedFacetSetting(model.BrandFacet, FacetGroupKind.Brand, ref clearCache);
 				UpdateLocalizedFacetSetting(model.PriceFacet, FacetGroupKind.Price, ref clearCache);

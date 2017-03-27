@@ -4,9 +4,9 @@ $btn-wide-padding-x:    1.8rem;
 $btn-wide-padding-x-lg: 2.5rem;
 $btn-wide-padding-x-sm: 1.2rem;
 
-$btn-size:              ($btn-padding-y * 2) + ($font-size-base * $line-height-base);
-$btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-lg * $line-height-lg);
-$btn-size-sm:           ($btn-padding-y-sm * 2) + ($font-size-sm * $line-height-sm);
+$btn-size:              ($btn-padding-y * 2) + ($font-size-base * $btn-line-height);
+$btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-lg * $btn-line-height) - 0.05rem;
+$btn-size-sm:           ($btn-padding-y-sm * 2) + ($font-size-sm * $btn-line-height);
 
 /*$btn-size:              $input-height;
 $btn-size-lg:           $input-height-lg;
@@ -22,44 +22,36 @@ $btn-size-sm:           $input-height-sm;*/
 // --------------------------------------------------
 
 .btn {
-    //text-transform: uppercase;
-    outline: none !important;
-    transition: all 0.12s ease-in-out;
-    box-shadow: none;
-    //transition: none;
+    cursor: pointer;
 }
 
 .btn-secondary {
-    border-color: rgba(0,0,0,.15) rgba(0,0,0,.15) rgba(0,0,0,.25);
+    &:hover,
+    &:active,
+    &.active,
+    .show > &.dropdown-toggle {
+        background-color: #f2f2f2;
+    }
 }
 
-.btn-secondary:hover,
-.btn-secondary:focus, .btn-secondary.focus {
-    background-color: #f2f2f2;
-    border-color: rgba(0,0,0,.2) rgba(0,0,0,.2) rgba(0,0,0,.3)
-}
-
-.btn-link {
-    text-decoration: none !important;
-}
+.btn-secondary.hover        { @extend .btn-secondary:hover; }
+.btn-primary.hover          { @extend .btn-primary:hover; }
+.btn-warning.hover          { @extend .btn-warning:hover; }
+.btn-danger.hover           { @extend .btn-danger:hover; }
+.btn-info.hover             { @extend .btn-info:hover; }
+.btn-success.hover          { @extend .btn-success:hover; }
 
 
-// btn-grey
+// btn-gray
 // --------------------------------------------------
 
-$btn-grey-bg:       $gray-lightest;
-$btn-grey-border:   rgba(0,0,0, 0.15);
+$btn-gray-bg:       $gray-lightest;
 
-.btn-grey {
-    @include button-variant($btn-secondary-color, $btn-grey-bg, $btn-grey-border);
-    box-shadow: none;
+.btn-gray {
+    @include button-variant($btn-secondary-color, $gray-lightest, $btn-secondary-border);
 }
 
-.btn-grey:hover,
-.btn-grey:focus, .btn-grey.focus {
-    background-color: darken($btn-grey-bg, 5%) !important;
-    border-color: darken($btn-secondary-border, 6%) !important;
-}
+.btn-gray.hover             { @extend .btn-gray:hover; }
 
 
 // btn-icon, btn-circle
@@ -89,7 +81,7 @@ $btn-grey-border:   rgba(0,0,0, 0.15);
     // Move caret to bottom right corner
     &.dropdown-toggle:after {
         position: absolute;
-        right: 0;
+        right: 0.3rem;
         bottom: 0.5em;
     }
 }
@@ -105,13 +97,24 @@ $btn-grey-border:   rgba(0,0,0, 0.15);
 .btn-flat {
     color: inherit;
     background-color: transparent;
-    border-color: transparent !important;
-    box-shadow: none !important;
+    border-color: transparent;
+    box-shadow: none;
+
+    &:hover:not(:active):not(:focus),
+    &.hover:not(:active):not(:focus) { 
+        border-color: transparent;  
+    }
 }
+
 .btn-flat-light {
     color: rgba(255,255,255, 0.8);
-    &:hover, &:active, &.active, &:focus, &.focus {
+
+    &:hover, &.hover, &:active, &.active {
         border-color: rgba(255,255,255, 1) !important;
+    }
+
+    &:focus, &.focus {
+        box-shadow:  0 0 0 2px rgba(#fff, .4);
     }
 }
 
@@ -120,36 +123,43 @@ $btn-grey-border:   rgba(0,0,0, 0.15);
 // --------------------------------------------------
 
 .btn-clear {
-    color: rgba(255,255,255, 1);
+    color: rgba(255,255,255, 1) !important;
     background: rgba(255,255,255, 0);
     border-color: rgba(255,255,255, 0.6);
-    box-shadow: none !important;
+    box-shadow: none;
 
-    &:hover {
-        color: rgba(255,255,255, 1);
+    &:hover, &.hover {
         background: rgba(255,255,255, 0.15);
-        //border-color: rgba(255,255,255, 0);
     }
-    &:focus, &.focus, &:active, &.active {
-        color: rgba(255,255,255, 1);
-        background: rgba(255,255,255, 0.25);
-        //border-color: rgba(255,255,255, 0);
+
+    &:active, &.active {
+        border-color: #fff;
+        box-shadow: none;
+    }
+
+    &:focus, &.focus {
+        border-color: #fff;
+        box-shadow:  0 0 0 2px rgba(#fff, .25);
     }
 }
 
 .btn-clear-dark {
-    color: rgba(0, 0, 0, 0.6);
+    color: rgba(0, 0, 0, 0.7);
     background: transparent;
-    border-color: rgba(0, 0, 0, 0.3);
-    box-shadow: none !important;
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: none;
 
-    &:hover {
-        color: rgba(0, 0, 0, 0.8);
-        background: rgba(0, 0, 0, 0.08);
+    &:hover, &.hover {
+        color: rgba(0, 0, 0, 0.85);
+        background: rgba(0, 0, 0, 0.06);
     }
-    &:focus, &.focus, &:active, &.active {
-        color: rgba(0, 0, 0, 0.8);
-        background: rgba(0, 0, 0, 0.15);
+
+    &:active, &.active {
+        box-shadow: none;
+    }
+
+    &:focus, &.focus {
+        box-shadow:  0 0 0 2px rgba(#000, .08);
     }
 }
 
@@ -203,7 +213,7 @@ $btn-grey-border:   rgba(0,0,0, 0.15);
     overflow: hidden;
     padding-left: $btn-padding-x * 1.5;
     padding-right: $btn-padding-x * 1.5;
-    @include transition(all 0.2s ease-out);
+    transition: all 0.2s ease-out;
 
     > span {
         display: block;
@@ -222,7 +232,7 @@ $btn-grey-border:   rgba(0,0,0, 0.15);
             width: 1.25em;
             text-align: left;
             opacity: 0;
-            line-height: $line-height-base;
+            line-height: $btn-line-height;
             transition: opacity 0.2s ease-out;
             transform: translateX(-100%);
         }
@@ -236,16 +246,12 @@ $btn-grey-border:   rgba(0,0,0, 0.15);
     &.btn-lg {
         padding-left: $btn-padding-x-lg * 1.5;
         padding-right: $btn-padding-x-lg * 1.5;
-        > span > .fa { 
-            line-height: $line-height-lg; 
-        }
     }
     &.btn-sm {
         padding-left: $btn-padding-x-sm * 1.5;
         padding-right: $btn-padding-x-sm * 1.5;
         > span > .fa { 
-            top: 2px;
-            line-height: $line-height-sm; 
+            top: 1px;
         }
     }
 }
@@ -335,7 +341,9 @@ $btn-grey-border:   rgba(0,0,0, 0.15);
 
 .btn.btn-no-border {
     border-color: transparent !important;
-    box-shadow: none !important;
+    &:active, &.active {
+        box-shadow: none;
+    }
 }
 
 

@@ -362,19 +362,19 @@
 		$('body').on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
 			var btn = $(this).parent().find('> .btn');
 			if (e.type == "mouseenter") {
-				btn.addClass('focus');
+				btn.addClass('hover');
 			}
 			else if (e.type == "mousedown") {
-				btn.addClass('active').removeClass('focus');
+				btn.addClass('active focus').removeClass('hover');
 				_.delay(function () {
-					$('body').one('mousedown touch', function (e) { btn.removeClass('active'); });
+					$('body').one('mousedown touch', function (e) { btn.removeClass('active focus'); });
 				}, 50);
 			}
 			else if (e.type == "mouseleave") {
-				btn.removeClass('focus');
+				btn.removeClass('hover');
 			}
 			else if (e.type == "change") {
-				btn.removeClass('focus active');
+				btn.removeClass('hover active focus');
 				var elLabel = btn.find('[data-bind]');
 				elLabel.text(elLabel.data('bind') == 'value' ? $(this).val() : $('option:selected', this).text());
 			}

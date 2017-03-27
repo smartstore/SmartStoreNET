@@ -56,7 +56,7 @@
 					}
 					@(group.Label ?? group.Key)
 				</a>
-				<div id="facet-body-@(group.Key)" class="facet-body collapse@(expanded ? " in" : "")" aria-expanded="@expanded">
+				<div id="facet-body-@(group.Key)" class="facet-body collapse@(expanded ? " show" : "")" aria-expanded="@expanded">
 					@Html.Raw(templateHtml)
 					@if (selectedCount > 0)
 					{

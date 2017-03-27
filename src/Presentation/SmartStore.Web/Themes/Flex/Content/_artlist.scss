@@ -218,6 +218,7 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
     font-size: $art-font-size;
     font-weight: 600;
     margin-bottom: 0.25rem;
+    line-height: $art-line-height;
     > a { color: $body-color; }
 }
 

@@ -3186,7 +3186,7 @@ namespace SmartStore.Admin.Controllers
 						DisplayOrder = x.DisplayOrder,
 						ValueTypeId = x.ValueTypeId,
 						TypeName = x.ValueType.GetLocalizedEnum(_localizationService, _workContext),
-						TypeNameClass = (x.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr-1" : "d-none"),
+						TypeNameClass = (x.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr-1 mr8" : "d-none hide hidden-xs-up"),
 						LinkedProductId = x.LinkedProductId,
 						Quantity = x.Quantity
 					};
@@ -3327,7 +3327,7 @@ namespace SmartStore.Admin.Controllers
 				DisplayOrder = pvav.DisplayOrder,
 				ValueTypeId = pvav.ValueTypeId,
 				TypeName = pvav.ValueType.GetLocalizedEnum(_localizationService, _workContext),
-				TypeNameClass = (pvav.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr-1" : "d-none"),
+				TypeNameClass = (pvav.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr-1 mr8" : "d-none hide hidden-xs-up"),
 				LinkedProductId = pvav.LinkedProductId,
 				Quantity = pvav.Quantity
 			};

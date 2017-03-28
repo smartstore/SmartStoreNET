@@ -456,6 +456,11 @@
 			if (self.gallery && self.nav) {
 				self.gallery.on('click.gal', '.gal-item > a', function (e) {
 					e.preventDefault();
+
+					if ($('body').hasClass('search-focused')) {
+						// Don't open gallery when search box has focus
+						return;
+					}
 					
 					var $this = this;
 					var links = self.nav.find('.gal-item > a');

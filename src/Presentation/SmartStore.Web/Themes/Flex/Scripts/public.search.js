@@ -44,7 +44,7 @@
 			}
 		});
 
-		$(document).on('click', function (e) {
+		$(document).on('mousedown', function (e) {
 			// Close drop on outside click
 			shrinkBox();
 			closeDrop();

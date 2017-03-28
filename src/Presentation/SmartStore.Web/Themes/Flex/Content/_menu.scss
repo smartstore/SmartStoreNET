@@ -87,6 +87,8 @@ $ocm-horizontal-padding:                1.6rem;
             margin-top: -9px;
             @include fontastic('\e8d3');
         }
+
+        &.selected { font-weight: 600; }
     }
    
     .ocm-nav .navigate-back {
@@ -121,14 +123,18 @@ $ocm-horizontal-padding:                1.6rem;
     .manufacturer-container {
         .ocm-item {
             padding: 0 1.25rem;
-            
+           
             .col-img {
                 width: 100px;
                 min-width: 100px;
                 max-width: 100px;
 
                 .ocm-link {
-                    padding-top: 100%;
+                    padding: 0.5rem;
+                 
+                    > img {
+                        width: 100%;
+                    }
                 }
             }
         }
@@ -194,6 +200,7 @@ $ocm-horizontal-padding:                1.6rem;
         text-transform: initial;
         padding: 1rem 2rem;
         border-bottom: 1px solid $ocm-border-color;
+        background-color: #fff;
     }
 
     .menubar-icon {
@@ -251,6 +258,6 @@ $ocm-horizontal-padding:                1.6rem;
 }
 
 // one more then .offcanvas-overlay
-.select2-container {
+body > .select2-container {
     z-index: $offcanvas-z-index + 1;
 }

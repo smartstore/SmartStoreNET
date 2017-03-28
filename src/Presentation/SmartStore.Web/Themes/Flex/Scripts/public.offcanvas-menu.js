@@ -146,6 +146,8 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, "", entityId)).appendTo(categoryTab);
 	                }
 	                
+	                categoryContainerSlideIn.find("li[data-id='" + selectedMenuItemId + "']").addClass("selected");
+
 	                _.delay(function () {
 	                    categoryContainerSlideIn.addClass("in");
                         
@@ -283,7 +285,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	return {
 
 	    initMenu: function () {
-	        var selectedMenuItemId = $(".megamenu .navbar-nav").data("selected-menu-item");
+	        selectedMenuItemId = $(".megamenu .navbar-nav").data("selected-menu-item");
 	        
 	        if (selectedMenuItemId == 0) {
 	            navigateToHomeLayer(false);

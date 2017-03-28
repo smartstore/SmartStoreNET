@@ -11,7 +11,7 @@
             <li class="ocm-item" data-ajax="false">
                 <div class="row sm-gutters align-items-center">
                     <div class="col col-img">
-                        <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link img-center-container">
+                        <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link">
                             @if (manufacturer.PictureUrl.HasValue() && Model.DisplayImages)
                             {
                                 <img src="@manufacturer.PictureUrl" alt="@manufacturer.Name" title="@manufacturer.Name" />

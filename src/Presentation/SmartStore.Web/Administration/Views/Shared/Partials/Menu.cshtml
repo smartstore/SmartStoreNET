@@ -33,7 +33,7 @@
     }
 }
 
-<ul class="navbar-nav">
+<ul class="navbar-nav nav list-unstyled">
 @{
     foreach (var node in Model.Children)
     {
@@ -150,7 +150,7 @@
 <script type="text/javascript">
 
     $(function () {
-    	$('.navbar ul.nav > li.dropdown').navbar({
+        $('.navbar ul.navbar-nav > li.dropdown').navbar({
     		menuAim: {
     			rowSelector: "li.dropdown-submenu",
     			submenuSelector: "*",

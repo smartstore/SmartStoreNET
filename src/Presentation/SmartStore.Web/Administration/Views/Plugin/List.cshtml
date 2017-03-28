@@ -1,8 +1,6 @@
-﻿@model LocalPluginsModel
-@using SmartStore.Web.Framework.UI;
+﻿@using SmartStore.Web.Framework.UI;
 @using Newtonsoft.Json;
-@using SmartStore.Licensing;
-
+@model LocalPluginsModel
 @{    
     ViewBag.Title = T("Admin.Configuration.Plugins").Text;
 
@@ -32,34 +30,9 @@
 						{
 							<span class="label label-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
 						}
-						@if (plugin.IsLicensable)
-						{
-							if (plugin.LicenseState == LicensingState.Licensed)
-							{
-								<span class="label label-success">@T("Admin.Common.Licensed")</span>
-							}
-							else if (plugin.LicenseState == LicensingState.Unlicensed && plugin.TruncatedLicenseKey.HasValue())
-							{
-								<span class="label label-important">@T("Admin.Common.Unlicensed")</span>
-							}
-							else
-							{
-								<span class="label @(plugin.RemainingDemoUsageDaysLabel)">
-									@if (!plugin.RemainingDemoUsageDays.HasValue)
-									{
-										@T("Admin.Plugins.LicensingDemoNotStarted")
-									}
-									else if (plugin.RemainingDemoUsageDays <= 0)
-									{
-										@T("Admin.Plugins.LicensingDemoExpired")
-									}
-									else
-									{
-										@T("Admin.Plugins.LicensingDemoRemainingDays", plugin.RemainingDemoUsageDays)
-									}
-								</span>
-							}
-						}
+						<span class="license-label">
+							@Html.Partial("Partials/LicenseLabel", plugin.LicenseModel)
+						</span>
 					</div>
 					<div class="module-info">
 						@if (plugin.Url.HasValue())
@@ -115,9 +88,9 @@
 										@T("Admin.Configuration.Plugins.Fields.Configure")
 									</a>
 								}
-								@if (plugin.LicenseUrl.HasValue())
+								@if (plugin.LicenseModel.LicenseUrl.HasValue())
 								{
-									<button class="btn btn-small plugin-licence" type="button" data-url="@plugin.LicenseUrl">
+									<button class="btn btn-small plugin-licence" type="button" data-url="@plugin.LicenseModel.LicenseUrl">
 										<i class="fa fa-key"></i>
 										@T("Admin.Common.License")
 									</button>
@@ -142,7 +115,6 @@
 							@T("Admin.Configuration.Plugins.Fields.Install")
 						</a>
 					}
-
 				</div>
 
 			</div>
@@ -479,9 +451,16 @@
 
 		// reset license status
 		$('#plugin-licence-modal').on('click', '.licensing-reset-status-check', function() {
+			var licenseForm = $('#plugin-licence-modal').find('.modal-body form:first');
 			$({}).doAjax({
 				type: 'POST',
-				url: $('#plugin-licence-modal').find('.modal-body form:first').attr('data-resetcheckurl')
+				url: licenseForm.attr('data-resetcheckurl'),
+				callbackSuccess: function (resp) {
+					if (resp.length > 0) {
+						var systemName = licenseForm.attr('data-systemname');
+						$('#local-plugins').find('div[data-system-name="' + systemName + '"]').find('.license-label').html(resp);
+					}
+				}
 			});
 		});
 

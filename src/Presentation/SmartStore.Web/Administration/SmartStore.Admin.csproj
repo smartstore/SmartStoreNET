@@ -823,6 +823,7 @@
     <Content Include="Views\ProductAttribute\OptionEditPopup.cshtml" />
     <Content Include="Views\ProductAttribute\_CreateOrUpdateOption.cshtml" />
     <Content Include="Views\Setting\Partials\CommonFacet.cshtml" />
+    <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

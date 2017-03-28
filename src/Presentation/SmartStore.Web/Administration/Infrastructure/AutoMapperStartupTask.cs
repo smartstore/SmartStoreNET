@@ -400,18 +400,14 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.FilterConfigurationUrls, mo => mo.Ignore());
 			Mapper.CreateMap<ShippingMethodModel, ShippingMethod>()
 				.ForMember(dest => dest.RestrictedCountries, mo => mo.Ignore());
-            //plugins
-            Mapper.CreateMap<PluginDescriptor, PluginModel>()
-                .ForMember(dest => dest.ConfigurationUrl, mo => mo.Ignore())
+			//plugins
+			Mapper.CreateMap<PluginDescriptor, PluginModel>()
+				.ForMember(dest => dest.ConfigurationUrl, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore())
-                .ForMember(dest => dest.IconUrl, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.IconUrl, mo => mo.Ignore())
 				.ForMember(dest => dest.ConfigurationRoute, mo => mo.Ignore())
-				.ForMember(dest => dest.LicenseUrl, mo => mo.Ignore())
-				.ForMember(dest => dest.IsLicensable, mo => mo.Ignore())
-				.ForMember(dest => dest.LicenseState, mo => mo.Ignore())
-				.ForMember(dest => dest.TruncatedLicenseKey, mo => mo.Ignore())
-				.ForMember(dest => dest.RemainingDemoUsageDays, mo => mo.Ignore());
+				.ForMember(dest => dest.LicenseModel, mo => mo.Ignore());
             //newsLetter subscriptions
             Mapper.CreateMap<NewsLetterSubscription, NewsLetterSubscriptionModel>()
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())

@@ -28,6 +28,7 @@
 	background-position: 0 50%;
 }
 .rating > * {
+    position: relative;
     display: inline-block;
 	height: 16px;
 	background-image: url('images/star-on.png');
@@ -69,6 +70,7 @@
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
+        > * { vertical-align: top; }
     }
 
     h4 {

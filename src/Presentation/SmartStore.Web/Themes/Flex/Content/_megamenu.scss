@@ -50,6 +50,7 @@ $mm-zindex-base:                        ($zindex-dropdown - 20);
 	width: auto !important;
 	transition: margin-left 0.12s ease-in-out;
 	margin-left: 0;
+    line-height: 1.8;
 
     &:after {
         content: "";

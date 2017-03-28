@@ -7,6 +7,7 @@ $mm-light-hover-color:                  scale-color($mm-bg, $lightness: -5%); //
 $mm-dark-color:                         #fff;
 $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //lighten($mm-bg, 7%); // rgba(255,255,255, 0.1)
 $mm-zindex-base:                        ($zindex-dropdown - 20);
+$mm-selected-color:                     $brand-warning;
 
 .megamenu-section .navbar {
     background: $mm-bg;
@@ -58,10 +59,6 @@ $mm-zindex-base:                        ($zindex-dropdown - 20);
         clear: both;
     }
 
-    .nav-item + .nav-item { 
-        margin-left: 0; 
-    }
-
     .nav-item {
         .badge {
             position: absolute;
@@ -83,6 +80,7 @@ $mm-zindex-base:                        ($zindex-dropdown - 20);
         &:after {
 	        content: "";
         }
+
         &.active:before {
             content: "";
             right: 0;
@@ -93,6 +91,7 @@ $mm-zindex-base:                        ($zindex-dropdown - 20);
             bottom: -1px;
             z-index: ($mm-zindex-base + 3);
         }
+
         &.active:after {
             content: "";
             right: -2px;
@@ -103,6 +102,22 @@ $mm-zindex-base:                        ($zindex-dropdown - 20);
             bottom: -2px;
             z-index: ($mm-zindex-base + 2);
         }
+
+        &.selected .nav-link:before,
+        &.expanded .nav-link:before {
+            content: ' ';
+            display: block;
+            position: absolute;
+            width: 100%;
+            left: 0;
+            bottom: 1px;
+            height: 3px;
+            background: $mm-selected-color;
+        }
+    }
+
+    .nav-item + .nav-item { 
+        margin-left: 0; 
     }
 }
 .touchevents .megamenu .nav-slider {

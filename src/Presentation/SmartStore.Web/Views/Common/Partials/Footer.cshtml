@@ -135,14 +135,19 @@
 						</span>
 					</div>
 
-					<label class="radio-inline">
-						<input type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked">
-						@T("Newsletter.Subscribe")
-					</label>
-					<label class="radio-inline">
-						<input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios">
-						@T("Newsletter.Unsubscribe")
-					</label>
+					<div class="form-check form-check-inline">
+						<label class="form-check-label">
+							<input class="form-check-input" type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked">
+							@T("Newsletter.Subscribe")
+						</label>
+					</div>
+
+					<div class="form-check form-check-inline">
+						<label class="form-check-label">
+							<input class="form-check-input" type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios">
+							@T("Newsletter.Unsubscribe")
+						</label>
+					</div>
 
 					@Html.ValidationMessageFor(x => x.NewsletterEmail)
                     

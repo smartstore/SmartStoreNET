@@ -409,7 +409,7 @@ namespace SmartStore.Web.Framework.UI
 			{
 				if (base.Component.Fade)
 				{
-					item.ContentHtmlAttributes.AppendCssClass("show");
+					item.ContentHtmlAttributes.AppendCssClass("show in");
 				}
 				item.ContentHtmlAttributes.AppendCssClass("active");
 			}

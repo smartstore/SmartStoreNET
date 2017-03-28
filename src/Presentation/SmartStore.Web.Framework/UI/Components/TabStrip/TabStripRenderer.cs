@@ -98,7 +98,7 @@ namespace SmartStore.Web.Framework.UI
 
 				if (tab.Stacked)
 				{
-					ulAttrs.AppendCssClass("nav-stacked");
+					ulAttrs.AppendCssClass("nav-stacked flex-column");
 				}
 				writer.AddAttributes(ulAttrs);
 
@@ -266,7 +266,7 @@ namespace SmartStore.Web.Framework.UI
 			string loadedTabName = null;
 
             // <li [class="active [hide]"]><a href="#{id}" data-toggle="tab">{text}</a></li>
-            item.HtmlAttributes.AppendCssClass("nav-item");
+            item.HtmlAttributes.AppendCssClass("nav-item" + (item.Selected ? " active" : "")); // .active for BS2
 
 			if (!item.Selected && !item.Visible)
 			{
@@ -289,8 +289,8 @@ namespace SmartStore.Web.Framework.UI
 					writer.AddAttribute("href", itemId);
 					writer.AddAttribute("data-toggle", "tab");
 					writer.AddAttribute("data-loaded", "true");
-                    writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
-                    loadedTabName = GetTabName(item) ?? itemId;
+                    writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : "")); // .active for BS4
+					loadedTabName = GetTabName(item) ?? itemId;
 				}
 				else
 				{
@@ -409,7 +409,7 @@ namespace SmartStore.Web.Framework.UI
 			{
 				if (base.Component.Fade)
 				{
-					item.ContentHtmlAttributes.AppendCssClass("show in");
+					item.ContentHtmlAttributes.AppendCssClass("show in"); // .in for BS2, .show for BS4
 				}
 				item.ContentHtmlAttributes.AppendCssClass("active");
 			}

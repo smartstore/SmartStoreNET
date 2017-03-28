@@ -31,16 +31,19 @@ namespace SmartStore.Data.Migrations
 			context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
 
-            // Remove permission record
+            // Remove permission records
             var permissionRecords = context.Set<PermissionRecord>();
-            var record = permissionRecords.Where(x => x.SystemName.Equals("ManageContentSlider")).FirstOrDefault();
-            if (record != null)
-			{
-				permissionRecords.Remove(record);
-			}
+            var csRecord = permissionRecords.Where(x => x.SystemName.Equals("ManageContentSlider")).FirstOrDefault();
+            var quRecord = permissionRecords.Where(x => x.SystemName.Equals("ManageQuantityUnits")).FirstOrDefault();
+            
+            if (csRecord != null)
+				permissionRecords.Remove(csRecord);
 
-			// Add new product template...
-			context.Set<ProductTemplate>().AddOrUpdate(x => x.ViewPath, new ProductTemplate
+            if (quRecord != null)
+                permissionRecords.Remove(quRecord);
+            
+            // Add new product template...
+            context.Set<ProductTemplate>().AddOrUpdate(x => x.ViewPath, new ProductTemplate
 			{
 				Name = "Default Product Template",
 				ViewPath = "Product",

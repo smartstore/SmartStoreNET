@@ -8,7 +8,7 @@
 	var showBuyAction = Model.IsAvailable && !Model.AddToCart.DisableBuyButton;
 }
 
-<div class="row pd-offer-actions flex-nowrap">
+<div class="row pd-offer-actions">
 	@if (showBuyAction)
 	{
 		if (Model.ProductPrice.CallForPrice)

@@ -20,7 +20,7 @@ namespace SmartStore.Services.Search.Modelling
 		i	-	Page index
 		s	-	Page size
 		o	-	Order by
-		p	-   Price range (from-to || from(-) || -to)
+		p	-   Price range (from~to || from(~) || ~to)
 		c	-	Categories
 		m	-	Manufacturers
 		r	-	Min Rating
@@ -427,10 +427,10 @@ namespace SmartStore.Services.Search.Modelling
 		protected virtual void ConvertPrice(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 			string price;
-			decimal? minPrice = null;
-			decimal? maxPrice = null;
+			double? minPrice = null;
+			double? maxPrice = null;
 
-			if (GetValueFor(query, "p", FacetGroupKind.Price, out price) && TryParsePriceRange(price, out minPrice, out maxPrice))
+			if (GetValueFor(query, "p", FacetGroupKind.Price, out price) && TryParseRange(price, out minPrice, out maxPrice))
 			{
 				var currency = _services.WorkContext.WorkingCurrency;
 
@@ -454,7 +454,7 @@ namespace SmartStore.Services.Search.Modelling
 
 				if (minPrice.HasValue || maxPrice.HasValue)
 				{
-					query.PriceBetween(minPrice, maxPrice);
+					query.PriceBetween((decimal?)minPrice, (decimal?)maxPrice);
 				}
 			}
 
@@ -463,8 +463,8 @@ namespace SmartStore.Services.Search.Modelling
 				if (minPrice.HasValue || maxPrice.HasValue)
 				{
 					descriptor.AddValue(new FacetValue(
-						minPrice.HasValue ? decimal.ToDouble(minPrice.Value) : (double?)null,
-						maxPrice.HasValue ? decimal.ToDouble(maxPrice.Value) : (double?)null,
+						minPrice,
+						maxPrice,
 						IndexTypeCode.Double,
 						minPrice.HasValue,
 						maxPrice.HasValue)
@@ -475,26 +475,25 @@ namespace SmartStore.Services.Search.Modelling
 			});
 		}
 
-		private bool TryParsePriceRange(string price, out decimal? minPrice, out decimal? maxPrice)
+		protected virtual bool TryParseRange(string query, out double? min, out double? max)
 		{
-			minPrice = null;
-			maxPrice = null;
+			min = max = null;
 
-			if (price.IsEmpty())
+			if (query.IsEmpty())
 			{
 				return false;
 			}
 
-			// Format: from-to || from[-] || -to
-			var arr = price.Split('-').Select(x => x.Trim()).Take(2).ToArray();
+			// Format: from~to || from[~] || ~to
+			var arr = query.Split('~').Select(x => x.Trim()).Take(2).ToArray();
 
-			CommonHelper.TryConvert(arr[0], out minPrice);
+			CommonHelper.TryConvert(arr[0], out min);
 			if (arr.Length == 2)
 			{
-				CommonHelper.TryConvert(arr[1], out maxPrice);
+				CommonHelper.TryConvert(arr[1], out max);
 			}
 
-			return minPrice != null || maxPrice != null;
+			return min != null || max != null;
 		}
 
 		protected virtual void ConvertRating(CatalogSearchQuery query, RouteData routeData, string origin)

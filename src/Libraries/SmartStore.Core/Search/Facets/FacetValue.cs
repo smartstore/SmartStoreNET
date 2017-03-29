@@ -162,7 +162,7 @@ namespace SmartStore.Core.Search.Facets
 				string expr = valueStr;
 				if (upperValueStr.HasValue())
 				{
-					expr += "-" + upperValueStr.ToString();
+					expr += "~" + upperValueStr.ToString();
 				}
 
 				result = expr;

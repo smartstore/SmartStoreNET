@@ -201,13 +201,26 @@
 			}
 
 			// Custom price range
-			$('#btn-custom-price-range').click(function () {
-				var minVal = $('#price-range-from').val(),
-					maxVal = $('#price-range-to').val();
+			//$('#btn-custom-price-range').click(function () {
+			//	var minVal = $('#price-range-from').val(),
+			//		maxVal = $('#price-range-to').val();
 
-				var expr = minVal.replace(/[^\d\.\-]/g, '') + '-' + maxVal.replace(/[^\d\.\-]/g, '');
+			//	var expr = minVal.replace(/[^\d\.\-]/g, '') + '-' + maxVal.replace(/[^\d\.\-]/g, '');
 
-				var url = modifyUrl(null, 'p', expr.length > 1 ? expr : null);
+			//	var url = modifyUrl(null, 'p', expr.length > 1 ? expr : null);
+			//	setLocation(url);
+			//});
+
+			// Custom numeric ranges
+			widget.on('click', '.btn-custom-range', function (e) {
+				var btn = $(this),
+					cnt = btn.closest('.facet-range-container'),
+					minVal = cnt.find('.facet-range-from').val(),
+					maxVal = cnt.find('.facet-range-to').val();
+
+				var expr = minVal.replace(/[^\d\.\-]/g, '') + '~' + maxVal.replace(/[^\d\.\-]/g, '');
+
+				var url = modifyUrl(null, btn.data('qname'), expr.length > 1 ? expr : null);
 				setLocation(url);
 			});
 		})();
@@ -274,7 +287,7 @@
 				if (!afterResize) {
 					// Collapse all groups on initial page load
 					widget.find('.facet-toggle:not(.collapsed)').addClass('collapsed');
-					widget.find('.facet-body.in').removeClass('in');
+					widget.find('.facet-body.show').removeClass('show');
 				}
 			}
 

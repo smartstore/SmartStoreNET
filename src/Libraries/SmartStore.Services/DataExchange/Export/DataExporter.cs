@@ -709,9 +709,11 @@ namespace SmartStore.Services.DataExchange.Export
 					if (ctx.Projection.NoGroupedProducts && !ctx.IsPreview)
 					{
 						var searchQuery = new CatalogSearchQuery()
-							.VisibleIndividuallyOnly(ctx.Projection.OnlyIndividuallyVisibleAssociated)
 							.HasParentGroupedProduct(product.Id)
 							.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
+
+						if (ctx.Projection.OnlyIndividuallyVisibleAssociated)
+							searchQuery = searchQuery.VisibleIndividuallyOnly(true);
 
 						if (ctx.Filter.IsPublished.HasValue)
 							searchQuery = searchQuery.PublishedOnly(ctx.Filter.IsPublished.Value);

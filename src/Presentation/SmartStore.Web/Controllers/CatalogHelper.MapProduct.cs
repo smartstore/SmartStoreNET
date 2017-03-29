@@ -505,8 +505,7 @@ namespace SmartStore.Web.Controllers
 				{
 					// One-time batched retrieval of all associated products
 					var searchQuery = new CatalogSearchQuery()
-						.VisibleOnly(ctx.Customer)
-						.VisibleIndividuallyOnly(false)
+						.PublishedOnly(true)
 						.HasStoreId(ctx.Store.Id)
 						.HasParentGroupedProduct(ctx.BatchContext.ProductIds.ToArray());
 

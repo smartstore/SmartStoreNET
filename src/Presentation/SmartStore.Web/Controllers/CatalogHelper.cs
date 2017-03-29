@@ -268,7 +268,6 @@ namespace SmartStore.Web.Controllers
 					// associated products
 					var searchQuery = new CatalogSearchQuery()
 						.VisibleOnly(_services.WorkContext.CurrentCustomer)
-						.VisibleIndividuallyOnly(false)
 						.HasStoreId(_services.StoreContext.CurrentStore.Id)
 						.HasParentGroupedProduct(product.Id);
 

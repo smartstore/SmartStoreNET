@@ -11,6 +11,7 @@ namespace SmartStore.Core
     public class PagedList<T> : IPagedList<T>, IReadOnlyList<T>, IReadOnlyCollection<T>
     {
 		private IQueryable<T> _query;
+		private bool _queryIsPagedAlready;
 
 		private int _pageIndex;
 		private int _pageSize;
@@ -38,6 +39,7 @@ namespace SmartStore.Core
 			Guard.PagingArgsValid(pageIndex, pageSize, "pageIndex", "pageSize");
 
 			_query = source;
+			_queryIsPagedAlready = totalCount.HasValue;
 
 			_pageIndex = pageIndex;
 			_pageSize = pageSize;
@@ -53,7 +55,14 @@ namespace SmartStore.Core
 					_totalCount = _query.Count();
 				}
 
-				_list = ApplyPaging(_query).ToList();
+				if (_queryIsPagedAlready)
+				{
+					_list = _query.ToList();
+				}
+				else
+				{
+					_list = ApplyPaging(_query).ToList();
+				}
 			}
 		}
 

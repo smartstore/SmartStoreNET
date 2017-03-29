@@ -228,6 +228,10 @@ $mm-selected-color:                     $brand-warning;
         background-position: bottom right;
         padding: 1.5rem;
      
+        label { 
+            vertical-align: top; 
+            margin-bottom: 0;
+        }
         .col-md-3 {
             overflow: hidden;
         }
@@ -242,7 +246,6 @@ $mm-selected-color:                     $brand-warning;
         color: #222;
         padding-bottom: 0.4rem;
 
-        label { vertical-align: top; }
         &:not(:first-child) { padding-top: 1rem; }
     }
     .mega-menu-dropdown-heading + .mega-menu-dropdown-heading {

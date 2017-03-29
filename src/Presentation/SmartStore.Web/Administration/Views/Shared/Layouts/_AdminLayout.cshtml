@@ -27,7 +27,7 @@
 <div id="page">
 	@if (ViewData["warning.panel.message"] != null)
     {
-		<div class="warning-panel-message fade show">
+		<div class="warning-panel-message fade in">
             <button type="button" class="close" data-dismiss="alert">×</button>
             @Html.Raw(ViewData["warning.panel.message"])
 		</div>

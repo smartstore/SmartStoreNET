@@ -180,7 +180,7 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 
-				using (var scope = new DbContextScope(ctx: _services.DbContext, autoCommit: false))
+				using (var scope = new DbContextScope(ctx: _services.DbContext, autoCommit: false, validateOnSave: false))
 				{
 					// Run in uncommitting scope, because pictures could be updated (IsNew property) 
 					var batchContext = _dataExporter.Value.CreateProductExportContext(products);
@@ -257,6 +257,8 @@ namespace SmartStore.Web.Controllers
 					_services.DisplayControl.AnnounceRange(products);
 
 					scope.Commit();
+
+					batchContext.Clear();
 
 					// don't show stuff without data at all
 					model.ShowDescription = model.ShowDescription && model.Items.Any(x => x.ShortDescription.HasValue());

@@ -200,18 +200,7 @@
 				}
 			}
 
-			// Custom price range
-			//$('#btn-custom-price-range').click(function () {
-			//	var minVal = $('#price-range-from').val(),
-			//		maxVal = $('#price-range-to').val();
-
-			//	var expr = minVal.replace(/[^\d\.\-]/g, '') + '-' + maxVal.replace(/[^\d\.\-]/g, '');
-
-			//	var url = modifyUrl(null, 'p', expr.length > 1 ? expr : null);
-			//	setLocation(url);
-			//});
-
-			// Custom numeric ranges
+			// Custom ranges (prices, custom numeric attributes etc.)
 			widget.on('click', '.btn-custom-range', function (e) {
 				var btn = $(this),
 					cnt = btn.closest('.facet-range-container'),

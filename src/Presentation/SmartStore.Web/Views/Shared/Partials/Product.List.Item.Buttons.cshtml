@@ -33,7 +33,7 @@
 			href="#"
 			class="btn btn-primary ajax-cart-link @cssClasses"
 			title="@title"
-			data-toggle='@(!blockStyle ? "tooltip" : "")'
+			data-toggle='@(!blockStyle ? "tooltip" : "")' data-placement="bottom"
 			rel="nofollow"
 			data-type="cart"
 			data-action="add">
@@ -52,7 +52,7 @@
 	{
 		<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
 			class="btn @(blockStyle ? "btn-secondary" : "btn-gray") add-to-cart-button @cssClasses"
-			data-toggle='@(!blockStyle ? "tooltip" : "")'
+			data-toggle='@(!blockStyle ? "tooltip" : "")' data-placement="bottom"
 			rel="nofollow"
 			title="@T("Products.CallForPrice.GoToForm")">
 			<i class="fa fa-envelope"></i>
@@ -88,7 +88,7 @@
 			href="#"
 			class="btn btn-secondary btn-icon btn-lg art-btn col ajax-cart-link" 
 			title="@T("Categories.Wishlist")"
-			data-toggle="tooltip" 
+			data-toggle="tooltip" data-placement="bottom"
 			rel="nofollow"
 			data-type="wishlist" 
 			data-action="add">
@@ -106,7 +106,7 @@
 			href="#"
 			class="btn btn-secondary btn-icon btn-lg art-btn col ajax-cart-link" 
 			title="@T("Categories.Compare")"  
-			data-toggle="tooltip" 
+			data-toggle="tooltip" data-placement="bottom" 
 			rel="nofollow"
 			data-type="compare" 
 			data-action="add">

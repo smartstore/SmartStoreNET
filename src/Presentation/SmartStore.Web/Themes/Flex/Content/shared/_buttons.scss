@@ -4,17 +4,24 @@ $btn-wide-padding-x:    1.8rem;
 $btn-wide-padding-x-lg: 2.5rem;
 $btn-wide-padding-x-sm: 1.2rem;
 
-$btn-size:              ($btn-padding-y * 2) + ($font-size-base * $btn-line-height);
-$btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-lg * $btn-line-height) - 0.05rem;
-$btn-size-sm:           ($btn-padding-y-sm * 2) + ($font-size-sm * $btn-line-height);
+/*$btn-size:              ($btn-padding-y * 2) + ($font-size-base * $btn-line-height);
+$btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-lg * $btn-line-height);
+$btn-size-sm:           ($btn-padding-y-sm * 2) + ($font-size-sm * $btn-line-height);*/
 
-/*$btn-size:              $input-height;
+$btn-size:              $input-height;
 $btn-size-lg:           $input-height-lg;
-$btn-size-sm:           $input-height-sm;*/
+$btn-size-sm:           $input-height-sm;
 
 @mixin btn-padding($p) {
     padding-left: $p;
     padding-right: $p;
+}
+
+@mixin btn-square($size) {
+    $bw: $border-width * 2;
+    width: calc(#{$size} + #{$bw});
+    height: calc(#{$size} + #{$bw});
+    line-height: $size;
 }
 
 
@@ -60,22 +67,16 @@ $btn-gray-bg:       $gray-lightest;
 .btn-icon,
 .btn-circle {
     padding: 0;
-    width: $btn-size;
-    height: $btn-size;
-    line-height: $btn-size;
     text-align: center;
     vertical-align: middle;
-    box-sizing: content-box;
+    @include btn-square($btn-size);
+    //box-sizing: content-box;
 
     &.btn-lg {
-        width: $btn-size-lg;
-        height: $btn-size-lg;
-        line-height: $btn-size-lg;
+        @include btn-square($btn-size-lg);
     }
     &.btn-sm {
-        width: $btn-size-sm;
-        height: $btn-size-sm;
-        line-height: $btn-size-sm;
+        @include btn-square($btn-size-sm);
     }
 
     // Move caret to bottom right corner
@@ -425,6 +426,32 @@ $btn-gray-bg:       $gray-lightest;
         font-size: 1.166666em; // make it regular again
         color: $body-color;
     }
+
+    .btn.has-caret {
+        text-align: left;
+        padding-right: $btn-padding-x * 2;
+        &.btn-sm { padding-right: $btn-padding-x-sm * 2; }
+        &.btn-lg { padding-right: $btn-padding-x-lg * 2; }
+
+        > em,
+        > span {
+            display: block;
+            margin-bottom: 1px; // equalizes button heights
+            @include text-truncate();
+        }
+    }
+
+    .btn.has-caret:after {
+        @include fontawesome("\f0d7");
+        position: absolute;
+        display: block;
+        right: $btn-padding-x;
+        line-height: 1;
+        top: 50%;
+        transform: translate3d(50%, -50%, 0);
+    }
+    .btn-sm.has-caret:after { right: $btn-padding-x-sm; }
+    .btn-lg.has-caret:after { right: $btn-padding-x-lg; }
 
     select {
         position: absolute;

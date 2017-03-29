@@ -359,26 +359,37 @@
 		);
 
 		// .mf-dropdown (mobile friendly dropdown)
-		$('body').on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
-			var btn = $(this).parent().find('> .btn');
-			if (e.type == "mouseenter") {
-				btn.addClass('hover');
-			}
-			else if (e.type == "mousedown") {
-				btn.addClass('active focus').removeClass('hover');
-				_.delay(function () {
-					$('body').one('mousedown touch', function (e) { btn.removeClass('active focus'); });
-				}, 50);
-			}
-			else if (e.type == "mouseleave") {
-				btn.removeClass('hover');
-			}
-			else if (e.type == "change") {
-				btn.removeClass('hover active focus');
-				var elLabel = btn.find('[data-bind]');
-				elLabel.text(elLabel.data('bind') == 'value' ? $(this).val() : $('option:selected', this).text());
-			}
-		});
+		(function () {
+			$('.mf-dropdown').each(function (i, el) {
+				var elLabel = $('> .btn [data-bind]', el);
+				if (elLabel.length == 0 || elLabel.text().length > 0)
+					return;
+
+				var sel = $('select > option:selected', el).text() || $('select > option', el).first().text();
+				elLabel.text(sel);
+			});
+
+			$('body').on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
+				var btn = $(this).parent().find('> .btn');
+				if (e.type == "mouseenter") {
+					btn.addClass('hover');
+				}
+				else if (e.type == "mousedown") {
+					btn.addClass('active focus').removeClass('hover');
+					_.delay(function () {
+						$('body').one('mousedown touch', function (e) { btn.removeClass('active focus'); });
+					}, 50);
+				}
+				else if (e.type == "mouseleave") {
+					btn.removeClass('hover');
+				}
+				else if (e.type == "change") {
+					btn.removeClass('hover active focus');
+					var elLabel = btn.find('[data-bind]');
+					elLabel.text(elLabel.data('bind') == 'value' ? $(this).val() : $('option:selected', this).text());
+				}
+			});
+		})();
 
 		// html text collapser
 		if ($.fn.moreLess) {

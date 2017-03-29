@@ -746,6 +746,10 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Common.Shopbar.BasketPartOne", "Shopping", "Waren");
 			builder.AddOrUpdate("Common.Shopbar.BasketPartTwo", "Basket", "Korb");
+
+			builder.AddOrUpdate("Common.From", "From", "Von");
+			builder.AddOrUpdate("Common.To", "To", "Bis");
+			builder.AddOrUpdate("Common.Any", "Any", "Beliebig");
 		}
 	}
 }

@@ -164,7 +164,8 @@ select.form-control {
 
 select.form-control-sm {
   &:not([size]):not([multiple]) {
-    height: $input-height-sm;
+    $select-border-width: ($border-width * 2);
+    height: calc(#{$input-height-sm} + #{$select-border-width});
   }
 }
 
@@ -176,7 +177,8 @@ select.form-control-sm {
 
 select.form-control-lg {
   &:not([size]):not([multiple]) {
-    height: $input-height-lg;
+    $select-border-width: ($border-width * 2);
+    height: calc(#{$input-height-lg} + #{$select-border-width});
   }
 }
 

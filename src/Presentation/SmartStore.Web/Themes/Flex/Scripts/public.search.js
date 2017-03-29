@@ -212,6 +212,32 @@
 				var url = modifyUrl(null, btn.data('qname'), expr.length > 1 ? expr : null);
 				setLocation(url);
 			});
+
+			// Validate custom range selection
+			widget.on('change', 'select.facet-range-from, select.facet-range-to', function (e, recursive) {
+				if (recursive)
+					return;
+
+				var select = $(this),
+					isMin = select.hasClass('facet-range-from'),
+					otherSelect = select.closest('.facet-range-container').find('select.facet-range-' + (isMin ? 'to' : 'from')),
+					idx = select.find('option:selected').index(),
+					otherIdx = otherSelect.find('option:selected').index();
+
+				function validateRangeControls() {
+					var newIdx = Math.min($('option', otherSelect).length - 1, Math.max(0, isMin ? idx + 1 : idx - 1));
+					if (newIdx == idx) {
+						newIdx = 0;
+					}
+
+					$('option:eq(' + newIdx + ')', otherSelect).prop('selected', true);
+					otherSelect.trigger('change', [ true ]);
+				}
+
+				if (idx > 0 && otherIdx > 0 && ((isMin && idx >= otherIdx) || (!isMin && idx <= otherIdx))) {
+					validateRangeControls();
+				}
+			});
 		})();
 
 

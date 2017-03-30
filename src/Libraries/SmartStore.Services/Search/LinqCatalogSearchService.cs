@@ -148,18 +148,6 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		private Facet CreateFacet(FacetDescriptor descriptor, object value, IndexTypeCode typeCode, string label, int displayOrder)
-		{
-			var newValue = new FacetValue(value, typeCode)
-			{
-				IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(value)),
-				Label = label,
-				DisplayOrder = displayOrder
-			};
-
-			return new Facet(newValue);
-		}
-
 		protected virtual IQueryable<Product> ApplySearchTerm(IQueryable<Product> query, CatalogSearchQuery searchQuery)
 		{
 			var term = searchQuery.Term;
@@ -576,7 +564,7 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		protected virtual IDictionary<string, FacetGroup> GetFacets(CatalogSearchQuery searchQuery)
+		protected virtual IDictionary<string, FacetGroup> GetFacets(CatalogSearchQuery searchQuery, int totalHits)
 		{
 			var result = new Dictionary<string, FacetGroup>();
 			var languageId = searchQuery.LanguageId ?? _services.WorkContext.WorkingLanguage.Id;
@@ -620,10 +608,19 @@ namespace SmartStore.Services.Search
 
 					foreach (var category in categories)
 					{
+						var selected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(category.Id));
+						if (totalHits == 0 && !selected)
+							continue;
+
 						string label = null;
 						names.TryGetValue(category.Id, out label);
 
-						facets.Add(CreateFacet(descriptor, category.Id, IndexTypeCode.Int32, label.HasValue() ? label : category.Name, category.DisplayOrder));
+						facets.Add(new Facet(new FacetValue(category.Id, IndexTypeCode.Int32)
+						{
+							IsSelected = selected,
+							Label = label.HasValue() ? label : category.Name,
+							DisplayOrder = category.DisplayOrder
+						}));
 					}
 
 					#endregion
@@ -661,10 +658,19 @@ namespace SmartStore.Services.Search
 
 					foreach (var manu in manufacturers)
 					{
+						var selected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(manu.Id));
+						if (totalHits == 0 && !selected)
+							continue;
+
 						string label = null;
 						names.TryGetValue(manu.Id, out label);
 
-						facets.Add(CreateFacet(descriptor, manu.Id, IndexTypeCode.Int32, label.HasValue() ? label : manu.Name, manu.DisplayOrder));
+						facets.Add(new Facet(new FacetValue(manu.Id, IndexTypeCode.Int32)
+						{
+							IsSelected = selected,
+							Label = label.HasValue() ? label : manu.Name,
+							DisplayOrder = manu.DisplayOrder
+						}));
 					}
 
 					#endregion
@@ -685,10 +691,19 @@ namespace SmartStore.Services.Search
 						if (descriptor.MaxChoicesCount > 0 && facets.Count >= descriptor.MaxChoicesCount)
 							break;
 
+						var selected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(deliveryTime.Id));
+						if (totalHits == 0 && !selected)
+							continue;
+
 						string label = null;
 						names.TryGetValue(deliveryTime.Id, out label);
 
-						facets.Add(CreateFacet(descriptor, deliveryTime.Id, IndexTypeCode.Int32, label.HasValue() ? label : deliveryTime.Name, deliveryTime.DisplayOrder));
+						facets.Add(new Facet(new FacetValue(deliveryTime.Id, IndexTypeCode.Int32)
+						{
+							IsSelected = selected,
+							Label = label.HasValue() ? label : deliveryTime.Name,
+							DisplayOrder = deliveryTime.DisplayOrder
+						}));
 					}
 
 					#endregion
@@ -716,19 +731,21 @@ namespace SmartStore.Services.Search
 						if (price >= maxPrice)
 							i = int.MaxValue - 1;
 
-						var priceValue = new FacetValue(null, price, IndexTypeCode.Double, false, true)
-						{
-							DisplayOrder = ++count,
-							IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value == null && x.UpperValue != null && (double)x.UpperValue == price)
-						};
+						var selected = descriptor.Values.Any(x => x.IsSelected && x.Value == null && x.UpperValue != null && (double)x.UpperValue == price);
+						if (totalHits == 0 && !selected)
+							continue;
 
-						if (priceValue.IsSelected)
+						if (selected)
 							hasActivePredefinedFacet = true;
 
-						facets.Add(new Facet(priceValue));
+						facets.Add(new Facet(new FacetValue(null, price, IndexTypeCode.Double, false, true)
+						{
+							DisplayOrder = ++count,
+							IsSelected = selected
+						}));
 					}
 
-					// Add facet for custome price range
+					// Add facet for custome price range.
 					var priceDescriptorValue = descriptor.Values.FirstOrDefault();
 
 					var customPriceFacetValue = new FacetValue(
@@ -740,24 +757,29 @@ namespace SmartStore.Services.Search
 
 					customPriceFacetValue.IsSelected = customPriceFacetValue.Value != null || customPriceFacetValue.UpperValue != null;
 
-					facets.Insert(0, new Facet("custom", customPriceFacetValue));
+					if (!(totalHits == 0 && !customPriceFacetValue.IsSelected))
+					{
+						facets.Insert(0, new Facet("custom", customPriceFacetValue));
+					}
 
 					#endregion
 				}
 				else if (kind == FacetGroupKind.Rating)
 				{
+					if (totalHits == 0 && !descriptor.Values.Any(x => x.IsSelected))
+						continue;
+
 					foreach (var rating in FacetUtility.GetRatings())
 					{
 						var newFacet = new Facet(rating);
 						newFacet.Value.IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(rating.Value));
-
 						facets.Add(newFacet);
 					}
 				}
 				else if (kind == FacetGroupKind.Availability || kind == FacetGroupKind.NewArrivals)
 				{
 					var value = descriptor.Values.FirstOrDefault();
-					if (value != null)
+					if (value != null && !(totalHits == 0 && !value.IsSelected))
 					{
 						var newValue = value.Clone();
 						newValue.Value = true;
@@ -791,7 +813,7 @@ namespace SmartStore.Services.Search
 		{
 			_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
 
-			int totalCount = 0;
+			var totalHits = 0;
 			Func<IList<Product>> hitsFactory = null;
 			IDictionary<string, FacetGroup> facets = null;
 
@@ -799,7 +821,7 @@ namespace SmartStore.Services.Search
 			{
 				var query = GetProductQuery(searchQuery, null);
 
-				totalCount = query.Count();
+				totalHits = query.Count();
 
 				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
 				{
@@ -813,14 +835,14 @@ namespace SmartStore.Services.Search
 
 				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets) && searchQuery.FacetDescriptors.Any())
 				{
-					facets = GetFacets(searchQuery);
+					facets = GetFacets(searchQuery, totalHits);
 				}
 			}
 
 			var result = new CatalogSearchResult(
 				null,
 				searchQuery,
-				totalCount,
+				totalHits,
 				hitsFactory,
 				null,
 				facets);

@@ -415,6 +415,8 @@ namespace SmartStore.Services.Catalog
 				.Select(x => x.Name)
 				.ToList());
 
+			var pictures = _pictureService.GetPicturesByIds(attributeOptions.Where(x => x.PictureId != 0).Select(x => x.PictureId).Distinct().ToArray(), true);
+
 			ProductVariantAttributeValue productVariantAttributeValue = null;
 
 			using (_localizedEntityService.BeginScope())
@@ -425,9 +427,26 @@ namespace SmartStore.Services.Catalog
 						continue;
 
 					productVariantAttributeValue = option.Clone();
+					productVariantAttributeValue.PictureId = 0;
 					productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
 
-					// TODO: copy picture
+					if (option.PictureId != 0)
+					{
+						// Copy picture.
+						var picture = pictures.First(x => x.Id == option.PictureId);
+
+						var newPicture = _pictureService.InsertPicture(
+							picture.MediaStorage.Data,
+							picture.MimeType,
+							picture.SeoFilename,
+							picture.IsNew,
+							picture.Width ?? 0,
+							picture.Height ?? 0,
+							picture.IsTransient
+						);
+
+						productVariantAttributeValue.PictureId = newPicture.Id;
+					}
 
 					// No scope commit, we need new entity id.
 					_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);

@@ -1855,7 +1855,6 @@
     <Content Include="Views\Search\FacetTemplates\SingleSelect.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Price.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Rating.cshtml" />
-    <Content Include="Views\Search\FacetTemplates\Category.cshtml" />
     <Content Include="Views\Catalog\Partials\OffCanvasMenuManufacturers.cshtml" />
     <Content Include="Views\Common\Partials\Breadcrumb.cshtml" />
     <Content Include="Views\Shared\Layouts\_Checkout.cshtml" />

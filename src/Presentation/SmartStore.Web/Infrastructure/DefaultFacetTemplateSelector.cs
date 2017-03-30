@@ -36,13 +36,12 @@ namespace SmartStore.Web.Infrastructure
 
 			switch (group.Kind)
 			{
+				case FacetGroupKind.Category:
 				case FacetGroupKind.DeliveryTime:
 				case FacetGroupKind.Brand:
 				case FacetGroupKind.Availability:
 				case FacetGroupKind.NewArrivals:
 					return prefix + (group.IsMultiSelect ? "MultiSelect" : "SingleSelect");
-				case FacetGroupKind.Category:
-					return prefix + "MultiSelect"; // TODO: (mc) change this
 				case FacetGroupKind.Price:
 					return prefix + "Price";
 				case FacetGroupKind.Rating:

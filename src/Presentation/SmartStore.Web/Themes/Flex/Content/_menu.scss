@@ -95,10 +95,10 @@ $ocm-selected-color:                    $brand-warning;
             display: block;
             position: absolute;
             height: 100%;
-            right: 0;
-            top: 1px;
-            bottom: 1px;
-            width: 3px;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
             background: $ocm-selected-color;
         }
     }

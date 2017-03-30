@@ -218,12 +218,11 @@
     }
 }
 
-#terms-of-service-modal .modal-body {
-    padding-right: 0px;
+#iframe-terms-of-service { 
+    width: 100%;
 }
-#iframe-terms-of-service {
-    min-height: 100%;
-    flex: 1;
+body.popup {
+    padding: 20px;
 }
 
 .checkout-data .change-checkout-data {

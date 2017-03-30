@@ -4,6 +4,7 @@
 
 $ocm-border-color:                      rgba(#000, 0.15);
 $ocm-horizontal-padding:                1.6rem;
+$ocm-selected-color:                    $brand-warning;
 
 //
 // Sidebar Navigation Menus (Category menu etc.)
@@ -88,7 +89,18 @@ $ocm-horizontal-padding:                1.6rem;
             @include fontastic('\e8d3');
         }
 
-        &.selected { font-weight: 600; }
+        &.selected:before,
+        &.expanded:before {
+            content: ' ';
+            display: block;
+            position: absolute;
+            height: 100%;
+            right: 0;
+            top: 1px;
+            bottom: 1px;
+            width: 3px;
+            background: $ocm-selected-color;
+        }
     }
    
     .ocm-nav .navigate-back {
@@ -162,13 +174,13 @@ $ocm-horizontal-padding:                1.6rem;
         border-left: 1px solid $ocm-border-color;
         border-right: 1px solid $ocm-border-color;
 
-        &.in {
+        &.show {
             transform: translateX(0);
             z-index: 1;
             border-color: none;
         }
 
-        &.in ~ .layer {
+        &.show ~ .layer {
             transform: translateX(100%);
             z-index: 2;
         }

@@ -9,6 +9,10 @@ var AjaxMenu = (function ($, window, document, undefined) {
     var isInitialised = false;
     var viewport = ResponsiveBootstrapToolkit;
     var selectedMenuItemId = 0;
+    var currentCategoryId = 0;
+    var currentProductId = 0;
+    var currentManufacturerId = 0;
+
     var menu = $("#offcanvas-menu #menu-container");
 
     $(function () {
@@ -45,11 +49,11 @@ var AjaxMenu = (function ($, window, document, undefined) {
         // menu click events
         menu.on('click', '.ocm-item', function (e) {  
             var item = $(this);
-            var entityId = item.data("id");
+            var categoryId = item.data("id");
             var isAjaxNavigation = item.data("ajax");
 
             if (isAjaxNavigation == false) {
-                // let event bubble up, so normal navigation via href attribute takes effect
+                window.setLocation(item.find(".ocm-link").attr("href"));
                 return true;
             }
 
@@ -62,20 +66,20 @@ var AjaxMenu = (function ($, window, document, undefined) {
             
             e.preventDefault();
 
-            navigateToMenuItem(entityId ? entityId : 0, item.hasClass("navigate-back") ? "left" : "right");
+            navigateToMenuItem(categoryId ? categoryId : 0, item.hasClass("navigate-back") ? "left" : "right");
             
             // for stopping event propagation
             return false;
         });
 	});
 
-    function navigateToMenuItem(entityId, direction) {
+    function navigateToMenuItem(categoryId, direction) {
 
         var categoryContainer = menu.find(".category-container");
         var firstCall = categoryContainer.length == 0;
-        var categoryTab = entityId != 0 ? menu : menu.find("#ocm-categories");
+        var categoryTab = categoryId != 0 ? menu : menu.find("#ocm-categories");
 
-        var currentLayer = $(".layer.in", menu);
+        var currentLayer = $(".layer.show", menu);
         var nextLayer = currentLayer.next();
         var prevLayer = currentLayer.prev();
 
@@ -92,8 +96,8 @@ var AjaxMenu = (function ($, window, document, undefined) {
                         .removeClass("offcanvas-scrollable ocm-nav-layer layer");
                 }
                 
-                currentLayer.removeClass("in");
-                prevLayer.addClass("in");
+                currentLayer.removeClass("show");
+                prevLayer.addClass("show");
                 return;
             }
 
@@ -102,9 +106,9 @@ var AjaxMenu = (function ($, window, document, undefined) {
         else if (direction == "right") {
             
             // check whether a next layer exists and if it has the same id as the element to which the user is navigating to
-            if (nextLayer.data("id") == entityId) {
-                currentLayer.removeClass("in");
-                nextLayer.addClass("in");
+            if (nextLayer.data("id") == categoryId) {
+                currentLayer.removeClass("show");
+                nextLayer.addClass("show");
                 return;
             }
             else {
@@ -116,14 +120,18 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	    $.ajax({
 	        cache: false,
 	        url: menu.data("url-item"),
-	        data: { "categoryId": entityId },
+	        data: {
+	            "categoryId": categoryId,
+                "currentCategoryId": currentCategoryId,
+                "currentProductId": currentProductId
+	        },
 	        type: 'POST',
 	        success: function (response) {
 
 	            // replace current menu content with response 
 	            if (firstCall) {
-	                if (entityId != 0)
-	                    categoryTab.append(wrapAjaxResponse(response, " in", entityId));
+	                if (categoryId != 0)
+	                    categoryTab.append(wrapAjaxResponse(response, " show", categoryId));
 	                else {
 	                    categoryTab.append(response);
 	                }
@@ -135,24 +143,22 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	                if (direction == "left") {
                         
-	                    if (entityId == 0) {
+	                    if (categoryId == 0) {
 	                        navigateToHomeLayer(true);
 	                        return;
 	                    }
 	                    
-	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, "", entityId)).prependTo(categoryTab);
+	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, "", categoryId)).prependTo(categoryTab);
 	                }
 	                else {
-	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, "", entityId)).appendTo(categoryTab);
+	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, "", categoryId)).appendTo(categoryTab);
 	                }
 	                
-	                categoryContainerSlideIn.find("li[data-id='" + selectedMenuItemId + "']").addClass("selected");
-
 	                _.delay(function () {
-	                    categoryContainerSlideIn.addClass("in");
+	                    categoryContainerSlideIn.addClass("show");
                         
 	                    if (direction !== undefined)
-	                        categoryContainerSlideOut.removeClass("in");
+	                        categoryContainerSlideOut.removeClass("show");
                             
 	                }, 100);
 
@@ -161,11 +167,11 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	                    categoryContainerSlideOut = nextLayer;
 
 	                    categoryContainerSlideIn
-                            .addClass("in")
+                            .addClass("show")
                             .find(".ocm-nav-layer")
                             .removeClass("offcanvas-scrollable ocm-nav-layer layer");
 
-	                    categoryContainerSlideOut.removeClass("in");
+	                    categoryContainerSlideOut.removeClass("show");
 	                }
 
 	                categoryContainerSlideIn.on(Prefixer.event.transitionEnd, function (e) {
@@ -229,6 +235,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
             type: 'POST',
             success: function (response) {
                 manuTab.html(response);
+                manuTab.find("li[data-id='" + currentManufacturerId + "']").addClass("selected");
                 tabContent.tab('show');
                 tabContent.data("initialized", true);
             },
@@ -285,7 +292,11 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	return {
 
 	    initMenu: function () {
-	        selectedMenuItemId = $(".megamenu .navbar-nav").data("selected-menu-item");
+	        var nav = $(".megamenu .navbar-nav");
+	        selectedMenuItemId = nav.data("selected-menu-item");
+	        currentCategoryId = nav.data("current-category-id");
+	        currentProductId = nav.data("current-product-id");
+	        currentManufacturerId = nav.data("current-manufacturer-id");
 	        
 	        if (selectedMenuItemId == 0) {
 	            navigateToHomeLayer(false);

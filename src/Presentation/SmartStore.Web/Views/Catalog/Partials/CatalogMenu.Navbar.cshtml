@@ -40,7 +40,12 @@
     <a href = "#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-left"></i></a>
 </div>
 
-<ul class="navbar-nav flex-row" data-selected-menu-item="@currentNavItem">
+<ul class="navbar-nav flex-row flex-nowrap" 
+    data-selected-menu-item="@currentNavItem" 
+    data-current-category-id="@Model.SelectedNode.Value.EntityId" 
+    xdata-current-category-id="@CurrentCategoryId" 
+    data-current-product-id="@CurrentProductId"
+    data-current-manufacturer-id="@CurrentManufacturerId">
 
     @{ Html.RenderWidget("mainmenu_before_first_item"); }
 
@@ -59,13 +64,13 @@
         <li class='@(GetCssClassForNode(node, itemState))' id="main-nav-item-@item.EntityId" data-entity-id="@item.EntityId">
             @if(node.HasChildren)
             {   
-                <a href = "@itemUrl" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu-@item.EntityId">
+                <a href="@itemUrl" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu-@item.EntityId">
                     @item.Text
                 </a>
             }
             else
             {
-                <a href = "@itemUrl" class="nav-link">
+                <a href="@itemUrl" class="nav-link">
                     @item.Text
                 </a>
             }

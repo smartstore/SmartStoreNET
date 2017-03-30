@@ -66,20 +66,10 @@ $mm-selected-color:                     $brand-warning;
             top: 7px;
             font-size: $font-size-xs;
         }
+        .badge-important { background: $brand-primary; }
+        .badge-inverse { background: $brand-danger; }
 
-        /* TODO: (mc) > (mh) correct enum BadgeStyle, determine valid entries for bs4 */
-        .badge-important {
-            background: #0275d8; /* $brand-primary */
-        }
-        .badge-inverse {
-            background: #d9534f; /* $brand-danger */
-        }
-
-        /* active state */
-        &:before,
-        &:after {
-	        content: "";
-        }
+        &:before, &:after { content: ""; }
 
         &.active:before {
             content: "";

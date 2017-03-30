@@ -1,11 +1,40 @@
 ﻿@model NavigationModel
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Collections;
+@using SmartStore.Web.Framework.UI;
 
 @{
-	Layout = "";
-
-	var currentNode = Model.SelectedNode;
+    Layout = "";
+    var currentNode = ViewBag.SelectedNode as TreeNode<MenuItem>;
 }
+
+@functions {
+    private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state)
+    {
+        var liClasses = new List<string>();
+
+        liClasses.Add("nav-item");
+
+        if (node.Depth <= 1 && node.HasChildren)
+        {
+            liClasses.Add(node.Depth > 0 ? "dropdown-submenu" : "dropdown");
+        }
+
+        if ((state & NodePathState.Expanded) == NodePathState.Expanded)
+        {
+            liClasses.Add("expanded");
+        }
+
+        if ((state & NodePathState.Selected) == NodePathState.Selected)
+        {
+            liClasses.Add("selected");
+        }
+
+        return liClasses.Count > 0 ? String.Join(" ", liClasses) : null;
+    }
+}
+
+
 
 <div class="category-container">
 	@if (currentNode.Depth > 0)
@@ -35,7 +64,9 @@
         @foreach (var node in currentNode.Children)
         {
             var cat = node.Value;
-            <li class="ocm-item@(node.HasChildren ? " has-children" : "")" 
+            var itemState = node.GetNodePathState(Model.Path);
+
+            <li class="ocm-item@(node.HasChildren ? " has-children" : "") @(GetCssClassForNode(node, itemState))" 
 				data-id="@cat.EntityId" 
 				data-ajax="@(node.HasChildren ? "true" : "false")">
                 <a href="@node.Value.GenerateUrl(this.Url)" class="ocm-link has-count" @Html.Attr("data-count", cat.ElementsCount.ToString(), cat.ElementsCount > 0)>

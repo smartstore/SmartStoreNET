@@ -8,7 +8,7 @@
     <ul class="ocm-nav list-unstyled">
         @foreach (var manufacturer in Model.Manufacturers)
         {
-            <li class="ocm-item" data-ajax="false">
+            <li class="ocm-item" data-ajax="false" data-id="@manufacturer.Id">
                 <div class="row sm-gutters align-items-center">
                     <div class="col col-img">
                         <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link">

@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.0
 
@@ -68,6 +68,7 @@
 * #1025 Added token for customer number to MessageTokenProvider 
 * #1016 Implemented choosing of MessageTokens for newsletter campaigns with dropdown menu
 * #1107 OpenTrans: Added option to exclude long description of products from export
+* BMEcat: Implemented download of pictures according to MimeRoot-Info
 
 
 ### Bugfixes

@@ -1509,7 +1509,6 @@
     <Content Include="Themes\Flex\Scripts\jquery.bootstrap-touchspin.js" />
     <Content Include="Themes\Flex\Scripts\jquery.scrollTo.js" />
     <Content Include="Themes\Flex\Scripts\jquery.sortable.js" />
-    <Content Include="Themes\Flex\Scripts\jquery.transit.js" />
     <Content Include="Themes\Flex\Scripts\jquery.validate.unobtrusive.custom.js" />
     <Content Include="Themes\Flex\Scripts\offcanvas.js" />
     <Content Include="Themes\Flex\Scripts\prettify.js" />

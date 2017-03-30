@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
 using SmartStore.Core.IO;
 
@@ -20,6 +16,7 @@ namespace SmartStore
 		private string _fileTitle;
 		private string _fileExt;
 		private bool? _isImage;
+		private byte[] _buffer;
 
 		public PostedFileResult(HttpPostedFileBase httpFile)
 		{
@@ -167,7 +164,12 @@ namespace SmartStore
 		{
 			get
 			{
-				return _httpFile.InputStream.ToByteArray();
+				if (_buffer == null)
+				{
+					_buffer = _httpFile.InputStream.ToByteArray();
+				}
+
+				return _buffer;
 			}
 		}
 

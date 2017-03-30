@@ -62,6 +62,13 @@ namespace SmartStore.Services.Catalog
 		IList<ProductAttributeOption> GetProductAttributeOptionsByOptionsSetId(int optionsSetId);
 
 		/// <summary>
+		/// Gets all attribute options by attribute identifier
+		/// </summary>
+		/// <param name="attributeId">Attribute identifier</param>
+		/// <returns>List of attribute options</returns>
+		IList<ProductAttributeOption> GetProductAttributeOptionsByAttributeId(int attributeId);
+
+		/// <summary>
 		/// Deletes an attribute option
 		/// </summary>
 		/// <param name="productAttributeOption">Product attribute option</param>

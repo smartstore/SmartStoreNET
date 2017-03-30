@@ -3379,6 +3379,8 @@ namespace SmartStore.Admin.Controllers
 				else
 					pvav.LinkedProductId = model.LinkedProductId;
 
+				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
+
 				try
 				{
 					_productAttributeService.UpdateProductVariantAttributeValue(pvav);
@@ -3390,8 +3392,6 @@ namespace SmartStore.Admin.Controllers
 					ModelState.AddModelError("", exception.Message);
 					return View(model);
 				}
-
-				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
 
 				ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;

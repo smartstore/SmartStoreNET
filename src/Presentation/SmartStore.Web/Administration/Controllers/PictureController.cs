@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
@@ -9,7 +6,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class PictureController : AdminControllerBase
     {
         private readonly IPictureService _pictureService;
@@ -26,7 +23,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult AsyncUpload(bool isTransient = false, bool validate = true)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.UploadPictures))
-                return Json(new { success = false, error = "You do not have the required permissions" });
+                return Json(new { success = false, error = T("Admin.AccessDenied.Description") });
 
 			var postedFile = Request.ToPostedFileResult();
 

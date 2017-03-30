@@ -169,6 +169,20 @@ namespace SmartStore.Services.Catalog
 			return entities;
 		}
 
+		public virtual IList<ProductAttributeOption> GetProductAttributeOptionsByAttributeId(int attributeId)
+		{
+			if (attributeId == 0)
+				return new List<ProductAttributeOption>();
+
+			var entities =
+				from o in _productAttributeOptionRepository.Table
+				join os in _productAttributeOptionsSetRepository.Table on o.ProductAttributeOptionsSetId equals os.Id
+				where os.ProductAttributeId == attributeId
+				select o;
+
+			return entities.ToList();
+		}
+
 		public virtual void DeleteProductAttributeOption(ProductAttributeOption productAttributeOption)
 		{
 			Guard.NotNull(productAttributeOption, nameof(productAttributeOption));
@@ -412,6 +426,8 @@ namespace SmartStore.Services.Catalog
 
 					productVariantAttributeValue = option.Clone();
 					productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
+
+					// TODO: copy picture
 
 					// No scope commit, we need new entity id.
 					_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);

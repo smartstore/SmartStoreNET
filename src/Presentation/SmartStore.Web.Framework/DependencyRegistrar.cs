@@ -630,9 +630,12 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModelBinders(foundAssemblies);
 			builder.RegisterModelBinderProvider();
 
+			var pageHelperRegistration = builder.RegisterType<WebViewPageHelper>().InstancePerRequest();
+
 			// global exception handling
 			if (DataSettings.DatabaseIsInstalled())
 			{
+				pageHelperRegistration.PropertiesAutowired(PropertyWiringOptions.None);
 				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>(-100);
 			}
 		}

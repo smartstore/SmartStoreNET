@@ -360,8 +360,8 @@ namespace SmartStore.Data.Migrations
 				"Der Wildcard-Modus kann bei einer großen Anzahl an Produkten die Suche verlangsamen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchFieldsNote",
-				"The standard search searches the fields name, SKU and short description. For more fields, a search plugin like <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>MegaSearch Plugin</a> is required.",
-				"In der Standardsuche werden die Felder Name, SKU und Kurzbeschreibung durchsucht. Für weitere Felder ist ein Such-Plugin wie bspw. dem <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>MegaSearch Plugin</a> notwendig.");
+				"The standard search supports the search fields Name, SKU and Short Description. For more fields, a search plugin like <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>MegaSearch Plugin</a> is required.",
+				"In der Standardsuche können die Felder Name, SKU und Kurzbeschreibung durchsucht werden. Für weitere Felder ist ein Such-Plugin wie bspw. dem <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>MegaSearch Plugin</a> notwendig.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchMode",
 				"Search mode",

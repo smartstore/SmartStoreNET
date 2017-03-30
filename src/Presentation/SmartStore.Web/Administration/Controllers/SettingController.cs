@@ -1578,6 +1578,7 @@ namespace SmartStore.Admin.Controllers
 			var megaSearchDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearch");
 
 			var model = new SearchSettingsModel();
+			model.IsMegaSearchInstalled = megaSearchDescriptor != null;
 			model.SearchMode = settings.SearchMode;
 			model.SearchFields = settings.SearchFields;
 			model.InstantSearchEnabled = settings.InstantSearchEnabled;
@@ -1586,25 +1587,35 @@ namespace SmartStore.Admin.Controllers
 			model.ShowProductImagesInInstantSearch = settings.ShowProductImagesInInstantSearch;
 			model.FilterMinHitCount = settings.FilterMinHitCount;
 			model.FilterMaxChoicesCount = settings.FilterMaxChoicesCount;
-			
+
 			if (megaSearchDescriptor == null)
 			{
 				model.SearchFieldsNote = T("Admin.Configuration.Settings.Search.SearchFieldsNote");
+
+				model.AvailableSearchFields = new List<SelectListItem>
+				{
+					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ShortDescription"), Value = "shortdescription" },
+					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.Sku"), Value = "sku" },
+				};
+
+				model.AvailableSearchModes = settings.SearchMode.ToSelectList().Where(x => x.Value.ToInt() != (int)SearchMode.ExactMatch).ToList();
 			}
-
-			model.AvailableSearchModes = settings.SearchMode.ToSelectList().ToList();
-
-			model.AvailableSearchFields = new List<SelectListItem>
+			else
 			{
-				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ShortDescription"), Value = "shortdescription" },
-				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.FullDescription"), Value = "fulldescription" },
-				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ProductTags"), Value = "tagname" },
-				new SelectListItem { Text = T("Admin.Catalog.Manufacturers"), Value = "manufacturer" },
-				new SelectListItem { Text = T("Admin.Catalog.Categories"), Value = "category" },
-				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.Sku"), Value = "sku" },
-				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.GTIN"), Value = "gtin" },
-				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ManufacturerPartNumber"), Value = "mpn" }
-			};
+				model.AvailableSearchFields = new List<SelectListItem>
+				{
+					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ShortDescription"), Value = "shortdescription" },
+					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.FullDescription"), Value = "fulldescription" },
+					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ProductTags"), Value = "tagname" },
+					new SelectListItem { Text = T("Admin.Catalog.Manufacturers"), Value = "manufacturer" },
+					new SelectListItem { Text = T("Admin.Catalog.Categories"), Value = "category" },
+					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.Sku"), Value = "sku" },
+					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.GTIN"), Value = "gtin" },
+					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ManufacturerPartNumber"), Value = "mpn" }
+				};
+
+				model.AvailableSearchModes = settings.SearchMode.ToSelectList().ToList();
+			}
 
 			// Common facets
 			model.BrandFacet.Disabled = settings.BrandDisabled;

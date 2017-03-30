@@ -143,6 +143,8 @@
 })
 	<p></p>
 	<table class="adminContent">
+		@if (Model.IsMegaSearchInstalled)
+		{
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FilterMinHitCount)
@@ -152,6 +154,7 @@
 				@Html.ValidationMessageFor(model => model.FilterMinHitCount)
 			</td>
 		</tr>
+		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FilterMaxChoicesCount)
@@ -168,8 +171,11 @@
 {
 	private ViewDataDictionary CreateFacetViewData(string fieldPrefix)
 	{
-		var viewData = new ViewDataDictionary(ViewData);
-		viewData.TemplateInfo.HtmlFieldPrefix = fieldPrefix;
+		// Do not change field prefix of this.ViewData.
+		var viewData = new ViewDataDictionary(ViewData)
+		{
+			TemplateInfo = new TemplateInfo { HtmlFieldPrefix = fieldPrefix }
+		};
 		return viewData;
 	}
 }

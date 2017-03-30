@@ -22,6 +22,7 @@ namespace SmartStore.Admin.Models.Settings
 		}
 
 		public string SearchFieldsNote { get; set; }
+		public bool IsMegaSearchInstalled { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.SearchMode")]
 		public SearchMode SearchMode { get; set; }

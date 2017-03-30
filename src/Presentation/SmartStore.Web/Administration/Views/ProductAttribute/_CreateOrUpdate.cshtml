@@ -1,4 +1,5 @@
 ﻿@using Telerik.Web.Mvc.UI;
+@using SmartStore.Core.Search.Facets;
 @model ProductAttributeModel
 
 @Html.ValidationSummary(false)
@@ -121,7 +122,8 @@
 				@Html.SmartLabelFor(model => model.FacetTemplateHint)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(model => model.FacetTemplateHint, Model.FacetTemplateHint.ToSelectList().ToList())
+				@Html.DropDownListFor(model => model.FacetTemplateHint, 
+					Model.FacetTemplateHint.ToSelectList().Where(x => x.Value.ToInt() != (int)FacetTemplateHint.NumericRange).ToList())
 				@Html.ValidationMessageFor(model => model.FacetTemplateHint)
 			</td>
 		</tr>

@@ -682,6 +682,9 @@ namespace SmartStore.Services.Search
 
 					foreach (var deliveryTime in deliveryTimes)
 					{
+						if (descriptor.MaxChoicesCount > 0 && facets.Count >= descriptor.MaxChoicesCount)
+							break;
+
 						string label = null;
 						names.TryGetValue(deliveryTime.Id, out label);
 

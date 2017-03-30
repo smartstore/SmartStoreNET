@@ -1,14 +1,38 @@
-﻿@using SmartStore.Core.Search.Facets
+﻿@model ISearchResultModel
+
+@using SmartStore.Core.Search.Facets
 @using SmartStore.Web.Models.Search
 @using SmartStore.Services.Search.Extensions;
 
-@model ISearchResultModel
+@functions {
+	private Facet[] FlattenFacets(IEnumerable<Facet> facets)
+	{
+		var flattened = new List<Facet>();
+
+		foreach (var facet in facets)
+		{
+			if (facet.IsChoice)
+			{
+				if (facet.Value.IsSelected)
+				{
+					flattened.Add(facet);
+				}
+			}
+			else if (facet.Children.Count > 0)
+			{
+				flattened.AddRange(FlattenFacets(facet.Children));
+			}
+		}
+
+		return flattened.ToArray();
+	}
+}
 
 @{
 	Layout = "";
 
 	var result = Model.SearchResult;
-	var activeFilters = result.Facets.SelectMany(x => x.Value.Facets).Where(x => x.Value.IsSelected).ToArray();
+	var activeFilters = FlattenFacets(result.Facets.SelectMany(x => x.Value.Facets));
 }
 
 @{ Html.RenderWidget("active_filters_before"); }

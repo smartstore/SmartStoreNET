@@ -91,15 +91,7 @@ $ocm-selected-color:                    $brand-warning;
 
         &.selected:before,
         &.expanded:before {
-            content: ' ';
-            display: block;
-            position: absolute;
-            height: 100%;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: $ocm-selected-color;
+            @include active-list-item(5px, $ocm-selected-color);
         }
     }
    

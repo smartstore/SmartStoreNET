@@ -120,6 +120,21 @@ $pagination-active-color:       $pagination-color;
 $pagination-active-bg:          transparent;
 $pagination-active-border:      $pagination-border-color;
 
+
+// List Group
+
+$list-group-color:              $body-color;
+$list-group-bg:                 #fff;
+$list-group-border-color:       rgba(#000,.125);
+
+$list-group-active-color:       $list-group-color;
+$list-group-active-bg:          $list-group-bg;
+$list-group-active-border:      $list-group-border-color;
+
+$list-group-link-color:         #636c72;
+$list-group-link-active-color:  $body-color;
+/*$list-group-link-active-bg:     #fff;*/
+
 $alert-border-radius:           0;
 
 
@@ -820,4 +835,31 @@ a.pretty-link {
         transform: translate3d(0, 0, 0);
     }
 }
+
+
+//
+// Bootstrap List group tweaks
+// ------------------------------------------------------
+
+.list-group {
+    .list-group-item.active {
+        //font-weight: 600;
+        &:before {
+            @include active-list-item($size: 3px);
+        }      
+    }
+
+    &.has-icons {
+        .list-group-item {
+            display: inline-flex;
+            align-items: baseline;
+        }
+
+        .list-group-item-icon {
+            margin-right: 0.75rem;
+        }
+    }
+}
+
+
 

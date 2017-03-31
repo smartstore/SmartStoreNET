@@ -51,11 +51,6 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "ShoppingCart", action = "Wishlist", customerGuid = UrlParameter.Optional },
 				new[] { "SmartStore.Web.Controllers" });
 
-			routes.MapLocalizedRoute("MyAccount",
-				"customer/myaccount",
-				new { controller = "Customer", action = "MyAccount" },
-				new[] { "SmartStore.Web.Controllers" });
-
 			routes.MapLocalizedRoute("Topic",
 				"t/{SystemName}",
 				new { controller = "Topic", action = "TopicDetails" },

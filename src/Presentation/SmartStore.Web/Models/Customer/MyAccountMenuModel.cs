@@ -2,7 +2,7 @@
 
 namespace SmartStore.Web.Models.Customer
 {
-    public partial class CustomerNavigationModel : ModelBase
+    public partial class MyAccountMenuModel : ModelBase
     {
         public bool HideInfo { get; set; }
         public bool HideAddresses { get; set; }
@@ -15,20 +15,6 @@ namespace SmartStore.Web.Models.Customer
         public bool HideAvatar { get; set; }
         public bool HideForumSubscriptions { get; set; }
 
-        public CustomerNavigationEnum SelectedTab { get; set; }
-    }
-
-    public enum CustomerNavigationEnum
-    {
-        Info,
-        Addresses,
-        Orders,
-        BackInStockSubscriptions,
-        ReturnRequests,
-        DownloadableProducts,
-        RewardPoints,
-        ChangePassword,
-        Avatar,
-        ForumSubscriptions
+		public string SelectedItemToken { get; set; }
     }
 }

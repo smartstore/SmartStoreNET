@@ -143,17 +143,12 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.AssociatedExternalAuth")]
         public IList<AssociatedExternalAuthModel> AssociatedExternalAuthRecords { get; set; }
 
-        public CustomerNavigationModel NavigationModel { get; set; }
-
-
         #region Nested classes
 
         public partial class AssociatedExternalAuthModel : EntityModelBase
         {
             public string Email { get; set; }
-
             public string ExternalIdentifier { get; set; }
-
             public string AuthMethodName { get; set; }
         }
         

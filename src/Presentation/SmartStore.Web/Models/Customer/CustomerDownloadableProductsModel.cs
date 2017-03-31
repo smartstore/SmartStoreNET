@@ -12,7 +12,6 @@ namespace SmartStore.Web.Models.Customer
         }
 
         public IList<DownloadableProductsModel> Items { get; set; }
-        public CustomerNavigationModel NavigationModel { get; set; }
 
         #region Nested classes
 

@@ -402,7 +402,7 @@
     <Compile Include="Models\Customer\CustomerAddressEditModel.cs" />
     <Compile Include="Models\Customer\CustomerAddressListModel.cs" />
     <Compile Include="Models\Customer\CustomerRewardPointsModel.cs" />
-    <Compile Include="Models\Customer\CustomerNavigationModel.cs" />
+    <Compile Include="Models\Customer\MyAccountMenuModel.cs" />
     <Compile Include="Models\Customer\CustomerInfoModel.cs" />
     <Compile Include="Models\Customer\RegisterResultModel.cs" />
     <Compile Include="Models\Customer\RegisterModel.cs" />
@@ -1701,8 +1701,7 @@
     <Content Include="Views\Customer\ForumSubscriptions.cshtml" />
     <Content Include="Views\Customer\Info.cshtml" />
     <Content Include="Views\Customer\Login.cshtml" />
-    <Content Include="Views\Customer\MyAccount.cshtml" />
-    <Content Include="Views\Customer\Partials\MyAccountNavigation.cshtml" />
+    <Content Include="Views\Customer\Partials\MyAccountMenu.cshtml" />
     <Content Include="Views\Customer\Orders.cshtml" />
     <Content Include="Views\Customer\PasswordRecovery.cshtml" />
     <Content Include="Views\Customer\PasswordRecoveryConfirm.cshtml" />
@@ -1857,6 +1856,7 @@
     <Content Include="Views\Shared\Layouts\_Checkout.cshtml" />
     <Content Include="Views\Catalog\Partials\CatalogMenu.cshtml" />
     <Content Include="Views\Catalog\Partials\CatalogMenu.Navbar.cshtml" />
+    <Content Include="Views\Shared\Layouts\_MyAccount.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

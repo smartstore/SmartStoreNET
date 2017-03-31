@@ -1,40 +1,29 @@
 ﻿@model CustomerAddressEditModel
+
 @using SmartStore.Web.Models.Customer;
+
 @{
-    Layout = "_Layout";
+	Html.AddTitleParts(T("PageTitle.Account").Text);
 
-    //title
-    Html.AddTitleParts(T("PageTitle.Account").Text);
-}
-
-@section left
-{
-    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+	Layout = "_MyAccount";
+	ViewBag.PageClassToken = "addresses";
+	ViewBag.PageTitle = T("Account.CustomerAddresses.Edit").Text;
 }
 
 @using (Html.BeginForm())
 {
-    <div class="page account-page address-edit-page">
-        <div class="page-title">
-            <h1>@T("Account.CustomerAddresses.Edit")</h1>
-        </div>
+    var dataDictAddress = new ViewDataDictionary();
+    //Merge ModelState (required for validation)
+    dataDictAddress.ModelState.Merge(ViewData.ModelState);
+    dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
+    Html.RenderPartial("_CreateOrUpdateAddress", Model.Address, dataDictAddress);
 
-        <div class="page-body">
-            @{
-                var dataDictAddress = new ViewDataDictionary();
-                //Merge ModelState (required for validation)
-                dataDictAddress.ModelState.Merge(ViewData.ModelState);
-                dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
-                Html.RenderPartial("_CreateOrUpdateAddress", Model.Address, dataDictAddress);
-            }
-            <div class="form-group row">
-                <div class="col-sm-offset-3 col-sm-9">
-                    <button type="submit" class="btn btn-warning">
-                        <i class="fa fa-floppy-o"></i>
-                        @T("Common.Save")
-                    </button>
-                </div>
-            </div>
+    <div class="form-group row">
+        <div class="col-sm-offset-3 col-sm-9">
+            <button type="submit" class="btn btn-warning">
+                <i class="fa fa-floppy-o"></i>
+                @T("Common.Save")
+            </button>
         </div>
     </div>
 }

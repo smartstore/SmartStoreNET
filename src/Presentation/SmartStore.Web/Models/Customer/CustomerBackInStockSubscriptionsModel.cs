@@ -11,6 +11,5 @@ namespace SmartStore.Web.Models.Customer
         }
 
         public IList<BackInStockSubscriptionModel> Subscriptions { get; set; }
-        public CustomerNavigationModel NavigationModel { get; set; }
     }
 }

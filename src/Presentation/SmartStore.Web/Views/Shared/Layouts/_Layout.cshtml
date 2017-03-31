@@ -4,17 +4,19 @@
 	Html.RenderWidget("body_start_html_tag_after");
 	Html.RenderPartial("_Notifications");
 
-	var hasLeftSideBar = IsSectionDefined("left");
-	var hasRightSideBar = IsSectionDefined("right");
+	var hasLeftCol = IsSectionDefined("left");
+	var hasRightCol = IsSectionDefined("right");
+	var hideLeftCol = ViewBag.HideLeftCol == true;
+	var hideRightCol = ViewBag.HideRightCol == true;
 
 	int mainColspan = 12;
 	int cols = 1;
-	if (hasLeftSideBar)
+	if (hasLeftCol)
 	{
 		mainColspan -= 3;
 		cols += 1;
 	}
-	if (hasRightSideBar)
+	if (hasRightCol)
 	{
 		mainColspan -= 3;
 		cols += 1;
@@ -73,11 +75,11 @@
 					Html.RenderZone("teaser");
 					Html.RenderWidget("after_teaser");
 				}
-                <div id="content-body" class="row">
+                <div id="content-body" class="row mt-4">
 
-					@if (hasLeftSideBar)
+					@if (hasLeftCol)
 					{
-						<aside id="content-left" class="col-lg-3 d-none d-lg-block">
+						<aside id="content-left" class="col-lg-3 mb-4 mb-lg-0@(hideLeftCol ? " d-none d-lg-block" : "")">
 							@{
 								Html.RenderWidget("aside_left_before");
 								@RenderSection("left");
@@ -94,9 +96,9 @@
 						}
 					</div>
 
-					@if (hasRightSideBar)
+					@if (hasRightCol)
 					{
-						<aside id="content-right" class="col-lg-3">
+						<aside id="content-right" class="col-lg-3 mt-4 mt-lg-0@(hideRightCol ? " d-none d-lg-block" : "")">
 							@{
 								Html.RenderWidget("aside_right_before");
 								@RenderSection("right");

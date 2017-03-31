@@ -1,93 +1,80 @@
 ﻿@model CustomerAvatarModel
+
 @using SmartStore.Web.Models.Customer;
 @using SmartStore.Utilities;
-@using SmartStore.Core;
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Core.Infrastructure;
+
 @{
-    Layout = "_Layout";
+	Html.AddTitleParts(T("PageTitle.Account").Text);
 
-    //title
-    Html.AddTitleParts(T("PageTitle.Account").Text);
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
 
-    Html.AddScriptParts("~/bundles/fileupload");
-    Html.AddCssFileParts("~/css/fileupload");
+	var random = CommonHelper.GenerateRandomInteger();
+	var clientId = "picture" + random;
+	var pictureService = EngineContext.Current.Resolve<SmartStore.Services.Media.IPictureService>();
 
-    var random = CommonHelper.GenerateRandomInteger();
-    var clientId = "picture" + random;
-    var pictureService = EngineContext.Current.Resolve<SmartStore.Services.Media.IPictureService>();
-}
-
-@section left
-{
-    @{ Html.RenderPartial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary()); }
+	Layout = "_MyAccount";
+	ViewBag.PageClassToken = "avatar";
+	ViewBag.PageTitle = T("Account.Avatar").Text;
 }
 
 @using (Html.BeginForm("Avatar", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <div class="page account-page avatar-page">
+    <div id="@clientId" class="fileupload">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            @Html.ValidationSummary(true)
+        }
 
-        <div class="page-title">
-            <h1>@T("Account.Avatar")</h1>
-        </div>
+        @if (!Model.AvatarUrl.HasValue())
+        {
+            <div class="alert alert-info">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
+        }
 
-        <div id="@clientId" class="fileupload page-body">
-            @if (!ViewData.ModelState.IsValid)
-            {
-                @Html.ValidationSummary(true)
-            }
-
-            @if (!Model.AvatarUrl.HasValue())
-            {
-                <div class="alert alert-info">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
-            }
-
-            @if (!String.IsNullOrEmpty(Model.AvatarUrl))
-            {
-                <img src="@(Model.AvatarUrl + "?" + random)" class="img-thumbnail" alt="avatar" />
-            }
+        @if (!String.IsNullOrEmpty(Model.AvatarUrl))
+        {
+            <img src="@(Model.AvatarUrl + "?" + random)" class="img-thumbnail" alt="avatar" />
+        }
             
-            <button class="btn remove" @Html.Attr("style", "display:none", String.IsNullOrEmpty(Model.AvatarUrl))>
-                <i class="fa fa-trash-o"></i>
-                @T("Admin.Picture.RemovePicture")
-            </button>
+        <button class="btn btn-secondary btn-to-danger remove" @Html.Attr("style", "display:none", String.IsNullOrEmpty(Model.AvatarUrl))>
+            <i class="fa fa-trash-o"></i>
+            @T("Admin.Picture.RemovePicture")
+        </button>
 
-            <span class="btn btn-primary fileinput-button">
-                <i class="fa fa-upload"></i>
-                <span>@T("Common.Fileuploader.Upload")</span>
-                <input name="uploadedFile" id="uploadedFile" type="file" class="pull-left" />
-            </span>
+        <span class="btn btn-primary fileinput-button">
+            <i class="fa fa-upload"></i>
+            <span>@T("Common.Fileuploader.Upload")</span>
+            <input name="uploadedFile" id="uploadedFile" type="file" class="pull-left" />
+        </span>
 
-            <button class="btn btn-warning cancel">
-                <i class="fa fa-times"></i>
-                <span>@T("Common.Fileuploader.Cancel")</span>
-            </button>
+        <button class="btn btn-warning cancel">
+            <i class="fa fa-times"></i>
+            <span>@T("Common.Fileuploader.Cancel")</span>
+        </button>
 
-            <!-- The global progress information -->
-            <div class="span5 fileupload-progress fade">
-                <!-- The global progress bar -->
-                <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                    <div class="bar" style="width:0%;"></div>
-                </div>
-                <!-- The extended global progress information -->
-                <div class="progress-extended">&nbsp;</div>
+        <!-- The global progress information -->
+        <div class="span5 fileupload-progress fade">
+            <!-- The global progress bar -->
+            <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <div class="bar" style="width:0%;"></div>
             </div>
-
-
+            <!-- The extended global progress information -->
+            <div class="progress-extended">&nbsp;</div>
         </div>
-        <div style="margin-top:20px">
-            <button type="submit" name="upload-avatar" value="upload-avatar" class="btn btn-success upload-avatar-button">
-                <i class="fa fa-save"></i>
-                @T("Common.Save")
-            </button>
-        </div>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" name="upload-avatar" value="upload-avatar" class="btn btn-success upload-avatar-button">
+            <i class="fa fa-save"></i>
+            @T("Common.Save")
+        </button>
     </div>
 }
 
 <script type="text/javascript">
-
     $(function () {
-
         var el = $('#@clientId'),
             img = el.find('img'),
             elHidden = el.find('.hidden'),
@@ -121,5 +108,4 @@
             e.preventDefault();
         });
     });
-
 </script>

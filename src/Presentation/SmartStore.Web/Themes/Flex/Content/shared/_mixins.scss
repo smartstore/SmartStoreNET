@@ -4,8 +4,7 @@
 // ========================================================================
 
 @mixin bubble($direction: "left", $alignment: "near", $size: 10, $backgroundColor: #fff, $borderColor: $card-border-color) {
- 
-    //defaults for direction = left
+    // defaults for direction = left
     $elemAlignment: "right";
     $firstBorder: "top";
     $secondBorder: "bottom";
@@ -78,6 +77,17 @@
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     content: $content;
+}
+
+@mixin active-list-item($size: 4px, $color: $brand-warning) {
+    position: absolute;
+    display: block;
+    content: ' ';
+    left: -1px;
+    top: -1px;
+    bottom: -1px;
+    width: $size;
+    background: $color;
 }
 
 

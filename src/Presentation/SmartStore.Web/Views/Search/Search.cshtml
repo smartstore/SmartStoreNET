@@ -23,12 +23,16 @@
 	}
 
 	Layout = "_Layout";
+
+	ViewBag.HideLeftCol = true; // ...on mobile
 }
 
 @if (Model.SearchResult.Facets.Count > 0)
 {
 	@section left {
-		@{ Html.RenderAction("Filters", new { model = Model }); }
+		@{ 
+			Html.RenderAction("Filters", new { model = Model });
+		}
 	}
 }
 

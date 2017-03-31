@@ -170,16 +170,19 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected CustomerNavigationModel GetCustomerNavigationModel(Customer customer)
+        protected MyAccountMenuModel GetMyAccountMenuModel(Customer customer, string selectedItem = null)
         {
-            var model = new CustomerNavigationModel();
-            model.HideAvatar = !_customerSettings.AllowCustomersToUploadAvatars;
-            model.HideRewardPoints = !_rewardPointsSettings.Enabled;
-            model.HideForumSubscriptions = !_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToManageSubscriptions;
-            model.HideReturnRequests = !_orderSettings.ReturnRequestsEnabled ||
-				_orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).Count == 0;
-            model.HideDownloadableProducts = _customerSettings.HideDownloadableProductsTab;
-            model.HideBackInStockSubscriptions = _customerSettings.HideBackInStockSubscriptionsTab;
+            var model = new MyAccountMenuModel
+			{
+				HideAvatar = !_customerSettings.AllowCustomersToUploadAvatars,
+				HideRewardPoints = !_rewardPointsSettings.Enabled,
+				HideForumSubscriptions = !_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToManageSubscriptions,
+				HideReturnRequests = !_orderSettings.ReturnRequestsEnabled || _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).TotalCount == 0,
+				HideDownloadableProducts = _customerSettings.HideDownloadableProductsTab,
+				HideBackInStockSubscriptions = _customerSettings.HideBackInStockSubscriptionsTab,
+				SelectedItemToken = selectedItem
+			};
+
             return model;
         }
 
@@ -205,8 +208,6 @@ namespace SmartStore.Web.Controllers
             {
                 return false;
             }
-
-            // other validation 
 
             return result;
         }
@@ -348,9 +349,6 @@ namespace SmartStore.Web.Controllers
                     AuthMethodName = _pluginMediator.GetLocalizedFriendlyName(authMethod.Metadata, _workContext.WorkingLanguage.Id)
                 });
             }
-
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Info;
         }
         
         [NonAction]
@@ -362,8 +360,6 @@ namespace SmartStore.Web.Controllers
 			var storeScope = (_orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id);
 
 			var model = new CustomerOrderListModel();
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Orders;
 
 			var orders = _orderService.SearchOrders(storeScope, customer.Id, null, null, null, null, null, null, null, null, pageIndex, _orderSettings.OrderListPageSize);
 
@@ -931,21 +927,11 @@ namespace SmartStore.Web.Controllers
 
         #endregion
 
-        #region My account
-
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult MyAccount()
-        {
-            if (!IsCurrentUserRegistered())
-                return new HttpUnauthorizedResult();
-
-            var customer = _workContext.CurrentCustomer;
-
-            var model = GetCustomerNavigationModel(customer);
-            return View(model);
-        }
-
-        #region Info
+		public ActionResult MyAccountMenu(string selectedItem = null)
+		{
+			var model = GetMyAccountMenuModel(_workContext.CurrentCustomer, selectedItem);
+			return PartialView(model);
+		}
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
         public ActionResult Info()
@@ -1114,9 +1100,7 @@ namespace SmartStore.Web.Controllers
             PrepareCustomerInfoModel(model, customer, true);
             return View(model);
         }
-        
-        #endregion
-
+    
         #region Addresses
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
@@ -1128,8 +1112,6 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
 
             var model = new CustomerAddressListModel();
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Addresses;
             foreach (var address in customer.Addresses)
             {
                 var addressModel = new AddressModel();
@@ -1173,10 +1155,7 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
 
             var model = new CustomerAddressEditModel();
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Addresses;
-            model.Address.PrepareModel(null, false, _addressSettings, _localizationService,
-                    _stateProvinceService, () => _countryService.GetAllCountries());
+            model.Address.PrepareModel(null, false, _addressSettings, _localizationService, _stateProvinceService, () => _countryService.GetAllCountries());
 
             return View(model);
         }
@@ -1206,11 +1185,8 @@ namespace SmartStore.Web.Controllers
             }
 
 
-            //If we got this far, something failed, redisplay form
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Addresses;
-            model.Address.PrepareModel(null, true, _addressSettings, _localizationService,
-                    _stateProvinceService, () => _countryService.GetAllCountries());
+            // If we got this far, something failed, redisplay form
+            model.Address.PrepareModel(null, true, _addressSettings, _localizationService, _stateProvinceService, () => _countryService.GetAllCountries());
 
             return View(model);
         }
@@ -1232,10 +1208,7 @@ namespace SmartStore.Web.Controllers
 				return RedirectToAction("Addresses");
 
             var model = new CustomerAddressEditModel();
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Addresses;
-            model.Address.PrepareModel(address, false, _addressSettings, _localizationService,
-                    _stateProvinceService, () => _countryService.GetAllCountries());
+            model.Address.PrepareModel(address, false, _addressSettings, _localizationService,  _stateProvinceService, () => _countryService.GetAllCountries());
 
             return View(model);
         }
@@ -1260,11 +1233,8 @@ namespace SmartStore.Web.Controllers
 				return RedirectToAction("Addresses");
             }
 
-            //If we got this far, something failed, redisplay form
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Addresses;
-            model.Address.PrepareModel(address, true, _addressSettings, _localizationService,
-                    _stateProvinceService, () => _countryService.GetAllCountries());
+            // If we got this far, something failed, redisplay form
+            model.Address.PrepareModel(address, true, _addressSettings, _localizationService, _stateProvinceService, () => _countryService.GetAllCountries());
             return View(model);
         }
            
@@ -1333,8 +1303,6 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
 
             var model = new CustomerReturnRequestsModel();
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.ReturnRequests;
 			
 			var returnRequests = _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, int.MaxValue);
 
@@ -1393,8 +1361,6 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
 
             var model = new CustomerDownloadableProductsModel();
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.DownloadableProducts;
 
             var items = _orderService.GetAllOrderItems(null, customer.Id, null, null, null, null, null, true);
 
@@ -1461,8 +1427,6 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
 
             var model = new CustomerRewardPointsModel();
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.RewardPoints;
             foreach (var rph in customer.RewardPointsHistory.OrderByDescending(rph => rph.CreatedOnUtc).ThenByDescending(rph => rph.Id))
             {
                 model.RewardPoints.Add(new CustomerRewardPointsModel.RewardPointsHistoryModel()
@@ -1491,11 +1455,7 @@ namespace SmartStore.Web.Controllers
             if (!IsCurrentUserRegistered())
                 return new HttpUnauthorizedResult();
 
-            var customer = _workContext.CurrentCustomer;
-
             var model = new ChangePasswordModel();
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.ChangePassword;
             return View(model);
         }
 
@@ -1507,9 +1467,6 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             var customer = _workContext.CurrentCustomer;
-
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.ChangePassword;
 
             if (ModelState.IsValid)
             {
@@ -1550,8 +1507,6 @@ namespace SmartStore.Web.Controllers
 
             var model = new CustomerAvatarModel();
 			model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Avatar;
             model.AvatarUrl = _pictureService.GetPictureUrl(
                 customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId),
                 _mediaSettings.AvatarPictureSize,
@@ -1572,8 +1527,6 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
 
 			model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Avatar;
 
             if (ModelState.IsValid)
             {
@@ -1632,9 +1585,6 @@ namespace SmartStore.Web.Controllers
 				return RedirectToAction("Info");
 
             var customer = _workContext.CurrentCustomer;
-
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.Avatar;
             
             var customerAvatar = _pictureService.GetPictureById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
             if (customerAvatar != null)
@@ -1644,8 +1594,6 @@ namespace SmartStore.Web.Controllers
 
             return RedirectToAction("Avatar");
         }
-
-        #endregion
 
         #endregion
 
@@ -1764,8 +1712,6 @@ namespace SmartStore.Web.Controllers
             var list = _forumService.GetAllSubscriptions(customer.Id, 0, 0, pageIndex, pageSize);
 
             var model = new CustomerForumSubscriptionsModel(list);
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.ForumSubscriptions;
 
             foreach (var forumSubscription in list)
             {
@@ -1868,13 +1814,9 @@ namespace SmartStore.Web.Controllers
 
             var customer = _workContext.CurrentCustomer;
             var pageSize = 10;
-			var list = _backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(customer.Id,
-				 _storeContext.CurrentStore.Id, pageIndex, pageSize);
-
+			var list = _backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(customer.Id, _storeContext.CurrentStore.Id, pageIndex, pageSize);
 
             var model = new CustomerBackInStockSubscriptionsModel(list);
-            model.NavigationModel = GetCustomerNavigationModel(customer);
-            model.NavigationModel.SelectedTab = CustomerNavigationEnum.BackInStockSubscriptions;
 
             foreach (var subscription in list)
             {

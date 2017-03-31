@@ -14,7 +14,6 @@ namespace SmartStore.Web.Models.Customer
 
         public IList<RewardPointsHistoryModel> RewardPoints { get; set; }
         public string RewardPointsBalance { get; set; }
-        public CustomerNavigationModel NavigationModel { get; set; }
 
         #region Nested classes
         public partial class RewardPointsHistoryModel : EntityModelBase

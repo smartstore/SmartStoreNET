@@ -260,9 +260,11 @@ var AjaxMenu = (function ($, window, document, undefined) {
         // hide currency & language selectors 
         menuContent.find(".currency-selector, .language-selector").addClass("d-none");
 
-        var myAccount = menuContent.find("#menubar-my-account");
+        // remove data-toggle attributes
+        menuContent.find("[data-toggle=dropdown]").removeAttr("data-toggle");
 
         // open MyAccount dropdown initially
+        var myAccount = menuContent.find("#menubar-my-account");
         myAccount.find(".dropdown").addClass("show");
 
         // place MyAccount menu on top
@@ -270,6 +272,13 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
         menuContent.find(".dropdown-item").one("click", function (e) {
             e.stopPropagation();
+        });
+
+        // handle dropdown opening
+        serviceTab.on("click", ".dropdown > .menubar-link", function (e) {
+            e.preventDefault();
+            $(this).parent().toggleClass("show");
+            return false;
         });
 
         serviceTab.html(menuContent);

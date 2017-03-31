@@ -26,7 +26,7 @@
     }
 
     Html.AddScriptParts(true, "~/Content/editors/ckeditor/ckeditor.js");
-
+    
     var themeCssPath = Url.ThemeAwareContent("Content/theme.scss");
 }
 
@@ -43,7 +43,11 @@
             fullPage: (fullPage === true) ? true : false,
 			entities: false,
 			removePlugins: 'divarea',
-			contentsCss: ["@themeCssPath", "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"],
+			contentsCss: [
+                "@themeCssPath",
+                "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
+                "@Url.Content("~/Content/editors/ckeditor/contents.css")"
+			],
 			on: {
 				instanceReady: function (evt) {
 					// Fix native context menu

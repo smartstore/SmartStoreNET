@@ -6,12 +6,14 @@
 	var selItem = Model.SelectedItemToken != null ? Model.SelectedItemToken.ToLowerInvariant() : "";
 }
 
+@{ Html.RenderWidget("myaccount_menu_before"); }
+
 <div class="card myaccount-menu">
     <h5 class="card-header" style="border-bottom: none">
         @T("Account.Navigation")
     </h5>
     <div class="list-group list-group-flush has-icons">  
-        @{ Html.RenderWidget("myaccount_firstitem_before"); }
+        @{ Html.RenderWidget("myaccount_menu_firstitem_before"); }
 
         @if(!Model.HideInfo)
         {
@@ -84,6 +86,8 @@
             </a>
         }
 
-        @{ Html.RenderWidget("myaccount_lastitem_after"); }
+        @{ Html.RenderWidget("myaccount_menu_lastitem_after"); }
     </div>
 </div>
+
+@{ Html.RenderWidget("myaccount_menu_after"); }

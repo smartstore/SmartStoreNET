@@ -71,7 +71,6 @@ $btn-gray-bg:       $gray-lightest;
     vertical-align: middle;
     position: relative;
     @include btn-square($btn-size);
-    //box-sizing: content-box;
 
     &.btn-lg {
         @include btn-square($btn-size-lg);

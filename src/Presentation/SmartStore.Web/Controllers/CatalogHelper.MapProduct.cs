@@ -70,6 +70,8 @@ namespace SmartStore.Web.Controllers
 					model.AvailablePageSizes = new int[] { 12, 24, 36, 48, 72, 120 };
 				}
 			}
+
+			model.AllowFiltering = true;
 		}
 
 		public ProductSummaryMappingSettings GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode viewMode)

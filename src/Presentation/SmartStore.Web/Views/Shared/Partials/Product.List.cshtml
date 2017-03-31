@@ -93,7 +93,10 @@
 	</div>
 }
 
-@{ Html.RenderAction("ActiveFilters", "Search", new { area = "" }); }
+@if (Model.AllowFiltering)
+{
+	Html.RenderAction("ActiveFilters", "Search", new { area = "" });
+}
 
 @if (Model.PagedList.TotalCount > 0)
 {

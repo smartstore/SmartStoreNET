@@ -49,9 +49,7 @@ namespace SmartStore.Web.Models.Catalog
 		public GridColumnSpan GridColumnSpan { get; set; }
 		public bool AllowViewModeChanging { get; set; }
 
-		// TODO: (mc) Implement
 		public bool AllowFiltering { get; set; }
-
 		public bool AllowSorting { get; set; }
 		public int? CurrentSortOrder { get; set; }
 		public string CurrentSortOrderName { get; set; }

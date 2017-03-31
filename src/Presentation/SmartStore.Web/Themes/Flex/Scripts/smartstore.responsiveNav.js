@@ -20,7 +20,7 @@
 			if (el.data('offcanvas')) return;
 
 			// create offcanvas wrapper
-			var offcanvas = $('<aside class="offcanvas offcanvas-right offcanvas-overlay offcanvas-fullscreen" data-overlay="true"><div class="offcanvas-content"></div></aside>').appendTo('body');
+			var offcanvas = $('<aside class="offcanvas offcanvas-nav offcanvas-right offcanvas-overlay offcanvas-fullscreen" data-overlay="true"><div class="offcanvas-content"></div></aside>').appendTo('body');
 
 			// handle .offcanvas-closer click
 			offcanvas.one('click', '.offcanvas-closer', function (e) {

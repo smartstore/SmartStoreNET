@@ -84,29 +84,11 @@
 // Responsive Tabs
 // ==============================================================
 
-.nav-responsive .tab-content-header { 
+.tab-content-header {
     display: none;
 }
 
-.tab-content-header {
-    background: #f2f2f2;
-    border-bottom: 1px solid rgba(0,0,0, 0.1);
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    z-index: 1;
-}
-
-.offcanvas .tab-pane {
-    padding: 1.5rem;
-    //transition: none;
-}
-
-.offcanvas .tab-content-header ~ .tab-pane {
-    padding-top: 4.5rem;
-}
-
+// The collapsable tab strip in page body
 .nav-responsive.collapsed {
     position: relative;
 
@@ -170,4 +152,25 @@
         }
     }
 }
+
+// The moved tab content
+.offcanvas-nav {
+    .tab-content {
+        display: flex;
+        flex-direction: column;
+        max-height: 100%;
+    }
+
+    .tab-content-header {
+        display: block;
+        flex-grow: 0;
+    }
+
+    .tab-pane {
+        flex-grow: 1;
+        padding: 1.5rem;
+        padding-top: 1rem;
+    }
+}
+
 

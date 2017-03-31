@@ -69,6 +69,7 @@ $btn-gray-bg:       $gray-lightest;
     padding: 0;
     text-align: center;
     vertical-align: middle;
+    position: relative;
     @include btn-square($btn-size);
     //box-sizing: content-box;
 
@@ -77,6 +78,13 @@ $btn-gray-bg:       $gray-lightest;
     }
     &.btn-sm {
         @include btn-square($btn-size-sm);
+    }
+
+    > i {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate3d(-50%, -50%, 0);
     }
 
     // Move caret to bottom right corner

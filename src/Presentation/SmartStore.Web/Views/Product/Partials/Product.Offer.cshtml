@@ -5,6 +5,8 @@
 @using SmartStore.Web;
 
 <div class="pd-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+	<meta itemprop="itemCondition" content="http://schema.org/NewCondition" />
+
 	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
 	{
 		if (Model.AddToCart.CustomerEntersPrice)

@@ -367,7 +367,7 @@
     <Compile Include="Theming\ThemeableVirtualPathProviderViewEngine.cs" />
     <Compile Include="Theming\ThemeableRazorViewEngine.cs" />
     <Compile Include="Theming\ThemeContext.cs" />
-    <Compile Include="UI\Components\BadgeStyle.cs" />
+    <Compile Include="UI\Components\Enums.cs" />
     <Compile Include="UI\Components\Button\Button.cs" />
     <Compile Include="UI\Components\Component.cs" />
     <Compile Include="UI\Components\ComponentBuilder.cs" />

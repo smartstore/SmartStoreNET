@@ -11,4 +11,10 @@ namespace SmartStore.Web.Framework.UI
 		Warning,
         Danger  
     }
+
+	public enum BootstrapVersion
+	{
+		V2 = 2,
+		V4 = 4
+	}
 }

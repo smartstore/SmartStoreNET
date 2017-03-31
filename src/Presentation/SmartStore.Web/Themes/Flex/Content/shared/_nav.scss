@@ -90,8 +90,6 @@
 
 .tab-content-header {
     background: #f2f2f2;
-    background: $brand-primary;
-    background: #f2f2f2;
     border-bottom: 1px solid rgba(0,0,0, 0.1);
     position: fixed;
     left: 0;
@@ -113,11 +111,7 @@
     position: relative;
 
     .nav-tabs {
-        display: block !important;
-
-        .nav-item {
-            float: none;
-        }
+        flex-direction: column;
 
         .nav-link { 
             position: relative;

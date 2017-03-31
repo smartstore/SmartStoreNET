@@ -36,7 +36,7 @@
 
 	// Generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
-}).TabContentHeaderContent(TabContentHeader())
+}).TabContentHeaderContent(TabContentHeader()).ComponentVersion(BootstrapVersion.V4).Fade(false)
 
 @helper TabReviews() {{
 	var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();

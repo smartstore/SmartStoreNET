@@ -12,7 +12,7 @@
         <h1>@T("PrivateMessages.PrivateMessages")</h1>
     </div>
     <div class="page-body">
-        @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
+        @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).ComponentVersion(BootstrapVersion.V4).Items(x =>
         {
             x.Add().Text(@T("PrivateMessages.Inbox"))
                 .Content( Html.Action("Inbox", new { page = Model.InboxPage, tab = "inbox" }).ToString() )

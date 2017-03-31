@@ -20,5 +20,5 @@ namespace SmartStore.Web.Framework.UI
             this.Item.Pull = value;
             return this;
         }
-    }
+	}
 }

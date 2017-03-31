@@ -22,8 +22,8 @@ namespace SmartStore.Web.Framework.UI
     {
         public Tab()
         {
-            // [...]
-        }
+			// [...]
+		}
 
         public string Name
         {
@@ -36,5 +36,5 @@ namespace SmartStore.Web.Framework.UI
             get;
             set;
         }
-    }
+	}
 }

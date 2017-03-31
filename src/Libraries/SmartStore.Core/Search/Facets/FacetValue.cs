@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Search.Facets
@@ -153,19 +154,25 @@ namespace SmartStore.Core.Search.Facets
 		public override string ToString()
 		{
 			var result = string.Empty;
-			var valueStr = Value?.ToString() ?? string.Empty;
+
+			var valueStr = Value != null
+				? Convert.ToString(Value, CultureInfo.InvariantCulture)
+				: string.Empty;
 
 			if (IsRange)
 			{
-				var upperValueStr = UpperValue?.ToString() ?? string.Empty;
+				var upperValueStr = UpperValue != null
+					? Convert.ToString(UpperValue, CultureInfo.InvariantCulture)
+					: string.Empty;
 
-				string expr = valueStr;
 				if (upperValueStr.HasValue())
 				{
-					expr += "~" + upperValueStr.ToString();
+					result = string.Concat(valueStr, "~", upperValueStr);
 				}
-
-				result = expr;
+				else
+				{
+					result = valueStr;
+				}
 			}
 			else
 			{

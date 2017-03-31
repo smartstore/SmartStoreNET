@@ -652,11 +652,9 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.Availability", "Availability", "Verfügbarkeit");
 			builder.AddOrUpdate("Search.Facet.NewArrivals", "New Arrivals", "Neuheiten");
 
-			builder.AddOrUpdate("Search.Facet.PriceMin", "from {0}", "ab {0}");
-			builder.AddOrUpdate("Search.Facet.PriceMax", "up to {0}", "bis {0}");
-			builder.AddOrUpdate("Search.Facet.PriceBetween", "{0} - {1}", "{0} - {1}");
-			builder.AddOrUpdate("Search.Facet.RangeFrom", "{0} from", "{0} von");
-			builder.AddOrUpdate("Search.Facet.RangeTo", "{0} to", "{0} bis");
+			builder.AddOrUpdate("Search.Facet.RangeMin", "from {0}", "ab {0}");
+			builder.AddOrUpdate("Search.Facet.RangeMax", "up to {0}", "bis {0}");
+			builder.AddOrUpdate("Search.Facet.RangeBetween", "{0} - {1}", "{0} - {1}");
 
 			builder.AddOrUpdate("Search.Facet.FindPlaceholder", "Find {0}...", "{0} suchen...");
 			builder.AddOrUpdate("Search.Facet.SelectedCount", "{0} selected", "{0} ausgewählt");

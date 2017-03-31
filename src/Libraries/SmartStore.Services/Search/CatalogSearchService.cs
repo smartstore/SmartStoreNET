@@ -171,44 +171,69 @@ namespace SmartStore.Services.Search
 				return;
 			}
 
-			// TODO: (mc) > (mg) Apply labels to all other range attributes
-
-			// Apply "price" labels
 			FacetGroup group;
-			string labelTemplate;
+			var rangeMinTemplate = T("Search.Facet.RangeMin").Text;
+			var rangeMaxTemplate = T("Search.Facet.RangeMax").Text;
+			var rangeBetweenTemplate = T("Search.Facet.RangeBetween").Text;
 
+			// Apply "price" labels.
 			if (facets.TryGetValue("price", out group))
 			{
-				// Format prices for price facet labels
 				// TODO: formatting without decimals would be nice
-				labelTemplate = T("Search.Facet.PriceMax").Text;
-
 				foreach (var facet in group.Facets)
 				{
 					var val = facet.Value;
 
 					if (val.Value == null && val.UpperValue != null)
 					{
-						facet.Value.Label = T("Search.Facet.PriceMax", FormatPrice(val.UpperValue.Convert<decimal>()));
+						val.Label = rangeMaxTemplate.FormatInvariant(FormatPrice(val.UpperValue.Convert<decimal>()));
 					}
 					else if (val.Value != null && val.UpperValue == null)
 					{
-						facet.Value.Label = T("Search.Facet.PriceMin", FormatPrice(val.Value.Convert<decimal>()));
+						val.Label = rangeMinTemplate.FormatInvariant(FormatPrice(val.Value.Convert<decimal>()));
 					}
 					else if (val.Value != null && val.UpperValue != null)
 					{
-						facet.Value.Label = T("Search.Facet.PriceBetween", 
+						val.Label = rangeBetweenTemplate.FormatInvariant(
 							FormatPrice(val.Value.Convert<decimal>()),
 							FormatPrice(val.UpperValue.Convert<decimal>()));
 					}
 				}
 			}
 			
+			// Apply "rating" labels.
 			if (facets.TryGetValue("rating", out group))
 			{
 				foreach (var facet in group.Facets)
 				{
 					facet.Value.Label = T(facet.Key == "1" ? "Search.Facet.1StarAndMore" : "Search.Facet.XStarsAndMore", facet.Value.Value).Text;
+				}
+			}
+
+			// Apply "numeric range" labels.
+			var numericRanges = facets
+				.Where(x => x.Value.TemplateHint == FacetTemplateHint.NumericRange)
+				.Select(x => x.Value);
+
+			foreach (var numericRange in numericRanges)
+			{
+				foreach (var facet in numericRange.Facets.Where(x => x.Value.IsSelected))
+				{
+					var val = facet.Value;
+					var labels = val.Label.SplitSafe("~");
+
+					if (val.Value == null && val.UpperValue != null)
+					{
+						val.Label = rangeMaxTemplate.FormatInvariant(labels.SafeGet(0));
+					}
+					else if (val.Value != null && val.UpperValue == null)
+					{
+						val.Label = rangeMinTemplate.FormatInvariant(labels.SafeGet(0));
+					}
+					else if (val.Value != null && val.UpperValue != null)
+					{
+						val.Label = rangeBetweenTemplate.FormatInvariant(labels.SafeGet(0),	labels.SafeGet(1));
+					}
 				}
 			}
 		}

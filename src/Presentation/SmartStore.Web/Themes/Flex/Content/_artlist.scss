@@ -641,39 +641,11 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
 .slick-slider {
     &.artlist-grid {
         display: block !important;
-        flex: initial !important;
-        flex-wrap: nowrap;
     }
 
     .art {
         display: inline-block !important;
-        max-width: initial !important;
+        max-width: none !important;
         //width: 180px; // avoids flickering during initial load
     }
 }
-
-
-/*@include media-breakpoint-between(xs, md) {
-    .art-rowdiv:nth-of-type(2n+0) {
-        display: block;
-    }   
-    .art:nth-of-type(2n+0) {
-        border-right-color: transparent;
-    }  
-}
-@include media-breakpoint-only(lg) {
-    .art-rowdiv:nth-of-type(3n+0) {
-        display: block;
-    } 
-    .art:nth-of-type(3n+0) {
-        border-right-color: transparent;
-    }    
-}
-@include media-breakpoint-only(xl) { 
-    .art-rowdiv:nth-of-type(4n+0) {
-        display: block;
-    } 
-    .art:nth-of-type(4n+0) {
-        border-right-color: transparent;
-    }    
-}*/

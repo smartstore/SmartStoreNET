@@ -116,12 +116,12 @@
     		else {
     			if (nodeScrollable != null && nodeScrollable.length > 0) {
     				if (nodeScrollable.height() >= nodeScrollable[0].scrollHeight) {
-						// Content is NOT scrollable. Don't let iOS Safari scroll the body.
+    					// Content is NOT scrollable. Don't let iOS Safari scroll the body.
     					e.preventDefault();
     				}
     			}
     			else {
-					// Touch occurs outside of any scrollable element. Again: prevent body scrolling.
+    				// Touch occurs outside of any scrollable element. Again: prevent body scrolling.
     				e.preventDefault();
     			}
     		}

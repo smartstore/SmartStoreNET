@@ -69,7 +69,7 @@
             // set text
             self.throbber.css({ visibility: 'hidden', display: 'block' });
             self.throbberContent.html(opts.message);
-            self.throbberContent.toggleClass('hide', !(_.isString(opts.message) && opts.message.trim().length > 0));
+            self.throbberContent.toggleClass('d-none', !(_.isString(opts.message) && opts.message.trim().length > 0));
             self.throbber.css({ visibility: 'visible', opacity: 0 });
 
             var show = function () {

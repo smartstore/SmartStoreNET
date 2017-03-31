@@ -7,17 +7,32 @@
 	{
 		return;
 	}
+
+	var grouped = Model.GroupBy(x => x.SpecificationAttributeName, StringComparer.OrdinalIgnoreCase);
 }
 
 <div class="pd-specs table-responsive">
 	<table class="table pd-specs-table">
 		<tbody>
-			@for (int i = 0; i < Model.Count; i++)
+			@foreach (var group in grouped)
 			{
-				var item = Model[i];
 				<tr>
-					<td class="pd-spec-name">@item.SpecificationAttributeName</td>
-					<td class="pd-spec-value">@item.SpecificationAttributeOption</td>
+					<td class="pd-spec-name">@group.Key</td>
+					<td class="pd-spec-value">
+						@if (group.Count() == 1)
+						{
+							<text>@group.First().SpecificationAttributeOption</text>
+						}
+						else if (group.Count() > 1)
+						{
+							<ul class="mb-0 pl-3">
+								@foreach (var item in group)
+								{
+									<li class="pb-1">@item.SpecificationAttributeOption</li>
+								}
+							</ul>
+						}
+					</td>
 				</tr>
 			}
 		</tbody>

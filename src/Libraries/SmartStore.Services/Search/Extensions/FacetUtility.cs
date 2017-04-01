@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 
@@ -62,9 +63,53 @@ namespace SmartStore.Services.Search.Extensions
 			return result;
 		}
 
+		public static List<Facet> GetLessPriceFacets(List<Facet> facets, int maxNumber)
+		{
+			const double expFactor = 2.0;
+			const double flatten = 2.0;
+
+			if (facets.Count <= 3)
+				return facets;
+
+			// Remove too granular facets.
+			if (facets.Any(x => x.Value.UpperValue != null && (double)x.Value.UpperValue == 25.0))
+			{
+				facets.RemoveFacet(5.0, true);
+				facets.RemoveFacet(10.0, true);
+			}
+
+			var result = new List<Facet>();
+			var expIndexes = new HashSet<int>();
+			var lastIndex = facets.Count - 1;
+
+			// Get exponential distributed indexes.
+			for (var i = 0.0; i < lastIndex; ++i)
+			{
+				var x = (int)Math.Floor(Math.Pow(expFactor, i / flatten));
+				expIndexes.Add(x);
+			}
+
+			for (var index = 0; index <= lastIndex; ++index)
+			{
+				var facet = facets[index];
+
+				// Always return first, last and selected facets.
+				if (index == 0 || index == lastIndex || facet.Value.IsSelected)
+				{
+					result.Add(facet);
+				}
+				else if (expIndexes.Contains(index) && result.Count < maxNumber && index < (lastIndex - 1))
+				{
+					result.Add(facet);
+				}
+			}
+
+			return result;
+		}
+
 		public static IEnumerable<FacetValue> GetPrices(double minPrice, double maxPrice)
 		{
-			// validate
+			// Validate
 			if (minPrice > maxPrice)
 			{
 				var tmp = minPrice;
@@ -72,8 +117,8 @@ namespace SmartStore.Services.Search.Extensions
 				maxPrice = tmp;
 			}
 
-			minPrice = Math.Max(minPrice, 0.0);
-			maxPrice = Math.Max(maxPrice, 0.0);
+			minPrice = Math.Abs(minPrice);
+			maxPrice = Math.Abs(maxPrice);
 
 			var count = 0;
 			for (double price = minPrice;

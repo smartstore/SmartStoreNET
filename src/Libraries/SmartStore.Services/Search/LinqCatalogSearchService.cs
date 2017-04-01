@@ -745,7 +745,7 @@ namespace SmartStore.Services.Search
 						}));
 					}
 
-					// Add facet for custome price range.
+					// Add facet for custom price range.
 					var priceDescriptorValue = descriptor.Values.FirstOrDefault();
 
 					var customPriceFacetValue = new FacetValue(

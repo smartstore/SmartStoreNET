@@ -457,3 +457,8 @@ $facet-control-size:        20px;
         padding-right: 0;
     }
 }
+
+
+.has-active-filter .hide-on-active-filter {
+    display: none !important;
+}

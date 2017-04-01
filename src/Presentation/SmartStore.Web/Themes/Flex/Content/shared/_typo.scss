@@ -26,19 +26,29 @@ $font-weight-bold:        700;
 }
 
 
-// Utils
+// Heading
 // ===================
 
-@mixin font-inherit() {
-	font-family: inherit;
-	font-weight: inherit;
-	font-style: inherit;
-	color: inherit;
-	font-size: inherit;
-	color: inherit;
-	text-decoration: inherit;
-}
+.heading {
+    position: relative;
+    text-align: center;
 
-@mixin smaller() {
-    font-size: $font-size-sm !important;
+    &:before {
+        position: absolute;
+        display: block;
+        content: ' ';
+        width: 100%;
+        height: 1px;
+        top: 50%;
+        z-index: 0;
+        background: radial-gradient(ellipse at center, $body-bg 25%, rgba(#000, 0.25) 100%);
+    }
+
+    .heading-title {
+        position: relative;
+        display: inline-block;
+        background: $body-bg;
+        padding: 0 1rem;
+        font-weight: 300;
+    }
 }

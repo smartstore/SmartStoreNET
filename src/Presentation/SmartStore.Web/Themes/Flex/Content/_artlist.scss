@@ -649,3 +649,16 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
         //width: 180px; // avoids flickering during initial load
     }
 }
+
+
+// Special overrides
+// ---------------------------------------------
+
+.artlist-no-separators .artlist-grid:not(.artlist-boxed) {
+    .art {
+        border-bottom-width: 0 !important;
+    }
+    &:after {
+        height: 0 !important;
+    }
+}

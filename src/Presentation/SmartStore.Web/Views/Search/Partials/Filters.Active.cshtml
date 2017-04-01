@@ -39,6 +39,7 @@
 
 @if (activeFilters.Length > 0)
 {
+	Html.AddBodyCssClass("has-active-filter");
 	<div class="active-filters-container">
 		<ul class="list-unstyled clearfix active-filters">
 			@foreach (var filter in activeFilters)

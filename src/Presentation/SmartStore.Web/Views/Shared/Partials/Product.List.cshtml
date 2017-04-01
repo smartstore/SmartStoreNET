@@ -33,6 +33,12 @@
 	else
 	{
 		listCssClasses.Add("artlist-grid");
+
+		if (Model.BoxedStyleItems)
+		{
+			listCssClasses.Add("artlist-boxed");
+		}
+
 		// TODO: (mh) make 6-cols layout fit better per CSS (hide some elements etc.)
 		var colspan = (int)Model.GridColumnSpan;
 		listCssClasses.Add("artlist-{0}-cols".FormatInvariant(colspan));

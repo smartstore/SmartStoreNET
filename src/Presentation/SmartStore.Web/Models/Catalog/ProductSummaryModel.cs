@@ -47,8 +47,9 @@ namespace SmartStore.Web.Models.Catalog
 
 		public ProductSummaryViewMode ViewMode { get; set; }
 		public GridColumnSpan GridColumnSpan { get; set; }
-		public bool AllowViewModeChanging { get; set; }
+		public bool BoxedStyleItems { get; set; }
 
+		public bool AllowViewModeChanging { get; set; }
 		public bool AllowFiltering { get; set; }
 		public bool AllowSorting { get; set; }
 		public int? CurrentSortOrder { get; set; }

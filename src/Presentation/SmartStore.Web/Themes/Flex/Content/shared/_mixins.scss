@@ -90,4 +90,18 @@
     background: $color;
 }
 
+@mixin font-inherit() {
+	font-family: inherit;
+	font-weight: inherit;
+	font-style: inherit;
+	color: inherit;
+	font-size: inherit;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+@mixin smaller() {
+    font-size: $font-size-sm !important;
+}
+
 

@@ -60,18 +60,20 @@
 
 		@* Featured products *@
         @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Items.Count > 0)
-        {
-            Html.RenderWidget("manufacturerdetails_before_featured_products");
+		{
+			Html.RenderWidget("manufacturerdetails_before_featured_products");
 
-			<div class="featured-product-grid">
-				<div class="section-title">
-					@T("Products.FeaturedProducts")
+			<div class="product-grid featured-product-grid block">
+				<div class="heading heading-center">
+					<h3 class="heading-title fs-h1">@T("Products.FeaturedProducts")</h3>
 				</div>
-				@{
-                    Html.RenderPartial("Product.List", Model.FeaturedProducts);
-				}
+				<div class="block-body pt-3 artlist-no-separators">
+					@{
+						Html.RenderPartial("Product.List", Model.FeaturedProducts);
+					}
+				</div>
 			</div>
-                    }
+		}
 
 		@* Product list *@
 		@{ Html.RenderWidget("categorydetails_before_product_list"); }

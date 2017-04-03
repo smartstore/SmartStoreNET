@@ -84,7 +84,7 @@
             }
 
             self.visible = true;
-            self.throbber.delay(opts.delay).transition({ opacity: 1 }, opts.speed || 0, "linear", show);
+            self.throbber.delay(opts.delay).animate({ opacity: 1 }, opts.speed || 0, "linear", show);
 
             if (opts.timeout) {
                 var hideFn = _.bind(self.hide, this);

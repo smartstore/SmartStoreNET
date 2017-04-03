@@ -12539,7 +12539,7 @@
 		<Value>Miscellaneous</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Themes.Shopbar">
-		<Value>Shopbar/Megamenu</Value>
+		<Value>Shopbar/Mega Menu</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Themes.Tables">
 		<Value>Tables/Container</Value>
@@ -16396,7 +16396,7 @@
 		<Value>Container radius</Value>
 	</LocaleResource>
 	<LocaleResource Name="ThemeVar.Alpha.DisplayNavbar">
-		<Value>Display Megamenu</Value>
+		<Value>Display Mega Menu</Value>
 	</LocaleResource>
 	<LocaleResource Name="ThemeVar.Alpha.DropdownBackground">
 		<Value>Dropdown background color</Value>

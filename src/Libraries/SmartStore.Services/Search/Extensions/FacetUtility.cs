@@ -117,8 +117,8 @@ namespace SmartStore.Services.Search.Extensions
 				maxPrice = tmp;
 			}
 
-			minPrice = Math.Abs(minPrice);
-			maxPrice = Math.Abs(maxPrice);
+			minPrice = Math.Max(minPrice, 0);
+			maxPrice = Math.Max(maxPrice, 0);
 
 			var count = 0;
 			for (double price = minPrice;

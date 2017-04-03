@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
-using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
@@ -18,7 +17,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class SpecificationAttributeController : AdminControllerBase
     {
         #region Fields
@@ -332,18 +331,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return Json(new { Result = true });
-		}
-
-		[HttpPost]
-		public ActionResult ProductMappingEdit(int specificationAttributeId, string field, bool value)
-		{
-			_specificationAttributeService.UpdateProductSpecificationMapping(specificationAttributeId, field, value);
-
-			return Json(new
-			{
-				message = _localizationService.GetResource("Admin.Common.DataEditSuccess"),
-				notificationType = "success"
-			});
 		}
 
         #endregion

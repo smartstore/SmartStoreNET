@@ -712,9 +712,15 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetTemplateHint",
 				"Search filter presentation",
-				"Darstellug der Suchfilter",
+				"Darstellung der Suchfilter",
 				"Specifies the presentation of search filters. " + megaSearchPlusHintEn,
 				"Legt die Darstellung der Suchfilter fest. " + megaSearchPlusHintDe);
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.AllowFiltering",
+				"Allow filtering",
+				"Filtern ermöglichen",
+				"Specifies whether search results can be filtered by this attribute. " + megaSearchPlusHintEn,
+				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können. " + megaSearchPlusHintDe);
 
 			builder.AddOrUpdate("Admin.Catalog.Products.SpecificationAttributes.Fields.AllowFiltering",
 				"Allow filtering",
@@ -730,7 +736,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint",
 				"Search filter UI type",
-				"Suchfilter Darstellug",
+				"Suchfilter Darstellung",
 				"Specifies the search filter UI type. " + megaSearchPlusHintEn,
 				"Legt die Darstellung der Suchfilter fest. " + megaSearchPlusHintDe);
 
@@ -740,6 +746,14 @@ namespace SmartStore.Data.Migrations
 				"Specifies a numeric value to enbale range filtering (e.g. light red to dark red). \"Numeric range\" must be specified as search filter presentation for the attribute. " + megaSearchPlusHintEn,
 				"Legt einen numerischen Wert fest, um eine Bereichsfilterung zu ermöglichen (z.B. hellrot bis dunkelrot). Für das Attribut muss \"Numerischer Bereich\" als Suchfilterdarstellung festgelegt sein. " + megaSearchPlusHintDe);
 
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.ShowOnProductPage",
+				"Show on product page",
+				"Auf der Produktseite anzeigen",
+				"Check the box to display the attribute on the product detail page.",
+				"Legt fest, ob das Attribut auf der Produktdetailseite angezeigt werden soll.");
+
+
+
 			builder.AddOrUpdate("Account.Administration", "Admin", "Admin");
 
 			builder.AddOrUpdate("Common.Shopbar.BasketPartOne", "Shopping", "Waren");
@@ -748,6 +762,13 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.From", "From", "Von");
 			builder.AddOrUpdate("Common.To", "To", "Bis");
 			builder.AddOrUpdate("Common.Any", "Any", "Beliebig");
+
+			builder.Delete(
+				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.Description",
+				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.AllowFiltering",
+				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.DisallowFiltering",
+				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowOnProductPage",
+				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowNotOnProductPage");
 		}
 	}
 }

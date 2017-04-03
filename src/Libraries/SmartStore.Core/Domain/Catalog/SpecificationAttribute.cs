@@ -33,13 +33,25 @@ namespace SmartStore.Core.Domain.Catalog
 		public int DisplayOrder { get; set; }
 
 		/// <summary>
+		/// Gets or sets whether the specification attribute will be shown on the product page.
+		/// </summary>
+		[DataMember]
+		public bool? ShowOnProductPage { get; set; }
+
+		/// <summary>
+		/// Gets or sets whether the specification attribute can be filtered. Only effective in accordance with MegaSearchPlus plugin.
+		/// </summary>
+		[DataMember]
+		public bool? AllowFiltering { get; set; }
+
+		/// <summary>
 		/// Gets or sets the sorting of facets. Only effective in accordance with MegaSearchPlus plugin.
 		/// </summary>
 		[DataMember]
 		public FacetSorting FacetSorting { get; set; }
 
 		/// <summary>
-		/// Gets or sets the facet template hint
+		/// Gets or sets the facet template hint. Only effective in accordance with MegaSearchPlus plugin.
 		/// </summary>
 		[DataMember]
 		public FacetTemplateHint FacetTemplateHint { get; set; }

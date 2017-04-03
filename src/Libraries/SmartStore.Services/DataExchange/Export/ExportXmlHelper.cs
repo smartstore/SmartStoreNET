@@ -820,6 +820,10 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("Name", (string)option.SpecificationAttribute.Name);
 					_writer.Write("Alias", (string)option.SpecificationAttribute.Alias);
 					_writer.Write("DisplayOrder", entitySa.DisplayOrder.ToString());
+					_writer.Write("AllowFiltering", entitySa.AllowFiltering.ToString());
+					_writer.Write("ShowOnProductPage", entitySa.ShowOnProductPage.ToString());
+					_writer.Write("FacetSorting", ((int)entitySa.FacetSorting).ToString());
+					_writer.Write("FacetTemplateHint", ((int)entitySa.FacetTemplateHint).ToString());
 
 					WriteLocalized(option.SpecificationAttribute);
 

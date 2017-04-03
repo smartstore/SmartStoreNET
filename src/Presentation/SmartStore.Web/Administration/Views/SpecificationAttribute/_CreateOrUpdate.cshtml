@@ -1,4 +1,5 @@
 ﻿@using Telerik.Web.Mvc.UI;
+@using SmartStore.Core.Search.Facets;
 @model SpecificationAttributeModel
 
 @Html.ValidationSummary(false)
@@ -78,7 +79,7 @@
         </tr>
     </table>
     ))
-    <table class="adminContent">
+    <table id="SpecificationAttributeTable" class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.DisplayOrder)
@@ -90,14 +91,23 @@
         </tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.FacetSorting)
+				@Html.SmartLabelFor(model => model.ShowOnProductPage)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(model => model.FacetSorting, Model.FacetSorting.ToSelectList().ToList())
-				@Html.ValidationMessageFor(model => model.FacetSorting)
+				@Html.EditorFor(model => model.ShowOnProductPage)
+				@Html.ValidationMessageFor(model => model.ShowOnProductPage)
 			</td>
 		</tr>
 		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AllowFiltering)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AllowFiltering)
+				@Html.ValidationMessageFor(model => model.AllowFiltering)
+			</td>
+		</tr>
+		<tr class="allow-filtering">
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FacetTemplateHint)
 			</td>
@@ -106,7 +116,38 @@
 				@Html.ValidationMessageFor(model => model.FacetTemplateHint)
 			</td>
 		</tr>
+		<tr class="allow-filtering facet-sorting">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FacetSorting)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.FacetSorting, Model.FacetSorting.ToSelectList().ToList())
+				@Html.ValidationMessageFor(model => model.FacetSorting)
+			</td>
+		</tr>
     </table>
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+			// allow filtering
+			$('#@(Html.FieldIdFor(x => x.AllowFiltering))').change(filtering).trigger('change');
+
+			// facet template hint
+			$('#@(Html.FieldIdFor(x => x.FacetTemplateHint))').change(filtering).trigger('change');
+
+			function filtering() {
+				var allow = $('#@(Html.FieldIdFor(x => x.AllowFiltering))').val() !== 'false';
+				$('#SpecificationAttributeTable').find('.allow-filtering').toggle(allow);
+
+				if (allow) {
+					var sorting = $('#@(Html.FieldIdFor(x => x.FacetTemplateHint))').val() !== '@((int)FacetTemplateHint.NumericRange)';
+					$('#SpecificationAttributeTable').find('.facet-sorting').toggle(sorting);
+				}
+			}
+
+		});
+	</script>
 }
 
 @helper TabOptions()

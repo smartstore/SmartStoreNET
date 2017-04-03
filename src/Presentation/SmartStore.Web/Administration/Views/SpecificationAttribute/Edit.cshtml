@@ -1,8 +1,6 @@
 ﻿@model SpecificationAttributeModel
 @{    
-    //page title
     ViewBag.Title = T("Admin.Catalog.Attributes.SpecificationAttributes.EditAttributeDetails").Text;
-	string bundledDescription = T("Admin.Catalog.Attributes.SpecificationAttributes.Bundled.Description");
 }
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "specificationattribute-form" }))
 {
@@ -13,36 +11,6 @@
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
-
-			<div class="btn-group" style="vertical-align: middle">
-              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                @T("Admin.Common.Bundled")
-                <span class="fa fa-caret-down"></span>
-              </a>
-              <ul id="BundledMenu" class="dropdown-menu">
-                <li>
-					<a href="javascript:void(0)" data-url="@Url.Action("ProductMappingEdit", new { specificationAttributeId = Model.Id, field = "AllowFiltering", value = true })" title="@bundledDescription">
-						@T("Admin.Catalog.Attributes.SpecificationAttributes.Bundled.AllowFiltering")
-					</a>
-                </li>
-                <li>
-					<a href="javascript:void(0)" data-url="@Url.Action("ProductMappingEdit", new { specificationAttributeId = Model.Id, field = "AllowFiltering", value = false })" title="@bundledDescription">
-						@T("Admin.Catalog.Attributes.SpecificationAttributes.Bundled.DisallowFiltering")
-					</a>
-                </li>
-                <li>
-					<a href="javascript:void(0)" data-url="@Url.Action("ProductMappingEdit", new { specificationAttributeId = Model.Id, field = "ShowOnProductPage", value = true })" title="@bundledDescription">
-						@T("Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowOnProductPage")
-					</a>
-                </li>
-                <li>
-					<a href="javascript:void(0)" data-url="@Url.Action("ProductMappingEdit", new { specificationAttributeId = Model.Id, field = "ShowOnProductPage", value = false })" title="@bundledDescription">
-						@T("Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowNotOnProductPage")
-					</a>
-                </li>
-              </ul>
-			</div>
-
             <button type="submit" name="specificationattribute-delete" value="specificationattribute-delete" id="specificationattribute-delete" class="btn btn-danger">
 				<i class="fa fa-trash-o"></i>
 				@T("Admin.Common.Delete")
@@ -53,17 +21,3 @@
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("specificationattribute-delete")
-
-<script type="text/javascript">
-	$(document).ready(function () {
-		$('#BundledMenu').find('a').click(function () {
-			$(this).doAjax({
-				ask: '@T("Admin.Common.AskToProceed")',
-				curtainTitle: '@T("Admin.Common.WaitProcessingMessage")',
-				callbackSuccess: function (resp) {
-					window.displayNotification(resp.message, resp.notificationType);
-				}
-			});
-		});
-	});
-</script>

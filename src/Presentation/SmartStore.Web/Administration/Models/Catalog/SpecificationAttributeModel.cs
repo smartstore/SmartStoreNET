@@ -25,7 +25,13 @@ namespace SmartStore.Admin.Models.Catalog
 		public string Alias { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.DisplayOrder")]
-        public int DisplayOrder { get;set; }
+		public int DisplayOrder { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.AllowFiltering")]
+		public bool? AllowFiltering { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.ShowOnProductPage")]
+		public bool? ShowOnProductPage { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting")]
 		public FacetSorting FacetSorting { get; set; }

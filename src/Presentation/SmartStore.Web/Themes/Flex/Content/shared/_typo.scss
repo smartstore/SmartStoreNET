@@ -31,7 +31,6 @@ $font-weight-bold:        700;
 
 .heading {
     position: relative;
-    text-align: center;
 
     &:before {
         position: absolute;
@@ -41,14 +40,26 @@ $font-weight-bold:        700;
         height: 1px;
         top: 50%;
         z-index: 0;
-        background: radial-gradient(ellipse at center, $body-bg 25%, rgba(#000, 0.25) 100%);
+        background: radial-gradient(ellipse at left, $body-bg 25%, rgba(#000, 0.25) 100%);
     }
 
     .heading-title {
         position: relative;
         display: inline-block;
         background: $body-bg;
-        padding: 0 1rem;
+        padding-right: 1rem;
         font-weight: 300;
+    }
+}
+
+.heading-center {
+    text-align: center;
+
+    &:before {
+        background: radial-gradient(ellipse at center, $body-bg 25%, rgba(#000, 0.25) 100%);
+    }
+
+    .heading-title {
+        padding-left: 1rem;
     }
 }

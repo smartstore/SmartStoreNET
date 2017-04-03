@@ -772,7 +772,7 @@ a.pretty-link {
 // Category Menu
 // ------------------------------------------------------
 
-.catmenu-path {
+/*.catmenu-path {
     margin-bottom: 0.4rem;
     padding-bottom: 0.4rem;
     border-bottom: 1px solid rgba(#000, 0.12);
@@ -813,7 +813,39 @@ a.pretty-link {
 
 .catmenu-path .selected .catmenu-link {
     font-size: 1rem;
+}*/
+
+.catmenu {
+    .catmenu-path-item {
+        font-weight: 600;
+        background: rgba($list-group-hover-bg, 0.5);
+    }
+
+    .catmenu-path-item.expanded,
+    .catmenu-item.parent {
+        padding-right: $list-group-item-padding-x * 1.5;
+
+        &:after {
+            @include fontawesome("\f105", 1.2rem);   
+            display: block;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%); 
+        }
+    }
+
+    .catmenu-path-item.expanded {
+        color: $body-color;
+        &:after { content: '\f148'; font-size: inherit; }
+    }
+
+    .catmenu-path-item.active {
+        font-size: 1rem;
+        &:before { display: none !important; }
+    }
 }
+
 
 
 #scroll-top {

@@ -15,6 +15,8 @@ namespace SmartStore.Admin.Models.Catalog
         public SpecificationAttributeModel()
         {
             Locales = new List<SpecificationAttributeLocalizedModel>();
+			AllowFiltering = true;
+			ShowOnProductPage = true;
 		}
 
         [SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Name")]
@@ -28,10 +30,10 @@ namespace SmartStore.Admin.Models.Catalog
 		public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.AllowFiltering")]
-		public bool? AllowFiltering { get; set; }
+		public bool AllowFiltering { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.ShowOnProductPage")]
-		public bool? ShowOnProductPage { get; set; }
+		public bool ShowOnProductPage { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting")]
 		public FacetSorting FacetSorting { get; set; }

@@ -807,8 +807,6 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 			}
-			//default specs values
-			model.AddSpecificationAttributeModel.ShowOnProductPage = true;
 
 			//discounts
 			var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
@@ -2362,8 +2360,8 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult ProductSpecificationAttributeAdd(
 			int specificationAttributeOptionId,
-			bool allowFiltering,
-			bool showOnProductPage,
+			bool? allowFiltering,
+			bool? showOnProductPage,
 			int displayOrder,
 			int productId)
         {

@@ -34,13 +34,22 @@
 							.HtmlAttributes(new { style = "text-align:center" })
 							.HeaderHtmlAttributes(new { style = "text-align:center" });
 						columns.Bound(x => x.Name)
-							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
 						columns.Bound(x => x.Alias);
 						columns.Bound(x => x.OptionCount)
 							.Filterable(false)
 							.Width(200)
 							.Centered();
+						columns.Bound(x => x.AllowFiltering)
+							.Filterable(false)
+							.Width(200)
+							.Centered()
+							.ClientTemplate(@Html.SymbolForBool("AllowFiltering"));
+						columns.Bound(x => x.ShowOnProductPage)
+							.Filterable(false)
+							.Width(240)
+							.Centered()
+							.ClientTemplate(@Html.SymbolForBool("ShowOnProductPage"));
 						columns.Bound(x => x.DisplayOrder)
 							.Filterable(false)
 							.Width(200)

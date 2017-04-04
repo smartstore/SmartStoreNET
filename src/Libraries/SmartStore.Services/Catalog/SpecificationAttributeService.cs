@@ -197,16 +197,16 @@ namespace SmartStore.Services.Catalog
 				if (allowFiltering.HasValue)
 				{
 					joinedQuery = joinedQuery.Where(x =>
-						(x.Attribute.AllowFiltering == null && x.ProductAttribute.AllowFiltering == allowFiltering.Value) ||
-						(x.Attribute.AllowFiltering != null && x.Attribute.AllowFiltering == allowFiltering.Value)
+						(x.ProductAttribute.AllowFiltering == null && x.Attribute.AllowFiltering == allowFiltering.Value) ||
+						(x.ProductAttribute.AllowFiltering != null && x.ProductAttribute.AllowFiltering == allowFiltering.Value)
 					);
 				}
 
 				if (showOnProductPage.HasValue)
 				{
 					joinedQuery = joinedQuery.Where(x =>
-						(x.Attribute.ShowOnProductPage == null && x.ProductAttribute.ShowOnProductPage == showOnProductPage.Value) ||
-						(x.Attribute.ShowOnProductPage != null && x.Attribute.ShowOnProductPage == showOnProductPage.Value)
+						(x.ProductAttribute.ShowOnProductPage == null && x.Attribute.ShowOnProductPage == showOnProductPage.Value) ||
+						(x.ProductAttribute.ShowOnProductPage != null && x.ProductAttribute.ShowOnProductPage == showOnProductPage.Value)
 					);
 				}
 

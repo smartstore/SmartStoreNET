@@ -411,7 +411,6 @@ namespace SmartStore.Admin.Models.Catalog
             {
                 AvailableAttributes = new List<SelectListItem>();
                 AvailableOptions = new List<SelectListItem>();
-				AllowFiltering = true;
             }
             
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.SpecificationAttribute")]
@@ -421,10 +420,10 @@ namespace SmartStore.Admin.Models.Catalog
             public int SpecificationAttributeOptionId { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.AllowFiltering")]
-            public bool AllowFiltering { get; set; }
+            public bool? AllowFiltering { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.ShowOnProductPage")]
-            public bool ShowOnProductPage { get; set; }
+            public bool? ShowOnProductPage { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.DisplayOrder")]
             public int DisplayOrder { get; set; }

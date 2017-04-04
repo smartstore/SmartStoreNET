@@ -24,13 +24,13 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets whether the attribute can be filtered. Only effective in accordance with MegaSearchPlus plugin.
 		/// </summary>
 		[DataMember]
-		public bool AllowFiltering { get; set; }
+		public bool? AllowFiltering { get; set; }
 
         /// <summary>
         /// Gets or sets whether the attribute will be shown on the product page.
         /// </summary>
 		[DataMember]
-		public bool ShowOnProductPage { get; set; }
+		public bool? ShowOnProductPage { get; set; }
 
         /// <summary>
         /// Gets or sets the display order

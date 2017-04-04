@@ -107,7 +107,7 @@
 				@Html.ValidationMessageFor(model => model.AllowFiltering)
 			</td>
 		</tr>
-		<tr class="allow-filtering">
+		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FacetTemplateHint)
 			</td>
@@ -116,7 +116,7 @@
 				@Html.ValidationMessageFor(model => model.FacetTemplateHint)
 			</td>
 		</tr>
-		<tr class="allow-filtering facet-sorting">
+		<tr class="facet-sorting">
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FacetSorting)
 			</td>
@@ -130,21 +130,11 @@
 	<script type="text/javascript">
 		$(document).ready(function () {
 
-			// allow filtering
-			$('#@(Html.FieldIdFor(x => x.AllowFiltering))').change(filtering).trigger('change');
-
-			// facet template hint
-			$('#@(Html.FieldIdFor(x => x.FacetTemplateHint))').change(filtering).trigger('change');
-
-			function filtering() {
-				var allow = $('#@(Html.FieldIdFor(x => x.AllowFiltering))').val() !== 'false';
-				$('#SpecificationAttributeTable').find('.allow-filtering').toggle(allow);
-
-				if (allow) {
-					var sorting = $('#@(Html.FieldIdFor(x => x.FacetTemplateHint))').val() !== '@((int)FacetTemplateHint.NumericRange)';
-					$('#SpecificationAttributeTable').find('.facet-sorting').toggle(sorting);
-				}
-			}
+			// Facet template hint.
+			$('#@(Html.FieldIdFor(x => x.FacetTemplateHint))').change(function () {
+				var sorting = $(this).val() !== '@((int)FacetTemplateHint.NumericRange)';
+				$('#SpecificationAttributeTable').find('.facet-sorting').toggle(sorting);
+			}).trigger('change');
 
 		});
 	</script>

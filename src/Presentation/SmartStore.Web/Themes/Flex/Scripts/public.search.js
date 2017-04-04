@@ -107,7 +107,10 @@
 						dropBody.html('');
 					}
 					else {
-						dropBody.html(html);
+						var markup = $(html);
+						var isMultiCol = markup.hasClass('instasearch-row');
+						drop.toggleClass('w-100', !isMultiCol);
+						dropBody.html(markup);
 						openDrop();
 					}
 				},

@@ -40,13 +40,13 @@
                                 @Html.Raw(item.ShortDescription.Truncate(120, "..."))
                             </div>
 
-                            <div class="row align-items-center sm-gutters mt-2">
+                            <div class="d-flex align-items-center sm-gutters mt-2">
                                 <div class="col">
                                     <span class="price unit-price">
                                         @item.Price.Price
                                     </span>
                                 </div>
-                                <div class="ml-auto text-nowrap">
+                                <div class="col-auto text-nowrap">
                                     <a class="btn btn-secondary btn-to-danger btn-sm btn-icon remove ajax-cart-link"
                                        href="#"
                                        rel="nofollow"

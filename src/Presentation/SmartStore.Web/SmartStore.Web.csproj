@@ -407,7 +407,7 @@
     <Compile Include="Models\Customer\RegisterResultModel.cs" />
     <Compile Include="Models\Customer\RegisterModel.cs" />
     <Compile Include="Models\Customer\LoginModel.cs" />
-    <Compile Include="Models\Common\InfoBlockModel.cs" />
+    <Compile Include="Models\Common\ServiceMenuModel.cs" />
     <Compile Include="Models\Common\MenuModel.cs" />
     <Compile Include="Models\Common\ContactUsModel.cs" />
     <Compile Include="Models\Common\TaxTypeSelectorModel.cs" />
@@ -1679,7 +1679,6 @@
     <Content Include="Views\Common\Partials\EntityPickerList.cshtml" />
     <Content Include="Views\Common\Partials\Favicon.cshtml" />
     <Content Include="Views\Common\Partials\Footer.cshtml" />
-    <Content Include="Views\Common\Partials\InfoBlock.cshtml" />
     <Content Include="Views\Common\Partials\JavaScriptDisabledWarning.cshtml" />
     <Content Include="Views\Common\Partials\LanguageSelector.cshtml" />
     <Content Include="Views\Common\List.cshtml" />

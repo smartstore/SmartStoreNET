@@ -75,9 +75,9 @@ $mm-selected-color:                     $brand-warning;
             content: "";
             right: 0;
             position: absolute;
-            border-bottom: 15px solid #fff;
-            border-right: 17px solid transparent;
-            border-left: 17px solid transparent;
+            border-bottom: 10px solid #fff;
+            border-right: 12px solid transparent;
+            border-left: 12px solid transparent;
             bottom: -1px;
             z-index: ($mm-zindex-base + 3);
         }
@@ -86,9 +86,9 @@ $mm-selected-color:                     $brand-warning;
             content: "";
             right: -2px;
             position: absolute;
-            border-bottom: 17px solid #bbb;
-            border-right: 19px solid transparent;
-            border-left: 19px solid transparent;
+            border-bottom: 12px solid #bbb;
+            border-right: 14px solid transparent;
+            border-left: 14px solid transparent;
             bottom: -2px;
             z-index: ($mm-zindex-base + 2);
         }
@@ -318,6 +318,7 @@ $mm-selected-color:                     $brand-warning;
     .dropdown-menu {
         margin-top: -1px;
         min-width: 250px;
+        z-index: ($mm-zindex-base + 1);
     }
     .dropdown-item {
         padding-top: 0.35rem;

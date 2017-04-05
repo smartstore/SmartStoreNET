@@ -780,49 +780,6 @@ a.pretty-link {
 // Category Menu
 // ------------------------------------------------------
 
-/*.catmenu-path {
-    margin-bottom: 0.4rem;
-    padding-bottom: 0.4rem;
-    border-bottom: 1px solid rgba(#000, 0.12);
-}
-
-.catmenu-link {
-    position: relative;
-    display: block;
-    color: $body-color !important;
-    line-height: 1.3;
-    padding: 0.25rem 0;
-
-    .selected & {
-        font-weight: 700;
-    }
-
-    .expanded &,
-    .parent & {
-        padding-right: 1rem;
-
-        &:before {
-            @include fontawesome("\f105", 1.2rem);   
-            display: block;
-            position: absolute;
-            right: 0;
-            top: 3px; 
-        }
-    }
-
-    .expanded &:before {
-        content: '\f102';
-    }
-}
-
-.catmenu-path .catmenu-link {
-    font-weight: 600;
-}
-
-.catmenu-path .selected .catmenu-link {
-    font-size: 1rem;
-}*/
-
 .catmenu {
     .catmenu-path-item {
         font-weight: 600;
@@ -855,26 +812,24 @@ a.pretty-link {
 }
 
 
+//
+// Compare table
+// ------------------------------------------------------
 
-#scroll-top {
-    z-index: 9999;
-    position: fixed;
-    bottom: 80px;
-    right: 0;
-    width: 36px;
-    height: 36px;
-    border-radius: 3px 0 0 3px;
-    border: 1px solid rgba(0,0,0, 0.15);
-    border-right-width: 0;
-    background: rgba(255,255,255, 0.9);
-    color: $body-color !important;
-    text-decoration: none;
-    transform: translate3d(100%, 0, 0);
-    transition: transform .2s ease-in-out;
-    &.in {
-        transform: translate3d(0, 0, 0);
+.table-compare {
+    td, th {
+        width: 20%;
+    }
+    
+    th {
+        font-weight: 600;
+    }
+
+    tbody {
+        font-size: $font-size-sm;
     }
 }
+
 
 
 //
@@ -898,6 +853,28 @@ a.pretty-link {
         .list-group-item-icon {
             margin-right: 0.75rem;
         }
+    }
+}
+
+
+
+#scroll-top {
+    z-index: 9999;
+    position: fixed;
+    bottom: 80px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 3px 0 0 3px;
+    border: 1px solid rgba(0,0,0, 0.15);
+    border-right-width: 0;
+    background: rgba(255,255,255, 0.9);
+    color: $body-color !important;
+    text-decoration: none;
+    transform: translate3d(100%, 0, 0);
+    transition: transform .2s ease-in-out;
+    &.in {
+        transform: translate3d(0, 0, 0);
     }
 }
 

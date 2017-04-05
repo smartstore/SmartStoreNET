@@ -117,6 +117,9 @@ $facet-selection-color:             darken($brand-success, 15%);
     &.has-thumbs li {
         border-bottom: 1px solid rgba(#000, 0.12);
     }
+    &.has-thumbs li:last-child {
+        border-bottom: none;
+    }
 }
 
 @include media-breakpoint-up(sm) {

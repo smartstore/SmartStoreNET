@@ -1251,13 +1251,13 @@ namespace SmartStore.Web.Controllers
 
         #region Shopping cart
 
-        //add product to cart using AJAX
-        //currently we use this method on catalog pages (category/manufacturer/etc)
         [HttpPost]
-        public ActionResult AddProductSimple(int productId, bool forceredirection = false)
+        public ActionResult AddProductSimple(int productId, int shoppingCartTypeId = 1, bool forceredirection = false)
         {
-            //current we support only ShoppingCartType.ShoppingCart
-            const ShoppingCartType shoppingCartType = ShoppingCartType.ShoppingCart;
+			// Add product to cart using AJAX
+			// Currently we use this method on catalog pages (category/manufacturer/etc)
+
+			var shoppingCartType = (ShoppingCartType)shoppingCartTypeId;
 
             var product = _productService.GetProductById(productId);
 			if (product == null)
@@ -1278,26 +1278,26 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-            //quantity to add
+            // quantity to add
 			var qtyToAdd = product.OrderMinimumQuantity > 0 ? product.OrderMinimumQuantity : 1;
 
 			var allowedQuantities = product.ParseAllowedQuatities();
             if (allowedQuantities.Length > 0)
             {
-                //cannot be added to the cart (requires a customer to select a quantity from dropdownlist)
+                // cannot be added to the cart (requires a customer to select a quantity from dropdownlist)
                 return Json(new
                 {
                     redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
                 });
             }
 
-            //get standard warnings without attribute validations
-            //first, try to find existing shopping cart item
+            // get standard warnings without attribute validations
+            // first, try to find existing shopping cart item
 			var cart = _workContext.CurrentCustomer.GetCartItems(shoppingCartType, _storeContext.CurrentStore.Id);
 
             var shoppingCartItem = _shoppingCartService.FindShoppingCartItemInTheCart(cart, shoppingCartType, product);
             
-			//if we already have the same product in the cart, then use the total quantity to validate
+			// if we already have the same product in the cart, then use the total quantity to validate
             var quantityToValidate = shoppingCartItem != null ? shoppingCartItem.Item.Quantity + qtyToAdd : qtyToAdd;
 
 			var addToCartWarnings = (List<string>)_shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer, shoppingCartType,
@@ -1305,8 +1305,8 @@ namespace SmartStore.Web.Controllers
 
             if (addToCartWarnings.Count > 0)
             {
-                //cannot be added to the cart
-                //let's display standard warnings
+                // cannot be added to the cart
+                // let's display standard warnings
                 return Json(new
                 {
                     success = false,
@@ -1314,7 +1314,7 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            //now let's try adding product to the cart (now including product attribute validation, etc)
+            // now let's try adding product to the cart (now including product attribute validation, etc)
 			var addToCartContext = new AddToCartContext
 			{
 				Product = product,
@@ -1327,21 +1327,21 @@ namespace SmartStore.Web.Controllers
 
             if (addToCartContext.Warnings.Count > 0)
             {
-                //cannot be added to the cart
-                //but we do not display attribute and gift card warnings here. let's do it on the product details page
+                // cannot be added to the cart
+                // but we do not display attribute and gift card warnings here. let's do it on the product details page
                 return Json(new
                 {
                     redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
                 });
             }
 
-            //now product is in the cart
-            //activity log
+            // now product is in the cart
+            // activity log
 			_customerActivityService.InsertActivity("PublicStore.AddToShoppingCart", _localizationService.GetResource("ActivityLog.PublicStore.AddToShoppingCart"), product.Name);
 
             if (_shoppingCartSettings.DisplayCartAfterAddingProduct || forceredirection)
             {
-                //redirect to the shopping cart page
+                // redirect to the shopping cart page
                 return Json(new
                 {
                     redirect = Url.RouteUrl("ShoppingCart"),

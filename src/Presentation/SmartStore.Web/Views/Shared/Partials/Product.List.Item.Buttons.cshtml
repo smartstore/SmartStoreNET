@@ -17,16 +17,7 @@
 	}
 	if (!Model.Price.CallForPrice)
 	{
-		string addToCartUrl = "";
-		if (Model.Parent.ForceRedirectionAfterAddingToCart)
-		{
-			addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "forceredirection", true } });
-		}
-		else
-		{
-			addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id } });
-		}
-
+		var addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id, forceredirection = Model.Parent.ForceRedirectionAfterAddingToCart });
 		var title = (Model.Price.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
 
 		<a data-href='@addToCartUrl'
@@ -84,7 +75,7 @@
 
 	@if (!price.DisableWishlistButton && list.WishlistEnabled)
 	{
-		<a data-href='@Url.Action("AddProduct", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "shoppingCartTypeId", (int)ShoppingCartType.Wishlist } })'
+		<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
 			href="#"
 			class="btn btn-secondary btn-icon btn-lg art-btn col ajax-cart-link" 
 			title="@T("Categories.Wishlist")"

@@ -10,7 +10,7 @@
 	{
 		isMultiCol = 
 			Model.TopProducts.Items.Count > 0 
-			&& (hitGroups.Length > 1 || hitGroups.Sum(x => x.Hits.Count) > 4);
+			&& (hitGroups.Length > 1 && hitGroups.Sum(x => x.Hits.Count) > 4);
 	}
 }
 

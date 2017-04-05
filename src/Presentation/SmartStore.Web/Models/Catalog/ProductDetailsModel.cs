@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
@@ -219,7 +220,7 @@ namespace SmartStore.Web.Models.Catalog
 
 			public override string BuildControlId()
 			{
-				return string.Format("product_attribute_{0}_{1}_{2}_{3}", ProductId, BundleItemId, ProductAttributeId, Id);
+				return ProductVariantQueryItem.CreateKey(ProductId, BundleItemId, ProductAttributeId, Id);
 			}
 
 			public override string GetFileUploadUrl(UrlHelper url)

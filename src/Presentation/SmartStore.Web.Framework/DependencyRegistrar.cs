@@ -39,6 +39,7 @@ using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Importer;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -178,6 +179,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<CategoryTemplateService>().As<ICategoryTemplateService>().InstancePerRequest();
 			builder.RegisterType<ManufacturerTemplateService>().As<IManufacturerTemplateService>().InstancePerRequest();
 			builder.RegisterType<ProductTagService>().As<IProductTagService>().InstancePerRequest();
+			builder.RegisterType<ProductVariantQueryFactory>().As<IProductVariantQueryFactory>().InstancePerRequest();
 
 			builder.RegisterType<AffiliateService>().As<IAffiliateService>().InstancePerRequest();
 			builder.RegisterType<AddressService>().As<IAddressService>().InstancePerRequest();

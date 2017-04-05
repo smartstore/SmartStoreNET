@@ -26,6 +26,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -3534,7 +3535,7 @@ namespace SmartStore.Admin.Controllers
 					var pvacModel = x.ToModel();
 					PrepareProductAttributeCombinationModel(pvacModel, x, product, true);
 
-					pvacModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(x.AttributesXml, product.Id, productSeName);
+					pvacModel.ProductUrl = _productAttributeParser.GetProductUrlWithVariants(x.AttributesXml, product.Id, productSeName);
 					pvacModel.ProductUrlTitle = productUrlTitle;
 
 					try
@@ -3622,9 +3623,13 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost]
-		[ValidateInput(false)]
-		public async Task<ActionResult> AttributeCombinationCreatePopup(string btnId, string formId, int productId, ProductVariantAttributeCombinationModel model, FormCollection form)
+		[HttpPost, ValidateInput(false)]
+		public async Task<ActionResult> AttributeCombinationCreatePopup(
+			string btnId,
+			string formId,
+			int productId,
+			ProductVariantAttributeCombinationModel model,
+			ProductVariantQuery query)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
@@ -3636,16 +3641,8 @@ namespace SmartStore.Admin.Controllers
 			var warnings = new List<string>();
 			var variantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
-			string attributeXml = form.CreateSelectedAttributesXml(
-				product.Id, 
-				variantAttributes, 
-				_productAttributeParser, 
-				_localizationService,
-				_downloadService, 
-				_catalogSettings, 
-				this.Request, 
-				warnings, 
-				false);
+			var attributeXml = query.CreateSelectedAttributesXml(product.Id, 0, variantAttributes, _productAttributeParser, _localizationService,
+				_downloadService, _catalogSettings, this.Request, warnings);
 
 			warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, product, attributeXml));
 
@@ -3767,18 +3764,16 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult CombinationExistenceNote(int productId, FormCollection form)
+		public ActionResult CombinationExistenceNote(int productId, ProductVariantQuery query)
 		{
-			// no further authorization here
-
+			// No further authorization here.
 			var warnings = new List<string>();
 			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(productId);
 
-			string attributeXml = form.CreateSelectedAttributesXml(productId, attributes, _productAttributeParser,
-				_localizationService, _downloadService, _catalogSettings, this.Request, warnings, false);
+			var attributeXml = query.CreateSelectedAttributesXml(productId, 0, attributes, _productAttributeParser,
+				_localizationService, _downloadService, _catalogSettings, this.Request, warnings);
 
-			bool exists = (_productAttributeParser.FindProductVariantAttributeCombination(productId, attributeXml) != null);
-
+			var exists = (_productAttributeParser.FindProductVariantAttributeCombination(productId, attributeXml) != null);
 			if (!exists)
 			{
 				var product = _productService.GetProductById(productId);

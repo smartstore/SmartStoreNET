@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
 using System.Xml;
 using System.Xml.Linq;
-using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Services.Catalog
 {
@@ -327,28 +324,9 @@ namespace SmartStore.Services.Catalog
 			return result;
 		}
 
-		public virtual List<List<int>> DeserializeQueryData(string jsonData)
+		public virtual void DeserializeQuery(ProductVariantQuery query, string attributesXml, int productId, int bundleItemId = 0)
 		{
-			try
-			{
-				if (jsonData.HasValue())
-				{
-					if (jsonData.StartsWith("["))
-					{
-						return JsonConvert.DeserializeObject<List<List<int>>>(jsonData);
-					}
-
-					return new List<List<int>> { JsonConvert.DeserializeObject<List<int>>(jsonData) };
-				}
-			}
-			catch { }
-
-			return new List<List<int>>();
-		}
-
-		public virtual void DeserializeQueryData(List<List<int>> queryData, string attributesXml, int productId, int bundleItemId = 0)
-		{
-			Guard.NotNull(queryData, nameof(queryData));
+			Guard.NotNull(query, nameof(query));
 
 			if (attributesXml.HasValue() && productId != 0)
 			{
@@ -356,77 +334,30 @@ namespace SmartStore.Services.Catalog
 
 				foreach (var value in attributeValues)
 				{
-					var lst = new List<int>
+					query.AddVariant(new ProductVariantQueryItem(value.Id.ToString())
 					{
-						productId,
-						value.ProductVariantAttribute.ProductAttributeId,
-						value.ProductVariantAttributeId,
-						value.Id
-					};
-
-					if (bundleItemId != 0)
-						lst.Add(bundleItemId);
-
-					queryData.Add(lst);
+						ProductId = productId,
+						BundleItemId = bundleItemId,
+						AttributeId = value.ProductVariantAttribute.ProductAttributeId,
+						VariantAttributeId = value.ProductVariantAttributeId
+					});
 				}
 			}
 		}
 
-		public virtual string SerializeQueryData(string attributesXml, int productId, bool urlEncode = true)
+		public virtual string GetProductUrlWithVariants(string attributesXml, int productId, string productSeName)
 		{
-			var data = new List<List<int>>();
+			var query = new ProductVariantQuery();
+			DeserializeQuery(query, attributesXml, productId);
 
-			DeserializeQueryData(data, attributesXml, productId);
-
-			return SerializeQueryData(data, urlEncode);
+			return query.GetProductUrlWithVariants(productSeName);
 		}
 
-		public virtual string SerializeQueryData(List<List<int>> queryData, bool urlEncode = true)
-		{
-			if (queryData.Count > 0)
-			{
-				var result = JsonConvert.SerializeObject(queryData);
+		#endregion
 
-				return (urlEncode ? HttpUtility.UrlEncode(result) : result);
-			}
+		#region Gift card attributes
 
-			return "";
-		}
-
-		private string CreateProductUrl(string queryString, string productSeName)
-		{
-			var url = UrlHelper.GenerateUrl(
-				"Product",
-				null,
-				null,
-				new RouteValueDictionary(new { SeName = productSeName }),
-				RouteTable.Routes,
-				HttpContext.Current.Request.RequestContext,
-				false);
-
-			if (queryString.HasValue())
-			{
-				url = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", queryString);
-			}
-
-			return url;
-		}
-
-		public virtual string GetProductUrlWithAttributes(string attributesXml, int productId, string productSeName)
-		{
-			return CreateProductUrl(SerializeQueryData(attributesXml, productId), productSeName);
-		}
-
-		public virtual string GetProductUrlWithAttributes(List<List<int>> queryData, string productSeName)
-		{
-			return CreateProductUrl(SerializeQueryData(queryData), productSeName);
-		}
-
-        #endregion
-
-        #region Gift card attributes
-
-        public string AddGiftCardAttribute(string attributesXml, string recipientName,
+		public string AddGiftCardAttribute(string attributesXml, string recipientName,
             string recipientEmail, string senderName, string senderEmail, string giftCardMessage)
         {
             string result = string.Empty;

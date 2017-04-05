@@ -7,6 +7,7 @@ using SmartStore.Admin.Models.Common;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -517,7 +518,12 @@ namespace SmartStore.Admin.Models.Orders
                 public AttributeControlType AttributeControlType { get; set; }
 
                 public IList<ProductVariantAttributeValueModel> Values { get; set; }
-            }
+
+				public string GetControlId(int productId, int bundleItemId)
+				{
+					return ProductVariantQueryItem.CreateKey(productId, bundleItemId, ProductAttributeId, Id);
+				}
+			}
 
             public class ProductVariantAttributeValueModel : EntityModelBase
             {

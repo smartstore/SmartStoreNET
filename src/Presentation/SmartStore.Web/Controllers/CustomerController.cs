@@ -17,6 +17,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -1312,7 +1313,7 @@ namespace SmartStore.Web.Controllers
                 if (orderItem != null)
                 {
                     var product = orderItem.Product;
-					var attributeQueryData = new List<List<int>>();
+					var query = new ProductVariantQuery();
 
                     var itemModel = new CustomerReturnRequestsModel.ReturnRequestModel
                     {
@@ -1330,18 +1331,18 @@ namespace SmartStore.Web.Controllers
 
 					if (orderItem.Product.ProductType != ProductType.BundledProduct)
 					{
-						_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+						_productAttributeParser.DeserializeQuery(query, orderItem.AttributesXml, orderItem.ProductId);
 					}
 					else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
 					{
 						var bundleData = orderItem.GetBundleData();
 
-						bundleData.ForEach(x => _productAttributeParser.DeserializeQueryData(attributeQueryData, x.AttributesXml, x.ProductId, x.BundleItemId));
+						bundleData.ForEach(x => _productAttributeParser.DeserializeQuery(query, x.AttributesXml, x.ProductId, x.BundleItemId));
 					}
 
-					itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, itemModel.ProductSeName);
+					itemModel.ProductUrl = query.GetProductUrlWithVariants(itemModel.ProductSeName);
 
-                    model.Items.Add(itemModel);
+					model.Items.Add(itemModel);
                 }
             }
 
@@ -1377,7 +1378,7 @@ namespace SmartStore.Web.Controllers
 					ProductId = item.ProductId
                 };
 
-				itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(item.AttributesXml, item.ProductId, itemModel.ProductSeName);
+				itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithVariants(item.AttributesXml, item.ProductId, itemModel.ProductSeName);
 
                 model.Items.Add(itemModel);
 

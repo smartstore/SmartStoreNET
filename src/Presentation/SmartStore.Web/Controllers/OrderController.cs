@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -416,7 +417,7 @@ namespace SmartStore.Web.Controllers
 
                 orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
 
-				var attributeQueryData = new List<List<int>>();
+				var query = new ProductVariantQuery();
 
                 var shipmentItemModel = new ShipmentDetailsModel.ShipmentItemModel
                 {
@@ -432,18 +433,18 @@ namespace SmartStore.Web.Controllers
 
 				if (orderItem.Product.ProductType != ProductType.BundledProduct)
 				{
-					_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+					_productAttributeParser.DeserializeQuery(query, orderItem.AttributesXml, orderItem.ProductId);
 				}
 				else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
 				{
 					var bundleData = orderItem.GetBundleData();
 
-					bundleData.ForEach(x => _productAttributeParser.DeserializeQueryData(attributeQueryData, x.AttributesXml, x.ProductId, x.BundleItemId));
+					bundleData.ForEach(x => _productAttributeParser.DeserializeQuery(query, x.AttributesXml, x.ProductId, x.BundleItemId));
 				}
 
-				shipmentItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, shipmentItemModel.ProductSeName);
+				shipmentItemModel.ProductUrl = query.GetProductUrlWithVariants(shipmentItemModel.ProductSeName);
 
-                model.Items.Add(shipmentItemModel);
+				model.Items.Add(shipmentItemModel);
             }
 
             model.Order = PrepareOrderDetailsModel(order);
@@ -453,7 +454,7 @@ namespace SmartStore.Web.Controllers
 
 		private OrderDetailsModel.OrderItemModel PrepareOrderItemModel(Order order, OrderItem orderItem)
 		{
-			var attributeQueryData = new List<List<int>>();
+			var query = new ProductVariantQuery();
 
 			orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
 
@@ -471,7 +472,7 @@ namespace SmartStore.Web.Controllers
 
 			if (orderItem.Product.ProductType != ProductType.BundledProduct)
 			{
-				_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+				_productAttributeParser.DeserializeQuery(query, orderItem.AttributesXml, orderItem.ProductId);
 			}
 
             var quantityUnit = _quantityUnitService.GetQuantityUnitById(orderItem.Product.QuantityUnitId);
@@ -497,11 +498,11 @@ namespace SmartStore.Web.Controllers
 						AttributeInfo = bundleItem.AttributesInfo
 					};
 
-					bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(bundleItem.AttributesXml, bundleItem.ProductId, bundleItemModel.ProductSeName);
+					bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithVariants(bundleItem.AttributesXml, bundleItem.ProductId, bundleItemModel.ProductSeName);
 
 					if (orderItem.Product.BundlePerItemPricing)
 					{
-						_productAttributeParser.DeserializeQueryData(attributeQueryData, bundleItem.AttributesXml, bundleItem.ProductId, bundleItem.BundleItemId);
+						_productAttributeParser.DeserializeQuery(query, bundleItem.AttributesXml, bundleItem.ProductId, bundleItem.BundleItemId);
 					}
 
 					if (model.BundlePerItemShoppingCart)
@@ -538,7 +539,7 @@ namespace SmartStore.Web.Controllers
 					break;
 			}
 
-			model.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, model.ProductSeName);
+			model.ProductUrl = query.GetProductUrlWithVariants(model.ProductSeName);
 
 			return model;
 		}

@@ -136,11 +136,14 @@
 
                 <div id="newsletter-subscribe-block">
 
-					<div class="input-group mb-2">
+					<div class="input-group has-icon mb-2">
 						@Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email", @class = "form-control", placeholder = T("Newsletter.Email") })
+						<span class="input-group-icon text-muted">
+							<i class="fa fa-envelope"></i>
+						</span>
 						<span class="input-group-btn">
-							<button id="newsletter-subscribe-button" class="btn btn-icon btn-success" title="@T("Newsletter.Button")">
-								<i class="fa fa-envelope"></i>
+							<button id="newsletter-subscribe-button" class="btn btn-primary btn-icon" title="@T("Newsletter.Button")">
+								<i class="fa fa-angle-right"></i>
 							</button>
 						</span>
 					</div>

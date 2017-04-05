@@ -3,7 +3,6 @@
 /* Theme: ALPHA 
 ------------------------------ */
 
-@import 'bs4/scss/_variables.scss';
 @import '~/.app/themevars.scss';
 
 $enable-rounded:                true;
@@ -15,6 +14,12 @@ $enable-grid-classes:           true;
 
 $body-color:                    #333;
 $link-color:                    #08c;
+
+$gray-dark:                     #292b2c;
+$gray:                          #464a4c;
+$gray-light:                    #999;
+$gray-lighter:                  #eceeef;
+$gray-lightest:                 #f7f7f9;
 
 $red:                           #f44336;
 $orange:                        #ff9800;
@@ -102,6 +107,8 @@ $input-height-sm:               (($font-size-sm * $input-line-height) + ($input-
 
 
 // Dropdown
+$dropdown-link-hover-color:     darken($gray-dark, 5%);
+$dropdown-link-hover-bg:        $gray-lightest;
 $dropdown-link-active-color:    $dropdown-link-hover-color;
 $dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
 
@@ -141,7 +148,6 @@ $list-group-active-border:      $list-group-border-color;
 
 $list-group-link-color:         #636c72;
 $list-group-link-active-color:  $body-color;
-/*$list-group-link-active-bg:     #fff;*/
 
 $alert-border-radius:           0;
 
@@ -855,6 +861,11 @@ a.pretty-link {
         }
     }
 }
+
+
+//
+// Responsive collapse
+// ------------------------------------------------------
 
 
 

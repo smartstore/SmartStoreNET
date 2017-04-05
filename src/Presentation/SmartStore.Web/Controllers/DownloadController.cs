@@ -76,7 +76,7 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult GetDownload(Guid orderItemId, bool agree = false)
         {
-			if (id == Guid.Empty)
+			if (orderItemId == Guid.Empty)
 				return HttpNotFound();
 
 			var orderItem = _orderService.GetOrderItemByGuid(orderItemId);

@@ -3,13 +3,13 @@
 
 @{ Html.RenderWidget("servicemenu_before"); }
 
-@if(Model.TopicPageUrls.ContainsKey("aboutus"))
-{
-	<a href="@Model.TopicPageUrls["aboutus"]" class="dropdown-item">@T("AboutUs")</a>
-}
 @if (Model.RecentlyAddedProductsEnabled)
 {
     <a href="@Url.RouteUrl("RecentlyAddedProducts")" class="dropdown-item">@T("Products.NewProducts")</a>
+}
+@if (Model.ManufacturerEnabled)
+{
+    <a href="@Url.RouteUrl("ManufacturerList")" class="dropdown-item">@T("Manufacturers.List")</a>
 }
 @if (Model.RecentlyViewedProductsEnabled)
 {
@@ -18,6 +18,13 @@
 @if (Model.CompareProductsEnabled)
 {
     <a href="@Url.RouteUrl("CompareProducts")" class="dropdown-item">@T("Products.Compare.List")</a>
+}
+
+<div class="dropdown-divider"></div>
+
+@if (Model.TopicPageUrls.ContainsKey("aboutus"))
+{
+    <a href="@Model.TopicPageUrls["aboutus"]" class="dropdown-item">@T("AboutUs")</a>
 }
 @if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
 {

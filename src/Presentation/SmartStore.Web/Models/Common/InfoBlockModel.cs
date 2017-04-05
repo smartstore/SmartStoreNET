@@ -10,6 +10,7 @@ namespace SmartStore.Web.Models.Common
         public bool CompareProductsEnabled { get; set; }
         public bool BlogEnabled { get; set; }
         public bool ForumEnabled { get; set; }
+        public bool ManufacturerEnabled { get; set; }
         public bool AllowPrivateMessages { get; set; }
 
 		public Dictionary<string, string> TopicPageUrls { get; set; }

@@ -620,6 +620,7 @@ namespace SmartStore.Web.Controllers
                 CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
                 BlogEnabled = _blogSettings.Enabled,
                 ForumEnabled = _forumSettings.ForumsEnabled,
+                ManufacturerEnabled = _manufacturerService.Value.GetAllManufacturers().Count > 0,
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
             };
 

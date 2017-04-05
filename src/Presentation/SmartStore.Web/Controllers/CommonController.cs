@@ -613,14 +613,14 @@ namespace SmartStore.Web.Controllers
             var store = _services.StoreContext.CurrentStore;
             var allTopics = _topicService.GetAllTopics(store.Id);
 
-            var model = new InfoBlockModel
+            var model = new ServiceMenuModel
             {
                 RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,
                 RecentlyViewedProductsEnabled = _catalogSettings.RecentlyViewedProductsEnabled,
                 CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
                 BlogEnabled = _blogSettings.Enabled,
                 ForumEnabled = _forumSettings.ForumsEnabled,
-                ManufacturerEnabled = _manufacturerService.Value.GetAllManufacturers().Count > 0,
+                ManufacturerEnabled = _manufacturerService.Value.GetAllManufacturers(String.Empty, 0, 0).TotalCount > 0,
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
             };
 

@@ -3,7 +3,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Common
 {
-    public partial class InfoBlockModel : ModelBase
+    public partial class ServiceMenuModel : ModelBase
     {
         public bool RecentlyAddedProductsEnabled { get; set; }
         public bool RecentlyViewedProductsEnabled { get; set; }

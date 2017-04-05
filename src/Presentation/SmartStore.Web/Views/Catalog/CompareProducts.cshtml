@@ -20,7 +20,11 @@
 	}
 
 	var tableWidth = (Model.Items.Count + 1) * 20;
+
 	var hasRatings = Model.Items.Any(x => x.TotalReviews > 0);
+	var hasBrands = Model.ShowBrand && Model.Items.Any(x => x.Manufacturer != null);
+	var hasSkus = Model.ShowSku && Model.Items.Any(x => x.Sku.HasValue());
+	var hasDescriptions = Model.ShowDescription && Model.Items.Any(x => x.ShortDescription.HasValue());
 	var hasDimensions = Model.Items.Any(x => x.Dimensions.HasValue());
 	var hasWeight = Model.Items.Any(x => x.Weight.HasValue());
 }
@@ -136,7 +140,7 @@
 							<td>@{ Html.RenderPartial("Product.List.Item.Price", product); }</td>
 						}
 					</tr>
-					@if (Model.ShowBrand)
+					@if (hasBrands)
 					{
 						<tr>
 							<th class="caption">@T("Products.Manufacturer")</th>
@@ -151,7 +155,7 @@
 							}
 						</tr>
 					}
-					@if (Model.ShowSku)
+					@if (hasSkus)
 					{
 						<tr>
 							<th class="caption">@T("Products.Sku")</th>
@@ -181,7 +185,7 @@
 							}
 						</tr>
 					}
-					@if (Model.ShowDescription)
+					@if (hasDescriptions)
 					{
 						<tr>
 							<th class="caption">@T("Products.Compare.ShortDescription")</th>

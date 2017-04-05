@@ -123,11 +123,18 @@ namespace SmartStore.Data.Migrations
 				setting.Value = "Flex";
 			}
 
-			// Change CatalogSettings.ShowProductsFromSubcategories (true)
+			// Change CatalogSettings.ShowProductsFromSubcategories (to true)
 			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.ShowProductsFromSubcategories");
 			if (setting != null)
 			{
 				setting.Value = "True";
+			}
+
+			// Change CatalogSettings.IncludeFullDescriptionInCompareProducts (to false)
+			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.IncludeFullDescriptionInCompareProducts");
+			if (setting != null)
+			{
+				setting.Value = "False";
 			}
 
 			// [...]

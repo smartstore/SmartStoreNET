@@ -147,7 +147,10 @@
                         else if (offsetLeft + opendMenu.width() > megamenu.width()) {
                             offsetLeft = megamenu.width() - opendMenu.width();
                         }
-                        
+                        else if (navItem.width() > opendMenu.width()) {
+                            offsetLeft = offsetLeft + (navItem.width() - opendMenu.width()) + 5;
+                        }
+
                         opendMenu.css("left", offsetLeft);
                     });
                 }
@@ -207,7 +210,7 @@
 
                         newMarginLeft = Math.min(0, newMarginLeft);
 
-                        nav.css('margin-left', newMarginLeft + 'px').one(Prefixer.event.transitionEnd, function (e) {
+                        nav.css('margin-left', Math.ceil(newMarginLeft) + 'px').one(Prefixer.event.transitionEnd, function (e) {
                             // performs UI update after end of animation (.one(trans...))
                             updateNavState();
                         });

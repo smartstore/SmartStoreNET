@@ -867,6 +867,48 @@ a.pretty-link {
 // Responsive collapse
 // ------------------------------------------------------
 
+@include media-breakpoint-down(sm) {
+    .nav-collapsible {
+        position: relative;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        margin-top: -1px;
+
+        .nav-toggler { 
+            position: relative;
+            line-height: 1.5;
+            cursor: pointer; 
+            margin: 0;
+            padding: 0.75rem 1rem;
+
+            &:after {
+                @include fontawesome("\f107");
+                position: absolute;
+                right: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            &.collapsed:after {
+                content: "\f106";
+            }
+        }
+
+        .nav-collapse {
+            padding: 0 1rem;
+        }
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .nav-collapsible {
+        .nav-collapse {
+            display: block !important;
+            height: auto !important;
+        }
+    }
+}
+
 
 
 #scroll-top {

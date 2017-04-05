@@ -4,24 +4,19 @@
 // Footer Styles
 // --------------------------------------------------
 
+$footer-bg:             $gray-lightest;
+$footer-bottom-bg:      $gray-lighter;
 
-#footer-wrapper {
+
+#footer {
     border-top: 1px solid #ddd;
-    background: #f2f2f2;
+    background: $footer-bg;
     padding-top: 2rem;
     margin-top: 2rem;
 }
 
-.footer-main {
-    h4 {
-        padding: .5rem 0 1rem 0;
-    }
-
-    a {
-        text-decoration: none;
-        color: #888;
-        &:hover { color: #0275d8; }       
-    }
+.footer-main h4 {
+    margin-bottom: 1.25rem;
 }
 
 .footer-social {
@@ -48,8 +43,50 @@
     }
 }
 
-.footer-disclaimer {
-    border-top: 1px solid #bbb;
-    padding: 2rem 0;
-    margin-top: 2rem;
+.footer-links {
+    font-size: 1rem;
+    line-height: 1.8;
+
+    a {
+        display: block;
+        text-decoration: none;
+        color: $gray-light;
+        &:hover { color: $gray; }       
+    }
+}
+
+.footer-bottom-wrapper {
+    background: $footer-bottom-bg;
+}
+
+.footer-bottom {
+    padding: 1rem 0;
+    font-size: 90%;
+    color: #aaa;
+
+    a {
+        color: $gray;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .footer-bottom {
+        margin-top: 1rem;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .footer-main, 
+    .footer-bottom {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: 100% !important;
+    }
+
+    .footer-bottom {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
 }

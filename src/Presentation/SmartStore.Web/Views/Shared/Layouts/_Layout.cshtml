@@ -118,13 +118,9 @@
         }
         else
         {
-            <div id="footer-wrapper">
-                <footer class="container">
-                    @{ 
-                        Html.RenderAction("Footer", "Common", new { area = "" });
-					}
-				</footer>
-			</div>
+            <footer id="footer">
+                @{ Html.RenderAction("Footer", "Common", new { area = "" }); }
+			</footer>
         }
 
 		@{ Html.RenderZone("page-end"); }

@@ -331,7 +331,8 @@ namespace SmartStore.Web.Controllers
 								Alias = x.Alias,
 								FriendlyName = x.GetLocalized(l => l.Name),
 								AttributeId = x.ProductVariantAttributeId,
-								AttributeName = attrName
+								AttributeName = attrName,
+								ProductAttributeId = attr.Id
 							};
 						})
 						.ToList();

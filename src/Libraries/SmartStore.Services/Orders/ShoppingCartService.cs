@@ -18,6 +18,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Services.Orders
 {
@@ -1029,12 +1030,12 @@ namespace SmartStore.Services.Orders
 
 			_customerService.ResetCheckoutData(customer, storeId);
 
-			if (ctx.AttributeForm != null)
+			if (ctx.VariantQuery != null)
 			{
 				var attributes = _productAttributeService.GetProductVariantAttributesByProductId(ctx.Product.Id);
 
-				ctx.Attributes = ctx.AttributeForm.CreateSelectedAttributesXml(ctx.Product.Id, attributes, _productAttributeParser, _localizationService,
-					_downloadService, _catalogSettings, null, ctx.Warnings, true, ctx.BundleItemId);
+				ctx.Attributes = ctx.VariantQuery.CreateSelectedAttributesXml(ctx.Product.Id, ctx.BundleItemId, attributes, _productAttributeParser, 
+					_localizationService, _downloadService, _catalogSettings, null, ctx.Warnings);
 
 				if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.Attributes.HasValue())
 					ctx.Warnings.Add(T("ShoppingCart.Bundle.NoAttributes"));
@@ -1060,6 +1061,7 @@ namespace SmartStore.Services.Orders
 						Product = bundleItem.Product,
 						Customer = customer,
 						AttributeForm = ctx.AttributeForm,
+						VariantQuery = ctx.VariantQuery,
 						CartType = ctx.CartType,
 						Quantity = bundleItem.Quantity,
 						AddRequiredProducts = ctx.AddRequiredProducts,

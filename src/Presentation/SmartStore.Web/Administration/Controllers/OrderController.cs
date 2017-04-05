@@ -20,6 +20,7 @@ using SmartStore.Core.Search;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -1764,14 +1765,13 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddProductToOrderDetails(int orderId, int productId, bool adjustInventory, bool? updateTotals, FormCollection form)
+        public ActionResult AddProductToOrderDetails(int orderId, int productId, bool adjustInventory, bool? updateTotals, ProductVariantQuery query, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
             var order = _orderService.GetOrderById(orderId);
             var product = _productService.GetProductById(productId);
-            //save order item
 
             //basic properties
             var unitPriceInclTax = decimal.Zero;
@@ -1788,14 +1788,14 @@ namespace SmartStore.Admin.Controllers
 			decimal.TryParse(form["TaxRate"], out unitPriceTaxRate);
 
             var warnings = new List<string>();
-            string attributes = "";
+            var attributes = "";
 
 			if (product.ProductType != ProductType.BundledProduct)
 			{
 				var variantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
-				attributes = form.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser, _localizationService, _downloadService,
-					_catalogSettings, this.Request, warnings, false);
+				attributes = query.CreateSelectedAttributesXml(product.Id, 0, variantAttributes, _productAttributeParser, _localizationService, _downloadService,
+					_catalogSettings, this.Request, warnings);
 			}
 
             #region Gift cards

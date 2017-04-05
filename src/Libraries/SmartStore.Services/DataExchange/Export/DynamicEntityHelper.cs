@@ -22,6 +22,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.DataExchange.Export.Events;
 using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Localization;
@@ -664,11 +665,15 @@ namespace SmartStore.Services.DataExchange.Export
 					dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", valueNames), " ");
 				}
 
-				var attributeQueryString = _productAttributeParser.Value.SerializeQueryData(combination.AttributesXml, product.Id);
-				if (attributeQueryString.HasValue())
+				//var variantQueryString = _productAttributeParser.Value.SerializeQueryData(combination.AttributesXml, product.Id);
+				var query = new ProductVariantQuery();
+				_productAttributeParser.Value.DeserializeQuery(query, combination.AttributesXml, product.Id);
+				var variantQueryString = query.ToString();
+
+				if (variantQueryString.HasValue())
 				{
 					var url = (string)dynObject._DetailUrl;
-					dynObject._DetailUrl = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", attributeQueryString);
+					dynObject._DetailUrl = string.Concat(url, url.Contains("?") ? "&" : "?", variantQueryString);
 				}
 			}
 

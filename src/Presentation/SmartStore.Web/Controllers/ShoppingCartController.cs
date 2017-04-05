@@ -43,6 +43,7 @@ using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Services;
+using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Web.Controllers
 {
@@ -1044,7 +1045,7 @@ namespace SmartStore.Web.Controllers
 								ProductSeName = childItem.Item.Product.GetSeName(),
 							};
 
-							bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(
+							bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithVariants(
 								childItem.Item.AttributesXml, childItem.Item.ProductId, bundleItemModel.ProductSeName);
 
 							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
@@ -1228,22 +1229,22 @@ namespace SmartStore.Web.Controllers
         
 		private string GetProductUrlWithAttributes(OrganizedShoppingCartItem cartItem, string productSeName)
 		{
-			var attributeQueryData = new List<List<int>>();
+			var query = new ProductVariantQuery();
 			var product = cartItem.Item.Product;
 
 			if (product.ProductType != ProductType.BundledProduct)
 			{
-				_productAttributeParser.DeserializeQueryData(attributeQueryData, cartItem.Item.AttributesXml, product.Id);
+				_productAttributeParser.DeserializeQuery(query, cartItem.Item.AttributesXml, product.Id);
 			}
 			else if (cartItem.ChildItems != null && product.BundlePerItemPricing)
 			{
 				foreach (var childItem in cartItem.ChildItems.Where(x => x.Item.Id != cartItem.Item.Id))
 				{
-					_productAttributeParser.DeserializeQueryData(attributeQueryData, childItem.Item.AttributesXml, childItem.Item.ProductId, childItem.BundleItemData.Item.Id);
+					_productAttributeParser.DeserializeQuery(query, childItem.Item.AttributesXml, childItem.Item.ProductId, childItem.BundleItemData.Item.Id);
 				}
 			}
 
-			var url = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, productSeName);
+			var url = query.GetProductUrlWithVariants(productSeName);
 			return url;
 		}
 
@@ -1360,7 +1361,7 @@ namespace SmartStore.Web.Controllers
 		//currently we use this method on the product details pages
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult AddProduct(int productId, int shoppingCartTypeId, FormCollection form)
+        public ActionResult AddProduct(int productId, int shoppingCartTypeId, ProductVariantQuery query, FormCollection form)
         {
             var product = _productService.GetProductById(productId);
             if (product == null)
@@ -1408,6 +1409,7 @@ namespace SmartStore.Web.Controllers
 			{
 				Product = product,
 				AttributeForm = form,
+				VariantQuery = query,
 				CartType = cartType,
 				CustomerEnteredPrice = customerEnteredPriceConverted,
 				Quantity = quantity,

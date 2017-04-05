@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Product attribute parser interface
-    /// </summary>
-    public partial interface IProductAttributeParser
+	/// <summary>
+	/// Product attribute parser interface
+	/// </summary>
+	public partial interface IProductAttributeParser
     {
         #region Product attributes
 
@@ -81,37 +82,13 @@ namespace SmartStore.Services.Catalog
 		ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
 
 		/// <summary>
-		/// Deserializes attribute data from an URL query string
+		/// Deserializes product variant query
 		/// </summary>
-		/// <param name="jsonData">Json data query string</param>
-		/// <returns>List items with following structure: Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id</returns>
-		List<List<int>> DeserializeQueryData(string jsonData);
-
-		/// <summary>
-		/// Deserializes attribute data
-		/// </summary>
-		/// <param name="queryData">List with deserialized data</param>
+		/// <param name="query">Product variant query</param>
 		/// <param name="attributesXml">XML formatted attributes</param>
 		/// <param name="productId">Product identifier</param>
 		/// <param name="bundleItemId">Bundle item identifier</param>
-		void DeserializeQueryData(List<List<int>> queryData, string attributesXml, int productId, int bundleItemId = 0);
-
-		/// <summary>
-		/// Serializes attribute data
-		/// </summary>
-		/// <param name="attributesXml">XML formatted attributes</param>
-		/// <param name="productId">Product identifier</param>
-		/// <param name="urlEncode">Whether to URL encode</param>
-		/// <returns>Json string with attribute data</returns>
-		string SerializeQueryData(string attributesXml, int productId, bool urlEncode = true);
-
-		/// <summary>
-		/// Serializes attribute data
-		/// </summary>
-		/// <param name="queryData">List with deserialized data</param>
-		/// <param name="urlEncode">Whether to URL encode</param>
-		/// <returns>Json string with attribute data</returns>
-		string SerializeQueryData(List<List<int>> queryData, bool urlEncode = true);
+		void DeserializeQuery(ProductVariantQuery query, string attributesXml, int productId, int bundleItemId = 0);
 
 		/// <summary>
 		/// Gets the URL of the product page including attributes query string
@@ -120,31 +97,23 @@ namespace SmartStore.Services.Catalog
 		/// <param name="productId">Product identifier</param>
 		/// <param name="productSeName">Product SEO name</param>
 		/// <returns>URL of the product page including attributes query string</returns>
-		string GetProductUrlWithAttributes(string attributesXml, int productId, string productSeName);
+		string GetProductUrlWithVariants(string attributesXml, int productId, string productSeName);
+
+		#endregion
+
+		#region Gift card attributes
 
 		/// <summary>
-		/// Gets the URL of the product page including attributes query string
+		/// Add gift card attrbibutes
 		/// </summary>
-		/// <param name="queryData">Attribute query data</param>
-		/// <param name="productSeName">Product SEO name</param>
-		/// <returns>URL of the product page including attributes query string</returns>
-		string GetProductUrlWithAttributes(List<List<int>> queryData, string productSeName);
-
-        #endregion
-
-        #region Gift card attributes
-
-        /// <summary>
-        /// Add gift card attrbibutes
-        /// </summary>
 		/// <param name="attributesXml">XML formatted attributes</param>
-        /// <param name="recipientName">Recipient name</param>
-        /// <param name="recipientEmail">Recipient email</param>
-        /// <param name="senderName">Sender name</param>
-        /// <param name="senderEmail">Sender email</param>
-        /// <param name="giftCardMessage">Message</param>
-        /// <returns>Attributes</returns>
-        string AddGiftCardAttribute(string attributesXml, string recipientName,
+		/// <param name="recipientName">Recipient name</param>
+		/// <param name="recipientEmail">Recipient email</param>
+		/// <param name="senderName">Sender name</param>
+		/// <param name="senderEmail">Sender email</param>
+		/// <param name="giftCardMessage">Message</param>
+		/// <returns>Attributes</returns>
+		string AddGiftCardAttribute(string attributesXml, string recipientName,
             string recipientEmail, string senderName, string senderEmail, string giftCardMessage);
 
         /// <summary>

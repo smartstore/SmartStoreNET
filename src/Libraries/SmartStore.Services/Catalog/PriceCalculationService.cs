@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Media;
 using SmartStore.Services.Tax;
@@ -236,11 +236,11 @@ namespace SmartStore.Services.Catalog
 			var isBundlePricing = (bundleItem != null && !bundleItem.Item.BundleProduct.BundlePerItemPricing);
 			var bundleItemId = (bundleItem == null ? 0 : bundleItem.Item.Id);
 
-			var selectedAttributes = new NameValueCollection();
+			var query = new ProductVariantQuery();
 			var selectedAttributeValues = new List<ProductVariantAttributeValue>();
 			var attributes = context.Attributes.GetOrLoad(product.Id);
 
-			// 1. fill selectedAttributes with initially selected attributes
+			// 1. Fill query with initially selected attributes.
 			foreach (var attribute in attributes.Where(x => x.ProductVariantAttributeValues.Count > 0 && x.ShouldHaveValues()))
 			{
 				int preSelectedValueId = 0;
@@ -267,28 +267,40 @@ namespace SmartStore.Services.Catalog
 					}
 				}
 
-				// value pre-selected by a bundle item filter discards the default pre-selection
+				// Value pre-selected by a bundle item filter discards the default pre-selection.
 				if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
 				{
 					//defaultValue.IsPreSelected = true;
 					selectedAttributeValues.Add(defaultValue);
-					selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+					query.AddVariant(new ProductVariantQueryItem(defaultValue.Id.ToString())
+					{
+						ProductId = product.Id,
+						BundleItemId = bundleItemId,
+						AttributeId = attribute.ProductAttributeId,
+						VariantAttributeId = attribute.Id
+					});
 				}
 				else
 				{
 					foreach (var value in pvaValues.Where(x => x.IsPreSelected))
 					{
 						selectedAttributeValues.Add(value);
-						selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, value.Id, product.Id, bundleItemId);
+						query.AddVariant(new ProductVariantQueryItem(value.Id.ToString())
+						{
+							ProductId = product.Id,
+							BundleItemId = bundleItemId,
+							AttributeId = attribute.ProductAttributeId,
+							VariantAttributeId = attribute.Id
+						});
 					}
 				}
 			}
 
-			// 2. find attribute combination for selected attributes and merge it
-			if (!isBundle && selectedAttributes.Count > 0)
+			// 2. Find attribute combination for selected attributes and merge it.
+			if (!isBundle && query.Variants.Count > 0)
 			{
-				var attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
-					_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
+				var attributeXml = query.CreateSelectedAttributesXml(product.Id, bundleItemId, attributes, _productAttributeParser, _services.Localization,
+					_downloadService, _catalogSettings, _httpRequestBase, new List<string>());
 
 				var combinations = context.AttributeCombinations.GetOrLoad(product.Id);
 

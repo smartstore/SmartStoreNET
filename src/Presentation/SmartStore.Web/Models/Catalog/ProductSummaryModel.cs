@@ -5,6 +5,7 @@ using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Web.Models.Catalog
 {
@@ -169,11 +170,22 @@ namespace SmartStore.Web.Models.Catalog
 		{
 			public int AttributeId { get; set; }
 			public string AttributeName { get; set; }
+			public int ProductAttributeId { get; set; }
 
 			public int Id { get; set; }
 			public string Color { get; set; }
 			public string Alias { get; set; }
 			public string FriendlyName { get; set; }
+
+			public string GetQueryString(int productId, int bundleItemId)
+			{
+				var queryString = string.Concat(
+					ProductVariantQueryItem.CreateKey(productId, bundleItemId, ProductAttributeId, AttributeId),
+					"=",
+					Id.ToString());
+
+				return queryString;
+			}
 
 			public override int GetHashCode()
 			{

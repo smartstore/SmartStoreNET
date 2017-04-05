@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Dynamic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
@@ -13,6 +12,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -134,15 +134,14 @@ namespace SmartStore.Web.Controllers
 		#region Products
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult ProductDetails(int productId, string attributes)
+		public ActionResult ProductDetails(int productId, string attributes, ProductVariantQuery query)
 		{
 			var product = _productService.GetProductById(productId);
 			if (product == null || product.Deleted)
 				return HttpNotFound();
 
-			//Is published?
-			//Check whether the current user has a "Manage catalog" permission
-			//It allows him to preview a product before publishing
+			// Is published? Check whether the current user has a "Manage catalog" permission.
+			// It allows him to preview a product before publishing.
 			if (!product.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
 				return HttpNotFound();
 
@@ -154,10 +153,10 @@ namespace SmartStore.Web.Controllers
 			if (!_storeMappingService.Authorize(product))
 				return HttpNotFound();
 
-			// is product individually visible?
+			// Is product individually visible?
 			if (!product.VisibleIndividually)
 			{
-				// find parent grouped product
+				// Find parent grouped product.
 				var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
 
 				if (parentGroupedProduct == null)
@@ -166,25 +165,14 @@ namespace SmartStore.Web.Controllers
 				var routeValues = new RouteValueDictionary();
 				routeValues.Add("SeName", parentGroupedProduct.GetSeName());
 
-				// add query string parameters
+				// Add query string parameters.
 				Request.QueryString.AllKeys.Each(x => routeValues.Add(x, Request.QueryString[x]));
 
 				return RedirectToRoute("Product", routeValues);
 			}
 
-			var selectedAttributes = new NameValueCollection();
-			var attributesForProductId = 0;
-
-			if (product.ProductType == ProductType.GroupedProduct || (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
-				attributesForProductId = 0;
-			else
-				attributesForProductId = product.Id;
-
-			// Get selected attributes from query string
-			selectedAttributes.GetSelectedAttributes(Request.QueryString, _productAttributeParser.DeserializeQueryData(attributes),	attributesForProductId);
-
 			// Prepare the view model
-			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes, queryData: Request.QueryString);
+			var model = _helper.PrepareProductDetailsPageModel(product, query, queryData: Request.QueryString);
 
 			// Some cargo data
 			model.PictureSize = _mediaSettings.ProductDetailsPictureSize;
@@ -523,7 +511,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, FormCollection form)
+		public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, ProductVariantQuery query, FormCollection form)
 		{
 			int quantity = 1;
 			int galleryStartIndex = -1;
@@ -540,8 +528,8 @@ namespace SmartStore.Web.Controllers
 			var warnings = new List<string>();
 			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(productId);
 
-			string attributeXml = form.CreateSelectedAttributesXml(productId, attributes, _productAttributeParser,
-				_localizationService, _downloadService, _catalogSettings, this.Request, warnings, true);
+			var attributeXml = query.CreateSelectedAttributesXml(productId, 0, attributes, _productAttributeParser,
+				_localizationService, _downloadService, _catalogSettings, this.Request, warnings);
 
 			var areAllAttributesForCombinationSelected = _shoppingCartService.AreAllAttributesForCombinationSelected(attributeXml, product);
 
@@ -553,18 +541,18 @@ namespace SmartStore.Web.Controllers
 			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
 			{
 				bundleItems = _productService.GetBundleItems(product.Id);
-				if (form.Count > 0)
+				if (query.Variants.Count > 0)
 				{
-					// may add elements to form if they are preselected by bundle item filter
+					// may add elements to query object if they are preselected by bundle item filter
 					foreach (var itemData in bundleItems)
 					{
-						var unused = _helper.PrepareProductDetailsPageModel(itemData.Item.Product, false, itemData, null, form);
+						_helper.PrepareProductDetailsPageModel(itemData.Item.Product, query, false, itemData, null);
 					}
 				}
 			}
 
 			// get merged model data
-			_helper.PrepareProductDetailModel(m, product, isAssociated, bundleItem, bundleItems, form, quantity);
+			_helper.PrepareProductDetailModel(m, product, query, isAssociated, bundleItem, bundleItems, quantity);
 
 			if (bundleItem != null) // update bundle item thumbnail
 			{

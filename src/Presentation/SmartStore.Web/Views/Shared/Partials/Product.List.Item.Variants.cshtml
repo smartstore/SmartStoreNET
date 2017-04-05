@@ -13,10 +13,8 @@
 		<div class="art-color-opts">
 			@foreach (var clr in Model.ColorAttributes)
 			{
-				var qs = "?product_attribute_{0}_{1}_{2}_{3}={4}".FormatInvariant(Model.Id /* ProductId */, 0 /* BundleItemId */, clr.AttributeId, clr.Id, clr.Id);
-				@* TODO: (mc) Append attribute query to url *@
-				@* TODO: (mc) > (mg) WTF IS GOING ON HERE!??!!! *@
-				<a href='@(artDetailUrl + qs)' class="art-color-opt" style="background-color: @clr.Color" title='@T("Products.ChooseColorX", clr.FriendlyName, clr.AttributeName)'></a>
+				var selectColorUrl = string.Concat(artDetailUrl, "?", clr.GetQueryString(Model.Id, 0));
+				<a href='@selectColorUrl' class="art-color-opt" style="background-color: @clr.Color" title='@T("Products.ChooseColorX", clr.FriendlyName, clr.AttributeName)'></a>
 			}
 		</div>
 	}

@@ -227,7 +227,7 @@ namespace SmartStore.Services.Messages
                 sb.AppendLine(string.Format("<tr style=\"background-color: {0};text-align: center;\">", _templatesSettings.Color2));
                 
 				var productName = product.GetLocalized(x => x.Name, language.Id);
-				var productUrl = _productAttributeParser.GetProductUrlWithAttributes(orderItem.AttributesXml, product.Id, product.GetSeName());
+				var productUrl = _productAttributeParser.GetProductUrlWithVariants(orderItem.AttributesXml, product.Id, product.GetSeName());
 
 				sb.AppendLine("<td style=\"padding: 0.6em 0.4em; text-align: left;\">");
 
@@ -564,7 +564,7 @@ namespace SmartStore.Services.Messages
                 sb.AppendLine(string.Format("<tr style=\"background-color: {0};text-align: center;\">", _templatesSettings.Color2));
 
 				var productName = product.GetLocalized(x => x.Name, language.Id);
-				var productUrl = _productAttributeParser.GetProductUrlWithAttributes(orderItem.AttributesXml, product.Id, product.GetSeName());
+				var productUrl = _productAttributeParser.GetProductUrlWithVariants(orderItem.AttributesXml, product.Id, product.GetSeName());
 
 				sb.AppendLine("<td style=\"padding: 0.6em 0.4em;text-align: left;\">");
 				sb.AppendLine("<a href=\"{0}\">{1}</a>".FormatInvariant(productUrl, HttpUtility.HtmlEncode(productName)));

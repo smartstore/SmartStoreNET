@@ -16307,9 +16307,6 @@
 	<LocaleResource Name="ThemeVar.Alpha.TextColor">
 		<Value>Textfarbe</Value>
 	</LocaleResource>
-	<LocaleResource Name="ThemeVar.Alpha.WellBackground">
-		<Value>Well-Hintergrundfarbe</Value>
-	</LocaleResource>
 	<LocaleResource Name="Time.Day">
 		<Value>Tag</Value>
 	</LocaleResource>

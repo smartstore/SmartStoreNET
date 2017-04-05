@@ -1,9 +1,7 @@
 ﻿@model PollModel
-
 @using SmartStore.Web.Models.Polls;
-
 @{
-    Html.AddScriptParts("~/Scripts/public.voting.js");
+    Html.AddScriptParts("~/Themes/Flex/Scripts/public.voting.js");
 }
 
 <div id="poll-block-@(Model.Id)" class="@(Model.SystemKeyword.Equals("RightColumnPoll") ? "" : "card") poll-item equalized-column" data-equalized-deep="true">

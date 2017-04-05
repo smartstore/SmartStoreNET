@@ -132,7 +132,7 @@ fieldset legend {
     padding-bottom: 0.5rem;
 }
 
-//Tags
+// Tags
 .block-popular-tags li, 
 .block-popular-blogtags li {
     display: inline;
@@ -154,3 +154,21 @@ fieldset legend {
     font-size: $font-size-sm;
 }
 
+// Polls
+.progress {
+    width: 100%;
+}
+    
+progress::-moz-progress-bar { background: $btn-info-bg; }
+progress::-webkit-progress-value { background: $btn-info-bg; }
+progress { color: $btn-info-bg; }
+
+// homepage misc
+.page.home-page .card-header {
+    font-weight: 600;
+}
+
+// TODO: (mc) => place in core 
+.alert label {
+    margin-bottom: 0;
+}

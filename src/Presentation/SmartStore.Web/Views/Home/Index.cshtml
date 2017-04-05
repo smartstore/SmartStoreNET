@@ -16,10 +16,12 @@
 			Html.RenderAction("HomePageNews", "News");
 			Html.RenderAction("HomePagePolls", "Poll");
 			@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
-			Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" });
+            Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" });
 
-			Html.RenderWidget("home_page_bottom");
-		}
+            Html.RenderAction("PopularProductTags", "Catalog", new { area = "" });
+
+            Html.RenderWidget("home_page_bottom");
+        }
     </div>
 </div>
 

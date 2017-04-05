@@ -7,12 +7,12 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#agreement-agree").click(toggleContinueButton);
+        $("#download-agreement").click(toggleContinueButton);
         toggleContinueButton();
     });
 
     function toggleContinueButton() {
-        if ($('#agreement-agree').is(':checked')) {
+        if ($('#download-agreement').is(':checked')) {
             $('#continue-downloading').removeAttr('disabled').addClass("btn-info");
         } else {
             $('#continue-downloading').attr('disabled', 'disabled').removeClass("btn-info");
@@ -25,21 +25,22 @@
         <h1>@T("DownloadableProducts.UserAgreement")</h1>
     </div>
     <div class="page-body">
-        <div class="well">
+        <div>
             @Html.Raw(Model.UserAgreementText)
         </div>
         <div>
-            <label for="agreement-agree" class="checkbox">
-                <input id="agreement-agree" type="checkbox" value="@T("DownloadableProducts.IAgree")" />
-                @T("DownloadableProducts.IAgree")
-            </label>
-
-			<p></p>
-
-			<button type="submit" id="continue-downloading" class="btn" value="@T("Common.Continue")"
-					onclick="setLocation('@Url.Action("GetDownload", "Download", new { id = Model.OrderItemGuid, agree = true })')">
-				<i class="fa fa-check"></i>&nbsp;@T("Common.Continue")
-			</button>
+            <div class="download-agreement alert alert-info">
+                <div class="checkbox">
+                    <label for="download-agreement" class="checkbox">
+                        <input id="download-agreement" type="checkbox" value="@T("DownloadableProducts.IAgree")" />
+                        @T("DownloadableProducts.IAgree")
+                    </label>
+                </div>
+            </div>
+            <button type="submit" id="continue-downloading" class="btn" value="@T("Common.Continue")"
+                    onclick="setLocation('@Url.Action("GetDownload", "Download", new { id = Model.OrderItemGuid, agree = true })')">
+                <i class="fa fa-check"></i>&nbsp;@T("Common.Continue")
+            </button>
         </div>
     </div>
 </div>

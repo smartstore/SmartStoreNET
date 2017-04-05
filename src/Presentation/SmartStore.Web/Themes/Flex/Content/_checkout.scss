@@ -212,9 +212,7 @@
 .terms-of-service.alert {
     a.read {
         font-weight: bold;
-        &:hover {
-            cursor: pointer;
-        }
+        &:hover { cursor: pointer; }
     }
 }
 

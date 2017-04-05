@@ -54,11 +54,10 @@ namespace SmartStore.Web.Controllers
 		{
 			return GetFileContentResultFor(download, product, _downloadService.LoadDownloadBinary(download));
 		}
-
-
-		public ActionResult Sample(int id /* productId */)
+        
+		public ActionResult Sample(int productId)
         {
-            var product = _productService.GetProductById(id);
+            var product = _productService.GetProductById(productId);
             if (product == null)
 				return HttpNotFound();
 
@@ -75,38 +74,59 @@ namespace SmartStore.Web.Controllers
 			return GetFileContentResultFor(download, product);
         }
 
-		public ActionResult GetDownload(Guid id /* orderItemId */, bool agree = false)
+		public ActionResult GetDownload(Guid orderItemId, bool agree = false)
         {
 			if (id == Guid.Empty)
 				return HttpNotFound();
 
-			var orderItem = _orderService.GetOrderItemByGuid(id);
+			var orderItem = _orderService.GetOrderItemByGuid(orderItemId);
             if (orderItem == null)
 				return HttpNotFound();
 
             var order = orderItem.Order;
             var product = orderItem.Product;
-            if (!_downloadService.IsDownloadAllowed(orderItem))
-                return Content(T("Common.Download.NotAllowed"));
+            var hasNotification = false;
 
+            if (!_downloadService.IsDownloadAllowed(orderItem))
+            {
+                hasNotification = true;
+                NotifyError(T("Common.Download.NotAllowed"));
+            }
+            
             if (_customerSettings.DownloadableProductsValidateUser)
             {
                 if (_workContext.CurrentCustomer == null)
                     return new HttpUnauthorizedResult();
 
                 if (order.CustomerId != _workContext.CurrentCustomer.Id)
-                    return Content(T("Account.CustomerOrders.NotYourOrder"));
+                {
+                    hasNotification = true;
+                    NotifyError(T("Account.CustomerOrders.NotYourOrder"));
+                }
             }
 
             var download = _downloadService.GetDownloadById(product.DownloadId);
             if (download == null)
-				return Content(T("Common.Download.NoDataAvailable"));
+            {
+                hasNotification = true;
+                NotifyError(T("Common.Download.NoDataAvailable"));
+            }
 
 			if (product.HasUserAgreement && !agree)
-				return RedirectToAction("UserAgreement", "Customer", new { id = id });
+            {
+                hasNotification = true;
+            }
 
             if (!product.UnlimitedDownloads && orderItem.DownloadCount >= product.MaxNumberOfDownloads)
-                return Content(T("Common.Download.MaxNumberReached", product.MaxNumberOfDownloads));
+            {
+                hasNotification = true;
+                NotifyError(T("Common.Download.MaxNumberReached", product.MaxNumberOfDownloads));
+            }
+            
+            if (hasNotification)
+            {
+                return RedirectToAction("UserAgreement", "Customer", new { id = orderItemId });
+            }
             
             if (download.UseDownloadUrl)
             {
@@ -120,8 +140,11 @@ namespace SmartStore.Web.Controllers
 				var data = _downloadService.LoadDownloadBinary(download);
 
 				if (data == null || data.LongLength == 0)
-                    return Content(T("Common.Download.NoDataAvailable"));
-
+                {
+                    NotifyError(T("Common.Download.NoDataAvailable"));
+                    return RedirectToAction("UserAgreement", "Customer", new { id = orderItemId });
+                }
+                
                 orderItem.DownloadCount++;
                 _orderService.UpdateOrder(order);
 
@@ -129,12 +152,12 @@ namespace SmartStore.Web.Controllers
             }
         }
 
-		public ActionResult GetLicense(Guid id /* orderItemId */)
+		public ActionResult GetLicense(Guid orderItemId)
         {
-			if (id == Guid.Empty)
+			if (orderItemId == Guid.Empty)
 				return HttpNotFound();
 			
-			var orderItem = _orderService.GetOrderItemByGuid(id);
+			var orderItem = _orderService.GetOrderItemByGuid(orderItemId);
             if (orderItem == null)
 				return HttpNotFound();
 

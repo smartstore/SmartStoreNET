@@ -769,6 +769,9 @@ namespace SmartStore.Data.Migrations
 				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.DisallowFiltering",
 				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowOnProductPage",
 				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowNotOnProductPage");
-		}
+
+            builder.AddOrUpdate("Footer.Info", "Information", "Information");
+
+        }
 	}
 }

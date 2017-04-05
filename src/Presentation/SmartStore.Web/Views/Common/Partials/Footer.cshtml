@@ -2,6 +2,8 @@
 @using SmartStore.Web.Models.Common;
 
 @{ 
+    var hasHint = Model.SmartStoreHint.HasValue();
+
     var socialLinks = new List<Tuple<string, string>>();
     if (Model.FacebookLink.HasValue())
     {
@@ -45,36 +47,50 @@
 	</div>
 }
 
-<div class="row footer-main">
-    <div class="col-md-3">
-        @if (Model.ShowThemeSelector)
-        {
-			<div class="theme-selector d-none d-md-block">
-				<h4>@T("Footer.Themes")</h4>
-				<div class="content">
-					@{ 
-                        Html.RenderAction("StoreThemeSelector", "Common");
-					}
-				</div>
-			</div>
-                        }
+<div class="row sm-gutters footer-main">
+    <div class="col-12 col-sm-4 col-md-3">
+        <nav class="footer-quicklinks">
+            <h4>@T("Footer.Info")</h4>
+            <ul class="list-unstyled">
+                @if (Model.ManufacturerEnabled)
+                {
+                    <li><a href="@Url.RouteUrl("ManufacturerList")">@T("Manufacturers.List")</a></li>
+                }
+                @if (Model.RecentlyAddedProductsEnabled)
+                {
+                    <li><a href="@Url.RouteUrl("RecentlyAddedProducts")">@T("Products.NewProducts")</a></li>
+                }
+                @if (Model.RecentlyViewedProductsEnabled)
+                {
+                    <li><a href="@Url.RouteUrl("RecentlyViewedProducts")">@T("Products.RecentlyViewedProducts")</a></li>
+                }
+                @if (Model.CompareProductsEnabled)
+                {
+                    <li><a href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>
+                }
+            </ul>
+        </nav>
     </div>
 
-    <div class="col-6 col-md-3">
+    <div class="col-12 col-sm-4 col-md-3">
         <nav class="footer-quicklinks">
             <h4>@T("Footer.Service")</h4>
             <ul class="list-unstyled">
+                @if (Model.TopicPageUrls.ContainsKey("contactus"))
+                {
+                    <li><a href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
+                }
+                @if (Model.BlogEnabled)
+                {
+                    <li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+                }
+                @if (Model.ForumEnabled)
+                {
+                    <li><a href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
+                }
 				@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
                 {
 					<li><a href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
-                }
-				@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
-                {
-					<li><a href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
-                }
-				@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
-                {
-					<li><a href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
                 }
 				@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
                 {
@@ -84,14 +100,10 @@
         </nav>
     </div>
 
-	<div class="col-6 col-md-3">
+	<div class="col-12 col-sm-4 col-md-3">
 		<nav class="footer-quicklinks company">
 			<h4>@T("Footer.Company")</h4>
 			<ul class="list-unstyled">
-				@if (Model.TopicPageUrls.ContainsKey("contactus"))
-                {
-					<li><a href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
-                }
 				@if (Model.TopicPageUrls.ContainsKey("aboutus"))
                 {
 					<li><a href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
@@ -104,21 +116,19 @@
                 {
 					<li><a href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
                 }
-
-				@if (Model.BlogEnabled)
+                @if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
                 {
-					<li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+                    <li><a href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
                 }
-				@if (Model.ForumEnabled)
+                @if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
                 {
-					<li><a href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
+                    <li><a href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
                 }
 			</ul>
 		</nav>
-
 	</div>
 
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-12">
         @if (!Model.HideNewsletterBlock)
         {
             <div class="footer-newsletter">
@@ -135,19 +145,21 @@
 						</span>
 					</div>
 
-					<div class="form-check form-check-inline">
-						<label class="form-check-label">
-							<input class="form-check-input" type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked">
-							@T("Newsletter.Subscribe")
-						</label>
-					</div>
+                    <div class="d-none d-lg-block">
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked">
+                                @T("Newsletter.Subscribe")
+                            </label>
+                        </div>
 
-					<div class="form-check form-check-inline">
-						<label class="form-check-label">
-							<input class="form-check-input" type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios">
-							@T("Newsletter.Unsubscribe")
-						</label>
-					</div>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios">
+                                @T("Newsletter.Unsubscribe")
+                            </label>
+                        </div>
+                    </div>
 
 					@Html.ValidationMessageFor(x => x.NewsletterEmail)
                     
@@ -155,15 +167,26 @@
                 <div id="newsletter-result-block" class="alert alert-success" hidden></div>
             </div>
         }
-    </div>
 
+        @if (Model.ShowThemeSelector)
+        {
+            <div class="theme-selector d-none d-md-block">
+                <h4>@T("Footer.Themes")</h4>
+                <div class="content">
+                    @{
+                        Html.RenderAction("StoreThemeSelector", "Common");
+                    }
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @{ Html.RenderWidget("footer"); }
 
 <div class="footer-disclaimer container text-muted">
     <div class="row">
-		<div class="col-md-4 text-center text-md-left">
+		<div class="@(hasHint ? "col-md-4" : "col-md-6") text-center text-md-left">
 			@if (Model.ShowLegalInfo)
 			{
 				<div class="footer-legal">
@@ -172,11 +195,14 @@
 			}
 		</div>
 
-		<div class="col-md-4 text-center text-md-center">
-			@Html.Raw(Model.SmartStoreHint)
-		</div>
-
-		<div class="col-md-4 text-center text-md-right">
+        @if (hasHint)
+        {
+            <div class="col-md-4 text-center text-md-center">
+                @Html.Raw(Model.SmartStoreHint)
+            </div>
+        }
+		
+		<div class="@(hasHint ? "col-md-4" : "col-md-6") text-center text-md-right">
 			<div>
 				@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)
 			</div>

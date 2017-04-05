@@ -24,11 +24,9 @@
         
         @{ Html.RenderWidget("newsitem_page_before_body"); }
 
-        <div class="news-content clearfix">
+        <div class="news-content">
             @Html.Raw(Model.Full)
         </div>
-
-		<div class="clear"></div>
 
         @{ Html.RenderWidget("newsitem_page_before_comments"); }
 

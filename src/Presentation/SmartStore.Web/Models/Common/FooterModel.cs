@@ -15,6 +15,10 @@ namespace SmartStore.Web.Models.Common
         public bool HideNewsletterBlock { get; set; }
         public bool BlogEnabled { get; set; }
         public bool ForumEnabled { get; set; }
+        public bool RecentlyAddedProductsEnabled { get; set; }
+        public bool RecentlyViewedProductsEnabled { get; set; }
+        public bool CompareProductsEnabled { get; set; }
+        public bool ManufacturerEnabled { get; set; }
 
         public bool ShowSocialLinks { get; set; }
         public string FacebookLink { get; set; }

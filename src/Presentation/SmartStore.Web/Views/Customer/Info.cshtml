@@ -19,24 +19,26 @@
         @Html.ValidationSummary(true)
     }
 
-    <fieldset class="form-fields">
+    <fieldset class="content-group">
         <legend>@T("Account.YourPersonalDetails")</legend>
 
         @if (Model.GenderEnabled)
         {
             <div class="form-group row">
-                <label class="col-sm-3 form-control-label">@T("Account.Fields.Gender")</label>
+                <label class="col-sm-3 col-form-label">@T("Account.Fields.Gender")</label>
                 <div class="col-sm-9">
-                    <div class="radio">
-                        <label>
-                            @Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { id = "gender-male" })
-                            @T("Account.Fields.Gender.Male")
-                        </label>
-                        <label style="margin-left:15px">
-                            @Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { id = "gender-female" })
-                            @T("Account.Fields.Gender.Female")
-                        </label>
-                    </div>
+					<div class="form-check form-check-inline">
+						<label class="form-check-label">
+							@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input", id = "gender-male" })
+							@T("Account.Fields.Gender.Male")
+						</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<label class="form-check-label">
+							@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input", id = "gender-female" })
+							@T("Account.Fields.Gender.Female")
+						</label>
+					</div>
                 </div>
             </div>
         }
@@ -47,7 +49,7 @@
         @if (Model.DateOfBirthEnabled)
         {
             <div class="form-group row">
-                <label class="col-sm-3 form-control-label" for="DateOfBirthDay">@T("Account.Fields.DateOfBirth")</label>
+                <label class="col-sm-3 col-form-label" for="DateOfBirthDay">@T("Account.Fields.DateOfBirth")</label>
                 <div class="col-sm-9">
                     @Html.DatePickerDropDowns(Html.FieldNameFor(x => x.DateOfBirthDay),
                             Html.FieldNameFor(x => x.DateOfBirthMonth),
@@ -69,59 +71,59 @@
         @if (Model.UsernamesEnabled)
         {
             <div class="form-group row">
-                @Html.LabelFor(model => model.Username, new { @class = "col-sm-3 form-control-label required", @for = "Username" })
+                @Html.LabelFor(model => model.Username, new { @class = "col-sm-3 col-form-label required", @for = "Username" })
                 @if (Model.AllowUsersToChangeUsernames)
                 {
                     <div class="col-sm-9">
                         @if (Model.CheckUsernameAvailabilityEnabled)
                         {
                             <div class="input-group">
-                                @Html.TextBoxFor(model => model.Username, new { @class = "form-control col-sm-11" })
+                                @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
                                 @{ Html.RenderPartial("_CheckUsernameAvailability"); }
                             </div>
                         }
                         else
                         {
-                            @Html.EditorFor(model => model.Username, new { @class = "form-control" })
+                            @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
                         }
                         @Html.ValidationMessageFor(model => model.Username)
                     </div>
                 }
                 else
                 {
-                    <div class="controls">
-                        @Model.Username
-                    </div>
-                }
+                    <div class="col-sm-9">
+						<p class="form-control-static">@Model.Username</p>
+					</div>
+				}
             </div>
         }
 
         @if (Model.DisplayCustomerNumber)
         {
-            <div class="control-group">
-                @Html.LabelFor(model => model.CustomerNumber, new { @class = "control-label", @for = "CustomerNumber" })
-                <div class="controls">
-                    @Html.TextBoxFor(model => model.CustomerNumber, !Model.CustomerNumberEnabled ? new { @readonly = "true" } : null)
+            <div class="form-group row">
+                @Html.LabelFor(model => model.CustomerNumber, new { @class = "col-sm-3 col-form-label", @for = "CustomerNumber" })
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(model => model.CustomerNumber, !Model.CustomerNumberEnabled ? new { @class = "form-control", @readonly = "true" } : null)
                 </div>
             </div>
         }
 
     </fieldset>
 
-    if (Model.AssociatedExternalAuthRecords.Count > 0)
-    {
-        <fieldset class="form-fields">
+	if (Model.AssociatedExternalAuthRecords.Count > 0)
+	{
+        <fieldset class="content-group">
             <legend>@T("Account.AssociatedExternalAuth")</legend>
-            <table class="table table-striped table-hover">
+            <table class="table table-hover border-top-0">
                 <thead>
                     <tr>
-                        <th>
+                        <th class="border-top-0">
                             @T("Account.AssociatedExternalAuth.AuthMethodName")
                         </th>
-                        <th>
+                        <th class="border-top-0">
                             @T("Account.AssociatedExternalAuth.Email")
                         </th>
-                        <th>
+                        <th class="border-top-0">
                             @T("Account.AssociatedExternalAuth.ExternalIdentifier")
                         </th>
                     </tr>
@@ -148,7 +150,7 @@
 
     if (Model.CompanyEnabled || Model.DisplayVatNumber)
     {
-        <fieldset class="form-fields">
+        <fieldset class="content-group">
             <legend>@T("Account.CompanyDetails")</legend>
 
             @if (Model.CompanyEnabled)
@@ -158,10 +160,13 @@
             @if (Model.DisplayVatNumber)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.VatNumber, new { @class = "col-sm-3 form-control-label", @for = "VatNumber" })
+                    @Html.LabelFor(model => model.VatNumber, new { @class = "col-sm-3 col-form-label", @for = "VatNumber" })
                     <div class="col-sm-9">
-                        @Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = "Optional" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
-                        <span class="help-block text-muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
+						<div class="input-group">
+							@Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = "Optional" })
+							<span class="input-group-addon" id="basic-addon2">@Model.VatNumberStatusNote</span>
+						</div>
+						<div class="form-text text-muted vat-note">@T("Account.Fields.VatNumber.Note")</div>
                     </div>
                 </div>
             }
@@ -170,7 +175,7 @@
 
     if (Model.StreetAddressEnabled || Model.StreetAddress2Enabled || Model.ZipPostalCodeEnabled || Model.CityEnabled || Model.CountryEnabled)
     {
-        <fieldset class="form-fields">
+        <fieldset class="content-group">
             <legend>@T("Account.YourAddress")</legend>
 
             @if (Model.StreetAddressEnabled)
@@ -192,22 +197,18 @@
             @if (Model.CountryEnabled)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.CountryId, new { @class = "col-sm-3 form-control-label", @for = "CountryId" })
+                    @Html.LabelFor(model => model.CountryId, new { @class = "col-sm-3 col-form-label", @for = "CountryId" })
                     <div class="col-sm-9">
-                        @Html.DropDownList("CountryId", Model.AvailableCountries)
+                        @Html.DropDownList("CountryId", Model.AvailableCountries, new { @class = "form-control" })
                     </div>
                 </div>
             }
             @if (Model.CountryEnabled && Model.StateProvinceEnabled)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.StateProvinceId, new { @class = "col-sm-3 form-control-label", @for = "StateProvinceId" })
+                    @Html.LabelFor(model => model.StateProvinceId, new { @class = "col-sm-3 col-form-label", @for = "StateProvinceId" })
                     <div class="col-sm-9">
-                        @Html.DropDownList("StateProvinceId", Model.AvailableStates, new { style = "width: 280px" })
-                        <span id="states-loading-progress" style="display: none;">
-                            @T("Common.Wait...")
-                            <img src='@Url.Content("~/Content/Images/ajax_loader_small.gif")' alt="@T("Common.Wait...")" />
-                        </span>
+                        @Html.DropDownList("StateProvinceId", Model.AvailableStates, new { @class = "form-control" })
                     </div>
                 </div>
             }
@@ -216,7 +217,7 @@
 
     if (Model.PhoneEnabled || Model.FaxEnabled)
     {
-        <fieldset class="form-fields">
+        <fieldset class="content-group">
             <legend>@T("Account.YourContactInformation")</legend>
 
             @if (Model.PhoneEnabled)
@@ -233,25 +234,23 @@
 
     if (Model.NewsletterEnabled)
     {
-        <fieldset class="form-fields">
+        <fieldset class="content-group">
             <legend>@T("Account.Options")</legend>
-            <div class="checkbox">
-                @Html.ControlGroupFor(model => model.Newsletter, editorType: InputEditorType.Checkbox)
-            </div>
+            @Html.ControlGroupFor(model => model.Newsletter, editorType: InputEditorType.Checkbox)
         </fieldset>
     }
 
     if (Model.AllowCustomersToSetTimeZone || Model.SignatureEnabled)
     {
-        <fieldset class="form-fields">
+        <fieldset class="content-group">
             <legend>@T("Account.Preferences")</legend>
 
             @if (Model.AllowCustomersToSetTimeZone)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.TimeZoneId, new { @class = "col-sm-3 form-control-label", @for = "TimeZoneId" })
+                    @Html.LabelFor(model => model.TimeZoneId, new { @class = "col-sm-3 col-form-label", @for = "TimeZoneId" })
                     <div class="col-sm-9">
-                        @Html.DropDownList("TimeZoneId", Model.AvailableTimeZones)
+                        @Html.DropDownList("TimeZoneId", Model.AvailableTimeZones, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.TimeZoneId)
                     </div>
                 </div>
@@ -259,7 +258,7 @@
             @if (Model.SignatureEnabled)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.Signature, new { @class = "col-sm-3 form-control-label", @for = "Signature" })
+                    @Html.LabelFor(model => model.Signature, new { @class = "col-sm-3 col-form-label", @for = "Signature" })
                     <div class="col-sm-9">
                         @Html.TextAreaFor(model => model.Signature, new { placeholder = "Optional", @class = "form-control", rows = "3" })
                     </div>
@@ -270,10 +269,10 @@
     }
 
     <div class="form-group row">
-        <div class="col-sm-offset-3 col-sm-9">
-            <button type="submit" name="save-info-button" class="btn btn-primary save-customer-info-button">
-                <i class="fa fa-floppy-o"></i>
-                @T("Common.Save")
+        <div class="col">
+            <button type="submit" name="save-info-button" class="btn btn-primary btn-lg save-customer-info-button">
+                <i class="fa fa-check"></i>
+                <span>@T("Common.Save")</span>
             </button>
         </div>
     </div>
@@ -283,11 +282,9 @@
 {
     <script type="text/javascript">
          $(function() {
-            $("#@Html.FieldIdFor(model => model.CountryId)").change(function() {
+            $("#@Html.FieldIdFor(model => model.CountryId)").on('change', function() {
                 var selectedItem = $(this).val();
                 var ddlStates = $("#@Html.FieldIdFor(model => model.StateProvinceId)");
-                var statesProgress = $("#states-loading-progress");
-                statesProgress.show();
                 $.ajax({
                     cache: false,
                     type: "GET",
@@ -299,11 +296,9 @@
                             ddlStates.append($('<option></option>').val(option.id).html(option.name));
                         });
                         ddlStates.trigger("change");
-                        statesProgress.hide();
                     },
                     error:function (xhr, ajaxOptions, thrownError){
                         alert('Failed to retrieve states.');
-                        statesProgress.hide();
                     }
                 });
             });

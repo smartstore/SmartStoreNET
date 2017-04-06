@@ -14,7 +14,7 @@
 fieldset.content-group > legend {
     font-size: $font-size-h5;
     font-weight: 400;
-    color: #aaa;
+    color: $gray-light;
     text-transform: uppercase;
     border-bottom: 1px solid rgba(0,0,0, 0.12);
     padding-bottom: 1rem;
@@ -32,6 +32,10 @@ fieldset.content-group > legend {
 .input-group-addon {
     // fixes Flex wrong alignment with input-groups
     line-height: inherit;
+}
+
+.form-text {
+    line-height: 1.3;
 }
 
 

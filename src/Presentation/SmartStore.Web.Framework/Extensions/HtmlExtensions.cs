@@ -269,13 +269,13 @@ namespace SmartStore.Web.Framework
             int? selectedDay = null, int? selectedMonth = null, int? selectedYear = null, bool localizeLabels = true, bool disabled = false)
         {
 			var row = new TagBuilder("div");
-			row.AddCssClass("row no-space");
+			row.AddCssClass("row xs-gutters");
 
 			var daysCol = new TagBuilder("div");
-			daysCol.AddCssClass("col pr-2");
+			daysCol.AddCssClass("col");
 
 			var monthsCol = new TagBuilder("div");
-			monthsCol.AddCssClass("col pr-2");
+			monthsCol.AddCssClass("col");
 
 			var yearsCol = new TagBuilder("div");
 			yearsCol.AddCssClass("col");
@@ -497,7 +497,7 @@ namespace SmartStore.Web.Framework
 			var htmlAttributes = new RouteValueDictionary();
 			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
             var groupClass = "form-group row";
-            var labelClass = "col-sm-3";
+            var labelClass = "col-sm-3 col-form-label";
             var controlsClass = "col-sm-9";
             var sb = new StringBuilder("<div class='{0}'>".FormatWith(groupClass));
 
@@ -530,7 +530,7 @@ namespace SmartStore.Web.Framework
             switch (editorType)
             {
                 case InputEditorType.Checkbox:
-                    inputHtml = string.Format("<label class='checkbox'>{0} {1}</label>",
+                    inputHtml = string.Format("<div class='form-check'><label class='form-check-label'>{0} {1}</label></div>",
                         html.EditorFor(expression).ToString(),
                         ModelMetadata.FromLambdaExpression(expression, html.ViewData).DisplayName); // TBD: ist das OK so?
                     break;
@@ -546,7 +546,7 @@ namespace SmartStore.Web.Framework
             sb.AppendLine(html.ValidationMessageFor(expression).ToString());
             if (helpHint.HasValue())
             {
-                sb.AppendLine(string.Format("<div class='help-block muted'>{0}</div>", helpHint));
+                sb.AppendLine(string.Format("<div class='form-text text-muted'>{0}</div>", helpHint));
             }
             sb.AppendLine("</div>"); // div.controls
 

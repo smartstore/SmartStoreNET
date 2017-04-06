@@ -1,17 +1,16 @@
 ﻿<script type="text/javascript">
     $(function () {
-        $('#Username').closest(".input-append").after(createCircularSpinner(24).attr('id', 'cua-loader').css('margin-left', '10px'));
-        $('#Username').bind({
-            change: function () {
-                $('#username-availabilty').text('');
-                $('#check-availability-button')
-                    .removeClass("btn-success btn-warning")
-                    .find(">i")
-                    .removeClass("fa-check fa-exclamation-circle")
-                    .addClass("fa-question-circle");
-            }
-        });
-        $('#check-availability-button').click(function () {
+    	$('#Username').closest(".input-group-btn").after(createCircularSpinner(24).attr('id', 'cua-loader').css('margin-left', '10px'));
+    	$('#Username').on('input propertychange paste', function (e) {
+    		$('#username-availabilty').text('');
+    		$('#check-availability-button')
+				.removeClass("btn-success btn-warning")
+				.addClass("btn-secondary")
+				.find(">i")
+				.removeClass("fa-check fa-exclamation-circle")
+				.addClass("fa-question-circle");
+    	});
+        $('#check-availability-button').on('click', function (e) {
             var btn = $('#check-availability-button');
             $('#username-availabilty').text('');
             if ($("#Username").val().length > 0) {
@@ -26,7 +25,7 @@
                     success: function (data) {
                         btn.removeAttr('disabled');
                         btn
-                            .removeClass("btn-success btn-warning")
+                            .removeClass("btn-success btn-warning btn-secondary")
                             .addClass(data.Available ? "btn-success" : "btn-warning")
                             .find(">i")
                             .removeClass("fa-check fa-question-circle fa-exclamation-circle")
@@ -47,6 +46,9 @@
         });
     });
 </script>
-<button type="button" id="check-availability-button" class="btn input-group-addon col-sm-1 check-username-availability-button tooltip-toggle" title="@T("Account.CheckUsernameAvailability.Button")">
-    <i class="fa fa-question-circle"></i>
-</button>
+
+<span class="input-group-btn">
+	<button type="button" id="check-availability-button" class="btn btn-secondary check-username-availability-button tooltip-toggle" title="@T("Account.CheckUsernameAvailability.Button")">
+		<i class="fa fa-question-circle"></i>
+	</button>
+</span>

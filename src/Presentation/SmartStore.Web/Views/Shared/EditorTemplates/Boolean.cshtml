@@ -29,9 +29,9 @@
 
 @if (!ViewData.ModelMetadata.IsNullableValueType)
 {
-    @Html.CheckBox(string.Empty, Value ?? false, new { @class = "check-box" })
+    @Html.CheckBox(string.Empty, Value ?? false, new { @class = "check-box form-check-input" })
 }
 else
 {
-    @Html.DropDownList(string.Empty, TriStateValues, new { @class = "list-box tri-state" })
+    @Html.DropDownList(string.Empty, TriStateValues, new { @class = "form-control noskin list-box tri-state" })
 }

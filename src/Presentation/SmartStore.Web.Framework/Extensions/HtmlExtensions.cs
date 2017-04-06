@@ -497,8 +497,8 @@ namespace SmartStore.Web.Framework
 			var htmlAttributes = new RouteValueDictionary();
 			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
             var groupClass = "form-group row";
-            var labelClass = "col-sm-3 col-form-label";
-            var controlsClass = "col-sm-9";
+            var labelClass = "col-lg-3 col-form-label";
+            var controlsClass = "col-lg-9";
             var sb = new StringBuilder("<div class='{0}'>".FormatWith(groupClass));
 
             if (editorType != InputEditorType.Checkbox)

@@ -20,13 +20,13 @@
     }
 
     <fieldset class="content-group">
-        <legend>@T("Account.YourPersonalDetails")</legend>
+        <legend><span>@T("Account.YourPersonalDetails")</span></legend>
 
         @if (Model.GenderEnabled)
         {
             <div class="form-group row">
-                <label class="col-sm-3 col-form-label">@T("Account.Fields.Gender")</label>
-                <div class="col-sm-9">
+                <label class="col-lg-3 col-form-label">@T("Account.Fields.Gender")</label>
+                <div class="col-lg-9">
 					<div class="form-check form-check-inline">
 						<label class="form-check-label">
 							@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input", id = "gender-male" })
@@ -49,8 +49,8 @@
         @if (Model.DateOfBirthEnabled)
         {
             <div class="form-group row">
-                <label class="col-sm-3 col-form-label" for="DateOfBirthDay">@T("Account.Fields.DateOfBirth")</label>
-                <div class="col-sm-9">
+                <label class="col-lg-3 col-form-label" for="DateOfBirthDay">@T("Account.Fields.DateOfBirth")</label>
+                <div class="col-lg-9">
                     @Html.DatePickerDropDowns(Html.FieldNameFor(x => x.DateOfBirthDay),
                             Html.FieldNameFor(x => x.DateOfBirthMonth),
                             Html.FieldNameFor(x => x.DateOfBirthYear),
@@ -71,10 +71,10 @@
         @if (Model.UsernamesEnabled)
         {
             <div class="form-group row">
-                @Html.LabelFor(model => model.Username, new { @class = "col-sm-3 col-form-label required", @for = "Username" })
+                @Html.LabelFor(model => model.Username, new { @class = "col-lg-3 col-form-label required", @for = "Username" })
                 @if (Model.AllowUsersToChangeUsernames)
                 {
-                    <div class="col-sm-9">
+                    <div class="col-lg-9">
                         @if (Model.CheckUsernameAvailabilityEnabled)
                         {
                             <div class="input-group">
@@ -91,7 +91,7 @@
                 }
                 else
                 {
-                    <div class="col-sm-9">
+                    <div class="col-lg-9">
 						<p class="form-control-static">@Model.Username</p>
 					</div>
 				}
@@ -101,8 +101,8 @@
         @if (Model.DisplayCustomerNumber)
         {
             <div class="form-group row">
-                @Html.LabelFor(model => model.CustomerNumber, new { @class = "col-sm-3 col-form-label", @for = "CustomerNumber" })
-                <div class="col-sm-9">
+                @Html.LabelFor(model => model.CustomerNumber, new { @class = "col-lg-3 col-form-label", @for = "CustomerNumber" })
+                <div class="col-lg-9">
                     @Html.TextBoxFor(model => model.CustomerNumber, !Model.CustomerNumberEnabled ? new { @class = "form-control", @readonly = "true" } : null)
                 </div>
             </div>
@@ -113,7 +113,7 @@
 	if (Model.AssociatedExternalAuthRecords.Count > 0)
 	{
         <fieldset class="content-group">
-            <legend>@T("Account.AssociatedExternalAuth")</legend>
+            <legend><span>@T("Account.AssociatedExternalAuth")</span></legend>
             <table class="table table-hover border-top-0">
                 <thead>
                     <tr>
@@ -151,7 +151,7 @@
     if (Model.CompanyEnabled || Model.DisplayVatNumber)
     {
         <fieldset class="content-group">
-            <legend>@T("Account.CompanyDetails")</legend>
+            <legend><span>@T("Account.CompanyDetails")</span></legend>
 
             @if (Model.CompanyEnabled)
             {
@@ -160,8 +160,8 @@
             @if (Model.DisplayVatNumber)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.VatNumber, new { @class = "col-sm-3 col-form-label", @for = "VatNumber" })
-                    <div class="col-sm-9">
+                    @Html.LabelFor(model => model.VatNumber, new { @class = "col-lg-3 col-form-label", @for = "VatNumber" })
+                    <div class="col-lg-9">
 						<div class="input-group">
 							@Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = "Optional" })
 							<span class="input-group-addon" id="basic-addon2">@Model.VatNumberStatusNote</span>
@@ -176,7 +176,7 @@
     if (Model.StreetAddressEnabled || Model.StreetAddress2Enabled || Model.ZipPostalCodeEnabled || Model.CityEnabled || Model.CountryEnabled)
     {
         <fieldset class="content-group">
-            <legend>@T("Account.YourAddress")</legend>
+            <legend><span>@T("Account.YourAddress")</span></legend>
 
             @if (Model.StreetAddressEnabled)
             {
@@ -197,8 +197,8 @@
             @if (Model.CountryEnabled)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.CountryId, new { @class = "col-sm-3 col-form-label", @for = "CountryId" })
-                    <div class="col-sm-9">
+                    @Html.LabelFor(model => model.CountryId, new { @class = "col-lg-3 col-form-label", @for = "CountryId" })
+                    <div class="col-lg-9">
                         @Html.DropDownList("CountryId", Model.AvailableCountries, new { @class = "form-control" })
                     </div>
                 </div>
@@ -206,8 +206,8 @@
             @if (Model.CountryEnabled && Model.StateProvinceEnabled)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.StateProvinceId, new { @class = "col-sm-3 col-form-label", @for = "StateProvinceId" })
-                    <div class="col-sm-9">
+                    @Html.LabelFor(model => model.StateProvinceId, new { @class = "col-lg-3 col-form-label", @for = "StateProvinceId" })
+                    <div class="col-lg-9">
                         @Html.DropDownList("StateProvinceId", Model.AvailableStates, new { @class = "form-control" })
                     </div>
                 </div>
@@ -218,7 +218,7 @@
     if (Model.PhoneEnabled || Model.FaxEnabled)
     {
         <fieldset class="content-group">
-            <legend>@T("Account.YourContactInformation")</legend>
+            <legend><span>@T("Account.YourContactInformation")</span></legend>
 
             @if (Model.PhoneEnabled)
             {
@@ -235,7 +235,7 @@
     if (Model.NewsletterEnabled)
     {
         <fieldset class="content-group">
-            <legend>@T("Account.Options")</legend>
+            <legend><span>@T("Account.Options")</span></legend>
             @Html.ControlGroupFor(model => model.Newsletter, editorType: InputEditorType.Checkbox)
         </fieldset>
     }
@@ -243,13 +243,13 @@
     if (Model.AllowCustomersToSetTimeZone || Model.SignatureEnabled)
     {
         <fieldset class="content-group">
-            <legend>@T("Account.Preferences")</legend>
+            <legend><span>@T("Account.Preferences")</span></legend>
 
             @if (Model.AllowCustomersToSetTimeZone)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.TimeZoneId, new { @class = "col-sm-3 col-form-label", @for = "TimeZoneId" })
-                    <div class="col-sm-9">
+                    @Html.LabelFor(model => model.TimeZoneId, new { @class = "col-lg-3 col-form-label", @for = "TimeZoneId" })
+                    <div class="col-lg-9">
                         @Html.DropDownList("TimeZoneId", Model.AvailableTimeZones, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.TimeZoneId)
                     </div>
@@ -258,8 +258,8 @@
             @if (Model.SignatureEnabled)
             {
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.Signature, new { @class = "col-sm-3 col-form-label", @for = "Signature" })
-                    <div class="col-sm-9">
+                    @Html.LabelFor(model => model.Signature, new { @class = "col-lg-3 col-form-label", @for = "Signature" })
+                    <div class="col-lg-9">
                         @Html.TextAreaFor(model => model.Signature, new { placeholder = "Optional", @class = "form-control", rows = "3" })
                     </div>
                 </div>

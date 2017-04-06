@@ -152,6 +152,11 @@ $list-group-link-active-color:  $body-color;
 $alert-border-radius:           0;
 
 
+// Cards
+
+$card-deck-margin:              10px;
+
+
 // Brand color variables
 
 $clr-brand-facebook:            #3b5998;
@@ -843,8 +848,11 @@ a.pretty-link {
 // ------------------------------------------------------
 
 .list-group {
+    .list-group-item {
+        overflow: hidden;
+    }
+
     .list-group-item.active {
-        //font-weight: 600;
         &:before {
             @include active-list-item($size: 3px);
         }      

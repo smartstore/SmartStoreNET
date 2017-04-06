@@ -3,22 +3,38 @@
 // Forms
 // ==============================================================
 
-.form-control {
-    /*box-shadow: none;
+fieldset.content-group {
+    margin-bottom: 2rem;
 
-    &:focus, &.focus {
-        box-shadow: none;
-    }*/
-}
+    > legend {
+        position: relative;
+        font-size: $font-size-h5;
+        font-weight: 400;
+        color: $gray-light;
+        text-transform: uppercase;
+        //border-bottom: 1px solid rgba(0,0,0, 0.12);
+        //padding-bottom: 1rem;
+        margin-bottom: 1.2rem;
 
-fieldset.content-group > legend {
-    font-size: $font-size-h5;
-    font-weight: 400;
-    color: $gray-light;
-    text-transform: uppercase;
-    border-bottom: 1px solid rgba(0,0,0, 0.12);
-    padding-bottom: 1rem;
-    margin-bottom: 1.2rem;
+        &:before {
+            position: absolute;
+            content: ' ';
+            width: 100%;
+            left: 0;
+            top: 50%;
+            height: 1px;
+            background: rgba(0,0,0, 0.12);
+            z-index: 0;
+        }
+
+        > span {
+            position: relative;
+            display: inline-block;
+            background: $body-bg;
+            padding-right: 1rem;
+            z-index: 1;
+        }
+    }
 }
 
 .form-group > label:not(.checkbox-inline):not(.radio-inline) {

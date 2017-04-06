@@ -779,6 +779,11 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Footer.Info", "Information", "Information");
 
+            builder.AddOrUpdate("Admin.ContentManagement.Polls.Fields.SystemKeyword",
+                "System keyword",
+                "System-Schlüsselwort",
+                "The system keyword specifies the place in your shop where the poll will be displayed. Available system keywords are: MyAccountMenu, Blog",
+                "Das System-Schlüsselwort bestimmt den Platz im Shop, an welchem die Umfrage dargestellt wird. Verfügbare System-Schlüsselwörter sind: MyAccountMenu, Blog");
         }
 	}
 }

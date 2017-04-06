@@ -91,3 +91,5 @@
 </div>
 
 @{ Html.RenderWidget("myaccount_menu_after"); }
+
+@{ Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "MyAccountMenu" }); }

@@ -25,6 +25,7 @@
     @{
         Html.RenderAction("BlogMonths", "Blog");
         Html.RenderAction("BlogTags", "Blog");
+        Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "Blog" });
     }
 }
 

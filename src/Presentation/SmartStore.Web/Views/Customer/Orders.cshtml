@@ -101,50 +101,43 @@
     }
 }
 
-<div class="order-list">
-    @if (Model.Orders.Count > 0)
-    {
-        foreach (var order in Model.Orders)
-        {
-            <div class="order-item mt-4">
-                <h4 class="title">@T("Account.CustomerOrders.OrderNumber"): @order.OrderNumber</h4>
-                <div><hr /></div>
+@if (Model.Orders.Count == 0)
+{
+	<div class="alert alert-warning">
+		@T("Account.CustomerOrders.NoOrders")
+	</div>
+	return;
+}
 
-                <div class="row">
-                            
-                    <div class="col-sm-9">
-                        <dl class="dl-horizontal row">
-                            <dt class="col-sm-4">@T("Account.CustomerOrders.OrderStatus"):</dt>
-                            <dd class="col-sm-8">@order.OrderStatus</dd>
-                            <dt class="col-sm-4">@T("Account.CustomerOrders.OrderDate"):</dt>
-                            <dd class="col-sm-8">@order.CreatedOn.ToString()</dd>
-                            <dt class="col-sm-4">@T("Account.CustomerOrders.OrderTotal"):</dt>
-                            <dd class="col-sm-8">@order.OrderTotal</dd>
-                        </dl>                                
-                    </div>
-
-                    <div class="buttons col-sm-3">
-                        @if (order.IsReturnRequestAllowed)
-                        {
-                            <a class="btn btn-secondary" href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = order.Id })" rel="nofollow">
-                                <i class="fa fa-reply"></i>
-                                @T("Account.CustomerOrders.ReturnItems")
-                            </a>
-                            <text>&nbsp;&nbsp;&nbsp;</text>
-                        }
-                        <a class="btn btn-secondary" href="@Url.Action("Details", "Order", new { id = order.Id })" rel="nofollow">
-                            <i class="fa fa-list-alt"></i>
-                            @T("Account.CustomerOrders.OrderDetails")
-                        </a>
-                    </div>
-                </div>
-            </div>
-        }
-    }
-    else
+<div class="card-deck card-cols-sm-1 order-list">
+    @foreach (var order in Model.Orders)
     {
-        <div class="alert alert-warning">
-            @T("Account.CustomerOrders.NoOrders")
+        <div class="card card-shadow order-item">
+			<div class="card-block">
+				<h4 class="card-title mb-4">@T("Account.CustomerOrders.OrderNumber"): @order.OrderNumber</h4>
+				<dl class="row mb-0">
+					<dt class="col-sm-3 font-weight-400 text-muted">@T("Account.CustomerOrders.OrderStatus")</dt>
+					<dd class="col-sm-9">@order.OrderStatus</dd>
+					<dt class="col-sm-3 font-weight-400 text-muted">@T("Account.CustomerOrders.OrderDate")</dt>
+					<dd class="col-sm-9">@order.CreatedOn.ToString()</dd>
+					<dt class="col-sm-3 font-weight-400 text-muted">@T("Account.CustomerOrders.OrderTotal")</dt>
+					<dd class="col-sm-9 price">@order.OrderTotal</dd>
+				</dl>
+			</div>
+
+			<div class="card-footer d-flex p-0">
+				@if (order.IsReturnRequestAllowed)
+				{
+					<a class="btn btn-secondary xbtn-lg btn-flat rounded-0" href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = order.Id })" rel="nofollow">
+						<i class="fa fa-reply"></i>
+						<span>@T("Account.CustomerOrders.ReturnItems")</span>
+					</a>
+				}
+				<a class="btn btn-secondary xbtn-lg btn-flat rounded-0" href="@Url.Action("Details", "Order", new { id = order.Id })" rel="nofollow">
+					<i class="fa fa-list-alt"></i>
+					<span>@T("Account.CustomerOrders.OrderDetails")</span>
+				</a>
+			</div>
         </div>
     }
 </div>

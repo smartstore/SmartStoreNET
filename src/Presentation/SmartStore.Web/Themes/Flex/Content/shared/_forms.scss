@@ -37,7 +37,7 @@ fieldset.content-group {
     }
 }
 
-.form-group label:not(.checkbox-inline):not(.radio-inline) {
+.form-group label:not(.form-check-label) {
     font-weight: 600;
 }
 

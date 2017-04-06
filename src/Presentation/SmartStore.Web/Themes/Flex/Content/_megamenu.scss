@@ -60,6 +60,8 @@ $mm-selected-color:                     $brand-warning;
     }
 
     .nav-item {
+        position: relative;
+
         .badge {
             position: absolute;
             right: 3px;

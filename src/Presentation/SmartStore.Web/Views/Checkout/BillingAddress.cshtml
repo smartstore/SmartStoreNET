@@ -24,15 +24,15 @@
                 <div class="block-title fs-h4 mb-3 mt-4">
                     @T("Checkout.SelectBillingAddress")
                 </div>
-                <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 block-body address-grid">
 
+                <div class="artlist artlist-grid artlist-3-cols artlist-boxed block-body address-grid">
                     @foreach (var item in Model.ExistingAddresses)
                     {
-                        <div class="item-box card card-block">
+                        <div class="item-box art">
                             <div class="address-item">
-                            
+
                                 <div class="select-button">
-                                    <button class="btn btn-secondary btn-block select-billing-address-button"  onclick="setLocation('@Url.Action("SelectBillingAddress", new { addressId = item.Id })')">
+                                    <button class="btn btn-secondary btn-block select-billing-address-button" onclick="setLocation('@Url.Action("SelectBillingAddress", new { addressId = item.Id })')">
                                         @T("Checkout.BillToThisAddress")
                                     </button>
                                 </div>
@@ -46,14 +46,14 @@
                                     {
                                         <div class="phone">
                                             @T("Address.Fields.PhoneNumber"):
-                                             @item.PhoneNumber
+                                            @item.PhoneNumber
                                         </div>
                                     }
                                     @if (item.FaxEnabled && !String.IsNullOrEmpty(item.FaxNumber))
                                     {
                                         <div class="fax">
                                             @T("Address.Fields.FaxNumber"):
-                                             @item.FaxNumber
+                                            @item.FaxNumber
                                         </div>
                                     }
                                     @if (item.CompanyEnabled && !String.IsNullOrEmpty(item.Company))

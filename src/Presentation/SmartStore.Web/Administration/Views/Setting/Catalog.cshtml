@@ -88,11 +88,11 @@
         function toggleManufacturersOnHomepage() {
             if ($('#@Html.FieldIdFor(model => model.ShowManufacturersOnHomepage)').is(':checked')) {
                 $('#pnlShowManufacturerPictures').show();
-                $('#pnlManufacturersBlockItemsToDisplay').show();
+                $('#pnlManufacturerItemsToDisplayOnHomepage').show();
             }
             else {
                 $('#pnlShowManufacturerPictures').hide();
-                $('#pnlManufacturersBlockItemsToDisplay').hide();
+                $('#pnlManufacturerItemsToDisplayOnHomepage').hide();
             }
         }
 
@@ -279,15 +279,26 @@
                 @Html.ValidationMessageFor(model => model.ShowManufacturersOnHomepage)
             </td>
         </tr>
-        <tr id="pnlManufacturersBlockItemsToDisplay">
+        <tr id="pnlManufacturerItemsToDisplayOnHomepage">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ManufacturersBlockItemsToDisplay)
+                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayOnHomepage)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ManufacturersBlockItemsToDisplay)
-                @Html.ValidationMessageFor(model => model.ManufacturersBlockItemsToDisplay)
+                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayOnHomepage)
+                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayOnHomepage)
             </td>
         </tr>
+        
+        <tr id="pnlManufacturerItemsToDisplayOnHomepage">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
+                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
+            </td>
+        </tr>
+        
         <tr id="pnlShowManufacturerPictures">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowManufacturerPictures)

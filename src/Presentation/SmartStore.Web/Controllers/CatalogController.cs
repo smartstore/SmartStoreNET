@@ -444,20 +444,35 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        // TODO: remove, won't be needed anymore???
         [ChildActionOnly]
-        public ActionResult ManufacturerNavigation()
+        public ActionResult HomepageManufacturers()
         {
-			if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
-				return Content("");
+            if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
+                return Content("");
 
-            var model = _helper.PrepareManufacturerNavigationModel();
+            var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayOnHomepage);
 
             if (model.Manufacturers.Count == 0)
-				return Content("");
+                return Content("");
 
             return PartialView(model);
         }
+
+
+        // TODO: remove, won't be needed anymore???
+   //     [ChildActionOnly]
+   //     public ActionResult ManufacturerNavigation()
+   //     {
+			//if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
+			//	return Content("");
+
+   //         var model = _helper.PrepareManufacturerNavigationModel();
+
+   //         if (model.Manufacturers.Count == 0)
+			//	return Content("");
+
+   //         return PartialView(model);
+   //     }
 
         #endregion
 
@@ -915,7 +930,7 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult OffCanvasMenuManufacturers()
         {
-            var model = _helper.PrepareManufacturerNavigationModel();
+            var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayInOffcanvasMenu);
 
             return PartialView("OffCanvasMenuManufacturers", model);
         }

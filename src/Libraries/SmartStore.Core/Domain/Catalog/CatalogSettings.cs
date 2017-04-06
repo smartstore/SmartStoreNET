@@ -42,10 +42,15 @@ namespace SmartStore.Core.Domain.Catalog
 			CompareProductsEnabled = true;
 			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;
 			NumberOfBestsellersOnHomepage = 12;
+            
             ShowManufacturersOnHomepage = true;
             ShowManufacturerPictures = false;
+            ManufacturerItemsToDisplayOnHomepage = 18;
+            ManufacturerItemsToDisplayInOffcanvasMenu = 20;
+
             ShowManufacturerInProductDetail = true;
             ShowManufacturerPicturesInProductDetail = true;
+
 			ProductsAlsoPurchasedEnabled = true;
 			ProductsAlsoPurchasedNumber = 12;
 			NumberOfProductTags = 15;
@@ -56,7 +61,6 @@ namespace SmartStore.Core.Domain.Catalog
 			AllowCustomersToSelectPageSize = true;
 			MaximumBackInStockSubscriptions = 200;
 			FileUploadMaximumSizeBytes = 1024 * 200; //200KB
-			ManufacturersBlockItemsToDisplay = 8;
 			DisplayAllImagesNumber = 6;
 			ShowShortDescriptionInGridStyleLists = true;
 			ShowManufacturerInGridStyleLists = true;
@@ -273,6 +277,16 @@ namespace SmartStore.Core.Domain.Catalog
         public bool ShowManufacturersOnHomepage { get; set; }
 
         /// <summary>
+        /// Gets or sets the value indicating how many manufacturers on home page
+        /// </summary>
+        public int ManufacturerItemsToDisplayOnHomepage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating how many manufacturers in offcanvas menu
+        /// </summary>
+        public int ManufacturerItemsToDisplayInOffcanvasMenu { get; set; }
+        
+        /// <summary>
         /// Gets or sets a value indicating whether to show manufacturer pictures or names on home page
         /// </summary>
         public bool ShowManufacturerPictures { get; set; }
@@ -426,12 +440,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a list of allowed file extensions for customer uploaded files
         /// </summary>
         public List<string> FileUploadAllowedExtensions { get; set; }
-
-        /// <summary>
-        /// Gets or sets the value indicating how many manufacturers to display in manufacturers block
-        /// </summary>
-        public int ManufacturersBlockItemsToDisplay { get; set; }
-
+        
 		/// <summary>
 		/// Gets or sets a value indicating if html long text should be collapsed
 		/// </summary>

@@ -1278,25 +1278,26 @@ namespace SmartStore.Web.Controllers
             return model;
         }
 
-        public ManufacturerNavigationModel PrepareManufacturerNavigationModel()
+        public ManufacturerNavigationModel PrepareManufacturerNavigationModel(int manufacturerItemsToDisplay)
         {
             var cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY,
                 !_catalogSettings.HideManufacturerDefaultPictures,
                 _services.WorkContext.WorkingLanguage.Id,
-                _services.StoreContext.CurrentStore.Id);
-
+                _services.StoreContext.CurrentStore.Id,
+                manufacturerItemsToDisplay);
+            
             var cacheModel = _services.Cache.Get(cacheKey, () =>
             {
-                var manufacturers = _manufacturerService.GetAllManufacturers(null, 0, _catalogSettings.ManufacturersBlockItemsToDisplay + 1, _services.StoreContext.CurrentStore.Id);
+                var manufacturers = _manufacturerService.GetAllManufacturers(null, 0, manufacturerItemsToDisplay + 1, _services.StoreContext.CurrentStore.Id);
 
                 var model = new ManufacturerNavigationModel
                 {
                     DisplayManufacturers = _catalogSettings.ShowManufacturersOnHomepage,
                     DisplayImages = _catalogSettings.ShowManufacturerPictures,
-                    DisplayAllManufacturersLink = manufacturers.Count > _catalogSettings.ManufacturersBlockItemsToDisplay
+                    DisplayAllManufacturersLink = manufacturers.Count > manufacturerItemsToDisplay
                 };
 
-                foreach (var manufacturer in manufacturers.Take(_catalogSettings.ManufacturersBlockItemsToDisplay))
+                foreach (var manufacturer in manufacturers.Take(manufacturerItemsToDisplay))
                 {
                     var modelMan = new ManufacturerBriefInfoModel
                     {

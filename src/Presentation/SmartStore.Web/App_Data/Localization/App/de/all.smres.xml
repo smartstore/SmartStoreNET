@@ -4618,10 +4618,10 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.LabelAsNewForMaxDays.Hint">
 		<Value>Legt die Anzahl Tage fest, die das Produkt in der Liste mit einer "NEU"-Kennzeichnung versehen werden soll. Lassen Sie das Feld leer, um die Funktion zu deaktivieren.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay">
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayOnHomepage">
 		<Value>Anzahl der anzuzeigenen Hersteller</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay.Hint">
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayOnHomepage.Hint">
 		<Value>Legt die Anzahl der anzuzeigenen Hersteller in der Navigationsleiste fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay">

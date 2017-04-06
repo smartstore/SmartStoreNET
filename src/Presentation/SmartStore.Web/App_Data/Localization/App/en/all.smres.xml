@@ -4768,10 +4768,10 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.LabelAsNewForMaxDays.Hint">
 		<Value>Specifies the number of days that a "NEW" label should be displayed in the product list. Leave the field blank to disable this feature.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay">
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayOnHomepage">
 		<Value>Number of manufacturers to display</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay.Hint">
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayOnHomepage.Hint">
 		<Value>Enter the number of manufacturers to display in manufacturer navigation block.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay">

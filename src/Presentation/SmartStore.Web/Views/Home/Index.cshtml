@@ -6,15 +6,17 @@
 
 <div class="page home-page">
     <div class="page-body">
-		@{
-			Html.RenderWidget("home_page_top");
+		@{  Html.RenderWidget("home_page_top");
 
-			Html.RenderAction("TopicBlock", "Topic", new { systemName = "HomePageText" });
-			Html.RenderAction("HomepageCategories", "Catalog");
-			Html.RenderAction("HomepageProducts", "Catalog");
-			Html.RenderAction("HomepageBestSellers", "Catalog");
-			Html.RenderAction("HomePageNews", "News");
-			Html.RenderAction("HomePagePolls", "Poll");
+            Html.RenderAction("TopicBlock", "Topic", new { systemName = "HomePageText" });
+            Html.RenderAction("HomepageCategories", "Catalog");
+            Html.RenderAction("HomepageProducts", "Catalog");
+            Html.RenderAction("HomepageBestSellers", "Catalog");
+            Html.RenderAction("HomePageNews", "News");
+
+            Html.RenderAction("HomepageManufacturers", "Catalog");
+
+            Html.RenderAction("HomePagePolls", "Poll");
 			@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
             Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" });
 

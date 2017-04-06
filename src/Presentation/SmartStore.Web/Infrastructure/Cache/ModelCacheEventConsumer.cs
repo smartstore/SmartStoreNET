@@ -124,8 +124,9 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {0} : value indicating whether a default picture is displayed in case if no real picture exists
 		/// {1} : language id
 		/// {2} : current store ID
+        /// {3} : items to display
 		/// </remarks>
-		public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "pres:manufacturer:navigation-{0}-{1}-{2}";
+		public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "pres:manufacturer:navigation-{0}-{1}-{2}-{3}";
         public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "pres:manufacturer:navigation";
 
 		/// <summary>
@@ -460,7 +461,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         {
             //clear models which depend on settings
             _cacheManager.RemoveByPattern(PRODUCTTAG_POPULAR_PATTERN_KEY); //depends on CatalogSettings.NumberOfProductTags
-            _cacheManager.RemoveByPattern(MANUFACTURER_NAVIGATION_PATTERN_KEY); //depends on CatalogSettings.ManufacturersBlockItemsToDisplay
+            _cacheManager.RemoveByPattern(MANUFACTURER_NAVIGATION_PATTERN_KEY); //depends on CatalogSettings.ManufacturerItemsToDisplayOnHomepage
             _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY); //depends on CatalogSettings.NumberOfBestsellersOnHomepage
             _cacheManager.RemoveByPattern(BLOG_PATTERN_KEY); //depends on BlogSettings.NumberOfTags
             _cacheManager.RemoveByPattern(NEWS_PATTERN_KEY); //depends on NewsSettings.MainPageNewsCount

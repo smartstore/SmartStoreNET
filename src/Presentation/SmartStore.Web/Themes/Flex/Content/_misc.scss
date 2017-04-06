@@ -89,8 +89,30 @@ fieldset legend {
     margin-right: .5rem;
 }
 
-/* Manufacturers in left column
+/* Manufacturers on Homepage
 ================================================ */
+
+.manufacturer-grid .show-all-manufacturers {
+    > a {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        color: $btn-warning-color;
+        background: $btn-warning-bg;
+        font-weight: 600;
+        font-size: 1rem;
+        opacity: 0.7;
+        &:hover { 
+            text-decoration: none;
+            opacity: 1;
+        }
+        > span { margin: auto; }
+    }
+}
+
+/*
 .block-manufacturer-navigation .manufacturer-pic {
     float: left;
     width: 50px;
@@ -102,6 +124,8 @@ fieldset legend {
         max-height: 50px;
     }
 }
+*/
+
 
 /* All manufacturers
 ================================================ */

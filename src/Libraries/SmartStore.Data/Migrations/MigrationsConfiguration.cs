@@ -784,6 +784,24 @@ namespace SmartStore.Data.Migrations
                 "System-Schlüsselwort",
                 "The system keyword specifies the place in your shop where the poll will be displayed. Available system keywords are: MyAccountMenu, Blog",
                 "Das System-Schlüsselwort bestimmt den Platz im Shop, an welchem die Umfrage dargestellt wird. Verfügbare System-Schlüsselwörter sind: MyAccountMenu, Blog");
+            
+            builder.Delete("Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayOnHomepage",
+                "Amount of manufacturers to display on homepage",
+                "Anzahl der anzuzeigenden Hersteller auf der Homepage",
+                "Specifies the amount of manufacturers to display on homepage.",
+                "Bestimmt die Anzahl der anzuzeigenden Hersteller auf der Homepage.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayInOffCanvasMenu",
+                "Amount of manufacturers to display in offcanvas menu",
+                "Anzahl der anzuzeigenden Hersteller im OffCanvas-Menu",
+                "Specifies the amount of manufacturers to display in offcanvas menu.",
+                "Bestimmt die Anzahl der anzuzeigenden Hersteller im OffCanvas-Menu.");
+
+            builder.AddOrUpdate("Homepage.TopBrands", "Top Brands", "Top-Marken");
+            builder.AddOrUpdate("Homepage.Brands.ShowAll", "Show all", "Alle anzeigen");
+
         }
 	}
 }

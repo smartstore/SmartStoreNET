@@ -191,29 +191,9 @@
 	color: #aaa;
 }
 .checkout-data .enter-address .buttons {
-	border-top: 1px solid #ccc;
-	padding-top: 10px;
-}
-
-.checkout-data .address-grid {
-	padding-bottom: 0;
-}
-.checkout-data .address-grid .item-box {
-	text-align:center;
-	vertical-align:text-top;
-}
-.checkout-data .address-grid .address-item {
-	padding: 12px;
-    .select-button > button {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-}
-.checkout-data .address-grid .address-item .select-button {
-	margin-bottom: 10px;
-}
-.checkout-data .address-grid .address-item .address-box {
-	text-align:left;
+	padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
 }
 
 .address-required-hint {

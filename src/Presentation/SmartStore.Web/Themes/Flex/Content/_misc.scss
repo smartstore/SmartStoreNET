@@ -3,15 +3,11 @@
 //
 // Misc Styles
 // --------------------------------------------------
+body.popup { padding: 20px; }
 
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
     font-weight: initial;
-}
-
-// had to be to align menus to their menuitems
-.navbar-nav .nav-item {
-    position: relative;
 }
 
 // homepage news
@@ -168,7 +164,4 @@ progress { color: $btn-info-bg; }
     font-weight: 600;
 }
 
-// TODO: (mc) => place in core 
-.alert label {
-    margin-bottom: 0;
-}
+

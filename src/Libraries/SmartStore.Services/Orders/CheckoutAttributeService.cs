@@ -144,7 +144,7 @@ namespace SmartStore.Services.Orders
             if (checkoutAttributeValueId == 0)
                 return null;
 
-			return _checkoutAttributeValueRepository.GetByIdCached(checkoutAttributeValueId);
+			return _checkoutAttributeValueRepository.GetByIdCached(checkoutAttributeValueId, "db.checkoutattrval.id-" + checkoutAttributeValueId);
 		}
 
         public virtual void InsertCheckoutAttributeValue(CheckoutAttributeValue checkoutAttributeValue)

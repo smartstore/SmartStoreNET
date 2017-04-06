@@ -18,7 +18,9 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -41,13 +43,10 @@ using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
-using SmartStore.Web.Models.Catalog;
-using SmartStore.Services;
-using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class ShoppingCartController : PublicControllerBase
+	public partial class ShoppingCartController : PublicControllerBase
     {
         #region Fields
 
@@ -1086,96 +1085,76 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected void ParseAndSaveCheckoutAttributes(List<OrganizedShoppingCartItem> cart, FormCollection form)
+        protected void ParseAndSaveCheckoutAttributes(List<OrganizedShoppingCartItem> cart, ProductVariantQuery query)
         {
-            string selectedAttributes = "";
+            var selectedAttributes = "";
             var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
 
             if (!cart.RequiresShipping())
             {
-                //remove attributes which require shippable products
+                // Remove attributes which require shippable products.
                 checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
             }
 
             foreach (var attribute in checkoutAttributes)
             {
-                string controlId = string.Format("checkout_attribute_{0}", attribute.Id);
+				var selected = query.CheckoutAttributes.FirstOrDefault(x => x.AttributeId == attribute.Id);
+				var selectedValue = selected?.Value;
 
                 switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
                     case AttributeControlType.RadioList:
                     case AttributeControlType.ColorSquares:
-                        {
-                            var rblAttributes = form[controlId];
-                            if (!String.IsNullOrEmpty(rblAttributes))
-                            {
-                                var selectedAttributeId = rblAttributes.SplitSafe(",").SafeGet(0).ToInt();
-                                if (selectedAttributeId > 0)
-                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
-                            }
-                        }
-                        break;
+						if (selectedValue.HasValue())
+						{
+							var selectedAttributeId = selectedValue.SplitSafe(",").SafeGet(0).ToInt();
+							if (selectedAttributeId > 0)
+							{
+								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
+							}
+						}
+						break;
 
                     case AttributeControlType.Checkboxes:
-                        {
-                            var cblAttributes = form[controlId];
-                            if (!String.IsNullOrEmpty(cblAttributes))
-                            {
-                                foreach (var item in cblAttributes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                                {
-                                    var selectedAttributeId = item.SplitSafe(",").SafeGet(0).ToInt();
-									if (selectedAttributeId > 0)
-                                        selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
-                                }
-                            }
-                        }
-                        break;
+						if (selectedValue.HasValue())
+						{
+							foreach (var item in selectedValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+							{
+								var selectedAttributeId = item.SplitSafe(",").SafeGet(0).ToInt();
+								if (selectedAttributeId > 0)
+								{
+									selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
+								}
+							}
+						}
+						break;
 
                     case AttributeControlType.TextBox:    
                     case AttributeControlType.MultilineTextbox:
-                        {
-                            var txtAttribute = form[controlId];
-                            if (!String.IsNullOrEmpty(txtAttribute))
-                            {
-                                string enteredText = txtAttribute.Trim();
-                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, enteredText);
-                            }
+						if (selectedValue.HasValue())
+						{
+							selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedValue);
                         }
                         break;
 
                     case AttributeControlType.Datepicker:
-                        {
-                            var date = form[controlId + "_day"];
-                            var month = form[controlId + "_month"];
-                            var year = form[controlId + "_year"];
-                            DateTime? selectedDate = null;
-
-                            try
-                            {
-                                selectedDate = new DateTime(Int32.Parse(year), Int32.Parse(month), Int32.Parse(date));
-                            }
-                            catch { }
-
-                            if (selectedDate.HasValue)
-                            {
-                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedDate.Value.ToString("D"));
-                            }
-                        }
+						var date = selected?.Date;
+						if (date.HasValue)
+						{
+							selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, date.Value.ToString("D"));
+						}
                         break;
 
                     case AttributeControlType.FileUpload:
-                        {
-                            selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, form[controlId]);
+						if (selectedValue.HasValue())
+						{
+                            selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedValue);
                         }
-                        break;
-
-                    default:
                         break;
                 }
             }
 
-            //save checkout attributes
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.CheckoutAttributes, selectedAttributes);
         }
 
@@ -1793,12 +1772,11 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("startcheckout")]
-        public ActionResult StartCheckout(FormCollection form)
+        public ActionResult StartCheckout(ProductVariantQuery query)
         {
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
             
-            //parse and save checkout attributes
-            ParseAndSaveCheckoutAttributes(cart, form);
+            ParseAndSaveCheckoutAttributes(cart, query);
 
             //validate attributes
 			string checkoutAttributes = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
@@ -1832,12 +1810,11 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applydiscountcouponcode")]
-        public ActionResult ApplyDiscountCoupon(string discountcouponcode, FormCollection form)
+        public ActionResult ApplyDiscountCoupon(string discountcouponcode, ProductVariantQuery query)
         {
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-            //parse and save checkout attributes
-            ParseAndSaveCheckoutAttributes(cart, form);
+            ParseAndSaveCheckoutAttributes(cart, query);
 
             var model = new ShoppingCartModel();
 			model.DiscountBox.IsWarning = true;
@@ -1874,12 +1851,11 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applygiftcardcouponcode")]
-        public ActionResult ApplyGiftCard(string giftcardcouponcode, FormCollection form)
+        public ActionResult ApplyGiftCard(string giftcardcouponcode, ProductVariantQuery query)
         {
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-            //parse and save checkout attributes
-            ParseAndSaveCheckoutAttributes(cart, form);
+            ParseAndSaveCheckoutAttributes(cart, query);
 
             var model = new ShoppingCartModel();
 			model.GiftCardBox.IsWarning = true;
@@ -1921,13 +1897,12 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("estimateshipping")]
-        public ActionResult GetEstimateShipping(EstimateShippingModel shippingModel, FormCollection form)
+        public ActionResult GetEstimateShipping(EstimateShippingModel shippingModel, ProductVariantQuery query)
         {
 			var store = _storeContext.CurrentStore;
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-            //parse and save checkout attributes
-            ParseAndSaveCheckoutAttributes(cart, form);
+            ParseAndSaveCheckoutAttributes(cart, query);
 
             var model = new ShoppingCartModel();
             model.EstimateShipping.CountryId = shippingModel.CountryId;

@@ -8,6 +8,7 @@ using SmartStore.Web.Framework.UI.Choices;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Catalog;
+using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -155,7 +156,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         {
 			public override string BuildControlId()
 			{
-				return "checkout_attribute_" + this.Id;
+				return CheckoutAttributeQueryItem.CreateKey(Id);
 			}
 
 			public override string GetFileUploadUrl(UrlHelper url)

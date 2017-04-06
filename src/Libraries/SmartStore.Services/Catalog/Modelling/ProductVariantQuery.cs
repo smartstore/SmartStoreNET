@@ -8,11 +8,13 @@ namespace SmartStore.Services.Catalog.Modelling
 	{
 		private readonly List<ProductVariantQueryItem> _variants;
 		private readonly List<GiftCardQueryItem> _giftCards;
+		private readonly List<CheckoutAttributeQueryItem> _checkoutAttributes;
 
 		public ProductVariantQuery()
 		{
 			_variants = new List<ProductVariantQueryItem>();
 			_giftCards = new List<GiftCardQueryItem>();
+			_checkoutAttributes = new List<CheckoutAttributeQueryItem>();
 		}
 
 		public IReadOnlyList<ProductVariantQueryItem> Variants
@@ -31,6 +33,14 @@ namespace SmartStore.Services.Catalog.Modelling
 			}
 		}
 
+		public IReadOnlyList<CheckoutAttributeQueryItem> CheckoutAttributes
+		{
+			get
+			{
+				return _checkoutAttributes;
+			}
+		}
+
 		public void AddVariant(ProductVariantQueryItem item)
 		{
 			_variants.Add(item);
@@ -39,6 +49,11 @@ namespace SmartStore.Services.Catalog.Modelling
 		public void AddGiftCard(GiftCardQueryItem item)
 		{
 			_giftCards.Add(item);
+		}
+
+		public void AddCheckoutAttribute(CheckoutAttributeQueryItem item)
+		{
+			_checkoutAttributes.Add(item);
 		}
 
 		public ProductVariantQueryItem GetVariant(int productId, int bundleItemId, int attributeId, int variantAttributeId)
@@ -64,7 +79,8 @@ namespace SmartStore.Services.Catalog.Modelling
 			var groups = new string[]
 			{
 				string.Join("&", Variants.Select(x => string.Concat(x.ToString(), "=", HttpUtility.UrlEncode(x.Value)))),
-				string.Join("&", GiftCards.Select(x => string.Concat(x.ToString(), "=", HttpUtility.UrlEncode(x.Value))))
+				string.Join("&", GiftCards.Select(x => string.Concat(x.ToString(), "=", HttpUtility.UrlEncode(x.Value)))),
+				string.Join("&", CheckoutAttributes.Select(x => string.Concat(x.ToString(), "=", HttpUtility.UrlEncode(x.Value))))
 			};
 
 			return string.Join("&", groups.Where(x => x.HasValue()));

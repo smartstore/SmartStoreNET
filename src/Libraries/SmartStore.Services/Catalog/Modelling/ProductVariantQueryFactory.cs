@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 
@@ -13,34 +14,42 @@ namespace SmartStore.Services.Catalog.Modelling
 			_httpContext = httpContext;
 		}
 
+		private void GetData(NameValueCollection data, string prefix, Action<string, string> process)
+		{
+			if (data != null && data.Count > 0)
+			{
+				var items = data.AllKeys
+					.Where(x => x.EmptyNull().StartsWith(prefix))
+					.SelectMany(data.GetValues, (k, v) => new { key = k.EmptyNull(), value = v.EmptyNull() });
+
+				foreach (var item in items)
+				{
+					process(item.key, item.value);
+				}
+			}
+		}
+
 		private void GetVariants(ProductVariantQuery query, NameValueCollection data, string prefix)
 		{
-			if (data == null || data.Count == 0)
-				return;
-
-			var items = data.AllKeys
-				.Where(x => x.EmptyNull().StartsWith(prefix))
-				.SelectMany(data.GetValues, (k, v) => new { key = k.EmptyNull(), value = v.EmptyNull() });
-
-			foreach (var item in items)
+			GetData(data, prefix, (key, value) =>
 			{
-				var ids = item.key.Replace(prefix, "").SplitSafe("-");
+				var ids = key.Replace(prefix, "").SplitSafe("-");
 				if (ids.Length > 3)
 				{
-					if (item.key.EndsWith("-day") || item.key.EndsWith("-month"))
-						continue;
+					if (key.EndsWith("-day") || key.EndsWith("-month"))
+						return;
 
-					var variant = new ProductVariantQueryItem(item.value);
+					var variant = new ProductVariantQueryItem(value);
 					variant.ProductId = ids[0].ToInt();
 					variant.BundleItemId = ids[1].ToInt();
 					variant.AttributeId = ids[2].ToInt();
 					variant.VariantAttributeId = ids[3].ToInt();
 
-					if (item.key.EndsWith("-year"))
+					if (key.EndsWith("-year"))
 					{
-						variant.Year = item.value.ToInt();
+						variant.Year = value.ToInt();
 
-						var dateKey = item.key.Replace("-year", "");
+						var dateKey = key.Replace("-year", "");
 						variant.Month = data[dateKey + "-month"].ToInt();
 						variant.Day = data[dateKey + "-day"].ToInt();
 					}
@@ -49,30 +58,49 @@ namespace SmartStore.Services.Catalog.Modelling
 
 					query.AddVariant(variant);
 				}
-			}
+			});
 		}
 
 		private void GetGiftCards(ProductVariantQuery query, NameValueCollection data, string prefix)
 		{
-			if (data == null || data.Count == 0)
-				return;
-
-			var items = data.AllKeys
-				.Where(x => x.EmptyNull().StartsWith(prefix))
-				.SelectMany(data.GetValues, (k, v) => new { key = k.EmptyNull(), value = v.EmptyNull() });
-
-			foreach (var item in items)
+			GetData(data, prefix, (key, value) =>
 			{
-				var elements = item.key.Replace(prefix, "").SplitSafe("-");
+				var elements = key.Replace(prefix, "").SplitSafe("-");
 				if (elements.Length > 2)
 				{
-					var giftCard = new GiftCardQueryItem(elements[2], item.value);
+					var giftCard = new GiftCardQueryItem(elements[2], value);
 					giftCard.ProductId = elements[0].ToInt();
 					giftCard.BundleItemId = elements[1].ToInt();
 
 					query.AddGiftCard(giftCard);
 				}
-			}
+			});
+		}
+
+		private void GetCheckoutAttributes(ProductVariantQuery query, NameValueCollection data, string prefix)
+		{
+			GetData(data, prefix, (key, value) =>
+			{
+				var ids = key.Replace(prefix, "").SplitSafe("-");
+				if (ids.Length > 0)
+				{
+					if (key.EndsWith("-day") || key.EndsWith("-month"))
+						return;
+
+					var attribute = new CheckoutAttributeQueryItem(ids[0].ToInt(), value);
+
+					if (key.EndsWith("-year"))
+					{
+						attribute.Year = value.ToInt();
+
+						var dateKey = key.Replace("-year", "");
+						attribute.Month = data[dateKey + "-month"].ToInt();
+						attribute.Day = data[dateKey + "-day"].ToInt();
+					}
+
+					query.AddCheckoutAttribute(attribute);
+				}
+			});
 		}
 
 		public ProductVariantQuery Current { get; private set; }
@@ -91,6 +119,8 @@ namespace SmartStore.Services.Catalog.Modelling
 			GetGiftCards(query, _httpContext.Request.Form, GiftCardQueryItem.Prefix);
 			GetGiftCards(query, _httpContext.Request.QueryString, GiftCardQueryItem.Prefix);
 
+			GetCheckoutAttributes(query, _httpContext.Request.Form, CheckoutAttributeQueryItem.Prefix);
+			GetCheckoutAttributes(query, _httpContext.Request.QueryString, CheckoutAttributeQueryItem.Prefix);
 
 			return query;
 		}

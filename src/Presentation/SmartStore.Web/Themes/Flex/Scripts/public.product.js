@@ -70,7 +70,7 @@
 				var partial = $el.data('partial');
 				if (partial) {
 					// ...fetch the updated html from the corresponding AJAX result object's properties
-					if (data.Partials.hasOwnProperty(partial)) {
+					if (data.Partials && data.Partials.hasOwnProperty(partial)) {
 						var updatedHtml = data.Partials[partial] || "";
 						// ...and update the inner html
 						$el.html($(updatedHtml.trim()));

@@ -61,67 +61,32 @@
 }
 
 <nav class="order-progress">
-    <ul class="unstyled clearfix">
-    @foreach (var p in progresses)
-    {
-        string liClass = null;
-        string href = p.Visited || p.Active ? p.Href : "javascript:void(0)";
-        if (p.Visited)
-        {
-            liClass = "visited";
-        }
-        else if (p.Active)
-        {
-            liClass = "active";
-        }
-        else
-        {
-            liClass = "inactive";
-        }
-        <li class="@liClass">
-            <a class="order-progress-step @p.ClassName" href="@href">
-                <span class="order-progress-label">@p.Label</span>
-            </a>
-        </li>
-    }
-    </ul>
-</nav>
-
-<nav class="order-progress d-sm-none">
-    <ul>
-        
+    <ul class="list-unstyled">
         @{ Html.RenderWidget("checkout_progress_before"); }
 
-        <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Cart ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.RouteUrl("ShoppingCart"))) : null)>
-                <span class="order-progress-label">@T("Checkout.Progress.Cart")</span>
-            </a>
-        </li>
-        <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Address ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("BillingAddress"))) : null)>
-                <span class="order-progress-label">@T("Checkout.Progress.Address")</span>
-            </a>
-        </li>
-        <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Shipping ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("ShippingMethod"))) : null)>
-                <span class="order-progress-label">@T("Checkout.Progress.Shipping")</span>
-            </a>
-        </li>
-        <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Payment ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Shipping && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("PaymentMethod"))) : null)>
-                <span class="order-progress-label">@T("Checkout.Progress.Payment")</span>
-            </a>
-        </li>
-        <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Confirm ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Shipping && Model.CheckoutProgressStep != CheckoutProgressStep.Payment && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("Confirm"))) : null)>
-                <span class="order-progress-label">@T("Checkout.Progress.Confirm")</span>
-            </a>
-        </li>
-        <li>
-            <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Complete ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\""))>
-                <span class="order-progress-label">@T("Checkout.Progress.Complete")</span>
-            </a>
-        </li>
+        @foreach (var p in progresses)
+        {
+            string liClass = null;
+            string href = p.Visited || p.Active ? p.Href : "javascript:void(0)";
+            if (p.Visited)
+            {
+                liClass = "visited";
+            }
+            else if (p.Active)
+            {
+                liClass = "active";
+            }
+            else
+            {
+                liClass = "inactive";
+            }
+            <li class="@liClass">
+                <a class="order-progress-step @p.ClassName" href="@href">
+                    <span class="order-progress-label">@p.Label</span>
+                </a>
+            </li>
+        }
+
         @{ Html.RenderWidget("checkout_progress_after"); }
     </ul>
 </nav>

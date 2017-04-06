@@ -43,8 +43,8 @@
             </div>
         }
 
-        @Html.ControlGroupFor(model => model.FirstName, required: true)
-        @Html.ControlGroupFor(model => model.LastName, required: true)
+        @Html.ControlGroupFor(model => model.FirstName, required: true, breakpoint: "lg")
+        @Html.ControlGroupFor(model => model.LastName, required: true, breakpoint: "lg")
 
         @if (Model.DateOfBirthEnabled)
         {
@@ -66,7 +66,7 @@
             </div>
         }
 
-        @Html.ControlGroupFor(model => model.Email, required: true)
+        @Html.ControlGroupFor(model => model.Email, required: true, breakpoint: "lg")
 
         @if (Model.UsernamesEnabled)
         {
@@ -155,7 +155,7 @@
 
             @if (Model.CompanyEnabled)
             {
-                @Html.ControlGroupFor(model => model.Company, required: Model.CompanyRequired)
+                @Html.ControlGroupFor(model => model.Company, required: Model.CompanyRequired, breakpoint: "lg")
             }
             @if (Model.DisplayVatNumber)
             {
@@ -180,19 +180,19 @@
 
             @if (Model.StreetAddressEnabled)
             {
-                @Html.ControlGroupFor(model => model.StreetAddress, required: Model.StreetAddressRequired)
+                @Html.ControlGroupFor(model => model.StreetAddress, required: Model.StreetAddressRequired, breakpoint: "lg")
             }
             @if (Model.StreetAddress2Enabled)
             {
-                @Html.ControlGroupFor(model => model.StreetAddress2, required: Model.StreetAddress2Required)
+                @Html.ControlGroupFor(model => model.StreetAddress2, required: Model.StreetAddress2Required, breakpoint: "lg")
             }
             @if (Model.ZipPostalCodeEnabled)
             {
-                @Html.ControlGroupFor(model => model.ZipPostalCode, required: Model.ZipPostalCodeRequired)
+                @Html.ControlGroupFor(model => model.ZipPostalCode, required: Model.ZipPostalCodeRequired, breakpoint: "lg")
             }
             @if (Model.CityEnabled)
             {
-                @Html.ControlGroupFor(model => model.City, required: Model.CityRequired)
+                @Html.ControlGroupFor(model => model.City, required: Model.CityRequired, breakpoint: "lg")
             }
             @if (Model.CountryEnabled)
             {
@@ -222,11 +222,11 @@
 
             @if (Model.PhoneEnabled)
             {
-                @Html.ControlGroupFor(model => model.Phone, required: Model.PhoneRequired)
+                @Html.ControlGroupFor(model => model.Phone, required: Model.PhoneRequired, breakpoint: "lg")
             }
             @if (Model.FaxEnabled)
             {
-                @Html.ControlGroupFor(model => model.Fax, required: Model.FaxRequired)
+                @Html.ControlGroupFor(model => model.Fax, required: Model.FaxRequired, breakpoint: "lg")
             }
 
         </fieldset>
@@ -236,7 +236,7 @@
     {
         <fieldset class="content-group">
             <legend><span>@T("Account.Options")</span></legend>
-            @Html.ControlGroupFor(model => model.Newsletter, editorType: InputEditorType.Checkbox)
+            @Html.ControlGroupFor(model => model.Newsletter, editorType: InputEditorType.Checkbox, breakpoint: "lg")
         </fieldset>
     }
 

@@ -39,7 +39,7 @@
     @if (Model.CompanyEnabled)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.Company, new { @class = "col-sm-3 form-control-label control-label" + (Model.CompanyRequired ? " required" : ""), @for = "Company" })
+            @Html.LabelFor(model => model.Company, new { @class = "col-sm-3 col-form-label control-label" + (Model.CompanyRequired ? " required" : ""), @for = "Company" })
             <div class="col-sm-9">
                 @Html.TextBoxFor(model => model.Company, (Model.CompanyRequired ? null : new { @class = "form-control", placeholder = "Optional" }))
                 @Html.ValidationMessageFor(model => model.Company, null, new { @class = "text-danger" })
@@ -50,7 +50,7 @@
     <div><hr /></div>
 
     <div class="form-group row">
-        @Html.LabelFor(model => model.FirstName, new { @class = "col-sm-3 form-control-label required", @for = "FirstName" })
+        @Html.LabelFor(model => model.FirstName, new { @class = "col-sm-3 col-form-label required", @for = "FirstName" })
         <div class="col-sm-9">
             @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.FirstName, null , new { @class = "text-danger" } )
@@ -58,7 +58,7 @@
     </div>
 
     <div class="form-group row">
-        @Html.LabelFor(model => model.LastName, new { @class = "col-sm-3 form-control-label required", @for = "LastName" })
+        @Html.LabelFor(model => model.LastName, new { @class = "col-sm-3 col-form-label required", @for = "LastName" })
         <div class="col-sm-9">
             @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.LastName, null, new { @class = "text-danger" })
@@ -68,7 +68,7 @@
     @if (Model.StreetAddressEnabled)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.Address1, new { @class = "col-sm-3 form-control-label" + (Model.StreetAddressRequired ? " required" : ""), @for = "Address1" })
+            @Html.LabelFor(model => model.Address1, new { @class = "col-sm-3 col-form-label" + (Model.StreetAddressRequired ? " required" : ""), @for = "Address1" })
             <div class="col-sm-9">
                 @Html.TextBoxFor(model => model.Address1, new { placeholder = Model.StreetAddressRequired ? "" : "Optional", @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Address1, null, new { @class = "text-danger" })
@@ -79,7 +79,7 @@
     @if (Model.StreetAddress2Enabled)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.Address2, new { @class = "col-sm-3 form-control-label" + (Model.StreetAddress2Required ? " required" : ""), @for = "Address2" })
+            @Html.LabelFor(model => model.Address2, new { @class = "col-sm-3 col-form-label" + (Model.StreetAddress2Required ? " required" : ""), @for = "Address2" })
             <div class="col-sm-9">
                 @Html.TextBoxFor(model => model.Address2, new { placeholder = Model.StreetAddress2Required ? "" : "Optional", @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Address2, null, new { @class = "text-danger" })
@@ -92,7 +92,7 @@
         {
             <div class="col-sm-6">
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.City, new { @class = "col-sm-6 form-control-label" + (Model.CityRequired ? " required" : ""), @for = "City" })
+                    @Html.LabelFor(model => model.City, new { @class = "col-sm-6 col-form-label" + (Model.CityRequired ? " required" : ""), @for = "City" })
                     <div class="col-sm-6">
                         @Html.TextBoxFor(model => model.City, new { placeholder = Model.CityRequired ? "" : "Optional", @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.City, null, new { @class = "text-danger" })
@@ -105,7 +105,7 @@
         {
             <div class="col-sm-6">
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.ZipPostalCode, new { @class = "col-sm-4 text-right form-control-label" + (Model.ZipPostalCodeRequired ? " required" : ""), @for = "ZipPostalCode" })
+                    @Html.LabelFor(model => model.ZipPostalCode, new { @class = "col-sm-4 text-right col-form-label" + (Model.ZipPostalCodeRequired ? " required" : ""), @for = "ZipPostalCode" })
                     <div class="col-sm-8">
                         @Html.TextBoxFor(model => model.ZipPostalCode, new { placeholder = Model.ZipPostalCodeRequired ? "" : "Optional", @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.ZipPostalCode, null, new { @class = "text-danger" })
@@ -118,7 +118,7 @@
     @if (Model.CountryEnabled)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.CountryId, new { @class = "col-sm-3 form-control-label required", @for = "CountryId" })
+            @Html.LabelFor(model => model.CountryId, new { @class = "col-sm-3 col-form-label required", @for = "CountryId" })
             <div class="col-sm-9">
                 @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries, new { style = "min-width:289px" })
                 @Html.ValidationMessageFor(model => model.CountryId, null, new { @class = "text-danger" })
@@ -129,7 +129,7 @@
     @if (Model.CountryEnabled && Model.StateProvinceEnabled)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.StateProvinceId, new { @class = "col-sm-3 form-control-label", @for = "StateProvinceId" })
+            @Html.LabelFor(model => model.StateProvinceId, new { @class = "col-sm-3 col-form-label", @for = "StateProvinceId" })
             <div class="col-sm-9">
                 @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates, new { style = "min-width:289px" })
                 <span id="states-loading-progress" style="display: none;">
@@ -144,7 +144,7 @@
     <div><hr /></div>
 
     <div class="form-group row">
-        @Html.LabelFor(model => model.Email, new { @class = "col-sm-3 form-control-label required", @for = "Email" })
+        @Html.LabelFor(model => model.Email, new { @class = "col-sm-3 col-form-label required", @for = "Email" })
         <div class="col-sm-9">
             @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.Email, null, new { @class = "text-danger" })
@@ -154,7 +154,7 @@
     @if (Model.ValidateEmailAddress)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.EmailMatch, new { @class = "col-sm-3 form-control-label required", @for = "EmailMatch" })
+            @Html.LabelFor(model => model.EmailMatch, new { @class = "col-sm-3 col-form-label required", @for = "EmailMatch" })
             <div class="col-sm-9">
                 @Html.TextBoxFor(model => model.EmailMatch, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.EmailMatch, null, new { @class = "text-danger" })
@@ -165,7 +165,7 @@
     @if (Model.PhoneEnabled)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-sm-3 form-control-label" + (Model.PhoneRequired ? " required" : ""), @for = "PhoneNumber" })
+            @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-sm-3 col-form-label" + (Model.PhoneRequired ? " required" : ""), @for = "PhoneNumber" })
             <div class="col-sm-9">
                 @Html.TextBoxFor(model => model.PhoneNumber, new { placeholder = Model.PhoneRequired ? "" : "Optional", @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.PhoneNumber, null, new { @class = "text-danger" })
@@ -176,7 +176,7 @@
     @if (Model.FaxEnabled)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.FaxNumber, new { @class = "col-sm-3 form-control-label" + (Model.FaxRequired ? " required" : ""), @for = "FaxNumber" })
+            @Html.LabelFor(model => model.FaxNumber, new { @class = "col-sm-3 col-form-label" + (Model.FaxRequired ? " required" : ""), @for = "FaxNumber" })
             <div class="col-sm-9">
                 @Html.TextBoxFor(model => model.FaxNumber, new { placeholder = Model.FaxRequired ? "" : "Optional", @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.FaxNumber, null, new { @class = "text-danger" })

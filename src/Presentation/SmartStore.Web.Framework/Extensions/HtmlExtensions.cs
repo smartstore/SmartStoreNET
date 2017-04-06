@@ -486,7 +486,8 @@ namespace SmartStore.Web.Framework
             Expression<Func<TModel, TValue>> expression, 
             InputEditorType editorType = InputEditorType.TextBox,
             bool required = false,
-            string helpHint = null)
+            string helpHint = null,
+			string breakpoint = "md")
         {
             if (editorType == InputEditorType.Hidden)
             {
@@ -497,8 +498,8 @@ namespace SmartStore.Web.Framework
 			var htmlAttributes = new RouteValueDictionary();
 			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
             var groupClass = "form-group row";
-            var labelClass = "col-lg-3 col-form-label";
-            var controlsClass = "col-lg-9";
+            var labelClass = "col-{0}-3 col-form-label".FormatInvariant(breakpoint);
+            var controlsClass = "col-{0}-9".FormatInvariant(breakpoint);
             var sb = new StringBuilder("<div class='{0}'>".FormatWith(groupClass));
 
             if (editorType != InputEditorType.Checkbox)
@@ -541,7 +542,7 @@ namespace SmartStore.Web.Framework
                     inputHtml = html.TextBoxFor(expression, htmlAttributes).ToString();
                     break;
             }
-
+			
             sb.AppendLine(inputHtml);
             sb.AppendLine(html.ValidationMessageFor(expression).ToString());
             if (helpHint.HasValue())

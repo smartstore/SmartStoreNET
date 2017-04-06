@@ -19,10 +19,10 @@
     Html.RenderPartial("_CreateOrUpdateAddress", Model.Address, dataDictAddress);
             
     <div class="form-group row">
-        <div class="col-sm-offset-3 col-sm-9">
-            <button type="submit" class="btn btn-warning save-address-button">
-                <i class="fa fa-floppy-o"></i>
-                @T("Common.Save")
+        <div class="col">
+            <button type="submit" class="btn btn-primary btn-lg save-address-button">
+                <i class="fa fa-check"></i>
+                <span>@T("Common.Save")</span>
             </button>
         </div>
     </div>

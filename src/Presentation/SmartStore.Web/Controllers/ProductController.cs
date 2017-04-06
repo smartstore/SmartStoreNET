@@ -172,7 +172,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			// Prepare the view model
-			var model = _helper.PrepareProductDetailsPageModel(product, query, queryData: Request.QueryString);
+			var model = _helper.PrepareProductDetailsPageModel(product, query);
 
 			// Some cargo data
 			model.PictureSize = _mediaSettings.ProductDetailsPictureSize;

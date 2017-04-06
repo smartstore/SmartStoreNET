@@ -107,8 +107,8 @@
             <div class="clear"></div>
 
             @{
-                var dataDictGiftCard = new ViewDataDictionary();
-                dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = "giftcard";
+				var dataDictGiftCard = new ViewDataDictionary();
+				dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = Model.GiftCardFieldPrefix;
                 @Html.Partial("_ProductAddGiftCardInfo", Model.GiftCard, dataDictGiftCard)
             }
             

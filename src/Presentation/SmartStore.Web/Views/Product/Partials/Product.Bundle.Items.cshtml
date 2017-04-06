@@ -89,7 +89,7 @@
 			@if (item.GiftCard.IsGiftCard)
 			{
 				var dataDictBundleItemGiftCard = new ViewDataDictionary();
-				dataDictBundleItemGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_{1}", item.Id, item.BundleItem.Id);
+				dataDictBundleItemGiftCard.TemplateInfo.HtmlFieldPrefix = item.GiftCardFieldPrefix;
 				<div class="pd-bundle-item-giftcard pt-3">
 					@Html.Partial("Product.GiftCard", item.GiftCard, dataDictBundleItemGiftCard)
 				</div>

@@ -126,6 +126,22 @@ namespace SmartStore.Services.Catalog.Modelling
 			return result;
 		}
 
+		public static string AddGiftCardAttribute(
+			this ProductVariantQuery query,
+			int productId,
+			int bundleItemId,
+			string attributesXml,
+			IProductAttributeParser productAttributeParser)
+		{
+			return productAttributeParser.AddGiftCardAttribute(
+				attributesXml,
+				query.GetGiftCardValue(productId, bundleItemId, "RecipientName"),
+				query.GetGiftCardValue(productId, bundleItemId, "RecipientEmail"),
+				query.GetGiftCardValue(productId, bundleItemId, "SenderName"),
+				query.GetGiftCardValue(productId, bundleItemId, "SenderEmail"),
+				query.GetGiftCardValue(productId, bundleItemId, "Message"));
+		}
+
 		/// <summary>
 		/// Gets the URL of product detail page including variant query string
 		/// </summary>

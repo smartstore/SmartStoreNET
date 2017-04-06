@@ -468,6 +468,14 @@ namespace SmartStore.Admin.Models.Orders
 
                 public string Name { get; set; }
 
+				public string GiftCardFieldPrefix
+				{
+					get
+					{
+						return GiftCardQueryItem.CreateKey(ProductId, 0, null);
+					}
+				}
+
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.UnitPriceInclTax")]
                 public decimal UnitPriceInclTax { get; set; }
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.UnitPriceExclTax")]

@@ -164,8 +164,7 @@ namespace SmartStore.Web.Controllers
 			ProductVariantQuery query,
 			bool isAssociatedProduct = false,
 			ProductBundleItemData productBundleItem = null, 
-			IList<ProductBundleItemData> productBundleItems = null,
-			NameValueCollection queryData = null)
+			IList<ProductBundleItemData> productBundleItems = null)
 		{
 			Guard.NotNull(product, nameof(product));
 
@@ -213,35 +212,21 @@ namespace SmartStore.Web.Controllers
 					var shareCode = _catalogSettings.PageShareCode;
 					if (_services.WebHelper.IsCurrentConnectionSecured())
 					{
-						//need to change the addthis link to be https linked when the page is, so that the page doesnt ask about mixed mode when viewed in https...
+						// Need to change the addthis link to be https linked when the page is, so that the page doesn't ask about mixed mode when viewed in https...
 						shareCode = shareCode.Replace("http://", "https://");
 					}
 
 					model.ProductShareCode = shareCode;
 				}
 
-				// get gift card values from query string
-				if (queryData != null && queryData.Count > 0)
+				// Get gift card values from query string.
+				if (product.IsGiftCard)
 				{
-					var giftCardItems = queryData.AllKeys
-						.Where(x => x.EmptyNull().StartsWith("giftcard_"))
-						.SelectMany(queryData.GetValues, (k, v) => new { key = k, value = v.TrimSafe() });
-
-					foreach (var item in giftCardItems)
-					{
-						var key = item.key.EmptyNull().ToLower();
-
-						if (key.EndsWith("recipientname"))
-							model.GiftCard.RecipientName = item.value;
-						else if (key.EndsWith("recipientemail"))
-							model.GiftCard.RecipientEmail = item.value;
-						else if (key.EndsWith("sendername"))
-							model.GiftCard.SenderName = item.value;
-						else if (key.EndsWith("senderemail"))
-							model.GiftCard.SenderEmail = item.value;
-						else if (key.EndsWith("message"))
-							model.GiftCard.Message = item.value;
-					}
+					model.GiftCard.RecipientName = query.GetGiftCardValue(product.Id, 0, "RecipientName");
+					model.GiftCard.RecipientEmail = query.GetGiftCardValue(product.Id, 0, "RecipientEmail");
+					model.GiftCard.SenderName = query.GetGiftCardValue(product.Id, 0, "SenderName");
+					model.GiftCard.SenderEmail = query.GetGiftCardValue(product.Id, 0, "SenderEmail");
+					model.GiftCard.Message = query.GetGiftCardValue(product.Id, 0, "Message");
 				}
 
 				// Back in stock subscriptions

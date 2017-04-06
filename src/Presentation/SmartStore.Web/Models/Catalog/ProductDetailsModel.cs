@@ -66,6 +66,13 @@ namespace SmartStore.Web.Models.Catalog
 		public bool HasSampleDownload { get; set; }
 
 		public GiftCardModel GiftCard { get; set; }
+		public string GiftCardFieldPrefix
+		{
+			get
+			{
+				return GiftCardQueryItem.CreateKey(Id, BundleItem.Id, null);
+			}
+		}
 
 		public string StockAvailability { get; set; }
 		public bool IsAvailable { get; set; }

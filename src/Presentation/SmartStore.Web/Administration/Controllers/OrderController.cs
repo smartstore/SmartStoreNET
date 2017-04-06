@@ -1805,39 +1805,16 @@ namespace SmartStore.Admin.Controllers
             string senderName = "";
             string senderEmail = "";
             string giftCardMessage = "";
+
             if (product.IsGiftCard)
             {
-                foreach (string formKey in form.AllKeys)
-                {
-                    if (formKey.Equals("giftcard.RecipientName", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        recipientName = form[formKey];
-                        continue;
-                    }
-                    if (formKey.Equals("giftcard.RecipientEmail", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        recipientEmail = form[formKey];
-                        continue;
-                    }
-                    if (formKey.Equals("giftcard.SenderName", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        senderName = form[formKey];
-                        continue;
-                    }
-                    if (formKey.Equals("giftcard.SenderEmail", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        senderEmail = form[formKey];
-                        continue;
-                    }
-                    if (formKey.Equals("giftcard.Message", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        giftCardMessage = form[formKey];
-                        continue;
-                    }
-                }
+				recipientName = query.GetGiftCardValue(product.Id, 0, "RecipientName");
+				recipientEmail = query.GetGiftCardValue(product.Id, 0, "RecipientEmail");
+				senderName = query.GetGiftCardValue(product.Id, 0, "SenderName");
+				senderEmail = query.GetGiftCardValue(product.Id, 0, "SenderEmail");
+				giftCardMessage = query.GetGiftCardValue(product.Id, 0, "Message");
 
-                attributes = _productAttributeParser.AddGiftCardAttribute(attributes,
-                    recipientName, recipientEmail, senderName, senderEmail, giftCardMessage);
+                attributes = _productAttributeParser.AddGiftCardAttribute(attributes, recipientName, recipientEmail, senderName, senderEmail, giftCardMessage);
             }
 
             #endregion
@@ -1898,7 +1875,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     for (int i = 0; i < orderItem.Quantity; i++)
                     {
-                        var gc = new GiftCard()
+                        var gc = new GiftCard
                         {
                             GiftCardType = product.GiftCardType,
                             PurchasedWithOrderItem = orderItem,
@@ -1919,7 +1896,7 @@ namespace SmartStore.Admin.Controllers
 
 				if (adjustInventory || (updateTotals ?? false))
 				{
-					var context = new AutoUpdateOrderItemContext()
+					var context = new AutoUpdateOrderItemContext
 					{
 						IsNewOrderItem = true,
 						OrderItem = orderItem,

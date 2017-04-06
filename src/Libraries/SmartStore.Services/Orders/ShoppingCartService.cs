@@ -990,7 +990,7 @@ namespace SmartStore.Services.Orders
 						AttributesXml = selectedAttributes,
 						CustomerEnteredPrice = customerEnteredPrice,
 						Quantity = quantity,
-						ParentItemId = null	//parentItemId
+						ParentItemId = null
 					};
 
 					if (bundleItem != null)
@@ -1034,18 +1034,29 @@ namespace SmartStore.Services.Orders
 			{
 				var attributes = _productAttributeService.GetProductVariantAttributesByProductId(ctx.Product.Id);
 
-				ctx.Attributes = ctx.VariantQuery.CreateSelectedAttributesXml(ctx.Product.Id, ctx.BundleItemId, attributes, _productAttributeParser, 
+				ctx.AttributesXml = ctx.VariantQuery.CreateSelectedAttributesXml(ctx.Product.Id, ctx.BundleItemId, attributes, _productAttributeParser, 
 					_localizationService, _downloadService, _catalogSettings, null, ctx.Warnings);
 
-				if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.Attributes.HasValue())
+				if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.AttributesXml.HasValue())
+				{
 					ctx.Warnings.Add(T("ShoppingCart.Bundle.NoAttributes"));
+				}
 
 				if (ctx.Product.IsGiftCard)
-					ctx.Attributes = ctx.AttributeForm.AddGiftCardAttribute(ctx.Attributes, ctx.Product.Id, _productAttributeParser, ctx.BundleItemId);
+				{
+					//ctx.Attributes = ctx.AttributeForm.AddGiftCardAttribute(ctx.Attributes, ctx.Product.Id, _productAttributeParser, ctx.BundleItemId);
+					ctx.AttributesXml = _productAttributeParser.AddGiftCardAttribute(
+						ctx.AttributesXml,
+						ctx.VariantQuery.GetGiftCardValue(ctx.Product.Id, ctx.BundleItemId, "RecipientName"),
+						ctx.VariantQuery.GetGiftCardValue(ctx.Product.Id, ctx.BundleItemId, "RecipientEmail"),
+						ctx.VariantQuery.GetGiftCardValue(ctx.Product.Id, ctx.BundleItemId, "SenderName"),
+						ctx.VariantQuery.GetGiftCardValue(ctx.Product.Id, ctx.BundleItemId, "SenderEmail"),
+						ctx.VariantQuery.GetGiftCardValue(ctx.Product.Id, ctx.BundleItemId, "Message"));
+				}
 			}
 
 			ctx.Warnings.AddRange(
-				AddToCart(_workContext.CurrentCustomer, ctx.Product, ctx.CartType, storeId,	ctx.Attributes, ctx.CustomerEnteredPrice, ctx.Quantity, ctx.AddRequiredProducts, ctx)
+				AddToCart(_workContext.CurrentCustomer, ctx.Product, ctx.CartType, storeId,	ctx.AttributesXml, ctx.CustomerEnteredPrice, ctx.Quantity, ctx.AddRequiredProducts, ctx)
 			);
 
 			if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.Warnings.Count <= 0 && ctx.BundleItem == null)
@@ -1060,7 +1071,6 @@ namespace SmartStore.Services.Orders
 						ChildItems = ctx.ChildItems,
 						Product = bundleItem.Product,
 						Customer = customer,
-						AttributeForm = ctx.AttributeForm,
 						VariantQuery = ctx.VariantQuery,
 						CartType = ctx.CartType,
 						Quantity = bundleItem.Quantity,

@@ -30,7 +30,7 @@
 	@if (Model.GiftCard.IsGiftCard)
 	{
 		var dataDictGiftCard = new ViewDataDictionary();
-		dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_0", Model.Id);
+		dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = Model.GiftCardFieldPrefix;
 		Html.RenderPartial("Product.GiftCard", Model.GiftCard, dataDictGiftCard);
 	}
 

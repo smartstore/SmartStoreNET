@@ -1408,7 +1408,6 @@ namespace SmartStore.Web.Controllers
 			var addToCartContext = new AddToCartContext
 			{
 				Product = product,
-				AttributeForm = form,
 				VariantQuery = query,
 				CartType = cartType,
 				CustomerEnteredPrice = customerEnteredPriceConverted,

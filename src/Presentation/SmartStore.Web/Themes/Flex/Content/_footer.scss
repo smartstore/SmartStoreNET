@@ -9,38 +9,49 @@ $footer-bottom-bg:      $gray-lighter;
 
 
 #footer {
-    border-top: 1px solid #ddd;
+    border-top: 1px solid rgba(0,0,0, 0.1);
     background: $footer-bg;
+    margin-top: 1.5rem;
+}
+
+.footer-social-wrapper {
+    padding: 2rem 0;
+}
+
+.footer-main-wrapper {
     padding-top: 2rem;
-    margin-top: 2rem;
+}
+
+.footer-social-wrapper ~ .footer-main-wrapper {
+    padding-top: 0;
+}
+
+.footer-bottom-wrapper {
+    background: $footer-bottom-bg;
 }
 
 .footer-main h4 {
     margin-bottom: 1.25rem;
 }
 
-.footer-social {
-    padding-bottom: 2rem;
+.footer-socia.btn-social {
+    display: inline-block;
+    border-color: transparent !important;
+    font-size: 1.2rem;
+    margin: 0 0.4rem;
+    color: #fff !important;
+    background-color: #aaa;
+    outline: 0;
 
-    .btn-social {
-        display: inline-block;
-        border-color: transparent !important;
-        font-size: 1.2rem;
-        margin: 0 0.4rem;
-        color: #fff !important;
-        background-color: #aaa;
-        outline: 0;
-
-        &.btn-social-facebook       { &:hover, &:active { background-color: $clr-brand-facebook !important; } }
-        &.btn-social-twitter        { &:hover, &:active { background-color: $clr-brand-twitter !important; } }
-        &.btn-social-youtube        { &:hover, &:active { background-color: $clr-brand-youtube !important; } }
-        &.btn-social-pinterest      { &:hover, &:active { background-color: $clr-brand-pinterest !important; } }
-        &.btn-social-google-plus    { &:hover, &:active { background-color: $clr-brand-googleplus !important; } }
-        &.btn-social-flickr         { &:hover, &:active { background-color: $clr-brand-flickr !important; } }
-        &.btn-social-instagram      { &:hover, &:active { background-color: $clr-brand-instagram !important; } }
-        &.btn-social-linkedin       { &:hover, &:active { background-color: $clr-brand-linkedin !important; } }
-        &.btn-social-xing           { &:hover, &:active { background-color: $clr-brand-xing !important; } }
-    }
+    &.btn-social-facebook       { &:hover, &:active { background-color: $clr-brand-facebook !important; } }
+    &.btn-social-twitter        { &:hover, &:active { background-color: $clr-brand-twitter !important; } }
+    &.btn-social-youtube        { &:hover, &:active { background-color: $clr-brand-youtube !important; } }
+    &.btn-social-pinterest      { &:hover, &:active { background-color: $clr-brand-pinterest !important; } }
+    &.btn-social-google-plus    { &:hover, &:active { background-color: $clr-brand-googleplus !important; } }
+    &.btn-social-flickr         { &:hover, &:active { background-color: $clr-brand-flickr !important; } }
+    &.btn-social-instagram      { &:hover, &:active { background-color: $clr-brand-instagram !important; } }
+    &.btn-social-linkedin       { &:hover, &:active { background-color: $clr-brand-linkedin !important; } }
+    &.btn-social-xing           { &:hover, &:active { background-color: $clr-brand-xing !important; } }
 }
 
 .footer-links {
@@ -55,18 +66,12 @@ $footer-bottom-bg:      $gray-lighter;
     }
 }
 
-.footer-bottom-wrapper {
-    background: $footer-bottom-bg;
-}
-
 .footer-bottom {
     padding: 1rem 0;
     font-size: 90%;
     color: #aaa;
 
-    a {
-        color: $gray;
-    }
+    a { color: $gray; }
 }
 
 @include media-breakpoint-up(md) {
@@ -76,6 +81,10 @@ $footer-bottom-bg:      $gray-lighter;
 }
 
 @include media-breakpoint-down(sm) {
+    .footer-main-wrapper {
+        padding-top: 0;
+    }
+
     .footer-main, 
     .footer-bottom {
         margin-left: 0 !important;

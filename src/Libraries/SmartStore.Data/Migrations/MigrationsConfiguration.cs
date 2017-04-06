@@ -803,7 +803,10 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Homepage.Brands.ShowAll", "Show all", "Alle anzeigen");
 
 			builder.AddOrUpdate("Account.Fields.ZipPostalCode", "Zip code", "PLZ");
-
+			builder.AddOrUpdate("Account.CustomerReturnRequests.Reason", "Return reason", "Rücksendegrund");
+			builder.AddOrUpdate("Account.CustomerReturnRequests.Action", "Return action", "Rücksendeaktion");
+			builder.AddOrUpdate("Account.CustomerReturnRequests.Date", "Date Requested", "Anfragedatum");
+			builder.AddOrUpdate("Account.CustomerReturnRequests.Item", "Item", "Artikel");
 		}
 	}
 }

@@ -802,6 +802,8 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Homepage.TopBrands", "Top Brands", "Top-Marken");
             builder.AddOrUpdate("Homepage.Brands.ShowAll", "Show all", "Alle anzeigen");
 
-        }
+			builder.AddOrUpdate("Account.Fields.ZipPostalCode", "Zip code", "PLZ");
+
+		}
 	}
 }

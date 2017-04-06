@@ -498,8 +498,8 @@ namespace SmartStore.Web.Framework
 			var htmlAttributes = new RouteValueDictionary();
 			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
             var groupClass = "form-group row";
-            var labelClass = "col-{0}-3 col-form-label".FormatInvariant(breakpoint);
-            var controlsClass = "col-{0}-9".FormatInvariant(breakpoint);
+            var labelClass = "col-{0}-3 col-form-label".FormatInvariant(breakpoint.NullEmpty() ?? "md");
+            var controlsClass = "col-{0}-9".FormatInvariant(breakpoint.NullEmpty() ?? "md");
             var sb = new StringBuilder("<div class='{0}'>".FormatWith(groupClass));
 
             if (editorType != InputEditorType.Checkbox)

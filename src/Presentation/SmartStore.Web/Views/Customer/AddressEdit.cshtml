@@ -12,11 +12,12 @@
 
 @using (Html.BeginForm())
 {
-    var dataDictAddress = new ViewDataDictionary();
-    // Merge ModelState (required for validation)
-    dataDictAddress.ModelState.Merge(ViewData.ModelState);
-    dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
-    Html.RenderPartial("_CreateOrUpdateAddress", Model.Address, dataDictAddress);
+	var dataDictAddress = new ViewDataDictionary();
+	dataDictAddress["breakpoint"] = "lg";
+	// Merge ModelState (required for validation)
+	dataDictAddress.ModelState.Merge(ViewData.ModelState);
+	dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
+	Html.RenderPartial("_CreateOrUpdateAddress", Model.Address, dataDictAddress);
 
 	<div class="form-group row">
 		<div class="col">

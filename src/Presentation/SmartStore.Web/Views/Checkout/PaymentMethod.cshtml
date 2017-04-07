@@ -22,7 +22,7 @@
             {
                 <div class="reward-points alert alert-info">
                     <div class="checkbox">
-                        <label class="mb-0">
+                        <label class="form-check-label mb-0">
                             @Html.EditorFor(model => model.UseRewardPoints)
                             @Html.Raw(string.Format(T("Checkout.UseRewardPoints").Text, "<strong>" + Model.RewardPointsBalance + "</strong>", "<strong>" + Model.RewardPointsAmount + "</strong>"))
                         </label>

@@ -59,9 +59,11 @@
 
         var itemUrl = GetNodeLink(node);
         var itemState = node.GetNodePathState(Model.Path);
-
+        var isMegaMenuActive = node.GetMetadata<bool?>("IsMegaMenuActive", false);
+        var isDropDownActive = isMegaMenuActive == null ? true : (bool)isMegaMenuActive;
+        
         <li class='@(GetCssClassForNode(node, itemState))' id="main-nav-item-@item.EntityId" data-entity-id="@item.EntityId">
-            @if(node.HasChildren)
+            @if(node.HasChildren && isDropDownActive)
             {   
                 <a href="@itemUrl" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu-@item.EntityId">
                     @item.Text

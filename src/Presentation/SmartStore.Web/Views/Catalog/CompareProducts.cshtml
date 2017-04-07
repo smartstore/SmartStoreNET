@@ -127,7 +127,7 @@
 						@foreach (var product in Model.Items)
 						{
 							<td class="border-top-0 pt-1">
-								<a class="font-weight-600" href="@Url.RouteUrl("Product", new { SeName = product.SeName })">@product.Name</a>
+								<a class="font-weight-medium" href="@Url.RouteUrl("Product", new { SeName = product.SeName })">@product.Name</a>
 							</td>
 						}
 					</tr>

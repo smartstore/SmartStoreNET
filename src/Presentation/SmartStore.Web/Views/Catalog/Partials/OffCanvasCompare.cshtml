@@ -35,7 +35,7 @@
                         </div>
 
                         <div class="col col-data">
-                            <a class="name font-weight-600" href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@item.Name">@item.Name</a>
+                            <a class="name font-weight-medium" href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@item.Name">@item.Name</a>
                             <div class="short-desc text-muted">
                                 @Html.Raw(item.ShortDescription.Truncate(120, "..."))
                             </div>

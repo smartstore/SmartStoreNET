@@ -1,5 +1,84 @@
-﻿@{
+﻿@model IDictionary<string, object>
+
+@using SmartStore.Web.Framework.Theming;
+@using SmartStore.Web.Framework.UI;
+
+@{
     Layout = null;
 }
 
-<div class='text-muted'>@T("Admin.Configuration.Themes.NoConfigurationRequired")</div>
+@(Html.SmartStore().TabStrip().Name("theme-flex-edit").HtmlAttributes(new { @class = "theme-edit" }).Items(x =>
+{
+	var tabCommon = x.Add().Text(T("Common.General").Text).Content(@TabCommon()).Selected(true);
+}))
+
+@helper TabCommon()
+{
+	<table class="adminContent">
+		@ThemeVarEditor("gray-dark", "Grayscale")
+		@ThemeVarEditor("gray")
+		@ThemeVarEditor("gray-light")
+		@ThemeVarEditor("gray-lighter")
+		@ThemeVarEditor("gray-lightest")
+
+		@ThemeVarEditor("red", "Colors")
+		@ThemeVarEditor("orange")
+		@ThemeVarEditor("yellow")
+		@ThemeVarEditor("green")
+		@ThemeVarEditor("blue")
+		@ThemeVarEditor("bluegrey")
+		@ThemeVarEditor("indigo")
+		@ThemeVarEditor("teal")
+		@ThemeVarEditor("pink")
+		@ThemeVarEditor("purple")
+
+		@ThemeVarEditor("brand-primary", "Brand Colors")
+		@ThemeVarEditor("brand-warning")
+		@ThemeVarEditor("brand-danger")
+		@ThemeVarEditor("brand-info")
+		@ThemeVarEditor("brand-success")
+
+		@ThemeVarEditor("body-bg", "Site Colors")
+		@ThemeVarEditor("body-color")
+		@ThemeVarEditor("link-color")
+
+		@ThemeVarEditor("inverse-navbar", "Navbar")
+		@ThemeVarEditor("mm-bg")
+
+		@ThemeVarEditor("google-font-1", "Typo")
+		@ThemeVarEditor("google-font-2")
+		@ThemeVarEditor("google-font-3")
+		@ThemeVarEditor("font-family-sans-serif")
+		@ThemeVarEditor("font-family-monospace")
+		@ThemeVarEditor("font-size-base")
+		@ThemeVarEditor("font-size-lg")
+		@ThemeVarEditor("font-size-sm")
+		@ThemeVarEditor("font-size-xs")
+		@ThemeVarEditor("font-weight-light")
+		@ThemeVarEditor("font-weight-normal")
+		@ThemeVarEditor("font-weight-medium")
+		@ThemeVarEditor("font-weight-bold")
+	</table>
+}
+
+
+
+@helper ThemeVarEditor(string varName, string groupName = null)
+{
+	if (groupName != null)
+	{
+		<tr>
+			<td colspan="2" class="admin-config-group">
+				<div class="title">@groupName</div>
+			</td>
+		</tr>
+	}
+	<tr>
+		<td class="adminTitle">
+			@Html.ThemeVarLabel(ThemeManifest.Variables[varName])
+		</td>
+		<td class="adminData">
+			@Html.ThemeVarEditor(ThemeManifest.Variables[varName], Model[varName])
+		</td>
+	</tr>
+}

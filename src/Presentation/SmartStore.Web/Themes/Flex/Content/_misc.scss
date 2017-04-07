@@ -5,11 +5,6 @@
 // --------------------------------------------------
 body.popup { padding: 20px; }
 
-h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
-    font-weight: initial;
-}
-
 // homepage news
 .link-rss:hover {
     text-decoration: none;
@@ -97,7 +92,7 @@ h1, h2, h3, h4, h5, h6,
         left: 0;
         color: $btn-warning-color;
         background: $btn-warning-bg;
-        font-weight: 600;
+        font-weight: $sm-font-weight-medium;
         font-size: 1rem;
         opacity: 0.7;
         &:hover { 
@@ -181,7 +176,7 @@ progress { color: $btn-info-bg; }
 
 // homepage misc
 .page.home-page .card-header {
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
 }
 
 

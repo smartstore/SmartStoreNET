@@ -64,9 +64,11 @@
 				@T("Admin.Configuration.Themes.Validation.RestorePrevValues")
 			</a>	
 		</div>
-    }
+	}
 
-    Html.RenderAction("ConfigureTheme", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId, area = (string)null });
+	<div class="theme-editor">
+		@{ Html.RenderAction("ConfigureTheme", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId, area = (string)null }); }
+	</div>
 }
 
 @*import variables window*@

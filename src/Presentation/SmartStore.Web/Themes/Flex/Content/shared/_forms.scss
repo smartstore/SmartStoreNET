@@ -38,7 +38,7 @@ fieldset.content-group {
 }
 
 .form-group label:not(.form-check-label) {
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
 }
 
 .form-group.required > label:after {

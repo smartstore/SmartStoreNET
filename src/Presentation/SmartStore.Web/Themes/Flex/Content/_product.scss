@@ -76,7 +76,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 
 .pd-name-sm {
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
 }
 
 .pd-info .page-title {
@@ -86,7 +86,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 .pd-brand {
     color: inherit !important;
     text-decoration: none !important;
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
 }
 
 .pd-brand-picture {
@@ -143,7 +143,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
     }
     .pd-review-link {
         position: relative;
-        font-weight: 600;
+        font-weight: $sm-font-weight-medium;
         &:before {
             content: '|';
             display: inline-block;
@@ -223,7 +223,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 
 .pd-price-label {
     line-height: 1;
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
 }
 
 .pd-oldprice {
@@ -234,7 +234,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 }
 
 .pd-saving-percent {
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
     color: $brand-danger;
 }
 
@@ -258,7 +258,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
         font-size: $font-size-sm;
 
         th, td { padding-left: 0.5rem; padding-right: 0.5rem; }
-        th { font-weight: 600; }
+        th { font-weight: $sm-font-weight-medium; }
         .pd-tierprice-qty { font-weight: bold }
     }
 }
@@ -272,7 +272,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
     display: inline-block;
     padding: 0.5rem;
     margin: 0 0.2rem 0.4rem 0;
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
     color: $body-color;
     font-size: $font-size-base;
     line-height: 1;
@@ -297,7 +297,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 }
 
 .pd-bundle-item-name {
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
     > a { color: $body-color; }
 }
 
@@ -312,7 +312,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 }
 
 .pd-bundle-price-offer {
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
     font-size: $font-size-lg;
 }
 

@@ -12,8 +12,14 @@ namespace SmartStore.Web.Framework.Theming
 { 
     internal class ThemeVarsRepository
     {
-        private static readonly Regex s_keyWhitelist = new Regex(@"^[a-zA-Z0-9_-]+$");
-        private static readonly Regex s_valueWhitelist = new Regex(@"^[#@]?[a-zA-Z0-9""' _\.,-]*$");
+        private static readonly Regex s_keyWhitelist = new Regex(@"^[a-zA-Z0-9_-]+$", RegexOptions.Compiled);
+		private static readonly Regex s_valueBlacklist = new Regex(@"[:;]+", RegexOptions.Compiled);
+		private static readonly Regex s_valueSassVars = new Regex(@"[$][a-zA-Z0-9_-]+", RegexOptions.Compiled);
+		private static readonly Regex s_valueLessVars = new Regex(@"[@][a-zA-Z0-9_-]+", RegexOptions.Compiled);
+		//private static readonly Regex s_valueWhitelist = new Regex(@"^[#@]?[a-zA-Z0-9""' _\.,-]*$");
+
+		const string LessVarPrefix = "@var_";
+		const string SassVarPrefix = "$sm-";
 
 		public string GetPreprocessorCss(string extension, string themeName, int storeId)
         {
@@ -42,10 +48,13 @@ namespace SmartStore.Web.Framework.Theming
 
                 string value = v.Value.ToString();
 
-                if (!s_valueWhitelist.IsMatch(value))
-                    continue;
+				if (s_valueBlacklist.IsMatch(value))
+					continue;
 
-                result.Add("var_" + key, value);
+				//if (!s_valueWhitelist.IsMatch(value))
+				//    continue;
+
+				result.Add(key, value);
             }
 
             return result;
@@ -69,15 +78,62 @@ namespace SmartStore.Web.Framework.Theming
 			if (parameters.Count == 0)
 				return string.Empty;
 
-			var prefix = toLess ? "@" : "$";
+			var prefix = toLess ? LessVarPrefix : SassVarPrefix;
 
 			var sb = new StringBuilder();
 			foreach (var parameter in parameters.Where(kvp => kvp.Value.HasValue()))
 			{
-				sb.AppendFormat("{0}{1}: {2};\n", prefix, parameter.Key, parameter.Value);
+				var value = parameter.Value;
+				var rg = toLess ? s_valueLessVars : s_valueSassVars;
+
+				value = rg.Replace(value, match => 
+				{
+					// Replaces all occurences of $varname with $sm-varname (in case of SASS).
+					// The SASS compiler would throw exceptions otherwise, because the main variables file
+					// is not loaded yet at this stage.
+					var refVar = match.Value;
+					if (!refVar.StartsWith(prefix))
+					{
+						refVar = "{0}{1}".FormatInvariant(prefix, refVar.Substring(1));
+					}
+
+					return refVar;
+				});
+
+				sb.AppendFormat("{0}{1}: {2};\n", prefix, parameter.Key, value);
 			}
 
 			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Checks whether the passed SASS value is a valid, displayable HTML color,
+		/// e.g.: "lighten($red, 20%)" would return <c>false</c>.
+		/// </summary>
+		/// <param name="value">The SASS value to test</param>
+		/// <remarks>
+		/// We need this helper during theme configuration: we just can't render
+		/// color pickers for color values containing var references or SASS functions.
+		/// </remarks>
+		internal static bool IsValidColor(string value)
+		{
+			if (value.IsEmpty())
+			{
+				return true;
+			}
+
+			if (s_valueSassVars.IsMatch(value))
+			{
+				return false;
+			}
+
+			if (value[0] == '#' || value.StartsWith("rgb(") || value.StartsWith("rgba(") || value.StartsWith("hsl(") || value.StartsWith("hsla("))
+			{
+				return true;
+			}
+
+			// Let pass all color names (red, blue etc.), but reject functions, e.g. "lighten(#fff, 10%)"
+			return !value.Contains("(");
 		}
 	}
 

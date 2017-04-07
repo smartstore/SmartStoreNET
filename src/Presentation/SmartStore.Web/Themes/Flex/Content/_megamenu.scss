@@ -1,11 +1,11 @@
 ﻿/// <reference path="bs4/scss/bootstrap.scss" />
 
 $mm-navlink-font-size:                  1rem;
-$mm-bg:                                 $gray-lightest;
+$mm-bg:                                 $sm-mm-bg;
 $mm-light-color:                        $body-color;
 $mm-light-hover-color:                  scale-color($mm-bg, $lightness: -5%); //darken($mm-bg, 7%); // rgba(0, 0, 0, 0.06)
-$mm-dark-color:                         #fff;
-$mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //lighten($mm-bg, 7%); // rgba(255,255,255, 0.1)
+$mm-inverse-color:                      #fff;
+$mm-inverse-hover-color:                scale-color($mm-bg, $lightness: 15%); //lighten($mm-bg, 7%); // rgba(255,255,255, 0.1)
 $mm-zindex-base:                        ($zindex-dropdown - 20);
 $mm-selected-color:                     $brand-warning;
 
@@ -13,12 +13,13 @@ $mm-selected-color:                     $brand-warning;
     background: $mm-bg;
     padding: 0; 
 }
+
 .megamenu {
     overflow: hidden;
     position: relative;
-
+    
     .nav-link {
-        font-weight: 600;
+        font-weight: $sm-font-weight-medium;
         font-size: $mm-navlink-font-size;
     }
 }
@@ -33,13 +34,13 @@ $mm-selected-color:                     $brand-warning;
      }
 }
 
-.navbar-dark .megamenu .nav-item {
-    .nav-link { color: $mm-dark-color; }
+.navbar-inverse .megamenu .nav-item {
+    .nav-link { color: $mm-inverse-color; }
 
      &.active .nav-link, 
      .nav-link:focus, 
      .nav-link:hover { 
-         background: $mm-dark-hover-color; 
+         background: $mm-inverse-hover-color; 
      }
 } 
 
@@ -231,7 +232,7 @@ $mm-selected-color:                     $brand-warning;
 
     .mega-menu-dropdown-heading {
         font-size: 1rem;
-        font-weight: 600;
+        font-weight: $sm-font-weight-medium;
         line-height: 1.4rem;
         text-decoration: none;
         display: block;

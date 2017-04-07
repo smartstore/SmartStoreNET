@@ -1,4 +1,250 @@
-// Bootstrap overrides
-//
-// Copy variables from `_variables.scss` to this file to override default values
-// without modifying source files.
+/// <reference path="_variables.scss" />
+
+// Theme variables
+// ========================================
+
+
+// All theme variables and their default values.
+// All variables from theme.config must be listed here: sm-{varname}.
+// Although this rather seems to be a redundant process, it prevents
+// IDE SASS warnings.
+
+$sm-gray-dark:                  #292b2c !default;
+$sm-gray:                       #464a4c !default;
+$sm-gray-light:                 #999 !default;
+$sm-gray-lighter:               #eceeef !default;
+$sm-gray-lightest:              #f7f7f9 !default;
+
+$sm-red:                        #f44336 !default;
+$sm-orange:                     #ff9800 !default;
+$sm-yellow:                     #ffeb3b !default;
+$sm-green:                      #4caf50 !default;
+$sm-blue:                       #0275d8 !default;
+$sm-bluegrey:                   #78909c !default;
+$sm-indigo:                     #3f51b5 !default;
+$sm-teal:                       #009688 !default;
+$sm-pink:                       #ff5b77 !default;
+$sm-purple:                     #9c27b0 !default;
+
+$sm-brand-primary:              $sm-red !default;
+$sm-brand-warning:              $sm-orange !default;
+$sm-brand-danger:               $sm-red !default;
+$sm-brand-info:                 $sm-bluegrey !default;
+$sm-brand-success:              $sm-green !default;
+
+$sm-body-bg:                    #fff !default;
+$sm-body-color:                 #333 !default;
+$sm-link-color:                 #08c !default;
+
+$sm-font-family-sans-serif:     -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
+$sm-font-family-monospace:      Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$sm-font-size-base:             0.875rem !default;
+$sm-font-size-lg:               1rem !default; 
+$sm-font-size-sm:               0.8125rem !default; 
+$sm-font-size-xs:               0.75rem !default;
+
+$sm-font-weight-light:          300 !default;
+$sm-font-weight-normal:         normal !default; 
+$sm-font-weight-medium:         600 !default; 
+$sm-font-weight-bold:           bold !default;         
+
+$sm-mm-bg:                      $sm-gray-lightest !default;
+
+
+// Virtual file which fetches all theme variables from the database.
+// Variable names follow the pattern sm-{varname}. We use these 
+// variables to override bootstrap defaults below.
+
+@import '~/.app/themevars.scss';
+
+
+
+// Bootstrap variable overrides
+// ========================================
+
+$enable-rounded:                true;
+$enable-shadows:                true;
+$enable-gradients:              false;
+$enable-transitions:            true;
+$enable-hover-media-query:      false;
+$enable-grid-classes:           true;
+
+$body-bg:                       $sm-body-bg;
+$body-color:                    $sm-body-color;
+$link-color:                    $sm-link-color;
+
+$gray-dark:                     $sm-gray-dark;
+$gray:                          $sm-gray;
+$gray-light:                    $sm-gray-light;
+$gray-lighter:                  $sm-gray-lighter;
+$gray-lightest:                 $sm-gray-lightest;
+
+$red:                           $sm-red;
+$orange:                        $sm-orange;
+$yellow:                        $sm-yellow;
+$green:                         $sm-green;
+$blue:                          $sm-blue;
+$bluegrey:                      $sm-bluegrey;
+$indigo:                        $sm-indigo;
+$teal:                          $sm-teal;
+$pink:                          $sm-pink;
+$purple:                        $sm-purple;
+
+$brand-primary:                 $sm-brand-primary;
+$brand-success:                 $sm-brand-success;
+$brand-danger:                  $sm-brand-danger;
+$brand-warning:                 $sm-brand-warning;
+$brand-info:                    $sm-brand-info;
+
+$headings-line-height:          1.2;
+$headings-font-weight:          $sm-font-weight-normal;
+$lead-font-weight:              $sm-font-weight-light;
+
+$font-family-sans-serif:        $sm-font-family-sans-serif;
+$font-family-monospace:         $sm-font-family-monospace;
+
+$font-size-base:                $sm-font-size-base; // 14px
+$font-size-lg:                  $sm-font-size-lg; // 16px
+$font-size-sm:                  $sm-font-size-sm; // 13px
+$font-size-xs:                  $sm-font-size-xs; // 12px
+$line-height-base:              1.5;
+$line-height-sm:                1.5;
+$line-height-lg:                (4 / 3);
+
+$font-size-h1:                  2.25rem;
+$font-size-h2:                  1.75rem;
+$font-size-h3:                  1.5rem;
+$font-size-h4:                  1.25rem;
+$font-size-h5:                  1rem;
+$font-size-h6:                  $font-size-base;
+
+$display1-size:                 5.5rem;
+$display2-size:                 5rem;
+$display3-size:                 4.5rem;
+$display4-size:                 3rem;
+
+$border-radius:                 .25rem; // 3px
+$border-radius-lg:              .3rem; // 4px
+$border-radius-sm:              .2rem; // 2px
+
+$btn-border-radius:             .125rem;
+$btn-border-radius-lg:          .1875rem;
+$btn-border-radius-sm:          .125rem;
+
+$input-box-shadow:              none;
+$input-box-shadow-focus:        none;
+$input-border-radius:           $btn-border-radius;
+$input-border-radius-lg:        $btn-border-radius-lg;
+$input-border-radius-sm:        $btn-border-radius-sm;
+
+$btn-font-weight:               $sm-font-weight-medium;
+$btn-line-height:               1.5;
+$btn-padding-x:                 1rem;
+$btn-padding-y:                 0.625rem;
+$btn-padding-x-sm:              0.75rem;
+$btn-padding-y-sm:              0.5rem;
+$btn-padding-x-lg:              1.5rem;
+$btn-padding-y-lg:              0.875rem;
+
+$btn-secondary-border:          #ddd;
+$btn-box-shadow:                inset 0 1px 0 rgba(#fff, .15);
+$btn-focus-box-shadow:          0 0 0 2px rgba($brand-primary, .25);
+$btn-active-box-shadow:         inset 0 3px 5px rgba(#000, .125);
+$btn-transition:                box-shadow .12s ease-in-out;
+
+// Equalize input vertical paddings with button paddings
+$input-line-height:             $btn-line-height;
+$input-padding-y:               $btn-padding-y;
+$input-padding-y-sm:            $btn-padding-y-sm;
+$input-padding-y-lg:            $btn-padding-y-lg;
+$input-box-shadow:              none;
+$input-box-shadow-focus:        none;
+
+$input-height:                  (($font-size-base * $input-line-height) + ($input-padding-y * 2));
+$input-height-lg:               (($font-size-lg * $input-line-height) + ($input-padding-y-lg * 2));
+$input-height-sm:               (($font-size-sm * $input-line-height) + ($input-padding-y-sm * 2));
+
+
+// Dropdown
+
+$dropdown-link-hover-color:     darken($gray-dark, 5%);
+$dropdown-link-hover-bg:        $gray-lightest;
+$dropdown-link-active-color:    $dropdown-link-hover-color;
+$dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
+
+
+// Pagination
+
+$pagination-padding-x:          .75rem;
+$pagination-padding-y:          .125rem;
+$pagination-padding-x-sm:       .5rem;
+$pagination-padding-y-sm:       0;
+$pagination-padding-x-lg:       1rem;
+$pagination-padding-y-lg:       .25rem;
+
+
+$pagination-color:              $body-color;
+$pagination-bg:                 transparent;
+$pagination-border-color:       #ddd;
+
+$pagination-hover-color:        $pagination-color;
+$pagination-hover-bg:           rgba(0,0,0, 0.06);
+$pagination-hover-border:       #ddd;
+
+$pagination-active-color:       $pagination-color;
+$pagination-active-bg:          transparent;
+$pagination-active-border:      $pagination-border-color;
+
+
+// List Group
+
+$list-group-color:              $body-color;
+$list-group-bg:                 #fff;
+$list-group-border-color:       rgba(#000,.125);
+
+$list-group-active-color:       $list-group-color;
+$list-group-active-bg:          $list-group-bg;
+$list-group-active-border:      $list-group-border-color;
+
+$list-group-link-color:         #636c72;
+$list-group-link-active-color:  $body-color;
+
+$alert-border-radius:           0;
+
+
+// Cards
+
+$card-deck-margin:              10px;
+
+
+// Brand color variables
+
+$clr-brand-facebook:            #3b5998;
+$clr-brand-twitter:             #55acee;
+$clr-brand-github:              #bd2c00;
+$clr-brand-github2:             #ff9933;
+$clr-brand-github3:             #4183c4;
+$clr-brand-google:              #4285f4;
+$clr-brand-google2:             #db4437;
+$clr-brand-google3:             #f4b400;
+$clr-brand-google4:             #0f9d58;
+$clr-brand-google5:             #e7e6dd;
+$clr-brand-googleplus:          #dd4b39;
+$clr-brand-amazon:              #ff9900;
+$clr-brand-atlassian:           #003366;
+$clr-brand-dropbox:             #007ee5;
+$clr-brand-ebay:                #e53238;
+$clr-brand-flickr:              #0063dc;
+$clr-brand-html5:               #ec6231;
+$clr-brand-instagram:           #3f729b;
+$clr-brand-linkedin:            #007bb6;
+$clr-brand-paypal:              #3b7bbf;
+$clr-brand-pinterest:           #cc2127;
+$clr-brand-rss:                 #ee802f;
+$clr-brand-skype:               #00aff0;
+$clr-brand-stackoverflow:       #ef8236;
+$clr-brand-xing:                #126567;
+$clr-brand-youtube:             #cd201f;
+$clr-brand-microsoft:           #f65314;
+$clr-brand-windows:             #00bcf2;
+$clr-brand-bitbucket:           #205081;

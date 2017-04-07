@@ -1,12 +1,17 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
+
+h4, h5, h6, .h4, .h5, .h6 {
+    font-weight: $sm-font-weight-medium;
+}
+
+small, .small {
+  font-size: 90%;
+}
+
+
 // Font weight Helpers
 // ===================
-
-$font-weight-light:       300;
-$font-weight-normal:      400;
-$font-weight-medium:      600;
-$font-weight-bold:        700;
 
 @each $weight, $var in (unset, 100, 200, 300, 400, 500, 600, 700, 800, 900) {
     .font-weight-#{$weight} {
@@ -14,6 +19,13 @@ $font-weight-bold:        700;
     }
 }
 
+.font-weight-light {
+    font-weight: $sm-font-weight-light;
+}
+
+.font-weight-medium {
+    font-weight: $sm-font-weight-medium;
+}
 
 
 // jQuery UI stuff

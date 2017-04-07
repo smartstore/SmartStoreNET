@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 <div class="megamenu-section d-none d-lg-block">
-                    <nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark" : "navbar-light")'>
+                    <nav class='navbar @(GetThemeVariable<bool>("inverse-navbar") ? "navbar-inverse" : "navbar-light")'>
                         <div class="container megamenu-container">
                             @{ 
                                 Html.RenderAction("CatalogMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });

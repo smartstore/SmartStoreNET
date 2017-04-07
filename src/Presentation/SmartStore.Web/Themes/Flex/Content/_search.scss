@@ -208,7 +208,7 @@ $facet-selection-color:             darken($brand-success, 15%);
 	display: block;
     padding: 0.75rem 0;
     font-size: 16px;
-	font-weight: 600;
+	font-weight: $sm-font-weight-medium;
 	color: $body-color !important;
 	text-decoration: none !important;
 }
@@ -364,7 +364,7 @@ $facet-control-size:        20px;
     padding-right: 8px;
 
     .facet-control-native:checked ~ & {
-        font-weight: 600;
+        font-weight: $sm-font-weight-medium;
     }
 }
 

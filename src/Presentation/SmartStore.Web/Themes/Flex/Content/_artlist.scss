@@ -102,7 +102,7 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
 }
 
 @include media-breakpoint-up(lg) {
-    .btn-artlist-action { font-weight: 600; }
+    .btn-artlist-action { font-weight: $sm-font-weight-medium; }
 }
 
 .artlist-actions--top { 
@@ -215,7 +215,7 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
 .art-name {
     box-sizing: content-box;
     font-size: $art-font-size;
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
     margin-bottom: 0.25rem;
     line-height: $art-line-height;
     > a { color: $body-color; }
@@ -223,7 +223,7 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
 
 .art-genericname {
     font-size: $art-font-size;
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
     text-align: center;
     > a { color: $body-color; }
 }
@@ -241,7 +241,7 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
 
 .art-price {
     display: inline-block;  
-    font-weight: 600;
+    font-weight: $sm-font-weight-medium;
     font-size: 1rem;
     color: $art-price-color;
 
@@ -360,7 +360,7 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
     td { padding: 1px 0; }
     td:first-child { 
         padding-right: 0.5rem; 
-        font-weight: 600; 
+        font-weight: $sm-font-weight-medium; 
         //color: $text-muted;
     }
 }

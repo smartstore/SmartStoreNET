@@ -31,7 +31,7 @@ namespace SmartStore.Web.Framework.Theming
             var displayName = locService.GetResource(resKey, langId, false, Inflector.Titleize(info.Name));
 
             var hint = locService.GetResource(resKey + ".Hint", langId, false, "", true);
-            hint = "@(var_){0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
+            hint = "$(sm-){0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
 
             result.Append("<div class='ctl-label'>");
             result.Append(html.Label(html.NameForThemeVar(info), displayName));
@@ -61,10 +61,12 @@ namespace SmartStore.Web.Framework.Theming
 
 			var currentTheme = ThemeHelper.ResolveCurrentTheme();
 			var isDefault = strValue.IsCaseInsensitiveEqual(info.DefaultValue);
+			var isValidColor = info.Type == ThemeVariableType.Color 
+				&& ((strValue.HasValue() && ThemeVarsRepository.IsValidColor(strValue)) || (strValue.IsEmpty() && ThemeVarsRepository.IsValidColor(info.DefaultValue)));
 
 			MvcHtmlString control;
 
-            if (info.Type == ThemeVariableType.Color)
+            if (isValidColor)
             {
 				control = html.ColorBox(expression, strValue, info.DefaultValue);
             }
@@ -78,7 +80,7 @@ namespace SmartStore.Web.Framework.Theming
 			}
 			else
 			{
-				control = html.TextBox(expression, isDefault ? "" : strValue, new { placeholder = info.DefaultValue });
+				control = html.TextBox(expression, isDefault ? "" : strValue, new { placeholder = info.DefaultValue, @class = "form-control" });
 			}
 
 			if (currentTheme != info.Manifest)
@@ -112,7 +114,7 @@ namespace SmartStore.Web.Framework.Theming
                                  Selected = x.IsCaseInsensitiveEqual(value) 
                              };
 
-			return html.DropDownList(expression, selectList, new { placeholder = info.DefaultValue });
+			return html.DropDownList(expression, selectList, new { placeholder = info.DefaultValue, @class = "form-control" });
         }
 
         public static string NameForThemeVar(this HtmlHelper html, ThemeVariableInfo info)

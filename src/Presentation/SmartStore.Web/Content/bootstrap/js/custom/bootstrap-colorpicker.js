@@ -979,7 +979,6 @@
 			return val;
 		},
 		updateInput: function (val) {
-			console.log('updateInput', val || this.color.toString(this.format, false));
 			val = val || this.color.toString(this.format, false);
 			if (this.input !== false) {
 				this.input.prop('value', val);

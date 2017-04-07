@@ -3543,7 +3543,7 @@ namespace SmartStore.Admin.Controllers
 						var firstAttribute = _productAttributeParser.DeserializeProductVariantAttributes(x.AttributesXml).FirstOrDefault();
 
 						var attribute = x.Product.ProductVariantAttributes.FirstOrDefault(y => y.Id == firstAttribute.Key);
-						var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(y => y.Id == int.Parse(firstAttribute.Value.First()));
+						var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(y => y.Id == firstAttribute.Value.First().ToInt());
 
 						pvacModel.DisplayOrder = attributeValue.DisplayOrder;
 					}

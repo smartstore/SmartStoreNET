@@ -727,12 +727,16 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void CreateAllProductVariantAttributeCombinations(Product product)
 		{
-			// delete all existing combinations
+			// Delete all existing combinations.
 			_pvacRepository.DeleteAll(x => x.ProductId == product.Id);
 
 			var attributes = GetProductVariantAttributesByProductId(product.Id);
 			if (attributes == null || attributes.Count <= 0)
 				return;
+
+			var mappedAttributes = attributes
+				.SelectMany(x => x.ProductVariantAttributeValues)
+				.ToDictionarySafe(x => x.Id, x => x.ProductVariantAttribute);
 
 			var toCombine = new List<List<ProductVariantAttributeValue>>();
 			var resultMatrix = new List<List<ProductVariantAttributeValue>>();
@@ -752,23 +756,22 @@ namespace SmartStore.Services.Catalog
 				using (var scope = new DbContextScope(ctx: _pvacRepository.Context, autoCommit: false, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
 				{
 					ProductVariantAttributeCombination combination = null;
-
 					var idx = 0;
+
 					foreach (var values in resultMatrix)
 					{
 						idx++;
+						var attributesXml = "";
 
-						string attrXml = "";
-						for (var i = 0; i < values.Count; ++i)
+						foreach (var value in values)
 						{
-							var value = values[i];
-							attrXml = attributes[i].AddProductAttribute(attrXml, value.Id.ToString());
+							attributesXml = mappedAttributes[value.Id].AddProductAttribute(attributesXml, value.Id.ToString());
 						}
 
 						combination = new ProductVariantAttributeCombination
 						{
 							ProductId = product.Id,
-							AttributesXml = attrXml,
+							AttributesXml = attributesXml,
 							StockQuantity = 10000,
 							AllowOutOfStockOrders = true,
 							IsActive = true
@@ -785,12 +788,13 @@ namespace SmartStore.Services.Catalog
 						_eventPublisher.EntityInserted(combination);
 					}
 				}
-
 			}
 
-			//foreach (var y in resultMatrix) {
-			//	StringBuilder sb = new StringBuilder();
-			//	foreach (var x in y) {
+			//foreach (var y in resultMatrix)
+			//{
+			//	var sb = new System.Text.StringBuilder();
+			//	foreach (var x in y)
+			//	{
 			//		sb.AppendFormat("{0} ", x.Name);
 			//	}
 			//	sb.ToString().Dump();

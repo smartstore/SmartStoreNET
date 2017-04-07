@@ -141,7 +141,7 @@
 			<div class="col-md-3">
 				@if (!Model.HideNewsletterBlock)
 				{
-					<div class="footer-newsletter nav-collapsible">
+					<div class="footer-newsletter nav-collapsible" data-subscription-url="@(Url.RouteUrl("SubscribeNewsletter"))">
 						<h4 class="nav-toggler collapsed" data-toggle="collapse" data-target="#footer-newsletter" aria-controls="footer-newsletter" aria-expanded="false">@T("Newsletter.Title")</h4>
 						<div class="collapse nav-collapse" id="footer-newsletter">
 							<div id="newsletter-subscribe-block">
@@ -176,7 +176,7 @@
 								@Html.ValidationMessageFor(x => x.NewsletterEmail)
 
 							</div>
-							<div id="newsletter-result-block" class="alert alert-success" hidden></div>
+							<div id="newsletter-result-block" class="alert alert-success d-none"></div>
 						</div>
 					</div>
 				}
@@ -222,39 +222,3 @@
 		</div>
 	</div>
 </div>
-
-
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#newsletter-subscribe-button').click(function () {
-                
-            var subscribe = 'true';
-            if($('#newsletter-unsubscribe').is(':checked')) { 
-                subscribe = 'false';
-            }
-            var email = $("#newsletter-email").val();
-            
-            $.ajax({
-                cache: false,
-                type: "POST",
-                url: "@(Url.RouteUrl("SubscribeNewsletter"))",
-                data: { "subscribe": subscribe, "email": email },
-                success: function (data) {
-                    $("#newsletter-result-block").html(data.Result);
-                    if (data.Success) {
-                        $('#newsletter-subscribe-block').hide();
-                        $('#newsletter-result-block').removeClass("alert-error").addClass("alert-success").show();
-                    }
-                    else {
-                        $('#newsletter-result-block').removeClass("alert-success").addClass("alert-error").fadeIn("slow").delay(2000).fadeOut("slow");
-                    }
-                },
-                error:function (xhr, ajaxOptions, thrownError){
-                    $("#newsletter-result-block").empty().text("Failed to subscribe").removeClass("alert-success").addClass("alert-error");
-                }  
-            });                
-            return false;
-        });
-    });
-</script>

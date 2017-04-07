@@ -1,4 +1,6 @@
-﻿namespace SmartStore.Services.Catalog.Modelling
+﻿using System.Web;
+
+namespace SmartStore.Services.Catalog.Modelling
 {
 	public class GiftCardQueryItem
 	{
@@ -15,22 +17,14 @@
 			}
 		}
 
-		public static string Prefix
-		{
-			get
-			{
-				return "giftcard";
-			}
-		}
-
 		public static string CreateKey(int productId, int bundleItemId, string name)
 		{
 			if (name.HasValue())
 			{
-				return $"{Prefix}{productId}-{bundleItemId}-.{name.EmptyNull().ToLower()}";
+				return $"giftcard{productId}-{bundleItemId}-.{name.EmptyNull().ToLower()}";
 			}
 
-			return $"{Prefix}{productId}-{bundleItemId}-";
+			return $"giftcard{productId}-{bundleItemId}-";
 		}
 
 		public string Name { get; private set; }
@@ -38,6 +32,11 @@
 
 		public int ProductId { get; set; }
 		public int BundleItemId { get; set; }
+
+		public string ToQueryString()
+		{
+			return string.Concat(ToString(), "=", HttpUtility.UrlEncode(Value));
+		}
 
 		public override string ToString()
 		{

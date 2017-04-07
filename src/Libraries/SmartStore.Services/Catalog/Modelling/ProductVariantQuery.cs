@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace SmartStore.Services.Catalog.Modelling
 {
@@ -78,9 +77,9 @@ namespace SmartStore.Services.Catalog.Modelling
 		{
 			var groups = new string[]
 			{
-				string.Join("&", Variants.Select(x => string.Concat(x.ToString(), "=", HttpUtility.UrlEncode(x.Value)))),
-				string.Join("&", GiftCards.Select(x => string.Concat(x.ToString(), "=", HttpUtility.UrlEncode(x.Value)))),
-				string.Join("&", CheckoutAttributes.Select(x => string.Concat(x.ToString(), "=", HttpUtility.UrlEncode(x.Value))))
+				string.Join("&", Variants.Select(x => x.ToQueryString())),
+				string.Join("&", GiftCards.Select(x => x.ToQueryString())),
+				string.Join("&", CheckoutAttributes.Select(x => x.ToQueryString()))
 			};
 
 			return string.Join("&", groups.Where(x => x.HasValue()));

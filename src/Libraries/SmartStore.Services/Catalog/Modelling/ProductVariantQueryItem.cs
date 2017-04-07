@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Web;
 
 namespace SmartStore.Services.Catalog.Modelling
 {
@@ -9,17 +11,9 @@ namespace SmartStore.Services.Catalog.Modelling
 			Value = value.EmptyNull();
 		}
 
-		public static string Prefix
-		{
-			get
-			{
-				return "pvari";
-			}
-		}
-
 		public static string CreateKey(int productId, int bundleItemId, int attributeId, int variantAttributeId)
 		{
-			return $"{Prefix}{productId}-{bundleItemId}-{attributeId}-{variantAttributeId}";
+			return $"pvari{productId}-{bundleItemId}-{attributeId}-{variantAttributeId}";
 		}
 
 		public string Value { get; private set; }
@@ -55,6 +49,24 @@ namespace SmartStore.Services.Catalog.Modelling
 
 				return null;
 			}
+		}
+
+		public string ToQueryString()
+		{
+			var result = new List<string>();
+			var key = ToString();
+
+			if (Year > 0 && Month > 0 && Day > 0)
+			{
+				// TODO: Code never reached because of ParseProductVariantAttributeValues
+				var day = string.Concat(key, "-day=", Day);
+				var month = string.Concat(key, "-month=", Month);
+				var year = string.Concat(key, "-year=", Year);
+
+				return string.Join("&", day, month, year);
+			}
+
+			return string.Concat(key, "=", HttpUtility.UrlEncode(Value));
 		}
 
 		public override string ToString()

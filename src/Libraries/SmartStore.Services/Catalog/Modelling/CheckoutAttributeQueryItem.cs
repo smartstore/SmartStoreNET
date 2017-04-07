@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Web;
 
 namespace SmartStore.Services.Catalog.Modelling
 {
@@ -10,17 +12,9 @@ namespace SmartStore.Services.Catalog.Modelling
 			AttributeId = attributeId;
 		}
 
-		public static string Prefix
-		{
-			get
-			{
-				return "cattr";
-			}
-		}
-
 		public static string CreateKey(int attributeId)
 		{
-			return $"{Prefix}-{attributeId}";
+			return $"cattr{attributeId}";
 		}
 
 		public string Value { get; private set; }
@@ -44,6 +38,23 @@ namespace SmartStore.Services.Catalog.Modelling
 
 				return null;
 			}
+		}
+
+		public string ToQueryString()
+		{
+			var result = new List<string>();
+			var key = ToString();
+
+			if (Year > 0 && Month > 0 && Day > 0)
+			{
+				var day = string.Concat(key, "-day=", Day);
+				var month = string.Concat(key, "-month=", Month);
+				var year = string.Concat(key, "-year=", Year);
+
+				return string.Join("&", day, month, year);
+			}
+
+			return string.Concat(key, "=", HttpUtility.UrlEncode(Value));
 		}
 
 		public override string ToString()

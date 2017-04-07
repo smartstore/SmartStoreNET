@@ -1,16 +1,16 @@
 ﻿/// <reference path="bs4/scss/bootstrap.scss" />
 
-$mm-navlink-font-size:                  1rem;
-$mm-bg:                                 $sm-mm-bg;
-$mm-light-color:                        $body-color;
-$mm-light-hover-color:                  scale-color($mm-bg, $lightness: -5%); //darken($mm-bg, 7%); // rgba(0, 0, 0, 0.06)
-$mm-inverse-color:                      #fff;
-$mm-inverse-hover-color:                scale-color($mm-bg, $lightness: 15%); //lighten($mm-bg, 7%); // rgba(255,255,255, 0.1)
-$mm-zindex-base:                        ($zindex-dropdown - 20);
-$mm-selected-color:                     $brand-warning;
+$megamenu-navlink-font-size:                  1rem;
+$megamenu-bg:                                 $sm-megamenu-bg;
+$megamenu-light-color:                        $body-color;
+$megamenu-light-hover-color:                  scale-color($megamenu-bg, $lightness: -5%); //darken($megamenu-bg, 7%); // rgba(0, 0, 0, 0.06)
+$megamenu-inverse-color:                      #fff;
+$megamenu-inverse-hover-color:                scale-color($megamenu-bg, $lightness: 15%); //lighten($megamenu-bg, 7%); // rgba(255,255,255, 0.1)
+$megamenu-zindex-base:                        ($zindex-dropdown - 20);
+$megamenu-selected-color:                     $brand-warning;
 
 .megamenu-section .navbar {
-    background: $mm-bg;
+    background: $megamenu-bg;
     padding: 0; 
 }
 
@@ -20,27 +20,27 @@ $mm-selected-color:                     $brand-warning;
     
     .nav-link {
         font-weight: $sm-font-weight-medium;
-        font-size: $mm-navlink-font-size;
+        font-size: $megamenu-navlink-font-size;
     }
 }
 
 .navbar-light .megamenu .nav-item {
-    .nav-link { color: $mm-light-color; }
+    .nav-link { color: $megamenu-light-color; }
 
      &.active .nav-link, 
      .nav-link:focus, 
      .nav-link:hover { 
-         background: $mm-light-hover-color;
+         background: $megamenu-light-hover-color;
      }
 }
 
 .navbar-inverse .megamenu .nav-item {
-    .nav-link { color: $mm-inverse-color; }
+    .nav-link { color: $megamenu-inverse-color; }
 
      &.active .nav-link, 
      .nav-link:focus, 
      .nav-link:hover { 
-         background: $mm-inverse-hover-color; 
+         background: $megamenu-inverse-hover-color; 
      }
 } 
 
@@ -82,7 +82,7 @@ $mm-selected-color:                     $brand-warning;
             border-right: 12px solid transparent;
             border-left: 12px solid transparent;
             bottom: -1px;
-            z-index: ($mm-zindex-base + 3);
+            z-index: ($megamenu-zindex-base + 3);
         }
 
         &.active:after {
@@ -93,7 +93,7 @@ $mm-selected-color:                     $brand-warning;
             border-right: 14px solid transparent;
             border-left: 14px solid transparent;
             bottom: -2px;
-            z-index: ($mm-zindex-base + 2);
+            z-index: ($megamenu-zindex-base + 2);
         }
 
         &.selected .nav-link:before,
@@ -105,7 +105,7 @@ $mm-selected-color:                     $brand-warning;
             left: 0;
             bottom: 1px;
             height: 3px;
-            background: $mm-selected-color;
+            background: $megamenu-selected-color;
         }
     }
 
@@ -124,7 +124,7 @@ $mm-selected-color:                     $brand-warning;
     bottom: 0;
     transition: opacity .5s ease-in-out .1s;
     opacity: 0;
-    z-index: $mm-zindex-base;
+    z-index: $megamenu-zindex-base;
     display: none;
 
     &.megamenu-nav--prev a { padding-right: 10px; }
@@ -137,7 +137,7 @@ $mm-selected-color:                     $brand-warning;
         border: none;
         box-shadow: none;
         position: relative;
-        z-index: ($mm-zindex-base + 10);
+        z-index: ($megamenu-zindex-base + 10);
         padding: 0px;
         width: 40px;
         height: 98%;
@@ -165,16 +165,16 @@ $mm-selected-color:                     $brand-warning;
     display: block;
 }
 .megamenu .megamenu-nav--prev .megamenu-nav-btn {
-    background-image: linear-gradient(to left, rgba($mm-bg, 0), $mm-bg 40%, $mm-bg 100%);
+    background-image: linear-gradient(to left, rgba($megamenu-bg, 0), $megamenu-bg 40%, $megamenu-bg 100%);
 }
 .megamenu .megamenu-nav--next .megamenu-nav-btn {
-    background-image: linear-gradient(to right, rgba($mm-bg, 0), $mm-bg 40%, $mm-bg 100%);
+    background-image: linear-gradient(to right, rgba($megamenu-bg, 0), $megamenu-bg 40%, $megamenu-bg 100%);
 }
 
 .touchevents .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i,
 .touchevents .megamenu-section .megamenu-nav-btn i,
 .megamenu .megamenu-nav i {
-    color: $mm-light-color;
+    color: $megamenu-light-color;
     display: none;
 }
 .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i {
@@ -214,7 +214,7 @@ $mm-selected-color:                     $brand-warning;
     }
 
     .mega-menu-dropdown {
-        z-index: ($mm-zindex-base + 1);
+        z-index: ($megamenu-zindex-base + 1);
         width: 100%;
         top: -3px;
         background-repeat: no-repeat;
@@ -321,7 +321,7 @@ $mm-selected-color:                     $brand-warning;
     .dropdown-menu {
         margin-top: -1px;
         min-width: 250px;
-        z-index: ($mm-zindex-base + 1);
+        z-index: ($megamenu-zindex-base + 1);
     }
     .dropdown-item {
         padding-top: 0.35rem;

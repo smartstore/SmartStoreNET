@@ -1,62 +1,24 @@
 /// <reference path="_variables.scss" />
 
-// Theme variables
-// ========================================
-
-
-// All theme variables and their default values.
-// All variables from theme.config must be listed here: sm-{varname}.
-// Although this rather seems to be a redundant process, it prevents
-// IDE SASS warnings.
-
-$sm-gray-dark:                  #292b2c !default;
-$sm-gray:                       #464a4c !default;
-$sm-gray-light:                 #999 !default;
-$sm-gray-lighter:               #eceeef !default;
-$sm-gray-lightest:              #f7f7f9 !default;
-
-$sm-red:                        #f44336 !default;
-$sm-orange:                     #ff9800 !default;
-$sm-yellow:                     #ffeb3b !default;
-$sm-green:                      #4caf50 !default;
-$sm-blue:                       #0275d8 !default;
-$sm-bluegrey:                   #78909c !default;
-$sm-indigo:                     #3f51b5 !default;
-$sm-teal:                       #009688 !default;
-$sm-pink:                       #ff5b77 !default;
-$sm-purple:                     #9c27b0 !default;
-
-$sm-brand-primary:              $sm-red !default;
-$sm-brand-warning:              $sm-orange !default;
-$sm-brand-danger:               $sm-red !default;
-$sm-brand-info:                 $sm-bluegrey !default;
-$sm-brand-success:              $sm-green !default;
-
-$sm-body-bg:                    #fff !default;
-$sm-body-color:                 #333 !default;
-$sm-link-color:                 #08c !default;
-
-$sm-font-family-sans-serif:     -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
-$sm-font-family-monospace:      Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
-$sm-font-size-base:             0.875rem !default;
-$sm-font-size-lg:               1rem !default; 
-$sm-font-size-sm:               0.8125rem !default; 
-$sm-font-size-xs:               0.75rem !default;
-
-$sm-font-weight-light:          300 !default;
-$sm-font-weight-normal:         normal !default; 
-$sm-font-weight-medium:         600 !default; 
-$sm-font-weight-bold:           bold !default;         
-
-$sm-megamenu-bg:                $sm-gray-lightest !default;
-
 
 // Virtual file which fetches all theme variables from the database.
-// Variable names follow the pattern sm-{varname}. We use these 
-// variables to override bootstrap defaults below.
-
+// We use these variables to override bootstrap defaults below.
 @import '~/.app/themevars.scss';
 
+
+// Theme specific (non-bootstrap) variables
+// ========================================
+
+$font-weight-light:             300 !default;
+$font-weight-medium:            600 !default;
+
+$megamenu-bg:                   $gray-lightest !default;
+$megamenu-navlink-font-size:    1rem !default;
+$megamenu-light-color:          $body-color !default;
+$megamenu-light-hover-color:    scale-color($megamenu-bg, $lightness: -5%); //darken($megamenu-bg, 7%); // rgba(0, 0, 0, 0.06)
+$megamenu-inverse-color:        #fff !default;
+$megamenu-inverse-hover-color:  scale-color($megamenu-bg, $lightness: 15%); //lighten($megamenu-bg, 7%); // rgba(255,255,255, 0.1)
+$megamenu-selected-color:       $brand-warning !default; 
 
 
 // Bootstrap variable overrides
@@ -69,44 +31,7 @@ $enable-transitions:            true;
 $enable-hover-media-query:      false;
 $enable-grid-classes:           true;
 
-$body-bg:                       $sm-body-bg;
-$body-color:                    $sm-body-color;
-$link-color:                    $sm-link-color;
-
-$gray-dark:                     $sm-gray-dark;
-$gray:                          $sm-gray;
-$gray-light:                    $sm-gray-light;
-$gray-lighter:                  $sm-gray-lighter;
-$gray-lightest:                 $sm-gray-lightest;
-
-$red:                           $sm-red;
-$orange:                        $sm-orange;
-$yellow:                        $sm-yellow;
-$green:                         $sm-green;
-$blue:                          $sm-blue;
-$bluegrey:                      $sm-bluegrey;
-$indigo:                        $sm-indigo;
-$teal:                          $sm-teal;
-$pink:                          $sm-pink;
-$purple:                        $sm-purple;
-
-$brand-primary:                 $sm-brand-primary;
-$brand-success:                 $sm-brand-success;
-$brand-danger:                  $sm-brand-danger;
-$brand-warning:                 $sm-brand-warning;
-$brand-info:                    $sm-brand-info;
-
 $headings-line-height:          1.2;
-$headings-font-weight:          $sm-font-weight-normal;
-$lead-font-weight:              $sm-font-weight-light;
-
-$font-family-sans-serif:        $sm-font-family-sans-serif;
-$font-family-monospace:         $sm-font-family-monospace;
-
-$font-size-base:                $sm-font-size-base; // 14px
-$font-size-lg:                  $sm-font-size-lg; // 16px
-$font-size-sm:                  $sm-font-size-sm; // 13px
-$font-size-xs:                  $sm-font-size-xs; // 12px
 $line-height-base:              1.5;
 $line-height-sm:                1.5;
 $line-height-lg:                (4 / 3);
@@ -137,7 +62,7 @@ $input-border-radius:           $btn-border-radius;
 $input-border-radius-lg:        $btn-border-radius-lg;
 $input-border-radius-sm:        $btn-border-radius-sm;
 
-$btn-font-weight:               $sm-font-weight-medium;
+$btn-font-weight:               $font-weight-medium;
 $btn-line-height:               1.5;
 $btn-padding-x:                 1rem;
 $btn-padding-y:                 0.625rem;

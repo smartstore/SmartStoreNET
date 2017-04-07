@@ -44,7 +44,7 @@
         }
 
         &.active { 
-            font-weight: $sm-font-weight-medium;
+            font-weight: $font-weight-medium;
             color: inherit; 
         }
 
@@ -99,7 +99,7 @@
             position: relative;
             display: block; 
             text-transform: none;
-            font-weight: $sm-font-weight-medium;
+            font-weight: $font-weight-medium;
             text-align: left;
             color: $list-group-link-color !important;
             background-color: $list-group-bg;

@@ -227,7 +227,7 @@ $s2bs-form-control-transition: border-color ease-in-out .15s, box-shadow ease-in
     &[aria-selected=true] {
       background-color: $s2bs-dropdown-link-hover-bg;
       color: $s2bs-dropdown-link-hover-color;
-      font-weight: $sm-font-weight-medium;
+      font-weight: $font-weight-medium;
     }
 
     /**

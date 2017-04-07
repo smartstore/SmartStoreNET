@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.Theming
 		//private static readonly Regex s_valueWhitelist = new Regex(@"^[#@]?[a-zA-Z0-9""' _\.,-]*$");
 
 		const string LessVarPrefix = "@var_";
-		const string SassVarPrefix = "$sm-";
+		const string SassVarPrefix = "$";
 
 		public string GetPreprocessorCss(string extension, string themeName, int storeId)
         {
@@ -84,21 +84,22 @@ namespace SmartStore.Web.Framework.Theming
 			foreach (var parameter in parameters.Where(kvp => kvp.Value.HasValue()))
 			{
 				var value = parameter.Value;
-				var rg = toLess ? s_valueLessVars : s_valueSassVars;
-
-				value = rg.Replace(value, match => 
+				if (toLess)
 				{
-					// Replaces all occurences of $varname with $sm-varname (in case of SASS).
-					// The SASS compiler would throw exceptions otherwise, because the main variables file
-					// is not loaded yet at this stage.
-					var refVar = match.Value;
-					if (!refVar.StartsWith(prefix))
+					value = s_valueLessVars.Replace(value, match =>
 					{
-						refVar = "{0}{1}".FormatInvariant(prefix, refVar.Substring(1));
-					}
+						// Replaces all occurences of @varname with @var_varname (in case of LESS).
+						// The LESS compiler would throw exceptions otherwise, because the main variables file
+						// is not loaded yet at this stage.
+						var refVar = match.Value;
+						if (!refVar.StartsWith(prefix))
+						{
+							refVar = "{0}{1}".FormatInvariant(prefix, refVar.Substring(1));
+						}
 
-					return refVar;
-				});
+						return refVar;
+					});
+				}
 
 				sb.AppendFormat("{0}{1}: {2};\n", prefix, parameter.Key, value);
 			}

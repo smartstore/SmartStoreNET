@@ -1,13 +1,6 @@
 ﻿/// <reference path="bs4/scss/bootstrap.scss" />
 
-$megamenu-navlink-font-size:                  1rem;
-$megamenu-bg:                                 $sm-megamenu-bg;
-$megamenu-light-color:                        $body-color;
-$megamenu-light-hover-color:                  scale-color($megamenu-bg, $lightness: -5%); //darken($megamenu-bg, 7%); // rgba(0, 0, 0, 0.06)
-$megamenu-inverse-color:                      #fff;
-$megamenu-inverse-hover-color:                scale-color($megamenu-bg, $lightness: 15%); //lighten($megamenu-bg, 7%); // rgba(255,255,255, 0.1)
-$megamenu-zindex-base:                        ($zindex-dropdown - 20);
-$megamenu-selected-color:                     $brand-warning;
+$megamenu-zindex-base:          ($zindex-dropdown - 20);
 
 .megamenu-section .navbar {
     background: $megamenu-bg;
@@ -19,7 +12,7 @@ $megamenu-selected-color:                     $brand-warning;
     position: relative;
     
     .nav-link {
-        font-weight: $sm-font-weight-medium;
+        font-weight: $font-weight-medium;
         font-size: $megamenu-navlink-font-size;
     }
 }
@@ -222,7 +215,7 @@ $megamenu-selected-color:                     $brand-warning;
         padding: 1.5rem;
      
         label { 
-            vertical-align: top; 
+            vertical-align: top;
             margin-bottom: 0;
         }
         .col-md-3 {
@@ -232,7 +225,7 @@ $megamenu-selected-color:                     $brand-warning;
 
     .mega-menu-dropdown-heading {
         font-size: 1rem;
-        font-weight: $sm-font-weight-medium;
+        font-weight: $font-weight-medium; 
         line-height: 1.4rem;
         text-decoration: none;
         display: block;

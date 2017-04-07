@@ -123,6 +123,7 @@ body {
 
     &.block-boxed {
         border: 1px dotted rgba(0,0,0, 0.2);
+        .block-title > * { font-weight: $font-weight-normal; }
     }
 
     &.block-boxed .block-title {
@@ -182,7 +183,7 @@ body {
 a.pretty-link {
     color: $body-color;
     text-decoration: none;
-    font-weight: $sm-font-weight-medium;
+    font-weight: $font-weight-medium;
 
     > i { padding-right: 1.2rem; }
     > span {
@@ -216,7 +217,7 @@ a.pretty-link {
     .btn-text-expander {
         display: none;
         position: absolute;
-        font-weight: $sm-font-weight-medium;
+        font-weight: $font-weight-medium;
         left: 0;
         right: 0;
         bottom: 0;
@@ -559,7 +560,7 @@ a.pretty-link {
         vertical-align: middle;
         text-align: center;
         overflow: hidden;
-        font-weight: $sm-font-weight-medium;
+        font-weight: $font-weight-medium;
 
         background-size: cover;
         background-repeat: no-repeat;
@@ -615,7 +616,7 @@ a.pretty-link {
 
 .catmenu {
     .catmenu-path-item {
-        font-weight: $sm-font-weight-medium;
+        font-weight: $font-weight-medium;
         background: rgba($list-group-hover-bg, 0.5);
     }
 
@@ -655,7 +656,7 @@ a.pretty-link {
     }
     
     th {
-        font-weight: $sm-font-weight-medium;
+        font-weight: $font-weight-medium;
     }
 
     tbody {

@@ -2,7 +2,7 @@
 
 
 h4, h5, h6, .h4, .h5, .h6 {
-    font-weight: $sm-font-weight-medium;
+    font-weight: $font-weight-medium;
 }
 
 small, .small {
@@ -20,11 +20,11 @@ small, .small {
 }
 
 .font-weight-light {
-    font-weight: $sm-font-weight-light;
+    font-weight: $font-weight-light;
 }
 
 .font-weight-medium {
-    font-weight: $sm-font-weight-medium;
+    font-weight: $font-weight-medium;
 }
 
 
@@ -60,7 +60,7 @@ small, .small {
         display: inline-block;
         background: $body-bg;
         padding-right: 1rem;
-        font-weight: 300;
+        font-weight: $font-weight-light;
     }
 }
 

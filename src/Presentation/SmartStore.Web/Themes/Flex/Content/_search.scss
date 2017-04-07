@@ -97,7 +97,7 @@ $facet-selection-color:             darken($brand-success, 15%);
     padding-bottom: 0.3rem;
     font-size: 22px; // rem gets too small on mobile
     color: $brand-info;
-    font-weight: 300;
+    font-weight: $font-weight-light;
 
     ~ .instasearch-group-header {
         margin-top: 1.2rem;
@@ -208,7 +208,7 @@ $facet-selection-color:             darken($brand-success, 15%);
 	display: block;
     padding: 0.75rem 0;
     font-size: 16px;
-	font-weight: $sm-font-weight-medium;
+	font-weight: $font-weight-medium;
 	color: $body-color !important;
 	text-decoration: none !important;
 }
@@ -364,7 +364,7 @@ $facet-control-size:        20px;
     padding-right: 8px;
 
     .facet-control-native:checked ~ & {
-        font-weight: $sm-font-weight-medium;
+        font-weight: $font-weight-medium;
     }
 }
 

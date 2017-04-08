@@ -9,8 +9,6 @@
 @using (Html.BeginForm())
 {
     <div class="page post-edit">
-        @{ Html.RenderAction("ForumBreadcrumb", new { forumId = Model.ForumId, forumTopicId = Model.Id }); }
-
         <div class="title">
             <h2>@(Model.IsEdit ? T("Forum.EditTopic") : T("Forum.NewTopic"))</h2>
         </div>

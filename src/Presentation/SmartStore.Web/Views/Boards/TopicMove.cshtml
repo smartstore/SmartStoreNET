@@ -10,9 +10,6 @@
 {
     @Html.HiddenFor(model => model.Id)
     <div class="page move-forum-topic">
-        
-        @{ Html.RenderAction("ForumBreadcrumb", new { forumTopicId = Model.Id }); }
-
         <div class="title">
             <h2>@T("Forum.MoveTopic")</h2>
         </div>

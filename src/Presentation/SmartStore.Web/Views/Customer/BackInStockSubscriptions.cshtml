@@ -10,37 +10,6 @@
 	Layout = "_MyAccount";
 	ViewBag.PageClassToken = "backinstock";
 	ViewBag.PageTitle = T("Account.BackInStockSubscriptions").Text;
-
-	Model.Subscriptions.Add(new BackInStockSubscriptionModel
-	{
-		Id = 1,
-		ProductName = "Product name",
-		SeName = "SeName"
-	});
-	Model.Subscriptions.Add(new BackInStockSubscriptionModel
-	{
-		Id = 2,
-		ProductName = "Product name",
-		SeName = "SeName"
-	});
-	Model.Subscriptions.Add(new BackInStockSubscriptionModel
-	{
-		Id = 3,
-		ProductName = "Product name",
-		SeName = "SeName"
-	});
-	Model.Subscriptions.Add(new BackInStockSubscriptionModel
-	{
-		Id = 4,
-		ProductName = "Product name",
-		SeName = "SeName"
-	});
-	Model.Subscriptions.Add(new BackInStockSubscriptionModel
-	{
-		Id = 5,
-		ProductName = "Product name",
-		SeName = "SeName"
-	});
 }
 
 @if (Model.Subscriptions.Count == 0)
@@ -87,7 +56,7 @@
 
 		@if (Model.TotalPages > 1)
 		{
-			@Html.SmartStore().Pager(Model).Name("paginator").Action("BackInStockSubscriptions", "Customer")
+			@Html.SmartStore().Pager(Model).Name("paginator").QueryParam("page").Action("BackInStockSubscriptions", "Customer")
 		}
 
 		<div class="buttons">

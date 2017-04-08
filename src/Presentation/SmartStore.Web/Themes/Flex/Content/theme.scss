@@ -180,6 +180,10 @@ body {
     border: 1px solid #fff;
 }
 
+table th {
+    font-weight: $font-weight-medium;
+}
+
 a.pretty-link {
     color: $body-color;
     text-decoration: none;

@@ -3,9 +3,15 @@
 /* Theme: FLEX 
 ------------------------------ */
 
+// Virtual file which fetches all theme variables from the database.
+// We use these variables to override bootstrap defaults.
+@import '~/.app/themevars.scss';
+// Contains theme specific variable defaults
+// and bootstrap variable overrides.
+@import '_variables.scss'; 
+
+
 // Bootstrap
-// _custom.scss in the bootstrap folder contains all
-// theme specific variables and overrides.
 
 @import "bs4/scss/bootstrap.scss";
 

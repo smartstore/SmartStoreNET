@@ -450,29 +450,13 @@ namespace SmartStore.Web.Controllers
             if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
                 return Content("");
 
-            var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayOnHomepage);
+            var model = _helper.PrepareManufacturerNavigationModel(_catalogSettings.ManufacturerItemsToDisplayOnHomepage - 1);
 
             if (model.Manufacturers.Count == 0)
                 return Content("");
 
             return PartialView(model);
         }
-
-
-        // TODO: remove, won't be needed anymore???
-   //     [ChildActionOnly]
-   //     public ActionResult ManufacturerNavigation()
-   //     {
-			//if (_catalogSettings.ManufacturerItemsToDisplayOnHomepage == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
-			//	return Content("");
-
-   //         var model = _helper.PrepareManufacturerNavigationModel();
-
-   //         if (model.Manufacturers.Count == 0)
-			//	return Content("");
-
-   //         return PartialView(model);
-   //     }
 
         #endregion
 
@@ -938,7 +922,12 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult OffCanvasMenu()
         {
-            ViewBag.ShowManufacturersOnHomepage = _catalogSettings.ShowManufacturersOnHomepage;
+            ViewBag.ShowManufacturers = false;
+
+            if(_catalogSettings.ShowManufacturersInOffCanvas == true && _catalogSettings.ManufacturerItemsToDisplayInOffcanvasMenu > 0)
+            {
+                ViewBag.ShowManufacturers = true;
+            }
             
             return PartialView();
         }

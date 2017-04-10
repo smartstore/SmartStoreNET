@@ -2,6 +2,11 @@
 @using SmartStore.Web.Models.Catalog;
 @{
     Layout = "";
+
+    if (Model.Manufacturers.Count == 0 || !Model.DisplayManufacturers)
+    {
+        return;
+    }
 }
 
 <div class="manufacturer-container">
@@ -10,16 +15,21 @@
         {
             <li class="ocm-item" data-ajax="false" data-id="@manufacturer.Id">
                 <div class="row sm-gutters align-items-center">
-                    <div class="col col-img">
-                        <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link">
-                            @if (manufacturer.PictureUrl.HasValue() && Model.DisplayImages)
-                            {
-                                <img src="@manufacturer.PictureUrl" alt="@manufacturer.Name" title="@manufacturer.Name" />
+                    @if (Model.DisplayImages)
+                    {
+                        <div class="col col-img">
+                            @if(manufacturer.PictureUrl.HasValue())
+                            { 
+                                <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-img-link">
+                                    <img src="@manufacturer.PictureUrl" alt="@manufacturer.Name" title="@manufacturer.Name" />
+                                </a>
                             }
-                        </a>
-                    </div>
+                        </div>
+                    }
                     <div class="col col-data">
-                        @manufacturer.Name
+                        <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link">
+                            @manufacturer.Name
+                        </a>
                     </div>
                 </div>
             </li>

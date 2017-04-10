@@ -18,6 +18,7 @@ body.popup { padding: 20px; }
     margin-bottom: 2rem;
 }
 
+
 .deliverytime-group .delivery-time { 
     vertical-align: top; 
     padding-left: 0.25rem;
@@ -75,14 +76,8 @@ body.popup { padding: 20px; }
     font-size: 2rem;
 }
 
-// polls
-.todays-poll-box-block input {
-    margin-right: .5rem;
-}
-
 /* Manufacturers on Homepage
 ================================================ */
-
 .manufacturer-grid .show-all-manufacturers {
     > a {
         position: absolute;
@@ -102,21 +97,6 @@ body.popup { padding: 20px; }
         > span { margin: auto; }
     }
 }
-
-/*
-.block-manufacturer-navigation .manufacturer-pic {
-    float: left;
-    width: 50px;
-    height: 50px;
-    margin: 0 0 10px 10px;
-
-    img {
-        max-width: 50px;
-        max-height: 50px;
-    }
-}
-*/
-
 
 /* All manufacturers
 ================================================ */
@@ -164,15 +144,6 @@ body.popup { padding: 20px; }
 .text-smaller a {
     font-size: $font-size-sm;
 }
-
-// Polls
-.progress {
-    width: 100%;
-}
-    
-progress::-moz-progress-bar { background: $btn-info-bg; }
-progress::-webkit-progress-value { background: $btn-info-bg; }
-progress { color: $btn-info-bg; }
 
 // homepage misc
 .page.home-page .card-header {

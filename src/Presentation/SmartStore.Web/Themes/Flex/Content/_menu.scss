@@ -127,20 +127,22 @@ $ocm-selected-color:                    $brand-warning;
     .manufacturer-container {
         .ocm-item {
             padding: 0 1.25rem;
-           
+
             .col-img {
                 width: 100px;
                 min-width: 100px;
                 max-width: 100px;
 
-                .ocm-link {
+                .ocm-img-link {
                     padding: 0.5rem;
-                 
+                    display: block;
                     > img {
                         width: 100%;
                     }
                 }
             }
+            .ocm-link { padding-left: 0.75rem; }
+            .col-img ~ .col-data > .ocm-link { padding-left: 0; }
         }
 
         .ocm-nav {

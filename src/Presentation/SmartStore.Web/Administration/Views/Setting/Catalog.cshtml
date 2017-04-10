@@ -23,6 +23,7 @@
             $("#@Html.FieldIdFor(model => model.RecentlyAddedProductsEnabled)").click(toggleRecentlyAddedProducts);
             $("#@Html.FieldIdFor(model => model.ShowBestsellersOnHomepage)").click(toggleBestsellersOnHomepage);
             $("#@Html.FieldIdFor(model => model.ShowManufacturersOnHomepage)").click(toggleManufacturersOnHomepage);
+            $("#@Html.FieldIdFor(model => model.ShowManufacturersInOffCanvas)").click(toggleManufacturersInOffCanvas);
         	$("#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)").click(toggleProductsAlsoPurchasedNumber);
             $("#@Html.FieldIdFor(model => model.CompareProductsEnabled)").click(toggleCompareProducts);
             $("#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)").click(toggleHtmlTextCollapsedHeight);
@@ -37,6 +38,7 @@
             toggleCompareProducts();
             toggleHtmlTextCollapsedHeight();
             toggleManufacturersOnHomepage();
+            toggleManufacturersInOffCanvas();
             toggleManufacturerPictures();
         });
 
@@ -87,15 +89,22 @@
 
         function toggleManufacturersOnHomepage() {
             if ($('#@Html.FieldIdFor(model => model.ShowManufacturersOnHomepage)').is(':checked')) {
-                $('#pnlShowManufacturerPictures').show();
                 $('#pnlManufacturerItemsToDisplayOnHomepage').show();
             }
             else {
-                $('#pnlShowManufacturerPictures').hide();
                 $('#pnlManufacturerItemsToDisplayOnHomepage').hide();
             }
         }
 
+        function toggleManufacturersInOffCanvas() {
+            if ($('#@Html.FieldIdFor(model => model.ShowManufacturersInOffCanvas)').is(':checked')) {
+                $('#pnlManufacturerItemsToDisplayInOffCanvas').show();
+            }
+            else {
+                $('#pnlManufacturerItemsToDisplayInOffCanvas').hide();
+            }
+        }
+        
         function toggleProductsAlsoPurchasedNumber() {
             if ($('#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)').is(':checked')) {
                 $('#pnlProductsAlsoPurchasedNumber').show();
@@ -132,8 +141,6 @@
                 $('.manufacturer-pictures').hide();
             }
         }
-
-
     </script>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting"); 
@@ -269,63 +276,6 @@
                 @Html.ValidationMessageFor(model => model.NumberOfBestsellersOnHomepage)
             </td>
         </tr>
-
-        <tr id="pnlShowManufacturersOnHomepage">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowManufacturersOnHomepage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowManufacturersOnHomepage)
-                @Html.ValidationMessageFor(model => model.ShowManufacturersOnHomepage)
-            </td>
-        </tr>
-        <tr id="pnlManufacturerItemsToDisplayOnHomepage">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayOnHomepage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayOnHomepage)
-                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayOnHomepage)
-            </td>
-        </tr>
-        
-        <tr id="pnlManufacturerItemsToDisplayOnHomepage">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
-                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
-            </td>
-        </tr>
-        
-        <tr id="pnlShowManufacturerPictures">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowManufacturerPictures)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowManufacturerPictures)
-                @Html.ValidationMessageFor(model => model.ShowManufacturerPictures)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.HideManufacturerDefaultPictures)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.HideManufacturerDefaultPictures)
-				@Html.ValidationMessageFor(model => model.HideManufacturerDefaultPictures)
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SortManufacturersAlphabetically)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SortManufacturersAlphabetically)
-                @Html.ValidationMessageFor(model => model.SortManufacturersAlphabetically)
-            </td>
-        </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.HideCategoryDefaultPictures)
@@ -381,6 +331,84 @@
                 @Html.ValidationMessageFor(model => model.ShowDefaultDeliveryTime)
             </td>
         </tr>
+    </table>
+
+    <table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Admin.Catalog.Manufacturers")</div>
+				</div>
+			</td>
+		</tr>
+
+        <tr id="pnlShowManufacturersOnHomepage">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturersOnHomepage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowManufacturersOnHomepage)
+                @Html.ValidationMessageFor(model => model.ShowManufacturersOnHomepage)
+            </td>
+        </tr>
+        <tr id="pnlManufacturerItemsToDisplayOnHomepage">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayOnHomepage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayOnHomepage)
+                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayOnHomepage)
+            </td>
+        </tr>
+
+        <tr id="pnlShowManufacturersInOffCanvas">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturersInOffCanvas)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowManufacturersInOffCanvas)
+                @Html.ValidationMessageFor(model => model.ShowManufacturersInOffCanvas)
+            </td>
+        </tr>
+        
+        <tr id="pnlManufacturerItemsToDisplayInOffCanvas">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
+                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
+            </td>
+        </tr>
+
+        <tr id="pnlShowManufacturerPictures">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturerPictures)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowManufacturerPictures)
+                @Html.ValidationMessageFor(model => model.ShowManufacturerPictures)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.HideManufacturerDefaultPictures)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.HideManufacturerDefaultPictures)
+                @Html.ValidationMessageFor(model => model.HideManufacturerDefaultPictures)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SortManufacturersAlphabetically)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SortManufacturersAlphabetically)
+                @Html.ValidationMessageFor(model => model.SortManufacturersAlphabetically)
+            </td>
+        </tr>
+
     </table>
 }
         

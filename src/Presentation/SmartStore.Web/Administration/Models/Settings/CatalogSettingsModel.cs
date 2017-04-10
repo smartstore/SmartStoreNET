@@ -72,6 +72,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage")]
         public bool ShowManufacturersOnHomepage { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturersInOffCanvas")]
+        public bool ShowManufacturersInOffCanvas { get; set; }
+        
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayOnHomepage")]
         public int ManufacturerItemsToDisplayOnHomepage { get; set; }
 

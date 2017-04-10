@@ -1656,7 +1656,6 @@
     <Content Include="Views\Catalog\Partials\HomepageCategories.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageProducts.cshtml" />
     <Content Include="Views\Catalog\ManufacturerAll.cshtml" />
-    <Content Include="Views\Catalog\Partials\ManufacturerNavigation.cshtml" />
     <Content Include="Views\Catalog\ManufacturerTemplate.ProductsInGridOrLines.cshtml" />
     <Content Include="Views\Catalog\Partials\PopularProductTags.cshtml" />
     <Content Include="Views\Catalog\ProductsByTag.cshtml" />

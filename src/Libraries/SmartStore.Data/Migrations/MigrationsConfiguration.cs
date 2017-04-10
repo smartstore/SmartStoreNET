@@ -680,24 +680,6 @@ namespace SmartStore.Data.Migrations
 				"Specifies whether to SSL secure all request.",
 				"Legt fest, dass alle Anfragen SSL gesichert werden sollen.");
 
-            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage",
-                "Display manufacturer lists",
-                "Zeige Herstellerlisten",
-                "Specifies whether manufacturer lists will be displayed. This setting effects all partial manufacturer lists in the shop (e.g. homepage, mobile menu).",
-                "Legt fest, ob Herstellerlisten angezeigt werden. Diese Einstellung betrifft alle partiellen Herstellerlisten im Shop (z.B. Homepage, Mobile-Menu).");
-
-            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay",
-                "Amount of manufacturers to display in lists",
-                "Anzahl der anzuzeigenden Hersteller in Listen",
-                "Specifies the amount of manufacturers to display in lists. This setting effects all partial manufacturer lists in the shop (e.g. homepage, mobile menu).",
-                "Bestimmt die Anzahl der anzuzeigenden Hersteller in  Listen. Diese Einstellung betrifft alle partiellen Herstellerlisten im Shop (z.B. Homepage, Mobile-Menu).");
-
-            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerPictures",
-                "Display manufacturer pictures in lists",
-                "Herstellerbilder in Listen anzeigen",
-                "Specifies whether manufacturer pictures will be displayed in lists. This setting effects all partial manufacturer lists in the shop (e.g. homepage, mobile menu).",
-                "Bestimmt ob Herstellerbilder in Listen angezeigt werden sollen. Diese Einstellung betrifft alle partiellen Herstellerlisten im Shop (z.B. Homepage, Mobile-Menu).");
-
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.Checkboxes",
 				"Checkboxes",
 				"Kontrollkästchen");
@@ -787,18 +769,6 @@ namespace SmartStore.Data.Migrations
             
             builder.Delete("Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay");
 
-            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayOnHomepage",
-                "Amount of manufacturers to display on homepage",
-                "Anzahl der anzuzeigenden Hersteller auf der Homepage",
-                "Specifies the amount of manufacturers to display on homepage.",
-                "Bestimmt die Anzahl der anzuzeigenden Hersteller auf der Homepage.");
-
-            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayInOffCanvasMenu",
-                "Amount of manufacturers to display in offcanvas menu",
-                "Anzahl der anzuzeigenden Hersteller im OffCanvas-Menu",
-                "Specifies the amount of manufacturers to display in offcanvas menu.",
-                "Bestimmt die Anzahl der anzuzeigenden Hersteller im OffCanvas-Menu.");
-
             builder.AddOrUpdate("Homepage.TopBrands", "Top Brands", "Top-Marken");
             builder.AddOrUpdate("Homepage.Brands.ShowAll", "Show all", "Alle anzeigen");
 
@@ -807,6 +777,38 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Account.CustomerReturnRequests.Action", "Return action", "Rücksendeaktion");
 			builder.AddOrUpdate("Account.CustomerReturnRequests.Date", "Date Requested", "Anfragedatum");
 			builder.AddOrUpdate("Account.CustomerReturnRequests.Item", "Item", "Artikel");
-		}
+
+
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage",
+                "Display manufacturers on homepage",
+                "Zeige Hersteller auf Startseite",
+                "Specifies whether manufacturers will be displayed on the homepage.",
+                "Legt fest, ob Hersteller auf der Startseite angezeigt werden.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturersInOffCanvas",
+                "Display manufacturers in offcanvas menu",
+                "Zeige Hersteller in OffCanvas-Menu",
+                "Specifies whether manufacturers will be displayed in offcanvas menu.",
+                "Legt fest, ob Hersteller im OffCanvas-Menu angezeigt werden.");
+            
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayOnHomepage",
+                "Amount of manufacturers to display on homepage",
+                "Anzahl der anzuzeigenden Hersteller auf der Homepage",
+                "Specifies the amount of manufacturers to display on homepage.",
+                "Bestimmt die Anzahl der anzuzeigenden Hersteller auf der Homepage.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerPictures",
+                "Display manufacturer pictures in lists",
+                "Herstellerbilder in Listen anzeigen",
+                "Specifies whether manufacturer pictures will be displayed in lists. This setting effects all partial manufacturer lists in the shop (e.g. homepage, offcanvas menu).",
+                "Bestimmt ob Herstellerbilder in Listen angezeigt werden sollen. Diese Einstellung betrifft alle partiellen Herstellerlisten im Shop (z.B. Homepage, OffCanvas-Menu).");
+            
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayInOffCanvasMenu",
+                "Amount of manufacturers to display in offcanvas menu",
+                "Anzahl der anzuzeigenden Hersteller im OffCanvas-Menu",
+                "Specifies the amount of manufacturers to display in offcanvas menu.",
+                "Bestimmt die Anzahl der anzuzeigenden Hersteller im OffCanvas-Menu.");
+        }
 	}
 }

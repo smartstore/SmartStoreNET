@@ -46,6 +46,7 @@ namespace SmartStore.Core.Domain.Catalog
             ShowManufacturersOnHomepage = true;
             ShowManufacturerPictures = false;
             ManufacturerItemsToDisplayOnHomepage = 18;
+            ShowManufacturersInOffCanvas = true;
             ManufacturerItemsToDisplayInOffcanvasMenu = 20;
 
             ShowManufacturerInProductDetail = true;
@@ -276,6 +277,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public bool ShowManufacturersOnHomepage { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to show manufacturers in offcanvas menu
+        /// </summary>
+        public bool ShowManufacturersInOffCanvas { get; set; }
+        
         /// <summary>
         /// Gets or sets the value indicating how many manufacturers on home page
         /// </summary>

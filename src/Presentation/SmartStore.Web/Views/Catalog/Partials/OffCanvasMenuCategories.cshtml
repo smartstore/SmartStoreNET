@@ -12,9 +12,7 @@
     private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state)
     {
         var liClasses = new List<string>();
-
-        liClasses.Add("nav-item");
-
+        
         if (node.Depth <= 1 && node.HasChildren)
         {
             liClasses.Add(node.Depth > 0 ? "dropdown-submenu" : "dropdown");

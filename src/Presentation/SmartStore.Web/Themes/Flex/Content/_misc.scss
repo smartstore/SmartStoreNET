@@ -1,79 +1,25 @@
 /// <reference path="bs4/scss/bootstrap.scss" />
 
-//
-// Misc Styles
-// --------------------------------------------------
-body.popup { padding: 20px; }
-
-// homepage news
-.link-rss:hover {
-    text-decoration: none;
-}
-.news-date {
-    float: right; 
-    font-size: $font-size-sm;
-    font-weight: bold;
-}
-.news-item {
-    margin-bottom: 2rem;
-}
-
-
-.deliverytime-group .delivery-time { 
-    vertical-align: top; 
-    padding-left: 0.25rem;
-} 
-.delivery-time {
-    display: inline-block;
-    color: $brand-danger;
-    vertical-align: middle;
-    max-width: 100%;
-    @include text-truncate();
-
-    .delivery-time-status {
-        padding-right: 0.2rem;
-        font-size: 0.85em;
-    }
-}
-
-//
-// Breadcrumb Styles
-// --------------------------------------------------
-
+/* Breadcrumb
+================================================ */
 .breadcrumb {
     padding: 0;
     background: none;
     font-size: $font-size-sm;
     margin-bottom: 1.5rem;
 }
-
 .breadcrumb-item:after {
     content: '|';
     padding: 0 0.5rem;
 }
-
 .breadcrumb-item:last-of-type:after { 
     display: none; 
 }
-
 .breadcrumb > li + li::before {
     display: none !important;
 }
-
 .breadcrumb-item > a {
     color: $body-color !important;
-}
-
-
-#iframe-backinstocksubsription {
-    max-width: 100%;
-}
-
-// generic:
-// block titles
-.contact-page .block .block-title {
-    padding: 0 0 1.5rem 0;
-    font-size: 2rem;
 }
 
 /* Manufacturers on Homepage
@@ -100,6 +46,10 @@ body.popup { padding: 20px; }
 
 /* All manufacturers
 ================================================ */
+.manufacturer-list-title {
+    font-weight: bold;
+    padding-bottom: 0.5rem;
+}
 .manufacturer-nav {
     border-bottom: 1px solid #ddd;
     margin-bottom: 2rem;
@@ -118,9 +68,42 @@ body.popup { padding: 20px; }
     }
 }
 
-.manufacturer-list-title {
+/* Misc
+================================================ */
+body.popup { padding: 20px; }
+#iframe-backinstocksubsription {
+    max-width: 100%;
+}
+
+// delivery times
+.deliverytime-group .delivery-time { 
+    vertical-align: top; 
+    padding-left: 0.25rem;
+} 
+.delivery-time {
+    display: inline-block;
+    color: $brand-danger;
+    vertical-align: middle;
+    max-width: 100%;
+    @include text-truncate();
+
+    .delivery-time-status {
+        padding-right: 0.2rem;
+        font-size: 0.85em;
+    }
+}
+
+// homepage news
+.link-rss:hover {
+    text-decoration: none;
+}
+.news-date {
+    float: right; 
+    font-size: $font-size-sm;
     font-weight: bold;
-    padding-bottom: 0.5rem;
+}
+.news-item {
+    margin-bottom: 2rem;
 }
 
 // Tags
@@ -150,4 +133,9 @@ body.popup { padding: 20px; }
     font-weight: $font-weight-medium;
 }
 
-
+// generic:
+// block titles
+.contact-page .block .block-title {
+    padding: 0 0 1.5rem 0;
+    font-size: 2rem;
+}

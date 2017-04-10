@@ -8,6 +8,7 @@
 @import '~/.app/themevars.scss';
 // Contains theme specific variable defaults
 // and bootstrap variable overrides.
+@import '_variables-custom.scss'; 
 @import '_variables.scss'; 
 
 
@@ -62,6 +63,9 @@
 @import "_photoswipe-theme.scss";
 @import "_slick-theme.scss";
 @import "_drift-theme.scss";
+
+@import "_custom.scss";
+@import "_user.scss";
 
 
 // Custom imports from plugins

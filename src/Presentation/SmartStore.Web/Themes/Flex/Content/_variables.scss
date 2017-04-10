@@ -36,7 +36,6 @@ $spacers: (
     6: ($spacer * 3)
 );
 
-$headings-line-height:          1.2;
 $line-height-base:              1.5;
 $line-height-sm:                1.5;
 $line-height-lg:                (4 / 3);
@@ -52,6 +51,11 @@ $display1-size:                 5.5rem;
 $display2-size:                 5rem;
 $display3-size:                 4.5rem;
 $display4-size:                 3rem;
+
+$display1-weight:               $font-weight-light;
+$display2-weight:               $font-weight-light;
+$display3-weight:               $font-weight-light;
+$display4-weight:               $font-weight-light;
 
 $border-radius:                 .25rem; // 3px
 $border-radius-lg:              .3rem; // 4px

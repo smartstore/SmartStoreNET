@@ -53,6 +53,46 @@
                 });
             });
         },
+        // newsletter subsription
+        function (ctx) {
+            var newsletterContainer = $(".footer-newsletter");
+            if (newsletterContainer.length > 0)
+            {
+                var url = newsletterContainer.data("subscription-url");
+
+                newsletterContainer.find('#newsletter-subscribe-button').click(function () {
+
+                    var email = $("#newsletter-email").val();
+                    var subscribe = 'true';
+                    var resultDisplay = $("#newsletter-result-block");
+
+                    if ($('#newsletter-unsubscribe').is(':checked')) {
+                        subscribe = 'false';
+                    }
+		    
+                    $.ajax({
+                        cache: false,
+                        type: "POST",
+                        url: url,
+                        data: { "subscribe": subscribe, "email": email },
+                        success: function (data) {
+                            resultDisplay.html(data.Result);
+                            if (data.Success) {
+                                $('#newsletter-subscribe-block').hide();
+                                resultDisplay.removeClass("alert-error d-none").addClass("alert-success d-block");
+                            }
+                            else {
+                                resultDisplay.removeClass("alert-success d-none").addClass("alert-danger d-block").fadeIn("slow").delay(2000).fadeOut("slow");
+                            }
+                        },
+                        error:function (xhr, ajaxOptions, thrownError){
+                            resultDisplay.empty().text("Failed to subscribe").removeClass("alert-success d-none").addClass("alert-danger d-block");
+                        }  
+                    });                
+                    return false;
+                });
+            }
+        },
         // slick carousel
         function (ctx) {
         	if ($.fn.slick === undefined)

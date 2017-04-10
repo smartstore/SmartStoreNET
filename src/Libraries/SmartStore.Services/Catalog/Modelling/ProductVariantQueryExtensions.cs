@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -28,17 +29,23 @@ namespace SmartStore.Services.Catalog.Modelling
 
 			foreach (var pva in variantAttributes)
 			{
-				var selected = query.GetVariant(productId, bundleItemId, pva.ProductAttributeId, pva.Id);
-				var selectedValue = selected?.Value;
+				var selectedItems = query.Variants.Where(x => 
+					x.ProductId == productId &&
+					x.BundleItemId == bundleItemId &&
+					x.AttributeId == pva.ProductAttributeId &&
+					x.VariantAttributeId == pva.Id);
+
+				var firstItem = selectedItems.FirstOrDefault();
+				var firstItemValue = firstItem?.Value;
 
 				switch (pva.AttributeControlType)
 				{
 					case AttributeControlType.DropdownList:
 					case AttributeControlType.RadioList:
 					case AttributeControlType.ColorSquares:
-						if (selectedValue.HasValue())
+						if (firstItemValue.HasValue())
 						{
-							var selectedAttributeId = selectedValue.SplitSafe(",").SafeGet(0).ToInt();
+							var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();
 							if (selectedAttributeId > 0)
 							{
 								result = productAttributeParser.AddProductAttribute(result, pva, selectedAttributeId.ToString());
@@ -47,29 +54,26 @@ namespace SmartStore.Services.Catalog.Modelling
 						break;
 
 					case AttributeControlType.Checkboxes:
-						if (selectedValue.HasValue())
+						foreach (var item in selectedItems)
 						{
-							foreach (var item in selectedValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+							var selectedAttributeId = item.Value.SplitSafe(",").SafeGet(0).ToInt();
+							if (selectedAttributeId > 0)
 							{
-								var selectedAttributeId = item.SplitSafe(",").SafeGet(0).ToInt();
-								if (selectedAttributeId > 0)
-								{
-									result = productAttributeParser.AddProductAttribute(result, pva, selectedAttributeId.ToString());
-								}
+								result = productAttributeParser.AddProductAttribute(result, pva, selectedAttributeId.ToString());
 							}
 						}
 						break;
 
 					case AttributeControlType.TextBox:
 					case AttributeControlType.MultilineTextbox:
-						if (selectedValue.HasValue())
+						if (firstItemValue.HasValue())
 						{
-							result = productAttributeParser.AddProductAttribute(result, pva, selectedValue);
+							result = productAttributeParser.AddProductAttribute(result, pva, firstItemValue);
 						}
 						break;
 
 					case AttributeControlType.Datepicker:
-						var date = selected?.Date;
+						var date = firstItem?.Date;
 						if (date.HasValue)
 						{
 							result = productAttributeParser.AddProductAttribute(result, pva, date.Value.ToString("D"));
@@ -80,7 +84,7 @@ namespace SmartStore.Services.Catalog.Modelling
 						if (request == null)
 						{
 							Guid downloadGuid;
-							Guid.TryParse(selectedValue, out downloadGuid);
+							Guid.TryParse(firstItemValue, out downloadGuid);
 							var download = downloadService.GetDownloadByGuid(downloadGuid);
 							if (download != null)
 							{
@@ -143,11 +147,11 @@ namespace SmartStore.Services.Catalog.Modelling
 				HttpContext.Current.Request.RequestContext,
 				false);
 
-			var queryString = query.ToString();
+			var queryString = query.ToQueryString();
 
 			if (queryString.HasValue())
 			{
-				url = string.Concat(url, url.Contains("?") ? "&" : "?", queryString);
+				url = string.Concat(url, queryString.StartsWith("?") ? "" : "?", queryString);
 			}
 
 			return url;

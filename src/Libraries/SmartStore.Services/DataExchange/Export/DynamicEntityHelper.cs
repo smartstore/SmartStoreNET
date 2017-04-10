@@ -665,15 +665,14 @@ namespace SmartStore.Services.DataExchange.Export
 					dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", valueNames), " ");
 				}
 
-				//var variantQueryString = _productAttributeParser.Value.SerializeQueryData(combination.AttributesXml, product.Id);
 				var query = new ProductVariantQuery();
 				_productAttributeParser.Value.DeserializeQuery(query, combination.AttributesXml, product.Id);
-				var variantQueryString = query.ToString();
+				var variantQueryString = query.ToQueryString();
 
 				if (variantQueryString.HasValue())
 				{
 					var url = (string)dynObject._DetailUrl;
-					dynObject._DetailUrl = string.Concat(url, url.Contains("?") ? "&" : "?", variantQueryString);
+					dynObject._DetailUrl = string.Concat(url, variantQueryString.StartsWith("?") ? "" : "?", variantQueryString);
 				}
 			}
 

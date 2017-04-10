@@ -559,12 +559,17 @@ namespace SmartStore.Web.Controllers
 
 						if (hasSelectedAttributes)
 						{
-							var selectedVariant = query.GetVariant(product.Id, bundleItemId, attribute.ProductAttributeId, attribute.Id);
-							if (selectedVariant != null && selectedVariant.Day > 0 && selectedVariant.Month > 0 && selectedVariant.Year > 0)
+							var selectedVariant = query.Variants.FirstOrDefault(x =>
+								x.ProductId == product.Id &&
+								x.BundleItemId == bundleItemId &&
+								x.AttributeId == attribute.ProductAttributeId &&
+								x.VariantAttributeId == attribute.Id);
+
+							if (selectedVariant != null && selectedVariant.Date.HasValue)
 							{
-								pvaModel.SelectedDay = selectedVariant.Day;
-								pvaModel.SelectedMonth = selectedVariant.Month;
-								pvaModel.SelectedYear = selectedVariant.Year;
+								pvaModel.SelectedDay = selectedVariant.Date.Value.Day;
+								pvaModel.SelectedMonth = selectedVariant.Date.Value.Month;
+								pvaModel.SelectedYear = selectedVariant.Date.Value.Year;
 							}
 						}
 					}
@@ -572,7 +577,12 @@ namespace SmartStore.Web.Controllers
 					{
 						if (hasSelectedAttributes)
 						{
-							var selectedVariant = query.GetVariant(product.Id, bundleItemId, attribute.ProductAttributeId, attribute.Id);
+							var selectedVariant = query.Variants.FirstOrDefault(x =>
+								x.ProductId == product.Id &&
+								x.BundleItemId == bundleItemId &&
+								x.AttributeId == attribute.ProductAttributeId &&
+								x.VariantAttributeId == attribute.Id);
+
 							if (selectedVariant != null)
 							{
 								pvaModel.TextValue = selectedVariant.Value;
@@ -673,7 +683,9 @@ namespace SmartStore.Web.Controllers
 									ProductId = product.Id,
 									BundleItemId = bundleItemId,
 									AttributeId = attribute.ProductAttributeId,
-									VariantAttributeId = attribute.Id
+									VariantAttributeId = attribute.Id,
+									Alias = attribute.ProductAttribute.Alias,
+									ValueAlias = defaultValue.Alias
 								});
 							}
 						}
@@ -687,7 +699,9 @@ namespace SmartStore.Web.Controllers
 									ProductId = product.Id,
 									BundleItemId = bundleItemId,
 									AttributeId = attribute.ProductAttributeId,
-									VariantAttributeId = attribute.Id
+									VariantAttributeId = attribute.Id,
+									Alias = attribute.ProductAttribute.Alias,
+									ValueAlias = value.Alias
 								});
 							}
 						}

@@ -277,7 +277,9 @@ namespace SmartStore.Services.Catalog
 						ProductId = product.Id,
 						BundleItemId = bundleItemId,
 						AttributeId = attribute.ProductAttributeId,
-						VariantAttributeId = attribute.Id
+						VariantAttributeId = attribute.Id,
+						Alias = attribute.ProductAttribute.Alias,
+						ValueAlias = defaultValue.Alias
 					});
 				}
 				else
@@ -290,7 +292,9 @@ namespace SmartStore.Services.Catalog
 							ProductId = product.Id,
 							BundleItemId = bundleItemId,
 							AttributeId = attribute.ProductAttributeId,
-							VariantAttributeId = attribute.Id
+							VariantAttributeId = attribute.Id,
+							Alias = attribute.ProductAttribute.Alias,
+							ValueAlias = value.Alias
 						});
 					}
 				}

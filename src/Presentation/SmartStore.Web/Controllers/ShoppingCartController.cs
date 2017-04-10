@@ -1098,17 +1098,18 @@ namespace SmartStore.Web.Controllers
 
             foreach (var attribute in checkoutAttributes)
             {
-				var selected = query.CheckoutAttributes.FirstOrDefault(x => x.AttributeId == attribute.Id);
-				var selectedValue = selected?.Value;
+				var selectedItems = query.CheckoutAttributes.Where(x => x.AttributeId == attribute.Id);
+				var firstItem = selectedItems.FirstOrDefault();
+				var firstItemValue = firstItem?.Value;
 
                 switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
                     case AttributeControlType.RadioList:
                     case AttributeControlType.ColorSquares:
-						if (selectedValue.HasValue())
+						if (firstItemValue.HasValue())
 						{
-							var selectedAttributeId = selectedValue.SplitSafe(",").SafeGet(0).ToInt();
+							var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();
 							if (selectedAttributeId > 0)
 							{
 								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
@@ -1117,29 +1118,26 @@ namespace SmartStore.Web.Controllers
 						break;
 
                     case AttributeControlType.Checkboxes:
-						if (selectedValue.HasValue())
+						foreach (var item in selectedItems)
 						{
-							foreach (var item in selectedValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+							var selectedAttributeId = item.Value.SplitSafe(",").SafeGet(0).ToInt();
+							if (selectedAttributeId > 0)
 							{
-								var selectedAttributeId = item.SplitSafe(",").SafeGet(0).ToInt();
-								if (selectedAttributeId > 0)
-								{
-									selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
-								}
+								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
 							}
 						}
 						break;
 
                     case AttributeControlType.TextBox:    
                     case AttributeControlType.MultilineTextbox:
-						if (selectedValue.HasValue())
+						if (firstItemValue.HasValue())
 						{
-							selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedValue);
+							selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, firstItemValue);
                         }
                         break;
 
                     case AttributeControlType.Datepicker:
-						var date = selected?.Date;
+						var date = firstItem?.Date;
 						if (date.HasValue)
 						{
 							selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, date.Value.ToString("D"));
@@ -1147,9 +1145,9 @@ namespace SmartStore.Web.Controllers
                         break;
 
                     case AttributeControlType.FileUpload:
-						if (selectedValue.HasValue())
+						if (firstItemValue.HasValue())
 						{
-                            selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedValue);
+                            selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, firstItemValue);
                         }
                         break;
                 }

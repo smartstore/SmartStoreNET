@@ -1,6 +1,4 @@
-﻿using System.Web;
-
-namespace SmartStore.Services.Catalog.Modelling
+﻿namespace SmartStore.Services.Catalog.Modelling
 {
 	public class GiftCardQueryItem
 	{
@@ -24,6 +22,7 @@ namespace SmartStore.Services.Catalog.Modelling
 				return $"giftcard{productId}-{bundleItemId}-.{name.EmptyNull().ToLower()}";
 			}
 
+			// Just return field prefix for partial views.
 			return $"giftcard{productId}-{bundleItemId}-";
 		}
 
@@ -32,11 +31,6 @@ namespace SmartStore.Services.Catalog.Modelling
 
 		public int ProductId { get; set; }
 		public int BundleItemId { get; set; }
-
-		public string ToQueryString()
-		{
-			return string.Concat(ToString(), "=", HttpUtility.UrlEncode(Value));
-		}
 
 		public override string ToString()
 		{

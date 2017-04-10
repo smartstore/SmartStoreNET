@@ -77,7 +77,10 @@ namespace SmartStore.Services.Catalog
 				}
 				else
 				{
-					return _productVariantAttributeRepository.GetMany(productVariantAttributeIds).ToList();
+					return _productVariantAttributeRepository
+						.GetMany(productVariantAttributeIds)
+						.OrderBy(x => x.DisplayOrder)
+						.ToList();
 				}
 			}
 
@@ -281,10 +284,11 @@ namespace SmartStore.Services.Catalog
 
 		public virtual IList<ProductVariantAttribute> GetProductVariantAttributesByProductId(int productId)
         {
-			var query = from pva in _productVariantAttributeRepository.Table
+			var query = from pva in _productVariantAttributeRepository.Table.Expand(x => x.ProductAttribute)
 						orderby pva.DisplayOrder
 						where pva.ProductId == productId
 						select pva;
+
 			var productVariantAttributes = query.ToListCached("db.prodvarattrs.all-" + productId);
 			return productVariantAttributes;
 		}
@@ -358,8 +362,16 @@ namespace SmartStore.Services.Catalog
                 return Enumerable.Empty<ProductVariantAttributeValue>();
             }
 
-            return _productVariantAttributeValueRepository.GetMany(productVariantAttributeValueIds);
-        }
+			var query = _productVariantAttributeValueRepository.Table
+				.Expand(x => x.ProductVariantAttribute)
+				.Expand("ProductVariantAttribute.ProductAttribute")
+				.Where(x => productVariantAttributeValueIds.Contains(x.Id))
+				.OrderBy(x => x.ProductVariantAttribute.DisplayOrder)
+				.ThenBy(x => x.DisplayOrder);
+
+			return query.ToList();
+			//return _productVariantAttributeValueRepository.GetMany(productVariantAttributeValueIds);
+		}
 
         public virtual void InsertProductVariantAttribute(ProductVariantAttribute productVariantAttribute)
         {

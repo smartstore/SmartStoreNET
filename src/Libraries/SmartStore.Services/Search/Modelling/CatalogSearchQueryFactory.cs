@@ -600,11 +600,6 @@ namespace SmartStore.Services.Search.Modelling
 		{
 		}
 
-		public string ToQueryString(CatalogSearchQuery query)
-		{
-			return query.ToString();
-		}
-
 		protected T GetValueFor<T>(string key)
 		{
 			T value;

@@ -107,36 +107,37 @@ namespace SmartStore.Services.Catalog
 
         public virtual IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributeXml)
         {
-            //var pvaValues = Enumerable.Empty<ProductVariantAttributeValue>();
+			var attributeIds = DeserializeProductVariantAttributes(attributeXml);
+			var valueIds = new HashSet<int>(attributeIds.SelectMany(x => x.Value).Select(x => x.ToInt()));
 
-			var allIds = new List<int>();
-            var attrs = DeserializeProductVariantAttributes(attributeXml);
-			var pvaCollection = _productAttributeService.GetProductVariantAttributesByIds(attrs.Keys);
+			var values = _productAttributeService.GetProductVariantAttributeValuesByIds(valueIds.ToArray());
 
-            foreach (var pva in pvaCollection)
-            {
-                if (!pva.ShouldHaveValues())
-                    continue;
+			return values.Where(x => x.ProductVariantAttribute.ShouldHaveValues());
 
-                var pvaValuesStr = attrs[pva.Id];
+			//var allIds = new List<int>();
+			//var attrs = DeserializeProductVariantAttributes(attributeXml);
+			//var pvaCollection = _productAttributeService.GetProductVariantAttributesByIds(attrs.Keys);
 
-                var ids =
-					from id in pvaValuesStr
-					where id.HasValue()
-					select id.ToInt();
+			//foreach (var pva in pvaCollection)
+			//{
+			//	if (!pva.ShouldHaveValues())
+			//		continue;
 
-				allIds.AddRange(ids);
+			//	var pvaValuesStr = attrs[pva.Id];
 
-                //var values = _productAttributeService.GetProductVariantAttributeValuesByIds(ids.ToArray());
-                //pvaValues = pvaValues.Concat(values);
-            }
+			//	var ids =
+			//		from id in pvaValuesStr
+			//		where id.HasValue()
+			//		select id.ToInt();
 
-			int[] allDistinctIds = allIds.Distinct().ToArray();
+			//	allIds.AddRange(ids);
+			//}
 
-			var values = _productAttributeService.GetProductVariantAttributeValuesByIds(allDistinctIds);
+			//int[] allDistinctIds = allIds.Distinct().ToArray();
 
-            return values;
-        }
+			//var values = _productAttributeService.GetProductVariantAttributeValuesByIds(allDistinctIds);
+			//return values;
+		}
 
 		public virtual IList<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes)
 		{
@@ -339,7 +340,9 @@ namespace SmartStore.Services.Catalog
 						ProductId = productId,
 						BundleItemId = bundleItemId,
 						AttributeId = value.ProductVariantAttribute.ProductAttributeId,
-						VariantAttributeId = value.ProductVariantAttributeId
+						VariantAttributeId = value.ProductVariantAttributeId,
+						Alias = value.ProductVariantAttribute.ProductAttribute.Alias,
+						ValueAlias = value.Alias
 					});
 				}
 			}

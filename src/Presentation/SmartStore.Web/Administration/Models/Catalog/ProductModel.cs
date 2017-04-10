@@ -411,6 +411,8 @@ namespace SmartStore.Admin.Models.Catalog
             {
                 AvailableAttributes = new List<SelectListItem>();
                 AvailableOptions = new List<SelectListItem>();
+				AllowFiltering = true;
+				ShowOnProductPage = true;
             }
             
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.SpecificationAttribute")]

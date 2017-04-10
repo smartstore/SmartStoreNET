@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -10,9 +11,9 @@ namespace SmartStore.Services.Catalog.Modelling
 	public class ProductVariantQueryFactory : IProductVariantQueryFactory
 	{
 		internal static readonly Regex IsVariantKey = new Regex(@"pvari[0-9]+-[0-9]+-[0-9]+-[0-9]+", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		internal static readonly Regex IsVariantAliasKey = new Regex(@"\w+-[0-9]+-[0-9]+-[0-9]+$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		internal static readonly Regex IsGiftCardKey = new Regex(@"giftcard[0-9]+-[0-9]+-\.\w+$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		internal static readonly Regex IsCheckoutAttributeKey = new Regex(@"cattr[0-9]+$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		internal static readonly Regex IsVariantAliasKey = new Regex(@"\w+-[0-9]+-[0-9]+-[0-9]+$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		protected readonly HttpContextBase _httpContext;
 		protected readonly ICommonServices _services;
@@ -58,6 +59,41 @@ namespace SmartStore.Services.Catalog.Modelling
 			}
 		}
 
+		private DateTime? ConvertToDate(string key, string value)
+		{
+			var year = 0;
+			var month = 0;
+			var day = 0;
+
+			if (key.EndsWith("-date"))
+			{
+				// Convert from one query string item.
+				var dateItems = value.SplitSafe("-");
+				year = dateItems.SafeGet(0).ToInt();
+				month = dateItems.SafeGet(1).ToInt();
+				day = dateItems.SafeGet(2).ToInt();
+			}
+			else if (key.EndsWith("-year"))
+			{
+				// Convert from three form controls.
+				var dateKey = key.Replace("-year", "");
+				year = value.ToInt();
+				month = QueryItems[dateKey + "-month"].FirstOrDefault()?.ToInt() ?? 0;
+				day = QueryItems[dateKey + "-day"].FirstOrDefault()?.ToInt() ?? 0;
+			}
+
+			if (year > 0 && month > 0 && day > 0)
+			{
+				try
+				{
+					return new DateTime(year, month, day);
+				}
+				catch { }
+			}
+
+			return null;
+		}
+
 		protected virtual void ConvertVariant(ProductVariantQuery query, string key, string value)
 		{
 			if (key.EndsWith("-day") || key.EndsWith("-month"))
@@ -72,17 +108,67 @@ namespace SmartStore.Services.Catalog.Modelling
 				variant.AttributeId = ids[2].ToInt();
 				variant.VariantAttributeId = ids[3].ToInt();
 
-				if (key.EndsWith("-year"))
+				if (key.EndsWith("-date") || key.EndsWith("-year"))
 				{
-					variant.Year = value.ToInt();
-
-					var dateKey = key.Replace("-year", "");
-					variant.Month = QueryItems[dateKey + "-month"].FirstOrDefault()?.ToInt() ?? 0;
-					variant.Day = QueryItems[dateKey + "-day"].FirstOrDefault()?.ToInt() ?? 0;
+					variant.Date = ConvertToDate(key, value);
 				}
 
 				query.AddVariant(variant);
 			}
+		}
+
+		protected virtual bool ConvertVariantAlias(ProductVariantQuery query, string key, ICollection<string> values, int languageId)
+		{
+			if (values.Count == 0)
+				return false;
+
+			var ids = key.SplitSafe("-");
+			var len = ids.Length;
+			if (len < 4)
+				return false;
+
+			var alias = string.Join("-", ids.Take(len - 3));
+
+			var attributeId = _catalogSearchQueryAliasMapper.GetVariantIdByAlias(alias, languageId);
+			if (attributeId == 0)
+				return false;
+
+			var productId = ids.SafeGet(len - 3).ToInt();
+			var bundleItemId = ids.SafeGet(len - 2).ToInt();
+			var variantAttributeId = ids.SafeGet(len - 1).ToInt();
+
+			if (productId == 0 || variantAttributeId == 0)
+				return false;
+
+			foreach (var value in values)
+			{
+				// We cannot use GetVariantOptionIdByAlias. It doesn't necessarily provide a ProductVariantAttributeValue.Id associated with this product.
+				//var optionId = _catalogSearchQueryAliasMapper.GetVariantOptionIdByAlias(value, attributeId, languageId);
+				var optionId = 0;
+				string valueAlias = null;
+				var valueIds = value.SplitSafe("-");
+				if (valueIds.Length >= 2)
+				{
+					optionId = valueIds.SafeGet(valueIds.Length - 1).ToInt();
+					valueAlias = string.Join("-", valueIds.Take(valueIds.Length - 1));
+				}
+
+				var variant = new ProductVariantQueryItem(optionId == 0 ? value : optionId.ToString());
+				variant.ProductId = productId;
+				variant.BundleItemId = bundleItemId;
+				variant.AttributeId = attributeId;
+				variant.VariantAttributeId = variantAttributeId;
+				variant.Alias = alias;
+
+				if (optionId != 0)
+				{
+					variant.ValueAlias = valueAlias;
+				}
+
+				query.AddVariant(variant);
+			}
+
+			return true;
 		}
 
 		protected virtual void ConvertGiftCard(ProductVariantQuery query, string key, string value)
@@ -108,49 +194,13 @@ namespace SmartStore.Services.Catalog.Modelling
 			{
 				var attribute = new CheckoutAttributeQueryItem(ids[0].ToInt(), value);
 
-				if (key.EndsWith("-year"))
+				if (key.EndsWith("-date") || key.EndsWith("-year"))
 				{
-					attribute.Year = value.ToInt();
-
-					var dateKey = key.Replace("-year", "");
-					attribute.Month = QueryItems[dateKey + "-month"].FirstOrDefault()?.ToInt() ?? 0;
-					attribute.Day = QueryItems[dateKey + "-day"].FirstOrDefault()?.ToInt() ?? 0;
+					attribute.Date = ConvertToDate(key, value);
 				}
 
 				query.AddCheckoutAttribute(attribute);
 			}
-		}
-
-		protected virtual bool ConvertVariantAlias(ProductVariantQuery query, string key, ICollection<string> values, int languageId)
-		{
-			var ids = key.SplitSafe("-");
-			if (ids.Length < 4)
-				return false;
-
-			var attributeId = _catalogSearchQueryAliasMapper.GetVariantIdByAlias(ids[0], languageId);
-			if (attributeId == 0)
-				return false;
-
-			var result = false;
-			var productId = ids[1].ToInt();
-			var bundleItemId = ids[2].ToInt();
-			var variantAttributeId = ids[3].ToInt();
-
-			foreach (var value in values)
-			{
-				var optionId = _catalogSearchQueryAliasMapper.GetVariantOptionIdByAlias(value, attributeId, languageId);
-
-				var variant = new ProductVariantQueryItem(optionId == 0 ? value : optionId.ToString());
-				variant.ProductId = productId;
-				variant.BundleItemId = bundleItemId;
-				variant.AttributeId = attributeId;
-				variant.VariantAttributeId = variantAttributeId;
-
-				query.AddVariant(variant);
-				result = true;
-			}
-
-			return result;
 		}
 
 		protected virtual void ConvertItems(HttpRequestBase request, ProductVariantQuery query, string key, ICollection<string> values)

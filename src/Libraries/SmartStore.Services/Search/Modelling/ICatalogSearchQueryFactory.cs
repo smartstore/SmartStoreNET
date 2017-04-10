@@ -1,6 +1,4 @@
-﻿using System.Web;
-
-namespace SmartStore.Services.Search.Modelling
+﻿namespace SmartStore.Services.Search.Modelling
 {
 	public interface ICatalogSearchQueryFactory
 	{
@@ -10,13 +8,6 @@ namespace SmartStore.Services.Search.Modelling
 		/// </summary>
 		/// <returns>The query object</returns>
 		CatalogSearchQuery CreateFromQuery();
-
-		/// <summary>
-		/// Deserializes the passed query object to a query string
-		/// </summary>
-		/// <param name="query">The query</param>
-		/// <returns>Query string (e.g. '?q=term&o=1&i=1&s=100...')</returns>
-		string ToQueryString(CatalogSearchQuery query);
 
 		/// <summary>
 		/// The last created query instance. The MVC model binder uses this property to avoid repeated binding.

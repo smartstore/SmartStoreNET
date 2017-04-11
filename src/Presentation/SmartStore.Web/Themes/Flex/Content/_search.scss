@@ -1,13 +1,10 @@
+/// <reference path="_variables.scss" />
 /// <reference path="shared/_mixins.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 //
 // InstantSearch Box & Drop Styles
 // --------------------------------------------------
-
-$searchbox-border-color:            rgba(0,0,0, 0.12);
-$searchbox-border-active-color:     rgba(0,0,0, 0.2);
-$searchbox-hit-tag-color:           darken($brand-warning, 10%);
 
 $facet-selection-color:             darken($brand-success, 15%);
 
@@ -30,6 +27,7 @@ $facet-selection-color:             darken($brand-success, 15%);
     padding-left: 1rem;
     padding-right: 1rem;
     border-radius: 2px;
+    background: $searchbox-bg;
     border-color: $searchbox-border-color;
     box-shadow: none;
     transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
@@ -39,7 +37,7 @@ $facet-selection-color:             darken($brand-success, 15%);
         box-shadow: 0 2px 6px 0 rgba(0,0,0, 0.12);
     }
      &:focus, &:active {
-        background-color: #fff;
+        background-color: $searchbox-focus-bg;
         border-color: $searchbox-border-active-color;
     }
 }

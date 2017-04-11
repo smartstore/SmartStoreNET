@@ -24,6 +24,12 @@ $shopbar-bg:                    transparent !default;
 $megamenu-bg:                   $gray-lightest !default;
 $megamenu-navlink-font-size:    1rem !default;
 
+$searchbox-bg:                  #fff !default;
+$searchbox-focus-bg:            #fff !default;
+$searchbox-border-color:        rgba(0,0,0, 0.12) !default;
+$searchbox-border-active-color: rgba(0,0,0, 0.2) !default;
+$searchbox-hit-tag-color:       darken($brand-warning, 10%) !default;
+
 
 // Bootstrap variable overrides
 // ========================================

@@ -51,7 +51,7 @@
 
 			<!-- Address & Info -->
 			<div class="clearfix" style="margin-bottom: 100px">
-				<div class="order-address margin-top-40 pull-left">
+				<div class="order-address mt-5 pull-left">
 					<div>
 						<span class="header text-smallest">
 							@{
@@ -61,7 +61,7 @@
 							@JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, country }, " &middot; ")
 						</span>
 					</div>
-					<div class="margin-top-10">
+					<div class="mt-2">
 						@if (address.CompanyEnabled && address.Company.HasValue())
                         {
 							<div>@address.Company</div>
@@ -151,7 +151,7 @@
 
 			@if (order.CheckoutAttributeInfo.HasValue())
             {
-				<div class="checkout-attributes margin-bottom-30">
+				<div class="checkout-attributes mb-5">
 					@Html.Raw(order.CheckoutAttributeInfo)
 				</div>
             }
@@ -243,7 +243,7 @@
             {
 				<h3>@T("PDFInvoice.OrderNotes")</h3>
 
-				<div class="order-notes margin-top-10">
+				<div class="order-notes mt-2">
 					<table class="table">
 						<thead>
 							<tr>

@@ -37,7 +37,7 @@
 
             <!-- Address & Info -->
             <div class="clearfix">
-                <div class="order-address margin-top-40 pull-left">
+                <div class="order-address mt-5 pull-left">
                     <div>
                         <span class="header text-smallest">
                             @{
@@ -47,7 +47,7 @@
                             @JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, country }, " &middot; ")
                         </span>
                     </div>
-                    <div class="margin-top-10">
+                    <div class="mt-2">
                         @if (address.Company.HasValue())
 						{
                             <div>@address.Company</div>

@@ -1,8 +1,9 @@
-﻿/// <reference path="bs4/scss/bootstrap.scss" />
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
 /// <reference path="shared/_mixins.scss" />
 /// <reference path="shared/_offcanvas.scss" />
 
-$ocm-border-color:                      rgba(#000, 0.15);
+$ocm-border-color:                      rgba(#000, 0.1);
 $ocm-horizontal-padding:                1.6rem;
 $ocm-selected-color:                    $brand-warning;
 
@@ -207,6 +208,7 @@ $ocm-selected-color:                    $brand-warning;
         padding: 1rem 2rem;
         border-bottom: 1px solid $ocm-border-color;
         background-color: #fff;
+        color: $body-color;
     }
 
     .menubar-icon {
@@ -234,6 +236,8 @@ $ocm-selected-color:                    $brand-warning;
         border-bottom: 1px solid $ocm-border-color;
         border-radius: initial;
         box-shadow: initial;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
     }
 
     .dropdown-divider {

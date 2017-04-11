@@ -36,14 +36,14 @@
         else
         {
             <header>
-                <div class="menubar-section d-none d-lg-block">
+                <div class="menubar-section d-none d-lg-block @(GetThemeVariable<bool>("inverse-menubar") ? "menubar-inverse" : "menubar-light")">
                     <div class="container menubar-container">
                         @{ 
                             Html.RenderAction("Menu", "Common", new { area = "" });
 						}
                     </div>
                 </div>
-                <div class="shopbar-section"> 
+                <div class="shopbar-section @(GetThemeVariable<bool>("inverse-shopbar") ? "shopbar-inverse" : "shopbar-light")"> 
                     <div class="container shopbar-container">
                         @{ 
                             Html.RenderAction("ShopBar", "Common", new { area = "" });

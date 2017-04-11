@@ -1,4 +1,11 @@
-﻿/// <reference path="bs4/scss/bootstrap.scss" />
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+/*$megamenu-light-color:          $body-color !default;
+$megamenu-light-hover-bg:       scale-color($megamenu-bg, $lightness: -5%); //darken($megamenu-bg, 7%); // rgba(0, 0, 0, 0.06)
+$megamenu-inverse-color:        #fff !default;
+$megamenu-inverse-hover-bg:     scale-color($megamenu-bg, $lightness: 15%); //lighten($megamenu-bg, 7%); // rgba(255,255,255, 0.1)
+$megamenu-selected-color:       $brand-warning !default;*/
 
 $megamenu-zindex-base:          ($zindex-dropdown - 20);
 
@@ -10,6 +17,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
 .megamenu {
     overflow: hidden;
     position: relative;
+    width: 100%;
     
     .nav-link {
         font-weight: $font-weight-medium;
@@ -18,22 +26,22 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
 }
 
 .navbar-light .megamenu .nav-item {
-    .nav-link { color: $megamenu-light-color; }
+    .nav-link { color: $header-color; }
 
      &.active .nav-link, 
      .nav-link:focus, 
      .nav-link:hover { 
-         background: $megamenu-light-hover-color;
+         background: $header-hover-bg;
      }
 }
 
 .navbar-inverse .megamenu .nav-item {
-    .nav-link { color: $megamenu-inverse-color; }
+    .nav-link { color: $header-inverse-color; }
 
      &.active .nav-link, 
      .nav-link:focus, 
      .nav-link:hover { 
-         background: $megamenu-inverse-hover-color; 
+         background: $header-inverse-hover-bg; 
      }
 } 
 
@@ -98,7 +106,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
             left: 0;
             bottom: 1px;
             height: 3px;
-            background: $megamenu-selected-color;
+            background: $header-selected-color;
         }
     }
 
@@ -167,7 +175,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
 .touchevents .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i,
 .touchevents .megamenu-section .megamenu-nav-btn i,
 .megamenu .megamenu-nav i {
-    color: $megamenu-light-color;
+    color: $header-color;
     display: none;
 }
 .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i {

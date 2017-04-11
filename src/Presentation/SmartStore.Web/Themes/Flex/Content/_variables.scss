@@ -7,13 +7,22 @@
 $font-weight-light:             300 !default;
 $font-weight-medium:            600 !default;
 
+$header-bg:                     transparent !default;
+$header-color:                  $body-color !default;
+$header-color-muted:            $text-muted !default;
+$header-hover-bg:               rgba(#000, 0.03) !default;
+$header-border-color:           #ddd !default; 
+$header-inverse-color:          #fff !default;
+$header-inverse-color-muted:    rgba(#fff, 0.5) !default;
+$header-inverse-hover-bg:       rgba(#fff, 0.15) !default;
+$header-inverse-border-color:   rgba(#fff, 0.15) !default;
+$header-selected-color:         $brand-warning !default;
+$header-inverse-selected-color: $header-selected-color !default;
+
+$menubar-bg:                    transparent !default;
+$shopbar-bg:                    transparent !default;
 $megamenu-bg:                   $gray-lightest !default;
 $megamenu-navlink-font-size:    1rem !default;
-$megamenu-light-color:          $body-color !default;
-$megamenu-light-hover-color:    scale-color($megamenu-bg, $lightness: -5%); //darken($megamenu-bg, 7%); // rgba(0, 0, 0, 0.06)
-$megamenu-inverse-color:        #fff !default;
-$megamenu-inverse-hover-color:  scale-color($megamenu-bg, $lightness: 15%); //lighten($megamenu-bg, 7%); // rgba(255,255,255, 0.1)
-$megamenu-selected-color:       $brand-warning !default; 
 
 
 // Bootstrap variable overrides
@@ -26,6 +35,7 @@ $enable-transitions:            true;
 $enable-hover-media-query:      false;
 $enable-grid-classes:           true;
 
+$spacer: 1rem;
 $spacers: (
     0: 0,
     1: ($spacer * .25),

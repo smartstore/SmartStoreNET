@@ -51,7 +51,7 @@
 			{
 				<span>@T("Products.CallForPrice.GoToForm")</span>
 			}
-			else
+			else if (Model.Parent.ViewMode == ProductSummaryViewMode.List)
 			{
 				@* Show "Call for price" label on sm-only (enough space!) *@
 				<span class="d-none d-sm-inline">@T("Products.CallForPrice.GoToForm")</span>

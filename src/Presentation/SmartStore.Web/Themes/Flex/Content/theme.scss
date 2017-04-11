@@ -87,6 +87,10 @@ body {
 // TODO: (mc) Move all later (!)
 // ------------------------------------------------------
 
+header {
+    background-color: $header-bg;
+}
+
 #page {
     background: $body-bg;
     overflow-x: hidden;  

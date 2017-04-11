@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace SmartStore.Core.Search.Facets
 {
@@ -130,6 +131,17 @@ namespace SmartStore.Core.Search.Facets
 			get
 			{
 				return _facets.Values;
+			}
+		}
+
+		public IEnumerable<Facet> SelectedFacets
+		{
+			get
+			{
+				var parents = _facets.Values.Where(x => x.Value.IsSelected);
+				var children = _facets.Values.SelectMany(x => x.Children).Where(x => x.Value.IsSelected);
+
+				return parents.Concat(children);
 			}
 		}
 

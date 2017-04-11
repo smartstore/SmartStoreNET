@@ -40,7 +40,7 @@
 			}
 
 			i++;
-			var selectedFilters = group.Facets.Where(x => x.Value.IsSelected).ToArray();
+			var selectedFilters = group.SelectedFacets.ToArray();
 			var selectedCount = selectedFilters.Length;
 			var expanded = i <= 3 || selectedCount > 0;
 

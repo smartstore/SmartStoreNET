@@ -217,7 +217,7 @@ namespace SmartStore.Services.Search
 
 			foreach (var numericRange in numericRanges)
 			{
-				foreach (var facet in numericRange.Facets.Where(x => x.Value.IsSelected))
+				foreach (var facet in numericRange.SelectedFacets)
 				{
 					var val = facet.Value;
 					var labels = val.Label.SplitSafe("~");

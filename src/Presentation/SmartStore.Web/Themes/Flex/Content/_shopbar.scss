@@ -98,9 +98,12 @@
 }
 
 @include media-breakpoint-down(md) {
+    .shopbar-section {
+        border-bottom: 1px solid rgba(#000, 0.12);
+    }
+
     .shopbar {
         flex-wrap: wrap;
-        border-bottom: 1px solid rgba(#000, 0.12);
     }
 
     .shopbar-col-group-tools {

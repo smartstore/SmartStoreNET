@@ -23,6 +23,11 @@
 	}
 
 	Html.AddBodyCssClass("lyt-cols-" + cols);
+
+	if (GetThemeVariable<bool>("boxed"))
+	{
+		Html.AddBodyCssClass("boxed");
+	}
 }
 
 <div id="page">

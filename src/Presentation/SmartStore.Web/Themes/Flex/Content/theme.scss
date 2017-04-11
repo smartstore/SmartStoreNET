@@ -80,7 +80,7 @@ html {
 }
 
 body { 
-    background: $body-bg;
+    background: $site-bg;
 }
 
 //
@@ -92,7 +92,6 @@ header {
 }
 
 #page {
-    background: $body-bg;
     overflow-x: hidden;  
 }
 
@@ -102,6 +101,34 @@ header {
     background: $body-bg;
     box-shadow: 0 0 24px rgba(#000, 0.2);
 }
+
+
+.boxed {
+    .page-main {
+        margin-left: auto;
+        margin-right: auto;
+        @include make-container-max-widths();
+    }
+
+    .page-main .container {
+        padding-left: $grid-gutter-width-base / 2;
+        padding-right: $grid-gutter-width-base / 2;
+    }
+
+    @include media-breakpoint-up(sm) {
+        .page-main {
+            border: 1px solid rgba(#000, 0.2);
+            border-top-width: 0;
+            border-bottom-width: 0;
+
+            .container {
+                padding-left: $grid-gutter-width-base;
+                padding-right: $grid-gutter-width-base;
+            }
+        }
+    }
+}
+
 
 .page-title {
     margin-bottom: 1.5rem;

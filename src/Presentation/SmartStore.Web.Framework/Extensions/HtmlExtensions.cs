@@ -633,20 +633,33 @@ namespace SmartStore.Web.Framework
 			var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
 
 			var sb = new StringBuilder();
-			sb.Append("<div class=\"onoffswitch-container\"><div class=\"onoffswitch\">");
+			sb.Append("<label class='switch multi-store-override-switch'>");
 
-			sb.AppendFormat("<input type=\"checkbox\" id=\"{0}\" name=\"{0}\" class=\"onoffswitch-checkbox multi-store-override-option\"", fieldId);
-			sb.AppendFormat(" onclick=\"Admin.checkOverriddenStoreValue(this)\" data-parent-selector=\"{0}\"{1} />", 
+			sb.AppendFormat("<input type=\"checkbox\" id=\"{0}\" name=\"{0}\" class=\"multi-store-override-option\"", fieldId);
+			sb.AppendFormat(" onclick=\"Admin.checkOverriddenStoreValue(this)\" data-parent-selector=\"{0}\"{1} />",
 				parentSelector.EmptyNull(), overrideForStore ? " checked=\"checked\"" : "");
 
-			sb.AppendFormat("<label class=\"onoffswitch-label\" for=\"{0}\">", fieldId);
-			sb.AppendFormat("<span class=\"onoffswitch-on\">{0}</span>", localizeService.GetResource("Common.On").Truncate(3).ToUpper());
-			sb.AppendFormat("<span class=\"onoffswitch-off\">{0}</span>", localizeService.GetResource("Common.Off").Truncate(3).ToUpper());
-			sb.Append("<span class=\"onoffswitch-switch\"></span>");
-			sb.Append("<span class=\"onoffswitch-inner\"></span>");
+			sb.AppendFormat("<span class=\"switch-toggle\" data-on='{0}' data-off='{1}'></span>", 
+				localizeService.GetResource("Common.On").Truncate(3), 
+				localizeService.GetResource("Common.Off").Truncate(3));
 			sb.Append("</label>");
 			// Controls are not floating, so line-break prevents different distances between them.
-			sb.Append("</div></div>\r\n");
+			sb.Append("</label>\r\n");
+
+			//sb.Append("<div class=\"onoffswitch-container\"><div class=\"onoffswitch\">");
+
+			//sb.AppendFormat("<input type=\"checkbox\" id=\"{0}\" name=\"{0}\" class=\"onoffswitch-checkbox multi-store-override-option\"", fieldId);
+			//sb.AppendFormat(" onclick=\"Admin.checkOverriddenStoreValue(this)\" data-parent-selector=\"{0}\"{1} />",
+			//	parentSelector.EmptyNull(), overrideForStore ? " checked=\"checked\"" : "");
+
+			//sb.AppendFormat("<label class=\"onoffswitch-label\" for=\"{0}\">", fieldId);
+			//sb.AppendFormat("<span class=\"onoffswitch-on\">{0}</span>", localizeService.GetResource("Common.On").Truncate(3).ToUpper());
+			//sb.AppendFormat("<span class=\"onoffswitch-off\">{0}</span>", localizeService.GetResource("Common.Off").Truncate(3).ToUpper());
+			//sb.Append("<span class=\"onoffswitch-switch\"></span>");
+			//sb.Append("<span class=\"onoffswitch-inner\"></span>");
+			//sb.Append("</label>");
+			//// Controls are not floating, so line-break prevents different distances between them.
+			//sb.Append("</div></div>\r\n");
 
 			return MvcHtmlString.Create(sb.ToString());
 		}

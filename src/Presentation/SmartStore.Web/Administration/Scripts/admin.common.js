@@ -30,7 +30,7 @@ var Admin = {
 
 	checkOverriddenStoreValue: function (checkbox) {
 		var parentSelector = $(checkbox).attr('data-parent-selector').toString(),
-			parent = (parentSelector.length > 0 ? $(parentSelector) : $(checkbox).closest('.onoffswitch-container').parent()),
+			parent = (parentSelector.length > 0 ? $(parentSelector) : $(checkbox).closest('.switch').parent()),
 			checked = $(checkbox).is(':checked');
 
 		parent.find(':input:not([type=hidden])').each(function (index, elem) {

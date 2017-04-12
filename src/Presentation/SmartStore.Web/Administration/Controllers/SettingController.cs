@@ -1851,7 +1851,7 @@ namespace SmartStore.Admin.Controllers
 					_services.Settings.DeleteSetting(setting);
 				}
 
-				_services.Settings.SetSetting(model.Name, model.Value, storeId);
+				_services.Settings.SetSetting(model.Name, model.Value ?? "", storeId);
 
 				//activity log
 				_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));

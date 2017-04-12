@@ -371,7 +371,7 @@
 
                 function initRotator(containerId) {
                     var container = $(containerId);
-                    var catId = container.data("entity-id");
+                    var catId = container.data("id");
                     var displayRotator = container.data("display-rotator");
 
                     // reinit slick product rotator

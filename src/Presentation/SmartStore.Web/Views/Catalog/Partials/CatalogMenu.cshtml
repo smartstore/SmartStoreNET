@@ -12,7 +12,7 @@
 <div class="megamenu-dropdown-container simple">
     @foreach (var node in Model.Root.Children)
     {
-        <div id="dropdown-menu-@node.Value.EntityId" data-entity-id="@node.Value.EntityId">
+        <div id="dropdown-menu-@node.Value.EntityId" data-id="@node.Value.EntityId">
              @CreateDrilldownMenu(node.Children, true)
         </div>
     }
@@ -38,7 +38,7 @@
 		var itemState = node.GetNodePathState(Model.Path);
 		
         <a class='dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " selected" : "")' 
-           href="@itemUrl" id="dropdown-item-@item.EntityId" data-entity-id="@item.EntityId">
+           href="@itemUrl" id="dropdown-item-@item.EntityId" data-id="@item.EntityId">
             @item.Text
         </a>
     }

@@ -72,7 +72,14 @@ namespace SmartStore.Web.Framework.Theming
             }
             else if (info.Type == ThemeVariableType.Boolean)
             {
+				var locService = EngineContext.Current.Resolve<ILocalizationService>();
 				control = html.CheckBox(expression, strValue.ToBool());
+				var custom = "<label class='switch'>{0}<span class='switch-toggle' data-on='{1}' data-off='{2}'></span></label>".FormatInvariant(
+					control.ToString(),
+					locService.GetResource("Common.On").Truncate(3),
+					locService.GetResource("Common.Off").Truncate(3));
+
+				control = MvcHtmlString.Create(custom);
             }
 			else if (info.Type == ThemeVariableType.Select)
 			{

@@ -1620,11 +1620,15 @@ namespace SmartStore.Web.Controllers
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.PasswordRecoveryToken, passwordRecoveryToken.ToString());
                     _workflowMessageService.SendCustomerPasswordRecoveryMessage(customer, _workContext.WorkingLanguage.Id);
 
-                    model.Result = _localizationService.GetResource("Account.PasswordRecovery.EmailHasBeenSent");
+                    model.ResultMessage = _localizationService.GetResource("Account.PasswordRecovery.EmailHasBeenSent");
+                    model.ResultState = PasswordRecoveryResultState.Success;
                 }
                 else
-                    model.Result = _localizationService.GetResource("Account.PasswordRecovery.EmailNotFound");
-
+                {
+                    model.ResultMessage = _localizationService.GetResource("Account.PasswordRecovery.EmailNotFound");
+                    model.ResultState = PasswordRecoveryResultState.Error;
+                }
+                
                 return View(model);
             }
 

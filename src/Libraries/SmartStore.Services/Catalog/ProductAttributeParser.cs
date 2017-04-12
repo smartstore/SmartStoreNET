@@ -9,7 +9,6 @@ using SmartStore.Collections;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Services.Catalog
 {
@@ -323,37 +322,6 @@ namespace SmartStore.Services.Catalog
 			});
 
 			return result;
-		}
-
-		public virtual void DeserializeQuery(ProductVariantQuery query, string attributesXml, int productId, int bundleItemId = 0)
-		{
-			Guard.NotNull(query, nameof(query));
-
-			if (attributesXml.HasValue() && productId != 0)
-			{
-				var attributeValues = ParseProductVariantAttributeValues(attributesXml).ToList();
-
-				foreach (var value in attributeValues)
-				{
-					query.AddVariant(new ProductVariantQueryItem(value.Id.ToString())
-					{
-						ProductId = productId,
-						BundleItemId = bundleItemId,
-						AttributeId = value.ProductVariantAttribute.ProductAttributeId,
-						VariantAttributeId = value.ProductVariantAttributeId,
-						Alias = value.ProductVariantAttribute.ProductAttribute.Alias,
-						ValueAlias = value.Alias
-					});
-				}
-			}
-		}
-
-		public virtual string GetProductUrlWithVariants(string attributesXml, int productId, string productSeName)
-		{
-			var query = new ProductVariantQuery();
-			DeserializeQuery(query, attributesXml, productId);
-
-			return query.GetProductUrlWithVariants(productSeName);
 		}
 
 		#endregion

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Collections;
 
 namespace SmartStore.Services.Catalog.Modelling
 {
@@ -63,56 +62,6 @@ namespace SmartStore.Services.Catalog.Modelling
 				x.BundleItemId == bundleItemId &&
 				x.Name.IsCaseInsensitiveEqual(name))
 				?.Value;
-		}
-
-		public string ToQueryString()
-		{
-			var qs = new QueryString();
-
-			// Checkout Attributes
-			foreach (var item in _checkoutAttributes)
-			{
-				var name = item.ToString();
-
-				if (item.Date.HasValue)
-				{
-					qs.Add(name + "-date", string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
-				}
-				else
-				{
-					qs.Add(name, item.Value);
-				}
-			}
-
-			// Gift cards
-			foreach (var item in _giftCards)
-			{
-				qs.Add(item.ToString(), item.Value);
-			}
-
-			// Variants
-			foreach (var item in _variants)
-			{
-				var name = item.Alias.HasValue()
-					? $"{item.Alias}-{item.ProductId}-{item.BundleItemId}-{item.VariantAttributeId}"
-					: item.ToString();
-
-				if (item.Date.HasValue)
-				{
-					// TODO: Code never reached because of ParseProductVariantAttributeValues
-					qs.Add(name + "-date", string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
-				}
-				else
-				{
-					var value = item.ValueAlias.HasValue()
-						? $"{item.ValueAlias}-{item.Value}"
-						: item.Value;
-
-					qs.Add(name, value);
-				}
-			}
-
-			return qs.ToString(false);
 		}
 
 		public override string ToString()

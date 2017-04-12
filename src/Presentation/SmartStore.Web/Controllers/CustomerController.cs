@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -17,6 +16,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -77,7 +77,7 @@ namespace SmartStore.Web.Controllers
         private readonly IDownloadService _downloadService;
         private readonly IWebHelper _webHelper;
         private readonly ICustomerActivityService _customerActivityService;
-		private readonly IProductAttributeParser _productAttributeParser;
+		private readonly ProductUrlHelper _productUrlHelper;
 
         private readonly MediaSettings _mediaSettings;
         private readonly IWorkflowMessageService _workflowMessageService;
@@ -111,7 +111,7 @@ namespace SmartStore.Web.Controllers
             IBackInStockSubscriptionService backInStockSubscriptionService, 
             IDownloadService downloadService, IWebHelper webHelper,
             ICustomerActivityService customerActivityService, 
-			IProductAttributeParser productAttributeParser,
+			ProductUrlHelper productUrlHelper,
 			MediaSettings mediaSettings,
             IWorkflowMessageService workflowMessageService, LocalizationSettings localizationSettings,
             CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
@@ -150,9 +150,9 @@ namespace SmartStore.Web.Controllers
             this._downloadService = downloadService;
             this._webHelper = webHelper;
             this._customerActivityService = customerActivityService;
-			this._productAttributeParser = productAttributeParser;
+			this._productUrlHelper = productUrlHelper;
 
-            this._mediaSettings = mediaSettings;
+			this._mediaSettings = mediaSettings;
             this._workflowMessageService = workflowMessageService;
             this._localizationSettings = localizationSettings;
             this._captchaSettings = captchaSettings;
@@ -1331,16 +1331,16 @@ namespace SmartStore.Web.Controllers
 
 					if (orderItem.Product.ProductType != ProductType.BundledProduct)
 					{
-						_productAttributeParser.DeserializeQuery(query, orderItem.AttributesXml, orderItem.ProductId);
+						_productUrlHelper.DeserializeQuery(query, orderItem.ProductId, orderItem.AttributesXml);
 					}
 					else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
 					{
 						var bundleData = orderItem.GetBundleData();
 
-						bundleData.ForEach(x => _productAttributeParser.DeserializeQuery(query, x.AttributesXml, x.ProductId, x.BundleItemId));
+						bundleData.ForEach(x => _productUrlHelper.DeserializeQuery(query, x.ProductId, x.AttributesXml, x.BundleItemId));
 					}
 
-					itemModel.ProductUrl = query.GetProductUrlWithVariants(itemModel.ProductSeName);
+					itemModel.ProductUrl = _productUrlHelper.GetProductUrl(query, itemModel.ProductSeName);
 
 					model.Items.Add(itemModel);
                 }
@@ -1378,7 +1378,7 @@ namespace SmartStore.Web.Controllers
 					ProductId = item.ProductId
                 };
 
-				itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithVariants(item.AttributesXml, item.ProductId, itemModel.ProductSeName);
+				itemModel.ProductUrl = _productUrlHelper.GetProductUrl(item.ProductId, itemModel.ProductSeName, item.AttributesXml);
 
                 model.Items.Add(itemModel);
 

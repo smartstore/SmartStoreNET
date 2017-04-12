@@ -20,6 +20,7 @@ using SmartStore.Core.Search;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;

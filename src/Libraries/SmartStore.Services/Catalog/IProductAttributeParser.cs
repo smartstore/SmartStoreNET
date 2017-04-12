@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Services.Catalog
 {
@@ -80,24 +79,6 @@ namespace SmartStore.Services.Catalog
 		/// <param name="attributesXml">XML formatted attributes</param>
 		/// <returns>Found product variant attribute combination</returns>
 		ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
-
-		/// <summary>
-		/// Deserializes product variant query
-		/// </summary>
-		/// <param name="query">Product variant query</param>
-		/// <param name="attributesXml">XML formatted attributes</param>
-		/// <param name="productId">Product identifier</param>
-		/// <param name="bundleItemId">Bundle item identifier</param>
-		void DeserializeQuery(ProductVariantQuery query, string attributesXml, int productId, int bundleItemId = 0);
-
-		/// <summary>
-		/// Gets the URL of the product page including attributes query string
-		/// </summary>
-		/// <param name="attributesXml">XML formatted attributes</param>
-		/// <param name="productId">Product identifier</param>
-		/// <param name="productSeName">Product SEO name</param>
-		/// <returns>URL of the product page including attributes query string</returns>
-		string GetProductUrlWithVariants(string attributesXml, int productId, string productSeName);
 
 		#endregion
 

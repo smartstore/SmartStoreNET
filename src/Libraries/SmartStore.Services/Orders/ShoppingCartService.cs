@@ -19,6 +19,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Services.Catalog.Modelling;
+using SmartStore.Services.Catalog.Extensions;
 
 namespace SmartStore.Services.Orders
 {

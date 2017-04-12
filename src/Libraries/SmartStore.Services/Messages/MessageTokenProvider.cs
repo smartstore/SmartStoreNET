@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -24,6 +25,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -34,7 +36,6 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
-using SmartStore.Collections;
 
 namespace SmartStore.Services.Messages
 {
@@ -58,6 +59,7 @@ namespace SmartStore.Services.Messages
         private readonly IUrlRecordService _urlRecordService;
         private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IPictureService _pictureService;
+		private readonly ProductUrlHelper _productUrlHelper;
 
 		private readonly MediaSettings _mediaSettings;
 		private readonly ContactDataSettings _contactDataSettings;
@@ -90,6 +92,7 @@ namespace SmartStore.Services.Messages
             IUrlRecordService urlRecordService,
             IGenericAttributeService genericAttributeService,
 			IPictureService pictureService,
+			ProductUrlHelper productUrlHelper,
 			MediaSettings mediaSettings,
 			ContactDataSettings contactDataSettings,
 			MessageTemplatesSettings templatesSettings,
@@ -116,6 +119,7 @@ namespace SmartStore.Services.Messages
             _urlRecordService = urlRecordService;
             _genericAttributeService = genericAttributeService;
 			_pictureService = pictureService;
+			_productUrlHelper = productUrlHelper;
 
 			_mediaSettings = mediaSettings;
 			_contactDataSettings = contactDataSettings;
@@ -227,7 +231,7 @@ namespace SmartStore.Services.Messages
                 sb.AppendLine(string.Format("<tr style=\"background-color: {0};text-align: center;\">", _templatesSettings.Color2));
                 
 				var productName = product.GetLocalized(x => x.Name, language.Id);
-				var productUrl = _productAttributeParser.GetProductUrlWithVariants(orderItem.AttributesXml, product.Id, product.GetSeName());
+				var productUrl = _productUrlHelper.GetProductUrl(product.Id, product.GetSeName(), orderItem.AttributesXml);
 
 				sb.AppendLine("<td style=\"padding: 0.6em 0.4em; text-align: left;\">");
 
@@ -564,7 +568,7 @@ namespace SmartStore.Services.Messages
                 sb.AppendLine(string.Format("<tr style=\"background-color: {0};text-align: center;\">", _templatesSettings.Color2));
 
 				var productName = product.GetLocalized(x => x.Name, language.Id);
-				var productUrl = _productAttributeParser.GetProductUrlWithVariants(orderItem.AttributesXml, product.Id, product.GetSeName());
+				var productUrl = _productUrlHelper.GetProductUrl(product.Id, product.GetSeName(), orderItem.AttributesXml);
 
 				sb.AppendLine("<td style=\"padding: 0.6em 0.4em;text-align: left;\">");
 				sb.AppendLine("<a href=\"{0}\">{1}</a>".FormatInvariant(productUrl, HttpUtility.HtmlEncode(productName)));

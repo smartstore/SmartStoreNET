@@ -26,6 +26,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -96,6 +97,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ICommonServices _services;
 		private readonly ICountryService _countryService;
 		private readonly ICatalogSearchService _catalogSearchService;
+		private readonly ProductUrlHelper _productUrlHelper;
 		private readonly SeoSettings _seoSettings;
 		private readonly MediaSettings _mediaSettings;
 		private readonly SearchSettings _searchSettings;
@@ -147,6 +149,7 @@ namespace SmartStore.Admin.Controllers
             ICommonServices services,
 			ICountryService countryService,
 			ICatalogSearchService catalogSearchService,
+			ProductUrlHelper productUrlHelper,
 			SeoSettings seoSettings,
 			MediaSettings mediaSettings,
 			SearchSettings searchSettings)
@@ -193,6 +196,7 @@ namespace SmartStore.Admin.Controllers
             _services = services;
 			_countryService = countryService;
 			_catalogSearchService = catalogSearchService;
+			_productUrlHelper = productUrlHelper;
 			_seoSettings = seoSettings;
 			_mediaSettings = mediaSettings;
 			_searchSettings = searchSettings;
@@ -3535,7 +3539,7 @@ namespace SmartStore.Admin.Controllers
 					var pvacModel = x.ToModel();
 					PrepareProductAttributeCombinationModel(pvacModel, x, product, true);
 
-					pvacModel.ProductUrl = _productAttributeParser.GetProductUrlWithVariants(x.AttributesXml, product.Id, productSeName);
+					pvacModel.ProductUrl = _productUrlHelper.GetProductUrl(product.Id, productSeName, x.AttributesXml);
 					pvacModel.ProductUrlTitle = productUrlTitle;
 
 					try

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -7,6 +6,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -20,7 +20,7 @@ using SmartStore.Web.Models.Order;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class ReturnRequestController : PublicControllerBase
+	public partial class ReturnRequestController : PublicControllerBase
     {
 		#region Fields
 
@@ -33,9 +33,9 @@ namespace SmartStore.Web.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerService _customerService;
         private readonly IWorkflowMessageService _workflowMessageService;
-		private readonly IProductAttributeParser _productAttributeParser;
+		private readonly ProductUrlHelper _productUrlHelper;
 
-        private readonly LocalizationSettings _localizationSettings;
+		private readonly LocalizationSettings _localizationSettings;
         private readonly OrderSettings _orderSettings;
 
         #endregion
@@ -50,8 +50,8 @@ namespace SmartStore.Web.Controllers
             ILocalizationService localizationService,
             ICustomerService customerService,
             IWorkflowMessageService workflowMessageService,
-			IProductAttributeParser productAttributeParser,
-            LocalizationSettings localizationSettings,
+			ProductUrlHelper productUrlHelper,
+			LocalizationSettings localizationSettings,
             OrderSettings orderSettings)
         {
             this._orderService = orderService;
@@ -63,7 +63,7 @@ namespace SmartStore.Web.Controllers
             this._localizationService = localizationService;
             this._customerService = customerService;
             this._workflowMessageService = workflowMessageService;
-			this._productAttributeParser = productAttributeParser;
+			this._productUrlHelper = productUrlHelper;
 
             this._localizationSettings = localizationSettings;
             this._orderSettings = orderSettings;
@@ -118,16 +118,16 @@ namespace SmartStore.Web.Controllers
 
 				if (orderItem.Product.ProductType != ProductType.BundledProduct)
 				{
-					_productAttributeParser.DeserializeQuery(query, orderItem.AttributesXml, orderItem.ProductId);
+					_productUrlHelper.DeserializeQuery(query, orderItem.ProductId, orderItem.AttributesXml);
 				}
 				else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
 				{
 					var bundleData = orderItem.GetBundleData();
 
-					bundleData.ForEach(x => _productAttributeParser.DeserializeQuery(query, x.AttributesXml, x.ProductId, x.BundleItemId));
+					bundleData.ForEach(x => _productUrlHelper.DeserializeQuery(query, x.ProductId, x.AttributesXml, x.BundleItemId));
 				}
 
-				orderItemModel.ProductUrl = query.GetProductUrlWithVariants(orderItemModel.ProductSeName);
+				orderItemModel.ProductUrl = _productUrlHelper.GetProductUrl(query, orderItemModel.ProductSeName);
 
 				//unit price
 				switch (order.CustomerTaxDisplayType)

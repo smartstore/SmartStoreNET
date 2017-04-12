@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 
-namespace SmartStore.Services.Catalog.Modelling
+namespace SmartStore.Services.Catalog.Extensions
 {
 	public static class ProductVariantQueryExtensions
 	{
@@ -128,33 +127,6 @@ namespace SmartStore.Services.Catalog.Modelling
 			}
 
 			return result;
-		}
-
-		/// <summary>
-		/// Gets the URL of product detail page including variant query string
-		/// </summary>
-		/// <param name="query">Product variant query</param>
-		/// <param name="productSeName">Product SEO name</param>
-		/// <returns>URL of the product page including variant query string</returns>
-		public static string GetProductUrlWithVariants(this ProductVariantQuery query, string productSeName)
-		{
-			var url = UrlHelper.GenerateUrl(
-				"Product",
-				null,
-				null,
-				new RouteValueDictionary(new { SeName = productSeName }),
-				RouteTable.Routes,
-				HttpContext.Current.Request.RequestContext,
-				false);
-
-			var queryString = query.ToQueryString();
-
-			if (queryString.HasValue())
-			{
-				url = string.Concat(url, queryString.StartsWith("?") ? "" : "?", queryString);
-			}
-
-			return url;
 		}
 	}
 }

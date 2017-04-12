@@ -20,6 +20,7 @@ using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -100,12 +101,13 @@ namespace SmartStore.Web.Controllers
         private readonly MeasureSettings _measureSettings;
         private readonly ICompareProductsService _compareProductsService;
         private readonly CatalogHelper _helper;
+		private readonly ProductUrlHelper _productUrlHelper;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public ShoppingCartController(ICommonServices services, IProductService productService,
+		public ShoppingCartController(ICommonServices services, IProductService productService,
 			IWorkContext workContext, IStoreContext storeContext,
             IShoppingCartService shoppingCartService, IPictureService pictureService,
             ILocalizationService localizationService, 
@@ -133,7 +135,8 @@ namespace SmartStore.Web.Controllers
             IQuantityUnitService quantityUnitService,
 			Lazy<ITopicService> topicService,
             IMeasureService measureService, MeasureSettings measureSettings,
-            CatalogHelper helper, ICompareProductsService compareProductsService)
+            CatalogHelper helper, ICompareProductsService compareProductsService,
+			ProductUrlHelper productUrlHelper)
         {
             this._services = services;
             this._productService = productService;
@@ -185,6 +188,7 @@ namespace SmartStore.Web.Controllers
             this._measureSettings = measureSettings;
             this._helper = helper;
             this._compareProductsService = compareProductsService;
+			this._productUrlHelper = productUrlHelper;
         }
 
         #endregion
@@ -1044,8 +1048,8 @@ namespace SmartStore.Web.Controllers
 								ProductSeName = childItem.Item.Product.GetSeName(),
 							};
 
-							bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithVariants(
-								childItem.Item.AttributesXml, childItem.Item.ProductId, bundleItemModel.ProductSeName);
+							bundleItemModel.ProductUrl = _productUrlHelper.GetProductUrl(
+								childItem.Item.ProductId, bundleItemModel.ProductSeName, childItem.Item.AttributesXml);
 
 							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
 							if (itemPicture != null)
@@ -1211,17 +1215,17 @@ namespace SmartStore.Web.Controllers
 
 			if (product.ProductType != ProductType.BundledProduct)
 			{
-				_productAttributeParser.DeserializeQuery(query, cartItem.Item.AttributesXml, product.Id);
+				_productUrlHelper.DeserializeQuery(query, product.Id, cartItem.Item.AttributesXml);
 			}
 			else if (cartItem.ChildItems != null && product.BundlePerItemPricing)
 			{
 				foreach (var childItem in cartItem.ChildItems.Where(x => x.Item.Id != cartItem.Item.Id))
 				{
-					_productAttributeParser.DeserializeQuery(query, childItem.Item.AttributesXml, childItem.Item.ProductId, childItem.BundleItemData.Item.Id);
+					_productUrlHelper.DeserializeQuery(query, childItem.Item.ProductId, childItem.Item.AttributesXml, childItem.BundleItemData.Item.Id);
 				}
 			}
 
-			var url = query.GetProductUrlWithVariants(productSeName);
+			var url = _productUrlHelper.GetProductUrl(query, productSeName);
 			return url;
 		}
 

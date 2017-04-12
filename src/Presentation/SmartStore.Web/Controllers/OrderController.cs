@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
@@ -33,7 +34,7 @@ using SmartStore.Web.Models.Order;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class OrderController : PublicControllerBase
+	public partial class OrderController : PublicControllerBase
     {
 		#region Fields
 
@@ -49,18 +50,18 @@ namespace SmartStore.Web.Controllers
         private readonly ICountryService _countryService;
 		private readonly IProductService _productService;
 		private readonly IProductAttributeFormatter _productAttributeFormatter;
-		private readonly IProductAttributeParser _productAttributeParser;
 		private readonly IStoreService _storeService;
         private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _services;
         private readonly IQuantityUnitService _quantityUnitService;
+		private readonly ProductUrlHelper _productUrlHelper;
 
-        #endregion
+		#endregion
 
 		#region Constructors
 
-        public OrderController(
+		public OrderController(
 			IOrderService orderService, 
             IShipmentService shipmentService,
             ICurrencyService currencyService, 
@@ -75,11 +76,11 @@ namespace SmartStore.Web.Controllers
 			IStoreService storeService,
 			IProductService productService,
 			IProductAttributeFormatter productAttributeFormatter,
-			IProductAttributeParser productAttributeParser,
 			Lazy<IPictureService> pictureService,
 			PluginMediator pluginMediator,
 			ICommonServices services,
-            IQuantityUnitService quantityUnitService)
+            IQuantityUnitService quantityUnitService,
+			ProductUrlHelper productUrlHelper)
         {
             this._orderService = orderService;
             this._shipmentService = shipmentService;
@@ -93,12 +94,12 @@ namespace SmartStore.Web.Controllers
             this._countryService = countryService;
 			this._productService = productService;
 			this._productAttributeFormatter = productAttributeFormatter;
-			this._productAttributeParser = productAttributeParser;
 			this._storeService = storeService;
             this._checkoutAttributeFormatter = checkoutAttributeFormatter;
 			this._pluginMediator = pluginMediator;
 			this._services = services;
             this._quantityUnitService = quantityUnitService;
+			this._productUrlHelper = productUrlHelper;
         }
 
         #endregion
@@ -433,16 +434,16 @@ namespace SmartStore.Web.Controllers
 
 				if (orderItem.Product.ProductType != ProductType.BundledProduct)
 				{
-					_productAttributeParser.DeserializeQuery(query, orderItem.AttributesXml, orderItem.ProductId);
+					_productUrlHelper.DeserializeQuery(query, orderItem.ProductId, orderItem.AttributesXml);
 				}
 				else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
 				{
 					var bundleData = orderItem.GetBundleData();
 
-					bundleData.ForEach(x => _productAttributeParser.DeserializeQuery(query, x.AttributesXml, x.ProductId, x.BundleItemId));
+					bundleData.ForEach(x => _productUrlHelper.DeserializeQuery(query, x.ProductId, x.AttributesXml, x.BundleItemId));
 				}
 
-				shipmentItemModel.ProductUrl = query.GetProductUrlWithVariants(shipmentItemModel.ProductSeName);
+				shipmentItemModel.ProductUrl = _productUrlHelper.GetProductUrl(query, shipmentItemModel.ProductSeName);
 
 				model.Items.Add(shipmentItemModel);
             }
@@ -472,7 +473,7 @@ namespace SmartStore.Web.Controllers
 
 			if (orderItem.Product.ProductType != ProductType.BundledProduct)
 			{
-				_productAttributeParser.DeserializeQuery(query, orderItem.AttributesXml, orderItem.ProductId);
+				_productUrlHelper.DeserializeQuery(query, orderItem.ProductId, orderItem.AttributesXml);
 			}
 
             var quantityUnit = _quantityUnitService.GetQuantityUnitById(orderItem.Product.QuantityUnitId);
@@ -498,11 +499,11 @@ namespace SmartStore.Web.Controllers
 						AttributeInfo = bundleItem.AttributesInfo
 					};
 
-					bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithVariants(bundleItem.AttributesXml, bundleItem.ProductId, bundleItemModel.ProductSeName);
+					bundleItemModel.ProductUrl = _productUrlHelper.GetProductUrl(bundleItem.ProductId, bundleItemModel.ProductSeName, bundleItem.AttributesXml);
 
 					if (orderItem.Product.BundlePerItemPricing)
 					{
-						_productAttributeParser.DeserializeQuery(query, bundleItem.AttributesXml, bundleItem.ProductId, bundleItem.BundleItemId);
+						_productUrlHelper.DeserializeQuery(query, bundleItem.ProductId, bundleItem.AttributesXml, bundleItem.BundleItemId);
 					}
 
 					if (model.BundlePerItemShoppingCart)
@@ -539,7 +540,7 @@ namespace SmartStore.Web.Controllers
 					break;
 			}
 
-			model.ProductUrl = query.GetProductUrlWithVariants(model.ProductSeName);
+			model.ProductUrl = _productUrlHelper.GetProductUrl(query, model.ProductSeName);
 
 			return model;
 		}

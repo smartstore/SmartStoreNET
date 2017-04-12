@@ -610,28 +610,12 @@ namespace SmartStore.Services.DataExchange.Export
 			dynObject._AttributeCombination = null;
 			dynObject._AttributeCombinationValues = null;
 			dynObject._AttributeCombinationId = (combination == null ? 0 : combination.Id);
-			dynObject._DetailUrl = null;
-
-			if (_httpContext != null && _httpContext.Request != null)
-			{
-				var urlHelper = new LocalizedUrlHelper(_httpContext.Request.ApplicationPath, (string)dynObject.SeName, false);
-
-				if (_localizationSettings.Value.SeoFriendlyUrlsForLanguagesEnabled)
-				{
-					var defaultSeoCode = _languageService.Value.GetDefaultLanguageSeoCode(ctx.Store.Id);
-
-					if (ctx.ContextLanguage.UniqueSeoCode == defaultSeoCode && _localizationSettings.Value.DefaultLanguageRedirectBehaviour > 0)
-					{
-						urlHelper.StripSeoCode();
-					}
-					else
-					{
-						urlHelper.PrependSeoCode(ctx.ContextLanguage.UniqueSeoCode, true);
-					}
-				}
-
-				dynObject._DetailUrl = ctx.Store.Url.TrimEnd('/') + urlHelper.GetAbsolutePath();
-			}
+			dynObject._DetailUrl = _productUrlHelper.Value.GetAbsoluteProductUrl(
+				product.Id,
+				(string)dynObject.SeName,
+				combination != null ? combination.AttributesXml : null,
+				ctx.Store,
+				ctx.ContextLanguage);
 
 			if (combination == null)
 				dynObject._UniqueId = product.Id.ToString();
@@ -663,16 +647,6 @@ namespace SmartStore.Services.DataExchange.Export
 						.ToList();
 
 					dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", valueNames), " ");
-				}
-
-				var query = new ProductVariantQuery();
-				_productAttributeParser.Value.DeserializeQuery(query, combination.AttributesXml, product.Id);
-				var variantQueryString = query.ToQueryString();
-
-				if (variantQueryString.HasValue())
-				{
-					var url = (string)dynObject._DetailUrl;
-					dynObject._DetailUrl = string.Concat(url, variantQueryString.StartsWith("?") ? "" : "?", variantQueryString);
 				}
 			}
 

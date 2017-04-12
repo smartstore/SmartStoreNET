@@ -16,7 +16,7 @@
 
     if (!ViewData.ModelState.IsValid)
     {
-        @Html.ValidationSummary(true)
+        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
     }
 
     <fieldset class="content-group">
@@ -280,7 +280,7 @@
 
 @if (Model.CountryEnabled && Model.StateProvinceEnabled)
 {
-    <script type="text/javascript">
+    <script>
          $(function() {
             $("#@Html.FieldIdFor(model => model.CountryId)").on('change', function() {
                 var selectedItem = $(this).val();

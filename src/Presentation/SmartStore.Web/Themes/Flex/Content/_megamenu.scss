@@ -178,6 +178,11 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
     color: $header-color;
     display: none;
 }
+.touchevents .megamenu-section .navbar-inverse.navbar:hover .show-scroll-buttons .megamenu-nav-btn i,
+.touchevents .megamenu-section .navbar-inverse .megamenu-nav-btn i,
+.navbar-inverse .megamenu .megamenu-nav i {
+    color: $header-inverse-color;
+}
 .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i {
     display: block;
 }

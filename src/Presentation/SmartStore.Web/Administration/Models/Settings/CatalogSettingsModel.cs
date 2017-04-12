@@ -239,6 +239,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowShareButton")]
         public bool ShowShareButton { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.PageShareCode")]
+        public string PageShareCode { get; set; }
+        
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsAlsoPurchasedEnabled")]
         public bool ProductsAlsoPurchasedEnabled { get; set; }
 

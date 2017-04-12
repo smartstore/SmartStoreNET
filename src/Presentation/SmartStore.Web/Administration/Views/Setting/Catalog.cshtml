@@ -28,6 +28,7 @@
             $("#@Html.FieldIdFor(model => model.CompareProductsEnabled)").click(toggleCompareProducts);
             $("#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)").click(toggleHtmlTextCollapsedHeight);
             $("#@Html.FieldIdFor(model => model.ShowManufacturerInProductDetail)").click(toggleManufacturerPictures);
+            $("#@Html.FieldIdFor(model => model.ShowShareButton)").click(togglePageShareCode);
 
             toggleShowCategoryProductNumberIncludingSubcategories();
             toggleEmailAFriend();
@@ -40,6 +41,7 @@
             toggleManufacturersOnHomepage();
             toggleManufacturersInOffCanvas();
             toggleManufacturerPictures();
+            togglePageShareCode();
         });
 
         function toggleShowCategoryProductNumberIncludingSubcategories() {
@@ -104,7 +106,7 @@
                 $('#pnlManufacturerItemsToDisplayInOffCanvas').hide();
             }
         }
-        
+
         function toggleProductsAlsoPurchasedNumber() {
             if ($('#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)').is(':checked')) {
                 $('#pnlProductsAlsoPurchasedNumber').show();
@@ -139,6 +141,15 @@
             }
             else {
                 $('.manufacturer-pictures').hide();
+            }
+        }
+
+        function togglePageShareCode() {
+            if ($('#@Html.FieldIdFor(model => model.ShowShareButton)').is(':checked')) {
+                $('.pnlPageShareCode').show();
+            }
+            else {
+                $('.pnlPageShareCode').hide();
             }
         }
     </script>
@@ -794,15 +805,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowShareButton)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowShareButton)
-                @Html.ValidationMessageFor(model => model.ShowShareButton)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductsAlsoPurchasedEnabled)
             </td>
             <td class="adminData">
@@ -908,6 +910,24 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ShowLinkedAttributeValueImage)
                 @Html.ValidationMessageFor(model => model.ShowLinkedAttributeValueImage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowShareButton)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowShareButton)
+                @Html.ValidationMessageFor(model => model.ShowShareButton)
+            </td>
+        </tr>
+        <tr class="pnlPageShareCode">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PageShareCode)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(model => model.PageShareCode, new { @class = "input-large", style = "height:150px" })
+                @Html.ValidationMessageFor(model => model.PageShareCode)
             </td>
         </tr>
     </table>

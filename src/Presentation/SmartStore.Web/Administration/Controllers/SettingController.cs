@@ -631,6 +631,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult Catalog(CatalogSettingsModel model, FormCollection form)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))

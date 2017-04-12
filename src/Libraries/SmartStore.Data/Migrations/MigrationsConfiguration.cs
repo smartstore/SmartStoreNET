@@ -810,6 +810,14 @@ namespace SmartStore.Data.Migrations
                 "Anzahl der anzuzeigenden Hersteller im OffCanvas-Menu",
                 "Specifies the amount of manufacturers to display in offcanvas menu.",
                 "Bestimmt die Anzahl der anzuzeigenden Hersteller im OffCanvas-Menu.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.PageShareCode",
+                "Share button widget code",
+                "Share-Button Widget-Code",
+                @"Specifies the code to render the share button widget. By going to addthis.com you can create your own widget code and paste it here. 
+                    This way you can configure the display type of the widget as well as get statistic insight.",
+                @"Legt den Code des Share-Button Widgets fest. Gehen Sie zu addthis.com um Ihren eigenen Widget-Code zu erhalten und fügen Sie diesen hier ein. 
+                    Auf diese Weise können Sie die Darstellung des Widgets selbst bestimmen, sowie Statistiken einsehen.");
         }
 	}
 }

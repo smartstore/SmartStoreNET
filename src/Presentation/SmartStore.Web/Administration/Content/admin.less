@@ -1445,85 +1445,6 @@ table.payment-method-features td {
 
 /* On/Off switch button
 -------------------------------------------------------------- */
-.onoffswitch-container {
-	display: inline-block;
-	margin: 1px 2px 0 0;
-    vertical-align: middle;
-}
-
-.onoffswitch {
-    position: relative;
-    width: 60px;
-    .user-select(none);
-}
-
-.onoffswitch-checkbox {
-    display: none !important;
-}
-
-.onoffswitch-label {
-    display: block;
-    overflow: hidden;
-    cursor: pointer;
-    border: 1px solid #969696;
-    border-radius: 4px;
-    height: 14px;
-    padding: 0;
-    margin: 0;
-}
-
-.onoffswitch-inner {
-    width: 200%;
-    margin-left: -100%;
-}
-
-.onoffswitch-on, .onoffswitch-off {
-    float: left;
-    width: 50%;
-    height: 15px;
-    line-height: 15px;
-    padding: 0;
-    color: #fff; 
-    font-size: 10px; 
-    font-weight: normal;
-	text-align: center;
-	vertical-align: middle;
-    .box-sizing(border-box);
-}
-
-.onoffswitch-on {
-    background-color: @orange;
-    color: #fff;
-}
-
-.onoffswitch-off {
-    background-color: #fff;
-    color: #bbb;
-}
-
-.onoffswitch-switch {
-    width: 30px;
-	box-sizing: border-box;
-    margin: 0;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 30px;
-    background: #fff;
-    border: 1px solid #969696;
-    .border-radius(4px 0 0 4px);
-    .transition(all 0.05s ease-in);
-    #gradient > .vertical(#dddddd, #ffffff);
-}
-
-.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
-    margin-left: 0;
-}
-
-.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
-    right: 0; 
-	.border-radius(0 4px 4px 0);
-}
 
 .switch {
 	position: relative;
@@ -1531,6 +1452,7 @@ table.payment-method-features td {
 	vertical-align: middle;
 	margin: 0;
 	padding: 0;
+	user-select: none;
 
 	> .switch-toggle {
 		position: relative;

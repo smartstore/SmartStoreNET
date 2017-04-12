@@ -28,14 +28,21 @@ namespace SmartStore.Web.Framework.Theming
             var langId = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id;
             var locService = EngineContext.Current.Resolve<ILocalizationService>();
 
-            var displayName = locService.GetResource(resKey, langId, false, Inflector.Titleize(info.Name));
+            var displayName = locService.GetResource(resKey, langId, false, "", true);
 
-            var hint = locService.GetResource(resKey + ".Hint", langId, false, "", true);
-            hint = "$(sm-){0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
+			string hint = null;
+			if (displayName.HasValue())
+			{
+				hint = locService.GetResource(resKey + ".Hint", langId, false, "", true);
+				hint = "${0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
+			}
 
             result.Append("<div class='ctl-label'>");
-            result.Append(html.Label(html.NameForThemeVar(info), displayName));
-            result.Append(html.Hint(hint).ToHtmlString());
+            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name));
+			if (hint.HasValue())
+			{
+				result.Append(html.Hint(hint).ToHtmlString());
+			}
             result.Append("</div>");
 
             return MvcHtmlString.Create(result.ToString());

@@ -5,7 +5,7 @@
 // ========================================
 
 $boxed:                         false !default;
-$site-bg:                       #fff !default;
+$site-bg:                       $gray-lightest !default;
 
 $font-weight-light:             300 !default;
 $font-weight-medium:            600 !default;
@@ -32,6 +32,15 @@ $searchbox-focus-bg:            #fff !default;
 $searchbox-border-color:        rgba(0,0,0, 0.12) !default;
 $searchbox-border-active-color: rgba(0,0,0, 0.2) !default;
 $searchbox-hit-tag-color:       darken($brand-warning, 10%) !default;
+
+$footer-bg:                     $gray-lightest !default;
+$footer-color:                  $body-color !default;
+$footer-color-muted:            $text-muted !default;
+$footer-inverse-color:          #fff !default;
+$footer-inverse-color-muted:    rgba(#fff, 0.5) !default;
+
+$footer-social-bg:              #aaa !default;
+$footer-social-color:           #fff !default;
 
 
 // Bootstrap variable overrides

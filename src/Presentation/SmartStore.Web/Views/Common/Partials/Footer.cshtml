@@ -27,6 +27,8 @@
     {
         socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "youtube"));
     }
+
+	var invserseFooter = GetThemeVariable<bool>("inverse-footer");
 }
 
 @if (Model.ShowSocialLinks && socialLinks.Any())
@@ -37,7 +39,7 @@
 				<div class="col text-center">
 					@foreach (var link in socialLinks)
 					{
-						<a href="@link.Item1" target="_blank" class="btn btn-secondary btn-circle btn-social btn-social-@link.Item2">
+						<a href="@link.Item1" target="_blank" class="btn btn-@(invserseFooter ? "clear" : "secondary") btn-circle btn-social btn-social-@link.Item2">
 							<i class="fa fa-@link.Item2"></i>
 						</a>
 					}
@@ -53,7 +55,7 @@
 
 			<div class="col-md-3">
 				<nav class="footer-links nav-collapsible">
-					<h4 class="nav-toggler collapsed" data-toggle="collapse" data-target="#footer-info" aria-controls="footer-info" aria-expanded="false">@T("Footer.Info")</h4>
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-info" aria-controls="footer-info" aria-expanded="false">@T("Footer.Info")</h4>
 					<div class="collapse nav-collapse" id="footer-info">
 						<ul class="list-unstyled">
 							@if (Model.ManufacturerEnabled)
@@ -79,7 +81,7 @@
 
 			<div class="col-md-3">
 				<nav class="footer-links nav-collapsible">
-					<h4 class="nav-toggler collapsed" data-toggle="collapse" data-target="#footer-service" aria-controls="footer-service" aria-expanded="false">@T("Footer.Service")</h4>
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-service" aria-controls="footer-service" aria-expanded="false">@T("Footer.Service")</h4>
 					<div class="collapse nav-collapse" id="footer-service">
 						<ul class="list-unstyled">
 							@if (Model.TopicPageUrls.ContainsKey("contactus"))
@@ -110,7 +112,7 @@
 
 			<div class="col-md-3">
 				<nav class="footer-links company nav-collapsible">
-					<h4 class="nav-toggler collapsed" data-toggle="collapse" data-target="#footer-company" aria-controls="footer-company" aria-expanded="false">@T("Footer.Company")</h4>
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-company" aria-controls="footer-company" aria-expanded="false">@T("Footer.Company")</h4>
 					<div class="collapse nav-collapse" id="footer-company">
 						<ul class="list-unstyled">
 							@if (Model.TopicPageUrls.ContainsKey("aboutus"))
@@ -142,7 +144,7 @@
 				@if (!Model.HideNewsletterBlock)
 				{
 					<div class="footer-newsletter nav-collapsible" data-subscription-url="@(Url.RouteUrl("SubscribeNewsletter"))">
-						<h4 class="nav-toggler collapsed" data-toggle="collapse" data-target="#footer-newsletter" aria-controls="footer-newsletter" aria-expanded="false">@T("Newsletter.Title")</h4>
+						<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-newsletter" aria-controls="footer-newsletter" aria-expanded="false">@T("Newsletter.Title")</h4>
 						<div class="collapse nav-collapse" id="footer-newsletter">
 							<div id="newsletter-subscribe-block">
 								<div class="input-group has-icon mb-2">

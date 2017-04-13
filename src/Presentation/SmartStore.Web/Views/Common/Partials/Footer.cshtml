@@ -39,7 +39,7 @@
 				<div class="col text-center">
 					@foreach (var link in socialLinks)
 					{
-						<a href="@link.Item1" target="_blank" class="btn btn-@(invserseFooter ? "clear" : "secondary") btn-circle btn-social btn-social-@link.Item2">
+						<a href="@link.Item1" target="_blank" class="btn x-btn-@(invserseFooter ? "clear" : "secondary") btn-circle btn-social btn-brand-@link.Item2">
 							<i class="fa fa-@link.Item2"></i>
 						</a>
 					}
@@ -60,19 +60,19 @@
 						<ul class="list-unstyled">
 							@if (Model.ManufacturerEnabled)
 							{
-								<li><a href="@Url.RouteUrl("ManufacturerList")">@T("Manufacturers.List")</a></li>
+								<li><a class="footer-link" href="@Url.RouteUrl("ManufacturerList")">@T("Manufacturers.List")</a></li>
 							}
 							@if (Model.RecentlyAddedProductsEnabled)
 							{
-								<li><a href="@Url.RouteUrl("RecentlyAddedProducts")">@T("Products.NewProducts")</a></li>
+								<li><a class="footer-link" href="@Url.RouteUrl("RecentlyAddedProducts")">@T("Products.NewProducts")</a></li>
 							}
 							@if (Model.RecentlyViewedProductsEnabled)
 							{
-								<li><a href="@Url.RouteUrl("RecentlyViewedProducts")">@T("Products.RecentlyViewedProducts")</a></li>
+								<li><a class="footer-link" href="@Url.RouteUrl("RecentlyViewedProducts")">@T("Products.RecentlyViewedProducts")</a></li>
 							}
 							@if (Model.CompareProductsEnabled)
 							{
-								<li><a href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>
+								<li><a class="footer-link" href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>
 							}
 						</ul>
 					</div>
@@ -86,23 +86,23 @@
 						<ul class="list-unstyled">
 							@if (Model.TopicPageUrls.ContainsKey("contactus"))
 							{
-								<li><a href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
+								<li><a class="footer-link" href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
 							}
 							@if (Model.BlogEnabled)
 							{
-								<li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+								<li><a class="footer-link" href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
 							}
 							@if (Model.ForumEnabled)
 							{
-								<li><a href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
+								<li><a class="footer-link" href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
 							}
 							@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
 							{
-								<li><a href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
+								<li><a class="footer-link" href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
 							}
 							@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
 							{
-								<li><a href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
+								<li><a class="footer-link" href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
 							}
 						</ul>
 
@@ -117,23 +117,23 @@
 						<ul class="list-unstyled">
 							@if (Model.TopicPageUrls.ContainsKey("aboutus"))
 							{
-								<li><a href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
+								<li><a class="footer-link" href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
 							}
 							@if (Model.TopicPageUrls.ContainsKey("imprint"))
 							{
-								<li><a href="@Model.TopicPageUrls["imprint"]">@T("Imprint")</a></li>
+								<li><a class="footer-link" href="@Model.TopicPageUrls["imprint"]">@T("Imprint")</a></li>
 							}
 							@if (Model.TopicPageUrls.ContainsKey("disclaimer"))
 							{
-								<li><a href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
+								<li><a class="footer-link" href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
 							}
 							@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
 							{
-								<li><a href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
+								<li><a class="footer-link" href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
 							}
 							@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
 							{
-								<li><a href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
+								<li><a class="footer-link" href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
 							}
 						</ul>
 					</div>

@@ -5,7 +5,6 @@
 // Footer Styles
 // --------------------------------------------------
 
-
 #footer {
     border-top: 1px solid rgba(0,0,0, 0.1);
     background: $footer-bg;
@@ -78,14 +77,14 @@
         color: $footer-color;
     }
 
-    a {
+    a.footer-link {
         color: $footer-color-muted;
         &:hover { color: $ftmh; }
     }
 
-    .footer-social .btn-social {
+    .btn-social:not(:hover):not(:active):not(:focus) {
         background-color: $footer-social-bg;
-        color: $footer-social-color !important;
+        color: $footer-social-color;
     }
 
     .footer-bottom-wrapper {
@@ -103,12 +102,13 @@
         color: $footer-inverse-color;
     }
 
-    a {
+    a.footer-link {
         color: $footer-inverse-color-muted;
         &:hover { color: $ftmh; }
     }
 
-    .footer-social .btn-social {
+    .btn-social:not(:hover):not(:active):not(:focus) {
+        background-color: transparent;
         color: $footer-inverse-color-muted !important;
     }
 
@@ -122,19 +122,6 @@
 .footer-social .btn-social {
     display: inline-block;
     border-color: transparent !important;
-    font-size: 1.2rem;
+    box-shadow: none;
     margin: 0 0.4rem;
-    outline: 0;
-
-    &:hover, &:active { color: #fff !important; }
-
-    &.btn-social-facebook       { &:hover, &:active { background-color: $clr-brand-facebook !important; } }
-    &.btn-social-twitter        { &:hover, &:active { background-color: $clr-brand-twitter !important; } }
-    &.btn-social-youtube        { &:hover, &:active { background-color: $clr-brand-youtube !important; } }
-    &.btn-social-pinterest      { &:hover, &:active { background-color: $clr-brand-pinterest !important; } }
-    &.btn-social-google-plus    { &:hover, &:active { background-color: $clr-brand-googleplus !important; } }
-    &.btn-social-flickr         { &:hover, &:active { background-color: $clr-brand-flickr !important; } }
-    &.btn-social-instagram      { &:hover, &:active { background-color: $clr-brand-instagram !important; } }
-    &.btn-social-linkedin       { &:hover, &:active { background-color: $clr-brand-linkedin !important; } }
-    &.btn-social-xing           { &:hover, &:active { background-color: $clr-brand-xing !important; } }
 }

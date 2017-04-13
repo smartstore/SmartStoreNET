@@ -70,7 +70,10 @@
 
 /* Misc
 ================================================ */
-body.popup { padding: 20px; }
+body.popup { 
+    padding: 20px; 
+    background: $body-bg;
+}
 #iframe-backinstocksubsription {
     max-width: 100%;
 }

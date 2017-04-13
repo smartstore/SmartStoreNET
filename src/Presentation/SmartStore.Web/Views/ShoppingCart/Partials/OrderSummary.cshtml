@@ -491,28 +491,34 @@
 
 @if (!Model.IsEditable && Model.Items.Any(x => x.IsDownload && x.HasUserAgreement))
 {
-	<div id="user-agreement-modal" class="modal modal-large hide fade" tabindex="-1">
-		<div class="modal-header">
-			<h4 class="caption">@T("DownloadableProducts.UserAgreement")</h4>
-		</div>
-		<div class="modal-body"></div>
-		<div class="modal-footer">
-			<button class="btn" data-dismiss="modal">@T("Common.OK")</button>
-		</div>
-	</div>
+    using (Html.BeginZoneContent("end", key: "user-agreement-modal"))
+    {
+        <div id="user-agreement-modal" class="modal modal-flex fade" tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body p-3"></div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal">@T("Common.Confirm")</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
 	<script type="text/javascript">
 		$(document).ready(function () {
-			$('a.download-user-agreement').click(function () {
+		    $('a.download-user-agreement').on("click", function () {
 				var url = '@(Url.Action("GetUserAgreement", "Download"))?productId=' + $(this).attr('data-id'),
 					dialog = $('#user-agreement-modal');
 
 				dialog.find('.modal-body').empty();
 
 				$.get(url, function (html) {
-					dialog.find('.modal-body').html(html);
+				    dialog.find('.modal-body').html(html);
 				});
 
-				dialog.modal('show');
+				dialog.modal();
+
 				return false;
 			});
 		});

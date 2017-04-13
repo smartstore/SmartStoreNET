@@ -37,11 +37,11 @@
                 <div class="terms-of-service alert alert-info">
                     <script type="text/javascript">
                         $(document).ready(function () {
-                            $("#terms-of-service-trigger").click(function (event) {
+                            $("#terms-of-service-trigger").on("click", function (event) {
                                 event.preventDefault();
                                 $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" />');
                             });
-                            $("#disclaimer-trigger").click(function (event) {
+                            $("#disclaimer-trigger").on("click", function (event) {
                                 event.preventDefault();
                                 $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" />');
                             });

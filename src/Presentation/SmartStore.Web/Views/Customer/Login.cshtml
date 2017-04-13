@@ -1,8 +1,8 @@
 ﻿@model LoginModel
+
 @using SmartStore.Web.Models.Customer;
 @using SmartStore.Core;
 @using SmartStore.Core.Infrastructure;
-@using SmartStore.Core.Infrastructure.DependencyManagement;
 
 @{
     Layout = "_Layout";
@@ -15,37 +15,11 @@
         var webHelper = EngineContext.Current.Resolve<IWebHelper>();
         registerUrl = webHelper.ModifyQueryString(registerUrl, "returnurl=" + HttpUtility.UrlEncode(this.Context.Request.QueryString["returnUrl"]), null);
     }
-
-	var socialButtonsHtml = Html.Action("ExternalMethods", "ExternalAuthentication").ToHtmlString();
 }
-
-<script type="text/javascript">
-    $(function () {
-        applyCommonPlugins($(".page.login-page"));
-    });
-</script>
-
-<style>
-	.login-page hr {
-		width: 100%;
-		margin-top: 1.5rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.login-page .input-group-icon > i {
-		line-height: inherit;
-	}
-
-	.login-page .login-box .form-group:last-child {
-		margin-bottom: 0;
-	}
-</style>
 
 <div class="page login-page">
 	<div class="page-title">
-		@*<h1 class="h3">@T("Account.Login.Welcome")</h1>*@
-		<!-- PROTO -->
-		<h1 class="font-weight-normal">Anmeldung</h1>
+		<h1 class="font-weight-normal">@T("Account.Login.Welcome")</h1>
 	</div>
 
 	<div class="row mt-4">
@@ -117,7 +91,7 @@
 						<div class="xform-check">
 							<label class="form-check-label">
 								@Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
-								@T("Account.Login.Fields.RememberMe")
+								<span>@T("Account.Login.Fields.RememberMe")</span>
 							</label>
 						</div>
 						<div class="forgot-password">
@@ -138,17 +112,7 @@
 						</button>
 					</div>
 
-					@if (socialButtonsHtml.HasValue())
-					{
-						<div class="form-group">
-							<div class="text-center mb-3">
-								- ODER -
-							</div>
-							<div class="external-auth-buttons">
-								@Html.Raw(socialButtonsHtml)
-							</div>
-						</div>
-					}
+					@{ Html.RenderAction("ExternalMethods", "ExternalAuthentication"); }
 				</form>
 			</div>
 		</div>

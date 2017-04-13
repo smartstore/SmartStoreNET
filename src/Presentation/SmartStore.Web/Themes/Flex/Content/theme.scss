@@ -459,7 +459,7 @@ a.pretty-link {
         display: block; 
         position: absolute;
         color: #fff;
-        font-family: FontAwesome;
+        font-family: FontAwesome; 
         left: 0;
         top: 50%;
         font-size: 1.25em;
@@ -469,7 +469,7 @@ a.pretty-link {
         z-index: 2;
     }
     &.alert-danger:after   { content: "\f071"; } // exclamation-triangle
-    &.alert-info:after     { content: "\f06a"; } // info
+    &.alert-info:after     { content: "\f129"; } // info
     &.alert-success:after  { content: "\f00c"; } // check
     &.alert-warning:after  { content: "\f06a"; } // exclamation-circle
 }

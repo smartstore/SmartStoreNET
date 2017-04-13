@@ -5,7 +5,23 @@
 /* Login
 ================================================ */
 
-.login-wrapper {
+.login-box {
+    hr {
+		width: 100%;
+		margin-top: 1.5rem;
+		margin-bottom: 1.5rem;
+    }
+
+	.form-group:last-child {
+		margin-bottom: 0;
+	}
+
+	.input-group-icon > i {
+		line-height: inherit;
+	}
+}
+
+/*.login-wrapper {
 	position: relative;
 	overflow: hidden;
 	margin: 20px 0;
@@ -13,20 +29,6 @@
 	border: 1px solid #ddd;
 	background-color: #fafafa;
 }
-/*
-.login-block .block {
-	margin: 0;
-}
-
-.login-block .block-body {
-	padding-bottom: 0;
-}
-
-.login-block-login form,
-.login-block .control-group:last-child {
-	margin-bottom: 0;
-}
-*/
 
 .login-block-register {
 	position: absolute;
@@ -95,19 +97,19 @@
 		float: left;
 		margin-top: 8px;
 	}
-}
+}*/
 
 
 /* Registration
 ================================================ */
 
-.registration-page .buttons,
+/*.registration-page .buttons,
 .registration-result-page .buttons {
 	margin: 20px 0;
 	text-align: center;
 	padding-top: 20px;
 	border-top: 1px solid #ddd;
 	clear: both;
-}
+}*/
 
 

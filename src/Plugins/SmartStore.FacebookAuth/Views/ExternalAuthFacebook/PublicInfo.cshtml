@@ -1,10 +1,11 @@
 ﻿@using SmartStore.Web.Framework.UI
+
 @{
 	Layout = "";
 }
 
-<a class="btn btn-primary btn-extauth btn-facebook btn-block" href="@Url.RouteUrl("SmartStore.FacebookAuth", new { ReturnUrl = HttpContext.Current.Request.QueryString["ReturnUrl"], action = "Login" })">
-	<i class="fa fa-fw fa-lg fa-facebook-square"></i>
-	@T("Plugins.ExternalAuth.Facebook.Login")
+<a class="btn btn-primary btn-icon btn-lg btn-extauth btn-brand-facebook" data-toggle="tooltip" title="@T("Plugins.ExternalAuth.Facebook.Login")"
+   href="@Url.RouteUrl("SmartStore.FacebookAuth", new { ReturnUrl = HttpContext.Current.Request.QueryString["ReturnUrl"], action = "Login" })">
+	<i class="fa fa-fw fa-lg fa-facebook"></i>
 </a>
  

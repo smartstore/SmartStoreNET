@@ -470,3 +470,43 @@ $btn-gray-bg:       $gray-lightest;
         cursor: pointer;
     }
 }
+
+
+// Social buttons
+// --------------------------------------------------
+
+.btn-brand-facebook {
+    @include button-variant(#fff, $clr-brand-facebook, $clr-brand-facebook);
+}
+
+.btn-brand-twitter {
+    @include button-variant(#fff, $clr-brand-twitter, $clr-brand-twitter);
+}
+
+.btn-brand-youtube {
+    @include button-variant(#fff, $clr-brand-youtube, $clr-brand-youtube);
+}
+
+.btn-brand-pinterest {
+    @include button-variant(#fff, $clr-brand-pinterest, $clr-brand-pinterest);
+}
+
+.btn-brand-google-plus  {
+    @include button-variant(#fff, $clr-brand-googleplus , $clr-brand-googleplus );
+}
+
+/*.btn-brand-flickr {
+    @include button-variant(#fff, $clr-brand-flickr, $clr-brand-flickr);
+}
+
+.btn-brand-instagram {
+    @include button-variant(#fff, $clr-brand-instagram, $clr-brand-instagram);
+}
+
+.btn-brand-linkedin {
+    @include button-variant(#fff, $clr-brand-linkedin, $clr-brand-linkedin);
+}
+
+.btn-brand-xing {
+    @include button-variant(#fff, $clr-brand-xing, $clr-brand-xing);
+}*/

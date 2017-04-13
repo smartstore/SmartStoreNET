@@ -95,6 +95,10 @@ header {
     overflow-x: hidden;  
 }
 
+#content-wrapper {
+    min-height: 600px;
+}
+
 .page-main {
     position: relative;
     z-index: 1;

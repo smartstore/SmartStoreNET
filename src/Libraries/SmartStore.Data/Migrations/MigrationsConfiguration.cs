@@ -744,6 +744,8 @@ namespace SmartStore.Data.Migrations
 
 
 			builder.AddOrUpdate("Account.Administration", "Admin", "Admin");
+			builder.AddOrUpdate("Account.PasswordRecovery", "Reset password", "Passwort zurücksetzen");
+			
 
 			builder.AddOrUpdate("Common.Shopbar.BasketPartOne", "Shopping", "Waren");
 			builder.AddOrUpdate("Common.Shopbar.BasketPartTwo", "Basket", "Korb");

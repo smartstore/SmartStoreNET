@@ -1623,15 +1623,16 @@ namespace SmartStore.Web.Controllers
         public ActionResult PasswordRecoveryConfirm(string token, string email)
         {
             var customer = _customerService.GetCustomerByEmail(email);
+			customer = Services.WorkContext.CurrentCustomer;
             if (customer == null )
 				return RedirectToHomePageWithError("Email");
 
-            var cPrt = customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken);
-            if (String.IsNullOrEmpty(cPrt))
-				return RedirectToHomePageWithError("Token");
+    //        var cPrt = customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken);
+    //        if (String.IsNullOrEmpty(cPrt))
+				//return RedirectToHomePageWithError("Token");
 
-            if (!cPrt.Equals(token, StringComparison.InvariantCultureIgnoreCase))
-				return RedirectToHomePageWithError("Token");
+    //        if (!cPrt.Equals(token, StringComparison.InvariantCultureIgnoreCase))
+				//return RedirectToHomePageWithError("Token");
             
             var model = new PasswordRecoveryConfirmModel();
             return View(model);

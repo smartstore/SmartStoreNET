@@ -13,7 +13,7 @@
 			title = T("Products.DownloadSample").Text,
 			icon = "fa fa-download",
 			@class = "action-download-sample",
-			href = Url.Action("Sample", "Download", new { id = Model.Id })
+			href = Url.Action("Sample", "Download", new { productId = Model.Id })
 		});
 	}
 

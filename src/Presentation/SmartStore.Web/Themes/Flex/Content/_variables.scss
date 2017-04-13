@@ -169,6 +169,7 @@ $dropdown-link-hover-color:     darken($gray-dark, 5%);
 $dropdown-link-hover-bg:        $gray-lightest;
 $dropdown-link-active-color:    $dropdown-link-hover-color;
 $dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
+$dropdown-border-color:         rgba(#000, .075);
 
 
 // Pagination

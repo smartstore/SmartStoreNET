@@ -125,6 +125,7 @@ namespace SmartStore.Services.Tests.Customers
 			_services.Expect(x => x.StoreContext).Return(_storeContext);
 			_services.Expect(x => x.RequestCache).Return(NullRequestCache.Instance);
 			_services.Expect(x => x.Cache).Return(NullCache.Instance);
+			_services.Expect(x => x.EventPublisher).Return(_eventPublisher);
 
 			_customerService = new CustomerService(_customerRepo, _customerRoleRepo,
                 _genericAttributeRepo, _rewardPointsHistoryRepo, _genericAttributeService, _rewardPointsSettings, _services, new FakeHttpContext("~/"), _userAgent);

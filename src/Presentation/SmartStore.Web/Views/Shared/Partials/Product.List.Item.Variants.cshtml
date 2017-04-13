@@ -13,8 +13,7 @@
 		<div class="art-color-opts">
 			@foreach (var clr in Model.ColorAttributes)
 			{
-				var selectColorUrl = string.Concat(artDetailUrl, "?", clr.GetQueryString(Model.Id, 0));
-				<a href='@selectColorUrl' class="art-color-opt" style="background-color: @clr.Color" title='@T("Products.ChooseColorX", clr.FriendlyName, clr.AttributeName)'></a>
+				<a href='@clr.ProductUrl' class="art-color-opt" style="background-color: @clr.Color" title='@T("Products.ChooseColorX", clr.FriendlyName, clr.AttributeName)'></a>
 			}
 		</div>
 	}

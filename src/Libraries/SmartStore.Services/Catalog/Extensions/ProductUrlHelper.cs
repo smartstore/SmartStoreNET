@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Search.Modelling;
 
 namespace SmartStore.Services.Catalog.Extensions
 {
@@ -17,34 +18,43 @@ namespace SmartStore.Services.Catalog.Extensions
 		private readonly ICommonServices _services;
 		private readonly IProductAttributeParser _productAttributeParser;
 		private readonly Lazy<ILanguageService> _languageService;
+		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
 		private readonly Lazy<LocalizationSettings> _localizationSettings;
 
-		//private readonly int _languageId;
-		private readonly QueryString _initialQuery;
+		private readonly int _languageId;
 
 		public ProductUrlHelper(
 			HttpRequestBase httpRequest,
 			ICommonServices services,
 			IProductAttributeParser productAttributeParser,
 			Lazy<ILanguageService> languageService,
+			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
 			Lazy<LocalizationSettings> localizationSettings)
 		{
 			_httpRequest = httpRequest;
 			_services = services;
 			_productAttributeParser = productAttributeParser;
 			_languageService = languageService;
+			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
 			_localizationSettings = localizationSettings;
 
-			//_languageId = _services.WorkContext.WorkingLanguage.Id;
-			_initialQuery = QueryString.Current;
+			_languageId = _services.WorkContext.WorkingLanguage.Id;
 		}
 
+		/// <summary>
+		/// URL of the product page used to create the new product URL. Created from route if <c>null</c>.
+		/// </summary>
 		public string Url { get; set; }
 
-		protected virtual string ToQueryString(ProductVariantQuery query, bool withInitialQuery = true)
+		/// <summary>
+		/// Initial query string used to create the new query string. Usually <c>null</c>.
+		/// </summary>
+		public QueryString InitialQuery { get; set; }
+
+		protected virtual string ToQueryString(ProductVariantQuery query)
 		{
-			var qs = withInitialQuery 
-				? new QueryString(_initialQuery)
+			var qs = InitialQuery != null
+				? new QueryString(InitialQuery)
 				: new QueryString();
 
 			// Checkout Attributes
@@ -71,6 +81,11 @@ namespace SmartStore.Services.Catalog.Extensions
 			// Variants
 			foreach (var item in query.Variants)
 			{
+				if (item.Alias.IsEmpty())
+				{
+					item.Alias = _catalogSearchQueryAliasMapper.Value.GetVariantAliasById(item.AttributeId, _languageId);
+				}
+
 				var name = item.Alias.HasValue()
 					? $"{item.Alias}-{item.ProductId}-{item.BundleItemId}-{item.VariantAttributeId}"
 					: item.ToString();
@@ -82,6 +97,11 @@ namespace SmartStore.Services.Catalog.Extensions
 				}
 				else
 				{
+					if (item.ValueAlias.IsEmpty())
+					{
+						item.ValueAlias = _catalogSearchQueryAliasMapper.Value.GetVariantOptionAliasById(item.Value.ToInt(), _languageId);
+					}
+
 					var value = item.ValueAlias.HasValue()
 						? $"{item.ValueAlias}-{item.Value}"
 						: item.Value;
@@ -94,15 +114,16 @@ namespace SmartStore.Services.Catalog.Extensions
 		}
 
 		/// <summary>
-		/// Deserializes product variant query
+		/// Deserializes attributes XML into a product variant query
 		/// </summary>
 		/// <param name="query">Product variant query</param>
-		/// <param name="attributesXml">XML formatted attributes</param>
 		/// <param name="productId">Product identifier</param>
 		/// <param name="bundleItemId">Bundle item identifier</param>
+		/// <param name="attributesXml">XML formatted attributes</param>
 		public virtual void DeserializeQuery(ProductVariantQuery query, int productId, string attributesXml, int bundleItemId = 0)
 		{
 			Guard.NotNull(query, nameof(query));
+			Guard.NotZero(productId, nameof(productId));
 
 			if (attributesXml.HasValue() && productId != 0)
 			{
@@ -123,8 +144,16 @@ namespace SmartStore.Services.Catalog.Extensions
 			}
 		}
 
+		/// <summary>
+		/// Creates a product URL including variant query string.
+		/// </summary>
+		/// <param name="query">Product variant query</param>
+		/// <param name="productSeName">Product SEO name</param>
+		/// <returns>Product URL</returns>
 		public virtual string GetProductUrl(ProductVariantQuery query, string productSeName)
 		{
+			Guard.NotEmpty(productSeName, nameof(productSeName));
+
 			var url = Url ?? UrlHelper.GenerateUrl(
 				"Product",
 				null,
@@ -138,12 +167,12 @@ namespace SmartStore.Services.Catalog.Extensions
 		}
 
 		/// <summary>
-		/// Gets the URL of the product page including attributes query string
+		/// Creates a product URL including variant query string.
 		/// </summary>
-		/// <param name="attributesXml">XML formatted attributes</param>
 		/// <param name="productId">Product identifier</param>
 		/// <param name="productSeName">Product SEO name</param>
-		/// <returns>URL of the product page including attributes query string</returns>
+		/// <param name="attributesXml">XML formatted attributes</param>
+		/// <returns>Product URL</returns>
 		public virtual string GetProductUrl(int productId, string productSeName, string attributesXml)
 		{
 			var query = new ProductVariantQuery();
@@ -152,6 +181,15 @@ namespace SmartStore.Services.Catalog.Extensions
 			return GetProductUrl(query, productSeName);
 		}
 
+		/// <summary>
+		/// Creates an absolute product URL.
+		/// </summary>
+		/// <param name="productId">Product identifier</param>
+		/// <param name="productSeName">Product SEO name</param>
+		/// <param name="attributesXml">XML formatted attributes</param>
+		/// <param name="store">Store entity</param>
+		/// <param name="language">Language entity</param>
+		/// <returns>Absolute product URL</returns>
 		public virtual string GetAbsoluteProductUrl(
 			int productId,
 			string productSeName,
@@ -159,6 +197,8 @@ namespace SmartStore.Services.Catalog.Extensions
 			Store store = null,
 			Language language = null)
 		{
+			Guard.NotEmpty(productSeName, nameof(productSeName));
+
 			if (_httpRequest == null)
 				return null;
 
@@ -194,8 +234,7 @@ namespace SmartStore.Services.Catalog.Extensions
 				var query = new ProductVariantQuery();
 				DeserializeQuery(query, productId, attributesXml);
 
-				// Ignore initial query. Could be unwanted stuff like task parameter CurrentCustomerId.
-				url = url + ToQueryString(query, false);
+				url = url + ToQueryString(query);
 			}
 
 			return url;

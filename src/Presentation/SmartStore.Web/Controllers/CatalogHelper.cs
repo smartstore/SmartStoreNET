@@ -77,6 +77,7 @@ namespace SmartStore.Web.Controllers
 
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
+		private readonly ProductUrlHelper _productUrlHelper;
 
 		public CatalogHelper(
 			ICommonServices services,
@@ -113,7 +114,8 @@ namespace SmartStore.Web.Controllers
 			ICatalogSearchQueryFactory catalogSearchQueryFactory,
 			ISiteMapService siteMapService,
 			HttpRequestBase httpRequest,
-			UrlHelper urlHelper)
+			UrlHelper urlHelper,
+			ProductUrlHelper productUrlHelper)
 		{
 			this._services = services;
 			this._categoryService = categoryService;
@@ -150,6 +152,7 @@ namespace SmartStore.Web.Controllers
 			this._siteMapService = siteMapService;
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
+			this._productUrlHelper = productUrlHelper;
 
 			T = NullLocalizer.Instance;
 		}

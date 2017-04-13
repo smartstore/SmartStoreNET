@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
-using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -90,13 +88,13 @@ namespace SmartStore.Web.Controllers
             //return reasons
             foreach (var rrr in returnRequestReasons.SplitSafe(","))
             {
-                model.AvailableReturnReasons.Add(new SelectListItem() { Text = rrr, Value = rrr });
+                model.AvailableReturnReasons.Add(new SelectListItem { Text = rrr, Value = rrr });
             }
 
             //return actions
             foreach (var rra in returnRequestActions.SplitSafe(","))
             {
-                model.AvailableReturnActions.Add(new SelectListItem() { Text = rra, Value = rra });
+                model.AvailableReturnActions.Add(new SelectListItem { Text = rra, Value = rra });
             }
 
             //products
@@ -104,8 +102,6 @@ namespace SmartStore.Web.Controllers
 
             foreach (var orderItem in orderItems)
             {
-				var query = new ProductVariantQuery();
-
                 var orderItemModel = new SubmitReturnRequestModel.OrderItemModel
                 {
                     Id = orderItem.Id,
@@ -116,18 +112,7 @@ namespace SmartStore.Web.Controllers
                     Quantity = orderItem.Quantity
                 };
 
-				if (orderItem.Product.ProductType != ProductType.BundledProduct)
-				{
-					_productUrlHelper.DeserializeQuery(query, orderItem.ProductId, orderItem.AttributesXml);
-				}
-				else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
-				{
-					var bundleData = orderItem.GetBundleData();
-
-					bundleData.ForEach(x => _productUrlHelper.DeserializeQuery(query, x.ProductId, x.AttributesXml, x.BundleItemId));
-				}
-
-				orderItemModel.ProductUrl = _productUrlHelper.GetProductUrl(query, orderItemModel.ProductSeName);
+				orderItemModel.ProductUrl = _productUrlHelper.GetProductUrl(orderItemModel.ProductSeName, orderItem);
 
 				//unit price
 				switch (order.CustomerTaxDisplayType)

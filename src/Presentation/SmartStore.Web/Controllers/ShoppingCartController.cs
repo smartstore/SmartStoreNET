@@ -269,7 +269,7 @@ namespace SmartStore.Web.Controllers
 				CreatedOnUtc = item.UpdatedOnUtc
 			};
 
-            model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
+            model.ProductUrl = _productUrlHelper.GetProductUrl(model.ProductSeName, sci);
 
 			if (item.BundleItem != null)
 			{
@@ -468,7 +468,7 @@ namespace SmartStore.Web.Controllers
 				CreatedOnUtc = item.UpdatedOnUtc
 			};
 
-			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
+			model.ProductUrl = _productUrlHelper.GetProductUrl(model.ProductSeName, sci);
 
 			if (item.BundleItem != null)
 			{
@@ -1036,7 +1036,7 @@ namespace SmartStore.Web.Controllers
                     };
 
                     cartItemModel.QuantityUnitName = String.Empty;
-                    cartItemModel.ProductUrl = GetProductUrlWithAttributes(sci, cartItemModel.ProductSeName);
+					cartItemModel.ProductUrl = _productUrlHelper.GetProductUrl(cartItemModel.ProductSeName, sci);
 
 					if (sci.ChildItems != null && _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
 					{
@@ -1207,27 +1207,6 @@ namespace SmartStore.Web.Controllers
                 downloadGuid = Guid.Empty
             });
         }
-        
-		private string GetProductUrlWithAttributes(OrganizedShoppingCartItem cartItem, string productSeName)
-		{
-			var query = new ProductVariantQuery();
-			var product = cartItem.Item.Product;
-
-			if (product.ProductType != ProductType.BundledProduct)
-			{
-				_productUrlHelper.DeserializeQuery(query, product.Id, cartItem.Item.AttributesXml);
-			}
-			else if (cartItem.ChildItems != null && product.BundlePerItemPricing)
-			{
-				foreach (var childItem in cartItem.ChildItems.Where(x => x.Item.Id != cartItem.Item.Id))
-				{
-					_productUrlHelper.DeserializeQuery(query, childItem.Item.ProductId, childItem.Item.AttributesXml, childItem.BundleItemData.Item.Id);
-				}
-			}
-
-			var url = _productUrlHelper.GetProductUrl(query, productSeName);
-			return url;
-		}
 
         #endregion
 

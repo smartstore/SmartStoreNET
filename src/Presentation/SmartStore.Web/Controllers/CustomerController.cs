@@ -3,7 +3,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
@@ -17,7 +16,6 @@ using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
-using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -1301,10 +1299,8 @@ namespace SmartStore.Web.Controllers
             if (!IsCurrentUserRegistered())
                 return new HttpUnauthorizedResult();
 
-            var customer = _workContext.CurrentCustomer;
-
-            var model = new CustomerReturnRequestsModel();
-			
+			var model = new CustomerReturnRequestsModel();
+			var customer = _workContext.CurrentCustomer;		
 			var returnRequests = _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, int.MaxValue);
 
             foreach (var returnRequest in returnRequests)
@@ -1312,16 +1308,13 @@ namespace SmartStore.Web.Controllers
                 var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);
                 if (orderItem != null)
                 {
-                    var product = orderItem.Product;
-					var query = new ProductVariantQuery();
-
                     var itemModel = new CustomerReturnRequestsModel.ReturnRequestModel
                     {
                         Id = returnRequest.Id,
                         ReturnRequestStatus = returnRequest.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        ProductId = product.Id,
-						ProductName = product.GetLocalized(x => x.Name),
-                        ProductSeName = product.GetSeName(),
+                        ProductId = orderItem.Product.Id,
+						ProductName = orderItem.Product.GetLocalized(x => x.Name),
+                        ProductSeName = orderItem.Product.GetSeName(),
                         Quantity = returnRequest.Quantity,
                         ReturnAction = returnRequest.RequestedAction,
                         ReturnReason = returnRequest.ReasonForReturn,
@@ -1329,18 +1322,7 @@ namespace SmartStore.Web.Controllers
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc)
                     };
 
-					if (orderItem.Product.ProductType != ProductType.BundledProduct)
-					{
-						_productUrlHelper.DeserializeQuery(query, orderItem.ProductId, orderItem.AttributesXml);
-					}
-					else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
-					{
-						var bundleData = orderItem.GetBundleData();
-
-						bundleData.ForEach(x => _productUrlHelper.DeserializeQuery(query, x.ProductId, x.AttributesXml, x.BundleItemId));
-					}
-
-					itemModel.ProductUrl = _productUrlHelper.GetProductUrl(query, itemModel.ProductSeName);
+					itemModel.ProductUrl = _productUrlHelper.GetProductUrl(itemModel.ProductSeName, orderItem);
 
 					model.Items.Add(itemModel);
                 }

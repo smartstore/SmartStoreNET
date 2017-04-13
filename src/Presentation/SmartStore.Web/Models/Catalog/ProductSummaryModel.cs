@@ -176,16 +176,7 @@ namespace SmartStore.Web.Models.Catalog
 			public string Color { get; set; }
 			public string Alias { get; set; }
 			public string FriendlyName { get; set; }
-
-			public string GetQueryString(int productId, int bundleItemId)
-			{
-				var queryString = string.Concat(
-					ProductVariantQueryItem.CreateKey(productId, bundleItemId, ProductAttributeId, AttributeId),
-					"=",
-					Id.ToString());
-
-				return queryString;
-			}
+			public string ProductUrl { get; set; }
 
 			public override int GetHashCode()
 			{

@@ -14,6 +14,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
@@ -332,7 +333,8 @@ namespace SmartStore.Web.Controllers
 								FriendlyName = x.GetLocalized(l => l.Name),
 								AttributeId = x.ProductVariantAttributeId,
 								AttributeName = attrName,
-								ProductAttributeId = attr.Id
+								ProductAttributeId = attr.Id,
+								ProductUrl = _productUrlHelper.GetProductUrl(product.Id, item.SeName, 0, x)
 							};
 						})
 						.ToList();

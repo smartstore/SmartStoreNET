@@ -161,13 +161,13 @@
                 <div class="email">
                     @T("Order.Email"): @Model.BillingAddress.Email
                 </div>
-                @if (Model.BillingAddress.PhoneEnabled)
+                @if (Model.BillingAddress.PhoneEnabled && Model.BillingAddress.PhoneNumber.HasValue())
                 {
                     <div class="phone">
                         @T("Order.Phone"): @Model.BillingAddress.PhoneNumber
                     </div>
                 }
-                @if (Model.BillingAddress.FaxEnabled)
+                @if (Model.BillingAddress.FaxEnabled && Model.BillingAddress.FaxNumber.HasValue())
                 {
                     <div class="fax">
                         @T("Order.Fax"): @Model.BillingAddress.FaxNumber

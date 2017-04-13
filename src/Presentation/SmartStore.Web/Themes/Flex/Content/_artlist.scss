@@ -1,3 +1,4 @@
+/// <reference path="_variables.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 //
@@ -659,5 +660,34 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
     }
     &:after {
         height: 0 !important;
+    }
+}
+
+
+// 'Show all' special item
+// ---------------------------------------------
+
+.art.show-all-items {
+    padding: 0 !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+
+    .show-all-items-link {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex-grow: 1;
+        text-align: center;
+        padding: 1rem;
+        text-decoration: none !important;
+        font-size: 1.25rem;
+        font-weight: $font-weight-normal;
+
+        color: inherit !important;
+        background: rgba(#000, 0.06);
+        opacity: 0.5;
+
+        &:hover { opacity: 0.75; }
+        &:active { opacity: 1; }
     }
 }

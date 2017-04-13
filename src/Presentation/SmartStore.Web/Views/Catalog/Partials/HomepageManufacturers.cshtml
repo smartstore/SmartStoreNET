@@ -1,10 +1,17 @@
 ﻿@model ManufacturerNavigationModel
+
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
 	if (Model.Manufacturers.Count == 0 || !Model.DisplayManufacturers)
 	{
 		return;
+	}
+
+	var manufacturers = Model.Manufacturers;
+	if (Model.DisplayAllManufacturersLink)
+	{
+		manufacturers = manufacturers.Take(Model.Manufacturers.Count - 1).ToList();
 	}
 }
 
@@ -14,16 +21,20 @@
     </div>
 
     <div class="artlist artlist-grid artlist-6-cols artlist-boxed block-body pt-3">
-        @foreach (var manufacturer in Model.Manufacturers)
+        @foreach (var manufacturer in manufacturers)
         {
             @RenderManufacturer(manufacturer);
         }
 
-        <article class="art show-all-manufacturers">
-            <a href="@Url.RouteUrl("ManufacturerList")" class="d-flex align-items-center">
-                <span>@T("Homepage.Brands.ShowAll")</span>
-            </a>
-        </article>
+		@if (Model.DisplayAllManufacturersLink)
+		{
+			<div class="art show-all-items d-flex p-0">
+				<a href="@Url.RouteUrl("ManufacturerList")" class="show-all-items-link">
+					<i class="fa fa-ellipsis-h fa-lg"></i>
+					<span>@T("Homepage.Brands.ShowAll")</span>
+				</a>
+			</div>
+		}
     </div>
 </div>
 

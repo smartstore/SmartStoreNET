@@ -1296,7 +1296,7 @@ namespace SmartStore.Web.Controllers
 
         public ManufacturerNavigationModel PrepareManufacturerNavigationModel(int manufacturerItemsToDisplay)
         {
-            var cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY,
+			var cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY,
                 !_catalogSettings.HideManufacturerDefaultPictures,
                 _services.WorkContext.WorkingLanguage.Id,
                 _services.StoreContext.CurrentStore.Id,

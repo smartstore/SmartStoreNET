@@ -1,3 +1,4 @@
+/// <reference path="_variables.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 /* Breadcrumb
@@ -20,28 +21,6 @@
 }
 .breadcrumb-item > a {
     color: $body-color !important;
-}
-
-/* Manufacturers on Homepage
-================================================ */
-.manufacturer-grid .show-all-manufacturers {
-    > a {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        color: $btn-warning-color;
-        background: $btn-warning-bg;
-        font-weight: $font-weight-medium;
-        font-size: 1rem;
-        opacity: 0.7;
-        &:hover { 
-            text-decoration: none;
-            opacity: 1;
-        }
-        > span { margin: auto; }
-    }
 }
 
 /* All manufacturers

@@ -1,3 +1,4 @@
+/// <reference path="../_variables.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
 
@@ -20,11 +21,11 @@ small, .small {
 }
 
 .font-weight-light {
-    font-weight: $font-weight-light;
+    font-weight: $font-weight-light !important;
 }
 
 .font-weight-medium {
-    font-weight: $font-weight-medium;
+    font-weight: $font-weight-medium !important;
 }
 
 

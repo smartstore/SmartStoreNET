@@ -81,7 +81,7 @@
         @* Description *@
         @if (!String.IsNullOrWhiteSpace(Model.Description))
         {
-            <div class="category-description text-body hide-on-active-filter">
+            <div class="category-description lead hide-on-active-filter">
                 @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
         }
@@ -122,7 +122,7 @@
 
         @if (Model.BottomDescription.HasValue())
         {
-            <div class="category-description text-body">
+            <div class="category-description lead">
                 @Html.Raw(Html.CollapsedText(Model.BottomDescription))
             </div>
         }

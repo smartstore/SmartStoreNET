@@ -7,21 +7,202 @@
 @{
     Layout = "_Layout";
 
-    //title
     Html.AddTitleParts(T("PageTitle.Login").Text);
 
-    //register URL with return URL (if specified)
     var registerUrl = Url.RouteUrl("Register");
     if (!String.IsNullOrEmpty(this.Context.Request.QueryString["returnUrl"]))
     {
         var webHelper = EngineContext.Current.Resolve<IWebHelper>();
         registerUrl = webHelper.ModifyQueryString(registerUrl, "returnurl=" + HttpUtility.UrlEncode(this.Context.Request.QueryString["returnUrl"]), null);
     }
+
+	var socialButtonsHtml = Html.Action("ExternalMethods", "ExternalAuthentication").ToHtmlString();
 }
 
+<script type="text/javascript">
+    $(function () {
+        applyCommonPlugins($(".page.login-page"));
+    });
+</script>
+
+<style>
+	.login-page hr {
+		width: 100%;
+		margin-top: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.login-page .input-group-icon > i {
+		line-height: inherit;
+	}
+
+	.login-page .login-box .form-group:last-child {
+		margin-bottom: 0;
+	}
+</style>
+
 <div class="page login-page">
+	<div class="page-title">
+		@*<h1 class="h3">@T("Account.Login.Welcome")</h1>*@
+		<!-- PROTO -->
+		<h1 class="font-weight-normal">Anmeldung</h1>
+	</div>
+
+	<div class="row mt-4">
+		<div class="col-12 col-md-7 col-lg-6 col-xl-5 order-md-last">
+			<div class="card card-shadow p-5 mb-5 mb-md-0 login-box" style="background: #fcfcfc">
+				<h3 class="h4 mb-0">
+					@T("Account.Login.ReturningCustomer")
+				</h3>
+				<hr />
+				@if (!ViewData.ModelState.IsValid)
+				{
+					@Html.ValidationSummary(true, T("Account.Login.Unsuccessful").Text, new { @class = "alert alert-danger" })
+				}
+				<div class="text-muted" style="font-size: 85%">
+					@{
+						Html.RenderPartial("_ExternalAuthentication.AssociateMessage");
+					}
+				</div>
+				<!-- PROTO -->
+				<div class="alert alert-warning external-auth-association d-none">
+					@T("Account.AssociatedExternalAuth.YourAccountWillBeLinkedTo") <strong class="identifier">Facebook</strong>
+					<a href="@Url.Action("RemoveParameterAssociation", "ExternalAuthentication", new { ReturnUrl = Request.Url.ToString() })" class="remove" rel="nofollow">
+						(@T("Common.Remove"))
+					</a>
+				</div>
+
+				<!-- SignIn Form -->
+				<form action="@ViewContext.HttpContext.Request.RawUrl" method="post">
+					@if (Model.UsernamesEnabled)
+					{
+						<div class="form-group">
+							<div class="input-group input-group-lg has-icon">
+								@Html.TextBoxFor(m => m.Username, new { @class = "username form-control", placeholder = Html.DisplayNameFor(m => m.Username) })
+								<span class="input-group-icon">
+									<i class="icm icm-user"></i>
+								</span>
+							</div>
+							@Html.ValidationMessageFor(m => m.Username)
+						</div>
+					}
+					else
+					{
+						<div class="form-group">
+							<div class="input-group input-group-lg has-icon">
+								@Html.TextBoxFor(m => m.Email, new { @class = "email form-control", placeholder = Html.DisplayNameFor(m => m.Email) })
+								<span class="input-group-icon">
+									<i class="icm icm-envelope-open"></i>
+								</span>
+							</div>
+							@Html.ValidationMessageFor(m => m.Email)
+						</div>
+					}
+
+					<div class="form-group">
+						<div class="input-group input-group-lg has-icon">
+							<input type="password" class="password form-control" autocomplete="off"
+								   placeholder="@Html.DisplayNameFor(m => m.Password)"
+								   id="@Html.FieldIdFor(m => m.Password)"
+								   name="@Html.FieldNameFor(m => m.Password)"
+								   value="@(Model.Password.HasValue() ? Model.Password : null)" />
+							<span class="input-group-icon">
+								<i class="icm icm-shield"></i>
+							</span>
+						</div>
+						@Html.ValidationMessageFor(m => m.Password)
+					</div>
+
+					<div class="form-group d-flex justify-content-between">
+						<div class="xform-check">
+							<label class="form-check-label">
+								@Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+								@T("Account.Login.Fields.RememberMe")
+							</label>
+						</div>
+						<div class="forgot-password">
+							@Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
+						</div>
+					</div>
+
+					@if (Model.DisplayCaptcha)
+					{
+						<div class="form-group captcha-box">
+							@Html.Raw(Html.GenerateCaptcha())
+						</div>
+					}
+
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary btn-lg btn-block btn-login">
+							@T("Account.Login.LoginButton")
+						</button>
+					</div>
+
+					@if (socialButtonsHtml.HasValue())
+					{
+						<div class="form-group">
+							<div class="text-center mb-3">
+								- ODER -
+							</div>
+							<div class="external-auth-buttons">
+								@Html.Raw(socialButtonsHtml)
+							</div>
+						</div>
+					}
+				</form>
+			</div>
+		</div>
+		<div class="col-12 col-md-5 col-lg-6 col-xl-7 order-md-first">
+			<div class="page-info">
+				<!-- PROTO -->
+				<div class="alert alert-warning external-auth-association d-none">
+					@T("Account.AssociatedExternalAuth.YourAccountWillBeLinkedTo") <strong class="identifier">Facebook</strong>
+					<a href="@Url.Action("RemoveParameterAssociation", "ExternalAuthentication", new { ReturnUrl = Request.Url.ToString() })" class="remove" rel="nofollow">
+						(@T("Common.Remove"))
+					</a>
+				</div>
+				@{
+					Html.RenderPartial("_ExternalAuthentication.AssociateMessage");
+					Html.RenderAction("TopicBlock", "Topic", new { systemName = "LoginRegistrationInfo", bodyOnly = true, isLead = true });
+				}
+			</div>
+
+			<div class="x-login-block x-login-block-register">
+				@if (Model.CheckoutAsGuest)
+				{
+					Html.RenderAction("TopicBlock", "Topic", new { systemName = "CheckoutAsGuestOrRegister", bodyOnly = true });
+					<div class="row sm-gutters">
+						<div class="col-sm-6 col-md-12 col-lg-6 pb-2 pb-lg-0">
+							<a class="btn btn-warning btn-lg btn-block register-button" href="@registerUrl">
+								@T("Account.Register.Button")
+							</a>
+						</div>
+						<div class="col-sm-6 col-md-12 col-lg-6">
+							<a class="btn btn-secondary btn-lg btn-block checkout-as-guest-button" href="@Url.RouteUrl("Checkout")">
+								<span>@T("Account.Login.CheckoutAsGuest")</span>
+								<i class="fa fa-angle-right"></i>
+							</a>
+						</div>
+					</div>
+				}
+				else
+				{
+					<a class="btn btn-warning btn-lg register-button" href="@registerUrl">
+						@T("Account.Register.Button")
+					</a>
+				}
+			</div>
+		</div>
+	</div>
+</div>
+
+@{ 
+	return;
+}
+
+<div class="page login-page" style="opacity: 0.2; margin-top: 300px">
     <div class="page-title">
-        <h1>@T("Account.Login.Welcome")</h1>
+        <h1 class="h3">@T("Account.Login.Welcome")</h1>
     </div>
 
     @{ 
@@ -86,7 +267,7 @@
                         <form action="@ViewContext.HttpContext.Request.RawUrl" method="post" class="form-horizontal">
                             @if (!ViewData.ModelState.IsValid)
                             {
-                                @Html.ValidationSummary(true, T("Account.Login.Unsuccessful").Text)
+                                @Html.ValidationSummary(true, T("Account.Login.Unsuccessful").Text, new { @class = "alert alert-danger" })
                             }
 
                             @if (Model.UsernamesEnabled)
@@ -163,9 +344,3 @@
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    $(function () {
-        applyCommonPlugins($(".page.login-page"));
-    });
-</script>

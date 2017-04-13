@@ -778,7 +778,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Account.CustomerReturnRequests.Date", "Date Requested", "Anfragedatum");
 			builder.AddOrUpdate("Account.CustomerReturnRequests.Item", "Item", "Artikel");
 
+			builder.AddOrUpdate("Account.CreateAccount", "Create account", "Konto erstellen");
 			builder.AddOrUpdate("Account.Register.Button", "Register", "Registrieren");
+
+			builder.AddOrUpdate("Account.Login.Welcome", "Sign In", "Anmeldung");
 
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage",

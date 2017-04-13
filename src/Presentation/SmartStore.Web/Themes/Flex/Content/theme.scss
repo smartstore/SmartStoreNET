@@ -137,7 +137,7 @@ header {
 .text-body {
     // TODO: (mc) Make variable for this
     // TODO: (mc) > (mh) Apply to all elems with long text/description (news, blogs, forum etc.)
-    font-size: 1rem;
+    font-size: $lead-font-size;
 }
 
 
@@ -758,7 +758,7 @@ a.pretty-link {
             padding: 0.75rem 1rem;
 
             &:after {
-                @include fontawesome("\f107");
+                @include fontawesome("\f106");
                 position: absolute;
                 right: 1rem;
                 top: 50%;
@@ -766,7 +766,7 @@ a.pretty-link {
             }
 
             &.collapsed:after {
-                content: "\f106";
+                content: "\f107";
             }
         }
 

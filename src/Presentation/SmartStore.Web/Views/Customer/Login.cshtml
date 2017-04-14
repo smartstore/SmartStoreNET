@@ -24,7 +24,7 @@
 
 	<div class="row mt-4">
 		<div class="col-12 col-md-7 col-lg-6 col-xl-5 order-md-last">
-			<div class="card card-shadow p-5 mb-5 mb-md-0 login-box" style="background: #fcfcfc">
+			<div class="card card-shadow p-5 mb-5 mb-md-0 login-box">
 				<h3 class="h4 mb-0">
 					@T("Account.Login.ReturningCustomer")
 				</h3>
@@ -33,18 +33,6 @@
 				{
 					@Html.ValidationSummary(true, T("Account.Login.Unsuccessful").Text, new { @class = "alert alert-danger" })
 				}
-				<div class="text-muted" style="font-size: 85%">
-					@{
-						Html.RenderPartial("_ExternalAuthentication.AssociateMessage");
-					}
-				</div>
-				<!-- PROTO -->
-				<div class="alert alert-warning external-auth-association d-none">
-					@T("Account.AssociatedExternalAuth.YourAccountWillBeLinkedTo") <strong class="identifier">Facebook</strong>
-					<a href="@Url.Action("RemoveParameterAssociation", "ExternalAuthentication", new { ReturnUrl = Request.Url.ToString() })" class="remove" rel="nofollow">
-						(@T("Common.Remove"))
-					</a>
-				</div>
 
 				<!-- SignIn Form -->
 				<form action="@ViewContext.HttpContext.Request.RawUrl" method="post">
@@ -53,7 +41,7 @@
 						<div class="form-group">
 							<div class="input-group input-group-lg has-icon">
 								@Html.TextBoxFor(m => m.Username, new { @class = "username form-control", placeholder = Html.DisplayNameFor(m => m.Username) })
-								<span class="input-group-icon">
+								<span class="input-group-icon text-muted">
 									<i class="icm icm-user"></i>
 								</span>
 							</div>
@@ -65,7 +53,7 @@
 						<div class="form-group">
 							<div class="input-group input-group-lg has-icon">
 								@Html.TextBoxFor(m => m.Email, new { @class = "email form-control", type = "email", placeholder = Html.DisplayNameFor(m => m.Email) })
-								<span class="input-group-icon">
+								<span class="input-group-icon text-muted">
 									<i class="icm icm-envelope-open"></i>
 								</span>
 							</div>
@@ -80,7 +68,7 @@
 								   id="@Html.FieldIdFor(m => m.Password)"
 								   name="@Html.FieldNameFor(m => m.Password)"
 								   value="@(Model.Password.HasValue() ? Model.Password : null)" />
-							<span class="input-group-icon">
+							<span class="input-group-icon text-muted">
 								<i class="icm icm-shield"></i>
 							</span>
 						</div>
@@ -88,12 +76,10 @@
 					</div>
 
 					<div class="form-group d-flex justify-content-between">
-						<div class="xform-check">
-							<label class="form-check-label">
-								@Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
-								<span>@T("Account.Login.Fields.RememberMe")</span>
-							</label>
-						</div>
+						<label class="form-check-label">
+							@Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+							<span>@T("Account.Login.Fields.RememberMe")</span>
+						</label>
 						<div class="forgot-password">
 							@Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
 						</div>
@@ -118,20 +104,13 @@
 		</div>
 		<div class="col-12 col-md-5 col-lg-6 col-xl-7 order-md-first">
 			<div class="page-info">
-				<!-- PROTO -->
-				<div class="alert alert-warning external-auth-association d-none">
-					@T("Account.AssociatedExternalAuth.YourAccountWillBeLinkedTo") <strong class="identifier">Facebook</strong>
-					<a href="@Url.Action("RemoveParameterAssociation", "ExternalAuthentication", new { ReturnUrl = Request.Url.ToString() })" class="remove" rel="nofollow">
-						(@T("Common.Remove"))
-					</a>
-				</div>
 				@{
 					Html.RenderPartial("_ExternalAuthentication.AssociateMessage");
 					Html.RenderAction("TopicBlock", "Topic", new { systemName = "LoginRegistrationInfo", bodyOnly = true, isLead = true });
 				}
 			</div>
 
-			<div class="x-login-block x-login-block-register">
+			<div class="register-block">
 				@if (Model.CheckoutAsGuest)
 				{
 					Html.RenderAction("TopicBlock", "Topic", new { systemName = "CheckoutAsGuestOrRegister", bodyOnly = true });
@@ -151,160 +130,15 @@
 				}
 				else
 				{
-					<a class="btn btn-warning btn-lg register-button" href="@registerUrl">
-						@T("Account.Register.Button")
-					</a>
+					<div class="row">
+						<div class="col-12 col-lg-auto">
+							<a class="btn btn-warning btn-lg btn-block register-button" href="@registerUrl">
+								@T("Account.Register.Button")
+							</a>
+						</div>
+					</div>
 				}
 			</div>
 		</div>
 	</div>
-</div>
-
-@{ 
-	return;
-}
-
-<div class="page login-page" style="opacity: 0.2; margin-top: 300px">
-    <div class="page-title">
-        <h1 class="h3">@T("Account.Login.Welcome")</h1>
-    </div>
-
-    @{ 
-        Html.RenderAction("TopicBlock", "Topic", new { systemName = "LoginRegistrationInfo" });
-        Html.RenderPartial("_ExternalAuthentication.AssociateMessage");
-    }
-
-    <div class="page-body">
-        
-        <div class="login-wrapper clearfix">
-            
-            @if (Model.CheckoutAsGuest)
-            {
-                <div class="login-block login-block-register equalized-column">
-                    <div class="block login-block-inner checkout-as-guest-or-register-block">
-                        <div class="block-title">
-                            <h4>@T("Account.Login.CheckoutAsGuestOrRegister")</h4>
-                        </div>
-                        <div class="block-body">
-                            <p>
-                                @{ Html.RenderAction("TopicBlock", "Topic", new { systemName = "CheckoutAsGuestOrRegister" });}
-                            </p>
-                            <div class="buttons">
-                                <a class="btn btn-secondary pull-left checkout-as-guest-button" href="@Url.RouteUrl("Checkout")">
-                                    @T("Account.Login.CheckoutAsGuest")
-                                </a>
-                                <a class="btn btn-primary pull-right register-button" href="@registerUrl">
-                                    @T("Account.Register")
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="login-block login-block-register equalized-column">
-                    <div class="block login-block-inner">
-                        <div class="block-title">
-                            <h4>@T("Account.Login.NewCustomer")</h4>
-                        </div>
-                        <div class="block-body">
-                            <p>@T("Account.Login.NewCustomerText")</p>
-                            <div class="buttons">
-                                <a class="btn btn-primary register-button" href="@registerUrl">
-                                    @T("Account.Register")
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            <div class="login-block login-block-login equalized-column">
-
-                <div class="block">
-                    <div class="block-title">
-                        <h4>@T("Account.Login.ReturningCustomer")</h4>
-                    </div>
-                    <div class="block-body">
-
-                        <form action="@ViewContext.HttpContext.Request.RawUrl" method="post" class="form-horizontal">
-                            @if (!ViewData.ModelState.IsValid)
-                            {
-                                @Html.ValidationSummary(true, T("Account.Login.Unsuccessful").Text, new { @class = "alert alert-danger" })
-                            }
-
-                            @if (Model.UsernamesEnabled)
-                            {
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Username, new { @class = "col-sm-12 form-control-label", @for = "Username" })
-                                    <div class="col-sm-12">
-                                        @Html.TextBoxFor(m => m.Username, new { @class = "username form-control" })
-                                        @Html.ValidationMessageFor(m => m.Username, null, new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Email, new { @class = "col-sm-12 form-control-label", @for = "Email" })
-                                    <div class="col-sm-12">
-                                        @Html.TextBoxFor(m => m.Email, new { @class = "email form-control" })
-                                        @Html.ValidationMessageFor(m => m.Email, null, new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            }
-
-                            <div class="form-group row pwd">
-                                @Html.LabelFor(model => model.Password, new { @class = "col-sm-12 form-control-label", @for = "Password" })
-                                <div class="col-sm-12">
-                                    <input type="password" class="password form-control" autocomplete="off"
-                                           id="@Html.FieldIdFor(m => m.Password)"
-                                           name="@Html.FieldNameFor(m => m.Password)"
-                                           value="@(Model.Password.HasValue() ? Model.Password : null)" />
-                                    @Html.ValidationMessageFor(m => m.Password, null, new { @class = "text-danger" })
-                                    <div class="forgot-password">
-                                        @Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group row signin">
-                                <div class="col-sm-12">
-                                    <div class="checkbox inline">
-                                        <label>
-                                            @Html.CheckBoxFor(m => m.RememberMe)
-                                            @T("Account.Login.Fields.RememberMe")
-                                        </label>
-                                    </div>
-                                    <div class="pull-right">
-                                        <button type="submit" class="btn btn-secondary login-button">
-                                            <i class="fa fa-sign-in hide"></i>
-                                            @T("Account.Login.LoginButton")
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-sm-12">
-
-                                    @if (Model.DisplayCaptcha)
-                                    {
-                                        <div class="captcha-box">
-                                            @Html.Raw(Html.GenerateCaptcha())
-                                        </div>
-                                    }
-
-                                    <div class="externalauthentication clearfix">
-                                        @{ Html.RenderAction("ExternalMethods", "ExternalAuthentication"); }
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>

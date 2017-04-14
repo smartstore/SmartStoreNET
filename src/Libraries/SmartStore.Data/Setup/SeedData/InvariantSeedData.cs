@@ -4155,7 +4155,7 @@ namespace SmartStore.Data.Setup
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
 						Title = "About login / registration",
-						Body = "<p>Put your login / registration information here. You can edit this in the admin site.</p>"
+						Body = "<p><strong>Not registered yet?</strong></p><p>Create your own account now and experience our diversity. With an account you can place orders faster and will always have a&nbsp;perfect overview of your current and previous orders.</p>"
 					},
 				new Topic
 					{
@@ -4163,7 +4163,7 @@ namespace SmartStore.Data.Setup
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
 						Title = "Privacy policy",
-						Body = "<p>Put your privacy policy information here. You can edit this in the admin site.</p>"
+						Body = "<p><strong></strong></p>"
 					},
 				new Topic
 					{

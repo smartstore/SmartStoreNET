@@ -2028,7 +2028,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("LoginRegistrationInfo", x =>
                 {
                     x.Title = "Anmeldung/Registrierung";
-                    x.Body = "<p>Fügen Sie Informationen zur Anmeldung hier ein.</p><p>Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
+                    x.Body = "<p><strong>Noch nicht registriert?</strong></p><p>Erstellen Sie jetzt Ihr Kunden-Konto und erleben Sie unsere Vielfalt. Mit einem Konto können Sie künftig schneller bestellen und haben stets eine optimale Übersicht über Ihre laufenden sowie bisherigen Bestellungen.</p>";
                 })
                 .Alter("PrivacyInfo", x =>
                 {

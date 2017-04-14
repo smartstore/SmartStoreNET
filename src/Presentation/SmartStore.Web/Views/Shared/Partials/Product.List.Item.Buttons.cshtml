@@ -10,7 +10,7 @@
 }
 
 @helper RenderBuyButton(bool blockStyle) {{
-	var cssClasses = blockStyle ? "btn-block d-none d-md-block" : "btn-icon btn-lg art-btn col";
+	var cssClasses = blockStyle ? "btn-block d-none d-md-block" : "x-btn-icon btn-lg art-btn col";
 	if (!blockStyle && Model.Parent.ViewMode == ProductSummaryViewMode.List)
 	{
 		cssClasses += " d-md-none";
@@ -67,7 +67,7 @@
 	</div>
 }
 
-<div class="row art-btn-group">
+<div class="row no-gutters art-btn-group">
 	@if (!price.DisableBuyButton && list.BuyEnabled)
 	{
 		@RenderBuyButton(false)
@@ -77,7 +77,7 @@
 	{
 		<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
 			href="#"
-			class="btn btn-secondary btn-icon btn-lg art-btn col ajax-cart-link" 
+			class="btn btn-secondary x-btn-icon btn-lg art-btn col ajax-cart-link" 
 			title="@T("Categories.Wishlist")"
 			data-toggle="tooltip" data-placement="bottom"
 			rel="nofollow"
@@ -95,7 +95,7 @@
 	{
 		<a data-href="@Url.Action("AddProductToCompare", "Catalog", new RouteValueDictionary { { "id", Model.Id } })" 
 			href="#"
-			class="btn btn-secondary btn-icon btn-lg art-btn col ajax-cart-link" 
+			class="btn btn-secondary x-btn-icon btn-lg art-btn col ajax-cart-link" 
 			title="@T("Categories.Compare")"  
 			data-toggle="tooltip" data-placement="bottom" 
 			rel="nofollow"
@@ -110,7 +110,7 @@
 	}
 
 	<a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' 
-		class="btn btn-secondary btn-icon btn-lg art-btn col" 
+		class="btn btn-secondary x-btn-icon btn-lg art-btn col" 
 		title="@T("Products.Details")">
 		<i class="fa fa-info"></i>
 	</a>

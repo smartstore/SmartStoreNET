@@ -403,7 +403,7 @@ namespace SmartStore.Core
 
 			var result = string.Concat(
 				parts[0],
-				current.ToString(),
+				current.ToString(false),
 				anchor.NullEmpty() == null ? (curAnchor == null ? "" : "#" + curAnchor) : "#" + anchor
 			);
 
@@ -421,7 +421,7 @@ namespace SmartStore.Core
 				current.Remove(queryString);
 			}
 
-			var result = string.Concat(parts[0], current.ToString());
+			var result = string.Concat(parts[0], current.ToString(false));
 			return result;
         }
         

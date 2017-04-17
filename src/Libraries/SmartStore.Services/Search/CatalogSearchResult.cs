@@ -33,6 +33,15 @@ namespace SmartStore.Services.Search
 		}
 
 		/// <summary>
+		/// Constructor for an instance without any search hits
+		/// </summary>
+		/// <param name="query">Catalog search query</param>
+		public CatalogSearchResult(CatalogSearchQuery query)
+			: this(null, query, 0, () => new List<Product>(), null, null)
+		{
+		}
+
+		/// <summary>
 		/// Products found
 		/// </summary>
 		public IPagedList<Product> Hits

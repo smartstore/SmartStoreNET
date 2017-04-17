@@ -115,6 +115,7 @@ namespace SmartStore.Web.Controllers
 
 			if (query.Term == null || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
 			{
+				model.SearchResult = new CatalogSearchResult(query);
 				model.Error = T("Search.SearchTermMinimumLengthIsNCharacters", _searchSettings.InstantSearchTermMinLength);
 				return View(model);
 			}
@@ -132,7 +133,7 @@ namespace SmartStore.Web.Controllers
 			catch (Exception exception)
 			{
 				model.Error = exception.ToString();
-				result = new CatalogSearchResult(null, query, 0, () => new List<Product>(), null, null);
+				result = new CatalogSearchResult(query);
 			}
 
 			if (result.TotalHitsCount == 0 && result.SpellCheckerSuggestions.Any())

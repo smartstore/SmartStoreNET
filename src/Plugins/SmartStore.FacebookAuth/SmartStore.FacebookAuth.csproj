@@ -206,9 +206,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\public.scss">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Content Include="Description.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

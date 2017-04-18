@@ -121,3 +121,13 @@ body.popup {
     padding: 0 0 1.5rem 0;
     font-size: 2rem;
 }
+
+// error messages
+.validation-summary-errors {
+    @extend .alert; 
+    @extend .alert-danger; 
+
+	ul:last-of-type {
+		margin-bottom: 0;
+	}
+}

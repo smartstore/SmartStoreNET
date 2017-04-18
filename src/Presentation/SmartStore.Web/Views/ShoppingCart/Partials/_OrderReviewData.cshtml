@@ -4,14 +4,13 @@
 {
     <div class="order-review-data-box">
         <div class="row">
-
-            <div class="billinginfo col-sm-12 col-md-6">
-                <div class="block block-bordered card">
-                    <div class="block-title card-header">
+            <div class="billinginfo col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header h5">
                         <span>@T("Order.BillingAddress")</span>
                         <a class="change-checkout-data pull-right" href='@Url.Action("BillingAddress", "Checkout")'>@T("Common.Change")</a>
                     </div>
-                    <div class="block-body card-block">
+                    <div class="card-block">
                         <div class="name">
                             @Model.BillingAddress.FirstName @Model.BillingAddress.LastName
                         </div>
@@ -82,13 +81,13 @@
             </div>
             @if (Model.IsShippable)
             {
-                <div class="shippinginfo col-sm-12 col-md-6">
-                    <div class="block block-bordered card">
-                        <div class="block-title  card-header">
+                <div class="shippinginfo col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header h5">
                             <span>@T("Order.ShippingAddress")</span>
                             <a class="change-checkout-data pull-right" href='@Url.Action("ShippingAddress", "Checkout")'>@T("Common.Change")</a>
                         </div>
-                        <div class="block-body card-block">
+                        <div class="card-block">
                             <div class="name">
                                 @Model.ShippingAddress.FirstName @Model.ShippingAddress.LastName
                             </div>
@@ -154,7 +153,7 @@
                                     @Model.ShippingAddress.CountryName
                                 </div>
                             }
-                                </div>
+                        </div>
                     </div>
                 </div>
             }
@@ -163,16 +162,16 @@
 
         @if (!String.IsNullOrEmpty(Model.PaymentMethod))
         {
-            <div class="payment-method">
-                <div class="block block-bordered card">
-                    <div class="block-title card-header">
+            <div class="payment-method mb-3">
+                <div class="card">
+                    <div class="card-header h5">
                         <span>@T("Order.PaymentMethod")</span>
 						@if (!Model.IsPaymentSelectionSkipped)
 						{
 							<a class="change-checkout-data pull-right" href='@Url.Action("PaymentMethod", "Checkout")'>@T("Common.Change")</a>
 						}
                     </div>
-                    <div class="block-body card-block">
+                    <div class="card-block">
                         @Model.PaymentMethod
 						@if (Model.PaymentSummary.HasValue())
 						{
@@ -185,18 +184,17 @@
 
         @if (!String.IsNullOrEmpty(Model.ShippingMethod))
         {
-            <div class="shipping-method">
-                <div class="block block-bordered card">
-                    <div class="block-title card-header">
+            <div class="shipping-method mb-3">
+                <div class="card">
+                    <div class="card-header h5">
                         <span>@T("Order.ShippingMethod")</span>
 						<a class="change-checkout-data pull-right" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
                     </div>
-                    <div class="block-body card-block">
+                    <div class="card-block">
                         @Model.ShippingMethod
                     </div>
                 </div>
             </div>
         }
-
     </div>
 }

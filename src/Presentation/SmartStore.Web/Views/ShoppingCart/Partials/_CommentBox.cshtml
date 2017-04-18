@@ -1,13 +1,11 @@
 ﻿@model ShoppingCartModel
 @using SmartStore.Web.Models.ShoppingCart;
 
-<div class="block block-bordered comment-box card">
-
-    <div class="block-title card-header">
+<div class="comment-box card mb-3">
+    <div class="card-header h5">
         @T("ShoppingCart.CommentBox")
     </div>
-
-    <div class="block-body card-block">
-        @Html.TextAreaFor(model => model.CustomerComment, new { placeholder = "Optional" })
+    <div class="card-block">
+        @Html.TextAreaFor(model => model.CustomerComment, new { placeholder = "Optional", @class = "form-control" })
     </div>
 </div>

@@ -79,7 +79,7 @@
                             resultDisplay.html(data.Result);
                             if (data.Success) {
                                 $('#newsletter-subscribe-block').hide();
-                                resultDisplay.removeClass("alert-error d-none").addClass("alert-success d-block");
+                                resultDisplay.removeClass("alert-danger d-none").addClass("alert-success d-block");
                             }
                             else {
                                 resultDisplay.removeClass("alert-success d-none").addClass("alert-danger d-block").fadeIn("slow").delay(2000).fadeOut("slow");

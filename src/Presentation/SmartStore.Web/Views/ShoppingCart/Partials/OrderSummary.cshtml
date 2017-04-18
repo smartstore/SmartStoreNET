@@ -17,33 +17,13 @@
                    data-type="cart"
                    data-action="remove"
                    title='@T("Common.Remove")'>
-                    <i class="fa fa-trash-o mr-0"></i>
+                   <i class="fa fa-trash-o mr-0"></i>
                 </a>
-
-                <script type="text/javascript">
-                    //TODO NewAlpha: implement smooth animation and relocate script
-                    $(".ajax-cart-link").click(function () {
-
-                        //if there is more then one line
-                        if ($(".product-body[style!='display: none;']").length > 1)
-                        {
-                            var itemLine = $(this).closest(".product-body");
-                            //$(itemLine, "td").wrapInner('<div style="display:inline" />').slideUp();
-                            itemLine.slideUp();
-                        }
-                        else 
-                        {
-                            //reload page
-                            location.reload();
-                        }
-                    });
-                </script>
-
 			</td>
 		}
 		@if (Model.ShowSku)
 		{
-			<td class="text-nowrap">
+			<td class="text-nowrap d-none d-lg-table-cell">
 				@item.Sku
 			</td>
 		}
@@ -98,24 +78,20 @@
 			}
 			@if (!Model.IsEditable && item.IsDownload && item.HasUserAgreement)
 			{
-				<div class="download-agreement">
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)" />
-							@T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)
-						</label>
-					</div>
+				<div class="download-agreement checkbox">
+					<label class="form-check-label">
+						<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)" class="form-check-input" />
+						@T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)
+					</label>
 				</div>
 			}
 			@if (!Model.IsEditable && Model.DisplayEsdRevocationWaiverBox && item.IsEsd)
 			{
-				<div class="esd-revocation-waiver">
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)" />
-							@T("Checkout.EsdRevocationWaiverConfirmation")
-						</label>
-					</div>
+				<div class="esd-revocation-waiver checkbox">
+                    <label class="form-check-label">
+                        <input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)" class="form-check-input" />
+                        @T("Checkout.EsdRevocationWaiverConfirmation")
+                    </label>
 				</div>
 			}
 			@if (item.Warnings.Count > 0)
@@ -131,7 +107,7 @@
 
         @if (Model.DisplayWeight)
 		{
-            <td class="weight text-nowrap">
+            <td class="weight text-nowrap d-none d-xl-table-cell">
                 <span class="product-weight">@((item.Weight * item.EnteredQuantity).ToString("N2")) kg</span>
             </td>
         }
@@ -181,7 +157,7 @@
 				}
 				@if (Model.ShowSku)
 				{
-					<td>&nbsp;</td>
+					<td class="d-none d-lg-table-cell">&nbsp;</td>
 				}
 				@if (Model.ShowProductImages)
 				{
@@ -281,16 +257,16 @@
 
 	@if (!Model.IsEditable && (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None || Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None))
 	{
-		<div class="block block-bordered newsletter-subscription">
-			<div class="block-title">
-				<h3>@T("Common.Options")</h3>
+		<div class="card newsletter-subscription mb-3"> 
+			<div class="card-header h5">
+				<span>@T("Common.Options")</span>
 			</div>
-			<div class="block-body">
+			<div class="card-block">
 				@if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
 				{
 					<div class="checkbox">
-						<label>
-							<input type="checkbox" name="SubscribeToNewsLetter" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+						<label class="form-check-label">
+							<input type="checkbox" name="SubscribeToNewsLetter" class="form-check-input"  @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
 							@T("Checkout.SubscribeToNewsLetter")
 						</label>
 					</div>
@@ -298,8 +274,8 @@
 				@if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
 				{
 					<div class="checkbox">
-						<label>
-							<input type="checkbox" name="AcceptThirdPartyEmailHandOver" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+						<label class="form-check-label">
+							<input type="checkbox" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
 							@Model.ThirdPartyEmailHandOverLabel
 						</label>
 					</div>
@@ -340,7 +316,7 @@
                     }
 					@if (Model.ShowSku)
                     {
-						<th>
+						<th class="d-none d-lg-table-cell">
 							@T("ShoppingCart.SKU")
 						</th>
                     }
@@ -354,7 +330,7 @@
 
                     @if (Model.DisplayWeight)
                     {
-                    <th>
+                    <th class="d-none d-xl-table-cell">
                         @T("ShoppingCart.Weight")
                     </th>
                     }
@@ -393,10 +369,12 @@
         {
 			<div class="common-buttons clearfix">
 				<button type="submit" name="updatecart" value="updatecart" class="btn btn-secondary pull-right update-cart-button">
-					<i class="fa fa-refresh"></i>&nbsp;@T("ShoppingCart.UpdateCart")
+					<i class="fa fa-refresh"></i>
+                    <span>@T("ShoppingCart.UpdateCart")</span>
 				</button>
                 <button type="submit" name="continueshopping" value="continueshopping" class="btn btn-secondary pull-left continue-shopping-button">
-                    <i class="fa fa-caret-left"></i>&nbsp;@T("ShoppingCart.ContinueShopping")
+                    <i class="fa fa-caret-left"></i>
+                    <span>@T("ShoppingCart.ContinueShopping")</span>
                 </button>
 				<input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" style="display: none;" />
 			</div>
@@ -523,4 +501,25 @@
 			});
 		});
 	</script>
+}
+
+@if (Model.IsEditable)
+{
+    <script type="text/javascript">
+        //TODO: implement smooth animation and relocate script
+        $(".ajax-cart-link").on("click", function () {
+            //if there is more then one line
+            if ($(".product-body[style!='display: none;']").length > 1)
+            {
+                var itemLine = $(this).closest(".product-body");
+                //$(itemLine, "td").wrapInner('<div style="display:inline" />').slideUp();
+                itemLine.slideUp();
+            }
+            else
+            {
+                //reload page
+                location.reload();
+            }
+        });
+    </script>
 }

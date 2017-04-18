@@ -24,9 +24,9 @@
 		{
 			Html.RenderWidget("checkout_confirm_top");
 
-            <div class="page-intro">
+            <p class="page-intro lead">
                 @Html.Raw(@T("Checkout.ConfirmHint"))
-            </div>
+            </p>
 
             <input type="hidden" id="customercommenthidden" name="customercommenthidden" />
 			<input type="hidden" id="SubscribeToNewsLetterHidden" name="SubscribeToNewsLetterHidden" />
@@ -48,8 +48,8 @@
                         });
                     </script>
                     <div class="checkbox">
-                        <label class="mb-0">
-                            <input id="termsofservice" type="checkbox" name="termsofservice" />
+                        <label class="mb-0 form-check-label">
+                            <input id="termsofservice" type="checkbox" name="termsofservice" class="form-check-input" />
                             @Html.Raw(terms)
                         </label>
                     </div>
@@ -195,13 +195,13 @@
                     </script>
                     
                     <a class="btn btn-secondary pull-left" href="@Url.Action("PaymentMethod")">
-                        <i class="fa fa-caret-left"></i>&nbsp;
-                        @T("Common.Back")
+                        <i class="fa fa-caret-left"></i>
+                        <span>@T("Common.Back")</span>
                     </a>
                     
                     <button class="btn btn-danger btn-large pull-right confirm-order-next-step-button" onclick="return false;" >
-                        @T("Checkout.ConfirmButton")
-                        &nbsp;<i class="fa fa-fw fa-caret-right"></i> 
+                        <span>@T("Checkout.ConfirmButton")</span>
+                        <i class="fa fa-fw fa-caret-right"></i> 
                     </button>
                 }
             </div>

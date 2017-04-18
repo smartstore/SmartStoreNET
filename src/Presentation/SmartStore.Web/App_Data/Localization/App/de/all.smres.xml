@@ -14745,7 +14745,7 @@
 		<Value>Der Typ von wiederkehrender Zahlung wird nicht unterstützt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Payment.SelectCreditCard">
-		<Value>Wähle Kreditkarte aus</Value>
+		<Value>Wählen Sie Ihre Kreditkarte aus</Value>
 	</LocaleResource>
 	<LocaleResource Name="Paymentinfo">
 		<Value>Zahlungsarten</Value>

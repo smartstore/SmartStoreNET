@@ -15073,7 +15073,7 @@
 		<Value>The recurring payment type is not supported.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Payment.SelectCreditCard">
-		<Value>Select credit card</Value>
+		<Value>Select your credit card</Value>
 	</LocaleResource>
 	<LocaleResource Name="Paymentinfo">
 		<Value>Payment info</Value>

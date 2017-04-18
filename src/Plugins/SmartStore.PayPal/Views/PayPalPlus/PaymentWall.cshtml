@@ -21,7 +21,7 @@
 
 		@if (Model.ErrorMessage.HasValue())
 		{
-			<div class="alert alert-error">
+			<div class="alert alert-danger">
 				@Html.Raw(T("Plugins.Payments.PayPalPlus.MethodUnavailable"))
 				<br />
 				@if (!Model.ApprovalUrl.HasValue())
@@ -33,7 +33,7 @@
 		}
 		else if (Model.PayPalPlusPseudoMessageFlag.HasValue() && Model.PayPalPlusPseudoMessageFlag == "1")
 		{
-			<div class="alert alert-error">
+			<div class="alert alert-danger">
 				@Html.Raw(T("Plugins.Payments.PayPalPlus.SorryFailure"))
 			</div>
 		}
@@ -47,7 +47,7 @@
 
 		@if (Model.HasAnyFees)
 		{
-			<div id="PayPalPlusPaymentFeeContainer" class="alert alert-info payment-fee" style="visibility:hidden; margin-bottom:0;">
+			<div id="PayPalPlusPaymentFeeContainer" class="alert alert-info payment-fee mb-0" style="visibility:hidden;">
 				@T("Plugins.Payments.PayPalPlus.PaymentFeeMessage")
 			</div>
 		}
@@ -55,12 +55,14 @@
 		<div id="PayPalPlusPaymentWall"></div>
 
 		<div class="select-button clearfix">
-			<a class="btn pull-left" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
-				<i class="fa fa-caret-left"></i>&nbsp;@T("Common.Back")
+			<a class="btn btn-secondary pull-left" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
+                <i class="fa fa-caret-left"></i>
+                <span>@T("Common.Back")</span>
 			</a>
 
 			<button id="PayPalPlusNextCheckoutStep" class="btn btn-warning pull-right payment-method-next-step-button hide">
-				@T("Checkout.NextButton")&nbsp;<i class="fa fa-caret-right"></i>
+                <span>@T("Checkout.NextButton")</span>
+                <i class="fa fa-caret-right"></i>
 			</button>
 		</div>
 

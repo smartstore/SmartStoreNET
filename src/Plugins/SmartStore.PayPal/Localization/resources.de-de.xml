@@ -421,7 +421,7 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
         </Value>
       </LocaleResource>
       <LocaleResource Name="MethodUnavailable">
-        <Value>Wir können Ihnen leider keine PayPal PLUS Zahlungsart anbieten. Bitte versuchen Sie er später erneut.</Value>
+        <Value>Wir können Ihnen momentan leider keine PayPal PLUS Zahlungsart anbieten. Bitte versuchen Sie es später erneut.</Value>
       </LocaleResource>
       <LocaleResource Name="SorryFailure">
         <Value>Entschuldigung, das hat gerade nicht funktioniert. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode.</Value>

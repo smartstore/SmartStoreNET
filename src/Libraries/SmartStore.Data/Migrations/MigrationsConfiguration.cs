@@ -846,7 +846,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Order.NotFound")
 				.Value("de", "Die Bestellung {0} konnte nicht gefunden werden.");
 			builder.AddOrUpdate("Order.Order#")
-				.Value("de", "Bestellnummer");
+				.Value("de", "Bestellnr.");
 			builder.AddOrUpdate("Order.OrderDate")
 				.Value("de", "Bestellt am");
 			builder.AddOrUpdate("Order.OrderDetails")

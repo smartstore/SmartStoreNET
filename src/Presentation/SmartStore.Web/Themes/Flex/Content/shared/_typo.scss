@@ -2,12 +2,8 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
 
-h4, h5, h6, .h4, .h5, .h6 {
-    font-weight: $font-weight-medium;
-}
-
-small, .small {
-  font-size: 90%;
+h1, h2, .h1, .h2 {
+    font-weight: $headings-lg-font-weight;
 }
 
 

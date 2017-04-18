@@ -114,13 +114,13 @@
     {
         <div class="card card-shadow order-item">
 			<div class="card-block">
-				<h4 class="card-title mb-4">@T("Account.CustomerOrders.OrderNumber"): @order.OrderNumber</h4>
+				<h4 class="card-title mb-4">@T("Order.Order#"): @order.OrderNumber</h4>
 				<dl class="row mb-0">
-					<dt class="col-sm-3 font-weight-400 text-muted">@T("Account.CustomerOrders.OrderStatus")</dt>
+					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.OrderStatus")</dt>
 					<dd class="col-sm-9">@order.OrderStatus</dd>
-					<dt class="col-sm-3 font-weight-400 text-muted">@T("Account.CustomerOrders.OrderDate")</dt>
+					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.OrderDate")</dt>
 					<dd class="col-sm-9">@order.CreatedOn.ToString()</dd>
-					<dt class="col-sm-3 font-weight-400 text-muted">@T("Account.CustomerOrders.OrderTotal")</dt>
+					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.OrderTotal")</dt>
 					<dd class="col-sm-9 price">@order.OrderTotal</dd>
 				</dl>
 			</div>
@@ -135,7 +135,7 @@
 				}
 				<a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("Details", "Order", new { id = order.Id })" rel="nofollow">
 					<i class="fa fa-list-alt"></i>
-					<span>@T("Account.CustomerOrders.OrderDetails")</span>
+					<span>@T("Order.OrderDetails")</span>
 				</a>
 			</div>
         </div>

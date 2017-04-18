@@ -7,7 +7,6 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Order
 {
-	
 	public partial class OrderDetailsModel : EntityModelBase
     {
         public OrderDetailsModel()

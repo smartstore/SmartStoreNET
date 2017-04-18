@@ -824,6 +824,51 @@ namespace SmartStore.Data.Migrations
                     This way you can configure the display type of the widget as well as get statistic insight.",
                 @"Legt den Code des Share-Button Widgets fest. Gehen Sie zu addthis.com um Ihren eigenen Widget-Code zu erhalten und fügen Sie diesen hier ein. 
                     Auf diese Weise können Sie die Darstellung des Widgets selbst bestimmen, sowie Statistiken einsehen.");
-        }
+
+			builder.AddOrUpdate("Order.CannotCancel")
+				.Value("de", "Die Bestellung kann nicht storniert werden.");
+			builder.AddOrUpdate("Order.CannotCapture")
+				.Value("de", "Die Bestellung nicht gebucht werden.");
+			builder.AddOrUpdate("Order.CannotMarkCompleted")
+				.Value("de", "Die Bestellung kann nicht abgeschlossen werden.");
+			builder.AddOrUpdate("Order.CannotMarkPaid")
+				.Value("de", "Die Bestellung kann nicht als bezahlt markiert werden.");
+			builder.AddOrUpdate("Order.CannotPartialRefund")
+				.Value("de", "Eine Teilrückerstattung ist für diese Bestellung nicht möglich.");
+			builder.AddOrUpdate("Order.CannotRefund")
+				.Value("de", "Eine Rückerstattung ist für diese Bestellung nicht möglich.");
+			builder.AddOrUpdate("Order.CannotVoid")
+				.Value("de", "Eine Stornierung dieser Bestellung ist nicht möglich.");
+			builder.AddOrUpdate("Order.CompletePayment.Hint")
+				.Value("de", "Die Bestellung wurde noch nicht bezahlt. Um die Zahlung nun vorzunehmen, klicken Sie die Schaltfläche 'Zahlung veranlassen'");
+			builder.AddOrUpdate("Order.getpdfinvoice")
+				.Value("de", "Bestellung als PDF");
+			builder.AddOrUpdate("Order.NotFound")
+				.Value("de", "Die Bestellung {0} konnte nicht gefunden werden.");
+			builder.AddOrUpdate("Order.Order#")
+				.Value("de", "Bestellnummer");
+			builder.AddOrUpdate("Order.OrderDate")
+				.Value("de", "Bestellt am");
+			builder.AddOrUpdate("Order.OrderDetails")
+				.Value("de", "Bestelldetails");
+			builder.AddOrUpdate("Order.OrderStatus")
+				.Value("de", "Bestellstatus");
+			builder.AddOrUpdate("Order.Shipments.Order#")
+				.Value("de", "Bestellnr.");
+			builder.AddOrUpdate("PDFInvoice.Order#")
+				.Value("de", "Bestellnr.");
+			builder.AddOrUpdate("PDFPackagingSlip.Order")
+				.Value("de", "Bestellung");
+			builder.AddOrUpdate("Account.CustomerOrders")
+				.Value("de", "Bestellungen");
+			builder.AddOrUpdate("Account.CustomerOrders.NoOrders")
+				.Value("de", "Keine Bestellungen");
+			builder.AddOrUpdate("Account.CustomerOrders.NotYourOrder")
+				.Value("de", "Diese Bestellung konnte Ihnen nicht zugeordnet werden.");
+			builder.AddOrUpdate("Account.CustomerOrders.RecurringOrders.InitialOrder")
+				.Value("de", "Ursprüngliche Bestellung");
+			builder.AddOrUpdate("Account.CustomerOrders.RecurringOrders.ViewInitialOrder")
+				.Value("de", "Bestellungsansicht (ID - {0})");
+		}
 	}
 }

@@ -131,3 +131,12 @@ body.popup {
 		margin-bottom: 0;
 	}
 }
+
+// overwrite for bluimp file upload control
+.fileupload .fileupload-progress.collapse {
+    display: none !important; 
+    width: 100%;
+}
+.fileupload .fileupload-progress.collapse.show {
+    display: block !important; 
+}

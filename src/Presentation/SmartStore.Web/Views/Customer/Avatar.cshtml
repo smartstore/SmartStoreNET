@@ -33,11 +33,8 @@
             <div class="alert alert-info">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
         }
 
-        @if (!String.IsNullOrEmpty(Model.AvatarUrl))
-        {
-            <img src="@(Model.AvatarUrl + "?" + random)" class="img-thumbnail" alt="avatar" />
-        }
-            
+        <img src="@(Model.AvatarUrl + "?" + random)" class="img-thumbnail @(Model.AvatarUrl.HasValue() ? "" : "d-none")" alt="avatar" style="max-width:120px" />
+
         <button class="btn btn-secondary btn-to-danger remove" @Html.Attr("style", "display:none", String.IsNullOrEmpty(Model.AvatarUrl))>
             <i class="fa fa-trash-o"></i>
             @T("Admin.Picture.RemovePicture")
@@ -55,10 +52,10 @@
         </button>
 
         <!-- The global progress information -->
-        <div class="span5 fileupload-progress fade">
+        <div class="fileupload-progress fade collapse mt-2 col-6">
             <!-- The global progress bar -->
-            <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                <div class="bar" style="width:0%;"></div>
+            <div class="progress active">
+                <div class="progress-bar bg-success progress-bar-striped" style="width:0%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             <!-- The extended global progress information -->
             <div class="progress-extended">&nbsp;</div>
@@ -78,7 +75,8 @@
         var el = $('#@clientId'),
             img = el.find('img'),
             elHidden = el.find('.hidden'),
-            elRemove = el.find('.remove');
+            elRemove = el.find('.remove'),
+            elFile = el.find('.uploaded-file');
 
         $('#@clientId').fileupload({
             url: '@(Url.Content("~/Admin/Picture/AsyncUpload"))',
@@ -88,6 +86,7 @@
             done: function (e, data) {
                 var result = data.result;
                 if (result.success) {
+                    img.removeClass("d-none");
                     img.attr('src', result.imageUrl);
                     elHidden.val(result.pictureId);
                     elRemove.show();
@@ -96,7 +95,7 @@
 
             error: function (jqXHR, textStatus, errorThrown) {
                 if (errorThrown === 'abort') {
-                    //alert('File Upload has been canceled');
+                    alert('File Upload has been canceled');
                 }
             }
         });

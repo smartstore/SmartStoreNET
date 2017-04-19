@@ -16,10 +16,12 @@
 			url = box.data("url"),
 			keyNav = null;
 
-		box.on('input propertychange paste', function (e) {
+		var throttledInput = _.throttle(function (e) {
 			var term = box.val();
 			doSearch(term);
-		});
+		}, 100);
+
+		box.on('input propertychange paste', throttledInput);
 
 		box.parent().on('click', function (e) {
 			e.stopPropagation();

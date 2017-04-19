@@ -100,50 +100,51 @@
 	}
 }
 
-<div class="page order-details">
-    <div class="clearfix">
-        <div class="page-title pull-left">
-            <div class="page-title">
-                <h1 class="font-weight-normal">@T("Order.OrderDetails")</h1>
-            </div>
+<div class="page page-order-details">
+    <div class="clearfix mb-3">
+        <div class="page-title mb-3 float-sm-left">
+            <h1 class="h2 mb-0">
+				@T("Order.OrderDetails")
+				<small class="text-muted"><small>@Model.OrderNumber</small></small>
+			</h1>
         </div>
 
-        <div class="print-buttons pull-right" style="margin-top: 12px">
-            <a href="@Url.Action("print", new { id = Model.Id, pdf = false })" target="print" class="btn print-order-button" rel="nofollow">
+        <div class="print-buttons float-sm-right">
+            <a href="@Url.Action("print", new { id = Model.Id, pdf = false })" target="print" class="btn btn-secondary btn-sm print-order-button" rel="nofollow">
                 <i class="fa fa-print"></i>
-                @T("Order.Print")
+                <span>@T("Order.Print")</span>
             </a>
             @if (Model.DisplayPdfInvoice)
             {
-				<a href="@Url.Action("print", new { id = Model.Id, pdf = true })" class="btn pdf-order-button" rel="nofollow">
+				<a href="@Url.Action("print", new { id = Model.Id, pdf = true })" class="btn btn-secondary btn-sm pdf-order-button" rel="nofollow">
 					<i class="fa fa-file-pdf-o"></i>
-					@T("Order.GetPDFInvoice")
+					<span>@T("Order.GetPDFInvoice")</span>
 				</a>
             }
         </div>
     </div>
 
     <div class="page-body">
-        
         @{ Html.RenderWidget("orderdetails_page_top"); }
 
-        <div class="row">
-            <div class="col-sm-9">
-                <dl class="dl-horizontal row">
-                    <dt class="col-sm-4">@T("Order.Order#"):</dt>
-                    <dd class="col-sm-8">@Model.OrderNumber</dd>
-
-                    <dt class="col-sm-4">@T("Order.OrderDate"):</dt>
-                    <dd class="col-sm-8">@Model.CreatedOn.ToString("D")</dd>
-
-                    <dt class="col-sm-4">@T("Order.OrderStatus"):</dt>
-                    <dd class="col-sm-8">@Model.OrderStatus</dd>
-
-                    <dt class="col-sm-4">@T("Order.OrderTotal"):</dt>
-                    <dd class="text-success col-sm-8"><strong>@Model.OrderTotal</strong></dd>
-                </dl>
-            </div>
-        </div>
+		<div class="row mb-3">
+			<div class="col-6 col-sm-auto pb-3">
+				<h5 class="text-muted">@T("Order.OrderDate")</h5>
+				<div>@Model.CreatedOn.ToShortDateString()</div>
+			</div>
+			<div class="col-6 col-sm-auto pb-3">
+				<h5 class="text-muted">@T("Order.Order#")</h5>
+				<div>@Model.OrderNumber</div>
+			</div>
+			<div class="col-6 col-sm-auto pb-3">
+				<h5 class="text-muted">@T("Order.OrderStatus")</h5>
+				<div>@Model.OrderStatus</div>
+			</div>
+			<div class="col-6 col-sm-auto pb-3">
+				<h5 class="text-muted">@T("Order.OrderTotal")</h5>
+				<div class="text-success">@Model.OrderTotal</div>
+			</div>
+		</div>
 
         @{ Html.RenderWidget("orderdetails_page_overview"); }
 

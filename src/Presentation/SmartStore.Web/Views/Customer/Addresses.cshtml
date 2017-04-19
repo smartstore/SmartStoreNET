@@ -34,7 +34,7 @@
                     
         <div class="card card-shadow address-list-item">
             <div class="card-block">
-				<h4 class="card-title">@address.FirstName @address.LastName</h4>
+				<h4 class="card-title">@address.GetFormattedName()</h4>
 
 				<div class="mb-2">
 					<div class="email">
@@ -70,25 +70,14 @@
                     <div class="address2">@address.Address2</div>
                 }
                 @if (address.CityEnabled || address.StateProvinceEnabled || address.ZipPostalCodeEnabled)
-                {
-                <div class="city-state-zip">
-                    @if (address.CityEnabled)
-                    {
-                        @address.City
-                    }
-                    @if (address.CityEnabled && (address.StateProvinceEnabled || address.ZipPostalCodeEnabled))
-                    {
-                        <text>,</text>
-                    }
-                    @if (address.StateProvinceEnabled)
-                    {
-						@address.StateProvinceName
-                    }
-                    @if (address.ZipPostalCodeEnabled)
-                    {
-                        @address.ZipPostalCode
-                    }
-                    </div>
+				{
+					var cityStateZip = address.GetFormattedCityStateZip();
+					if (cityStateZip.HasValue())
+					{
+						<div class="city-state-zip">
+							@Html.Raw(cityStateZip)
+						</div>
+					}
                 }
                 @if (address.CountryEnabled && !String.IsNullOrEmpty(address.CountryName))
                 {

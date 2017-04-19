@@ -2,6 +2,7 @@
 
 @using SmartStore.Core.Domain.Orders;
 @using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Models.Order;
 @using SmartStore.Services.Localization;
 
@@ -9,95 +10,6 @@
     Layout = "_Layout";
 
     Html.AddTitleParts(T("PageTitle.OrderDetails").Text);
-}
-
-@helper SimpleProduct(OrderDetailsModel.OrderItemModel item)
-{
-	<tr>
-		@if (Model.ShowSku)
-		{
-			<td>
-				@item.Sku
-			</td>
-		}
-		<td>
-			<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-			@if (!String.IsNullOrEmpty(item.AttributeInfo))
-			{
-				<div class="attributes">
-					@Html.Raw(item.AttributeInfo)
-				</div>
-			}
-		</td>
-		<td class="text-sm-right">
-			@item.UnitPrice
-		</td>
-		<td class="text-sm-center">
-			@item.Quantity
-            @item.QuantityUnit
-		</td>
-		<td class="text-sm-right text-success">
-			@item.SubTotal
-		</td>
-	</tr>
-}
-
-@helper BundleProducts(OrderDetailsModel.OrderItemModel parentItem)
-{
-	if (parentItem.BundleItems != null)
-	{
-		foreach (var item in parentItem.BundleItems.OrderBy(x => x.DisplayOrder))
-		{
-			<tr class="product-bundle-row">
-				@if (Model.ShowSku)
-				{
-					<td>&nbsp;</td>
-				}
-				<td>
-					<div class="bundle-item bundle-item-indent">
-						<div class="bundle-item-body">
-							<div class="bundle-item-name">
-								@if (item.VisibleIndividually)
-								{
-									<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-								}
-								else
-								{
-									@item.ProductName
-								}
-								@if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
-								{
-									<text>
-										&#215;&nbsp;@item.Quantity 
-									</text>
-								}
-							</div>
-							@if (!String.IsNullOrEmpty(item.AttributeInfo))
-							{
-								<div class="bundle-item-attribute-info text-muted">
-									@Html.Raw(item.AttributeInfo)
-								</div>
-							}
-						</div>
-					</div>
-				</td>
-				<td class="text-sm-right">
-					@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
-					{
-						<span class="text-muted">
-							@Html.Raw(item.PriceWithDiscount)
-						</span>
-					}
-					else
-					{
-						<text>&nbsp;</text>
-					}
-				</td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-		}
-	}
 }
 
 <div class="page page-order-details">
@@ -163,156 +75,20 @@
 					<div class="row">
 						<div class="col mb-4 mb-lg-0 billinginfo">
 							<h5>@T("Order.BillingAddress")</h5>
-							<div class="name">
-								@Model.BillingAddress.FirstName @Model.BillingAddress.LastName
-							</div>
-							<div class="email">
-								@T("Order.Email"): @Model.BillingAddress.Email
-							</div>
-							@if (Model.BillingAddress.PhoneEnabled && Model.BillingAddress.PhoneNumber.HasValue())
-							{
-								<div class="phone">
-									@T("Order.Phone"): @Model.BillingAddress.PhoneNumber
-								</div>
-							}
-							@if (Model.BillingAddress.FaxEnabled && Model.BillingAddress.FaxNumber.HasValue())
-							{
-								<div class="fax">
-									@T("Order.Fax"): @Model.BillingAddress.FaxNumber
-								</div>
-							}
-							@if (Model.BillingAddress.CompanyEnabled && !String.IsNullOrEmpty(Model.BillingAddress.Company))
-							{
-								<div class="company">
-									@Model.BillingAddress.Company
-								</div>
-							}
-							@if (Model.BillingAddress.StreetAddressEnabled)
-							{
-								<div class="address1">
-									@Model.BillingAddress.Address1
-								</div>
-							}
-							@if (Model.BillingAddress.StreetAddress2Enabled && !String.IsNullOrEmpty(Model.BillingAddress.Address2))
-							{
-								<div class="address2">
-									@Model.BillingAddress.Address2
-								</div>
-							}
-
-							@if (Model.BillingAddress.CityEnabled || Model.BillingAddress.StateProvinceEnabled || Model.BillingAddress.ZipPostalCodeEnabled)
-							{
-								<div class="city-state-zip">
-									@if (Model.BillingAddress.CityEnabled)
-									{
-										@Model.BillingAddress.City
-									}
-									@if (Model.BillingAddress.CityEnabled && (Model.BillingAddress.StateProvinceEnabled || Model.BillingAddress.ZipPostalCodeEnabled))
-									{
-										<text>,</text>
-									}
-									@if (Model.BillingAddress.StateProvinceEnabled)
-									{
-										@Model.BillingAddress.StateProvinceName
-									}
-									@if (Model.BillingAddress.ZipPostalCodeEnabled)
-									{
-										@Model.BillingAddress.ZipPostalCode
-									}
-								</div>
-							}
-							@if (Model.BillingAddress.CountryEnabled && !String.IsNullOrEmpty(Model.BillingAddress.CountryName))
-							{
-								<div class="country">
-									@Model.BillingAddress.CountryName
-								</div>
-							}
-							@if (!String.IsNullOrEmpty(Model.VatNumber))
-							{
-								<div class="vat">
-									<div class="vat-label">
-										<strong>@T("Order.VATNumber")</strong>
-									</div>
-									<div class="vat-value">
-										@Model.VatNumber
-									</div>
-								</div>
-							}
+							@RenderAddress(Model.BillingAddress)
 						</div>
 
-						@if (Model.IsShippable)
+						@if (Model.IsShippable && Model.ShippingAddress != null)
 						{
 							<div class="col mb-4 mb-lg-0 shippinginfo">
 								<h5>@T("Order.ShippingAddress")</h5>
-								<div class="name">
-									@Model.ShippingAddress.FirstName @Model.ShippingAddress.LastName
-								</div>
-								<div class="email">
-									@T("Order.Email"): @Model.ShippingAddress.Email
-								</div>
-								@if (Model.ShippingAddress.PhoneEnabled)
-								{
-									<div class="phone">
-										@T("Order.Phone"): @Model.ShippingAddress.PhoneNumber
-									</div>
-								}
-								@if (Model.ShippingAddress.FaxEnabled)
-								{
-									<div class="fax">
-										@T("Order.Fax"): @Model.ShippingAddress.FaxNumber
-									</div>
-								}
-								@if (Model.ShippingAddress.CompanyEnabled && !String.IsNullOrEmpty(Model.ShippingAddress.Company))
-								{
-									<div class="company">
-										@Model.ShippingAddress.Company
-									</div>
-								}
-								@if (Model.ShippingAddress.StreetAddressEnabled)
-								{
-									<div class="address1">
-										@Model.ShippingAddress.Address1
-									</div>
-								}
-								@if (Model.ShippingAddress.StreetAddress2Enabled && !String.IsNullOrEmpty(Model.ShippingAddress.Address2))
-								{
-									<div class="address2">
-										@Model.ShippingAddress.Address2
-									</div>
-								}
-								@if (Model.ShippingAddress.CityEnabled || Model.ShippingAddress.StateProvinceEnabled || Model.ShippingAddress.ZipPostalCodeEnabled)
-								{
-									<div class="city-state-zip">
-										@if (Model.ShippingAddress.CityEnabled)
-										{
-											@Model.ShippingAddress.City
-										}
-										@if (Model.ShippingAddress.CityEnabled && (Model.ShippingAddress.StateProvinceEnabled || Model.ShippingAddress.ZipPostalCodeEnabled))
-										{
-											<text>,</text>
-										}
-										@if (Model.ShippingAddress.StateProvinceEnabled)
-										{
-											@Model.ShippingAddress.StateProvinceName
-										}
-										@if (Model.ShippingAddress.ZipPostalCodeEnabled)
-										{
-											@Model.ShippingAddress.ZipPostalCode
-										}
-									</div>
-								}
-								@if (Model.ShippingAddress.CountryEnabled && !String.IsNullOrEmpty(Model.ShippingAddress.CountryName))
-								{
-									<div class="country">
-										@Model.ShippingAddress.CountryName
-									</div>
-								}
+								@RenderAddress(Model.ShippingAddress)
 							</div>
 						}
 					</div>
 				</div>
 
-				@if (Model.PaymentMethod.HasValue() || Model.IsShippable)
+				@if (Model.PaymentMethod.HasValue() || Model.IsShippable || Model.VatNumber.HasValue())
 				{
 					<div class="col-md-4">
 						<div class="row">
@@ -335,6 +111,11 @@
 											<div class="small text-muted pt-2">@T("Order.CompletePayment.Hint")</div>
 										}
 									}
+								}
+								@if (Model.VatNumber.HasValue())
+								{
+									<h5>@T("Order.VATNumber")</h5>
+									<p>@Model.VatNumber</p>
 								}
 							</div>
 						</div>
@@ -693,3 +474,150 @@
 
     </div>
 </div>
+
+
+@helper RenderAddress(AddressModel address)
+{
+	var cityStateZip = address.GetFormattedCityStateZip();
+
+	<div class="mb-2">
+		@if (address.CompanyEnabled && address.Company.HasValue())
+		{
+			<div class="company">
+				@Model.BillingAddress.Company
+			</div>
+		}
+		<div class="name">
+			@address.GetFormattedName()
+		</div>
+		@if (address.StreetAddressEnabled && address.Address1.HasValue())
+		{
+			<div class="address1">
+				@address.Address1
+			</div>
+		}
+		@if (address.StreetAddress2Enabled && address.Address2.HasValue())
+		{
+			<div class="address2">
+				@address.Address2
+			</div>
+		}
+		@if (cityStateZip.HasValue())
+		{
+			<div class="city-state-zip">
+				@Html.Raw(cityStateZip)
+			</div>
+		}
+		@if (address.CountryEnabled && address.CountryName.HasValue())
+		{
+			<div class="country">
+				@address.CountryName
+			</div>
+		}
+	</div>
+
+	<div class="email">
+		@T("Order.Email"): @address.Email
+	</div>
+	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
+	{
+		<div class="phone">
+			@T("Order.Phone"): @address.PhoneNumber
+		</div>
+	}
+	if (address.FaxEnabled && address.FaxNumber.HasValue())
+	{
+		<div class="fax">
+			@T("Order.Fax"): @address.FaxNumber
+		</div>
+	}
+}
+
+@helper SimpleProduct(OrderDetailsModel.OrderItemModel item)
+{
+	<tr>
+		@if (Model.ShowSku)
+		{
+			<td>
+				@item.Sku
+			</td>
+		}
+		<td>
+			<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+			@if (!String.IsNullOrEmpty(item.AttributeInfo))
+			{
+				<div class="attributes">
+					@Html.Raw(item.AttributeInfo)
+				</div>
+			}
+		</td>
+		<td class="text-sm-right">
+			@item.UnitPrice
+		</td>
+		<td class="text-sm-center">
+			@item.Quantity
+			@item.QuantityUnit
+		</td>
+		<td class="text-sm-right text-success">
+			@item.SubTotal
+		</td>
+	</tr>
+}
+
+@helper BundleProducts(OrderDetailsModel.OrderItemModel parentItem)
+{
+	if (parentItem.BundleItems != null)
+	{
+		foreach (var item in parentItem.BundleItems.OrderBy(x => x.DisplayOrder))
+		{
+			<tr class="product-bundle-row">
+				@if (Model.ShowSku)
+				{
+					<td>&nbsp;</td>
+				}
+				<td>
+					<div class="bundle-item bundle-item-indent">
+						<div class="bundle-item-body">
+							<div class="bundle-item-name">
+								@if (item.VisibleIndividually)
+								{
+									<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+								}
+								else
+								{
+									@item.ProductName
+								}
+								@if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
+								{
+									<text>
+										&#215;&nbsp;@item.Quantity
+									</text>
+								}
+							</div>
+							@if (!String.IsNullOrEmpty(item.AttributeInfo))
+							{
+								<div class="bundle-item-attribute-info text-muted">
+									@Html.Raw(item.AttributeInfo)
+								</div>
+							}
+						</div>
+					</div>
+				</td>
+				<td class="text-sm-right">
+					@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
+					{
+						<span class="text-muted">
+							@Html.Raw(item.PriceWithDiscount)
+						</span>
+					}
+					else
+					{
+						<text>&nbsp;</text>
+					}
+				</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		}
+	}
+}

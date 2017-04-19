@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
@@ -107,5 +108,50 @@ namespace SmartStore.Web.Models.Common
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }
         public IList<SelectListItem> AvailableSalutations { get; set; }
-    }
+
+
+		public string GetFormattedName()
+		{
+			var sb = new StringBuilder();
+
+			sb.Append(FirstName);
+			if (FirstName.HasValue() && LastName.HasValue())
+			{
+				sb.Append(" ");
+			}
+			sb.Append(LastName);
+
+			return sb.ToString();
+		}
+
+		public string GetFormattedCityStateZip()
+		{
+			var sb = new StringBuilder();
+
+			if (CityEnabled && City.HasValue())
+			{
+				sb.Append(City);
+				if ((StateProvinceEnabled && StateProvinceName.HasValue()) || (ZipPostalCodeEnabled && ZipPostalCode.HasValue()))
+				{
+					sb.Append(", ");
+				}
+			}
+
+			if (StateProvinceEnabled && StateProvinceName.HasValue())
+			{
+				sb.Append(StateProvinceName);
+				if (ZipPostalCodeEnabled && ZipPostalCode.HasValue())
+				{
+					sb.Append(" ");
+				}
+			}
+
+			if (ZipPostalCodeEnabled && ZipPostalCode.HasValue())
+			{
+				sb.Append(ZipPostalCode);
+			}
+
+			return sb.ToString();
+		}
+	}
 }

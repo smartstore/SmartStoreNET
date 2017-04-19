@@ -42,16 +42,14 @@ namespace SmartStore.Core.Domain.Catalog
 			CompareProductsEnabled = true;
 			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;
 			NumberOfBestsellersOnHomepage = 12;
-            
+            ShowPopularProductTagsOnHomepage = false;
             ShowManufacturersOnHomepage = true;
             ShowManufacturerPictures = false;
             ManufacturerItemsToDisplayOnHomepage = 18;
             ShowManufacturersInOffCanvas = true;
             ManufacturerItemsToDisplayInOffcanvasMenu = 20;
-
             ShowManufacturerInProductDetail = true;
             ShowManufacturerPicturesInProductDetail = true;
-
 			ProductsAlsoPurchasedEnabled = true;
 			ProductsAlsoPurchasedNumber = 12;
 			NumberOfProductTags = 15;
@@ -384,6 +382,8 @@ namespace SmartStore.Core.Domain.Catalog
         public bool ShowDefaultQuantityUnit { get; set; }
 
         public bool ShowDefaultDeliveryTime { get; set; }
+
+        public bool ShowPopularProductTagsOnHomepage { get; set; }
 
         public bool ShowDiscountSign { get; set; }
 

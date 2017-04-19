@@ -342,6 +342,15 @@
                 @Html.ValidationMessageFor(model => model.ShowDefaultDeliveryTime)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowPopularProductTagsOnHomepage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowPopularProductTagsOnHomepage)
+                @Html.ValidationMessageFor(model => model.ShowPopularProductTagsOnHomepage)
+            </td>
+        </tr>
     </table>
 
     <table class="adminContent">

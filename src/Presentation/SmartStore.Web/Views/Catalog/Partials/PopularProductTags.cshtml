@@ -2,16 +2,17 @@
 @using SmartStore.Web.Models.Catalog;
 @if (Model.Tags.Count > 0)
 {
-    <div class="block block-bordered block-popular-tags card">
+    <div class="block-popular-tags card">
         <div class="card-header">
             @T("Products.Tags.Popular")
         </div>
-        <div class="block-body listbox card-block">
+        <div class="listbox card-block">
             <div class="tags">
                 <ul class="list-unstyled">
                     @foreach (var item in Model.Tags)
                     {
-                        <li><a href="@Url.RouteUrl("ProductsByTag", new { productTagId = item.Id, SeName = item.SeName })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a>&nbsp;&nbsp;
+                        <li class="pr-2">
+                            <a href="@Url.RouteUrl("ProductsByTag", new { productTagId = item.Id, SeName = item.SeName })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a>
                         </li>
                     }
                 </ul>

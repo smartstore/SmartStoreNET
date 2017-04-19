@@ -869,6 +869,12 @@ namespace SmartStore.Data.Migrations
 				.Value("de", "Ursprüngliche Bestellung");
 			builder.AddOrUpdate("Account.CustomerOrders.RecurringOrders.ViewInitialOrder")
 				.Value("de", "Bestellungsansicht (ID - {0})");
-		}
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowPopularProductTagsOnHomepage",
+                "Show popular product tags on homepage",
+                "Zeige Produkt-Tags auf der Startseite",
+                "Specifies whether to show popular product tags on the homepage.",
+                "Bestimmt ob beliebte Produkt-Tags auf der Startseite angezeigt werden.");
+        }
 	}
 }

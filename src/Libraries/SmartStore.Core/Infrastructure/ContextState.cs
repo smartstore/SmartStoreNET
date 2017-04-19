@@ -44,7 +44,7 @@ namespace SmartStore.Core.Infrastructure
 
 			if (HttpContext.Current.Items[_name] == null)
 			{
-				HttpContext.Current.Items[_name] = _defaultValue == null ? null : _defaultValue();
+				HttpContext.Current.Items[_name] = _defaultValue?.Invoke();
 			}
 
 			return HttpContext.Current.Items[_name] as T;

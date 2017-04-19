@@ -129,11 +129,11 @@
 
         @if (Model.Items.Count > 0)
         {
-            <div class="section-title mt-4 mb-3">
-                <strong>@T("Order.Product(s)")</strong>
-            </div>
+            <div class="card mt-4">
+				<div class="card-header font-weight-medium">
+					@T("Order.Product(s)")
+				</div>
 
-            <div class="products-box">
                 <table class="table table-order-items table-order-products">
                     <thead>
                         <tr>

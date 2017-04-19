@@ -5,6 +5,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Data.Caching;
 using System.Web.Hosting;
+using SmartStore.Utilities;
 
 namespace SmartStore.Data
 {
@@ -26,26 +27,24 @@ namespace SmartStore.Data
 			{
 				base.SetDefaultConnectionFactory(provider.GetConnectionFactory());
 
-				if (HostingEnvironment.IsHosted && DataSettings.DatabaseIsInstalled())
+				if (HostingEnvironment.IsHosted && !CommonHelper.IsDevEnvironment && DataSettings.DatabaseIsInstalled())
 				{
-					//// TODO: (mc) Investigate memleak
-					
-					//// prepare EntityFramework 2nd level cache
-					//IDbCache cache = null;
-					//try
-					//{
-					//	cache = EngineContext.Current.Resolve<IDbCache>();
-					//}
-					//catch
-					//{
-					//	cache = new NullDbCache();
-					//}
+					// prepare EntityFramework 2nd level cache
+					IDbCache cache = null;
+					try
+					{
+						cache = EngineContext.Current.Resolve<IDbCache>();
+					}
+					catch
+					{
+						cache = new NullDbCache();
+					}
 
-					//var cacheInterceptor = new CacheTransactionInterceptor(cache);
-					//AddInterceptor(cacheInterceptor);
+					var cacheInterceptor = new CacheTransactionInterceptor(cache);
+					AddInterceptor(cacheInterceptor);
 
-					//Loaded +=
-					//  (sender, args) => args.ReplaceService<DbProviderServices>((s, _) => new CachingProviderServices(s, cacheInterceptor));
+					Loaded +=
+					  (sender, args) => args.ReplaceService<DbProviderServices>((s, _) => new CachingProviderServices(s, cacheInterceptor));
 				}
 			}
 		}

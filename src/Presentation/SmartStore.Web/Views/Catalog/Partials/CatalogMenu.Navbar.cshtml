@@ -2,7 +2,7 @@
 @using SmartStore.Collections;
 @{ 
     Html.AppendScriptParts(true, Url.Content("~/Themes/Flex/Scripts/smartstore.megamenu.js"));
-    var currentNavItem = Model.SelectedNode.IsLeaf ? Model.SelectedNode.Parent.Value.EntityId : Model.SelectedNode.Value.EntityId;
+    var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null ? Model.SelectedNode.Parent.Value.EntityId : Model.SelectedNode.Value.EntityId;
 }
 
 @functions {

@@ -153,8 +153,8 @@ header {
     .block-title {
         font-size: $font-size-h3;
         border-bottom: 1px solid rgba(0,0,0, 0.12);
-        padding-top: 0.75em;
-        padding-bottom: 0.75em;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
 
         > * {
             // Most probably a heading tag

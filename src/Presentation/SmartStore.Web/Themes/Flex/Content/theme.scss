@@ -148,11 +148,13 @@ header {
 .block {
     &:not(:last-child) {
         margin-bottom: 1.8rem;
-    }   
+    }
 
     .block-title {
         font-size: $font-size-h3;
         border-bottom: 1px solid rgba(0,0,0, 0.12);
+        padding-top: 0.75em;
+        padding-bottom: 0.75em;
 
         > * {
             // Most probably a heading tag

@@ -444,8 +444,21 @@ a.pretty-link {
 // Validation
 // ------------------------------------------------------
 
-.validation-summary-errors > ul {
-    margin: 0;
+.validation-summary-valid,
+.validation-summary-errors {
+    @extend .alert;
+
+    > *:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.validation-summary-valid {
+    @extend .alert-success; 
+}
+
+.validation-summary-errors {
+    @extend .alert-danger; 
 }
 
 .field-validation-error {

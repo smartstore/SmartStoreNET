@@ -667,11 +667,15 @@ namespace SmartStore.Web.Controllers
 				return View(ProductSummaryModel.Empty);
 			}
 
-			query = query.SortBy(ProductSortingEnum.CreatedOn).Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
+			query = query
+				.SortBy(ProductSortingEnum.CreatedOn)
+				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
+
 			var result = _catalogSearchService.Search(query);
 
 			var settings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
-			var model = _helper.MapProductSummaryModel(result.Hits, settings);
+			var model = _helper.MapProductSummaryModel(result.Hits.ToList(), settings);
+			model.GridColumnSpan = GridColumnSpan.Max5Cols;
 
 			return View(model);
 		}

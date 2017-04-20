@@ -37,7 +37,7 @@ namespace SmartStore.Core.Domain.Catalog
 			AskQuestionEnabled = true;
 			RecentlyViewedProductsNumber = 8;
 			RecentlyViewedProductsEnabled = true;
-			RecentlyAddedProductsNumber = 12;
+			RecentlyAddedProductsNumber = 100;
 			RecentlyAddedProductsEnabled = true;
 			CompareProductsEnabled = true;
 			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;

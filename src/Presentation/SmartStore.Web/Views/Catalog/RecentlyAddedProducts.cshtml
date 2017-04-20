@@ -10,13 +10,19 @@
 @using SmartStore.Web.Framework.UI;
 
 <div class="page recently-added-products-page">
-    <div class="page-title">
-        <a href="@Url.RouteUrl("RecentlyAddedProductsRSS")" class="link-rss" title="@T("Products.NewProducts.RSS.Hint")">
-			<i class="fa fa-rss text-muted"></i>
-			@T("Products.NewProducts.RSS")
-		</a>
-        <h1 class="h3">@T("Products.NewProducts")</h1>
-    </div>
+	<div class="row align-items-center">
+		<div class="col">
+			<div class="heading">
+				<h1 class="heading-title">@T("Products.NewProducts")</h1>
+			</div>
+		</div>
+		<div class="col col-auto">
+			<a href="@Url.RouteUrl("RecentlyAddedProductsRSS")" class="btn btn-warning" title="@T("Products.NewProducts.RSS.Hint")">
+				<i class="fa fa-rss"></i>
+				<span>@T("Products.NewProducts.RSS")</span>
+			</a>
+		</div>
+	</div>
 
     <div class="page-body">
 		@if (Model.Items.Count > 0)

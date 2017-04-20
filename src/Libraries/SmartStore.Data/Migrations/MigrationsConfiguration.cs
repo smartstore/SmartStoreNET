@@ -130,11 +130,18 @@ namespace SmartStore.Data.Migrations
 				setting.Value = "True";
 			}
 
-			// Change CatalogSettings.IncludeFullDescriptionInCompareProducts (to false)
-			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.IncludeFullDescriptionInCompareProducts");
+			// Change CatalogSettings.RecentlyAddedProductsNumber (to 100)
+			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.RecentlyAddedProductsNumber");
+			if (setting != null && setting.Value.Convert<int?>() < 100)
+			{
+				setting.Value = "100";
+			}
+
+			// Change CatalogSettings.ShowProductsFromSubcategories (to true)
+			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.ShowProductsFromSubcategories");
 			if (setting != null)
 			{
-				setting.Value = "False";
+				setting.Value = "True";
 			}
 
 			// [...]
@@ -415,6 +422,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.Availability.InStockWithQuantity", "{0} in stock", "{0} am Lager");
 			builder.AddOrUpdate("Products.Availability.InStock", "In stock", "Vorrätig");
 			builder.AddOrUpdate("Products.Availability.OutOfStock", "Out of stock", "Vergriffen");
+			builder.AddOrUpdate("Products.NewProducts", "What's New", "Neu eingetroffen");
 
 			builder.AddOrUpdate("Reviews.Overview.First", "Be the first to review this item", "Geben Sie die erste Bewertung ab");
 			builder.AddOrUpdate("Reviews.Overview.AddNew", "Write a review", "Bewertung schreiben");

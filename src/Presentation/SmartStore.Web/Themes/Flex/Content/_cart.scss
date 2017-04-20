@@ -196,6 +196,7 @@
 
 .cart-col {
     padding: 1rem;
+    vertical-align: top;
 }
 
 .cart-col-main {
@@ -306,3 +307,13 @@
 .table-order-products .addtocart {
     text-align: center;
 }
+
+.sci-attr {
+    span:first-child {
+        font-weight: $font-weight-bold;
+    }
+    .delivery-time {
+        padding-left: 15px;
+    }
+}
+

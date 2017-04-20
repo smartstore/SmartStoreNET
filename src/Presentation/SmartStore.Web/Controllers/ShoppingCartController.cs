@@ -667,6 +667,7 @@ namespace SmartStore.Web.Controllers
 			model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
 			model.DisplayBasePrice = _shoppingCartSettings.ShowBasePrice;
 			model.DisplayWeight = _shoppingCartSettings.ShowWeight;
+
 			model.IsEditable = isEditable;
 			model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;

@@ -873,7 +873,6 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Order.Product(s).Item", "Item", "Artikel");
 			builder.AddOrUpdate("Order.Product(s).Total", "Total", "Gesamt");
 			builder.AddOrUpdate("Order.Product(s).SKU", "SKU", "Art.-Nr.");
-		}
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowPopularProductTagsOnHomepage",
                 "Show popular product tags on homepage",

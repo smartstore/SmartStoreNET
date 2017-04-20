@@ -30,11 +30,13 @@
 }
 
 <div class="page compare-products-page">
-	<div class="row no-gutters mb-2 align-baseline">
-		<div class="col page-title mb-0">
-			<h1 class="h3">@T("Products.Compare.Title")</h1>
+	<div class="row mb-4 align-items-center">
+		<div class="col">
+			<div class="heading">
+				<h1 class="heading-title fs-h1">@T("Products.Compare.Title")</h1>
+			</div>
 		</div>
-		<div class="col-auto">
+		<div class="col col-auto">
 			<a class="btn btn-danger" href='@Url.Action("ClearCompareList")' style="margin-bottom: 12px" rel="nofollow">
 				<i class="fa fa-trash-o"></i>
 				<span>@T("Products.Compare.Clear")</span>

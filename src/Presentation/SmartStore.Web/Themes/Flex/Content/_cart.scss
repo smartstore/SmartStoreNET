@@ -214,8 +214,12 @@
         content: attr(data-caption);
         font-size: $font-size-h5;
         font-weight: $font-weight-medium;
-        padding-bottom: 0.25rem;
+        padding-bottom: 0.4rem;
     }
+}
+
+.cart-col-price .price {
+    line-height: $input-height;
 }
 
 .cart-col-qty {
@@ -244,7 +248,7 @@
 }
 
 .cart-body {
-    .cart-col-subtotal  { font-weight: $font-weight-medium; }
+    .cart-col-subtotal .price  { font-weight: $font-weight-medium; }
 }
 
 @include media-breakpoint-up(md) {
@@ -267,6 +271,7 @@
 
     .cart-col-qty {
         text-align: left;
+        min-width: 100px;
     }
 
     .cart-head {

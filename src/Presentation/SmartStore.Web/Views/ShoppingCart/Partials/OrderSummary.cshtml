@@ -136,8 +136,8 @@
 
                     @if (Model.IsEditable)
                     {
-                        <div class="button-bar">
-                            <a class="remove ajax-cart-link btn btn-secondary btn-to-danger xbtn-sm btn-icon xbtn-flat mb-1"
+                        <div class="btn-group-vertical card-shadow">
+                            <a class="btn btn-gray btn-to-danger btn-sm btn-icon xbtn-flat ajax-cart-link"
                                href="#"
                                rel="nofollow"
                                data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
@@ -145,10 +145,9 @@
                                data-type="cart"
                                data-action="remove"
                                title='@T("Common.Remove")'>
-                                <i class="fa fa-trash-o"></i>
+								<i class="fa fa-2x">×</i>
                             </a>
-                            <br />
-                            <a class="btn btn-secondary xbtn-sm btn-icon xbtn-flat ajax-cart-link" title='@T("ShoppingCart.MoveToWishlist")'
+                            <a class="btn btn-secondary btn-sm btn-icon xbtn-flat ajax-cart-link" title='@T("ShoppingCart.MoveToWishlist")'
                                href="#"
                                rel="nofollow"
                                data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart })"
@@ -165,7 +164,7 @@
         </div>
 
         <div class="cart-col cart-col-price" data-caption="@T("Order.Product(s).Price")">
-            <span class="product-unit-price">@item.UnitPrice</span>
+            <span class="price">@item.UnitPrice</span>
         </div>
 
         <div class="cart-col cart-col-qty px-0" data-caption="@T("Order.Product(s).Quantity")">
@@ -180,7 +179,7 @@
         </div>
 
         <div class="cart-col cart-col-price cart-col-subtotal" data-caption="@T("Order.Product(s).Total")">
-            <span class="product-subtotal">@item.SubTotal</span>
+            <span class="price">@item.SubTotal</span>
             @if (!String.IsNullOrEmpty(item.Discount))
             {
                 <div class="discount">

@@ -47,196 +47,198 @@
     <div class="page-body">
         @if (Model.Items.Count > 0)
         {
-			<table class="table table-responsive table-bordered table-striped table-compare" style="width: @(tableWidth)%">
-				<thead>
-					<tr>
-						<th class="border-bottom-0 p-0">&nbsp;</th>
-						@foreach (var product in Model.Items)
-						{
-							var showAddToCart = !product.Price.DisableBuyButton && !product.Price.CallForPrice && product.Parent.BuyEnabled;
-							var showWishlist = !product.Price.DisableWishlistButton && product.Parent.WishlistEnabled;
-							
-							<th class="border-bottom-0 p-0">
-								<div class="row xs-gutters flex-nowrap">
-									@if (showAddToCart || showWishlist)
-									{
-										<div class="col-auto">
-											<div class="btn-group">
-												@if (showAddToCart)
-												{
-													<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = product.Id, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })'
-													   href="#"
-													   class="btn btn-secondary btn-icon btn-flat ajax-cart-link rounded-0"
-													   title="@T("ShoppingCart.AddToCart")"
-													   rel="nofollow"
-													   data-type="cart"
-													   data-action="add">
-														<i class="fa fa-cart-arrow-down"></i>
-													</a>
-												}
-												@if (showWishlist)
-												{
-													<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = product.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
-													   href="#"
-													   class="btn btn-secondary btn-icon btn-flat ajax-cart-link rounded-0"
-													   title="@T("ShoppingCart.AddToWishlist")"
-													   rel="nofollow"
-													   data-type="wishlist"
-													   data-action="add">
-														<i class="fa fa-heart-o"></i>
-													</a>
-												}
-											</div>
-										</div>
-									}
-									<div class="col text-right">
-										<a class="btn btn-secondary btn-to-danger btn-flat btn-remove rounded-0" href='@Url.Action("RemoveProductFromCompare", new { id = product.Id })' rel="nofollow">
-											@T("Common.Remove")
-										</a>
-									</div>
-								</div>
-							</th>
-						}
-					</tr>
-					<tr>
-						<th class="border-top-0 border-bottom-0 pb-1">&nbsp;</th>
-						@foreach (var product in Model.Items)
-						{
-							<th class="border-top-0 border-bottom-0 pb-1">
-								@if (product.Picture != null && product.Picture.ImageUrl.HasValue())
-								{
-									<a class="d-block text-center" href="@Url.RouteUrl("Product", new { SeName = product.SeName })">
-										<img class="img-fluid" alt="@product.Picture.AlternateText" src="@product.Picture.ImageUrl" title="@product.Picture.Title" />
-									</a>
-								}
-							</th>
-						}
-					</tr>
-					@if (hasRatings)
-					{
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped table-compare" style="width: @(tableWidth)%">
+					<thead>
 						<tr>
-							<th class="border-top-0 border-bottom-0 py-1">&nbsp;</th>
+							<th class="border-bottom-0 p-0">&nbsp;</th>
 							@foreach (var product in Model.Items)
 							{
-								<th class="border-top-0 border-bottom-0 py-1">
-									@{ Html.RenderPartial("Product.List.Item.Rating", product); }
+								var showAddToCart = !product.Price.DisableBuyButton && !product.Price.CallForPrice && product.Parent.BuyEnabled;
+								var showWishlist = !product.Price.DisableWishlistButton && product.Parent.WishlistEnabled;
+
+								<th class="border-bottom-0 p-0">
+									<div class="row xs-gutters flex-nowrap">
+										@if (showAddToCart || showWishlist)
+										{
+											<div class="col-auto">
+												<div class="btn-group">
+													@if (showAddToCart)
+													{
+														<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = product.Id, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })'
+														   href="#"
+														   class="btn btn-secondary btn-icon btn-flat ajax-cart-link rounded-0"
+														   title="@T("ShoppingCart.AddToCart")"
+														   rel="nofollow"
+														   data-type="cart"
+														   data-action="add">
+															<i class="fa fa-cart-arrow-down"></i>
+														</a>
+													}
+													@if (showWishlist)
+													{
+														<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = product.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+														   href="#"
+														   class="btn btn-secondary btn-icon btn-flat ajax-cart-link rounded-0"
+														   title="@T("ShoppingCart.AddToWishlist")"
+														   rel="nofollow"
+														   data-type="wishlist"
+														   data-action="add">
+															<i class="fa fa-heart-o"></i>
+														</a>
+													}
+												</div>
+											</div>
+										}
+										<div class="col text-right">
+											<a class="btn btn-secondary btn-to-danger btn-flat btn-remove rounded-0" href='@Url.Action("RemoveProductFromCompare", new { id = product.Id })' rel="nofollow">
+												@T("Common.Remove")
+											</a>
+										</div>
+									</div>
 								</th>
 							}
 						</tr>
-					}
-					<tr>
-						<th class="border-top-0 pt-1">&nbsp;</th>
-						@foreach (var product in Model.Items)
+						<tr>
+							<th class="border-top-0 border-bottom-0 pb-1">&nbsp;</th>
+							@foreach (var product in Model.Items)
+							{
+								<th class="border-top-0 border-bottom-0 pb-1">
+									@if (product.Picture != null && product.Picture.ImageUrl.HasValue())
+									{
+										<a class="d-block text-center" href="@Url.RouteUrl("Product", new { SeName = product.SeName })">
+											<img class="img-fluid" alt="@product.Picture.AlternateText" src="@product.Picture.ImageUrl" title="@product.Picture.Title" />
+										</a>
+									}
+								</th>
+							}
+						</tr>
+						@if (hasRatings)
 						{
-							<td class="border-top-0 pt-1">
-								<a class="font-weight-medium" href="@Url.RouteUrl("Product", new { SeName = product.SeName })">@product.Name</a>
-							</td>
-						}
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<th class="caption">&nbsp;</th>
-						@foreach (var product in Model.Items)
+							<tr>
+								<th class="border-top-0 border-bottom-0 py-1">&nbsp;</th>
+								@foreach (var product in Model.Items)
+								{
+									<th class="border-top-0 border-bottom-0 py-1">
+										@{ Html.RenderPartial("Product.List.Item.Rating", product); }
+									</th>
+											}
+							</tr>
+											}
+						<tr>
+							<th class="border-top-0 pt-1">&nbsp;</th>
+							@foreach (var product in Model.Items)
+							{
+								<td class="border-top-0 pt-1">
+									<a class="font-weight-medium" href="@Url.RouteUrl("Product", new { SeName = product.SeName })">@product.Name</a>
+								</td>
+							}
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th class="caption">&nbsp;</th>
+							@foreach (var product in Model.Items)
+							{
+								<td>@{ Html.RenderPartial("Product.List.Item.Price", product); }</td>
+									}
+						</tr>
+						@if (hasBrands)
 						{
-							<td>@{ Html.RenderPartial("Product.List.Item.Price", product); }</td>
+							<tr>
+								<th class="caption">@T("Products.Manufacturer")</th>
+								@foreach (var product in Model.Items)
+								{
+									<td>
+										@if (product.Manufacturer != null)
+										{
+											<span>@product.Manufacturer.Name</span>
+										}
+									</td>
+								}
+							</tr>
 						}
-					</tr>
-					@if (hasBrands)
-					{
-						<tr>
-							<th class="caption">@T("Products.Manufacturer")</th>
-							@foreach (var product in Model.Items)
-							{
-								<td>
-									@if (product.Manufacturer != null)
-									{
-										<span>@product.Manufacturer.Name</span>
-									}
-								</td>
-							}
-						</tr>
-					}
-					@if (hasSkus)
-					{
-						<tr>
-							<th class="caption">@T("Products.Sku")</th>
-							@foreach (var product in Model.Items)
-							{
-								<td>@product.Sku</td>
-							}
-						</tr>
-					}
-					@if (hasWeight)
-					{
-						<tr>
-							<th class="caption">@T("Products.Weight")</th>
-							@foreach (var product in Model.Items)
-							{
-								<td>@product.Weight</td>
-							}
-						</tr>
-					}
-					@if (hasDimensions)
-					{
-						<tr>
-							<th class="caption">@T("Products.Dimensions")</th>
-							@foreach (var product in Model.Items)
-							{
-								<td>@product.Dimensions</td>
-							}
-						</tr>
-					}
-					@if (hasDescriptions)
-					{
-						<tr>
-							<th class="caption">@T("Products.Compare.ShortDescription")</th>
-							@foreach (var product in Model.Items)
-							{
-								<td>
-									@Html.Raw(product.ShortDescription)
-								</td>
-							}
-						</tr>
-					}
-					@foreach (var specificationAttribute in specificationAttributes)
-					{
-						<tr>
-							<th class="caption">@specificationAttribute.SpecificationAttributeName</th>
-							@foreach (var product in Model.Items)
-							{
-								var foundProductSpec = product.SpecificationAttributes.Where(psa => psa.SpecificationAttributeId == specificationAttribute.SpecificationAttributeId).FirstOrDefault();
-								var specValue = foundProductSpec != null ? foundProductSpec.SpecificationAttributeOption : "";
+						@if (hasSkus)
+						{
+							<tr>
+								<th class="caption">@T("Products.Sku")</th>
+								@foreach (var product in Model.Items)
+								{
+									<td>@product.Sku</td>
+								}
+							</tr>
+						}
+						@if (hasWeight)
+						{
+							<tr>
+								<th class="caption">@T("Products.Weight")</th>
+								@foreach (var product in Model.Items)
+								{
+									<td>@product.Weight</td>
+								}
+							</tr>
+						}
+						@if (hasDimensions)
+						{
+							<tr>
+								<th class="caption">@T("Products.Dimensions")</th>
+								@foreach (var product in Model.Items)
+								{
+									<td>@product.Dimensions</td>
+								}
+							</tr>
+						}
+						@if (hasDescriptions)
+						{
+							<tr>
+								<th class="caption">@T("Products.Compare.ShortDescription")</th>
+								@foreach (var product in Model.Items)
+								{
+									<td>
+										@Html.Raw(product.ShortDescription)
+									</td>
+								}
+							</tr>
+						}
+						@foreach (var specificationAttribute in specificationAttributes)
+						{
+							<tr>
+								<th class="caption">@specificationAttribute.SpecificationAttributeName</th>
+								@foreach (var product in Model.Items)
+								{
+									var foundProductSpec = product.SpecificationAttributes.Where(psa => psa.SpecificationAttributeId == specificationAttribute.SpecificationAttributeId).FirstOrDefault();
+									var specValue = foundProductSpec != null ? foundProductSpec.SpecificationAttributeOption : "";
 
-								<td>
-									@if (!String.IsNullOrEmpty(specValue))
-									{
-										@specValue
-									}
-									else
-									{
-										<text>&nbsp;</text>
-									}
-								</td>
-							}
-						</tr>
-					}
-					@if (Model.ShowFullDescription)
-					{
-						<tr>
-							<th class="caption">@T("Products.Compare.FullDescription")</th>
-							@foreach (var product in Model.Items)
-							{
-								<td>
-									@Html.Raw(product.FullDescription)
-								</td>
-							}
-						</tr>
-					}
+									<td>
+										@if (!String.IsNullOrEmpty(specValue))
+										{
+											@specValue
+										}
+										else
+										{
+											<text>&nbsp;</text>
+										}
+									</td>
+								}
+							</tr>
+						}
+						@if (Model.ShowFullDescription)
+						{
+							<tr>
+								<th class="caption">@T("Products.Compare.FullDescription")</th>
+								@foreach (var product in Model.Items)
+								{
+									<td>
+										@Html.Raw(product.FullDescription)
+									</td>
+								}
+							</tr>
+						}
 
-					@{ Html.RenderWidget("compareproducts_row"); }
-				</tbody>
-			</table>
+						@{ Html.RenderWidget("compareproducts_row"); }
+					</tbody>
+				</table>
+			</div>
         }
     </div>
 </div>

@@ -801,7 +801,7 @@ a.pretty-link {
     }
 }
 
-@include media-breakpoint-up(md) {
+@include media-breakpoint-up(md) { 
     .nav-collapsible {
         .nav-collapse {
             display: block !important;
@@ -809,15 +809,3 @@ a.pretty-link {
         }
     }
 }
-
-
-//
-// MyAccount / Order
-// ------------------------------------------------------
-
-
-
-
-
-
-

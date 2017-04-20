@@ -134,48 +134,38 @@
 					@T("Order.Product(s)")
 				</div>
 
-                <table class="table table-order-items table-order-products">
-                    <thead>
-                        <tr>
-                            @if (Model.ShowSku)
-                            {
-                                <th class="text-sm-center">
-                                    @T("Order.Product(s).SKU")
-                                </th>
-                            }
-                            <th>
-                                @T("Order.Product(s).Name")
-                            </th>
-                            <th class="text-sm-right">
+                <div id="order-items" class="cart">
+                    <div class="cart-head">
+                        <div class="cart-row">
+                            <div class="cart-col cart-col-main">
+                                @T("Order.Product(s).Item")
+                            </div>
+                            <div class="cart-col  cart-col-price">
                                 @T("Order.Product(s).Price")
-                            </th>
-                            <th class="text-sm-center">
+                            </div>
+                            <div class="cart-col cart-col-qty">
                                 @T("Order.Product(s).Quantity")
-                            </th>
-                            <th class="text-sm-right">
+                            </div>
+                            <div class="cart-col cart-col-price cart-col-subtotal">
                                 @T("Order.Product(s).Total")
-                            </th>
-                        </tr>
-                    </thead>
-                    @{
-                        foreach (var item in Model.Items)
-                        {
-                            if (item.ProductType == ProductType.BundledProduct)
-                            {
-                                <tbody class="product-body product-body-bundle">
-                                    @SimpleProduct(item)
-                                    @BundleProducts(item)
-                                </tbody>
-                            }
-                            else
-                            {
-                                <tbody class="product-body product-body-simple">
-                                    @SimpleProduct(item)
-                                </tbody>
-                            }
-                        }
-                    }
-                </table>
+                            </div>
+                        </div>
+                    </div>
+					<div class="cart-body">
+						@foreach (var item in Model.Items)
+						{
+							if (item.ProductType == ProductType.BundledProduct)
+							{
+								@SimpleProduct(item)
+								@BundleProducts(item)
+							}
+							else
+							{
+								@SimpleProduct(item)
+							}
+						}
+					</div>
+                </div>
 
                 @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
                 {
@@ -535,33 +525,34 @@
 
 @helper SimpleProduct(OrderDetailsModel.OrderItemModel item)
 {
-	<tr>
-		@if (Model.ShowSku)
-		{
-			<td>
-				@item.Sku
-			</td>
-		}
-		<td>
-			<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-			@if (!String.IsNullOrEmpty(item.AttributeInfo))
+	<div class="cart-row">
+		<div class="cart-col cart-col-main">
+			<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+			@if (Model.ShowSku && item.Sku.HasValue())
 			{
-				<div class="attributes">
+				<div class="cart-item-sku small">
+					<span>@T("Order.Product(s).SKU")</span>
+					<span class="text-muted">@item.Sku</span>
+				</div>
+			}
+			@if (item.AttributeInfo.HasValue())
+			{
+				<div class="cart-item-attrs">
 					@Html.Raw(item.AttributeInfo)
 				</div>
 			}
-		</td>
-		<td class="text-sm-right">
+		</div>
+		<div class="cart-col cart-col-price" data-caption="@T("Order.Product(s).Price")">
 			@item.UnitPrice
-		</td>
-		<td class="text-sm-center">
+		</div>
+		<div class="cart-col cart-col-qty" data-caption="@T("Order.Product(s).Quantity")">
 			@item.Quantity
 			@item.QuantityUnit
-		</td>
-		<td class="text-sm-right text-success">
+		</div>
+		<div class="cart-col cart-col-price cart-col-subtotal" data-caption="@T("Order.Product(s).Total")">
 			@item.SubTotal
-		</td>
-	</tr>
+		</div>
+	</div>
 }
 
 @helper BundleProducts(OrderDetailsModel.OrderItemModel parentItem)
@@ -570,54 +561,40 @@
 	{
 		foreach (var item in parentItem.BundleItems.OrderBy(x => x.DisplayOrder))
 		{
-			<tr class="product-bundle-row">
-				@if (Model.ShowSku)
-				{
-					<td>&nbsp;</td>
-				}
-				<td>
-					<div class="bundle-item bundle-item-indent">
-						<div class="bundle-item-body">
-							<div class="bundle-item-name">
-								@if (item.VisibleIndividually)
-								{
-									<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-								}
-								else
-								{
-									@item.ProductName
-								}
-								@if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
-								{
-									<text>
-										&#215;&nbsp;@item.Quantity
-									</text>
-								}
-							</div>
-							@if (!String.IsNullOrEmpty(item.AttributeInfo))
-							{
-								<div class="bundle-item-attribute-info text-muted">
-									@Html.Raw(item.AttributeInfo)
-								</div>
-							}
-						</div>
-					</div>
-				</td>
-				<td class="text-sm-right">
-					@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
+			<div class="cart-row cart-row-child">
+				<div class="cart-col cart-col-main">
+					@if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
 					{
-						<span class="text-muted">
-							@Html.Raw(item.PriceWithDiscount)
-						</span>
+						<span class="font-weight-medium">@item.Quantity&nbsp;&#215;</span>
+					}
+					@if (item.VisibleIndividually)
+					{
+						<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+					}
+					else
+					{
+						<span class="cart-item-link">@item.ProductName</span>
+					}
+					@if (item.AttributeInfo.HasValue())
+					{
+						<div class="cart-item-attrs">
+							@Html.Raw(item.AttributeInfo)
+						</div>
+					}
+				</div>
+				<div class="cart-col cart-col-price">
+					@if (item.PriceWithDiscount.HasValue())
+					{
+						@Html.Raw(item.PriceWithDiscount)
 					}
 					else
 					{
 						<text>&nbsp;</text>
 					}
-				</td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
+				</div>
+				<div class="cart-col">&nbsp;</div>
+				<div class="cart-col">&nbsp;</div>
+			</div>
 		}
 	}
 }

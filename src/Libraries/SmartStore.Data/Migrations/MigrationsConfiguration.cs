@@ -870,6 +870,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Account.CustomerOrders.RecurringOrders.ViewInitialOrder")
 				.Value("de", "Bestellungsansicht (ID - {0})");
 
+			builder.AddOrUpdate("Order.Product(s).Item", "Item", "Artikel");
+			builder.AddOrUpdate("Order.Product(s).Total", "Total", "Gesamt");
+			builder.AddOrUpdate("Order.Product(s).SKU", "SKU", "Art.-Nr.");
+		}
+
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowPopularProductTagsOnHomepage",
                 "Show popular product tags on homepage",
                 "Zeige Produkt-Tags auf der Startseite",

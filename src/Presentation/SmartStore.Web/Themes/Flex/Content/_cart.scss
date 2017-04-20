@@ -1,3 +1,4 @@
+/// <reference path="_variables.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 // General
@@ -172,6 +173,119 @@
 
 // Full Cart
 // =================================
+
+.cart {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.cart-head {
+    display: none;
+}
+
+.cart-body {
+
+}
+
+.cart-row {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid $gray-lighter;
+}
+
+.cart-col {
+    padding: 1rem;
+}
+
+.cart-col-main {
+    width: 100%;
+}
+
+.cart-col-main ~ .cart-col {
+    // don't wrap price & qty stuff
+    white-space: nowrap;
+    width: 33%;
+    padding-top: 0;
+
+    &:before {
+        display: block;
+        content: attr(data-caption);
+        font-size: $font-size-h5;
+        font-weight: $font-weight-medium;
+        padding-bottom: 0.25rem;
+    }
+}
+
+.cart-col-qty {
+    text-align: center;
+}
+
+.cart-col-subtotal {
+    text-align: right;
+}
+
+.cart-item-link {
+    //font-weight: $font-weight-medium;
+    //color: inherit !important;
+
+    ~ * { margin-top: 0.5rem; }
+}
+
+.cart-item-sku {
+    //color: $text-muted;
+    margin-top: 0;
+}
+
+.cart-head {
+    .cart-row   { border-bottom-width: 2px; }
+    .cart-col   { font-size: $font-size-h5; font-weight: $font-weight-medium; }   
+}
+
+.cart-body {
+    .cart-col-subtotal  { font-weight: $font-weight-medium; }
+}
+
+@include media-breakpoint-up(md) {
+    .cart           { display: table; }
+    .cart-head      { display: table-header-group; }
+    .cart-body      { display: table-row-group; }
+    .cart-foot      { display: table-footer-group; }
+    .cart-row       { display: table-row; }
+    .cart-col       { display: table-cell; }
+
+    .cart-col {
+        border-bottom: 1px solid $gray-lighter;
+    }
+
+    .cart-col-main ~ .cart-col {
+        width: auto;
+        padding-top: 1rem;
+        &:before { display: none; }
+    }
+
+    .cart-col-qty {
+        text-align: left;
+    }
+
+    .cart-head {
+        .cart-col   { border-bottom-width: 2px; }
+    }
+
+    .cart-row-child {
+        background: $gray-lightest;
+
+        .cart-col:not(:last-child) { 
+            border-bottom: none; 
+        }
+
+        .cart-col-main { 
+            padding-left: 3rem; 
+
+        }
+    }
+}
+
 
 .order-summary-content .selected-checkout-attributes,
 .order-details .checkout-attributes {

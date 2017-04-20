@@ -1,3 +1,4 @@
+/// <reference path="_variables.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 $pd-offer-bg:                   $gray-lightest;
@@ -256,6 +257,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
         background-color: #fff;
         margin-bottom: 0;
         font-size: $font-size-sm;
+        overflow-x: auto;
 
         th, td { padding-left: 0.5rem; padding-right: 0.5rem; }
         th { font-weight: $font-weight-medium; }

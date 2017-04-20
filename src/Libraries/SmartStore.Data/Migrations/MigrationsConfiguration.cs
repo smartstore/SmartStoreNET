@@ -545,7 +545,9 @@ namespace SmartStore.Data.Migrations
 				"You have not added any product to your compare list yet. Use the <i class='{0}'></i> icon to add a product to your compare list.",
 				"Sie haben noch keine Produkte in ihrer Vergleichsliste.<br /> Benutzen Sie das <i class='{0}'></i> Symbol, um ein Produkt in die Vergleichsliste aufzunehmen.");
 
-            builder.AddOrUpdate("PageTitle.Blog.Month", "Blog entries in {0}", "Blog Einträge des Monats {0}");
+			builder.AddOrUpdate("ShoppingCart.UnitPrice", "Price", "Preis");
+
+			builder.AddOrUpdate("PageTitle.Blog.Month", "Blog entries in {0}", "Blog Einträge des Monats {0}");
             builder.AddOrUpdate("PageTitle.Blog.Tag", "Blog entries for the tag {0}", "Blog-Einträge für das Stichwort {0}");
             builder.AddOrUpdate("Metadesc.Blog.Month", "Blog entries in {0}", "Blog Einträge des Monats {0}");
             builder.AddOrUpdate("Metadesc.Blog.Tag", "Blog entries for the tag {0}", "Blog-Einträge für das Stichwort {0}");

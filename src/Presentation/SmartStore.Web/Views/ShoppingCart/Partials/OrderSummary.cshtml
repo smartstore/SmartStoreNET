@@ -8,20 +8,18 @@
     <div class="cart-row">
         <div class="cart-col cart-col-main">
             <div class="row sm-gutters">
-
                 @if (Model.ShowProductImages)
                 {
-                    <div class="productpicture col" style="max-width:120px">
+                    <div class="col cart-item-img">
                         @if (item.Picture.ImageUrl.HasValue())
                         {
-                            <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+                            <img class="img-fluid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
                         }
                     </div>
                 }
 
                 <div class="col">
-
-                    <a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+                    <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 
                     @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
                     {
@@ -105,61 +103,34 @@
                             }
                         </div>
                     }
-
-                    @*@if (Model.IsEditable)
-                    {
-                        <div class="button-bar">
-                            <a class="remove ajax-cart-link btn btn-secondary btn-to-danger btn-sm"
-                               href="#"
-                               rel="nofollow"
-                               data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
-                               data-name="@item.ProductName"
-                               data-type="cart"
-                               data-action="remove"
-                               title='@T("Common.Remove")'>
-                                <i class="fa fa-trash-o mr-0"></i>
-                            </a>
-                            <a class="btn btn-secondary btn-sm btn-icon ajax-cart-link" title='@T("ShoppingCart.MoveToWishlist")'
-                               href="#"
-                               rel="nofollow"
-                               data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart })"
-                               data-name="@item.ProductName"
-                               data-type="cart"
-                               data-action="addfromcart">
-                                <i class="fa fa-heart-o"></i>
-                            </a>   
-                        </div>
-                    }*@
                 </div>
-            
-                <div class="col col-auto">
-
-                    @if (Model.IsEditable)
-                    {
-                        <div class="btn-group-vertical card-shadow">
-                            <a class="btn btn-gray btn-to-danger btn-sm btn-icon xbtn-flat ajax-cart-link"
-                               href="#"
-                               rel="nofollow"
-                               data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
-                               data-name="@item.ProductName"
-                               data-type="cart"
-                               data-action="remove"
-                               title='@T("Common.Remove")'>
+				
+				@if (Model.IsEditable)
+				{
+					<div class="col col-auto">
+						<div class="cart-row-actions btn-group-vertical card-shadow">
+							<a class="btn btn-gray btn-to-danger btn-sm btn-icon xbtn-flat ajax-cart-link"
+							   href="#"
+							   rel="nofollow"
+							   data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
+							   data-name="@item.ProductName"
+							   data-type="cart"
+							   data-action="remove"
+							   title='@T("Common.Remove")'>
 								<i class="fa fa-2x">×</i>
-                            </a>
-                            <a class="btn btn-secondary btn-sm btn-icon xbtn-flat ajax-cart-link" title='@T("ShoppingCart.MoveToWishlist")'
-                               href="#"
-                               rel="nofollow"
-                               data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart })"
-                               data-name="@item.ProductName"
-                               data-type="cart"
-                               data-action="addfromcart">
-                                <i class="fa fa-heart-o"></i>
-                            </a>
-                        </div>
-                    }
-                </div>
-
+							</a>
+							<a class="btn btn-secondary btn-sm btn-icon xbtn-flat ajax-cart-link" title='@T("ShoppingCart.MoveToWishlist")'
+							   href="#"
+							   rel="nofollow"
+							   data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart })"
+							   data-name="@item.ProductName"
+							   data-type="cart"
+							   data-action="addfromcart">
+								<i class="fa fa-heart-o"></i>
+							</a>
+						</div>
+					</div>
+				}
             </div>
         </div>
 
@@ -167,7 +138,7 @@
             <span class="price">@item.UnitPrice</span>
         </div>
 
-        <div class="cart-col cart-col-qty px-0" data-caption="@T("Order.Product(s).Quantity")">
+        <div class="cart-col cart-col-qty" data-caption="@T("Order.Product(s).Quantity")">
             @if (Model.IsEditable)
             {
                 @Html.EditorFor(x => item, "QtyInput", new { htmlAttributes = new { data_sci_id = item.Id, id = "itemquantity{0}".FormatWith(item.Id), Name = "itemquantity{0}".FormatWith(item.Id) } })
@@ -213,11 +184,11 @@
                                 <div class="bundle-item-name">
                                     @if (item.VisibleIndividually)
                                     {
-                                        <a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+                                        <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
                                     }
                                     else
                                     {
-                                        @item.ProductName
+										<span class="cart-item-link">@item.ProductName</span>
                                     }
                                     @if (item.EnteredQuantity > 1 && item.BundlePerItemShoppingCart)
                                     {
@@ -336,38 +307,41 @@
         @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
         using (Html.BeginRouteForm("ShoppingCart", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
-            <div id="order-items" class="cart">
-                <div class="cart-head">
-                    <div class="cart-row">
-                        <div class="cart-col cart-col-main">
-                            @T("ShoppingCart.Product(s)")
-                        </div>
-                        <div class="cart-col cart-col-price">
-                            @T("ShoppingCart.UnitPrice")
-                        </div>
-                        <div class="cart-col cart-col-qty">
-                            @T("ShoppingCart.Quantity")
-                        </div>
-                        <div class="cart-col cart-col-price cart-col-subtotal">
-                            @T("ShoppingCart.ItemTotal")
-                        </div>
-                    </div>
-                </div>
-                <div class="cart-body">                    
-                    @foreach (var item in Model.Items)
-                    {
-                        if (item.ProductType == ProductType.BundledProduct)
-                        {
-                            @SimpleProduct(item)
-                            @BundleProducts(item)
-                        }
-                        else
-                        {
-                            @SimpleProduct(item)
-                        }
-                    }
-                </div>
-            </div>
+            <div class="card mb-4">
+				<div id="order-items" class="cart cart-editable mb-0">
+					<div class="cart-head">
+						<div class="cart-row">
+							<div class="cart-col cart-col-main">
+								@T("ShoppingCart.Product(s)")
+							</div>
+							<div class="cart-col cart-col-price">
+								@T("ShoppingCart.UnitPrice")
+							</div>
+							<div class="cart-col cart-col-qty">
+								@T("ShoppingCart.Quantity")
+							</div>
+							<div class="cart-col cart-col-price cart-col-subtotal">
+								@T("ShoppingCart.ItemTotal")
+							</div>
+						</div>
+					</div>
+					<div class="cart-body">
+						@foreach (var item in Model.Items)
+						{
+							if (item.ProductType == ProductType.BundledProduct)
+							{
+								@SimpleProduct(item)
+								@BundleProducts(item)
+							}
+							else
+							{
+								@SimpleProduct(item)
+							}
+						}
+					</div>
+				</div>
+
+			</div>
 
             if (Model.IsEditable)
             {

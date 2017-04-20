@@ -51,8 +51,14 @@
 
         <div class="row">
             <div class="col-sm-push-2 col-sm-10 mt-3">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-reply"></i>@T("Forum.Submit")</button>
-                <button class="btn" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName })'); return false;">@T("Forum.Cancel")</button>
+                <button type="submit" class="btn btn-primary">
+					<i class="fa fa-reply"></i>
+					@T("Forum.Submit")
+				</button>
+                <button class="btn" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName })'); return false;">
+					<i class="fa fa-times"></i>
+					@T("Forum.Cancel")
+				</button>
             </div>
         </div>
     </div>

@@ -126,8 +126,8 @@
 
         @if (Model.Items.Count > 0)
         {
-            <div class="card mt-4">
-                <div id="order-items" class="cart">
+            <div class="card my-5">
+                <div id="order-items" class="cart mb-0">
                     <div class="cart-head">
                         <div class="cart-row">
                             <div class="cart-col cart-col-main">
@@ -159,195 +159,131 @@
 						}
 					</div>
                 </div>
+				
+				@{ 
+					Model.OrderSubTotalDiscount = "1,90 €";
+					Model.PaymentMethodAdditionalFee = "0,87 €";
+					Model.DisplayTaxRates = true;
+					Model.TaxRates.Add(new OrderDetailsModel.TaxRate { Rate = "7", Value = "0,92 €" });
+					Model.TaxRates.Add(new OrderDetailsModel.TaxRate { Rate = "19", Value = "5,45 €" });
+					Model.OrderTotalDiscount = "10,00 €";
+					Model.GiftCards.Add(new OrderDetailsModel.GiftCard { CouponCode = "A1234", Remaining = "22,78 €", Amount = "3,72 €" });
+					Model.GiftCards.Add(new OrderDetailsModel.GiftCard { CouponCode = "BX78 933c", Remaining = "2.897,55 €", Amount = "99,72 €" });
+					Model.RedeemedRewardPoints = 29;
+					Model.RedeemedRewardPointsAmount = "19,98 €";
+				}
 
-                @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
-                {
-                    <div class="checkout-attributes card card-block">
-                        @Html.Raw(Model.CheckoutAttributeInfo)
-                    </div>
-                }
-
-                <div class="actions clearfix">
-                    <div class="pull-right">
-                        @if (Model.IsReturnRequestAllowed)
-                        {
-                            <a class="btn btn-secondary return-items-button" href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = Model.Id })" rel="nofollow">
-                                <i class="fa fa-reply"></i>
-                                @T("Order.ReturnItems")
-                            </a>
-                        }
-
-                        @if (Model.IsReOrderAllowed)
-                        {
-                            <a class="btn btn-primary re-order-button" href="@Url.Action("ReOrder", new { id = Model.Id })" rel="nofollow">
-                                <i class="fa fa-shopping-cart"></i>
-                                @T("Order.Reorder")
-                            </a>
-                        }
-                    </div>
-                </div>
-
+				<div class="cart-footer rounded-bottom">
+					<div class="row">
+						<div class="col-md-6">
+							@if (Model.CheckoutAttributeInfo.HasValue())
+							{
+								<div class="cart-checkout-attrs">
+									@Html.Raw(Model.CheckoutAttributeInfo)
+								</div>
+							}
+						</div>
+						<div class="col-md-6">
+							<table class="cart-summary">
+								<tr class="cart-summary-subtotal">
+									<td class="cart-summary-label">@T("Order.SubTotal"):</td>
+									<td class="cart-summary-value">@Model.OrderSubtotal</td>
+								</tr>
+								@if (Model.OrderSubTotalDiscount.HasValue())
+								{
+									<tr class="cart-summary-subtotaldiscount cart-summary-pos">
+										<td class="cart-summary-label">@T("Order.SubTotalDiscount"):</td>
+										<td class="cart-summary-value">@Model.OrderSubTotalDiscount</td>
+									</tr>
+								}
+								@if (Model.IsShippable)
+								{
+									<tr class="cart-summary-shipping cart-summary-neg">
+										<td class="cart-summary-label">@T("Order.Shipping"):</td>
+										<td class="cart-summary-value">@Model.OrderShipping</td>
+									</tr>
+								}
+								@if (Model.PaymentMethodAdditionalFee.HasValue())
+								{
+									<tr class="cart-summary-payfee cart-summary-neg">
+										<td class="cart-summary-label">@T("Order.PaymentMethodAdditionalFee"):</td>
+										<td class="cart-summary-value">@Model.PaymentMethodAdditionalFee</td>
+									</tr>
+								}
+								@if (Model.DisplayTaxRates && Model.TaxRates.Count > 0)
+								{
+									foreach (var taxRate in Model.TaxRates)
+									{
+										<tr class="cart-summary-tax">
+											<td class="cart-summary-label">@T("Order.TaxRateLine", taxRate.Rate):</td>
+											<td class="cart-summary-value">@taxRate.Value</td>
+										</tr>
+									}
+								}
+								@if (Model.DisplayTax)
+								{
+									<tr class="cart-summary-tax">
+										<td class="cart-summary-label">@T("Order.Tax"):</td>
+										<td class="cart-summary-value">@Model.Tax</td>
+									</tr>
+								}
+								@if (Model.OrderTotalDiscount.HasValue())
+								{
+									<tr class="cart-summary-totaldiscount cart-summary-pos">
+										<td class="cart-summary-label">@T("Order.TotalDiscount"):</td>
+										<td class="cart-summary-value">@Model.OrderTotalDiscount</td>
+									</tr>
+								}
+								@if (Model.GiftCards.Count > 0)
+								{
+									foreach (var gc in Model.GiftCards)
+									{
+										<tr class="cart-summary-giftcard">
+											<td class="cart-summary-label">
+												<span class="cart-summary-pos pr-1">@T("Order.GiftCardInfo", gc.CouponCode)</span>
+												<span class="text-nowrap text-muted small">@T("ShoppingCart.Totals.GiftCardInfo.Remaining", gc.Remaining)</span>
+											</td>
+											<td class="cart-summary-value cart-summary-pos">@gc.Amount</td>
+										</tr>
+									}
+								}
+								@if (Model.RedeemedRewardPoints > 0)
+								{
+									<tr class="cart-summary-rewardpoints cart-summary-pos">
+										<td class="cart-summary-label">@T("Order.RewardPoints", Model.RedeemedRewardPoints):</td>
+										<td class="cart-summary-value">@Model.RedeemedRewardPointsAmount</td>
+									</tr>
+								}
+								<tr class="cart-summary-total">
+									<td class="cart-summary-label">@T("Order.OrderTotal"):</td>
+									<td class="cart-summary-value">@Model.OrderTotal</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
             </div>
         }
 
         @{ Html.RenderWidget("orderdetails_page_afterproducts"); }
 
-        <div class="row">
-            <div class="total-info col-md-4 offset-md-8 mt-3">
-                <table class="cart-summary table">
-                    <tbody>
-                        <tr>
-                            <td class="cart-total-left">
-                                <strong>@T("Order.SubTotal"):</strong>
-                            </td>
-                            <td class="cart-total-right text-sm-right">
-                                <span class="text-nowrap">
-                                    @Model.OrderSubtotal
-                                </span>
-                            </td>
-                        </tr>
-                        @if (!string.IsNullOrEmpty(Model.OrderSubTotalDiscount))
-                        {
-                            <tr>
-                                <td class="cart-total-left">
-                                    <strong>
-                                        @T("Order.SubTotalDiscount"):
-                                    </strong>
-                                </td>
-                                <td class="cart-total-right text-sm-right">
-                                    <span class="text-nowrap">
-                                        @Model.OrderSubTotalDiscount
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                        @if (Model.IsShippable)
-                        {
-                            <tr>
-                                <td class="cart-total-left">
-                                    <strong>
-                                        @T("Order.Shipping"):
-                                    </strong>
-                                </td>
-                                <td class="cart-total-right text-sm-right">
-                                    <span class="text-nowrap">
-                                        @Model.OrderShipping
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                        @if (!string.IsNullOrEmpty(Model.PaymentMethodAdditionalFee))
-                        {
-                            <tr>
-                                <td class="cart-total-left">
-                                    <strong>
-                                        @T("Order.PaymentMethodAdditionalFee"):
-                                    </strong>
-                                </td>
-                                <td class="cart-total-right text-sm-right">
-                                    <span class="text-nowrap">
-                                        @Model.PaymentMethodAdditionalFee
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                        @if (Model.DisplayTaxRates && Model.TaxRates.Count > 0)
-                        {
-                            foreach (var taxRate in Model.TaxRates)
-                            {
-                                <tr>
-                                    <td class="cart-total-left">
-                                        <strong>
-                                            @string.Format(T("Order.TaxRateLine").Text, taxRate.Rate):
-                                        </strong>
-                                    </td>
-                                    <td class="cart-total-right text-sm-right">
-                                        <span class="text-nowrap">
-                                            @taxRate.Value
-                                        </span>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        @if (Model.DisplayTax)
-                        {
-                            <tr>
-                                <td class="cart-total-left">
-                                    <strong>
-                                        @T("Order.Tax"):
-                                    </strong>
-                                </td>
-                                <td class="cart-total-right text-sm-right">
-                                    <span class="text-nowrap">
-                                        @Model.Tax
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                        @if (!string.IsNullOrEmpty(Model.OrderTotalDiscount))
-                        {
-                            <tr>
-                                <td class="cart-total-left">
-                                    <strong>
-                                        @T("Order.TotalDiscount"):
-                                    </strong>
-                                </td>
-                                <td class="cart-total-right text-sm-right">
-                                    <span class="text-nowrap">
-                                        @Model.OrderTotalDiscount
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                        @if (Model.GiftCards.Count > 0)
-                        {
-                            foreach (var gc in Model.GiftCards)
-                            {
-                                <tr>
-                                    <td class="cart-total-left">
-                                        <strong>@string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode):</strong>
-                                        <br />
-                                        <span class="text-nowrap">@string.Format(T("ShoppingCart.Totals.GiftCardInfo.Remaining").Text, gc.Remaining)</span>
-                                    </td>
-                                    <td class="cart-total-right text-sm-right">
-                                        <span class="text-nowrap">
-                                            @gc.Amount
-                                        </span>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        @if (Model.RedeemedRewardPoints > 0)
-                        {
-                            <tr>
-                                <td class="cart-total-left">
-                                    <strong>@string.Format(T("Order.RewardPoints").Text, Model.RedeemedRewardPoints):</strong>
-                                </td>
-                                <td class="cart-total-right text-sm-right">
-                                    <span class="text-nowrap">
-                                        @Model.RedeemedRewardPointsAmount
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                        <tr>
-                            <td class="cart-total-left">
-                                <strong>
-                                    @T("Order.OrderTotal"):
-                                </strong>
-                            </td>
-                            <td class="cart-total-right text-sm-right">
-                                <span class="text-nowrap">
-                                    <strong>
-                                        @Model.OrderTotal
-                                    </strong>
-                                </span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+		<div class="cart-actions text-right mb-2">
+			@if (!Model.IsReturnRequestAllowed)
+			{
+				<a class="btn btn-secondary mt-2" href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = Model.Id })" rel="nofollow">
+					<i class="fa fa-reply"></i>
+					<span>@T("Order.ReturnItems")</span>
+				</a>
+			}
+
+			@if (Model.IsReOrderAllowed)
+			{
+				<a class="btn btn-primary mt-2" href="@Url.Action("ReOrder", new { id = Model.Id })" rel="nofollow">
+					<i class="fa fa-shopping-cart"></i>
+					<span>@T("Order.Reorder")</span>
+				</a>
+			}
+		</div>
 
         @{ Html.RenderWidget("orderdetails_page_aftertotal"); }
 

@@ -281,7 +281,6 @@
     .cart           { display: table; }
     .cart-head      { display: table-header-group; }
     .cart-body      { display: table-row-group; }
-    .cart-foot      { display: table-footer-group; }
     .cart-row       { display: table-row; }
     .cart-col       { display: table-cell; }
 
@@ -330,6 +329,47 @@
     .cart-editable .cart-col-qty {
         text-align: center;
         min-width: 120px;
+    }
+}
+
+
+.cart-footer {
+    background-color: $cart-footer-bg;
+    padding: 1rem;
+}
+
+.cart-summary {
+    width: 100%;
+    line-height: 1.3;
+
+    td {
+        padding: 0.4rem 0;
+        vertical-align: top;
+    }
+
+    .cart-summary-label {
+        padding-right: 0.5rem;
+    }
+
+    .cart-summary-value {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .cart-summary-pos {
+        color: $state-success-text;
+        font-weight: $font-weight-medium;
+    }
+
+    .cart-summary-neg {
+        color: $state-danger-text;
+    }
+
+    .cart-summary-total {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-medium;
+
+        td { padding-top: 0.75rem; }
     }
 }
 

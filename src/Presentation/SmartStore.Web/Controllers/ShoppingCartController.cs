@@ -44,6 +44,8 @@ using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
+using System.IO;
+using System.Web.Mvc.Html;
 
 namespace SmartStore.Web.Controllers
 {
@@ -1613,103 +1615,103 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        //update a certain shopping cart item on the page
-        [ValidateInput(false)]
-        [HttpPost, ActionName("Cart")]
-        [FormValueRequired(FormValueRequirement.StartsWith, "updatecartitem-")]
-        public ActionResult UpdateCartItem(FormCollection form)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-                return RedirectToRoute("HomePage");
+   //     //update a certain shopping cart item on the page
+   //     [ValidateInput(false)]
+   //     [HttpPost, ActionName("Cart")]
+   //     [FormValueRequired(FormValueRequirement.StartsWith, "updatecartitem-")]
+   //     public ActionResult UpdateCartItem(FormCollection form)
+   //     {
+   //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
+   //             return RedirectToRoute("HomePage");
 
-            //get shopping cart item identifier
-            int sciId = 0;
-			foreach (var formValue in form.AllKeys)
-			{
-				if (formValue.StartsWith("updatecartitem-", StringComparison.InvariantCultureIgnoreCase))
-					sciId = Convert.ToInt32(formValue.Substring("updatecartitem-".Length));
-			}
+   //         //get shopping cart item identifier
+   //         int sciId = 0;
+			//foreach (var formValue in form.AllKeys)
+			//{
+			//	if (formValue.StartsWith("updatecartitem-", StringComparison.InvariantCultureIgnoreCase))
+			//		sciId = Convert.ToInt32(formValue.Substring("updatecartitem-".Length));
+			//}
 
-            //get shopping cart item
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+   //         //get shopping cart item
+			//var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			var sci = cart.FirstOrDefault(x => x.Item.Id == sciId);
-            if (sci == null)
-            {
-                return RedirectToRoute("ShoppingCart");
-            }
+			//var sci = cart.FirstOrDefault(x => x.Item.Id == sciId);
+   //         if (sci == null)
+   //         {
+   //             return RedirectToRoute("ShoppingCart");
+   //         }
 
-            //update the cart item
-            var warnings = new List<string>();
-			foreach (string formKey in form.AllKeys)
-			{
-				if (formKey.Equals(string.Format("itemquantity{0}", sci.Item.Id), StringComparison.InvariantCultureIgnoreCase))
-				{
-					int newQuantity = sci.Item.Quantity;
-					if (int.TryParse(form[formKey], out newQuantity))
-					{
-						warnings.AddRange(_shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer,	sci.Item.Id, newQuantity, true));
-					}
-					break;
-				}
-			}
+   //         //update the cart item
+   //         var warnings = new List<string>();
+			//foreach (string formKey in form.AllKeys)
+			//{
+			//	if (formKey.Equals(string.Format("itemquantity{0}", sci.Item.Id), StringComparison.InvariantCultureIgnoreCase))
+			//	{
+			//		int newQuantity = sci.Item.Quantity;
+			//		if (int.TryParse(form[formKey], out newQuantity))
+			//		{
+			//			warnings.AddRange(_shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer,	sci.Item.Id, newQuantity, true));
+			//		}
+			//		break;
+			//	}
+			//}
 
-            //updated cart
-			cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+   //         //updated cart
+			//cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			var model = new ShoppingCartModel();
-            PrepareShoppingCartModel(model, cart);
+			//var model = new ShoppingCartModel();
+   //         PrepareShoppingCartModel(model, cart);
 
-            //update current warnings... find model
-			var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
-			if (sciModel != null)
-			{
-				foreach (var w in warnings)
-				{
-					if (!sciModel.Warnings.Contains(w))
-						sciModel.Warnings.Add(w);
-				}
-			}
-            return View(model);
-        }
+   //         //update current warnings... find model
+			//var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
+			//if (sciModel != null)
+			//{
+			//	foreach (var w in warnings)
+			//	{
+			//		if (!sciModel.Warnings.Contains(w))
+			//			sciModel.Warnings.Add(w);
+			//	}
+			//}
+   //         return View(model);
+   //     }
         
-        //remove a certain shopping cart item on the page
-        [ValidateInput(false)]
-        [HttpPost, ActionName("Cart")]
-        [FormValueRequired(FormValueRequirement.StartsWith, "removefromcart-")]
-        public ActionResult RemoveCartItem(FormCollection form)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-                return RedirectToRoute("HomePage");
+   //     //remove a certain shopping cart item on the page
+   //     [ValidateInput(false)]
+   //     [HttpPost, ActionName("Cart")]
+   //     [FormValueRequired(FormValueRequirement.StartsWith, "removefromcart-")]
+   //     public ActionResult RemoveCartItem(FormCollection form)
+   //     {
+   //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
+   //             return RedirectToRoute("HomePage");
 
-            //get shopping cart item identifier
-            int sciId = 0;
-			foreach (var formValue in form.AllKeys)
-			{
-				if (formValue.StartsWith("removefromcart-", StringComparison.InvariantCultureIgnoreCase))
-					sciId = Convert.ToInt32(formValue.Substring("removefromcart-".Length));
-			}
+   //         //get shopping cart item identifier
+   //         int sciId = 0;
+			//foreach (var formValue in form.AllKeys)
+			//{
+			//	if (formValue.StartsWith("removefromcart-", StringComparison.InvariantCultureIgnoreCase))
+			//		sciId = Convert.ToInt32(formValue.Substring("removefromcart-".Length));
+			//}
 
-            //get shopping cart item
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+   //         //get shopping cart item
+			//var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			var sci = cart.FirstOrDefault(x => x.Item.Id == sciId);
-            if (sci == null)
-            {
-                return RedirectToRoute("ShoppingCart");
-            }
+			//var sci = cart.FirstOrDefault(x => x.Item.Id == sciId);
+   //         if (sci == null)
+   //         {
+   //             return RedirectToRoute("ShoppingCart");
+   //         }
 
-            //remove the cart item
-            _shoppingCartService.DeleteShoppingCartItem(sci.Item, ensureOnlyActiveCheckoutAttributes: true);
+   //         //remove the cart item
+   //         _shoppingCartService.DeleteShoppingCartItem(sci.Item, ensureOnlyActiveCheckoutAttributes: true);
 
-            //updated cart
-			cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+   //         //updated cart
+			//cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			var model = new ShoppingCartModel();
-            PrepareShoppingCartModel(model, cart);
+			//var model = new ShoppingCartModel();
+   //         PrepareShoppingCartModel(model, cart);
 
-            return View(model);
-        }
+   //         return View(model);
+   //     }
 
         // Ajax deletion
         [HttpPost]
@@ -1732,12 +1734,34 @@ namespace SmartStore.Web.Controllers
             //remove the cart item
             _shoppingCartService.DeleteShoppingCartItem(item, ensureOnlyActiveCheckoutAttributes: true);
 
+            // create updated cart model
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var model = new ShoppingCartModel();
+            PrepareShoppingCartModel(model, cart);
+
             //updated cart
-            return Json(new 
-            { 
+            return Json(new
+            {
                 success = true,
-				message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Success")
+                message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Success"),
+                cartHtml = this.RenderPartialViewToString("_CartItems", model),
+                totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary( new { isEditable = true } ))
             });
+        }
+        
+        private string InvokeAction(string actionName, string controllerName, RouteValueDictionary routeValues)
+        {
+            var viewContext = new ViewContext(
+                   ControllerContext,
+                   new WebFormView(ControllerContext, "tmp"),
+                   ViewData,
+                   TempData,
+                   TextWriter.Null
+            );
+
+            var htmlHelper = new HtmlHelper(viewContext, new ViewPage());
+
+            return htmlHelper.Action(actionName, controllerName, routeValues).ToString();
         }
 
         [ValidateInput(false)]
@@ -2234,19 +2258,33 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateOcCartItem(int sciItemId, int newQuantity)
+        public ActionResult UpdateOcCartItem(int sciItemId, int newQuantity, bool isCartPage = false)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
                 return RedirectToRoute("HomePage");
 
             var warnings = new List<string>();
             warnings.AddRange(_shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer, sciItemId, newQuantity, false));
-            
+
+            var cartHtml = String.Empty;
+            var totalsHtml = String.Empty;
+
+            if (isCartPage)
+            {
+                var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+                var model = new ShoppingCartModel();
+                PrepareShoppingCartModel(model, cart);
+                cartHtml = this.RenderPartialViewToString("_CartItems", model);
+                totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+            }
+
             return Json(new
             {
                 success = warnings.Count > 0 ? false : true,
                 SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(),
-                message = warnings
+                message = warnings,
+                cartHtml = cartHtml,
+                totalsHtml = totalsHtml
             });
         }
 
@@ -2587,7 +2625,7 @@ namespace SmartStore.Web.Controllers
         // ajax
         [HttpPost]
         [ActionName("MoveItemBetweenCartAndWishlist")]
-        public ActionResult MoveItemBetweenCartAndWishlistAjax(int cartItemId, ShoppingCartType cartType)
+        public ActionResult MoveItemBetweenCartAndWishlistAjax(int cartItemId, ShoppingCartType cartType, bool isCartPage = false)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart) || !_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
             {
@@ -2616,12 +2654,26 @@ namespace SmartStore.Web.Controllers
 
 				if (warnings.Count == 0)
 				{
-					return Json(new
+                    var cartHtml = String.Empty;
+                    var totalsHtml = String.Empty;
+
+                    if (isCartPage)
+                    {
+                        var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+                        var model = new ShoppingCartModel();
+                        PrepareShoppingCartModel(model, cart);
+                        cartHtml = this.RenderPartialViewToString("_CartItems", model);
+                        totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                    }
+                    
+                    return Json(new
 					{
 						success = true,
 						wasMoved = _shoppingCartSettings.MoveItemsFromWishlistToCart,
-						message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheCart")
-					});
+						message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheCart"),
+                        cartHtml = cartHtml,
+                        totalsHtml = totalsHtml
+                    });
 				}
 			}
 

@@ -106,24 +106,23 @@
 				{
 					<div class="col col-auto">
 						<div class="cart-row-actions btn-group-vertical card-shadow">
-							<a class="btn btn-gray btn-to-danger btn-sm btn-icon xbtn-flat ajax-cart-link"
+							<a class="btn btn-gray btn-to-danger btn-sm btn-icon ajax-action-link" title="@T("Common.Remove")"
 							   href="#"
 							   rel="nofollow"
 							   data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
 							   data-name="@item.ProductName"
 							   data-type="cart"
-							   data-action="remove"
-							   title='@T("Common.Remove")'>
+							   data-action="remove">
 								<i class="fa fa-2x">×</i>
 							</a>
-							<a class="btn btn-secondary btn-sm btn-icon xbtn-flat ajax-cart-link" title='@T("ShoppingCart.MoveToWishlist")'
+							<a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
 							   href="#"
 							   rel="nofollow"
 							   data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart })"
 							   data-name="@item.ProductName"
 							   data-type="cart"
 							   data-action="addfromcart">
-								<i class="fa fa-heart-o"></i>
+							    <i class="fa fa-heart-o"></i>
 							</a>
 						</div>
 					</div>
@@ -323,21 +322,9 @@
 						</div>
 					</div>
 					<div class="cart-body">
-						@foreach (var item in Model.Items)
-						{
-							if (item.ProductType == ProductType.BundledProduct)
-							{
-								@SimpleProduct(item)
-								@BundleProducts(item)
-							}
-							else
-							{
-								@SimpleProduct(item)
-							}
-						}
+                        @{ Html.RenderPartial("_CartItems", Model); }
 					</div>
 				</div>
-
 			</div>
 
             if (Model.IsEditable)
@@ -388,13 +375,15 @@
                 <div class="col-lg-4">
                     @if (Model.IsEditable && !String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
                     {
-                        <div class="alert alert-info" style="margin-top: 0">
+                        <div class="alert alert-info mt-0">
                             @Model.MinOrderSubtotalWarning
                         </div>
                     }
 
-                    @{ Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable }); }
-
+                    <div id="order-totals">
+                        @{ Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable }); }
+                    </div>
+                    
                     @{ Html.RenderWidget("order_summary_content_totals_bottom"); }
 
                     @if (Model.IsEditable)
@@ -481,24 +470,83 @@
 @if (Model.IsEditable)
 {
     <script type="text/javascript">
-        $(".order-summary-content .ajax-cart-link").on("click", function () {
-            //if there is more then one line
-            if ($(".product-body[style!='display: none;']").length > 1) {
-                var itemLine = $(this).closest(".product-body");
-                itemLine.slideUp();
-            }
-            else {
-                //reload page
-                location.reload();
-            }
+
+        $("body").on("click", ".order-summary-content .ajax-action-link", function (e) {
+
+            var link = $(e.currentTarget);
+
+            $.ajax({
+                cache: false,
+                url: link.data("href"),
+                data: link.data,
+                type: 'POST',
+                success: function (response) {
+
+                    var cartBody = $(".cart-body");
+                    var totals = $("#order-totals");
+
+                    if (response.success)
+                    {
+                        // replace html
+                        cartBody.html(response.cartHtml);
+                        totals.html(response.totalsHtml);
+                    }
+
+                    displayNotification(response.message, response.success ? "success" : "error");
+
+                    // reinit qty ctls
+                    applyCommonPlugins(cartBody);
+
+                    // update shopbar
+                    
+                    ShopBar.loadSummary("cart", true);
+                    
+                    if (link.data("type") == "wishlist") {
+                        ShopBar.loadSummary("wishlist", true);
+                    }
+                }
+            });
         });
 
         // React to touchspin change
         $('.order-summary-content').on('change', '.qty-input .form-control', function (e) {
-            var el = $(this);
+            var link = $(this);
             
-            // TODO
+            /*
+            $.ajax({
+                cache: false,
+                url: link.data("href"),
+                data: link.data,
+                type: 'POST',
+                success: function (response) {
+
+                    var cartBody = $(".cart-body");
+                    var totals = $("#order-totals");
+
+                    if (response.success) {
+                        // replace html
+                        cartBody.html(response.cartHtml);
+                        totals.html(response.totalsHtml);
+                    }
+
+                    displayNotification(response.message, response.success ? "success" : "error");
+
+                    // reinit qty ctls
+                    applyCommonPlugins(cartBody);
+
+                    // update shopbar
+
+                    ShopBar.loadSummary("cart", true);
+
+                    if (link.data("type") == "wishlist") {
+                        ShopBar.loadSummary("wishlist", true);
+                    }
+                }
+            });
+            */
         });
+
+        // React to move to wishlist
 
     </script>
 }

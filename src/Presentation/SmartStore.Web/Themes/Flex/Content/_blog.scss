@@ -86,13 +86,13 @@
     padding: 1rem 0 2rem 0;
 }
 
-.news-item-page .news-date,
+/*.news-item-page .news-date,
 .blogpost-page .blogpost-date {
 	float: right;
 	margin-top: 12px;
     font-size: $font-size-sm;
     color: #aaa;
-}
+}*/
 
 .new-comment .comment-title {
 	width: 70%;
@@ -102,7 +102,7 @@
 	height: 150px;
 }
 
-.comment-item {
+/*.comment-item {
 	margin-bottom: 20px;
 	position: relative;
 	.comment-avatar {
@@ -130,5 +130,12 @@
     font-size: 1.2rem;
     padding: .5rem 0 .2rem 0;
     margin-bottom: 1.2rem;
+}*/
+
+.comment-item {
+    padding: 2rem 0;
+    border-bottom: 1px solid rgba(0,0,0, 0.12);
+
+    &:last-child { border-bottom: none; }
 }
 

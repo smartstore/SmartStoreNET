@@ -1,122 +1,79 @@
 ﻿@model NewsItemModel
 
 @using SmartStore.Web.Models.News;
+
 @{
     Layout = "_Layout";
 
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
-
-    string avatarSpanning = (Model.AllowCustomersToUploadAvatars ? "padding-left: {0}px; min-height: {0}px;".FormatWith(Model.AvatarPictureSize + 30) : "");
 }
 
 <article class="page news-item-page">
-    <div class="news-date text-muted">
+    <div class="news-date text-muted mb-1">
         @Model.CreatedOn.ToString("D")
     </div>
 
-    <div class="page-title">
-        <h1>@Model.Title</h1>
+    <div class="page-title mb-6">
+        <h1 class="fs-h2">@Model.Title</h1>
     </div>
 
-    <div class="news-body">
-        
+    <div class="news-body">    
         @{ Html.RenderWidget("newsitem_page_before_body"); }
 
-        <div class="news-content">
+        <div class="news-content text-body">
             @Html.Raw(Model.Full)
         </div>
 
         @{ Html.RenderWidget("newsitem_page_before_comments"); }
 
-        @if (Model.AllowComments)
+        @if (Model.Comments.AllowComments)
         {
-            <div class="block news-comment-form mt-5">
-                <h3 class="block-title my-3">@T("News.Comments.LeaveYourComment")</h3>
-                <div class="block-body">
-                    @using (Html.BeginForm())
-                    {
-                        if (ViewContext.ViewData.ModelState.ContainsKey(""))
-                        {
-                            @Html.ValidationSummary(true)
-                        }
+			<div class="row">
+				<div class="col-12 col-lg-8 offset-lg-2">
+					<div class="block news-comment-form mt-6">
+						@using (Html.BeginForm())
+						{
+							<fieldset class="news-comment-form content-group mt-5">
+								<legend><span>@T("News.Comments.LeaveYourComment")</span></legend>
 
-                        @Html.ControlGroupFor(model => model.AddNewComment.CommentTitle, required: true, breakpoint: "md")
-                        <div class="form-group row">
-                            @Html.LabelFor(model => model.AddNewComment.CommentText, new { @class = "col-sm-3 col-form-label required" })
-                            <div class="col-sm-9">
-                                @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "form-control", rows = "6" })
-                                @Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
-                            </div>
-                        </div>
+								@if (ViewContext.ViewData.ModelState.ContainsKey(""))
+								{
+									@Html.ValidationSummary(true)
+								}
 
-                        if (Model.AddNewComment.DisplayCaptcha)
-                        {
-                            <div class="form-group row">
-                                <div class="col-sm-offset-2 col-sm-10 captcha-box">
-                                    @Html.Raw(Html.GenerateCaptcha())
-                                </div>
-                            </div>
-                        }
-
-                        <div class="form-group row">
-                            <div class="col col-sm-auto offset-sm-3">
-                                <button type="submit" name="add-comment" value="add-comment" class="bbtn btn-primary btn-lg btn-block">
-                                    @T("News.Comments.SubmitButton")
-                                </button>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            if (Model.Comments.Count > 0)
-            {
-                <div class="comment-list block">
-
-                    <div class="title block-title">
-                        @T("News.Comments") (@Model.NumberOfComments)
-                    </div>
-
-                    <div class="block-body">
-                    @foreach (var comment in Model.Comments)
-                    {
-                        <div class="comment-item news-comment clearfix" style="@avatarSpanning">
-                            
-							@if (!String.IsNullOrEmpty(comment.CustomerAvatarUrl))
-							{
-								<div class="comment-avatar">								
-									<img src="@(comment.CustomerAvatarUrl)" class="avatar-img img-thumbnail" title="avatar" alt="avatar" />
+								<div class="form-group">
+									@Html.TextBoxFor(model => model.AddNewComment.CommentTitle, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentTitle) })
+									@Html.ValidationMessageFor(model => model.AddNewComment.CommentTitle)
 								</div>
-							}
-                            
-                            <div class="comment-content">
-                                <div class="comment-info">
-                                    @if (comment.AllowViewingProfiles)
-									{
-										<a href="@Url.RouteUrl("CustomerProfile", new { id = comment.CustomerId })" class="username" rel="nofollow">@(comment.CustomerName)</a>
-									}
-									else
-									{
-                                        <span class="username">@(comment.CustomerName)</span>
-                                    }
-                                    <span class="comment-time">
-                                        @comment.CreatedOn.ToString("D")
-                                    </span>
-                                </div>
-                                <div class="comment-body">
-                                    @Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(comment.CommentText, false, true, false, false, false, false))
-                                </div>
-                            </div>
 
-                            @{ Html.RenderWidget("newsitem_page_inside_comment"); }
+								<div class="form-group">
+									@Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentText), rows = "6" })
+									@Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
+								</div>
 
-                        </div>
-                    }
-                    </div>
-                </div>
-            }
+								@if (Model.AddNewComment.DisplayCaptcha)
+								{
+									<div class="form-group">
+										<div class="captcha-box">
+											@Html.Raw(Html.GenerateCaptcha())
+										</div>
+									</div>
+								}
+
+								<div class="form-group">
+									<button type="submit" name="add-comment" value="add-comment" class="btn btn-primary btn-lg">
+										@T("News.Comments.SubmitButton")
+									</button>
+								</div>
+							</fieldset>
+						}
+					</div>
+
+					@{ Html.RenderPartial("Comment.List", Model.Comments); }
+				</div>
+			</div>
         }
 
         @{ Html.RenderWidget("newsitem_page_after_comments"); }

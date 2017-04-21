@@ -362,6 +362,7 @@
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
     <Compile Include="Models\Common\EntityPickerModel.cs" />
+    <Compile Include="Models\Common\CommentModel.cs" />
     <Compile Include="Models\Search\ISearchResultModel.cs" />
     <Compile Include="Models\Search\SearchResultModel.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
@@ -386,7 +387,6 @@
     <Compile Include="Models\Install\InstallModel.cs" />
     <Compile Include="Models\News\AddNewsCommentModel.cs" />
     <Compile Include="Models\News\HomePageNewsItemsModel.cs" />
-    <Compile Include="Models\News\NewsCommentModel.cs" />
     <Compile Include="Models\News\NewsPagingFilteringModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\News\NewsItemModel.cs" />
@@ -1862,6 +1862,8 @@
     <Content Include="Themes\Flex\Content\_user.scss" />
     <Content Include="Themes\Flex\Content\_custom.scss" />
     <Content Include="Views\ShoppingCart\Partials\_CartItems.cshtml" />
+    <Content Include="Views\Shared\Partials\Comment.Item.cshtml" />
+    <Content Include="Views\Shared\Partials\Comment.List.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,36 @@
+﻿@model CommentListModel
+
+@using SmartStore.Web.Models.Common;
+
+@{
+	if (Model.Comments.Count == 0)
+	{
+		return;
+	}
+}
+
+<style>
+	.comment-avatar-col {
+		width: @(Model.AvatarPictureSize)px;
+		max-width: 60px;
+	}
+
+	@@media (min-width: 576px) {
+		.comment-avatar-col { max-width: @(Model.AvatarPictureSize)px; }
+	}
+</style>
+
+<div class="block comment-list mb-6">
+	<h4 class="block-title comment-list-title">
+		@T("News.Comments")
+		<small class="text-muted">(@Model.NumberOfComments)</small>
+	</h4>
+
+	<div class="block-body p-0">
+		@foreach (var comment in Model.Comments)
+		{
+			Html.RenderPartial("Comment.Item", comment);
+		}
+	</div>
+</div>
+

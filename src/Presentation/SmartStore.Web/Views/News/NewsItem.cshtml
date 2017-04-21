@@ -32,45 +32,45 @@
 
         @if (Model.AllowComments)
         {
-            <div class="new-comment">
-                <h3 class="title">@T("News.Comments.LeaveYourComment")</h3>
-                @using (Html.BeginForm())
-                {
-                    <div>
-                        @if (ViewContext.ViewData.ModelState.ContainsKey(""))
-						{
+            <div class="block news-comment-form mt-5">
+                <h3 class="block-title my-3">@T("News.Comments.LeaveYourComment")</h3>
+                <div class="block-body">
+                    @using (Html.BeginForm())
+                    {
+                        if (ViewContext.ViewData.ModelState.ContainsKey(""))
+                        {
                             @Html.ValidationSummary(true)
                         }
-                        <div class="forms-box">
-                            <div class="inputs">
-                                @Html.LabelFor(model => model.AddNewComment.CommentTitle)
-                                <div class="input-box">
-                                    @Html.TextBoxFor(model => model.AddNewComment.CommentTitle, new { @class = "comment-title" })
-                                </div>
-                                @Html.ValidationMessageFor(model => model.AddNewComment.CommentTitle)
-                            </div>
-                            <div class="inputs">
-                                @Html.LabelFor(model => model.AddNewComment.CommentText)
-                                <div class="input-box">
-                                    @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "comment-text" })
-                                </div>
+
+                        @Html.ControlGroupFor(model => model.AddNewComment.CommentTitle, required: true, breakpoint: "md")
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.AddNewComment.CommentText, new { @class = "col-sm-3 col-form-label required" })
+                            <div class="col-sm-9">
+                                @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "form-control", rows = "6" })
                                 @Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
                             </div>
-                            @if (Model.AddNewComment.DisplayCaptcha)
-                            {
-                                <div class="captcha-box">
+                        </div>
+
+                        if (Model.AddNewComment.DisplayCaptcha)
+                        {
+                            <div class="form-group row">
+                                <div class="col-sm-offset-2 col-sm-10 captcha-box">
                                     @Html.Raw(Html.GenerateCaptcha())
                                 </div>
-                            }
+                            </div>
+                        }
+
+                        <div class="form-group row">
+                            <div class="col col-sm-auto offset-sm-3">
+                                <button type="submit" name="add-comment" value="add-comment" class="bbtn btn-primary btn-lg btn-block">
+                                    @T("News.Comments.SubmitButton")
+                                </button>
+                            </div>
                         </div>
-                        <div class="buttons">
-                            <button type="submit" name="add-comment" value="add-comment" class="btn btn-primary news-item-add-comment-button">
-                                @T("News.Comments.SubmitButton")
-                            </button>
-                        </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
+
             if (Model.Comments.Count > 0)
             {
                 <div class="comment-list block">

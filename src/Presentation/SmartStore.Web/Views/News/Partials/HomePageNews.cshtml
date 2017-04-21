@@ -8,26 +8,22 @@
 @if (Model.NewsItems.Count > 0)
 {
     <div class="block news-list-homepage">
-        <div class="block-title clearfix">
-            <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("News.RSS.Hint")" data-toggle="tooltip">
-                <i class="fa fa-rss text-muted"></i>
-                @T("News.RSS")
-            </a>
-            @T("News")
+        <div class="heading heading-center">
+            <h3 class="heading-title fs-h1">@T("News")</h3>
         </div>
         <div class="block-body news-items">
             @foreach (var item in Model.NewsItems)
             {
-                <div class="news-item">
-                    <h4 class="news-title clearfix">
+                <div class="news-item mb-5">
+                    <h4 class="news-title">
                         <a class="news-title" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
                             @item.Title
                         </a>
-                        <span class="news-date text-muted pull-right">
+                        <span class="news-date float-right">
                            @item.CreatedOn.ToString("D")
                         </span>
                     </h4>
-                    <div class="news-details">
+                    <div class="news-details mt-3 mb-2">
                         @Html.Raw(item.Short)
                     </div>
                     <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="read-more">
@@ -35,12 +31,18 @@
                     </a>
                 </div>
             }
+
+            <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("News.RSS.Hint")" data-toggle="tooltip">
+                <i class="fa fa-rss"></i>
+                @T("News.RSS")
+            </a>
+
             <div class="view-all">
-                <a href="@Url.RouteUrl("NewsArchive")">
-                    @T("News.ViewAll")
+                <a class="btn btn-sm btn-outline-secondary" href="@Url.RouteUrl("NewsArchive")">
+                    <i class="fa fa-file-text-o"></i>
+                    <span>@T("News.ViewAll")</span>
                 </a>
             </div>
         </div>
     </div>
-
 }

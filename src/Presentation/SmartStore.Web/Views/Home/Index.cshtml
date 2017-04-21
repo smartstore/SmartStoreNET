@@ -6,7 +6,7 @@
 
 <div class="page home-page">
     <div class="page-body">
-		@{  
+		@{
 			Html.RenderWidget("home_page_top");
 
 			Html.RenderAction("TopicBlock", "Topic", new { systemName = "HomePageText", isLead = true });
@@ -18,13 +18,14 @@
 			Html.RenderAction("HomepageManufacturers", "Catalog");
 
 			Html.RenderAction("HomePagePolls", "Poll");
+
+			Html.RenderAction("PopularProductTags", "Catalog", new { area = "" });
+
 			@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
-            Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" });
+			Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" });
 
-            Html.RenderAction("PopularProductTags", "Catalog", new { area = "" });
-
-            Html.RenderWidget("home_page_bottom");
-        }
+			Html.RenderWidget("home_page_bottom");
+		}
     </div>
 </div>
 

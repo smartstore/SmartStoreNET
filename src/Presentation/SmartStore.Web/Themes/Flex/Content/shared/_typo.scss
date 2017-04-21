@@ -6,6 +6,17 @@ h1, h2, .h1, .h2 {
     font-weight: $headings-lg-font-weight;
 }
 
+a.color-body {
+    $clr: lighten($body-color, 10%);
+    color: $clr;
+    text-decoration: none;
+
+    &:hover {
+        color: $clr;
+        text-decoration: underline;
+    }
+}
+
 
 // Font weight Helpers
 // ===================

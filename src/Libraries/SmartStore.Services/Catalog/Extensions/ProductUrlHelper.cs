@@ -152,7 +152,8 @@ namespace SmartStore.Services.Catalog.Extensions
 		/// <returns>Product URL</returns>
 		public virtual string GetProductUrl(ProductVariantQuery query, string productSeName)
 		{
-			Guard.NotEmpty(productSeName, nameof(productSeName));
+			if (productSeName.IsEmpty())
+				return null;
 
 			var url = Url ?? UrlHelper.GenerateUrl(
 				"Product",
@@ -197,9 +198,7 @@ namespace SmartStore.Services.Catalog.Extensions
 			Store store = null,
 			Language language = null)
 		{
-			Guard.NotEmpty(productSeName, nameof(productSeName));
-
-			if (_httpRequest == null)
+			if (_httpRequest == null || productSeName.IsEmpty())
 				return null;
 
 			var url = Url;

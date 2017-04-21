@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.Entity;
 using ImageResizer;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -485,8 +485,19 @@ namespace SmartStore.Services.Media
 
                         if (saveOnResolve)
                         {
-                            _pictureRepository.Update(picture);
-                        }
+							try
+							{
+								_pictureRepository.Update(picture);
+							}
+							catch (InvalidOperationException ioe)
+							{
+								// Ignore exception for pictures that already have been processed.
+								if (!ioe.IsAlreadyAttachedEntityException())
+								{
+									throw;
+								}
+							}
+						}
                     }
                     finally
                     {

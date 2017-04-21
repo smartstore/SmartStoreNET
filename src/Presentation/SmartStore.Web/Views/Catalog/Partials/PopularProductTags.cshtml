@@ -2,11 +2,11 @@
 @using SmartStore.Web.Models.Catalog;
 @if (Model.Tags.Count > 0)
 {
-    <div class="block-popular-tags card">
-        <div class="card-header">
+    <div class="block-popular-tags block">
+        <div class="block-title text-center">
             @T("Products.Tags.Popular")
         </div>
-        <div class="listbox card-block">
+        <div class="listbox block-body">
             <div class="tags">
                 <ul class="list-unstyled">
                     @foreach (var item in Model.Tags)

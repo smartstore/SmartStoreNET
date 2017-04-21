@@ -93,6 +93,11 @@ body.popup {
 .block-popular-blogtags li {
     display: inline;
 }
+.block-popular-tags {
+    li { font-size: 1.2rem; }
+    a { color: $gray; }
+}
+
 
 // menu
 .dropdown {

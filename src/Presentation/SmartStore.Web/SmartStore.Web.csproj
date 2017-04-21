@@ -317,7 +317,6 @@
     <Compile Include="Models\Blogs\BlogPagingFilteringModel.cs" />
     <Compile Include="Models\Blogs\BlogPostTagModel.cs" />
     <Compile Include="Models\Blogs\BlogPostModel.cs" />
-    <Compile Include="Models\Blogs\BlogCommentModel.cs" />
     <Compile Include="Models\Blogs\BlogPostYearMonthModel.cs" />
     <Compile Include="Models\Blogs\AddBlogCommentModel.cs" />
     <Compile Include="Models\Blogs\BlogPostTagListModel.cs" />

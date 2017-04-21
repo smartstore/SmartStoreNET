@@ -1,13 +1,9 @@
-﻿/// <reference path="bs4/scss/bootstrap.scss" />
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
 
 //
 // Blog Styles
 // --------------------------------------------------
-
-.link-rss {
-    float: right;
-    color: $green;
-}
 
 .blog-page .blogpost {
 	padding: 20px 0;		
@@ -19,7 +15,6 @@
 }
 
 .blog-page .blogpost .blogpost-info {
-	
 	.blogpost-comments {
 		position: relative;
 		display: block;
@@ -69,68 +64,6 @@
         background-color: #fafafa;
 	}
 }
-
-
-.blog-page .blogpost .blogpost-content {
-	.blogpost-title {
-		margin-top: 0;
-		& > a {
-			text-decoration: none;
-		}	
-	}
-}
-
-
-.blogpost-page .page-title {
-    text-align: left;
-    padding: 1rem 0 2rem 0;
-}
-
-/*.news-item-page .news-date,
-.blogpost-page .blogpost-date {
-	float: right;
-	margin-top: 12px;
-    font-size: $font-size-sm;
-    color: #aaa;
-}*/
-
-.new-comment .comment-title {
-	width: 70%;
-}
-.new-comment .comment-text {
-	width: 70%;
-	height: 150px;
-}
-
-/*.comment-item {
-	margin-bottom: 20px;
-	position: relative;
-	.comment-avatar {
-		position: absolute;
-		top: 2px;
-		left: 0;
-	}
-	.comment-content { }
-	.comment-content .comment-info {
-		margin-bottom: 12px;
-		.username {
-			font-weight: bold;
-			color: inherit;
-			font-size: 16px;
-		}
-		.comment-time {
-			margin-left: 4px;
-			color: #bbb;
-		}
-	}
-}
-
-.comment-list .title {
-    border-bottom: 1px solid #ddd;
-    font-size: 1.2rem;
-    padding: .5rem 0 .2rem 0;
-    margin-bottom: 1.2rem;
-}*/
 
 .comment-item {
     padding: 2rem 0;

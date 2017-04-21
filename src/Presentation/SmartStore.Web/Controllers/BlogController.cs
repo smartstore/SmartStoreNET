@@ -21,6 +21,7 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -28,6 +29,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Blogs;
+using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Controllers
 {
@@ -120,27 +122,30 @@ namespace SmartStore.Web.Controllers
             model.SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false);
             model.Title = blogPost.Title;
             model.Body = blogPost.Body;
-            model.AllowComments = blogPost.AllowComments;
-            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize; 
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
             model.Tags = blogPost.ParseTags().ToList();
-            model.NumberOfComments = blogPost.ApprovedCommentCount;
             model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnBlogCommentPage;
-			model.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
+			model.Comments.AllowComments = blogPost.AllowComments;
+			model.Comments.AvatarPictureSize = _mediaSettings.AvatarPictureSize;
+			model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;
+			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
+
             if (prepareComments)
             {
                 var blogComments = blogPost.BlogComments.Where(pr => pr.IsApproved).OrderBy(pr => pr.CreatedOnUtc);
                 foreach (var bc in blogComments)
                 {
-                    var commentModel = new BlogCommentModel()
+                    var commentModel = new CommentModel(model.Comments)
                     {
                         Id = bc.Id,
                         CustomerId = bc.CustomerId,
                         CustomerName = bc.Customer.FormatUserName(),
                         CommentText = bc.CommentText,
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(bc.CreatedOnUtc, DateTimeKind.Utc),
-                        AllowViewingProfiles = _customerSettings.AllowViewingProfiles && bc.Customer != null && !bc.Customer.IsGuest()
+						CreatedOnPretty = bc.CreatedOnUtc.RelativeFormat(true, "f"),
+						AllowViewingProfiles = _customerSettings.AllowViewingProfiles && bc.Customer != null && !bc.Customer.IsGuest()
                     };
+
                     if (_customerSettings.AllowCustomersToUploadAvatars)
                     {
                         var customer = bc.Customer;
@@ -149,7 +154,8 @@ namespace SmartStore.Web.Controllers
                             avatarUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.AvatarPictureSize, PictureType.Avatar);
                         commentModel.CustomerAvatarUrl = avatarUrl;
                     }
-                    model.Comments.Add(commentModel);
+
+                    model.Comments.Comments.Add(commentModel);
                 }
             }
 

@@ -63,14 +63,14 @@
                 <article class="blogpost row">
 
                     <div class="blogpost-info col-3">
-                        @if (item.AllowComments)
+                        @if (item.Comments.AllowComments)
                         {
-                            <a class="blogpost-comments@(item.NumberOfComments > 0 ? " vivid" : "")" 
+                            <a class="blogpost-comments@(item.Comments.NumberOfComments > 0 ? " vivid" : "")" 
                                 href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" 
-                                title="@string.Format(@T("Blog.CommentsLink").Text, item.NumberOfComments)" 
+                                title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)" 
                                 data-toggle="tooltip">
 								<span class="blogpost-comments-icon fa fa-comments"></span>
-                                <span class="blogpost-comments-count">@item.NumberOfComments</span>
+                                <span class="blogpost-comments-count">@item.Comments.NumberOfComments</span>
                             </a>
                         }
                         

@@ -410,7 +410,7 @@ namespace SmartStore.Web.Controllers
                 );
 			}
 
-			//picture
+			// picture
 			if (item.BundleItem != null)
 			{
 				if (_shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
@@ -422,7 +422,7 @@ namespace SmartStore.Web.Controllers
 					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbPictureSize, model.ProductName, item.AttributesXml);
 			}
 
-			//item warnings
+			// item warnings
 			var itemWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer, item.ShoppingCartType, product, item.StoreId,
 				item.AttributesXml, item.CustomerEnteredPrice, item.Quantity, false, bundleItem: item.BundleItem, childItems: sci.ChildItems);
 
@@ -684,8 +684,6 @@ namespace SmartStore.Web.Controllers
 			model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
 			));
-			//model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer);
-			//model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer, "", false);
 
 			bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
 			if (!minOrderSubtotalAmountOk)

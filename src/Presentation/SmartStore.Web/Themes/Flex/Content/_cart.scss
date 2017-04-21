@@ -178,6 +178,7 @@
     width: 100%;
     max-width: 100%;
     margin-bottom: 1.5rem;
+    border-bottom: 1px solid $gray-lighter;
 }
 
 .cart-head {
@@ -191,11 +192,11 @@
 .cart-row {
     display: flex;
     flex-wrap: wrap;
-    border-bottom: 1px solid $gray-lighter;
+    border-top: 1px solid $gray-lighter;
 }
 
 .cart-row-actions {
-    //@extend .btn-group;    
+  
 }
 
 .cart-col {
@@ -220,10 +221,6 @@
         font-weight: $font-weight-medium;
         padding-bottom: 0.4rem;
     }
-}
-
-.cart-col-price .price {
-    line-height: $input-height;
 }
 
 .cart-col-qty {
@@ -256,12 +253,28 @@
 }
 
 .cart-head {
-    .cart-row   { border-bottom-width: 2px; }
+    .cart-row   { border-top: none; border-bottom: 1px solid $gray-lighter; }
     .cart-col   { font-size: $font-size-h5; font-weight: $font-weight-medium; }   
 }
 
 .cart-body {
     .cart-col-subtotal .price  { font-weight: $font-weight-medium; }
+}
+
+.cart-editable {
+    .price {
+        line-height: $input-height;
+    }
+}
+
+.cart-row-child {
+    font-size: 90%;
+    background: #fbfbfb;
+    border-top: none;
+
+    .cart-item-img { display: none; }
+    .cart-col-main ~ .cart-col { display: none; }
+    .cart-item-link { font-size: $font-size-base; }
 }
 
 @include media-breakpoint-up(md) {
@@ -273,7 +286,7 @@
     .cart-col       { display: table-cell; }
 
     .cart-col {
-        border-bottom: 1px solid $gray-lighter;
+        border-top: 1px solid $gray-lighter;
     }
 
     .cart-col-main ~ .cart-col {
@@ -287,20 +300,17 @@
     }
 
     .cart-head {
-        .cart-col   { border-bottom-width: 2px; }
+        .cart-col   { border-top: none; border-bottom: 1px solid $gray-lighter; }
     }
 
     .cart-row-child {
-        background: $gray-lightest;
+        .cart-col { border-top: none; }
+        .cart-item-img { display: block; }
+        .cart-col-main ~ .cart-col { display: table-cell; }
 
-        .cart-col:not(:last-child) { 
-            border-bottom: none; 
-        }
-
-        .cart-col-main { 
+        /*.cart-col-main { 
             padding-left: 3rem; 
-
-        }
+        }*/
     }
 
     .cart-editable {

@@ -6,6 +6,7 @@ using System.Web.Routing;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
@@ -30,6 +31,7 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Order;
 
 namespace SmartStore.Web.Controllers
@@ -56,6 +58,11 @@ namespace SmartStore.Web.Controllers
 		private readonly ICommonServices _services;
         private readonly IQuantityUnitService _quantityUnitService;
 		private readonly ProductUrlHelper _productUrlHelper;
+		private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IPictureService _pictureService;
+		private readonly CatalogSettings _catalogSettings;
+		private readonly MediaSettings _mediaSettings;
+		private readonly ShoppingCartSettings _shoppingCartSettings;
 
 		#endregion
 
@@ -76,11 +83,15 @@ namespace SmartStore.Web.Controllers
 			IStoreService storeService,
 			IProductService productService,
 			IProductAttributeFormatter productAttributeFormatter,
-			Lazy<IPictureService> pictureService,
 			PluginMediator pluginMediator,
 			ICommonServices services,
             IQuantityUnitService quantityUnitService,
-			ProductUrlHelper productUrlHelper)
+			ProductUrlHelper productUrlHelper,
+			IProductAttributeParser productAttributeParser,
+			IPictureService pictureService,
+			CatalogSettings catalogSettings,
+			MediaSettings mediaSettings,
+			ShoppingCartSettings shoppingCartSettings)
         {
             this._orderService = orderService;
             this._shipmentService = shipmentService;
@@ -100,6 +111,11 @@ namespace SmartStore.Web.Controllers
 			this._services = services;
             this._quantityUnitService = quantityUnitService;
 			this._productUrlHelper = productUrlHelper;
+			this._pictureService = pictureService;
+			this._catalogSettings = catalogSettings;
+			this._productAttributeParser = productAttributeParser;
+			this._mediaSettings = mediaSettings;
+			this._shoppingCartSettings = shoppingCartSettings;
         }
 
         #endregion
@@ -335,9 +351,10 @@ namespace SmartStore.Web.Controllers
             }
 
 
-            //purchased products
+            // purchased products
 			model.ShowSku = catalogSettings.ShowProductSku;
-            var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
+			model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
+			var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
 
             foreach (var orderItem in orderItems)
             {
@@ -518,15 +535,55 @@ namespace SmartStore.Web.Controllers
 			}
 
 			model.ProductUrl = _productUrlHelper.GetProductUrl(model.ProductSeName, orderItem);
+			
+			if (_shoppingCartSettings.ShowProductImagesOnShoppingCart)
+			{
+				model.Picture = PrepareOrderItemPictureModel(orderItem.Product, _mediaSettings.CartThumbPictureSize, model.ProductName, orderItem.AttributesXml);
+			}				
 
 			return model;
 		}
 
-        #endregion
+		private PictureModel PrepareOrderItemPictureModel(Product product, int pictureSize, string productName, string attributesXml)
+		{
+			Guard.NotNull(product, nameof(product));
 
-        #region Order details
+			var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+			Picture picture = null;
+
+			if (combination != null)
+			{
+				var picturesIds = combination.GetAssignedPictureIds();
+				if (picturesIds != null && picturesIds.Length > 0)
+					picture = _pictureService.GetPictureById(picturesIds[0]);
+			}
+
+			// no attribute combination image, then load product picture
+			if (picture == null)
+				picture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
+
+			if (picture == null && !product.VisibleIndividually && product.ParentGroupedProductId > 0)
+			{
+				// let's check whether this product has some parent "grouped" product
+				picture = _pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault();
+			}
+			
+			return new PictureModel
+			{
+				PictureId = picture != null ? picture.Id : 0,
+				Size = pictureSize,
+				ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
+				Title = T("Media.Product.ImageLinkTitleFormat", productName),
+				AlternateText = T("Media.Product.ImageAlternateTextFormat", productName)
+			};
+		}
+
+		#endregion
+
+		#region Order details
+
+		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
         public ActionResult Details(int id)
         {
 			var order = _orderService.GetOrderById(id);

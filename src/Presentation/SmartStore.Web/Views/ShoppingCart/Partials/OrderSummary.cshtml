@@ -8,13 +8,10 @@
     <div class="cart-row">
         <div class="cart-col cart-col-main">
             <div class="row sm-gutters">
-                @if (Model.ShowProductImages)
+                @if (Model.ShowProductImages && item.Picture != null && item.Picture.ImageUrl.HasValue())
                 {
                     <div class="col cart-item-img">
-                        @if (item.Picture.ImageUrl.HasValue())
-                        {
-                            <img class="img-fluid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
-                        }
+						<img class="img-fluid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
                     </div>
                 }
 

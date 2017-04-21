@@ -127,10 +127,6 @@
         @if (Model.Items.Count > 0)
         {
             <div class="card mt-4">
-				<div class="card-header font-weight-medium">
-					@T("Order.Product(s)")
-				</div>
-
                 <div id="order-items" class="cart">
                     <div class="cart-head">
                         <div class="cart-row">
@@ -197,8 +193,8 @@
         @{ Html.RenderWidget("orderdetails_page_afterproducts"); }
 
         <div class="row">
-            <div class="total-info col-md-4 col-md-push-8 mt-3">
-                <table class="cart-total table">
+            <div class="total-info col-md-4 offset-md-8 mt-3">
+                <table class="cart-summary table">
                     <tbody>
                         <tr>
                             <td class="cart-total-left">
@@ -524,30 +520,40 @@
 {
 	<div class="cart-row">
 		<div class="cart-col cart-col-main">
-			<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-			@if (Model.ShowSku && item.Sku.HasValue())
-			{
-				<div class="cart-item-sku small">
-					<span>@T("Order.Product(s).SKU")</span>
-					<span class="text-muted">@item.Sku</span>
+			<div class="row sm-gutters">
+				@if (Model.ShowProductImages && item.Picture != null && item.Picture.ImageUrl.HasValue())
+				{
+					<div class="col cart-item-img">
+						<img class="img-fluid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+					</div>
+				}
+				<div class="col">
+					<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+					@if (Model.ShowSku && item.Sku.HasValue())
+					{
+						<div class="cart-item-sku small">
+							<span>@T("Order.Product(s).SKU")</span>
+							<span class="text-muted">@item.Sku</span>
+						</div>
+					}
+					@if (item.AttributeInfo.HasValue())
+					{
+						<div class="cart-item-attrs">
+							@Html.Raw(item.AttributeInfo)
+						</div>
+					}
 				</div>
-			}
-			@if (item.AttributeInfo.HasValue())
-			{
-				<div class="cart-item-attrs">
-					@Html.Raw(item.AttributeInfo)
-				</div>
-			}
+			</div>
 		</div>
 		<div class="cart-col cart-col-price" data-caption="@T("Order.Product(s).Price")">
-			@item.UnitPrice
+			<span class="price">@item.UnitPrice</span>
 		</div>
 		<div class="cart-col cart-col-qty" data-caption="@T("Order.Product(s).Quantity")">
 			@item.Quantity
 			@item.QuantityUnit
 		</div>
 		<div class="cart-col cart-col-price cart-col-subtotal" data-caption="@T("Order.Product(s).Total")">
-			@item.SubTotal
+			<span class="price">@item.SubTotal</span>
 		</div>
 	</div>
 }
@@ -560,29 +566,36 @@
 		{
 			<div class="cart-row cart-row-child">
 				<div class="cart-col cart-col-main">
-					@if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
-					{
-						<span class="font-weight-medium">@item.Quantity&nbsp;&#215;</span>
-					}
-					@if (item.VisibleIndividually)
-					{
-						<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-					}
-					else
-					{
-						<span class="cart-item-link">@item.ProductName</span>
-					}
-					@if (item.AttributeInfo.HasValue())
-					{
-						<div class="cart-item-attrs">
-							@Html.Raw(item.AttributeInfo)
+					<div class="row sm-gutters">
+						<div class="col cart-item-img">
+							<!-- Spacer -->
 						</div>
-					}
+						<div class="col">
+							@if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
+							{
+								<span class="font-weight-medium">@item.Quantity&nbsp;&#215;</span>
+							}
+							@if (item.VisibleIndividually)
+							{
+								<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+							}
+							else
+							{
+								<span class="cart-item-link">@item.ProductName</span>
+							}
+							@if (item.AttributeInfo.HasValue())
+							{
+								<div class="cart-item-attrs">
+									@Html.Raw(item.AttributeInfo)
+								</div>
+							}
+						</div>
+					</div>
 				</div>
 				<div class="cart-col cart-col-price">
 					@if (item.PriceWithDiscount.HasValue())
-					{
-						@Html.Raw(item.PriceWithDiscount)
+					{			
+						<span class="price">@Html.Raw(item.PriceWithDiscount)</span>
 					}
 					else
 					{

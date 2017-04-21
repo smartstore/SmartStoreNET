@@ -4,6 +4,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
+using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Models.Order
 {
@@ -72,7 +73,8 @@ namespace SmartStore.Web.Models.Order
         public IList<GiftCard> GiftCards { get; set; }
 
         public bool ShowSku { get; set; }
-        public IList<OrderItemModel> Items { get; set; }
+		public bool ShowProductImages { get; set; }
+		public IList<OrderItemModel> Items { get; set; }
 
         public IList<OrderNote> OrderNotes { get; set; }
 
@@ -98,6 +100,7 @@ namespace SmartStore.Web.Models.Order
             public string AttributeInfo { get; set; }
 			public bool BundlePerItemPricing { get; set; }
 			public bool BundlePerItemShoppingCart { get; set; }
+			public PictureModel Picture { get; set; }
 
 			public IList<BundleItemModel> BundleItems { get; set; }
         }

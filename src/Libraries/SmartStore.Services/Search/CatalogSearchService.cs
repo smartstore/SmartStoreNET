@@ -1,48 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Mvc;
 using Autofac;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Search
 {
 	public partial class CatalogSearchService : ICatalogSearchService
 	{
-		private readonly IComponentContext _ctx;
-		private readonly ILogger _logger;
+		private readonly ICommonServices _services;
 		private readonly IIndexManager _indexManager;
 		private readonly Lazy<IProductService> _productService;
-		private readonly IChronometer _chronometer;
-		private readonly IEventPublisher _eventPublisher;
+		private readonly ILogger _logger;
 		private readonly IPriceFormatter _priceFormatter;
+		private readonly UrlHelper _urlHelper;
 
 		public CatalogSearchService(
-			IComponentContext ctx,
-			ILogger logger,
+			ICommonServices services,
 			IIndexManager indexManager,
 			Lazy<IProductService> productService,
-			IChronometer chronometer,
-			IEventPublisher eventPublisher,
-			IPriceFormatter priceFormatter)
+			ILogger logger,
+			IPriceFormatter priceFormatter,
+			UrlHelper urlHelper)
 		{
-			_ctx = ctx;
-			_logger = logger;
+			_services = services;
 			_indexManager = indexManager;
 			_productService = productService;
-			_chronometer = chronometer;
-			_eventPublisher = eventPublisher;
+			_logger = logger;
 			_priceFormatter = priceFormatter;
+			_urlHelper = urlHelper;
 
 			T = NullLocalizer.Instance;
 		}
 
 		public Localizer T { get; set; }
+
+		/// <summary>
+		/// Notifies admin that indexing is required to use the advanced search.
+		/// </summary>
+		protected virtual void IndexingRequiredNotification()
+		{
+			if (_services.WorkContext.CurrentCustomer.IsAdmin())
+			{
+				var notification = T("Search.IndexingRequiredNotification",
+					_urlHelper.Action("Indexing", "MegaSearch", new { area = "SmartStore.MegaSearch" }),
+					_urlHelper.Action("ConfigurePlugin", "Plugin", new { area = "admin", systemName = "SmartStore.MegaSearch" }));
+
+				_services.Notifier.Information(notification);
+			}
+		}
 
 		/// <summary>
 		/// Bypasses the index provider and directly searches in the database
@@ -53,7 +66,7 @@ namespace SmartStore.Services.Search
 		protected virtual CatalogSearchResult SearchDirect(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
 		{
 			// fallback to linq search
-			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
+			var linqCatalogSearchService = _services.Container.ResolveNamed<ICatalogSearchService>("linq");
 
 			var result = linqCatalogSearchService.Search(searchQuery, loadFlags, true);
 			ApplyFacetLabels(result.Facets);
@@ -85,23 +98,23 @@ namespace SmartStore.Services.Search
 					Func<IList<Product>> hitsFactory = null;
 					IDictionary<string, FacetGroup> facets = null;
 
-					_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
+					_services.EventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
 
 					if (searchQuery.Take > 0)
 					{
-						using (_chronometer.Step(stepPrefix + "Count"))
+						using (_services.Chronometer.Step(stepPrefix + "Count"))
 						{
 							totalCount = searchEngine.Count();
 						}
 
-						using (_chronometer.Step(stepPrefix + "Hits"))
+						using (_services.Chronometer.Step(stepPrefix + "Hits"))
 						{
 							searchHits = searchEngine.Search();
 						}
 
 						if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
 						{
-							using (_chronometer.Step(stepPrefix + "Collect"))
+							using (_services.Chronometer.Step(stepPrefix + "Collect"))
 							{
 								var productIds = searchHits.Select(x => x.EntityId).ToArray();
 								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
@@ -112,7 +125,7 @@ namespace SmartStore.Services.Search
 						{
 							try
 							{
-								using (_chronometer.Step(stepPrefix + "Facets"))
+								using (_services.Chronometer.Step(stepPrefix + "Facets"))
 								{
 									facets = searchEngine.GetFacetMap();
 									ApplyFacetLabels(facets);
@@ -129,7 +142,7 @@ namespace SmartStore.Services.Search
 					{
 						try
 						{
-							using (_chronometer.Step(stepPrefix + "Spellcheck"))
+							using (_services.Chronometer.Step(stepPrefix + "Spellcheck"))
 							{
 								spellCheckerSuggestions = searchEngine.CheckSpelling();
 							}
@@ -149,9 +162,13 @@ namespace SmartStore.Services.Search
 						spellCheckerSuggestions,
 						facets);
 
-					_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
+					_services.EventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
 
 					return result;
+				}
+				else if (searchQuery.Origin.IsCaseInsensitiveEqual("Search/Search"))
+				{
+					IndexingRequiredNotification();
 				}
 			}
 
@@ -160,7 +177,7 @@ namespace SmartStore.Services.Search
 
 		public IQueryable<Product> PrepareQuery(CatalogSearchQuery searchQuery, IQueryable<Product> baseQuery = null)
 		{
-			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
+			var linqCatalogSearchService = _services.Container.ResolveNamed<ICatalogSearchService>("linq");
 			return linqCatalogSearchService.PrepareQuery(searchQuery, baseQuery);
 		}
 

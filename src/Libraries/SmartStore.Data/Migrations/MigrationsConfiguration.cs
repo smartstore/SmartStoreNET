@@ -889,6 +889,10 @@ namespace SmartStore.Data.Migrations
                 "Zeige Produkt-Tags auf der Startseite",
                 "Specifies whether to show popular product tags on the homepage.",
                 "Bestimmt ob beliebte Produkt-Tags auf der Startseite angezeigt werden.");
-        }
+
+			builder.AddOrUpdate("Search.IndexingRequiredNotification",
+				"This is the default search. For advanced search, indexing is required. <a href='{0}'>Now start</a> indexing or <a href='{1}'>open configuration</a>.",
+				"Hierbei handelt es sich um die Standardsuche. Für die erweiterte Suche ist eine Indexierung erforderlich. Indexierung <a href='{0}'>jetzt starten</a> oder <a href='{1}'>Konfiguration aufrufen</a>.");
+		}
 	}
 }

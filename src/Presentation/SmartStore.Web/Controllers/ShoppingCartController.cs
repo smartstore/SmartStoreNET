@@ -1744,7 +1744,7 @@ namespace SmartStore.Web.Controllers
             {
                 success = true,
                 message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Success"),
-                cartHtml = this.RenderPartialViewToString("_CartItems", model),
+                cartHtml = this.RenderPartialViewToString("CartItems", model),
                 totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary( new { isEditable = true } ))
             });
         }
@@ -2274,7 +2274,7 @@ namespace SmartStore.Web.Controllers
                 var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
                 var model = new ShoppingCartModel();
                 PrepareShoppingCartModel(model, cart);
-                cartHtml = this.RenderPartialViewToString("_CartItems", model);
+                cartHtml = this.RenderPartialViewToString("CartItems", model);
                 totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
             }
 
@@ -2662,7 +2662,7 @@ namespace SmartStore.Web.Controllers
                         var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
                         var model = new ShoppingCartModel();
                         PrepareShoppingCartModel(model, cart);
-                        cartHtml = this.RenderPartialViewToString("_CartItems", model);
+                        cartHtml = this.RenderPartialViewToString("CartItems", model);
                         totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
                     }
                     

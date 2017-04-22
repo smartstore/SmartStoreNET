@@ -1860,7 +1860,7 @@
     <Content Include="Themes\Flex\Content\_variables-custom.scss" />
     <Content Include="Themes\Flex\Content\_user.scss" />
     <Content Include="Themes\Flex\Content\_custom.scss" />
-    <Content Include="Views\ShoppingCart\Partials\_CartItems.cshtml" />
+    <Content Include="Views\ShoppingCart\Partials\CartItems.cshtml" />
     <Content Include="Views\Shared\Partials\Comment.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Comment.List.cshtml" />
     <None Include="Web.EFMigrations.config">

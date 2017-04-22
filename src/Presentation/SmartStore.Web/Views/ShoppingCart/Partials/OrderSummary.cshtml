@@ -304,7 +304,7 @@
         using (Html.BeginRouteForm("ShoppingCart", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             <div class="card mb-4">
-				<div id="order-items" class="cart cart-editable mb-0">
+				<div id="cart-items" class="cart cart-editable mb-0">
 					<div class="cart-head">
 						<div class="cart-row">
 							<div class="cart-col cart-col-main">
@@ -322,7 +322,18 @@
 						</div>
 					</div>
 					<div class="cart-body">
-                        @{ Html.RenderPartial("_CartItems", Model); }
+                        @{ Html.RenderPartial("CartItems", Model); }
+					</div>
+				</div>
+
+				<div class="cart-footer rounded-bottom">
+					<div class="row">
+						<div class="col-md-6">
+
+						</div>
+						<div class="col-md-6">
+							@{ Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable }); }
+						</div>
 					</div>
 				</div>
 			</div>
@@ -343,7 +354,6 @@
             }
 
             <div class="cart-footer row mt-5">
-
                 <div class="col-lg-8 order-totals-left">
 
                     @{ Html.RenderWidget("order_summary_content_totals_left"); }
@@ -379,10 +389,6 @@
                             @Model.MinOrderSubtotalWarning
                         </div>
                     }
-
-                    <div id="order-totals">
-                        @{ Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable }); }
-                    </div>
                     
                     @{ Html.RenderWidget("order_summary_content_totals_bottom"); }
 
@@ -393,12 +399,12 @@
                             <div class="checkout-buttons clearfix">
 
                                 <button type="button"
-                                        class="btn btn-primary btn-large pull-right checkout-button"
+                                        class="btn btn-danger btn-lg btn-large pull-right checkout-button"
                                         id="checkout"
                                         name="checkout"
                                         onclick="$('#startcheckout').trigger('click'); return false;">
-                                    @T("Checkout.Button")&nbsp;
-                                    <i class="fa fa-arrow-right" style="font-size: 18px"></i>
+                                    <span>@T("Checkout.Button")</span>
+                                    <i class="fa fa-angle-right"></i>
                                 </button>
 
                             </div>

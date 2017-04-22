@@ -2506,6 +2506,7 @@ namespace SmartStore.Services.Orders
                 var daysPassed = (DateTime.UtcNow - order.CreatedOnUtc).TotalDays;
                 numberOfDaysReturnRequestAvailableValid = (daysPassed - _orderSettings.NumberOfDaysReturnRequestAvailable) < 0;
             }
+
             return numberOfDaysReturnRequestAvailableValid;
         }
 

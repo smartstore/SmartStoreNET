@@ -681,7 +681,6 @@ namespace SmartStore.Web.Controllers
                 model.MeasureUnitName = measure.Name;
             }
             
-
 			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
@@ -1987,13 +1986,18 @@ namespace SmartStore.Web.Controllers
 
             if (cart.Count > 0)
             {             
- 
                 //weight
                 model.Weight = decimal.Zero;
 
                 foreach (var sci in cart) 
                 {
                     model.Weight += sci.Item.Product.Weight * sci.Item.Quantity;
+                }
+
+                var measure = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
+                if (measure != null)
+                {
+                    model.WeightMeasureUnitName = measure.Name;
                 }
 
                 //subtotal

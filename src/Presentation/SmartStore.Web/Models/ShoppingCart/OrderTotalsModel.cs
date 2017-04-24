@@ -37,6 +37,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         public string RedeemedRewardPointsAmount { get; set; }
         public string OrderTotal { get; set; }
         public decimal Weight { get; set; }
+        public string WeightMeasureUnitName { get; set; }
 
         #region Nested classes
 

@@ -1,11 +1,8 @@
 ﻿@model WishlistModel
-@using SmartStore.Core.Domain.Orders;
-@using SmartStore.Web.Models.Checkout;
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.ShoppingCart;
 @{
     Layout = "_Layout";
-
     Html.AddTitleParts(T("PageTitle.Wishlist").Text);
 }
 
@@ -216,75 +213,38 @@
 
                 using (Html.BeginRouteForm("Wishlist", FormMethod.Post))
                 {
-                    <table class="cart table table-order-products">
-                        <thead>
-                            <tr class="cart-header-row">
-                                @if (Model.IsEditable)
-                                {
-                                    <th>
-                                        @T("ShoppingCart.Remove")
-                                    </th>
-                                }
-                                @if (Model.DisplayAddToCart)
-                                {
-                                    <th>
-                                        <span class="text-nowrap">
-                                            @T("ShoppingCart.AddToCart")
-                                        </span>
-                                    </th>
-                                }
-                                @if (Model.ShowSku)
-                                {
-                                    <th>
-                                        @T("ShoppingCart.SKU")
-                                    </th>
-                                }
-                                @if (Model.ShowProductImages)
-                                {
-                                    <th class="picture"></th>
-                                }
-                                <th>
-                                    @T("ShoppingCart.Product(s)")
-                                </th>
-                                <th class="unit-price">
-                                    @T("ShoppingCart.UnitPrice")
-                                </th>
-                                <th>
-                                    @T("ShoppingCart.Quantity")
-                                </th>
-                                <th class="omega">
-                                    @T("ShoppingCart.ItemTotal")
-                                </th>
-                            </tr>
-                        </thead>
-					    @{
-                            foreach (var item in Model.Items)
-                            {
-							    if (item.ProductType == ProductType.BundledProduct)
-							    {
-								    <tbody class="product-body product-body-bundle">
-									    @SimpleProduct(item)
-									    @BundleProducts(item)
-								    </tbody>
-							    }
-							    else
-							    {
-								    <tbody class="product-body product-body-simple">
-									    @SimpleProduct(item)
-								    </tbody>
-							    }
-                            }
-					    }
-                    </table>                
-                    
+                    <div class="card mb-4">
+                        <div id="cart-items" class="cart cart-editable mb-0">
+                            <div class="cart-head">
+                                <div class="cart-row">
+                                    <div class="cart-col cart-col-main">
+                                        @T("ShoppingCart.Product(s)")
+                                    </div>
+                                    <div class="cart-col cart-col-price">
+                                        @T("ShoppingCart.UnitPrice")
+                                    </div>
+                                    <div class="cart-col cart-col-qty">
+                                        @T("ShoppingCart.Quantity")
+                                    </div>
+                                    <div class="cart-col cart-col-price cart-col-subtotal">
+                                        @T("ShoppingCart.ItemTotal")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cart-body">
+                                @{ Html.RenderPartial("WishlistItems", Model); }
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="common-buttons clearfix">
-                        @if (Model.IsEditable)
+                        @*@if (Model.IsEditable)
                         {
                             <button type="submit" name="updatecart" value="updatecart" class="btn btn-secondary update-wishlist-button">
                                 <i class="fa fa-refresh"></i>
                                 @T("Wishlist.UpdateCart")
                             </button>
-                        }
+                        }*@
                         @if (Model.IsEditable && Model.EmailWishlistEnabled)
                         {
                             <a class="btn btn-secondary email-a-friend-wishlist-button" href="@Url.Action("EmailWishlist")" rel="nofollow">
@@ -300,7 +260,6 @@
                             </button>
                         }						
                     </div>
-                    
                 }
             }
             else
@@ -325,3 +284,59 @@
         }
     </div>
 </div>
+
+@if (Model.IsEditable)
+{
+    <script type="text/javascript">
+
+        var orderSummary = $(".wishlist-content");
+
+        // remove cart item & move to wishlist
+        orderSummary.on("click", ".ajax-action-link", function (e) {
+            var link = $(this);
+            updateShoppingCartItems(link, link.data);
+        });
+
+        // quantity touchspin change
+        orderSummary.on('change', '.qty-input .form-control', function (e) {
+            var link = $(this);
+            updateShoppingCartItems(link, { "sciItemId": link.data("sci-id"), "newQuantity": link.val(), "isCartPage": true, "isWishlist": true });
+        });
+
+        function updateShoppingCartItems(link, data) {
+            $.ajax({
+                cache: false,
+                url: link.data("href"),
+                data: data,
+                type: 'POST',
+                success: function (response) {
+
+                    if (response.cartItemCount == 0) {
+                        orderSummary.html('<div class="alert alert-info fade show">@T("Wishlist.CartIsEmpty")</div>');
+                    }
+
+                    var cartBody = $(".cart-body");
+                    var totals = $("#order-totals");
+
+                    if (response.success) {
+                        // replace html
+                        cartBody.html(response.cartHtml);
+                        totals.html(response.totalsHtml);
+                    }
+
+                    displayNotification(response.message, response.success ? "success" : "error");
+
+                    // reinit qty ctls
+                    applyCommonPlugins(cartBody);
+
+                    // update shopbar
+                    ShopBar.loadSummary("cart", true);
+
+                    if (link.data("type") == "wishlist") {
+                        ShopBar.loadSummary("wishlist", true);
+                    }
+                }
+            });
+        }
+    </script>
+}

@@ -1863,6 +1863,7 @@
     <Content Include="Views\ShoppingCart\Partials\CartItems.cshtml" />
     <Content Include="Views\Shared\Partials\Comment.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Comment.List.cshtml" />
+    <Content Include="Views\ShoppingCart\Partials\WishlistItems.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

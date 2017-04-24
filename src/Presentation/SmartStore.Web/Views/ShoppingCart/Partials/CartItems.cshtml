@@ -32,12 +32,18 @@
                         </div>
                     }
 
-                    <div class="sci-attributes text-smaller my-2">
+                    <div class="cart-item-attributes text-smaller my-2">
+
+                        <div class="text-nowrap row cart-item-attr d-none d-md-flex d-lg-none">
+                            <span class="col-3">@T("Order.Product(s).Price"):</span>
+                            <span class="col-9">@item.UnitPrice</span>
+                        </div>
+
                         @if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
                         {
-                            <div class="deliverytime-group row sci-attr">
-                                <span class="col-12 col-sm-3 col-md-12 col-lg-3">@T("Products.DeliveryTime")</span>
-                                <span class="delivery-time col-12 col-sm-9 col-md-12 col-lg-9" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
+                            <div class="deliverytime-group row cart-item-attr">
+                                <span class="col-3">@T("Products.DeliveryTime")</span>
+                                <span class="delivery-time col-9" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
                                     <i class="fa fa-circle delivery-time-status"></i>
                                     @item.DeliveryTimeName
                                 </span>
@@ -46,17 +52,17 @@
 
                         @if (Model.ShowSku && !String.IsNullOrEmpty(item.Sku))
                         {
-                            <div class="text-nowrap row sci-attr">
-                                <span class="col-12 col-sm-3 col-md-12 col-lg-3">@T("ShoppingCart.SKU"):</span>
-                                <span class="col-12 col-sm-9 col-md-12 col-lg-9">@item.Sku</span>
+                            <div class="text-nowrap row cart-item-attr">
+                                <span class="col-3">@T("ShoppingCart.SKU"):</span>
+                                <span class="col-9">@item.Sku</span>
                             </div>
                         }
 
                         @if (Model.DisplayWeight && item.Weight > 0)
                         {
-                            <div class="text-nowrap row sci-attr">
-                                <span class="col-12 col-sm-3 col-md-12 col-lg-3">@T("ShoppingCart.Weight"):</span>
-                                <span class="col-12 col-sm-9 col-md-12 col-lg-9">@((item.Weight * item.EnteredQuantity).ToString("N2")) @Model.MeasureUnitName</span>
+                            <div class="text-nowrap row cart-item-attr">
+                                <span class="col-3">@T("ShoppingCart.Weight"):</span>
+                                <span class="col-9">@((item.Weight * item.EnteredQuantity).ToString("N2")) @Model.MeasureUnitName</span>
                             </div>
                         }
                     </div>

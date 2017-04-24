@@ -236,6 +236,15 @@
 .cart-item-img {
     max-width: 70px;
     text-align: center;
+
+    @media (max-width: 375px) {
+        flex-basis: auto;
+        margin-bottom: 10px;
+        max-width: initial;
+        .img-fluid {
+            max-height: 100px;
+        }
+    }
 }
 
 .cart-item-link {
@@ -250,6 +259,15 @@
 .cart-item-sku {
     //color: $text-muted;
     margin-top: 0;
+}
+
+.cart-item-attr {
+    span:first-child {
+        font-weight: $font-weight-bold;
+    }
+    .delivery-time {
+        padding-left: 15px;
+    }
 }
 
 .cart-head {
@@ -397,13 +415,3 @@
 .table-order-products .addtocart {
     text-align: center;
 }
-
-.sci-attr {
-    span:first-child {
-        font-weight: $font-weight-bold;
-    }
-    .delivery-time {
-        padding-left: 15px;
-    }
-}
-

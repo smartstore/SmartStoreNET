@@ -34,11 +34,39 @@ namespace SmartStore.Admin.Models.Discounts
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountPercentage")]
         public decimal DiscountPercentage { get; set; }
 
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountAmount")]
-        public decimal DiscountAmount { get; set; }
-        public string PrimaryStoreCurrencyCode { get; set; }
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountPercentage")]
+		public string FormattedDiscountPercentage
+		{
+			get
+			{
+				if (UsePercentage)
+				{
+					return string.Format("{0:0.##}", DiscountPercentage);
+				}
 
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.StartDate")]
+				return string.Empty;
+			}
+		}
+
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountAmount")]
+        public decimal DiscountAmount { get; set; }
+		public string PrimaryStoreCurrencyCode { get; set; }
+
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountAmount")]
+		public string FormattedDiscountAmount
+		{
+			get
+			{
+				if (!UsePercentage)
+				{
+					return string.Format("{0:0.00}", DiscountAmount);
+				}
+
+				return string.Empty;
+			}
+		}
+
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.StartDate")]
         public DateTime? StartDateUtc { get; set; }
 
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.EndDate")]

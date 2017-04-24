@@ -20,41 +20,31 @@
     <tr>
         <td>
             @(Html.Telerik().Grid<DiscountModel>(Model.Data)
-                    .Name("discounts-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name)
-                            .Width(400)
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-                        columns.Bound(x => x.UsePercentage)
-                            .Width(120)
-                            .Template(item => @Html.SymbolForBool(item.UsePercentage))
-                            .ClientTemplate(@Html.SymbolForBool("UsePercentage"))
-                            .Centered();
-                        columns.Bound(x => x.DiscountPercentage)
-                            .Width(120)
-							.Format("{0:0.00}")
-                            .Centered();
-                        columns.Bound(x => x.DiscountAmount)
+					.Name("discounts-grid")
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Name)
+							.Width(400)
+							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+						columns.Bound(x => x.UsePercentage)
 							.Width(120)
-							.Format("{0:0.00}")
+							.Template(item => @Html.SymbolForBool(item.UsePercentage))
+							.ClientTemplate(@Html.SymbolForBool("UsePercentage"))
+							.Centered();
+						columns.Bound(x => x.FormattedDiscountPercentage)
+							.Width(120)
+							.Centered();
+						columns.Bound(x => x.FormattedDiscountAmount)
+							.Width(120)
 							.RightAlign();
-                        columns.Bound(x => x.StartDateUtc)
-                            //.Format("{0:d}")
-                            .Width(120);
-                        columns.Bound(x => x.EndDateUtc)
-                            //.Format("{0:d}")
-                            .Width(120);
-                        columns.Bound(x => x.Id)
-                            .Width(100)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                    })
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Discount"))
-                    .EnableCustomBinding(true))
+						columns.Bound(x => x.StartDateUtc)
+							.Width(120);
+						columns.Bound(x => x.EndDateUtc)
+							.Width(120);
+					})
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Discount"))
+					.EnableCustomBinding(true))
         </td>
     </tr>
 </table>

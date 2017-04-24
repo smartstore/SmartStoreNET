@@ -44,7 +44,7 @@
                             </div>
                         }
 
-                        @if (Model.ShowSku)
+                        @if (Model.ShowSku && !String.IsNullOrEmpty(item.Sku))
                         {
                             <div class="text-nowrap row sci-attr">
                                 <span class="col-12 col-sm-3 col-md-12 col-lg-3">@T("ShoppingCart.SKU"):</span>
@@ -52,7 +52,7 @@
                             </div>
                         }
 
-                        @if (Model.DisplayWeight)
+                        @if (Model.DisplayWeight && item.Weight > 0)
                         {
                             <div class="text-nowrap row sci-attr">
                                 <span class="col-12 col-sm-3 col-md-12 col-lg-3">@T("ShoppingCart.Weight"):</span>
@@ -139,7 +139,7 @@
             {
                 @Html.EditorFor(x => item, "QtyInput", new { htmlAttributes = new {
                    @class = "ajax-action-link",
-                   data_href= Url.Action("UpdateOcCartItem", "ShoppingCart", new { sciItemId = item.Id, isCartPage = true }),
+                   data_href= Url.Action("UpdateCartItem", "ShoppingCart", new { sciItemId = item.Id, isCartPage = true }),
                    data_sci_item = item.Id,
                    id = "itemquantity{0}".FormatWith(item.Id),
                    Name = "itemquantity{0}".FormatWith(item.Id)

@@ -1614,66 +1614,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-   //     //update a certain shopping cart item on the page
-   //     [ValidateInput(false)]
-   //     [HttpPost, ActionName("Cart")]
-   //     [FormValueRequired(FormValueRequirement.StartsWith, "updatecartitem-")]
-   //     public ActionResult UpdateCartItem(FormCollection form)
-   //     {
-   //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-   //             return RedirectToRoute("HomePage");
-
-   //         //get shopping cart item identifier
-   //         int sciId = 0;
-			//foreach (var formValue in form.AllKeys)
-			//{
-			//	if (formValue.StartsWith("updatecartitem-", StringComparison.InvariantCultureIgnoreCase))
-			//		sciId = Convert.ToInt32(formValue.Substring("updatecartitem-".Length));
-			//}
-
-   //         //get shopping cart item
-			//var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			//var sci = cart.FirstOrDefault(x => x.Item.Id == sciId);
-   //         if (sci == null)
-   //         {
-   //             return RedirectToRoute("ShoppingCart");
-   //         }
-
-   //         //update the cart item
-   //         var warnings = new List<string>();
-			//foreach (string formKey in form.AllKeys)
-			//{
-			//	if (formKey.Equals(string.Format("itemquantity{0}", sci.Item.Id), StringComparison.InvariantCultureIgnoreCase))
-			//	{
-			//		int newQuantity = sci.Item.Quantity;
-			//		if (int.TryParse(form[formKey], out newQuantity))
-			//		{
-			//			warnings.AddRange(_shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer,	sci.Item.Id, newQuantity, true));
-			//		}
-			//		break;
-			//	}
-			//}
-
-   //         //updated cart
-			//cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			//var model = new ShoppingCartModel();
-   //         PrepareShoppingCartModel(model, cart);
-
-   //         //update current warnings... find model
-			//var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
-			//if (sciModel != null)
-			//{
-			//	foreach (var w in warnings)
-			//	{
-			//		if (!sciModel.Warnings.Contains(w))
-			//			sciModel.Warnings.Add(w);
-			//	}
-			//}
-   //         return View(model);
-   //     }
-        
    //     //remove a certain shopping cart item on the page
    //     [ValidateInput(false)]
    //     [HttpPost, ActionName("Cart")]
@@ -1741,28 +1681,14 @@ namespace SmartStore.Web.Controllers
             //updated cart
             return Json(new
             {
+                cartItemCount = cart.Count,
                 success = true,
                 message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Success"),
                 cartHtml = this.RenderPartialViewToString("CartItems", model),
                 totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary( new { isEditable = true } ))
             });
         }
-        
-        private string InvokeAction(string actionName, string controllerName, RouteValueDictionary routeValues)
-        {
-            var viewContext = new ViewContext(
-                   ControllerContext,
-                   new WebFormView(ControllerContext, "tmp"),
-                   ViewData,
-                   TempData,
-                   TextWriter.Null
-            );
-
-            var htmlHelper = new HtmlHelper(viewContext, new ViewPage());
-
-            return htmlHelper.Action(actionName, controllerName, routeValues).ToString();
-        }
-
+       
         [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("continueshopping")]
@@ -2262,7 +2188,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateOcCartItem(int sciItemId, int newQuantity, bool isCartPage = false)
+        public ActionResult UpdateCartItem(int sciItemId, int newQuantity, bool isCartPage = false)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
                 return RedirectToRoute("HomePage");
@@ -2660,6 +2586,7 @@ namespace SmartStore.Web.Controllers
 				{
                     var cartHtml = String.Empty;
                     var totalsHtml = String.Empty;
+                    var cartItemCount = 0;
 
                     if (isCartPage)
                     {
@@ -2668,15 +2595,17 @@ namespace SmartStore.Web.Controllers
                         PrepareShoppingCartModel(model, cart);
                         cartHtml = this.RenderPartialViewToString("CartItems", model);
                         totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                        cartItemCount = cart.Count;
                     }
-                    
+
                     return Json(new
-					{
-						success = true,
-						wasMoved = _shoppingCartSettings.MoveItemsFromWishlistToCart,
-						message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheCart"),
+                    {
+                        success = true,
+                        wasMoved = _shoppingCartSettings.MoveItemsFromWishlistToCart,
+                        message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheCart"),
                         cartHtml = cartHtml,
-                        totalsHtml = totalsHtml
+                        totalsHtml = totalsHtml,
+                        cartItemCount = cartItemCount
                     });
 				}
 			}
@@ -2752,5 +2681,21 @@ namespace SmartStore.Web.Controllers
         }
 
         #endregion
+
+        // TODO: (mc) duplicate of output cache plugin method, find a place for it and remove duplicates
+        private string InvokeAction(string actionName, string controllerName, RouteValueDictionary routeValues)
+        {
+            var viewContext = new ViewContext(
+                   ControllerContext,
+                   new WebFormView(ControllerContext, "tmp"),
+                   ViewData,
+                   TempData,
+                   TextWriter.Null
+            );
+
+            var htmlHelper = new HtmlHelper(viewContext, new ViewPage());
+
+            return htmlHelper.Action(actionName, controllerName, routeValues).ToString();
+        }
     }
 }

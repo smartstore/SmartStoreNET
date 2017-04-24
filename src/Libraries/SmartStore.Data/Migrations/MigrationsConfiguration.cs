@@ -893,6 +893,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.IndexingRequiredNotification",
 				"This is the default search. For advanced search, indexing is required. <a href='{0}'>Now start</a> indexing or <a href='{1}'>open configuration</a>.",
 				"Hierbei handelt es sich um die Standardsuche. Für die erweiterte Suche ist eine Indexierung erforderlich. Indexierung <a href='{0}'>jetzt starten</a> oder <a href='{1}'>Konfiguration aufrufen</a>.");
-		}
+            
+            builder.Delete("ShoppingCart.UpdateCartItem", "ShoppingCart.UpdateCart");
+            builder.AddOrUpdate("ShoppingCart.SKU", "SKU", "Art.-Nr.");
+
+        }
 	}
 }

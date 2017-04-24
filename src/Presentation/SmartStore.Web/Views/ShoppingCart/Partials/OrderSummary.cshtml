@@ -1,243 +1,6 @@
 ﻿@model ShoppingCartModel
 @using SmartStore.Core.Domain.Orders;
-@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.ShoppingCart;
-
-@helper SimpleProduct(ShoppingCartModel.ShoppingCartItemModel item)
-{
-    <div class="cart-row">
-        <div class="cart-col cart-col-main">
-            <div class="row sm-gutters">
-                @if (Model.ShowProductImages && item.Picture != null && item.Picture.ImageUrl.HasValue())
-                {
-                    <div class="col cart-item-img">
-						<img class="img-fluid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
-                    </div>
-                }
-
-                <div class="col">
-                    <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-
-                    @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
-                    {
-                        <div class="short-desc">
-                            @Html.Raw(item.ShortDesc)
-                        </div>
-                    }
-
-                    @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
-                    {
-                        <div class="base-price text-muted text-smaller">
-                            @item.BasePrice
-                        </div>
-                    }
-
-                    <div class="sci-attributes text-smaller my-2">
-                        @if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
-                        {
-                            <div class="deliverytime-group row sci-attr">
-                                <span class="col-12 col-sm-3 col-md-12 col-lg-3">@T("Products.DeliveryTime")</span>
-                                <span class="delivery-time col-12 col-sm-9 col-md-12 col-lg-9" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
-                                    <i class="fa fa-circle delivery-time-status"></i>
-                                    @item.DeliveryTimeName
-                                </span>
-                            </div>
-                        }
-
-                        @if (Model.ShowSku)
-                        {
-                            <div class="text-nowrap row sci-attr">
-                                <span class="col-12 col-sm-3 col-md-12 col-lg-3">@T("ShoppingCart.SKU"):</span>
-                                <span class="col-12 col-sm-9 col-md-12 col-lg-9">@item.Sku</span>
-                            </div>
-                        }
-
-                        @if (Model.DisplayWeight)
-                        {
-                            <div class="text-nowrap row sci-attr">
-                                <span class="col-12 col-sm-3 col-md-12 col-lg-3">@T("ShoppingCart.Weight"):</span>
-                                <span class="col-12 col-sm-9 col-md-12 col-lg-9">@((item.Weight * item.EnteredQuantity).ToString("N2")) @Model.MeasureUnitName</span>
-                            </div>
-                        }
-                    </div>
-
-                    @if (!String.IsNullOrEmpty(item.AttributeInfo))
-                    {
-                        <div class="attributes text-muted text-smaller mb-2">
-                            @Html.Raw(item.AttributeInfo)
-                        </div>
-                    }
-                    @if (!String.IsNullOrEmpty(item.RecurringInfo))
-                    {
-                        <div class="recurring-info">
-                            @Html.Raw(item.RecurringInfo)
-                        </div>
-                    }
-                    @if (!Model.IsEditable && item.IsDownload && item.HasUserAgreement)
-                    {
-                        <div class="download-agreement checkbox">
-                            <label class="form-check-label">
-                                <input type="checkbox" name="AgreeUserAgreement@(item.ProductId)" class="form-check-input" />
-                                @T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)
-                            </label>
-                        </div>
-                    }
-                    @if (!Model.IsEditable && Model.DisplayEsdRevocationWaiverBox && item.IsEsd)
-                    {
-                        <div class="esd-revocation-waiver checkbox">
-                            <label class="form-check-label">
-                                <input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)" class="form-check-input" />
-                                @T("Checkout.EsdRevocationWaiverConfirmation")
-                            </label>
-                        </div>
-                    }
-                    @if (item.Warnings.Count > 0)
-                    {
-                        <div class="alert alert-danger">
-                            @for (int i = 0; i < item.Warnings.Count; i++)
-                            {
-                                <p>@item.Warnings[i]</p>
-                            }
-                        </div>
-                    }
-                </div>
-				
-				@if (Model.IsEditable)
-				{
-					<div class="col col-auto">
-						<div class="cart-row-actions btn-group-vertical card-shadow">
-							<a class="btn btn-gray btn-to-danger btn-sm btn-icon ajax-action-link" title="@T("Common.Remove")"
-							   href="#"
-							   rel="nofollow"
-							   data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
-							   data-name="@item.ProductName"
-							   data-type="cart"
-							   data-action="remove">
-								<i class="fa fa-2x">×</i>
-							</a>
-							<a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
-							   href="#"
-							   rel="nofollow"
-							   data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart })"
-							   data-name="@item.ProductName"
-							   data-type="cart"
-							   data-action="addfromcart">
-							    <i class="fa fa-heart-o"></i>
-							</a>
-						</div>
-					</div>
-				}
-            </div>
-        </div>
-
-        <div class="cart-col cart-col-price" data-caption="@T("Order.Product(s).Price")">
-            <span class="price">@item.UnitPrice</span>
-        </div>
-
-        <div class="cart-col cart-col-qty" data-caption="@T("Order.Product(s).Quantity")">
-            @if (Model.IsEditable)
-            {
-                @Html.EditorFor(x => item, "QtyInput", new { htmlAttributes = new { data_sci_id = item.Id, id = "itemquantity{0}".FormatWith(item.Id), Name = "itemquantity{0}".FormatWith(item.Id) } })
-            }
-            else
-            {
-                <span>@item.EnteredQuantity</span>
-            }
-        </div>
-
-        <div class="cart-col cart-col-price cart-col-subtotal" data-caption="@T("Order.Product(s).Total")">
-            <span class="price">@item.SubTotal</span>
-            @if (!String.IsNullOrEmpty(item.Discount))
-            {
-                <div class="discount">
-                    @T("ShoppingCart.ItemYouSave"):<br/> @item.Discount
-                </div>
-            }
-        </div>
-    </div>
-}
-
-@helper BundleProducts(ShoppingCartModel.ShoppingCartItemModel parentItem)
-{
-    if (parentItem.ChildItems != null)
-    {
-        foreach (var item in parentItem.ChildItems.OrderBy(x => x.BundleItem.DisplayOrder))
-        {
-            <div class="cart-row cart-row-child">
-                <div class="cart-col cart-col-main">
-                    <div class="product">
-                        <div class="bundle-item">
-                            @if (Model.ShowProductBundleImages)
-                            {
-                                <div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatInvariant(Model.BundleThumbSize + 10))">
-                                    @if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
-                                    {
-                                        <img src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
-                                    }
-                                </div>
-                            }
-                            <div class="bundle-item-body">
-                                <div class="bundle-item-name">
-                                    @if (item.VisibleIndividually)
-                                    {
-                                        <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-                                    }
-                                    else
-                                    {
-										<span class="cart-item-link">@item.ProductName</span>
-                                    }
-                                    @if (item.EnteredQuantity > 1 && item.BundlePerItemShoppingCart)
-                                    {
-                                        <text>&#215;&nbsp;@item.EnteredQuantity</text>
-                                    }
-                                </div>
-                                @if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
-                                {
-                                    <div class="bundle-item-description short-desc text-smaller">
-                                        @Html.Raw(item.ShortDesc.Truncate(210, "..."))
-                                    </div>
-                                }
-                                @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
-                                {
-                                    <div class="base-price text-muted">
-                                        @item.BasePrice
-                                    </div>
-                                }
-                                @if (!String.IsNullOrEmpty(item.AttributeInfo))
-                                {
-                                    <div class="bundle-item-attribute-info text-muted">
-                                        @Html.Raw(item.AttributeInfo)
-                                    </div>
-                                }
-                                @if (item.Warnings.Count > 0)
-                                {
-                                    <div class="alert alert-danger">
-                                        @foreach (var warning in item.Warnings)
-                                        {
-                                            <p>@warning</p>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="cart-col cart-col-price">
-                    @if (!String.IsNullOrWhiteSpace(item.BundleItem.PriceWithDiscount))
-                    {
-                        @Html.Raw(item.BundleItem.PriceWithDiscount)
-                    }
-                    else
-                    {
-                        <text>&nbsp;</text>
-                    }
-                </div>
-                <div class="cart-col">&nbsp;</div>
-                <div class="cart-col">&nbsp;</div>
-            </div>
-        }
-    }
-}
 
 <div class="order-summary-content">
 
@@ -328,30 +91,21 @@
 
 				<div class="cart-footer rounded-bottom">
 					<div class="row">
-						<div class="col-md-6">
-
+						<div class="col-md-6 text-left align-self-end">
+                            @if (Model.IsEditable)
+                            {
+                                <button type="submit" name="continueshopping" value="continueshopping" class="btn btn-secondary continue-shopping-button">
+                                    <i class="fa fa-caret-left"></i>
+                                    <span>@T("ShoppingCart.ContinueShopping")</span>
+                                </button>
+                            }
 						</div>
-						<div class="col-md-6">
+						<div id="order-totals" class="col-md-6">
 							@{ Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable }); }
 						</div>
 					</div>
 				</div>
 			</div>
-
-            if (Model.IsEditable)
-            {
-                <div class="common-buttons clearfix">
-                    <button type="submit" name="updatecart" value="updatecart" class="btn btn-secondary pull-right update-cart-button">
-                        <i class="fa fa-refresh"></i>
-                        <span>@T("ShoppingCart.UpdateCart")</span>
-                    </button>
-                    <button type="submit" name="continueshopping" value="continueshopping" class="btn btn-secondary pull-left continue-shopping-button">
-                        <i class="fa fa-caret-left"></i>
-                        <span>@T("ShoppingCart.ContinueShopping")</span>
-                    </button>
-                    <input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" style="display: none;" />
-                </div>
-            }
 
             <div class="cart-footer row mt-5">
                 <div class="col-lg-8 order-totals-left">
@@ -397,7 +151,7 @@
                         if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
                         {
                             <div class="checkout-buttons clearfix">
-
+                                <input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" class="d-none" />
                                 <button type="button"
                                         class="btn btn-danger btn-lg btn-large pull-right checkout-button"
                                         id="checkout"
@@ -477,54 +231,31 @@
 {
     <script type="text/javascript">
 
-        $("body").on("click", ".order-summary-content .ajax-action-link", function (e) {
+        var orderSummary = $(".order-summary-content");
 
-            var link = $(e.currentTarget);
-
-            $.ajax({
-                cache: false,
-                url: link.data("href"),
-                data: link.data,
-                type: 'POST',
-                success: function (response) {
-
-                    var cartBody = $(".cart-body");
-                    var totals = $("#order-totals");
-
-                    if (response.success)
-                    {
-                        // replace html
-                        cartBody.html(response.cartHtml);
-                        totals.html(response.totalsHtml);
-                    }
-
-                    displayNotification(response.message, response.success ? "success" : "error");
-
-                    // reinit qty ctls
-                    applyCommonPlugins(cartBody);
-
-                    // update shopbar
-                    
-                    ShopBar.loadSummary("cart", true);
-                    
-                    if (link.data("type") == "wishlist") {
-                        ShopBar.loadSummary("wishlist", true);
-                    }
-                }
-            });
+        // remove cart item & move to wishlist
+        orderSummary.on("click", ".ajax-action-link", function (e) {
+            var link = $(this);
+            updateShoppingCartItems(link, link.data);
         });
 
-        // React to touchspin change
-        $('.order-summary-content').on('change', '.qty-input .form-control', function (e) {
+        // quantity touchspin change
+        orderSummary.on('change', '.qty-input .form-control', function (e) {
             var link = $(this);
-            
-            /*
+            updateShoppingCartItems(link, { "sciItemId": link.data("sci-id"), "newQuantity": link.val() });
+        });
+
+        function updateShoppingCartItems(link, data) {
             $.ajax({
                 cache: false,
                 url: link.data("href"),
-                data: link.data,
+                data: data,
                 type: 'POST',
                 success: function (response) {
+
+                    if (response.cartItemCount == 0) {
+                        orderSummary.html('<div class="alert alert-info fade show">@T("ShoppingCart.CartIsEmpty")</div>');
+                    }
 
                     var cartBody = $(".cart-body");
                     var totals = $("#order-totals");
@@ -541,7 +272,6 @@
                     applyCommonPlugins(cartBody);
 
                     // update shopbar
-
                     ShopBar.loadSummary("cart", true);
 
                     if (link.data("type") == "wishlist") {
@@ -549,10 +279,7 @@
                     }
                 }
             });
-            */
-        });
-
-        // React to move to wishlist
+        }
 
     </script>
 }

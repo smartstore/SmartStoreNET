@@ -897,6 +897,10 @@ namespace SmartStore.Data.Migrations
             builder.Delete("ShoppingCart.UpdateCartItem", "ShoppingCart.UpdateCart");
             builder.AddOrUpdate("ShoppingCart.SKU", "SKU", "Art.-Nr.");
 
+            builder.AddOrUpdate("Products.ProductsHaveBeenAddedToTheCart", 
+                "The selected products have successfully been added to the cart.", 
+                "Die von Ihnen gewählten Produkte wurden in den Warenkorb gelegt.");
+            
         }
 	}
 }

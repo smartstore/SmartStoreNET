@@ -238,13 +238,6 @@
                     </div>
 
                     <div class="common-buttons clearfix">
-                        @*@if (Model.IsEditable)
-                        {
-                            <button type="submit" name="updatecart" value="updatecart" class="btn btn-secondary update-wishlist-button">
-                                <i class="fa fa-refresh"></i>
-                                @T("Wishlist.UpdateCart")
-                            </button>
-                        }*@
                         @if (Model.IsEditable && Model.EmailWishlistEnabled)
                         {
                             <a class="btn btn-secondary email-a-friend-wishlist-button" href="@Url.Action("EmailWishlist")" rel="nofollow">
@@ -252,7 +245,7 @@
                                 @T("Wishlist.EmailAFriend")
                             </a>
                         }
-                        @if (Model.DisplayAddToCart)
+                        @if (Model.DisplayAddToCart && !Model.IsEditable)
                         {
                             <button type="submit" name="addtocartbutton" value="addtocartbutton" class="btn btn-primary pull-right wishlist-add-to-cart-button">
                                 <i class="fa fa-cart-arrow-down"></i>
@@ -313,6 +306,7 @@
 
                     if (response.cartItemCount == 0) {
                         orderSummary.html('<div class="alert alert-info fade show">@T("Wishlist.CartIsEmpty")</div>');
+                        $(".share-info").hide();
                     }
 
                     var cartBody = $(".cart-body");
@@ -330,10 +324,10 @@
                     applyCommonPlugins(cartBody);
 
                     // update shopbar
-                    ShopBar.loadSummary("cart", true);
-
-                    if (link.data("type") == "wishlist") {
-                        ShopBar.loadSummary("wishlist", true);
+                    ShopBar.loadSummary("wishlist", true);
+                    
+                    if (link.data("type") == "cart") {
+                        ShopBar.loadSummary("cart", true);
                     }
                 }
             });

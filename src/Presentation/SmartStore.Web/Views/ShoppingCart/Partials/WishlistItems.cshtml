@@ -8,10 +8,17 @@
     <div class="cart-row">
         <div class="cart-col cart-col-main">
             <div class="row sm-gutters">
+                @if (Model.DisplayAddToCart && !Model.IsEditable)
+                {   
+                    <div class="checkbox mx-3 mt-1">
+                        <input type="checkbox" name="addtocart" value="@(item.Id)" />
+                    </div>
+                }
+
                 @if (Model.ShowProductImages && item.Picture != null && item.Picture.ImageUrl.HasValue())
                 {
                     <div class="col cart-item-img">
-						<img class="img-fluid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+                        <img class="img-fluid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
                     </div>
                 }
 
@@ -53,32 +60,32 @@
                         </div>
                     }
                 </div>
-				
-				@if (Model.IsEditable)
-				{
-					<div class="col col-auto">
-						<div class="cart-row-actions btn-group-vertical card-shadow">
-							<a class="btn btn-gray btn-to-danger btn-sm btn-icon ajax-action-link" title="@T("Common.Remove")"
-							   href="#"
-							   rel="nofollow"
-							   data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id, wishlistItem = true })'
-							   data-name="@item.ProductName"
-							   data-type="cart"
-							   data-action="remove">
-								<i class="fa fa-2x">×</i>
-							</a>
-							<a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
-							   href="#"
-							   rel="nofollow"
-							   data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.Wishlist, isCartPage = true })"
-							   data-name="@item.ProductName"
-							   data-type="wishlist"
-							   data-action="addfromcart">
-							    <i class="fa fa-cart-arrow-down"></i>
-							</a>
-						</div>
-					</div>
-				}
+
+                @if (Model.IsEditable)
+                {
+                    <div class="col col-auto">
+                        <div class="cart-row-actions btn-group-vertical card-shadow">
+                            <a class="btn btn-gray btn-to-danger btn-sm btn-icon ajax-action-link" title="@T("Common.Remove")"
+                               href="#"
+                               rel="nofollow"
+                               data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id, wishlistItem = true })'
+                               data-name="@item.ProductName"
+                               data-type="wishlist"
+                               data-action="remove">
+                                <i class="fa fa-2x">×</i>
+                            </a>
+                            <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
+                               href="#"
+                               rel="nofollow"
+                               data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.Wishlist, isCartPage = true })"
+                               data-name="@item.ProductName"
+                               data-type="cart"
+                               data-action="addfromcart">
+                                <i class="fa fa-cart-arrow-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
 

@@ -1675,8 +1675,7 @@ namespace SmartStore.Web.Controllers
 
             // create updated cart model
             var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-            //var model = new ShoppingCartModel();
-            //PrepareShoppingCartModel(model, cart);
+            var wishlist = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
             var cartHtml = String.Empty;
             var totalsHtml = String.Empty;
             var cartItemCount = 0;
@@ -1684,7 +1683,6 @@ namespace SmartStore.Web.Controllers
             if (cartType == ShoppingCartType.Wishlist)
             {
                 var model = new WishlistModel();
-                var wishlist = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
                 PrepareWishlistModel(model, wishlist);
                 cartHtml = this.RenderPartialViewToString("WishlistItems", model);
             }
@@ -1701,7 +1699,7 @@ namespace SmartStore.Web.Controllers
             //updated cart
             return Json(new
             {
-                cartItemCount = cart.Count,
+                cartItemCount = isWishlistItem ? wishlist.Count : cart.Count,
                 success = true,
                 message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Success"),
                 cartHtml = cartHtml,
@@ -2291,101 +2289,46 @@ namespace SmartStore.Web.Controllers
         }
 
         //update all wishlist cart items on the page
-        [ValidateInput(false)]
-        [HttpPost, ActionName("Wishlist")]
-        [FormValueRequired("updatecart")]
-        public ActionResult UpdateWishlistAll(FormCollection form)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
-                return RedirectToRoute("HomePage");
-
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
-
-            var allIdsToRemove = form["removefromcart"] != null ? 
-				form["removefromcart"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList() : new List<int>();
-
-            //current warnings <cart item identifier, warnings>
-            var innerWarnings = new Dictionary<int, IList<string>>();
-            foreach (var sci in cart)
-            {
-                bool remove = allIdsToRemove.Contains(sci.Item.Id);
-				if (remove)
-				{
-					_shoppingCartService.DeleteShoppingCartItem(sci.Item);
-				}
-				else
-				{
-					foreach (string formKey in form.AllKeys)
-					{
-						if (formKey.Equals(string.Format("itemquantity{0}", sci.Item.Id), StringComparison.InvariantCultureIgnoreCase))
-						{
-							int newQuantity = sci.Item.Quantity;
-							if (int.TryParse(form[formKey], out newQuantity))
-							{
-								var currSciWarnings = _shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer,
-									sci.Item.Id, newQuantity, true);
-								innerWarnings.Add(sci.Item.Id, currSciWarnings);
-							}
-							break;
-						}
-					}
-				}
-            }
-
-            //updated wishlist
-			cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
-			var model = new WishlistModel();
-
-            PrepareWishlistModel(model, cart);
-
-            //update current warnings
-            foreach (var kvp in innerWarnings)
-            {
-                //kvp = <cart item identifier, warnings>
-                var sciId = kvp.Key;
-                var warnings = kvp.Value;
-                //find model
-				var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
-				if (sciModel != null)
-				{
-					foreach (var w in warnings)
-					{
-						if (!sciModel.Warnings.Contains(w))
-							sciModel.Warnings.Add(w);
-					}
-				}
-            }
-            return View(model);
-        }
-
-        //remove a certain wishlist cart item on the page
    //     [ValidateInput(false)]
    //     [HttpPost, ActionName("Wishlist")]
-   //     [FormValueRequired(FormValueRequirement.StartsWith, "removefromcart-")]
-   //     public ActionResult RemoveWishlistItem(FormCollection form)
+   //     [FormValueRequired("updatecart")]
+   //     public ActionResult UpdateWishlistAll(FormCollection form)
    //     {
    //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
    //             return RedirectToRoute("HomePage");
 
-   //         //get wishlist cart item identifier
-   //         int sciId = 0;
-			//foreach (var formValue in form.AllKeys)
-			//{
-			//	if (formValue.StartsWith("removefromcart-", StringComparison.InvariantCultureIgnoreCase))
-			//		sciId = Convert.ToInt32(formValue.Substring("removefromcart-".Length));
-			//}
-
-   //         //get wishlist cart item
 			//var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
 
-			//var sci = cart.FirstOrDefault(x => x.Item.Id == sciId);
-   //         if (sci == null)
-   //         {
-   //             return RedirectToRoute("Wishlist");
-   //         }
+   //         var allIdsToRemove = form["removefromcart"] != null ? 
+			//	form["removefromcart"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList() : new List<int>();
 
-   //         //remove the wishlist cart item
-   //         _shoppingCartService.DeleteShoppingCartItem(sci.Item);
+   //         //current warnings <cart item identifier, warnings>
+   //         var innerWarnings = new Dictionary<int, IList<string>>();
+   //         foreach (var sci in cart)
+   //         {
+   //             bool remove = allIdsToRemove.Contains(sci.Item.Id);
+			//	if (remove)
+			//	{
+			//		_shoppingCartService.DeleteShoppingCartItem(sci.Item);
+			//	}
+			//	else
+			//	{
+			//		foreach (string formKey in form.AllKeys)
+			//		{
+			//			if (formKey.Equals(string.Format("itemquantity{0}", sci.Item.Id), StringComparison.InvariantCultureIgnoreCase))
+			//			{
+			//				int newQuantity = sci.Item.Quantity;
+			//				if (int.TryParse(form[formKey], out newQuantity))
+			//				{
+			//					var currSciWarnings = _shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer,
+			//						sci.Item.Id, newQuantity, true);
+			//					innerWarnings.Add(sci.Item.Id, currSciWarnings);
+			//				}
+			//				break;
+			//			}
+			//		}
+			//	}
+   //         }
 
    //         //updated wishlist
 			//cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
@@ -2393,77 +2336,30 @@ namespace SmartStore.Web.Controllers
 
    //         PrepareWishlistModel(model, cart);
 
+   //         //update current warnings
+   //         foreach (var kvp in innerWarnings)
+   //         {
+   //             //kvp = <cart item identifier, warnings>
+   //             var sciId = kvp.Key;
+   //             var warnings = kvp.Value;
+   //             //find model
+			//	var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
+			//	if (sciModel != null)
+			//	{
+			//		foreach (var w in warnings)
+			//		{
+			//			if (!sciModel.Warnings.Contains(w))
+			//				sciModel.Warnings.Add(w);
+			//		}
+			//	}
+   //         }
    //         return View(model);
    //     }
 
-   //     [ValidateInput(false)]
-   //     [HttpPost, ActionName("Wishlist")]
-   //     [FormValueRequired("addtocartbutton")]
-   //     public ActionResult AddItemstoCartFromWishlist(Guid? customerGuid, FormCollection form)
-   //     {
-   //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-   //             return RedirectToRoute("HomePage");
-
-   //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
-   //             return RedirectToRoute("HomePage");
-
-   //         var pageCustomer = customerGuid.HasValue
-   //             ? _customerService.GetCustomerByGuid(customerGuid.Value)
-   //             : _workContext.CurrentCustomer;
-   //         if (pageCustomer == null)
-   //             return RedirectToRoute("HomePage");
-
-			//var pageCart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
-
-   //         var allWarnings = new List<string>();
-   //         var numberOfAddedItems = 0;
-   //         var allIdsToAdd = form["addtocart"] != null ? 
-			//	form["addtocart"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList() : new List<int>();
-
-			//foreach (var sci in pageCart)
-   //         {
-   //             if (allIdsToAdd.Contains(sci.Item.Id))
-   //             {
-			//		var warnings = _shoppingCartService.Copy(sci, _workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id, true);
-
-			//		if (warnings.Count == 0)
-			//			numberOfAddedItems++;
-
-   //                 if (_shoppingCartSettings.MoveItemsFromWishlistToCart && //settings enabled
-   //                     !customerGuid.HasValue && //own wishlist
-   //                     warnings.Count == 0) //no warnings (already in the cart)
-   //                 {
-   //                     //let's remove the item from wishlist
-   //                     _shoppingCartService.DeleteShoppingCartItem(sci.Item);
-   //                 }
-   //                 allWarnings.AddRange(warnings);
-   //             }
-   //         }
-
-   //         if (numberOfAddedItems > 0)
-   //         {
-   //             //redirect to the shopping cart page
-   //             return RedirectToRoute("ShoppingCart");
-   //         }
-   //         else
-   //         {
-   //             //no items added. redisplay the wishlist page
-			//	var cart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id); 
-   //             var model = new WishlistModel();
-
-   //             PrepareWishlistModel(model, cart, !customerGuid.HasValue);
-
-			//	this.NotifyInfo(_localizationService.GetResource("Products.SelectProducts"), true);
-
-   //             return View(model);
-   //         }
-   //     }
-
-        //add a certain wishlist cart item on the page to the shopping cart
         [ValidateInput(false)]
         [HttpPost, ActionName("Wishlist")]
-        [FormValueRequired(FormValueRequirement.StartsWith, "addtocart-")]
-        public ActionResult AddOneItemtoCartFromWishlist(Guid? customerGuid, FormCollection form)
+        [FormValueRequired("addtocartbutton")]
+        public ActionResult AddItemstoCartFromWishlist(Guid? customerGuid, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
                 return RedirectToRoute("HomePage");
@@ -2471,51 +2367,53 @@ namespace SmartStore.Web.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
                 return RedirectToRoute("HomePage");
 
-            //get wishlist cart item identifier
-            int sciId = 0;
-			foreach (var formValue in form.AllKeys)
-			{
-				if (formValue.StartsWith("addtocart-", StringComparison.InvariantCultureIgnoreCase))
-					sciId = Convert.ToInt32(formValue.Substring("addtocart-".Length));
-			}
-
-            //get wishlist cart item
             var pageCustomer = customerGuid.HasValue
                 ? _customerService.GetCustomerByGuid(customerGuid.Value)
                 : _workContext.CurrentCustomer;
             if (pageCustomer == null)
                 return RedirectToRoute("HomePage");
 
-			var pageCart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
+            var pageCart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
 
-			var sci = pageCart.FirstOrDefault(x => x.Item.Id == sciId);
-            if (sci == null)
+            var allWarnings = new List<string>();
+            var numberOfAddedItems = 0;
+            var allIdsToAdd = form["addtocart"] != null ?
+                form["addtocart"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList() : new List<int>();
+
+            foreach (var sci in pageCart)
             {
-                return RedirectToRoute("Wishlist");
-            }
+                if (allIdsToAdd.Contains(sci.Item.Id))
+                {
+                    var warnings = _shoppingCartService.Copy(sci, _workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id, true);
 
-			var warnings = _shoppingCartService.Copy(sci, _workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id, true);
+                    if (warnings.Count == 0)
+                        numberOfAddedItems++;
 
-            if (_shoppingCartSettings.MoveItemsFromWishlistToCart && //settings enabled
+                    if (_shoppingCartSettings.MoveItemsFromWishlistToCart && //settings enabled
                         !customerGuid.HasValue && //own wishlist
-                        warnings.Count == 0) //no warnings ( already in the cart)
-            {
-                //let's remove the item from wishlist
-                _shoppingCartService.DeleteShoppingCartItem(sci.Item);
+                        warnings.Count == 0) //no warnings (already in the cart)
+                    {
+                        //let's remove the item from wishlist
+                        _shoppingCartService.DeleteShoppingCartItem(sci.Item);
+                    }
+                    allWarnings.AddRange(warnings);
+                }
             }
 
-            if (warnings.Count == 0)
+            if (numberOfAddedItems > 0)
             {
-                //redirect to the shopping cart page
+                NotifySuccess(_localizationService.GetResource("Products.ProductsHaveBeenAddedToTheCart"), true);
                 return RedirectToRoute("ShoppingCart");
             }
             else
             {
                 //no items added. redisplay the wishlist page
-				var cart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
+                var cart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
                 var model = new WishlistModel();
 
                 PrepareWishlistModel(model, cart, !customerGuid.HasValue);
+
+                NotifyInfo(_localizationService.GetResource("Products.SelectProducts"), true);
 
                 return View(model);
             }
@@ -2568,6 +2466,7 @@ namespace SmartStore.Web.Controllers
                         else
                         {
                             var model = new ShoppingCartModel();
+                            cart = customer.GetCartItems(cartType, _storeContext.CurrentStore.Id);
                             PrepareShoppingCartModel(model, cart);
                             cartHtml = this.RenderPartialViewToString("CartItems", model);
                             totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));

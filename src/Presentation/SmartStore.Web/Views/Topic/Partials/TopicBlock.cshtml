@@ -61,12 +61,12 @@
 
 @if (ViewBag.BodyOnly)
 {
-    <div class="topic-html-content-body@(ViewBag.IsLead == true ? " lead" : "")" id="ph-topic-body-@Model.Id">
+    <div class="topic-html-content-body@(ViewBag.IsLead == true ? " lead" : "") my-3" id="ph-topic-body-@Model.Id">
         @Html.Raw(Html.CollapsedText(Model.Body))
     </div>
 }
 else {
-    <div class="block topic-html-content" id="ph-topic-@Model.Id">
+    <div class="block topic-html-content my-3" id="ph-topic-@Model.Id">
         @if (!string.IsNullOrEmpty(Model.Title))
         {
             <div class="block-title" id="ph-title-@Model.Id">

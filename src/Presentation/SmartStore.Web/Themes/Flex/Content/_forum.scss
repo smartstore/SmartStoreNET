@@ -1,4 +1,6 @@
-﻿//
+﻿/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
 // Forum Styles
 // --------------------------------------------------
 
@@ -54,15 +56,6 @@
 .topics-group .replies,
 .topics-group .views {
 	text-align: center;
-}
-.forums-main .current-time {
-	padding-top: 5px;
-}
-.forums-main .topic-html-content {
-	margin-top: -30px;
-	.block-title {
-		font-size: 34px;
-	}
 }
 
 .forums-main .group-header .forum-spacer,
@@ -164,14 +157,7 @@
 	}
 }
 .forum-topic .topic-options {
-	margin-bottom: 5px;
-	.pagination {
-		margin: 0;
-	}
-	.pull-left {
-		padding: 10px 0 0 5px;
-		min-width: 250px
-	}
+	
 }
 .forum-topic .topic-options.bottom .pull-left {
     padding-top: 0;
@@ -190,7 +176,6 @@
 }
 .post-info .user-info .user-stats, 
 .post-content .posttime {
-	
     font-size: .75rem !important;
 }
 .post-info .user-info {
@@ -201,8 +186,11 @@
 	margin-top: 10px;
 	min-width: 100px
 }
-.forum-post {
-	position: relative;
+.forum-post.block .block-title {
+	font-size: $font-size-base;
+    a {
+        padding-right: 0.75rem;
+    }
 }
 .post-content {
 	margin: 0 0 50px 170px;
@@ -245,7 +233,6 @@
 
 .forum-search-box{
 	font-size: .9em;
-	float: right;
 	text-align: right;
 	padding: 15px 0 0 0;
 }

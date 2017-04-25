@@ -1,10 +1,5 @@
 ﻿@model ForumPageModel
 @using SmartStore.Core.Domain.Forums;
-@using SmartStore.Services.Customers;
-@using SmartStore.Services.Forums;
-@using SmartStore.Services.Seo;
-@using SmartStore.Web;
-@using SmartStore.Web.Models;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
@@ -13,7 +8,14 @@
 
     Html.AddTitleParts(Model.Name);
     Html.AddMetaDescriptionParts(Model.Name);
+
+    var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
+        .Name("paginator")
+        .ShowSummary(false)
+        .Route("ForumSlug", new RouteValues { id = Model.Id, slug = Model.SeName })
+        .Alignment(PagerAlignment.Right);
 }
+
 <script type="text/javascript">
     function handleForumWatch(context) {
         var btn = $('#watch-forum');
@@ -22,36 +24,41 @@
     }
     function setButtonWatchState(btn, subscribed) {
         subscribed = (subscribed !== undefined) ? subscribed : toBool(btn.data("subscribed"));
-        btn.find("i").remove(); // remove icon
+        btn.find("i").remove();
         btn.prepend('<i class="fa fa-bookmark" />&nbsp;').toggleClass("btn-warning", subscribed);
     }
     $(function () {
         setButtonWatchState($('#watch-forum'));
     });
 </script>
+
 <div class="page forum">
-    <div class="clearfix">
-        <h2 class="pull-left page-title">
-            
+    @{ Html.RenderPartial("_SearchBox"); }
+
+    <div class="row  mt-5">
+        <div class="col">
+            <div class="heading mb-4">
+                <h2 class="heading-title">@Model.Name</h2>
+            </div>
+        </div>
+        <div class="col col-auto">
             @if (Model.ForumFeedsEnabled)
             {
-                <a href="@Url.Action("ForumRSS", new { id = @Model.Id })" class="link-rss" title="@T("Forum.ForumRSSLinkTitle")" data-toggle="tooltip">
-                    <i class="fa fa-rss text-muted"></i>
-                    @T("Forum.RSS")
+                <a href="@Url.Action("ForumRSS", new { id = @Model.Id })" class="btn btn-warning" title="@T("Forum.ForumRSSLinkTitle")">
+                    <i class="fa fa-rss"></i>
+                    <span>@T("Forum.RSS")</span>
                 </a>
             }
-            @Model.Name
-        </h2>
-        @{ Html.RenderPartial("_SearchBox"); }
+        </div>
     </div>
 
-    <h3>@Model.Description</h3>
+    <p class="lead">@Model.Description</p>
 
     <div>
-        <div class="actions">
+        <div class="actions mt-5 mb-3">
             <a href='@Url.Action("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic" rel="nofollow">
                 <i class="fa fa-plus"></i>
-                @T("Forum.NewTopic")
+                <span>@T("Forum.NewTopic")</span>
             </a>
             @if (Model.IsCustomerAllowedToSubscribe)
             {
@@ -61,24 +68,8 @@
                             new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleForumWatch" },
                             new { id = "watch-forum", @class = "btn watch-forum", data_subscribed = Model.WatchForumSubscribed })
             }
-
-            @*@if (Model.ForumFeedsEnabled)
-            {
-                <button class="btn btn-warning" onclick="setLocation('@Url.Action("ForumRSS", new { id = @Model.Id })')" title="@T("Forum.ForumRSSLinkTitle")">
-                    <i class="fa fa-rss"></i>
-                    @T("Forum.RSS")
-                </button>
-            }*@
-
         </div>
 
-        @{
-            var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
-                                        .Name("paginator")
-                                        .ShowSummary(false)
-                                        .Route("ForumSlug", new RouteValues { id = Model.Id, slug = Model.SeName })
-                                        .Alignment(PagerAlignment.Right);
-        }
         @pager
     </div>
 
@@ -146,30 +137,30 @@
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
                         
                         <div>
-                            <div class="topic-starter text-muted pull-left">
+                            <div class="topic-starter text-muted float-left">
                                 @if (@topic.CustomerId > 0)
                                 {
                                     if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
                                     {
-                                    @T("Forum.Author")<text>:</text> @Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })
+                                        @T("Forum.Author")<text>:</text> @Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })
                                     }
                                     else
                                     {
-                                    @T("Forum.Author")<text>:</text> @topic.CustomerName
+                                        @T("Forum.Author")<text>:</text> @topic.CustomerName
                                     }
                                 }
                             </div>
                             @if (topic.NumPosts > Model.PostsPageSize)
                             {
                                 @(Html.SmartStore().Pager(topic.TotalPostPages)
-                .HtmlAttributes(new { @class = "topics-pager" })
-                .WithRenderer<ForumTopicPagerRenderer>()
-                .ShowPrevious(false)
-                .ShowNext(false)
-                .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
-                .Alignment(PagerAlignment.Left)
-                .Size(PagerSize.Small)
-                .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
+                                    .HtmlAttributes(new { @class = "topics-pager" })
+                                    .WithRenderer<ForumTopicPagerRenderer>()
+                                    .ShowPrevious(false)
+                                    .ShowNext(false)
+                                    .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
+                                    .Alignment(PagerAlignment.Left)
+                                    .Size(PagerSize.Small)
+                                    .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                             }
                         </div>
 
@@ -189,5 +180,4 @@
     </div>
 
     @pager
-
 </div>

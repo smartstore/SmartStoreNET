@@ -1631,7 +1631,6 @@
     <Content Include="Views\Blog\Partials\BlogTags.cshtml" />
     <Content Include="Views\Blog\List.cshtml" />
     <Content Include="Views\Boards\ActiveDiscussions.cshtml" />
-    <Content Include="Views\Boards\Partials\ActiveDiscussionsSmall.cshtml" />
     <Content Include="Views\Boards\Forum.cshtml" />
     <Content Include="Views\Boards\ForumGroup.cshtml" />
     <Content Include="Views\Boards\Index.cshtml" />

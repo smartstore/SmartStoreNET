@@ -1,43 +1,42 @@
 ﻿@model ActiveDiscussionsModel
-@using SmartStore.Services.Customers;
-@using SmartStore.Services.Forums;
-@using SmartStore.Services.Seo;
-@using SmartStore.Web;
 @using SmartStore.Web.Models.Boards;
-@using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
 
-<div class="clearfix">
-@if (!Model.ViewAllLinkEnabled)
+@{ 
+    var isPartial = Model.ViewAllLinkEnabled;
+}
+
+@if (!isPartial)
 {
     Html.RenderPartial("_SearchBox");
 }
-</div>
-<div class="active-discussions">
-    <div class="active-discussions-title">
-        <h3 class="pull-left page-title">
 
+<div class="active-discussions mt-5">
+    <div class="row">
+        <div class="col">
+            <div class="heading mb-4">
+                <h3 class="heading-title @(!isPartial ? "fs-h1" : "")">@T("Forum.ActiveDiscussions")</h3>
+            </div>
+        </div>
+        <div class="col col-auto">
             @if (Model.ActiveDiscussionsFeedEnabled == true)
             {
-                <a href="@Url.Action("ActiveDiscussionsRSS")" class="link-rss" title="@T("Forum.ActiveDiscussionsRSSLinkTitle")" data-toggle="tooltip">
-                    <i class="fa fa-rss text-muted"></i>
-                    @T("Forum.RSS")
+                <a class="btn btn-warning" href="@Url.Action("ActiveDiscussionsRSS")" title="@T("Forum.ActiveDiscussionsRSSLinkTitle")">
+                    <i class="fa fa-rss"></i>
+                    <span>@T("Forum.RSS")</span>
                 </a>
             }
-
-            @T("Forum.ActiveDiscussions")
-        </h3>
-
-        <div class="pull-right" style="padding:15px 0">
-            @if (Model.ViewAllLinkEnabled)
+            
+            @if (isPartial)
             {        
-                <button class="btn" onclick="setLocation('@Url.Action("ActiveDiscussions")')">
-                    <i class="fa fa-th-list"></i>&nbsp;
-                    @T("Forum.ActiveDiscussions.ViewAll")
+                <button class="btn btn-outline-info btn-flat" onclick="setLocation('@Url.Action("ActiveDiscussions")')">
+                    <i class="fa fa-th-list"></i>
+                    <span>@T("Forum.ActiveDiscussions.ViewAll")</span>
                 </button>
             }
         </div>
     </div>
+
     <div class="active-discussionstopics clearfix">
         <table class="table">
             @if (Model.ForumTopics.Count > 0)
@@ -60,6 +59,7 @@
                     </tr>
                 </thead>
             }
+
             @foreach (var topic in Model.ForumTopics)
             {
                 <tr class="topic">
@@ -86,14 +86,14 @@
                             @if (@topic.NumPosts > Model.PostsPageSize)
                             {
                                 @(Html.SmartStore().Pager(topic.TotalPostPages)
-                .HtmlAttributes(new { @class = "topics-pager" })
-                .WithRenderer<ForumTopicPagerRenderer>()
-                .ShowPrevious(false)
-                .ShowNext(false)
-                .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
-                .Alignment(PagerAlignment.Left)
-                .Size(PagerSize.Mini)
-                .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
+                                    .HtmlAttributes(new { @class = "topics-pager" })
+                                    .WithRenderer<ForumTopicPagerRenderer>()
+                                    .ShowPrevious(false)
+                                    .ShowNext(false)
+                                    .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
+                                    .Alignment(PagerAlignment.Left)
+                                    .Size(PagerSize.Mini)
+                                    .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                             }
                         </div>
                     </td>

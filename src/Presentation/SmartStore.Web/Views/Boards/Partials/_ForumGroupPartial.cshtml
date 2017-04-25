@@ -1,10 +1,9 @@
 ﻿@model ForumGroupModel
-@using SmartStore.Services.Forums;
-@using SmartStore.Services.Seo;
 @using SmartStore.Web.Models.Boards;
-<div class="forum-group clearfix">
+
+<div class="forum-group">
     <div class="group-title">
-        <h3>
+        <h3 class="fs-h3">
             @Html.RouteLink(Model.Name, "ForumGroupSlug", new { id = Model.Id, slug = Model.SeName })
         </h3>
     </div>

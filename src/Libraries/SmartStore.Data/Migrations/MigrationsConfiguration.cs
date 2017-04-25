@@ -900,7 +900,10 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Products.ProductsHaveBeenAddedToTheCart", 
                 "The selected products have successfully been added to the cart.", 
                 "Die von Ihnen gewählten Produkte wurden in den Warenkorb gelegt.");
-            
+
+            builder.AddOrUpdate("Forum.TopicSubject",
+                "Topic subject",
+                "Thema");
         }
 	}
 }

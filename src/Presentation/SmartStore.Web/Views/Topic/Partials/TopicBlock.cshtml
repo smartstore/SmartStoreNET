@@ -65,7 +65,8 @@
         @Html.Raw(Html.CollapsedText(Model.Body))
     </div>
 }
-else {
+else
+{
     <div class="block topic-html-content my-3" id="ph-topic-@Model.Id">
         @if (!string.IsNullOrEmpty(Model.Title))
         {

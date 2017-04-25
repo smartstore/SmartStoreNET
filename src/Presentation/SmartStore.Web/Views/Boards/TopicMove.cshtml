@@ -1,16 +1,14 @@
 ﻿@model TopicMoveModel
 @using SmartStore.Web.Models.Boards;
-@using SmartStore.Services.Seo;
 @{    
     Layout = "_Layout";
-
     Html.AddTitleParts(T("Forum.PageTitle.MoveTopic").Text);
 }
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.Id)
     <div class="page move-forum-topic">
-        <div class="title">
+        <div class="page-title">
             <h2>@T("Forum.MoveTopic")</h2>
         </div>
 
@@ -21,7 +19,7 @@
                 @Html.DropDownList("ForumSelected", new SelectList(Model.ForumList, "Value", "Text"))
             </div>
 
-            <div class="options">
+            <div class="options my-3">
                 <button type="submit" class="btn btn-primary">@T("Forum.Submit")</button>
                 <button class="btn btn-danger" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = @Model.Id, slug = @Model.TopicSeName })')">
                     @T("Forum.Cancel")

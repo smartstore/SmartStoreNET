@@ -1,23 +1,21 @@
 ﻿@model SearchModel
 @using SmartStore.Core.Domain.Forums;
-@using SmartStore.Web;
-@using SmartStore.Web.Models;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
-
 @{   
     Layout = "_Layout";
-
     Html.AddTitleParts(T("Forum.PageTitle.Search").Text);
 }
+
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(function () {
         toggleAdvancedSearch();
         $('#adv').click(function () {
             toggleAdvancedSearch();
         });
     });
+
     function toggleAdvancedSearch() {
         if ($('#adv').is(':checked')) {
             $('#advanced-search-block').show();
@@ -31,55 +29,44 @@
 <div class="page forum-search">
     <div class="forum-search-panel">
         <div class="page-title">
-            <h1>@T("Forum.Search")</h1>
+            <h1 class="fs-h2">@T("Forum.Search")</h1>
         </div>
 
-        <div class="search-input">
-
-            @using (Html.BeginRouteForm("BoardSearch", FormMethod.Get, new { @class = "form-inline" }))
+        <div class="search-input col-10 push-1 mt-4">
+            @using (Html.BeginRouteForm("BoardSearch", FormMethod.Get))
             {
-                <div class="row">
-
-                    <div class="col-sm-offset-4 col-sm-8">
-                    
-                            <div class="input-group">
-                                <div class="input-append">
-                                    @Html.TextBox("searchterms", null, new { @class = "forum-search-text form-control" })
-                                    <input type="submit" class="btn btn-warning input-group-addon" value="@T("Forum.SearchButton")" />
-                                </div>
-                            </div>
-                    
-                    </div>
-
-                    <div class="col-sm-offset-4 col-sm-8">
-                        <div class="checkbox">
-                            <label>
-                                @Html.CheckBox("adv", Model.ShowAdvancedSearch, new { })
-                                @T("Forum.Search.AdvancedSearch")
-                            </label>
-                        </div>
-                    </div>
+                
+                <div class="input-group d-flex">
+                    @Html.TextBox("searchterms", null, new { @class = "forum-search-text form-control" })
+                    <input type="submit" class="btn btn-primary input-group-addon" value="@T("Forum.SearchButton")" />
                 </div>
-                <div id="advanced-search-block" style="display: none;">
-                    <div class="row">
-                        <label class="col-sm-4 form-control-label">@T("Forum.Search.SearchInForum")</label>
-                        <div class="col-sm-8">
-                            @Html.DropDownList("forumId", new SelectList(Model.ForumList, "Value", "Text", Model.ForumIdSelected), new { style = "min-width:300px;" })
-                        </div>
-                    </div>
-                    <div class="row">
-                        <label class="col-sm-4 form-control-label">@T("Forum.Search.SearchWithin")</label>
-                        <div class="col-sm-8">
-                            @Html.DropDownList("within", new SelectList(Model.WithinList, "Value", "Text", Model.WithinSelected), new { style = "min-width:300px;" })
-                        </div>
-                    </div>
-                    <div class="row">
-                        <label class="col-sm-4 form-control-label">@T("Forum.Search.LimitResultsToPrevious")</label>
-                        <div class="col-sm-8">
-                            @Html.DropDownList("limitDays", new SelectList(Model.LimitList, "Value", "Text", Model.LimitDaysSelected), new { style = "min-width:300px;" })
-                        </div>
-                    </div>
 
+                <div class="checkbox mt-2">
+                    <label class="form-check-label">
+                        @Html.CheckBox("adv", Model.ShowAdvancedSearch, new { @class = "check-box form-check-input" })
+                        @T("Forum.Search.AdvancedSearch")
+                    </label>
+                </div>
+                
+                <div id="advanced-search-block" style="display: none;">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">@T("Forum.Search.SearchInForum")</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("forumId", new SelectList(Model.ForumList, "Value", "Text", Model.ForumIdSelected))
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">@T("Forum.Search.SearchWithin")</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("within", new SelectList(Model.WithinList, "Value", "Text", Model.WithinSelected))
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">@T("Forum.Search.LimitResultsToPrevious")</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("limitDays", new SelectList(Model.LimitList, "Value", "Text", Model.LimitDaysSelected))
+                        </div>
+                    </div>
                 </div>
             }
         </div>
@@ -104,9 +91,9 @@
             }
 
             var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
-                            .Name("paginator")
-                            .Alignment(PagerAlignment.Right)
-                            .Route("BoardSearch", new ForumSearchRouteValues { adv = adv, searchterms = searchterms, forumId = forumId, within = within, limitDays = limitDays });
+                .Name("paginator")
+                .Alignment(PagerAlignment.Right)
+                .Route("BoardSearch", new ForumSearchRouteValues { adv = adv, searchterms = searchterms, forumId = forumId, within = within, limitDays = limitDays });
         }
 
         @pager
@@ -179,14 +166,14 @@
                                     @if (@topic.NumPosts > Model.PostsPageSize)
                                     {
                                         @(Html.SmartStore().Pager(topic.TotalPostPages)
-    .HtmlAttributes(new { @class = "topics-pager" })
-    .WithRenderer<ForumTopicPagerRenderer>()
-    .ShowPrevious(false)
-    .ShowNext(false)
-    .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
-    .Alignment(PagerAlignment.Left)
-    .Size(PagerSize.Mini)
-    .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
+                                            .HtmlAttributes(new { @class = "topics-pager" })
+                                            .WithRenderer<ForumTopicPagerRenderer>()
+                                            .ShowPrevious(false)
+                                            .ShowNext(false)
+                                            .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
+                                            .Alignment(PagerAlignment.Left)
+                                            .Size(PagerSize.Mini)
+                                            .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                                     }
                                     <div class="topic-starter">
                                         @if (@topic.CustomerId > 0)
@@ -212,9 +199,9 @@
                                     @{ Html.RenderAction("LastPost", new { forumPostId = @topic.LastPostId, showTopic = false }); }
                                 </td>
                             </tr>
-                                        }
+                        }
                     </table>
-                                        }
+                }
             </div>
         </div>
 

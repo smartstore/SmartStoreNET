@@ -272,7 +272,7 @@ namespace SmartStore.Web.Controllers
             model.ActiveDiscussionsFeedEnabled = _forumSettings.ActiveDiscussionsFeedEnabled;
             model.PostsPageSize = _forumSettings.PostsPageSize;
 
-            return PartialView(model);
+            return PartialView("_ActiveTopics", model);
         }
 
         public ActionResult ActiveDiscussions(int forumId = 0)

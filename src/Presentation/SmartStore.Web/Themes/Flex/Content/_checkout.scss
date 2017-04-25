@@ -254,7 +254,9 @@
     border-bottom: none;
     background: #efefef;
     margin: 0 !important;
-    padding-bottom: 20px;
+    & > .card {
+        border: none;
+    }
 }
 .checkout-confirm-page .checkout-data > .confirm-order {
     border: 1px solid #bbb;

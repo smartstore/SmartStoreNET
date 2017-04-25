@@ -66,7 +66,7 @@
         @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
         using (Html.BeginRouteForm("ShoppingCart", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
-            <div class="card mb-4">
+            <div class="card">
 				<div id="cart-items" class="cart cart-editable mb-0">
 					<div class="cart-head">
 						<div class="cart-row">
@@ -107,13 +107,13 @@
 				</div>
 			</div>
 
-            <div class="cart-footer row mt-5">
-                <div class="col-lg-8 order-totals-left">
+            if (Model.IsEditable)
+            {
+                <div class="cart-footer row mt-5">
+                    <div class="col-lg-8">
 
-                    @{ Html.RenderWidget("order_summary_content_totals_left"); }
+                        @{ Html.RenderWidget("order_summary_content_totals_left"); }
 
-                    @if (Model.IsEditable)
-                    {
                         <div class="row">
                             <!-- Discount Code, Gift Cards, Estimate shipping -->
                             <div class="col-sm-6">
@@ -132,23 +132,20 @@
                                 }
                             </div>
                         </div>
-                     }
-                </div>
+                    </div>
 
-                <!-- Totals -->
-                <div class="col-lg-4">
-                    @if (Model.IsEditable && !String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
-                    {
-                        <div class="alert alert-info mt-0">
-                            @Model.MinOrderSubtotalWarning
-                        </div>
-                    }
+                    <!-- Totals -->
+                    <div class="col-lg-4">
+                        @if (!String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
+                        {
+                            <div class="alert alert-info mt-0">
+                                @Model.MinOrderSubtotalWarning
+                            </div>
+                        }
                     
-                    @{ Html.RenderWidget("order_summary_content_totals_bottom"); }
+                        @{ Html.RenderWidget("order_summary_content_totals_bottom"); }
 
-                    @if (Model.IsEditable)
-                    {
-                        if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
+                        @if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
                         {
                             <div class="checkout-buttons clearfix">
                                 <input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" class="d-none" />
@@ -171,9 +168,9 @@
                                 }
                             </div>
                         }
-                    }
+                    </div>
                 </div>
-            </div>
+            }
         }
 
         Html.RenderWidget("order_summary_content_after");

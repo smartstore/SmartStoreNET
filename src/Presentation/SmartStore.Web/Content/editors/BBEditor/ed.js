@@ -13,15 +13,13 @@ var webRoot;
 
 function edToolbar(obj) {
     document.write("<div class=\"bb-toolbar btn-toolbar\">");
-    document.write("<div class='btn-group'>");
-    document.write("<button type='button' class='btn btn-small' name='btnBold' onClick=\"doAddTags('[b]','[/b]','" + obj + "')\"><i class='fa fa-bold'></i></button>");
-    document.write("<button type='button' class='btn btn-small' name='btnItalic' onClick=\"doAddTags('[i]','[/i]','" + obj + "')\"><i class='fa fa-italic'></i></button>");
-    document.write("<button type='button' class='btn btn-small' name='btnUnderline' onClick=\"doAddTags('[u]','[/u]','" + obj + "')\"><i class='fa fa-underline'></i></button>");
-    document.write("</div>");
-    document.write("<button type='button' class='btn btn-small' name='btnLink' onClick=\"doURL('" + obj + "')\"><i class='fa fa-link'></i></button>");
-    document.write("<div class='btn-group'>");
-    document.write("<button type='button' class='btn btn-small' name='btnCode' onClick=\"doAddTags('[code]','[/code]','" + obj + "')\"><i class='fa fa-code'></i></button>");
-    document.write("<button type='button' class='btn btn-small' name='btnQuote' onClick=\"doAddTags('[quote]','[/quote]','" + obj + "')\"><i class='fa fa-quote-left'></i></button>");
+    document.write("<div class='btn-group mb-1'>");
+    document.write("<button type='button' class='btn btn-secondary btn-small' name='btnBold' onClick=\"doAddTags('[b]','[/b]','" + obj + "')\"><i class='fa fa-bold'></i></button>");
+    document.write("<button type='button' class='btn btn-secondary btn-small' name='btnItalic' onClick=\"doAddTags('[i]','[/i]','" + obj + "')\"><i class='fa fa-italic'></i></button>");
+    document.write("<button type='button' class='btn btn-secondary btn-small' name='btnUnderline' onClick=\"doAddTags('[u]','[/u]','" + obj + "')\"><i class='fa fa-underline'></i></button>");
+    document.write("<button type='button' class='btn btn-secondary btn-small' name='btnLink' onClick=\"doURL('" + obj + "')\"><i class='fa fa-link'></i></button>");
+    document.write("<button type='button' class='btn btn-secondary btn-small' name='btnCode' onClick=\"doAddTags('[code]','[/code]','" + obj + "')\"><i class='fa fa-code'></i></button>");
+    document.write("<button type='button' class='btn btn-secondary btn-small' name='btnQuote' onClick=\"doAddTags('[quote]','[/quote]','" + obj + "')\"><i class='fa fa-quote-left'></i></button>");
     document.write("</div>");
     document.write("</div>");
 }

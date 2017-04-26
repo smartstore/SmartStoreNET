@@ -10,8 +10,7 @@
 
 <script type="text/javascript">
     function handleTopicWatch(context) {
-        $('#watch-topic-top').text(context.Text);
-        $('#watch-topic-bottom').text(context.Text);
+        $('.watch-topic-link-button').text(context.Text);
     }
 </script>
 
@@ -74,7 +73,7 @@
 
         <button class="btn btn-primary" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
             <i class="fa fa-share"></i>
-            @T("Forum.Reply").Text
+            <span>@T("Forum.Reply")</span>
         </button>
 
         @if (Model.IsCustomerAllowedToSubscribe)
@@ -85,7 +84,7 @@
                     "TopicWatch",
                     new { id = @Model.Id },
                     new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleTopicWatch" },
-                    new { id = "watch-topic-bottom", @class = "watch-topic-link-button" })
+                    new { @class = "watch-topic-link-button" })
             </div>
         }
 

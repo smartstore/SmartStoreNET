@@ -42,8 +42,8 @@
     </div>
 
     <div class="block-body card-block">
-        <div class="post-info pull-left">
-            <div class="user-info">
+        <div class="post-info float-left">
+            <div class="user-info mt-3 text-center">
                 @if (!String.IsNullOrEmpty(Model.CustomerAvatarUrl))
                 {
                     <div class="avatar">
@@ -51,7 +51,7 @@
                     </div>
                 }
 
-                <div class="user-stats">
+                <div class="user-stats mt-2">
                     @if (Model.IsCustomerForumModerator)
                     {
                         <div class="status">
@@ -82,9 +82,9 @@
 
                     @if (Model.AllowPrivateMessages && !Model.IsCustomerGuest)
 				    {
-                        <a class="btn btn btn-outline-info btn-flat button-pm" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })'>
+                        <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })'>
                             <i class="fa fa-user"></i>
-                            @T("Forum.PrivateMessages.PM")
+                            <span>@T("Forum.PrivateMessages.PM")</span>
                         </a>
 				    }
                 </div>

@@ -37,7 +37,7 @@
 
         <button class="btn btn-secondary btn-to-danger remove" @Html.Attr("style", "display:none", String.IsNullOrEmpty(Model.AvatarUrl))>
             <i class="fa fa-trash-o"></i>
-            @T("Admin.Picture.RemovePicture")
+            <span>@T("Admin.Picture.RemovePicture")</span>
         </button>
 
         <span class="btn btn-primary fileinput-button">
@@ -65,7 +65,7 @@
     <div class="mt-4">
         <button type="submit" name="upload-avatar" value="upload-avatar" class="btn btn-success upload-avatar-button">
             <i class="fa fa-save"></i>
-            @T("Common.Save")
+            <span>@T("Common.Save")</span>
         </button>
     </div>
 }

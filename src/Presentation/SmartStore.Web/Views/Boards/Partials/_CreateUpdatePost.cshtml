@@ -55,7 +55,7 @@
                     <i class="fa fa-reply"></i>
                     <span>@T("Forum.Submit")</span>
                 </button>
-                <button class="btn" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName })'); return false;">
+                <button class="btn btn-secondary" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName })'); return false;">
                     <i class="fa fa-times"></i>
                     <span>@T("Forum.Cancel")</span>
                 </button>

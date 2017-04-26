@@ -91,7 +91,6 @@ namespace SmartStore.Web.Controllers
 				x.MapShortDescription = true;
 			});
 
-			// TODO: (mc) actually SHOW pictures in InstantSearch (???)
 			mappingSettings.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
 			mappingSettings.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
 

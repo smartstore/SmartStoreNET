@@ -40,12 +40,14 @@
 			</div>
 
             <div class="buttons clearfix mt-3">
-                <a class="btn btn-secondary pull-left" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
-                    <i class="fa fa-caret-left"></i>&nbsp;@T("Common.Back")
+                <a class="btn btn-secondary btn-lg" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
+                    <i class="fa fa-angle-left"></i>
+                    <span>@T("Common.Back")</span>
                 </a>
 
-                <button id="AmazonPayNextCheckoutStep" type="submit" class="btn btn-warning pull-right payment-method-next-step-button hide">
-                    @T("Checkout.NextButton")&nbsp;<i class="fa fa-caret-right"></i>
+                <button id="AmazonPayNextCheckoutStep" type="submit" class="btn btn-warning btn-lg payment-method-next-step-button hide">
+                    <span>@T("Checkout.NextButton")</span>
+                    <i class="fa fa-angle-right"></i>
                 </button>
             </div>
 			

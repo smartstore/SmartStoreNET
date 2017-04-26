@@ -32,15 +32,15 @@
 
 		@{ Html.RenderWidget("checkout_shipping_address_middle"); }
 
-		<div class="buttons clearfix mt-3">
-			<a class="btn btn-secondary pull-left" href="@Url.Action("Cart", "ShoppingCart", new { area = "" })">
-				<i class="fa fa-caret-left"></i>
+		<div class="buttons mt-3">
+			<a class="btn btn-secondary btn-lg" href="@Url.Action("Cart", "ShoppingCart", new { area = "" })">
+				<i class="fa fa-angle-left"></i>
                 <span>@T("Common.Back")</span>
 			</a>
 
-			<a id="AmazonPayNextCheckoutStep" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })" class="btn btn-warning pull-right new-address-next-step-button hide">
+			<a id="AmazonPayNextCheckoutStep" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })" class="btn btn-warning btn-lg new-address-next-step-button hide">
 				<span>@T("Checkout.NextButton")</span>
-                <i class="fa fa-caret-right"></i>
+                <i class="fa fa-angle-right"></i>
 			</a>
 		</div>
 

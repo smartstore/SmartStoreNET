@@ -93,17 +93,16 @@
 			
 			if (Model.PaymentMethods.Count > 0)
 			{
-				<div class="select-button clearfix">
-					<a class="btn btn-secondary pull-left" href="@Url.Action("ShippingMethod")">
-						<i class="fa fa-caret-left"></i>&nbsp;
-						@T("Common.Back")
+				<div class="buttons">
+					<a class="btn btn-secondary btn-lg" href="@Url.Action("ShippingMethod")">
+                        <i class="fa fa-angle-left"></i>
+                        <span>@T("Common.Back")</span>
 					</a>    
+					<input type="submit" name="nextstep" id="nextstep" class="d-none" />
 
-					<input type="submit" name="nextstep" id="nextstep" style="display:none"/>
-
-					<button class="btn btn-warning pull-right payment-method-next-step-button" onclick="$('#nextstep').trigger('click');return false;">
+					<button class="btn btn-warning btn-lg payment-method-next-step-button" onclick="$('#nextstep').trigger('click');return false;">
 						<span>@T("Checkout.NextButton")</span>
-						<i class="fa fa-caret-right"></i>
+                        <i class="fa fa-angle-right"></i>
 					</button>
 				</div>				
             }

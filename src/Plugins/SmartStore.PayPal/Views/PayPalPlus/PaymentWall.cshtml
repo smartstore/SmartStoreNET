@@ -16,7 +16,7 @@
 	<div class="page-title">
 		<h1>@T("Checkout.SelectPaymentMethod")</h1>
 	</div>
-	<div class="page-body checkout-data" style="padding-bottom: 20px;">
+	<div class="page-body checkout-data">
 		@{ Html.RenderWidget("checkout_payment_method_top"); }
 
 		@if (Model.ErrorMessage.HasValue())
@@ -54,15 +54,15 @@
 
 		<div id="PayPalPlusPaymentWall"></div>
 
-		<div class="select-button clearfix">
-			<a class="btn btn-secondary pull-left" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
-                <i class="fa fa-caret-left"></i>
+		<div class="select-button buttons">
+			<a class="btn btn-secondary btn-lg" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
+                <i class="fa fa-angle-left"></i>
                 <span>@T("Common.Back")</span>
 			</a>
 
-			<button id="PayPalPlusNextCheckoutStep" class="btn btn-warning pull-right payment-method-next-step-button hide">
+			<button id="PayPalPlusNextCheckoutStep" class="btn btn-warning btn-lg payment-method-next-step-button hide">
                 <span>@T("Checkout.NextButton")</span>
-                <i class="fa fa-caret-right"></i>
+                <i class="fa fa-angle-right"></i>
 			</button>
 		</div>
 

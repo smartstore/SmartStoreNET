@@ -190,7 +190,7 @@
 	font-weight: 100; 
 	color: #aaa;
 }
-.checkout-data .enter-address .buttons {
+.checkout-data .buttons {
 	padding-top: 1rem;
     display: flex;
     justify-content: space-between;
@@ -200,13 +200,6 @@
 	padding: 10px 0;
 	border-top: 1px solid #d7d7d7;
 	border-bottom: 1px solid #d7d7d7;
-}
-.checkout-data .payment-info .select-button {
-	padding-top: 10px;
-	border-top: 1px solid #d7d7d7;
-}
-.checkout-data .order-completed .select-button {
-    padding-top: 15px;
 }
 
 .order-details-table .item-box {

@@ -125,15 +125,15 @@
                     </div>
 
                     <div class="buttons">
-                        <a class="btn btn-secondary pull-left" href="@Url.Action("BillingAddress")">
-                            <i class="fa fa-caret-left"></i>&nbsp;
-                            @T("Common.Back")
+                        <a class="btn btn-secondary btn-lg" href="@Url.Action("BillingAddress")">
+                            <i class="fa fa-angle-left"></i>
+                            <span>@T("Common.Back")</span>
                         </a>
                         <input type="submit" id="nextstep" name="nextstep" class="d-none" />
 
-                        <button class="btn btn-warning pull-right new-address-next-step-button" onclick="$('#nextstep').trigger('click');return false;">
+                        <button class="btn btn-warning btn-lg new-address-next-step-button" onclick="$('#nextstep').trigger('click');return false;">
                             <span>@T("Checkout.NextButton")</span>
-                            <i class="fa fa-caret-right"></i>
+                            <i class="fa fa-angle-right"></i>
                         </button>
                     </div>
                  }

@@ -95,7 +95,7 @@
                             @if (Model.IsEditable)
                             {
                                 <button type="submit" name="continueshopping" value="continueshopping" class="btn btn-secondary continue-shopping-button">
-                                    <i class="fa fa-caret-left"></i>
+                                    <i class="fa fa-angle-left"></i>
                                     <span>@T("ShoppingCart.ContinueShopping")</span>
                                 </button>
                             }
@@ -197,7 +197,7 @@
                 <div class="modal-content">
                     <div class="modal-body p-3"></div>
                     <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal">@T("Common.Confirm")</button>
+                        <button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button>
                     </div>
                 </div>
             </div>
@@ -232,14 +232,18 @@
 
         // remove cart item & move to wishlist
         orderSummary.on("click", ".ajax-action-link", function (e) {
+            e.preventDefault();
             var link = $(this);
             updateShoppingCartItems(link, link.data);
+            return false;
         });
 
         // quantity touchspin change
         orderSummary.on('change', '.qty-input .form-control', function (e) {
+            e.preventDefault();
             var link = $(this);
             updateShoppingCartItems(link, { "sciItemId": link.data("sci-id"), "newQuantity": link.val() });
+            return false;
         });
 
         function updateShoppingCartItems(link, data) {
@@ -277,6 +281,5 @@
                 }
             });
         }
-
     </script>
 }

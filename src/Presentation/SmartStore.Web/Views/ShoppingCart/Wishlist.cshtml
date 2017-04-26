@@ -193,9 +193,7 @@
 
 <div class="page wishlist-page">
     <div class="page-title">
-        <h1>
-            @(Model.IsEditable ? T("Wishlist") : T("Wishlist.WishlistOf", Model.CustomerFullname))
-        </h1>
+        <h1>@(Model.IsEditable ? T("Wishlist") : T("Wishlist.WishlistOf", Model.CustomerFullname))</h1>
     </div>
     <div class="page-body">
         <div class="wishlist-content">
@@ -242,14 +240,14 @@
                         {
                             <a class="btn btn-secondary email-a-friend-wishlist-button" href="@Url.Action("EmailWishlist")" rel="nofollow">
                                 <i class="fa fa-envelope"></i>
-                                @T("Wishlist.EmailAFriend")
+                                <span>@T("Wishlist.EmailAFriend")</span>
                             </a>
                         }
                         @if (Model.DisplayAddToCart && !Model.IsEditable)
                         {
-                            <button type="submit" name="addtocartbutton" value="addtocartbutton" class="btn btn-primary pull-right wishlist-add-to-cart-button">
+                            <button type="submit" name="addtocartbutton" value="addtocartbutton" class="btn btn-primary float-right wishlist-add-to-cart-button">
                                 <i class="fa fa-cart-arrow-down"></i>
-                                @T("ShoppingCart.AddToCart")
+                                <span>@T("ShoppingCart.AddToCart")</span>
                             </button>
                         }						
                     </div>
@@ -286,14 +284,18 @@
 
         // remove cart item & move to wishlist
         orderSummary.on("click", ".ajax-action-link", function (e) {
+            e.preventDefault();
             var link = $(this);
             updateShoppingCartItems(link, link.data);
+            return false;
         });
 
         // quantity touchspin change
         orderSummary.on('change', '.qty-input .form-control', function (e) {
+            e.preventDefault();
             var link = $(this);
             updateShoppingCartItems(link, { "sciItemId": link.data("sci-id"), "newQuantity": link.val(), "isCartPage": true, "isWishlist": true });
+            return false;
         });
 
         function updateShoppingCartItems(link, data) {

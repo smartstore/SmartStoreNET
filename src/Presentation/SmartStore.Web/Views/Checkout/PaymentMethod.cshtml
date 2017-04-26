@@ -12,7 +12,7 @@
 
 <div class="page payment-method-page">
     <div class="page-title">
-        <h1>@T("Checkout.SelectPaymentMethod")</h1>
+        <h1 class="h3">@T("Checkout.SelectPaymentMethod")</h1>
     </div>
     <div class="page-body checkout-data">
         @using (Html.BeginForm())
@@ -21,7 +21,7 @@
 
             if (Model.DisplayRewardPoints && Model.PaymentMethods.Count > 0)
             {
-                <div class="reward-points alert alert-info">
+                <div class="reward-points alert alert-info mb-4">
                     <div class="checkbox">
                         <label class="form-check-label mb-0">
                             @Html.EditorFor(model => model.UseRewardPoints)
@@ -30,6 +30,7 @@
                     </div>
                 </div>
             }
+
             <div class="opt-list payment-methods">
                 @if (Model.PaymentMethods.Count > 0)
                 {
@@ -86,7 +87,7 @@
                 }
                 else
                 {
-                    <div class="message-error">
+                    <div class="alert alert-danger">
                         @T("Checkout.NoPaymentMethods")
                     </div>
                 }
@@ -103,7 +104,7 @@
 
 					<button class="btn btn-warning btn-lg payment-method-next-step-button" onclick="$('#nextstep').trigger('click');return false;">
 						<span>@T("Checkout.NextButton")</span>
-                        <i class="fa fa-angle-right"></i>
+						<i class="fa fa-angle-right"></i>
 					</button>
 				</div>				
             }

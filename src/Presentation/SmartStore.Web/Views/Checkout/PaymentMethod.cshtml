@@ -49,7 +49,7 @@
 											   data-lazy-info='@(paymentMethod.RequiresInteraction ? "true" : "false")'
 											   class="opt-radio"
 											   value="@(paymentMethod.PaymentMethodSystemName)" />
-										<span class="opt-name h5 font-weight-medium">@paymentMethod.Name</span>
+										<span class="opt-name">@paymentMethod.Name</span>
 									</label>
 								</div>
 								@if (paymentMethod.Fee.HasValue())

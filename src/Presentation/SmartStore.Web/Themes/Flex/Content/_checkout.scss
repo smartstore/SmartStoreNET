@@ -178,6 +178,7 @@ $costep-active-label-color:     $costep-label-color;
 	}
 
 	.opt-name { 
+        font-size: $font-size-h5;
 		font-weight: $font-weight-medium;
 		margin-left: 12px;
 		@include text-truncate();
@@ -189,22 +190,32 @@ $costep-active-label-color:     $costep-label-color;
 		margin-left: 32px;
 	}
 
-	.opt-info .opt-form { 
-		margin-top: 1.5rem;
+    .opt-info {
+	    .opt-form { 
+		    margin-top: 1.5rem;
 
-        .col-form-label {
-            font-weight: normal;
+            .col-form-label {
+                font-weight: normal;
+            }
+	    }
+
+	    .media-object { 
+		    max-width: 120px;
+		    text-align: center;
+	    }
+
+	    .media-body { 
+		    color: $text-muted;
+	    }
+
+        p:empty {
+            display: none;
         }
-	}
 
-	.opt-info .media-object { 
-		max-width: 120px;
-		text-align: center;
-	}
-
-	.opt-info .media-body { 
-		color: $text-muted;
-	}
+        p:last-child {
+            margin-bottom: 0;
+        }
+    }
 }
 
 

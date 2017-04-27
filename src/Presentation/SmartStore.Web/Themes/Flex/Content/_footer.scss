@@ -67,6 +67,17 @@
         padding-left: 1rem !important;
         padding-right: 1rem !important;
     }
+
+    .nav-collapsible {
+        border-top: 1px solid darken($footer-bg, 10%);
+        border-bottom: 1px solid darken($footer-bg, 10%);
+        margin-top: -1px;
+    }
+
+    .footer-inverse .nav-collapsible {
+        border-top-color: lighten($footer-bg, 10%);
+        border-bottom-color: lighten($footer-bg, 10%);
+    }
 }
 
 .footer-light {

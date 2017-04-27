@@ -39,7 +39,7 @@
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-repeat"></i>
-					<span class='badge badge-pill label-cart-amount badge-@labelStyle @(Model.CompareItems == 0 ? "d-none" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
+					<span class='badge badge-pill label-cart-amount badge-@labelStyle ' style="@(Model.CompareItems == 0 ? "display:none" : "")" data-bind-to="CompareSummary">@Model.CompareItems</span>
 				</span>
 				<span class="shopbar-button-label">
 					<span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
@@ -59,7 +59,7 @@
 				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-heart"></i>
-					<span class='badge badge-pill label-cart-amount badge-@labelStyle @(Model.WishlistItems == 0 ? "d-none" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
+					<span class='badge badge-pill label-cart-amount badge-@labelStyle' style="@(Model.WishlistItems == 0 ? "display:none" : "")" data-bind-to="TotalProducts">@Model.WishlistItems</span>
 				</span>
 				<span class="shopbar-button-label">
 					<span>@T("Common.Shopbar.WishlistPartOne")</span><br />
@@ -79,7 +79,7 @@
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-bag"></i>
-					<span class='badge badge-pill label-cart-amount badge-@(labelStyle)@(Model.ShoppingCartItems == 0 ? " d-none" : "")' data-bind-to="TotalProducts">
+					<span class='badge badge-pill label-cart-amount badge-@(labelStyle)' style="@(Model.ShoppingCartItems == 0 ? "display:none" : "")" data-bind-to="TotalProducts">
 						@Model.ShoppingCartItems
 					</span>
 				</span>

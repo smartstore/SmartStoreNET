@@ -1685,6 +1685,7 @@ namespace SmartStore.Web.Controllers
                 var model = new WishlistModel();
                 PrepareWishlistModel(model, wishlist);
                 cartHtml = this.RenderPartialViewToString("WishlistItems", model);
+                cartItemCount = wishlist.Count;
             }
             else
             {
@@ -1692,14 +1693,13 @@ namespace SmartStore.Web.Controllers
                 PrepareShoppingCartModel(model, cart);
                 cartHtml = this.RenderPartialViewToString("CartItems", model);
                 totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                cartItemCount = cart.Count;
             }
-
-            cartItemCount = cart.Count;
             
             //updated cart
             return Json(new
             {
-                cartItemCount = isWishlistItem ? wishlist.Count : cart.Count,
+                cartItemCount = cartItemCount,
                 success = true,
                 message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Success"),
                 cartHtml = cartHtml,
@@ -2356,6 +2356,7 @@ namespace SmartStore.Web.Controllers
    //         return View(model);
    //     }
 
+            // TODO: Obsolete ? remove...
         [ValidateInput(false)]
         [HttpPost, ActionName("Wishlist")]
         [FormValueRequired("addtocartbutton")]
@@ -2452,6 +2453,7 @@ namespace SmartStore.Web.Controllers
 				{
                     var cartHtml = String.Empty;
                     var totalsHtml = String.Empty;
+                    var message = String.Empty;
                     var cartItemCount = 0;
 
                     if (isCartPage)
@@ -2462,6 +2464,8 @@ namespace SmartStore.Web.Controllers
                             var wishlist = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
                             PrepareWishlistModel(model, wishlist);
                             cartHtml = this.RenderPartialViewToString("WishlistItems", model);
+                            message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheCart");
+                            cartItemCount = wishlist.Count;
                         }
                         else
                         {
@@ -2470,16 +2474,16 @@ namespace SmartStore.Web.Controllers
                             PrepareShoppingCartModel(model, cart);
                             cartHtml = this.RenderPartialViewToString("CartItems", model);
                             totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                            message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist");
+                            cartItemCount = cart.Count;
                         }
-                        
-                        cartItemCount = cart.Count;
                     }
 
                     return Json(new
                     {
                         success = true,
                         wasMoved = _shoppingCartSettings.MoveItemsFromWishlistToCart,
-                        message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheCart"),
+                        message = message,
                         cartHtml = cartHtml,
                         totalsHtml = totalsHtml,
                         cartItemCount = cartItemCount

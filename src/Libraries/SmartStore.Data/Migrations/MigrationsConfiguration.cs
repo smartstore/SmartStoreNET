@@ -523,9 +523,7 @@ namespace SmartStore.Data.Migrations
 				"Legt das Herkunftsland des Produktes fest.");
 
 			builder.Delete(
-				"Products.ProductHasBeenAddedToTheWishlist", 
 				"Products.ProductHasBeenAddedToTheWishlist.Link",
-				"Products.ProductHasBeenAddedToTheCart",
 				"Products.ProductHasBeenAddedToTheCart.Link");
 
 			builder.AddOrUpdate("ShoppingCart.AddToWishlist", "Add to wishlist", "Auf die Wunschliste");

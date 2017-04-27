@@ -255,7 +255,7 @@
             }
             else
             {
-				<div class="alert alert-info fade show">
+				<div class="alert alert-warning fade show">
 					@T("Wishlist.CartIsEmpty")
 				</div>
             }
@@ -307,7 +307,7 @@
                 success: function (response) {
 
                     if (response.cartItemCount == 0) {
-                        orderSummary.html('<div class="alert alert-info fade show">@T("Wishlist.CartIsEmpty")</div>');
+                        orderSummary.html('<div class="alert alert-warning fade show">@T("Wishlist.CartIsEmpty")</div>');
                         $(".share-info").hide();
                     }
 

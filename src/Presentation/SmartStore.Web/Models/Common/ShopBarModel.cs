@@ -18,10 +18,5 @@ namespace SmartStore.Web.Models.Common
 
         public bool CompareProductsEnabled { get; set; }
         public int CompareItems { get; set; }
-
-        //TODO: werden nicht benötigt raus damit 
-        public bool AllowPrivateMessages { get; set; }
-        public string UnreadPrivateMessages { get; set; }
-        public string AlertMessage { get; set; }
     }
 }

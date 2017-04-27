@@ -35,6 +35,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
+using SmartStore.Services;
 
 namespace SmartStore.Web.Controllers
 {
@@ -42,6 +43,7 @@ namespace SmartStore.Web.Controllers
     {
         #region Fields
 
+        private readonly ICommonServices _services;
         private readonly IAuthenticationService _authenticationService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly DateTimeSettings _dateTimeSettings;
@@ -88,7 +90,9 @@ namespace SmartStore.Web.Controllers
 
         #region Ctor
 
-        public CustomerController(IAuthenticationService authenticationService,
+        public CustomerController(
+            ICommonServices services,
+            IAuthenticationService authenticationService,
             IDateTimeHelper dateTimeHelper,
             DateTimeSettings dateTimeSettings, TaxSettings taxSettings,
             ILocalizationService localizationService,
@@ -115,6 +119,7 @@ namespace SmartStore.Web.Controllers
             CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
 			PluginMediator pluginMediator)
         {
+            this._services = services;
             this._authenticationService = authenticationService;
             this._dateTimeHelper = dateTimeHelper;
             this._dateTimeSettings = dateTimeSettings;
@@ -176,13 +181,33 @@ namespace SmartStore.Web.Controllers
 				HideAvatar = !_customerSettings.AllowCustomersToUploadAvatars,
 				HideRewardPoints = !_rewardPointsSettings.Enabled,
 				HideForumSubscriptions = !_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToManageSubscriptions,
-				HideReturnRequests = !_orderSettings.ReturnRequestsEnabled || _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).TotalCount == 0,
+                HidePrivateMessages = !_forumSettings.AllowPrivateMessages,
+                UnreadMessageCount = GetUnreadPrivateMessages(),
+                HideReturnRequests = !_orderSettings.ReturnRequestsEnabled || _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).TotalCount == 0,
 				HideDownloadableProducts = _customerSettings.HideDownloadableProductsTab,
 				HideBackInStockSubscriptions = _customerSettings.HideBackInStockSubscriptionsTab,
 				SelectedItemToken = selectedItem
 			};
 
             return model;
+        }
+
+        [NonAction]
+        protected int GetUnreadPrivateMessages()
+        {
+            var result = 0;
+            var customer = _services.WorkContext.CurrentCustomer;
+            if (_forumSettings.AllowPrivateMessages && !customer.IsGuest())
+            {
+                var privateMessages = _forumService.GetAllPrivateMessages(_services.StoreContext.CurrentStore.Id, 0, customer.Id, false, null, false, string.Empty, 0, 1);
+
+                if (privateMessages.TotalCount > 0)
+                {
+                    result = privateMessages.TotalCount;
+                }
+            }
+
+            return result;
         }
 
         [NonAction]

@@ -85,6 +85,17 @@
 				<span>@T("Account.ForumSubscriptions")</span>
             </a>
         }
+        @if (!Model.HidePrivateMessages)
+        {
+            <a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "privatemessages" ? " active" : "")">
+                <i class="fa fa-fw fa-envelope-o list-group-item-icon"></i>
+                <span>@T("PrivateMessages.Inbox")</span>
+                @if (Model.UnreadMessageCount > 0)
+                {
+                    <span class="badge badge-pill badge-warning ml-2">@Model.UnreadMessageCount</span>
+                }
+            </a>
+        }
 
         @{ Html.RenderWidget("myaccount_menu_lastitem_after"); }
     </div>

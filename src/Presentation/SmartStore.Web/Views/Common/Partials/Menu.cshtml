@@ -34,12 +34,6 @@
             </div>
         </div>
 
-        @*
-            TODO?
-            PrivateMessages
-        *@
-
-
         @if (!Model.DisplayAdminLink && Model.DisplayLoginLink)
         {
             <a class="menubar-link" href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" rel="nofollow">

@@ -14,7 +14,9 @@ namespace SmartStore.Web.Models.Customer
         public bool HideChangePassword { get; set; }
         public bool HideAvatar { get; set; }
         public bool HideForumSubscriptions { get; set; }
-
-		public string SelectedItemToken { get; set; }
+        public bool HidePrivateMessages { get; set; }
+        public int UnreadMessageCount { get; set; }
+        
+        public string SelectedItemToken { get; set; }
     }
 }

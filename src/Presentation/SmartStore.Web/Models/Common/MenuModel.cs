@@ -8,10 +8,6 @@ namespace SmartStore.Web.Models.Common
         public bool BlogEnabled { get; set; }
         public bool RecentlyAddedProductsEnabled { get; set; }
         public bool ForumEnabled { get; set; }
-
-        public bool AllowPrivateMessages { get; set; }
-        public int UnreadPrivateMessages { get; set; }
-
         public bool IsAuthenticated { get; set; }
 		public bool DisplayLoginLink { get; set; }
 		public bool DisplayAdminLink { get; set; }

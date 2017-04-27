@@ -35,7 +35,7 @@
 	@if (Model.CompareProductsEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-compare" data-target="#compare-tab">
-			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
+			<a href="@Url.Action("CompareProducts", "Catalog")"  class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-repeat"></i>
@@ -55,7 +55,7 @@
 	@if (Model.WishlistEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-wishlist" data-target="#wishlist-tab">
-			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
+			<a href="@Url.RouteUrl("Wishlist")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
 				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-heart"></i>
@@ -75,7 +75,7 @@
 	@if (Model.ShoppingCartEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-cart" data-target="#cart-tab">
-			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
+			<a href="@Url.RouteUrl("ShoppingCart")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-bag"></i>

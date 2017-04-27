@@ -144,20 +144,29 @@ var AjaxCart = (function ($, window, document, undefined) {
 			// for stopping event propagation
 			return false;
 		}
-
 	}
 
 })(jQuery, this, document);
 
 $(function () {
     var shopBar = $(".shopbar");
+    var shouldOpen = !$("body").hasClass("no-offcanvas-cart");
 
-    shopBar.find(".shopbar-button").on("click", function () {
-    	var el = $(this);
-        var tool = el.parent();
+    shopBar.find(".shopbar-button").on("click", function (e) {
 
-        // Open corresponding tab
-        $('.nav-tabs a' + tool.data("target")).tab('show');
+        if (!shouldOpen) {
+            // navigate to link (href target)
+            e.stopPropagation();
+            return;
+        }
+        else
+        {
+            var el = $(this);
+            var tool = el.parent();
+
+            // Open corresponding tab
+            $('.nav-tabs a' + tool.data("target")).tab('show');
+        }
     });
 
     // Register for tab change event 

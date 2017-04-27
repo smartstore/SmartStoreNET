@@ -3,7 +3,7 @@
 @using SmartStore.Web.Models.ShoppingCart;
 @{
     Layout = "_Layout";
-    Html.AddBodyCssClass("order-summary-page");
+    Html.AddBodyCssClass("order-summary-page no-offcanvas-cart");
     Html.AddTitleParts(T("PageTitle.ShoppingCart").Text);
     Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Cart });
 }

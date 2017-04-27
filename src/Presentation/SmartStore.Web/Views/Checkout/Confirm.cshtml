@@ -1,12 +1,13 @@
 ﻿@model CheckoutConfirmModel
 @using SmartStore.Web.Models.Checkout;
 @{
-	Layout = "_Checkout";
-	Html.AddTitleParts(T("PageTitle.Checkout").Text);
+    Layout = "_Checkout";
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+    Html.AddBodyCssClass("no-offcanvas-cart");
 
-	string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
+    string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
+    string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
+    string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
 }
 
 @section orderProgress{

@@ -14,7 +14,7 @@
     </div>
 
     <div class="page-body">
-        @Html.SmartStore().TabStrip().Name("profile-tabs").HtmlAttributes(new { @class = "profile-tabs" }).SmartTabSelection(true).ComponentVersion(BootstrapVersion.V4).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
+        @Html.SmartStore().TabStrip().Name("profile-tabs").HtmlAttributes(new { @class = "profile-tabs" }).SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
         {
             x.Add().Text(T("Profile.PersonalInfo").Text)
                 .Selected(!postsTabSelected)
@@ -26,7 +26,14 @@
                     .Selected(postsTabSelected)
                     .Content(Html.Action("posts", new { customerProfileId = Model.CustomerProfileId, page = Model.PostsPage }).ToString());
             }
-        })
+        }).TabContentHeaderContent(TabContentHeader()).ComponentVersion(BootstrapVersion.V4).Fade(false)
 
     </div>
 </div>
+
+@helper TabContentHeader()
+{{
+	<a href="javascript:void()" class="btn btn-success btn-no-border btn-icon offcanvas-closer rounded-0" title="@T("Common.Close")">
+		<i class="fa fa-2x fa-lg fa-angle-left"></i>
+	</a>
+}}

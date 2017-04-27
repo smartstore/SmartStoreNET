@@ -151,7 +151,7 @@ namespace SmartStore.Web.Framework.UI
 
 				writer.RenderEndTag(); // div.tabbable
 				
-				if (tab.IsResponsive && tab.TabContentHeaderContent != null)
+				if (tab.IsResponsive /* && tab.TabContentHeaderContent != null*/)
 				{
 					writer.WriteLine(@"<script>$(function() {{ $('#{0}').responsiveNav(); }})</script>".FormatInvariant(tab.Id));
 				}    

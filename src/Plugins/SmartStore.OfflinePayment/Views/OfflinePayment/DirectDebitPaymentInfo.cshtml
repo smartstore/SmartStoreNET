@@ -4,13 +4,13 @@
     Layout = "";
 }
 
-<p class="muted">
+<p class="text-muted">
     @Html.Raw(Model.DescriptionText)
 </p>
 
 @Html.Hidden("OfflinePaymentMethodType", "DirectDebit")
 
-<div class="form-horizontal">
+<div class="opt-form">
     <div class="form-group row">
         @Html.LabelFor(model => model.EnterIBAN, new { @class = "col-md-3 col-form-label" })
         <div class="col-md-9">

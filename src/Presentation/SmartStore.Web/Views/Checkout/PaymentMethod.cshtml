@@ -31,22 +31,16 @@
                 </div>
             }
 
-            <div class="opt-list payment-methods">
-                @if (Model.PaymentMethods.Count > 0)
-                {
-                    for (int i = 0; i < Model.PaymentMethods.Count; i++)
-                    {
-                        var paymentMethod = Model.PaymentMethods[i];
+			if (Model.PaymentMethods.Count > 0)
+			{
+				<ul class="list-group opt-list payment-methods">
+					@for (int i = 0; i < Model.PaymentMethods.Count; i++)
+					{
+						var paymentMethod = Model.PaymentMethods[i];
 						var infoRoute = paymentMethod.PaymentInfoRoute;
-                            
-                        <div class="opt-list-item@(paymentMethod.Selected ? " selected" : "") payment-method-item">
+
+						<li class="list-group-item opt-list-item payment-method-item@(paymentMethod.Selected ? " active" : "")">
 							<div class="opt-data">
-								@if (!String.IsNullOrEmpty(paymentMethod.Fee))
-								{
-									<div class="opt-fee payment-fee pull-right text-success">
-										@paymentMethod.Fee
-									</div>
-								}
 								<div class="opt-control option-name radio">
 									<label for="paymentmethod_@(i)">
 										<input id="paymentmethod_@(i)" type="radio" name="paymentmethod"
@@ -55,16 +49,22 @@
 											   data-lazy-info='@(paymentMethod.RequiresInteraction ? "true" : "false")'
 											   class="opt-radio"
 											   value="@(paymentMethod.PaymentMethodSystemName)" />
-										<span class="opt-name">@paymentMethod.Name</span>
+										<span class="opt-name h5 font-weight-medium">@paymentMethod.Name</span>
 									</label>
 								</div>
+								@if (paymentMethod.Fee.HasValue())
+								{
+									<small class="opt-fee payment-fee text-danger">@paymentMethod.Fee</small>
+								}
 							</div>
+
 							@if (paymentMethod.FullDescription.HasValue())
 							{
 								<div class="opt-info-item payment-method-description">
 									@Html.Raw(paymentMethod.FullDescription)
 								</div>
 							}
+
 							@if (!paymentMethod.RequiresInteraction || (paymentMethod.Selected && infoRoute != null))
 							{
 								<div class="opt-info payment-method-info"
@@ -76,22 +76,22 @@
 											@Html.ValidationSummary(false)
 										</div>
 									}
-									@if(!(paymentMethod.FullDescription.HasValue() && !paymentMethod.RequiresInteraction))
-                                    {
-                                        Html.RenderAction(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues);
-                                    }
+									@if (!(paymentMethod.FullDescription.HasValue() && !paymentMethod.RequiresInteraction))
+									{
+										Html.RenderAction(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues);
+									}
 								</div>
 							}
-                        </div>
+						</li>
 					}
-                }
-                else
-                {
-                    <div class="alert alert-danger">
-                        @T("Checkout.NoPaymentMethods")
-                    </div>
-                }
-            </div>
+				</ul>
+			}
+			else
+			{
+				<div class="alert alert-danger">
+					@T("Checkout.NoPaymentMethods")
+				</div>
+			}
 			
 			if (Model.PaymentMethods.Count > 0)
 			{
@@ -136,10 +136,10 @@
 				});
 			}
 			
-			$('.checkout-data .opt-list-item').removeClass('selected');
+			$('.checkout-data .opt-list-item').removeClass('active');
 
 			var item = radio.closest('.opt-list-item');
-			item.addClass("selected");
+			item.addClass("active");
 
 			if (!radio.data("has-info") || !radio.data("lazy-info")) {
 				removeInfoPanels();
@@ -150,7 +150,7 @@
 				type: 'POST',
 				cache: false,
 				dataType: 'html',
-				async: false,
+				async: true,
 				url: '@Url.Action("PaymentInfoAjax")',
 				data: { paymentMethodSystemName: systemName },
 				success: function (html) {

@@ -153,66 +153,57 @@ $costep-active-label-color:     $costep-label-color;
 
 
 
-/* Checkout
-================================================ */
+//
+// Checkout options (payment & shipping)
+// --------------------------------------------------
 
 .checkout-data {
 	.opt-list { 
-		margin-bottom: 20px;
+		margin-bottom: 1.5rem;
 	}
-	.opt-list-item { 
-		position: relative;
-		padding: 12px 12px;
-		border-top: 1px solid #ddd;
-		border-bottom: 1px solid #ddd;
-		margin-top: -1px;
-	}
-	.opt-list-item.selected { 
-		background-color: #f9f9f9;
-		border-color: #f9f9f9;
-	}
-	.opt-info,
-	.opt-info-item { 
-		margin-top: 6px;
-		margin-left: 32px;
-	}
-	.opt-info .form-horizontal { 
-		margin-top: 20px;
-	}
-	.opt-info .form-horizontal .control-label { 
-		text-align: left;
-		width: 200px;
-		&.required {
-			font-weight: normal;
-		}
-	}
-	.opt-info .form-horizontal .controls {
-		margin-left: 220px;
-	}
-	.opt-info .form-horizontal .control-group {
-		margin-bottom: 12px;
-	}
-	.opt-info .media .pull-left { 
-		width: 120px;
-	}
-	.opt-info .media-object { 
-		max-width: 120px;
-		text-align: center;
-	}
-	.opt-info .media-body { 
-		color: $text-muted;
-	}
-	.opt-control {
-		padding-right: 100px;
-	}
+
+    .opt-list-item {
+        padding: 1.25rem;
+    }
+
+    .opt-data {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+    }
+
 	.opt-control label {
 		cursor: pointer;
 		margin-bottom: 0;
 	}
+
 	.opt-name { 
-		font-weight: bold;
+		font-weight: $font-weight-medium;
 		margin-left: 12px;
-		//.text-overflow();
+		@include text-truncate();
+	}
+
+	.opt-info,
+	.opt-info-item { 
+		margin-top: 0.75rem;
+		margin-left: 32px;
+	}
+
+	.opt-info .opt-form { 
+		margin-top: 1.5rem;
+
+        .col-form-label {
+            font-weight: normal;
+        }
+	}
+
+	.opt-info .media-object { 
+		max-width: 120px;
+		text-align: center;
+	}
+
+	.opt-info .media-body { 
+		color: $text-muted;
 	}
 }
 

@@ -2886,6 +2886,38 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(entities);
 
             entities.WithKey(x => x.MetaTitle)
+            .Alter("Furniture", x =>
+            {
+                x.Name = "Möbel";
+            })
+            .Alter("Lounger", x =>
+            {
+                x.Name = "Liegen";
+            })
+            .Alter("Chairs", x =>
+            {
+                x.Name = "Stühle";
+            })
+            .Alter("Lamps", x =>
+            {
+                x.Name = "Lampen";
+            })
+            .Alter("Fashion", x =>
+            {
+                x.Name = "Mode";
+            })
+            .Alter("Sports", x =>
+             {
+                 x.Name = "Sport";
+             })
+            .Alter("Sunglasses", x =>
+            {
+                x.Name = "Sonnenbrillen";
+            })
+            .Alter("Soccer", x =>
+            {
+                x.Name = "Fußball";
+            })
             .Alter("Books", x =>
             {
                 x.Name = "Bücher";
@@ -2914,9 +2946,9 @@ namespace SmartStore.Web.Infrastructure.Installation
             {
                 x.Name = "Smartphones";
             })
-            .Alter("Instant music", x =>
+            .Alter("Digital Products", x =>
             {
-                x.Name = "Musik kaufen & sofort herunterladen";
+                x.Name = "Digitale Produkte";
             })
             .Alter("Gift cards", x =>
             {

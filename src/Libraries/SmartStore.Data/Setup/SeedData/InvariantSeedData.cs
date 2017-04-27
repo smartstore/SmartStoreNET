@@ -6116,11 +6116,47 @@ namespace SmartStore.Data.Setup
 			var categoryTemplateInGridAndLines =
 				this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
 
-			//categories
+            //categories
 
-			#region category definitions
+            #region category definitions
 
-			var categoryBooks = new Category
+            var categoryFurniture = new Category
+            {
+                Name = "Furniture",
+                Alias = "Furniture",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_furniture.jpg"), "image/jpeg", GetSeName("Furniture")),
+                Published = true,
+                DisplayOrder = 1,
+                MetaTitle = "Furniture",
+                ShowOnHomePage = true
+            };
+
+            var categoryApple = new Category
+            {
+                Name = "Apple",
+                Alias = "Apple",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_apple.png"), "image/jpeg", GetSeName("Apple")),
+                Published = true,
+                DisplayOrder = 1,
+                MetaTitle = "Apple",
+                ShowOnHomePage = true
+            };
+
+            var categorySports = new Category
+            {
+                Name = "Sports",
+                Alias = "Sports",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sports.jpg"), "image/jpeg", GetSeName("Sports")),
+                Published = true,
+                DisplayOrder = 1,
+                MetaTitle = "Sports",
+                ShowOnHomePage = true
+            };
+
+            var categoryBooks = new Category
 			{
 				Name = "Books",
                 Alias = "Books",
@@ -6142,7 +6178,19 @@ namespace SmartStore.Data.Setup
 				MetaTitle = "Computers"
 			};
 
-			var categoryGaming = new Category
+            var categoryFashion = new Category
+            {
+                Name = "Fashion",
+                Alias = "Fashion",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_fashion.jpg"), "image/png", GetSeName("Fashion")),
+                Published = true,
+                DisplayOrder = 2,
+                MetaTitle = "Fashion",
+                ShowOnHomePage = true
+            };
+
+            var categoryGaming = new Category
 			{
 				Name = "Gaming",
 				Alias = "Gaming",
@@ -6167,14 +6215,15 @@ namespace SmartStore.Data.Setup
 
 			var categoryDigitalDownloads = new Category
 			{
-				Name = "Instant music",
-                Alias = "Instant music",
+				Name = "Digital Products",
+                Alias = "Digital Products",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitaldownloads.jpg"), "image/jpeg", GetSeName("Digital downloads")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitalproducts.jpg"), "image/jpeg", GetSeName("Digital Products")),
 				Published = true,
 				DisplayOrder = 6,
-				MetaTitle = "Instant music"
-			};
+				MetaTitle = "Digital Products",
+                ShowOnHomePage = true
+            };
 
 			var categoryGiftCards = new Category
 			{
@@ -6184,8 +6233,9 @@ namespace SmartStore.Data.Setup
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_giftcards.png"), "image/png", GetSeName("Gift Cards")),
 				Published = true,
 				DisplayOrder = 12,
-				MetaTitle = "Gift cards"
-			};
+				MetaTitle = "Gift cards",
+                ShowOnHomePage = true
+            };
 
 			var categoryWatches = new Category
 			{
@@ -6195,15 +6245,16 @@ namespace SmartStore.Data.Setup
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_watches.png"), "image/png", GetSeName("Watches")),
 				Published = true,
 				DisplayOrder = 10,
-				MetaTitle = "Watches"
-			};
+				MetaTitle = "Watches",
+                ShowOnHomePage = true
+            };
 
 			#endregion category definitions
 
 			var entities = new List<Category>
 			{
-			   categoryBooks, categoryComputers, categoryCellPhones, categoryDigitalDownloads, categoryGaming, categoryGiftCards, categoryWatches
-			};
+               categoryApple, categorySports, categoryBooks, categoryFurniture,categoryComputers, categoryCellPhones, categoryDigitalDownloads, categoryGaming, categoryGiftCards, categoryFashion, categoryWatches
+            };
 
 			this.Alter(entities);
 			return entities;
@@ -6217,11 +6268,112 @@ namespace SmartStore.Data.Setup
 			var categoryTemplateInGridAndLines =
 				this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
 
-			//categories
+            //categories
 
-			#region category definitions
+            #region category definitions
 
-			var categoryBooksSpiegel = new Category
+            var categoryFurnitureSofas = new Category
+            {
+                Name = "Sofas",
+                Alias = "Sofas",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sofas.jpg"), "image/png", GetSeName("Sofas")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Furniture").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Sofas",
+                ShowOnHomePage = true
+            };
+
+            var categoryFurnitureLounger = new Category
+            {
+                Name = "Lounger",
+                Alias = "Lounger",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_lounger.jpg"), "image/png", GetSeName("Lounger")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Furniture").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Lounger"
+            };
+
+            var categoryFurnitureChairs = new Category
+            {
+                Name = "Chairs",
+                Alias = "Chairs",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_chairs.png"), "image/png", GetSeName("Chairs")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Furniture").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Chairs",
+                ShowOnHomePage = true
+            };
+
+            var categoryFurnitureLamps = new Category
+            {
+                Name = "Lamps",
+                Alias = "Lamps",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_lamps.png"), "image/png", GetSeName("Lamps")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Furniture").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Lamps"
+            };
+
+            var categorySportsSunglasses = new Category
+            {
+                Name = "Sunglasses",
+                Alias = "Sunglasses",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sunglasses.jpg"), "image/png", GetSeName("Sunglasses")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Sunglasses",
+                ShowOnHomePage = true
+            };
+
+            var categorySportsSoccer = new Category
+            {
+                Name = "Soccer",
+                Alias = "Soccer",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_soccer.png"), "image/png", GetSeName("Soccer")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Soccer",
+                ShowOnHomePage = true
+            };
+
+            var categorySportsBasketball = new Category
+            {
+                Name = "Basketball",
+                Alias = "Basketball",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_basketball.png"), "image/png", GetSeName("Basketball")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Basketball",
+                ShowOnHomePage = true
+            };
+
+            var categorySportsGolf = new Category
+            {
+                Name = "Golf",
+                Alias = "Golf",
+                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_golf.jpg"), "image/png", GetSeName("Golf")),
+                Published = true,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                DisplayOrder = 1,
+                MetaTitle = "Golf"
+            };
+
+            var categoryBooksSpiegel = new Category
 			{
 				Name = "SPIEGEL-Bestseller",
                 Alias = "SPIEGEL-Bestseller",
@@ -6297,7 +6449,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Category>
 			{
-				categoryBooksSpiegel, categoryBooksCookAndEnjoy, categoryDesktops, categoryNotebooks, categoryGamingAccessories, categoryGamingGames
+                categorySportsSunglasses,categorySportsSoccer, categorySportsBasketball,categorySportsGolf, categoryFurnitureLounger, categoryFurnitureSofas, categoryFurnitureChairs, categoryFurnitureLamps, categoryBooksSpiegel, categoryBooksCookAndEnjoy, categoryDesktops, categoryNotebooks, categoryGamingAccessories, categoryGamingGames
 			};
 
 			this.Alter(entities);
@@ -6312,14 +6464,40 @@ namespace SmartStore.Data.Setup
 			var manufacturerTemplateInGridAndLines =
 				this.ManufacturerTemplates().Where(pt => pt.ViewPath == "ManufacturerTemplate.ProductsInGridOrLines").FirstOrDefault();
 
-			//var categoryTemplateInGridAndLines =
-			//    this.CategoryTemplates().Where(pt => pt.Name == "Products in Grid or Lines").FirstOrDefault();
+            //var categoryTemplateInGridAndLines =
+            //    this.CategoryTemplates().Where(pt => pt.Name == "Products in Grid or Lines").FirstOrDefault();
 
-			//categories
+            //categories
 
-			#region Apple
+            #region Ray-ban
 
-			var manufacturerApple = new Manufacturer
+            var manufacturerRayban = new Manufacturer
+            {
+                Name = "Ray-Ban",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ray-ban.jpg"), "image/png", GetSeName("Ray-Ban")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Ray-ban
+
+            #region Oakley
+
+            var manufacturerOakley = new Manufacturer
+            {
+                Name = "Oakley",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_oakley.png"), "image/png", GetSeName("Oakley")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Oakley
+
+            #region Apple
+
+            var manufacturerApple = new Manufacturer
 			{
 				Name = "Apple",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
@@ -6581,8 +6759,8 @@ namespace SmartStore.Data.Setup
 			{
 			  manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
 			  manufacturerCanon, manufacturerCasio, manufacturerPanasonic, manufacturerBlackBerry, manufacturerHTC, manufacturerFestina, manufacturerCertina, 
-			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft
-			};
+			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft,manufacturerOakley,manufacturerRayban
+            };
 
 			this.Alter(entities);
 			return entities;
@@ -6604,9 +6782,535 @@ namespace SmartStore.Data.Setup
 
 			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
 
-			#endregion definitions
+            #endregion definitions
 
-			#region category Gift Cards
+
+            #region category sunglasses
+
+            var categorySunglasses = this._ctx.Set<Category>().First(c => c.Alias == "Sunglasses");
+
+            #region product Top bar
+
+            var productRayBanTopBar = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Ray-Ban Top Bar RB 3183",
+                IsEsd = false,
+                ShortDescription = "The Ray-Ban Original Wayfarer is the most famous style in the history of sunglasses. With the original design from 1952 the Wayfarer is popular with celebrities, musicians, artists and fashion experts.",
+                FullDescription = "Die Sonnenbrille Ray-Ban ® RB3183 mir ihrer aerodynamischen Form eine reminiszenzist an Geschwindigkeit. <br> Eine rechteckige Form und das auf den Bügeln aufgedruckte klassische Ray-Ban Logo zeichnet dieses leichte Halbrand-Modell aus.",
+                Sku = "P-3004",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Ray-Ban Top Bar RB 3183",
+                Price = 139M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productRayBanTopBar.ProductCategories.Add(new ProductCategory() { Category = categorySunglasses, DisplayOrder = 1 });
+
+            productRayBanTopBar.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_RayBanTopBar_1.jpg"), "image/png", GetSeName(productRayBanTopBar.Name)),
+                DisplayOrder = 1,
+            });
+
+            productRayBanTopBar.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_RayBanTopBar_2.jpg"), "image/png", GetSeName(productRayBanTopBar.Name)),
+                DisplayOrder = 1,
+            });
+
+            productRayBanTopBar.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_RayBanTopBar_3.jpg"), "image/png", GetSeName(productRayBanTopBar.Name)),
+                DisplayOrder = 1,
+            });
+
+            productRayBanTopBar.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Ray-Ban").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product Top bar
+
+            #region product ORIGINAL WAYFARER AT COLLECTION
+
+            var productOriginalWayfarer = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "ORIGINAL WAYFARER AT COLLECTION",
+                IsEsd = false,
+                ShortDescription = "The Ray-Ban Original Wayfarer is the most famous style in the history of sunglasses. With the original design from 1952 the Wayfarer is popular with celebrities, musicians, artists and fashion experts.",
+                FullDescription = "<p><strong>Radar® EV Path™ PRIZM™ Road</strong> </p> <p>A new milestone in the heritage of performance, Radar® EV takes breakthroughs of a revolutionary design even further with a taller lens that extends the upper field of view. From the comfort and protection of the O Matter® frame to the grip of its Unobtanium® components, this premium design builds on the legacy of Radar innovation and style. </p> <p><strong>Features</strong> </p> <ul>   <li>PRIZM™ is a revolutionary lens technology that fine-tunes vision for specific sports and environments. See what you’ve been missing. Click here to learn more about Prizm Lens Technology.</li>   <li>Path lenses enhance performance if traditional lenses touch your cheeks and help extend the upper field of view</li>   <li>Engineered for maximized airflow for optimal ventilation to keep you cool</li>   <li>Unobtanium® earsocks and nosepads keep glasses in place, increasing grip despite perspiration</li>   <li>Interchangeable Lenses let you change lenses in seconds to optimize vision in any sport environment</li> </ul>",
+                Sku = "P-3003",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "ORIGINAL WAYFARER AT COLLECTION",
+                Price = 149M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productOriginalWayfarer.ProductCategories.Add(new ProductCategory() { Category = categorySunglasses, DisplayOrder = 1 });
+
+            productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_1.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                DisplayOrder = 1,
+            });
+
+            productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_2.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                DisplayOrder = 1,
+            });
+
+            productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_3.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                DisplayOrder = 1,
+            });
+
+            productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_4.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                DisplayOrder = 1,
+            });
+
+            productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_5.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                DisplayOrder = 1,
+            });
+
+            productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_6.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                DisplayOrder = 1,
+            });
+
+            productOriginalWayfarer.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Ray-Ban").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product ORIGINAL WAYFARER AT COLLECTION
+
+            #region product Radar EV Prizm Sports Sunglasses
+
+            var productRadarEVPrizmSportsSunglasses = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Radar EV Prizm Sports Sunglasses",
+                IsEsd = false,
+                ShortDescription = "",
+                FullDescription = "<p><strong>Radar® EV Path™ PRIZM™ Road</strong> </p> <p>A new milestone in the heritage of performance, Radar® EV takes breakthroughs of a revolutionary design even further with a taller lens that extends the upper field of view. From the comfort and protection of the O Matter® frame to the grip of its Unobtanium® components, this premium design builds on the legacy of Radar innovation and style. </p> <p><strong>Features</strong> </p> <ul>   <li>PRIZM™ is a revolutionary lens technology that fine-tunes vision for specific sports and environments. See what you’ve been missing. Click here to learn more about Prizm Lens Technology.</li>   <li>Path lenses enhance performance if traditional lenses touch your cheeks and help extend the upper field of view</li>   <li>Engineered for maximized airflow for optimal ventilation to keep you cool</li>   <li>Unobtanium® earsocks and nosepads keep glasses in place, increasing grip despite perspiration</li>   <li>Interchangeable Lenses let you change lenses in seconds to optimize vision in any sport environment</li> </ul>",
+                Sku = "P-3001",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Radar EV Prizm Sports Sunglasses",
+                Price = 149M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productRadarEVPrizmSportsSunglasses.ProductCategories.Add(new ProductCategory() { Category = categorySunglasses, DisplayOrder = 1 });
+
+            productRadarEVPrizmSportsSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_radar_ev_prizm.jpg"), "image/png", GetSeName(productRadarEVPrizmSportsSunglasses.Name)),
+                DisplayOrder = 1,
+            });
+
+            productRadarEVPrizmSportsSunglasses.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Oakley").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product Radar EV Prizm Sports Sunglasses
+
+            #region product Custom Flak Sunglasses
+
+            var productCustomFlakSunglasses = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Custom Flak Sunglasses",
+                IsEsd = false,
+                ShortDescription = "",
+                FullDescription = "<p><strong>Radar® EV Path™ PRIZM™ Road</strong> </p> <p>A new milestone in the heritage of performance, Radar® EV takes breakthroughs of a revolutionary design even further with a taller lens that extends the upper field of view. From the comfort and protection of the O Matter® frame to the grip of its Unobtanium® components, this premium design builds on the legacy of Radar innovation and style. </p> <p><strong>Features</strong> </p> <ul>   <li>PRIZM™ is a revolutionary lens technology that fine-tunes vision for specific sports and environments. See what you’ve been missing. Click here to learn more about Prizm Lens Technology.</li>   <li>Path lenses enhance performance if traditional lenses touch your cheeks and help extend the upper field of view</li>   <li>Engineered for maximized airflow for optimal ventilation to keep you cool</li>   <li>Unobtanium® earsocks and nosepads keep glasses in place, increasing grip despite perspiration</li>   <li>Interchangeable Lenses let you change lenses in seconds to optimize vision in any sport environment</li> </ul>",
+                Sku = "P-3002",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Custom Flak Sunglasses",
+                Price = 179M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productCustomFlakSunglasses.ProductCategories.Add(new ProductCategory() { Category = categorySunglasses, DisplayOrder = 1 });
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlakSunglasses.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name)),
+                DisplayOrder = 1,
+            });
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "productCustomFlakSunglasses_black_white.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name)),
+                DisplayOrder = 1,
+            });
+
+            productCustomFlakSunglasses.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Oakley").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product Custom Flak Sunglasses
+
+
+
+            #endregion category sunglasses
+
+            #region category apple
+
+            var categoryApple = this._ctx.Set<Category>().First(c => c.Alias == "Apple");
+
+            #region product iphone plus
+
+            var productIphoneplus = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "iPhone Plus",
+                IsEsd = false,
+                ShortDescription = "iPhone 7 dramatically improves the most important aspects of the iPhone experience. It introduces advanced new camera systems. The best performance and battery life ever in an iPhone. Immersive stereo speakers. The brightest, most colorful iPhone display. Splash and water resistance.1 And it looks every bit as powerful as it is. This is iPhone 7.",
+                FullDescription = "",
+                Sku = "P-2001",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "iPhone Plus",
+                Price = 878M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productIphoneplus.ProductCategories.Add(new ProductCategory() { Category = categoryApple, DisplayOrder = 1 });
+
+            productIphoneplus.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphoneplus_1.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
+                DisplayOrder = 1,
+            });
+
+            productIphoneplus.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphoneplus_2.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
+                DisplayOrder = 2,
+            });
+
+            productIphoneplus.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product iphone plus
+
+            #region product Watch Series 2
+
+            var productWatchSeries2 = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Watch Series 2",
+                IsEsd = false,
+                ShortDescription = "Live a better day. Built-in GPS. Water resistance to 50 meters.1 A lightning-fast dual‑core processor. And a display that’s two times brighter than before. Full of features that help you stay active, motivated, and connected, Apple Watch Series 2 is the perfect partner for a healthy life.",
+                FullDescription = "",
+                Sku = "P-2002",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Watch Series 2",
+                Price = 299M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productWatchSeries2.ProductCategories.Add(new ProductCategory() { Category = categoryApple, DisplayOrder = 1 });
+
+            productWatchSeries2.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_watchseries2_1.jpg"), "image/png", GetSeName(productWatchSeries2.Name)),
+                DisplayOrder = 1,
+            });
+
+            productWatchSeries2.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_watchseries2_2.jpg"), "image/png", GetSeName(productWatchSeries2.Name)),
+                DisplayOrder = 2,
+            });
+
+            productWatchSeries2.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product Watch Series 2
+
+            #region product Airpods
+
+            var productAirpods = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "AirPods",
+                IsEsd = false,
+                ShortDescription = "Wireless. Effortless. Magical. Just take them out and they’re ready to use with all your devices. Put them in your ears and they connect instantly. Speak into them and your voice sounds clear. Introducing AirPods. Simplicity and technology, together like never before. The result is completely magical.",
+                FullDescription = "",
+                Sku = "P-2003",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "AirPods",
+                Price = 999M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productAirpods.ProductCategories.Add(new ProductCategory() { Category = categoryApple, DisplayOrder = 1 });
+
+            productAirpods.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_white.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAirpods.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_turquoise.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                DisplayOrder = 2,
+            });
+
+            productAirpods.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_lightblue.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                DisplayOrder = 3,
+            });
+
+            productAirpods.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_rose.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                DisplayOrder = 4,
+            });
+
+            productAirpods.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_gold.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                DisplayOrder = 5,
+            });
+
+            productAirpods.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_mint.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                DisplayOrder = 6,
+            });
+
+            productAirpods.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
+                DisplayOrder = 7,
+            });
+
+            #endregion product Airpods
+
+            #region product Ultimate Apple Pro Hipster Bundle
+
+            var productAppleProHipsterBundle = new Product()
+            {
+                ProductType = ProductType.BundledProduct,
+                VisibleIndividually = true,
+                Name = "Ultimate Apple Pro Hipster Bundle",
+                IsEsd = false,
+                ShortDescription = "Save with this set 5%!",
+                FullDescription = "As an Apple fan and hipster, it is your basic need to always have the latest Apple products. So you do not have to spend four times a year in front of the Apple Store, simply subscribe to the Ultimate Apple Pro Hipster Set in the year subscription!",
+                Sku = "P-2005-Bundle",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Ultimate Apple Pro Hipster Bundle",
+                Price = 2371M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single(),
+                BundleTitleText = "Bundle includes",
+                BundlePerItemPricing = true,
+                BundlePerItemShoppingCart = true
+            };
+            
+            productAppleProHipsterBundle.ProductCategories.Add(new ProductCategory() { Category = categoryApple, DisplayOrder = 1 });
+
+            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ultimate-apple-pro-hipster-bundle.jpg"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_white.jpg"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
+                DisplayOrder = 2,
+            });
+
+            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_watchseries2_2.jpg"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
+                DisplayOrder = 2,
+            });
+
+            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphoneplus_2.jpg"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
+                DisplayOrder = 2,
+            });
+
+            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_apple.png"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
+                DisplayOrder = 2,
+            });
+
+            productAppleProHipsterBundle.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product Ultimate Apple Pro Hipster Bundle
+            
+            #region product 9,7 iPad
+
+            var product97ipad = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "9,7' iPad",
+                IsEsd = false,
+                ShortDescription = "Flat-out fun. Learn, play, surf, create. iPad gives you the incredible display, performance, and apps to do what you love to do. Anywhere. Easily. Magically.",
+                FullDescription = "",
+                Sku = "P-2004",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "9,7' iPad",
+                Price = 299M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            product97ipad.ProductCategories.Add(new ProductCategory() { Category = categoryApple, DisplayOrder = 1 });
+
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ipad_1.jpg"), "image/png", GetSeName(product97ipad.Name)),
+                DisplayOrder = 1,
+            });
+
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ipad_2.jpg"), "image/png", GetSeName(product97ipad.Name)),
+                DisplayOrder = 2,
+            });
+
+            product97ipad.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product 9,7 iPad
+
+
+            #endregion category apple
+
+            #region category Gift Cards
 
             var categoryGiftCards = this._ctx.Set<Category>().First(c => c.Alias == "Gift Cards");
 
@@ -6627,7 +7331,6 @@ namespace SmartStore.Data.Setup
 				MetaTitle = "$5 Virtual Gift Card",
 				Price = 5M,
 				IsGiftCard = true,
-				GiftCardType = GiftCardType.Virtual,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
 				OrderMinimumQuantity = 1,
 				OrderMaximumQuantity = 10000,
@@ -7704,7 +8407,7 @@ namespace SmartStore.Data.Setup
 
 			#region Instant Download Music
 
-            var categoryMusic = this._ctx.Set<Category>().First(c => c.Alias == "Instant music");
+            var categoryMusic = this._ctx.Set<Category>().First(c => c.Alias == "Digital Products");
 
 			#region Antonio Vivaldi: then spring
 
@@ -8418,7 +9121,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Product>
 			{
-				product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
+                productRayBanTopBar,productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,
@@ -8434,10 +9137,60 @@ namespace SmartStore.Data.Setup
 
 		public IList<ProductBundleItem> ProductBundleItems()
 		{
-			#region gaming
+            var utcNow = DateTime.UtcNow;
 
-			var utcNow = DateTime.UtcNow;
-			var bundlePs3AssassinCreed = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399105");
+            #region apple bundles
+            var bundleAppleProHipster = _ctx.Set<Product>().First(x => x.Sku == "P-2005-Bundle");
+
+            var bundleItemIproductIphoneplus = new ProductBundleItem()
+            {
+                BundleProduct = bundleAppleProHipster,
+                Product = _ctx.Set<Product>().First(x => x.Sku == "P-2001"),
+                Quantity = 1,
+                Discount = 40.0M,
+                Visible = true,
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            var bundleItemProductWatchSeries2 = new ProductBundleItem()
+            {
+                BundleProduct = bundleAppleProHipster,
+                Product = _ctx.Set<Product>().First(x => x.Sku == "P-2002"),
+                Quantity = 2,
+                Discount = 30.0M,
+                Visible = true,
+                Published = true,
+                DisplayOrder = 2
+            };
+
+            var bundleItemproductAirpods = new ProductBundleItem()
+            {
+                BundleProduct = bundleAppleProHipster,
+                Product = _ctx.Set<Product>().First(x => x.Sku == "P-2003"),
+                Quantity = 1,
+                Discount = 30.0M,
+                Visible = true,
+                Published = true,
+                DisplayOrder = 3
+            };
+
+            var bundleItemproductIpad = new ProductBundleItem()
+            {
+                BundleProduct = bundleAppleProHipster,
+                Product = _ctx.Set<Product>().First(x => x.Sku == "P-2004"),
+                Quantity = 1,
+                Discount = 30.0M,
+                Visible = true,
+                Published = true,
+                DisplayOrder = 3
+            };
+
+            #endregion apple bundles
+
+            #region gaming
+
+            var bundlePs3AssassinCreed = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399105");
 
 			var bundleItemPs3AssassinCreed1 = new ProductBundleItem()
 			{
@@ -8510,8 +9263,8 @@ namespace SmartStore.Data.Setup
 			var entities = new List<ProductBundleItem>
 			{
 				bundleItemPs3AssassinCreed1, bundleItemPs3AssassinCreed2, bundleItemPs3AssassinCreed3,
-				bundleItemPs41, bundleItemPs42, bundleItemPs43
-			};
+				bundleItemPs41, bundleItemPs42, bundleItemPs43,bundleItemIproductIphoneplus, bundleItemProductWatchSeries2,bundleItemproductAirpods,bundleItemproductIpad
+            };
 
 			this.Alter(entities);
 			return entities;

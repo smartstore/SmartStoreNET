@@ -1,6 +1,4 @@
 ﻿@model ProfilePostsModel
-
-@using SmartStore.Web;
 @using SmartStore.Web.Models.Profile;
 @using SmartStore.Web.Framework.UI;
 
@@ -11,17 +9,16 @@
         {
             var item = Model.Posts[i];
             
-            <div class="block block-bordered">
-                <div class="block-title">
-                    <span>@T("Profile.Topic")</span>:
+            <div class="card mt-3">
+                <div class="card-header">
+                    <span class="mr-1">@T("Profile.Topic"):</span>
                     @Html.RouteLink(item.ForumTopicTitle, "TopicSlug", new { id = item.ForumTopicId, slug = item.ForumTopicSlug })
 
-                    <div class="pull-right">
+                    <div class="float-right">
                         <span>@T("Profile.PostedOn")</span>: <span>@item.Posted</span>
                     </div>
-
                 </div>
-                <div class="block-body">
+                <div class="card-block">
                     @Html.Raw(item.ForumPostText)
                 </div>
             </div>
@@ -31,8 +28,11 @@
     {
         @T("Profile.LatestPosts.NoPosts")
     }
+
     @if (Model.TotalPages > 1)
     {
-        @Html.SmartStore().Pager(Model).Name("paginator").Route("CustomerProfile", ViewData["PagerRouteValues"])
+        <div class="mt-3">
+            @Html.SmartStore().Pager(Model).Name("paginator").Route("CustomerProfile", ViewData["PagerRouteValues"])
+        </div>
     }
 </div>

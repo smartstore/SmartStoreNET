@@ -2,8 +2,9 @@
 
 @using SmartStore.Web.Models.Profile;
 
-<div class="profile-info-box clearfix">
-    <div class="user-details pull-left">
+<div class="profile-info-box row">
+
+    <div class="user-details col-2 text-center">
         @if (Model.AvatarEnabled && !String.IsNullOrEmpty(Model.AvatarUrl))
         {
             <div class="avatar">
@@ -18,18 +19,17 @@
         }
         @if (Model.PMEnabled)
         {
-            <div class="profile-stat">
-                <div class="send-pm-box">
-                    @Html.ActionLink(T("Forum.PrivateMessages.PM").Text, "Send", "PrivateMessages", new { id = @Model.CustomerProfileId }, new { @class = "pm-link-button" })
-                </div>
-            </div>  
+            <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerProfileId })'>
+                <i class="fa fa-user"></i>
+                <span>@T("Forum.PrivateMessages.PM")</span>
+            </a>
         }
         
         @{ Html.RenderWidget("profile_page_info_userdetails"); }
-
     </div>
-    <div class="user-stats pull-left">
-        <div class="title">
+
+    <div class="user-stats col-10">
+        <div class="title h4">
             @T("Profile.Statistics")
         </div>
         @if (Model.TotalPostsEnabled)

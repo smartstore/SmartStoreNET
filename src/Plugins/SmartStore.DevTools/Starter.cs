@@ -19,6 +19,7 @@ namespace SmartStore.DevTools
 		public void Execute()
 		{
 			StackExchange.Profiling.EntityFramework6.MiniProfilerEF6.Initialize();
+			//StackExchange.Profiling.MiniProfiler.Settings.MaxUnviewedProfiles = 2;
 		}
 
 		public int Order

@@ -247,6 +247,9 @@
         });
 
         function updateShoppingCartItems(link, data) {
+
+            showThrobber();
+
             $.ajax({
                 cache: false,
                 url: link.data("href"),
@@ -278,8 +281,26 @@
                     if (link.data("type") == "wishlist") {
                         ShopBar.loadSummary("wishlist", true);
                     }
+
+                    hideThrobber();
                 }
             });
         }
+
+        function showThrobber() {
+            var cnt = $("#cart-items");
+            var throbber = cnt.data('throbber');
+            if (!throbber) {
+                throbber = cnt.throbber({ white: true, small: true, message: '', show: false, speed: 0 }).data('throbber');
+            }
+
+            throbber.show();
+        }
+
+        function hideThrobber () {      	
+            var cnt = $("#cart-items");
+            _.delay(function () { cnt.data("throbber").hide(); }, 100);
+        }
+
     </script>
 }

@@ -32,7 +32,7 @@
     @if (Model.TotalPages > 1)
     {
         <div class="mt-3">
-            @Html.SmartStore().Pager(Model).Name("paginator").Route("CustomerProfile", ViewData["PagerRouteValues"])
+            @Html.SmartStore().Pager(Model).Name("paginator").QueryParam("page").Route("CustomerProfile", ViewData["PagerRouteValues"])
         </div>
     }
 </div>

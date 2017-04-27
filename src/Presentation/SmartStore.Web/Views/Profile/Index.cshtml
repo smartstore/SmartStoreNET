@@ -14,10 +14,10 @@
     </div>
 
     <div class="page-body">
-        @Html.SmartStore().TabStrip().Name("profile-tabs").HtmlAttributes(new { @class = "profile-tabs" }).SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
+        @Html.SmartStore().TabStrip().Name("profile-tabs").HtmlAttributes(new { @class = "profile-tabs" }).SmartTabSelection(true).ComponentVersion(BootstrapVersion.V4).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
         {
             x.Add().Text(T("Profile.PersonalInfo").Text)
-                .Selected(true)
+                .Selected(!postsTabSelected)
                 .Content(Html.Action("info", new { customerProfileId = Model.CustomerProfileId }).ToString());
 
             if (Model.ForumsEnabled)

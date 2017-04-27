@@ -10,7 +10,7 @@
     ViewBag.PageTitle = T("PrivateMessages.PrivateMessages").Text;
 }
 
-@Html.SmartStore().TabStrip().Name("pm-tabs").HtmlAttributes(new { @class = "pm-tabs" }).SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
+@Html.SmartStore().TabStrip().Name("pm-tabs").HtmlAttributes(new { @class = "pm-tabs" }).SmartTabSelection(true).Style(TabsStyle.Material).ComponentVersion(BootstrapVersion.V4).Responsive(true, "<md").Items(x =>
 {
     x.Add().Text(@T("PrivateMessages.Inbox"))
         .Content(Html.Action("Inbox", new { page = Model.InboxPage, tab = "inbox" }).ToString())

@@ -170,24 +170,37 @@ $costep-active-label-color:     $costep-label-color;
         display: flex;
         width: 100%;
         justify-content: space-between;
+        align-items: center;
     }
 
-	.opt-control label {
-		cursor: pointer;
-		margin-bottom: 0;
-	}
+    .opt-control {
+        margin-bottom: 0;
+
+	    .form-check-label {
+		    cursor: pointer;
+		    margin-bottom: 0;
+	    }
+
+        .form-check-input {
+            margin-top: 0.2rem;
+        }
+    }
 
 	.opt-name { 
+        display: block;
         font-size: $font-size-h5;
 		font-weight: $font-weight-medium;
-		margin-left: 12px;
-		@include text-truncate();
+		margin-left: 4px;
+        line-height: 1.3;
 	}
+
+    .opt-fee {
+        white-space: nowrap;
+    }
 
 	.opt-info,
 	.opt-info-item { 
 		margin-top: 0.75rem;
-		margin-left: 32px;
 	}
 
     .opt-info {
@@ -200,8 +213,8 @@ $costep-active-label-color:     $costep-label-color;
 	    }
 
 	    .media-object { 
-		    max-width: 120px;
-		    text-align: center;
+		    max-width: 25%;
+            margin-top: 0.25rem;
 	    }
 
 	    .media-body { 
@@ -215,6 +228,23 @@ $costep-active-label-color:     $costep-label-color;
         p:last-child {
             margin-bottom: 0;
         }
+    }
+
+    @include media-breakpoint-up(sm) {
+        .opt-info .media-object {
+            max-width: 120px;
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+	    .opt-name { 
+		    margin-left: 12px;
+	    }
+
+	    .opt-info,
+	    .opt-info-item { 
+		    margin-left: 32px;
+	    }
     }
 }
 

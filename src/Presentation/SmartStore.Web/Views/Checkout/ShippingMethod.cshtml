@@ -39,9 +39,9 @@
 
 						<li class="list-group-item opt-list-item shipping-option-item@(shippingMethod.Selected ? " active" : "")">
 							<div class="opt-data">
-								<div class="opt-control option-name radio">
-									<label for="shippingoption_@(i)">
-										<input id="shippingoption_@(i)" type="radio" name="shippingoption" class="opt-radio"
+								<div class="form-check opt-control option-name radio">
+									<label class="form-check-label">
+										<input id="shippingoption_@(i)" type="radio" name="shippingoption" class="opt-radio form-check-input"
 											   @Html.Attr("checked", "checked", shippingMethod.Selected)
 											   value="@(shippingMethod.Name)___@(shippingMethod.ShippingRateComputationMethodSystemName)" />
 										<span class="opt-name">@Html.Raw(HttpUtility.HtmlDecode(shippingMethod.Name))</span>

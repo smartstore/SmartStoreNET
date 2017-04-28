@@ -6469,6 +6469,59 @@ namespace SmartStore.Data.Setup
 
             //categories
 
+
+            #region Puma
+
+            var manufacturerPuma = new Manufacturer
+            {
+                Name = "Puma",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_puma.jpg"), "image/png", GetSeName("Puma")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Nike
+
+            #region Nike
+
+            var manufacturerNike = new Manufacturer
+            {
+                Name = "Nike",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_nike.png"), "image/png", GetSeName("Nike")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Nike
+
+            #region Wilson
+
+            var manufacturerWilson = new Manufacturer
+            {
+                Name = "Wilson",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_wilson.png"), "image/png", GetSeName("Wilson")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Wilson
+
+            #region Adidas
+
+            var manufacturerAdidas = new Manufacturer
+            {
+                Name = "Adidas",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_adidas.png"), "image/png", GetSeName("Adidas")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Adidas
+
             #region Ray-ban
 
             var manufacturerRayban = new Manufacturer
@@ -6759,7 +6812,7 @@ namespace SmartStore.Data.Setup
 			{
 			  manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
 			  manufacturerCanon, manufacturerCasio, manufacturerPanasonic, manufacturerBlackBerry, manufacturerHTC, manufacturerFestina, manufacturerCertina, 
-			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft,manufacturerOakley,manufacturerRayban
+			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft,manufacturerOakley,manufacturerRayban,manufacturerAdidas, manufacturerWilson,manufacturerPuma,manufacturerNike
             };
 
 			this.Alter(entities);
@@ -6784,6 +6837,336 @@ namespace SmartStore.Data.Setup
 
             #endregion definitions
 
+            #region category Soccer
+            
+            var categorySoccer = this._ctx.Set<Category>().First(c => c.Alias == "Soccer");
+
+            #region product Nike Strike Football
+
+            var productNikeStrikeFootball = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Nike Strike Football",
+                IsEsd = false,
+                ShortDescription = "GREAT TOUCH. HIGH VISIBILITY.",
+                FullDescription = "<p><strong>Enhance play everyday, with the Nike Strike Football. </strong> </p> <p>Reinforced rubber retains its shape for confident and consistent control. A stand out Visual Power graphic in black, green and orange is best for ball tracking, despite dark or inclement conditions. </p> <ul>   <li>Visual Power graphic helps give a true read on flight trajectory.</li>   <li>Textured casing offers superior touch.</li>   <li>Reinforced rubber bladder supports air and shape retention.</li>   <li>66% rubber/ 15% polyurethane/ 13% polyester/ 7% EVA.</li> </ul> ",  
+                Sku = "P-5004",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Nike Strike Football",
+                Price = 59.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productNikeStrikeFootball.ProductCategories.Add(new ProductCategory() { Category = categorySoccer, DisplayOrder = 1 });
+
+            productNikeStrikeFootball.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_nike-strike-football.jpg"), "image/png", GetSeName(productNikeStrikeFootball.Name)),
+                DisplayOrder = 1,
+            });
+
+            productNikeStrikeFootball.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Nike").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion Nike Strike Football
+
+            #region product Evopower 5.3 Trainer HS Ball
+
+            var productNikeEvoPowerBall = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Evopower 5.3 Trainer HS Ball",
+                IsEsd = false,
+                ShortDescription = "Entry level training ball.",
+                FullDescription = "<p><strong>Entry level training ball.</strong></ p >< p > Constructed from 32 panels with equal surface areas for reduced seam-stress and a perfectly round shape.Handstitched panels with multilayered woven backing for enhanced stability and aerodynamics.</ p >",
+                Sku = "P-5003",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Evopower 5.3 Trainer HS Ball",
+                Price = 59.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productNikeEvoPowerBall.ProductCategories.Add(new ProductCategory() { Category = categorySoccer, DisplayOrder = 1 });
+
+            productNikeEvoPowerBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_nike-vopower-53-trainer-hs-ball.jpg"), "image/png", GetSeName(productNikeEvoPowerBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productNikeEvoPowerBall.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Nike").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion Evopower 5.3 Trainer HS Ball
+
+            #region product Torfabrik official game ball
+
+            var productTorfabrikOfficialGameBall = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Torfabrik official game ball",
+                IsEsd = false,
+                ShortDescription = "Available in different colors",
+                FullDescription = "",
+                Sku = "P-5002",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Torfabrik official game ball",
+                Price = 59.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productTorfabrikOfficialGameBall.ProductCategories.Add(new ProductCategory() { Category = categorySoccer, DisplayOrder = 1 });
+
+            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_white.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_red.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_yellow.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_blue.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_green.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productTorfabrikOfficialGameBall.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion Torfabrik official game ball
+
+            #region product Adidas TANGO SALA BALL
+
+            var productAdidasTangoSalaBall = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Adidas TANGO SALA BALL",
+                IsEsd = false,
+                ShortDescription = "In different colors",
+                FullDescription = "<p><strong>TANGO SALA BALL</strong>   <br />   A SALA BALL TO MATCH YOUR INDOOR PLAYMAKING. </p> <p>Take the game indoors. With a design nod to the original Tango ball that set the performance standard, this indoor soccer is designed for low rebound and enhanced control for futsal. Machine-stitched for a soft touch and high durability. </p> <ul>   <li>Machine-stitched for soft touch and high durability</li>   <li>Low rebound for enhanced ball control</li>   <li>Butyl bladder for best air retention</li>   <li>Requires inflation</li>   <li>100% natural rubber</li>   <li>Imported</li> </ul> <p> </p> ",
+                Sku = "P-5001",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Adidas TANGO SALA BALL",
+                Price = 59.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productAdidasTangoSalaBall.ProductCategories.Add(new ProductCategory() { Category = categorySoccer, DisplayOrder = 1 });
+
+            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-white.png"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-yellow.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-red.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-green.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-gray.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-brown.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-blue.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAdidasTangoSalaBall.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion Adidas TANGO SALA BALL
+
+            #endregion category Soccer
+
+            #region category Basketball
+
+            var categoryBasketball = this._ctx.Set<Category>().First(c => c.Alias == "Basketball");
+
+            #region Wilson Evolution High School Game Basketball
+
+            var productEvolutionHighSchoolGameBasketball = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Evolution High School Game Basketball",
+                IsEsd = false,
+                ShortDescription = "A DURABLE BASKETBALL ALL SURFACES",
+                FullDescription = "<p><strong>All-Court Prep Ball</strong> </p> <p>A durable basketball for all surfaces. </p> <p>Whether on parquet or on asphalt - the adidas All-Court Prep Ball hat has only one goal: the basket. This basketball is made of durable artificial leather, was also predestined for indoor games also for outdoor games. </p> <ul>   <li>Composite cover made of artificial leather</li>   <li>suitable for indoors and outdoors</li>   <li>Delivered unpumped</li> </ul> ",
+                Sku = "P-4001",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Evolution High School Game Basketball",
+                Price = 25.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productEvolutionHighSchoolGameBasketball.ProductCategories.Add(new ProductCategory() { Category = categoryBasketball, DisplayOrder = 1 });
+
+            productEvolutionHighSchoolGameBasketball.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_evolution-high-school-game-basketball.jpg"), "image/png", GetSeName(productEvolutionHighSchoolGameBasketball.Name)),
+                DisplayOrder = 1,
+            });
+
+            productEvolutionHighSchoolGameBasketball.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion Wilson Evolution High School Game Basketball
+
+
+            #region All Court Basketball
+
+            var productAllCourtBasketball = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "All-Court Basketball",
+                IsEsd = false,
+                ShortDescription = "A DURABLE BASKETBALL ALL SURFACES",
+                FullDescription = "<p><strong>All-Court Prep Ball</strong> </p> <p>A durable basketball for all surfaces. </p> <p>Whether on parquet or on asphalt - the adidas All-Court Prep Ball hat has only one goal: the basket. This basketball is made of durable artificial leather, was also predestined for indoor games also for outdoor games. </p> <ul>   <li>Composite cover made of artificial leather</li>   <li>suitable for indoors and outdoors</li>   <li>Delivered unpumped</li> </ul> ",
+                Sku = "P-4002",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "All-Court Basketball",
+                Price = 25.90M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productAllCourtBasketball.ProductCategories.Add(new ProductCategory() { Category = categoryBasketball, DisplayOrder = 1 });
+
+            productAllCourtBasketball.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_all-court-basketball.png"), "image/png", GetSeName(productAllCourtBasketball.Name)),
+                DisplayOrder = 1,
+            });
+
+            productAllCourtBasketball.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion All Court Basketball
+
+            #endregion category Basketball
 
             #region category sunglasses
 
@@ -9121,7 +9504,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Product>
 			{
-                productRayBanTopBar,productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
+                productNikeStrikeFootball,productNikeEvoPowerBall,productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,

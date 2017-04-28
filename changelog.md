@@ -80,16 +80,19 @@
 	* Id should be unique when exporting attribute combinations as products
 	* Attribute price adjustments were ignored when exporting attribute combinations as products
 	* Associated products that are not individually visible are not exported anymore. GMC rejects them because the frontend redirects to the grouped product.
-* #999 Export: Projected customer id ignored during price calculation
+* Export:
+	* #999 Projected customer id ignored during price calculation
+	* #1104 Language projection ignored when creating product details URL
+	* #1030: Orders didn't include data of attribute combinations
+	* Orders didn't include shipping address
 * Awarded reward points for a placed order sometimes wrong calculated
 * PayPal PLUS:
 	* A changed shipping address/costs was not transmitted to PayPal
 	* Skip payment if cart total is zero
 	* Do not display payment wall if method is filtered
+* PayPal Express: Fixed net price issue.
 * Bundle item cannot be deleted if it's in a shopping cart
 * Fixed SSL issue for news items in RSS feed
-* #1030: Order export: does not export the data of the attribute combination
-* Order export does not export shipping address
 * Filter shows wrong number of products if "Include products from subcategories" is activated
 * Guest user cannot be deleted if he has a private message
 * #1029 Biz-Importer: Imports fixed tax rates as zero percentage
@@ -98,7 +101,6 @@
 * #1086 Gift cards can be earned in one store and applied in another
 * Whishlist: Products with minimum order amount greater then 1 can be added to the whishlist without any warning
 * #1102: Discounts not transmitted when the total amount is zero
-* #1104 Export: Language projection ignored when creating product details URL
 * #1101 Clickatell: Sending SMS not working anymore
 
 ## SmartStore.NET 2.6

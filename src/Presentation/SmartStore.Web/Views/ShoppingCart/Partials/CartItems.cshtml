@@ -20,7 +20,7 @@
 
                     @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
                     {
-                        <div class="cart-item-desc text-smaller">
+                        <div class="cart-item-desc text-smaller text-muted">
                             @Html.Raw(item.ShortDesc.Truncate(180, "..."))
                         </div>
                     }
@@ -205,7 +205,7 @@
                                 </div>
                                 @if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
                                 {
-                                    <div class="bundle-item-description cart-item-desc text-smaller">
+                                    <div class="bundle-item-description cart-item-desc text-smaller text-muted">
                                         @Html.Raw(item.ShortDesc.Truncate(210, "..."))
                                     </div>
                                 }

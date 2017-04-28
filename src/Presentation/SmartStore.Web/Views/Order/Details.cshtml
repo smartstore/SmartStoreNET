@@ -355,7 +355,7 @@
 							@foreach (var item in Model.OrderNotes)
 							{
 								<tr>
-									<td class="text-nowrap">@item.CreatedOn.ToString()</td>
+									<td class="text-nowrap">@item.FriendlyCreatedOn</td>
 									<td>@Html.Raw(item.Note)</td>
 								</tr>
 							}

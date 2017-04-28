@@ -136,7 +136,8 @@ namespace SmartStore.Web.Models.Order
         {
             public string Note { get; set; }
             public DateTime CreatedOn { get; set; }
-        }
+			public string FriendlyCreatedOn { get; set; }
+		}
 
         public partial class ShipmentBriefModel : EntityModelBase
         {

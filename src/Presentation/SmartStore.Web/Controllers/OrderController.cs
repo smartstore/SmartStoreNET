@@ -26,6 +26,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
@@ -343,11 +344,14 @@ namespace SmartStore.Web.Controllers
                 .OrderByDescending(on => on.CreatedOnUtc)
                 .ToList())
             {
-                model.OrderNotes.Add(new OrderDetailsModel.OrderNote
+				var createdOn = _dateTimeHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc);
+
+				model.OrderNotes.Add(new OrderDetailsModel.OrderNote
                 {
                     Note = orderNote.FormatOrderNoteText(),
-                    CreatedOn = _dateTimeHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc)
-                });
+                    CreatedOn = createdOn,
+					FriendlyCreatedOn = createdOn.RelativeFormat(false, "f")
+				});
             }
 
 

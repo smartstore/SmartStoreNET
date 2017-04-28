@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.0
 
@@ -46,7 +46,6 @@
 * Added order message token for accepting third party email handover
 * ECB currency exchange rate provider now cross calculates rates based on euro rates
 * BeezUP: Exports the product weight
-* Payone: Replace client API by Payone iFrame solution. Allows credit card payment compliant with PCI DSS, SAQ A.
 * Updated Elmar shop info XML from version 1.1 to 2.0
 * (Perf) Application start faster by ~20%
 * (Perf) Lower memory consumption
@@ -69,6 +68,9 @@
 * #1016 Implemented choosing of MessageTokens for newsletter campaigns with dropdown menu
 * #1107 OpenTrans: Added option to exclude long description of products from export
 * BMEcat: Implemented download of pictures according to MimeRoot-Info
+* Payone:
+	* Replace client API by Payone iFrame solution. Allows credit card payment compliant with PCI DSS, SAQ A.
+	* #1123 Add order note with payment info for prepayment and invoice payment.
 
 
 ### Bugfixes

@@ -25,7 +25,7 @@ namespace SmartStore.Core.Html
             if (String.IsNullOrEmpty(text))
                 return string.Empty;
 
-            string allowedTags = "br,hr,b,i,u,a,div,ol,ul,li,blockquote,img,span,p,em,strong,font,pre,h1,h2,h3,h4,h5,h6,address,cite";
+            string allowedTags = "br,hr,b,i,u,a,div,ol,ul,li,dl,dt,dd,blockquote,img,span,p,em,strong,font,pre,h1,h2,h3,h4,h5,h6,address,cite";
 
             var m = Regex.Matches(text, "<.*?>", RegexOptions.IgnoreCase);
             for (int i = m.Count - 1; i >= 0; i--)

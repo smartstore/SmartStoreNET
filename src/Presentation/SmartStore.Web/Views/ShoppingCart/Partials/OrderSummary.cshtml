@@ -103,7 +103,7 @@
 								}
 							}
 						</div>
-						<div class="col-md-6" id="order-totals">
+						<div class="col-md-6">
 							@if (Model.IsEditable && Model.MinOrderSubtotalWarning.HasValue())
 							{
 								<div class="alert alert-warning">
@@ -116,7 +116,11 @@
 									Html.RenderPartial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary());
 								}
 								Html.RenderWidget("order_summary_totals_before");
-								Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable });
+
+								<div id="order-totals">
+									@{ Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable }); }
+								</div>
+
 								Html.RenderWidget("order_summary_totals_after");
 							}
 						</div>

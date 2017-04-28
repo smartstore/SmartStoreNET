@@ -438,7 +438,6 @@
         cursor: pointer;
         padding: 0.5rem 0;
         margin: 0;
-        //font-weight: normal;
 
         &:after {
             @include fontawesome("\f106");
@@ -456,7 +455,12 @@
     }
 
     .cart-action-body {
-        margin-bottom: 1rem;
+        padding-top: 0.5rem;
+        padding-bottom: 1rem;
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
     }
 
     &:first-child .cart-action-title {

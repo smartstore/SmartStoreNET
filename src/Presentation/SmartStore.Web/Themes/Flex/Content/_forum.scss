@@ -126,11 +126,11 @@ $forum-unobstrusive-link-color: #646464;
 	padding: 15px 0 0 0;
 }
 .basic-search,
-#advanced-search-block {
-	label {
-		padding-right: 10px;
-		text-align: right;
-	}
+#advanced-search-block label {
+	padding-right: 10px;
+    @include media-breakpoint-up(sm) { 
+	    text-align: right;
+    }
 }
 #advanced-search-block,
 .search-input,

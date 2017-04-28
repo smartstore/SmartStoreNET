@@ -52,19 +52,19 @@
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">@T("Forum.Search.SearchInForum")</label>
                         <div class="col-sm-8">
-                            @Html.DropDownList("forumId", new SelectList(Model.ForumList, "Value", "Text", Model.ForumIdSelected))
+                            @Html.DropDownList("forumId", new SelectList(Model.ForumList, "Value", "Text", Model.ForumIdSelected), new { @class = "form-control" })
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">@T("Forum.Search.SearchWithin")</label>
                         <div class="col-sm-8">
-                            @Html.DropDownList("within", new SelectList(Model.WithinList, "Value", "Text", Model.WithinSelected))
+                            @Html.DropDownList("within", new SelectList(Model.WithinList, "Value", "Text", Model.WithinSelected), new { @class = "form-control" })
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">@T("Forum.Search.LimitResultsToPrevious")</label>
                         <div class="col-sm-8">
-                            @Html.DropDownList("limitDays", new SelectList(Model.LimitList, "Value", "Text", Model.LimitDaysSelected))
+                            @Html.DropDownList("limitDays", new SelectList(Model.LimitList, "Value", "Text", Model.LimitDaysSelected), new { @class = "form-control" })
                         </div>
                     </div>
                 </div>

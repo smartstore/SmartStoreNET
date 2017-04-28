@@ -10,11 +10,12 @@
             var item = Model.Posts[i];
             
             <div class="card mt-3">
-                <div class="card-header">
-                    <span class="mr-1">@T("Profile.Topic"):</span>
-                    @Html.RouteLink(item.ForumTopicTitle, "TopicSlug", new { id = item.ForumTopicId, slug = item.ForumTopicSlug })
-
-                    <div class="float-right">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div>
+                        <span class="mr-1">@T("Profile.Topic"):</span>
+                        @Html.RouteLink(item.ForumTopicTitle, "TopicSlug", new { id = item.ForumTopicId, slug = item.ForumTopicSlug })
+                    </div>
+                    <div class="text-muted">
                         <span>@T("Profile.PostedOn")</span>: <span>@item.Posted</span>
                     </div>
                 </div>

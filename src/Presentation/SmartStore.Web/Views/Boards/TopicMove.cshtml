@@ -16,7 +16,7 @@
             <h4 class="my-3">@T("Forum.SelectTheForumToMoveTopic")</h4>
 
             <div>
-                @Html.DropDownList("ForumSelected", new SelectList(Model.ForumList, "Value", "Text"))
+                @Html.DropDownList("ForumSelected", new SelectList(Model.ForumList, "Value", "Text"), new { @class = "form-control" })
             </div>
 
             <div class="options my-3">

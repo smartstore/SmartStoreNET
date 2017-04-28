@@ -46,7 +46,7 @@
             <div class="form-group row">
                 <label class="col-sm-3 col-form-label">@T("Forum.Priority")</label>
                 <div class="col-sm-9">
-                    @Html.DropDownList("TopicTypeId", new SelectList(@Model.TopicPriorities, "Value", "Text", @Model.TopicTypeId))
+                    @Html.DropDownList("TopicTypeId", new SelectList(@Model.TopicPriorities, "Value", "Text", @Model.TopicTypeId), new { @class = "form-control" } )
                 </div>
             </div>
         }

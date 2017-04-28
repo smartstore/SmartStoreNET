@@ -15,7 +15,7 @@
 
 <div class="page payment-method-page">
     <div class="page-title">
-        <h1>@T("Checkout.SelectPaymentMethod")</h1>
+        <h1 class="h3">@T("Checkout.SelectPaymentMethod")</h1>
     </div>
 
     <div class="page-body checkout-data">
@@ -39,7 +39,7 @@
 				<div id="@Model.GetWidgetId"></div>
 			</div>
 
-            <div class="buttons clearfix mt-3">
+            <div class="buttons mt-3">
                 <a class="btn btn-secondary btn-lg" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
                     <i class="fa fa-angle-left"></i>
                     <span>@T("Common.Back")</span>

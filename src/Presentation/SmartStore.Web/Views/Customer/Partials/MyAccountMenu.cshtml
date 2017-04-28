@@ -36,7 +36,7 @@
 				<span>@T("Account.CustomerOrders")</span>
             </a>
 		}
-        @if (true /*!Model.HideReturnRequests*/)
+        @if (!Model.HideReturnRequests)
 		{ 
             <a href="@Url.Action("ReturnRequests", "Customer")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "returnrequests" ? " active" : "")">
 				<i class="fa fa-fw fa-truck list-group-item-icon"></i>

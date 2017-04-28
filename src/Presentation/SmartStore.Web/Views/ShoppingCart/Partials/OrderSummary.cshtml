@@ -104,16 +104,17 @@
 							}
 						</div>
 						<div class="col-md-6">
-							@if (Model.IsEditable && Model.MinOrderSubtotalWarning.HasValue())
-							{
-								<div class="alert alert-warning">
-									@Model.MinOrderSubtotalWarning
-								</div>
-							}
-							@{ 
+							@{
 								if (Model.IsEditable)
 								{
 									Html.RenderPartial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary());
+
+									if (Model.MinOrderSubtotalWarning.HasValue())
+									{
+										<div class="alert alert-warning">
+											@Model.MinOrderSubtotalWarning
+										</div>
+									}
 								}
 								Html.RenderWidget("order_summary_totals_before");
 
@@ -152,13 +153,16 @@
 								</button>
 							</div>
 
-							<div class="addon-buttons">
-								@*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
-								@foreach (var item in Model.ButtonPaymentMethods.Items)
+							if (Model.ButtonPaymentMethods.Items.Any())
+							{
+								<div class="addon-buttons">
+									@*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
+									@foreach (var item in Model.ButtonPaymentMethods.Items)
 								{
 									Html.RenderAction(item.ActionName, item.ControllerName, item.RouteValues);
 								}
-							</div>
+								</div>
+							}
 						}
 					</div>
 				</div>

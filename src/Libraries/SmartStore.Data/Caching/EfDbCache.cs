@@ -64,7 +64,7 @@ namespace SmartStore.Data.Caching
 			}
 		}
 
-		private bool IsTocix(IEnumerable<string> entitySets)
+		private bool IsToxic(IEnumerable<string> entitySets)
 		{
 			return entitySets.Any(x => _toxicSets.Contains(x));
 		}
@@ -88,7 +88,7 @@ namespace SmartStore.Data.Caching
 
 		public virtual DbCacheEntry RequestPut(string key, object value, string[] dependentEntitySets)
 		{
-			if (!Enabled || IsTocix(dependentEntitySets))
+			if (!Enabled || IsToxic(dependentEntitySets))
 			{
 				return null;
 			}
@@ -118,7 +118,7 @@ namespace SmartStore.Data.Caching
 		{
 			Guard.NotNull(entitySets, nameof(entitySets));
 
-			if (!Enabled || !entitySets.Any() || IsTocix(entitySets))
+			if (!Enabled || !entitySets.Any() || IsToxic(entitySets))
 				return;
 
 			var sets = entitySets.Distinct().ToArray();
@@ -215,7 +215,7 @@ namespace SmartStore.Data.Caching
 
 		public virtual DbCacheEntry Put(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan? duration)
 		{
-			if (!Enabled || IsTocix(dependentEntitySets))
+			if (!Enabled || IsToxic(dependentEntitySets))
 			{
 				return null;
 			}
@@ -256,7 +256,7 @@ namespace SmartStore.Data.Caching
 		{
 			Guard.NotNull(entitySets, nameof(entitySets));
 
-			if (!Enabled || !entitySets.Any() || IsTocix(entitySets))
+			if (!Enabled || !entitySets.Any() || IsToxic(entitySets))
 				return;
 
 			var sets = entitySets.Distinct().ToArray();

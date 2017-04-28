@@ -137,7 +137,7 @@ namespace SmartStore.Services.Discounts
                 {
                     // The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
                     // That's why we pass the date value
-                    var nowUtc = DateTime.UtcNow;
+                    var nowUtc = DateTime.UtcNow.Date;
                     query = query.Where(d =>
                         (!d.StartDateUtc.HasValue || d.StartDateUtc <= nowUtc)
                         && (!d.EndDateUtc.HasValue || d.EndDateUtc >= nowUtc));

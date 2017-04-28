@@ -43,15 +43,9 @@ namespace SmartStore.DevTools.Services
 
 		public void StepStop(string key)
 		{
-			if (this.Profiler == null)
-			{
-				return;
-			}
-
-			IDisposable step;
 			if (_steps.ContainsKey(key) && _steps[key].Count > 0)
 			{
-				step = _steps[key].Pop();
+				var step = _steps[key].Pop();
 				step.Dispose();
 				if (_steps[key].Count == 0)
 				{

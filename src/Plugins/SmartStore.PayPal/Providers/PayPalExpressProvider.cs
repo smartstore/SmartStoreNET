@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Controllers;
@@ -20,6 +21,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
+using SmartStore.Services.Tax;
 
 namespace SmartStore.PayPal
 {
@@ -30,7 +32,8 @@ namespace SmartStore.PayPal
     {
         private readonly ICurrencyService _currencyService;
         private readonly IPriceCalculationService _priceCalculationService;
-        private readonly IGenericAttributeService _genericAttributeService;
+		private readonly ITaxService _taxService;
+		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IGiftCardService _giftCardService;
         private readonly IShippingService _shippingService;
@@ -41,7 +44,8 @@ namespace SmartStore.PayPal
         public PayPalExpressProvider(
             ICurrencyService currencyService,
             IPriceCalculationService priceCalculationService,
-            IGenericAttributeService genericAttributeService,
+			ITaxService taxService,
+			IGenericAttributeService genericAttributeService,
             IStateProvinceService stateProvinceService,
             IGiftCardService giftCardService,
             IShippingService shippingService,
@@ -51,6 +55,7 @@ namespace SmartStore.PayPal
         {
             _currencyService = currencyService;
             _priceCalculationService = priceCalculationService;
+			_taxService = taxService;
             _genericAttributeService = genericAttributeService;
             _stateProvinceService = stateProvinceService;
             _giftCardService = giftCardService;
@@ -154,12 +159,14 @@ namespace SmartStore.PayPal
 
         public SetExpressCheckoutResponseType SetExpressCheckout(PayPalProcessPaymentRequest processPaymentRequest, IList<OrganizedShoppingCartItem> cart)
         {
-            var result = new SetExpressCheckoutResponseType();
+			var result = new SetExpressCheckoutResponseType();
 			var store = Services.StoreService.GetStoreById(processPaymentRequest.StoreId);
+			var customer = Services.WorkContext.CurrentCustomer;
 			var settings = Services.Settings.LoadSetting<PayPalExpressPaymentSettings>(processPaymentRequest.StoreId);
 			var payPalCurrency = GetApiCurrency(store.PrimaryStoreCurrency);
-            
-            var req = new SetExpressCheckoutReq
+			var excludingTax = (Services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id) == TaxDisplayType.ExcludingTax);
+
+			var req = new SetExpressCheckoutReq
             {
                 SetExpressCheckoutRequest = new SetExpressCheckoutRequestType
                 {
@@ -180,45 +187,53 @@ namespace SmartStore.PayPal
                 NoShipping = settings.NoShipmentAddress.ToString()
             };
 
-            // populate cart
-            decimal itemTotal = decimal.Zero;
+			// populate cart
+			var taxRate = decimal.Zero;
+			var unitPriceTaxRate = decimal.Zero;
+			var itemTotal = decimal.Zero;
             var cartItems = new List<PaymentDetailsItemType>();
-            foreach (OrganizedShoppingCartItem item in cart)
-            {
-                decimal shoppingCartUnitPriceWithDiscountBase = _priceCalculationService.GetUnitPrice(item, true);
-                decimal shoppingCartUnitPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartUnitPriceWithDiscountBase, Services.WorkContext.WorkingCurrency);
-                decimal priceIncludingTier = shoppingCartUnitPriceWithDiscount;
 
-                cartItems.Add(new PaymentDetailsItemType()
+            foreach (var item in cart)
+            {
+				var product = item.Item.Product;
+				var unitPrice = _priceCalculationService.GetUnitPrice(item, true);
+				var shoppingCartUnitPriceWithDiscount = excludingTax 
+					? _taxService.GetProductPrice(product, unitPrice, false, customer, out taxRate)
+					: _taxService.GetProductPrice(product, unitPrice, true, customer, out unitPriceTaxRate);
+
+                cartItems.Add(new PaymentDetailsItemType
                 {
-                    Name = item.Item.Product.Name,
-                    Number = item.Item.Product.Sku,
+                    Name = product.Name,
+                    Number = product.Sku,
                     Quantity = item.Item.Quantity.ToString(),
-                    Amount = new BasicAmountType()  // this is the per item cost
+					// this is the per item cost
+					Amount = new BasicAmountType
                     {
 						currencyID = payPalCurrency,
-                        Value = (priceIncludingTier).ToString("N", new CultureInfo("en-us"))
+                        Value = shoppingCartUnitPriceWithDiscount.FormatInvariant()
                     }
                 });
-                itemTotal += (item.Item.Quantity * priceIncludingTier);
+
+                itemTotal += (item.Item.Quantity * shoppingCartUnitPriceWithDiscount);
             };
 
             // additional handling fee
             var additionalHandlingFee = GetAdditionalHandlingFee(cart);
-            cartItems.Add(new PaymentDetailsItemType()
+            cartItems.Add(new PaymentDetailsItemType
             {
                 Name = T("Plugins.Payments.PayPal.PaymentMethodFee").Text,
                 Quantity = "1",
                 Amount = new BasicAmountType()  
                 {
 					currencyID = payPalCurrency,
-                    Value = (additionalHandlingFee).ToString("N", new CultureInfo("en-us"))
+                    Value = additionalHandlingFee.FormatInvariant()
                 }
             });
+
             itemTotal += GetAdditionalHandlingFee(cart);
 
             //shipping
-            decimal shippingTotal = decimal.Zero;
+            var shippingTotal = decimal.Zero;
             if (cart.RequiresShipping())
             {
                 decimal? shoppingCartShippingBase = OrderTotalCalculationService.GetShoppingCartShippingTotal(cart);
@@ -253,27 +268,22 @@ namespace SmartStore.PayPal
             //decimal shoppingCartTax = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTaxBase, CommonServices.WorkContext.WorkingCurrency);
             
             // discount
-            decimal discount = -processPaymentRequest.Discount;
-
+            var discount = -processPaymentRequest.Discount;
             if (discount != 0)
             {
-                cartItems.Add(new PaymentDetailsItemType()
+                cartItems.Add(new PaymentDetailsItemType
                 {
                     Name = T("Plugins.Payments.PayPal.ThreadrockDiscount").Text,
                     Quantity = "1",
-                    Amount = new BasicAmountType() // this is the total discount
+                    Amount = new BasicAmountType // this is the total discount
                     {
 						currencyID = payPalCurrency,
-                        Value = discount.ToString("N", new CultureInfo("en-us"))
+                        Value = discount.FormatInvariant()
                     }
                 });
 
                 itemTotal += discount;
             }
-
-            // get customer
-            int customerId = Convert.ToInt32(Services.WorkContext.CurrentCustomer.Id.ToString());
-            var customer = _customerService.GetCustomerById(customerId);
 
             if (!cart.IsRecurring())
             {
@@ -294,14 +304,14 @@ namespace SmartStore.PayPal
 
                             decimal amountToSubtract = -amountCanBeUsed;
 
-                            cartItems.Add(new PaymentDetailsItemType()
+                            cartItems.Add(new PaymentDetailsItemType
                             {
                                 Name = T("Plugins.Payments.PayPal.GiftcardApplied").Text,
                                 Quantity = "1",
-                                Amount = new BasicAmountType()
+                                Amount = new BasicAmountType
                                 {
 									currencyID = payPalCurrency,
-                                    Value = amountToSubtract.ToString("N", new CultureInfo("en-us"))
+                                    Value = amountToSubtract.FormatInvariant()
                                 }
                             });
 
@@ -317,12 +327,12 @@ namespace SmartStore.PayPal
             {
                 ItemTotal = new BasicAmountType
                 {
-                    Value = Math.Round(itemTotal, 2).ToString("N", new CultureInfo("en-us")),
+                    Value = Math.Round(itemTotal, 2).FormatInvariant(),
 					currencyID = payPalCurrency
                 },
                 ShippingTotal = new BasicAmountType
                 {
-                    Value = Math.Round(shippingTotal, 2).ToString("N", new CultureInfo("en-us")),
+                    Value = Math.Round(shippingTotal, 2).FormatInvariant(),
 					currencyID = payPalCurrency
                 },
                 //TaxTotal = new BasicAmountType
@@ -332,7 +342,7 @@ namespace SmartStore.PayPal
                 //},
                 OrderTotal = new BasicAmountType
                 {
-                    Value = Math.Round(itemTotal + shippingTotal, 2).ToString("N", new CultureInfo("en-us")),
+                    Value = Math.Round(itemTotal + shippingTotal, 2).FormatInvariant(),
 					currencyID = payPalCurrency
                 },
                 Custom = processPaymentRequest.OrderGuid.ToString(),

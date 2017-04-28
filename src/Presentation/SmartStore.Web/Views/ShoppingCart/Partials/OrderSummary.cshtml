@@ -91,86 +91,74 @@
 
 				<div class="cart-footer rounded-bottom">
 					<div class="row">
-						<div class="col-md-6 text-left align-self-end">
-                            @if (Model.IsEditable)
-                            {
-                                <button type="submit" name="continueshopping" value="continueshopping" class="btn btn-secondary continue-shopping-button">
-                                    <i class="fa fa-angle-left"></i>
-                                    <span>@T("ShoppingCart.ContinueShopping")</span>
-                                </button>
-                            }
+						<div class="col-md-6">
+							@if (Model.IsEditable)
+							{
+								Html.RenderWidget("order_summary_actions_before");
+								Html.RenderPartial("_DiscountBox", Model.DiscountBox);
+								Html.RenderPartial("_GiftCardBox", Model.GiftCardBox);
+								Html.RenderPartial("EstimateShipping", Model.EstimateShipping);
+								Html.RenderWidget("order_summary_actions_after");
+							}
 						</div>
-						<div id="order-totals" class="col-md-6">
-							@{ Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable }); }
+						<div class="col-md-6" id="order-totals">
+							@if (Model.IsEditable && Model.MinOrderSubtotalWarning.HasValue())
+							{
+								<div class="alert alert-warning">
+									@Model.MinOrderSubtotalWarning
+								</div>
+							}
+							@{ 
+								if (Model.IsEditable)
+								{
+									Html.RenderPartial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary());
+								}
+								Html.RenderWidget("order_summary_totals_before");
+								Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable });
+								Html.RenderWidget("order_summary_totals_after");
+							}
 						</div>
 					</div>
 				</div>
 			</div>
 
-            if (Model.IsEditable)
-            {
-                <div class="cart-footer row mt-5">
-                    <div class="col-lg-8">
+			if (Model.IsEditable)
+			{
+				Html.RenderWidget("order_summary_buttons_before");
 
-                        @{ Html.RenderWidget("order_summary_content_totals_left"); }
+				<div class="cart-buttons my-4 row">
+					<div class="col-sm-6 col-lg-4 order-last order-sm-first mt-3 mt-sm-0">
+						<button class="btn btn-secondary btn-block btn-lg btn-continue-shopping" type="submit" name="continueshopping" value="continueshopping">
+							<i class="fa fa-angle-left mr-3"></i>
+							<span>@T("ShoppingCart.ContinueShopping")</span>
+						</button>
+					</div>
+					<div class="col-sm-6 col-lg-4 ml-lg-auto">
+						@if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
+						{
+							<div class="checkout-buttons">
+								<input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" class="d-none" />
+								<button type="button" id="checkout" name="checkout"
+										class="btn btn-danger btn-lg btn-block btn-checkout"
+										onclick="$('#startcheckout').trigger('click'); return false;">
+									<span>@T("Checkout.Button")</span>
+									<i class="fa fa-angle-right ml-3"></i>
+								</button>
+							</div>
 
-                        <div class="row">
-                            <!-- Discount Code, Gift Cards, Estimate shipping -->
-                            <div class="col-sm-6">
-                                @{
-                                    Html.RenderPartial("_DiscountBox", Model.DiscountBox);
-                                    Html.RenderPartial("_GiftCardBox", Model.GiftCardBox);
-                                }
-                                @{ Html.RenderWidget("order_summary_content_deals"); }
-                            </div>
+							<div class="addon-buttons">
+								@*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
+								@foreach (var item in Model.ButtonPaymentMethods.Items)
+								{
+									Html.RenderAction(item.ActionName, item.ControllerName, item.RouteValues);
+								}
+							</div>
+						}
+					</div>
+				</div>
 
-                            <!-- Checkout attributes -->
-                            <div class="col-sm-6">
-                                @{
-                                    Html.RenderPartial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary());
-                                    Html.RenderPartial("EstimateShipping", Model.EstimateShipping);
-                                }
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Totals -->
-                    <div class="col-lg-4">
-                        @if (!String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
-                        {
-                            <div class="alert alert-info mt-0">
-                                @Model.MinOrderSubtotalWarning
-                            </div>
-                        }
-                    
-                        @{ Html.RenderWidget("order_summary_content_totals_bottom"); }
-
-                        @if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
-                        {
-                            <div class="checkout-buttons clearfix">
-                                <input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" class="d-none" />
-                                <button type="button"
-                                        class="btn btn-danger btn-lg btn-large pull-right checkout-button"
-                                        id="checkout"
-                                        name="checkout"
-                                        onclick="$('#startcheckout').trigger('click'); return false;">
-                                    <span>@T("Checkout.Button")</span>
-                                    <i class="fa fa-angle-right"></i>
-                                </button>
-
-                            </div>
-
-                            <div class="addon-buttons">
-                                @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
-                                @foreach (var item in Model.ButtonPaymentMethods.Items)
-                                {
-                                    Html.RenderAction(item.ActionName, item.ControllerName, item.RouteValues);
-                                }
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
+				Html.RenderWidget("order_summary_buttons_after");
+			}
         }
 
         Html.RenderWidget("order_summary_content_after");

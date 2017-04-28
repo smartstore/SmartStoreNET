@@ -1,4 +1,5 @@
 /// <reference path="_variables.scss" />
+/// <reference path="shared/_mixins.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 // General
@@ -354,6 +355,10 @@
 .cart-footer {
     background-color: $cart-footer-bg;
     padding: 1rem;
+
+    .alert {
+        border: 1px solid rgba(#000, 0.08);
+    }
 }
 
 .cart-summary {
@@ -395,6 +400,11 @@
     }
 }
 
+.cart-checkout-attributes {
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(#000, 0.12);
+}
+
 
 .order-summary-content .selected-checkout-attributes,
 .order-details .checkout-attributes {
@@ -414,4 +424,42 @@
 .table-order-products .remove,
 .table-order-products .addtocart {
     text-align: center;
+}
+
+
+// Collapsible cart action boxes
+// =================================
+
+.cart-action {
+    position: relative;
+
+    .cart-action-title {
+        position: relative;
+        cursor: pointer;
+        padding: 0.5rem 0;
+        margin: 0;
+        //font-weight: normal;
+
+        &:after {
+            @include fontawesome("\f106");
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%) rotate(0);
+            transition: transform 0.15s linear;
+        }
+
+        &.collapsed:after {
+            //content: "\f107";
+            transform: translateY(-50%) rotate(180deg);
+        }
+    }
+
+    .cart-action-body {
+        margin-bottom: 1rem;
+    }
+
+    &:first-child .cart-action-title {
+        padding-top: 0;
+    }
 }

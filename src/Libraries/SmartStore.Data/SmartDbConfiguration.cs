@@ -27,7 +27,7 @@ namespace SmartStore.Data
 			{
 				base.SetDefaultConnectionFactory(provider.GetConnectionFactory());
 
-				if (HostingEnvironment.IsHosted && !CommonHelper.IsDevEnvironment && DataSettings.DatabaseIsInstalled())
+				if (HostingEnvironment.IsHosted && DataSettings.DatabaseIsInstalled())
 				{
 					// prepare EntityFramework 2nd level cache
 					IDbCache cache = null;
@@ -43,8 +43,10 @@ namespace SmartStore.Data
 					var cacheInterceptor = new CacheTransactionInterceptor(cache);
 					AddInterceptor(cacheInterceptor);
 
-					Loaded +=
-					  (sender, args) => args.ReplaceService<DbProviderServices>((s, _) => new CachingProviderServices(s, cacheInterceptor));
+					if (true /*!CommonHelper.IsDevEnvironment*/)
+					{
+						Loaded += (sender, args) => args.ReplaceService<DbProviderServices>((s, _) => new CachingProviderServices(s, cacheInterceptor));
+					}
 				}
 			}
 		}

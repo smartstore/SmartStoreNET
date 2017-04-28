@@ -545,6 +545,10 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("ShoppingCart.UnitPrice", "Price", "Preis");
 
+			builder.AddOrUpdate("ShoppingCart.DiscountCouponCode", "I have a discount code", "Ich habe einen Rabattcode");
+			builder.AddOrUpdate("ShoppingCart.GiftCardCouponCode", "I have a gift card", "Ich habe einen Gutschein");
+			builder.AddOrUpdate("ShoppingCart.EstimateShipping", "Estimate shipping", "Versandkosten schätzen");
+
 			builder.AddOrUpdate("PageTitle.Blog.Month", "Blog entries in {0}", "Blog Einträge des Monats {0}");
             builder.AddOrUpdate("PageTitle.Blog.Tag", "Blog entries for the tag {0}", "Blog-Einträge für das Stichwort {0}");
             builder.AddOrUpdate("Metadesc.Blog.Month", "Blog entries in {0}", "Blog Einträge des Monats {0}");

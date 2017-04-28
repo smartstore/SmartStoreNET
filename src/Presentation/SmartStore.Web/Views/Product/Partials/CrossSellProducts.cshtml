@@ -9,11 +9,13 @@
 	}
 }
 
-<div class="block product-grid cross-sells">
-    <div class="block-title cross-sells-title">
-		<h3>@T("ShoppingCart.CrossSells")</h3> 
+<div class="block block-boxed cross-sells">
+    <div class="block-title">
+		<h4>@T("ShoppingCart.CrossSells")</h4> 
     </div>
-    <div class="block-body">
-		@{ Html.RenderPartial("Product.List", Model); }
+    <div class="block-body pt-0">
+		<div class="artlist-carousel">
+			@{ Html.RenderPartial("Product.List", Model); }
+		</div>
     </div>
 </div>

@@ -20,8 +20,8 @@
 
                     @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
                     {
-                        <div class="cart-item-desc text-smaller text-muted">
-                            @Html.Raw(item.ShortDesc.Truncate(180, "..."))
+                        <div class="cart-item-desc text-muted">
+                            @Html.Raw(item.ShortDesc.Truncate(250, "..."))
                         </div>
                     }
 
@@ -33,12 +33,6 @@
                     }
 
                     <div class="cart-item-attributes text-smaller my-2">
-
-                        <div class="text-nowrap row cart-item-attr d-none d-md-flex d-lg-none">
-                            <span class="col-3">@T("Order.Product(s).Price"):</span>
-                            <span class="col-9">@item.UnitPrice</span>
-                        </div>
-
                         @if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
                         {
                             <div class="deliverytime-group row cart-item-attr">
@@ -79,24 +73,29 @@
                             @Html.Raw(item.RecurringInfo)
                         </div>
                     }
-                    @if (!Model.IsEditable && item.IsDownload && item.HasUserAgreement)
-                    {
-                        <div class="download-agreement checkbox">
-                            <label class="form-check-label">
-                                <input type="checkbox" name="AgreeUserAgreement@(item.ProductId)" class="form-check-input" />
-                                @T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)
-                            </label>
-                        </div>
-                    }
-                    @if (!Model.IsEditable && Model.DisplayEsdRevocationWaiverBox && item.IsEsd)
-                    {
-                        <div class="esd-revocation-waiver checkbox">
-                            <label class="form-check-label">
-                                <input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)" class="form-check-input" />
-                                @T("Checkout.EsdRevocationWaiverConfirmation")
-                            </label>
-                        </div>
-                    }
+					@if (!Model.IsEditable && (item.IsDownload && item.HasUserAgreement) || (Model.DisplayEsdRevocationWaiverBox && item.IsEsd))
+					{
+						<div class="alert alert-warning mb-0">
+							@if (item.IsDownload && item.HasUserAgreement)
+							{
+								<div class="download-agreement form-check">
+									<label class="form-check-label">
+										<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)" class="form-check-input" />
+										<span>@T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)</span>
+									</label>
+								</div>
+							}
+							@if (Model.DisplayEsdRevocationWaiverBox && item.IsEsd)
+							{
+								<div class="esd-revocation-waiver form-check">
+									<label class="form-check-label">
+										<input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)" class="form-check-input" />
+										<span>@T("Checkout.EsdRevocationWaiverConfirmation")</span>
+									</label>
+								</div>
+							}
+						</div>
+					}
                     @if (item.Warnings.Count > 0)
                     {
                         <div class="alert alert-danger">

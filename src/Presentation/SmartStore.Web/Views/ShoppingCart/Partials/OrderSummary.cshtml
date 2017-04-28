@@ -1,6 +1,12 @@
 ﻿@model ShoppingCartModel
+
 @using SmartStore.Core.Domain.Orders;
 @using SmartStore.Web.Models.ShoppingCart;
+
+@{ 
+	//Model.NewsLetterSubscription = CheckoutNewsLetterSubscription.Activated;
+	//Model.ThirdPartyEmailHandOver = CheckoutThirdPartyEmailHandOver.Activated;
+}
 
 <div class="order-summary-content">
 
@@ -22,19 +28,19 @@
             <div class="card-block">
                 @if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
                 {
-                    <div class="checkbox">
+                    <div class="form-check">
                         <label class="form-check-label">
                             <input type="checkbox" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
-                            @T("Checkout.SubscribeToNewsLetter")
+                            <span>@T("Checkout.SubscribeToNewsLetter")</span>
                         </label>
                     </div>
                 }
                 @if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
                 {
-                    <div class="checkbox">
+                    <div class="form-check">
                         <label class="form-check-label">
                             <input type="checkbox" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
-                            @Model.ThirdPartyEmailHandOverLabel
+                            <span>@Model.ThirdPartyEmailHandOverLabel</span>
                         </label>
                     </div>
                 }
@@ -158,9 +164,9 @@
 								<div class="addon-buttons">
 									@*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
 									@foreach (var item in Model.ButtonPaymentMethods.Items)
-								{
-									Html.RenderAction(item.ActionName, item.ControllerName, item.RouteValues);
-								}
+									{
+										Html.RenderAction(item.ActionName, item.ControllerName, item.RouteValues);
+									}
 								</div>
 							}
 						}

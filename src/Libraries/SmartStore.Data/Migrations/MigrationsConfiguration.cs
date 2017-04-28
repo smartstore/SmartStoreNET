@@ -137,6 +137,13 @@ namespace SmartStore.Data.Migrations
 				setting.Value = "100";
 			}
 
+			// Change shoppingcartsettings.crosssellsnumber (to 24)
+			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "shoppingcartsettings.crosssellsnumber");
+			if (setting != null && setting.Value.Convert<int?>() < 24)
+			{
+				setting.Value = "24";
+			}
+
 			// Change CatalogSettings.ShowProductsFromSubcategories (to true)
 			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.ShowProductsFromSubcategories");
 			if (setting != null)

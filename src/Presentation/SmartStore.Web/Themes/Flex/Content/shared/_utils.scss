@@ -76,6 +76,10 @@ code {
     font-weight: 400;
 }
 
+.card-block > *:last-child {
+    margin-bottom: 0 !important;
+}
+
 
 // Dropdowns
 // ==============================================================

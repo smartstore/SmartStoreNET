@@ -126,6 +126,10 @@
 			</div>
 
 			<div class="card-footer d-flex p-0">
+				<a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("Details", "Order", new { id = order.Id })" rel="nofollow">
+					<i class="fa fa-list-alt"></i>
+					<span>@T("Order.OrderDetails")</span>
+				</a>
 				@if (order.IsReturnRequestAllowed)
 				{
 					<a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = order.Id })" rel="nofollow">
@@ -133,10 +137,6 @@
 						<span>@T("Account.CustomerOrders.ReturnItems")</span>
 					</a>
 				}
-				<a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("Details", "Order", new { id = order.Id })" rel="nofollow">
-					<i class="fa fa-list-alt"></i>
-					<span>@T("Order.OrderDetails")</span>
-				</a>
 			</div>
         </div>
     }

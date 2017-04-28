@@ -423,7 +423,6 @@ namespace SmartStore.Web.Controllers
 					x.ForceRedirectionAfterAddingToCart = true;
 				});
 
-				// TODO: (mc) Display this as carousel/slider
 				var model = _helper.MapProductSummaryModel(products, settings);
 
 				return PartialView(model);

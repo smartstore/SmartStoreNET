@@ -269,32 +269,12 @@ $costep-active-label-color:     $costep-label-color;
 /* Checkout Data
 ================================================ */
 
-.checkout-data .select-address-title,
-.checkout-data .enter-address-title {
-	padding: 10px 10px 5px 0;
-	font-family: 'Segoe UI light','Segoe UI'; 
-	font-weight: 100; 
-	color: #aaa;
-}
 .checkout-data .buttons {
 	padding-top: 1rem;
     display: flex;
     justify-content: space-between;
 }
 
-.checkout-data .payment-info {
-	padding: 10px 0;
-	border-top: 1px solid #d7d7d7;
-	border-bottom: 1px solid #d7d7d7;
-}
-
-.order-details-table .item-box {
-	padding: 10px;
-	margin: 0 20px 20px 0;
-}
-.order-details-table .shippinginfo .item-box {
-	margin-right: 0;
-}
 
 /* Checkout Confirm
 ================================================ */
@@ -317,39 +297,6 @@ $costep-active-label-color:     $costep-label-color;
 .checkout-data .change-checkout-data {
 	font-weight: normal;
 	text-transform: none;
-    /*
-	color: @linkColor;
-	&:hover { color: @linkColorHover }
-    */
-}
-
-.checkout-confirm-page .comment-box textarea {
-    width: 99%;
-    height: 50px;
-}
-
-.checkout-confirm-page .order-summary-content form {
-    border: 1px solid #bbb;
-    border-bottom: none;
-    background: #efefef;
-    margin: 0 !important;
-    & > .card {
-        border: none;
-    }
-}
-.checkout-confirm-page .checkout-data > .confirm-order {
-    border: 1px solid #bbb;
-    background: #efefef;
-    border-top: none;
-    padding: 20px;
-    margin-bottom: 30px;
-}
-.checkout-confirm-page .confirm-order-legal-hint {
-    border-left: 1px solid #bbb !important;
-    border-right: 1px solid #bbb !important;
-    margin: auto;
-    text-align: center;
-    //.border-radius(0);
 }
 
 

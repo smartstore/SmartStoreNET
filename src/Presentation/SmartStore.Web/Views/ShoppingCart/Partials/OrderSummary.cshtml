@@ -42,13 +42,6 @@
         </div>
     }
 
-    @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
-    {
-        <div class="selected-checkout-attributes card card-block text-left">
-            @Html.Raw(Model.CheckoutAttributeInfo)
-        </div>
-    }
-
     @if (Model.Items.Count > 0)
     {
         if (Model.Warnings.Count > 0)
@@ -67,7 +60,7 @@
         using (Html.BeginRouteForm("ShoppingCart", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             <div class="card">
-				<div id="cart-items" class="cart cart-editable mb-0">
+				<div id="cart-items" class="cart mb-0@(Model.IsEditable ? " cart-editable" : "")">
 					<div class="cart-head">
 						<div class="cart-row">
 							<div class="cart-col cart-col-main">
@@ -99,6 +92,15 @@
 								Html.RenderPartial("_GiftCardBox", Model.GiftCardBox);
 								Html.RenderPartial("EstimateShipping", Model.EstimateShipping);
 								Html.RenderWidget("order_summary_actions_after");
+							}
+							else
+							{
+								if (Model.CheckoutAttributeInfo.HasValue())
+								{
+									<div class="selected-checkout-attributes">
+										@Html.Raw(Model.CheckoutAttributeInfo)
+									</div>
+								}
 							}
 						</div>
 						<div class="col-md-6" id="order-totals">

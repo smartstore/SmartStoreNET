@@ -81,29 +81,27 @@
             <div class="confirm-order">
                 @if (Model.Warnings.Count > 0)
 				{
-					<p>
-						<div class="alert alert-danger">
-							<ul>
-								@for (int i = 0; i < Model.Warnings.Count; i++)
-								{
-									<li>@Html.Raw(Model.Warnings[i])</li>
-								}
-							</ul>
-						</div>
-					</p>
+					<div class="alert alert-danger">
+						<ul>
+							@for (int i = 0; i < Model.Warnings.Count; i++)
+							{
+								<li>@Html.Raw(Model.Warnings[i])</li>
+							}
+						</ul>
+					</div>
 				}
             </div>  
 		}
         
         @{ Html.RenderWidget("checkout_confirm_before_summary"); }
 
-        <div class="order-summary-body">
+        <div class="order-summary-body mb-4">
             @{ Html.RenderAction("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true }); }
         </div>
 
         @if (Model.ShowConfirmOrderLegalHint) 
         { 
-            <div class="confirm-order-legal-hint alert alert-info">
+            <div class="confirm-order-legal-hint alert alert-warning">
                 @T("OrderSummary.ConfirmOrderLegalHint")
             </div>
         }
@@ -201,7 +199,7 @@
                     
                     <button class="btn btn-danger btn-lg confirm-order-next-step-button" onclick="return false;" >
                         <span>@T("Checkout.ConfirmButton")</span>
-                        <i class="fa fa-fw fa-angle-right"></i> 
+                        <i class="fa fa-angle-right ml-5"></i> 
                     </button>
                 }
             </div>

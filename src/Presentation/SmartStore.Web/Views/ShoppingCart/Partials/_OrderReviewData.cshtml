@@ -6,9 +6,9 @@
         <div class="row">
             <div class="billinginfo col-md-6 mb-3">
                 <div class="card">
-                    <div class="card-header h5">
-                        <span>@T("Order.BillingAddress")</span>
-                        <a class="change-checkout-data pull-right" href='@Url.Action("BillingAddress", "Checkout")'>@T("Common.Change")</a>
+                    <div class="card-header d-flex flex-nowrap justify-content-between">
+                        <h5 class="m-0">@T("Order.BillingAddress")</h5>
+                        <a class="change-checkout-data" href='@Url.Action("BillingAddress", "Checkout")'>@T("Common.Change")</a>
                     </div>
                     <div class="card-block">
                         <div class="name">
@@ -83,9 +83,9 @@
             {
                 <div class="shippinginfo col-md-6 mb-3">
                     <div class="card">
-                        <div class="card-header h5">
-                            <span>@T("Order.ShippingAddress")</span>
-                            <a class="change-checkout-data pull-right" href='@Url.Action("ShippingAddress", "Checkout")'>@T("Common.Change")</a>
+                        <div class="card-header d-flex flex-nowrap justify-content-between">
+                            <h5 class="m-0">@T("Order.ShippingAddress")</h5>
+                            <a class="change-checkout-data" href='@Url.Action("ShippingAddress", "Checkout")'>@T("Common.Change")</a>
                         </div>
                         <div class="card-block">
                             <div class="name">
@@ -164,11 +164,11 @@
         {
             <div class="payment-method mb-3">
                 <div class="card">
-                    <div class="card-header h5">
-                        <span>@T("Order.PaymentMethod")</span>
+                    <div class="card-header d-flex flex-nowrap justify-content-between">
+                        <h5 class="m-0">@T("Order.PaymentMethod")</h5>
 						@if (!Model.IsPaymentSelectionSkipped)
 						{
-							<a class="change-checkout-data pull-right" href='@Url.Action("PaymentMethod", "Checkout")'>@T("Common.Change")</a>
+							<a class="change-checkout-data" href='@Url.Action("PaymentMethod", "Checkout")'>@T("Common.Change")</a>
 						}
                     </div>
                     <div class="card-block">
@@ -186,9 +186,9 @@
         {
             <div class="shipping-method mb-3">
                 <div class="card">
-                    <div class="card-header h5">
-                        <span>@T("Order.ShippingMethod")</span>
-						<a class="change-checkout-data pull-right" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
+                    <div class="card-header d-flex flex-nowrap justify-content-between">
+                        <h5 class="m-0">@T("Order.ShippingMethod")</h5>
+						<a class="change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
                     </div>
                     <div class="card-block">
                         @Model.ShippingMethod

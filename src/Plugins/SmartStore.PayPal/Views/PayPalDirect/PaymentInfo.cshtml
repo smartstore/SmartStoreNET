@@ -10,7 +10,7 @@
     <div class="form-group row">
         @Html.LabelFor(model => model.CreditCardTypes, new { @class = "col-md-3 col-form-label required" })
         <div class="col-md-9">
-            @Html.DropDownListFor(model => model.CreditCardType, Model.CreditCardTypes)
+            @Html.DropDownListFor(model => model.CreditCardType, Model.CreditCardTypes, new { @class = "form-control no-skin" })
         </div>
     </div>
     
@@ -20,12 +20,12 @@
     <div class="form-group row">
         @Html.LabelFor(model => model.ExpireMonth, new { @class = "col-md-3 col-form-label required" })
         <div class="col-md-9">
-            <div class="row">
-                <div class="col-md-6">
-                    @Html.DropDownListFor(model => model.ExpireMonth, Model.ExpireMonths)
+            <div class="row sm-gutters">
+                <div class="col-6">
+                    @Html.DropDownListFor(model => model.ExpireMonth, Model.ExpireMonths, new { @class = "form-control no-skin" })
                 </div>
-                <div class="col-md-6 pl-0">
-                    @Html.DropDownListFor(model => model.ExpireYear, Model.ExpireYears)
+                <div class="col-6">
+                    @Html.DropDownListFor(model => model.ExpireYear, Model.ExpireYears, new { @class = "form-control no-skin" })
                 </div>
             </div>
         </div>

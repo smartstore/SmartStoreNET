@@ -15,7 +15,7 @@
             </td>
             <td class="adminData">
 				@Html.SettingOverrideCheckbox(model => model.TransactMode)
-                @Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues)
+                @Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues, new { @class = "form-control no-skin" })
             </td>
         </tr>
 		<tr>

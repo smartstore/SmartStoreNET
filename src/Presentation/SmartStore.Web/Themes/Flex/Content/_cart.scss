@@ -258,16 +258,16 @@
 }
 
 .cart-item-sku {
-    //color: $text-muted;
     margin-top: 0;
 }
 
 .cart-item-attr {
-    span:first-child {
-        font-weight: $font-weight-bold;
-    }
-    .delivery-time {
-        padding-left: 15px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+
+    div:first-child {
+        //font-weight: $font-weight-bold;
+        font-weight: $font-weight-medium;
     }
 }
 

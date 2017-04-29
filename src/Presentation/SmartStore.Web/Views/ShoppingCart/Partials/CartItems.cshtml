@@ -20,43 +20,45 @@
 
                     @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
                     {
-                        <div class="cart-item-desc text-muted">
+                        <div class="cart-item-desc text-smaller">
                             @Html.Raw(item.ShortDesc.Truncate(250, "..."))
                         </div>
                     }
 
                     @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
                     {
-                        <div class="base-price text-muted text-smaller">
+                        <div class="cart-item-base-price text-muted text-smaller">
                             @item.BasePrice
                         </div>
                     }
 
-                    <div class="cart-item-attributes text-smaller my-2">
+                    <div class="cart-item-attrs text-smaller my-2">
                         @if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
                         {
-                            <div class="deliverytime-group row cart-item-attr">
-                                <span class="col-3">@T("Products.DeliveryTime")</span>
-                                <span class="delivery-time col-9" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
-                                    <i class="fa fa-circle delivery-time-status"></i>
-                                    @item.DeliveryTimeName
-                                </span>
+                            <div class="row cart-item-attr deliverytime-group">
+                                <div class="col-3">@T("Products.DeliveryTime")</div>
+								<div class="col-9">
+									<span class="delivery-time pl-0" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
+										<i class="fa fa-circle delivery-time-status"></i>
+										@item.DeliveryTimeName
+									</span>
+								</div>
                             </div>
                         }
 
                         @if (Model.ShowSku && !String.IsNullOrEmpty(item.Sku))
                         {
-                            <div class="text-nowrap row cart-item-attr">
-                                <span class="col-3">@T("ShoppingCart.SKU"):</span>
-                                <span class="col-9">@item.Sku</span>
+                            <div class="row cart-item-attr text-nowrap">
+                                <div class="col-3">@T("ShoppingCart.SKU"):</div>
+                                <div class="col-9">@item.Sku</div>
                             </div>
                         }
 
                         @if (Model.DisplayWeight && item.Weight > 0)
                         {
-                            <div class="text-nowrap row cart-item-attr">
-                                <span class="col-3">@T("ShoppingCart.Weight"):</span>
-                                <span class="col-9">@((item.Weight * item.EnteredQuantity).ToString("N2")) @Model.MeasureUnitName</span>
+                            <div class="row cart-item-attr text-nowrap">
+                                <div class="col-3">@T("ShoppingCart.Weight"):</div>
+                                <div class="col-9">@((item.Weight * item.EnteredQuantity).ToString("N2")) @Model.MeasureUnitName</div>
                             </div>
                         }
                     </div>
@@ -160,8 +162,9 @@
             <span class="price">@item.SubTotal</span>
             @if (!String.IsNullOrEmpty(item.Discount))
             {
-                <div class="discount">
-                    @T("ShoppingCart.ItemYouSave"):<br/> @item.Discount
+                <div class="discount text-smaller text-muted pt-1">
+					<div>@T("ShoppingCart.ItemYouSave"):</div>
+					<div>@item.Discount</div>
                 </div>
             }
         </div>
@@ -176,60 +179,64 @@
         {
             <div class="cart-row cart-row-child">
                 <div class="cart-col cart-col-main">
-                    <div class="product">
-                        <div class="bundle-item">
-                            @if (Model.ShowProductBundleImages)
+                    <div class="row sm-gutters">
+						<div class="col cart-item-img">
+							<!-- Spacer -->
+						</div>
+                        <div class="col">
+							<div class="d-flex w-100 align-items-center justify-content-start flex-nowrap">
+								@if (Model.ShowProductBundleImages)
+								{
+									<div class="mr-3" style="@("width: {0}px;".FormatInvariant(Model.BundleThumbSize))">
+										@if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
+										{
+											<img class="img-fluid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
+										}
+									</div>
+									<div>
+										@if (item.EnteredQuantity > 1 && item.BundlePerItemShoppingCart)
+										{
+											<span class="font-weight-medium">@(item.EnteredQuantity)&nbsp;&#215;</span>
+										}
+										@if (item.VisibleIndividually)
+										{
+											<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+										}
+										else
+										{
+											<span class="cart-item-link">@item.ProductName</span>
+										}
+									</div>
+								}
+							</div>
+
+                            @if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
                             {
-                                <div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatInvariant(Model.BundleThumbSize + 10))">
-                                    @if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
+                                <div class="cart-item-desc mt-2">
+                                    @Html.Raw(item.ShortDesc.Truncate(210, "..."))
+                                </div>
+                            }
+                            @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
+                            {
+                                <div class="cart-item-base-price text-muted mt-2">
+                                    @item.BasePrice
+                                </div>
+                            }
+                            @if (!String.IsNullOrEmpty(item.AttributeInfo))
+                            {
+                                <div class="cart-item-attrs text-muted mt-2">
+                                    @Html.Raw(item.AttributeInfo)
+                                </div>
+                            }
+                            @if (item.Warnings.Count > 0)
+                            {
+                                <div class="alert alert-danger mt-2 mb-0">
+                                    @foreach (var warning in item.Warnings)
                                     {
-                                        <img src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
+                                        <p>@warning</p>
                                     }
                                 </div>
                             }
-                            <div class="bundle-item-body">
-                                <div class="bundle-item-name">
-                                    @if (item.VisibleIndividually)
-                                    {
-                                        <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-                                    }
-                                    else
-                                    {
-										<span class="cart-item-link">@item.ProductName</span>
-                                    }
-                                    @if (item.EnteredQuantity > 1 && item.BundlePerItemShoppingCart)
-                                    {
-                                        <text>&#215;&nbsp;@item.EnteredQuantity</text>
-                                    }
-                                </div>
-                                @if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
-                                {
-                                    <div class="bundle-item-description cart-item-desc text-smaller text-muted">
-                                        @Html.Raw(item.ShortDesc.Truncate(210, "..."))
-                                    </div>
-                                }
-                                @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
-                                {
-                                    <div class="base-price text-muted">
-                                        @item.BasePrice
-                                    </div>
-                                }
-                                @if (!String.IsNullOrEmpty(item.AttributeInfo))
-                                {
-                                    <div class="bundle-item-attribute-info text-muted">
-                                        @Html.Raw(item.AttributeInfo)
-                                    </div>
-                                }
-                                @if (item.Warnings.Count > 0)
-                                {
-                                    <div class="alert alert-danger">
-                                        @foreach (var warning in item.Warnings)
-                                        {
-                                            <p>@warning</p>
-                                        }
-                                    </div>
-                                }
-                            </div>
                         </div>
                     </div>
                 </div>

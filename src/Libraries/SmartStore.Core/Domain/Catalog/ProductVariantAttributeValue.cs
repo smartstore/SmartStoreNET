@@ -20,7 +20,6 @@ namespace SmartStore.Core.Domain.Catalog
 
         /// <summary>
         /// Gets or sets the product variant attribute alias 
-        /// (an optional key for advanced customization)
         /// </summary>
 		[DataMember]
 		public string Alias { get; set; }

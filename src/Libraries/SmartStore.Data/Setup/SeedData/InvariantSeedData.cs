@@ -5648,59 +5648,98 @@ namespace SmartStore.Data.Setup
 				new ProductAttribute
 				{
 					Name = "Color",
-					Alias = "Color",
+					Alias = "color"
 				},
 				new ProductAttribute
 				{
 					Name = "Custom Text",
-					Alias = "Custom Text",
+					Alias = "custom-text"
 				},
 				new ProductAttribute
 				{
 					Name = "HDD",
-					Alias = "HDD",
+					Alias = "hdd"
 				},
 				new ProductAttribute
 				{
 					Name = "OS",
-					Alias = "OS",
+					Alias = "os"
 				},
 				new ProductAttribute
 				{
 					Name = "Processor",
-					Alias = "Processor",
+					Alias = "processor"
 				},
 				new ProductAttribute
 				{
 					Name = "RAM",
-					Alias = "RAM",
+					Alias = "ram",
 				},
 				new ProductAttribute
 				{
 					Name = "Size",
-					Alias = "Size"
+					Alias = "size"
 				},
 				new ProductAttribute
 				{
 					Name = "Software",
-					Alias = "Software",
+					Alias = "software"
 				},
 				new ProductAttribute
 				{
 					Name = "Game",
-					Alias = "Game"
+					Alias = "game"
 				},
 				new ProductAttribute
 				{
 					Name = "Color",
-					Alias = "iPhone color"
+					Alias = "iphone-color"
 				},
 				new ProductAttribute
 				{
 					Name = "Memory capacity",
-					Alias = "Memory capacity"
+					Alias = "memory-capacity"
 				}
 			};
+
+			this.Alter(entities);
+			return entities;
+		}
+
+		public IList<ProductAttributeOptionsSet> ProductAttributeOptionsSets()
+		{
+			var entities = new List<ProductAttributeOptionsSet>();
+			var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
+
+			entities.Add(new ProductAttributeOptionsSet
+			{
+				Name = "General colors",
+				ProductAttributeId = colorAttribute.Id
+			});
+
+			this.Alter(entities);
+			return entities;
+		}
+
+		public IList<ProductAttributeOption> ProductAttributeOptions()
+		{
+			var entities = new List<ProductAttributeOption>();
+			var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
+			var generalColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.ProductAttributeId == colorAttribute.Id);
+
+			var generalColors = new string[] { "Red", "Green", "British Racing Green", "Blue", "Yellow", "Black", "White" };
+
+			for (var i = 0; i < generalColors.Length; ++i)
+			{
+				entities.Add(new ProductAttributeOption
+				{
+					ProductAttributeOptionsSetId = generalColorsSet.Id,
+					Alias = GetSeName(generalColors[i]),
+					Name = generalColors[i],
+					Quantity = 1,
+					DisplayOrder = i + 1
+				});
+			}
 
 			this.Alter(entities);
 			return entities;
@@ -5713,8 +5752,8 @@ namespace SmartStore.Data.Setup
 			#region iPhone
 
 			var productIphone = _ctx.Set<Product>().First(x => x.Sku == "Apple-1001");
-			var attributeMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "Memory capacity");
-			var attributeIphoneIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iPhone color");
+			var attributeMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
+			var attributeIphoneIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
 
 			var attributeIphoneMemoryCapacity = new ProductVariantAttribute()
 			{
@@ -5802,7 +5841,7 @@ namespace SmartStore.Data.Setup
 			#region attributeDualshock3ControllerColor
 
 			var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
-			var attributeColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "Color");
+			var attributeColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
 
 			var attributeDualshock3ControllerColor = new ProductVariantAttribute()
 			{
@@ -5840,7 +5879,7 @@ namespace SmartStore.Data.Setup
 			#region attributePs3OneGameFree
 
 			var productPs3OneGameFree = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS310111");
-			var attributeGames = _ctx.Set<ProductAttribute>().First(x => x.Alias == "Game");
+			var attributeGames = _ctx.Set<ProductAttribute>().First(x => x.Alias == "game");
 
 			var attributePs3OneGameFree = new ProductVariantAttribute()
 			{
@@ -5854,7 +5893,7 @@ namespace SmartStore.Data.Setup
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
 				Name = "Assassin's Creed III",
-				Alias = "Assassin's Creed III",
+				Alias = "assassins-creed-3",
 				DisplayOrder = 1,
 				Quantity = 1,
 				ValueType = ProductVariantAttributeValueType.ProductLinkage,
@@ -5864,7 +5903,7 @@ namespace SmartStore.Data.Setup
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
 				Name = "Watch Dogs",
-				Alias = "Watch Dogs",
+				Alias = "watch-dogs",
 				DisplayOrder = 2,
 				Quantity = 1,
 				ValueType = ProductVariantAttributeValueType.ProductLinkage,
@@ -5874,7 +5913,7 @@ namespace SmartStore.Data.Setup
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
 				Name = "Prince of Persia \"The Forgotten Sands\"",
-				Alias = "Prince of Persia \"The Forgotten Sands\"",
+				Alias = "prince-of-persia-the-forgotten-sands",
 				DisplayOrder = 3,
 				Quantity = 1,
 				ValueType = ProductVariantAttributeValueType.ProductLinkage,
@@ -5884,7 +5923,7 @@ namespace SmartStore.Data.Setup
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
 				Name = "Driver San Francisco",
-				Alias = "Driver San Francisco",
+				Alias = "driver-san-francisco",
 				DisplayOrder = 4,
 				Quantity = 1,
 				ValueType = ProductVariantAttributeValueType.ProductLinkage,
@@ -10173,6 +10212,14 @@ namespace SmartStore.Data.Setup
 		}
 
 		protected virtual void Alter(IList<ProductAttribute> entities)
+		{
+		}
+
+		protected virtual void Alter(IList<ProductAttributeOptionsSet> entities)
+		{
+		}
+
+		protected virtual void Alter(IList<ProductAttributeOption> entities)
 		{
 		}
 

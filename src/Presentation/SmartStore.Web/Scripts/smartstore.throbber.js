@@ -103,7 +103,7 @@
 
                 !defaults.speed || _.isTrue(immediately)
             		? self.throbber.stop(true).hide(0, hide)
-                    : self.throbber.stop(true).transition({ opacity: 0 }, opts.speed || 0, "linear", hide);
+                    : self.throbber.stop(true).animate({ opacity: 0 }, opts.speed || 0, "linear", hide);
             }
 
         }

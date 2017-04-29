@@ -89,9 +89,8 @@ namespace SmartStore.Web.Controllers
                 }
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-				Logger.Error(ex);
 				return false;
             }
         }

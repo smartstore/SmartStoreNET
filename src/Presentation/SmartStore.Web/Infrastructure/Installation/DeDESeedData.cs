@@ -2773,54 +2773,74 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            //entities.Clear();
-
             entities.WithKey(x => x.Alias)
-                .Alter("Color", x =>
+                .Alter("color", x =>
                 {
                     x.Name = "Farbe";
                 })
-                .Alter("Custom Text", x =>
+                .Alter("custom-text", x =>
                 {
                     x.Name = "eigener Text";
                 })
-                .Alter("HDD", x =>
+                .Alter("hdd", x =>
                 {
                     x.Name = "HDD";
                 })
-                .Alter("OS", x =>
+                .Alter("os", x =>
                 {
                     x.Name = "Betriebssystem";
                 })
-                .Alter("Processor", x =>
+                .Alter("processor", x =>
                 {
                     x.Name = "Prozessor";
                 })
-                .Alter("RAM", x =>
+                .Alter("ram", x =>
                 {
                     x.Name = "Arbeitsspeicher";
                 })
-                .Alter("Size", x =>
+                .Alter("size", x =>
                 {
                     x.Name = "Größe";
                 })
-                .Alter("Software", x =>
+                .Alter("software", x =>
                 {
                     x.Name = "Software";
                 })
-				.Alter("Game", x =>
+				.Alter("game", x =>
 				{
 					x.Name = "Spiel";
 				})
-				.Alter("iPhone color", x =>
+				.Alter("iphone-color", x =>
 				{
 					x.Name = "Farbe";
 				})
-				.Alter("Memory capacity", x =>
+				.Alter("memory-capacity", x =>
 				{
 					x.Name = "Speicherkapazität";
 				});
         }
+
+		protected override void Alter(IList<ProductAttributeOptionsSet> entities)
+		{
+			base.Alter(entities);
+
+			entities.WithKey(x => x.Name)
+				.Alter("General colors", x => x.Name = "Allgemeine Farben");
+		}
+
+		protected override void Alter(IList<ProductAttributeOption> entities)
+		{
+			base.Alter(entities);
+
+			entities.WithKey(x => x.Name)
+				.Alter("Red", x => x.Name = "Rot")
+				.Alter("Green", x => x.Name = "Grün")
+				.Alter("British Racing Green", x => x.Name = "Britisches Renn-Grün")
+				.Alter("Blue", x => x.Name = "Blau")
+				.Alter("Yellow", x => x.Name = "Gelb")
+				.Alter("Black", x => x.Name = "Schwarz")
+				.Alter("White", x => x.Name = "Weiß");
+		}
 
 		protected override void Alter(IList<ProductVariantAttribute> entities)
 		{
@@ -2828,20 +2848,20 @@ namespace SmartStore.Web.Infrastructure.Installation
 			
 
 			entities.WithKey(x => x.ProductAttribute.Alias)
-				.Alter("Color", x =>
-					{
-						x.ProductVariantAttributeValues.First(v => v.Alias == "black").Name = "Schwarz";
-						x.ProductVariantAttributeValues.First(v => v.Alias == "white").Name = "Weiß";
-					})
-				.Alter("iPhone color", x =>
+				.Alter("color", x =>
+				{
+					x.ProductVariantAttributeValues.First(v => v.Alias == "black").Name = "Schwarz";
+					x.ProductVariantAttributeValues.First(v => v.Alias == "white").Name = "Weiß";
+				})
+				.Alter("iphone-color", x =>
 				{
 					x.ProductVariantAttributeValues.First(v => v.Alias == "silver").Name = "Silber";
 					x.ProductVariantAttributeValues.First(v => v.Alias == "spacegray").Name = "Space-Grau";
 				})
-				.Alter("Game", x =>
-					{
-						x.ProductVariantAttributeValues.First(v => v.Alias == "Prince of Persia \"The Forgotten Sands\"").Name = "Prince of Persia \"Die vergessene Zeit\"";
-					});
+				.Alter("game", x =>
+				{
+					x.ProductVariantAttributeValues.First(v => v.Alias == "prince-of-persia-the-forgotten-sands").Name = "Prince of Persia \"Die vergessene Zeit\"";
+				});
 		}
 
         protected override void Alter(IList<ProductTemplate> entities)

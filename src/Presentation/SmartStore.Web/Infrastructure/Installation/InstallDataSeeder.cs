@@ -605,6 +605,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 				Populate("PopulateSpecificationAttributes", _data.SpecificationAttributes());
 				Populate("PopulateProductAttributes", _data.ProductAttributes());
+				Populate("PopulateProductAttributeOptionsSets", _data.ProductAttributeOptionsSets());
+				Populate("PopulateProductAttributeOptions", _data.ProductAttributeOptions());
 				Populate("PopulateCategories", PopulateCategories);
 				Populate("PopulateManufacturers", PopulateManufacturers);
 				Populate("PopulateProducts", PopulateProducts);

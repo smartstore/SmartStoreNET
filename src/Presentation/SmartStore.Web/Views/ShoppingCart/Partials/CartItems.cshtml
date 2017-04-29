@@ -187,7 +187,7 @@
 							<div class="d-flex w-100 align-items-center justify-content-start flex-nowrap">
 								@if (Model.ShowProductBundleImages)
 								{
-									<div class="mr-3" style="@("width: {0}px;".FormatInvariant(Model.BundleThumbSize))">
+									<div class="mr-3" style="@("width: {0}px;".FormatInvariant(Math.Min(Model.BundleThumbSize, 60)))">
 										@if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
 										{
 											<img class="img-fluid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />

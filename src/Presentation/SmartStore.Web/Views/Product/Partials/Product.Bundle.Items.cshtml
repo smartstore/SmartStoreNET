@@ -14,10 +14,6 @@
 			itemType = "bundleitem"
 		});
 
-		var displayAttrs = item.AttributeInfo.HasValue();
-		var displayPrice = item.ProductPrice.Price.HasValue() || item.ProductPrice.PriceWithDiscount.HasValue();
-		var displayStock = item.StockAvailability.HasValue();
-
 		<div class="pd-bundle-item card-block update-container" data-url="@updateUrl">
 			<div class="pd-bundle-item-top row no-gutters">
 				@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
@@ -53,29 +49,17 @@
 						</div>
 					}
 
-					@if (displayAttrs || displayPrice || displayStock)
-					{
-						<div class="pd-bundle-item-offer pt-3">
-							@if (displayAttrs)
-							{
-								<div class="pd-bundle-item-attribute-info">
-									@Html.Raw(item.AttributeInfo)
-								</div>
-							}
-							@if (displayPrice)
-							{
-								<div class="pd-offer-price-container" data-partial="BundleItemPrice">
-									@{ Html.RenderPartial("Product.Offer.Price", item); }
-								</div>
-							}
-							@if (displayStock)
-							{
-								<div class="pd-stock-info-container" data-partial="BundleItemStock">
-									@{ Html.RenderPartial("Product.StockInfo", item); }
-								</div>
-							}
+					<div class="pd-bundle-item-offer pt-3">
+						<div class="pd-bundle-item-attribute-info">
+							@Html.Raw(item.AttributeInfo)
 						</div>
-					}
+						<div class="pd-offer-price-container" data-partial="BundleItemPrice">
+							@{ Html.RenderPartial("Product.Offer.Price", item); }
+						</div>
+						<div class="pd-stock-info-container" data-partial="BundleItemStock">
+							@{ Html.RenderPartial("Product.StockInfo", item); }
+						</div>
+					</div>
 				</div>
 			</div>
 

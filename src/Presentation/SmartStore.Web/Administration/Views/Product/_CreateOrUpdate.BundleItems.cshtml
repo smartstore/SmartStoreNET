@@ -157,24 +157,14 @@
 			return false;
 		});
 
-		$(document).on('change', '#@Html.FieldIdFor(model => model.BundlePerItemPricing)', function () {
-			var isChecked = $(this).is(':checked');
-			$('#TierPriceContainer').toggle(!isChecked);
-			$('#group-prices').find('.base-price').toggle(!isChecked);
-			$('a[href=#tab-discounts]').parent().toggle(!isChecked);
-        });
-
-        $(document).on('change', '#@Html.FieldIdFor(model => model.BundlePerItemShoppingCart)', function () {
-        	$('a[href=#tab-inventory]').parent().toggle(!$(this).is(':checked'));
-        });
-
-		// toggle bundle infos
+		// Toggle bundle infos
 		$(document).on('click', '#ProductBundleInfoLink', function () {
 			var info = $('#ProductBundleInfoContainer');
 			$(this).text($(this).attr(info.is(':visible') ? 'data-in' : 'data-out'));
 			info.slideToggle();
 		});
 
+		// Add new bundle item
 		$(document).on('click', '#AddNewBundleItemButton', function () {
 			$({}).entityPicker('loadDialog', {
 				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
@@ -199,6 +189,30 @@
 				}
 			});
 		});
+
+		// Bundle per item pricing
+		$(document).on('change', '#@Html.FieldIdFor(model => model.BundlePerItemPricing)', function () {
+			bundlePerItemPricing($(this).is(':checked'));
+		});
+
+		bundlePerItemPricing(@(Model.BundlePerItemPricing.ToString().ToLower()));
+
+		function bundlePerItemPricing(isActive) {
+			$('#TierPriceContainer').toggle(!isActive);
+			$('#group-prices').find('.base-price').toggle(!isActive);
+			$('a[href=#tab-discounts]').parent().toggle(!isActive);
+		}
+
+		// Bundle per item in shopping cart
+		$(document).on('change', '#@Html.FieldIdFor(model => model.BundlePerItemShoppingCart)', function () {
+			bundlePerItemShoppingCart($(this).is(':checked'));
+		});
+
+		bundlePerItemShoppingCart(@(Model.BundlePerItemShoppingCart.ToString().ToLower()));
+
+		function bundlePerItemShoppingCart(isActive) {
+			$('a[href=#tab-inventory]').parent().toggle(!isActive);
+		}
 
 	});
     </script>

@@ -647,6 +647,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 category = model.ToEntity(category);
+				category.ParentCategoryId = model.ParentCategoryId ?? 0;
 
 				MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
 

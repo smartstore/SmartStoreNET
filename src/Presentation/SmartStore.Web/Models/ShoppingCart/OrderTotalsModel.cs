@@ -39,6 +39,8 @@ namespace SmartStore.Web.Models.ShoppingCart
         public decimal Weight { get; set; }
         public string WeightMeasureUnitName { get; set; }
 
+        public bool ShowConfirmOrderLegalHint { get; set; }
+
         #region Nested classes
 
         public partial class TaxRate: ModelBase

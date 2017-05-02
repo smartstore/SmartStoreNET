@@ -93,13 +93,6 @@
             @{ Html.RenderAction("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true }); }
         </div>
 
-        @if (Model.ShowConfirmOrderLegalHint) 
-        { 
-            <div class="alert alert-warning confirm-order-legal-hint">
-                @T("OrderSummary.ConfirmOrderLegalHint")
-            </div>
-        }
-
 		@if (Model.MinOrderTotalWarning.HasValue())
 		{
 			<div class="alert alert-danger">

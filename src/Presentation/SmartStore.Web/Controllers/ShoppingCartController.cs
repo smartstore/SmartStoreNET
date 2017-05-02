@@ -2040,6 +2040,7 @@ namespace SmartStore.Web.Controllers
                 model.DisplayTax = displayTax;
 
                 model.DisplayWeight = _shoppingCartSettings.ShowWeight;
+                model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
 
                 //total
                 decimal orderTotalDiscountAmountBase = decimal.Zero;

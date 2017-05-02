@@ -367,7 +367,6 @@ namespace SmartStore.Web.Controllers
             }
 
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
-            model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
 			model.ShowEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
 			model.BypassPaymentMethodInfo = _paymentSettings.BypassPaymentMethodInfo;
             return model;

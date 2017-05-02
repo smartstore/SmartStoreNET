@@ -1,20 +1,12 @@
 ﻿@model OrderTotalsModel
-
 @using SmartStore.Web.Models.ShoppingCart;
 
-@*@{ 
-	Model.SubTotalDiscount = "19,23 €";
-	Model.AllowRemovingSubTotalDiscount = true;
-	Model.AllowRemovingOrderTotalDiscount = true;
-	Model.RequiresShipping = true;
-	Model.Shipping = "19,23 €";
-	Model.SelectedShippingMethod = "UPS Express";
-	Model.PaymentMethodAdditionalFee = "2,79 €";
-	Model.OrderTotalDiscount = "89,79 €";
-
-	Model.GiftCards.Add(new OrderTotalsModel.GiftCard { Amount = "89,79 €", CouponCode = "CP X6789 gghh 5678", Remaining = "1.987,00 €", Id = 33 });
-	Model.GiftCards.Add(new OrderTotalsModel.GiftCard { Amount = "22,11 €", CouponCode = "AA X6789 gghh 3333", Remaining = "987,00 €", Id = 86 });
-}*@
+@if (Model.ShowConfirmOrderLegalHint && !Model.IsEditable)
+{
+    <div class="alert alert-warning confirm-order-legal-hint">
+        @T("OrderSummary.ConfirmOrderLegalHint")
+    </div>
+}
 
 <table class="cart-summary">
     @if (Model.DisplayWeight)

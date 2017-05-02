@@ -414,10 +414,11 @@ namespace SmartStore.PayPal.Services
 
 				var intro = T("Plugins.SmartStore.PayPal.PayUponInvoiceLegalNote", _companyInfoSettings.Value.CompanyName.NaIfEmpty());
 
-				if (instruct.Link.HasValue())
-				{
-					intro = "{0} <a href='{1}'>{2}</a>.".FormatInvariant(intro, instruct.Link, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Details));
-				}
+				// /v1/payments/payment/<id>/payment-instruction not working anymore. Serves 401 unauthorized.
+				//if (instruct.Link.HasValue())
+				//{
+				//	intro = "{0} <a href='{1}'>{2}</a>.".FormatInvariant(intro, instruct.Link, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Details));
+				//}
 
 				sb.AppendFormat(paragraphTemplate, intro);
 

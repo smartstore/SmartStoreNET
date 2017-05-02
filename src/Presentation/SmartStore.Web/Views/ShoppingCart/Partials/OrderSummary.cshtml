@@ -1,12 +1,6 @@
 ﻿@model ShoppingCartModel
-
 @using SmartStore.Core.Domain.Orders;
 @using SmartStore.Web.Models.ShoppingCart;
-
-@{ 
-	//Model.NewsLetterSubscription = CheckoutNewsLetterSubscription.Activated;
-	//Model.ThirdPartyEmailHandOver = CheckoutThirdPartyEmailHandOver.Activated;
-}
 
 <div class="order-summary-content">
 
@@ -159,17 +153,25 @@
 								</button>
 							</div>
 
-							if (Model.ButtonPaymentMethods.Items.Any())
-							{
-								<div class="addon-buttons">
-									@*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
-									@foreach (var item in Model.ButtonPaymentMethods.Items)
-									{
-										Html.RenderAction(item.ActionName, item.ControllerName, item.RouteValues);
-									}
-								</div>
-							}
-						}
+                            if (Model.ButtonPaymentMethods.Items.Any())
+                            {
+
+
+                                <div class="addon-buttons">
+                                    <div class="d-flex justify-content-sm-end justify-content-center flex-wrap">
+                                        <div class="mt-3 mb-1 d-block col-12 text-center text-sm-right">
+                                            <span>@T("ShoppingCart.AlternativePaymentButtons")</span>
+                                        </div>
+
+                                        @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
+                                        @foreach (var item in Model.ButtonPaymentMethods.Items)
+                                        {
+                                            Html.RenderAction(item.ActionName, item.ControllerName, item.RouteValues);
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
 					</div>
 				</div>
 

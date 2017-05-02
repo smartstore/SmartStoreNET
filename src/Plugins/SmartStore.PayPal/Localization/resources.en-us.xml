@@ -196,9 +196,6 @@
 	    <LocaleResource Name="ModeAuth">
 		    <Value>Authorize immediately, debit later</Value>
 	    </LocaleResource>
-      <LocaleResource Name="SelectionText">
-        <Value>or</Value>
-      </LocaleResource>
       <LocaleResource Name="Fields.ShowButtonInMiniShoppingCart">
         <Value>Show button in mini shopping cart</Value>
       </LocaleResource>

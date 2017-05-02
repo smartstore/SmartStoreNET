@@ -1,21 +1,13 @@
-﻿@using SmartStore.Web.Framework;
-@model SmartStore.AmazonPay.Models.AmazonPayViewModel
-
+﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
 @{
 	Layout = "";
 	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 }
 @if (!String.IsNullOrEmpty(Model.SellerId)) { 
-    <div class="amazon-pay-button">
-	    <div class="selection-text">
-		    @T("Plugins.Payments.AmazonPay.SelectionText")
-	    </div>
-
-	    <div class="button-container">
-		    <div id="@Model.GetWidgetId">
-			    <img src="@Model.ButtonUrl" style="cursor: pointer;" />
-		    </div>
-	    </div>
+    <div class="amazon-pay-button my-2 ml-3">
+		<div id="@Model.GetWidgetId">
+			<img src="@Model.ButtonUrl" style="cursor: pointer;" />
+		</div>
     </div>
 
     Html.RenderPartial("ScriptingLoginButton", Model);

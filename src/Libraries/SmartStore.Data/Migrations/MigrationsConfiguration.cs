@@ -913,6 +913,8 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Forum.TopicSubject",
                 "Topic subject",
                 "Thema");
+
+            builder.AddOrUpdate("ShoppingCart.AlternativePaymentButtons", "- OR -", "- ODER -");
         }
 	}
 }

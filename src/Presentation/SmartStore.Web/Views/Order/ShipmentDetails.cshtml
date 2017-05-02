@@ -1,16 +1,22 @@
 ﻿@model ShipmentDetailsModel
 
+@using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Models.Order;
 
 @{
-    Layout = "_Layout";
+	Layout = "_Layout";
 
-    Html.AddTitleParts(T("PageTitle.ShipmentDetails").Text);
+	Html.AddTitleParts(T("PageTitle.ShipmentDetails").Text);
+
+	Model.ShipmentStatusEvents.Add(new ShipmentDetailsModel.ShipmentStatusEventModel { Country = "Deutschland", Date = DateTime.Now, EventName = "EventName", Location = "Location" });
+	Model.ShipmentStatusEvents.Add(new ShipmentDetailsModel.ShipmentStatusEventModel { Country = "Deutschland", Date = null, EventName = "EventName", Location = "Location" });
 }
 
 <div class="page shipment-details">
     <div class="page-title">
-        <h1 class="h3">@string.Format(T("Order.Shipments.Information").Text, Model.Id)</h1>
+        <h1 class="h2">
+			@T("Order.Shipments.Information", Model.Id)
+		</h1>
     </div>
 
     <div class="page-body">
@@ -158,11 +164,8 @@
                     </table>
                 </div>
             </div>
-            <div class="clear">
-            </div>
         }
-        <div class="clear">
-        </div>
+
         @if (Model.ShipmentStatusEvents.Count > 0)
         {
             <div class="shipment-status-events">
@@ -217,3 +220,61 @@
         }
     </div>
 </div>
+
+
+@helper RenderAddress(AddressModel address)
+{
+	var cityStateZip = address.GetFormattedCityStateZip();
+
+	<div class="mb-2">
+		@if (address.CompanyEnabled && address.Company.HasValue())
+		{
+			<div class="company">
+				@address.Company
+			</div>
+		}
+		<div class="name">
+			@address.GetFormattedName()
+		</div>
+		@if (address.StreetAddressEnabled && address.Address1.HasValue())
+		{
+			<div class="address1">
+				@address.Address1
+			</div>
+		}
+		@if (address.StreetAddress2Enabled && address.Address2.HasValue())
+		{
+			<div class="address2">
+				@address.Address2
+			</div>
+		}
+		@if (cityStateZip.HasValue())
+		{
+			<div class="city-state-zip">
+				@Html.Raw(cityStateZip)
+			</div>
+		}
+		@if (address.CountryEnabled && address.CountryName.HasValue())
+		{
+			<div class="country">
+				@address.CountryName
+			</div>
+		}
+	</div>
+
+	<div class="email">
+		@T("Order.Email"): @address.Email
+	</div>
+	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
+	{
+		<div class="phone">
+			@T("Order.Phone"): @address.PhoneNumber
+		</div>
+	}
+	if (address.FaxEnabled && address.FaxNumber.HasValue())
+	{
+		<div class="fax">
+			@T("Order.Fax"): @address.FaxNumber
+		</div>
+	}
+}

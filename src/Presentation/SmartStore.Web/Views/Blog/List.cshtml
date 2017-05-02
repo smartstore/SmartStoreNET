@@ -1,5 +1,4 @@
 ﻿@model BlogPostListModel
-@using SmartStore.Web;
 @using SmartStore.Web.Models.Blogs;
 @using SmartStore.Web.Framework.UI;
 @using System.Globalization;
@@ -25,47 +24,56 @@
     @{
         Html.RenderAction("BlogMonths", "Blog");
         Html.RenderAction("BlogTags", "Blog");
-        Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "Blog" });
+
+        <div class="d-none d-lg-block">
+            @{ Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "Blog" }); }
+        </div>
     }
 }
 
 <div class="page blog-page">
-    <div class="page-title">
-        <a href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("Blog.RSS.Hint")" data-toggle="tooltip">
-            <i class="fa fa-rss text-muted"></i>
-            @T("Blog.RSS")
-        </a>
-        <h1>
-            @if (String.IsNullOrEmpty(Model.PagingFilteringContext.Tag))
-            {
-                if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
-                {
-                    string.Format(T("Blog.FilteredByMonth").Text, Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToString("MMMM"));
-                }
-                else
-                {
-                    @T("Blog")
-                }
-            }
-            else
-            {
-                string.Format(T("Blog.TaggedWith").Text, Model.PagingFilteringContext.Tag);
-            }
-        </h1>
+    <div class="page-title row">
+        <div class="col">
+            <div class="heading">
+                <h1 class="heading-title">
+                    @if (String.IsNullOrEmpty(Model.PagingFilteringContext.Tag))
+                    {
+                        if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
+                        {
+                            string.Format(T("Blog.FilteredByMonth").Text, Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToString("MMMM"));
+                        }
+                        else
+                        {
+                            @T("Blog")
+                        }
+                    }
+                    else
+                    {
+                        string.Format(T("Blog.TaggedWith").Text, Model.PagingFilteringContext.Tag);
+                    }
+                </h1>
+            </div>
+        </div>
+        <div class="col col-auto text-right">
+            <a class="btn btn-warning" href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" title="@T("Blog.RSS.Hint")">
+                <i class="fa fa-rss"></i>
+                <span>@T("Blog.RSS")</span>
+            </a>
+        </div>
+
     </div>
     <div class="page-body">
         
         @{ Html.RenderWidget("bloglist_page_before_posts"); }
 
-        <div class="blogposts container">
+        <div class="blogposts">
             @foreach (var item in Model.BlogPosts)
             {
-                <article class="blogpost row">
-
-                    <div class="blogpost-info col-3">
+                <article class="blogpost row mt-0">
+                    <div class="blogpost-info col-12 col-md-3">
                         @if (item.Comments.AllowComments)
                         {
-                            <a class="blogpost-comments@(item.Comments.NumberOfComments > 0 ? " vivid" : "")" 
+                            <a class="blogpost-comments@(item.Comments.NumberOfComments > 0 ? " vivid" : "") d-none d-lg-inline" 
                                 href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" 
                                 title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)" 
                                 data-toggle="tooltip">
@@ -80,7 +88,7 @@
                         
                         @if (item.Tags.Count > 0)
                         {
-                            <div class="blogpost-tags">
+                            <div class="blogpost-tags mb-3 mb-md-0">
                                 <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
                                 @for (int i = 0, length = item.Tags.Count; i < length; i++)
                                 {
@@ -92,7 +100,7 @@
                         }
                     </div>
 
-                    <div class="blogpost-content col-9">
+                    <div class="blogpost-content col-12 col-md-9">
                         <h3 class="blogpost-title">
                             <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
                                 @item.Title

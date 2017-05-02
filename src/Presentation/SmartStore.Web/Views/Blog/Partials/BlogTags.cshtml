@@ -3,17 +3,21 @@
 
 @if (Model.Tags.Count > 0)
 {
-    <div class="block block-bordered block-popular-blogtags card clearfix">
-        <div class="block-title card-header">
+    <div class="block-popular-blogtags card">
+        <div class="card-header">
             @T("Blog.TagCloud")
         </div>
-        <div class="block-body listbox card-block">
-            <ul class="list-unstyled m-b-0">
-                @foreach (var item in Model.Tags)
+        <div class="listbox card-block">
+            <div class="tags fs-h4">
+                <ul class="list-inline">
+                    @foreach (var item in Model.Tags)
                 {
-                    <li><a href="@Url.RouteUrl("BlogByTag", new { tag = item.Name })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a></li>
-                }
-            </ul>
+                        <li class="list-inline-item">
+                            <a class="color-body" href="@Url.RouteUrl("BlogByTag", new { tag = item.Name })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a>
+                        </li>
+                    }
+                </ul>
+            </div>
         </div>
     </div>
 }

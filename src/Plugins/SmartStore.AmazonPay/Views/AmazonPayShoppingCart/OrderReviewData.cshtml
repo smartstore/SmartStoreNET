@@ -1,57 +1,62 @@
-﻿@using SmartStore.Web.Framework;
-
-@model SmartStore.AmazonPay.Models.AmazonPayViewModel
-
+﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
 @{
     Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 }
 
-<div class="order-review-data-box">
-	<div class="row">
+<div class="card card-block order-review-data-box mb-3">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
 
-		@if (Model.IsShippable)
-        {
-			<div class="amazon-pay-address-widget col-md-6">
-				<div class="block block-bordered">
-					<div class="block-title">
-						<span>@T("Order.ShippingAddress")</span>
-						<a class="change-checkout-data pull-right" href='@Url.Action("ShippingAddress", "Checkout", new { area = "" })'>@T("Common.Change")</a>
-					</div>
-					<div class="block-body">
-						<div id="@(Model.GetWidgetId)Address"></div>
-					</div>
-				</div>
-			</div>
-        }
-		
-		<div class="amazon-pay-wallet-widget col-md-6">
-			<div class="block block-bordered">
-				<div class="block-title">
-					<span>@T("Order.PaymentMethod")</span>
-					<a class="change-checkout-data pull-right" href='@Url.Action("PaymentMethod", "Checkout", new { area = "" })'>@T("Common.Change")</a>
-				</div>
-				<div class="block-body">
-					<div id="@(Model.GetWidgetId)Wallet"></div>
-				</div>
-			</div>
-		</div>
+                @if (Model.IsShippable)
+                {
+                    <div class="col">
+                        <div class="row sm-gutters">
+                            <div class="col">
+                                <div class="heading">
+                                    <h5 class="heading-title font-weight-medium">@T("Order.ShippingAddress")</h5>
+                                </div>
+                            </div>
+                            <div class="col col-auto">
+                                <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingAddress", "Checkout", new { area = "" })'>@T("Common.Change")</a>
+                            </div>
+                        </div>
+                        <p id="@(Model.GetWidgetId)Address"></p>
+                    </div>
+                }
 
-	</div>
-
-    @if (Model.ShippingMethod.HasValue())
-    {
-        <div class="shipping-method">
-            <div class="block block-bordered">
-                <div class="block-title">
-                    <span>@T("Order.ShippingMethod")</span>
-                    <a class="change-checkout-data pull-right" href='@Url.Action("ShippingMethod", "Checkout", new { area = "" })'>@T("Common.Change")</a>
+                <div class="amazon-pay-wallet-widget col">
+                    <div class="row sm-gutters">
+                        <div class="col">
+                            <div class="heading">
+                                <h5 class="heading-title font-weight-medium">@T("Order.PaymentMethod")</h5>
+                            </div>
+                        </div>
+                        <div class="col col-auto">
+                            <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("PaymentMethod", "Checkout", new { area = "" })'>@T("Common.Change")</a>
+                        </div>
+                    </div>
+                    <p id="@(Model.GetWidgetId)Wallet"></p>
                 </div>
-                <div class="block-body">
-                    @Model.ShippingMethod
-                </div>
+
             </div>
+
+            @if (Model.IsShippable && Model.ShippingMethod.HasValue())
+            {
+                <div class="row sm-gutters">
+                    <div class="col">
+                        <div class="heading">
+                            <h5 class="heading-title font-weight-medium">@T("Order.ShippingMethod")</h5>
+                        </div>
+                    </div>
+                    <div class="col col-auto">
+                        <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
+                    </div>
+                </div>
+                <p>@Model.ShippingMethod</p>
+            }
         </div>
-    }
+    </div>
 </div>
 
 @{ Html.RenderPartial("ScriptingReadWidgets", Model); }

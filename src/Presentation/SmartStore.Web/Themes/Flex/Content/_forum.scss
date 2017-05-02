@@ -41,8 +41,8 @@ $forum-unobstrusive-link-color: #646464;
 .topics-group .views {
 	text-align: center;
 }
-.forums-main .group-header .forum-spacer,
-.active-discussions-header .topic-name,
+.forum-spacer,
+.active-discussionstopics .topic-name,
 .topics-group .topic-name {
 	width: 100%;
 }
@@ -71,7 +71,6 @@ $forum-unobstrusive-link-color: #646464;
 ================================================ */
 .forum-topic {
     .post-info {
-	    min-width: 160px;
         .user-info .button-pm {
 	        min-width: 100px
         }
@@ -83,10 +82,8 @@ $forum-unobstrusive-link-color: #646464;
         }
     }
     .post-content {
-	    margin: 0 0 50px 170px;
-
-        .functions {
-	        position: absolute;
+	    .functions {
+	        xposition: absolute;
 	        right: 10px;
 	        bottom: 10px;
 	        .fa-quote-left { font-size: 10px;}

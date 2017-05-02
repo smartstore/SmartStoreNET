@@ -8,7 +8,7 @@
         </h3>
     </div>
 
-    <table class="groups table">
+    <table class="groups table table-responsive">
         <thead>
             <tr class="group-header">
                 <th class="forum-name">
@@ -16,13 +16,13 @@
                 </th>
                 <th class="forum-spacer">
                 </th>
-                <th class="topics">
+                <th class="topics d-none d-md-table-cell">
                     @T("Forum.Topics")
                 </th>
-                <th class="posts">
+                <th class="posts d-none d-md-table-cell">
                     @T("Forum.Posts")
                 </th>
-                <th class="last-post">
+                <th class="last-post d-none d-md-table-cell">
                     @T("Forum.LatestPost")
                 </th>
             </tr>
@@ -42,13 +42,13 @@
                         @forum.Description
                     </div>
                 </td>
-                <td class="topics">
+                <td class="topics d-none d-md-table-cell">
                     @forum.NumTopics
                 </td>
-                <td class="posts">
+                <td class="posts d-none d-md-table-cell">
                     @forum.NumPosts
                 </td>
-                <td class="last-post">
+                <td class="last-post d-none d-md-table-cell">
                     @{ Html.RenderAction("LastPost", new { forumPostId = @forum.LastPostId, showTopic = true }); }
                 </td>
             </tr>            

@@ -16,7 +16,7 @@
             }
         }
 
-        <div class="float-right">
+        <div>
 
             @if (Model.IsCurrentCustomerAllowedToEditPost)
             {
@@ -41,8 +41,8 @@
         </div>
     </div>
 
-    <div class="block-body card-block">
-        <div class="post-info float-left">
+    <div class="block-body card-block row">
+        <div class="post-info col-3 d-none d-sm-block">
             <div class="user-info mt-3 text-center">
                 @if (!String.IsNullOrEmpty(Model.CustomerAvatarUrl))
                 {
@@ -90,7 +90,7 @@
                 </div>
             </div>
         </div>
-        <div class="post-content">
+        <div class="post-content col col-sm-9">
             <div class="posttime text-muted">
                 @T("Forum.Posted"): <span class="stat-value">@Model.PostCreatedOnStr</span>
             </div>
@@ -107,16 +107,18 @@
                     @Html.Raw(@Model.FormattedSignature)
                 </div>
             }
+        </div>
+    </div>
 
-            <div class="functions">
-                <a href="#" class="btn btn-link btn-sm font-weight-600">
-                    @T("Forum.Top")
-                </a>
-                <button class="btn btn-outline-info btn-flat btn-sm" onclick="setLocation('@Url.Action("PostCreate", new { id = Model.ForumTopicId, quote = Model.Id })')">
-                    <i class="fa fa-quote-left"></i>
-                    <span>@T("Forum.QuotePost")</span>
-                </button>
-            </div>
+    <div class="text-right">
+        <div class="functions">
+            <a href="#" class="btn btn-link btn-sm font-weight-600">
+                @T("Forum.Top")
+            </a>
+            <button class="btn btn-outline-info btn-flat btn-sm" onclick="setLocation('@Url.Action("PostCreate", new { id = Model.ForumTopicId, quote = Model.Id })')">
+                <i class="fa fa-quote-left"></i>
+                <span>@T("Forum.QuotePost")</span>
+            </button>
         </div>
     </div>
 </div>

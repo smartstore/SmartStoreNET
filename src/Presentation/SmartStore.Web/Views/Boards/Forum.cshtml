@@ -25,7 +25,7 @@
     function setButtonWatchState(btn, subscribed) {
         subscribed = (subscribed !== undefined) ? subscribed : toBool(btn.data("subscribed"));
         btn.find("i").remove();
-        btn.prepend('<i class="fa fa-bookmark" />&nbsp;').toggleClass("btn-warning", subscribed);
+        btn.prepend('<i class="fa fa-bookmark" />&nbsp;').toggleClass("btn-outline-warning", subscribed);
     }
     $(function () {
         setButtonWatchState($('#watch-forum'));
@@ -35,7 +35,7 @@
 <div class="page forum">
     @{ Html.RenderPartial("_SearchBox"); }
 
-    <div class="row  mt-5">
+    <div class="row mt-5">
         <div class="col">
             <div class="heading mb-4">
                 <h2 class="heading-title">@Model.Name</h2>
@@ -55,26 +55,29 @@
     <p class="lead">@Model.Description</p>
 
     <div>
-        <div class="actions mt-5 mb-3">
-            <a href='@Url.Action("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic" rel="nofollow">
-                <i class="fa fa-plus"></i>
-                <span>@T("Forum.NewTopic")</span>
-            </a>
-            @if (Model.IsCustomerAllowedToSubscribe)
-            {
-                @Ajax.ActionLink(Model.WatchForumText,
+        <div class="actions my-3 row sm-gutters">
+            <div class="col col-sm-auto mt-1 mt-sm-0">
+                <a href='@Url.Action("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic btn-block" rel="nofollow">
+                    <i class="fa fa-plus"></i>
+                    <span>@T("Forum.NewTopic")</span>
+                </a>
+            </div>
+            <div class="col col-sm-auto mt-1 mt-sm-0">
+                @if (Model.IsCustomerAllowedToSubscribe)
+                {
+                    @Ajax.ActionLink(Model.WatchForumText,
                             "ForumWatch",
                             new { id = @Model.Id },
                             new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleForumWatch" },
-                            new { id = "watch-forum", @class = "btn watch-forum", data_subscribed = Model.WatchForumSubscribed })
-            }
+                            new { id = "watch-forum", @class = "btn btn-outline-primary font-weight-bold btn-block watch-forum", data_subscribed = Model.WatchForumSubscribed })
+                }
+            </div>
         </div>
-
         @pager
     </div>
 
     <div class="topics-group clearfix">
-        <table class="table">
+        <table class="table table-responsive">
             @if (Model.ForumTopics.Count > 0)
             {
                 <thead>
@@ -83,13 +86,13 @@
                         <th class="topic-name">
                             @T("Forum.TopicTitle")
                         </th>
-                        <th class="replies">
+                        <th class="replies d-none d-md-table-cell">
                             @T("Forum.Replies")
                         </th>
-                        <th class="views">
+                        <th class="views d-none d-md-table-cell">
                             @T("Forum.Views")
                         </th>
-                        <th class="last-post">
+                        <th class="last-post d-none d-md-table-cell">
                             @T("Forum.LatestPost")
                         </th>
                     </tr>
@@ -165,13 +168,13 @@
                         </div>
 
                     </td>
-                    <td class="replies">
+                    <td class="replies d-none d-md-table-cell">
                         @topic.NumReplies
                     </td>
-                    <td class="views">
+                    <td class="views d-none d-md-table-cell">
                         @topic.Views
                     </td>
-                    <td class="last-post">
+                    <td class="last-post d-none d-md-table-cell">
                         @{ Html.RenderAction("LastPost", new { forumPostId = @topic.LastPostId, showTopic = false }); }
                     </td>
                 </tr>

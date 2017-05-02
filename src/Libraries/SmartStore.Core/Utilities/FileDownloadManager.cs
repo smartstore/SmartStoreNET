@@ -58,6 +58,7 @@ namespace SmartStore.Utilities
 			if (sendAuthCookie)
 			{
 				req.SetFormsAuthenticationCookie(_httpRequest);
+				req.SetAnonymousIdentCookie(_httpRequest);
 			}
 
 			using (var resp = (HttpWebResponse)req.GetResponse())

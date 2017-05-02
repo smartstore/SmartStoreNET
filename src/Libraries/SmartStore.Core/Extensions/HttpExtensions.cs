@@ -106,14 +106,26 @@ namespace SmartStore
 	    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 	    public static void SetFormsAuthenticationCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
 		{
-			Guard.NotNull(webRequest, nameof(webRequest));
-			Guard.NotNull(httpRequest, nameof(httpRequest));
+			CopyCookie(webRequest, httpRequest, FormsAuthentication.FormsCookieName);
+		}
 
-			var authCookie = httpRequest.Cookies[FormsAuthentication.FormsCookieName];
-			if (authCookie == null)
+		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+		public static void SetAnonymousIdentCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
+		{
+			CopyCookie(webRequest, httpRequest, "SMARTSTORE.ANONYMOUS"); 
+		}
+
+		private static void CopyCookie(HttpWebRequest webRequest, HttpRequestBase sourceHttpRequest, string cookieName)
+		{
+			Guard.NotNull(webRequest, nameof(webRequest));
+			Guard.NotNull(sourceHttpRequest, nameof(sourceHttpRequest));
+			Guard.NotEmpty(cookieName, nameof(cookieName));
+
+			var sourceCookie = sourceHttpRequest.Cookies[cookieName];
+			if (sourceCookie == null)
 				return;
 
-			var sendCookie = new Cookie(authCookie.Name, authCookie.Value, authCookie.Path, httpRequest.Url.Host);
+			var sendCookie = new Cookie(sourceCookie.Name, sourceCookie.Value, sourceCookie.Path, sourceHttpRequest.Url.Host);
 
 			if (webRequest.CookieContainer == null)
 			{

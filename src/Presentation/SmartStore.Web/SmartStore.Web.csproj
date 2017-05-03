@@ -772,6 +772,7 @@
     <Content Include="Content\samples\manufacturer_festina.png" />
     <Content Include="Content\samples\manufacturer_oakley.png" />
     <Content Include="Content\samples\manufacturer_sony.png" />
+    <Content Include="Content\samples\manufacturer_titleist.png" />
     <Content Include="Content\samples\manufacturer_ubisoft.png" />
     <Content Include="Content\samples\manufacturer_wilson.png" />
     <Content Include="Content\samples\music.png" />
@@ -799,6 +800,7 @@
     <Content Include="Content\samples\product_CustomFlakSunglasses.jpg" />
     <Content Include="Content\samples\product_dellinspiron23.png" />
     <Content Include="Content\samples\product_evolution-high-school-game-basketball.jpg" />
+    <Content Include="Content\samples\product_gbb-epic-sub-zero-driver.jpg" />
     <Content Include="Content\samples\product_giftcart.png" />
     <Content Include="Content\samples\product_ipad_1.jpg" />
     <Content Include="Content\samples\product_ipad_2.jpg" />
@@ -822,6 +824,8 @@
     <Content Include="Content\samples\product_sony_ps4.png" />
     <Content Include="Content\samples\product_sony_ps4_bundle.png" />
     <Content Include="Content\samples\product_sony_ps4_camera.png" />
+    <Content Include="Content\samples\product_supremeGolfball_1.jpg" />
+    <Content Include="Content\samples\product_supremeGolfball_2.jpg" />
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_blue.png" />
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_green.png" />
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_red.png" />

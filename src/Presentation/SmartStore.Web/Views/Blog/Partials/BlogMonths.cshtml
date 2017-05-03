@@ -4,19 +4,20 @@
 @if (Model.Count > 0)
 {
     <div class="block-blog-archive card mb-3">
-        <div class="card-header">
+        <h5 class="card-header">
             @T("Blog.Archive")
-        </div>
-        <div class="listbox card-block">
+        </h5>
+        <div class="listbox card-block py-1">
             <ul id="blog-month-list" class="list-unstyled">
                 @foreach (var yearItem in Model)
                 {
-                    <li class="year">@(yearItem.Year)
-                        <ul id="blog-year-@(yearItem.Year)">
+                    <li class="year my-2 font-weight-bold">@(yearItem.Year)
+                        <ul id="blog-year-@(yearItem.Year)" class="list-unstyled">
                             @foreach (var monthItem in yearItem.Months)
                             {
-                                <li>
-                                    <a href="@Url.RouteUrl("BlogByMonth", new { month = yearItem.Year + "-" + monthItem.Month })">@(new DateTime(yearItem.Year, monthItem.Month, 1).ToString("MMMM"))
+                                <li class="ml-3">
+                                    <a href="@Url.RouteUrl("BlogByMonth", new { month = yearItem.Year + "-" + monthItem.Month })" class="font-weight-normal color-body">
+                                        @(new DateTime(yearItem.Year, monthItem.Month, 1).ToString("MMMM"))
                                         (@(monthItem.BlogPostCount))
                                     </a> 
                                 </li>

@@ -29,7 +29,7 @@
 		position: absolute;
 		font-size: 50px;
 		line-height: 50px;
-		color: #f1f1f1;
+		color: $gray-lighter;
 	}
 	
 	.blogpost-comments .blogpost-comments-count {
@@ -39,29 +39,28 @@
 		line-height: 16px;
 		width: 38px;
 		text-align: center;
-		color: #c5c5c5;
+		color: $gray-light;
 	}
 	
     
 	.blogpost-comments.vivid {
-		.blogpost-comments-icon { color: #444 }
-		.blogpost-comments-count { color: #fff }
+		.blogpost-comments-icon { color: $gray }
+		.blogpost-comments-count { color: $white }
 	}
 	
 	.blogpost-date {
 		clear: both;
-		float: right;
 		text-align: right;
 		margin-bottom: 8px;
 	}
 	
 	.blogpost-tags {
 		clear: both;
-        border-radius: 3px;
-        border: 1px solid #e5e5e5;
+        border-radius: $border-radius;
+        border: 1px solid $gray-lighter;
         font-size: $font-size-sm;
         padding: .3rem;
-        background-color: #fafafa;
+        background-color: $gray-lightest;
 	}
 }
 
@@ -70,5 +69,9 @@
     border-bottom: 1px solid rgba(0,0,0, 0.12);
 
     &:last-child { border-bottom: none; }
+}
+
+.block-popular-blogtags {
+    overflow: hidden;
 }
 

@@ -71,7 +71,14 @@ else
         @if (!string.IsNullOrEmpty(Model.Title))
         {
             <div class="block-title" id="ph-title-@Model.Id">
-				<h3>@Model.Title</h3>
+				@if (ViewBag.IsLead == true)
+				{
+					<h1 class="h2">@Model.Title</h1>
+				}
+				else
+				{
+					<h4>@Model.Title</h4>
+				}
             </div>
         }
         <div class="block-body topic-html-content-body@(ViewBag.IsLead == true ? " lead" : "")">

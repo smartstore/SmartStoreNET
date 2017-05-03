@@ -123,6 +123,14 @@
     }
 }
 
+.page-body > .block:not(.block-boxed):first-child {
+    margin-top: 0 !important;
+
+    .block-title {
+        padding-top: 0;
+    }
+}
+
 
 
 .pagination {

@@ -12,7 +12,7 @@ namespace SmartStore.Web.Models.Blogs
     {
         public BlogPostModel()
         {
-            Tags = new List<string>();
+            Tags = new List<BlogPostTagModel>();
 			AddNewComment = new AddBlogCommentModel();
 			Comments = new CommentListModel();
 		}
@@ -22,7 +22,7 @@ namespace SmartStore.Web.Models.Blogs
         public string MetaTitle { get; set; }
         public string SeName { get; set; }
 		public DateTime CreatedOn { get; set; }
-		public IList<string> Tags { get; set; }
+		public IList<BlogPostTagModel> Tags { get; set; }
 
 		public string Title { get; set; }
         public string Body { get; set; }

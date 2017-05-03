@@ -94,7 +94,7 @@
                                 {
                                     var tag = item.Tags[i];
                                     var isLast = i == length - 1;
-                                    <a class="blogpost-tag" href="@Url.RouteUrl("BlogByTag", new { tag = tag })">@tag@(!isLast ? "," : "")</a>
+                                    <a class="blogpost-tag" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name@(!isLast ? "," : "")</a>
                                 }
                             </div>
                         }

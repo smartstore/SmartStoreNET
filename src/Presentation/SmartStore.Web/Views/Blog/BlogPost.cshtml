@@ -26,19 +26,19 @@
 
     <div class="blogpost-body">
 		@{ Html.RenderWidget("blogpost_page_before_body"); }
-        <div class="blogpost-content">
+        <div class="blogpost-content text-body">
             @Html.Raw(Model.Body)
         </div>
 
         @if (Model.Tags.Count > 0)
         {
-            <div class="blogpost-tags card-block">
+            <div class="blogpost-tags mt-4">
                 <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
                 @for (int i = 0, length = Model.Tags.Count; i < length; i++)
                 {
                     var tag = Model.Tags[i];
                     var isLast = i == length - 1;
-                    <a class="blogpost-tag" href="@Url.RouteUrl("BlogByTag", new { tag = tag })">@tag</a>@(!isLast ? ", " : "")
+                    <a class="blogpost-tag" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name</a>@(!isLast ? ", " : "")
                 }
             </div>
         }

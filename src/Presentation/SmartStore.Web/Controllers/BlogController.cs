@@ -30,6 +30,7 @@ using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Blogs;
 using SmartStore.Web.Models.Common;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Web.Controllers
 {
@@ -57,6 +58,7 @@ namespace SmartStore.Web.Controllers
         private readonly LocalizationSettings _localizationSettings;
         private readonly CustomerSettings _customerSettings;
         private readonly CaptchaSettings _captchaSettings;
+        private readonly SeoSettings _seoSettings;
 
         #endregion
 
@@ -79,7 +81,8 @@ namespace SmartStore.Web.Controllers
 			BlogSettings blogSettings,
             LocalizationSettings localizationSettings,
 			CustomerSettings customerSettings,
-            CaptchaSettings captchaSettings)
+            CaptchaSettings captchaSettings,
+            SeoSettings seoSettings)
         {
             this._blogService = blogService;
             this._workContext = workContext;
@@ -100,6 +103,7 @@ namespace SmartStore.Web.Controllers
             this._localizationSettings = localizationSettings;
             this._customerSettings = customerSettings;
             this._captchaSettings = captchaSettings;
+            this._seoSettings = seoSettings;
         }
 
         #endregion
@@ -123,7 +127,11 @@ namespace SmartStore.Web.Controllers
             model.Title = blogPost.Title;
             model.Body = blogPost.Body;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
-            model.Tags = blogPost.ParseTags().ToList();
+            model.Tags = blogPost.ParseTags().Select(x => new BlogPostTagModel { Name = x, SeName = SeoHelper.GetSeName(x,
+                _seoSettings.ConvertNonWesternChars,
+                _seoSettings.AllowUnicodeCharsInUrls,
+                _seoSettings.SeoNameCharConversion)
+            }).ToList();
             model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnBlogCommentPage;
 			model.Comments.AllowComments = blogPost.AllowComments;
 			model.Comments.AvatarPictureSize = _mediaSettings.AvatarPictureSize;
@@ -392,6 +400,7 @@ namespace SmartStore.Web.Controllers
                     model.Tags.Add(new BlogPostTagModel()
                     {
                         Name = tag.Name,
+                        SeName = tag.GetSeName(),
                         BlogPostCount = tag.BlogPostCount
                     });
                 return model;

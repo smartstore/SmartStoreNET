@@ -61,6 +61,19 @@ namespace SmartStore.Services.Seo
         }
 
         /// <summary>
+        /// Gets blog post SE (search engine) name
+        /// </summary>
+        /// <param name="blogPost">Blog post</param>
+        /// <returns>Blog post SE (search engine) name</returns>
+        public static string GetSeName(this BlogPostTag blogPostTag)
+        {
+            if (blogPostTag == null)
+                throw new ArgumentNullException("blogPostTag");
+            string seName = GetSeName(blogPostTag.Name);
+            return seName;
+        }
+
+        /// <summary>
         /// Gets news item SE (search engine) name
         /// </summary>
         /// <param name="newsItem">News item</param>

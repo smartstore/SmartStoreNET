@@ -13,10 +13,10 @@
 		{
 			string css = null;
 
-			var hasColor = item.ColorSquaresRgb.HasValue() && item.ColorSquaresRgb != "transparent";
+			var hasColor = item.Color.HasValue() && item.Color != "transparent";
 			if (hasColor)
 			{
-				css = "background-color: " + item.ColorSquaresRgb + ";";
+				css = "background-color: " + item.Color + ";";
 			}
 
 			if (item.ImageUrl.HasValue())

@@ -611,7 +611,7 @@ namespace SmartStore.Web.Controllers
 						pvaValueModel.Id = pvaValue.Id;
 						pvaValueModel.Name = pvaValue.GetLocalized(x => x.Name);
 						pvaValueModel.Alias = pvaValue.Alias;
-						pvaValueModel.ColorSquaresRgb = pvaValue.ColorSquaresRgb; //used with "Color squares" attribute type
+						pvaValueModel.Color = pvaValue.ColorSquaresRgb; //used with "Color squares" attribute type
 						pvaValueModel.IsPreSelected = pvaValue.IsPreSelected;
 
 						if (linkedProduct != null && linkedProduct.VisibleIndividually)

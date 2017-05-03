@@ -13,7 +13,7 @@
 @foreach (var item in items)
 {
 	var checkId = controlId + "_" + item.Id;
-	var hasColor = item.ColorSquaresRgb.HasValue() && item.ColorSquaresRgb != "transparent";
+	var hasColor = item.Color.HasValue() && item.Color != "transparent";
 	<div class="@type">
 		<label class="form-check-label">
 			<input class="form-check-input" type="@type" id="@checkId" name="@controlId" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
@@ -33,7 +33,7 @@
 			}
 			else if (hasColor)
 			{
-				<span class="choice-item-color" style="background-color: @item.ColorSquaresRgb"></span>
+				<span class="choice-item-color" style="background-color: @item.Color"></span>
 			}
 
 			@item.GetItemLabel()

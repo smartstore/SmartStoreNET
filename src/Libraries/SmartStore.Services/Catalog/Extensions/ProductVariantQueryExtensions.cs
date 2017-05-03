@@ -41,7 +41,7 @@ namespace SmartStore.Services.Catalog.Extensions
 				{
 					case AttributeControlType.DropdownList:
 					case AttributeControlType.RadioList:
-					case AttributeControlType.ColorSquares:
+					case AttributeControlType.Boxes:
 						if (firstItemValue.HasValue())
 						{
 							var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();

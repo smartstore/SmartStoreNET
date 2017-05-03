@@ -8,7 +8,7 @@ namespace SmartStore.Web.Framework.UI.Choices
 		public string Name { get; set; }
 		public string SeName { get; set; }
 		public string Alias { get; set; }
-		public string ColorSquaresRgb { get; set; }
+		public string Color { get; set; }
 		public string PriceAdjustment { get; set; }
 		public decimal PriceAdjustmentValue { get; set; }
 		public int QuantityInfo { get; set; }

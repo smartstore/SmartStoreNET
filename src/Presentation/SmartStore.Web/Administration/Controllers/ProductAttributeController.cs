@@ -424,7 +424,7 @@ namespace SmartStore.Admin.Controllers
 			var model = new ProductAttributeOptionModel
 			{
 				ProductAttributeOptionsSetId = id,
-				ColorSquaresRgb = string.Empty,
+				Color = string.Empty,
 				Quantity = 1
 			};
 

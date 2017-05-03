@@ -703,8 +703,8 @@ namespace SmartStore.Data.Migrations
 				"Checkboxes",
 				"Kontrollkästchen");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.Custom",
-				"Custom (Color squares, thumbnail...)",
-				"Spezifisch (Farbflächen, Thumbnail...)");
+				"Boxes (color & image)",
+				"Kästchen (Farbe & Bild)");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.NumericRange",
 				"Numeric range",
 				"Numerischer Bereich");
@@ -922,6 +922,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Themes.Validation.ErrorReportTitle",
 				"SASS parser error report",
 				"SASS Parser Fehlerbericht");
+
+			builder.Delete("Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.ColorSquares");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.Boxes",
+				"Boxes (color & image)",
+				"Kästchen (Farbe & Bild)");
 		}
 	}
 }

@@ -661,7 +661,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ColorSquaresRgb")]
 			[AllowHtml, UIHint("Color")]
-			public string ColorSquaresRgb { get; set; }
+			public string Color { get; set; }
 			public bool IsListTypeAttribute { get; set; }
 
             [UIHint("Picture")]

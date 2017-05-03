@@ -780,7 +780,7 @@ namespace SmartStore.Web.Controllers
 				{
 					case AttributeControlType.DropdownList:
 					case AttributeControlType.RadioList:
-					case AttributeControlType.ColorSquares:
+					case AttributeControlType.Boxes:
 					case AttributeControlType.Checkboxes:
 						{
 							if (!String.IsNullOrEmpty(selectedCheckoutAttributes))
@@ -1110,7 +1110,7 @@ namespace SmartStore.Web.Controllers
                 {
                     case AttributeControlType.DropdownList:
                     case AttributeControlType.RadioList:
-                    case AttributeControlType.ColorSquares:
+                    case AttributeControlType.Boxes:
 						if (firstItemValue.HasValue())
 						{
 							var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();

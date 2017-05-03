@@ -34,8 +34,8 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         FileUpload = 30,
         /// <summary>
-        /// Color squares
+        /// Boxes
         /// </summary>
-        ColorSquares = 40,
+        Boxes = 40,
     }
 }

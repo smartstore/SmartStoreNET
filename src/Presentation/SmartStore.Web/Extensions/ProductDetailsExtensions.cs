@@ -55,7 +55,7 @@ namespace SmartStore.Web
 				case AttributeControlType.DropdownList:
 				case AttributeControlType.RadioList:
 				case AttributeControlType.Checkboxes:
-				case AttributeControlType.ColorSquares:
+				case AttributeControlType.Boxes:
 					return (variantAttribute.Values.Count > 0);
 				default:
 					return true;

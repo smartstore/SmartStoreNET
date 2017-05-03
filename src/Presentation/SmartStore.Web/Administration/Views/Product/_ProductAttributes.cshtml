@@ -17,7 +17,7 @@
 			<span style="font-weight: bold;">@(attribute.TextPrompt.HasValue() ? attribute.TextPrompt : attribute.Name)</span>
 		</label>
 		<div class="controls">
-			@if (attribute.AttributeControlType == AttributeControlType.Checkboxes || attribute.AttributeControlType == AttributeControlType.RadioList || attribute.AttributeControlType == AttributeControlType.ColorSquares)
+			@if (attribute.AttributeControlType == AttributeControlType.Checkboxes || attribute.AttributeControlType == AttributeControlType.RadioList || attribute.AttributeControlType == AttributeControlType.Boxes)
             {
 				@ControlsCheckboxesAndRadios(attribute, controlId, attribute.AttributeControlType == AttributeControlType.Checkboxes ? "checkbox" : "radio")
 			}

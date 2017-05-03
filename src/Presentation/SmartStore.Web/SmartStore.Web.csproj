@@ -1107,7 +1107,6 @@
     <Content Include="Themes\Flex\Content\bs4\scss\mixins\_transforms.scss" />
     <Content Include="Themes\Flex\Content\bs4\scss\mixins\_transition.scss" />
     <Content Include="Themes\Flex\Content\bs4\scss\mixins\_visibility.scss" />
-    <Content Include="Themes\Flex\Content\bs4\_user.scss" />
     <None Include="Themes\Flex\Content\photoswipe\LICENSE" />
     <None Include="Themes\Flex\Content\drift\LICENSE" />
     <Content Include="Themes\Flex\Content\photoswipe\photoswipe-ui-default.js" />
@@ -1923,6 +1922,8 @@
     <Content Include="Views\Shared\Partials\Comment.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Comment.List.cshtml" />
     <Content Include="Views\ShoppingCart\Partials\WishlistItems.cshtml" />
+    <Content Include="Themes\Flex\Content\_layout.scss" />
+    <Content Include="Themes\Flex\Content\shared\_cards.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

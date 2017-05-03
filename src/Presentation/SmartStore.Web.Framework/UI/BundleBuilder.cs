@@ -111,7 +111,7 @@ namespace SmartStore.Web.Framework.UI
                 hash = HttpServerUtility.UrlTokenEncode(input);
 
                 // append StoreId & ThemeName to hash in order to vary cache by store/theme combination
-                if (type == BundleType.Stylesheet && !_workContext.IsAdmin && files.Any(x => x.EndsWith(".less", StringComparison.OrdinalIgnoreCase)))
+                if (type == BundleType.Stylesheet && !_workContext.IsAdmin && files.Any(x => x.EndsWith(".scss", StringComparison.OrdinalIgnoreCase)))
                 {
                     hash += "-s" + _storeContext.CurrentStore.Id;
 					hash += "-t" + _themeContext.CurrentTheme.ThemeName;
@@ -126,7 +126,5 @@ namespace SmartStore.Web.Framework.UI
 			sb.Append(postfix); 
             return sb.ToString();
         }
-
     }
-
 }

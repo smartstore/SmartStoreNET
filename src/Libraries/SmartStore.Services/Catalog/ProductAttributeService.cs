@@ -21,6 +21,10 @@ namespace SmartStore.Services.Catalog
 		private const string PRODUCTVARIANTATTRIBUTES_COMBINATIONS_BY_ID_KEY = "SmartStore.productvariantattribute.combinations.id-{0}-{1}-{2}";
 		private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.";
 
+		// 0 = Attribute value ids, e.g. 16-254-1245
+		private const string PRODUCTVARIANTATTRIBUTEVALUES_BY_IDS_KEY = "SmartStore.productvariantattributevalues.ids-{0}";
+		private const string PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.productvariantattributevalues";
+
 		private readonly IRepository<ProductAttribute> _productAttributeRepository;
 		private readonly IRepository<ProductAttributeOption> _productAttributeOptionRepository;
 		private readonly IRepository<ProductAttributeOptionsSet> _productAttributeOptionsSetRepository;
@@ -98,9 +102,10 @@ namespace SmartStore.Services.Catalog
 
             //cache
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityDeleted(productAttribute);
+			//event notification
+			_eventPublisher.EntityDeleted(productAttribute);
         }
 
         public virtual IList<ProductAttribute> GetAllProductAttributes()
@@ -128,9 +133,10 @@ namespace SmartStore.Services.Catalog
 			_productAttributeRepository.Insert(productAttribute);
             
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityInserted(productAttribute);
+			//event notification
+			_eventPublisher.EntityInserted(productAttribute);
         }
 
         public virtual void UpdateProductAttribute(ProductAttribute productAttribute)
@@ -141,9 +147,10 @@ namespace SmartStore.Services.Catalog
 			_productAttributeRepository.Update(productAttribute);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityUpdated(productAttribute);
+			//event notification
+			_eventPublisher.EntityUpdated(productAttribute);
         }
 
 		#endregion
@@ -277,9 +284,10 @@ namespace SmartStore.Services.Catalog
             _productVariantAttributeRepository.Delete(productVariantAttribute);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityDeleted(productVariantAttribute);
+			//event notification
+			_eventPublisher.EntityDeleted(productVariantAttribute);
         }
 
 		public virtual IList<ProductVariantAttribute> GetProductVariantAttributesByProductId(int productId)
@@ -362,14 +370,19 @@ namespace SmartStore.Services.Catalog
                 return Enumerable.Empty<ProductVariantAttributeValue>();
             }
 
-			var query = _productVariantAttributeValueRepository.Table
-				.Expand(x => x.ProductVariantAttribute)
-				.Expand("ProductVariantAttribute.ProductAttribute")
-				.Where(x => productVariantAttributeValueIds.Contains(x.Id))
-				.OrderBy(x => x.ProductVariantAttribute.DisplayOrder)
-				.ThenBy(x => x.DisplayOrder);
+			var key = PRODUCTVARIANTATTRIBUTEVALUES_BY_IDS_KEY.FormatInvariant(string.Join("-", productVariantAttributeValueIds));
+			return _requestCache.Get(key, () =>
+			{
+				var query = _productVariantAttributeValueRepository.Table
+					.Expand(x => x.ProductVariantAttribute)
+					.Expand("ProductVariantAttribute.ProductAttribute")
+					.Where(x => productVariantAttributeValueIds.Contains(x.Id))
+					.OrderBy(x => x.ProductVariantAttribute.DisplayOrder)
+					.ThenBy(x => x.DisplayOrder);
 
-			return query.ToList();
+				return query.ToList();
+			});
+
 			//return _productVariantAttributeValueRepository.GetMany(productVariantAttributeValueIds);
 		}
 
@@ -380,6 +393,7 @@ namespace SmartStore.Services.Catalog
 			_productVariantAttributeRepository.Insert(productVariantAttribute);
 
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityInserted(productVariantAttribute);
@@ -393,9 +407,10 @@ namespace SmartStore.Services.Catalog
 			_productVariantAttributeRepository.Update(productVariantAttribute);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityUpdated(productVariantAttribute);
+			//event notification
+			_eventPublisher.EntityUpdated(productVariantAttribute);
         }
 
 		public virtual int CopyAttributeOptions(ProductVariantAttribute productVariantAttribute, int productAttributeOptionsSetId, bool deleteExistingValues)
@@ -501,9 +516,10 @@ namespace SmartStore.Services.Catalog
             _productVariantAttributeValueRepository.Delete(productVariantAttributeValue);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityDeleted(productVariantAttributeValue);
+			//event notification
+			_eventPublisher.EntityDeleted(productVariantAttributeValue);
         }
 
         public virtual IList<ProductVariantAttributeValue> GetProductVariantAttributeValues(int productVariantAttributeId)
@@ -533,9 +549,10 @@ namespace SmartStore.Services.Catalog
 			_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityInserted(productVariantAttributeValue);
+			//event notification
+			_eventPublisher.EntityInserted(productVariantAttributeValue);
         }
 
         public virtual void UpdateProductVariantAttributeValue(ProductVariantAttributeValue productVariantAttributeValue)
@@ -546,9 +563,10 @@ namespace SmartStore.Services.Catalog
 			_productVariantAttributeValueRepository.Update(productVariantAttributeValue);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityUpdated(productVariantAttributeValue);
+			//event notification
+			_eventPublisher.EntityUpdated(productVariantAttributeValue);
         }
 
         #endregion

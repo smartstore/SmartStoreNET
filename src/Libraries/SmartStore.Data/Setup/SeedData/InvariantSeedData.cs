@@ -5648,7 +5648,8 @@ namespace SmartStore.Data.Setup
 				new ProductAttribute
 				{
 					Name = "Color",
-					Alias = "color"
+					Alias = "color",
+                    AllowFiltering = true
 				},
 				new ProductAttribute
 				{
@@ -5717,7 +5718,31 @@ namespace SmartStore.Data.Setup
 				ProductAttributeId = colorAttribute.Id
 			});
 
-			this.Alter(entities);
+            entities.Add(new ProductAttributeOptionsSet
+            {
+                Name = "Apple colors",
+                ProductAttributeId = colorAttribute.Id
+            });
+
+            entities.Add(new ProductAttributeOptionsSet
+            {
+                Name = "Rayban original Wayfarer colors",
+                ProductAttributeId = colorAttribute.Id
+            });
+
+            entities.Add(new ProductAttributeOptionsSet
+            {
+                Name = "Rayban Topbar colors",
+                ProductAttributeId = colorAttribute.Id
+            });
+
+            entities.Add(new ProductAttributeOptionsSet
+            {
+                Name = "Bauhaus colors",
+                ProductAttributeId = colorAttribute.Id
+            });
+
+            this.Alter(entities);
 			return entities;
 		}
 
@@ -5725,11 +5750,13 @@ namespace SmartStore.Data.Setup
 		{
 			var entities = new List<ProductAttributeOption>();
 			var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
-			var generalColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.ProductAttributeId == colorAttribute.Id);
+			var generalColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "General colors");
 
-			var generalColors = new string[] { "Red", "Green", "British Racing Green", "Blue", "Yellow", "Black", "White" };
+			var generalColors = new string[] { "Red", "Green", "Blue", "Yellow", "Black", "White", "Gray", "Silver", "Brown" };
+            var generalColorValues = new string[] {"#ff0000", "#008000", "#0000ff", "#ffff00", "#000000", "#ffffff", "#808080", "#dddfde", "#a52a2a"};
 
-			for (var i = 0; i < generalColors.Length; ++i)
+
+            for (var i = 0; i < generalColors.Length; ++i)
 			{
 				entities.Add(new ProductAttributeOption
 				{
@@ -5737,11 +5764,87 @@ namespace SmartStore.Data.Setup
 					Alias = GetSeName(generalColors[i]),
 					Name = generalColors[i],
 					Quantity = 1,
-					DisplayOrder = i + 1
+					DisplayOrder = i + 1,
+                    ColorSquaresRgb = generalColorValues[i]
 				});
 			}
+            
+            var appleColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Apple colors");
 
-			this.Alter(entities);
+            var appleColors = new string[] { "Gold", "Light blue", "Purple", "Mint", "Rose", "Red", "Silver", "Space gray", "Turquoise" };
+            var apppleColorValues = new string[] { "#e3d0ba", "#a6b9df", "#dba5d7", "#a6dbb1", "#d9a6ad", "#af1e2d", "#dddfde", "#abaeb1", "#a4dbde" };
+
+            for (var i = 0; i < appleColors.Length; ++i)
+            {
+                entities.Add(new ProductAttributeOption
+                {
+                    ProductAttributeOptionsSetId = appleColorsSet.Id,
+                    Alias = GetSeName(appleColors[i]),
+                    Name = appleColors[i],
+                    Quantity = 1,
+                    DisplayOrder = i + 1,
+                    ColorSquaresRgb = apppleColorValues[i]
+                });
+            }
+
+            var raybanWayfarerColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban original Wayfarer colors");
+
+            var raybanWayfarerColors = new string[] { "Blue-Gray", "Brown", "Gray", "Green" };
+            var raybanWayfarerColorValues = new string[] { "#3e4659", "#3e4659", "#727377", "#3c432e" };
+
+            for (var i = 0; i < raybanWayfarerColors.Length; ++i)
+            {
+                entities.Add(new ProductAttributeOption
+                {
+                    ProductAttributeOptionsSetId = raybanWayfarerColorsSet.Id,
+                    Alias = GetSeName(raybanWayfarerColors[i]),
+                    Name = raybanWayfarerColors[i],
+                    Quantity = 1,
+                    DisplayOrder = i + 1,
+                    ColorSquaresRgb = raybanWayfarerColorValues[i]
+                });
+            }
+
+            var raybanTopbarColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban Topbar colors");
+
+            var raybanTopbarColors = new string[] { "Silver", "Shiny black", "Gunmetal", "Black" };
+            var raybanTopbarsColorValues = new string[] { "#b5c3c4", "#586166", "#6f785b", "#546d67" };
+
+            for (var i = 0; i < raybanTopbarColors.Length; ++i)
+            {
+                entities.Add(new ProductAttributeOption
+                {
+                    ProductAttributeOptionsSetId = raybanTopbarColorsSet.Id,
+                    Alias = GetSeName(raybanTopbarColors[i]),
+                    Name = raybanTopbarColors[i],
+                    Quantity = 1,
+                    DisplayOrder = i + 1,
+                    ColorSquaresRgb = raybanTopbarsColorValues[i]
+                });
+            }
+
+            var bauhausColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Bauhaus colors");
+
+            var bauhausColors = new string[] { "White-old", "Anthracite", "Beige", "Biscuit", "Blue", "Brown", "Champagne", "Cognac", "Brown-dark", "Black", "Green-dark", "Red-dark"
+                , "Graphite-black", "Green", "Blue-light", "Grey-light", "Red-raspberry", "Orange", "Yellow-colza", "Rosso", "Red", "Black", "Red-tomato", "White" };
+
+            var bauhausColorValues = new string[] { "#E9E5D9", "#343635", "#D7C6AA", "#F1E2C1", "#0000FE", "#734221", "#F7E9CE", "#BD6C3F", "#2A1708", "#00000", "#192521", "#5D060F",
+                "#383428", "#008543", "#00ACE4", "#CDCDCD", " #C72F48", "#FF5F01", "#FDD100", "#D30100", "#FE0000","#000000","#EA3E28", "#FFFFFF" };
+
+            for (var i = 0; i < bauhausColors.Length; ++i)
+            {
+                entities.Add(new ProductAttributeOption
+                {
+                    ProductAttributeOptionsSetId = bauhausColorsSet.Id,
+                    Alias = GetSeName(bauhausColors[i]),
+                    Name = bauhausColors[i],
+                    Quantity = 1,
+                    DisplayOrder = i + 1,
+                    ColorSquaresRgb = bauhausColorValues[i]
+                });
+            }
+
+            this.Alter(entities);
 			return entities;
 		}
 
@@ -7855,10 +7958,10 @@ namespace SmartStore.Data.Setup
             var categorySpiegelBestseller = this._ctx.Set<Category>().First(c => c.Alias == "SPIEGEL-Bestseller");
             var categoryCookAndEnjoy = this._ctx.Set<Category>().First(c => c.Alias == "Cook and enjoy");
             var categoryBooks = this._ctx.Set<Category>().First(c => c.Alias == "Books");
+            
+            #region productBooksUberMan
 
-			#region productBooksUberMan
-
-			var productBooksUberMan = new Product()
+            var productBooksUberMan = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
@@ -8827,13 +8930,91 @@ namespace SmartStore.Data.Setup
 
 			#endregion Smartphones
 
-			#region Instant Download Music
+			#region Instant Download Music / Digital Products
 
-            var categoryMusic = this._ctx.Set<Category>().First(c => c.Alias == "Digital Products");
+            var categoryDigitalProducts = this._ctx.Set<Category>().First(c => c.Alias == "Digital Products");
 
-			#region Antonio Vivaldi: then spring
+            #region product Books Stone of the Wise
 
-			var productInstantDownloadVivaldi = new Product
+            var productBooksStoneOfTheWise = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Ebook 'Stone of the Wise' in 'Lorem ipsum'",
+                IsEsd = true,
+                ShortDescription = "E-Book, 465 pages",
+                FullDescription = "",
+                Sku = "P-6001",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Ebook 'Stone of the Wise' in 'Lorem ipsum'",
+                Price = 9.90M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsDownload = true,
+                HasSampleDownload = true,
+                SampleDownload = new Download
+                {
+                    DownloadGuid = Guid.NewGuid(),
+                    ContentType = "application/pdf",
+                    MediaStorage = new MediaStorage
+                    {
+                        Data = File.ReadAllBytes(sampleDownloadsPath + "Stone_of_the_wise_preview.pdf")
+                    },
+                    Extension = ".pdf",
+                    Filename = "Stone_of_the_wise_preview",
+                    IsNew = true,
+                    UpdatedOnUtc = DateTime.UtcNow
+                }
+            };
+
+            productBooksStoneOfTheWise.ProductCategories.Add(new ProductCategory() { Category = categoryDigitalProducts, DisplayOrder = 1 });
+
+            //pictures
+            productBooksStoneOfTheWise.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "stone_of_wisdom.jpg"), "image/jpeg", GetSeName(productBooksStoneOfTheWise.Name)),
+                DisplayOrder = 1,
+            });
+
+            //attributes
+            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> cars
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
+            });
+            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+
+
+            #endregion product Books Stone of the Wise
+
+
+            #region Antonio Vivaldi: then spring
+
+            var productInstantDownloadVivaldi = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
@@ -8870,7 +9051,7 @@ namespace SmartStore.Data.Setup
 				}
 			};
 
-            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory() { Category = categoryMusic, DisplayOrder = 1 });
+            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory() { Category = categoryDigitalProducts, DisplayOrder = 1 });
             
 			#region pictures
 
@@ -8946,7 +9127,7 @@ namespace SmartStore.Data.Setup
 				}
 			};
 
-            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory() { Category = categoryMusic, DisplayOrder = 1 });
+            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory() { Category = categoryDigitalProducts, DisplayOrder = 1 });
 
 			#region pictures
 
@@ -9543,7 +9724,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Product>
 			{
-                productNikeStrikeFootball,productNikeEvoPowerBall,productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
+                productBooksStoneOfTheWise,productNikeStrikeFootball,productNikeEvoPowerBall,productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,

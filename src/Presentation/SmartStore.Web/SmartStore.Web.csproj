@@ -832,6 +832,7 @@
     <Content Include="Content\samples\product_watchseries2_2.jpg" />
     <Content Include="Content\samples\sony-ps3-white.jpg" />
     <Content Include="Content\samples\sony-PS3AssassinsCreedBundle.png" />
+    <Content Include="Content\samples\stone_of_wisdom.jpg" />
     <Content Include="Content\samples\ubisoft-assassins-creed-3.jpg" />
     <Content Include="Content\samples\ubisoft-driver-san-francisco.jpg" />
     <Content Include="Content\samples\ubisoft-prince-of-persia.jpg" />
@@ -867,6 +868,7 @@
     <Content Include="Content\bootstrap\custom\spinner.less" />
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />
+    <Content Include="Content\samples\Stone_of_the_wise_preview.pdf" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-AE.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-BH.js" />

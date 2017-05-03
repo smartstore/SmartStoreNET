@@ -6893,6 +6893,93 @@ namespace SmartStore.Data.Setup
 
             var categoryGolf = this._ctx.Set<Category>().First(c => c.Alias == "Golf");
 
+            #region product Titleist SM6 Tour Chrome
+
+            var productTitleistSM6TourChrome = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Titleist SM6 Tour Chrome",
+                IsEsd = false,
+                ShortDescription = "For golfers who want maximum impact control and feedback.",
+                FullDescription = "​​<p><strong>Inspired by the best iron players in the world</strong> </p> <p>The new 'Spin Milled 6' wages establish a new performance class in three key areas of the Wedge game: precise length steps, bounce and maximum spin. </p> <p>   <br />   For each loft the center of gravity of the wedge is determined individually. Therefore, the SM6 offers a particularly precise length and flight curve control combined with great impact.   <br />   Bob Vokey's tourer-puffed sole cleat allows all golfers more bounce, adapted to their personal swing profile and the respective ground conditions. </p> <p>   <br />   A new, parallel face texture was developed for the absolutely exact and with 100% quality control machined grooves. The result is a consistently higher edge sharpness for more spin. </p> <p> </p> <ul>   <li>Precise lengths and flight curve control thanks to progressively placed center of gravity.</li>   <li>Improved bounce due to Bob Vokey's proven soles.</li>   <li>TX4 grooves produce more spin through a new surface and edge sharpness.</li>   <li>Multiple personalization options.</li> </ul> ",
+                Sku = "P-7004",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Titleist SM6 Tour Chrome",
+                Price = 164.95M,
+                OldPrice= 199.95M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productTitleistSM6TourChrome.ProductCategories.Add(new ProductCategory() { Category = categoryGolf, DisplayOrder = 1 });
+
+            productTitleistSM6TourChrome.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_titleist_sm6_tour_chrome.jpg"), "image/png", GetSeName(productTitleistSM6TourChrome.Name)),
+                DisplayOrder = 1,
+            });
+
+            productTitleistSM6TourChrome.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Titleist").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product Titleist SM6 Tour Chrome
+
+            #region product Titleist Pro V1x
+
+            var productTitleistProV1x = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Titleist Pro V1x",
+                IsEsd = false,
+                ShortDescription = "Golf ball with high ball flight",
+                FullDescription = "​​The top players rely on the new Titleist Pro V1x. High ball flight, soft feel and more spin in the short game are the advantages of the V1x version. Perfect performance from the leading manufacturer. The new Titleist Pro V1 golf ball is exactly defined and promises penetrating ball flight with very soft hit feeling.",
+                Sku = "P-7001",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Titleist Pro V1x",
+                Price = 2.1M,
+                IsGiftCard = false,
+                ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productTitleistProV1x.ProductCategories.Add(new ProductCategory() { Category = categoryGolf, DisplayOrder = 1 });
+
+            productTitleistProV1x.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_titleist-pro-v1x.jpg"), "image/png", GetSeName(productTitleistProV1x.Name)),
+                DisplayOrder = 1,
+            });
+
+            productTitleistProV1x.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Titleist").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion product Titleist Pro V1x
+
             #region product Supreme Golfball
 
             var productSupremeGolfball = new Product()
@@ -6903,7 +6990,7 @@ namespace SmartStore.Data.Setup
                 IsEsd = false,
                 ShortDescription = "Training balls with perfect flying characteristics",
                 FullDescription = "​Perfect golf exercise ball with the characteristics like the 'original', but in a glass-fracture-proof execution. Massive core, an ideal training ball for yard and garden. Colors: white, yellow, orange.",
-                Sku = "P-7001",
+                Sku = "P-7002",
                 ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
@@ -6952,7 +7039,7 @@ namespace SmartStore.Data.Setup
                 IsEsd = false,
                 ShortDescription = "Low spin for good golfing!",
                 FullDescription = "Your game wins with the GBB Epic Sub Zero Driver. A golf club with an extremely low spin and the phenomenal high-speed characteristic.",
-                Sku = "P-7002",
+                Sku = "P-7003",
                 ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
@@ -9654,7 +9741,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Product>
 			{
-                productGBBEpicSubZeroDriver,productSupremeGolfball,productNikeStrikeFootball,productNikeEvoPowerBall,productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
+                productTitleistSM6TourChrome,productTitleistProV1x,productGBBEpicSubZeroDriver,productSupremeGolfball,productNikeStrikeFootball,productNikeEvoPowerBall,productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,

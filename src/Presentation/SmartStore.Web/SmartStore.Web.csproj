@@ -826,6 +826,8 @@
     <Content Include="Content\samples\product_sony_ps4_camera.png" />
     <Content Include="Content\samples\product_supremeGolfball_1.jpg" />
     <Content Include="Content\samples\product_supremeGolfball_2.jpg" />
+    <Content Include="Content\samples\product_titleist-pro-v1x.jpg" />
+    <Content Include="Content\samples\product_titleist_sm6_tour_chrome.jpg" />
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_blue.png" />
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_green.png" />
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_red.png" />

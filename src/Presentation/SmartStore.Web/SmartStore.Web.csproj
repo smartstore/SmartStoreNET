@@ -1931,7 +1931,7 @@
     <Content Include="Views\Shared\Partials\Comment.List.cshtml" />
     <Content Include="Views\ShoppingCart\Partials\WishlistItems.cshtml" />
     <Content Include="Themes\Flex\Content\_layout.scss" />
-    <Content Include="Themes\Flex\Content\shared\_cards.scss" />
+    <Content Include="Themes\Flex\Content\shared\_card.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

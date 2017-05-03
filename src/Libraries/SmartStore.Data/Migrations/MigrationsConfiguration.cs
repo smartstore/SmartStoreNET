@@ -915,6 +915,13 @@ namespace SmartStore.Data.Migrations
                 "Thema");
 
             builder.AddOrUpdate("ShoppingCart.AlternativePaymentButtons", "- OR -", "- ODER -");
-        }
+
+			builder.AddOrUpdate("Admin.Configuration.Themes.Notifications.ConfigureError",
+				"SASS CSS Parser Error: Your changes were not saved because your configuration would lead to an error in the shop. For details see report.",
+				"SASS CSS Parser Fehler: Ihre Änderungen wurden nicht gespeichert, da Ihre Konfiguration zu einem Fehler im Shop führen würde. Details siehe Fehlerbericht.");
+			builder.AddOrUpdate("Admin.Configuration.Themes.Validation.ErrorReportTitle",
+				"SASS parser error report",
+				"SASS Parser Fehlerbericht");
+		}
 	}
 }

@@ -208,7 +208,7 @@ namespace SmartStore.Admin.Controllers
 
 			// check for parsing error
 			var manifest = _themeRegistry.GetThemeManifest(theme);
-			string error = ValidateLess(manifest, storeId);
+			string error = ValidateSass(manifest, storeId);
 			if (error.HasValue())
 			{
 				// restore previous vars
@@ -222,7 +222,7 @@ namespace SmartStore.Admin.Controllers
 					_themeVarService.SaveThemeVariables(theme, storeId, currentVars);
 				}
 
-				TempData["LessParsingError"] = error.Trim().TrimStart('\r', '\n', '/', '*').TrimEnd('*', '/', '\r', '\n');
+				TempData["SassParsingError"] = error.Trim().TrimStart('\r', '\n', '/', '*').TrimEnd('*', '/', '\r', '\n');
 				TempData["OverriddenThemeVars"] = values;
 				NotifyError(T("Admin.Configuration.Themes.Notifications.ConfigureError"));
 				return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
@@ -265,17 +265,16 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		/// <summary>
-		/// Validates the result LESS file by calling it's url.
+		/// Validates the result SASS file by calling it's url.
 		/// </summary>
 		/// <param name="theme">Theme name</param>
 		/// <param name="storeId">Stored Id</param>
 		/// <returns>The error message when a parsing error occured, <c>null</c> otherwise</returns>
-		private string ValidateLess(ThemeManifest manifest, int storeId)
-		{
-			
+		private string ValidateSass(ThemeManifest manifest, int storeId)
+		{	
 			string error = string.Empty;
 
-			var virtualPath = "~/Themes/{0}/Content/theme.less".FormatCurrent(manifest.ThemeName);
+			var virtualPath = "~/Themes/{0}/Content/theme.scss".FormatCurrent(manifest.ThemeName);
 			var resolver = this._themeFileResolver.Value;
 			var file = resolver.Resolve(virtualPath);
 			if (file != null)
@@ -283,7 +282,7 @@ namespace SmartStore.Admin.Controllers
 				virtualPath = file.ResultVirtualPath;
 			}
 
-			var url = "{0}?storeId={1}&theme={2}".FormatInvariant(
+			var url = "{0}?storeId={1}&theme={2}&validate=1".FormatInvariant(
 				WebHelper.GetAbsoluteUrl(virtualPath, this.Request),
 				storeId,
 				manifest.ThemeName);
@@ -300,7 +299,6 @@ namespace SmartStore.Admin.Controllers
 				if (ex.Response is HttpWebResponse)
 				{
 					var webResponse = (HttpWebResponse)ex.Response;
-
 					var statusCode = webResponse.StatusCode;
 
 					if (statusCode == HttpStatusCode.InternalServerError)
@@ -320,7 +318,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch (Exception ex)
 			{
-				var x = ex.Message;
+				error = ex.Message;
 			}
 			finally
 			{

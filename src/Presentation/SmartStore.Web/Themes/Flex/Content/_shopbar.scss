@@ -164,7 +164,7 @@
 
 .shopbar-light {
     .shopbar-button { 
-        color: $header-color !important; 
+        color: $shopbar-color !important; 
 
         &:hover {
             border-color: rgba(#000, 0.12) rgba(#000, 0.12) rgba(#000, 0.12);
@@ -184,7 +184,7 @@
 
 .shopbar-inverse {
     .shopbar-button { 
-        color: $header-inverse-color !important; 
+        color: $shopbar-inverse-color !important; 
 
         &:hover {
             border-color: rgba(#fff, 0.2) rgba(#fff, 0.2) rgba(#fff, 0.2);
@@ -241,13 +241,13 @@
 .menubar-light {
     &.menubar-section { border-bottom: 1px solid $header-border-color; }
     .menubar-link {
-        color: lighten($header-color, 8%);
+        color: $menubar-color;
     }
     .menubar-link:hover,
     .menubar-link:active,
     .show .menubar-link {
         background-color: $header-hover-bg;
-        color: $header-color;
+        color:  $menubar-color;
     }
     .menubar-group--special .menubar-link {
         color: darken($header-color, 15%) !important;
@@ -255,9 +255,9 @@
 }
 
 .menubar-inverse {
-    &.menubar-section { border-bottom: 1px solid $header-inverse-border-color; }
+    &.menubar-section { border-bottom: 1px solid $menubar-inverse-color; }
     .menubar-link {
-        color: $header-inverse-color-muted;
+        color: $menubar-inverse-color;
     }
     .menubar-link:hover,
     .menubar-link:active,

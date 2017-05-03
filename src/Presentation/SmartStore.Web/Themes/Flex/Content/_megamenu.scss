@@ -1,9 +1,7 @@
 ﻿/// <reference path="_variables.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
-/*$megamenu-light-color:          $body-color !default;
-$megamenu-light-hover-bg:       scale-color($megamenu-bg, $lightness: -5%); //darken($megamenu-bg, 7%); // rgba(0, 0, 0, 0.06)
-$megamenu-inverse-color:        #fff !default;
+/*$megamenu-light-hover-bg:       scale-color($megamenu-bg, $lightness: -5%); //darken($megamenu-bg, 7%); // rgba(0, 0, 0, 0.06)
 $megamenu-inverse-hover-bg:     scale-color($megamenu-bg, $lightness: 15%); //lighten($megamenu-bg, 7%); // rgba(255,255,255, 0.1)
 $megamenu-selected-color:       $brand-warning !default;*/
 
@@ -26,7 +24,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
 }
 
 .navbar-light .megamenu .nav-item {
-    .nav-link { color: $header-color; }
+    .nav-link { color: $megamenu-color; }
 
      &.active .nav-link, 
      .nav-link:focus, 
@@ -36,7 +34,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
 }
 
 .navbar-inverse .megamenu .nav-item {
-    .nav-link { color: $header-inverse-color; }
+    .nav-link { color: $megamenu-inverse-color; }
 
      &.active .nav-link, 
      .nav-link:focus, 

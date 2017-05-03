@@ -11,7 +11,7 @@
             <div class="tags fs-h4">
                 <ul class="list-inline">
                     @foreach (var item in Model.Tags)
-                {
+                    {
                         <li class="list-inline-item">
                             <a class="color-body" href="@Url.RouteUrl("BlogByTag", new { tag = item.SeName })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a>
                         </li>

@@ -1002,6 +1002,10 @@
     <Content Include="Themes\Flex\Content\pnotify\js\pnotify.buttons.js" />
     <Content Include="Themes\Flex\Content\pnotify\js\pnotify.js" />
     <Content Include="Themes\Flex\Content\pnotify\js\pnotify.mobile.js" />
+    <Content Include="Themes\Flex\Scripts\jquery-3.2.1.js" />
+    <Content Include="Themes\Flex\Scripts\jquery-3.2.1.min.js" />
+    <Content Include="Themes\Flex\Scripts\jquery-migrate-3.0.0.js" />
+    <Content Include="Themes\Flex\Scripts\jquery-migrate-3.0.0.min.js" />
     <Content Include="Themes\Flex\Scripts\public.offcanvas-menu.js" />
     <Content Include="Themes\Flex\Scripts\public.product.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.touchevents.js" />

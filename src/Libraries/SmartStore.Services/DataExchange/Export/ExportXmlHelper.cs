@@ -668,7 +668,7 @@ namespace SmartStore.Services.DataExchange.Export
 						_writer.Write("Id", entityPvav.Id.ToString());
 						_writer.Write("Alias", (string)value.Alias);
 						_writer.Write("Name", (string)value.Name);
-						_writer.Write("ColorSquaresRgb", (string)value.ColorSquaresRgb);
+						_writer.Write("Color", (string)value.Color);
 						_writer.Write("PriceAdjustment", ((decimal)value.PriceAdjustment).ToString(_culture));
 						_writer.Write("WeightAdjustment", ((decimal)value.WeightAdjustment).ToString(_culture));
 						_writer.Write("IsPreSelected", entityPvav.IsPreSelected.ToString());

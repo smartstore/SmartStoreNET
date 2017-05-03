@@ -485,6 +485,10 @@
     <Compile Include="Migrations\201704031946479_SpecificationAttributeAllowFiltering.Designer.cs">
       <DependentUpon>201704031946479_SpecificationAttributeAllowFiltering.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705032238367_RenameColorSquaresRgb.cs" />
+    <Compile Include="Migrations\201705032238367_RenameColorSquaresRgb.Designer.cs">
+      <DependentUpon>201705032238367_RenameColorSquaresRgb.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -884,6 +888,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201704031946479_SpecificationAttributeAllowFiltering.resx">
       <DependentUpon>201704031946479_SpecificationAttributeAllowFiltering.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705032238367_RenameColorSquaresRgb.resx">
+      <DependentUpon>201705032238367_RenameColorSquaresRgb.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

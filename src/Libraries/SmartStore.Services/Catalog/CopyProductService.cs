@@ -412,7 +412,7 @@ namespace SmartStore.Services.Catalog
 					{
 						ProductVariantAttributeId = productVariantAttributeCopy.Id,
 						Name = productVariantAttributeValue.Name,
-						ColorSquaresRgb = productVariantAttributeValue.ColorSquaresRgb,
+						Color = productVariantAttributeValue.Color,
 						PriceAdjustment = productVariantAttributeValue.PriceAdjustment,
 						WeightAdjustment = productVariantAttributeValue.WeightAdjustment,
 						IsPreSelected = productVariantAttributeValue.IsPreSelected,

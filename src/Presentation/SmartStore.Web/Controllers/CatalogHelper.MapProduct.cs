@@ -317,7 +317,7 @@ namespace SmartStore.Web.Controllers
 					var colorAttributes = attributes
 						.Where(x => x.IsListTypeAttribute())
 						.SelectMany(x => x.ProductVariantAttributeValues)
-						.Where(x => x.ColorSquaresRgb.HasValue() && !x.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
+						.Where(x => x.Color.HasValue() && !x.Color.IsCaseInsensitiveEqual("transparent"))
 						.Distinct()
 						.Take(20) // limit results
 						.Select(x => 
@@ -328,7 +328,7 @@ namespace SmartStore.Web.Controllers
 							return new ProductSummaryModel.ColorAttributeValue
 							{
 								Id = x.Id,
-								Color = x.ColorSquaresRgb,
+								Color = x.Color,
 								Alias = x.Alias,
 								FriendlyName = x.GetLocalized(l => l.Name),
 								AttributeId = x.ProductVariantAttributeId,

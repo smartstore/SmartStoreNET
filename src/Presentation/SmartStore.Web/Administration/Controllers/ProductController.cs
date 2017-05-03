@@ -3177,9 +3177,9 @@ namespace SmartStore.Admin.Controllers
 						Id = x.Id,
 						ProductVariantAttributeId = x.ProductVariantAttributeId,
 						Name = x.Name,
-						NameString = x.ColorSquaresRgb.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.ColorSquaresRgb),
+						NameString = x.Color.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.Color),
 						Alias = x.Alias,
-						Color = x.ColorSquaresRgb,
+						Color = x.Color,
                         PictureId = x.PictureId,
 						PriceAdjustment = x.PriceAdjustment,
 						PriceAdjustmentString = (x.ValueType == ProductVariantAttributeValueType.Simple ? x.PriceAdjustment.ToString("G29") : ""),
@@ -3262,7 +3262,7 @@ namespace SmartStore.Admin.Controllers
 					ProductVariantAttributeId = model.ProductVariantAttributeId,
 					Name = model.Name,
 					Alias = model.Alias,
-					ColorSquaresRgb = model.Color,
+					Color = model.Color,
                     PictureId = model.PictureId,
 					PriceAdjustment = model.PriceAdjustment,
 					WeightAdjustment = model.WeightAdjustment,
@@ -3321,7 +3321,7 @@ namespace SmartStore.Admin.Controllers
 				ProductVariantAttributeId = pvav.ProductVariantAttributeId,
 				Name = pvav.Name,
 				Alias = pvav.Alias,
-				Color = pvav.ColorSquaresRgb,
+				Color = pvav.Color,
                 PictureId = pvav.PictureId,
 				IsListTypeAttribute = pvav.ProductVariantAttribute.IsListTypeAttribute(),
 				PriceAdjustment = pvav.PriceAdjustment,
@@ -3368,7 +3368,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				pvav.Name = model.Name;
 				pvav.Alias = model.Alias;
-				pvav.ColorSquaresRgb = model.Color;
+				pvav.Color = model.Color;
                 pvav.PictureId = model.PictureId;
 				pvav.PriceAdjustment = model.PriceAdjustment;
 				pvav.WeightAdjustment = model.WeightAdjustment;

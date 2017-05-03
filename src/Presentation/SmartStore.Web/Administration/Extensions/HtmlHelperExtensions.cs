@@ -13,8 +13,8 @@ namespace SmartStore.Admin.Extensions
 		{
 			string result =
 				"<i class='<#= TypeNameClass #>' title='<#= TypeName #>'></i>" +
-				"<# if(ColorSquaresRgb && ColorSquaresRgb.length > 0) {#>" +
-				"<span class=\"color-container\"><span class=\"color\" style=\"background:<#= ColorSquaresRgb #>\">&nbsp;</span></span>" +
+				"<# if(Color && Color.length > 0) {#>" +
+				"<span class=\"color-container\"><span class=\"color\" style=\"background:<#= Color #>\">&nbsp;</span></span>" +
 				"<span><#= NameString #><#= QuantityInfo #></span>" +
 				"<# } else { #>" +
 				"<span><#= NameString #><#= QuantityInfo #></span>" +

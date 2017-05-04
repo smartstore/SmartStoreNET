@@ -27,6 +27,14 @@ $menubar-bg:                    transparent !default;
 $shopbar-bg:                    transparent !default;
 $megamenu-bg:                   $gray-lightest !default;
 $megamenu-navlink-font-size:    1rem !default;
+$mega-menu-height:              1.8 !default;
+
+$menubar-color:                 lighten($header-color, 8%);
+$menubar-inverse-color:         $header-inverse-color-muted !default;
+$shopbar-color:                 $header-color !default;
+$shopbar-inverse-color:         $header-inverse-color !default;
+$megamenu-color:                $header-color !default;
+$megamenu-inverse-color:        $header-inverse-color !default;
 
 $searchbox-bg:                  #fff !default;
 $searchbox-focus-bg:            #fff !default;
@@ -42,11 +50,6 @@ $footer-inverse-color-muted:    rgba(#fff, 0.5) !default;
 
 $footer-social-bg:              #aaa !default;
 $footer-social-color:           #fff !default;
-
-$login-box-bg:                  #fcfcfc !default;
-
-$cart-footer-bg:                $gray-lightest !default;
-
 
 
 // Brand color variables
@@ -202,17 +205,14 @@ $list-group-active-border:      $list-group-border-color;
 $list-group-link-color:         #636c72;
 $list-group-link-active-color:  $body-color;
 
-// Cards
+// Misc
 
 $card-deck-margin:              10px;
-
 $alert-border-radius:           0;
-
-
-// MH suggestions 
-$menubar-color:                 lighten($header-color, 8%);
-$menubar-inverse-color:         $header-inverse-color-muted !default;
-$shopbar-color:                 $header-color !default;
-$shopbar-inverse-color:         $header-inverse-color !default;
-$megamenu-color:                $header-color !default;
-$megamenu-inverse-color:        $header-inverse-color !default;
+$product-price-color:           $body-color !default;
+$login-box-bg:                  #fcfcfc !default;
+$cart-footer-bg:                $gray-lightest !default;
+$costep-progress-color:         $brand-warning !default;
+$offcanvas-cart-footer:         $brand-success !default;
+$art-active-bg-color:           #fff !default;
+$art-active-border-color:       rgba(0,0,0, 0.2) !default;

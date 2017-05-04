@@ -11,8 +11,8 @@ $costep-bg:                     #fff;
 $costep-color:                  #ccc;
 $costep-label-color:            $body-color;
 
-$costep-visited-border:         $brand-warning;
-$costep-visited-bg:             $brand-warning;
+$costep-visited-border:         $costep-progress-color;
+$costep-visited-bg:             $costep-progress-color;
 $costep-visited-color:          rgba(#fff, 0.85);
 $costep-visited-label-color:    $costep-label-color;
 

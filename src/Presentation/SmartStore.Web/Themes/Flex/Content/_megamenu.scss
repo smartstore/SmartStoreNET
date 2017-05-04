@@ -1,10 +1,6 @@
 ﻿/// <reference path="_variables.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
-/*$megamenu-light-hover-bg:       scale-color($megamenu-bg, $lightness: -5%); //darken($megamenu-bg, 7%); // rgba(0, 0, 0, 0.06)
-$megamenu-inverse-hover-bg:     scale-color($megamenu-bg, $lightness: 15%); //lighten($megamenu-bg, 7%); // rgba(255,255,255, 0.1)
-$megamenu-selected-color:       $brand-warning !default;*/
-
 $megamenu-zindex-base:          ($zindex-dropdown - 20);
 
 .megamenu-section .navbar {
@@ -51,7 +47,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
 	width: auto !important;
 	transition: margin-left 0.12s ease-in-out;
 	margin-left: 0;
-    line-height: 1.8;
+    line-height: $mega-menu-height;
 
     &:after {
         content: "";

@@ -927,6 +927,18 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.Boxes",
 				"Boxes (color & image)",
 				"Kästchen (Farbe & Bild)");
-		}
+
+            builder.Delete(
+                "Admin.Themes.Grid",
+                "Admin.Themes.Shopbar",
+                "Admin.Themes.ContentSlider",
+                "Admin.Themes.Tables"
+                // "Admin.Themes.Footer" ???
+            );
+
+            builder.AddOrUpdate("Admin.Themes.Colors", "Colors", "Farben");
+            builder.AddOrUpdate("Admin.Themes.States", "Messages", "Meldungen");
+
+        }
 	}
 }

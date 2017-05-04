@@ -46,7 +46,7 @@
 
         &.active { 
             font-weight: $font-weight-medium;
-            color: inherit; 
+            color: $nav-tabs-active-link-color; 
         }
 
         &.disabled {

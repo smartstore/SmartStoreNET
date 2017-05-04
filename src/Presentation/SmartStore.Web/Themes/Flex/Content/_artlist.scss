@@ -9,11 +9,9 @@ $art-font-size:                 $font-size-base;
 $art-font-size-sm:              $font-size-sm;
 $art-font-size-xs:              $font-size-xs;
 $art-line-height:               1.3;
-$art-price-color:               $body-color;
+$art-price-color:               $product-price-color;
 $art-price-offer-color:         $red;
 $art-border-color:              #ddd;
-$art-active-bg-color:           #fff;
-$art-active-border-color:       rgba(0,0,0, 0.2);
 
 @mixin make-art-row() {
     display: flex;

@@ -14,29 +14,38 @@
     var tabColors = x.Add().Text(T("Admin.Themes.Colors").Text).Content(@TabColors());
     var tabButtons = x.Add().Text(T("Admin.Themes.Buttons").Text).Content(@TabButtons());
     var tabStates = x.Add().Text(T("Admin.Themes.States").Text).Content(@TabStates());
+    var tabMisc = x.Add().Text(T("Admin.Themes.Misc").Text).Content(@TabMisc());
+    
 }))
 
 @helper TabCommon()
 {
 	<table class="adminContent">
 		@ThemeVarEditor("boxed", "Layout")
-		@ThemeVarEditor("site-bg")
+		
+        @ThemeVarEditor("body-bg", "Site Colors")
+        @ThemeVarEditor("site-bg")
+        @ThemeVarEditor("body-color")
+        @ThemeVarEditor("text-muted")
+        @ThemeVarEditor("link-color")
 
 		@ThemeVarEditor("header-bg", "Header")
+        @ThemeVarEditor("shopbar-label")
+        @ThemeVarEditor("search-button")
 		@ThemeVarEditor("inverse-menubar")
 		@ThemeVarEditor("inverse-shopbar")
 		@ThemeVarEditor("inverse-navbar")
 		@ThemeVarEditor("menubar-bg")
 		@ThemeVarEditor("shopbar-bg")
 		@ThemeVarEditor("megamenu-bg")
-        
         @ThemeVarEditor("menubar-color")
         @ThemeVarEditor("shopbar-color")
         @ThemeVarEditor("megamenu-color")
         @ThemeVarEditor("menubar-inverse-color")
         @ThemeVarEditor("shopbar-inverse-color")
         @ThemeVarEditor("megamenu-inverse-color")
-
+        @ThemeVarEditor("mega-menu-height")
+        
 		@ThemeVarEditor("inverse-footer", "Footer")
 		@ThemeVarEditor("footer-bg")
 		@ThemeVarEditor("footer-color")
@@ -45,23 +54,13 @@
 		@ThemeVarEditor("footer-inverse-color-muted")
 		@ThemeVarEditor("footer-social-bg")
 		@ThemeVarEditor("footer-social-color")
-
-        @ThemeVarEditor("card-border-radius", "Cards")
-        @ThemeVarEditor("card-border-color")
-        @ThemeVarEditor("card-cap-bg")
-        @ThemeVarEditor("card-bg")
-        @ThemeVarEditor("card-link-hover-color")
-
 	</table>
 }
 
 @helper TabFonts()
 {
     <table class="adminContent">
-        @ThemeVarEditor("google-font-1", "Typo")
-        @ThemeVarEditor("google-font-2")
-        @ThemeVarEditor("google-font-3")
-        @ThemeVarEditor("font-family-sans-serif")
+        @ThemeVarEditor("font-family-sans-serif", "Typo")
         @ThemeVarEditor("font-family-monospace")
         @ThemeVarEditor("font-size-base")
         @ThemeVarEditor("font-size-lg")
@@ -77,18 +76,16 @@
         @ThemeVarEditor("headings-line-height")
         @ThemeVarEditor("headings-color")
         @ThemeVarEditor("lead-font-weight")
+
+        @ThemeVarEditor("google-font-1", "Google Fonts")
+        @ThemeVarEditor("google-font-2")
+        @ThemeVarEditor("google-font-3")
     </table>
 }
 
 @helper TabColors()
 {
     <table class="adminContent">
-
-        @ThemeVarEditor("body-bg", "Site Colors")
-        @ThemeVarEditor("body-color")
-        @ThemeVarEditor("text-muted")
-        @ThemeVarEditor("link-color")
-
         @ThemeVarEditor("red", "Colors")
         @ThemeVarEditor("orange")
         @ThemeVarEditor("yellow")
@@ -164,6 +161,39 @@
     </table>
 }
 
+@helper TabMisc()
+{
+    <table class="adminContent">
+        @ThemeVarEditor("card-border-radius", "Cards")
+        @ThemeVarEditor("card-border-color")
+        @ThemeVarEditor("card-cap-bg")
+        @ThemeVarEditor("card-bg")
+        @ThemeVarEditor("card-link-hover-color")
+
+        @ThemeVarEditor("dropdown-bg", "Dropdowns")
+        @ThemeVarEditor("dropdown-border-color")
+        @ThemeVarEditor("dropdown-divider-bg")
+        @ThemeVarEditor("dropdown-box-shadow")
+        @ThemeVarEditor("dropdown-link-color")
+        @ThemeVarEditor("dropdown-link-hover-color")
+        @ThemeVarEditor("dropdown-link-hover-bg")
+
+        @ThemeVarEditor("table-bg", "Tables")
+        @ThemeVarEditor("table-bg-accent")
+        @ThemeVarEditor("table-bg-hover")
+        @ThemeVarEditor("table-bg-active")
+        @ThemeVarEditor("table-border-color")
+
+        @ThemeVarEditor("nav-tabs-active-link-color", "Misc")
+        @ThemeVarEditor("product-price-color")
+        @ThemeVarEditor("login-box-bg")
+        @ThemeVarEditor("cart-footer-bg")
+        @ThemeVarEditor("costep-progress-color")
+        @ThemeVarEditor("offcanvas-cart-footer")
+        @ThemeVarEditor("art-active-bg-color")
+        @ThemeVarEditor("art-active-border-color")
+    </table>
+}
 
 @helper ThemeVarEditor(string varName, string groupName = null)
 {

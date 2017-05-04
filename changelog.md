@@ -1,14 +1,29 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.0
 
-### Breaking change
-* Removed Web API plugin from open source core
+### Highlights
+* **Flex**: New mobile-first responsive Theme based on Bootstrap 4
+* **Mega Search**: highly professional search framework based on Lucene.NET (commercial plugin exclusively bundled with Pro Edition)
+	* Ultra fast search results, even with millions of items
+	* Faceted search
+	* Synonyms
+	* Compound word splitting
+* **Mega Menu**: highly customizable catalog menu widgets (commercial plugin exclusively bundled with Pro Edition)
+* **Content Slider**: creates eye-catching content to boost sales (commercial plugin exclusively bundled with Pro Edition)
+* **Output Cache** with "donut hole caching" for maximum speed and scalability (commercial plugin exclusively bundled with Premium Edition)
+* **Microsoft AZURE** provider for media storage (commercial plugin exclusively bundled with Premium Edition)
+* Web Farms: **REDIS** providers for Business Cache, Output Cache and Session State (commercial plugin exclusively bundled with Enterprise Edition)
+* Product variant **option sets**
+* New product specification attribute type: **numeric range**
+* Image support for variant attributes
 
-### New Features
-* Output Cache with "donut hole caching" (commercial plugin)
-* REDIS providers for Business Cache, Output Cache and Session State (commercial plugin)
-* Microsoft AZURE provider for media storage (commercial plugin)
+### Breaking changes
+* Removed old **Content Slider** module from open source core
+* Removed **Web API** plugin from open source core (now exclusively bundled with Premium Edition)
+
+
+### Other New Features
 * Message Bus for inter-process messaging between servers (commercial plugin)
 * Configurable media storage path for web farms
 * (Dev) log4net integration

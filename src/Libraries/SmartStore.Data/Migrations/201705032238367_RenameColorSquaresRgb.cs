@@ -36,6 +36,11 @@ namespace SmartStore.Data.Migrations
 				RenameColumn("dbo.ProductVariantAttributeValue", "Color", "ColorSquaresRgb");
 				RenameColumn("dbo.ProductAttributeOption", "Color", "ColorSquaresRgb");
 			}
+			else
+			{
+				DropColumn("dbo.ProductVariantAttributeValue", "Color");
+				DropColumn("dbo.ProductAttributeOption", "Color");
+			}
 		}
 
 		public void Seed(SmartObjectContext context)

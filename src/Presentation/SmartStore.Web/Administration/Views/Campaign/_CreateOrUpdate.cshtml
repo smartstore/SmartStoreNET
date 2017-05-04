@@ -1,6 +1,7 @@
 ﻿@model CampaignModel
 
 @Html.HiddenFor(model => model.Id)
+@Html.ValidationSummary(false)
 
 @if (Model.Id > 0)
 {

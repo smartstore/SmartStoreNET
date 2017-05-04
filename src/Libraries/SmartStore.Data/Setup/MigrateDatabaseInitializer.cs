@@ -63,7 +63,7 @@ namespace SmartStore.Data.Setup
 		{
 			if (!context.Database.Exists())
 			{
-				throw Error.InvalidOperation("Database migration failed becuase the target database does not exist. Ensure the database was initialized and seeded with the 'InstallDatabaseInitializer'.");
+				throw Error.InvalidOperation("Database migration failed because the target database does not exist. Ensure the database was initialized and seeded with the 'InstallDatabaseInitializer'.");
 			}
 
 			var config = CreateConfiguration();

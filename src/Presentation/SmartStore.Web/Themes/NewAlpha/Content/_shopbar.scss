@@ -1,0 +1,398 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// ShopBar Styles
+// --------------------------------------------------
+
+.shopbar-section {
+    padding: 1.25rem 0;
+}
+
+.shopbar {
+    display: flex;
+    align-items: center;
+    margin-left:  -0.6rem;
+    margin-right:  -0.6rem;
+}
+
+.shopbar-col {
+    flex: 0 1 auto;
+    padding: 0 0.6rem;
+}
+
+.shopbar-col--stretch {
+    flex: 1 1 auto;
+}
+
+
+//
+// Logo
+// --------------------------------------------------
+
+.shop-logo {
+    max-width: 16rem;
+    max-height: 6rem;
+}
+
+
+//
+// Search
+// --------------------------------------------------
+
+// ...
+
+
+
+//
+// Menu Styles (TODO: move later)
+// --------------------------------------------------
+
+.menubar-section {
+    border-bottom: 1px solid #ddd;
+}
+
+.menubar {
+    //padding: 1rem 0;
+    text-align: right;
+}
+
+.menubar-group {
+    display: inline-block;
+    margin-left: 1rem;
+}
+
+.menubar-link {
+    display: inline-block;
+    //float: left;
+    font-size: 80%;
+    color: #666;
+    padding: 1em 0.6em;
+    text-decoration: none !important;
+    text-transform: uppercase;
+
+    &:hover {
+        background-color: #f5f5f5;
+        color: #000;
+    }
+}
+
+.menubar-group--special {
+    font-weight: 600;
+    .menubar-link {
+        color: #000;
+    }
+}
+
+
+//
+// Megamenu (TODO: move later)
+// --------------------------------------------------
+
+.megamenu .nav-link {
+    font-weight: 600;
+}
+
+.navbar-light .megamenu .navbar-nav .nav-link {
+    color: $body-color;
+}
+
+
+//
+// ShopBar Tools
+// --------------------------------------------------
+
+.shopbar-tools {
+    @include clearfix();
+}
+
+.shopbar-tool {
+    float: left;
+    position: relative;
+}
+
+.shopbar-button {
+    display: block;
+    text-decoration: none !important;
+    height: $input-height;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 0.125rem;
+    transition: all 0.12s ease;
+
+    &:hover {
+        //border-color: $btn-secondary-border;
+        border-color: rgba(0,0,0, 0.12) rgba(0,0,0, 0.12) rgba(0,0,0, 0.12);
+        box-shadow: 0 1px 0 rgba(255,255,255, 0.15) inset, 
+                    0 1px 1px rgba(0,0,0, 0.075);
+    }
+    &:active, .open & {
+        border-color: #adadad;
+        background-color: #e6e6e6;
+        
+        background-image: none;
+        outline: 0;
+        box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    }
+
+    &:not(:last-child) {
+        //margin-right: 0.9rem;
+    }
+
+    .shopbar-button-icon,
+    .shopbar-button-label {
+        display: inline-block;
+        vertical-align: bottom;
+        position: relative;
+        text-decoration: none;
+    }
+
+    .shopbar-button-icon {
+        margin-bottom: 0;
+        > i {
+            font-size: 1.6rem;
+            line-height: 1.6rem;
+            color: $body-color;
+        }
+        > .label {
+		    position: absolute; 
+		    right: -3px; 
+		    top: -3px;
+            font-size: 0.7rem; 
+		    /*font-size: 11px;
+		    padding-top: 1px;
+		    padding-bottom: 1px;*/
+        }
+    }
+
+    .shopbar-button-label {
+        font-size: 0.75rem;
+        line-height: 1.2;
+        margin-left: 0.2rem;
+        color: $body-color;
+        color: rgba($body-color, 0.5);
+        color: #999;
+        color: #b0bec5;
+        color: #90a4ae;
+        vertical-align: top;
+        //display: none;
+    }
+}
+
+
+//
+// ShopBar Flyouts
+// --------------------------------------------------
+
+.shopbar-flyout {
+	position: absolute;
+	visibility: hidden;
+	opacity: 0;
+	top: 100%;
+	left: 0;
+	z-index: $zindex-dropdown;
+	float: left;
+	min-width: 400px;
+	max-width: 500px;
+	padding: 0.5rem 0;
+	margin: 0;
+    margin-top: -1px;
+	list-style: none;
+	background-clip: padding-box;
+  	
+  	height: 50px;
+  	min-height: 50px;
+	background-image: none;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	
+	transition: opacity 0.15s ease-in-out;
+	background-color: $dropdown-bg;
+	border: $dropdown-border-width solid $dropdown-border-color;
+	border-color: rgba(0,0,0, 0.15);
+	border-radius: $border-radius;
+	box-shadow: 0 2px 8px rgba(0,0,0,.2);
+	
+    .spinner-container {
+        height: 100%;
+	}
+
+    .shopbar-tool:not(.loading) & > .spinner-container {
+		display: none;
+	}
+
+	.shopbar-tool.loading & > .shopbar-flyout-inner {
+		display: none;
+	}
+	
+	.shopbar-tool.loaded & {
+		height: auto;
+	}
+
+    .shopbar-tool.open & {
+	    visibility: visible;
+	    opacity: 1;
+	}
+  	
+	// Dividers (basically an hr) within the dropdown
+	.divider {
+		@include nav-divider($dropdown-divider-bg);
+	}
+
+	// Links within the dropdown menu
+	a {
+		font-weight: normal;
+		line-height: $line-height;
+		white-space: nowrap;
+	}
+}
+
+.shopbar-flyout--right {
+    // Aligns the dropdown menu to right
+    right: 0;
+	left: auto;
+}
+
+.shopbar-flyout-inner {
+	position: relative;
+	min-height: 50px;
+}
+
+.shopbar-flyout-inner .name {
+    color: $body-color;
+    text-decoration: none;
+	transition: color .1s linear;
+}
+
+.shopbar-flyout-inner .no-items {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 50%;
+	margin: 0 10px 0 10px;
+    margin-top: -(($line-height*$font-size-base)/2);
+	text-align: center;
+}
+
+.shopbar-flyout-inner .items {
+	padding: 0;
+	margin: 0;
+	font-size: 80%;
+}
+
+.shopbar-flyout-inner .price {
+	text-align: right;
+    font-weight: 600;
+}
+
+.shopbar-flyout-inner .items .item {
+	position: relative; 
+	padding: 8px 20px;
+	margin: 0;
+	border-bottom: 1px solid #e5e5e5;
+
+	&.omega { 
+		border-bottom: none 
+	}
+	
+	&.more { 
+		text-align: center;
+		.name {
+			color: #777;
+			font-size: 1.1em;
+			font-weight: bold;
+			&:hover {
+				color: $gray;
+			}
+		}
+	}
+
+	.picture {
+		display: inline-block;
+		text-align: center;
+		margin: 0; 
+		margin-right: 4px;
+		width: 32px;
+		
+		img { 
+			max-width: 32px; 
+			max-height: 50px 
+		}
+	}
+
+	.quantity {
+		width: 25px;
+		margin-left: 5px;
+        font-weight: 600;
+		.times {
+			font-size: .9em;
+		}
+	}
+
+	.data {
+		width: 200px;
+		overflow: hidden;
+        @include text-truncate()
+	}
+	
+	.data .attributes {
+		white-space: initial;
+		line-height: 12px;
+	}
+	
+	&.no-thumb .data {
+		width: 180px;
+	}
+	
+	.action {
+		padding-left: 4px;
+		i { font-size: 11px }
+	}
+	
+	.price {
+		width: 64px;
+	}
+
+	.remove {
+		position: absolute;
+		right: 4px;
+		top: 8px;
+		opacity: 0;
+		color: #000;
+		transition: opacity .1s linear;
+	}
+	
+	&:hover .remove {
+		opacity: 0.5;
+	}
+
+	.remove:hover {
+		opacity: 1;
+	}
+}
+
+#shopbar-flyout-wishlist .shopbar-flyout-inner .items .item {
+	.data { width: 136px }
+	&.no-thumb .data { width: 176px }
+}
+
+#shopbar-flyout-compare .shopbar-flyout-inner .items .item {
+	.figure { margin-right: 8px }
+	.data { width: 170px }
+}
+
+.shopbar-flyout-inner .summary {
+    padding: 12px 20px;
+	background: #f5f5f5; 
+	border-top: 1px solid #c2c2c2;
+	border-bottom: 1px solid #d2d2d2; 
+	font-weight: bold; 
+	box-shadow: inset 0px 5px 20px -9px rgba(0,0,0, .25); 	
+}
+
+.shopbar-flyout-inner .buttons {
+	padding: 20px 20px 12px 20px;
+}
+
+#shopbar-flyout-account .shopbar-flyout-inner {
+	padding: 10px 20px;
+}

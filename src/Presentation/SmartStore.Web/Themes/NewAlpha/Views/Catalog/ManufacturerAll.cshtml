@@ -1,0 +1,37 @@
+﻿@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Models.Catalog;
+@model IList<ManufacturerModel>
+@{
+    Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+
+    Html.AddTitleParts(T("PageTitle.Manufacturers").Text);
+}
+<div class="page manufacturer-list-page">
+    <div class="page-title">
+        <h1>@T("Manufacturers.List")</h1>
+    </div>
+    <div class="clear">
+    </div>
+    <div class="page-body">
+        <div class="manufacturer-grid">
+            @if (Model.Count > 0)
+            {
+                @(Html.DataList<ManufacturerModel>(Model, 3,
+                    @<div class="item-box manufacturer-item">
+                        <h2 class="man-title">
+                            <a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
+                        </h2>
+                        <div class="picture" data-equalized-part="picture">
+							@if (item.PictureModel.ImageUrl.HasValue())
+							{
+								<a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })" title="@item.PictureModel.Title">
+									<img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" /></a>
+							}
+                        </div>
+                    </div>
+                ))
+            }
+        </div>
+    </div>
+</div>

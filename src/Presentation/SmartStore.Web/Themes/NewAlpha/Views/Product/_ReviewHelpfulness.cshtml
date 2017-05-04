@@ -1,0 +1,18 @@
+﻿@model ProductReviewHelpfulnessModel
+@using SmartStore.Web.Models.Catalog;
+
+@{
+    Html.AddScriptParts("~/Scripts/public.reviews.js");
+}
+
+<div class="product-review-vote muted" data-review-id="@(Model.ProductReviewId)" data-href='@(Url.Action("SetReviewHelpfulness"))'>
+    <span>@T("Reviews.Helpfulness.WasHelpful?")</span>
+    <a class="vote vote-yes" href="#" title="@T("Common.Yes")" rel="tooltip nofollow">
+        <i class="fa fa-thumbs-up"></i>
+        <span class="vote-count" data-bind-to="TotalYes"><strong style="font-size:12px">@(Model.HelpfulYesTotal)</strong></span>
+    </a>
+    <a class="vote vote-no" href="#" title="@T("Common.No")" rel="tooltip nofollow">
+        <i class="fa fa-thumbs-down"></i>
+        <span class="vote-count" data-bind-to="TotalNo"><strong style="font-size:12px">@(Model.HelpfulNoTotal)</strong></span>
+    </a>
+</div>

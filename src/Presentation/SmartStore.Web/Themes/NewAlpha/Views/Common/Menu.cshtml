@@ -1,0 +1,98 @@
+﻿@model MenuModel
+@using SmartStore.Web.Models.Common;
+
+<ul class="list-inline pull-left">
+    @Html.Widget("header_menu_before")
+
+    @if (Model.IsCustomerImpersonated)
+    {
+        <li class="list-inline-item finish-impersonation">
+            <a href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">
+                <i class="fa fa-sign-out"></i>
+                @Model.CustomerEmailUsername
+            </a>
+        </li>
+    }
+    @if (Model.AllowPrivateMessages)
+    {
+        <li class="list-inline-item">
+            <a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow">
+                @T("PrivateMessages.Inbox")
+                @if (Model.UnreadPrivateMessages > 0) 
+                {
+                    <span class="label label-info">@Model.UnreadPrivateMessages</span>
+                }
+            </a>
+        </li>
+    }
+    @if (Model.RecentlyAddedProductsEnabled)
+    {
+        <li class="list-inline-item">
+            <a href="@Url.RouteUrl("RecentlyAddedProducts")">
+                @T("Products.NewProducts")
+            </a>
+        </li>
+    }
+    <li class="list-inline-item">
+        <a href="@Url.RouteUrl("ProductSearch")">@T("Search")</a>
+    </li>
+	@if (Model.HasContactUsPage)
+	{
+		<li class="list-inline-item">
+			<a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
+		</li>
+	}
+    @Html.Widget("header_menu_after")
+</ul>
+
+@if (Model.NewsEnabled || Model.BlogEnabled || Model.ForumEnabled || Model.DisplayAdminLink || Model.DisplayLoginLink)
+{
+    <ul class="list-inline pull-left special">
+		@if (Model.NewsEnabled)
+		{
+			<li class="list-inline-item">
+				<a class="special-news" href="@Url.RouteUrl("NewsArchive")">
+					<i class="fa fa-rss-square"></i>
+					@T("News")
+				</a>
+			</li>
+		}
+        @if (Model.BlogEnabled)
+        {
+            <li class="list-inline-item">
+                <a class="special-blog" href="@Url.RouteUrl("Blog")">
+                    <i class="fa fa-pencil-square-o"></i>
+                    @T("Blog")
+                </a>
+            </li>
+        }
+        @if (Model.ForumEnabled)
+        {
+            <li class="list-inline-item">
+                <a class="special-forum" href="@Url.RouteUrl("Boards")">
+                    <i class="fa fa-users"></i>
+                    @T("Forum.Forums")
+                </a>
+            </li>
+        }
+        @if (Model.DisplayAdminLink)
+        {
+            <li class="list-inline-item">
+                <a href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
+                    <i class="fa fa-cog"></i> 
+                    @T("Account.Administration")
+                </a>
+            </li>
+        }
+		else if (Model.DisplayLoginLink)
+		{
+			<li class="list-inline-item">
+				<a href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" rel="nofollow">
+					<i class="fa fa-sign-in"></i>
+					@T("Account.Login")
+				</a>
+			</li>
+		}
+    </ul>
+}
+

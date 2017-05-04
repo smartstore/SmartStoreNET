@@ -1,0 +1,50 @@
+﻿@model ShopHeaderModel
+@using SmartStore.Web.Models.Common;
+
+<div class="menubar">
+	<nav class="menubar-group">
+		<a class="menubar-link" href="#">Suche</a>
+		<a class="menubar-link" href="#">Kontakt</a>
+		<a class="menubar-link" href="#">Hilfe &amp; Service &nbsp;<i class="fa fa-caret-down"></i></a>
+		<a class="menubar-link" href="#"><i class="fa fa-user"></i>&nbsp;&nbsp;Anmelden</a>
+	</nav>
+
+	<nav class="menubar-group menubar-group--special">
+		<a class="menubar-link" href="#">News</a>
+		<a class="menubar-link" href="#">Blog</a>
+		<a class="menubar-link" href="#">Forum</a>
+	</nav>
+
+	<nav class="menubar-group menubar-group--special">
+		<a class="menubar-link" href="#"><i class="fa fa-cog"></i>&nbsp;&nbsp;Admin</a>
+	</nav>
+</div>
+
+
+@*<div id="logobar" class="container clearfix">
+
+    <a href="@Url.RouteUrl("HomePage")" class="pull-left brand@(Model.LogoUploaded ? "" : " textual")">
+            
+        @if (Model.LogoUploaded) 
+        {
+            <img src='@Url.Content(Model.LogoUrl)' 
+                alt="@Model.LogoTitle" 
+                title="@Model.LogoTitle"
+                @Html.Attr("width", Model.LogoWidth.ToString(), Model.LogoWidth > 0)
+                @Html.Attr("height", Model.LogoHeight.ToString(), Model.LogoHeight > 0) />
+        }
+        else
+        {
+            @Model.LogoTitle    
+        }
+    </a>
+
+    <nav id="nav-home pull-left" class="clearfix">
+        @Html.Action("Menu", "Common")
+    </nav>
+
+    <div class="regional-selectors pull-left">
+        @Html.Action("LanguageSelector", "Common")
+        @Html.Action("CurrencySelector", "Common")
+    </div>
+</div>*@

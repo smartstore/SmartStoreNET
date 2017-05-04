@@ -1,0 +1,45 @@
+﻿@model ProductReviewsModel
+@using SmartStore.Web.Models.Catalog;
+
+@if (Model.Items.Count > 0)
+{
+    <div class="product-review-list">
+        
+        @foreach (var review in Model.Items)
+        {
+            int ratingPercent = review.Rating * 20;                
+            <div class="product-review-item">
+
+                <div class="review-title">
+                    <div class="rating">
+                        <div style="width: @(ratingPercent)%"></div>
+                    </div>
+                    <strong>@review.Title</strong>,
+                    <span class="muted"><small>@review.WrittenOnStr</small></span>
+                </div>
+
+                <div class="review-author muted">
+                    <strong>@T("Reviews.From"):</strong>
+                    @if (review.AllowViewingProfiles)
+                    {
+                        <a href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow">@(review.CustomerName)</a>
+                    }
+                    else
+                    {
+                        @review.CustomerName
+                    }
+                </div>
+
+                <div class="review-text">
+                    @Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(review.ReviewText, false, true, false, false, false, false))
+                </div>
+                @Html.Partial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary())
+                @Html.Widget("productreviews_page_inside_review")
+            </div>
+        }
+    </div>
+} 
+else 
+{
+    <a href="@Url.Action("Reviews", new { id = Model.ProductId })">@T("Reviews.Overview.First")</a>
+}

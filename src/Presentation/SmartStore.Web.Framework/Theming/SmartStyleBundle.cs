@@ -20,7 +20,7 @@ namespace SmartStore.Web.Framework.Theming
 
 	    [SuppressMessage("ReSharper", "VirtualMemberCallInContructor")]
 	    public SmartStyleBundle(string virtualPath, string cdnPath)
-            : base(virtualPath, cdnPath, new IBundleTransform[] { BundleTransformerContext.Current.GetCssTransformerInstance() })
+            : base(virtualPath, cdnPath, new IBundleTransform[] { BundleTransformerContext.Current.Styles.GetDefaultTransformInstance() })
         {
             Builder = new NullBuilder();
         }

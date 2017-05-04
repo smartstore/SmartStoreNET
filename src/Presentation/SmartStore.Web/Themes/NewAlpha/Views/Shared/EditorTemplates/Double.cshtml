@@ -1,0 +1,17 @@
+@model System.Double
+@using Telerik.Web.Mvc.UI
+
+@{
+    string additionalClass = string.Empty;
+    if (ViewData.ContainsKey("small")) {
+        additionalClass = ViewData["small"].Convert<bool>() ? "small" : "";   
+    }
+}
+
+@(Html.Telerik().NumericTextBox()
+        .Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
+        .Value(Model)
+        .HtmlAttributes(new { @class = additionalClass })
+        .DecimalDigits(4)   //always display 4 digits
+)
+

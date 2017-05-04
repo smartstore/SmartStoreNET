@@ -1,0 +1,121 @@
+﻿@model CustomerAddressListModel
+@using SmartStore.Web.Models.Customer;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Account").Text);
+}
+@section left
+{
+    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+}
+<div class="page account-page address-list-page">
+    <h4 class="muted">@T("Account.MyAccount")</h4>
+    <div class="page-title">
+        <h1>@T("Account.CustomerAddresses")</h1>
+    </div>
+
+    <div class="page-body">
+
+        <div class="add-button">
+			<a class="btn btn-primary add-address-button" href="@Url.Action("AddressAdd")" rel="nofollow">
+				<i class="fa fa-plus"></i>&nbsp;
+				@T("Common.AddNew")
+			</a>
+        </div>
+
+        <div class="address-list">
+            @if (Model.Addresses.Count > 0)
+            {
+                for (int i = 0; i < Model.Addresses.Count; i++)
+                {
+                    var address = Model.Addresses[i];
+                    
+                <div class="address-item clearfix">
+                    <h4 class="title" style="color: #555; font-weight: 400">@address.FirstName @address.LastName</h4>
+                    <div class="info form-horizontal pull-left">
+                        <div class="email">
+                            @Html.LabelFor(model => model.Addresses[i].Email):
+                            @address.Email
+                        </div>
+                        @if (address.PhoneEnabled)
+                        {
+                        <div class="phone">
+                            @Html.LabelFor(model => model.Addresses[i].PhoneNumber):
+                            @address.PhoneNumber
+                        </div>
+                        }
+                        @if (address.FaxEnabled)
+                        {
+                        <div class="fax">
+                            @Html.LabelFor(model => model.Addresses[i].FaxNumber):
+            @address.FaxNumber
+                            </div>
+                        }
+                        @if (address.CompanyEnabled && !String.IsNullOrEmpty(address.Company))
+                        {
+                            <div class="company">@address.Company</div>
+                        }
+                        @if (address.StreetAddressEnabled)
+                        {
+                        <div class="address1">
+                                @address.Address1
+                            </div>
+                        }
+                        @if (address.StreetAddress2Enabled && !String.IsNullOrEmpty(address.Address2))
+                        {
+                            <div class="address2">
+                                @address.Address2
+                            </div>
+                        }
+                        @if (address.CityEnabled || address.StateProvinceEnabled || address.ZipPostalCodeEnabled)
+                        {
+                        <div class="city-state-zip">
+                                @if (address.CityEnabled)
+                                {
+                                    @address.City
+                                }
+                                @if (address.CityEnabled && (address.StateProvinceEnabled || address.ZipPostalCodeEnabled))
+                                {
+                                    <text>,</text>
+                                }
+                                @if (address.StateProvinceEnabled)
+                                {
+                            @address.StateProvinceName
+                                }
+                                @if (address.ZipPostalCodeEnabled)
+                                {
+                                    @address.ZipPostalCode
+                                }
+                            </div>
+                        }
+                        @if (address.CountryEnabled && !String.IsNullOrEmpty(address.CountryName))
+                        {
+                            <div class="country">
+                                @address.CountryName
+                            </div>
+                        }
+                    </div>
+                    <div class="buttons pull-right">
+                        <button class="btn edit-address-button" onclick="location.href='@Url.Action("AddressEdit", new { id = address.Id })'">
+							<i class="fa fa-pencil-square-o"></i>
+							@T("Common.Edit")
+						</button>
+                        <button class="btn btn-danger delete-address-button" onclick="location.href='@Url.Action("AddressDelete", new { id = address.Id })'">
+							<i class="fa fa-trash-o"></i>
+							@T("Common.Delete")
+						</button>
+                    </div>
+                </div>
+                <div class="clear">
+                </div>
+                }
+            }
+            else
+            {
+                @T("Account.CustomerAddresses.NoAddresses")
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+﻿@model IList<ProductOverviewModel>
+@{
+    Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.RecentlyViewedProducts").Text);
+}
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Models.Catalog;
+<div class="page recently-viewed-products-page">
+    <div class="page-title">
+        <h1>@T("Products.RecentlyViewedProducts")</h1>
+    </div>
+    <div class="clear">
+    </div>
+    <div class="page-body">
+        @if (Model.Count > 0)
+        {
+            <div class="product-grid">
+                @(Html.DataList<ProductOverviewModel>(Model, 3,
+                    @<div class="item-box">
+                        @Html.Partial("_ProductBox", @item)
+                    </div>
+                ))
+            </div>
+        }
+    </div>
+</div>

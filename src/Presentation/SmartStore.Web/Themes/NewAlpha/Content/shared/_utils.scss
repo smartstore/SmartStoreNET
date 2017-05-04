@@ -1,0 +1,337 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+// Responsive Typo
+// ==============================================================
+
+@include media-breakpoint-down(md) {
+    html {
+        font-size: 15px;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    html {
+        font-size: 14px;
+    }
+}
+
+
+// Font Sizes
+// ==============================================================
+
+.fs-h1          { font-size: $font-size-h1; }
+.fs-h2          { font-size: $font-size-h2; }
+.fs-h3          { font-size: $font-size-h3; }
+.fs-h4          { font-size: $font-size-h4; }
+.fs-h5          { font-size: $font-size-h5; }
+.fs-h6          { font-size: $font-size-h6; }
+
+.fs-lead        { font-size: $lead-font-size; }
+
+.fs-display-1   { font-size: $display1-size; }
+.fs-display-2   { font-size: $display2-size; }
+.fs-display-3   { font-size: $display3-size; }
+.fs-display-4   { font-size: $display4-size; }
+
+.fs-small       { font-size: 0.85rem; }
+
+
+// Responsive Heights (e.g. .height-400-md)
+// ==============================================================
+
+@each $breakpoint in (xs, sm, md, lg, xl) {
+    @include media-breakpoint-up($breakpoint) {
+        .height-100-#{$breakpoint}     { height: 100px; }
+        .height-200-#{$breakpoint}     { height: 200px; }
+        .height-300-#{$breakpoint}     { height: 300px; }
+        .height-400-#{$breakpoint}     { height: 400px; }
+        .height-500-#{$breakpoint}     { height: 500px; }
+        .height-600-#{$breakpoint}     { height: 600px; }
+        .height-700-#{$breakpoint}     { height: 700px; }
+        .height-800-#{$breakpoint}     { height: 800px; }
+        .height-900-#{$breakpoint}     { height: 900px; }
+    }
+}
+
+
+//  Grid
+// ==============================================================
+
+.container-fluid {
+    padding-left: 6%;
+    padding-right: 6%;
+}
+
+
+// Typo
+// ==============================================================
+
+code {
+    background-color: rgba(0,0,0, 0.03);
+    border-radius: 2px; 
+}
+
+
+// Cards
+// ==============================================================
+
+.card {
+    border-radius: 3px;
+}
+
+.card-shadow {
+    box-shadow: 0 0 3px rgba(0,0,0, .1);
+}
+
+.card-block > p:last-child {
+    margin-bottom:  0;
+}
+
+
+// Dropdowns
+// ==============================================================
+
+.dropdown-menu {
+      border-radius: 3px;
+}
+
+.dropdown-item {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+// Unfold animation
+
+.dropdown-toggle + .dropdown-menu {
+    /*display: block;
+    transform: translateY(20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.18s ease-in-out;*/
+}
+
+.open > .dropdown-toggle + .dropdown-menu {
+    /*transform: translateY(0);
+    opacity: 1;
+    visibility: visible;*/
+}
+
+
+// Responsive spacing (e.g. m-t-3-sm or m-y-2-lg)
+// ==============================================================
+
+@each $breakpoint in (lg, md, sm, xs) {
+    @include media-breakpoint-down($breakpoint) {
+        @each $size, $lengths in $spacers {
+            $length-x:   map-get($lengths, x);
+            $length-y:   map-get($lengths, y);
+
+            .m-t-#{$size}-#{$breakpoint} { margin-top:      $length-y !important; }
+            .m-b-#{$size}-#{$breakpoint} { margin-bottom:   $length-y !important; }
+            .m-l-#{$size}-#{$breakpoint} { margin-left:     $length-x !important; }
+            .m-r-#{$size}-#{$breakpoint} { margin-right:    $length-x !important; }
+
+            // Axes
+            .m-y-#{$size}-#{$breakpoint} {
+                margin-top:     $length-y !important;
+                margin-bottom:  $length-y !important;
+            }
+            .m-x-#{$size}-#{$breakpoint} {
+                margin-left:    $length-x !important;
+                margin-right:   $length-x !important;
+            }
+
+            .p-t-#{$size}-#{$breakpoint} { padding-top:     $length-y !important; }
+            .p-b-#{$size}-#{$breakpoint} { padding-bottom:  $length-y !important; }
+            .p-l-#{$size}-#{$breakpoint} { padding-left:    $length-x !important; }
+            .p-r-#{$size}-#{$breakpoint} { padding-right:   $length-x !important; }
+
+            // Axes
+            .p-y-#{$size}-#{$breakpoint} {
+                padding-top:    $length-y !important;
+                padding-bottom: $length-y !important;
+            }
+            .p-x-#{$size}-#{$breakpoint} {
+                padding-left:    $length-x !important;
+                padding-right:   $length-x !important;
+            }
+        }
+    }
+}
+
+
+// Remove space from rows and cols
+// ==============================================================
+
+.row.no-space {
+    margin-right: 0;
+    margin-left: 0;
+}
+.row.no-space > [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0; 
+}
+
+
+// Vertical aligns
+// ========================================================================
+.vertical-align {
+    font-size: 0;
+
+    &:before {
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+        content: "";
+    }
+
+    &-middle, &-bottom {
+        display: inline-block;
+        max-width: 100%;
+        font-size: 1rem;
+    }
+    &-middle {
+        vertical-align: middle;
+    }
+    &-bottom {
+        vertical-align: bottom;
+    }
+}
+
+
+// Responsive heading sizes
+// ==============================================================
+
+@mixin responsive-headings($tag-name, $font-size, $multiplier) {
+  $selector: "#{$tag-name}, .#{$tag-name}";
+
+  #{$selector} {
+    font-size: $font-size * (1 - (0.2 * $multiplier));
+  }
+
+  @include media-breakpoint-up(xs) {
+    #{$selector} {
+      font-size: $font-size * (1 - (0.1 * $multiplier));
+    }
+  }
+  @include media-breakpoint-up(md) {
+    #{$selector} {
+      font-size: $font-size * (1 - (0.05 * $multiplier));
+    }
+  }
+  @include media-breakpoint-up(lg) {
+    #{$selector} {
+      font-size: $font-size; 
+    }
+  }
+}
+
+/*@include responsive-headings('h1', $font-size-h1, 1); 
+@include responsive-headings('h2', $font-size-h2, 1);
+@include responsive-headings('h3', $font-size-h3, 1);
+@include responsive-headings('h4', $font-size-h4, 0.7);
+@include responsive-headings('h5', $font-size-h5, 0.6);
+@include responsive-headings('h6', $font-size-h6, 0.5);*/
+
+
+//  Popover
+// ==============================================================
+
+.popover-title {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-weight: 600;
+}
+
+
+// flex: equal height for child elements (like cards etc.)
+// ========================================================================
+
+.row.flex > * {
+    display: flex;
+}
+
+.row.flex > * > * {
+    flex: 1;
+    flex: 1 0 100%;
+}
+
+
+// "Real" responsive card decks & groups
+// ==============================================================
+
+@mixin card-deck-responsive($breakpoint) {
+    .card-deck {
+        &.card-cols-#{$breakpoint}-1 .card {
+            -ms-flex: 1 0 100% !important;
+            flex: 1 0 calc(100% - 1.255rem) !important;
+            max-width: calc(100% - 1.255rem);
+        }
+        &.card-cols-#{$breakpoint}-2 .card {
+            -ms-flex: 0 0 50% !important;
+            flex: 0 0 calc(50% - 1.255rem) !important;
+            max-width: calc(50% - 1.255rem);
+        }
+        &.card-cols-#{$breakpoint}-3 .card { 
+            -ms-flex: 0 0 33.333% !important; 
+            flex: 0 0 calc(33.333% - 1.255rem) !important;
+            max-width: calc(33.333% - 1.25rem);
+        }
+        &.card-cols-#{$breakpoint}-4 .card {
+            -ms-flex: 0 0 25% !important;
+            flex: 0 0 calc(25% - 1.255rem) !important;
+            max-width: calc(25% - 1.255rem);
+        }
+        &.card-cols-#{$breakpoint}-5 .card {
+            -ms-flex: 0 0 20% !important;
+            flex: 0 0 calc(20% - 1.255rem) !important;
+            max-width: calc(20% - 1.255rem);
+        }  
+    }
+}
+
+@mixin card-group-responsive($breakpoint) {
+    .card-group {
+        &.card-cols-#{$breakpoint}-1 .card {
+            flex: 1 0 100% !important;
+            max-width: 100%;
+        }
+        &.card-cols-#{$breakpoint}-2 .card {
+            flex: 0 0 50% !important;
+            max-width: 50%;
+        }
+        &.card-cols-#{$breakpoint}-3 .card {
+            flex: 0 0 33.333% !important;
+            max-width: 33.333%;
+        }
+        &.card-cols-#{$breakpoint}-4 .card {
+            flex: 0 0 25% !important;
+            max-width: 25%;
+        }
+        &.card-cols-#{$breakpoint}-5 .card {
+            flex: 0 0 20% !important;
+            max-width: 20%;
+        }  
+    }
+}
+
+@mixin card-columns-responsive($breakpoint) {
+    .card-columns {
+        @each $x in (1, 2, 3, 4, 5) {
+            &.card-cols-#{$breakpoint}-#{$x} {
+                column-count: #{$x};
+            }
+        } 
+    }
+}
+
+@each $breakpoint in (sm, md, lg, xl) {
+    @include media-breakpoint-up($breakpoint) {
+        @include card-deck-responsive($breakpoint); 
+        @include card-group-responsive($breakpoint);
+        @include card-columns-responsive($breakpoint);       
+    }
+}
+
+

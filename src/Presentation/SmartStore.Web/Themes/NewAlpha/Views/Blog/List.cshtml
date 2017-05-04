@@ -1,0 +1,106 @@
+﻿@model BlogPostListModel
+@using SmartStore.Web;
+@using SmartStore.Web.Models.Blogs;
+@using SmartStore.Web.Framework.UI;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Blog").Text);
+}
+@section left {
+    @Html.Action("BlogMonths", "Blog")
+    @Html.Action("BlogTags", "Blog")
+}
+<div class="page blog-page">
+    <div class="page-title">
+        <a href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("Blog.RSS.Hint")" rel="tooltip">
+            <i class="fa fa-rss muted"></i>
+            @T("Blog.RSS")
+        </a>
+        <h1>
+            @if (String.IsNullOrEmpty(Model.PagingFilteringContext.Tag))
+            {
+                if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
+                {
+                    string.Format(T("Blog.FilteredByMonth").Text, Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToString("MMMM"));
+                }
+                else
+                {
+                    @T("Blog")
+                }
+            }
+            else
+            {
+                string.Format(T("Blog.TaggedWith").Text, Model.PagingFilteringContext.Tag);
+            }
+        </h1>
+    </div>
+    <div class="clear">
+    </div>
+    <div class="page-body">
+        @Html.Widget("bloglist_page_before_posts")
+        <div class="blogposts">
+            @foreach (var item in Model.BlogPosts)
+            {
+                <article class="blogpost row-fluid">
+
+                    <div class="blogpost-info span6 pull-left">
+                        @if (item.AllowComments)
+                        {
+                            <a class="blogpost-comments@(item.NumberOfComments > 0 ? " vivid" : "")" 
+                                href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" 
+                                title="@string.Format(@T("Blog.CommentsLink").Text, item.NumberOfComments)" 
+                                rel="tooltip">
+								<span class="blogpost-comments-icon fa fa-comments"></span>
+                                <span class="blogpost-comments-count">@item.NumberOfComments</span>
+                            </a>
+                        }
+                        
+                        <div class="blogpost-date muted">
+                            @item.CreatedOn.ToString("dd MMMM, yyyy")
+                        </div>
+                        
+                        @if (item.Tags.Count > 0)
+                        {
+                            <div class="blogpost-tags well well-small">
+                                <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
+                                @for (int i = 0, length = item.Tags.Count; i < length; i++)
+                                {
+                                    var tag = item.Tags[i];
+                                    var isLast = i == length - 1;
+                                    <a class="blogpost-tag" href="@Url.RouteUrl("BlogByTag", new { tag = tag })">@tag@(!isLast ? "," : "")</a>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="blogpost-content span18 pull-left">
+                        <h3 class="blogpost-title">
+                            <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
+                                @item.Title
+                            </a>
+                        </h3>
+
+                        <div class="blogpost-body">
+                            @Html.Raw(item.Body)
+                        </div>
+
+                        @Html.Widget("bloglist_page_inside_post")
+                    </div>
+
+                </article>
+            }
+        </div>
+
+        @(Html.SmartStore().Pager(Model.PagingFilteringContext)
+                          .Name("pagination-bottom")
+                          .QueryParam("pagenumber")
+                          .ShowFirst(false)
+                          .ShowLast(false)
+                          .Style(PagerStyle.Pagination)
+                          .MaxPagesToDisplay(6))
+
+        @Html.Widget("bloglist_page_after_posts")
+    </div>
+</div>

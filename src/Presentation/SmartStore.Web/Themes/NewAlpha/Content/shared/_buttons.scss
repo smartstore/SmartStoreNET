@@ -1,0 +1,333 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+$btn-wide-padding-x:    1.8rem;
+$btn-wide-padding-x-lg: 2rem;
+$btn-wide-padding-x-sm: 1.2rem;
+
+$btn-size:              ($btn-padding-y * 2) + ($font-size-base * $line-height);
+$btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-base * $line-height-lg);
+$btn-size-sm:           ($btn-padding-y-sm * 2) + ($font-size-sm * $line-height-sm);
+
+/*$btn-size:              $input-height;
+$btn-size-lg:           $input-height-lg;
+$btn-size-sm:           $input-height-sm;*/
+
+@mixin btn-padding($p) {
+    padding-left: $p;
+    padding-right: $p;
+}
+
+
+// General
+// =======
+
+.btn {
+    //text-transform: uppercase;
+    outline: none !important;
+    transition: all 0.12s ease-in-out;
+}
+
+.btn-lg:not(.btn-icon):not(.btn-circle), 
+.btn-group-lg > .btn:not(.btn-icon):not(.btn-circle) {
+    font-size: $font-size-base;
+}
+
+
+// Icon margins
+// ============
+
+.btn:not(.btn-icon):not(.btn-circle) {
+    > .fa { margin-left: 0; margin-right: 0.5em; }
+    > .fa.icon-right { margin-left: 0.5em; margin-right: 0; }
+}
+
+
+// btn-icon, btn-circle
+// ====================
+
+.btn-icon,
+.btn-circle {
+    padding: 0;
+    width: $btn-size;
+    height: $btn-size;
+    line-height: $btn-size;
+    text-align: center;
+    vertical-align: middle;
+    box-sizing: content-box;
+
+    &.btn-lg {
+        width: $btn-size-lg;
+        height: $btn-size-lg;
+        line-height: $btn-size-lg;
+    }
+    &.btn-sm {
+        width: $btn-size-sm;
+        height: $btn-size-sm;
+        line-height: $btn-size-sm;
+    }
+}
+
+.btn-circle {
+    border-radius: 50%;
+}
+
+
+// btn-flat
+// ========
+
+.btn-flat {
+    color: inherit;
+    background-color: transparent;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+.btn-flat-light {
+    color: rgba(255,255,255, 0.8);
+    &:hover, &:active, &.active, &:focus, &.focus {
+        border-color: rgba(255,255,255, 1) !important;
+    }
+}
+
+
+// btn-clear
+// =========
+
+.btn-clear {
+    color: rgba(255,255,255, 1);
+    background: rgba(255,255,255, 0);
+    border-color: rgba(255,255,255, 0.6);
+    box-shadow: none !important;
+
+    &:hover {
+        color: rgba(255,255,255, 1);
+        background: rgba(255,255,255, 0.15);
+        //border-color: rgba(255,255,255, 0);
+    }
+    &:focus, &.focus, &:active, &.active {
+        color: rgba(255,255,255, 1);
+        background: rgba(255,255,255, 0.25);
+        //border-color: rgba(255,255,255, 0);
+    }
+}
+
+
+// btn-labeled
+// ===========
+
+.btn-labeled {
+    position: relative;
+    padding-left: $btn-padding-x + $btn-size;
+
+    > b {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0, .12);
+        display: block;
+        width: $btn-size;
+        line-height: $btn-size - 0.1rem;
+        text-align: center;
+    }
+    &.btn-lg {
+        padding-left: $btn-padding-x-lg + $btn-size-lg;
+        > b { width: $btn-size-lg; line-height: $btn-size-lg - 0.1rem; }
+    }
+    &.btn-sm {
+        padding-left: $btn-padding-x-sm + $btn-size-sm;
+        > b { width: $btn-size-sm; line-height: $btn-size-sm - 0.1rem; }
+    }
+
+    &.icon-right {
+        padding-left: $btn-padding-x;
+        padding-right: $btn-padding-x + $btn-size;
+
+        > b {
+            left: auto;
+            right: 0;
+        }
+    }
+}
+
+
+// btn-animate
+// ===========
+
+.btn-animate {
+    position: relative;
+    overflow: hidden;
+    padding-left: $btn-padding-x * 1.5;
+    padding-right: $btn-padding-x * 1.5;
+    @include transition(all 0.2s ease-out);
+
+    > span {
+        display: block;
+        width: 100%;
+        height: 100%;
+
+        transition: transform 0.2s ease-out;
+        transform: translateX(0);
+
+        > .fa {
+            position: absolute;
+            display: block;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 1.25em;
+            text-align: left;
+            opacity: 0;
+            line-height: $line-height;
+            transition: opacity 0.2s ease-out;
+            transform: translateX(-100%);
+        }
+    }
+
+    &:hover > span {
+        transform: translateX(10px);
+        > .fa { opacity: 1; }
+    }
+
+    &.btn-lg {
+        padding-left: $btn-padding-x-lg * 1.5;
+        padding-right: $btn-padding-x-lg * 1.5;
+        > span > .fa { 
+            line-height: $line-height-lg; 
+        }
+    }
+    &.btn-sm {
+        padding-left: $btn-padding-x-sm * 1.5;
+        padding-right: $btn-padding-x-sm * 1.5;
+        > span > .fa { 
+            top: 2px;
+            line-height: $line-height-sm; 
+        }
+    }
+}
+
+.btn-animate.btn-animate-right {
+    > span > .fa {
+        left: auto;
+        right: 0;
+        text-align: right;
+        transform: translateX(100%);
+    }
+
+    &:hover > span {
+        transform: translateX(-10px);
+    }
+}
+
+.btn-animate.btn-animate-down {
+    > span {
+        text-align: center;
+    }
+    > span > .fa {
+        left: 50%;
+        margin-left: -0.625em;
+        right: 0;
+        top: 0;
+        text-align: center;
+        transform: translateY(-100%);
+    }
+
+    &:hover > span {
+        transform: translateY(100%);
+    }
+}
+.btn-animate.btn-animate-down.btn-lg {
+    > span > .fa {
+        font-size: 1.5rem;
+        line-height: 1.5rem;
+        transform: translateY(-$btn-size-lg);
+    }
+    &:hover > span {
+        transform: translateY($btn-size-lg);
+    }
+}
+.btn-animate.btn-animate-down.btn-sm {
+    > span > .fa {
+        transform: translateY(-$btn-size-sm);
+    }
+    &:hover > span {
+        transform: translateY($btn-size-sm);
+    }
+}
+
+
+// btn-to-danger
+// =============
+
+.btn.btn-to-danger {
+    transition: none;
+    &:hover {
+        @extend .btn-danger:hover;
+    }
+    &:active, &.active {
+        @extend .btn-danger:active;
+    }
+    &:focus, &.focus {
+        @extend .btn-danger:focus;
+    }
+}
+
+
+// btn-no-border
+// =============
+
+.btn.btn-no-border {
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+
+// btn-wide
+// ========
+
+.btn-wide {
+    @include btn-padding($btn-wide-padding-x);
+
+    &.btn-lg {
+        @include btn-padding($btn-wide-padding-x-lg);
+    }
+    &.btn-sm {
+        @include btn-padding($btn-wide-padding-x-sm);
+    }
+}
+
+.btn-wide.btn-animate {
+    @include btn-padding($btn-wide-padding-x * 1.5);
+    span > .fa {
+        width: 1.5em;
+    }
+
+    &.btn-lg {
+        @include btn-padding($btn-wide-padding-x-lg * 1.5);
+    }
+    &.btn-sm {
+        @include btn-padding($btn-wide-padding-x-sm * 1.5); 
+    }
+}
+
+.btn-wide.btn-labeled {
+    padding-left: $btn-wide-padding-x + $btn-size;
+
+    &.btn-lg {
+        padding-left: $btn-wide-padding-x-lg + $btn-size-lg;
+    }
+    &.btn-sm {
+        padding-left: $btn-wide-padding-x-sm + $btn-size-sm;
+    }
+
+    &.icon-right {
+        padding-left: $btn-wide-padding-x;
+        padding-right: $btn-wide-padding-x + $btn-size;
+
+        &.btn-lg {
+            padding-right: $btn-wide-padding-x-lg + $btn-size-lg;
+        }
+        &.btn-sm {
+            padding-right: $btn-wide-padding-x-sm + $btn-size-sm;
+        }
+    }
+}

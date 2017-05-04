@@ -1,0 +1,86 @@
+﻿@model ProductAskQuestionModel
+@using SmartStore.Web.Models.Catalog;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(Model.ProductName);
+    Html.AddTitleParts(T("Products.AskQuestion.Title").Text);
+    Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
+}
+<div class="page ask-question-page">
+    <div class="page-title">
+        <h1>@T("Products.AskQuestion.Title")</h1>
+    </div>
+    <div class="page-body">
+
+        @using (Html.BeginForm("AskQuestion", null, FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+                               
+        <fieldset>
+
+            <legend>
+                <a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" class="product">@Model.ProductName</a>
+            </legend>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(true)
+            }
+
+            <div class="control-group">
+                @Html.LabelFor(model => model.SenderEmail, new { @class="control-label required" , @for="SenderEmail" } )
+                <div class="controls">
+                    @Html.TextBoxFor(model => model.SenderEmail)
+                    @Html.ValidationMessageFor(model => model.SenderEmail)
+                </div>
+            </div>
+
+            <div class="control-group">
+                @Html.LabelFor(model => model.SenderName, new { @class="control-label required" , @for="SenderName" } )
+                <div class="controls">
+                    @Html.TextBoxFor(model => model.SenderName)
+                    @Html.ValidationMessageFor(model => model.SenderName)
+                </div>
+            </div>
+
+            <div class="control-group">
+                @Html.LabelFor(model => model.SenderPhone, new { @class="control-label" , @for="SenderPhone" } )
+                <div class="controls">
+                    @Html.TextBoxFor(model => model.SenderPhone, new { placeholder = T("Common.Optional") })
+                    @Html.ValidationMessageFor(model => model.SenderPhone)
+                </div>
+            </div>
+
+            <div class="control-group">
+                @Html.LabelFor(model => model.Question, new { @class="control-label required" , @for="Question" } )
+                <div class="controls">
+                    @Html.TextAreaFor(model => model.Question, new { style = "width:80%; height:150px" })
+                    @Html.ValidationMessageFor(model => model.Question)
+                </div>
+            </div>
+
+            @if (Model.DisplayCaptcha)
+            {
+                <div class="control-group">
+                    <div class="controls">
+                        <div class="captcha-box">
+                            @Html.Raw(Html.GenerateCaptcha())
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" name="send-email" class="btn btn-primary">
+                        <i class="fa fa-caret-right"></i>&nbsp;@T("Common.Send")
+                    </button>
+                </div>
+            </div>
+
+        </fieldset>
+        }
+
+    </div>
+</div>

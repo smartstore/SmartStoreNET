@@ -1,0 +1,49 @@
+﻿@model NewsItemListModel
+@using SmartStore.Web;
+@using SmartStore.Web.Models.News;
+@using SmartStore.Web.Framework.UI;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.NewsArchive").Text);
+}
+<div class="page news-list-page">
+    <div class="page-title">
+        <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("News.RSS.Hint")">
+            <i class="fa fa-rss muted"></i>
+            @T("News.RSS")
+        </a>
+        <h1>@T("News")</h1>
+    </div>
+
+    <div class="page-body">
+        @Html.Widget("newslist_page_before_items")
+
+        <div class="news-items">
+            @foreach (var item in Model.NewsItems)
+            {
+                <div class="news-item">
+                    <h4 class="news-title clearfix">
+                        <a class="news-title" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                            @item.Title
+                        </a>
+                        <span class="news-date muted pull-right">
+                           @item.CreatedOn.ToString("D")
+                        </span>
+                    </h4>
+                    <div class="news-details">
+                        @Html.Raw(item.Short)
+                    </div>
+                    <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="read-more">
+                        @T("News.MoreInfo")
+                    </a>
+                </div>
+            }
+        </div>
+
+        @Html.SmartStore().Pager(Model.PagingFilteringContext).QueryParam("pagenumber")
+
+        @Html.Widget("newslist_page_after_items")
+    </div>
+</div>

@@ -1,0 +1,134 @@
+﻿@model ForumTopicPageModel
+@using SmartStore.Services.Seo;
+@using SmartStore.Web;
+@using SmartStore.Web.Models;
+@using SmartStore.Web.Models.Boards;
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Web.Framework.UI;
+
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts(Model.Subject);
+    Html.AddMetaDescriptionParts(Model.Subject);
+}
+<script type="text/javascript">
+    function handleTopicWatch(context) {
+        $('#watch-topic-top').text(context.Text);
+        $('#watch-topic-bottom').text(context.Text);
+    }
+</script>
+<div class="page forum-topic">
+    @Html.Action("ForumBreadcrumb", new { forumTopicId = Model.Id })
+    
+    @Html.Partial("_SearchBox")
+    
+    <div class="title clearfix">
+        <h2>
+            @Model.Subject
+        </h2>
+    </div>
+    
+    @if (Model.IsCustomerAllowedToEditTopic || Model.IsCustomerAllowedToDeleteTopic || Model.IsCustomerAllowedToMoveTopic) 
+    {
+    <div class="clearfix">
+        <div class="manage btn-group pull-left">
+            @if (Model.IsCustomerAllowedToEditTopic)
+			{
+				<a href='@Url.Action("TopicEdit", new { id = Model.Id })' class="btn" rel="nofollow">
+					<i class="fa fa-pencil-square-o"></i>
+					@T("Forum.EditTopic")
+				</a>
+			}
+            @if (Model.IsCustomerAllowedToDeleteTopic)
+			{
+				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn" rel="nofollow" onclick='@(String.Format("return confirm('{0}');", T("Common.AreYouSure").Text))'>
+					<i class="fa fa-trash-o"></i>
+					@T("Forum.DeleteTopic").Text
+				</a>
+			}
+            @if (Model.IsCustomerAllowedToMoveTopic)
+			{
+				<a href='@Url.Action("TopicMove", new { id = Model.Id })' class="btn" rel="nofollow">
+					<i class="fa fa-arrows"></i>
+					@T("Forum.MoveTopic")
+				</a>
+			}
+        </div>
+    </div>
+    }
+
+    <div class="topic-options top clearfix">
+
+        @if (Model.IsCustomerAllowedToSubscribe)
+        {
+            <div class="pull-left">
+                <i class="fa fa-bookmark"></i>        
+                
+                @Ajax.ActionLink(Model.WatchTopicText,
+                                "TopicWatch",
+                                new { id = @Model.Id },
+                                new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleTopicWatch" },
+                                new { id = "watch-topic-top", @class = "watch-topic-link-button" })
+            </div>
+        }
+        
+        <div class="pull-right" style="min-width:250px">
+            <button class="btn btn-primary pull-right" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
+                <i class="fa fa-share"></i>
+                @T("Forum.Reply")
+            </button>
+        </div>
+
+        @{
+            var pager = Html.SmartStore().Pager(Model.PostsPageIndex, Model.PostsPageSize, Model.PostsTotalRecords)
+                        .Name("paginator")
+                        .Size(PagerSize.Small)
+                        .Alignment(PagerAlignment.Centered)
+                        .Route("TopicSlug", new RouteValues { id = Model.Id, slug = Model.SeName });
+        }
+
+        @pager
+    </div>
+
+    <div class="posts">
+        @{
+            var index = 0;
+        }
+        @foreach (var post in @Model.ForumPostModels)
+        {
+            index++;
+            Html.RenderPartial("_ForumPost", post);
+            @*if(index < @Model.ForumPostModels.Count)
+            {
+                <hr />
+            }*@
+        }
+    </div>
+
+    <div class="topic-options bottom">
+
+        <button class="btn btn-primary pull-right" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
+            <i class="fa fa-share"></i>
+            @T("Forum.Reply").Text
+        </button>
+
+        <div class="pull-left">
+            @if (Model.IsCustomerAllowedToSubscribe)
+            {
+                <i class="fa fa-bookmark"></i>
+                @Ajax.ActionLink(Model.WatchTopicText,
+                                "TopicWatch",
+                                new { id = @Model.Id },
+                                new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleTopicWatch" },
+                                new { id = "watch-topic-bottom", @class = "watch-topic-link-button" })
+            }
+        </div>
+
+        @pager
+
+
+    </div>
+    
+</div>
+

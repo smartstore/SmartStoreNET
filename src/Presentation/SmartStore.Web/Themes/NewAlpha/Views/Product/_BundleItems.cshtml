@@ -1,0 +1,103 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web;
+
+@foreach (var item in Model.BundledItems.Where(x => x.BundleItem.Visible))
+{
+	string bundleItemClass = (Model.BundledItems.IndexOf(item) == 0 && !Model.RenderBundleTitle()) ? "" : " bundle-item-border";
+
+	<div class="bundle-item clearfix update-container@(bundleItemClass)" data-url="@Html.Raw(item.UpdateProductDetailsUrl("bundleitem"))">
+
+		@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
+		{
+			<div class="bundle-item-image dynamic-image" style="min-width: @(item.ThumbDimensions)px; min-height: @(item.ThumbDimensions)px;">
+				<img src="@item.DetailsPictureModel.DefaultPictureModel.ImageUrl" alt="@item.DetailsPictureModel.AlternateText" title="@item.DetailsPictureModel.DefaultPictureModel.Title" />
+			</div>
+		}
+		<div class="bundle-item-body">
+			<div class="bundle-item-name">
+				@if (item.VisibleIndividually)
+				{
+					<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">@item.Name</a>
+				}
+				else
+				{
+					@item.Name
+				}
+				@if (item.BundleItem.Quantity > 1)
+				{
+					<text>
+						&#215;&nbsp;@item.BundleItem.Quantity
+					</text>
+				}
+			</div>
+
+			@if (!String.IsNullOrWhiteSpace(item.ShortDescription))
+			{
+                <div class="bundle-item-description" title="@(item.ShortDescription.Length < 170 ? "" : item.ShortDescription)">
+                    @Html.Raw(item.ShortDescription.Truncate(170, "..."))
+                    @if (item.ShortDescription.Length > 170) { <text>...</text> }
+                </div>
+			}
+
+			<div class="attributes bundle-item-attributes">
+				<table>
+					<tr class="stock attr-stock @(String.IsNullOrWhiteSpace(item.StockAvailability) ? "hide fade" : "")">
+						<td class="attr-label">
+							<strong>@T("Products.Availability"): </strong>
+						</td>
+						<td class="value">
+							@item.StockAvailability
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			@if (!(String.IsNullOrWhiteSpace(item.ProductPrice.Price) && String.IsNullOrWhiteSpace(item.ProductPrice.PriceWithDiscount)))
+			{
+				<div class="bundle-item-price price-block">
+					@{
+						string priceClass = String.IsNullOrWhiteSpace(item.ProductPrice.PriceWithDiscount) ? "" : " older-price";
+					}
+
+					<span class="product-price-without-discount@(priceClass)@(String.IsNullOrWhiteSpace(item.ProductPrice.Price) ? " hide fade" : "")">
+						@Html.Raw(item.ProductPrice.Price)</span>@* no line break cause of strike through *@
+
+					<span class="product-price-with-discount@(String.IsNullOrWhiteSpace(item.ProductPrice.PriceWithDiscount) ? " hide fade" : "")">
+						@Html.Raw(item.ProductPrice.PriceWithDiscount)
+					</span>
+
+                    @if(item.ProductPrice.BundleItemShowBasePrice == true)
+                    { 
+					    <div class="base-price muted@(String.IsNullOrWhiteSpace(item.BasePriceInfo) ? " hide fade" : "")">
+						    @item.BasePriceInfo
+					    </div>
+                    }
+				</div>
+			}
+			
+			@if (!String.IsNullOrEmpty(item.AttributeInfo))
+			{
+				<div class="bundle-item-attribute-info muted">
+					@Html.Raw(item.AttributeInfo)
+				</div>
+			}
+		</div>
+
+		@if (item.ProductVariantAttributes.ShouldBeRendered())
+		{
+			<div class="bundle-item-footer@(item.BundleItem.IsBundleItemPricing ? "" : " hide")">
+				@Html.Partial("_Attributes", item.ProductVariantAttributes, new ViewDataDictionary())
+			</div>
+		}
+
+		@if (item.GiftCard.IsGiftCard)
+		{
+			var dataDictBundleItemGiftCard = new ViewDataDictionary();
+			dataDictBundleItemGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_{1}", item.Id, item.BundleItem.Id);
+			<div class="bundle-item-footer">
+				@Html.Partial("_GiftCardInfo", item.GiftCard, dataDictBundleItemGiftCard)
+			</div>
+		}
+	</div>
+}

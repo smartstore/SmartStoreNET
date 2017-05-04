@@ -1,0 +1,27 @@
+﻿@model ShoppingCartModel.GiftCardBoxModel
+@using SmartStore.Web.Models.ShoppingCart;
+@if (Model.Display)
+{
+    <div class="giftcard-box cart-box well well-small">
+        <h4 class="title">@T("ShoppingCart.GiftCardCouponCode")</h4>
+
+        @if (!String.IsNullOrEmpty(Model.Message))
+        {
+            <div class="alert alert-info fade in">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                @Model.Message
+            </div>
+        }
+
+        <div class="coupon-code input-append">
+            <input name="giftcardcouponcode" type="text" class="prompt gift-card-coupon-code" placeholder="@T("ShoppingCart.GiftCardCouponCode.Tooltip")" />
+            <button type="submit" 
+                    class="btn btn-warning tooltip-toggle apply-gift-card-coupon-code-button"
+                    title="@T("ShoppingCart.GiftCardCouponCode.Button")" 
+                    name="applygiftcardcouponcode"
+                    value="applygiftcardcouponcode">
+                <i class="fa fa-check"></i>
+            </button>
+        </div>
+    </div>
+}

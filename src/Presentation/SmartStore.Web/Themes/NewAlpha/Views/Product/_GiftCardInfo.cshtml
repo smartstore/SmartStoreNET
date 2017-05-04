@@ -1,0 +1,48 @@
+﻿@model ProductDetailsModel.GiftCardModel
+@using SmartStore.Web.Models.Catalog;
+@if (Model.IsGiftCard)
+{
+    <div class="giftcard">
+
+        <div class="control-group">
+            @Html.LabelFor(model => model.RecipientName, new { @class = "control-label required", @for = "RecipientName" })
+            <div class="controls">
+                @Html.EditorFor(model => model.RecipientName, "BlockInput")
+            </div>
+        </div>
+        
+        @if (Model.GiftCardType == SmartStore.Core.Domain.Catalog.GiftCardType.Virtual)
+        {
+        <div class="control-group">
+            @Html.LabelFor(model => model.RecipientEmail, new { @class = "control-label required", @for = "RecipientEmail" })
+            <div class="controls">
+                @Html.EditorFor(model => model.RecipientEmail, "BlockInput")
+            </div>
+        </div>
+        }
+        
+        <div class="control-group">
+            @Html.LabelFor(model => model.SenderName, new { @class = "control-label required", @for = "SenderName" })
+            <div class="controls input-block-level">
+                @Html.EditorFor(model => model.SenderName, "BlockInput")
+            </div>
+        </div>
+        
+        @if (Model.GiftCardType == SmartStore.Core.Domain.Catalog.GiftCardType.Virtual)
+        {
+            <div class="control-group">
+                @Html.LabelFor(model => model.SenderEmail, new { @class = "control-label required", @for = "SenderEmail" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.SenderEmail, "BlockInput")
+                </div>
+            </div>
+        }
+        
+        <div class="control-group">
+            @Html.LabelFor(model => model.Message, new { @class = "control-label", @for = "Message" })
+            <div class="controls">
+                 @Html.TextAreaFor(model => model.Message, new { @class = "message input-block-level" })
+            </div>
+        </div>
+    </div>
+}

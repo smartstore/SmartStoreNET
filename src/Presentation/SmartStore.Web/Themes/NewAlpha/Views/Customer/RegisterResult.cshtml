@@ -1,0 +1,40 @@
+﻿@model RegisterResultModel
+@using SmartStore.Web.Models.Customer;
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+@{
+    Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Register").Text);
+
+    //continue URL
+    var continueUrl = "";
+    if (!String.IsNullOrEmpty(this.Context.Request.QueryString["returnUrl"]))
+    {
+        continueUrl = this.Context.Request.QueryString["returnUrl"];
+    }
+    else
+    {
+        continueUrl = Url.RouteUrl("HomePage");
+    }
+}
+<div class="page registration-result-page">
+    <div class="page-title">
+        <h1>@T("Account.Register")</h1>
+    </div>
+
+    <div class="page-body">
+        
+        <div class="section-body">
+            @Model.Result
+        </div>
+
+        <div class="buttons">
+            <a class="btn register-continue-button" href="@continueUrl">
+                @T("Account.Register.Result.Continue")
+            </a>
+        </div>
+    </div>
+</div>

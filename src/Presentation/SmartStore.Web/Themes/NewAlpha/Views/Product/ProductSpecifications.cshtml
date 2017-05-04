@@ -1,0 +1,27 @@
+﻿@model IList<ProductSpecificationModel>
+@using SmartStore.Web.Models.Catalog;
+@if (Model.Count > 0)
+{
+    <div class="product-specs-box">
+        <div class="product-specs-list">
+            <table class="table table-striped table-hover">
+                <col width="25%" />
+                <col />
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var item = Model[i];
+                        <tr>
+                            <td class="a-right specname">
+                                @item.SpecificationAttributeName
+                            </td>
+                            <td class="a-left specvalue">
+                                @item.SpecificationAttributeOption
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

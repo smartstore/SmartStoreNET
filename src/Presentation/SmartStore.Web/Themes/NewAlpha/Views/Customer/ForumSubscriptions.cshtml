@@ -1,0 +1,97 @@
+﻿@model CustomerForumSubscriptionsModel
+@using SmartStore.Web;
+@using SmartStore.Web.Models.Customer;
+@using SmartStore.Web.Framework.UI;
+@{    
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    Html.AddTitleParts(T("PageTitle.ForumSubscriptions").Text);
+}
+@section left
+{
+    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+}
+<div class="page account-page forum-subscriptions-page">
+    <div class="page-title">
+        <h1>@T("Account.MyAccount") - @T("Account.ForumSubscriptions")</h1>
+    </div>
+    <div class="page-body">
+        @if (Model.ForumSubscriptions.Count > 0)
+        {
+            <div class="description">
+                @T("Account.ForumSubscriptions.Description")
+            </div>
+            <script type="text/javascript">
+                $(document).ready(function () {
+
+                    $('#selectall').click(function () {
+                        $('.subscription-list .rowcheckbox').attr('checked', $(this).is(':checked')).change();
+                    });
+
+                    $(document).on('change', '.subscription-list .rowcheckbox', function (e) {
+                        var numChkBoxes = $('.subscription-list .rowcheckbox').length;
+                        var numChkBoxesChecked = $('.subscription-list .rowcheckbox:checked').length;
+                        $('#selectall').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+                    });
+                });
+            </script>
+            using (Html.BeginForm())
+            {
+            <div class="subscription-list">
+                <table class="table table-striped table-hover">
+                    <col width="1" />
+                    <col />
+                    <thead>
+                        <tr>
+                            <th class="a-center">
+                                <input type="checkbox" id="selectall" />
+                            </th>
+                            <th class="a-center">
+                                @T("Account.ForumSubscriptions.InfoColumn")
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.ForumSubscriptions.Count; i++)
+                        {
+                            var item = Model.ForumSubscriptions[i];
+                            <tr>
+                                <td class="a-center">
+                                    <input type="checkbox" name="fs@(item.Id)" class="rowcheckbox" />
+                                </td>
+                                <td class="a-left">
+                                    @if (item.TopicSubscription)
+                                    {
+                                        @Html.RouteLink(item.Title, "TopicSlug", new { Id = item.ForumTopicId, slug = item.Slug })
+                                    }
+                                    else
+                                    {
+                                        @Html.RouteLink(item.Title, "ForumSlug", new { Id = item.ForumId, slug = item.Slug })
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (Model.TotalPages > 1)
+                {
+                    @Html.SmartStore().Pager(Model).Name("paginator")
+                }
+                
+                <div class="buttons">
+                    <button class="btn btn-danger" type="submit" value="delete-subs">
+                        <i class="fa fa-trash-o"></i>&nbsp;
+                        @T("Account.ForumSubscriptions.DeleteSelected")
+                    </button>
+                </div>
+            </div>
+            }
+        }
+        else
+        {
+            <div class="no-data">
+                @T("Account.ForumSubscriptions.NoSubscriptions")
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,89 @@
+﻿@model CustomerBackInStockSubscriptionsModel
+@using SmartStore.Web;
+@using SmartStore.Web.Models.Customer;
+@using SmartStore.Web.Framework.UI;
+@{    
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    Html.AddTitleParts(T("PageTitle.BackInStockSubscriptions").Text);
+}
+@section left
+{
+    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+}
+<div class="page account-page back-in-stock-subscription-list-page">
+    <h4 class="muted">@T("Account.MyAccount")</h4>
+    <div class="page-title">
+        <h1>@T("Account.BackInStockSubscriptions")</h1>
+    </div>
+
+    <div class="page-body">
+        @if (Model.Subscriptions.Count > 0)
+        {
+            <div class="description">
+                @T("Account.BackInStockSubscriptions.Description")
+            </div>
+            <script type="text/javascript">
+                $(document).ready(function () {
+
+                    $('#selectall').click(function () {
+                        $('.subscription-list .rowcheckbox').attr('checked', $(this).is(':checked')).change();
+                    });
+
+                    $(document).on('change', '.subscription-list .rowcheckbox', function (e) {
+                        var numChkBoxes = $('.subscription-list .rowcheckbox').length;
+                        var numChkBoxesChecked = $('.subscription-list .rowcheckbox:checked').length;
+                        $('#selectall').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+                    });
+                });
+            </script>        
+            using (Html.BeginForm())
+            {
+            <div class="subscription-list">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="ac">
+                                <input type="checkbox" id="selectall" />
+                            </th>
+                            <th>
+                                @T("Account.BackInStockSubscriptions.ProductColumn")
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Subscriptions.Count; i++)
+                        {
+                            var item = Model.Subscriptions[i];
+                            <tr>
+                                <td class="ac" style="vertical-align: middle">
+                                    <input type="checkbox" name="biss@(item.Id)" class="rowcheckbox" />
+                                </td>
+                                <td>
+                                    @Html.RouteLink(item.ProductName, "Product", new { SeName = item.SeName })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (Model.TotalPages > 1)
+                {
+                    @Html.SmartStore().Pager(Model).Name("paginator").Action("BackInStockSubscriptions", "Customer")
+                }
+
+                <div class="buttons">
+                    <button type="submit" class="btn btn-danger delete-selected-biss-button">
+                        @T("Account.BackInStockSubscriptions.DeleteSelected")
+                    </button>
+                </div>
+            </div>
+            }
+        }
+        else
+        {
+            <div class="no-data">
+                @T("Account.BackInStockSubscriptions.NoSubscriptions")
+            </div>
+        }
+    </div>
+</div>

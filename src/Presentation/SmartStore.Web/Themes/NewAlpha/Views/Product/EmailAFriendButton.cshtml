@@ -1,0 +1,8 @@
+﻿@model ProductEmailAFriendModel
+@using SmartStore.Web.Models.Catalog;
+<div class="tell-a-friend">
+    <a href="@Url.Action("EmailAFriend", new { id = Model.ProductId })" rel="nofollow">
+        <i class="fa fa-fw fa-envelope"></i>
+        @T("Products.EmailAFriend")
+    </a>
+</div>

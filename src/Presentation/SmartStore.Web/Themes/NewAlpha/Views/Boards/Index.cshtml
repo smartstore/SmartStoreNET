@@ -1,0 +1,30 @@
+﻿@model BoardsIndexModel
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Services.Helpers;
+@using SmartStore.Web.Models.Boards;
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts(T("Forum.PageTitle.Default").Text);
+}
+<div class="page forums-main">
+    <div class="forums-main-header clearfix">
+        <div class="current-time pull-left">
+            @Model.CurrentTime.ToString("F")
+        </div>
+        @Html.Partial("_SearchBox")
+    </div>
+
+    <div>
+        @Html.Action("TopicBlock", "Topic", new { systemName = "ForumWelcomeMessage" })
+    </div>
+
+    
+    
+    @foreach (var forumGroup in Model.ForumGroups)
+    {
+		Html.RenderPartial("_ForumGroupPartial", forumGroup);
+    }
+    
+    @Html.Action("ActiveDiscussionsSmall")
+</div>

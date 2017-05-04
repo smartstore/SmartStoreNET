@@ -1,0 +1,120 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Forms
+// ==============================================================
+
+.form-control {
+    box-shadow: none;
+
+    &:focus, &.focus {
+        box-shadow: none;
+    }
+}
+
+fieldset.content-group > legend {
+    font-size: $font-size-h5;
+    font-weight: 400;
+    color: #aaa;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(0,0,0, 0.12);
+    padding-bottom: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.form-group > label:not(.checkbox-inline):not(.radio-inline) {
+    font-weight: 600;
+}
+
+.form-group.required > label:after {
+    content: ' *';
+}
+
+.input-group-addon {
+    // fixes Flex wrong alignment with input-groups
+    line-height: inherit;
+}
+
+
+// Control with Icons
+// ==============================================================
+
+.has-icon {
+    position: relative;
+    display: flex;
+}
+
+.has-icon .form-control {
+    position: relative;
+    z-index: 2;
+}
+
+.has-icon .input-group-icon {
+    position: absolute;
+    left: 0;
+    z-index: 10;
+    width: $input-height;
+    height: $input-height;
+    line-height: $input-height;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.has-icon.has-icon-right .input-group-icon { 
+    left: auto;
+    right: 0;
+}
+
+.has-icon.input-group-lg .input-group-icon {
+    width: $input-height-lg;
+    height: $input-height-lg;
+    line-height: $input-height-lg;
+    font-size: $font-size-lg;
+}
+
+.has-icon.input-group-sm .input-group-icon {
+    width: $input-height-sm;
+    height: $input-height-sm;
+    line-height: $input-height-sm;
+    font-size: $font-size-sm;
+}
+
+.has-icon:not(.has-icon-right) .form-control { 
+    padding-left: $input-height;
+}
+.has-icon:not(.has-icon-right).input-group-lg .form-control {
+    padding-left: $input-height-lg;
+}
+.has-icon:not(.has-icon-right).input-group-sm .form-control {
+    padding-left: $input-height-sm;
+}
+
+.has-icon-right .form-control { 
+    padding-right: $input-height;
+}
+.has-icon-right.input-group-lg .form-control {
+    padding-right: $input-height-lg;
+}
+.has-icon-right.input-group-sm .form-control {
+    padding-right: $input-height-sm;
+}
+
+
+// Checkbox & Radio tweaks
+// ==============================================================
+
+.radio label, .checkbox label, 
+.radio-inline, .checkbox-inline {
+    padding-left: 1.5rem;
+}
+
+.radio input[type="radio"], .radio-inline input[type="radio"], 
+.checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
+    margin-top: 0.5rem;
+    margin-left: -1.5rem;
+}
+
+.radio-inline + .radio-inline, 
+.checkbox-inline + .checkbox-inline {
+    margin-left: 1.75rem;
+}
+

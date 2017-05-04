@@ -357,7 +357,7 @@ namespace SmartStore.Services.Catalog
         {
             Guard.ArgumentNotNull(() => ctx);
 
-            var query = this.PrepareProductSearchQuery(ctx);
+            var query = this.PrepareProductSearchQuery(ctx,product=>product.Id);
             return query.Distinct().Count();
         }
 

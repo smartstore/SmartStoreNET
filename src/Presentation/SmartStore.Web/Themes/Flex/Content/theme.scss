@@ -32,14 +32,14 @@
 @import "shared/_star-rating.scss";
 @import "shared/_sortable-grip.scss";
 @import "shared/_utils.scss";
-@import "select2/scss/core.scss";
+@import "vendors/select2/scss/core.scss";
 @import "shared/_select2.scss";
 @import "shared/_offcanvas.scss";
 @import "shared/_animate.scss";
 @import "shared/_touchspin.scss";
 @import "shared/_pnotify.scss";
-@import "photoswipe/photoswipe.scss";
-@import "slick/slick.scss";
+@import "vendors/photoswipe/photoswipe.scss";
+@import "vendors/slick/slick.scss";
 
 
 // Main

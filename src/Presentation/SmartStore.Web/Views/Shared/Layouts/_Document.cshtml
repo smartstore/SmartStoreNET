@@ -11,14 +11,15 @@
 	var cssRoot = "~/Themes/Flex/Content/css/";
 	var jsRoot = "~/Themes/Flex/Scripts/";
 	var bootstrapJsRoot = "~/Themes/Flex/Content/bs4/js/";
+	var vendorsRoot = "~/Themes/Flex/Content/vendors/";
 
 	// add css assets
 	Html.AppendCssFileParts(
-		cssRoot + "font-awesome.css",
+		vendorsRoot + "font-awesome/font-awesome.css",
 		cssRoot + "fontastic.css",
-		contentRoot + "pnotify/css/pnotify.css",
-		contentRoot + "pnotify/css/pnotify.mobile.css",
-		contentRoot + "pnotify/css/pnotify.buttons.css");
+		vendorsRoot + "pnotify/css/pnotify.css",
+		vendorsRoot + "pnotify/css/pnotify.mobile.css",
+		vendorsRoot + "pnotify/css/pnotify.buttons.css");
 
 	Html.AppendScriptParts(ResourceLocation.Head,
 		"~/Scripts/modernizr.js",
@@ -32,9 +33,7 @@
 	Html.AppendScriptParts(ResourceLocation.Foot,
 		// jQuery UI Core
 		"~/Scripts/jquery-ui/effect.js",
-		"~/Scripts/jquery-ui/effect-transfer.js",
 		"~/Scripts/jquery-ui/effect-shake.js",
-		"~/Scripts/jquery-ui/position.js",
 		// jQuery Validation
 		"~/Scripts/jquery.unobtrusive-ajax.js",
 		"~/Scripts/jquery.validate.js",
@@ -59,8 +58,8 @@
 		bootstrapJsRoot + "bootstrap-datetimepicker.js",
 		// Shared UI
 		jsRoot + "smartstore.viewport.js",
-		contentRoot + "select2/js/select2.js",
-		contentRoot + "slick/slick.js",
+		vendorsRoot + "select2/js/select2.js",
+		vendorsRoot + "slick/slick.js",
 		jsRoot + "smartstore.selectwrapper.js",
 		jsRoot + "smartstore.throbber.js",
 		jsRoot + "smartstore.thumbzoomer.js",
@@ -68,10 +67,10 @@
 		jsRoot + "smartstore.keynav.js",
 		jsRoot + "smartstore.articlelist.js",
 		jsRoot + "smartstore.product.js",
-		contentRoot + "pnotify/js/pnotify.js",
-		contentRoot + "pnotify/js/pnotify.mobile.js",
-		contentRoot + "pnotify/js/pnotify.buttons.js",
-		contentRoot + "pnotify/js/pnotify.animate.js",
+		vendorsRoot + "pnotify/js/pnotify.js",
+		vendorsRoot + "pnotify/js/pnotify.mobile.js",
+		vendorsRoot + "pnotify/js/pnotify.buttons.js",
+		vendorsRoot + "pnotify/js/pnotify.animate.js",
 		jsRoot + "jquery.bootstrap-touchspin.js",
 		jsRoot + "jquery.scrollTo.js",
 		jsRoot + "smartstore.globalize.adapter.js",

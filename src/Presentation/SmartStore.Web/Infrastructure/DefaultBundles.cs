@@ -16,9 +16,9 @@ namespace SmartStore.Web.Infrastructure
 			 * TODO: (mc) change pathes once work is finished
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/smart-gallery").Include(
-				"~/Themes/Flex/Content/drift/Drift.js",
-				"~/Themes/Flex/Content/photoswipe/photoswipe.js",
-				"~/Themes/Flex/Content/photoswipe/photoswipe-ui-default.js",
+				"~/Themes/Flex/Content/vendors/drift/Drift.js",
+				"~/Themes/Flex/Content/vendors/photoswipe/photoswipe.js",
+				"~/Themes/Flex/Content/vendors/photoswipe/photoswipe-ui-default.js",
 				"~/Themes/Flex/Scripts/smartstore.gallery.js"));
 
 			/* File Upload

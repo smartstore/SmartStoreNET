@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Core.Domain.Blogs;
@@ -103,13 +104,13 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult List(GridCommand command)
+		public async Task<ActionResult> List(GridCommand command)
         {
 			var model = new GridModel<BlogPostModel>();
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
 			{
-				var blogPosts = _blogService.GetAllBlogPosts(0, 0, null, null, command.Page - 1, command.PageSize, true);
+				var blogPosts = await Task.Factory.StartNew(() =>_blogService.GetAllBlogPosts(0, 0, null, null, command.Page - 1, command.PageSize, true)).Result;
 
 				model.Data = blogPosts.Select(x =>
 				{
@@ -157,7 +158,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Create(BlogPostModel model, bool continueEditing)
+        public async Task<ActionResult> Create(BlogPostModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
                 return AccessDeniedView();
@@ -169,7 +170,7 @@ namespace SmartStore.Admin.Controllers
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
                 blogPost.CreatedOnUtc = DateTime.UtcNow;
-                _blogService.InsertBlogPost(blogPost);
+                await _blogService.InsertBlogPost(blogPost);
 
                 //search engine name
                 var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
@@ -189,12 +190,12 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-		public ActionResult Edit(int id)
+		public async Task<ActionResult> Edit(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
                 return AccessDeniedView();
 
-            var blogPost = _blogService.GetBlogPostById(id);
+            var blogPost = await _blogService.GetBlogPostById(id);
             if (blogPost == null)
                 return RedirectToAction("List");
 
@@ -209,12 +210,12 @@ namespace SmartStore.Admin.Controllers
 		}
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		public ActionResult Edit(BlogPostModel model, bool continueEditing)
+		public async Task<ActionResult> Edit(BlogPostModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
                 return AccessDeniedView();
 
-            var blogPost = _blogService.GetBlogPostById(model.Id);
+            var blogPost = await _blogService.GetBlogPostById(model.Id);
             if (blogPost == null)
                 return RedirectToAction("List");
 
@@ -224,7 +225,7 @@ namespace SmartStore.Admin.Controllers
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
-                _blogService.UpdateBlogPost(blogPost);
+                await _blogService.UpdateBlogPost(blogPost);
 
                 //search engine name
                 var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
@@ -245,16 +246,16 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, ActionName("Delete")]
-		public ActionResult DeleteConfirmed(int id)
+		public async Task<ActionResult> DeleteConfirmed(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
                 return AccessDeniedView();
 
-            var blogPost = _blogService.GetBlogPostById(id);
+            var blogPost = await _blogService.GetBlogPostById(id);
             if (blogPost == null)
                 return RedirectToAction("List");
 
-            _blogService.DeleteBlogPost(blogPost);
+            await _blogService.DeleteBlogPost(blogPost);
 
             NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Deleted"));
 			return RedirectToAction("List");
@@ -275,7 +276,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult Comments(int? filterByBlogPostId, GridCommand command)
+        public async Task<ActionResult> Comments(int? filterByBlogPostId, GridCommand command)
         {
 			var model = new GridModel<BlogCommentModel>();
 
@@ -285,7 +286,7 @@ namespace SmartStore.Admin.Controllers
 				if (filterByBlogPostId.HasValue)
 				{
 					//filter comments by blog
-					var blogPost = _blogService.GetBlogPostById(filterByBlogPostId.Value);
+					var blogPost = await _blogService.GetBlogPostById(filterByBlogPostId.Value);
 					comments = blogPost.BlogComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
 				}
 				else
@@ -331,7 +332,7 @@ namespace SmartStore.Admin.Controllers
         }
         
         [GridAction(EnableCustomBinding = true)]
-        public ActionResult CommentDelete(int? filterByBlogPostId, int id, GridCommand command)
+        public async Task<ActionResult> CommentDelete(int? filterByBlogPostId, int id, GridCommand command)
         {
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
 			{
@@ -341,10 +342,10 @@ namespace SmartStore.Admin.Controllers
 				_customerContentService.DeleteCustomerContent(comment);
 
 				//update totals
-				_blogService.UpdateCommentTotals(blogPost);
+				await _blogService.UpdateCommentTotals(blogPost);
 			}
 
-            return Comments(filterByBlogPostId, command);
+            return await Comments(filterByBlogPostId, command);
         }
 
         #endregion

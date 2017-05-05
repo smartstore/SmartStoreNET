@@ -16,6 +16,9 @@
 				<h1 class="heading-title">@T("Products.NewProducts")</h1>
 			</div>
 		</div>
+
+        @{ Html.RenderWidget("recently_added_products_top"); }
+
 		<div class="col col-auto">
 			<a href="@Url.RouteUrl("RecentlyAddedProductsRSS")" class="btn btn-warning" title="@T("Products.NewProducts.RSS.Hint")">
 				<i class="fa fa-rss"></i>

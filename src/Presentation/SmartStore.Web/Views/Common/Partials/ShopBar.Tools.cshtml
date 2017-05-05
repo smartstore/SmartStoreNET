@@ -8,6 +8,7 @@
 }
 
 <div class="shopbar-col shopbar-tools">
+
 	<!-- Hamburger Menu -->
 	<div class="shopbar-tool d-lg-none" id="shopbar-menu">
 		<a class="shopbar-button" href="#" data-toggle="offcanvas" data-autohide="true" data-placement="left" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-menu">
@@ -19,6 +20,8 @@
 			</span>
 		</a>
 	</div>
+
+    @{ Html.RenderWidget("shopbar_tools_before"); }
 
 	<!-- User -->
 	<div class="shopbar-tool d-lg-none" id="shopbar-user">
@@ -93,6 +96,9 @@
 			</a>
 		</div>
 	}
+
+    @{ Html.RenderWidget("shopbar_tools_after"); }
+
 </div>
 
 @using (Html.BeginZoneContent("end", key: "offcanvas-menu"))

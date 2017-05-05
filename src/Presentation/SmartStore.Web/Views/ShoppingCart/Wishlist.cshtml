@@ -12,6 +12,9 @@
     </div>
     <div class="page-body">
         <div class="wishlist-content">
+            
+            @{ Html.RenderWidget("wishlist_items_top"); }
+
             @if (Model.Items.Count > 0)
             {
                 if (Model.Warnings.Count > 0)

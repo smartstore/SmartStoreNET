@@ -21,6 +21,8 @@
     </div>
     <div class="page-body">
 
+        @{ Html.RenderWidget("manufacturers_all_top"); }
+
         @if (catalogSettings.SortManufacturersAlphabetically)
         {
             <div class="manufacturer-nav">
@@ -92,6 +94,8 @@
                 }
 		    </div>
         }
+
+        @{ Html.RenderWidget("manufacturers_all_bottom"); }
     </div>
 </div>
 

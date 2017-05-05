@@ -140,7 +140,7 @@
             }
 		</div>
     }
-	@{ Html.RenderWidget("mini_shopping_cart_bottom"); }
+	@{ Html.RenderWidget("offcanvas_cart_items_after"); }
 </div>
 
 @if (Model.TotalProducts == 0)
@@ -187,8 +187,10 @@
 		</div>
 	</div>
 
-	@{
-		var summaryHtml = Html.Widget("offcanvas_cart_summary").ToHtmlString();
+    @{ 
+        Html.RenderWidget("offcanvas_cart_footer_after");
+
+        var summaryHtml = Html.Widget("offcanvas_cart_summary").ToHtmlString();
 	}
 
 	@if (summaryHtml.HasValue())
@@ -199,5 +201,6 @@
 			</div>
 		</div>
 	}
+
 </div>
 

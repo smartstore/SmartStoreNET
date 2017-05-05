@@ -5,7 +5,7 @@
     string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
 }
 
-@{ Html.RenderWidget("header_menu_before"); }
+@{ Html.RenderWidget("header_menu_top"); }
 
 <nav class="menubar">
     <nav class="menubar-group ml-0">
@@ -16,6 +16,9 @@
     </nav>
 
     <nav class="menubar-group ml-auto">
+        
+        @{ Html.RenderWidget("header_menu_before"); }
+
         @if (Model.HasContactUsPage)
 		{
             <a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
@@ -70,6 +73,7 @@
                 @T("Forum.Forums")
             </a>
         }
+        @{ Html.RenderWidget("header_menu_special_after"); }
     </nav>
 
     <nav id="menubar-my-account" class="menubar-group">
@@ -94,6 +98,8 @@
             }
         </div>
 
+        @{ Html.RenderWidget("header_menu_after"); }
+
     </nav>
 
     @if (Model.DisplayAdminLink)
@@ -107,5 +113,5 @@
     }
 </nav>
 
-@{ Html.RenderWidget("header_menu_after"); }
+@{ Html.RenderWidget("header_menu_bottom"); }
 

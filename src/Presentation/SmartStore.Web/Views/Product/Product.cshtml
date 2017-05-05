@@ -45,12 +45,18 @@
 				<section class="row pd-section pd-section-top">
 					<!-- Picture -->
 					<div class="col-12 col-md-6 col-lg-7 pd-data-col">
-						<div id="pd-gallery-container">
+                        @{ Html.RenderWidget("productdetails_pictures_top"); }
+						
+                        <div id="pd-gallery-container">
 							@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
 						</div>
+
+                        @{ Html.RenderWidget("productdetails_info_bottom"); }
 					</div>
 					<!-- Sidebar: Info, Price, Buttons etc. -->
 					<aside class="col-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
+
+                        @{ Html.RenderWidget("productdetails_info_top"); }
 						<!-- Title/Brand/ReviewSummary -->
 						@{ Html.RenderPartial("Product.Info", Model); }
 
@@ -63,7 +69,9 @@
 						}
 
 						@if (Model.ProductType != ProductType.GroupedProduct)
-						{
+                        {
+                            Html.RenderWidget("productdetails_attrs_top");
+
 							<!-- Product attributes (SKU, EAN, Weight etc.) -->
 							<div class="pd-attrs-container" data-partial="Attrs">
 								@{ Html.RenderPartial("Product.Attrs", Model); }
@@ -74,31 +82,31 @@
 						}
 
 						@if (Model.ProductType == ProductType.GroupedProduct)
-						{
-							var showActionLinks = Model.AskQuestionEnabled || Model.TellAFriendEnabled || Model.CompareEnabled;
-							if (showActionLinks)
-							{
+                        {
+                            var showActionLinks = Model.AskQuestionEnabled || Model.TellAFriendEnabled || Model.CompareEnabled;
+                            if (showActionLinks)
+                            {
 								<ul class="pd-action-links pd-group list-unstyled">
 									@if (Model.AskQuestionEnabled)
-									{
+                                    {
 										<li>
 											<a class="pretty-link action-ask-question" href="@Url.Action("AskQuestion", new { id = Model.Id })" rel="nofollow">
 												<i class="fa fa-fw fa-envelope"></i>
 												<span>@T("Products.AskQuestion")</span>
 											</a>
 										</li>
-									}
+                                    }
 									@if (Model.TellAFriendEnabled)
-									{
+                                    {
 										<li>
 											<a class="pretty-link action-tell" href="@Url.Action("EmailAFriend", new { id = Model.Id })" rel="nofollow">
 												<i class="fa fa-fw fa-bullhorn"></i>
 												<span>@T("Products.EmailAFriend")</span>
 											</a>
 										</li>
-									}
+                                    }
 									@if (Model.CompareEnabled)
-									{
+                                    {
 										<li>
 											<a data-href="@Url.Action("AddProductToCompare", "Catalog", new { id = Model.Id })" 
 											   href="#" 
@@ -110,7 +118,9 @@
 												<span>@T("Products.Compare.AddToCompareList")</span>
 											</a>
 										</li>
-									}
+                                    }
+
+                                    @{ Html.RenderWidget("productdetail_action_links_after"); }
 								</ul>
 							}
 						}
@@ -158,14 +168,23 @@
 
 		<!-- Bottom Content: Full Description, Specification, Review etc. -->
 		<section class="pd-section pd-section-bottom">
-			<!-- Tabs -->
-			@{ Html.RenderPartial("Product.Tabs", Model); }
-			<!-- Tags -->
-			@{ Html.RenderAction("ProductTags", new { productId = Model.Id }); }
-			<!-- Related products -->
-			@{ Html.RenderAction("RelatedProducts", new { productId = Model.Id }); }
-			<!-- Products also purchased -->
-			@{ Html.RenderAction("ProductsAlsoPurchased", new { productId = Model.Id }); }
+			@{
+                <!-- Tabs -->
+                Html.RenderPartial("Product.Tabs", Model);
+                Html.RenderWidget("productdetail_tabs_after");
+
+                <!-- Tags -->
+                Html.RenderAction("ProductTags", new { productId = Model.Id });
+                Html.RenderWidget("productdetail_tags_after");
+
+                <!-- Related products -->
+                Html.RenderAction("RelatedProducts", new { productId = Model.Id });
+                Html.RenderWidget("productdetail_related_products_after");
+
+                <!-- Products also purchased -->
+                Html.RenderAction("ProductsAlsoPurchased", new { productId = Model.Id });
+                Html.RenderWidget("productdetail_also_purchased_after");
+            }
 		</section>
 	</article>
 

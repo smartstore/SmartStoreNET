@@ -72,8 +72,8 @@
       <HintPath>..\..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
+    <Reference Include="AutoMapper, Version=6.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -233,7 +233,7 @@
     <Compile Include="Infrastructure\RouteProvider.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
-    <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
+    <Compile Include="Infrastructure\AutoMapperAdminProfile.cs" />
     <Compile Include="Models\Catalog\CategoryTreeModel.cs" />
     <Compile Include="Models\Catalog\ProductAttributeOptionModel.cs" />
     <Compile Include="Models\Catalog\ProductAttributeOptionsSetModel.cs" />

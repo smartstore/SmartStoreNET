@@ -13,8 +13,7 @@ using SmartStore.Web.Framework.WebApi.OData;
 namespace SmartStore.Web.Framework.WebApi
 {
 	public class WebApiStartupTask : IStartupTask
-    {
-        
+    {      
         public void Execute()
         {
 			var config = GlobalConfiguration.Configuration;

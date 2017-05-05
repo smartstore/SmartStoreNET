@@ -10,9 +10,11 @@ namespace SmartStore.Web.MVC.Tests.Admin.Infrastructure
         [Test]
         public void Configuration_is_valid()
         {
-            var autoMapperStartupTask = new AutoMapperStartupTask();
-            autoMapperStartupTask.Execute();
-            Mapper.AssertConfigurationIsValid();
-        }
+			var config = new MapperConfiguration(cfg => {
+				cfg.AddProfile(new AutoMapperAdminProfile());
+			});
+
+			config.AssertConfigurationIsValid();
+		}
     }
 }

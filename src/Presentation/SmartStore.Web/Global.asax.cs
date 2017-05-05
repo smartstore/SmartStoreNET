@@ -7,6 +7,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.Security;
 using System.Web.WebPages;
+using AutoMapper;
 using FluentValidation.Mvc;
 using JavaScriptEngineSwitcher.Core;
 using JavaScriptEngineSwitcher.Msie;
@@ -34,16 +35,16 @@ namespace SmartStore.Web
 
 	public class MvcApplication : System.Web.HttpApplication
 	{
-		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+		public static void RegisterGlobalFilters(GlobalFilterCollection filters, IEngine engine)
 		{
-			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
+			var eventPublisher = engine.Resolve<IEventPublisher>();
 			eventPublisher.Publish(new AppRegisterGlobalFiltersEvent
 			{
 				Filters = filters
 			});
 		}
 
-		public static void RegisterRoutes(RouteCollection routes, bool databaseInstalled = true)
+		public static void RegisterRoutes(RouteCollection routes, IEngine engine, bool databaseInstalled = true)
 		{
 			//routes.IgnoreRoute("favicon.ico");
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
@@ -51,15 +52,31 @@ namespace SmartStore.Web
 			routes.IgnoreRoute(".db/{*virtualpath}");
 
 			// register routes (core, admin, plugins, etc)
-			var routePublisher = EngineContext.Current.Resolve<IRoutePublisher>();
+			var routePublisher = engine.Resolve<IRoutePublisher>();
 			routePublisher.RegisterRoutes(routes);
 		}
 
-		public static void RegisterBundles(BundleCollection bundles)
+		public static void RegisterBundles(BundleCollection bundles, IEngine engine)
 		{
 			// register custom bundles
-			var bundlePublisher = EngineContext.Current.Resolve<IBundlePublisher>();
+			var bundlePublisher = engine.Resolve<IBundlePublisher>();
 			bundlePublisher.RegisterBundles(bundles);
+		}
+
+		public static void RegisterClassMaps(IEngine engine)
+		{
+			// register AutoMapper maps
+			var profileTypes = engine.Resolve<ITypeFinder>().FindClassesOfType<Profile>();
+
+			if (profileTypes.Any())
+			{
+				Mapper.Initialize(cfg => {
+					foreach (var profileType in profileTypes)
+					{
+						cfg.AddProfile(profileType);
+					}
+				});
+			}
 		}
 
 		public static void RegisterJsEngines()
@@ -92,7 +109,7 @@ namespace SmartStore.Web
 			}
 
 			// Initialize engine context
-			EngineContext.Initialize(false);
+			var engine = EngineContext.Initialize(false);
 
 			// Model binders
 			ModelBinders.Binders.DefaultBinder = new SmartModelBinder();
@@ -108,9 +125,9 @@ namespace SmartStore.Web
 			{
 				x.ValidatorFactory = new SmartValidatorFactory();
 			});
-
+			
 			// Routes
-			RegisterRoutes(RouteTable.Routes, installed);
+			RegisterRoutes(RouteTable.Routes, engine, installed);
 
 			// localize MVC resources
 			ClientDataTypeModelValidatorProvider.ResourceClassKey = "MvcLocalization";
@@ -126,10 +143,10 @@ namespace SmartStore.Web
 				ViewEngines.Engines.Add(new ThemeableRazorViewEngine());
 
 				// Global filters
-				RegisterGlobalFilters(GlobalFilters.Filters);
+				RegisterGlobalFilters(GlobalFilters.Filters, engine);
 
 				// Bundles
-				RegisterBundles(BundleTable.Bundles);
+				RegisterBundles(BundleTable.Bundles, engine);
 
 				// register virtual path provider for theming (file inheritance & variables handling)
 				HostingEnvironment.RegisterVirtualPathProvider(new ThemingVirtualPathProvider(HostingEnvironment.VirtualPathProvider));
@@ -144,6 +161,9 @@ namespace SmartStore.Web
 
 				// "throw-away" filter for task scheduler initialization (the filter removes itself when processed)
 				GlobalFilters.Filters.Add(new InitializeSchedulerFilter());
+
+				// register AutoMapper class maps
+				RegisterClassMaps(engine);
 			}
 			else
 			{

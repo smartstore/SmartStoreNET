@@ -700,7 +700,7 @@ namespace SmartStore.Services.Catalog
 			if (sku.IsEmpty())
 				return null;
 
-			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku);
+			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku && x.Product.Deleted == false);
 			return combination;
 		}
 

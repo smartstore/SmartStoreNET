@@ -94,7 +94,11 @@ namespace SmartStore.DevTools.Filters
                     {
                         ViewName = "~/Plugins/SmartStore.DevTools/Views/DevTools/WidgetZone.cshtml",
                     };
-                    filterContext.RouteData.Values.Add("widgetZone", model.WidgetZone);
+
+                    if(filterContext.RouteData.Values["widgetZone"] == null)
+                    {
+                        filterContext.RouteData.Values.Add("widgetZone", model.WidgetZone);
+                    }
                 }
 			}
 		}

@@ -1,7 +1,4 @@
-﻿@model Telerik.Web.Mvc.GridModel<DeliveryTimeModel>
-@using Telerik.Web.Mvc.UI
-@{
-    //page title
+﻿@{
     ViewBag.Title = T("Admin.Configuration.DeliveryTimes").Text;
 }
 <div class="section-header">
@@ -20,22 +17,26 @@
     <tr>
         <td>
             @(Html.Telerik().Grid<DeliveryTimeModel>()
-                    .Name("delivery-times-grid")
-                    .BindTo(Model.Data)
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name)
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-                        columns.Bound(x => x.ColorHexValue)
-                            .Centered();
-                        columns.Bound(x => x.DisplayOrder)
-                            .Centered();
-                        columns.Bound(x => x.IsDefault)
-                            .Template(x => Html.SymbolForBool(x.IsDefault))
-                            .Centered();
-                    })     
-               )
+					.Name("delivery-times-grid")
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Name)
+							.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+						columns.Bound(x => x.ColorHexValue)
+							.ClientTemplate("<span class='color-container'><span class='color' style='background:<#= ColorHexValue #>'>&nbsp;</span></span><span><#= ColorHexValue #></span>")
+							.Width(200);
+						columns.Bound(x => x.DisplayOrder)
+							.Centered()
+							.Width(200);
+						columns.Bound(x => x.IsDefault)
+							.ClientTemplate(@Html.SymbolForBool("IsDefault"))
+							.Centered()
+							.Width(200);
+					})
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "DeliveryTime"))
+					.PreserveGridState()
+					.EnableCustomBinding(true)
+			   )
         </td>
     </tr>
 </table>

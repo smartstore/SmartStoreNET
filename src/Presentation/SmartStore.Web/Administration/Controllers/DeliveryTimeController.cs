@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
@@ -17,15 +13,12 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class DeliveryTimeController :  AdminControllerBase
     {
         #region Fields
 
         private readonly IDeliveryTimeService _deliveryTimeService;
-        private readonly ISettingService _settingService;
-        private readonly ILocalizationService _localizationService;
-        private readonly IPermissionService _permissionService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
 
@@ -33,19 +26,14 @@ namespace SmartStore.Admin.Controllers
 
         #region Constructors
 
-        public DeliveryTimeController(IDeliveryTimeService deliveryTimeService,
-            ISettingService settingService,
-            ILocalizationService localizationService,
-            IPermissionService permissionService,
+        public DeliveryTimeController(
+			IDeliveryTimeService deliveryTimeService,
             ILocalizedEntityService localizedEntityService, 
             ILanguageService languageService)
         {
-            this._deliveryTimeService = deliveryTimeService;
-            this._settingService = settingService;
-            this._localizationService = localizationService;
-            this._permissionService = permissionService;
-            this._localizedEntityService = localizedEntityService;
-            this._languageService = languageService;
+            _deliveryTimeService = deliveryTimeService;
+            _localizedEntityService = localizedEntityService;
+            _languageService = languageService;
         }
         
         #endregion
@@ -57,13 +45,9 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(deliveryTime,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(deliveryTime, x => x.Name, localized.Name, localized.LanguageId);
             }
         }
-
 
         #endregion
 
@@ -76,22 +60,41 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
                 return AccessDeniedView();
 
-            var deliveryTimesModel = _deliveryTimeService.GetAllDeliveryTimes().Select(x => x.ToModel()).ToList();
-            
-            var gridModel = new GridModel<DeliveryTimeModel>
-            {
-                Data = deliveryTimesModel,
-                Total = deliveryTimesModel.Count()
-            };
-            return View(gridModel);
+            return View();
         }
 
-        //ajax
-        // codehint: sm-add
-        public ActionResult AllDeliveryTimes(string label, int selectedId)
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult List(GridCommand command)
+		{
+			var gridModel = new GridModel<DeliveryTimeModel>();
+
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+			{
+				var deliveryTimeModels = _deliveryTimeService.GetAllDeliveryTimes()
+					.Select(x => x.ToModel())
+					.ToList();
+
+				gridModel.Data = deliveryTimeModels;
+				gridModel.Total = deliveryTimeModels.Count();
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<DeliveryTimeModel>();
+
+				NotifyAccessDenied();
+			}
+
+			return new JsonResult
+			{
+				Data = gridModel
+			};
+		}
+
+		//ajax
+		public ActionResult AllDeliveryTimes(string label, int selectedId)
         {
             var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
             if (label.HasValue())
@@ -107,7 +110,11 @@ namespace SmartStore.Admin.Controllers
                            selected = m.Id == selectedId
                        };
 
-            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult
+			{
+				Data = list.ToList(),
+				JsonRequestBehavior = JsonRequestBehavior.AllowGet
+			};
         }
 
         #endregion
@@ -116,11 +123,11 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Create()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
                 return AccessDeniedView();
 
             var model = new DeliveryTimeModel();
-            //locales
+
             AddLocales(_languageService, model.Locales);
             
             return View(model);
@@ -129,7 +136,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(DeliveryTimeModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
@@ -137,10 +144,10 @@ namespace SmartStore.Admin.Controllers
                 var deliveryTime = model.ToEntity();
                 
                 _deliveryTimeService.InsertDeliveryTime(deliveryTime);
-                //locales
+
                 UpdateLocales(deliveryTime, model);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.DeliveryTime.Added"));
+                NotifySuccess(T("Admin.Configuration.DeliveryTime.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = deliveryTime.Id }) : RedirectToAction("List");
             }
 
@@ -150,32 +157,31 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
                 return AccessDeniedView();
 
             var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(id);
             if (deliveryTime == null)
-                //No currency found with the specified id
                 return RedirectToAction("List");
 
             var model = deliveryTime.ToModel();
-            //locales
+
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = deliveryTime.GetLocalized(x => x.Name, languageId, false, false);
             });
+
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Edit(DeliveryTimeModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
                 return AccessDeniedView();
 
             var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(model.Id);
             if (deliveryTime == null)
-                //No delivery time  found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -191,7 +197,7 @@ namespace SmartStore.Admin.Controllers
                 UpdateLocales(deliveryTime, model);
 				_deliveryTimeService.UpdateDeliveryTime(deliveryTime);
                 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.DeliveryTimes.Updated"));
+                NotifySuccess(T("Admin.Configuration.DeliveryTimes.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = deliveryTime.Id }) : RedirectToAction("List");
             }
 
@@ -201,20 +207,18 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
                 return AccessDeniedView();
 
             var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(id);
             if (deliveryTime == null)
-                //No delivery time found with the specified id
                 return RedirectToAction("List");
 
             try
             {
-
                 _deliveryTimeService.DeleteDeliveryTime(deliveryTime);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.DeliveryTimes.Deleted"));
+                NotifySuccess(T("Admin.Configuration.DeliveryTimes.Deleted"));
                 return RedirectToAction("List");
             }
             catch (Exception exc)
@@ -227,12 +231,9 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult Save(FormCollection formValues)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageDeliveryTimes))
                 return AccessDeniedView();
 
-            //_currencySettings.ActiveExchangeRateProviderSystemName = formValues["exchangeRateProvider"];
-            //_currencySettings.AutoUpdateEnabled = formValues["autoUpdateEnabled"].Equals("false") ? false : true;
-            //_settingService.SaveSetting(_deliveryTimeSettings);
             return RedirectToAction("List", "DeliveryTime");
         }
 

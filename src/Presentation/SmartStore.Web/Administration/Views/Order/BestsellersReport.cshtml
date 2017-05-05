@@ -68,11 +68,10 @@
                         .Columns(columns =>
                         {
                             columns.Bound(x => x.ProductName)
-								.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
                             columns.Bound(x => x.TotalQuantity)
 								.Centered()
-								.Width(100);
+								.Width(200);
                             columns.Bound(x => x.TotalAmount)
 								.RightAlign()
 								.Width(200);

@@ -775,6 +775,7 @@
     <Content Include="Content\samples\manufacturer_titleist.png" />
     <Content Include="Content\samples\manufacturer_ubisoft.png" />
     <Content Include="Content\samples\manufacturer_wilson.png" />
+    <Content Include="Content\samples\manufacturer_seiko.png" />
     <Content Include="Content\samples\music.png" />
     <Content Include="Content\samples\packshot-net.png" />
     <Content Include="Content\samples\productCustomFlakSunglasses_black_white.jpg" />
@@ -804,6 +805,12 @@
     <Content Include="Content\samples\product_giftcart.png" />
     <Content Include="Content\samples\product_ipad_1.jpg" />
     <Content Include="Content\samples\product_ipad_2.jpg" />
+    <Content Include="Content\samples\product_iphone-plus_all_colors.jpg" />
+    <Content Include="Content\samples\product_iphone-plus_black.jpg" />
+    <Content Include="Content\samples\product_iphone-plus_gold.jpg" />
+    <Content Include="Content\samples\product_iphone-plus_red.jpg" />
+    <Content Include="Content\samples\product_iphone-plus_rose.jpg" />
+    <Content Include="Content\samples\product_iphone-plus_silver.jpg" />
     <Content Include="Content\samples\product_iphoneplus_1.jpg" />
     <Content Include="Content\samples\product_iphoneplus_2.jpg" />
     <Content Include="Content\samples\product_nike-vopower-53-trainer-hs-ball.jpg" />
@@ -818,6 +825,7 @@
     <Content Include="Content\samples\product_RayBanTopBar_1.jpg" />
     <Content Include="Content\samples\product_RayBanTopBar_2.jpg" />
     <Content Include="Content\samples\product_RayBanTopBar_3.jpg" />
+    <Content Include="Content\samples\product_SeikoSRPA49K1.jpg" />
     <Content Include="Content\samples\product_sony_dualshock4_wirelesscontroller.png" />
     <Content Include="Content\samples\product_sony_ps3_black.png" />
     <Content Include="Content\samples\product_sony_ps3_plus_game.png" />

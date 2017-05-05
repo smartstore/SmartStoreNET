@@ -4836,93 +4836,93 @@ namespace SmartStore.Data.Setup
 
 		public IList<SpecificationAttribute> SpecificationAttributes()
 		{
-			// var entities = new List<SpecificationAttribute>
+            // var entities = new List<SpecificationAttribute>
 
-			#region predefined older attributes
+            #region predefined older attributes
 
-			//    var sa1 = new SpecificationAttribute
-			//{
-			//    Name = "Screensize",
-			//    DisplayOrder = 1,
-			//};
-			//sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "10.0''",
-			//    DisplayOrder = 3,
-			//});
-			//sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "14.1''",
-			//    DisplayOrder = 4,
-			//});
-			//sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "15.4''",
-			//    DisplayOrder = 5,
-			//});
-			//sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "16.0''",
-			//    DisplayOrder = 6,
-			//});
-			//var sa2 = new SpecificationAttribute
-			//{
-			//    Name = "CPU Type",
-			//    DisplayOrder = 2,
-			//};
-			//sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "AMD",
-			//    DisplayOrder = 1,
-			//});
-			//sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "Intel",
-			//    DisplayOrder = 2,
-			//});
-			//var sa3 = new SpecificationAttribute
-			//{
-			//    Name = "Memory",
-			//    DisplayOrder = 3,
-			//};
-			//sa3.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "1 GB",
-			//    DisplayOrder = 1,
-			//});
-			//sa3.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "3 GB",
-			//    DisplayOrder = 2,
-			//});
-			//var sa4 = new SpecificationAttribute
-			//{
-			//    Name = "Hardrive",
-			//    DisplayOrder = 5,
-			//};
-			//sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "320 GB",
-			//    DisplayOrder = 7,
-			//});
-			//sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "250 GB",
-			//    DisplayOrder = 4,
-			//});
-			//sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-			//{
-			//    Name = "160 GB",
-			//    DisplayOrder = 3,
-			//});
+            //    var sa1 = new SpecificationAttribute
+            //{
+            //    Name = "Screensize",
+            //    DisplayOrder = 1,
+            //};
+            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "10.0''",
+            //    DisplayOrder = 3,
+            //});
+            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "14.1''",
+            //    DisplayOrder = 4,
+            //});
+            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "15.4''",
+            //    DisplayOrder = 5,
+            //});
+            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "16.0''",
+            //    DisplayOrder = 6,
+            //});
+            //var sa2 = new SpecificationAttribute
+            //{
+            //    Name = "CPU Type",
+            //    DisplayOrder = 2,
+            //};
+            //sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "AMD",
+            //    DisplayOrder = 1,
+            //});
+            //sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "Intel",
+            //    DisplayOrder = 2,
+            //});
+            //var sa3 = new SpecificationAttribute
+            //{
+            //    Name = "Memory",
+            //    DisplayOrder = 3,
+            //};
+            //sa3.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "1 GB",
+            //    DisplayOrder = 1,
+            //});
+            //sa3.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "3 GB",
+            //    DisplayOrder = 2,
+            //});
+            //var sa4 = new SpecificationAttribute
+            //{
+            //    Name = "Hardrive",
+            //    DisplayOrder = 5,
+            //};
+            //sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "320 GB",
+            //    DisplayOrder = 7,
+            //});
+            //sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "250 GB",
+            //    DisplayOrder = 4,
+            //});
+            //sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "160 GB",
+            //    DisplayOrder = 3,
+            //});
 
-			#endregion predefined older attributes
+            #endregion predefined older attributes
 
-			#region new attributes
+            #region new attributes
 
-			#region sa1 CPU-Manufacturer
+            #region sa1 CPU-Manufacturer
 
-			var sa1 = new SpecificationAttribute
+            var sa1 = new SpecificationAttribute
 			{
 				Name = "CPU-Manufacturer",
 				DisplayOrder = 1,
@@ -4959,7 +4959,7 @@ namespace SmartStore.Data.Setup
 
 			var sa2 = new SpecificationAttribute
 			{
-				Name = "color",
+				Name = "Color",
 				DisplayOrder = 2,
 			};
 			sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5004,7 +5004,7 @@ namespace SmartStore.Data.Setup
 
 			var sa3 = new SpecificationAttribute
 			{
-				Name = "harddisk capacity",
+				Name = "Harddisk capacity",
 				DisplayOrder = 3,
 			};
 			sa3.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5129,7 +5129,7 @@ namespace SmartStore.Data.Setup
 
 			var sa6 = new SpecificationAttribute
 			{
-				Name = "ports",
+				Name = "Ports",
 				DisplayOrder = 6,
 			};
 			sa6.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5199,7 +5199,7 @@ namespace SmartStore.Data.Setup
 
 			var sa8 = new SpecificationAttribute
 			{
-				Name = "material",
+				Name = "Material",
 				DisplayOrder = 8,
 			};
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5223,13 +5223,37 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 4,
 			});
 
-			#endregion sa8 material
+            sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "leather",
+                DisplayOrder = 5,
+            });
 
-			#region sa9 movement
+            sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "nylon",
+                DisplayOrder = 6,
+            });
 
-			var sa9 = new SpecificationAttribute
+            sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "silicone",
+                DisplayOrder = 7,
+            });
+
+            sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "ceramic",
+                DisplayOrder = 8,
+            });
+
+            #endregion sa8 material
+
+            #region sa9 movement
+
+            var sa9 = new SpecificationAttribute
 			{
-				Name = "movement",
+				Name = "Movement",
 				DisplayOrder = 9,
 			};
 			sa9.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5254,7 +5278,7 @@ namespace SmartStore.Data.Setup
 
 			var sa10 = new SpecificationAttribute
 			{
-				Name = "clasp",
+				Name = "Clasp",
 				DisplayOrder = 10,
 			};
 			sa10.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5279,7 +5303,7 @@ namespace SmartStore.Data.Setup
 
 			var sa11 = new SpecificationAttribute
 			{
-				Name = "window material",
+				Name = "Window material",
 				DisplayOrder = 11,
 			};
 			sa11.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5299,7 +5323,7 @@ namespace SmartStore.Data.Setup
 
 			var sa12 = new SpecificationAttribute
 			{
-				Name = "language",
+				Name = "Language",
 				DisplayOrder = 12,
 			};
 			sa12.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5329,7 +5353,7 @@ namespace SmartStore.Data.Setup
 
 			var sa13 = new SpecificationAttribute
 			{
-				Name = "edition",
+				Name = "Edition",
 				DisplayOrder = 13,
 			};
 			sa13.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5349,7 +5373,7 @@ namespace SmartStore.Data.Setup
 
 			var sa14 = new SpecificationAttribute
 			{
-				Name = "category",
+				Name = "Category",
 				DisplayOrder = 14,
 			};
 			sa14.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5434,7 +5458,7 @@ namespace SmartStore.Data.Setup
 
 			var sa16 = new SpecificationAttribute
 			{
-				Name = "type of mass-storage",
+				Name = "Type of mass-storage",
 				DisplayOrder = 16,
 			};
 			sa16.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5504,7 +5528,7 @@ namespace SmartStore.Data.Setup
 
 			var sa19 = new SpecificationAttribute
 			{
-				Name = "music genre",
+				Name = "Music genre",
 				DisplayOrder = 19,
 			};
 			sa19.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5549,7 +5573,7 @@ namespace SmartStore.Data.Setup
 
 			var sa20 = new SpecificationAttribute
 			{
-				Name = "manufacturer",
+				Name = "Manufacturer",
 				DisplayOrder = 20,
 			};
 			sa20.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
@@ -5627,15 +5651,391 @@ namespace SmartStore.Data.Setup
 				Name = "Festina",
 				DisplayOrder = 15,
 			});
+            sa20.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Seiko",
+                DisplayOrder = 16,
+            });
 
-			#endregion sa20 manufacturer
+            #endregion sa20 manufacturer
 
-			#endregion new attributes
+            #region sa21 Watches for whom
 
-			var entities = new List<SpecificationAttribute>
+            var sa21 = new SpecificationAttribute
+            {
+                Name = "For whom",
+                DisplayOrder = 21,
+            };
+            sa21.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "For him",
+                DisplayOrder = 1,
+            });
+            sa21.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "For her",
+                DisplayOrder = 2,
+            });
+
+            #endregion sa11 Watches for whom
+
+            #region sa22 Offer
+
+            var sa22 = new SpecificationAttribute
+            {
+                Name = "Offer",
+                DisplayOrder = 22,
+            };
+
+            sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Clearance",
+                DisplayOrder = 1,
+            });
+
+            sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Permanent low price",
+                DisplayOrder = 2,
+            });
+
+            sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Promotion",
+                DisplayOrder = 3,
+            });
+
+            sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Reduced price",
+                DisplayOrder = 4,
+            });
+
+            sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Special Buy",
+                DisplayOrder = 5,
+            });
+
+            sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Offer of the day",
+                DisplayOrder = 6,
+            });
+
+            sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Weekly offer",
+                DisplayOrder = 7,
+            });
+
+            sa22.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Best Price",
+                DisplayOrder = 8,
+            });
+
+            #endregion sa22 Offer
+
+            #region sa23 Size
+
+            var sa23 = new SpecificationAttribute
+            {
+                Name = "Size",
+                DisplayOrder = 23,
+            };
+
+            sa23.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "XS",
+                DisplayOrder = 1,
+            });
+
+            sa23.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "S",
+                DisplayOrder = 2,
+            });
+
+            sa23.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "M",
+                DisplayOrder = 3,
+            });
+
+            sa23.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "L",
+                DisplayOrder = 4,
+            });
+
+            sa23.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "XL",
+                DisplayOrder = 5,
+            });
+
+            sa23.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "XXL",
+                DisplayOrder = 6,
+            });
+
+
+            #endregion sa23 Size
+
+            #region sa24 diameter
+
+            var sa24 = new SpecificationAttribute
+            {
+                Name = "Diameter",
+                DisplayOrder = 24,
+            };
+
+            sa24.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "38mm",
+                DisplayOrder = 1,
+            });
+
+            sa24.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "40mm",
+                DisplayOrder = 2,
+            });
+
+            sa24.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "44mm",
+                DisplayOrder = 3,
+            });
+
+            #endregion sa24 diameter
+
+            #region sa25 closure
+
+            var sa25 = new SpecificationAttribute
+            {
+                Name = "Closure",
+                DisplayOrder = 25,
+            };
+
+            sa25.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "snap closure",
+                DisplayOrder = 1,
+            });
+
+            sa25.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "folding clasp",
+                DisplayOrder = 2,
+            });
+
+            sa25.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "thorn close",
+                DisplayOrder = 3,
+            });
+
+            #endregion sa25 closure
+
+            #region sa26 facial shape
+
+            var sa26 = new SpecificationAttribute
+            {
+                Name = "Facial shape",
+                DisplayOrder = 26,
+            };
+
+            sa26.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "oval",
+                DisplayOrder = 1,
+            });
+
+            sa26.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "round",
+                DisplayOrder = 2,
+            });
+
+            sa26.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "heart shaped",
+                DisplayOrder = 3,
+            });
+
+            sa26.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "angular",
+                DisplayOrder = 4,
+            });
+
+            #endregion sa26 facial shape
+
+            #region sa27 storage capacity
+
+            var sa27 = new SpecificationAttribute
+            {
+                Name = "Storage capacity",
+                DisplayOrder = 27,
+            };
+
+            sa27.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "32 GB",
+                DisplayOrder = 1,
+            });
+
+            sa27.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "64 GB",
+                DisplayOrder = 2,
+            });
+
+            sa27.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "128 GB",
+                DisplayOrder = 3,
+            });
+
+            #endregion sa27 facial shape
+
+            #region sa28 color
+
+            //var sa28 = new SpecificationAttribute
+            //{
+            //    Name = "color",
+            //    DisplayOrder = 1,
+            //};
+
+            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "gray",
+            //    DisplayOrder = 1,
+            //});
+
+            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "silver",
+            //    DisplayOrder = 2,
+            //});
+
+            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "white",
+            //    DisplayOrder = 3,
+            //});
+
+            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "black",
+            //    DisplayOrder = 4,
+            //});
+
+            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "beige",
+            //    DisplayOrder = 5,
+            //});
+
+            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "red",
+            //    DisplayOrder = 6,
+            //});
+
+            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "blue",
+            //    DisplayOrder = 7,
+            //});
+
+            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "green",
+            //    DisplayOrder = 8,
+            //});
+
+            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            //{
+            //    Name = "yellow",
+            //    DisplayOrder = 9,
+            //});
+
+            #endregion sa28 color
+
+            #region sa28 Dial window material type
+
+            var sa28 = new SpecificationAttribute
+            {
+                Name = "Dial window material type",
+                DisplayOrder = 28,
+            };
+
+            sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Mineral",
+                DisplayOrder = 1,
+            });
+
+            sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Sapphire",
+                DisplayOrder = 2,
+            });
+
+            #endregion sa28 Dial window material type
+
+            #region sa29 type of fabric
+
+            var sa29 = new SpecificationAttribute
+            {
+                Name = "Type of fabric",
+                DisplayOrder = 29,
+            };
+
+            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "cotton",
+                DisplayOrder = 1,
+            });
+
+            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "polyamide",
+                DisplayOrder = 2,
+            });
+
+            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "spandex",
+                DisplayOrder = 3,
+            });
+
+            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "polyester",
+                DisplayOrder = 4,
+            });
+
+            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "leather",
+                DisplayOrder = 5,
+            });
+
+            #endregion sa29 type of fabric
+
+
+
+            #endregion new attributes
+
+            var entities = new List<SpecificationAttribute>
 			{
-				sa1,sa2,sa3,sa4,sa5,sa6,sa7,sa8,sa9,sa10,sa11,sa12,sa13,sa14,sa15,sa16,sa17,sa18,sa19,sa20
-			};
+				sa1,sa2,sa3,sa4,sa5,sa6,sa7,sa8,sa9,sa10,sa11,sa12,sa13,sa14,sa15,sa16,sa17,sa18,sa19,sa20,sa21,sa22,sa23,sa24,sa25,sa26,sa27,sa28,sa29
+            };
 
 			this.Alter(entities);
 			return entities;
@@ -5706,52 +6106,267 @@ namespace SmartStore.Data.Setup
 			return entities;
 		}
 
-		public IList<ProductAttributeOptionsSet> ProductAttributeOptionsSets()
-		{
-			var entities = new List<ProductAttributeOptionsSet>();
-			var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
+        public IList<ProductAttributeOptionsSet> ProductAttributeOptionsSets()
+        {
+            var entities = new List<ProductAttributeOptionsSet>();
+            var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
 
-			entities.Add(new ProductAttributeOptionsSet
-			{
-				Name = "General colors",
-				ProductAttributeId = colorAttribute.Id
-			});
+            entities.Add(new ProductAttributeOptionsSet
+            {
+                Name = "General colors",
+                ProductAttributeId = colorAttribute.Id
+            });
 
-			this.Alter(entities);
-			return entities;
-		}
+            entities.Add(new ProductAttributeOptionsSet
+            {
+                Name = "Apple colors",
+                ProductAttributeId = colorAttribute.Id
+            });
 
-		public IList<ProductAttributeOption> ProductAttributeOptions()
-		{
-			var entities = new List<ProductAttributeOption>();
-			var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
-			var generalColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.ProductAttributeId == colorAttribute.Id);
+            entities.Add(new ProductAttributeOptionsSet
+            {
+                Name = "Rayban original Wayfarer colors",
+                ProductAttributeId = colorAttribute.Id
+            });
 
-			var generalColors = new string[] { "Red", "Green", "British Racing Green", "Blue", "Yellow", "Black", "White" };
+            entities.Add(new ProductAttributeOptionsSet
+            {
+                Name = "Rayban Topbar colors",
+                ProductAttributeId = colorAttribute.Id
+            });
 
-			for (var i = 0; i < generalColors.Length; ++i)
-			{
-				entities.Add(new ProductAttributeOption
-				{
-					ProductAttributeOptionsSetId = generalColorsSet.Id,
-					Alias = GetSeName(generalColors[i]),
-					Name = generalColors[i],
-					Quantity = 1,
-					DisplayOrder = i + 1
-				});
-			}
+            entities.Add(new ProductAttributeOptionsSet
+            {
+                Name = "Bauhaus colors",
+                ProductAttributeId = colorAttribute.Id
+            });
 
-			this.Alter(entities);
-			return entities;
-		}
+            this.Alter(entities);
+            return entities;
+        }
 
-		public IList<ProductVariantAttribute> ProductVariantAttributes()
+        public IList<ProductAttributeOption> ProductAttributeOptions()
+        {
+            var entities = new List<ProductAttributeOption>();
+            var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
+            var generalColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "General colors");
+
+            var generalColors = new string[] { "Red", "Green", "Blue", "Yellow", "Black", "White", "Gray", "Silver", "Brown" };
+            var generalColorValues = new string[] { "#ff0000", "#008000", "#0000ff", "#ffff00", "#000000", "#ffffff", "#808080", "#dddfde", "#a52a2a" };
+
+
+            for (var i = 0; i < generalColors.Length; ++i)
+            {
+                entities.Add(new ProductAttributeOption
+                {
+                    ProductAttributeOptionsSetId = generalColorsSet.Id,
+                    Alias = GetSeName(generalColors[i]),
+                    Name = generalColors[i],
+                    Quantity = 1,
+                    DisplayOrder = i + 1,
+                    Color = generalColorValues[i]
+                    
+                });
+            }
+
+            var appleColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Apple colors");
+
+            var appleColors = new string[] { "Gold", "Light blue", "Purple", "Mint", "Rose", "Red", "Silver", "Space gray", "Turquoise" };
+            var apppleColorValues = new string[] { "#e3d0ba", "#a6b9df", "#dba5d7", "#a6dbb1", "#d9a6ad", "#af1e2d", "#dddfde", "#abaeb1", "#a4dbde" };
+
+            for (var i = 0; i < appleColors.Length; ++i)
+            {
+                entities.Add(new ProductAttributeOption
+                {
+                    ProductAttributeOptionsSetId = appleColorsSet.Id,
+                    Alias = GetSeName(appleColors[i]),
+                    Name = appleColors[i],
+                    Quantity = 1,
+                    DisplayOrder = i + 1,
+                    Color = apppleColorValues[i]
+                });
+            }
+
+            var raybanWayfarerColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban original Wayfarer colors");
+
+            var raybanWayfarerColors = new string[] { "Blue-Gray", "Brown", "Gray", "Green" };
+            var raybanWayfarerColorValues = new string[] { "#3e4659", "#3e4659", "#727377", "#3c432e" };
+
+            for (var i = 0; i < raybanWayfarerColors.Length; ++i)
+            {
+                entities.Add(new ProductAttributeOption
+                {
+                    ProductAttributeOptionsSetId = raybanWayfarerColorsSet.Id,
+                    Alias = GetSeName(raybanWayfarerColors[i]),
+                    Name = raybanWayfarerColors[i],
+                    Quantity = 1,
+                    DisplayOrder = i + 1,
+                    Color = raybanWayfarerColorValues[i]
+                });
+            }
+
+            var raybanTopbarColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban Topbar colors");
+
+            var raybanTopbarColors = new string[] { "Silver", "Shiny black", "Gunmetal", "Black" };
+            var raybanTopbarsColorValues = new string[] { "#b5c3c4", "#586166", "#6f785b", "#546d67" };
+
+            for (var i = 0; i < raybanTopbarColors.Length; ++i)
+            {
+                entities.Add(new ProductAttributeOption
+                {
+                    ProductAttributeOptionsSetId = raybanTopbarColorsSet.Id,
+                    Alias = GetSeName(raybanTopbarColors[i]),
+                    Name = raybanTopbarColors[i],
+                    Quantity = 1,
+                    DisplayOrder = i + 1,
+                    Color = raybanTopbarsColorValues[i]
+                });
+            }
+
+            var bauhausColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Bauhaus colors");
+
+            var bauhausColors = new string[] { "White-old", "Anthracite", "Beige", "Biscuit", "Blue", "Brown", "Champagne", "Cognac", "Brown-dark", "Black", "Green-dark", "Red-dark"
+                , "Graphite-black", "Green", "Blue-light", "Grey-light", "Red-raspberry", "Orange", "Yellow-colza", "Rosso", "Red", "Black", "Red-tomato", "White" };
+
+            var bauhausColorValues = new string[] { "#E9E5D9", "#343635", "#D7C6AA", "#F1E2C1", "#0000FE", "#734221", "#F7E9CE", "#BD6C3F", "#2A1708", "#00000", "#192521", "#5D060F",
+                "#383428", "#008543", "#00ACE4", "#CDCDCD", " #C72F48", "#FF5F01", "#FDD100", "#D30100", "#FE0000","#000000","#EA3E28", "#FFFFFF" };
+
+            for (var i = 0; i < bauhausColors.Length; ++i)
+            {
+                entities.Add(new ProductAttributeOption
+                {
+                    ProductAttributeOptionsSetId = bauhausColorsSet.Id,
+                    Alias = GetSeName(bauhausColors[i]),
+                    Name = bauhausColors[i],
+                    Quantity = 1,
+                    DisplayOrder = i + 1,
+                    Color = bauhausColorValues[i]
+                });
+            }
+
+            this.Alter(entities);
+            return entities;
+        }
+
+        public IList<ProductVariantAttribute> ProductVariantAttributes()
 		{
 			var entities = new List<ProductVariantAttribute>();
 
-			#region iPhone
+            #region iPhone 7 plus
 
-			var productIphone = _ctx.Set<Product>().First(x => x.Sku == "Apple-1001");
+            var productIphone7Plus = _ctx.Set<Product>().First(x => x.Sku == "P-2001");
+            var attributeMemoryCapacityiPhone7Plus = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
+            var attributeIphoneIphoneColoriPhone7Plus = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
+
+            var attributeIphone7PlusMemoryCapacity = new ProductVariantAttribute()
+            {
+                Product = productIphone7Plus,
+                ProductAttribute = attributeMemoryCapacityiPhone7Plus,
+                IsRequired = true,
+                DisplayOrder = 1,
+                AttributeControlType = AttributeControlType.RadioList
+            };
+
+            attributeIphone7PlusMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "16 GB",
+                Alias = "16gb",
+                IsPreSelected = true,
+                DisplayOrder = 1,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple
+            });
+
+            attributeIphone7PlusMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "64 GB",
+                Alias = "64gb",
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 100.0M
+            });
+
+            attributeIphone7PlusMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "128 GB",
+                Alias = "128gb",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 200.0M
+            });
+
+            entities.Add(attributeIphone7PlusMemoryCapacity);
+
+
+            var attributeIphone7PlusColor = new ProductVariantAttribute()
+            {
+                Product = productIphone7Plus,
+                ProductAttribute = attributeIphoneIphoneColoriPhone7Plus,
+                IsRequired = true,
+                DisplayOrder = 2,
+                AttributeControlType = AttributeControlType.Boxes
+            };
+
+            attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Silver",
+                Alias = "silver",
+                IsPreSelected = true,
+                DisplayOrder = 1,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#dddfde"
+            });
+
+            attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Gold",
+                Alias = "gold",
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#e3d0ba"
+            });
+
+            attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Red",
+                Alias = "red",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#af1e2d"
+            });
+
+            attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Rose",
+                Alias = "rose",
+                DisplayOrder = 4,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#d9a6ad"
+            });
+
+            attributeIphone7PlusColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Black",
+                Alias = "black",
+                DisplayOrder = 5,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#000000"
+            });
+
+            entities.Add(attributeIphone7PlusColor);
+
+            #endregion iPhone 7 plus
+
+            #region iPhone
+
+            var productIphone = _ctx.Set<Product>().First(x => x.Sku == "Apple-1001");
 			var attributeMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
 			var attributeIphoneIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
 
@@ -5944,7 +6559,9 @@ namespace SmartStore.Data.Setup
 
 			string attributeXml = "<Attributes><ProductVariantAttribute ID=\"{0}\"><ProductVariantAttributeValue><Value>{1}</Value></ProductVariantAttributeValue></ProductVariantAttribute></Attributes>";
 
-			var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
+            #region ps3
+
+            var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
 			var ps3PictureIds = productPs3.ProductPictures.Select(pp => pp.PictureId).ToList();
 			var picturesPs3 = _ctx.Set<Picture>().Where(x => ps3PictureIds.Contains(x.Id)).ToList();
 
@@ -5974,13 +6591,92 @@ namespace SmartStore.Data.Setup
 				AssignedPictureIds = picturesPs3.First(x => x.SeoFilename.EndsWith("-white")).Id.ToString()
 			});
 
-			return entities;
+            #endregion ps3
+
+            #region Iphone 7 plus
+
+            var productIphone7Plus = _ctx.Set<Product>().First(x => x.Sku == "P-2001");
+            var Iphone7PlusPictureIds = productIphone7Plus.ProductPictures.Select(pp => pp.PictureId).ToList();
+            var picturesIphone7Plus = _ctx.Set<Picture>().Where(x => Iphone7PlusPictureIds.Contains(x.Id)).ToList();
+
+            var attributeColorIphone7Plus = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
+            var productAttributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attributeColorIphone7Plus.Id);
+            var attributeColorValuesIphone7Plus = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == productAttributeColorIphone7Plus.Id).ToList();
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-B",
+                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "black").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-black")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-RD",
+                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "red").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-red")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-SV",
+                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "silver").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-silver")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-RS",
+                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "rose").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-GD",
+                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "gold").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+            });
+
+            #endregion Iphone 7 plus
+
+            return entities;
 		}
 
 		public IList<ProductTag> ProductTags()
 		{
-			#region tag gift
-			var productTagGift = new ProductTag
+            #region tag apple
+            var productTagApple = new ProductTag
+            {
+                Name = "apple"
+            };
+
+            _ctx.Set<Product>().Where(pt => pt.MetaTitle == "iPhone Plus").First().ProductTags.Add(productTagApple);
+
+            #endregion tag apple
+
+            #region tag gift
+            var productTagGift = new ProductTag
 			{
 				Name = "gift"
 			};
@@ -6509,6 +7205,19 @@ namespace SmartStore.Data.Setup
 
             //categories
 
+            #region Seiko
+
+            var manufacturerSeiko = new Manufacturer
+            {
+                Name = "Seiko",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_seiko.png"), "image/png", GetSeName("Seiko")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Seiko
+
             #region Titleist
 
             var manufacturerTitleist = new Manufacturer
@@ -6862,7 +7571,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Manufacturer>
 			{
-			  manufacturerTitleist,manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
+			  manufacturerSeiko, manufacturerTitleist,manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
 			  manufacturerCanon, manufacturerCasio, manufacturerPanasonic, manufacturerBlackBerry, manufacturerHTC, manufacturerFestina, manufacturerCertina, 
 			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft,manufacturerOakley,manufacturerRayban,manufacturerAdidas, manufacturerWilson,manufacturerPuma,manufacturerNike
             };
@@ -7656,14 +8365,16 @@ namespace SmartStore.Data.Setup
                 IsGiftCard = false,
                 ManageInventoryMethod = ManageInventoryMethod.ManageStock,
                 OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 10000,
+                OrderMaximumQuantity = 9,
                 StockQuantity = 10000,
+                DisplayStockAvailability = true,
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
+                IsFreeShipping = true,
                 DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
             };
-
+            
             productIphoneplus.ProductCategories.Add(new ProductCategory() { Category = categoryApple, DisplayOrder = 1 });
 
             productIphoneplus.ProductPictures.Add(new ProductPicture()
@@ -7674,7 +8385,37 @@ namespace SmartStore.Data.Setup
 
             productIphoneplus.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphoneplus_2.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_red.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-red"),
+                DisplayOrder = 2,
+            });
+
+            productIphoneplus.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_all_colors.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
+                DisplayOrder = 2,
+            });
+
+            productIphoneplus.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_silver.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-silver"),
+                DisplayOrder = 2,
+            });
+
+            productIphoneplus.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_black.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-black"),
+                DisplayOrder = 2,
+            });
+
+            productIphoneplus.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_rose.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-rose"),
+                DisplayOrder = 2,
+            });
+
+            productIphoneplus.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_gold.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-gold"),
                 DisplayOrder = 2,
             });
 
@@ -8675,19 +9416,19 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1,
 			});
 
-			#endregion manufacturer
+            #endregion manufacturer
 
-			#region SpecificationAttributes
-			//attributes
-			productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 1,
-				// CPU -> Intel
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 1).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
-			});
-			productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            #region SpecificationAttributes
+            //attributes
+            productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // CPU -> Intel
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 1).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+            });
+            productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
 			{
 				AllowFiltering = true,
 				ShowOnProductPage = true,
@@ -9019,183 +9760,351 @@ namespace SmartStore.Data.Setup
 				// OS / Windows 7 32 Bit
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
 			});
-			#endregion SpecificationAttributes
+            #endregion SpecificationAttributes
 
-			#endregion productSmartPhonesAppleIphone
+            #endregion productSmartPhonesAppleIphone
 
-			#endregion Smartphones
+            #endregion Smartphones
 
-			#region Instant Download Music
+            #region Instant Download Music / Digital Products
 
-            var categoryMusic = this._ctx.Set<Category>().First(c => c.Alias == "Digital Products");
+            var categoryDigitalProducts = this._ctx.Set<Category>().First(c => c.Alias == "Digital Products");
 
-			#region Antonio Vivaldi: then spring
+            #region product Books Stone of the Wise
 
-			var productInstantDownloadVivaldi = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Antonio Vivaldi: spring",
-				IsEsd = true,
-				ShortDescription = "MP3, 320 kbit/s",
-				FullDescription = "<p>Antonio Vivaldi: Spring</p> <p>Antonio Lucio Vivaldi (March 4, 1678 in Venice, &dagger; 28 July 1741 in Vienna) was a Venetian composer and violinist in the Baroque.</p> <p>The Four Seasons (Le quattro stagioni Italian) is perhaps the most famous works of Antonio Vivaldi. It's four violin concertos with extra-musical programs, each portraying a concert season. This is the individual concerts one - probably written by Vivaldi himself - Sonnet preceded by consecutive letters in front of the lines and in the appropriate places in the score arrange the verbal description of the music.</p> <p>Vivaldi had previously always been experimenting with non-musical programs, which often reflected in his tracks, the exact interpretation of the individual points score is unusual for him. His experience as a virtuoso violinist allowed him access to particularly effective playing techniques, as an opera composer, he had developed a strong sense of effects, both of which benefitted from him.</p> <p>As the title suggests, especially to imitate natural phenomena - gentle winds, severe storms and thunderstorms are elements that are common to all four concerts. There are also various birds and even a dog, further human activities such as hunting, a barn dance, ice skating, including stumbling and falling to the heavy sleep of a drunkard.</p> <p>The work dates from 1725 and is available in two print editions, which appeared more or less simultaneously published in Amsterdam and Paris.</p>",
+            var productBooksStoneOfTheWise = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Ebook 'Stone of the Wise' in 'Lorem ipsum'",
+                IsEsd = true,
+                ShortDescription = "E-Book, 465 pages",
+                FullDescription = "",
+                Sku = "P-6001",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Ebook 'Stone of the Wise' in 'Lorem ipsum'",
+                Price = 9.90M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsDownload = true,
+                HasSampleDownload = true,
+                SampleDownload = new Download
+                {
+                    DownloadGuid = Guid.NewGuid(),
+                    ContentType = "application/pdf",
+                    MediaStorage = new MediaStorage
+                    {
+                        Data = File.ReadAllBytes(sampleDownloadsPath + "Stone_of_the_wise_preview.pdf")
+                    },
+                    Extension = ".pdf",
+                    Filename = "Stone_of_the_wise_preview",
+                    IsNew = true,
+                    UpdatedOnUtc = DateTime.UtcNow
+                }
+            };
+
+            productBooksStoneOfTheWise.ProductCategories.Add(new ProductCategory() { Category = categoryDigitalProducts, DisplayOrder = 1 });
+
+            //pictures
+            productBooksStoneOfTheWise.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "stone_of_wisdom.jpg"), "image/jpeg", GetSeName(productBooksStoneOfTheWise.Name)),
+                DisplayOrder = 1,
+            });
+
+            //attributes
+            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Edition -> bound
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Category -> cars
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
+            });
+            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Language -> German
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+
+
+            #endregion product Books Stone of the Wise
+
+
+            #region Antonio Vivaldi: then spring
+
+            var productInstantDownloadVivaldi = new Product
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Antonio Vivaldi: spring",
+                IsEsd = true,
+                ShortDescription = "MP3, 320 kbit/s",
+                FullDescription = "<p>Antonio Vivaldi: Spring</p> <p>Antonio Lucio Vivaldi (March 4, 1678 in Venice, &dagger; 28 July 1741 in Vienna) was a Venetian composer and violinist in the Baroque.</p> <p>The Four Seasons (Le quattro stagioni Italian) is perhaps the most famous works of Antonio Vivaldi. It's four violin concertos with extra-musical programs, each portraying a concert season. This is the individual concerts one - probably written by Vivaldi himself - Sonnet preceded by consecutive letters in front of the lines and in the appropriate places in the score arrange the verbal description of the music.</p> <p>Vivaldi had previously always been experimenting with non-musical programs, which often reflected in his tracks, the exact interpretation of the individual points score is unusual for him. His experience as a virtuoso violinist allowed him access to particularly effective playing techniques, as an opera composer, he had developed a strong sense of effects, both of which benefitted from him.</p> <p>As the title suggests, especially to imitate natural phenomena - gentle winds, severe storms and thunderstorms are elements that are common to all four concerts. There are also various birds and even a dog, further human activities such as hunting, a barn dance, ice skating, including stumbling and falling to the heavy sleep of a drunkard.</p> <p>The work dates from 1725 and is available in two print editions, which appeared more or less simultaneously published in Amsterdam and Paris.</p>",
                 Sku = "P-1016",
-				ProductTemplateId = productTemplateSimple.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Antonio Vivaldi: spring",
-				Price = 1.99M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsDownload = true,
-				HasSampleDownload = true,
-				SampleDownload = new Download
-				{
-					DownloadGuid = Guid.NewGuid(),
-					ContentType = "audio/mp3",
-					MediaStorage = new MediaStorage
-					{
-						Data = File.ReadAllBytes(sampleDownloadsPath + "vivaldi-four-seasons-spring.mp3")
-					},
-					Extension = ".mp3",
-					Filename = "vivaldi-four-seasons-spring",
-					IsNew = true,
-					UpdatedOnUtc = DateTime.UtcNow
-				}
-			};
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Antonio Vivaldi: spring",
+                Price = 1.99M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsDownload = true,
+                HasSampleDownload = true,
+                SampleDownload = new Download
+                {
+                    DownloadGuid = Guid.NewGuid(),
+                    ContentType = "audio/mp3",
+                    MediaStorage = new MediaStorage
+                    {
+                        Data = File.ReadAllBytes(sampleDownloadsPath + "vivaldi-four-seasons-spring.mp3")
+                    },
+                    Extension = ".mp3",
+                    Filename = "vivaldi-four-seasons-spring",
+                    IsNew = true,
+                    UpdatedOnUtc = DateTime.UtcNow
+                }
+            };
 
-            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory() { Category = categoryMusic, DisplayOrder = 1 });
-            
-			#region pictures
+            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory() { Category = categoryDigitalProducts, DisplayOrder = 1 });
 
-			//pictures
-			productInstantDownloadVivaldi.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000740-antonio-vivaldi-der-fruhling-100.jpg"), "image/jpeg", GetSeName(productInstantDownloadVivaldi.Name)),
-				DisplayOrder = 1,
-			});
+            #region pictures
 
-			#endregion pictures
+            //pictures
+            productInstantDownloadVivaldi.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000740-antonio-vivaldi-der-fruhling-100.jpg"), "image/jpeg", GetSeName(productInstantDownloadVivaldi.Name)),
+                DisplayOrder = 1,
+            });
 
-			#region SpecificationAttributes
-			//attributes
-			productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 1,
-				// mp3 quality > 320 kbit/S
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 18).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
-			});
-			productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 2,
-				// genre > classic
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 19).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
-			});
+            #endregion pictures
 
-			#endregion SpecificationAttributes
+            #region SpecificationAttributes
+            //attributes
+            productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // mp3 quality > 320 kbit/S
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 18).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                // genre > classic
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 19).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
+            });
 
-			#endregion Antonio Vivildi: then spring
+            #endregion SpecificationAttributes
 
-			#region Beethoven für Elise
+            #endregion Antonio Vivildi: then spring
 
-			var productInstantDownloadBeethoven = new Product()
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Ludwig van Beethoven: For Elise",
-				IsEsd = true,
-				ShortDescription = "Ludwig van Beethoven's most popular compositions",
-				FullDescription = "<p> The score was not published until 1867, 40 years after the composer's death in 1827. The discoverer of the piece, Ludwig Nohl, affirmed that the original autographed manuscript, now lost, was dated 27 April 1810.[4] The version of \"Für Elise\" we hear today is an earlier version that was transcribed by Ludwig Nohl. There is a later version, with drastic changes to the accompaniment which was transcribed from a later manuscript by Barry Cooper. The most notable difference is in the first theme, the left-hand arpeggios are delayed by a 16th note beat. There are a few extra bars in the transitional section into the B section; and finally, the rising A minor arpeggio figure is moved later into the piece. The tempo marking Poco Moto is believed to have been on the manuscript that Ludwig Nohl transcribed (now lost). The later version includes the marking Molto Grazioso. It is believed that Beethoven intended to add the piece to a cycle of bagatelles.[citation needed] </p> <p> Therese Malfatti, widely believed to be the dedicatee of \"Für Elise\" The pianist and musicologist Luca Chiantore (es) argued in his thesis and his 2010 book Beethoven al piano that Beethoven might not have been the person who gave the piece the form that we know today. Chiantore suggested that the original signed manuscript, upon which Ludwig Nohl claimed to base his transcription, may never have existed.[5] On the other hand, the musicologist Barry Cooper stated, in a 1984 essay in The Musical Times, that one of two surviving sketches closely resembles the published version.[6] </p>",
+            #region Beethoven für Elise
+
+            var productInstantDownloadBeethoven = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Ludwig van Beethoven: For Elise",
+                IsEsd = true,
+                ShortDescription = "Ludwig van Beethoven's most popular compositions",
+                FullDescription = "<p> The score was not published until 1867, 40 years after the composer's death in 1827. The discoverer of the piece, Ludwig Nohl, affirmed that the original autographed manuscript, now lost, was dated 27 April 1810.[4] The version of \"Für Elise\" we hear today is an earlier version that was transcribed by Ludwig Nohl. There is a later version, with drastic changes to the accompaniment which was transcribed from a later manuscript by Barry Cooper. The most notable difference is in the first theme, the left-hand arpeggios are delayed by a 16th note beat. There are a few extra bars in the transitional section into the B section; and finally, the rising A minor arpeggio figure is moved later into the piece. The tempo marking Poco Moto is believed to have been on the manuscript that Ludwig Nohl transcribed (now lost). The later version includes the marking Molto Grazioso. It is believed that Beethoven intended to add the piece to a cycle of bagatelles.[citation needed] </p> <p> Therese Malfatti, widely believed to be the dedicatee of \"Für Elise\" The pianist and musicologist Luca Chiantore (es) argued in his thesis and his 2010 book Beethoven al piano that Beethoven might not have been the person who gave the piece the form that we know today. Chiantore suggested that the original signed manuscript, upon which Ludwig Nohl claimed to base his transcription, may never have existed.[5] On the other hand, the musicologist Barry Cooper stated, in a 1984 essay in The Musical Times, that one of two surviving sketches closely resembles the published version.[6] </p>",
                 Sku = "P-1017",
-				ProductTemplateId = productTemplateSimple.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Ludwig van Beethoven: Für Elise",
-				ShowOnHomePage = true,
-				Price = 1.89M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsDownload = true,
-				HasSampleDownload = true,
-				SampleDownload = new Download()
-				{
-					DownloadGuid = Guid.NewGuid(),
-					ContentType = "audio/mp3",
-					MediaStorage = new MediaStorage
-					{
-						Data = File.ReadAllBytes(sampleDownloadsPath + "beethoven-fur-elise.mp3")
-					},
-					Extension = ".mp3",
-					Filename = "beethoven-fur-elise.mp3",
-					IsNew = true,
-					UpdatedOnUtc = DateTime.UtcNow
-				}
-			};
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Ludwig van Beethoven: Für Elise",
+                ShowOnHomePage = true,
+                Price = 1.89M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsDownload = true,
+                HasSampleDownload = true,
+                SampleDownload = new Download()
+                {
+                    DownloadGuid = Guid.NewGuid(),
+                    ContentType = "audio/mp3",
+                    MediaStorage = new MediaStorage
+                    {
+                        Data = File.ReadAllBytes(sampleDownloadsPath + "beethoven-fur-elise.mp3")
+                    },
+                    Extension = ".mp3",
+                    Filename = "beethoven-fur-elise.mp3",
+                    IsNew = true,
+                    UpdatedOnUtc = DateTime.UtcNow
+                }
+            };
 
-            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory() { Category = categoryMusic, DisplayOrder = 1 });
+            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory() { Category = categoryDigitalProducts, DisplayOrder = 1 });
 
-			#region pictures
+            #region pictures
 
-			//pictures
-			productInstantDownloadBeethoven.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "Beethoven.jpg"), "image/jpeg", GetSeName(productInstantDownloadBeethoven.Name)),
-				DisplayOrder = 1,
-			});
+            //pictures
+            productInstantDownloadBeethoven.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "Beethoven.jpg"), "image/jpeg", GetSeName(productInstantDownloadBeethoven.Name)),
+                DisplayOrder = 1,
+            });
 
-			#endregion pictures
+            #endregion pictures
 
-			#region SpecificationAttributes
-			//attributes
-			productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 1,
-				// mp3 quality > 320 kbit/S
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 18).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
-			});
-			productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 2,
-				// genre > classic
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 19).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
-			});
+            #region SpecificationAttributes
+            //attributes
+            productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // mp3 quality > 320 kbit/S
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 18).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                // genre > classic
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 19).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
+            });
 
-			#endregion SpecificationAttributes
+            #endregion SpecificationAttributes
 
-			#endregion Beethoven für Elise
+            #endregion Beethoven für Elise
 
-			#endregion Instant Download Music
+            #endregion Instant Download Music
 
-			#region watches
+            #region watches
 
             var categoryWatches = this._ctx.Set<Category>().First(c => c.Alias == "Watches");
 
-			#region productWatchesCertinaDSPodiumBigSize
+            #region productSeikoSRPA49K1
 
-			var productWatchesCertinaDSPodiumBigSize = new Product()
+            var productSeikoSRPA49K1 = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Seiko Mechanical Automatic SRPA49K1",
+                ShortDescription = "Seiko Mechanical Automatic SRPA49K1",
+                FullDescription = "<p><strong>Seiko 5 Sports Automatic Watch SRPA49K1 SRPA49</strong> </p> <ul>   <li>Unidirectional Rotating Bezel</li>   <li>Day And Date Display</li>   <li>See Through Case Back</li>   <li>100M Water Resistance</li>   <li>Stainless Steel Case</li>   <li>Automatic Movement</li>   <li>24 Jewels</li>   <li>Caliber: 4R36</li> </ul> ",
+                Sku = "P-9001",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Seiko Mechanical Automatic SRPA49K1",
+                ShowOnHomePage = true,
+                Price = 269.00M,
+                OldPrice = 329.00M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productSeikoSRPA49K1.ProductCategories.Add(new ProductCategory() { Category = categoryWatches, DisplayOrder = 1 });
+
+            #region pictures
+
+            //pictures
+            productSeikoSRPA49K1.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_SeikoSRPA49K1.jpg"), "image/png", GetSeName(productSeikoSRPA49K1.Name)),
+                DisplayOrder = 1,
+            });
+
+            #endregion pictures
+
+            #region manufacturer
+
+            //manufacturer
+            productSeikoSRPA49K1.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Seiko").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion manufacturer
+
+            #region SpecificationAttributes
+            //attributes
+            productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // housing > steel
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                // manufacturer > Seiko
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 16).Single()
+            });
+            productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // Gender -> gentlemen
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 7).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // movement -> quarz
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            #endregion SpecificationAttributes
+
+            #endregion productSeikoSRPA49K1 
+
+
+            #region productWatchesCertinaDSPodiumBigSize
+
+            var productWatchesCertinaDSPodiumBigSize = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Name = "Certina DS Podium Big Size",
 				ShortDescription = "C001.617.26.037.00",
 				FullDescription = "<p>Since 1888, Certina has maintained an enviable reputation for its excellent watches and reliable movements. From the time of its integration into the SMH (today's Swatch Group) in the early 1980s, every Certina has been equipped with a high-quality ETA movement.</p><p>In a quartz watch movement, high-frequency oscillations are generated in a tiny synthetic crystal, then divided down electronically to provide the extreme accuracy of the Certina internal clock. A battery supplies the necessary energy.</p><p>The quartz movement is sometimes equipped with an end-of-life (EOL) indicator. When the seconds hand begins moving in four-second increments, the battery should be replaced within two weeks.</p><p>An automatic watch movement is driven by a rotor. Arm and wrist movements spin the rotor, which in turn winds the main spring. Energy is continuously produced, eliminating the need for a battery. The rate precision therefore depends on a rigorous manufacturing process and the original calibration, as well as the lifestyle of the user.</p><p>Most automatic movements are driven by an offset rotor. To earn the title of chronometer, a watch must be equipped with a movement that has obtained an official rate certificate from the COSC (Contrôle Officiel Suisse des Chronomètres). To obtain this, precision tests in different positions and at different temperatures must be carried out. These tests take place over a 15-day period. Thermocompensated means that the effective temperature inside the watch is measured and taken into account when improving precision. This allows fluctuations in the rate precision of a normal quartz watch due to temperature variations to be reduced by several seconds a week. The precision is 20 times more accurate than on a normal quartz watch, i.e. +/- 10 seconds per year (0.07 seconds/day).</p>",
-                Sku = "P-1018",
+                Sku = "P-9002",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
@@ -9741,7 +10650,10 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Product>
 			{
-                productTitleistSM6TourChrome,productTitleistProV1x,productGBBEpicSubZeroDriver,productSupremeGolfball,productNikeStrikeFootball,productNikeEvoPowerBall,productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
+                productSeikoSRPA49K1,productTitleistSM6TourChrome,productTitleistProV1x,productGBBEpicSubZeroDriver,productSupremeGolfball,productBooksStoneOfTheWise,productNikeStrikeFootball,productNikeEvoPowerBall,
+                productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,
+                productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,
+                productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,

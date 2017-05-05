@@ -7,10 +7,8 @@ using NCrontab;
 
 namespace SmartStore.Services.Tasks
 {
-
 	public static class CronExpression
 	{
-
 		public static bool IsValid(string expression)
 		{
 			try

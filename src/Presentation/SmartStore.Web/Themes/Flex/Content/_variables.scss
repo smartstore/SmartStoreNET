@@ -29,10 +29,12 @@ $megamenu-bg:                   $gray-lightest !default;
 $megamenu-navlink-font-size:    1rem !default;
 $mega-menu-height:              1.8 !default;
 
-$menubar-color:                 lighten($header-color, 8%);
+$menubar-color:                 lighten($header-color, 8%) !default;
 $menubar-inverse-color:         $header-inverse-color-muted !default;
 $shopbar-color:                 $header-color !default;
+$shopbar-color-muted:           rgba($shopbar-color, 0.5);
 $shopbar-inverse-color:         $header-inverse-color !default;
+$shopbar-inverse-color-muted:   rgba($shopbar-inverse-color, 0.5);
 $megamenu-color:                $header-color !default;
 $megamenu-inverse-color:        $header-inverse-color !default;
 

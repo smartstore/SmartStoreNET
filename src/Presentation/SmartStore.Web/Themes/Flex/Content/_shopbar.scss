@@ -178,7 +178,7 @@
             box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
         }
 
-        .shopbar-button-label span { color: $header-color-muted;  }
+        .shopbar-button-label span { color: $shopbar-color-muted;  }
     }
 }
 
@@ -196,7 +196,7 @@
             box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.3);
         }
 
-        .shopbar-button-label span { color: $header-inverse-color-muted;  }
+        .shopbar-button-label span { color: $shopbar-inverse-color-muted;  }
     }
 }
 
@@ -250,7 +250,7 @@
         color:  $menubar-color;
     }
     .menubar-group--special .menubar-link {
-        color: darken($header-color, 15%) !important;
+        color: darken($menubar-color, 15%) !important;
     }
 }
 

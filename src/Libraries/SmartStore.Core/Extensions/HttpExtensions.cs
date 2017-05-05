@@ -207,11 +207,11 @@ namespace SmartStore
 		{
 			var regionName = "SmartStoreNET:";
 
-			pattern = pattern == "*" ? "" : pattern;
+			pattern = pattern == "*" ? regionName : pattern;
 
 			var keys = from entry in HttpRuntime.Cache.AsParallel().Cast<DictionaryEntry>()
 					   let key = entry.Key.ToString()
-					   where key.StartsWith(regionName + pattern, StringComparison.OrdinalIgnoreCase)
+					   where key.StartsWith(pattern, StringComparison.OrdinalIgnoreCase)
 					   select key;
 
 			foreach (var key in keys.ToArray())

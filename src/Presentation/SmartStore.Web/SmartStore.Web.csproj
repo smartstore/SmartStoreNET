@@ -993,6 +993,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
+    <Content Include="Scripts\underscore.js" />
     <Content Include="Themes\Flex\Content\css\fontastic.css" />
     <Content Include="Themes\Flex\Content\css\fonts\fontastic.svg" />
     <Content Include="Themes\Flex\Content\skinning\_pnotify.scss" />
@@ -1026,7 +1027,6 @@
     <Content Include="Scripts\smartstore.column-equalizer.js" />
     <Content Include="Scripts\jquery.scrollTo.js" />
     <Content Include="Scripts\jquery.serialScroll.js" />
-    <Content Include="Scripts\underscore.js" />
     <Content Include="Scripts\underscore.min.js" />
     <Content Include="Themes\Flex\Content\bs4\js\bootstrap-colorpicker-globalinit.js" />
     <Content Include="Themes\Flex\Content\bs4\js\bootstrap-colorpicker.js" />

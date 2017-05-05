@@ -991,10 +991,10 @@
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Themes\Flex\Content\css\fontastic.css" />
     <Content Include="Themes\Flex\Content\css\fonts\fontastic.svg" />
-    <Content Include="Themes\Flex\Content\shared\_pnotify.scss" />
+    <Content Include="Themes\Flex\Content\skinning\_pnotify.scss" />
     <Content Include="Themes\Flex\Content\shared\_mixins.scss" />
-    <Content Include="Themes\Flex\Content\shared\_select2.scss" />
-    <Content Include="Themes\Flex\Content\shared\_touchspin.scss" />
+    <Content Include="Themes\Flex\Content\skinning\_select2.scss" />
+    <Content Include="Themes\Flex\Content\skinning\_touchspin.scss" />
     <Content Include="Themes\Flex\Content\vendors\pnotify\css\pnotify.buttons.css" />
     <Content Include="Themes\Flex\Content\vendors\pnotify\css\pnotify.css" />
     <Content Include="Themes\Flex\Content\vendors\pnotify\css\pnotify.mobile.css" />
@@ -1118,22 +1118,24 @@
     <Content Include="Themes\Flex\Content\bs4\scss\mixins\_transforms.scss" />
     <Content Include="Themes\Flex\Content\bs4\scss\mixins\_transition.scss" />
     <Content Include="Themes\Flex\Content\bs4\scss\mixins\_visibility.scss" />
+    <Content Include="Themes\Flex\Content\shared\_pagination.scss" />
+    <Content Include="Themes\Flex\Content\_text-expander.scss" />
+    <Content Include="Themes\Flex\Content\shared\_alert.scss" />
+    <Content Include="Themes\Flex\Content\shared\_nav-collapsible.scss" />
+    <Content Include="Themes\Flex\Content\shared\_breadcrumb.scss" />
     <None Include="Themes\Flex\Content\vendors\photoswipe\LICENSE" />
     <None Include="Themes\Flex\Content\vendors\drift\LICENSE" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\photoswipe-ui-default.js" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\photoswipe-ui-default.min.js" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\photoswipe.js" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\photoswipe.min.js" />
-    <Content Include="Themes\Flex\Content\images\ajax_loader_small.gif" />
-    <Content Include="Themes\Flex\Content\images\color-overlay.png" />
-    <Content Include="Themes\Flex\Content\images\deliv-bg-aero.png" />
     <Content Include="Themes\Flex\Content\images\loading.gif" />
     <Content Include="Themes\Flex\Content\images\star-off-12.png" />
     <Content Include="Themes\Flex\Content\images\star-off.png" />
     <Content Include="Themes\Flex\Content\images\star-on-12.png" />
     <Content Include="Themes\Flex\Content\images\star-on.png" />
     <None Include="Themes\Flex\Content\compiled\theme.css" />
-    <Content Include="Themes\Flex\Content\shared\img\grippy.png" />
+    <Content Include="Themes\Flex\Content\images\grippy.png" />
     <Content Include="Themes\Flex\Content\vendors\animate\_animate.scss" />
     <Content Include="Themes\Flex\Content\vendors\animate\helpers\_base.scss" />
     <Content Include="Themes\Flex\Content\vendors\animate\helpers\_mixins.scss" />
@@ -1646,7 +1648,6 @@
     <Content Include="Themes\AlphaOld\Content\skin.less" />
     <Content Include="Themes\AlphaOld\Content\typo.less" />
     <Content Include="Themes\Web.config" />
-    <Content Include="Themes\Flex\Content\shared\_utils.scss" />
     <Content Include="Themes\Flex\Content\shared\_buttons.scss" />
     <Content Include="Themes\Flex\Content\shared\_forms.scss" />
     <Content Include="Themes\Flex\Content\shared\_colors.scss" />
@@ -1656,7 +1657,7 @@
     <Content Include="Themes\Flex\Content\vendors\font-awesome\fontawesome-webfont.woff2" />
     <Content Include="Themes\Flex\Content\vendors\font-awesome\FontAwesome.otf" />
     <Content Include="Themes\Flex\Content\shared\_typo.scss" />
-    <Content Include="Themes\Flex\Content\shared\_modal-flex.scss" />
+    <Content Include="Themes\Flex\Content\shared\_modal.scss" />
     <Content Include="Themes\Flex\Content\shared\_throbber.scss" />
     <Content Include="Themes\Flex\Content\shared\_spinner.scss" />
     <Content Include="Themes\Flex\Content\shared\_star-rating.scss" />
@@ -1846,7 +1847,6 @@
     <Content Include="Themes\Flex\Content\_misc.scss" />
     <Content Include="Themes\Flex\Content\_blog.scss" />
     <Content Include="Themes\Flex\Content\_forum.scss" />
-    <Content Include="Themes\Flex\Content\_pages.scss" />
     <Content Include="Themes\Flex\Content\_rating.scss" />
     <Content Include="Views\Common\Partials\ServiceMenu.cshtml" />
     <Content Include="Views\ShoppingCart\Partials\OffCanvasCart.cshtml" />
@@ -1872,13 +1872,13 @@
     <Content Include="Views\Shared\Partials\Product.List.Item.Buttons.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Item.Variants.cshtml" />
     <Content Include="Themes\Flex\Content\vendors\slick\slick.scss" />
-    <Content Include="Themes\Flex\Content\_slick-theme.scss" />
+    <Content Include="Themes\Flex\Content\skinning\_slick.scss" />
     <Content Include="Themes\Flex\Content\_product.scss" />
     <Content Include="Views\Product\Partials\Product.Picture.cshtml" />
     <Content Include="Views\Product\Partials\Product.Info.cshtml" />
     <Content Include="Views\Product\Partials\Product.Offer.cshtml" />
-    <Content Include="Themes\Flex\Content\_drift-theme.scss" />
-    <Content Include="Themes\Flex\Content\_photoswipe-theme.scss" />
+    <Content Include="Themes\Flex\Content\skinning\_drift.scss" />
+    <Content Include="Themes\Flex\Content\skinning\_photoswipe.scss" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\photoswipe.scss" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\_main-settings.scss" />
     <Content Include="Themes\Flex\Content\_gallery.scss" />
@@ -1933,8 +1933,11 @@
     <Content Include="Views\Shared\Partials\Comment.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Comment.List.cshtml" />
     <Content Include="Views\ShoppingCart\Partials\WishlistItems.cshtml" />
-    <Content Include="Themes\Flex\Content\_layout.scss" />
+    <Content Include="Themes\Flex\Content\_core.scss" />
     <Content Include="Themes\Flex\Content\shared\_card.scss" />
+    <Content Include="Themes\Flex\Content\_block.scss" />
+    <Content Include="Themes\Flex\Content\_choice.scss" />
+    <Content Include="Themes\Flex\Content\_layout.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

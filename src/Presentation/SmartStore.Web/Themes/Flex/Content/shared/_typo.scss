@@ -2,28 +2,37 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
 
-h1, h2, .h1, .h2 {
-    font-weight: $headings-lg-font-weight;
-}
+// Font Sizes
+// ==============================================================
 
-a.color-body {
-    $clr: lighten($body-color, 10%);
-    color: $clr;
-    text-decoration: none;
+.fs-h1          { font-size: $font-size-h1 !important; }
+.fs-h2          { font-size: $font-size-h2 !important; }
+.fs-h3          { font-size: $font-size-h3 !important; }
+.fs-h4          { font-size: $font-size-h4 !important; }
+.fs-h5          { font-size: $font-size-h5 !important; }
+.fs-h6          { font-size: $font-size-h6 !important; }
 
-    &:hover {
-        color: $clr;
-        text-decoration: underline;
-    }
-}
+.fs-lead        { font-size: $lead-font-size; }
 
-.text-wrap {
-    white-space: normal !important;
+.fs-display-1   { font-size: $display1-size !important; }
+.fs-display-2   { font-size: $display2-size !important; }
+.fs-display-3   { font-size: $display3-size !important; }
+.fs-display-4   { font-size: $display4-size !important; }
+
+.fs-small       { font-size: 0.85rem !important; }
+
+.text-smaller,
+.text-smaller a {
+    font-size: $font-size-sm;
 }
 
 
 // Font weight Helpers
-// ===================
+// ======================================
+
+h1, h2, .h1, .h2 {
+    font-weight: $headings-lg-font-weight;
+}
 
 @each $weight, $var in (unset, 100, 200, 300, 400, 500, 600, 700, 800, 900) {
     .font-weight-#{$weight} {
@@ -40,18 +49,8 @@ a.color-body {
 }
 
 
-// jQuery UI stuff
-// ===================
-
-.ui-effects-transfer, .transfer {
-	border: 2px dotted $body-color !important;
-	background: transparent;
-	z-index: $zindex-modal+1;
-}
-
-
-// Heading
-// ===================
+// Heading & Title
+// ======================================
 
 .heading {
     position: relative;
@@ -86,4 +85,48 @@ a.color-body {
     .heading-title {
         padding-left: 1rem;
     }
+}
+
+.page-title {
+    margin-bottom: 1.5rem;
+}
+
+
+// Misc typo stuff
+// ======================================
+
+a.color-body {
+    $clr: lighten($body-color, 10%);
+    color: $clr;
+    text-decoration: none;
+
+    &:hover {
+        color: $clr;
+        text-decoration: underline;
+    }
+}
+
+a.pretty-link {
+    color: $body-color;
+    text-decoration: none;
+    font-weight: $font-weight-medium;
+
+    > i { padding-right: 1.2rem; }
+    > span {
+        color: #aaa;
+        &:hover, &:active { color: inherit; }
+    }
+}
+
+.text-wrap {
+    white-space: normal !important;
+}
+
+.text-body {
+    font-size: $lead-font-size;
+}
+
+code {
+    background-color: rgba(0,0,0, 0.03);
+    border-radius: 2px; 
 }

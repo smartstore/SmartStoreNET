@@ -379,6 +379,48 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 }
 
 
+//
+// Compare table
+// ------------------------------------------------------
+
+.table-compare {
+    td, th {
+        width: 20%;
+    }
+    
+    th {
+        font-weight: $font-weight-medium;
+    }
+
+    tbody {
+        font-size: $font-size-sm;
+    }
+}
+
+
+//
+// Delivery times
+// ------------------------------------------------------
+
+.deliverytime-group .delivery-time { 
+    vertical-align: top; 
+    padding-left: 0.25rem;
+}
+
+.delivery-time {
+    display: inline-block;
+    color: $brand-danger;
+    vertical-align: middle;
+    max-width: 100%;
+    @include text-truncate();
+
+    .delivery-time-status {
+        padding-right: 0.2rem;
+        font-size: 0.85em;
+    }
+}
+
+
 // Misc
 // =====================================================
 

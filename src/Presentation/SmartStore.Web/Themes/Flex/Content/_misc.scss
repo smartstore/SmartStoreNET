@@ -1,34 +1,15 @@
 /// <reference path="_variables.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
-/* Breadcrumb
-================================================ */
-.breadcrumb {
-    padding: 0;
-    background: none;
-    font-size: $font-size-sm;
-    margin-bottom: 1.5rem;
-}
-.breadcrumb-item:after {
-    content: '|';
-    padding: 0 0.5rem;
-}
-.breadcrumb-item:last-of-type:after { 
-    display: none; 
-}
-.breadcrumb > li + li::before {
-    display: none !important;
-}
-.breadcrumb-item > a {
-    color: $body-color !important;
-}
+//
+// Brands
+// -------------------------------------------------
 
-/* All manufacturers
-================================================ */
 .manufacturer-list-title {
     font-weight: bold;
     padding-bottom: 0.5rem;
 }
+
 .manufacturer-nav {
     border-bottom: 1px solid #ddd;
     margin-bottom: 2rem;
@@ -47,63 +28,9 @@
     }
 }
 
-/* Misc
-================================================ */
-body.popup { 
-    padding: 20px; 
-    background: $body-bg;
-}
-#iframe-backinstocksubsription {
-    max-width: 100%;
-}
-
-// delivery times
-.deliverytime-group .delivery-time { 
-    vertical-align: top; 
-    padding-left: 0.25rem;
-} 
-.delivery-time {
-    display: inline-block;
-    color: $brand-danger;
-    vertical-align: middle;
-    max-width: 100%;
-    @include text-truncate();
-
-    .delivery-time-status {
-        padding-right: 0.2rem;
-        font-size: 0.85em;
-    }
-}
-
-
-// menu
-.dropdown {
-    display: inline;
-    /*a {
-        font-size: $font-size-sm;
-    }*/
-    .badge {
-        font-size: $font-size-xs;
-    }
-}
-
-.text-smaller,
-.text-smaller a {
-    font-size: $font-size-sm;
-}
-
-// homepage misc
-.page.home-page .card-header {
-    font-weight: $font-weight-medium;
-}
-
-// generic:
-// block titles
-.contact-page .block .block-title {
-    padding: 0 0 1.5rem 0;
-    font-size: 2rem;
-}
-
+//
+// File Upload
+// -------------------------------------------------
 
 // overwrite for bluimp file upload control
 .fileupload .fileupload-progress.collapse {
@@ -115,9 +42,15 @@ body.popup {
 }
 
 
-/* Private Messages
-================================================ */
+//
+// Other stuff
+// -------------------------------------------------
+
+#iframe-backinstocksubsription {
+    max-width: 100%;
+}
+
 .pm-unread {
 	font-weight: bold;
-	background: #f7f7f7;
+	background: $gray-lightest;
 }

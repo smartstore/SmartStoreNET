@@ -7,9 +7,46 @@ $ocm-border-color:                      rgba(#000, 0.1);
 $ocm-horizontal-padding:                1.6rem;
 $ocm-selected-color:                    $brand-warning;
 
+
+//
+// Category Menu
+// ------------------------------------------------------
+
+.catmenu {
+    .catmenu-path-item {
+        font-weight: $font-weight-medium;
+        background: rgba($list-group-hover-bg, 0.5);
+    }
+
+    .catmenu-path-item.expanded,
+    .catmenu-item.parent {
+        padding-right: $list-group-item-padding-x * 1.5;
+
+        &:after {
+            @include fontawesome("\f105", 1.2rem);   
+            display: block;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%); 
+        }
+    }
+
+    .catmenu-path-item.expanded {
+        color: $body-color;
+        &:after { content: '\f148'; font-size: inherit; }
+    }
+
+    .catmenu-path-item.active {
+        font-size: 1rem;
+        &:before { display: none !important; }
+    }
+}
+
+
 //
 // Sidebar Navigation Menus (Category menu etc.)
-// --------------------------------------------------
+// ------------------------------------------------------
 
 #offcanvas-menu {
     .tab-pane {
@@ -157,8 +194,9 @@ $ocm-selected-color:                    $brand-warning;
 }
 
 
-// Animation
-// ===============================================
+//
+// Offcanvas animation
+// ------------------------------------------------------
 
 #offcanvas-menu {
     .layer {
@@ -190,8 +228,9 @@ $ocm-selected-color:                    $brand-warning;
     }
 }
 
-// Service menu 
-// ===============================================
+//
+// Offcanvas Service menu 
+// ------------------------------------------------------
 
 #ocm-service {
     .menubar {
@@ -262,12 +301,18 @@ $ocm-selected-color:                    $brand-warning;
     }
 }
 
+
+//
+// Misc
+// ------------------------------------------------------
+
 // very weird hack to prevent loading icon from wobbling :-/ font-size is 20px
 .touchevents .category-container .ocm-item.has-children.animated:after {
     max-height: 18px;
 }
 
-// one more then .offcanvas-overlay
+
 body > .select2-container {
+    // one higher than .offcanvas-overlay
     z-index: $offcanvas-z-index + 1;
 }

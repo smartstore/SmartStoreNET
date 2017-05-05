@@ -1,7 +1,8 @@
+/// <reference path="../_variables.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
 // Forms
-// ==============================================================
+// ------------------------------------------------------
 
 fieldset.content-group {
     margin-bottom: 2rem;
@@ -12,8 +13,6 @@ fieldset.content-group {
         font-weight: 400;
         color: $gray-light;
         text-transform: uppercase;
-        //border-bottom: 1px solid rgba(0,0,0, 0.12);
-        //padding-bottom: 1rem;
         margin-bottom: 1.2rem;
 
         &:before {
@@ -56,7 +55,7 @@ fieldset.content-group {
 
 
 // Control with Icons
-// ==============================================================
+// ------------------------------------------------------
 
 .has-icon {
     position: relative;
@@ -120,17 +119,50 @@ fieldset.content-group {
 
 
 // Checkbox & Radio tweaks
-// ==============================================================
+// ------------------------------------------------------
 
-.radio input[type="radio"], .radio-inline input[type="radio"], 
-.checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
-    /*margin-top: 0.5rem;
-    margin-left: -1.5rem;*/
+.radio input[type="radio"], 
+.radio-inline input[type="radio"], 
+.checkbox input[type="checkbox"], 
+.checkbox-inline input[type="checkbox"] {
     margin-right: 0.25rem;
 }
 
-/*.radio-inline + .radio-inline, 
-.checkbox-inline + .checkbox-inline {
-    margin-left: 1.75rem;
-}*/
+
+//
+// Validation
+// ------------------------------------------------------
+
+.validation-summary-valid,
+.validation-summary-errors {
+    @extend .alert;
+
+    > *:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.validation-summary-valid {
+    @extend .alert-success; 
+}
+
+.validation-summary-errors {
+    @extend .alert-danger; 
+}
+
+.field-validation-error {
+    display: block;
+    color: $state-danger-text;
+    margin-top: 0.25rem;
+}
+
+
+//
+// Some BS 4 fixes
+// ------------------------------------------------------
+
+.input-group .form-control {
+    // Inputs too wide on FF otherwise
+    flex-basis: auto;
+}
 

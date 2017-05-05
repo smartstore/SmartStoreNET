@@ -1,750 +1,113 @@
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 /* Theme: FLEX 
------------------------------- */
+======================================== */
 
-// Virtual file which fetches all theme variables from the database.
-// We use these variables to override bootstrap defaults.
+
+//
+// Virtual file which fetches all theme variables 
+// from the database. We use these variables to 
+// override bootstrap defaults.
+// --------------------------------------------------
+
 @import '~/.app/themevars.scss';
+
+//
 // Contains theme specific variable defaults
 // and bootstrap variable overrides.
+// --------------------------------------------------
+
 @import '_variables-custom.scss'; 
 @import '_variables.scss'; 
 
-
-// Bootstrap
+//
+// Bootstrap 4
+// --------------------------------------------------
 
 @import "bs4/scss/bootstrap.scss"; 
 
 
-// Global
+//
+// Vendors
+// --------------------------------------------------
+
+@import "vendors/photoswipe/photoswipe.scss";
+@import "vendors/slick/slick.scss";
+@import "vendors/select2/scss/core.scss";
+
+
+//
+// Global / Shared
+// --------------------------------------------------
 
 /*@import 'shared/_colors.scss';*/ // <-- uncomment this for convenient prototyping
 @import 'shared/_mixins.scss'; 
 @import 'shared/_typo.scss';
-@import 'shared/_buttons.scss';
+@import 'shared/_alert.scss';
+@import 'shared/_buttons.scss'; 
 @import 'shared/_card.scss';
 @import 'shared/_forms.scss';
+@import 'shared/_breadcrumb.scss';
+@import 'shared/_pagination.scss';
 @import 'shared/_nav.scss';
-@import "shared/_modal-flex.scss"; 
+@import 'shared/_nav-collapsible.scss';
+@import "shared/_modal.scss"; 
 @import "shared/_throbber.scss";
 @import "shared/_spinner.scss";
 @import "shared/_star-rating.scss";
 @import "shared/_sortable-grip.scss";
-@import "shared/_utils.scss";
-@import "vendors/select2/scss/core.scss";
-@import "shared/_select2.scss";
 @import "shared/_offcanvas.scss";
 @import "shared/_animate.scss";
-@import "shared/_touchspin.scss";
-@import "shared/_pnotify.scss";
-@import "vendors/photoswipe/photoswipe.scss";
-@import "vendors/slick/slick.scss";
 
 
+//
+// Component skinning
+// --------------------------------------------------
+
+@import "skinning/_select2.scss";
+@import "skinning/_touchspin.scss";
+@import "skinning/_pnotify.scss";
+@import "skinning/_photoswipe.scss";
+@import "skinning/_slick.scss";
+@import "skinning/_drift.scss";
+
+
+//
 // Main
+// --------------------------------------------------
 
+@import "_core.scss";
 @import "_layout.scss";
+@import "_block.scss";
 @import "_shopbar.scss";
-@import "_search.scss";
 @import "_footer.scss";
-@import "_misc.scss";
+@import "_menu.scss";
+@import "_megamenu.scss";
+@import "_text-expander.scss";
+@import "_choice.scss";
+@import "_search.scss";
 @import "_blog.scss";
 @import "_forum.scss";
-@import "_checkout.scss";
 @import "_login.scss";
 @import "_rating.scss";
 @import "_artlist.scss";
 @import "_product.scss";
 @import "_gallery.scss";
 @import "_cart.scss";
-@import "_megamenu.scss";
-@import "_menu.scss";
+@import "_checkout.scss";
+@import "_misc.scss";
 
-@import "_photoswipe-theme.scss";
-@import "_slick-theme.scss";
-@import "_drift-theme.scss";
+
+//
+// Custom imports from plugins
+// --------------------------------------------------
+
+@import '~/.app/moduleimports.scss';
+
+
+//
+// Customization
+// --------------------------------------------------
 
 @import "_custom.scss";
 @import "_user.scss";
-
-
-// Custom imports from plugins
-
-@import '~/.app/moduleimports.scss'; 
-
-
-//
-// TODO: (mc) Move all later (!)
-// ------------------------------------------------------
-
-
-.page-title {
-    margin-bottom: 1.5rem;
-}
-
-.text-body {
-    font-size: $lead-font-size;
-}
-
-
-.block {
-    &:not(:last-child) {
-        margin-bottom: 1.8rem;
-    }
-
-    .block-title {
-        font-size: $font-size-h3;
-        border-bottom: 1px solid rgba(0,0,0, 0.12);
-        padding-top: 0.75em;
-        padding-bottom: 0.75em;
-
-        > * {
-            // Most probably a heading tag
-            margin: 0;
-            padding: 0;
-        }
-    }
-
-    .block-body {
-        padding-top: 1rem;
-    }
-
-    &.block-boxed {
-        border: 1px dotted rgba(0,0,0, 0.2);
-        .block-title > * { font-weight: $font-weight-normal; }
-    }
-
-    &.block-boxed .block-title {
-        color: $gray-light;
-        margin-left: 1.5rem;
-        margin-right: 1.5rem;
-    }
-}
-
-.page-body > .block:not(.block-boxed):first-child {
-    margin-top: 0 !important;
-
-    .block-title {
-        padding-top: 0;
-    }
-}
-
-
-
-.pagination {
-    .page-nav {
-        background-color: #fff;
-        &:hover { background-color: $pagination-hover-bg; }
-        &:first-of-type { margin-right: 0.25rem; }
-        &:last-of-type { margin-left: 0.25rem; }
-    }
-
-    .page-link {
-        border-radius: 2px !important;
-        margin-left: 0;
-        text-decoration: none !important;
-    }
-
-    .shrinked .page-link {
-        padding-left: 2px;
-        padding-right: 2px;
-        background-color: transparent !important;
-    }
-
-    .page-link:not(.page-nav) {
-        border-color: transparent !important;
-    }
-
-    .active .page-link {
-        font-weight: bold;
-    }
-
-    &.pagination-xs {
-        .page-link {
-            line-height: 1.4;
-            font-size: $font-size-xs;
-            padding: 0 6px;
-        }
-    }
-}
-
-.tooltip {
-    font-size: $font-size-sm;
-}
-
-.badge {
-    border: 1px solid #fff;
-}
-
-table th {
-    font-weight: $font-weight-medium;
-}
-
-a.pretty-link {
-    color: $body-color;
-    text-decoration: none;
-    font-weight: $font-weight-medium;
-
-    > i { padding-right: 1.2rem; }
-    > span {
-        color: #aaa;
-        &:hover, &:active { color: inherit; }
-    }
-}
-
-.has-count[data-count]:after {
-    content: "(" attr(data-count) ")";
-    position: relative;
-    display: inline-block;
-    opacity: 0.6;
-	padding-left: 0.2rem;
-    font-weight: 400;
-}
-
-
-
-//
-// Text expander / collapser (Move later!)
-// ------------------------------------------------------
-
-.more-less {
-    display: block;
-    position: relative;
-    max-height: 260px;
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-
-    .btn-text-expander {
-        display: none;
-        position: absolute;
-        font-weight: $font-weight-medium;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 2;
-        text-decoration: none !important;
-
-        .fa { padding-right: 0.4rem }
-    }
-
-    .btn-text-expander--expand::after {
-        content: '';
-        position: absolute;
-        z-index: -1;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: ($font-size-base * $line-height-base) * 3;
-        background: linear-gradient(to bottom, rgba($body-bg, 0), $body-bg 70%, $body-bg 100%);
-    }
-
-    .btn-text-expander--collapse {
-        position: relative;
-        font-weight: normal;
-    }
-
-    &.collapsed {
-        .btn-text-expander--expand { display: block; }
-    }
-
-    &.expanded {
-        max-height: none !important;
-        .btn-text-expander--collapse { display: block; }
-    }
-}
-
-
-// Icon margins (Move later!)
-// ------------------------------------------------------
-
-.btn,
-.menubar-link,
-.nav-link,
-.dropdown-item {
-    .fa + span, .fa + em { padding-left: 0.4em; }
-    span + .fa, em + .fa { margin-left: 0.4em; }
-}
-
-
-// Data binding 3d rotate
-// ------------------------------------------------------
-@keyframes data-binding {
-    0%      { transform: rotateY(0deg); }
-    50%     { transform: rotateY(180deg); color: transparent; }
-    100%    { transform: rotateY(360deg); }
-}
-
-.data-binding {
-    animation: data-binding 0.5s ease-in-out;
-}
-
-
-//
-// Some layout utils
-// ------------------------------------------------------
-
-.sm-gutters {
-    $gw: 0.5rem;
-    margin-right: $gw * -1;
-    margin-left: $gw * -1;
-    > .col, > [class*="col-"] {
-        padding-right: $gw;
-        padding-left: $gw;
-    }
-}
-
-.xs-gutters {
-    $gw: 0.25rem;
-    margin-right: $gw * -1;
-    margin-left: $gw * -1;
-    > .col, > [class*="col-"] {
-        padding-right: $gw;
-        padding-left: $gw;
-    }
-}
-
-
-//
-// Some BS 4 fixes
-// ------------------------------------------------------
-
-.input-group .form-control {
-    // Inputs too wide on FF otherwise
-    flex-basis: auto;
-}
-
-
-//
-// Some Flex utils
-// ------------------------------------------------------
-
-.flex-grow-0        { flex-grow: 0 !important; }
-.flex-grow-1        { flex-grow: 1 !important; }
-
-
-//
-// Profiler sucks on small screens
-// ------------------------------------------------------
-
-@include media-breakpoint-down(sm) {
-    .profiler-results {
-        display: none !important;
-    }
-}
-
-
-//
-// Fontastic utils (ensure crisp icons with 20/40...px)
-// ------------------------------------------------------
-
-.icm        { font-size: 20px; display: inline-block; }
-.icm-2x     { font-size: 40px; }
-.icm-3x     { font-size: 60px; }
-.icm-4x     { font-size: 80px; }
-.icm-5x     { font-size: 100px; }
-
-
-// Imaging
-// ------------------------------------------------------
-
-.img-center-container {
-    display: block;
-    position: relative;
-    height: 0;
-    width: 100%;
-    padding-top: 100%;
-    text-decoration: none !important;
-    outline: none !important;
-
-    > img {
-        position: absolute;
-        max-width: 100%;
-        max-height: 100%;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-    }
-}
-
-
-//
-// Validation
-// ------------------------------------------------------
-
-.validation-summary-valid,
-.validation-summary-errors {
-    @extend .alert;
-
-    > *:last-child {
-        margin-bottom: 0;
-    }
-}
-
-.validation-summary-valid {
-    @extend .alert-success; 
-}
-
-.validation-summary-errors {
-    @extend .alert-danger; 
-}
-
-.field-validation-error {
-    display: block;
-    color: $state-danger-text;
-    margin-top: 0.25rem;
-}
-
-
-
-//
-// Alerts
-// ------------------------------------------------------
-
-.alert {
-    position: relative;
-    padding-left: 4rem;
-    line-height: 1.5;
-    border-width: 0;
-
-    &:before {
-        display: block; 
-        position: absolute;
-        content: ' ';
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 3rem;
-        z-index: 1;
-    }
-    &.alert-danger:before    { background-color: $brand-danger; }
-    &.alert-info:before      { background-color: $brand-info; }
-    &.alert-success:before   { background-color: $brand-success; }
-    &.alert-warning:before   { background-color: $brand-warning; }
-
-    &:after {
-        display: block; 
-        position: absolute;
-        color: #fff;
-        font-family: FontAwesome; 
-        left: 0;
-        top: 50%;
-        font-size: 1.25em;
-        width: 3rem;
-        text-align: center;
-        transform: translateY(-50%);
-        z-index: 2;
-    }
-    &.alert-danger:after   { content: "\f071"; } // exclamation-triangle
-    &.alert-info:after     { content: "\f129"; } // info
-    &.alert-success:after  { content: "\f00c"; } // check
-    &.alert-warning:after  { content: "\f06a"; } // exclamation-circle
-}
-
-.alert > ul {
-    padding-left: 1.2rem;
-}
-
-.alert > *:first-child {
-	margin-top: 0 !important;
-}
-
-.alert > *:last-child {
-	margin-bottom: 0 !important;
-}
-
-
-
-//
-// Choice-Styles (Variants etc.)
-// ------------------------------------------------------
-
-.choice {
-    margin-bottom: 1rem;
-}
-
-.col-form-label.required,
-.choice-label.required {
-	color: inherit;
-	font-weight: bold;
-	&:after { content: ' *' }
-}
-
-.choice-item-img,
-.choice-item-color {
-    display: inline-block;
-    text-decoration: none !important;
-    margin-right: 0.25rem;
-    overflow: hidden;
-}
-
-.choice-item-img {
-    max-width: 20px;
-    max-height: 1em;
-
-    > img {
-        max-width: 100%;
-        height: auto;
-    }
-}
-
-.choice-item-color {
-    width: 1em;
-    height: 1em;
-    padding: 0;
-}
-
-.choice-description {
-    color: $text-muted;
-    font-size: $font-size-sm;
-    margin-bottom: 0.5rem;
-    > *:first-child { margin-top: 0; }
-    > *:last-child { margin-bottom: 0; }
-}
-
-.choice-box-group {
-    $choice-box-padding:        0.2rem;
-    $choice-box-size:           2.8rem;
-    $choice-box-size-lg:        4rem;
-    $choice-box-size-sm:        2.3rem;
-    $choice-box-size-xl:        6rem;
-
-	margin: 0;
-	padding: 0;
-	list-style-type: none;
-    position: relative;
-    margin: 0 ($choice-box-padding * -1);
-
-    @include clearfix();
-
-	.choice-box {
-        position: relative;
-        float: left;
-        display: block;
-        padding: $choice-box-padding;
-	}
-
-    .choice-box-label {
-        margin: 0;
-    }
-
-	.choice-box-content {
-        position: relative;
-		display: block;
-        cursor: pointer;
-
-        &:after {
-            box-sizing: content-box;
-            position: absolute;
-            display: block;
-            right: -6px;
-            top: -6px;
-            background-color: $brand-warning;
-            border-radius: 50%;
-            border: 1px solid #fff;
-
-            width: 16px;
-            height: 16px;
-            line-height: 16px;
-            text-align: center;
-            vertical-align: middle;
-
-            font-family: FontAwesome;
-            content: "\f00c"; // check
-            color: #fff;
-            font-size: 10px;
-
-            opacity: 0;
-            transform: scale(0);
-            transition: all 0.1s ease-in;
-        }
-	}
-
-	.choice-box-element {
-        display: inline-block;
-        border: 1px solid rgba(0,0,0, .3);
-        background-color: #fff;
-        transition: border-color 0.1s linear;
-
-        height: $choice-box-size;
-        line-height: $choice-box-size;
-        min-width: $choice-box-size;
-        vertical-align: middle;
-        text-align: center;
-        overflow: hidden;
-        font-weight: $font-weight-medium;
-
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-
-        &:hover { border-color: rgba(0,0,0, 0.7); }
-
-        .choice-box-text {
-            padding: 0 0.4rem;
-        }
-	}
-
-	.choice-box-control-native:checked + .choice-box-content {
-        .choice-box-element {
-            border-color: rgba(0,0,0, 0.7);
-            outline: 1px solid rgba(0,0,0, 0.7);
-        }
-
-        &:after {
-            opacity: 1;
-            transform: scale(1);
-        }
-	}
-
-	.choice-box-control-native {
-		display: none !important;
-	}
-
-    // Choice box sizing
-    &.choice-box-group-xl .choice-box-element {
-        height: $choice-box-size-xl;
-        line-height: $choice-box-size-xl;
-        min-width: $choice-box-size-xl;     
-    }
-
-    &.choice-box-group-lg .choice-box-element {
-        height: $choice-box-size-lg;
-        line-height: $choice-box-size-lg;
-        min-width: $choice-box-size-lg;       
-    }
-
-    &.choice-box-group-sm .choice-box-element {
-        height: $choice-box-size-sm;
-        line-height: $choice-box-size-sm;
-        min-width: $choice-box-size-sm;       
-    }
-}
-
-
-//
-// Category Menu
-// ------------------------------------------------------
-
-.catmenu {
-    .catmenu-path-item {
-        font-weight: $font-weight-medium;
-        background: rgba($list-group-hover-bg, 0.5);
-    }
-
-    .catmenu-path-item.expanded,
-    .catmenu-item.parent {
-        padding-right: $list-group-item-padding-x * 1.5;
-
-        &:after {
-            @include fontawesome("\f105", 1.2rem);   
-            display: block;
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%); 
-        }
-    }
-
-    .catmenu-path-item.expanded {
-        color: $body-color;
-        &:after { content: '\f148'; font-size: inherit; }
-    }
-
-    .catmenu-path-item.active {
-        font-size: 1rem;
-        &:before { display: none !important; }
-    }
-}
-
-
-//
-// Compare table
-// ------------------------------------------------------
-
-.table-compare {
-    td, th {
-        width: 20%;
-    }
-    
-    th {
-        font-weight: $font-weight-medium;
-    }
-
-    tbody {
-        font-size: $font-size-sm;
-    }
-}
-
-
-
-//
-// Bootstrap List group tweaks
-// ------------------------------------------------------
-
-.list-group {
-    .list-group-item {
-        overflow: hidden;
-    }
-
-    .list-group-item.active {
-        &:before {
-            @include active-list-item($size: 3px);
-        }      
-    }
-
-    &.has-icons {
-        .list-group-item {
-            display: inline-flex;
-            align-items: baseline;
-        }
-
-        .list-group-item-icon {
-            margin-right: 0.75rem;
-        }
-    }
-}
-
-
-//
-// Responsive collapse
-// ------------------------------------------------------
-
-@include media-breakpoint-down(sm) {
-    .nav-collapsible {
-        position: relative;
-
-        .nav-toggler { 
-            position: relative;
-            line-height: 1.5;
-            cursor: pointer; 
-            margin: 0;
-            padding: 0.75rem 1rem;
-
-            &:after {
-                @include fontawesome("\f106");
-                position: absolute;
-                right: 1rem;
-                top: 50%;
-                transform: translateY(-50%);
-            }
-
-            &.collapsed:after {
-                content: "\f107";
-            }
-        }
-
-        .nav-collapse {
-            padding: 0 1rem;
-        }
-    }
-}
-
-@include media-breakpoint-up(md) { 
-    .nav-collapsible .nav-collapse {
-        display: block !important;
-        height: auto !important;
-    }
-}

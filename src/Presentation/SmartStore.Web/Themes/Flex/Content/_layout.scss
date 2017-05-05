@@ -1,6 +1,22 @@
 /// <reference path="_variables.scss" />
 /// <reference path="bs4/scss/bootstrap.scss" />
 
+
+// Responsive Typo
+// ==============================================================
+
+@include media-breakpoint-down(md) {
+    html {
+        font-size: 15px;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    html {
+        font-size: 14px;
+    }
+}
+
 //
 // Layout
 // --------------------------------------------------
@@ -12,6 +28,11 @@ html {
 
 body { 
     background: $site-bg; 
+}
+
+body.popup { 
+    padding: 1.25rem; 
+    background: $body-bg;
 }
 
 #header {
@@ -59,6 +80,9 @@ body {
     }
 }
 
+//
+// 'Scroll to top' button
+// --------------------------------------------------
 
 #scroll-top {
     z-index: 9999;

@@ -98,12 +98,13 @@
 			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*.txt" />
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
 		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
-		  	<SqlCe-Native-Binaries-amd64 Include="$(SqlCeFolder)\amd64\**\*"/>
+		  	<SqlCe-Native-Binaries-x64 Include="$(SqlCeFolder)\x64\**\*"/>
 		  	<Msvcp140-Binaries-x86 Include="$(Msvcp140Folder)\x86\**\*"/>
-		  	<Msvcp140-Binaries-amd64 Include="$(Msvcp140Folder)\amd64\**\*"/>
-		  	<V8-Native-Binaries-x86 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.2.0\runtimes\win7-x86\native\**\*"/>
-		  	<V8-Native-Binaries-x64 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.2.2.0\runtimes\win7-x64\native\**\*"/>
-		  	<LibSass-Native-Binaries Include="$(SrcFolder)\packages\LibSassHost.0.6.1\content\LibSassHost.Native\**\*"/>
+		  	<Msvcp140-Binaries-x64 Include="$(Msvcp140Folder)\x64\**\*"/>
+		  	<V8-Native-Binaries-x86 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\runtimes\win7-x86\native\**\*"/>
+		  	<V8-Native-Binaries-x64 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.2.4.0\runtimes\win7-x64\native\**\*"/>
+		  	<LibSass-Native-Binaries-x86 Include="$(SrcFolder)\packages\LibSassHost.Native.win-x86.1.0.3\runtimes\win7-x86\native\**\*"/>
+		  	<LibSass-Native-Binaries-x64 Include="$(SrcFolder)\packages\LibSassHost.Native.win-x64.1.0.3\runtimes\win7-x64\native\**\*"/>
 		</ItemGroup>
 
 		<!-- delete the build folder -->
@@ -153,12 +154,13 @@
 
 		<!-- copy native binaries-->
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
-		<Copy SourceFiles="@(SqlCe-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
+		<Copy SourceFiles="@(SqlCe-Native-Binaries-x64)" DestinationFolder="$(StageFolder)\bin\x64\%(RecursiveDir)" />
 		<Copy SourceFiles="@(Msvcp140-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
-		<Copy SourceFiles="@(Msvcp140-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
+		<Copy SourceFiles="@(Msvcp140-Binaries-x64)" DestinationFolder="$(StageFolder)\bin\x64\%(RecursiveDir)" />
 		<Copy SourceFiles="@(V8-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
 		<Copy SourceFiles="@(V8-Native-Binaries-x64)" DestinationFolder="$(StageFolder)\bin\x64\%(RecursiveDir)" />
-		<Copy SourceFiles="@(LibSass-Native-Binaries)" DestinationFolder="$(StageFolder)\bin\LibSassHost.Native\%(RecursiveDir)" />
+		<Copy SourceFiles="@(LibSass-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
+		<Copy SourceFiles="@(LibSass-Native-Binaries-x64)" DestinationFolder="$(StageFolder)\bin\x64\%(RecursiveDir)" />
 
 		<!-- transform config files -->
 		<TransformXml Source="$(TransformInputFile)" Transform="$(TransformFile)" Destination="$(TransformOutputFile)" />

@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Compilation;
-using System.Web.Hosting;
-using Microsoft.Web.Infrastructure;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
-using SmartStore.ComponentModel;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Packaging;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
+using System.Runtime.InteropServices;
 
 // Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
 // SEE THIS POST for full details of what this does
@@ -33,7 +29,10 @@ namespace SmartStore.Core.Plugins
     /// </summary>
     public class PluginManager
     {
-        private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
+		[DllImport("kernel32.dll", SetLastError = true)]
+		private static extern bool SetDllDirectory(string lpPathName);
+
+		private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
         private static DirectoryInfo _shadowCopyFolder;
         private static readonly string _pluginsPath = "~/Plugins";
         private static readonly string _shadowCopyPath = "~/Plugins/bin";
@@ -98,10 +97,11 @@ namespace SmartStore.Core.Plugins
 				updater.ExecuteMigrations();
 			}
 			
-			// adding a process-specific environment path (either bin/x86 or bin/amd64)
+			// adding a process-specific environment path (either bin/x86 or bin/x64)
 			// ensures that unmanaged native dependencies can be resolved successfully.
-			SetPrivateEnvPath();
-			
+			SetNativeDllPath();
+			//SetPrivateEnvPath();
+
 			DynamicModuleUtility.RegisterModule(typeof(AutofacRequestLifetimeHttpModule));
 			
 			using (Locker.GetWriteLock())
@@ -476,17 +476,26 @@ namespace SmartStore.Core.Plugins
 			{
 				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "x86");
 			}
-			
+
 
 			Environment.SetEnvironmentVariable("PATH", envPath, EnvironmentVariableTarget.Process);
 		}
 
-        /// <summary>
-        /// Indicates whether assembly file is already loaded
-        /// </summary>
-        /// <param name="fileInfo">File info</param>
-        /// <returns>Result</returns>
-        private static bool IsAlreadyLoaded(FileInfo fileInfo)
+		private static void SetNativeDllPath()
+		{
+			var currentDomain = AppDomain.CurrentDomain;
+			var privateBinPath = currentDomain.SetupInformation.PrivateBinPath.NullEmpty() ?? currentDomain.BaseDirectory;
+			var dir = Path.Combine(privateBinPath, Environment.Is64BitProcess ? "x64" : "x86");
+
+			SetDllDirectory(dir);
+		}
+
+		/// <summary>
+		/// Indicates whether assembly file is already loaded
+		/// </summary>
+		/// <param name="fileInfo">File info</param>
+		/// <returns>Result</returns>
+		private static bool IsAlreadyLoaded(FileInfo fileInfo)
         {
             // do not compare the full assembly name, just filename
             try

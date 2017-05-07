@@ -2832,36 +2832,38 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			base.Alter(entities);
 
-			entities.WithKey(x => x.Name)
-				.Alter("Red", x => x.Name = "Rot")
-				.Alter("Green", x => x.Name = "Grün")
-				.Alter("British Racing Green", x => x.Name = "Britisches Renn-Grün")
-				.Alter("Blue", x => x.Name = "Blau")
-				.Alter("Yellow", x => x.Name = "Gelb")
-				.Alter("Black", x => x.Name = "Schwarz")
-				.Alter("White", x => x.Name = "Weiß");
+			entities.Where(x => x.Name == "Red").Each(x => x.Name = "Rot");
+			entities.Where(x => x.Name == "Green").Each(x => x.Name = "Grün");
+			entities.Where(x => x.Name == "British Racing Green").Each(x => x.Name = "Britisches Renn-Grün");
+			entities.Where(x => x.Name == "Blue").Each(x => x.Name = "Blau");
+			entities.Where(x => x.Name == "Yellow").Each(x => x.Name = "Gelb");
+			entities.Where(x => x.Name == "Black").Each(x => x.Name = "Schwarz");
+			entities.Where(x => x.Name == "White").Each(x => x.Name = "Weiß");
+			entities.Where(x => x.Name == "Gray").Each(x => x.Name = "Grau");
+			entities.Where(x => x.Name == "Silver").Each(x => x.Name = "Silber");
+			entities.Where(x => x.Name == "Brown").Each(x => x.Name = "Braun");
 		}
 
 		protected override void Alter(IList<ProductVariantAttribute> entities)
 		{
 			base.Alter(entities);
-			
 
-			entities.WithKey(x => x.ProductAttribute.Alias)
-				.Alter("color", x =>
-				{
-					x.ProductVariantAttributeValues.First(v => v.Alias == "black").Name = "Schwarz";
-					x.ProductVariantAttributeValues.First(v => v.Alias == "white").Name = "Weiß";
-				})
-				.Alter("iphone-color", x =>
-				{
-					x.ProductVariantAttributeValues.First(v => v.Alias == "silver").Name = "Silber";
-					x.ProductVariantAttributeValues.First(v => v.Alias == "spacegray").Name = "Space-Grau";
-				})
-				.Alter("game", x =>
-				{
-					x.ProductVariantAttributeValues.First(v => v.Alias == "prince-of-persia-the-forgotten-sands").Name = "Prince of Persia \"Die vergessene Zeit\"";
-				});
+			entities.Where(x => x.ProductAttribute.Alias == "color").Each(x =>
+			{
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "black").Each(y => y.Name = "Schwarz");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "white").Each(y => y.Name = "Weiß");
+			});
+
+			entities.Where(x => x.ProductAttribute.Alias == "iphone-color").Each(x =>
+			{
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "silver").Each(y => y.Name = "Silber");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "spacegray").Each(y => y.Name = "Space-Grau");
+			});
+
+			entities.Where(x => x.ProductAttribute.Alias == "game").Each(x =>
+			{
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "prince-of-persia-the-forgotten-sands").Each(y => y.Name = "Prince of Persia \"Die vergessene Zeit\"");
+			});
 		}
 
         protected override void Alter(IList<ProductTemplate> entities)
@@ -2988,7 +2990,18 @@ namespace SmartStore.Web.Infrastructure.Installation
 			});
         }
 
-        protected override void Alter(IList<Product> entities)
+		private void AlterFashionProducts(IList<Product> entities)
+		{
+			entities.WithKey(x => x.Sku)
+				.Alter("F-112345", x =>
+				{
+					x.Name = "Herren Shirt";
+					x.ShortDescription = "Herren Shirt mit trendigem Rollsaum";
+					x.FullDescription = "<p>Oberstoff (140 g/m²): 100% Baumwolle 100% Bio-Baumwolle, Single Jersey Rundhalsausschnitt und Ärmel mit Rollsaum. In den Trendfarben Heather Grey und Red</p>";
+				});
+		}
+
+		protected override void Alter(IList<Product> entities)
         {
             base.Alter(entities);
 
@@ -3407,6 +3420,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 				#endregion gaming
 
+				AlterFashionProducts(entities);
 			}
             catch (Exception ex)
             {

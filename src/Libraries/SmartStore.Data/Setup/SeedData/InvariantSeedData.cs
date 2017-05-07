@@ -6149,27 +6149,23 @@ namespace SmartStore.Data.Setup
         {
             var entities = new List<ProductAttributeOption>();
             var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
-            var generalColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "General colors");
+			var colorSets = _ctx.Set<ProductAttributeOptionsSet>().ToList();
 
             var generalColors = new string[] { "Red", "Green", "Blue", "Yellow", "Black", "White", "Gray", "Silver", "Brown" };
             var generalColorValues = new string[] { "#ff0000", "#008000", "#0000ff", "#ffff00", "#000000", "#ffffff", "#808080", "#dddfde", "#a52a2a" };
-
 
             for (var i = 0; i < generalColors.Length; ++i)
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = generalColorsSet.Id,
+                    ProductAttributeOptionsSetId = colorSets[0].Id,
                     Alias = GetSeName(generalColors[i]),
                     Name = generalColors[i],
                     Quantity = 1,
                     DisplayOrder = i + 1,
-                    Color = generalColorValues[i]
-                    
+                    Color = generalColorValues[i]                    
                 });
             }
-
-            var appleColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Apple colors");
 
             var appleColors = new string[] { "Gold", "Light blue", "Purple", "Mint", "Rose", "Red", "Silver", "Space gray", "Turquoise" };
             var apppleColorValues = new string[] { "#e3d0ba", "#a6b9df", "#dba5d7", "#a6dbb1", "#d9a6ad", "#af1e2d", "#dddfde", "#abaeb1", "#a4dbde" };
@@ -6178,7 +6174,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = appleColorsSet.Id,
+                    ProductAttributeOptionsSetId = colorSets[1].Id,
                     Alias = GetSeName(appleColors[i]),
                     Name = appleColors[i],
                     Quantity = 1,
@@ -6187,8 +6183,6 @@ namespace SmartStore.Data.Setup
                 });
             }
 
-            var raybanWayfarerColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban original Wayfarer colors");
-
             var raybanWayfarerColors = new string[] { "Blue-Gray", "Brown", "Gray", "Green" };
             var raybanWayfarerColorValues = new string[] { "#3e4659", "#3e4659", "#727377", "#3c432e" };
 
@@ -6196,7 +6190,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = raybanWayfarerColorsSet.Id,
+                    ProductAttributeOptionsSetId = colorSets[2].Id,
                     Alias = GetSeName(raybanWayfarerColors[i]),
                     Name = raybanWayfarerColors[i],
                     Quantity = 1,
@@ -6205,8 +6199,6 @@ namespace SmartStore.Data.Setup
                 });
             }
 
-            var raybanTopbarColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban Topbar colors");
-
             var raybanTopbarColors = new string[] { "Silver", "Shiny black", "Gunmetal", "Black" };
             var raybanTopbarsColorValues = new string[] { "#b5c3c4", "#586166", "#6f785b", "#546d67" };
 
@@ -6214,7 +6206,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = raybanTopbarColorsSet.Id,
+                    ProductAttributeOptionsSetId = colorSets[3].Id,
                     Alias = GetSeName(raybanTopbarColors[i]),
                     Name = raybanTopbarColors[i],
                     Quantity = 1,
@@ -6222,8 +6214,6 @@ namespace SmartStore.Data.Setup
                     Color = raybanTopbarsColorValues[i]
                 });
             }
-
-            var bauhausColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Bauhaus colors");
 
             var bauhausColors = new string[] { "White-old", "Anthracite", "Beige", "Biscuit", "Blue", "Brown", "Champagne", "Cognac", "Brown-dark", "Black", "Green-dark", "Red-dark"
                 , "Graphite-black", "Green", "Blue-light", "Grey-light", "Red-raspberry", "Orange", "Yellow-colza", "Rosso", "Red", "Black", "Red-tomato", "White" };
@@ -6235,7 +6225,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = bauhausColorsSet.Id,
+                    ProductAttributeOptionsSetId = colorSets[4].Id,
                     Alias = GetSeName(bauhausColors[i]),
                     Name = bauhausColors[i],
                     Quantity = 1,
@@ -6845,13 +6835,9 @@ namespace SmartStore.Data.Setup
 
 		public IList<Category> CategoriesFirstLevel()
 		{
-			// pictures
 			var sampleImagesPath = this._sampleImagesPath;
 
-			var categoryTemplateInGridAndLines =
-				this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
-
-            //categories
+			var categoryTemplateInGridAndLines = CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
 
             #region category definitions
 
@@ -7578,6 +7564,77 @@ namespace SmartStore.Data.Setup
 
 			this.Alter(entities);
 			return entities;
+		}
+
+		private List<Product> GetFashionProducts()
+		{
+			var result = new List<Product>();
+			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "ProductTemplate.Simple");
+			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
+			var fashionCategory = _ctx.Set<Category>().First(c => c.Alias == "Fashion");
+			var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
+
+			// Men’s T
+			var product1 = new Product
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Name = "Men’s T",
+				MetaTitle = "Mens shirt",
+				ShortDescription = "Men's shirt with trendy hem",
+				FullDescription = "<p>Topcloth (140 g/m²): 100% cotton 100% organic cotton, single jersey round neck and sleeve with hem. In the trendy colors heather grey and red.</p>",
+				Sku = "F-112345",
+				ManufacturerPartNumber = "JN8002",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				Price = 15.90M,
+				OldPrice = 24.90M,
+				SpecialPrice = 12.00M,
+				SpecialPriceStartDateTimeUtc = new DateTime(2017, 5, 1, 0, 0, 0),
+				SpecialPriceEndDateTimeUtc = specialPriceEndDate,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			product1.ProductCategories.Add(new ProductCategory
+			{
+				Category = fashionCategory,
+				DisplayOrder = 1
+			});
+
+			product1.ProductPictures.Add(new ProductPicture
+			{
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_1.jpg"), "image/jpeg", GetSeName(product1.Name)),
+				DisplayOrder = 1
+			});
+			product1.ProductPictures.Add(new ProductPicture
+			{
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_2.jpg"), "image/jpeg", GetSeName(product1.Name)),
+				DisplayOrder = 2
+			});
+
+			product1.TierPrices.Add(new TierPrice
+			{
+				Quantity = 10,
+				Price = 10.00M
+			});
+			product1.TierPrices.Add(new TierPrice
+			{
+				Quantity = 50,
+				Price = 8.00M
+			});
+
+			result.Add(product1);
+
+
+
+			return result;
 		}
 
 		public IList<Product> Products()
@@ -10662,6 +10719,8 @@ namespace SmartStore.Data.Setup
 				productGroupAccessories,
 				productWatchDogs, productPrinceOfPersia, productDriverSanFrancisco, productPs3OneGame
 			};
+
+			entities.AddRange(GetFashionProducts());
 
 			this.Alter(entities);
 			return entities;

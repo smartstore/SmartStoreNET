@@ -6043,15 +6043,64 @@ namespace SmartStore.Data.Setup
 
 		public IList<ProductAttribute> ProductAttributes()
 		{
-			var attributes = new string[] { "Color", "Custom Text", "HDD", "OS", "Processor", "RAM", "Size", "Software", "Game", "iPhone Color", "Memory capacity" };
-
-			var entities = attributes
-				.Select(x => new ProductAttribute
+			var entities = new List<ProductAttribute>
+			{
+				new ProductAttribute
 				{
-					Name = x,
-					Alias = GetSeName(x)
-				})
-				.ToList();
+					Name = "Color",
+					Alias = "color"
+				},
+				new ProductAttribute
+				{
+					Name = "Custom Text",
+					Alias = "custom-text"
+				},
+				new ProductAttribute
+				{
+					Name = "HDD",
+					Alias = "hdd"
+				},
+				new ProductAttribute
+				{
+					Name = "OS",
+					Alias = "os"
+				},
+				new ProductAttribute
+				{
+					Name = "Processor",
+					Alias = "processor"
+				},
+				new ProductAttribute
+				{
+					Name = "RAM",
+					Alias = "ram",
+				},
+				new ProductAttribute
+				{
+					Name = "Size",
+					Alias = "size"
+				},
+				new ProductAttribute
+				{
+					Name = "Software",
+					Alias = "software"
+				},
+				new ProductAttribute
+				{
+					Name = "Game",
+					Alias = "game"
+				},
+				new ProductAttribute
+				{
+					Name = "Color",
+					Alias = "iphone-color"
+				},
+				new ProductAttribute
+				{
+					Name = "Memory capacity",
+					Alias = "memory-capacity"
+				}
+			};
 
 			this.Alter(entities);
 			return entities;
@@ -6809,7 +6858,7 @@ namespace SmartStore.Data.Setup
             var categoryFurniture = new Category
             {
                 Name = "Furniture",
-                Alias = GetSeName("Furniture"),
+                Alias = "Furniture",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_furniture.jpg"), "image/jpeg", GetSeName("Furniture")),
                 Published = true,
@@ -6821,7 +6870,7 @@ namespace SmartStore.Data.Setup
             var categoryApple = new Category
             {
                 Name = "Apple",
-                Alias = GetSeName("Apple"),
+                Alias = "Apple",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_apple.png"), "image/jpeg", GetSeName("Apple")),
                 Published = true,
@@ -6833,7 +6882,7 @@ namespace SmartStore.Data.Setup
             var categorySports = new Category
             {
                 Name = "Sports",
-                Alias = GetSeName("Sports"),
+                Alias = "Sports",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sports.jpg"), "image/jpeg", GetSeName("Sports")),
                 Published = true,
@@ -6845,7 +6894,7 @@ namespace SmartStore.Data.Setup
             var categoryBooks = new Category
 			{
 				Name = "Books",
-                Alias = GetSeName("Books"),
+                Alias = "Books",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "emblem_library.png"), "image/jpeg", GetSeName("Books")),
 				Published = true,
@@ -6856,7 +6905,7 @@ namespace SmartStore.Data.Setup
 			var categoryComputers = new Category
 			{
 				Name = "Computers",
-                Alias = GetSeName("Computers"),
+                Alias = "Computers",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_computers.png"), "image/png", GetSeName("Computers")),
 				Published = true,
@@ -6867,7 +6916,7 @@ namespace SmartStore.Data.Setup
             var categoryFashion = new Category
             {
                 Name = "Fashion",
-                Alias = GetSeName("Fashion"),
+                Alias = "Fashion",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_fashion.jpg"), "image/png", GetSeName("Fashion")),
                 Published = true,
@@ -6879,7 +6928,7 @@ namespace SmartStore.Data.Setup
             var categoryGaming = new Category
 			{
 				Name = "Gaming",
-				Alias = GetSeName("Gaming"),
+				Alias = "Gaming",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming.png"), "image/png", GetSeName("Gaming")),
 				Published = true,
@@ -6890,7 +6939,7 @@ namespace SmartStore.Data.Setup
 			var categoryCellPhones = new Category
 			{
 				Name = "Cell phones",
-                Alias = GetSeName("Cell phones"),
+                Alias = "Cell phones",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				//ParentCategoryId = categoryElectronics.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_cellphone.png"), "image/png", GetSeName("Cell phones")),
@@ -6902,7 +6951,7 @@ namespace SmartStore.Data.Setup
 			var categoryDigitalDownloads = new Category
 			{
 				Name = "Digital Products",
-                Alias = GetSeName("Digital Products"),
+                Alias = "Digital Products",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitalproducts.jpg"), "image/jpeg", GetSeName("Digital Products")),
 				Published = true,
@@ -6914,7 +6963,7 @@ namespace SmartStore.Data.Setup
 			var categoryGiftCards = new Category
 			{
 				Name = "Gift Cards",
-                Alias = GetSeName("Gift Cards"),
+                Alias = "Gift Cards",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_giftcards.png"), "image/png", GetSeName("Gift Cards")),
 				Published = true,
@@ -6926,7 +6975,7 @@ namespace SmartStore.Data.Setup
 			var categoryWatches = new Category
 			{
 				Name = "Watches",
-                Alias = GetSeName("Watches"),
+                Alias = "Watches",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_watches.png"), "image/png", GetSeName("Watches")),
 				Published = true,
@@ -6961,7 +7010,7 @@ namespace SmartStore.Data.Setup
             var categoryFurnitureSofas = new Category
             {
                 Name = "Sofas",
-                Alias = GetSeName("Sofas"),
+                Alias = "Sofas",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sofas.jpg"), "image/png", GetSeName("Sofas")),
                 Published = true,
@@ -6974,7 +7023,7 @@ namespace SmartStore.Data.Setup
             var categoryFurnitureLounger = new Category
             {
                 Name = "Lounger",
-                Alias = GetSeName("Lounger"),
+                Alias = "Lounger",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_lounger.jpg"), "image/png", GetSeName("Lounger")),
                 Published = true,
@@ -6986,7 +7035,7 @@ namespace SmartStore.Data.Setup
             var categoryFurnitureChairs = new Category
             {
                 Name = "Chairs",
-                Alias = GetSeName("Chairs"),
+                Alias = "Chairs",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_chairs.png"), "image/png", GetSeName("Chairs")),
                 Published = true,
@@ -6999,7 +7048,7 @@ namespace SmartStore.Data.Setup
             var categoryFurnitureLamps = new Category
             {
                 Name = "Lamps",
-                Alias = GetSeName("Lamps"),
+                Alias = "Lamps",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_lamps.png"), "image/png", GetSeName("Lamps")),
                 Published = true,
@@ -7011,7 +7060,7 @@ namespace SmartStore.Data.Setup
             var categorySportsGolf = new Category
             {
                 Name = "Golf",
-                Alias = GetSeName("Golf"),
+                Alias = "Golf",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_golf.jpg"), "image/png", GetSeName("Golf")),
                 Published = true,
@@ -7024,7 +7073,7 @@ namespace SmartStore.Data.Setup
             var categorySportsSunglasses = new Category
             {
                 Name = "Sunglasses",
-                Alias = GetSeName("Sunglasses"),
+                Alias = "Sunglasses",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sunglasses.jpg"), "image/png", GetSeName("Sunglasses")),
                 Published = true,
@@ -7037,7 +7086,7 @@ namespace SmartStore.Data.Setup
             var categorySportsSoccer = new Category
             {
                 Name = "Soccer",
-                Alias = GetSeName("Soccer"),
+                Alias = "Soccer",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_soccer.png"), "image/png", GetSeName("Soccer")),
                 Published = true,
@@ -7050,7 +7099,7 @@ namespace SmartStore.Data.Setup
             var categorySportsBasketball = new Category
             {
                 Name = "Basketball",
-                Alias = GetSeName("Basketball"),
+                Alias = "Basketball",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_basketball.png"), "image/png", GetSeName("Basketball")),
                 Published = true,
@@ -7063,7 +7112,7 @@ namespace SmartStore.Data.Setup
             var categoryBooksSpiegel = new Category
 			{
 				Name = "SPIEGEL-Bestseller",
-                Alias = GetSeName("SPIEGEL-Bestseller"),
+                Alias = "SPIEGEL-Bestseller",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000930_spiegel-bestseller.png"), "image/png", GetSeName("SPIEGEL-Bestseller")),
 				Published = true,
@@ -7075,7 +7124,7 @@ namespace SmartStore.Data.Setup
 			var categoryBooksCookAndEnjoy = new Category
 			{
 				Name = "Cook and enjoy",
-                Alias = GetSeName("Cook and enjoy"),
+                Alias = "Cook and enjoy",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000936_kochen-geniesen.jpeg"), "image/jpeg", GetSeName("Cook and enjoy")),
 				Published = true,
@@ -7087,7 +7136,7 @@ namespace SmartStore.Data.Setup
 			var categoryDesktops = new Category
 			{
 				Name = "Desktops",
-                Alias = GetSeName("Desktops"),
+                Alias = "Desktops",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_desktops.png"), "image/png", GetSeName("Desktops")),
@@ -7099,7 +7148,7 @@ namespace SmartStore.Data.Setup
 			var categoryNotebooks = new Category
 			{
 				Name = "Notebooks",
-                Alias = GetSeName("Notebooks"),
+                Alias = "Notebooks",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_notebooks.png"), "image/png", GetSeName("Notebooks")),
@@ -7111,7 +7160,7 @@ namespace SmartStore.Data.Setup
 			var categoryGamingAccessories = new Category
 			{
 				Name = "Gaming Accessories",
-				Alias = GetSeName("Gaming Accessories"),
+				Alias = "Gaming Accessories",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.png"), "image/png", GetSeName("Gaming Accessories")),
@@ -7123,7 +7172,7 @@ namespace SmartStore.Data.Setup
 			var categoryGamingGames = new Category
 			{
 				Name = "Games",
-				Alias = GetSeName("Games"),
+				Alias = "Games",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.png"), "image/png", GetSeName("Games")),
@@ -7531,16 +7580,6 @@ namespace SmartStore.Data.Setup
 			return entities;
 		}
 
-		private List<Product> GetFashionProducts()
-		{
-			var result = new List<Product>();
-			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "ProductTemplate.Simple");
-			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
-
-
-			return result;
-		}
-
 		public IList<Product> Products()
 		{
 			#region definitions
@@ -7561,7 +7600,7 @@ namespace SmartStore.Data.Setup
 
             #region category golf
 
-            var categoryGolf = this._ctx.Set<Category>().First(c => c.Name == "Golf");
+            var categoryGolf = this._ctx.Set<Category>().First(c => c.Alias == "Golf");
 
             #region product Titleist SM6 Tour Chrome
 
@@ -7746,7 +7785,7 @@ namespace SmartStore.Data.Setup
 
             #region category Soccer
 
-            var categorySoccer = this._ctx.Set<Category>().First(c => c.Name == "Soccer");
+            var categorySoccer = this._ctx.Set<Category>().First(c => c.Alias == "Soccer");
 
             #region product Nike Strike Football
 
@@ -7984,7 +8023,7 @@ namespace SmartStore.Data.Setup
 
             #region category Basketball
 
-            var categoryBasketball = this._ctx.Set<Category>().First(c => c.Name == "Basketball");
+            var categoryBasketball = this._ctx.Set<Category>().First(c => c.Alias == "Basketball");
 
             #region Wilson Evolution High School Game Basketball
 
@@ -8077,7 +8116,7 @@ namespace SmartStore.Data.Setup
 
             #region category sunglasses
 
-            var categorySunglasses = this._ctx.Set<Category>().First(c => c.Name == "Sunglasses");
+            var categorySunglasses = this._ctx.Set<Category>().First(c => c.Alias == "Sunglasses");
 
             #region product Top bar
 
@@ -8305,7 +8344,7 @@ namespace SmartStore.Data.Setup
 
             #region category apple
 
-            var categoryApple = this._ctx.Set<Category>().First(c => c.Name == "Apple");
+            var categoryApple = this._ctx.Set<Category>().First(c => c.Alias == "Apple");
 
             #region product iphone plus
 
@@ -8634,7 +8673,7 @@ namespace SmartStore.Data.Setup
 
             #region category Gift Cards
 
-            var categoryGiftCards = this._ctx.Set<Category>().First(c => c.Name == "Gift Cards");
+            var categoryGiftCards = this._ctx.Set<Category>().First(c => c.Alias == "Gift Cards");
 
 			#region product5GiftCard
 
@@ -8752,9 +8791,9 @@ namespace SmartStore.Data.Setup
 
 			#region category books
 
-            var categorySpiegelBestseller = this._ctx.Set<Category>().First(c => c.Name == "SPIEGEL-Bestseller");
-            var categoryCookAndEnjoy = this._ctx.Set<Category>().First(c => c.Name == "Cook and enjoy");
-            var categoryBooks = this._ctx.Set<Category>().First(c => c.Name == "Books");
+            var categorySpiegelBestseller = this._ctx.Set<Category>().First(c => c.Alias == "SPIEGEL-Bestseller");
+            var categoryCookAndEnjoy = this._ctx.Set<Category>().First(c => c.Alias == "Cook and enjoy");
+            var categoryBooks = this._ctx.Set<Category>().First(c => c.Alias == "Books");
 
 			#region productBooksUberMan
 
@@ -9315,9 +9354,9 @@ namespace SmartStore.Data.Setup
 
 			#region computer
 
-            var categoryComputer = this._ctx.Set<Category>().First(c => c.Name == "Computers");
-            var categoryNotebooks = this._ctx.Set<Category>().First(c => c.Name == "Notebooks");
-            var categoryDesktops = this._ctx.Set<Category>().First(c => c.Name == "Desktops");
+            var categoryComputer = this._ctx.Set<Category>().First(c => c.Alias == "Computers");
+            var categoryNotebooks = this._ctx.Set<Category>().First(c => c.Alias == "Notebooks");
+            var categoryDesktops = this._ctx.Set<Category>().First(c => c.Alias == "Desktops");
 
 			#region productComputerDellInspiron23
 
@@ -9621,7 +9660,7 @@ namespace SmartStore.Data.Setup
 
 			#region Smartphones
 
-            var categoryCellPhones = this._ctx.Set<Category>().First(c => c.Name == "Cell phones");
+            var categoryCellPhones = this._ctx.Set<Category>().First(c => c.Alias == "Cell phones");
 
 			#region productSmartPhonesAppleIphone
 
@@ -9729,7 +9768,7 @@ namespace SmartStore.Data.Setup
 
             #region Instant Download Music / Digital Products
 
-            var categoryDigitalProducts = this._ctx.Set<Category>().First(c => c.Name == "Digital Products");
+            var categoryDigitalProducts = this._ctx.Set<Category>().First(c => c.Alias == "Digital Products");
 
             #region product Books Stone of the Wise
 
@@ -9964,7 +10003,7 @@ namespace SmartStore.Data.Setup
 
             #region watches
 
-            var categoryWatches = this._ctx.Set<Category>().First(c => c.Name == "Watches");
+            var categoryWatches = this._ctx.Set<Category>().First(c => c.Alias == "Watches");
 
             #region productSeikoSRPA49K1
 
@@ -10150,9 +10189,9 @@ namespace SmartStore.Data.Setup
 
 			var manuSony = _ctx.Set<Manufacturer>().First(c => c.Name == "Sony");
 			var manuUbisoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Ubisoft");
-			var categoryGaming = this._ctx.Set<Category>().First(c => c.Name == "Gaming");
-			var categoryGamingAccessories = this._ctx.Set<Category>().First(c => c.Name == "Gaming Accessories");
-			var categoryGamingGames = this._ctx.Set<Category>().First(c => c.Name == "Games");
+			var categoryGaming = this._ctx.Set<Category>().First(c => c.Alias == "Gaming");
+			var categoryGamingAccessories = this._ctx.Set<Category>().First(c => c.Alias == "Gaming Accessories");
+			var categoryGamingGames = this._ctx.Set<Category>().First(c => c.Alias == "Games");
 
 			#region bundlePs3AssassinCreed
 
@@ -10623,8 +10662,6 @@ namespace SmartStore.Data.Setup
 				productGroupAccessories,
 				productWatchDogs, productPrinceOfPersia, productDriverSanFrancisco, productPs3OneGame
 			};
-
-			entities.AddRange(GetFashionProducts());
 
 			this.Alter(entities);
 			return entities;

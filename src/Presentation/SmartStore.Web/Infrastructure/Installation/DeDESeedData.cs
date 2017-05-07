@@ -2773,48 +2773,48 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.Name)
-                .Alter("Color", x =>
+            entities.WithKey(x => x.Alias)
+                .Alter("color", x =>
                 {
                     x.Name = "Farbe";
                 })
-                .Alter("Custom Text", x =>
+                .Alter("custom-text", x =>
                 {
                     x.Name = "eigener Text";
                 })
-                .Alter("HDD", x =>
+                .Alter("hdd", x =>
                 {
                     x.Name = "HDD";
                 })
-                .Alter("OS", x =>
+                .Alter("os", x =>
                 {
                     x.Name = "Betriebssystem";
                 })
-                .Alter("Processor", x =>
+                .Alter("processor", x =>
                 {
                     x.Name = "Prozessor";
                 })
-                .Alter("RAM", x =>
+                .Alter("ram", x =>
                 {
                     x.Name = "Arbeitsspeicher";
                 })
-                .Alter("Size", x =>
+                .Alter("size", x =>
                 {
                     x.Name = "Größe";
                 })
-                .Alter("Software", x =>
+                .Alter("software", x =>
                 {
                     x.Name = "Software";
                 })
-				.Alter("Game", x =>
+				.Alter("game", x =>
 				{
 					x.Name = "Spiel";
 				})
-				.Alter("iPhone Color", x =>
+				.Alter("iphone-color", x =>
 				{
-					x.Name = "iPhone Farbe";
+					x.Name = "Farbe";
 				})
-				.Alter("Memory capacity", x =>
+				.Alter("memory-capacity", x =>
 				{
 					x.Name = "Speicherkapazität";
 				});
@@ -2905,87 +2905,87 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.Name)
-				.Alter("Furniture", x =>
-				{
-					x.Name = "Möbel";
-				})
-				.Alter("Lounger", x =>
-				{
-					x.Name = "Liegen";
-				})
-				.Alter("Chairs", x =>
-				{
-					x.Name = "Stühle";
-				})
-				.Alter("Lamps", x =>
-				{
-					x.Name = "Lampen";
-				})
-				.Alter("Fashion", x =>
-				{
-					x.Name = "Mode";
-				})
-				.Alter("Sports", x =>
-				{
-					x.Name = "Sport";
-				})
-				.Alter("Sunglasses", x =>
-				{
-					x.Name = "Sonnenbrillen";
-				})
-				.Alter("Soccer", x =>
-				{
-					x.Name = "Fußball";
-				})
-				.Alter("Books", x =>
-				{
-					x.Name = "Bücher";
-				})
-				.Alter("Cook and enjoy", x =>
-				{
-					x.Name = "Kochen und Genießen";
-				})
-				.Alter("Computers", x =>
-				{
-					x.Name = "Computer";
-				})
-				.Alter("Desktops", x =>
-				{
-					x.Name = "Desktop Computer";
-				})
-				.Alter("Notebooks", x =>
-				{
-					x.Name = "Notebook";
-				})
-				.Alter("Software", x =>
-				{
-					x.Name = "Software";
-				})
-				.Alter("Cell phones", x =>
-				{
-					x.Name = "Smartphones";
-				})
-				.Alter("Digital Products", x =>
-				{
-					x.Name = "Digitale Produkte";
-				})
-				.Alter("Gift cards", x =>
-				{
-					x.Name = "Geschenkgutscheine";
-				})
-				.Alter("Watches", x =>
-				{
-					x.Name = "Uhren";
-				})
-				.Alter("Gaming Accessories", x =>
-				{
-					x.Name = "Zubehör";
-				})
-				.Alter("Games", x =>
-				{
-					x.Name = "Spiele";
-				});
+            entities.WithKey(x => x.MetaTitle)
+            .Alter("Furniture", x =>
+            {
+                x.Name = "Möbel";
+            })
+            .Alter("Lounger", x =>
+            {
+                x.Name = "Liegen";
+            })
+            .Alter("Chairs", x =>
+            {
+                x.Name = "Stühle";
+            })
+            .Alter("Lamps", x =>
+            {
+                x.Name = "Lampen";
+            })
+            .Alter("Fashion", x =>
+            {
+                x.Name = "Mode";
+            })
+            .Alter("Sports", x =>
+             {
+                 x.Name = "Sport";
+             })
+            .Alter("Sunglasses", x =>
+            {
+                x.Name = "Sonnenbrillen";
+            })
+            .Alter("Soccer", x =>
+            {
+                x.Name = "Fußball";
+            })
+            .Alter("Books", x =>
+            {
+                x.Name = "Bücher";
+            })
+            .Alter("Cook and enjoy", x =>
+            {
+                x.Name = "Kochen und Genießen";
+            })
+            .Alter("Computers", x =>
+                {
+                    x.Name = "Computer";
+                })
+            .Alter("Desktops", x =>
+            {
+                x.Name = "Desktop Computer";
+            })
+            .Alter("Notebooks", x =>
+            {
+                x.Name = "Notebook";
+            })
+            .Alter("Software", x =>
+            {
+                x.Name = "Software";
+            })
+            .Alter("Cell phones", x =>
+            {
+                x.Name = "Smartphones";
+            })
+            .Alter("Digital Products", x =>
+            {
+                x.Name = "Digitale Produkte";
+            })
+            .Alter("Gift cards", x =>
+            {
+                x.Name = "Geschenkgutscheine";
+            })
+            .Alter("Watches", x =>
+            {
+                x.Name = "Uhren";
+            })
+			.Alter("Gaming Accessories", x =>
+			{
+				x.Name = "Zubehör";
+			})
+			.Alter("Games", x =>
+			{
+				x.Name = "Spiele";
+			});
         }
 
         protected override void Alter(IList<Product> entities)

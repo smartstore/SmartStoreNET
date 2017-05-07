@@ -734,6 +734,16 @@
 			</tr>
         }
 
+		@if (Model.DisplayCompletePaymentNote)
+		{
+			<tr>
+				<td colspan="2">
+					<div class="alert alert-warning">
+						@Html.Raw(T("Order.CompletePayment.AdminNote", Url.Action("Details", "Order", new { id = Model.Id, area = "" })))
+					</div>
+				</td>
+			</tr>
+		}
         @if (Model.DisplayPurchaseOrderNumber)
         {
             <tr>

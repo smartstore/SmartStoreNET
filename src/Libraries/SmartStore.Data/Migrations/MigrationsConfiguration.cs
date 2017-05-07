@@ -939,6 +939,9 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Themes.Colors", "Colors", "Farben");
             builder.AddOrUpdate("Admin.Themes.States", "Messages", "Meldungen");
 
+			builder.AddOrUpdate("Order.CompletePayment.AdminNote",
+				"The payment is pending. The buyer can make the payment by clicking on the <b>Complete payment</b> button on the <a href='{0}'>order details page</a>.",
+				"Die Zahlung ist ausstehend. Der Käufer kann die Zahlung durchführen, indem er auf der <a href='{0}'>Bestelldetailseite</a> den Button <b>Zahlung veranlassen</b> klickt.");
         }
 	}
 }

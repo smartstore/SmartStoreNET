@@ -13,7 +13,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
-    public class OrderModel : TabbableModel
+	public class OrderModel : TabbableModel
     {
         public OrderModel()
         {
@@ -180,8 +180,10 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         public string DirectDebitIban { get; set; }
 
-        //misc payment info
-        public bool DisplayPurchaseOrderNumber { get; set; }
+		//misc payment info
+		public bool DisplayCompletePaymentNote { get; set; }
+		public bool DisplayPurchaseOrderNumber { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.Fields.PurchaseOrderNumber")]
         public string PurchaseOrderNumber { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.AuthorizationTransactionID")]

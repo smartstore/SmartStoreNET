@@ -368,6 +368,7 @@ namespace SmartStore.Admin.Controllers
 					model.PurchaseOrderNumber = order.PurchaseOrderNumber;
 				}
 
+				model.DisplayCompletePaymentNote = order.PaymentStatus == PaymentStatus.Pending && pm.Value.CanRePostProcessPayment(order);
 				model.PaymentMethod = _pluginMediator.GetLocalizedFriendlyName(pm.Metadata);
 				model.PaymentMethodSystemName = order.PaymentMethodSystemName;
 			}
@@ -382,8 +383,6 @@ namespace SmartStore.Admin.Controllers
             model.SubscriptionTransactionId = order.SubscriptionTransactionId;
 			model.AuthorizationTransactionResult = order.AuthorizationTransactionResult;
 			model.CaptureTransactionResult = order.CaptureTransactionResult;
-
-            //payment method info
             model.PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext);
 
             //payment method buttons

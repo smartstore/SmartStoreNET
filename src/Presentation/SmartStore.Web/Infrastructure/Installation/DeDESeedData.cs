@@ -3000,6 +3000,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.Name = "Herren Shirt";
 					x.ShortDescription = "Herren Shirt mit trendigem Rollsaum";
 					x.FullDescription = "<p>Oberstoff (140 g/m²): 100% Baumwolle 100% Bio-Baumwolle, Single Jersey Rundhalsausschnitt und Ärmel mit Rollsaum. In den Trendfarben Heather Grey und Red</p>";
+				})
+				.Alter("Fashion-112355", x =>
+				{
+					x.ShortDescription = "Der Sneaker-Klassiker!";
+					x.FullDescription = "<p>Seit 1912 und bis heute unerreicht: Der Converse All Star Sneaker. Ein Schuh für jede Gelegenheit.</p>";
 				});
 		}
 

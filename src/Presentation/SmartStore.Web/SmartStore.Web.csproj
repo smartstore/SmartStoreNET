@@ -767,12 +767,14 @@
     <Content Include="Content\samples\manufacturer-westerndigital.png" />
     <Content Include="Content\samples\manufacturer_adidas.png" />
     <Content Include="Content\samples\manufacturer_apple.png" />
+    <Content Include="Content\samples\manufacturer_breitling.png" />
     <Content Include="Content\samples\manufacturer_nike.png" />
     <Content Include="Content\samples\manufacturer_puma.jpg" />
     <Content Include="Content\samples\manufacturer_ray-ban.jpg" />
     <Content Include="Content\samples\manufacturer_festina.png" />
     <Content Include="Content\samples\manufacturer_oakley.png" />
     <Content Include="Content\samples\manufacturer_sony.png" />
+    <Content Include="Content\samples\manufacturer_tissot.png" />
     <Content Include="Content\samples\manufacturer_titleist.png" />
     <Content Include="Content\samples\manufacturer_ubisoft.png" />
     <Content Include="Content\samples\manufacturer_wilson.png" />
@@ -837,6 +839,7 @@
     <Content Include="Content\samples\product_sony_ps4_camera.png" />
     <Content Include="Content\samples\product_supremeGolfball_1.jpg" />
     <Content Include="Content\samples\product_supremeGolfball_2.jpg" />
+    <Content Include="Content\samples\product_tissot-t-touch-expert-solar.jpg" />
     <Content Include="Content\samples\product_titleist-pro-v1x.jpg" />
     <Content Include="Content\samples\product_titleist_sm6_tour_chrome.jpg" />
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_blue.png" />
@@ -844,6 +847,7 @@
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_red.png" />
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_white.png" />
     <Content Include="Content\samples\product_torfabrik-offizieller-spielball_yellow.png" />
+    <Content Include="Content\samples\product_transocean-chronograph.jpg" />
     <Content Include="Content\samples\product_ultimate-apple-pro-hipster-bundle.jpg" />
     <Content Include="Content\samples\product_watchseries2_1.jpg" />
     <Content Include="Content\samples\product_watchseries2_2.jpg" />

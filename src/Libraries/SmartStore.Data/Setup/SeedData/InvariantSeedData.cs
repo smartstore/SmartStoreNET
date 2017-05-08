@@ -6283,16 +6283,6 @@ namespace SmartStore.Data.Setup
 
             attributeIphone7PlusMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
             {
-                Name = "16 GB",
-                Alias = "16gb",
-                IsPreSelected = true,
-                DisplayOrder = 1,
-                Quantity = 1,
-                ValueType = ProductVariantAttributeValueType.Simple
-            });
-
-            attributeIphone7PlusMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-            {
                 Name = "64 GB",
                 Alias = "64gb",
                 DisplayOrder = 2,
@@ -6626,10 +6616,13 @@ namespace SmartStore.Data.Setup
 			var entities = new List<ProductVariantAttributeCombination>();
 			var attrColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
 			var attrSize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "size");
+            var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
+            var attrColorIphoneColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
+            
 
-			#region ps3
+            #region ps3
 
-			var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
+            var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
 			var ps3PictureIds = productPs3.ProductPictures.Select(pp => pp.PictureId).ToList();
 			var picturesPs3 = _ctx.Set<Picture>().Where(x => ps3PictureIds.Contains(x.Id)).ToList();
 
@@ -6666,15 +6659,24 @@ namespace SmartStore.Data.Setup
             var Iphone7PlusPictureIds = productIphone7Plus.ProductPictures.Select(pp => pp.PictureId).ToList();
             var picturesIphone7Plus = _ctx.Set<Picture>().Where(x => Iphone7PlusPictureIds.Contains(x.Id)).ToList();
 
-            var attributeColorIphone7Plus = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
-            var productAttributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attributeColorIphone7Plus.Id);
-            var attributeColorValuesIphone7Plus = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == productAttributeColorIphone7Plus.Id).ToList();
+            //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
+            
+            var Iphone7PlusColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColorIphoneColors.Id);
+            var Iphone7PlusColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == Iphone7PlusColor.Id).ToList();
+
+            var Iphone7PlusCapacity = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrMemoryCapacity.Id);
+            var Iphone7PlusCapacityValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == Iphone7PlusCapacity.Id).ToList();
+
 
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productIphone7Plus,
-                Sku = productIphone7Plus.Sku + "-B",
-                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "black").Id),
+                Sku = productIphone7Plus.Sku + "-black-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "black").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "64gb").Id),
+
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
@@ -6684,8 +6686,25 @@ namespace SmartStore.Data.Setup
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productIphone7Plus,
-                Sku = productIphone7Plus.Sku + "-RD",
-                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "red").Id),
+                Sku = productIphone7Plus.Sku + "-black-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "black").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "64gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-black")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-red-64",
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "red").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "64gb").Id),
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
@@ -6695,8 +6714,37 @@ namespace SmartStore.Data.Setup
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productIphone7Plus,
-                Sku = productIphone7Plus.Sku + "-SV",
-                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "silver").Id),
+                Sku = productIphone7Plus.Sku + "-red-128",
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "red").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "128gb").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-red")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-silver-64",
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "silver").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "64gb").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-silver")).Id.ToString()
+            });
+
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-silver-128",
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "silver").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "128gb").Id),
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
@@ -6706,8 +6754,10 @@ namespace SmartStore.Data.Setup
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productIphone7Plus,
-                Sku = productIphone7Plus.Sku + "-RS",
-                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "rose").Id),
+                Sku = productIphone7Plus.Sku + "-rose-64",
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "rose").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "64gb").Id),
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
@@ -6717,19 +6767,47 @@ namespace SmartStore.Data.Setup
             entities.Add(new ProductVariantAttributeCombination()
             {
                 Product = productIphone7Plus,
-                Sku = productIphone7Plus.Sku + "-GD",
-                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "gold").Id),
+                Sku = productIphone7Plus.Sku + "-rose-128",
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "rose").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "128gb").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-gold-64",
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "gold").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "64gb").Id),
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
             });
 
-			#endregion Iphone 7 plus
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productIphone7Plus,
+                Sku = productIphone7Plus.Sku + "-gold-128",
+                AttributesXml = FormatAttributeXml(
+                    Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "gold").Id,
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "128gb").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+            });
 
-			#region Fashion Men’s T
+            #endregion Iphone 7 plus
 
-			var productMensShirt = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112345");
+            #region Fashion Men’s T
+
+            var productMensShirt = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112345");
 			var mensShirtPictureIds = productMensShirt.ProductPictures.Select(x => x.PictureId).ToList();
 			var mensShirtPictures = _ctx.Set<Picture>().Where(x => mensShirtPictureIds.Contains(x.Id)).ToList();
 
@@ -11065,7 +11143,6 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-
 			var productPrinceOfPersia = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
@@ -11180,6 +11257,8 @@ namespace SmartStore.Data.Setup
 				productGroupAccessories,
 				productWatchDogs, productPrinceOfPersia, productDriverSanFrancisco, productPs3OneGame
 			};
+
+            entities.AddRange(GetFashionProducts());
 
 			this.Alter(entities);
 			return entities;

@@ -2852,6 +2852,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 			{
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "black").Each(y => y.Name = "Schwarz");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "white").Each(y => y.Name = "Weiß");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "red").Each(y => y.Name = "Rot");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "gray").Each(y => y.Name = "Grau");
 			});
 
 			entities.Where(x => x.ProductAttribute.Alias == "iphone-color").Each(x =>
@@ -2993,7 +2995,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 		private void AlterFashionProducts(IList<Product> entities)
 		{
 			entities.WithKey(x => x.Sku)
-				.Alter("F-112345", x =>
+				.Alter("Fashion-112345", x =>
 				{
 					x.Name = "Herren Shirt";
 					x.ShortDescription = "Herren Shirt mit trendigem Rollsaum";

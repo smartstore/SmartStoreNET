@@ -814,8 +814,8 @@
     <Content Include="Content\samples\product_iphone-plus_silver.jpg" />
     <Content Include="Content\samples\product_iphoneplus_1.jpg" />
     <Content Include="Content\samples\product_iphoneplus_2.jpg" />
-    <Content Include="Content\samples\product_mens_tshirt_1.jpg" />
-    <Content Include="Content\samples\product_mens_tshirt_2.jpg" />
+    <Content Include="Content\samples\product_mens_tshirt_red.jpg" />
+    <Content Include="Content\samples\product_mens_tshirt_gray.jpg" />
     <Content Include="Content\samples\product_nike-vopower-53-trainer-hs-ball.jpg" />
     <Content Include="Content\samples\product_playstation3dualshock3.png" />
     <Content Include="Content\samples\product_productOriginalWayfarer_1.jpg" />

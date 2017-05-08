@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
@@ -6241,17 +6242,20 @@ namespace SmartStore.Data.Setup
         public IList<ProductVariantAttribute> ProductVariantAttributes()
 		{
 			var entities = new List<ProductVariantAttribute>();
+			var attrColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
+			var attrSize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "size");
+			var attrGames = _ctx.Set<ProductAttribute>().First(x => x.Alias == "game");
+			var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
+			var attrIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
 
-            #region iPhone 7 plus
+			#region iPhone 7 plus
 
-            var productIphone7Plus = _ctx.Set<Product>().First(x => x.Sku == "P-2001");
-            var attributeMemoryCapacityiPhone7Plus = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
-            var attributeIphoneIphoneColoriPhone7Plus = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
+			var productIphone7Plus = _ctx.Set<Product>().First(x => x.Sku == "P-2001");
 
             var attributeIphone7PlusMemoryCapacity = new ProductVariantAttribute()
             {
                 Product = productIphone7Plus,
-                ProductAttribute = attributeMemoryCapacityiPhone7Plus,
+                ProductAttribute = attrMemoryCapacity,
                 IsRequired = true,
                 DisplayOrder = 1,
                 AttributeControlType = AttributeControlType.RadioList
@@ -6293,7 +6297,7 @@ namespace SmartStore.Data.Setup
             var attributeIphone7PlusColor = new ProductVariantAttribute()
             {
                 Product = productIphone7Plus,
-                ProductAttribute = attributeIphoneIphoneColoriPhone7Plus,
+                ProductAttribute = attrIphoneColor,
                 IsRequired = true,
                 DisplayOrder = 2,
                 AttributeControlType = AttributeControlType.Boxes
@@ -6357,13 +6361,11 @@ namespace SmartStore.Data.Setup
             #region iPhone
 
             var productIphone = _ctx.Set<Product>().First(x => x.Sku == "Apple-1001");
-			var attributeMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
-			var attributeIphoneIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
 
 			var attributeIphoneMemoryCapacity = new ProductVariantAttribute()
 			{
 				Product = productIphone,
-				ProductAttribute = attributeMemoryCapacity,
+				ProductAttribute = attrMemoryCapacity,
 				IsRequired = true,
 				DisplayOrder = 1,
 				AttributeControlType = AttributeControlType.DropdownList
@@ -6405,7 +6407,7 @@ namespace SmartStore.Data.Setup
 			var attributeIphoneColor = new ProductVariantAttribute()
 			{
 				Product = productIphone,
-				ProductAttribute = attributeIphoneIphoneColor,
+				ProductAttribute = attrIphoneColor,
 				IsRequired = true,
 				DisplayOrder = 2,
 				AttributeControlType = AttributeControlType.DropdownList
@@ -6446,12 +6448,11 @@ namespace SmartStore.Data.Setup
 			#region attributeDualshock3ControllerColor
 
 			var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
-			var attributeColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
 
 			var attributeDualshock3ControllerColor = new ProductVariantAttribute()
 			{
 				Product = productPs3,
-				ProductAttribute = attributeColor,
+				ProductAttribute = attrColor,
 				IsRequired = true,
 				DisplayOrder = 1,
 				AttributeControlType = AttributeControlType.DropdownList
@@ -6484,12 +6485,11 @@ namespace SmartStore.Data.Setup
 			#region attributePs3OneGameFree
 
 			var productPs3OneGameFree = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS310111");
-			var attributeGames = _ctx.Set<ProductAttribute>().First(x => x.Alias == "game");
 
 			var attributePs3OneGameFree = new ProductVariantAttribute()
 			{
 				Product = productPs3OneGameFree,
-				ProductAttribute = attributeGames,
+				ProductAttribute = attrGames,
 				IsRequired = true,
 				DisplayOrder = 1,
 				AttributeControlType = AttributeControlType.DropdownList
@@ -6539,31 +6539,88 @@ namespace SmartStore.Data.Setup
 
 			#endregion attributePs3OneGameFree
 
+			#region Fashion Men’s T
+
+			var productMensShirt = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112345");
+
+			var attrMensShirtSize = new ProductVariantAttribute
+			{
+				Product = productMensShirt,
+				ProductAttribute = attrSize,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.RadioList
+			};
+			attrMensShirtSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "M",
+				Alias = "medium",
+				DisplayOrder = 1,
+				Quantity = 1
+			});
+			attrMensShirtSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "L",
+				Alias = "large",
+				DisplayOrder = 2,
+				Quantity = 1
+			});
+			entities.Add(attrMensShirtSize);
+
+			var attrMensShirtColor = new ProductVariantAttribute
+			{
+				Product = productMensShirt,
+				ProductAttribute = attrColor,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+			attrMensShirtColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Red",
+				Alias = "red",
+				DisplayOrder = 1,
+				Quantity = 1,
+				Color = "#e81010",
+				IsPreSelected = true
+			});
+			attrMensShirtColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Gray",
+				Alias = "gray",
+				DisplayOrder = 2,
+				Quantity = 1,
+				Color = "#cfcfcf"
+			});
+			entities.Add(attrMensShirtColor);
+
+			#endregion
+
 			this.Alter(entities);
 			return entities;
 		}
 
 		public IList<ProductVariantAttributeCombination> ProductVariantAttributeCombinations()
 		{
+			var sb = new StringBuilder();
 			var entities = new List<ProductVariantAttributeCombination>();
+			var attrColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
+			var attrSize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "size");
 
-			string attributeXml = "<Attributes><ProductVariantAttribute ID=\"{0}\"><ProductVariantAttributeValue><Value>{1}</Value></ProductVariantAttributeValue></ProductVariantAttribute></Attributes>";
+			#region ps3
 
-            #region ps3
-
-            var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
+			var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
 			var ps3PictureIds = productPs3.ProductPictures.Select(pp => pp.PictureId).ToList();
 			var picturesPs3 = _ctx.Set<Picture>().Where(x => ps3PictureIds.Contains(x.Id)).ToList();
 
-			var attributeColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "Color");
-			var productAttributeColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productPs3.Id && x.ProductAttributeId == attributeColor.Id);
+			var productAttributeColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productPs3.Id && x.ProductAttributeId == attrColor.Id);
 			var attributeColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == productAttributeColor.Id).ToList();
 
 			entities.Add(new ProductVariantAttributeCombination()
 			{
 				Product = productPs3,
 				Sku = productPs3.Sku + "-B",
-				AttributesXml = attributeXml.FormatWith(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "black").Id),
+				AttributesXml = FormatAttributeXml(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "black").Id),
 				StockQuantity = 10000,
 				AllowOutOfStockOrders = true,
 				IsActive = true,
@@ -6574,7 +6631,7 @@ namespace SmartStore.Data.Setup
 			{
 				Product = productPs3,
 				Sku = productPs3.Sku + "-W",
-				AttributesXml = attributeXml.FormatWith(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "white").Id),
+				AttributesXml = FormatAttributeXml(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "white").Id),
 				StockQuantity = 10000,
 				AllowOutOfStockOrders = true,
 				IsActive = true,
@@ -6597,7 +6654,7 @@ namespace SmartStore.Data.Setup
             {
                 Product = productIphone7Plus,
                 Sku = productIphone7Plus.Sku + "-B",
-                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "black").Id),
+                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "black").Id),
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
@@ -6608,7 +6665,7 @@ namespace SmartStore.Data.Setup
             {
                 Product = productIphone7Plus,
                 Sku = productIphone7Plus.Sku + "-RD",
-                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "red").Id),
+                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "red").Id),
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
@@ -6619,7 +6676,7 @@ namespace SmartStore.Data.Setup
             {
                 Product = productIphone7Plus,
                 Sku = productIphone7Plus.Sku + "-SV",
-                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "silver").Id),
+                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "silver").Id),
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
@@ -6630,7 +6687,7 @@ namespace SmartStore.Data.Setup
             {
                 Product = productIphone7Plus,
                 Sku = productIphone7Plus.Sku + "-RS",
-                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "rose").Id),
+                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "rose").Id),
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
@@ -6641,16 +6698,79 @@ namespace SmartStore.Data.Setup
             {
                 Product = productIphone7Plus,
                 Sku = productIphone7Plus.Sku + "-GD",
-                AttributesXml = attributeXml.FormatWith(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "gold").Id),
+                AttributesXml = FormatAttributeXml(productAttributeColorIphone7Plus.Id, attributeColorValuesIphone7Plus.First(x => x.Alias == "gold").Id),
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 AssignedPictureIds = picturesIphone7Plus.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
             });
 
-            #endregion Iphone 7 plus
+			#endregion Iphone 7 plus
 
-            return entities;
+			#region Fashion Men’s T
+
+			var productMensShirt = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112345");
+			var mensShirtPictureIds = productMensShirt.ProductPictures.Select(x => x.PictureId).ToList();
+			var mensShirtPictures = _ctx.Set<Picture>().Where(x => mensShirtPictureIds.Contains(x.Id)).ToList();
+
+			var mensShirtColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productMensShirt.Id && x.ProductAttributeId == attrColor.Id);
+			var mensShirtColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == mensShirtColor.Id).ToList();
+
+			var mensShirtSize = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productMensShirt.Id && x.ProductAttributeId == attrSize.Id);
+			var mensShirtSizeValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == mensShirtSize.Id).ToList();
+
+			entities.Add(new ProductVariantAttributeCombination
+			{
+				Product = productMensShirt,
+				Sku = productMensShirt.Sku + "-red-m",
+				AttributesXml = FormatAttributeXml(
+					mensShirtColor.Id, mensShirtColorValues.First(x => x.Alias == "red").Id,
+					mensShirtSize.Id, mensShirtSizeValues.First(x => x.Alias == "medium").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				AssignedPictureIds = mensShirtPictures.First(x => x.SeoFilename.EndsWith("-red")).Id.ToString()
+			});
+			entities.Add(new ProductVariantAttributeCombination
+			{
+				Product = productMensShirt,
+				Sku = productMensShirt.Sku + "-red-l",
+				AttributesXml = FormatAttributeXml(
+					mensShirtColor.Id, mensShirtColorValues.First(x => x.Alias == "red").Id,
+					mensShirtSize.Id, mensShirtSizeValues.First(x => x.Alias == "large").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				AssignedPictureIds = mensShirtPictures.First(x => x.SeoFilename.EndsWith("-red")).Id.ToString()
+			});
+			entities.Add(new ProductVariantAttributeCombination
+			{
+				Product = productMensShirt,
+				Sku = productMensShirt.Sku + "-gray-m",
+				AttributesXml = FormatAttributeXml(
+					mensShirtColor.Id, mensShirtColorValues.First(x => x.Alias == "gray").Id,
+					mensShirtSize.Id, mensShirtSizeValues.First(x => x.Alias == "medium").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				AssignedPictureIds = mensShirtPictures.First(x => x.SeoFilename.EndsWith("-gray")).Id.ToString()
+			});
+			entities.Add(new ProductVariantAttributeCombination
+			{
+				Product = productMensShirt,
+				Sku = productMensShirt.Sku + "-gray-l",
+				AttributesXml = FormatAttributeXml(
+					mensShirtColor.Id, mensShirtColorValues.First(x => x.Alias == "gray").Id,
+					mensShirtSize.Id, mensShirtSizeValues.First(x => x.Alias == "large").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				AssignedPictureIds = mensShirtPictures.First(x => x.SeoFilename.EndsWith("-gray")).Id.ToString()
+			});
+
+			#endregion
+
+			return entities;
 		}
 
 		public IList<ProductTag> ProductTags()
@@ -7583,7 +7703,7 @@ namespace SmartStore.Data.Setup
 				MetaTitle = "Mens shirt",
 				ShortDescription = "Men's shirt with trendy hem",
 				FullDescription = "<p>Topcloth (140 g/m²): 100% cotton 100% organic cotton, single jersey round neck and sleeve with hem. In the trendy colors heather grey and red.</p>",
-				Sku = "F-112345",
+				Sku = "Fashion-112345",
 				ManufacturerPartNumber = "JN8002",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
@@ -7610,12 +7730,12 @@ namespace SmartStore.Data.Setup
 
 			product1.ProductPictures.Add(new ProductPicture
 			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_1.jpg"), "image/jpeg", GetSeName(product1.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_red.jpg"), "image/jpeg", "mens-tshirt-red"),
 				DisplayOrder = 1
 			});
 			product1.ProductPictures.Add(new ProductPicture
 			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_2.jpg"), "image/jpeg", GetSeName(product1.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_gray.jpg"), "image/jpeg", "mens-tshirt-gray"),
 				DisplayOrder = 2
 			});
 
@@ -11522,6 +11642,26 @@ namespace SmartStore.Data.Setup
 			}
 
 			return currency;
+		}
+
+		protected string FormatAttributeXml(int attributeId, int valueId, bool withRootTag = true)
+		{
+			var xml = $"<ProductVariantAttribute ID=\"{attributeId}\"><ProductVariantAttributeValue><Value>{valueId}</Value></ProductVariantAttributeValue></ProductVariantAttribute>";
+
+			if (withRootTag)
+			{
+				return string.Concat("<Attributes>", xml, "</Attributes>");
+			}
+
+			return xml;
+		}
+		protected string FormatAttributeXml(int attributeId1, int valueId1, int attributeId2, int valueId2)
+		{
+			return string.Concat(
+				"<Attributes>",
+				FormatAttributeXml(attributeId1, valueId1, false),
+				FormatAttributeXml(attributeId2, valueId2, false),
+				"</Attributes>");
 		}
 
 		#endregion

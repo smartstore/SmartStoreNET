@@ -139,7 +139,7 @@
                     navElems.on(event, function (e) {
                         var navItem = $(this);
                         var opendMenu = $(navItem.find(".nav-link").data("target")).find(".dropdown-menu");
-                        var offsetLeft = navItem.offset().left - megamenu.offset().left;
+                        var offsetLeft = (navItem.offset().left - megamenu.offset().left) + 10;
 
                         if (offsetLeft < 0) {
                             offsetLeft = 0;

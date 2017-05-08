@@ -318,6 +318,8 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
 
 // exclusive for .simple
 .megamenu-dropdown-container.simple {
+    position: initial;
+    
     .dropdown-menu {
         margin-top: -1px;
         min-width: 250px;

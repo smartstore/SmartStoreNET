@@ -27,7 +27,7 @@ $menubar-bg:                    transparent !default;
 $shopbar-bg:                    transparent !default;
 $megamenu-bg:                   $gray-lightest !default;
 $megamenu-navlink-font-size:    1rem !default;
-$mega-menu-height:              1.8 !default;
+$megamenu-line-height:          1.8 !default;
 
 $menubar-color:                 lighten($header-color, 8%) !default;
 $menubar-inverse-color:         $header-inverse-color-muted !default;
@@ -218,3 +218,4 @@ $costep-progress-color:         $brand-warning !default;
 $offcanvas-cart-footer:         $brand-success !default;
 $art-active-bg-color:           #fff !default;
 $art-active-border-color:       rgba(0,0,0, 0.2) !default;
+$product-detail-addtocart-box-bg:   $gray-lightest !default;

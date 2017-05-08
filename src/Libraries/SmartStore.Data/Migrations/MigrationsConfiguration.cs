@@ -938,10 +938,51 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Themes.Colors", "Colors", "Farben");
             builder.AddOrUpdate("Admin.Themes.States", "Messages", "Meldungen");
+            builder.AddOrUpdate("Admin.Themes.Components", "Components", "Komponenten");
 
-			builder.AddOrUpdate("Order.CompletePayment.AdminNote",
+            builder.AddOrUpdate("Order.CompletePayment.AdminNote",
 				"The payment is pending. The buyer can make the payment by clicking on the <b>Complete payment</b> button on the <a href='{0}'>order details page</a>.",
 				"Die Zahlung ist ausstehend. Der Käufer kann die Zahlung durchführen, indem er auf der <a href='{0}'>Bestelldetailseite</a> den Button <b>Zahlung veranlassen</b> klickt.");
+
+            builder.AddOrUpdate("Admin.ThemeVar.CostepPogressColor", 
+                "Specifies the color of the checkout progress bar.", 
+                "Legt die Farbe der Fortschrittsanzeige des Checkoutprozesses fest.");
+
+            builder.AddOrUpdate("Admin.Theme.GoogleFonts.Hint",
+                @"<p>To embed <b>Google Fonts</b> please not the following advices.</p>
+                    <ul>
+                        <li>
+                            Go to <a href=""https://fonts.google.com/"" target=""_blank"">https://fonts.google.com/</a> and choose the font-families you want to use in your store.
+                        </li>
+                        <li>
+                            The Html code that will be provided to you to embed the choosen fonts into your website looks like this:
+                            <pre>&lt;href=""https://fonts.googleapis.com/css?family=<b>Roboto:100,300,400,500,700|Ubuntu</b>"" rel=""stylesheet""></pre>
+                        </li>
+                        <li>
+                            Copy the bold marked part of the link and enter it into one of the threee fields within the theme configurator that's intended for this purpose.
+                        </li>
+                        <li>
+                            Now you can use the fonts by entering the name of a font-family (e.g. <i>Roboto</i>) into one of the input fields which are 
+                            provided to configure font-families (e.g. <i>$font-family-sans-serif)</i>.
+                        </li>
+                    </ul>",
+                @"<p>Um <b>Google Fonts</b> einzubinden, beachten Sie bitte die nachfolgende Anweisung.</p>
+                    <ul>
+                        <li>
+                            Gehen Sie zu <a href=""https://fonts.google.com/"" target=""_blank"">https://fonts.google.com/</a> und wählen Sie die Schriftarten, die Sie in Ihrem Shop verwenden möchten. 
+                        </li>
+                        <li>
+                            Als Html-Code für Ihre Webseite, wird Ihnen ein Link in folgender Form angeboten:
+                            <pre>&lt;href=""https://fonts.googleapis.com/css?family=<b>Roboto:100,300,400,500,700|Ubuntu</b>"" rel=""stylesheet""></pre>
+                        </li>
+                        <li>
+                            Fügen Sie den fett markierten Teil des Links in eins der drei Felder des Theme-Konfigurators ein, die für Google Fonts vorgesehen sind.
+                        </li>
+                        <li>
+                            Nun können Sie die Schriftart verwenden, indem Sie den Namen der Schriftart (z.B. <i>Roboto</i>) in den Eingabefeldern angeben,
+                            die für Schriftarten vorgesehen sind (z.B. <i>$font-family-sans-serif)</i>.
+                        </li>
+                    </ul>");
         }
 	}
 }

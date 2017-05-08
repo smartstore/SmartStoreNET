@@ -47,7 +47,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
 	width: auto !important;
 	transition: margin-left 0.12s ease-in-out;
 	margin-left: 0;
-    line-height: $mega-menu-height;
+    line-height: $megamenu-line-height;
 
     &:after {
         content: "";
@@ -73,7 +73,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
             content: "";
             right: 0;
             position: absolute;
-            border-bottom: 10px solid #fff;
+            border-bottom: 10px solid $dropdown-bg;
             border-right: 12px solid transparent;
             border-left: 12px solid transparent;
             bottom: -1px;
@@ -84,7 +84,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
             content: "";
             right: -2px;
             position: absolute;
-            border-bottom: 12px solid #bbb;
+            border-bottom: 12px solid $dropdown-border-color;
             border-right: 14px solid transparent;
             border-left: 14px solid transparent;
             bottom: -2px;
@@ -338,4 +338,8 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
         right: initial;
         left: 10px;
     }
+}
+
+.boxed .megamenu-dropdown-container.simple .dropdown-menu {
+    margin-left: 20px;
 }

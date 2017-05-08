@@ -1,7 +1,7 @@
 ﻿@using SmartStore.Web.Models.Catalog;
 @model SearchBoxModel
 @{
-    var labelStyle = GetThemeVariable<string>("search-button", "primary");
+    var labelStyle = GetThemeVariable<string>("search-button-style", "primary");
 }
 
 @using (Html.BeginRouteForm("Search", FormMethod.Get, new { @class = "instasearch-form" }))

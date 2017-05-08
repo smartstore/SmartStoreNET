@@ -9,52 +9,42 @@
 
 @(Html.SmartStore().TabStrip().Name("theme-flex-edit").HtmlAttributes(new { @class = "theme-edit" }).Items(x =>
 {
-	var tabCommon = x.Add().Text(T("Common.General").Text).Content(@TabCommon()).Selected(true);
+    var tabGeneral = x.Add().Text(T("Common.General").Text).Content(@TabGeneral()).Selected(true);
     var tabFonts = x.Add().Text(T("Admin.Themes.Fonts").Text).Content(@TabFonts());
-    var tabColors = x.Add().Text(T("Admin.Themes.Colors").Text).Content(@TabColors());
+    var tabLayout = x.Add().Text("Layout").Content(@TabLayout());
     var tabButtons = x.Add().Text(T("Admin.Themes.Buttons").Text).Content(@TabButtons());
     var tabStates = x.Add().Text(T("Admin.Themes.States").Text).Content(@TabStates());
+    var tabComponents = x.Add().Text(T("Admin.Themes.Components").Text).Content(@TabComponents());
     var tabMisc = x.Add().Text(T("Admin.Themes.Misc").Text).Content(@TabMisc());
-    
+
 }))
 
-@helper TabCommon()
+@helper TabGeneral()
 {
-	<table class="adminContent">
-		@ThemeVarEditor("boxed", "Layout")
-		
-        @ThemeVarEditor("body-bg", "Site Colors")
-        @ThemeVarEditor("site-bg")
-        @ThemeVarEditor("body-color")
-        @ThemeVarEditor("text-muted")
-        @ThemeVarEditor("link-color")
+    <table class="adminContent">
+        @ThemeVarEditor("gray-dark", "Grayscale")
+        @ThemeVarEditor("gray")
+        @ThemeVarEditor("gray-light")
+        @ThemeVarEditor("gray-lighter")
+        @ThemeVarEditor("gray-lightest")
 
-		@ThemeVarEditor("header-bg", "Header")
-        @ThemeVarEditor("shopbar-label")
-        @ThemeVarEditor("search-button")
-		@ThemeVarEditor("inverse-menubar")
-		@ThemeVarEditor("inverse-shopbar")
-		@ThemeVarEditor("inverse-navbar")
-		@ThemeVarEditor("menubar-bg")
-		@ThemeVarEditor("shopbar-bg")
-		@ThemeVarEditor("megamenu-bg")
-        @ThemeVarEditor("menubar-color")
-        @ThemeVarEditor("shopbar-color")
-        @ThemeVarEditor("megamenu-color")
-        @ThemeVarEditor("menubar-inverse-color")
-        @ThemeVarEditor("shopbar-inverse-color")
-        @ThemeVarEditor("megamenu-inverse-color")
-        @ThemeVarEditor("mega-menu-height")
-        
-		@ThemeVarEditor("inverse-footer", "Footer")
-		@ThemeVarEditor("footer-bg")
-		@ThemeVarEditor("footer-color")
-		@ThemeVarEditor("footer-color-muted")
-		@ThemeVarEditor("footer-inverse-color")
-		@ThemeVarEditor("footer-inverse-color-muted")
-		@ThemeVarEditor("footer-social-bg")
-		@ThemeVarEditor("footer-social-color")
-	</table>
+        @ThemeVarEditor("red", "Colors")
+        @ThemeVarEditor("orange")
+        @ThemeVarEditor("yellow")
+        @ThemeVarEditor("green")
+        @ThemeVarEditor("blue")
+        @ThemeVarEditor("bluegrey")
+        @ThemeVarEditor("indigo")
+        @ThemeVarEditor("teal")
+        @ThemeVarEditor("pink")
+        @ThemeVarEditor("purple")
+
+        @ThemeVarEditor("brand-primary", "Brand Colors")
+        @ThemeVarEditor("brand-warning")
+        @ThemeVarEditor("brand-danger")
+        @ThemeVarEditor("brand-info")
+        @ThemeVarEditor("brand-success")
+    </table>
 }
 
 @helper TabFonts()
@@ -77,37 +67,73 @@
         @ThemeVarEditor("headings-color")
         @ThemeVarEditor("lead-font-weight")
 
-        @ThemeVarEditor("google-font-1", "Google Fonts")
+        <tr>
+            <td colspan="2" class="admin-config-group">
+                <div class="title">Google Fonts</div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <div class="alert alert-info">
+                    
+                    @T("Admin.Theme.GoogleFonts.Hint")
+
+                </div>
+            </td>
+        </tr>
+
+        @ThemeVarEditor("google-font-1")
         @ThemeVarEditor("google-font-2")
         @ThemeVarEditor("google-font-3")
     </table>
 }
 
-@helper TabColors()
+@helper TabLayout()
 {
     <table class="adminContent">
-        @ThemeVarEditor("red", "Colors")
-        @ThemeVarEditor("orange")
-        @ThemeVarEditor("yellow")
-        @ThemeVarEditor("green")
-        @ThemeVarEditor("blue")
-        @ThemeVarEditor("bluegrey")
-        @ThemeVarEditor("indigo")
-        @ThemeVarEditor("teal")
-        @ThemeVarEditor("pink")
-        @ThemeVarEditor("purple")
+        @ThemeVarEditor("boxed")
 
-        @ThemeVarEditor("gray-dark", "Grayscale")
-        @ThemeVarEditor("gray")
-        @ThemeVarEditor("gray-light")
-        @ThemeVarEditor("gray-lighter")
-        @ThemeVarEditor("gray-lightest")
+        @ThemeVarEditor("body-bg", "Site Colors")
+        @ThemeVarEditor("site-bg")
+        @ThemeVarEditor("body-color")
+        @ThemeVarEditor("text-muted")
+        @ThemeVarEditor("link-color")
 
-        @ThemeVarEditor("brand-primary", "Brand Colors")
-        @ThemeVarEditor("brand-warning")
-        @ThemeVarEditor("brand-danger")
-        @ThemeVarEditor("brand-info")
-        @ThemeVarEditor("brand-success")
+        @ThemeVarEditor("header-bg", "Header")
+        @ThemeVarEditor("shopbar-label")
+
+        @ThemeVarEditor("inverse-menubar", "")
+        @ThemeVarEditor("menubar-bg")
+        @ThemeVarEditor("menubar-color")
+        @ThemeVarEditor("menubar-inverse-color")
+
+        @ThemeVarEditor("inverse-shopbar", "")
+        @ThemeVarEditor("shopbar-bg")
+        @ThemeVarEditor("shopbar-color")
+        @ThemeVarEditor("shopbar-inverse-color")
+
+        @ThemeVarEditor("inverse-navbar", "")
+        @ThemeVarEditor("megamenu-bg")
+        @ThemeVarEditor("megamenu-color")
+        @ThemeVarEditor("megamenu-inverse-color")
+        @ThemeVarEditor("megamenu-line-height")
+
+        @ThemeVarEditor("search-button-style", "Searchbox")
+        @ThemeVarEditor("searchbox-bg")
+        @ThemeVarEditor("searchbox-focus-bg")
+        @ThemeVarEditor("searchbox-border-color")
+        @ThemeVarEditor("searchbox-border-active-color")
+        @ThemeVarEditor("searchbox-hit-tag-color")
+
+        @ThemeVarEditor("inverse-footer", "Footer")
+        @ThemeVarEditor("footer-bg")
+        @ThemeVarEditor("footer-color")
+        @ThemeVarEditor("footer-color-muted")
+        @ThemeVarEditor("footer-inverse-color")
+        @ThemeVarEditor("footer-inverse-color-muted")
+        @ThemeVarEditor("footer-social-bg")
+        @ThemeVarEditor("footer-social-color")
     </table>
 }
 
@@ -161,7 +187,7 @@
     </table>
 }
 
-@helper TabMisc()
+@helper TabComponents()
 {
     <table class="adminContent">
         @ThemeVarEditor("card-border-radius", "Cards")
@@ -183,19 +209,25 @@
         @ThemeVarEditor("table-bg-hover")
         @ThemeVarEditor("table-bg-active")
         @ThemeVarEditor("table-border-color")
+    </table>
+}
 
-        @ThemeVarEditor("nav-tabs-active-link-color", "Misc")
+@helper TabMisc()
+{
+    <table class="adminContent">
+        @ThemeVarEditor("nav-tabs-active-link-color")
         @ThemeVarEditor("product-price-color")
+        @ThemeVarEditor("product-detail-addtocart-box-bg")
         @ThemeVarEditor("login-box-bg")
         @ThemeVarEditor("cart-footer-bg")
-        @ThemeVarEditor("costep-progress-color")
+        @ThemeVarEditor("costep-progress-color", null, T("Admin.ThemeVar.CostepPogressColor"))
         @ThemeVarEditor("offcanvas-cart-footer")
         @ThemeVarEditor("art-active-bg-color")
         @ThemeVarEditor("art-active-border-color")
     </table>
 }
 
-@helper ThemeVarEditor(string varName, string groupName = null)
+@helper ThemeVarEditor(string varName, string groupName = null, string helpText = null)
 {
     if (groupName != null)
     {
@@ -207,7 +239,13 @@
     }
     <tr>
         <td class="adminTitle">
-            @Html.ThemeVarLabel(ThemeManifest.Variables[varName])
+            <div class="ctl-label">
+                @if (helpText != null)
+                {
+                    <a class="hint" href="#" onclick="return false;" tabindex="-1" data-original-title="@helpText"><i class="fa fa-question-circle"></i></a>
+                }
+                @Html.ThemeVarLabel(ThemeManifest.Variables[varName])
+            </div>
         </td>
         <td class="adminData">
             @Html.ThemeVarEditor(ThemeManifest.Variables[varName], Model[varName])

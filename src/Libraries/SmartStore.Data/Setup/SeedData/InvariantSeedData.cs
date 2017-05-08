@@ -6277,6 +6277,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "64 GB",
                 Alias = "64gb",
+                IsPreSelected = true,
                 DisplayOrder = 2,
                 Quantity = 1,
                 ValueType = ProductVariantAttributeValueType.Simple,
@@ -6682,7 +6683,7 @@ namespace SmartStore.Data.Setup
 
                 AttributesXml = FormatAttributeXml(
                     Iphone7PlusColor.Id, Iphone7PlusColorValues.First(x => x.Alias == "black").Id,
-                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "64gb").Id),
+                    Iphone7PlusCapacity.Id, Iphone7PlusCapacityValues.First(x => x.Alias == "128gb").Id),
 
                 StockQuantity = 10000,
                 AllowOutOfStockOrders = true,
@@ -8711,8 +8712,14 @@ namespace SmartStore.Data.Setup
 
             productIphoneplus.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphoneplus_1.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_all_colors.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
                 DisplayOrder = 1,
+            });
+
+            productIphoneplus.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphoneplus_1.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
+                DisplayOrder = 2,
             });
 
             productIphoneplus.ProductPictures.Add(new ProductPicture()
@@ -8720,13 +8727,7 @@ namespace SmartStore.Data.Setup
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_red.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-red"),
                 DisplayOrder = 2,
             });
-
-            productIphoneplus.ProductPictures.Add(new ProductPicture()
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_all_colors.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
-                DisplayOrder = 2,
-            });
-
+            
             productIphoneplus.ProductPictures.Add(new ProductPicture()
             {
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_silver.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-silver"),
@@ -8755,6 +8756,48 @@ namespace SmartStore.Data.Setup
             {
                 Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
                 DisplayOrder = 1,
+            });
+
+            //attributes
+            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // offer type -> Permanent low price
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+            });
+            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // manufacturer -> apple
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // storage capacity -> 64gb
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+            });
+            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // storage capacity -> 128gb
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // operating system -> ios
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
             });
 
             #endregion product iphone plus

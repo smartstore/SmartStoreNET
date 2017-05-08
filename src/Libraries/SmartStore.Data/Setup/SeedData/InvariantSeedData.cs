@@ -6160,7 +6160,7 @@ namespace SmartStore.Data.Setup
         {
             var entities = new List<ProductAttributeOption>();
             var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
-            var generalColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "General colors");
+			var sets = _ctx.Set<ProductAttributeOptionsSet>().ToList();
 
             var generalColors = new string[] { "Red", "Green", "Blue", "Yellow", "Black", "White", "Gray", "Silver", "Brown" };
             var generalColorValues = new string[] { "#ff0000", "#008000", "#0000ff", "#ffff00", "#000000", "#ffffff", "#808080", "#dddfde", "#a52a2a" };
@@ -6170,7 +6170,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = generalColorsSet.Id,
+                    ProductAttributeOptionsSetId = sets[0].Id,
                     Alias = GetSeName(generalColors[i]),
                     Name = generalColors[i],
                     Quantity = 1,
@@ -6180,8 +6180,6 @@ namespace SmartStore.Data.Setup
                 });
             }
 
-            var appleColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Apple colors");
-
             var appleColors = new string[] { "Gold", "Light blue", "Purple", "Mint", "Rose", "Red", "Silver", "Space gray", "Turquoise" };
             var apppleColorValues = new string[] { "#e3d0ba", "#a6b9df", "#dba5d7", "#a6dbb1", "#d9a6ad", "#af1e2d", "#dddfde", "#abaeb1", "#a4dbde" };
 
@@ -6189,7 +6187,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = appleColorsSet.Id,
+                    ProductAttributeOptionsSetId = sets[1].Id,
                     Alias = GetSeName(appleColors[i]),
                     Name = appleColors[i],
                     Quantity = 1,
@@ -6198,8 +6196,6 @@ namespace SmartStore.Data.Setup
                 });
             }
 
-            var raybanWayfarerColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban original Wayfarer colors");
-
             var raybanWayfarerColors = new string[] { "Blue-Gray", "Brown", "Gray", "Green" };
             var raybanWayfarerColorValues = new string[] { "#3e4659", "#3e4659", "#727377", "#3c432e" };
 
@@ -6207,7 +6203,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = raybanWayfarerColorsSet.Id,
+                    ProductAttributeOptionsSetId = sets[2].Id,
                     Alias = GetSeName(raybanWayfarerColors[i]),
                     Name = raybanWayfarerColors[i],
                     Quantity = 1,
@@ -6216,8 +6212,6 @@ namespace SmartStore.Data.Setup
                 });
             }
 
-            var raybanTopbarColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban Topbar colors");
-
             var raybanTopbarColors = new string[] { "Silver", "Shiny black", "Gunmetal", "Black" };
             var raybanTopbarsColorValues = new string[] { "#b5c3c4", "#586166", "#6f785b", "#546d67" };
 
@@ -6225,7 +6219,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = raybanTopbarColorsSet.Id,
+                    ProductAttributeOptionsSetId = sets[3].Id,
                     Alias = GetSeName(raybanTopbarColors[i]),
                     Name = raybanTopbarColors[i],
                     Quantity = 1,
@@ -6233,8 +6227,6 @@ namespace SmartStore.Data.Setup
                     Color = raybanTopbarsColorValues[i]
                 });
             }
-
-            var bauhausColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Bauhaus colors");
 
             var bauhausColors = new string[] { "White-old", "Anthracite", "Beige", "Biscuit", "Blue", "Brown", "Champagne", "Cognac", "Brown-dark", "Black", "Green-dark", "Red-dark"
                 , "Graphite-black", "Green", "Blue-light", "Grey-light", "Red-raspberry", "Orange", "Yellow-colza", "Rosso", "Red", "Black", "Red-tomato", "White" };
@@ -6246,7 +6238,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = bauhausColorsSet.Id,
+                    ProductAttributeOptionsSetId = sets[4].Id,
                     Alias = GetSeName(bauhausColors[i]),
                     Name = bauhausColors[i],
                     Quantity = 1,
@@ -7745,7 +7737,7 @@ namespace SmartStore.Data.Setup
 			var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
 
 			// Men’s T
-			var product1 = new Product
+			var mensShirt = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
@@ -7772,36 +7764,71 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = firstDeliveryTime
 			};
 
-			product1.ProductCategories.Add(new ProductCategory
+			mensShirt.ProductCategories.Add(new ProductCategory
 			{
 				Category = fashionCategory,
 				DisplayOrder = 1
 			});
 
-			product1.ProductPictures.Add(new ProductPicture
+			mensShirt.ProductPictures.Add(new ProductPicture
 			{
 				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_red.jpg"), "image/jpeg", "mens-tshirt-red"),
 				DisplayOrder = 1
 			});
-			product1.ProductPictures.Add(new ProductPicture
+			mensShirt.ProductPictures.Add(new ProductPicture
 			{
 				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_gray.jpg"), "image/jpeg", "mens-tshirt-gray"),
 				DisplayOrder = 2
 			});
 
-			product1.TierPrices.Add(new TierPrice
+			mensShirt.TierPrices.Add(new TierPrice
 			{
 				Quantity = 10,
 				Price = 10.00M
 			});
-			product1.TierPrices.Add(new TierPrice
+			mensShirt.TierPrices.Add(new TierPrice
 			{
 				Quantity = 50,
 				Price = 8.00M
 			});
 
-			result.Add(product1);
+			result.Add(mensShirt);
 
+			// Converse All Star
+			var converseAllStar = new Product
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Name = "Converse All Star",
+				ShortDescription = "The classical sneaker!",
+				FullDescription = "<p>Since 1912 and to this day unrivalled: the converse All Star sneaker. A shoe for every occasion.</p>",
+				Sku = "Fashion-112355",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				Price = 79.90M,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			converseAllStar.ProductCategories.Add(new ProductCategory
+			{
+				Category = fashionCategory,
+				DisplayOrder = 1
+			});
+
+			converseAllStar.ProductPictures.Add(new ProductPicture
+			{
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_converse.jpg"), "image/jpeg", "allstar-converse"),
+				DisplayOrder = 1
+			});
+
+			result.Add(converseAllStar);
 
 
 			return result;

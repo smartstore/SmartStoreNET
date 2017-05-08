@@ -5656,6 +5656,16 @@ namespace SmartStore.Data.Setup
                 Name = "Seiko",
                 DisplayOrder = 16,
             });
+            sa20.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Tissot",
+                DisplayOrder = 17,
+            });
+            sa20.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Breitling",
+                DisplayOrder = 18,
+            });
 
             #endregion sa20 manufacturer
 
@@ -6149,23 +6159,27 @@ namespace SmartStore.Data.Setup
         {
             var entities = new List<ProductAttributeOption>();
             var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
-			var colorSets = _ctx.Set<ProductAttributeOptionsSet>().ToList();
+            var generalColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "General colors");
 
             var generalColors = new string[] { "Red", "Green", "Blue", "Yellow", "Black", "White", "Gray", "Silver", "Brown" };
             var generalColorValues = new string[] { "#ff0000", "#008000", "#0000ff", "#ffff00", "#000000", "#ffffff", "#808080", "#dddfde", "#a52a2a" };
+
 
             for (var i = 0; i < generalColors.Length; ++i)
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = colorSets[0].Id,
+                    ProductAttributeOptionsSetId = generalColorsSet.Id,
                     Alias = GetSeName(generalColors[i]),
                     Name = generalColors[i],
                     Quantity = 1,
                     DisplayOrder = i + 1,
-                    Color = generalColorValues[i]                    
+                    Color = generalColorValues[i]
+                    
                 });
             }
+
+            var appleColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Apple colors");
 
             var appleColors = new string[] { "Gold", "Light blue", "Purple", "Mint", "Rose", "Red", "Silver", "Space gray", "Turquoise" };
             var apppleColorValues = new string[] { "#e3d0ba", "#a6b9df", "#dba5d7", "#a6dbb1", "#d9a6ad", "#af1e2d", "#dddfde", "#abaeb1", "#a4dbde" };
@@ -6174,7 +6188,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = colorSets[1].Id,
+                    ProductAttributeOptionsSetId = appleColorsSet.Id,
                     Alias = GetSeName(appleColors[i]),
                     Name = appleColors[i],
                     Quantity = 1,
@@ -6183,6 +6197,8 @@ namespace SmartStore.Data.Setup
                 });
             }
 
+            var raybanWayfarerColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban original Wayfarer colors");
+
             var raybanWayfarerColors = new string[] { "Blue-Gray", "Brown", "Gray", "Green" };
             var raybanWayfarerColorValues = new string[] { "#3e4659", "#3e4659", "#727377", "#3c432e" };
 
@@ -6190,7 +6206,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = colorSets[2].Id,
+                    ProductAttributeOptionsSetId = raybanWayfarerColorsSet.Id,
                     Alias = GetSeName(raybanWayfarerColors[i]),
                     Name = raybanWayfarerColors[i],
                     Quantity = 1,
@@ -6199,6 +6215,8 @@ namespace SmartStore.Data.Setup
                 });
             }
 
+            var raybanTopbarColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Rayban Topbar colors");
+
             var raybanTopbarColors = new string[] { "Silver", "Shiny black", "Gunmetal", "Black" };
             var raybanTopbarsColorValues = new string[] { "#b5c3c4", "#586166", "#6f785b", "#546d67" };
 
@@ -6206,7 +6224,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = colorSets[3].Id,
+                    ProductAttributeOptionsSetId = raybanTopbarColorsSet.Id,
                     Alias = GetSeName(raybanTopbarColors[i]),
                     Name = raybanTopbarColors[i],
                     Quantity = 1,
@@ -6214,6 +6232,8 @@ namespace SmartStore.Data.Setup
                     Color = raybanTopbarsColorValues[i]
                 });
             }
+
+            var bauhausColorsSet = _ctx.Set<ProductAttributeOptionsSet>().First(x => x.Name == "Bauhaus colors");
 
             var bauhausColors = new string[] { "White-old", "Anthracite", "Beige", "Biscuit", "Blue", "Brown", "Champagne", "Cognac", "Brown-dark", "Black", "Green-dark", "Red-dark"
                 , "Graphite-black", "Green", "Blue-light", "Grey-light", "Red-raspberry", "Orange", "Yellow-colza", "Rosso", "Red", "Black", "Red-tomato", "White" };
@@ -6225,7 +6245,7 @@ namespace SmartStore.Data.Setup
             {
                 entities.Add(new ProductAttributeOption
                 {
-                    ProductAttributeOptionsSetId = colorSets[4].Id,
+                    ProductAttributeOptionsSetId = bauhausColorsSet.Id,
                     Alias = GetSeName(bauhausColors[i]),
                     Name = bauhausColors[i],
                     Quantity = 1,
@@ -6835,9 +6855,13 @@ namespace SmartStore.Data.Setup
 
 		public IList<Category> CategoriesFirstLevel()
 		{
+			// pictures
 			var sampleImagesPath = this._sampleImagesPath;
 
-			var categoryTemplateInGridAndLines = CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
+			var categoryTemplateInGridAndLines =
+				this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
+
+            //categories
 
             #region category definitions
 
@@ -7190,6 +7214,32 @@ namespace SmartStore.Data.Setup
             //    this.CategoryTemplates().Where(pt => pt.Name == "Products in Grid or Lines").FirstOrDefault();
 
             //categories
+
+            #region Breitling
+
+            var manufacturerBreitling = new Manufacturer
+            {
+                Name = "Breitling",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_breitling.png"), "image/png", GetSeName("Breitling")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Breitling
+
+            #region Tissot
+
+            var manufacturerTissot = new Manufacturer
+            {
+                Name = "Tissot",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_Tissot.png"), "image/png", GetSeName("Tissot")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Tissot
 
             #region Seiko
 
@@ -7557,84 +7607,13 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Manufacturer>
 			{
-			  manufacturerSeiko, manufacturerTitleist,manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
+              manufacturerBreitling,manufacturerTissot,manufacturerSeiko, manufacturerTitleist,manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
 			  manufacturerCanon, manufacturerCasio, manufacturerPanasonic, manufacturerBlackBerry, manufacturerHTC, manufacturerFestina, manufacturerCertina, 
 			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft,manufacturerOakley,manufacturerRayban,manufacturerAdidas, manufacturerWilson,manufacturerPuma,manufacturerNike
             };
 
 			this.Alter(entities);
 			return entities;
-		}
-
-		private List<Product> GetFashionProducts()
-		{
-			var result = new List<Product>();
-			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "ProductTemplate.Simple");
-			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
-			var fashionCategory = _ctx.Set<Category>().First(c => c.Alias == "Fashion");
-			var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
-
-			// Men’s T
-			var product1 = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Men’s T",
-				MetaTitle = "Mens shirt",
-				ShortDescription = "Men's shirt with trendy hem",
-				FullDescription = "<p>Topcloth (140 g/m²): 100% cotton 100% organic cotton, single jersey round neck and sleeve with hem. In the trendy colors heather grey and red.</p>",
-				Sku = "F-112345",
-				ManufacturerPartNumber = "JN8002",
-				ProductTemplateId = productTemplateSimple.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				Price = 15.90M,
-				OldPrice = 24.90M,
-				SpecialPrice = 12.00M,
-				SpecialPriceStartDateTimeUtc = new DateTime(2017, 5, 1, 0, 0, 0),
-				SpecialPriceEndDateTimeUtc = specialPriceEndDate,
-				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
-
-			product1.ProductCategories.Add(new ProductCategory
-			{
-				Category = fashionCategory,
-				DisplayOrder = 1
-			});
-
-			product1.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_1.jpg"), "image/jpeg", GetSeName(product1.Name)),
-				DisplayOrder = 1
-			});
-			product1.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_2.jpg"), "image/jpeg", GetSeName(product1.Name)),
-				DisplayOrder = 2
-			});
-
-			product1.TierPrices.Add(new TierPrice
-			{
-				Quantity = 10,
-				Price = 10.00M
-			});
-			product1.TierPrices.Add(new TierPrice
-			{
-				Quantity = 50,
-				Price = 8.00M
-			});
-
-			result.Add(product1);
-
-
-
-			return result;
 		}
 
 		public IList<Product> Products()
@@ -10062,6 +10041,249 @@ namespace SmartStore.Data.Setup
 
             var categoryWatches = this._ctx.Set<Category>().First(c => c.Alias == "Watches");
 
+
+            #region productTRANSOCEANCHRONOGRAPH
+
+            var productTRANSOCEANCHRONOGRAPH = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "TRANSOCEAN CHRONOGRAPH",
+                ShortDescription = "The Transocean Chronograph interprets the factual aesthetics of classic chronographs of the 1950s and 1960s in a decidedly contemporary style.",
+                FullDescription = "<p>The Transocean Chronograph interprets the factual aesthetics of classic chronographs of the 1950s and 1960s in a decidedly contemporary style. The high-performance caliber 01, designed and manufactured entirely in the Breitling studios, works in its form, which is reduced to the essentials. </p> <p> </p> <table style='width: 425px;'>   <tbody>     <tr>       <td style='width: 185px;'>Caliber       </td>       <td style='width: 237px;'>Breitling 01 (Manufactory caliber)       </td>     </tr>     <tr>       <td style='width: 185px;'>Movement       </td>       <td style='width: 237px;'>Mechanically, Automatic       </td>     </tr>     <tr>       <td style='width: 185px;'>Power reserve       </td>       <td style='width: 237px;'>Min. 70 hour       </td>     </tr>     <tr>       <td style='width: 185px;'>Chronograph       </td>       <td style='width: 237px;'>1/4-Seconds, 30 Minutes, 12 Hours       </td>     </tr>     <tr>       <td style='width: 185px;'>Half vibrations       </td>       <td style='width: 237px;'>28 800 a/h       </td>     </tr>     <tr>       <td style='width: 185px;'>Rubies       </td>       <td style='width: 237px;'>47 Rubies       </td>     </tr>     <tr>       <td style='width: 185px;'>Calendar       </td>       <td style='width: 237px;'>Window       </td>     </tr>   </tbody> </table> ",
+                Sku = "P-9001",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "RANSOCEAN CHRONOGRAPH",
+                ShowOnHomePage = true,
+                Price = 24110.00M,
+                OldPrice = 26230.00M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productTRANSOCEANCHRONOGRAPH.ProductCategories.Add(new ProductCategory() { Category = categoryWatches, DisplayOrder = 1 });
+
+            #region pictures
+
+            //pictures
+            productTRANSOCEANCHRONOGRAPH.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_transocean-chronograph.jpg"), "image/png", GetSeName(productTRANSOCEANCHRONOGRAPH.Name)),
+                DisplayOrder = 1,
+            });
+
+            #endregion pictures
+
+            #region manufacturer
+
+            //manufacturer
+            productTRANSOCEANCHRONOGRAPH.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Breitling").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion manufacturer
+
+            #region SpecificationAttributes
+            //attributes
+            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // offer > promotion
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                // manufacturer > Breitling
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 18).Single()
+            });
+            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // housing > steel
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // material -> leather
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
+            });
+            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // Gender -> gentlemen
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 7).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // movement -> mechanical, self winding
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // diameter -> 44mm
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 24).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            productTRANSOCEANCHRONOGRAPH.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // closure -> folding clasp
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 25).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+            });
+            #endregion SpecificationAttributes
+
+            #endregion productTRANSOCEANCHRONOGRAPH
+
+            #region productTissotT-TouchExpertSolar
+
+            var productTissotTTouchExpertSolar = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "Tissot T-Touch Expert Solar",
+                ShortDescription = "The beam of the Tissot T-Touch Expert Solar on the dial ensures that the Super-LumiNova®-coated indexes and hands illuminate in the dark, and on the other hand, charges the battery of the watch. This model is a force package in every respect.",
+                FullDescription = "<p>The T-Touch Expert Solar is an important new model in the Tissot range. </p> <p>Tissot’s pioneering spirit is what led to the creation of tactile watches in 1999. </p> <p>Today, it is the first to present a touch-screen watch powered by solar energy, confirming its position as leader in tactile technology in watchmaking. </p> <p>Extremely well designed, it showcases clean lines in both sports and timeless pieces. </p> <p>Powered by solar energy with 25 features including weather forecasting, altimeter, second time zone and a compass it is the perfect travel companion. </p> ",
+                Sku = "P-9002",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Tissot T-Touch Expert Solar",
+                ShowOnHomePage = true,
+                Price = 969.00M,
+                OldPrice = 990.00M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+            };
+
+            productTissotTTouchExpertSolar.ProductCategories.Add(new ProductCategory() { Category = categoryWatches, DisplayOrder = 1 });
+
+            #region pictures
+
+            //pictures
+            productTissotTTouchExpertSolar.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_tissot-t-touch-expert-solar.jpg"), "image/png", GetSeName(productTissotTTouchExpertSolar.Name)),
+                DisplayOrder = 1,
+            });
+
+            #endregion pictures
+
+            #region manufacturer
+
+            //manufacturer
+            productTissotTTouchExpertSolar.ProductManufacturers.Add(new ProductManufacturer()
+            {
+                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Tissot").Single(),
+                DisplayOrder = 1,
+            });
+
+            #endregion manufacturer
+
+            #region SpecificationAttributes
+            //attributes
+            productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // offer > best price
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 8).Single()
+            });
+            productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 2,
+                // manufacturer > Tissot
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 17).Single()
+            });
+            productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // housing > steel
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // material -> silicone
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 7).Single()
+            });
+            productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // Gender -> gentlemen
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 7).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // movement -> Automatic, self-winding
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // diameter -> 44mm
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 24).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            productTissotTTouchExpertSolar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // closure -> thorn close
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 25).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            #endregion SpecificationAttributes
+
+            #endregion productTissotT-TouchExpertSolar
+
             #region productSeikoSRPA49K1
 
             var productSeikoSRPA49K1 = new Product()
@@ -10071,7 +10293,7 @@ namespace SmartStore.Data.Setup
                 Name = "Seiko Mechanical Automatic SRPA49K1",
                 ShortDescription = "Seiko Mechanical Automatic SRPA49K1",
                 FullDescription = "<p><strong>Seiko 5 Sports Automatic Watch SRPA49K1 SRPA49</strong> </p> <ul>   <li>Unidirectional Rotating Bezel</li>   <li>Day And Date Display</li>   <li>See Through Case Back</li>   <li>100M Water Resistance</li>   <li>Stainless Steel Case</li>   <li>Automatic Movement</li>   <li>24 Jewels</li>   <li>Caliber: 4R36</li> </ul> ",
-                Sku = "P-9001",
+                Sku = "P-9003",
                 ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
@@ -10127,6 +10349,14 @@ namespace SmartStore.Data.Setup
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // material -> stainless steel
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
                 DisplayOrder = 2,
                 // manufacturer > Seiko
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 16).Single()
@@ -10147,6 +10377,22 @@ namespace SmartStore.Data.Setup
                 // movement -> quarz
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
             });
+            productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // closure -> folding clasp
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 25).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+            });
+            productSeikoSRPA49K1.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // diameter -> 44mm
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 24).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
             #endregion SpecificationAttributes
 
             #endregion productSeikoSRPA49K1 
@@ -10161,7 +10407,7 @@ namespace SmartStore.Data.Setup
 				Name = "Certina DS Podium Big Size",
 				ShortDescription = "C001.617.26.037.00",
 				FullDescription = "<p>Since 1888, Certina has maintained an enviable reputation for its excellent watches and reliable movements. From the time of its integration into the SMH (today's Swatch Group) in the early 1980s, every Certina has been equipped with a high-quality ETA movement.</p><p>In a quartz watch movement, high-frequency oscillations are generated in a tiny synthetic crystal, then divided down electronically to provide the extreme accuracy of the Certina internal clock. A battery supplies the necessary energy.</p><p>The quartz movement is sometimes equipped with an end-of-life (EOL) indicator. When the seconds hand begins moving in four-second increments, the battery should be replaced within two weeks.</p><p>An automatic watch movement is driven by a rotor. Arm and wrist movements spin the rotor, which in turn winds the main spring. Energy is continuously produced, eliminating the need for a battery. The rate precision therefore depends on a rigorous manufacturing process and the original calibration, as well as the lifestyle of the user.</p><p>Most automatic movements are driven by an offset rotor. To earn the title of chronometer, a watch must be equipped with a movement that has obtained an official rate certificate from the COSC (Contrôle Officiel Suisse des Chronomètres). To obtain this, precision tests in different positions and at different temperatures must be carried out. These tests take place over a 15-day period. Thermocompensated means that the effective temperature inside the watch is measured and taken into account when improving precision. This allows fluctuations in the rate precision of a normal quartz watch due to temperature variations to be reduced by several seconds a week. The precision is 20 times more accurate than on a normal quartz watch, i.e. +/- 10 seconds per year (0.07 seconds/day).</p>",
-                Sku = "P-9002",
+                Sku = "P-9004",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
@@ -10212,7 +10458,15 @@ namespace SmartStore.Data.Setup
 				// housing > steel
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
 			});
-			productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // material -> leather
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
+            });
+            productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
 			{
 				AllowFiltering = true,
 				ShowOnProductPage = true,
@@ -10228,23 +10482,39 @@ namespace SmartStore.Data.Setup
 				// Gender -> gentlemen
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 7).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
 			});
-			productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 5,
-				// movement -> quarz
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
-			});
-			#endregion SpecificationAttributes
+            productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // movement -> quarz
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 9).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // closure -> folding clasp
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 25).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+            });
+            productWatchesCertinaDSPodiumBigSize.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 5,
+                // diameter -> 40mm
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 24).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+            });
+            #endregion SpecificationAttributes
 
-			#endregion productWatchesCertinaDSPodiumBigSize
+            #endregion productWatchesCertinaDSPodiumBigSize
 
-			#endregion watches
+            #endregion watches
 
-			#region gaming
+            #region gaming
 
-			var manuSony = _ctx.Set<Manufacturer>().First(c => c.Name == "Sony");
+            var manuSony = _ctx.Set<Manufacturer>().First(c => c.Name == "Sony");
 			var manuUbisoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Ubisoft");
 			var categoryGaming = this._ctx.Set<Category>().First(c => c.Alias == "Gaming");
 			var categoryGamingAccessories = this._ctx.Set<Category>().First(c => c.Alias == "Gaming Accessories");
@@ -10707,7 +10977,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Product>
 			{
-                productSeikoSRPA49K1,productTitleistSM6TourChrome,productTitleistProV1x,productGBBEpicSubZeroDriver,productSupremeGolfball,productBooksStoneOfTheWise,productNikeStrikeFootball,productNikeEvoPowerBall,
+                productTRANSOCEANCHRONOGRAPH,productTissotTTouchExpertSolar,productSeikoSRPA49K1,productTitleistSM6TourChrome,productTitleistProV1x,productGBBEpicSubZeroDriver,productSupremeGolfball,productBooksStoneOfTheWise,productNikeStrikeFootball,productNikeEvoPowerBall,
                 productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,
                 productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,
                 productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
@@ -10719,8 +10989,6 @@ namespace SmartStore.Data.Setup
 				productGroupAccessories,
 				productWatchDogs, productPrinceOfPersia, productDriverSanFrancisco, productPs3OneGame
 			};
-
-			entities.AddRange(GetFashionProducts());
 
 			this.Alter(entities);
 			return entities;

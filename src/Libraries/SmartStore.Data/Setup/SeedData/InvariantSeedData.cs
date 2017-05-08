@@ -57,14 +57,21 @@ namespace SmartStore.Data.Setup
 
 		public IList<Picture> Pictures()
 		{
-			var entities = new List<Picture> 
-			{ 
+			var entities = new List<Picture>
+			{
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", GetSeName("company-logo")),
  				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "clouds.png"), "image/png", GetSeName("slider-bg")),
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "iphone.png"), "image/png", GetSeName("slide-1")),
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "music.png"), "image/png", GetSeName("slide-2")),
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "packshot-net.png"), "image/png", GetSeName("slide-3")),
+
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_charcoal.jpg"), "image/jpeg", "all-star-charcoal"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_maroon.jpg"), "image/jpeg", "all-star-maroon"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_navy.jpg"), "image/jpeg", "all-star-navy"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_purple.jpg"), "image/jpeg", "all-star-purple"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_white.jpg"), "image/jpeg", "all-star-white"),
 			};
+
 			this.Alter(entities);
 			return entities;
 		}
@@ -6599,6 +6606,68 @@ namespace SmartStore.Data.Setup
 
 			#endregion
 
+			#region Fashion Converse All Star
+
+			var productAllStar = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112355");
+			var allStarColors = new string[] { "Charcoal", "Maroon", "Navy", "Purple", "White" };
+			var allStarPictures = _ctx.Set<Picture>().Where(x => x.SeoFilename.StartsWith("all-star-")).ToList();
+
+			var attrAllStarColor = new ProductVariantAttribute
+			{
+				Product = productAllStar,
+				ProductAttribute = attrColor,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+
+			for (var i = 0; i < allStarColors.Length; ++i)
+			{
+				var allStarPicture = allStarPictures.First(x => x.SeoFilename.EndsWith(allStarColors[i].ToLower()));
+				attrAllStarColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = allStarColors[i],
+					Alias = allStarColors[i].ToLower(),
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					PictureId = allStarPicture.Id
+				});
+			}
+			entities.Add(attrAllStarColor);
+
+			var attrAllStarSize = new ProductVariantAttribute
+			{
+				Product = productAllStar,
+				ProductAttribute = attrSize,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+			attrAllStarSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "42",
+				Alias = "42",
+				DisplayOrder = 1,
+				Quantity = 1
+			});
+			attrAllStarSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "43",
+				Alias = "43",
+				DisplayOrder = 2,
+				Quantity = 1
+			});
+			attrAllStarSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "44",
+				Alias = "44",
+				DisplayOrder = 3,
+				Quantity = 1
+			});
+			entities.Add(attrAllStarSize);
+
+			#endregion
+
 			this.Alter(entities);
 			return entities;
 		}
@@ -6858,6 +6927,56 @@ namespace SmartStore.Data.Setup
 				IsActive = true,
 				AssignedPictureIds = mensShirtPictures.First(x => x.SeoFilename.EndsWith("-gray")).Id.ToString()
 			});
+
+			#endregion
+
+			#region Fashion Converse All Star
+
+			var productAllStar = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112355");
+			var allStarPictureIds = productAllStar.ProductPictures.Select(x => x.PictureId).ToList();
+			var allStarPictures = _ctx.Set<Picture>().Where(x => allStarPictureIds.Contains(x.Id)).ToList();
+
+			var allStarColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productAllStar.Id && x.ProductAttributeId == attrColor.Id);
+			var allStarColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == allStarColor.Id).ToList();
+
+			var allStarSize = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productAllStar.Id && x.ProductAttributeId == attrSize.Id);
+			var allStarSizeValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == allStarSize.Id).ToList();
+
+			var allStarCombinations = new[]
+			{
+				new { Color = "Charcoal", Size = "42" },
+				new { Color = "Charcoal", Size = "43" },
+				new { Color = "Charcoal", Size = "44" },
+				new { Color = "Maroon", Size = "42" },
+				new { Color = "Maroon", Size = "43" },
+				new { Color = "Maroon", Size = "44" },
+				new { Color = "Navy", Size = "42" },
+				new { Color = "Navy", Size = "43" },
+				new { Color = "Navy", Size = "44" },
+				new { Color = "Purple", Size = "42" },
+				new { Color = "Purple", Size = "43" },
+				new { Color = "Purple", Size = "44" },
+				new { Color = "White", Size = "42" },
+				new { Color = "White", Size = "43" },
+				new { Color = "White", Size = "44" },
+			};
+
+			foreach (var comb in allStarCombinations)
+			{
+				var lowerColor = comb.Color.ToLower();
+				entities.Add(new ProductVariantAttributeCombination
+				{
+					Product = productAllStar,
+					Sku = productAllStar.Sku + string.Concat("-", lowerColor, "-", comb.Size),
+					AttributesXml = FormatAttributeXml(
+						allStarColor.Id, allStarColorValues.First(x => x.Alias == lowerColor).Id,
+						allStarSize.Id, allStarSizeValues.First(x => x.Alias == comb.Size).Id),
+					StockQuantity = 10000,
+					AllowOutOfStockOrders = true,
+					IsActive = true,
+					AssignedPictureIds = allStarPictures.First(x => x.SeoFilename.EndsWith(lowerColor)).Id.ToString()
+				});
+			}
 
 			#endregion
 
@@ -7879,6 +7998,7 @@ namespace SmartStore.Data.Setup
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Name = "Converse All Star",
+				MetaTitle = "Converse All Star",
 				ShortDescription = "The classical sneaker!",
 				FullDescription = "<p>Since 1912 and to this day unrivalled: the converse All Star sneaker. A shoe for every occasion.</p>",
 				Sku = "Fashion-112355",
@@ -7901,11 +8021,17 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			converseAllStar.ProductPictures.Add(new ProductPicture
+			var allStarImages = new string[] { "product_allstar_converse.jpg", "product_allstar_hi_charcoal.jpg", "product_allstar_hi_maroon.jpg", "product_allstar_hi_navy.jpg",
+				"product_allstar_hi_purple.jpg", "product_allstar_hi_white.jpg" };
+
+			for (var i = 0; i < allStarImages.Length; ++i)
 			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_converse.jpg"), "image/jpeg", "allstar-converse"),
-				DisplayOrder = 1
-			});
+				converseAllStar.ProductPictures.Add(new ProductPicture
+				{
+					Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + allStarImages[i]), "image/jpeg", allStarImages[i].Replace("product_", "").Replace(".jpg", "")),
+					DisplayOrder = i + 1
+				});
+			}
 
 			result.Add(converseAllStar);
 

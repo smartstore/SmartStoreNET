@@ -2853,7 +2853,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "black").Each(y => y.Name = "Schwarz");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "white").Each(y => y.Name = "Weiß");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "red").Each(y => y.Name = "Rot");
-				x.ProductVariantAttributeValues.Where(y => y.Alias == "gray").Each(y => y.Name = "Grau");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "gray" || y.Alias == "charcoal").Each(y => y.Name = "Grau");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "maroon").Each(y => y.Name = "Rotbraun");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "navy" || y.Alias == "blue").Each(y => y.Name = "Blau");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "purple").Each(y => y.Name = "Violett");
 			});
 
 			entities.Where(x => x.ProductAttribute.Alias == "iphone-color").Each(x =>

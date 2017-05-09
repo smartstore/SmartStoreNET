@@ -2526,18 +2526,18 @@ namespace SmartStore.Web.Infrastructure.Installation
 .Alter(8, x =>
                     {
                         x.Name = "Material";
-                        var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                        attribOption1.First().Name = "Edelstahl";
-
-                        var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                        attribOption2.First().Name = "Titan";
-
-                        var attribOption3 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3);
-                        attribOption2.First().Name = "Kunststoff";
-
-                        var attribOption4 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3);
-                        attribOption2.First().Name = "Aluminium";
-                    })
+                        x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 1).Name = "Edelstahl";
+                        x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 2).Name = "Titan";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 3).Name = "Kunststoff";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 4).Name = "Aluminium";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 5).Name = "Leder";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 6).Name = "Nylon";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 7).Name = "Silikon";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 8).Name = "Keramik";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 9).Name = "Baumwolle";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 10).Name = "100% Bio-Baumwolle";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 11).Name = "Polyamid";
+					})
             #endregion
 
             #region Technische Ausführung

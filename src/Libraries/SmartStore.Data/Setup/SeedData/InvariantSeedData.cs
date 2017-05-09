@@ -5227,7 +5227,7 @@ namespace SmartStore.Data.Setup
 			});
 			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "aluminum",
+				Name = "aluminium",
 				DisplayOrder = 4,
 			});
 
@@ -5255,11 +5255,27 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 8,
             });
 
-            #endregion sa8 material
+			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
+			{
+				Name = "cotton",
+				DisplayOrder = 9,
+			});
+			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
+			{
+				Name = "100% organic cotton",
+				DisplayOrder = 10,
+			});
+			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
+			{
+				Name = "polyamide",
+				DisplayOrder = 11,
+			});
 
-            #region sa9 movement
+			#endregion sa8 material
 
-            var sa9 = new SpecificationAttribute
+			#region sa9 movement
+
+					   var sa9 = new SpecificationAttribute
 			{
 				Name = "Movement",
 				DisplayOrder = 9,
@@ -8622,6 +8638,7 @@ namespace SmartStore.Data.Setup
 			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
 			var fashionCategory = _ctx.Set<Category>().First(c => c.Alias == "Fashion");
 			var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
+			var specOptionCotton = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 9);
 
 			// Men’s T
 			var mensShirt = new Product
@@ -8680,6 +8697,21 @@ namespace SmartStore.Data.Setup
 				Price = 8.00M
 			});
 
+			mensShirt.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 1,
+				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 10)
+			});
+			mensShirt.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 2,
+				SpecificationAttributeOption = specOptionCotton
+			});
+
 			result.Add(mensShirt);
 
 			// Converse All Star
@@ -8723,6 +8755,14 @@ namespace SmartStore.Data.Setup
 					DisplayOrder = i + 1
 				});
 			}
+
+			converseAllStar.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 1,
+				SpecificationAttributeOption = specOptionCotton
+			});
 
 			result.Add(converseAllStar);
 
@@ -8768,6 +8808,14 @@ namespace SmartStore.Data.Setup
 					DisplayOrder = i + 1
 				});
 			}
+
+			shirtMeccanica.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 1,
+				SpecificationAttributeOption = specOptionCotton
+			});
 
 			result.Add(shirtMeccanica);
 
@@ -8818,6 +8866,14 @@ namespace SmartStore.Data.Setup
 				});
 			}
 
+			ladiesJacket.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 1,
+				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 11)
+			});
+
 			result.Add(ladiesJacket);
 
 			// Clark Premium Blue Jeans
@@ -8854,6 +8910,14 @@ namespace SmartStore.Data.Setup
 			{
 				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_clark_premium_jeans.jpg"), "image/jpeg", "clark_premium_jeans"),
 				DisplayOrder = 1
+			});
+
+			clarkJeans.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 1,
+				SpecificationAttributeOption = specOptionCotton
 			});
 
 			result.Add(clarkJeans);

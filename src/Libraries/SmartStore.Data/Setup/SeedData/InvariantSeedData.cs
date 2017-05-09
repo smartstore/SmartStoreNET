@@ -6466,7 +6466,7 @@ namespace SmartStore.Data.Setup
 
 			#endregion attributePs3OneGameFree
 
-			#region Fashion Men’s T
+			#region Fashion - Men’s T
 
 			var productMensShirt = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112345");
 
@@ -6523,7 +6523,7 @@ namespace SmartStore.Data.Setup
 
 			#endregion
 
-			#region Fashion Converse All Star
+			#region Fashion - Converse All Star
 
 			var productAllStar = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112355");
 			var allStarColors = new string[] { "Charcoal", "Maroon", "Navy", "Purple", "White" };
@@ -6582,6 +6582,63 @@ namespace SmartStore.Data.Setup
 				Quantity = 1
 			});
 			entities.Add(attrAllStarSize);
+
+			#endregion
+
+			#region Fashion - Shirt Meccanica
+
+			var productShirtMeccanica = _ctx.Set<Product>().First(x => x.Sku == "Fashion-987693502");
+			var shirtMeccanicaSizes = new string[] { "XS", "S", "M", "L", "XL" };
+			var shirtMeccanicaColors = new[]
+			{
+				new { Color = "Red", Code = "#fe0000" },
+				new { Color = "Black", Code = "#000000" }
+			};
+
+			var attrShirtMeccanicaColor = new ProductVariantAttribute
+			{
+				Product = productShirtMeccanica,
+				ProductAttribute = attrColor,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+
+			for (var i = 0; i < shirtMeccanicaColors.Length; ++i)
+			{
+				attrShirtMeccanicaColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = shirtMeccanicaColors[i].Color,
+					Alias = shirtMeccanicaColors[i].Color.ToLower(),
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					Color = shirtMeccanicaColors[i].Code,
+					IsPreSelected = shirtMeccanicaColors[i].Color == "Red"
+				});
+			}
+			entities.Add(attrShirtMeccanicaColor);
+
+			var attrShirtMeccanicaSize = new ProductVariantAttribute
+			{
+				Product = productShirtMeccanica,
+				ProductAttribute = attrSize,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+
+			for (var i = 0; i < shirtMeccanicaSizes.Length; ++i)
+			{
+				attrShirtMeccanicaSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = shirtMeccanicaSizes[i],
+					Alias = shirtMeccanicaSizes[i].ToLower(),
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					IsPreSelected = shirtMeccanicaSizes[i] == "XS"
+				});
+			}
+			entities.Add(attrShirtMeccanicaSize);
 
 			#endregion
 
@@ -6784,7 +6841,7 @@ namespace SmartStore.Data.Setup
 
             #endregion Iphone 7 plus
 
-            #region Fashion Men’s T
+            #region Fashion - Men’s T
 
             var productMensShirt = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112345");
 			var mensShirtPictureIds = productMensShirt.ProductPictures.Select(x => x.PictureId).ToList();
@@ -6847,7 +6904,7 @@ namespace SmartStore.Data.Setup
 
 			#endregion
 
-			#region Fashion Converse All Star
+			#region Fashion - Converse All Star
 
 			var productAllStar = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112355");
 			var allStarPictureIds = productAllStar.ProductPictures.Select(x => x.PictureId).ToList();
@@ -6892,6 +6949,53 @@ namespace SmartStore.Data.Setup
 					AllowOutOfStockOrders = true,
 					IsActive = true,
 					AssignedPictureIds = allStarPictures.First(x => x.SeoFilename.EndsWith(lowerColor)).Id.ToString()
+				});
+			}
+
+			#endregion
+
+			#region Fashion - Shirt Meccanica
+
+			var productShirtMeccanica = _ctx.Set<Product>().First(x => x.Sku == "Fashion-987693502");
+			var shirtMeccanicaPictureIds = productShirtMeccanica.ProductPictures.Select(x => x.PictureId).ToList();
+			var shirtMeccanicaPictures = _ctx.Set<Picture>().Where(x => shirtMeccanicaPictureIds.Contains(x.Id)).ToList();
+
+			var shirtMeccanicaColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productShirtMeccanica.Id && x.ProductAttributeId == attrColor.Id);
+			var shirtMeccanicaColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == shirtMeccanicaColor.Id).ToList();
+
+			var shirtMeccanicaSize = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productShirtMeccanica.Id && x.ProductAttributeId == attrSize.Id);
+			var shirtMeccanicaSizeValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == shirtMeccanicaSize.Id).ToList();
+
+			var shirtMeccanicaCombinations = new[]
+			{
+				new { Color = "Red", Size = "XS" },
+				new { Color = "Red", Size = "S" },
+				new { Color = "Red", Size = "M" },
+				new { Color = "Red", Size = "L" },
+				new { Color = "Red", Size = "XL" },
+				new { Color = "Black", Size = "XS" },
+				new { Color = "Black", Size = "S" },
+				new { Color = "Black", Size = "M" },
+				new { Color = "Black", Size = "L" },
+				new { Color = "Black", Size = "XL" }
+			};
+
+			foreach (var comb in shirtMeccanicaCombinations)
+			{
+				var lowerColor = comb.Color.ToLower();
+				var pictureIds = shirtMeccanicaPictures.Where(x => x.SeoFilename.Contains($"_{lowerColor}_")).Select(x => x.Id);
+
+				entities.Add(new ProductVariantAttributeCombination
+				{
+					Product = productShirtMeccanica,
+					Sku = productShirtMeccanica.Sku + string.Concat("-", lowerColor, "-", comb.Size),
+					AttributesXml = FormatAttributeXml(
+						shirtMeccanicaColor.Id, shirtMeccanicaColorValues.First(x => x.Alias == lowerColor).Id,
+						shirtMeccanicaSize.Id, shirtMeccanicaSizeValues.First(x => x.Alias == comb.Size.ToLower()).Id),
+					StockQuantity = 10000,
+					AllowOutOfStockOrders = true,
+					IsActive = true,
+					AssignedPictureIds = string.Join(",", pictureIds)
 				});
 			}
 
@@ -7952,6 +8056,49 @@ namespace SmartStore.Data.Setup
 
 			result.Add(converseAllStar);
 
+			// Shirt Meccanica
+			var shirtMeccanica = new Product
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Name = "Sleeveless shirt Meccanica",
+				MetaTitle = "Sleeveless shirt Meccanica",
+				FullDescription = "<p>Also in summer, the Ducati goes with fashion style! With the sleeveless shirt Meccanica, every woman can express her passion for Ducati with a comfortable and versatile piece of clothing. The shirt is available in black and vintage red. It carries on the front the traditional lettering in plastisol print, which makes it even clearer and more radiant, while on the back in the neck area is the famous logo with the typical \"wings\" of the fifties.</p>",
+				Sku = "Fashion-987693502",
+				ManufacturerPartNumber = "987693502",
+				Gtin = "987693502",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				Price = 38.00M,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime
+			};
+
+			shirtMeccanica.ProductCategories.Add(new ProductCategory
+			{
+				Category = fashionCategory,
+				DisplayOrder = 1
+			});
+
+			var shirtMeccanicaImages = new string[] { "product_shirt_meccanica_red_1.jpg", "product_shirt_meccanica_red_2.jpg", "product_shirt_meccanica_red_3.jpg",
+				"product_shirt_meccanica_red_4.jpg", "product_shirt_meccanica_black_1.jpg", "product_shirt_meccanica_black_2.jpg", "product_shirt_meccanica_black_3.jpg" };
+
+			for (var i = 0; i < shirtMeccanicaImages.Length; ++i)
+			{
+				shirtMeccanica.ProductPictures.Add(new ProductPicture
+				{
+					Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + shirtMeccanicaImages[i]), "image/jpeg", shirtMeccanicaImages[i].Replace("product_", "").Replace(".jpg", "")),
+					DisplayOrder = i + 1
+				});
+			}
+
+			result.Add(shirtMeccanica);
 
 			return result;
 		}

@@ -3007,6 +3007,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.ShortDescription = "Der Sneaker-Klassiker!";
 					x.FullDescription = "<p>Seit 1912 und bis heute unerreicht: Der Converse All Star Sneaker. Ein Schuh für jede Gelegenheit.</p>";
+				})
+				.Alter("Fashion-987693502", x =>
+				{
+					x.Name = "Ärmelloses Shirt Meccanica";
+					x.FullDescription = "Auch im Sommer geht der Ducati Stil mit der Mode! Mit dem ärmellosen Shirt Meccanica kann jede Frau ihrer Leidenschaft für Ducati mit einem bequemen und vielseitigen Kleidungsstück Ausdruck verleihen. Das Shirt gibt es in schwarz und vintagerot. Es trägt auf der Vorderseite den traditionellen Schriftzug in Plastisoldruck, wodurch er noch deutlicher und strahlender wird, während sich auf der Rückseite im Nackenbereich das berühmte Logo mit den typischen \"Flügeln\" der fünfziger Jahre befindet.";
 				});
 		}
 

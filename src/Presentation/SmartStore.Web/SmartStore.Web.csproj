@@ -842,6 +842,13 @@
     <Content Include="Content\samples\product_RayBanTopBar_2.jpg" />
     <Content Include="Content\samples\product_RayBanTopBar_3.jpg" />
     <Content Include="Content\samples\product_SeikoSRPA49K1.jpg" />
+    <Content Include="Content\samples\product_shirt_meccanica_black_1.jpg" />
+    <Content Include="Content\samples\product_shirt_meccanica_black_2.jpg" />
+    <Content Include="Content\samples\product_shirt_meccanica_black_3.jpg" />
+    <Content Include="Content\samples\product_shirt_meccanica_red_1.jpg" />
+    <Content Include="Content\samples\product_shirt_meccanica_red_2.jpg" />
+    <Content Include="Content\samples\product_shirt_meccanica_red_3.jpg" />
+    <Content Include="Content\samples\product_shirt_meccanica_red_4.jpg" />
     <Content Include="Content\samples\product_sony_dualshock4_wirelesscontroller.png" />
     <Content Include="Content\samples\product_sony_ps3_black.png" />
     <Content Include="Content\samples\product_sony_ps3_plus_game.png" />

@@ -22,7 +22,7 @@ namespace SmartStore.DevTools
 	{
 		public void Execute()
 		{
-			StackExchange.Profiling.EntityFramework6.MiniProfilerEF6.Initialize();
+			//StackExchange.Profiling.EntityFramework6.MiniProfilerEF6.Initialize();
 
 			StackExchange.Profiling.MiniProfiler.Settings.MaxUnviewedProfiles = 5;
 			//StackExchange.Profiling.MiniProfiler.Settings.Results_List_Authorize = (req) => true;

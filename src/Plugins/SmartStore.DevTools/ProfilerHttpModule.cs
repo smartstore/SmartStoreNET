@@ -40,6 +40,8 @@ namespace SmartStore.DevTools
 
 		private static bool ShouldProfile(HttpApplication app)
 		{
+			return false;
+
 			if (app.Context == null || app.Context.Request == null)
 				return false;
 

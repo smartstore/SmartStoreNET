@@ -100,7 +100,7 @@ namespace SmartStore.Core.Logging
 			{
 				using (new ActionDisposable(() => props["sm:ThreadInfoAdded"] = true))
 				{
-					if (DataSettings.DatabaseIsInstalled())
+					if (DataSettings.DatabaseIsInstalled() && EngineContext.Current.IsFullyInitialized)
 					{
 						var container = EngineContext.Current.ContainerManager;
 
@@ -118,7 +118,6 @@ namespace SmartStore.Core.Logging
 								props["CustomerId"] = DBNull.Value;
 							}
 						}
-
 
 						IWebHelper webHelper;
 

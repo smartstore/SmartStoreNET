@@ -488,7 +488,7 @@ namespace SmartStore.Web.Framework
 
 			registration.Activated += (sender, e) =>
 			{
-				if (DataSettings.DatabaseIsInstalled())
+				if (DataSettings.DatabaseIsInstalled() && e.Context.Resolve<IEngine>().IsFullyInitialized)
 				{
 					var prop = e.Component.Metadata.Get("Property.T") as FastProperty;
 					if (prop != null)
@@ -1155,7 +1155,7 @@ namespace SmartStore.Web.Framework
 
 					try
 					{
-						if (c.TryResolve(out storeContext))
+						if (c.Resolve<IEngine>().IsFullyInitialized && c.TryResolve(out storeContext))
 						{
 							//currentStoreId = storeContext.CurrentStoreIdIfMultiStoreMode;
 							currentStoreId = storeContext.CurrentStore.Id;

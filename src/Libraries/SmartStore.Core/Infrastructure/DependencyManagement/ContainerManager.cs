@@ -131,12 +131,30 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public bool TryResolve(Type serviceType, ILifetimeScope scope, out object instance)
         {
-			return (scope ?? Scope()).TryResolve(serviceType, out instance);
+			instance = null;
+
+			try
+			{
+				return (scope ?? Scope()).TryResolve(serviceType, out instance);
+			}
+			catch
+			{
+				return false;
+			}	
         }
 
 		public bool TryResolve<T>(ILifetimeScope scope, out T instance)
 		{
-			return (scope ?? Scope()).TryResolve<T>(out instance);
+			instance = default(T);
+
+			try
+			{
+				return (scope ?? Scope()).TryResolve<T>(out instance);
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		public bool IsRegistered(Type serviceType, ILifetimeScope scope = null)

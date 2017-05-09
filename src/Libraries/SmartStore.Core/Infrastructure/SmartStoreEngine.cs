@@ -142,7 +142,13 @@ namespace SmartStore.Core.Infrastructure
 			}
         }
 
-        public T Resolve<T>(string name = null) where T : class
+		public bool IsFullyInitialized
+		{
+			get;
+			set;
+		}
+
+		public T Resolve<T>(string name = null) where T : class
 		{
             if (name.HasValue())
             {

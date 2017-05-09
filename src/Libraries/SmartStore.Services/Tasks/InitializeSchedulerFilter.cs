@@ -38,6 +38,9 @@ namespace SmartStore.Services.Tasks
                 {
                     s_initializing = true;
 
+					// The very first request must set app state to 'fully initialized'
+					EngineContext.Current.IsFullyInitialized = true;
+
 					var logger = EngineContext.Current.Resolve<ILoggerFactory>().CreateLogger<InitializeSchedulerFilter>();
 					ITaskScheduler taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
 

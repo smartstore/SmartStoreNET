@@ -63,15 +63,18 @@ namespace SmartStore.DevTools
 				return false;
 			}
 
-			ProfilerSettings settings;
+			ProfilerSettings settings = null;
 
-			try
+			if (EngineContext.Current.IsFullyInitialized)
 			{
-				settings = EngineContext.Current.Resolve<ProfilerSettings>();
-			}
-			catch
-			{
-				return false;
+				try
+				{
+					settings = EngineContext.Current.Resolve<ProfilerSettings>();
+				}
+				catch
+				{
+					return false;
+				}
 			}
 
 			return settings == null ? false : settings.EnableMiniProfilerInPublicStore;

@@ -2851,11 +2851,13 @@ namespace SmartStore.Web.Infrastructure.Installation
 			{
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "black").Each(y => y.Name = "Schwarz");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "white").Each(y => y.Name = "Weiß");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "silver").Each(y => y.Name = "Silber");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "red").Each(y => y.Name = "Rot");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "gray" || y.Alias == "charcoal").Each(y => y.Name = "Grau");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "maroon").Each(y => y.Name = "Rotbraun");
-				x.ProductVariantAttributeValues.Where(y => y.Alias == "navy" || y.Alias == "blue").Each(y => y.Name = "Blau");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "blue").Each(y => y.Name = "Blau");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "purple").Each(y => y.Name = "Violett");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "green").Each(y => y.Name = "Grün");
 			});
 
 			entities.Where(x => x.ProductAttribute.Alias == "iphone-color").Each(x =>
@@ -3011,7 +3013,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("Fashion-987693502", x =>
 				{
 					x.Name = "Ärmelloses Shirt Meccanica";
-					x.FullDescription = "Auch im Sommer geht der Ducati Stil mit der Mode! Mit dem ärmellosen Shirt Meccanica kann jede Frau ihrer Leidenschaft für Ducati mit einem bequemen und vielseitigen Kleidungsstück Ausdruck verleihen. Das Shirt gibt es in schwarz und vintagerot. Es trägt auf der Vorderseite den traditionellen Schriftzug in Plastisoldruck, wodurch er noch deutlicher und strahlender wird, während sich auf der Rückseite im Nackenbereich das berühmte Logo mit den typischen \"Flügeln\" der fünfziger Jahre befindet.";
+					x.FullDescription = "<p>Auch im Sommer geht der Ducati Stil mit der Mode! Mit dem ärmellosen Shirt Meccanica kann jede Frau ihrer Leidenschaft für Ducati mit einem bequemen und vielseitigen Kleidungsstück Ausdruck verleihen. Das Shirt gibt es in schwarz und vintagerot. Es trägt auf der Vorderseite den traditionellen Schriftzug in Plastisoldruck, wodurch er noch deutlicher und strahlender wird, während sich auf der Rückseite im Nackenbereich das berühmte Logo mit den typischen \"Flügeln\" der fünfziger Jahre befindet.</p>";
+				})
+				.Alter("Fashion-JN1107", x =>
+				{
+					x.Name = "Damen Sport-Jacke";
+					x.FullDescription = "<p>Leichtes wind- und wasserabweisendes Gewebe, Futter aus weichem Single-Jersey Strickbündchen an Arm und Bund, 2 seitliche Taschen mit Reißverschluss, Kapuze in leicht tailliertem Schnitt.</p><ul><li>Oberstoff: 100%</li><li>Polyamid Futterstoff: 65% Polyester, 35% Baumwolle</li><li>Futterstoff 2: 100% Polyester</li></ul>";
 				});
 		}
 

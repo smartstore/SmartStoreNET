@@ -6713,7 +6713,8 @@ namespace SmartStore.Data.Setup
 				Name = "42",
 				Alias = "42",
 				DisplayOrder = 1,
-				Quantity = 1
+				Quantity = 1,
+				IsPreSelected = true
 			});
 			attrAllStarSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
 			{
@@ -6787,6 +6788,68 @@ namespace SmartStore.Data.Setup
 				});
 			}
 			entities.Add(attrShirtMeccanicaSize);
+
+			#endregion
+
+			#region Fashion - Ladies Jacket
+
+			var productLadiesJacket = _ctx.Set<Product>().First(x => x.Sku == "Fashion-JN1107");
+			var ladiesJacketSizes = new string[] { "XS", "S", "M", "L", "XL" };
+			var ladiesJacketColors = new[]
+			{
+				new { Color = "Red", Code = "#CE1F1C" },
+				new { Color = "Orange", Code = "#EB7F01" },
+				new { Color = "Green", Code = "#24B87E" },
+				new { Color = "Blue", Code = "#0F8CCE" },
+				new { Color = "Navy", Code = "#525671" },
+				new { Color = "Silver", Code = "#ABB0B3" },
+				new { Color = "Black", Code = "#404040" }
+			};
+
+			var attrLadiesJacketColor = new ProductVariantAttribute
+			{
+				Product = productLadiesJacket,
+				ProductAttribute = attrColor,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+
+			for (var i = 0; i < ladiesJacketColors.Length; ++i)
+			{
+				attrLadiesJacketColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = ladiesJacketColors[i].Color,
+					Alias = ladiesJacketColors[i].Color.ToLower(),
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					Color = ladiesJacketColors[i].Code,
+					IsPreSelected = ladiesJacketColors[i].Color == "Red"
+				});
+			}
+			entities.Add(attrLadiesJacketColor);
+
+			var attrLadiesJacketSize = new ProductVariantAttribute
+			{
+				Product = productLadiesJacket,
+				ProductAttribute = attrSize,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+
+			for (var i = 0; i < ladiesJacketSizes.Length; ++i)
+			{
+				attrLadiesJacketSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = ladiesJacketSizes[i],
+					Alias = ladiesJacketSizes[i].ToLower(),
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					IsPreSelected = ladiesJacketSizes[i] == "XS"
+				});
+			}
+			entities.Add(attrLadiesJacketSize);
 
 			#endregion
 
@@ -7438,19 +7501,92 @@ namespace SmartStore.Data.Setup
 			foreach (var comb in shirtMeccanicaCombinations)
 			{
 				var lowerColor = comb.Color.ToLower();
+				var lowerSize = comb.Size.ToLower();
 				var pictureIds = shirtMeccanicaPictures.Where(x => x.SeoFilename.Contains($"_{lowerColor}_")).Select(x => x.Id);
 
 				entities.Add(new ProductVariantAttributeCombination
 				{
 					Product = productShirtMeccanica,
-					Sku = productShirtMeccanica.Sku + string.Concat("-", lowerColor, "-", comb.Size),
+					Sku = productShirtMeccanica.Sku + string.Concat("-", lowerColor, "-", lowerSize),
 					AttributesXml = FormatAttributeXml(
 						shirtMeccanicaColor.Id, shirtMeccanicaColorValues.First(x => x.Alias == lowerColor).Id,
-						shirtMeccanicaSize.Id, shirtMeccanicaSizeValues.First(x => x.Alias == comb.Size.ToLower()).Id),
+						shirtMeccanicaSize.Id, shirtMeccanicaSizeValues.First(x => x.Alias == lowerSize).Id),
 					StockQuantity = 10000,
 					AllowOutOfStockOrders = true,
 					IsActive = true,
 					AssignedPictureIds = string.Join(",", pictureIds)
+				});
+			}
+
+			#endregion
+
+			#region Fashion - Ladies Jacket
+
+			var productLadiesJacket = _ctx.Set<Product>().First(x => x.Sku == "Fashion-JN1107");
+			var ladiesJacketPictureIds = productLadiesJacket.ProductPictures.Select(x => x.PictureId).ToList();
+			var ladiesJacketPictures = _ctx.Set<Picture>().Where(x => ladiesJacketPictureIds.Contains(x.Id)).ToList();
+
+			var ladiesJacketColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productLadiesJacket.Id && x.ProductAttributeId == attrColor.Id);
+			var ladiesJacketColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ladiesJacketColor.Id).ToList();
+
+			var ladiesJacketSize = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productLadiesJacket.Id && x.ProductAttributeId == attrSize.Id);
+			var ladiesJacketSizeValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ladiesJacketSize.Id).ToList();
+
+			var ladiesJacketCombinations = new[]
+			{
+				new { Color = "Red", Size = "XS" },
+				new { Color = "Red", Size = "S" },
+				new { Color = "Red", Size = "M" },
+				new { Color = "Red", Size = "L" },
+				new { Color = "Red", Size = "XL" },
+				new { Color = "Orange", Size = "XS" },
+				new { Color = "Orange", Size = "S" },
+				new { Color = "Orange", Size = "M" },
+				new { Color = "Orange", Size = "L" },
+				new { Color = "Orange", Size = "XL" },
+				new { Color = "Green", Size = "XS" },
+				new { Color = "Green", Size = "S" },
+				new { Color = "Green", Size = "M" },
+				new { Color = "Green", Size = "L" },
+				new { Color = "Green", Size = "XL" },
+				new { Color = "Blue", Size = "XS" },
+				new { Color = "Blue", Size = "S" },
+				new { Color = "Blue", Size = "M" },
+				new { Color = "Blue", Size = "L" },
+				new { Color = "Blue", Size = "XL" },
+				new { Color = "Navy", Size = "XS" },
+				new { Color = "Navy", Size = "S" },
+				new { Color = "Navy", Size = "M" },
+				new { Color = "Navy", Size = "L" },
+				new { Color = "Navy", Size = "XL" },
+				new { Color = "Silver", Size = "XS" },
+				new { Color = "Silver", Size = "S" },
+				new { Color = "Silver", Size = "M" },
+				new { Color = "Silver", Size = "L" },
+				new { Color = "Silver", Size = "XL" },
+				new { Color = "Black", Size = "XS" },
+				new { Color = "Black", Size = "S" },
+				new { Color = "Black", Size = "M" },
+				new { Color = "Black", Size = "L" },
+				new { Color = "Black", Size = "XL" }
+			};
+
+			foreach (var comb in ladiesJacketCombinations)
+			{
+				var lowerColor = comb.Color.ToLower();
+				var lowerSize = comb.Size.ToLower();
+
+				entities.Add(new ProductVariantAttributeCombination
+				{
+					Product = productLadiesJacket,
+					Sku = productLadiesJacket.Sku + string.Concat("-", lowerColor, "-", lowerSize),
+					AttributesXml = FormatAttributeXml(
+						ladiesJacketColor.Id, ladiesJacketColorValues.First(x => x.Alias == lowerColor).Id,
+						ladiesJacketSize.Id, ladiesJacketSizeValues.First(x => x.Alias == lowerSize).Id),
+					StockQuantity = 10000,
+					AllowOutOfStockOrders = true,
+					IsActive = true,
+					AssignedPictureIds = ladiesJacketPictures.First(x => x.SeoFilename.EndsWith(lowerColor)).Id.ToString()
 				});
 			}
 
@@ -8435,7 +8571,8 @@ namespace SmartStore.Data.Setup
 				StockQuantity = 10000,
 				NotifyAdminForQuantityBelow = 1,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
+				DeliveryTime = firstDeliveryTime,
+				DisplayOrder = 3
 			};
 
 			mensShirt.ProductCategories.Add(new ProductCategory
@@ -8488,7 +8625,8 @@ namespace SmartStore.Data.Setup
 				StockQuantity = 10000,
 				NotifyAdminForQuantityBelow = 1,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
+				DeliveryTime = firstDeliveryTime,
+				DisplayOrder = 1
 			};
 
 			converseAllStar.ProductCategories.Add(new ProductCategory
@@ -8532,7 +8670,8 @@ namespace SmartStore.Data.Setup
 				StockQuantity = 10000,
 				NotifyAdminForQuantityBelow = 1,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
+				DeliveryTime = firstDeliveryTime,
+				DisplayOrder = 4
 			};
 
 			shirtMeccanica.ProductCategories.Add(new ProductCategory
@@ -8554,6 +8693,55 @@ namespace SmartStore.Data.Setup
 			}
 
 			result.Add(shirtMeccanica);
+
+			// Ladies jacket
+			var ladiesJacket = new Product
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Name = "Ladies Sports Jacket",
+				MetaTitle = "Ladies Sports Jacket",
+				FullDescription = "<p>Lightweight wind and water repellent fabric, lining of soft single jersey knit cuffs on arm and waistband. 2 side pockets with zipper, hood in slightly waisted cut.</p><ul><il>Material: 100% polyamide</il><il>Lining: 65% polyester, 35% cotton</il><il>Lining 2: 100% polyester.</il></ul>",
+				Sku = "Fashion-JN1107",
+				ManufacturerPartNumber = "JN1107",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				Price = 55.00M,
+				OldPrice = 60.00M,
+				ProductCost = 20.00M,
+				SpecialPrice = 52.99M,
+				SpecialPriceStartDateTimeUtc = new DateTime(2017, 5, 1, 0, 0, 0),
+				SpecialPriceEndDateTimeUtc = specialPriceEndDate,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime,
+				DisplayOrder = 2
+			};
+
+			ladiesJacket.ProductCategories.Add(new ProductCategory
+			{
+				Category = fashionCategory,
+				DisplayOrder = 1
+			});
+
+			var ladiesJacketImages = new string[] { "product_ladies_jacket_red.jpg", "product_ladies_jacket_orange.jpg", "product_ladies_jacket_green.jpg",
+				"product_ladies_jacket_blue.jpg", "product_ladies_jacket_navy.jpg", "product_ladies_jacket_silver.jpg", "product_ladies_jacket_black.jpg" };
+
+			for (var i = 0; i < ladiesJacketImages.Length; ++i)
+			{
+				ladiesJacket.ProductPictures.Add(new ProductPicture
+				{
+					Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + ladiesJacketImages[i]), "image/jpeg", ladiesJacketImages[i].Replace("product_", "").Replace(".jpg", "")),
+					DisplayOrder = i + 1
+				});
+			}
+
+			result.Add(ladiesJacket);
 
 			return result;
 		}

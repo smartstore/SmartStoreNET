@@ -956,7 +956,7 @@ namespace SmartStore.Data.Migrations
                         </li>
                         <li>
                             The Html code that will be provided to you to embed the choosen fonts into your website looks like this:
-                            <pre>&lt;href=""https://fonts.googleapis.com/css?family=<b>Roboto:100,300,400,500,700|Ubuntu</b>"" rel=""stylesheet""></pre>
+                            <pre>&lt;link href=""https://fonts.googleapis.com/css?family=<b>Roboto:100,300,400,500,700|Ubuntu</b>"" rel=""stylesheet""></pre>
                         </li>
                         <li>
                             Copy the bold marked part of the link and enter it into one of the threee fields within the theme configurator that's intended for this purpose.
@@ -973,7 +973,7 @@ namespace SmartStore.Data.Migrations
                         </li>
                         <li>
                             Als Html-Code für Ihre Webseite, wird Ihnen ein Link in folgender Form angeboten:
-                            <pre>&lt;href=""https://fonts.googleapis.com/css?family=<b>Roboto:100,300,400,500,700|Ubuntu</b>"" rel=""stylesheet""></pre>
+                            <pre>&lt;link href=""https://fonts.googleapis.com/css?family=<b>Roboto:100,300,400,500,700|Ubuntu</b>"" rel=""stylesheet""></pre>
                         </li>
                         <li>
                             Fügen Sie den fett markierten Teil des Links in eins der drei Felder des Theme-Konfigurators ein, die für Google Fonts vorgesehen sind.

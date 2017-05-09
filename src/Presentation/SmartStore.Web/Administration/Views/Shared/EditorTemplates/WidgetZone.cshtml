@@ -24,42 +24,39 @@
         else {
         	var optGroups = [
                 {
-                	text: "Global", children: [
-						'home_page_top',
+                    text: "@T("Admin.ContentManagement.Homepage")", children: [
+                        'home_page_top',
+                        'home_page_after_intro',
+                        'home_page_after_categories',
+                        'home_page_after_products',
+                        'home_page_after_bestsellers',
+                        'home_page_after_manufacturers',
+                        'home_page_after_tags',
+                        'home_page_after_news',
+                        'home_page_after_polls',
 						'home_page_bottom',
+                    ]
+                },
+                {
+                	text: "Global", children: [
 						'main_column_before',
 						'main_column_after',
-						'left_side_column_before',
-						'left_side_column_after_category_navigation',
-						'left_side_column_after_manufacturer_navigation',
-						'left_side_column_after_tags',
-						'left_side_column_after_info',
-						'left_side_column_after_poll',
-						'left_side_column_after',
-						'right_side_column_before',
-						'right_side_column_after_recentlyviewed',
-						'right_side_column_after_poll',
-						'right_side_column_after',
 						'body_start_html_tag_after',
 						'content_before',
+                        'after_teaser',
+                        'aside_left_before',
+                        'aside_left_after',
+                        'aside_right_before',
+                        'aside_right_after',
 						'content_after',
 						'body_end_html_tag_before',
-						'head_html_tag',
-						'admin_navbar_before',
-						'admin_navbar_after',
-						'admin_breadcrumb',
-						'admin_content_before',
-						'admin_content_after',
-						'admin_menu_before',
-						'admin_button_toolbar_before',
-						'admin_button_toolbar_after'
+						'head_html_tag'
                 	]
                 },
                 {
                     text: "@T("Admin.ContentManagement.Blog")", children: [
                         'blogpost_page_before_body',
                         'blogpost_page_before_comments',
-                        'blogpost_page_inside_comment',
                         'blogpost_page_after_comments',
                         'bloglist_page_before_posts',
                         'bloglist_page_inside_post',
@@ -67,49 +64,65 @@
                     ]
                 },
                 {
+                    text: "News", children: [
+                        'newslist_page_before_items',
+                        'newslist_page_after_items',
+                        'newsitem_page_before_body',
+                        'newsitem_page_before_comments',
+                        'newsitem_page_after_comments'
+                    ]
+                },
+                {
                 	text: "@T("Admin.Catalog.Categories")", children: [
-						'categorydetails_after_breadcrumb',
 						'categorydetails_top',
 						'categorydetails_before_subcategories',
 						'categorydetails_before_featured_products',
-						'categorydetails_after_featured_products',
 						'categorydetails_before_product_list',
-						'categorydetails_bottom',
-						'categorydetails_before_filters'
+						'categorydetails_bottom'
                     ]
                 },
                 {
                     text: "@T("Admin.Catalog.Products")", children: [
 					  'productbox_add_info',
-					  'productsbytag_before_product_list',
 					  'productreviews_page_inside_review',
-					  'productdetails_overview_top',
-					  'productdetails_overview_bottom',
 					  'productsbytag_top',
 					  'productsbytag_bottom',
 					  'productdetails_add_info',
+                      'productdetails_add_info_bundle',
 					  'productdetails_top',
-					  'productdetails_before_pictures',
-					  'productdetails_after_pictures',
 					  'productdetails_bottom',
+                      'productdetails_pictures_top',
+                      'productdetails_info_top',
+                      'productdetails_info_bottom',
+                      'productdetails_attrs_top',
+                      'productdetail_action_links_after',
+                      'productdetail_tabs_after',
+                      'productdetail_tags_after',
+                      'productdetail_related_products_after',
+                      'productdetail_also_purchased_after'
                     ]
                 },
                 {
                     text: "Navigation", children: [
-                        'productbreadcrumb_before',
-                        'productbreadcrumb_after',
+                        'header_menu_top',
                         'header_menu_before',
+                        'header_menu_special_after',
                         'header_menu_after',
-                        'megamenu_before_first_item',
-                        'megamenu_after_last_item',
+                        'header_menu_bottom',
+                        'servicemenu_before',
+                        'servicemenu_after',
+                        'shopbar_tools_before',
+                        'shopbar_tools_after',
+                        'mainmenu_before_first_item',
+                        'mainmenu_after_last_item',
+                        'breadcrumb_before',
+                        'breadcrumb_after',
                         'account_dropdown_before',
                         'account_dropdown_after',
-                        'header_links_before',
-                        'header_links_after',
-                        'infoblock_before',
-                        'infoblock_after',
-                        'account_navigation_before',
-                        'account_navigation_after'
+                        'myaccount_menu_before',
+                        'myaccount_menu_after',
+                        'myaccount_menu_firstitem_before',
+                        'myaccount_menu_lastitem_after'
                     ]
                 },
                 {
@@ -117,8 +130,8 @@
                         'invoice_footer_before',
                         'invoice_footer_after',
                         'invoice_header_before',
-                        'invoice_header_right',
                         'invoice_header_after',
+                        'invoice_header_right',
                         'invoice_top',
                         'invoice_orderinfo_top',
                         'invoice_orderinfotable_after',
@@ -141,21 +154,24 @@
                 },
                 {
                     text: "@T("Admin.Catalog.Manufacturers")", children: [
+                        'manufacturers_all_top',
+                        'manufacturers_all_bottom',
                         'manufacturerdetails_top',
                         'manufacturerdetails_before_featured_products',
-                        'manufacturerdetails_after_featured_products',
-                        'manufacturerdetails_before_filters',
-                        'manufacturerdetails_before_product_list',
                         'manufacturerdetails_bottom'
                     ]
                 },
                 {
                     text: "@T("Common.Misc")", children: [
                         'compareproducts_row',
-                        'searchbox',
                         'footer',
                         'contactus_top',
                         'contactus_bottom',
+                        'searchbox',
+                        'search_filters_before',
+                        'search_filters_after',
+                        'active_filters_before',
+                        'active_filters_after',
                         'productreviews_page_top',
                         'productreviews_page_inside_review',
                         'productreviews_page_bottom',
@@ -166,7 +182,11 @@
                         'shipmentdetails_orderinfo_top',
                         'shipmentdetails_orderinfotable_after',
                         'shipmentdetails_orderinfo_bottom',
-                        'shipmentdetails_lines_before'
+                        'shipmentdetails_lines_before',
+                        'recently_added_products_top',
+                        'wishlist_items_top',
+                        'offcanvas_wishlist_items_after',
+                        'offcanvas_compare_items_after'
                     ]
                 },
                 {
@@ -177,7 +197,7 @@
                         'newsitem_page_before_body',
                         'newsitem_page_before_comments',
                         'newsitem_page_inside_comment',
-                         'newsitem_page_after_comments'
+                        'newsitem_page_after_comments'
                     ]
                 },
                 {
@@ -195,8 +215,8 @@
                         'checkout_billing_address_top',
                         'checkout_billing_address_middle',
                         'checkout_billing_address_bottom',
-                        'checkout_progress_before',
-                        'checkout_progress_after',
+                        'checkout_steps_before',
+                        'checkout_steps_after',
                         'checkout_completed_top',
                         'checkout_completed_bottom',
                         'checkout_confirm_top',
@@ -213,11 +233,16 @@
                 },
                 {
                     text: "@T("Shoppingcart")", children: [
-                        'mini_shopping_cart_bottom',
+                        'offcanvas_cart_summary',
+                        'offcanvas_cart_items_after',
+                        'offcanvas_cart_footer_after',
                         'order_summary_content_before',
-                        'order_summary_content_totals_left',
-                        'order_summary_content_deals',
-                        'order_summary_content_totals_bottom',
+                        'order_summary_actions_before',
+                        'order_summary_actions_after',
+                        'order_summary_totals_before',
+                        'order_summary_totals_after',
+                        'order_summary_buttons_before',
+                        'order_summary_buttons_after',
                         'order_summary_content_after'
                     ]
                 }

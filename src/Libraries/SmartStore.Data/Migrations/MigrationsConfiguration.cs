@@ -997,6 +997,8 @@ namespace SmartStore.Data.Migrations
                 "There are no sent items to be displayed.",
                 "Sie haben noch keine Nachrichten versendet.");
 
+            builder.AddOrUpdate("Admin.ContentManagement.Homepage", "Homepage", "Startseite");
+
         }
     }
 }

@@ -187,7 +187,6 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableWidgetZones, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableTitleTags, mo => mo.Ignore());
 			CreateMap<TopicModel, Topic>();
 

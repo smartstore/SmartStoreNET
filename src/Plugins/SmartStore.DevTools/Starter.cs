@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using SmartStore.Core.Infrastructure;
@@ -22,11 +23,11 @@ namespace SmartStore.DevTools
 	{
 		public void Execute()
 		{
-			//StackExchange.Profiling.EntityFramework6.MiniProfilerEF6.Initialize();
-
 			StackExchange.Profiling.MiniProfiler.Settings.MaxUnviewedProfiles = 5;
 			//StackExchange.Profiling.MiniProfiler.Settings.Results_List_Authorize = (req) => true;
 			//StackExchange.Profiling.MiniProfiler.Settings.Storage = new NullProfilerStorage();
+
+			StackExchange.Profiling.EntityFramework6.MiniProfilerEF6.Initialize();
 		}
 
 		public int Order

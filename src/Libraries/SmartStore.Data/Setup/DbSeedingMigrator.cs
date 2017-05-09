@@ -6,6 +6,7 @@ using System.Data.Entity.Migrations.Infrastructure;
 using System.Linq;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
+using SmartStore.Data.Migrations;
 
 namespace SmartStore.Data.Setup
 {
@@ -19,6 +20,14 @@ namespace SmartStore.Data.Setup
 	{
 		private ILogger _logger;
 		private static bool _isMigrating;
+
+		/// <summary>
+		/// Initializes a new instance of the DbMigrator class with the default (core db) configuration.
+		/// </summary>
+		public DbSeedingMigrator()
+			: this(new MigrationsConfiguration())
+		{
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the DbMigrator class.

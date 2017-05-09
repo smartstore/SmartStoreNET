@@ -12,6 +12,11 @@ namespace SmartStore.DevTools
 		
 		public void Init(HttpApplication context)
 		{
+			if (DevToolsPlugin.HasPendingMigrations())
+			{
+				return;
+			}
+
 			context.BeginRequest += OnBeginRequest;
 			context.EndRequest += OnEndRequest;
 		}
@@ -40,8 +45,6 @@ namespace SmartStore.DevTools
 
 		private static bool ShouldProfile(HttpApplication app)
 		{
-			return false;
-
 			if (app.Context == null || app.Context.Request == null)
 				return false;
 

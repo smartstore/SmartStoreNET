@@ -6122,6 +6122,16 @@ namespace SmartStore.Data.Setup
 				{
 					Name = "Memory capacity",
 					Alias = "memory-capacity"
+				},
+				new ProductAttribute
+				{
+					Name = "Width",
+					Alias = "width"
+				},
+				new ProductAttribute
+				{
+					Name = "Length",
+					Alias = "length"
 				}
 			};
 
@@ -6189,10 +6199,12 @@ namespace SmartStore.Data.Setup
 			var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
 			var attrIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
             var attr97iPadColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
+			var attrWidth = _ctx.Set<ProductAttribute>().First(x => x.Alias == "width");
+			var attrLength = _ctx.Set<ProductAttribute>().First(x => x.Alias == "length");
 
-            #region 9,7 iPad
+			#region 9,7 iPad
 
-            var product97iPad = _ctx.Set<Product>().First(x => x.Sku == "P-2004");
+			var product97iPad = _ctx.Set<Product>().First(x => x.Sku == "P-2004");
 
             var attribute97iPadMemoryCapacity = new ProductVariantAttribute()
             {
@@ -6850,6 +6862,58 @@ namespace SmartStore.Data.Setup
 				});
 			}
 			entities.Add(attrLadiesJacketSize);
+
+			#endregion
+
+			#region Fashion - Clark Jeans
+
+			var productClarkJeans = _ctx.Set<Product>().First(x => x.Sku == "Fashion-65986524");
+			var clarkJeansWidth = new string[] { "31", "32", "33", "34", "35", "36", "38", "40", "42", "44", "46" };
+			var clarkJeansLength = new string[] { "30", "32", "34" };
+
+			var attrClarkJeansWidth = new ProductVariantAttribute
+			{
+				Product = productClarkJeans,
+				ProductAttribute = attrWidth,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+
+			for (var i = 0; i < clarkJeansWidth.Length; ++i)
+			{
+				attrClarkJeansWidth.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = clarkJeansWidth[i],
+					Alias = clarkJeansWidth[i],
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					IsPreSelected = clarkJeansWidth[i] == "31"
+				});
+			}
+			entities.Add(attrClarkJeansWidth);
+
+			var attrClarkJeansLength = new ProductVariantAttribute
+			{
+				Product = productClarkJeans,
+				ProductAttribute = attrLength,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+
+			for (var i = 0; i < clarkJeansLength.Length; ++i)
+			{
+				attrClarkJeansLength.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = clarkJeansLength[i],
+					Alias = clarkJeansLength[i],
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					IsPreSelected = clarkJeansLength[i] == "30"
+				});
+			}
+			entities.Add(attrClarkJeansLength);
 
 			#endregion
 
@@ -8742,6 +8806,45 @@ namespace SmartStore.Data.Setup
 			}
 
 			result.Add(ladiesJacket);
+
+			// Clark Premium Blue Jeans
+			var clarkJeans = new Product
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Name = "Clark Premium Blue Jeans",
+				MetaTitle = "Clark Premium Blue Jeans",
+				ShortDescription = "Modern Jeans in Easy Comfort Fit",
+				FullDescription = "<p>Real five-pocket jeans by Joker with additional, set-up pocket. Thanks to easy comfort fit with normal rise and comfortable leg width suitable for any character.</p><ul><li>Material: softer, lighter premium denim made of 100% cotton.</li><li>Waist (inch): 29-46</li><li>leg (inch): 30 to 38</li></ul>",
+				Sku = "Fashion-65986524",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				Price = 109.90M,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				IsShipEnabled = true,
+				DeliveryTime = firstDeliveryTime,
+				DisplayOrder = 5
+			};
+
+			clarkJeans.ProductCategories.Add(new ProductCategory
+			{
+				Category = fashionCategory,
+				DisplayOrder = 1
+			});
+
+			clarkJeans.ProductPictures.Add(new ProductPicture
+			{
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_clark_premium_jeans.jpg"), "image/jpeg", "clark_premium_jeans"),
+				DisplayOrder = 1
+			});
+
+			result.Add(clarkJeans);
+
 
 			return result;
 		}

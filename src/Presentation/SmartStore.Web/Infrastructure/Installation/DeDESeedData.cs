@@ -2817,6 +2817,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("memory-capacity", x =>
 				{
 					x.Name = "Speicherkapazität";
+				})
+				.Alter("width", x =>
+				{
+					x.Name = "Weite";
+				})
+				.Alter("length", x =>
+				{
+					x.Name = "Länge";
 				});
         }
 
@@ -3019,7 +3027,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.Name = "Damen Sport-Jacke";
 					x.FullDescription = "<p>Leichtes wind- und wasserabweisendes Gewebe, Futter aus weichem Single-Jersey Strickbündchen an Arm und Bund, 2 seitliche Taschen mit Reißverschluss, Kapuze in leicht tailliertem Schnitt.</p><ul><li>Oberstoff: 100%</li><li>Polyamid Futterstoff: 65% Polyester, 35% Baumwolle</li><li>Futterstoff 2: 100% Polyester</li></ul>";
-				});
+				})
+				.Alter("Fashion-65986524", x =>
+				 {
+					 x.ShortDescription = "Moderne Jeans in Easy Comfort Fit";
+					 x.FullDescription = "<p>Echte Five-Pocket-Jeans von Joker mit zusätzlicher, aufgesetzter Uhrentasche. Dank Easy Comfort Fit mit normaler Leibhöhe und bequemer Beinweite passend für jeden Figurtyp. Gerader Beinverlauf.</p><ul><li>Material: weicher, leichterer Premium-Denim aus 100% Baumwolle</li><li>Bundweite (Zoll): 29-46</li><li>Beinlänge (Zoll): 30 bis 38</li></ul>";
+				 });
 		}
 
 		protected override void Alter(IList<Product> entities)

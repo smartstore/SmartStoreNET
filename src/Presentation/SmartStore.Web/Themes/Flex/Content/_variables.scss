@@ -38,6 +38,12 @@ $shopbar-inverse-color-muted:   rgba($shopbar-inverse-color, 0.5);
 $megamenu-color:                $header-color !default;
 $megamenu-inverse-color:        $header-inverse-color !default;
 
+$megamenu-dropdown-bg:          #fff !default;
+$megamenu-text-color:           $body-color !default;
+$megamenu-heading-color:        #222 !default;
+$megamenu-subitem-color:        #999 !default;
+$megamenu-rotator-bg:           rgba(255, 255, 255, 0.92) !default;
+
 $searchbox-bg:                  #fff !default;
 $searchbox-focus-bg:            #fff !default;
 $searchbox-border-color:        rgba(0,0,0, 0.12) !default;

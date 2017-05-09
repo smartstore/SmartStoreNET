@@ -6135,30 +6135,6 @@ namespace SmartStore.Data.Setup
                 ProductAttributeId = colorAttribute.Id
             });
 
-            entities.Add(new ProductAttributeOptionsSet
-            {
-                Name = "Apple colors",
-                ProductAttributeId = colorAttribute.Id
-            });
-
-            entities.Add(new ProductAttributeOptionsSet
-            {
-                Name = "Rayban original Wayfarer colors",
-                ProductAttributeId = colorAttribute.Id
-            });
-
-            entities.Add(new ProductAttributeOptionsSet
-            {
-                Name = "Rayban Topbar colors",
-                ProductAttributeId = colorAttribute.Id
-            });
-
-            entities.Add(new ProductAttributeOptionsSet
-            {
-                Name = "Bauhaus colors",
-                ProductAttributeId = colorAttribute.Id
-            });
-
             this.Alter(entities);
             return entities;
         }
@@ -6169,88 +6145,29 @@ namespace SmartStore.Data.Setup
             var colorAttribute = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
 			var sets = _ctx.Set<ProductAttributeOptionsSet>().ToList();
 
-            var generalColors = new string[] { "Red", "Green", "Blue", "Yellow", "Black", "White", "Gray", "Silver", "Brown" };
-            var generalColorValues = new string[] { "#ff0000", "#008000", "#0000ff", "#ffff00", "#000000", "#ffffff", "#808080", "#dddfde", "#a52a2a" };
+			var generalColors = new[]
+			{
+				new { Color = "Red", Code = "#ff0000" },
+				new { Color = "Green", Code = "#008000" },
+				new { Color = "Blue", Code = "#0000ff" },
+				new { Color = "Yellow", Code = "#ffff00" },
+				new { Color = "Black", Code = "#000000" },
+				new { Color = "White", Code = "#ffffff" },
+				new { Color = "Gray", Code = "#808080" },
+				new { Color = "Silver", Code = "#dddfde" },
+				new { Color = "Brown", Code = "#a52a2a" },
+			};
 
-
-            for (var i = 0; i < generalColors.Length; ++i)
+			for (var i = 0; i < generalColors.Length; ++i)
             {
                 entities.Add(new ProductAttributeOption
                 {
                     ProductAttributeOptionsSetId = sets[0].Id,
-                    Alias = GetSeName(generalColors[i]),
-                    Name = generalColors[i],
+                    Alias = generalColors[i].Color.ToLower(),
+                    Name = generalColors[i].Color,
                     Quantity = 1,
                     DisplayOrder = i + 1,
-                    Color = generalColorValues[i]
-                    
-                });
-            }
-
-            var appleColors = new string[] { "Gold", "Light blue", "Purple", "Mint", "Rose", "Red", "Silver", "Space gray", "Turquoise" };
-            var apppleColorValues = new string[] { "#e3d0ba", "#a6b9df", "#dba5d7", "#a6dbb1", "#d9a6ad", "#af1e2d", "#dddfde", "#abaeb1", "#a4dbde" };
-
-            for (var i = 0; i < appleColors.Length; ++i)
-            {
-                entities.Add(new ProductAttributeOption
-                {
-                    ProductAttributeOptionsSetId = sets[1].Id,
-                    Alias = GetSeName(appleColors[i]),
-                    Name = appleColors[i],
-                    Quantity = 1,
-                    DisplayOrder = i + 1,
-                    Color = apppleColorValues[i]
-                });
-            }
-
-            var raybanWayfarerColors = new string[] { "Blue-Gray", "Brown", "Gray", "Green" };
-            var raybanWayfarerColorValues = new string[] { "#3e4659", "#3e4659", "#727377", "#3c432e" };
-
-            for (var i = 0; i < raybanWayfarerColors.Length; ++i)
-            {
-                entities.Add(new ProductAttributeOption
-                {
-                    ProductAttributeOptionsSetId = sets[2].Id,
-                    Alias = GetSeName(raybanWayfarerColors[i]),
-                    Name = raybanWayfarerColors[i],
-                    Quantity = 1,
-                    DisplayOrder = i + 1,
-                    Color = raybanWayfarerColorValues[i]
-                });
-            }
-
-            var raybanTopbarColors = new string[] { "Silver", "Shiny black", "Gunmetal", "Black" };
-            var raybanTopbarsColorValues = new string[] { "#b5c3c4", "#586166", "#6f785b", "#546d67" };
-
-            for (var i = 0; i < raybanTopbarColors.Length; ++i)
-            {
-                entities.Add(new ProductAttributeOption
-                {
-                    ProductAttributeOptionsSetId = sets[3].Id,
-                    Alias = GetSeName(raybanTopbarColors[i]),
-                    Name = raybanTopbarColors[i],
-                    Quantity = 1,
-                    DisplayOrder = i + 1,
-                    Color = raybanTopbarsColorValues[i]
-                });
-            }
-
-            var bauhausColors = new string[] { "White-old", "Anthracite", "Beige", "Biscuit", "Blue", "Brown", "Champagne", "Cognac", "Brown-dark", "Black", "Green-dark", "Red-dark"
-                , "Graphite-black", "Green", "Blue-light", "Grey-light", "Red-raspberry", "Orange", "Yellow-colza", "Rosso", "Red", "Black", "Red-tomato", "White" };
-
-            var bauhausColorValues = new string[] { "#E9E5D9", "#343635", "#D7C6AA", "#F1E2C1", "#0000FE", "#734221", "#F7E9CE", "#BD6C3F", "#2A1708", "#00000", "#192521", "#5D060F",
-                "#383428", "#008543", "#00ACE4", "#CDCDCD", " #C72F48", "#FF5F01", "#FDD100", "#D30100", "#FE0000","#000000","#EA3E28", "#FFFFFF" };
-
-            for (var i = 0; i < bauhausColors.Length; ++i)
-            {
-                entities.Add(new ProductAttributeOption
-                {
-                    ProductAttributeOptionsSetId = sets[4].Id,
-                    Alias = GetSeName(bauhausColors[i]),
-                    Name = bauhausColors[i],
-                    Quantity = 1,
-                    DisplayOrder = i + 1,
-                    Color = bauhausColorValues[i]
+                    Color = generalColors[i].Code                    
                 });
             }
 

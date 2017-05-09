@@ -2832,16 +2832,15 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			base.Alter(entities);
 
-			entities.Where(x => x.Name == "Red").Each(x => x.Name = "Rot");
-			entities.Where(x => x.Name == "Green").Each(x => x.Name = "Grün");
-			entities.Where(x => x.Name == "British Racing Green").Each(x => x.Name = "Britisches Renn-Grün");
-			entities.Where(x => x.Name == "Blue").Each(x => x.Name = "Blau");
-			entities.Where(x => x.Name == "Yellow").Each(x => x.Name = "Gelb");
-			entities.Where(x => x.Name == "Black").Each(x => x.Name = "Schwarz");
-			entities.Where(x => x.Name == "White").Each(x => x.Name = "Weiß");
-			entities.Where(x => x.Name == "Gray").Each(x => x.Name = "Grau");
-			entities.Where(x => x.Name == "Silver").Each(x => x.Name = "Silber");
-			entities.Where(x => x.Name == "Brown").Each(x => x.Name = "Braun");
+			entities.Where(x => x.Alias == "red").Each(x => x.Name = "Rot");
+			entities.Where(x => x.Alias == "green").Each(x => x.Name = "Grün");
+			entities.Where(x => x.Alias == "blue").Each(x => x.Name = "Blau");
+			entities.Where(x => x.Alias == "yellow").Each(x => x.Name = "Gelb");
+			entities.Where(x => x.Alias == "black").Each(x => x.Name = "Schwarz");
+			entities.Where(x => x.Alias == "white").Each(x => x.Name = "Weiß");
+			entities.Where(x => x.Alias == "gray").Each(x => x.Name = "Grau");
+			entities.Where(x => x.Alias == "silver").Each(x => x.Name = "Silber");
+			entities.Where(x => x.Alias == "brown").Each(x => x.Name = "Braun");
 		}
 
 		protected override void Alter(IList<ProductVariantAttribute> entities)

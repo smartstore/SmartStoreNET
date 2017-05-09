@@ -130,6 +130,14 @@ namespace SmartStore.Core.Caching
 					yield return "p" + product.ParentGroupedProductId;
 				}
 			}
+			else if (type == typeof(ProductTag))
+			{
+				var ids = ((ProductTag)entity).Products.Select(x => x.Id);
+				foreach (var id in ids)
+				{
+					yield return "p" + id;
+				}
+			}
 			else if (type == typeof(ProductBundleItem))
 			{
 				yield return "p" + ((ProductBundleItem)entity).ProductId;

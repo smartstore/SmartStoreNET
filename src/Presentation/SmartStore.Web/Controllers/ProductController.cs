@@ -911,7 +911,6 @@ namespace SmartStore.Web.Controllers
 
 		#endregion
 
-
 		#region Email a friend
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]

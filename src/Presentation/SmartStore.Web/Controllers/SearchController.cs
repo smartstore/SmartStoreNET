@@ -218,7 +218,7 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult FacetGroup(FacetGroup facetGroup, string templateName)
 		{
-			// Just a "proxy" for our "StandardFacetTemplateSelector"
+			// Just a "proxy" for our "DefaultFacetTemplateSelector"
 			return PartialView(templateName, facetGroup);
 		}
 

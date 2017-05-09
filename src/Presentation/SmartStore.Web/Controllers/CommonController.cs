@@ -338,14 +338,21 @@ namespace SmartStore.Web.Controllers
                 }
 
                 string logoUrl = null;
-                var logoSize = new Size();
+                Size logoSize = Size.Empty;
                 if (picture != null)
                 {
                     logoUrl = pictureService.GetPictureUrl(picture);
-                    logoSize = pictureService.GetPictureSize(picture);
+					if (picture.Width.HasValue && picture.Height.HasValue)
+					{
+						logoSize = new Size(picture.Width.Value, picture.Height.Value);
+					}
+					else
+					{
+						logoSize = pictureService.GetPictureSize(picture);
+					} 
                 }
 
-                return new ShopHeaderModel()
+                return new ShopHeaderModel
                 {
                     LogoUploaded = picture != null && logoUrl.HasValue(),
                     LogoUrl = logoUrl,
@@ -411,11 +418,6 @@ namespace SmartStore.Web.Controllers
 			_services.WorkContext.TaxDisplayType = taxDisplayType;
 
             return RedirectToReferrer(returnUrl);
-        }
-
-        public ActionResult Settings()
-        {
-            return View();
         }
 
         // footer

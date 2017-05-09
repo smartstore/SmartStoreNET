@@ -750,6 +750,7 @@
     <Content Include="Content\samples\company_logo.png" />
     <Content Include="Content\samples\emblem_library.png" />
     <Content Include="Content\samples\iphone.png" />
+    <Content Include="Content\samples\manufacturer_wb.png" />
     <Content Include="Content\samples\manufacturer-android.png" />
     <Content Include="Content\samples\manufacturer-blackberry.png" />
     <Content Include="Content\samples\manufacturer-canon.png" />
@@ -824,6 +825,7 @@
     <Content Include="Content\samples\product_cookingfortwo.jpg" />
     <Content Include="Content\samples\product_CustomFlakSunglasses.jpg" />
     <Content Include="Content\samples\product_dellinspiron23.png" />
+    <Content Include="Content\samples\product_dualshock4.jpg" />
     <Content Include="Content\samples\product_evolution-high-school-game-basketball.jpg" />
     <Content Include="Content\samples\product_gbb-epic-sub-zero-driver.jpg" />
     <Content Include="Content\samples\product_giftcart.png" />
@@ -844,10 +846,10 @@
     <Content Include="Content\samples\product_ladies_jacket_orange.jpg" />
     <Content Include="Content\samples\product_ladies_jacket_red.jpg" />
     <Content Include="Content\samples\product_ladies_jacket_silver.jpg" />
+    <Content Include="Content\samples\product_legoworlds.jpg" />
     <Content Include="Content\samples\product_mens_tshirt_red.jpg" />
     <Content Include="Content\samples\product_mens_tshirt_gray.jpg" />
     <Content Include="Content\samples\product_nike-vopower-53-trainer-hs-ball.jpg" />
-    <Content Include="Content\samples\product_playstation3dualshock3.png" />
     <Content Include="Content\samples\product_productOriginalWayfarer_1.jpg" />
     <Content Include="Content\samples\product_productOriginalWayfarer_2.jpg" />
     <Content Include="Content\samples\product_productOriginalWayfarer_3.jpg" />

@@ -6614,12 +6614,12 @@ namespace SmartStore.Data.Setup
 
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
-				Name = "Driver San Francisco",
-				Alias = "driver-san-francisco",
+				Name = "LEGO Worlds - PlayStation 4",
+                Alias = "lego-worlds-playstation_4",
 				DisplayOrder = 4,
 				Quantity = 1,
 				ValueType = ProductVariantAttributeValueType.ProductLinkage,
-				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-driversanfrancisco").Id
+				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Gaming-Lego-001").Id
 			});
 
 			entities.Add(attributePs3OneGameFree);
@@ -8201,6 +8201,19 @@ namespace SmartStore.Data.Setup
 
             //categories
 
+            #region Warner Home Video Games
+
+            var manufacturerWarnerHome = new Manufacturer
+            {
+                Name = "Warner Home Video Games",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_wb.png"), "image/png", GetSeName("Warner Home Video Games")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion Warner Home Video Games
+
             #region Breitling
 
             var manufacturerBreitling = new Manufacturer
@@ -8593,7 +8606,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Manufacturer>
 			{
-              manufacturerBreitling,manufacturerTissot,manufacturerSeiko, manufacturerTitleist,manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
+              manufacturerWarnerHome,manufacturerBreitling,manufacturerTissot,manufacturerSeiko, manufacturerTitleist,manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
 			  manufacturerCanon, manufacturerCasio, manufacturerPanasonic, manufacturerBlackBerry, manufacturerHTC, manufacturerFestina, manufacturerCertina, 
 			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft,manufacturerOakley,manufacturerRayban,manufacturerAdidas, manufacturerWilson,manufacturerPuma,manufacturerNike
             };
@@ -11900,15 +11913,16 @@ namespace SmartStore.Data.Setup
 			var categoryGaming = this._ctx.Set<Category>().First(c => c.Alias == "Gaming");
 			var categoryGamingAccessories = this._ctx.Set<Category>().First(c => c.Alias == "Gaming Accessories");
 			var categoryGamingGames = this._ctx.Set<Category>().First(c => c.Alias == "Games");
+            var manuWarnerHomme = _ctx.Set<Manufacturer>().First(c => c.Name == "Warner Home Video Games");
+            
+            #region bundlePs3AssassinCreed
 
-			#region bundlePs3AssassinCreed
-
-			var productPs3 = new Product()
+            var productPs3 = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Sku = "Sony-PS399000",
-				Name = "Playstation 3 Super Slim",
+				Name = "Playstation 4 Super Slim",
 				ShortDescription = "The Sony PlayStation 3 is the multi media console for next-generation digital home entertainment. It offers the Blu-ray technology, which enables you to enjoy movies in high definition.",
 				FullDescription = "<ul><li>PowerPC-base Core @3.2GHz</li><li>1 VMX vector unit per core</li><li>512KB L2 cache</li><li>7 x SPE @3.2GHz</li><li>7 x 128b 128 SIMD GPRs</li><li>7 x 256KB SRAM for SPE</li><li>* 1 of 8 SPEs reserved for redundancy total floating point performance: 218 GFLOPS</li><li> 1.8 TFLOPS floating point performance</li><li>Full HD (up to 1080p) x 2 channels</li><li>Multi-way programmable parallel floating point shader pipelines</li><li>GPU: RSX @550MHz</li><li>256MB XDR Main RAM @3.2GHz</li><li>256MB GDDR3 VRAM @700MHz</li><li>Sound: Dolby 5.1ch, DTS, LPCM, etc. (Cell-base processing)</li><li>Wi-Fi: IEEE 802.11 b/g</li><li>USB: Front x 4, Rear x 2 (USB2.0)</li><li>Memory Stick: standard/Duo, PRO x 1</li></ul>",
 				ProductTemplateId = productTemplateSimple.Id,
@@ -11942,19 +11956,20 @@ namespace SmartStore.Data.Setup
 			});
 
 
-			var productDualshock3Controller = new Product()
+			var productDualshock4Controller = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Sku = "Sony-PS399004",
-				Name = "DUALSHOCK 3 Wireless Controller",
-				ShortDescription = "Equipped with SIXAXIS™ motion sensing technology and pressure sensors in each action button, the DUALSHOCK®3 wireless controller for the PlayStation®3 provides the most intuitive game play experience.",
-				FullDescription = "<ul><li><h4>Weights and Measurements</h4><ul><li>Dimensions (Approx.) : 5.56\"(w) x 8.5\"(h) x 3.63\" (d)</li></ul></li></ul>",
+				Name = "DUALSHOCK 4 Wireless Controller",
+				ShortDescription = "Revolutionary. Intuitive. Precise. A revolutionary controller for a new era of gaming, the DualShock 4 Wireless Controller features familiar PlayStation controls and innovative new additions, such as a touch pad, light bar, and more.",
+				FullDescription = "<ul>  <li>Precision Controller for PlayStation 4: The feel, shape, and sensitivity of the DualShock 4’s analog sticks and trigger buttons have been enhanced to offer players absolute control for all games</li>  <li>Sharing at your Fingertips: The addition of the Share button makes sharing your greatest gaming moments as easy as a push of a button. Upload gameplay videos and screenshots directly from your system or live-stream your gameplay, all without disturbing the game in progress.</li>  <li>New ways to Play: Revolutionary features like the touch pad, integrated light bar, and built-in speaker offer exciting new ways to experience and interact with your games and its 3.5mm audio jack offers a practical personal audio solution for gamers who want to listen to their games in private.</li>  <li>Charge Efficiently: The DualShock 4 Wireless Controller can easily be recharged by plugging it into your PlayStation 4 system, even when on standby, or with any standard charger with a micro-USB port.</li></ul>",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				MetaTitle = "DUALSHOCK 3 Wireless Controller",
+				MetaTitle = "DUALSHOCK 4 Wireless Controller",
 				Price = 54.90M,
+                OldPrice = 59.90M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
 				OrderMinimumQuantity = 1,
 				OrderMaximumQuantity = 10000,
@@ -11965,12 +11980,12 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = firstDeliveryTime
 			};
 
-			productDualshock3Controller.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
-			productDualshock3Controller.ProductCategories.Add(new ProductCategory() { Category = categoryGamingAccessories, DisplayOrder = 1 });
+            productDualshock4Controller.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+            productDualshock4Controller.ProductCategories.Add(new ProductCategory() { Category = categoryGamingAccessories, DisplayOrder = 1 });
 
-			productDualshock3Controller.ProductPictures.Add(new ProductPicture()
+            productDualshock4Controller.ProductPictures.Add(new ProductPicture()
 			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_playstation3dualshock3.png"), "image/png", GetSeName(productDualshock3Controller.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_dualshock4.jpg"), "image/png", GetSeName(productDualshock4Controller.Name)),
 				DisplayOrder = 1
 			});
 
@@ -12054,7 +12069,9 @@ namespace SmartStore.Data.Setup
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Sku = "Sony-PS410034",
-				Name = "PlayStation 4",
+                //Sku = "PS410037",
+
+                Name = "PlayStation 4",
 				ShortDescription = "The best place to play. Working with some of the most creative minds in the industry, PlayStation®4 delivers breathtaking and unique gaming experiences.",
 				FullDescription = "<p><h4>The power to perform.</h4><div>PlayStation®4 was designed from the ground up to ensure that game creators can unleash their imaginations to develop the very best games and deliver new play experiences never before possible. With ultra-fast customized processors and 8GB of high-performance unified system memory, PS4™ is the home to games with rich, high-fidelity graphics and deeply immersive experiences that shatter expectations.</div></p><p><ul><li><h4>Processor</h4><ul><li>Processor Technology : Low power x86-64 AMD 'Jaguar', 8 cores</li></ul></li><li><h4>Software</h4><ul><li>Processor : Single-chip custom processor</li></ul></li><li><h4>Display</h4><ul><li>Display Technology : HDMI<br />Digital Output (optical)</li></ul></li><li><h4>General</h4><ul><li>Ethernet ports x speed : Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T); IEEE 802.11 b/g/n; Bluetooth® 2.1 (EDR)</li><li>Hard disk : Built-in</li></ul></li><li><h4>General Specifications</h4><ul><li>Video : BD 6xCAV<br />DVD 8xCAV</li></ul></li><li><h4>Graphics</h4><ul><li>Graphics Processor : 1.84 TFLOPS, AMD Radeon™ Graphics Core Next engine</li></ul></li><li><h4>Interface</h4><ul><li>I/O Port : Super-Speed USB (USB 3.0), AUX</li></ul></li><li><h4>Memory</h4><ul><li>Internal Memory : GDDR5 8GB</li></ul></li></ul></p>",
 				ProductTemplateId = productTemplateSimple.Id,
@@ -12080,42 +12097,47 @@ namespace SmartStore.Data.Setup
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps4.png"), "image/png", GetSeName(productPs4.Name)),
 				DisplayOrder = 1
 			});
+            productPs4.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_dualshock4_wirelesscontroller.png"), "image/png", GetSeName(productPs4.Name)),
+                DisplayOrder = 1
+            });
 
 
-			var productDualshock4Controller = new Product()
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Sku = "Sony-PS410037",
-				Name = "DUALSHOCK 4 Wireless Controller",
-				ShortDescription = "Combining classic controls with innovative new ways to play, the DUALSHOCK®4 wireless controller is an evolutionary controller for a new era of gaming.",
-				FullDescription = "<p>Keys / Switches : PS button, SHARE button, OPTIONS button, Directional buttons (Up/Down/Left/Right), Action buttons (Triangle, Circle, Cross, Square), R1/L1/R2/L2/R3/L3, Right stick, Left stick, Touch Pad Button. The DualShock 4 is currently available in Jet Black, Magma Red, and Wave Blue.</p><p>The DualShock 4 features the following buttons: PS button, SHARE button, OPTIONS button, directional buttons, action buttons (triangle, circle, cross, square), shoulder buttons (R1/L1), triggers (R2/L2), analog stick click buttons (L3/R3) and a touch pad click button.[25] These mark several changes from the DualShock 3 and other previous PlayStation controllers. The START and SELECT buttons have been merged into a single OPTIONS button.[25][27] A dedicated SHARE button will allow players to upload video from their gameplay experiences.[25] The joysticks and triggers have been redesigned based on developer input.[25] with the ridged surface of the joysticks now featuring an outer ring surrounding the concave dome caps.</p><p>The DualShock 4 is backward compatible with the PlayStation 3, but only via a microUSB cable. Backward compatibility is not supported via Bluetooth.</p>",
-				ProductTemplateId = productTemplateSimple.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "DUALSHOCK 4 Wireless Controller",
-				Price = 59.99M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
+            //var productDualshock4Controller = new Product()
+            //{
+            //	ProductType = ProductType.SimpleProduct,
+            //	VisibleIndividually = true,
+            //	Sku = "Sony-PS410037",
+            //	Name = "DUALSHOCK 4 Wireless Controller",
+            //	ShortDescription = "Combining classic controls with innovative new ways to play, the DUALSHOCK®4 wireless controller is an evolutionary controller for a new era of gaming.",
+            //	FullDescription = "<p>Keys / Switches : PS button, SHARE button, OPTIONS button, Directional buttons (Up/Down/Left/Right), Action buttons (Triangle, Circle, Cross, Square), R1/L1/R2/L2/R3/L3, Right stick, Left stick, Touch Pad Button. The DualShock 4 is currently available in Jet Black, Magma Red, and Wave Blue.</p><p>The DualShock 4 features the following buttons: PS button, SHARE button, OPTIONS button, directional buttons, action buttons (triangle, circle, cross, square), shoulder buttons (R1/L1), triggers (R2/L2), analog stick click buttons (L3/R3) and a touch pad click button.[25] These mark several changes from the DualShock 3 and other previous PlayStation controllers. The START and SELECT buttons have been merged into a single OPTIONS button.[25][27] A dedicated SHARE button will allow players to upload video from their gameplay experiences.[25] The joysticks and triggers have been redesigned based on developer input.[25] with the ridged surface of the joysticks now featuring an outer ring surrounding the concave dome caps.</p><p>The DualShock 4 is backward compatible with the PlayStation 3, but only via a microUSB cable. Backward compatibility is not supported via Bluetooth.</p>",
+            //	ProductTemplateId = productTemplateSimple.Id,
+            //	AllowCustomerReviews = true,
+            //	Published = true,
+            //	MetaTitle = "DUALSHOCK 4 Wireless Controller",
+            //	Price = 59.99M,
+            //	ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+            //	OrderMinimumQuantity = 1,
+            //	OrderMaximumQuantity = 10,
+            //	StockQuantity = 10000,
+            //	NotifyAdminForQuantityBelow = 1,
+            //	AllowBackInStockSubscriptions = false,
+            //	IsShipEnabled = true,
+            //	DeliveryTime = firstDeliveryTime
+            //};
 
-			productDualshock4Controller.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
-			productDualshock4Controller.ProductCategories.Add(new ProductCategory() { Category = categoryGamingAccessories, DisplayOrder = 2 });
+            //productDualshock4Controller.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+            //productDualshock4Controller.ProductCategories.Add(new ProductCategory() { Category = categoryGamingAccessories, DisplayOrder = 2 });
 
-			productDualshock4Controller.ProductPictures.Add(new ProductPicture()
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_dualshock4_wirelesscontroller.png"), "image/png", GetSeName(productDualshock4Controller.Name)),
-				DisplayOrder = 1
-			});
+            //productDualshock4Controller.ProductPictures.Add(new ProductPicture()
+            //{
+            //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_dualshock4_wirelesscontroller.png"), "image/png", GetSeName(productDualshock4Controller.Name)),
+            //	DisplayOrder = 1
+            //});
 
 
-			var productPs4Camera = new Product()
+            var productPs4Camera = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
@@ -12287,19 +12309,23 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			var productDriverSanFrancisco = new Product()
+
+            //productDriverSanFrancisco
+            var productLegoWorlds = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
-				Sku = "Ubi-driversanfrancisco",
-				Name = "Driver San Francisco",
-				ShortDescription = "Developed by Ubisoft Reflections, creators of the original DRIVER title, DRIVER SAN FRANCISCO is the return of the established action driving video game series that has sold 14 million copies worldwide. Players will race through the iconic streets of San Francisco and beyond in the largest open-world environment to date spanning over 200 square miles.",
-				FullDescription = "<p>With crime lord Charles Jericho now on the loose, San Francisco faces a terrible threat. Only one man can stand against him. He has driven the streets of a hundred cities and spent his whole life putting criminals behind bars. But to take Jericho down, there can be no turning back, and he knows that this may very well be his last ride. His name is John Tanner. He is the DRIVER.</p><p>An innovative gameplay feature enables players to seamlessly SHIFT between over 130 licensed muscle and super cars to keep them constantly in the heart of the action. With its timeless atmosphere, unique car handling and renewed playability, DRIVER SAN FRANCISCO revitalizes the classic free-roaming, cinematic car chase experience for the current generation of video game platforms.</p><p><h4>THE TRUE CAR CHASE EXPERIENCE</h4>Rediscover the cinematic driving sensations of DRIVER: loose suspension, long drifts, Hollywood-style crashes and high-speed pursuits in dense traffic. Drive over 130 fully destructible muscle and super cars with realistic handling and customization features that take fast-action driving to the next level.</p><p><h4>RELENTLESS MANHUNT</h4>Uncover a thrilling character-driven storyline in which personal revenge fuels Tanner’s relentless manhunt for Jericho. Follow Tanner's survival race across San Francisco and beyond to discover how this chase will bring him to a point of no return.</p><p><h4>SHIFT</h4>As Tanner recovers from a terrible crash, he realizes he has acquired a new ability, SHIFT, enabling him to instantly change vehicles and take control. Experience unprecedented intensity, diversity and freedom; SHIFT into a faster car, deploy civilian vehicles to destroy your enemies and even take control of your opponents’ car to force their demise. SHIFT also allows for thrilling new Multi-player modes within the game.</p><p><h4>A CAR CHASE PLAYGROUND</h4>Drive on more than 200 square miles of road network, over the Golden Gate Bridge, and through iconic locations of San Francisco. SHIFT from one car to the next and dip into the lives of different residents, a head-spinning array of characters, each with a unique perspective on a city under siege.</p><p><h4>MULTIPLAYER MAYHEM</h4>Experience 10 different addictive multi-player modes, including 6 on-line modes where the SHIFT feature allows players to be anywhere at any time. Ram, tail and overtake your friends in offline split-screen or online modes.</p><p><h4>…AND MORE</h4>Record your best stunts and chases with the Director replay mode to edit and share your movies. Test your driving skills with 20 challenging races and 80 “dares” spread all across the city. Listen to over 60 music tracks with songs from famous artists, not to mention the original memorable DRIVER theme.</p>",
+				//Sku = "Ubi-driversanfrancisco",
+                Sku = "Gaming-Lego-001",
+                Name = "LEGO Worlds - PlayStation 4",
+				ShortDescription = "Experience a galaxy of Worlds made entirely from LEGO bricks.",
+				FullDescription = "<ul>  <li>Experience a galaxy of Worlds made entirely from LEGO bricks.</li>  <li>LEGO Worlds is an open environment of procedurally-generated Worlds made entirely of LEGO bricks which you can freely manipulate and dynamically populate with LEGO models.</li>  <li>Create anything you can imagine one brick at a time, or use large-scale landscaping tools to create vast mountain ranges and dot your world with tropical islands.</li>  <li>Explore using helicopters, dragons, motorbikes or even gorillas and unlock treasures that enhance your gameplay.</li>  <li>Watch your creations come to life through characters and creatures that interact with you and each other in unexpected ways.</li></ul><p></p>",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				MetaTitle = "Driver San Francisco",
-				Price = 39.90M,
+				MetaTitle = "LEGO Worlds - PlayStation 4",
+				Price = 29.90M,
+                OldPrice = 34.90M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
 				OrderMinimumQuantity = 1,
 				OrderMaximumQuantity = 10000,
@@ -12310,12 +12336,12 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = firstDeliveryTime
 			};
 
-			productDriverSanFrancisco.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuUbisoft, DisplayOrder = 1 });
-			productDriverSanFrancisco.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 3 });
+            productLegoWorlds.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuWarnerHomme, DisplayOrder = 1 });
+            productLegoWorlds.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 3 });
 
-			productDriverSanFrancisco.ProductPictures.Add(new ProductPicture()
+            productLegoWorlds.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-driver-san-francisco.jpg"), "image/jpeg", GetSeName(productDriverSanFrancisco.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_legoworlds.jpg"), "image/jpeg", GetSeName(productLegoWorlds.Name)),
 				DisplayOrder = 1
 			});
 
@@ -12364,10 +12390,10 @@ namespace SmartStore.Data.Setup
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,
-				productPs3, productDualshock3Controller, productAssassinsCreed3, productBundlePs3AssassinCreed,
+				productPs3, productAssassinsCreed3, productBundlePs3AssassinCreed,
 				productPs4, productDualshock4Controller, productPs4Camera, productBundlePs4,
 				productGroupAccessories,
-				productWatchDogs, productPrinceOfPersia, productDriverSanFrancisco, productPs3OneGame
+				productWatchDogs, productPrinceOfPersia, productLegoWorlds, productPs3OneGame
 			};
 
             entities.AddRange(GetFashionProducts());
@@ -12482,8 +12508,9 @@ namespace SmartStore.Data.Setup
 			var bundleItemPs42 = new ProductBundleItem
 			{
 				BundleProduct = bundlePs4,
-				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410037"),
-				Quantity = 1,
+				//Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410037"),
+                Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410034"),
+                Quantity = 1,
 				Visible = true,
 				Published = true,
 				DisplayOrder = 2

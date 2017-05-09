@@ -5,7 +5,7 @@ using log4net.Util;
 
 namespace SmartStore.Core.Logging
 {
-    public class SmartFileAppender : RollingFileAppender
+	public class SmartFileAppender : RollingFileAppender
     {
         /// <summary>
         /// Dictionary of already known suffixes (based on previous attempts) for a given filename.
@@ -21,7 +21,7 @@ namespace SmartStore.Core.Logging
         /// Maximum number of suffixes recorded before a cleanup happens to recycle memory.
         /// </summary>
         private const int MaxSuffixes = 100;
-
+		
         /// <summary>
         /// Opens the log file adding an incremental suffix to the filename if required due to an opening failure (usually, locking).
         /// </summary>

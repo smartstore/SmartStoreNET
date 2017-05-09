@@ -789,6 +789,15 @@
     <Content Include="Content\samples\products_airpods_turquoise.jpg" />
     <Content Include="Content\samples\products_airpods_white.jpg" />
     <Content Include="Content\samples\products_nike-strike-football.jpg" />
+    <Content Include="Content\samples\product_97-ipad-gold.jpg" />
+    <Content Include="Content\samples\product_97-ipad-lightblue.jpg" />
+    <Content Include="Content\samples\product_97-ipad-mint.jpg" />
+    <Content Include="Content\samples\product_97-ipad-purple.jpg" />
+    <Content Include="Content\samples\product_97-ipad-rose.jpg" />
+    <Content Include="Content\samples\product_97-ipad-silver.jpg" />
+    <Content Include="Content\samples\product_97-ipad-spacegray.jpg" />
+    <Content Include="Content\samples\product_97-ipad-turquoise.jpg" />
+    <Content Include="Content\samples\product_97-ipad-yellow.jpg" />
     <Content Include="Content\samples\product_aceraspiresl1500.png" />
     <Content Include="Content\samples\product_adidas-tango-pasadena-ball-blue.jpg" />
     <Content Include="Content\samples\product_adidas-tango-pasadena-ball-brown.jpg" />

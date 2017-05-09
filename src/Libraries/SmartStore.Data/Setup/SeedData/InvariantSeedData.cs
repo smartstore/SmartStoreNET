@@ -6113,7 +6113,12 @@ namespace SmartStore.Data.Setup
 					Name = "Color",
 					Alias = "iphone-color"
 				},
-				new ProductAttribute
+                new ProductAttribute
+                {
+                    Name = "Color",
+                    Alias = "ipad-color"
+                },
+                new ProductAttribute
 				{
 					Name = "Memory capacity",
 					Alias = "memory-capacity"
@@ -6183,10 +6188,153 @@ namespace SmartStore.Data.Setup
 			var attrGames = _ctx.Set<ProductAttribute>().First(x => x.Alias == "game");
 			var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
 			var attrIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
+            var attr97iPadColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
 
-			#region iPhone 7 plus
+            #region 9,7 iPad
 
-			var productIphone7Plus = _ctx.Set<Product>().First(x => x.Sku == "P-2001");
+            var product97iPad = _ctx.Set<Product>().First(x => x.Sku == "P-2004");
+
+            var attribute97iPadMemoryCapacity = new ProductVariantAttribute()
+            {
+                Product = product97iPad,
+                ProductAttribute = attrMemoryCapacity,
+                IsRequired = true,
+                DisplayOrder = 1,
+                AttributeControlType = AttributeControlType.RadioList
+            };
+
+            attribute97iPadMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "64 GB",
+                Alias = "64gb",
+                IsPreSelected = true,
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 100.0M
+            });
+
+            attribute97iPadMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "128 GB",
+                Alias = "128gb",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 200.0M
+            });
+
+            entities.Add(attribute97iPadMemoryCapacity);
+
+
+            var attribute97iPadColor = new ProductVariantAttribute()
+            {
+                Product = product97iPad,
+                ProductAttribute = attr97iPadColor,
+                IsRequired = true,
+                DisplayOrder = 2,
+                AttributeControlType = AttributeControlType.Boxes
+            };
+
+            attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Silver",
+                Alias = "silver",
+                IsPreSelected = true,
+                DisplayOrder = 1,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#dddfde"
+            });
+
+            attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Gold",
+                Alias = "gold",
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#e3d0ba"
+            });
+
+            attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Spacegray",
+                Alias = "spacegray",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#abaeb1"
+            });
+
+            attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Rose",
+                Alias = "rose",
+                DisplayOrder = 4,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#d9a6ad"
+            });
+
+            attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Mint",
+                Alias = "mint",
+                DisplayOrder = 5,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#a6dbb1"
+            });
+
+            attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Purple",
+                Alias = "purple",
+                DisplayOrder = 6,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#dba5d7"
+            });
+
+            attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Lightblue",
+                Alias = "lightblue",
+                DisplayOrder = 7,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#a6b9df"
+            });
+
+            attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Turquoise",
+                Alias = "turquoise",
+                DisplayOrder = 8,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#a4dbde"
+            });
+
+            attribute97iPadColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Yellow",
+                Alias = "yellow",
+                DisplayOrder = 7,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#dfddb6"
+            });
+
+
+            entities.Add(attribute97iPadColor);
+
+            #endregion 9,7 iPad
+
+            #region iPhone 7 plus
+
+            var productIphone7Plus = _ctx.Set<Product>().First(x => x.Sku == "P-2001");
 
             var attributeIphone7PlusMemoryCapacity = new ProductVariantAttribute()
             {
@@ -6654,7 +6802,8 @@ namespace SmartStore.Data.Setup
 			var attrSize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "size");
             var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
             var attrColorIphoneColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
-            
+            var attr97iPadColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
+
 
             #region ps3
 
@@ -6689,6 +6838,312 @@ namespace SmartStore.Data.Setup
 
             #endregion ps3
 
+            #region 9,7 Ipad
+
+            var productiPad97 = _ctx.Set<Product>().First(x => x.Sku == "P-2004");
+            var iPad97PictureIds = productiPad97.ProductPictures.Select(pp => pp.PictureId).ToList();
+            var picturesiPad97 = _ctx.Set<Picture>().Where(x => iPad97PictureIds.Contains(x.Id)).ToList();
+
+            //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
+
+            var iPad97Color = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productiPad97.Id && x.ProductAttributeId == attr97iPadColors.Id);
+            var iPad97ColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == iPad97Color.Id).ToList();
+
+            var ipad97Capacity = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productiPad97.Id && x.ProductAttributeId == attrMemoryCapacity.Id);
+            var iPad97CapacityValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ipad97Capacity.Id).ToList();
+
+            #region silver
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "-silver-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "silver").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "64gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                Price = 299M,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-silver")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "silver-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "silver").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "128gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-silver")).Id.ToString()
+            });
+
+            #endregion silver
+
+            #region gold
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "-gold-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "gold").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "64gb").Id),
+                Price = 279M,
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "gold-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "gold").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "128gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+            });
+            #endregion gold
+
+            #region spacegray
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "-spacegray-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "spacegray").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "64gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-spacegray")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "spacegray-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "spacegray").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "128gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-spacegray")).Id.ToString()
+            });
+            #endregion spacegray
+
+            #region rose
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "-rose-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "rose").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "64gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "rose-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "rose").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "128gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+            });
+            #endregion rose
+
+            #region mint
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "-mint-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "mint").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "64gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-mint")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "mint-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "mint").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "128gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-mint")).Id.ToString()
+            });
+            #endregion mint
+
+            #region purple
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "-purple-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "purple").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "64gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-purple")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "purple-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "purple").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "128gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-purple")).Id.ToString()
+            });
+            #endregion purple
+
+            #region lightblue
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "-lightblue-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "lightblue").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "64gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-lightblue")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "lightblue-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "lightblue").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "128gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-lightblue")).Id.ToString()
+            });
+            #endregion lightblue
+
+            #region yellow
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "-yellow-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "yellow").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "64gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-yellow")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "yellow-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "yellow").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "128gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-yellow")).Id.ToString()
+            });
+            #endregion yellow
+
+            #region turquoise
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "-turquoise-64gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "turquoise").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "64gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-turquoise")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productiPad97,
+                Sku = productiPad97.Sku + "turquoise-128gb",
+
+                AttributesXml = FormatAttributeXml(
+                    iPad97Color.Id, iPad97ColorValues.First(x => x.Alias == "turquoise").Id,
+                    ipad97Capacity.Id, iPad97CapacityValues.First(x => x.Alias == "128gb").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesiPad97.First(x => x.SeoFilename.EndsWith("-turquoise")).Id.ToString()
+            });
+            #endregion turquoise
+
+            #endregion 9,7 Ipad
+
             #region Iphone 7 plus
 
             var productIphone7Plus = _ctx.Set<Product>().First(x => x.Sku == "P-2001");
@@ -6696,7 +7151,7 @@ namespace SmartStore.Data.Setup
             var picturesIphone7Plus = _ctx.Set<Picture>().Where(x => Iphone7PlusPictureIds.Contains(x.Id)).ToList();
 
             //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
-            
+
             var Iphone7PlusColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColorIphoneColors.Id);
             var Iphone7PlusColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == Iphone7PlusColor.Id).ToList();
 
@@ -8119,6 +8574,8 @@ namespace SmartStore.Data.Setup
 
 			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
 
+            var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
+
             #endregion definitions
 
             #region category golf
@@ -9193,13 +9650,18 @@ namespace SmartStore.Data.Setup
                 Name = "9,7' iPad",
                 IsEsd = false,
                 ShortDescription = "Flat-out fun. Learn, play, surf, create. iPad gives you the incredible display, performance, and apps to do what you love to do. Anywhere. Easily. Magically.",
-                FullDescription = "",
+                FullDescription = "<ul>  <li>9,7' Retina Display mit True Tone und</li>  <li>A9X Chip der dritten Generation mit 64-Bit Desktoparchitektur</li>  <li>Touch ID Fingerabdrucksensor</li>  <li>12 Megapixel iSight Kamera mit 4K Video</li>  <li>5 Megapixel FaceTime HD Kamera</li>  <li>802.11ac WLAN mit MIMO</li>  <li>Bis zu 10 Stunden Batterielaufzeit***</li>  <li>4-Lautsprecher-Audio</li></ul>",
                 Sku = "P-2004",
                 ProductTemplateId = productTemplateSimple.Id,
                 AllowCustomerReviews = true,
                 Published = true,
+                ShowOnHomePage = true,
                 MetaTitle = "9,7' iPad",
-                Price = 299M,
+                Price = 319.00M,
+                OldPrice = 349.00M,
+                SpecialPrice = 299.00M,
+                SpecialPriceStartDateTimeUtc = new DateTime(2017, 5, 1, 0, 0, 0),
+                SpecialPriceEndDateTimeUtc = specialPriceEndDate,
                 IsGiftCard = false,
                 ManageInventoryMethod = ManageInventoryMethod.ManageStock,
                 OrderMinimumQuantity = 1,
@@ -9213,6 +9675,7 @@ namespace SmartStore.Data.Setup
 
             product97ipad.ProductCategories.Add(new ProductCategory() { Category = categoryApple, DisplayOrder = 1 });
 
+            #region pictures
             product97ipad.ProductPictures.Add(new ProductPicture()
             {
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ipad_1.jpg"), "image/png", GetSeName(product97ipad.Name)),
@@ -9225,11 +9688,109 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 2,
             });
 
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-yellow.jpg"), "image/png", GetSeName(product97ipad.Name) + "-yellow"),
+                DisplayOrder = 2,
+            });
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-turquoise.jpg"), "image/png", GetSeName(product97ipad.Name) + "-turquoise"),
+                DisplayOrder = 2,
+            });
+
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-lightblue.jpg"), "image/png", GetSeName(product97ipad.Name) + "-lightblue"),
+                DisplayOrder = 2,
+            });
+
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-purple.jpg"), "image/png", GetSeName(product97ipad.Name) + "-purple"),
+                DisplayOrder = 2,
+            });
+
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-mint.jpg"), "image/png", GetSeName(product97ipad.Name) + "-mint"),
+                DisplayOrder = 2,
+            });
+
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-rose.jpg"), "image/png", GetSeName(product97ipad.Name) + "-rose"),
+                DisplayOrder = 2,
+            });
+
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-spacegray.jpg"), "image/png", GetSeName(product97ipad.Name) + "-spacegray"),
+                DisplayOrder = 2,
+            });
+
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-gold.jpg"), "image/png", GetSeName(product97ipad.Name) + "-gold"),
+                DisplayOrder = 2,
+            });
+
+            product97ipad.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-silver.jpg"), "image/png", GetSeName(product97ipad.Name) + "-silver"),
+                DisplayOrder = 2,
+            });
+            #endregion pictures
+
             product97ipad.ProductManufacturers.Add(new ProductManufacturer()
             {
                 Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
                 DisplayOrder = 1,
             });
+
+            #region attributes
+            //attributes
+            product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // offer type -> promotion
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // manufacturer -> apple
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // storage capacity -> 64gb
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+            });
+            product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // storage capacity -> 128gb
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+            });
+            product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // operating system -> ios
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
+            });
+            #endregion attributes
 
             #endregion product 9,7 iPad
 

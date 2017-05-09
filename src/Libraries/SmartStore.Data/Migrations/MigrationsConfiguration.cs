@@ -983,6 +983,20 @@ namespace SmartStore.Data.Migrations
                             die für Schriftarten vorgesehen sind (z.B. <i>$font-family-sans-serif)</i>.
                         </li>
                     </ul>");
+
+            builder.AddOrUpdate("PrivateMessages.NoInboxItems.Title",
+                "Your inbox is empty",
+                "Ihr Posteingang ist leer");
+            builder.AddOrUpdate("PrivateMessages.NoInboxItems.Info",
+                "There are no items to be displayed in your email inbox.",
+                "Es befinden sich keine anzuzeigenden Nachrichten in Ihrem Posteingang.");
+            builder.AddOrUpdate("PrivateMessages.NoSentItems.Title",
+                "No sent items",
+                "Keine versendeten Nachrichten");
+            builder.AddOrUpdate("PrivateMessages.NoSentItems.Info",
+                "There are no sent items to be displayed.",
+                "Sie haben noch keine Nachrichten versendet.");
+
         }
-	}
+    }
 }

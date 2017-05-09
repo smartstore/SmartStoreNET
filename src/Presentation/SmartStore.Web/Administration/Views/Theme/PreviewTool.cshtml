@@ -85,49 +85,20 @@
 	}
 
 	#previewmode .close {
-		font-size: 28px;
+		font-size: 20px;
 		font-weight: bold;
-		margin-top: -2px;
-	}
-
-	#previewmode select {
-		width: 100%;
-		border-radius: 0;
 	}
 
 	#previewmode .btn {
-		border-radius: 2px;
 		text-transform: uppercase;
 	}
 
-	#previewmode .btn-applytheme, 
-	#previewmode .btn-exitpreview {
+	#previewmode select {
 		border-radius: 0;
-		border: none !important;
-		padding-top: 12px;
-		padding-bottom: 12px;
-		margin: 0;
-		color: #fff;
 	}
 
 	#previewmode .btn-applytheme { 
-		background: #fbb450; 
 		margin-bottom: 1px; 
-	}
-	#previewmode .btn-applytheme:hover {
-		background: #fa9f1e;
-	}
-	#previewmode .btn-applytheme:active {
-		background: #f99406;
-	}
-	#previewmode .btn-exitpreview { 
-		background: #ee5f5b; 
-	}
-	#previewmode .btn-exitpreview:hover { 
-		background: #e9322d; 
-	}
-	#previewmode .btn-exitpreview:active { 
-		background: #e51d18; 
 	}
 </style>
 
@@ -140,21 +111,21 @@
 				<h4 class="previewmode-title">@T("Admin.Configuration.Themes.PreviewMode")</h4>
 
 				<label class="previewmode-label">@T("Admin.Configuration.Themes.Theme"):</label>
-				@Html.DropDownList("theme", themes, new { @class = "noskin" })
+				@Html.DropDownList("theme", themes, new { @class = "form-control noskin" })
 
-				<label class="previewmode-label">@T("Admin.Common.Store"):</label>
-				@Html.DropDownList("storeId", stores, new { @class = "noskin" })
+				<label class="previewmode-label mt-2">@T("Admin.Common.Store"):</label>
+				@Html.DropDownList("storeId", stores, new { @class = "form-control noskin" })
 
 				@Html.Hidden("returnUrl", Request.RawUrl)
 			</div>
 
-			<button type="submit" name="PreviewMode.Apply" value="@T("Common.Apply")" class="btn btn-warning btn-block btn-applytheme" @Html.Attr("disabled", "disabled", disableApply)>
+			<button type="submit" name="PreviewMode.Apply" value="@T("Common.Apply")" class="btn btn-primary btn-block rounded-0 btn-applytheme" @Html.Attr("disabled", "disabled", disableApply)>
 				@T("Common.Apply")
 			</button>
 
-			<button type="submit" name="PreviewMode.Exit" value="@T("Admin.Configuration.Themes.ExitPreviewMode")" class="btn btn-danger btn-block btn-exitpreview">
+			<button type="submit" name="PreviewMode.Exit" value="@T("Admin.Configuration.Themes.ExitPreviewMode")" class="btn btn-danger btn-block mt-0 rounded-0 btn-exitpreview">
 				<i class="fa fa-fw fa-eye-slash"></i>
-				@T("Admin.Configuration.Themes.ExitPreviewMode")
+				<span>@T("Admin.Configuration.Themes.ExitPreviewMode")</span>
 			</button>
 		}
 	</div>

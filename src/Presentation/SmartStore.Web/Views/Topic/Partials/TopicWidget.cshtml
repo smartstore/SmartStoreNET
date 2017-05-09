@@ -17,7 +17,7 @@
 			@Html.Raw("<" + Model.TitleTag + ">" + Model.Title + "</" + Model.TitleTag + ">")
 		</div>
     }
-    <div class="block-body">
+    <div class="block-body @(Model.IsBordered ? "px-4" : "")">
         @Html.Raw(Html.CollapsedText(Model.Html))
     </div>
 </div>

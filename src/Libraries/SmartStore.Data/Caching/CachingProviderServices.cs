@@ -5,6 +5,8 @@ using System.Data.Entity.Core.Common;
 using System.Data.Entity.Core.Common.CommandTrees;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Spatial;
+using SmartStore.Utilities;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Data.Caching
 {
@@ -21,15 +23,35 @@ namespace SmartStore.Data.Caching
 			_policy = policy ?? new DbCachingPolicy();
 		}
 
+		internal bool HasPendingMigrations
+		{
+			get
+			{
+				if (CommonHelper.IsDevEnvironment)
+				{
+					// Don't bother with database cache when we're in (IDE) debug mode
+					// and migrations are about to be executed: EF throws exceptions during migration 
+					// on purpose, which are harmless in release mode, but really annoying and confusing
+					// in debug mode. Namely, execution will break within our 'CacheTransactionInterceptor',
+					// and we don't want that.
+					return DbSeedingMigrator<SmartObjectContext>.IsMigrating;
+				}
+
+				return false;
+			}
+		}
+
 		protected override DbCommandDefinition CreateDbCommandDefinition(DbProviderManifest providerManifest, DbCommandTree commandTree)
 		{
-			return new CachingCommandDefinition(
-				_providerServices.CreateCommandDefinition(providerManifest, commandTree),
-				new CommandTreeFacts(commandTree),
-				_cacheTransactionInterceptor,
-				_policy);
-
-			//return _providerServices.CreateCommandDefinition(providerManifest, commandTree);
+			var commandDefinition = _providerServices.CreateCommandDefinition(providerManifest, commandTree);
+			
+			return HasPendingMigrations
+				? commandDefinition 
+				: new CachingCommandDefinition(
+					commandDefinition,
+					new CommandTreeFacts(commandTree),
+					_cacheTransactionInterceptor,
+					_policy);
 		}
 
 		protected override DbProviderManifest GetDbProviderManifest(string manifestToken)

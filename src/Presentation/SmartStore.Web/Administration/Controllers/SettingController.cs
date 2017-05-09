@@ -1328,7 +1328,7 @@ namespace SmartStore.Admin.Controllers
 				localizationSettings.SeoFriendlyUrlsForLanguagesEnabled = model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
 				_services.Settings.SaveSetting(localizationSettings, x => x.SeoFriendlyUrlsForLanguagesEnabled, 0, false);
 
-				System.Web.Routing.RouteTable.Routes.ClearSeoFriendlyUrlsCachedValueForRoutes();	// clear cached values of routes
+				LocalizedRoute.ClearSeoFriendlyUrlsCachedValue();
 			}
 
 			//company information

@@ -58,7 +58,6 @@ namespace SmartStore.Data.Setup
 		/// Initializes the database.
 		/// </summary>
 		/// <param name="context">The context.</param>
-		/// <inheritdoc />
 		public virtual void InitializeDatabase(TContext context)
 		{
 			if (!context.Database.Exists())

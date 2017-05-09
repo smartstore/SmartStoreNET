@@ -397,11 +397,7 @@ namespace SmartStore.Web.Framework
 
 				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
 					//.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
-					.PropertiesAutowired((pi, obj) => 
-					{
-						// Prevent Autofac circularity exception & never trigger hooks during tooling or tests
-						return typeof(IDbHookHandler).IsAssignableFrom(pi.PropertyType) && HostingEnvironment.IsHosted;
-					})
+					.PropertiesAutowired(new DbContextPropertySelector(), false)
 					.InstancePerRequest();
 			}
 			else
@@ -456,6 +452,15 @@ namespace SmartStore.Web.Framework
 		{
 			return type.GetProperty("QuerySettings", typeof(DbQuerySettings));
 		}
+
+		private class DbContextPropertySelector : IPropertySelector
+		{
+			public bool InjectProperty(PropertyInfo propertyInfo, object instance)
+			{
+				// Prevent Autofac circularity exception & never trigger hooks during tooling or tests
+				return HostingEnvironment.IsHosted && typeof(IDbHookHandler).IsAssignableFrom(propertyInfo.PropertyType);
+			}
+		}
 	}
 
 	public class LocalizationModule : Module
@@ -488,8 +493,12 @@ namespace SmartStore.Web.Framework
 					var prop = e.Component.Metadata.Get("Property.T") as FastProperty;
 					if (prop != null)
 					{
-						Localizer localizer = e.Context.Resolve<IText>().Get;
-						prop.SetValue(e.Instance, localizer);
+						try
+						{
+							Localizer localizer = e.Context.Resolve<IText>().Get;
+							prop.SetValue(e.Instance, localizer);
+						}
+						catch { }
 					}
 				}
 			};
@@ -1143,21 +1152,26 @@ namespace SmartStore.Web.Framework
 				{
 					int currentStoreId = 0;
 					IStoreContext storeContext;
-					if (c.TryResolve(out storeContext))
+
+					try
 					{
-						//currentStoreId = storeContext.CurrentStoreIdIfMultiStoreMode;
-						currentStoreId = storeContext.CurrentStore.Id;
-						//uncomment the code below if you want load settings per store only when you have two stores installed.
-						//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
-						//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
+						if (c.TryResolve(out storeContext))
+						{
+							//currentStoreId = storeContext.CurrentStoreIdIfMultiStoreMode;
+							currentStoreId = storeContext.CurrentStore.Id;
+							//uncomment the code below if you want load settings per store only when you have two stores installed.
+							//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
+							//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
 
-						////although it's better to connect to your database and execute the following SQL:
-						//DELETE FROM [Setting] WHERE [StoreId] > 0
+							////although it's better to connect to your database and execute the following SQL:
+							//DELETE FROM [Setting] WHERE [StoreId] > 0
 
-						return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+							return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+						}
 					}
+					catch { }
 
-					// Unit tests
+					// Unit tests & tooling
 					return new TSettings();
 				})
                 .InstancePerRequest()

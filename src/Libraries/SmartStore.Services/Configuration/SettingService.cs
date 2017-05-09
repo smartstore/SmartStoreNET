@@ -26,9 +26,9 @@ namespace SmartStore.Services.Configuration
 
         public SettingService(ICacheManager cacheManager, IEventPublisher eventPublisher, IRepository<Setting> settingRepository)
         {
-            this._cacheManager = cacheManager;
-            this._eventPublisher = eventPublisher;
-            this._settingRepository = settingRepository;
+            _cacheManager = cacheManager;
+            _eventPublisher = eventPublisher;
+            _settingRepository = settingRepository;
 
 			Logger = NullLogger.Instance;
         }

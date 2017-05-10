@@ -228,7 +228,7 @@ namespace SmartStore.Web.Controllers
 						ShowBrand = settings.MapManufacturers,
 						ForceRedirectionAfterAddingToCart = settings.ForceRedirectionAfterAddingToCart,
 						CompareEnabled = _catalogSettings.CompareProductsEnabled,
-						WishlistEnabled = true, // TODO: (mc) Setting?
+						WishlistEnabled = _permissionService.Value.Authorize(StandardPermissionProvider.EnableWishlist),
 						BuyEnabled = !_catalogSettings.HideBuyButtonInLists,
 						ThumbSize = settings.ThumbnailSize,
 						ShowDiscountBadge = _catalogSettings.ShowDiscountSign,

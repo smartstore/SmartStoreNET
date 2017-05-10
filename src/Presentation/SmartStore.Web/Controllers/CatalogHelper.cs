@@ -71,10 +71,10 @@ namespace SmartStore.Web.Controllers
 		private readonly ISettingService _settingService;
 		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<IDataExporter> _dataExporter;
-		private readonly ICatalogSearchService _catalogSearchService;
+        private readonly Lazy<IPermissionService> _permissionService;
+        private readonly ICatalogSearchService _catalogSearchService;
 		private readonly ICatalogSearchQueryFactory _catalogSearchQueryFactory;
 		private readonly ISiteMapService _siteMapService;
-
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
 		private readonly ProductUrlHelper _productUrlHelper;
@@ -110,7 +110,8 @@ namespace SmartStore.Web.Controllers
 			Lazy<IMenuPublisher> _menuPublisher,
 			Lazy<ITopicService> topicService,
 			Lazy<IDataExporter> dataExporter,
-			ICatalogSearchService catalogSearchService,
+            Lazy<IPermissionService> permissionService,
+            ICatalogSearchService catalogSearchService,
 			ICatalogSearchQueryFactory catalogSearchQueryFactory,
 			ISiteMapService siteMapService,
 			HttpRequestBase httpRequest,
@@ -147,7 +148,8 @@ namespace SmartStore.Web.Controllers
 			this._captchaSettings = captchaSettings;
 			this._topicService = topicService;
 			this._dataExporter = dataExporter;
-			this._catalogSearchService = catalogSearchService;
+            this._permissionService = permissionService;
+            this._catalogSearchService = catalogSearchService;
 			this._catalogSearchQueryFactory = catalogSearchQueryFactory;
 			this._siteMapService = siteMapService;
 			this._httpRequest = httpRequest;

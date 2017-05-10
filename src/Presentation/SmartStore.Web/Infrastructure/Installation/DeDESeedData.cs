@@ -2834,7 +2834,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.Name = "Stärke der Tischplatte";
 				})
-				.Alter("version", x =>
+				.Alter("style", x =>
 				{
 					x.Name = "Ausführung";
 				});

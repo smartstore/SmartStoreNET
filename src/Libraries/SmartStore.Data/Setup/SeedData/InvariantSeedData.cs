@@ -6186,8 +6186,8 @@ namespace SmartStore.Data.Setup
 				},
 				new ProductAttribute
 				{
-					Name = "Version",
-					Alias = "version"
+					Name = "Style",
+					Alias = "style"
 				}
 			};
 
@@ -6260,7 +6260,7 @@ namespace SmartStore.Data.Setup
 			var attrLength = _ctx.Set<ProductAttribute>().First(x => x.Alias == "length");
 			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
 			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
-			var attrVersion = _ctx.Set<ProductAttribute>().First(x => x.Alias == "version");
+			var attrStyle = _ctx.Set<ProductAttribute>().First(x => x.Alias == "style");
 
 			#region 9,7 iPad
 
@@ -7278,7 +7278,7 @@ namespace SmartStore.Data.Setup
 			var attrBallChairVersion = new ProductVariantAttribute
 			{
 				Product = productBallChair,
-				ProductAttribute = attrVersion,
+				ProductAttribute = attrStyle,
 				IsRequired = true,
 				DisplayOrder = 2,
 				AttributeControlType = AttributeControlType.DropdownList
@@ -7315,7 +7315,7 @@ namespace SmartStore.Data.Setup
             var attr97iPadColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
 			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
 			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
-			var attrVersion = _ctx.Set<ProductAttribute>().First(x => x.Alias == "version");
+			var attrStyle = _ctx.Set<ProductAttribute>().First(x => x.Alias == "style");
 
 			#region ps3
 
@@ -8230,7 +8230,7 @@ namespace SmartStore.Data.Setup
 			var ballChairPictureIds = productBallChair.ProductPictures.Select(x => x.PictureId).ToList();
 			var ballChairPictures = _ctx.Set<Picture>().Where(x => ballChairPictureIds.Contains(x.Id)).ToList();
 
-			var ballChairVersion = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrVersion.Id);
+			var ballChairVersion = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrStyle.Id);
 			var ballChairVersionValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairVersion.Id).ToList();
 
 			var ballChairColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrColor.Id);

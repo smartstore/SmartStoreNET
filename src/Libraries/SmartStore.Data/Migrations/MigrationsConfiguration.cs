@@ -998,7 +998,7 @@ namespace SmartStore.Data.Migrations
                 "Sie haben noch keine Nachrichten versendet.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Homepage", "Homepage", "Startseite");
-
+            builder.AddOrUpdate("Products.SavingBadgeLabel", "- {0} %", "- {0} %");
         }
     }
 }

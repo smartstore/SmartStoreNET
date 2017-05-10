@@ -696,10 +696,9 @@ namespace SmartStore.Web.Controllers
 
 				if (model.ShowDiscountBadge)
 				{
-					// TODO: (mc) Make language resource for saving badge label
 					item.Badges.Add(new ProductSummaryModel.Badge
 					{
-						Label = "- {0} %".FormatCurrentUI(priceModel.SavingPercent.ToString("N0")),
+						Label = T("Products.SavingBadgeLabel", priceModel.SavingPercent.ToString("N0")),
 						Style = BadgeStyle.Danger
 					});
 				}

@@ -6158,6 +6158,11 @@ namespace SmartStore.Data.Setup
 				{
 					Name = "Plate Thickness",
 					Alias = "plate-thickness"
+				},
+				new ProductAttribute
+				{
+					Name = "Version",
+					Alias = "version"
 				}
 			};
 
@@ -6229,6 +6234,7 @@ namespace SmartStore.Data.Setup
 			var attrLength = _ctx.Set<ProductAttribute>().First(x => x.Alias == "length");
 			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
 			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
+			var attrVersion = _ctx.Set<ProductAttribute>().First(x => x.Alias == "version");
 
 			#region 9,7 iPad
 
@@ -7001,6 +7007,99 @@ namespace SmartStore.Data.Setup
 
 			#endregion
 
+			#region Furniture - Ball chair
+
+			var productBallChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-ball-chair");
+			var ballChairVersions = new[]
+			{
+				new { Name = "Leather Special - Black 62", Color = "#030301" },
+				new { Name = "Leather Special - White 63", Color = "#ffffff" },
+				new { Name = "Leather Special - Beige 120", Color = "#d1bc8a" },
+				new { Name = "Leather Special - Dark brown 71", Color = "#1d0c05" },
+				new { Name = "Leather Special - Natural 65", Color = "#ffffff" },
+				new { Name = "Leather Special - Biscuit 64", Color = "#e0ccab" },
+				new { Name = "Leather Special - Red 1513", Color = "#fe0000" },
+				new { Name = "Leather Special - Dark red 66", Color = "#5e0000" },
+				new { Name = "Leather Special - Dark green 1506", Color = "#0a3210" },
+				new { Name = "Leather Special - Blue 7300", Color = "#0000ff" },
+				new { Name = "Leather Special - Light grey 72", Color = "#e3e3e5" },
+				new { Name = "Leather Special - Antracite 1501", Color = "#32312f" },
+				new { Name = "Leather Aniline - Black 380", Color = "#000000" },
+				new { Name = "Leather Aniline - White 001", Color = "#ffffff" },
+				new { Name = "Leather Aniline - Beige 20", Color = "#d1bc8a" },
+				new { Name = "Leather Aniline - Orange 59103", Color = "#ff6501" },
+				new { Name = "Leather Aniline - Brown 410", Color = "#755232" },
+				new { Name = "Leather Aniline - Cognac 425", Color = "#e9aa1b" },
+				new { Name = "Leather Aniline - Rosso 310", Color = "#a10300" },
+				new { Name = "Leather Aniline - Red 310", Color = "#fe0000" },
+				new { Name = "Leather Aniline - Dark Brown 430", Color = "#1e0c07" },
+				new { Name = "Leather Aniline - Antracite 400", Color = "#595854" },
+				new { Name = "Leather Aniline - Blue 9210", Color = "#0000ff" },
+				new { Name = "Leather Aniline - Nocciola 9050", Color = "#94703e" },
+				new { Name = "Leather Aniline - Fumo 224", Color = "#413d3e" },
+				new { Name = "Mixed Linen - Light blue", Color = "#00ccff" },
+				new { Name = "Mixed Linen - Old white 1419", Color = "#f8f7f3" },
+				new { Name = "Mixed Linen - Champagner 1476", Color = "#f9e3cb" },
+				new { Name = "Mixed Linen - Colza yellow 1404", Color = "#e6e60c" },
+				new { Name = "Mixed Linen - Tomato red 2490", Color = "#b10101" },
+				new { Name = "Mixed Linen - Red 1904", Color = "#ff0000" },
+				new { Name = "Mixed Linen - Raspberry red 1459", Color = "#b42042" },
+				new { Name = "Mixed Linen - Green 2763", Color = "#00ff00" },
+				new { Name = "Mixed Linen - Brown 1496", Color = "#663300" },
+				new { Name = "Mixed Linen - Blue 1470", Color = "#0000ff" },
+				new { Name = "Mixed Linen - Graphite black 1424", Color = "#2e2f31" }
+			};
+
+			var attrBallChairColor = new ProductVariantAttribute
+			{
+				Product = productBallChair,
+				ProductAttribute = attrColor,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+			attrBallChairColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "White",
+				Alias = "white",
+				DisplayOrder = 1,
+				Quantity = 1,
+				IsPreSelected = true
+			});
+			attrBallChairColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Black",
+				Alias = "black",
+				DisplayOrder = 2,
+				Quantity = 1
+			});
+			entities.Add(attrBallChairColor);
+
+			var attrBallChairVersion = new ProductVariantAttribute
+			{
+				Product = productBallChair,
+				ProductAttribute = attrVersion,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+
+			for (var i = 0; i < ballChairVersions.Length; ++i)
+			{
+				attrBallChairVersion.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = ballChairVersions[i].Name,
+					Alias = ballChairVersions[i].Name.Replace(" - ", "-").Replace(" ", "-").ToLower(),
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					Color = ballChairVersions[i].Color,
+					IsPreSelected = (ballChairVersions[i].Name == "Mixed Linen - Tomato red 2490")
+				});
+			}
+			entities.Add(attrBallChairVersion);
+
+			#endregion
+
 			this.Alter(entities);
 			return entities;
 		}
@@ -7016,6 +7115,7 @@ namespace SmartStore.Data.Setup
             var attr97iPadColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
 			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
 			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
+			var attrVersion = _ctx.Set<ProductAttribute>().First(x => x.Alias == "version");
 
 			#region ps3
 
@@ -7799,6 +7899,49 @@ namespace SmartStore.Data.Setup
 				IsActive = true,
 				Price = 999.00M
 			});
+
+			#endregion
+
+			#region Furniture - Ball chair
+
+			var productBallChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-ball-chair");
+			var ballChairPictureIds = productBallChair.ProductPictures.Select(x => x.PictureId).ToList();
+			var ballChairPictures = _ctx.Set<Picture>().Where(x => ballChairPictureIds.Contains(x.Id)).ToList();
+
+			var ballChairVersion = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrVersion.Id);
+			var ballChairVersionValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairVersion.Id).ToList();
+
+			var ballChairColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrColor.Id);
+			var ballChairColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairColor.Id).ToList();
+
+			foreach (var versionValue in ballChairVersionValues)
+			{
+				foreach (var colorValue in ballChairColorValues)
+				{
+					decimal ballChairPrice = 2199.00M;
+
+					if (versionValue.Name.StartsWith("Leather Special"))
+					{
+						ballChairPrice = 2599.00M;
+					}
+					else if (versionValue.Name.StartsWith("Leather Aniline"))
+					{
+						ballChairPrice = 2999.00M;
+					}
+
+					entities.Add(new ProductVariantAttributeCombination
+					{
+						Product = productBallChair,
+						Sku = productBallChair.Sku + string.Concat("-", colorValue.Alias, "-", versionValue.Alias),
+						AttributesXml = FormatAttributeXml(ballChairVersion.Id, versionValue.Id, ballChairColor.Id, colorValue.Id),
+						StockQuantity = 10000,
+						AllowOutOfStockOrders = true,
+						IsActive = true,
+						AssignedPictureIds = ballChairPictures.First(x => x.SeoFilename.EndsWith(colorValue.Alias)).Id.ToString(),
+						Price = ballChairPrice
+					});
+				}
+			}
 
 			#endregion
 
@@ -9060,6 +9203,59 @@ namespace SmartStore.Data.Setup
 			});
 
 			result.Add(corbusierTable);
+
+			// Ball Chair
+			var ballChair = new Product
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Name = "Eero Aarnio Ball Chair (1966)",
+				MetaTitle = "Eero Aarnio Ball Chair (1966)",
+				FullDescription = "<p>The ball chair, or also called the Globe chair, is a real masterpiece of the legendary designer Eero Aarnio. The ball chair from the Sixties has written designer history. The egg designed armchair rests on a trumpet foot and is not lastly appreciated due to its shape and the quiet atmosphere inside this furniture. The design of the furniture body allows noise and disturbing outer world elements in the Hintergurnd us. A place as created for resting and relaxing. With its wide range of colours, the eyeball chair fits in every living and working environment. A chair that stands out for its timeless design and always has the modern look. The ball chair is 360° to rotate to change the view of the surroundings. The outer shell in fiberglass white or black. The upholstery is mixed in leather or linen.</p><p>Dimension: Width 102 cm, depth 87 cm, height 124 cm, seat height: 44 cm.</p>",
+				Sku = "Furniture-ball-chair",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				Price = 2199.00M,
+				HasTierPrices = true,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				IsShipEnabled = true,
+				DeliveryTime = thirdDeliveryTime
+			};
+
+			ballChair.ProductCategories.Add(new ProductCategory
+			{
+				Category = furnitureCategory,
+				DisplayOrder = 1
+			});
+
+			ballChair.ProductPictures.Add(new ProductPicture
+			{
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_ball_chair_white.jpg"), "image/jpeg", "ball_chair_white"),
+				DisplayOrder = 1
+			});
+			ballChair.ProductPictures.Add(new ProductPicture
+			{
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_ball_chair_black.jpg"), "image/jpeg", "ball_chair_black"),
+				DisplayOrder = 2
+			});
+
+			ballChair.TierPrices.Add(new TierPrice
+			{
+				Quantity = 2,
+				Price = 1979.10M
+			});
+			ballChair.TierPrices.Add(new TierPrice
+			{
+				Quantity = 4,
+				Price = 1869.15M
+			});
+
+			result.Add(ballChair);
 
 			return result;
 		}

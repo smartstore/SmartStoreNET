@@ -2833,6 +2833,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("plate-thickness", x =>
 				{
 					x.Name = "Stärke der Tischplatte";
+				})
+				.Alter("version", x =>
+				{
+					x.Name = "Ausführung";
 				});
 		}
 
@@ -3057,6 +3061,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.Name = "Le Corbusier LC 6 Esstisch (1929)";
 					x.ShortDescription = "Esstisch LC6, Designer: Le Corbusier, B x H x T: 225 x 69/74 (verstellbar) x 85 cm, Unterkonstruktion: Stahlrohr, Glasplatte: klar oder sandgestrahlt, 15 oder 19 mm, höhenverstellbar.";
 					x.FullDescription = "<p>Vier kleine Teller tragen eine Platte aus Glas. Darunter erstreckt sich in klarer Struktur die Konstruktion aus Stahlrohr. Der LC6 ist echter Klassiker der Bauhaus-Kunst und dient in Kombination mit den Drehstühlen LC7 als formschöne Le Corbusier-Essecke. Darüber hinaus findet man den Tisch auch vermehrt in Büros oder in Hallen. Er ist höhenverstellbar und kann so dem jeweiligen Zweck perfekt angepasst werden.</p><p>Der formschöne Tisch von Le Corbusier ist mit klarer oder mit sandgestrahlter Glasplatte erhältlich. Die Unterkonstruktion besteht aus ovalen Stahlrohren.</p>";
+				})
+				.Alter("Furniture-ball-chair", x =>
+				{
+					x.Name = "Eero Aarnio Kugelsessel (1966)";
+					x.FullDescription = "<p>Der Ball Chair oder auch Globe Chair genannt, ist ein echtes Meisterwerk des legendären Designers Eero Aarnio. Der Kugelsessel aus den sechziger Jahren hat Designergeschichte geschrieben. Der eiförmig gestaltet Sessel ruht auf einem Trompetenfuss und wird nicht zu letzt aufgrund seiner Form und der ruhigen Atmophäre im Innern dieses Möbels besonders geschätzt. Das Design des Möbelkörpers lässt  Geräusche und störende Außenweltelemente in den Hintergurnd tretten. Ein Platz, wie geschaffen zum ausruhen und entspannen. Mit der großen Auswahl an Farben passt passt sich der Eyeball Chair jeder Wohn- und Arbeitsumgebung gekonnt an. Ein Sessel, der sich durch zeitloses Design auszeichnet und die Moderne immer im Blick haben wird. Der Ball Chair ist 360° zu drehen, um den Blick auf die Umgebung zu veränderen. Die Aussenschale in Fiberglas weiss oder schwarz. Der Bezug ist in Leder oder Linen Mixed.<p><p>Abmessung: Breite 102 cm, Tiefe 87 cm, Höhe 124 cm, Sitzhöhe: 44 cm.</p>";
 				});
 		}
 

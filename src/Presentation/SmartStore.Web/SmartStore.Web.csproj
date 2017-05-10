@@ -815,6 +815,8 @@
     <Content Include="Content\samples\product_allstar_navy.jpg" />
     <Content Include="Content\samples\product_allstar_purple.jpg" />
     <Content Include="Content\samples\product_allstar_white.jpg" />
+    <Content Include="Content\samples\product_ball_chair_black.jpg" />
+    <Content Include="Content\samples\product_ball_chair_white.jpg" />
     <Content Include="Content\samples\product_bestgrillingrecipes.jpg" />
     <Content Include="Content\samples\product_certina_ds_podium_big.png" />
     <Content Include="Content\samples\product_clark_premium_jeans.jpg" />

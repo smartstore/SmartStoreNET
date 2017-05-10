@@ -1291,17 +1291,10 @@
     <Content Include="Themes\Flex\Content\vendors\slick\slick.min.js" />
     <Content Include="Themes\Flex\Content\_megamenu.scss" />
     <Content Include="Themes\Flex\preview.png" />
-    <Content Include="Themes\AlphaOld\Content\images\color-overlay.png" />
-    <Content Include="Themes\AlphaOld\Content\images\deliv-bg-aero.png" />
     <Content Include="Content\Images\star-off-12.png" />
     <Content Include="Content\Images\star-off.png" />
     <Content Include="Content\Images\star-on-12.png" />
     <Content Include="Content\Images\star-on.png" />
-    <Content Include="Themes\AlphaOld\Content\images\star-off-12.png" />
-    <Content Include="Themes\AlphaOld\Content\images\star-off.png" />
-    <Content Include="Themes\AlphaOld\Content\images\star-on-12.png" />
-    <Content Include="Themes\AlphaOld\Content\images\star-on.png" />
-    <Content Include="Themes\AlphaOld\Content\slider.less" />
     <Content Include="Content\bootstrap\custom\telerik\editor.png" />
     <Content Include="Content\bootstrap\custom\telerik\gradient.png" />
     <Content Include="Content\bootstrap\custom\telerik\imagebrowser.png" />
@@ -1638,9 +1631,6 @@
     <Content Include="Scripts\public.common.js" />
     <Content Include="Scripts\smartstore.jquery.utils.js" />
     <Content Include="Scripts\smartstore.system.js" />
-    <Content Include="Themes\AlphaOld\Content\images\ajax_loader_small.gif" />
-    <Content Include="Themes\AlphaOld\Content\images\loading.gif" />
-    <Content Include="Themes\AlphaOld\preview.png" />
     <Content Include="Themes\Flex\Content\vendors\drift\Drift.min.js" />
     <Content Include="Themes\Flex\Content\vendors\drift\Drift.js" />
     <Content Include="Themes\Flex\Scripts\jquery.addeasing.js" />
@@ -1687,34 +1677,6 @@
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Themes\AlphaOld\Content\theme.less" />
-    <Content Include="Themes\AlphaOld\Content\variables.custom.less" />
-    <Content Include="Themes\AlphaOld\Content\variables.less" />
-    <Content Include="Themes\AlphaOld\Content\user.less" />
-    <Content Include="Themes\AlphaOld\Content\bootstrap.less" />
-    <Content Include="Themes\AlphaOld\Content\blocks.less" />
-    <Content Include="Themes\AlphaOld\Content\blog.less" />
-    <Content Include="Themes\AlphaOld\Content\cart.less" />
-    <Content Include="Themes\AlphaOld\Content\catalog.less" />
-    <Content Include="Themes\AlphaOld\Content\checkout.less" />
-    <Content Include="Themes\AlphaOld\Content\common.less" />
-    <Content Include="Themes\AlphaOld\Content\custom.less" />
-    <Content Include="Themes\AlphaOld\Content\datalist.less" />
-    <Content Include="Themes\AlphaOld\Content\footer.less" />
-    <Content Include="Themes\AlphaOld\Content\forum.less" />
-    <Content Include="Themes\AlphaOld\Content\header.less" />
-    <Content Include="Themes\AlphaOld\Content\layout.less" />
-    <Content Include="Themes\AlphaOld\Content\login.less" />
-    <Content Include="Themes\AlphaOld\Content\misc.less" />
-    <Content Include="Themes\AlphaOld\Content\nav.less" />
-    <Content Include="Themes\AlphaOld\Content\pages.less" />
-    <Content Include="Themes\AlphaOld\Content\paginator.less" />
-    <Content Include="Themes\AlphaOld\Content\product.less" />
-    <Content Include="Themes\AlphaOld\Content\profile.less" />
-    <Content Include="Themes\AlphaOld\Content\rating.less" />
-    <Content Include="Themes\AlphaOld\Content\shopbar.less" />
-    <Content Include="Themes\AlphaOld\Content\skin.less" />
-    <Content Include="Themes\AlphaOld\Content\typo.less" />
     <Content Include="Themes\Web.config" />
     <Content Include="Themes\Flex\Content\shared\_buttons.scss" />
     <Content Include="Themes\Flex\Content\shared\_forms.scss" />
@@ -2031,11 +1993,6 @@
       <Project>{75fd4163-333c-4dd5-854d-2ef294e45d94}</Project>
       <Name>SmartStore.Web.Framework</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Themes\AlphaOld\theme.config.obsolete">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\Partials\Head.cshtml" />

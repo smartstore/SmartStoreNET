@@ -47,7 +47,7 @@ namespace SmartStore.Web.Models.ShoppingCart
             
             public int EnteredQuantity { get; set; }
 
-            public string QuantityUnitName { get; set; }        // TODO: get rid of this property, won't be displayed anyway
+            public string QuantityUnitName { get; set; }
 
             public List<SelectListItem> AllowedQuantities { get; set; }
 

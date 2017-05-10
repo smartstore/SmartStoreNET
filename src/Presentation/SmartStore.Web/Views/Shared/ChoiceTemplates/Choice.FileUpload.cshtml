@@ -1,11 +1,6 @@
 ﻿@model ChoiceModel
-
 @using SmartStore.Web.Framework.UI.Choices;
-@using SmartStore.Web.Models.Catalog;
-
 @{ 
-	// TODO: (mc) Update fileupload stuff to BS4
-
 	Html.AddScriptParts("~/bundles/fileupload");
 	Html.AddCssFileParts("~/css/fileupload");
 
@@ -20,7 +15,6 @@
 	//ex. ['jpg', 'jpeg', 'png', 'gif'] or []
 	var allowedFileExtensions = string.Join("|", Model.AllowedFileExtensions.Select(x => x.Trim()).ToList());
 }
-
 
 <div id="@clientId" class="fileupload">
 	<input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />

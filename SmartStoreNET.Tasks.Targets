@@ -44,7 +44,7 @@
 		<ZipDirectory>$(StageFolder)</ZipDirectory>
 		<ZipVersionFileSuffix Condition="$(Version) != ''">.$(Version)</ZipVersionFileSuffix>
 		<ZipVersionFileSuffix Condition="$(Version) == ''"></ZipVersionFileSuffix>
-		<ZipFileSuffix>.Web</ZipFileSuffix>
+		<ZipFileSuffix>.Community</ZipFileSuffix>
 	</PropertyGroup>
 
 	<Import Project="$(LibFolder)\MSBuild\MSBuild.Community.Tasks.Targets"/>

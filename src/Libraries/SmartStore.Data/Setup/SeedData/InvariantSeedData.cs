@@ -10279,11 +10279,47 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1,
 			});
 
-			#endregion product50GiftCard
+            #endregion product50GiftCard
 
-			#endregion category Gift Cards
+            #region product100GiftCard
 
-			#region category books
+            var product100GiftCard = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Name = "$100 Virtual Gift Card",
+                IsEsd = true,
+                ShortDescription = "$100 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
+                FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
+                Sku = "P-100999",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "$100 Virtual Gift Card",
+                Price = 100M,
+                IsGiftCard = true,
+                GiftCardType = GiftCardType.Virtual,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false
+            };
+
+            product100GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
+
+            product100GiftCard.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_giftcart.png"), "image/png", GetSeName(product100GiftCard.Name)),
+                DisplayOrder = 1,
+            });
+
+            #endregion product100GiftCard
+
+            #endregion category Gift Cards
+
+            #region category books
 
             var categorySpiegelBestseller = this._ctx.Set<Category>().First(c => c.Alias == "SPIEGEL-Bestseller");
             var categoryCookAndEnjoy = this._ctx.Set<Category>().First(c => c.Alias == "Cook and enjoy");
@@ -12450,7 +12486,7 @@ namespace SmartStore.Data.Setup
                 productTRANSOCEANCHRONOGRAPH,productTissotTTouchExpertSolar,productSeikoSRPA49K1,productTitleistSM6TourChrome,productTitleistProV1x,productGBBEpicSubZeroDriver,productSupremeGolfball,productBooksStoneOfTheWise,productNikeStrikeFootball,productNikeEvoPowerBall,
                 productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,
                 productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,
-                productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
+                productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard,product100GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,

@@ -3050,7 +3050,190 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 				entities.WithKey(x => x.MetaTitle)
 
-				# region category Gift Cards
+
+                #region category gold
+
+                #region product Titleist SM6 Tour Chrome
+
+                .Alter("Titleist SM6 Tour Chrome", x =>
+                {
+                    x.ShortDescription = "Für Golfspieler, die ein Maximum an Schlagkontrolle und Feedback wünschen.";
+                    x.FullDescription = "<p><strong>Inspiriert von den besten Eisenspielern der Welt</strong></p><p>Die neuen 'Spin Milled 6'-Wedges etablieren eine neue Leistungsklasse in drei Schlüsselbereichen des Wedge-Spiels: Präzise Längenschritte, Schlagvielfalt und maximaler Spin.&nbsp;</p><p>  <br />  Für jeden Loft wird der Schwerpunkt des Wedges einzeln bestimmt. Daher bieten die SM6 eine besonders präzise Längen- und Flugkurvenkontrolle in Verbindung mit großartigem Schlaggefühl.&nbsp;  <br />  Bob Vokeys tourerpobte Sohlenschliffe erlauben allen Golfern mehr Schlagvielfalt, angepasst auf deren persönliches Schwungprofil und die jeweiligen Bodenverhältnissen.</p><p>  <br />  Zu den absolut exakt und mit 100%iger Qualitätskontrolle gefrästen Rillen wurde eine neue, parallele Schlagflächen-Textur entwickelt. Das Ergebnis ist eine beständig höhere Kantenschärfe für mehr Spin.</p><p></p><ul>  <li>Präzise Längen und Flugkurvenkontrolle dank progressiv platziertem Schwerpunkt.</li>  <li>Verbesserte Schlagvielfalt aufgrund der erprobten Sohlenschliffe von Bob Vokey.</li>  <li>TX4-Rillen erzeugen mehr Spin durch eine neue Oberfläche und Kantenschärfe.</li>  <li>Vielfältige Personalisierungsmöglichkeiten.</li></ul><p></p><p></p><p></p>";
+                    x.Price = 164.95M;
+                    x.OldPrice = 199.95M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+
+                #endregion product Titleist SM6 Tour Chrome
+
+                #region product Titleist Pro V1x
+
+                .Alter("Titleist Pro V1x", x =>
+                {
+                    x.ShortDescription = "Golfball mit hohem Ballflug";
+                    x.FullDescription = "<p>Auf den neuen Titleist Pro V1x vertrauen die Spitzenspieler. Hoher Ballflug, weiches Schlaggefühl und mehr Spin im kurzen Spiel sind die Vorteile der V1x-Ausführung.Perfekte Gesamtleistung vom führenden Hersteller. Der neue Titleist Pro V1-Golfball ist exakt definiert und verspricht durchdringenden Ballflug bei sehr weichem Schlaggefühl.</p>";
+                    x.Price = 1.89M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+
+                #endregion product Titleist Pro V1x
+
+                #region product Supreme Golfball
+
+                .Alter("Supreme Golfball", x =>
+                {
+                    x.ShortDescription = "Trainingsbälle mit perfekten Flugeigenschaften";
+                    x.FullDescription = "<p>Perfekter Golf-Übungsball mit den Eigenschaften wie das 'Original', aber in glasbruchsicherer Ausführng. Massiver Kern, ein idealer Trainingsball für Hof und Garten. Farben: weiß, gelb, orange.</p>";
+                    x.Price = 1.99M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+
+                #endregion product Supreme Golfball
+
+                #region product GBB Epic Sub Zero Driver
+
+                .Alter("GBB Epic Sub Zero Driver", x =>
+                {
+                    x.ShortDescription = "Geringer Spin für gutes Golfen!";
+                    x.FullDescription = "<p>Ihr Spiel gewinnt mit dem GBB Epic Sub Zero Driver. Ein Golfschläger mit extrem wenig Spin und das bei phänomenaler Hochgeschwindigkeits-Charakteristik.&nbsp;</p>";
+                    x.Price = 489.00M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+
+                #endregion product GBB Epic Sub Zero Driver
+
+                #endregion category golf
+
+                #region category Soccer
+
+                #region product Nike Strike Football
+
+                .Alter("NIKE STRIKE", x =>
+                {
+                    x.ShortDescription = "HERVORRAGENDES BALLGEFÜHL. GUTE SICHTBARKEIT.";
+                    x.FullDescription = "<p>Verbessert das Spiel jeden Tag mit dem Nike Strike Football. Verstärkter Gummi behält seine Form für zuversichtliche und konsequente Kontrolle. Eine herausragende Visual Power Grafik in schwarz, grün und orange ist am besten für Ball Tracking, trotz dunkler oder schlechter Bedingungen.</p><p></p><ul>  <li>Visual Power Grafik hilft, eine echte Lesung auf Flugtrajektorie zu geben.</li>  <li>Strukturiertes Gehäuse bietet überlegene Note.</li>  <li>Verstärkte Gummiblase unterstützt Luft- und Formbeibehaltung.</li>  <li>66% Gummi / 15% Polyurethan / 13% Polyester / 7% EVA.</li></ul>";
+                    x.Price = 29.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product Nike Strike Football
+
+                #region product Evopower 5.3 Trainer HS Ball
+
+                .Alter("Evopower 5.3 Trainer HS Ball", x =>
+                {
+                    x.ShortDescription = "Einsteiger Trainingsball.";
+                    x.FullDescription = "<p>Einsteiger Trainingsball.  <br />  Konstruiert aus 32 Platten mit gleichen Flächen für reduzierte Naht und eine vollkommen runde Form.  <br />  Handgestickte Platten mit mehrschichtigem gewebtem Rücken für mehr Stabilität und Aerodynamik.</p>";
+                    x.Price = 35.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product Evopower 5.3 Trainer HS Ball
+
+                #region product Torfabrik official game ball
+
+                .Alter("Torfabrik official game ball", x =>
+                {
+                    x.ShortDescription = "Einsteiger Trainingsball.";
+                    x.FullDescription = "<p>Einsteiger Trainingsball.  <br />  Konstruiert aus 32 Platten mit gleichen Flächen für reduzierte Naht und eine vollkommen runde Form.  <br />  Handgestickte Platten mit mehrschichtigem gewebtem Rücken für mehr Stabilität und Aerodynamik.</p>";
+                    x.Price = 35.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product Torfabrik official game ball
+
+                #region product Adidas TANGO SALA BALL
+
+                .Alter("Adidas TANGO SALA BALL", x =>
+                {
+                    x.ShortDescription = "Farbe White/Black/Solar Red";
+                    x.FullDescription = "<h2 style='box-sizing: border-box; outline: 0px; margin-right: 0px; margin-bottom: 32px; margin-left: 0px; padding: 0px; border: 0px; font-variant-numeric: inherit; font-weight: inherit; font-stretch: inherit; font-size: 32px; line-height: 30.4px; font-family: adilight, Arial, Helvetica, Verdana, sans-serif; vertical-align: baseline; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; max-height: 999999px; text-transform: uppercase; letter-spacing: 6px; text-align: center; color: rgb(0, 0, 0);'>TANGO PASADENA BALL</h2><div class='product-details-description clearfix' style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-variant-numeric: inherit; font-stretch: inherit; font-size: 14px; line-height: inherit; font-family: adihausregular, Arial, Helvetica, Verdana, sans-serif; vertical-align: baseline; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; max-height: 999999px; zoom: 1; color: rgb(0, 0, 0);'>  <div class='prod-details para-small' itemprop='description' style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: 24px; vertical-align: baseline; background: transparent; max-height: 999999px; color: rgb(54, 55, 56); width: 441.594px; float: left;'>Der adidas Tango Pasadena Ball wurde speziell für harte Trainingseinheiten und hitzige Kämpfe auf dem Fußballplatz gemacht. Er hat die bestmögliche FIFA-Bewertung bekommen und verfügt über einen handgenähten Körper, dem kein Training und kein Spiel etwas anhaben können.  </div>  <div class='prod-details para-small' itemprop='description' style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: 24px; vertical-align: baseline; background: transparent; max-height: 999999px; color: rgb(54, 55, 56); width: 441.594px; float: left;'>  </div>  <ul class='bullets_list para-small' style='box-sizing: border-box; outline: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 16px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: 20px; vertical-align: baseline; background: transparent; max-height: 999999px; list-style-position: initial; list-style-image: initial; color: rgb(54, 55, 56); width: 441.594px; float: right;'>    <li style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; font-size: inherit; line-height: 24px; font-family: inherit; vertical-align: baseline; background: transparent; max-height: 999999px;'>Handgenäht für hohe Strapazierfähigkeit und gutes Ballgefühl</li>    <li style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; font-size: inherit; line-height: 24px; font-family: inherit; vertical-align: baseline; background: transparent; max-height: 999999px;'>FIFA-Höchstwertung: Der Ball hat Tests in den Kategorien Gewicht, Wasseraufnahme, Form- und Größenbeständigkeit erfolgreich bestanden</li>    <li style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; font-size: inherit; line-height: 24px; font-family: inherit; vertical-align: baseline; background: transparent; max-height: 999999px;'>Latex-Blase für optimales Rücksprungverhalten</li>    <li style='box-sizing: border-box; outline: 0px; margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; font-size: inherit; line-height: 24px; font-family: inherit; vertical-align: baseline; background: transparent; max-height: 999999px;'>100 % Polyurethan</li>  </ul></div>";
+                    x.Price = 59.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product Adidas TANGO SALA BALL
+
+                #endregion category Soccer
+
+
+                #region category Gift Cards
                 .Alter("$5 Virtual Gift Card", x =>
 				{
 					x.Name = "5 € Geschenkgutschein";
@@ -3072,11 +3255,18 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
 				})
 
-				#endregion
+                .Alter("$100 Virtual Gift Card", x =>
+                {
+                    x.Name = "100 € Geschenkgutschein";
+                    x.ShortDescription = "100 € Geschenkgutschein. Eine ideale Geschenkidee.";
+                    x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
+                })
 
-				#region Bücher
+                #endregion
 
-				#region SPIEGEL-Bestseller
+                #region Bücher
+
+                #region SPIEGEL-Bestseller
                 .Alter("Überman: The novel", x =>
 				{
 					x.Name = "Überman: Der Roman";

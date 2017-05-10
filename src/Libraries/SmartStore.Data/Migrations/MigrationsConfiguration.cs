@@ -780,7 +780,7 @@ namespace SmartStore.Data.Migrations
 				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowOnProductPage",
 				"Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowNotOnProductPage");
 
-            builder.AddOrUpdate("Footer.Info", "Information", "Information");
+            builder.AddOrUpdate("Footer.Info", "Informations", "Informationen");
 
             builder.AddOrUpdate("Admin.ContentManagement.Polls.Fields.SystemKeyword",
                 "System keyword",
@@ -998,7 +998,7 @@ namespace SmartStore.Data.Migrations
                 "Sie haben noch keine Nachrichten versendet.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Homepage", "Homepage", "Startseite");
-
+            builder.AddOrUpdate("Products.SavingBadgeLabel", "- {0} %", "- {0} %");
         }
     }
 }

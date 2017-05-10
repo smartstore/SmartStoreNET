@@ -3085,7 +3085,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				entities.WithKey(x => x.MetaTitle)
 
 
-                #region category gold
+                #region category golf
 
                 #region product Titleist SM6 Tour Chrome
 
@@ -3182,8 +3182,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 
                 #region product Nike Strike Football
 
-                .Alter("NIKE STRIKE", x =>
+                .Alter("Nike Strike Football", x =>
                 {
+                    x.Name = "Nike Strike Fußball";
                     x.ShortDescription = "HERVORRAGENDES BALLGEFÜHL. GUTE SICHTBARKEIT.";
                     x.FullDescription = "<p>Verbessert das Spiel jeden Tag mit dem Nike Strike Football. Verstärkter Gummi behält seine Form für zuversichtliche und konsequente Kontrolle. Eine herausragende Visual Power Grafik in schwarz, grün und orange ist am besten für Ball Tracking, trotz dunkler oder schlechter Bedingungen.</p><p></p><ul>  <li>Visual Power Grafik hilft, eine echte Lesung auf Flugtrajektorie zu geben.</li>  <li>Strukturiertes Gehäuse bietet überlegene Note.</li>  <li>Verstärkte Gummiblase unterstützt Luft- und Formbeibehaltung.</li>  <li>66% Gummi / 15% Polyurethan / 13% Polyester / 7% EVA.</li></ul>";
                     x.Price = 29.90M;

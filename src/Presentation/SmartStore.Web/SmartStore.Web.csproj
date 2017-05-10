@@ -745,6 +745,7 @@
     <Content Include="Content\samples\clouds.png" />
     <Content Include="Content\samples\company_logo.png" />
     <Content Include="Content\samples\emblem_library.png" />
+    <Content Include="Content\samples\gift-card.jpg" />
     <Content Include="Content\samples\iphone.png" />
     <Content Include="Content\samples\manufacturer_EA_Sports.png" />
     <Content Include="Content\samples\manufacturer_wb.png" />
@@ -863,6 +864,9 @@
     <Content Include="Content\samples\product_productOriginalWayfarer_4.jpg" />
     <Content Include="Content\samples\product_productOriginalWayfarer_5.jpg" />
     <Content Include="Content\samples\product_productOriginalWayfarer_6.jpg" />
+    <Content Include="Content\samples\product_ps4_wo_controller.jpg" />
+    <Content Include="Content\samples\product_ps4_slim.jpg" />
+    <Content Include="Content\samples\product_ps4_w_controller.jpg" />
     <Content Include="Content\samples\product_radar_ev_prizm.jpg" />
     <Content Include="Content\samples\product_RayBanTopBar_1.jpg" />
     <Content Include="Content\samples\product_RayBanTopBar_2.jpg" />

@@ -6188,8 +6188,13 @@ namespace SmartStore.Data.Setup
 				{
 					Name = "Style",
 					Alias = "style"
-				}
-			};
+				},
+                new ProductAttribute
+                {
+                    Name = "Controller",
+                    Alias = "controller"
+                }
+            };
 
 			this.Alter(entities);
 			return entities;
@@ -6250,7 +6255,8 @@ namespace SmartStore.Data.Setup
 		{
 			var entities = new List<ProductVariantAttribute>();
 			var attrColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
-			var attrSize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "size");
+            var attrController = _ctx.Set<ProductAttribute>().First(x => x.Alias == "controller");
+            var attrSize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "size");
 			var attrGames = _ctx.Set<ProductAttribute>().First(x => x.Alias == "game");
             var attrBallsize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ballsize");
             var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
@@ -6599,16 +6605,16 @@ namespace SmartStore.Data.Setup
 			var attributeDualshock3ControllerColor = new ProductVariantAttribute()
 			{
 				Product = productPs3,
-				ProductAttribute = attrColor,
+				ProductAttribute = attrController,
 				IsRequired = true,
 				DisplayOrder = 1,
-				AttributeControlType = AttributeControlType.DropdownList
+				AttributeControlType = AttributeControlType.RadioList
 			};
 
 			attributeDualshock3ControllerColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
-				Name = "Black",
-				Alias = "black",
+				Name = "without controller",
+				Alias = "without_controller",
 				IsPreSelected = true,
 				DisplayOrder = 1,
 				Quantity = 1,
@@ -6617,9 +6623,9 @@ namespace SmartStore.Data.Setup
 
 			attributeDualshock3ControllerColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
-				Name = "White",
-				Alias = "white",
-				PriceAdjustment = 10.0M,
+				Name = "whith controller",
+				Alias = "with_controller",
+				PriceAdjustment = 60.0M,
 				DisplayOrder = 2,
 				Quantity = 1,
 				ValueType = ProductVariantAttributeValueType.Simple
@@ -7309,7 +7315,8 @@ namespace SmartStore.Data.Setup
 			var sb = new StringBuilder();
 			var entities = new List<ProductVariantAttributeCombination>();
 			var attrColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
-			var attrSize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "size");
+            var attrController = _ctx.Set<ProductAttribute>().First(x => x.Alias == "controller");
+            var attrSize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "size");
             var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
             var attrColorIphoneColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
             var attr97iPadColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
@@ -7323,29 +7330,29 @@ namespace SmartStore.Data.Setup
 			var ps3PictureIds = productPs3.ProductPictures.Select(pp => pp.PictureId).ToList();
 			var picturesPs3 = _ctx.Set<Picture>().Where(x => ps3PictureIds.Contains(x.Id)).ToList();
 
-			var productAttributeColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productPs3.Id && x.ProductAttributeId == attrColor.Id);
+			var productAttributeColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productPs3.Id && x.ProductAttributeId == attrController.Id);
 			var attributeColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == productAttributeColor.Id).ToList();
 
 			entities.Add(new ProductVariantAttributeCombination()
 			{
 				Product = productPs3,
 				Sku = productPs3.Sku + "-B",
-				AttributesXml = FormatAttributeXml(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "black").Id),
+				AttributesXml = FormatAttributeXml(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "with_controller").Id),
 				StockQuantity = 10000,
 				AllowOutOfStockOrders = true,
 				IsActive = true,
-				AssignedPictureIds = picturesPs3.First(x => x.SeoFilename.EndsWith("-black")).Id.ToString()
+				AssignedPictureIds = picturesPs3.First(x => x.SeoFilename.EndsWith("-controller")).Id.ToString()
 			});
 
 			entities.Add(new ProductVariantAttributeCombination()
 			{
 				Product = productPs3,
 				Sku = productPs3.Sku + "-W",
-				AttributesXml = FormatAttributeXml(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "white").Id),
+				AttributesXml = FormatAttributeXml(productAttributeColor.Id, attributeColorValues.First(x => x.Alias == "without_controller").Id),
 				StockQuantity = 10000,
 				AllowOutOfStockOrders = true,
 				IsActive = true,
-				AssignedPictureIds = picturesPs3.First(x => x.SeoFilename.EndsWith("-white")).Id.ToString()
+				AssignedPictureIds = picturesPs3.First(x => x.SeoFilename.EndsWith("-single")).Id.ToString()
 			});
 
             #endregion ps3
@@ -8288,14 +8295,15 @@ namespace SmartStore.Data.Setup
 				Name = "gift"
 			};
 
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "$5 Virtual Gift Card").First().ProductTags.Add(productTagGift);
+			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "$10 Virtual Gift Card").First().ProductTags.Add(productTagGift);
 			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "$25 Virtual Gift Card").First().ProductTags.Add(productTagGift);
 			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "$50 Virtual Gift Card").First().ProductTags.Add(productTagGift);
+            _ctx.Set<Product>().Where(pt => pt.MetaTitle == "$100 Virtual Gift Card").First().ProductTags.Add(productTagGift);
 
-			#endregion tag gift
+            #endregion tag gift
 
-			#region tag computer
-			var productTagComputer = new ProductTag
+            #region tag computer
+            var productTagComputer = new ProductTag
 			{
 				Name = "computer"
 			};
@@ -8568,7 +8576,7 @@ namespace SmartStore.Data.Setup
 				Name = "Gift Cards",
                 Alias = "Gift Cards",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_giftcards.png"), "image/png", GetSeName("Gift Cards")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName("Gift Cards")),
 				Published = true,
 				DisplayOrder = 12,
 				MetaTitle = "Gift cards",
@@ -10932,21 +10940,21 @@ namespace SmartStore.Data.Setup
 
             var categoryGiftCards = this._ctx.Set<Category>().First(c => c.Alias == "Gift Cards");
 
-			#region product5GiftCard
+			#region product10GiftCard
 
-			var product5GiftCard = new Product()
+			var product10GiftCard = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
-				Name = "$5 Virtual Gift Card",
+				Name = "$10 Virtual Gift Cardxxx",
 				IsEsd = true,
-				ShortDescription = "$5 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
+				ShortDescription = "$10 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
 				FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
                 Sku = "P-1000",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				MetaTitle = "$5 Virtual Gift Card",
+				MetaTitle = "$10 Virtual Gift Card",
 				Price = 5M,
 				IsGiftCard = true,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -10954,31 +10962,33 @@ namespace SmartStore.Data.Setup
 				OrderMaximumQuantity = 10000,
 				StockQuantity = 10000,
 				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false
+				AllowBackInStockSubscriptions = false,
+                DisplayOrder = 1
+                
 			};
 
-            product5GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
+            product10GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
 
-			//var productTag = _productTagRepository.Table.Where(pt => pt.Name == "gift").FirstOrDefault();
-			//productTag.ProductCount++;
-			//productTag.Products.Add(product5GiftCard);
-			//_productTagRepository.Update(productTag);
+            //var productTag = _productTagRepository.Table.Where(pt => pt.Name == "gift").FirstOrDefault();
+            //productTag.ProductCount++;
+            //productTag.Products.Add(product5GiftCard);
+            //_productTagRepository.Update(productTag);
 
-			product5GiftCard.ProductPictures.Add(new ProductPicture()
+            product10GiftCard.ProductPictures.Add(new ProductPicture()
 			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_giftcart.png"), "image/png", GetSeName(product5GiftCard.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName(product10GiftCard.Name)),
 				DisplayOrder = 1,
 			});
 
-			#endregion product5GiftCard
+            #endregion product10GiftCard
 
-			#region product25GiftCard
+            #region product25GiftCard
 
-			var product25GiftCard = new Product()
+            var product25GiftCard = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
-				Name = "$25 Virtual Gift Card",
+				Name = "$25 Virtual Gift Cardxxx",
 				IsEsd = true,
 				ShortDescription = "$25 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
 				FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
@@ -10995,15 +11005,16 @@ namespace SmartStore.Data.Setup
 				OrderMaximumQuantity = 10000,
 				StockQuantity = 10000,
 				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false
-			};
+				AllowBackInStockSubscriptions = false,
+                DisplayOrder = 2
+            };
 
             product25GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
 
 			product25GiftCard.ProductPictures.Add(new ProductPicture()
 			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_giftcart.png"), "image/png", GetSeName(product25GiftCard.Name)),
-				DisplayOrder = 1,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName(product25GiftCard.Name)),
+				DisplayOrder = 2,
 			});
 
 			#endregion product25GiftCard
@@ -11014,7 +11025,7 @@ namespace SmartStore.Data.Setup
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
-				Name = "$50 Virtual Gift Card",
+				Name = "$50 Virtual Gift Cardxxx",
 				IsEsd = true,
 				ShortDescription = "$50 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
 				FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
@@ -11031,15 +11042,16 @@ namespace SmartStore.Data.Setup
 				OrderMaximumQuantity = 10000,
 				StockQuantity = 10000,
 				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false
-			};
+				AllowBackInStockSubscriptions = false,
+                DisplayOrder = 3
+            };
 
             product50GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
 
 			product50GiftCard.ProductPictures.Add(new ProductPicture()
 			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_giftcart.png"), "image/png", GetSeName(product50GiftCard.Name)),
-				DisplayOrder = 1,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName(product50GiftCard.Name)),
+				DisplayOrder = 3,
 			});
 
             #endregion product50GiftCard
@@ -11050,7 +11062,7 @@ namespace SmartStore.Data.Setup
             {
                 ProductType = ProductType.SimpleProduct,
                 VisibleIndividually = true,
-                Name = "$100 Virtual Gift Card",
+                Name = "$100 Virtual Gift Cardxxx",
                 IsEsd = true,
                 ShortDescription = "$100 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
                 FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
@@ -11067,15 +11079,16 @@ namespace SmartStore.Data.Setup
                 OrderMaximumQuantity = 10000,
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false
+                AllowBackInStockSubscriptions = false,
+                DisplayOrder = 4
             };
 
             product100GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
 
             product100GiftCard.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_giftcart.png"), "image/png", GetSeName(product100GiftCard.Name)),
-                DisplayOrder = 1,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName(product100GiftCard.Name)),
+                DisplayOrder = 4,
             });
 
             #endregion product100GiftCard
@@ -12786,14 +12799,15 @@ namespace SmartStore.Data.Setup
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Sku = "Sony-PS399000",
-				Name = "Playstation 4 Super Slim",
-				ShortDescription = "The Sony PlayStation 3 is the multi media console for next-generation digital home entertainment. It offers the Blu-ray technology, which enables you to enjoy movies in high definition.",
-				FullDescription = "<ul><li>PowerPC-base Core @3.2GHz</li><li>1 VMX vector unit per core</li><li>512KB L2 cache</li><li>7 x SPE @3.2GHz</li><li>7 x 128b 128 SIMD GPRs</li><li>7 x 256KB SRAM for SPE</li><li>* 1 of 8 SPEs reserved for redundancy total floating point performance: 218 GFLOPS</li><li> 1.8 TFLOPS floating point performance</li><li>Full HD (up to 1080p) x 2 channels</li><li>Multi-way programmable parallel floating point shader pipelines</li><li>GPU: RSX @550MHz</li><li>256MB XDR Main RAM @3.2GHz</li><li>256MB GDDR3 VRAM @700MHz</li><li>Sound: Dolby 5.1ch, DTS, LPCM, etc. (Cell-base processing)</li><li>Wi-Fi: IEEE 802.11 b/g</li><li>USB: Front x 4, Rear x 2 (USB2.0)</li><li>Memory Stick: standard/Duo, PRO x 1</li></ul>",
+				Name = "Playstation 4 Pro",
+				ShortDescription = "The Sony PlayStation 4 Pro is the multi media console for next-generation digital home entertainment. It offers the Blu-ray technology, which enables you to enjoy movies in high definition.",
+				FullDescription = "<ul><li>PowerPC-base Core @5.2GHz</li><li>1 VMX vector unit per core</li><li>512KB L2 cache</li><li>7 x SPE @5.2GHz</li><li>7 x 128b 128 SIMD GPRs</li><li>7 x 256MB SRAM for SPE</li><li>* 1 of 8 SPEs reserved for redundancy total floating point performance: 218 GFLOPS</li><li> 1.8 TFLOPS floating point performance</li><li>Full HD (up to 1080p) x 2 channels</li><li>Multi-way programmable parallel floating point shader pipelines</li><li>GPU: RSX @550MHz</li><li>256MB XDR Main RAM @3.2GHz</li><li>256MB GDDR3 VRAM @700MHz</li><li>Sound: Dolby 5.1ch, DTS, LPCM, etc. (Cell-base processing)</li><li>Wi-Fi: IEEE 802.11 b/g</li><li>USB: Front x 4, Rear x 2 (USB2.0)</li><li>Memory Stick: standard/Duo, PRO x 1</li></ul>",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				MetaTitle = "Playstation 3 Super Slim",
-				Price = 189.00M,
+                //MetaTitle = "Playstation 4 Super Slim",
+                MetaTitle = "Playstation 4 Pro",
+                Price = 189.00M,
 				OldPrice = 199.99M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
 				OrderMinimumQuantity = 1,
@@ -12810,12 +12824,12 @@ namespace SmartStore.Data.Setup
 
 			productPs3.ProductPictures.Add(new ProductPicture()
 			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps3_black.png"), "image/png", GetSeName(productPs3.Name) + "-black"),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ps4_w_controller.jpg"), "image/png", GetSeName(productPs3.Name) + "-controller"),
 				DisplayOrder = 1
 			});
 			productPs3.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps3-white.jpg"), "image/jpeg", GetSeName(productPs3.Name) + "-white"),
+            {
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ps4_wo_controller.jpg"), "image/jpeg", GetSeName(productPs3.Name) + "-single"),
 				DisplayOrder = 2
 			});
 
@@ -12895,14 +12909,14 @@ namespace SmartStore.Data.Setup
 				ProductType = ProductType.BundledProduct,
 				VisibleIndividually = true,
 				Sku = "Sony-PS399105",
-				Name = "PlayStation 3 Assassin's Creed III Bundle",
-				ShortDescription = "500GB PlayStation®3 system, 2 × DUALSHOCK®3 wireless controller and Assassin's Creed® III.",
+				Name = "PlayStation 4 Minecraft Bundle",
+				ShortDescription = "100GB PlayStation®4 system, 2 × DUALSHOCK®4 wireless controller and Minecraft for PS4 Edition.",
 				FullDescription = 
 					"<ul><li><h4>Processor</h4><ul><li>Processor Technology : Cell Broadband Engine™</li></ul></li><li><h4>General</h4><ul><li>Communication : Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T IEEE 802.11 b/g Wi-Fi<br tabindex=\"0\">Bluetooth 2.0 (EDR)</li><li>Inputs and Outputs : USB 2.0 X 2</li></ul></li><li><h4>Graphics</h4><ul><li>Graphics Processor : RSX</li></ul></li><li><h4>Memory</h4><ul><li>Internal Memory : 256MB XDR Main RAM<br>256MB GDDR3 VRAM</li></ul></li><li><h4>Power</h4><ul><li>Power Consumption (in Operation) : Approximately 250 watts</li></ul></li><li><h4>Storage</h4><ul><li>Storage Capacity : 2.5' Serial ATA (500GB)</li></ul></li><li><h4>Video</h4><ul><li>Resolution : 480i, 480p, 720p, 1080i, 1080p (24p/60p)</li></ul></li><li><h4>Weights and Measurements</h4><ul><li>Dimensions (Approx.) : Approximately 11.42\" (W) x 2.56\" (H) x 11.42\" (D) (290mm x 65mm x 290mm)</li><li>Weight (Approx.) : Approximately 7.055 lbs (3.2 kg)</li></ul></li></ul>",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				MetaTitle = "PlayStation 3 Assassin's Creed III Bundle",
+				MetaTitle = "PlayStation 4 Assassin's Creed III Bundle",
 				Price = 269.97M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
 				OrderMinimumQuantity = 1,
@@ -13327,7 +13341,7 @@ namespace SmartStore.Data.Setup
                 productTRANSOCEANCHRONOGRAPH,productTissotTTouchExpertSolar,productSeikoSRPA49K1,productTitleistSM6TourChrome,productTitleistProV1x,productGBBEpicSubZeroDriver,productSupremeGolfball,productBooksStoneOfTheWise,productNikeStrikeFootball,productNikeEvoPowerBall,
                 productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,
                 productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,
-                productIphoneplus,productWatchSeries2,product5GiftCard, product25GiftCard, product50GiftCard,product100GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
+                productIphoneplus,productWatchSeries2,product10GiftCard, product25GiftCard, product50GiftCard,product100GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,

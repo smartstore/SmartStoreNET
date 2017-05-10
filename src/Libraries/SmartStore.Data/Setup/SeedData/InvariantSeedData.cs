@@ -6178,9 +6178,8 @@ namespace SmartStore.Data.Setup
 				{
 					Name = "Plate Thickness",
 					Alias = "plate-thickness"
-				}
-			};
 				},
+		
                 new ProductAttribute
                 {
                     Name = "Ballsize",
@@ -7022,11 +7021,12 @@ namespace SmartStore.Data.Setup
 				});
 			}
 			entities.Add(attrClarkJeansLength);
+            
+            #endregion Fashion - Clark Jeans
 
+            #region Furniture - Le Corbusier LC 6 table
 
-			#region Furniture - Le Corbusier LC 6 table
-
-			var productCorbusierTable = _ctx.Set<Product>().First(x => x.Sku == "Furniture-lc6");
+            var productCorbusierTable = _ctx.Set<Product>().First(x => x.Sku == "Furniture-lc6");
 
 			var attrCorbusierTablePlate = new ProductVariantAttribute
 			{
@@ -7080,7 +7080,6 @@ namespace SmartStore.Data.Setup
 
 			#endregion
 
-			this.Alter(entities);
             #region Soccer Adidas TANGO SALA BALL
 
             var productAdidasTANGOSALABALL = _ctx.Set<Product>().First(x => x.Sku == "P-5001");
@@ -8004,7 +8003,6 @@ namespace SmartStore.Data.Setup
 
 			#endregion
 
-			return entities;
             #region Soccer Adidas TANGO SALA BALL
 
             var productAdidasTANGOSALABALL = _ctx.Set<Product>().First(x => x.Sku == "P-5001");

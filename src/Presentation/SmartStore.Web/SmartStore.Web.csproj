@@ -849,6 +849,7 @@
     <Content Include="Content\samples\product_legoworlds.jpg" />
     <Content Include="Content\samples\product_mens_tshirt_red.jpg" />
     <Content Include="Content\samples\product_mens_tshirt_gray.jpg" />
+    <Content Include="Content\samples\product_minecraft.jpg" />
     <Content Include="Content\samples\product_nike-vopower-53-trainer-hs-ball.jpg" />
     <Content Include="Content\samples\product_productOriginalWayfarer_1.jpg" />
     <Content Include="Content\samples\product_productOriginalWayfarer_2.jpg" />
@@ -888,6 +889,7 @@
     <Content Include="Content\samples\product_ultimate-apple-pro-hipster-bundle.jpg" />
     <Content Include="Content\samples\product_watchseries2_1.jpg" />
     <Content Include="Content\samples\product_watchseries2_2.jpg" />
+    <Content Include="Content\samples\ps4_bundle_minecraft.jpg" />
     <Content Include="Content\samples\sony-ps3-white.jpg" />
     <Content Include="Content\samples\sony-PS3AssassinsCreedBundle.png" />
     <Content Include="Content\samples\stone_of_wisdom.jpg" />

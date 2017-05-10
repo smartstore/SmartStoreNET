@@ -6691,12 +6691,12 @@ namespace SmartStore.Data.Setup
 
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
-				Name = "Assassin's Creed III",
-				Alias = "assassins-creed-3",
+				Name = "Minecraft - Playstation 4 Edition",
+				Alias = "minecraft-playstation4edition",
 				DisplayOrder = 1,
 				Quantity = 1,
 				ValueType = ProductVariantAttributeValueType.ProductLinkage,
-				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-acreed3").Id
+				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "PD-Minecraft4ps4").Id
 			});
 
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
@@ -12648,15 +12648,18 @@ namespace SmartStore.Data.Setup
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
-				Sku = "Ubi-acreed3",
-				Name = "Assassin's Creed III",
+                //Sku = "Ubi-acreed3",
+                Sku = "PD-Minecraft4ps4",
+                Name = "Minecraft - Playstation 4 Edition",
 				ShortDescription = "Third-person action-adventure title set.",
 				FullDescription = "Assassin's Creed III is set in an open world and presented from the third-person perspective with a primary focus on using Desmond and Connor's combat and stealth abilities to eliminate targets and explore the environment. Connor is able to freely explore 18th-century Boston, New York and the American frontier to complete side missions away from the primary storyline. The game also features a multiplayer component, allowing players to compete online to complete solo and team based objectives including assassinations and evading pursuers. Ubisoft developed a new game engine, Anvil Next, for the game.",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
-				MetaTitle = "Assassin's Creed III",
-				Price = 49.90M,
+				//MetaTitle = "Assassin's Creed III",
+                MetaTitle = "Minecraft - Playstation 4 Edition",
+
+                Price = 49.90M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
 				OrderMinimumQuantity = 1,
 				OrderMaximumQuantity = 10000,
@@ -12667,12 +12670,12 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = firstDeliveryTime
 			};
 
-            productMinecraft.ProductManufacturers.Add(new ProductManufacturer() {	Manufacturer = manuUbisoft,	DisplayOrder = 1 });
+            productMinecraft.ProductManufacturers.Add(new ProductManufacturer() {	Manufacturer = manuSony,	DisplayOrder = 1 });
             productMinecraft.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 4 });
 
             productMinecraft.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-assassins-creed-3.jpg"), "image/jpeg", GetSeName("Assassin Creed 3")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_minecraft.jpg"), "image/jpeg", GetSeName("Minecraft - Playstation 4 Edition")),
 				DisplayOrder = 1
 			});
 
@@ -12710,7 +12713,7 @@ namespace SmartStore.Data.Setup
 
 			productBundlePs3AssassinCreed.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-PS3AssassinsCreedBundle.png"), "image/png", GetSeName(productBundlePs3AssassinCreed.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ps4_bundle_minecraft.jpg"), "image/png", GetSeName(productBundlePs3AssassinCreed.Name)),
 				DisplayOrder = 1
 			});
 
@@ -13112,11 +13115,12 @@ namespace SmartStore.Data.Setup
 
             #region gaming
 
-            var bundlePs3AssassinCreed = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399105");
+            //var bundlePs3AssassinCreed = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399105");
+            var bundlePs4Minecraft = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399105");
 
-			var bundleItemPs3AssassinCreed1 = new ProductBundleItem()
+            var bundleItemPs4Minecraft1 = new ProductBundleItem()
 			{
-				BundleProduct = bundlePs3AssassinCreed,
+				BundleProduct = bundlePs4Minecraft,
 				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000"),
 				Quantity = 1,
 				Discount = 20.0M,
@@ -13125,9 +13129,9 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			};
 
-			var bundleItemPs3AssassinCreed2 = new ProductBundleItem()
+			var bundleItemPs4Minecraft2 = new ProductBundleItem()
 			{
-				BundleProduct = bundlePs3AssassinCreed,
+				BundleProduct = bundlePs4Minecraft,
 				Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399004"),
 				Quantity = 2,
 				Discount = 30.0M,
@@ -13136,10 +13140,10 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 2
 			};
 
-			var bundleItemPs3AssassinCreed3 = new ProductBundleItem()
+			var bundleItemPs4Minecraft3 = new ProductBundleItem()
 			{
-				BundleProduct = bundlePs3AssassinCreed,
-				Product = _ctx.Set<Product>().First(x => x.Sku == "Ubi-acreed3"),
+				BundleProduct = bundlePs4Minecraft,
+				Product = _ctx.Set<Product>().First(x => x.Sku == "PD-Minecraft4ps4"),
 				Quantity = 1,
 				Discount = 20.0M,
 				Visible = true,
@@ -13185,7 +13189,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<ProductBundleItem>
 			{
-				bundleItemPs3AssassinCreed1, bundleItemPs3AssassinCreed2, bundleItemPs3AssassinCreed3,
+                bundleItemPs4Minecraft1, bundleItemPs4Minecraft2, bundleItemPs4Minecraft3,
 				bundleItemPs41, bundleItemPs42, bundleItemPs43,bundleItemIproductIphoneplus, bundleItemProductWatchSeries2,bundleItemproductAirpods,bundleItemproductIpad
             };
 
@@ -13196,7 +13200,7 @@ namespace SmartStore.Data.Setup
 		public void AssignGroupedProducts(IList<Product> savedProducts)
 		{
 			int productGamingAccessoriesId = savedProducts.First(x => x.Sku == "Sony-GroupAccessories").Id;
-			var gamingAccessoriesSkus = new List<string>() { "Sony-PS399004", "Ubi-acreed3", "Sony-PS410037", "Sony-PS410040" };
+			var gamingAccessoriesSkus = new List<string>() { "Sony-PS399004", "PD-Minecraft4ps4", "Sony-PS410037", "Sony-PS410040" };
 
 			savedProducts
 				.Where(x => gamingAccessoriesSkus.Contains(x.Sku))

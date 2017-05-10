@@ -12054,7 +12054,7 @@ namespace SmartStore.Data.Setup
 			});
 
 
-			var productAssassinsCreed3 = new Product()
+			var productMinecraft = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
@@ -12077,10 +12077,10 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = firstDeliveryTime
 			};
 
-			productAssassinsCreed3.ProductManufacturers.Add(new ProductManufacturer() {	Manufacturer = manuUbisoft,	DisplayOrder = 1 });
-			productAssassinsCreed3.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 4 });
+            productMinecraft.ProductManufacturers.Add(new ProductManufacturer() {	Manufacturer = manuUbisoft,	DisplayOrder = 1 });
+            productMinecraft.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 4 });
 
-			productAssassinsCreed3.ProductPictures.Add(new ProductPicture()
+            productMinecraft.ProductPictures.Add(new ProductPicture()
 			{
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-assassins-creed-3.jpg"), "image/jpeg", GetSeName("Assassin Creed 3")),
 				DisplayOrder = 1
@@ -12454,7 +12454,7 @@ namespace SmartStore.Data.Setup
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
 				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,
-				productPs3, productAssassinsCreed3, productBundlePs3AssassinCreed,
+				productPs3, productMinecraft, productBundlePs3AssassinCreed,
 				productPs4, productDualshock4Controller, productPs4Camera, productBundlePs4,
 				productGroupAccessories,
 				productWatchDogs, productPrinceOfPersia, productLegoWorlds, productPs3OneGame
@@ -12573,7 +12573,7 @@ namespace SmartStore.Data.Setup
 			{
 				BundleProduct = bundlePs4,
 				//Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410037"),
-                Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS410034"),
+                Product = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399004"),
                 Quantity = 1,
 				Visible = true,
 				Published = true,

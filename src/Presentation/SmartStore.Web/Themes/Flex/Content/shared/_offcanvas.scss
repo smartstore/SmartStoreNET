@@ -183,6 +183,7 @@ body.canvas-blocking .canvas-blocker {
         flex-direction: row;
         overflow-x: hidden;
         overflow-y: hidden;
+        flex-wrap: nowrap;
 
         .touchevents & { overflow-x: auto; }
     }

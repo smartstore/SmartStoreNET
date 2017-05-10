@@ -2773,39 +2773,39 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.Alias)
-                .Alter("color", x =>
-                {
-                    x.Name = "Farbe";
-                })
-                .Alter("custom-text", x =>
-                {
-                    x.Name = "eigener Text";
-                })
-                .Alter("hdd", x =>
-                {
-                    x.Name = "HDD";
-                })
-                .Alter("os", x =>
-                {
-                    x.Name = "Betriebssystem";
-                })
-                .Alter("processor", x =>
-                {
-                    x.Name = "Prozessor";
-                })
-                .Alter("ram", x =>
-                {
-                    x.Name = "Arbeitsspeicher";
-                })
-                .Alter("size", x =>
-                {
-                    x.Name = "Größe";
-                })
-                .Alter("software", x =>
-                {
-                    x.Name = "Software";
-                })
+			entities.WithKey(x => x.Alias)
+				.Alter("color", x =>
+				{
+					x.Name = "Farbe";
+				})
+				.Alter("custom-text", x =>
+				{
+					x.Name = "eigener Text";
+				})
+				.Alter("hdd", x =>
+				{
+					x.Name = "HDD";
+				})
+				.Alter("os", x =>
+				{
+					x.Name = "Betriebssystem";
+				})
+				.Alter("processor", x =>
+				{
+					x.Name = "Prozessor";
+				})
+				.Alter("ram", x =>
+				{
+					x.Name = "Arbeitsspeicher";
+				})
+				.Alter("size", x =>
+				{
+					x.Name = "Größe";
+				})
+				.Alter("software", x =>
+				{
+					x.Name = "Software";
+				})
 				.Alter("game", x =>
 				{
 					x.Name = "Spiel";
@@ -2825,8 +2825,16 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("length", x =>
 				{
 					x.Name = "Länge";
+				})
+				.Alter("plate", x =>
+				{
+					x.Name = "Tischplatte";
+				})
+				.Alter("plate-thickness", x =>
+				{
+					x.Name = "Stärke der Tischplatte";
 				});
-        }
+		}
 
 		protected override void Alter(IList<ProductAttributeOptionsSet> entities)
 		{
@@ -2877,6 +2885,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 			entities.Where(x => x.ProductAttribute.Alias == "game").Each(x =>
 			{
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "prince-of-persia-the-forgotten-sands").Each(y => y.Name = "Prince of Persia \"Die vergessene Zeit\"");
+			});
+
+			entities.Where(x => x.ProductAttribute.Alias == "plate").Each(x =>
+			{
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "clear-glass").Each(y => y.Name = "Klarglas");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "sandblasted-glass").Each(y => y.Name = "Sandgestrahltes Glas");
 			});
 		}
 
@@ -3033,6 +3047,17 @@ namespace SmartStore.Web.Infrastructure.Installation
 					 x.ShortDescription = "Moderne Jeans in Easy Comfort Fit";
 					 x.FullDescription = "<p>Echte Five-Pocket-Jeans von Joker mit zusätzlicher, aufgesetzter Uhrentasche. Dank Easy Comfort Fit mit normaler Leibhöhe und bequemer Beinweite passend für jeden Figurtyp. Gerader Beinverlauf.</p><ul><li>Material: weicher, leichterer Premium-Denim aus 100% Baumwolle</li><li>Bundweite (Zoll): 29-46</li><li>Beinlänge (Zoll): 30 bis 38</li></ul>";
 				 });
+		}
+
+		private void AlterFurnitureProducts(IList<Product> entities)
+		{
+			entities.WithKey(x => x.Sku)
+				.Alter("Furniture-lc6", x =>
+				{
+					x.Name = "Le Corbusier LC 6 Esstisch (1929)";
+					x.ShortDescription = "Esstisch LC6, Designer: Le Corbusier, B x H x T: 225 x 69/74 (verstellbar) x 85 cm, Unterkonstruktion: Stahlrohr, Glasplatte: klar oder sandgestrahlt, 15 oder 19 mm, höhenverstellbar.";
+					x.FullDescription = "<p>Vier kleine Teller tragen eine Platte aus Glas. Darunter erstreckt sich in klarer Struktur die Konstruktion aus Stahlrohr. Der LC6 ist echter Klassiker der Bauhaus-Kunst und dient in Kombination mit den Drehstühlen LC7 als formschöne Le Corbusier-Essecke. Darüber hinaus findet man den Tisch auch vermehrt in Büros oder in Hallen. Er ist höhenverstellbar und kann so dem jeweiligen Zweck perfekt angepasst werden.</p><p>Der formschöne Tisch von Le Corbusier ist mit klarer oder mit sandgestrahlter Glasplatte erhältlich. Die Unterkonstruktion besteht aus ovalen Stahlrohren.</p>";
+				});
 		}
 
 		protected override void Alter(IList<Product> entities)
@@ -3645,6 +3670,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#endregion gaming
 
 				AlterFashionProducts(entities);
+				AlterFurnitureProducts(entities);
 			}
             catch (Exception ex)
             {

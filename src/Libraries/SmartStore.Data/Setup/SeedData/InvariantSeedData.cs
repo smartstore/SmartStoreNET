@@ -6148,6 +6148,16 @@ namespace SmartStore.Data.Setup
 				{
 					Name = "Length",
 					Alias = "length"
+				},
+				new ProductAttribute
+				{
+					Name = "Plate",
+					Alias = "plate"
+				},
+				new ProductAttribute
+				{
+					Name = "Plate Thickness",
+					Alias = "plate-thickness"
 				}
 			};
 
@@ -6217,6 +6227,8 @@ namespace SmartStore.Data.Setup
             var attr97iPadColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
 			var attrWidth = _ctx.Set<ProductAttribute>().First(x => x.Alias == "width");
 			var attrLength = _ctx.Set<ProductAttribute>().First(x => x.Alias == "length");
+			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
+			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
 
 			#region 9,7 iPad
 
@@ -6933,6 +6945,62 @@ namespace SmartStore.Data.Setup
 
 			#endregion
 
+			#region Furniture - Le Corbusier LC 6 table
+
+			var productCorbusierTable = _ctx.Set<Product>().First(x => x.Sku == "Furniture-lc6");
+
+			var attrCorbusierTablePlate = new ProductVariantAttribute
+			{
+				Product = productCorbusierTable,
+				ProductAttribute = attrPlate,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+			attrCorbusierTablePlate.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Clear glass",
+				Alias = "clear-glass",
+				DisplayOrder = 1,
+				Quantity = 1,
+				IsPreSelected = true
+			});
+			attrCorbusierTablePlate.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Sandblasted glass",
+				Alias = "sandblasted-glass",
+				DisplayOrder = 2,
+				Quantity = 1
+			});
+			entities.Add(attrCorbusierTablePlate);
+
+			var attrCorbusierTableThickness = new ProductVariantAttribute
+			{
+				Product = productCorbusierTable,
+				ProductAttribute = attrPlateThickness,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+			attrCorbusierTableThickness.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "15 mm",
+				Alias = "15mm",
+				DisplayOrder = 1,
+				Quantity = 1,
+				IsPreSelected = true
+			});
+			attrCorbusierTableThickness.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "19 mm",
+				Alias = "19mm",
+				DisplayOrder = 2,
+				Quantity = 1
+			});
+			entities.Add(attrCorbusierTableThickness);
+
+			#endregion
+
 			this.Alter(entities);
 			return entities;
 		}
@@ -6946,11 +7014,12 @@ namespace SmartStore.Data.Setup
             var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
             var attrColorIphoneColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
             var attr97iPadColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
+			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
+			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
 
+			#region ps3
 
-            #region ps3
-
-            var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
+			var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
 			var ps3PictureIds = productPs3.ProductPictures.Select(pp => pp.PictureId).ToList();
 			var picturesPs3 = _ctx.Set<Picture>().Where(x => ps3PictureIds.Contains(x.Id)).ToList();
 
@@ -7672,6 +7741,67 @@ namespace SmartStore.Data.Setup
 
 			#endregion
 
+			#region Furniture - Le Corbusier LC 6 table
+
+			var productCorbusierTable = _ctx.Set<Product>().First(x => x.Sku == "Furniture-lc6");
+
+			var corbusierTablePlate = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productCorbusierTable.Id && x.ProductAttributeId == attrPlate.Id);
+			var corbusierTablePlateValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == corbusierTablePlate.Id).ToList();
+
+			var corbusierTablePlateThickness = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productCorbusierTable.Id && x.ProductAttributeId == attrPlateThickness.Id);
+			var corbusierTablePlateThicknessValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == corbusierTablePlateThickness.Id).ToList();
+
+			entities.Add(new ProductVariantAttributeCombination
+			{
+				Product = productCorbusierTable,
+				Sku = productMensShirt.Sku + "-clear-15",
+				AttributesXml = FormatAttributeXml(
+					corbusierTablePlate.Id, corbusierTablePlateValues.First(x => x.Alias == "clear-glass").Id,
+					corbusierTablePlateThickness.Id, corbusierTablePlateThicknessValues.First(x => x.Alias == "15mm").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				Price = 749.00M
+			});
+			entities.Add(new ProductVariantAttributeCombination
+			{
+				Product = productCorbusierTable,
+				Sku = productMensShirt.Sku + "-clear-19",
+				AttributesXml = FormatAttributeXml(
+					corbusierTablePlate.Id, corbusierTablePlateValues.First(x => x.Alias == "clear-glass").Id,
+					corbusierTablePlateThickness.Id, corbusierTablePlateThicknessValues.First(x => x.Alias == "19mm").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				Price = 899.00M
+			});
+			entities.Add(new ProductVariantAttributeCombination
+			{
+				Product = productCorbusierTable,
+				Sku = productMensShirt.Sku + "-sandblasted-15",
+				AttributesXml = FormatAttributeXml(
+					corbusierTablePlate.Id, corbusierTablePlateValues.First(x => x.Alias == "sandblasted-glass").Id,
+					corbusierTablePlateThickness.Id, corbusierTablePlateThicknessValues.First(x => x.Alias == "15mm").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				Price = 849.00M
+			});
+			entities.Add(new ProductVariantAttributeCombination
+			{
+				Product = productCorbusierTable,
+				Sku = productMensShirt.Sku + "-sandblasted-19",
+				AttributesXml = FormatAttributeXml(
+					corbusierTablePlate.Id, corbusierTablePlateValues.First(x => x.Alias == "sandblasted-glass").Id,
+					corbusierTablePlateThickness.Id, corbusierTablePlateThicknessValues.First(x => x.Alias == "19mm").Id),
+				StockQuantity = 10000,
+				AllowOutOfStockOrders = true,
+				IsActive = true,
+				Price = 999.00M
+			});
+
+			#endregion
+
 			return entities;
 		}
 
@@ -7857,13 +7987,8 @@ namespace SmartStore.Data.Setup
 
 		public IList<Category> CategoriesFirstLevel()
 		{
-			// pictures
 			var sampleImagesPath = this._sampleImagesPath;
-
-			var categoryTemplateInGridAndLines =
-				this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
-
-            //categories
+			var categoryTemplateInGridAndLines = this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
 
             #region category definitions
 
@@ -7996,11 +8121,12 @@ namespace SmartStore.Data.Setup
                 ShowOnHomePage = true
             };
 
-			#endregion category definitions
+			#endregion
 
 			var entities = new List<Category>
 			{
-               categoryApple, categorySports, categoryBooks, categoryFurniture,categoryComputers, categoryCellPhones, categoryDigitalDownloads, categoryGaming, categoryGiftCards, categoryFashion, categoryWatches
+				categoryApple, categorySports, categoryBooks, categoryFurniture,categoryComputers, categoryCellPhones, categoryDigitalDownloads, categoryGaming,
+				categoryGiftCards, categoryFashion, categoryWatches
             };
 
 			this.Alter(entities);
@@ -8009,65 +8135,10 @@ namespace SmartStore.Data.Setup
 
 		public IList<Category> CategoriesSecondLevel()
 		{
-			// pictures
 			var sampleImagesPath = this._sampleImagesPath;
-
-			var categoryTemplateInGridAndLines =
-				this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
-
-            //categories
+			var categoryTemplateInGridAndLines = this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
 
             #region category definitions
-
-            var categoryFurnitureSofas = new Category
-            {
-                Name = "Sofas",
-                Alias = "Sofas",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sofas.jpg"), "image/png", GetSeName("Sofas")),
-                Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Furniture").First().Id,
-                DisplayOrder = 1,
-                MetaTitle = "Sofas",
-                ShowOnHomePage = true
-            };
-
-            var categoryFurnitureLounger = new Category
-            {
-                Name = "Lounger",
-                Alias = "Lounger",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_lounger.jpg"), "image/png", GetSeName("Lounger")),
-                Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Furniture").First().Id,
-                DisplayOrder = 1,
-                MetaTitle = "Lounger"
-            };
-
-            var categoryFurnitureChairs = new Category
-            {
-                Name = "Chairs",
-                Alias = "Chairs",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_chairs.png"), "image/png", GetSeName("Chairs")),
-                Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Furniture").First().Id,
-                DisplayOrder = 1,
-                MetaTitle = "Chairs",
-                ShowOnHomePage = true
-            };
-
-            var categoryFurnitureLamps = new Category
-            {
-                Name = "Lamps",
-                Alias = "Lamps",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_lamps.png"), "image/png", GetSeName("Lamps")),
-                Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Furniture").First().Id,
-                DisplayOrder = 1,
-                MetaTitle = "Lamps"
-            };
 
             var categorySportsGolf = new Category
             {
@@ -8193,11 +8264,12 @@ namespace SmartStore.Data.Setup
 				MetaTitle = "Games"
 			};
 
-			#endregion category definitions
+			#endregion
 
 			var entities = new List<Category>
 			{
-                categorySportsSunglasses,categorySportsSoccer, categorySportsBasketball,categorySportsGolf, categoryFurnitureLounger, categoryFurnitureSofas, categoryFurnitureChairs, categoryFurnitureLamps, categoryBooksSpiegel, categoryBooksCookAndEnjoy, categoryDesktops, categoryNotebooks, categoryGamingAccessories, categoryGamingGames
+                categorySportsSunglasses,categorySportsSoccer, categorySportsBasketball,categorySportsGolf, categoryBooksSpiegel, categoryBooksCookAndEnjoy,
+				categoryDesktops, categoryNotebooks, categoryGamingAccessories, categoryGamingGames
 			};
 
 			this.Alter(entities);
@@ -8635,8 +8707,8 @@ namespace SmartStore.Data.Setup
 		{
 			var result = new List<Product>();
 			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "ProductTemplate.Simple");
-			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
-			var fashionCategory = _ctx.Set<Category>().First(c => c.Alias == "Fashion");
+			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 0);
+			var fashionCategory = _ctx.Set<Category>().First(x => x.Alias == "Fashion");
 			var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
 			var specOptionCotton = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 9);
 
@@ -8655,6 +8727,7 @@ namespace SmartStore.Data.Setup
 				AllowCustomerReviews = true,
 				Published = true,
 				Price = 15.90M,
+				HasTierPrices = true,
 				OldPrice = 24.90M,
 				SpecialPrice = 12.00M,
 				SpecialPriceStartDateTimeUtc = new DateTime(2017, 5, 1, 0, 0, 0),
@@ -8922,6 +8995,71 @@ namespace SmartStore.Data.Setup
 
 			result.Add(clarkJeans);
 
+
+			return result;
+		}
+
+		private List<Product> GetFurnitureProducts()
+		{
+			var result = new List<Product>();
+			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "ProductTemplate.Simple");
+			var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
+			var furnitureCategory = _ctx.Set<Category>().First(x => x.MetaTitle == "Furniture");
+
+			// Le Corbusier LC 6 table
+			var corbusierTable = new Product
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Name = "Le Corbusier LC 6 dining table (1929)",
+				MetaTitle = "Le Corbusier LC 6 dining table (1929)",
+				ShortDescription = "Dining table LC 6, designer: Le Corbusier, W x H x D: 225 x 69/74 (adjustable) x 85 cm, substructure: steel pipe, glass plate: Clear or sandblasted, 15 or 19 mm, height-adjustable.",
+				FullDescription = "<p>Four small plates carry a glass plate. The structure of the steel pipe is covered in clear structures. The LC6 is a true classic of Bauhaus art and is used in combination with the swivel chairs LC7 as a form-beautiful Le Corbusier dining area. In addition, the table is also increasingly found in offices or in halls. It is height-adjustable and can thus be perfectly adapted to the respective purpose.</p><p>Le Corbusier's beautifully shaped table is available with a clear or sandblasted glass plate. The substructure consists of oval steel tubes.</p>",
+				Sku = "Furniture-lc6",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				Price = 749.00M,
+				HasTierPrices = true,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				IsShipEnabled = true,
+				DeliveryTime = thirdDeliveryTime
+			};
+
+			corbusierTable.ProductCategories.Add(new ProductCategory
+			{
+				Category = furnitureCategory,
+				DisplayOrder = 1
+			});
+
+			var corbusierTableImages = new string[] { "product_corbusier_lc6_table_1.jpg", "product_corbusier_lc6_table_2.jpg", "product_corbusier_lc6_table_3.jpg",
+				"product_corbusier_lc6_table_4.jpg" };
+
+			for (var i = 0; i < corbusierTableImages.Length; ++i)
+			{
+				corbusierTable.ProductPictures.Add(new ProductPicture
+				{
+					Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + corbusierTableImages[i]), "image/jpeg", corbusierTableImages[i].Replace("product_", "").Replace(".jpg", "")),
+					DisplayOrder = i + 1
+				});
+			}
+
+			corbusierTable.TierPrices.Add(new TierPrice
+			{
+				Quantity = 2,
+				Price = 647.10M
+			});
+			corbusierTable.TierPrices.Add(new TierPrice
+			{
+				Quantity = 4,
+				Price = 636.65M
+			});
+
+			result.Add(corbusierTable);
 
 			return result;
 		}
@@ -12497,6 +12635,7 @@ namespace SmartStore.Data.Setup
 			};
 
             entities.AddRange(GetFashionProducts());
+			entities.AddRange(GetFurnitureProducts());
 
 			this.Alter(entities);
 			return entities;

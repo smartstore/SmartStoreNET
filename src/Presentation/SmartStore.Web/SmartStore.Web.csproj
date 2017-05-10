@@ -726,7 +726,6 @@
     <Content Include="Content\samples\category_apple.png" />
     <Content Include="Content\samples\category_basketball.png" />
     <Content Include="Content\samples\category_cellphone.png" />
-    <Content Include="Content\samples\category_chairs.png" />
     <Content Include="Content\samples\category_computers.png" />
     <Content Include="Content\samples\category_desktops.png" />
     <Content Include="Content\samples\category_digitaldownloads.jpg" />
@@ -738,11 +737,8 @@
     <Content Include="Content\samples\category_gaming_accessories.png" />
     <Content Include="Content\samples\category_giftcards.png" />
     <Content Include="Content\samples\category_golf.jpg" />
-    <Content Include="Content\samples\category_lamps.png" />
-    <Content Include="Content\samples\category_lounger.jpg" />
     <Content Include="Content\samples\category_notebooks.png" />
     <Content Include="Content\samples\category_soccer.png" />
-    <Content Include="Content\samples\category_sofas.jpg" />
     <Content Include="Content\samples\category_sports.jpg" />
     <Content Include="Content\samples\category_sunglasses.jpg" />
     <Content Include="Content\samples\category_watches.png" />
@@ -823,6 +819,10 @@
     <Content Include="Content\samples\product_certina_ds_podium_big.png" />
     <Content Include="Content\samples\product_clark_premium_jeans.jpg" />
     <Content Include="Content\samples\product_cookingfortwo.jpg" />
+    <Content Include="Content\samples\product_corbusier_lc6_table_1.jpg" />
+    <Content Include="Content\samples\product_corbusier_lc6_table_2.jpg" />
+    <Content Include="Content\samples\product_corbusier_lc6_table_3.jpg" />
+    <Content Include="Content\samples\product_corbusier_lc6_table_4.jpg" />
     <Content Include="Content\samples\product_CustomFlakSunglasses.jpg" />
     <Content Include="Content\samples\product_dellinspiron23.png" />
     <Content Include="Content\samples\product_dualshock4.jpg" />

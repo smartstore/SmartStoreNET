@@ -1048,6 +1048,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\underscore.js" />
+    <Content Include="Themes\FlexBlack\preview.png" />
     <Content Include="Themes\Flex\Content\css\fontastic.css" />
     <Content Include="Themes\Flex\Content\css\fonts\fontastic.svg" />
     <Content Include="Themes\Flex\Content\skinning\_pnotify.scss" />
@@ -1181,6 +1182,14 @@
     <Content Include="Themes\Flex\Content\shared\_alert.scss" />
     <Content Include="Themes\Flex\Content\shared\_nav-collapsible.scss" />
     <Content Include="Themes\Flex\Content\shared\_breadcrumb.scss" />
+    <Content Include="Themes\FlexBlack\Content\_user.scss" />
+    <Content Include="Themes\FlexBlack\Content\_custom.scss" />
+    <Content Include="Themes\FlexBlack\Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Themes\FlexBlack\theme.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Themes\Flex\Content\vendors\photoswipe\LICENSE" />
     <None Include="Themes\Flex\Content\vendors\drift\LICENSE" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\photoswipe-ui-default.js" />

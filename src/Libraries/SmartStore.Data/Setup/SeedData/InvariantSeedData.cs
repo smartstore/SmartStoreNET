@@ -5270,12 +5270,17 @@ namespace SmartStore.Data.Setup
 				Name = "polyamide",
 				DisplayOrder = 11,
 			});
+            sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
+            {
+                Name = "rubber",
+                DisplayOrder = 12,
+            });
 
-			#endregion sa8 material
+            #endregion sa8 material
 
-			#region sa9 movement
+            #region sa9 movement
 
-					   var sa9 = new SpecificationAttribute
+            var sa9 = new SpecificationAttribute
 			{
 				Name = "Movement",
 				DisplayOrder = 9,
@@ -5689,6 +5694,21 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Breitling",
                 DisplayOrder = 18,
+            });
+            sa20.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Adidas",
+                DisplayOrder = 19,
+            });
+            sa20.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Nike",
+                DisplayOrder = 20,
+            });
+            sa20.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
+            {
+                Name = "Puma",
+                DisplayOrder = 21,
             });
 
             #endregion sa20 manufacturer
@@ -6160,6 +6180,13 @@ namespace SmartStore.Data.Setup
 					Alias = "plate-thickness"
 				}
 			};
+				},
+                new ProductAttribute
+                {
+                    Name = "Ballsize",
+                    Alias = "ballsize"
+                }
+            };
 
 			this.Alter(entities);
 			return entities;
@@ -6222,7 +6249,8 @@ namespace SmartStore.Data.Setup
 			var attrColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "color");
 			var attrSize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "size");
 			var attrGames = _ctx.Set<ProductAttribute>().First(x => x.Alias == "game");
-			var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
+            var attrBallsize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ballsize");
+            var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
 			var attrIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
             var attr97iPadColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
 			var attrWidth = _ctx.Set<ProductAttribute>().First(x => x.Alias == "width");
@@ -6595,11 +6623,63 @@ namespace SmartStore.Data.Setup
 
 			entities.Add(attributeDualshock3ControllerColor);
 
-			#endregion attributeDualshock3ControllerColor
+            #endregion attributeDualshock3ControllerColor
 
-			#region attributePs3OneGameFree
+            #region attribute Evopower 5.3 Trainer HS Ball
 
-			var productPs3OneGameFree = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS310111");
+            var productEvopower = _ctx.Set<Product>().First(x => x.Sku == "P-5003");
+
+            var attributeEvopower = new ProductVariantAttribute()
+            {
+                Product = productEvopower,
+                ProductAttribute = attrBallsize,
+                IsRequired = true,
+                DisplayOrder = 1,
+                AttributeControlType = AttributeControlType.RadioList
+            };
+
+            attributeEvopower.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "3",
+                Alias = "ballsize-3",
+                DisplayOrder = 1,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 5.00M
+                //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-acreed3").Id
+            });
+
+            attributeEvopower.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "4",
+                Alias = "ballsize-4",
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 10.00M,
+                IsPreSelected = true
+                //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-watchdogs").Id
+            });
+
+            attributeEvopower.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "5",
+                Alias = "ballsize-5",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 15.00M
+                //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-princepersia").Id
+            });
+
+            
+            entities.Add(attributeEvopower);
+
+            #endregion attribute Evopower 5.3 Trainer HS Ball
+
+            #region attributePs3OneGameFree
+
+            var productPs3OneGameFree = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS310111");
 
 			var attributePs3OneGameFree = new ProductVariantAttribute()
 			{
@@ -6943,7 +7023,6 @@ namespace SmartStore.Data.Setup
 			}
 			entities.Add(attrClarkJeansLength);
 
-			#endregion
 
 			#region Furniture - Le Corbusier LC 6 table
 
@@ -7002,6 +7081,129 @@ namespace SmartStore.Data.Setup
 			#endregion
 
 			this.Alter(entities);
+            #region Soccer Adidas TANGO SALA BALL
+
+            var productAdidasTANGOSALABALL = _ctx.Set<Product>().First(x => x.Sku == "P-5001");
+            var productAdidasTANGOSALABALLSizes = new string[] { "3", "4", "5" };
+            var productAdidasTANGOSALABALLColors = new[]
+            {
+                new { Color = "Red", Code = "#ff0000" },
+                new { Color = "Yellow", Code = " #ffff00" },
+                new { Color = "Green", Code = "#008000" },
+                new { Color = "Blue", Code = "#0000ff" },
+                new { Color = "Gray", Code = "#808080" },
+                new { Color = "White", Code = "#ffffff" },
+                new { Color = "Brown", Code = "#a52a2a" }
+            };
+
+            var attrAdidasTANGOSALABALLColor = new ProductVariantAttribute
+            {
+                Product = productAdidasTANGOSALABALL,
+                ProductAttribute = attrColor,
+                IsRequired = true,
+                DisplayOrder = 1,
+                AttributeControlType = AttributeControlType.Boxes
+            };
+
+            for (var i = 0; i < productAdidasTANGOSALABALLColors.Length; ++i)
+            {
+                attrAdidasTANGOSALABALLColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+                {
+                    Name = productAdidasTANGOSALABALLColors[i].Color,
+                    Alias = productAdidasTANGOSALABALLColors[i].Color.ToLower(),
+                    DisplayOrder = i + 1,
+                    Quantity = 1,
+                    Color = productAdidasTANGOSALABALLColors[i].Code,
+                    IsPreSelected = productAdidasTANGOSALABALLColors[i].Color == "White"
+                });
+            }
+            entities.Add(attrAdidasTANGOSALABALLColor);
+
+            var attrAdidasTANGOSALABALLSize = new ProductVariantAttribute
+            {
+                Product = productAdidasTANGOSALABALL,
+                ProductAttribute = attrSize,
+                IsRequired = true,
+                DisplayOrder = 2,
+                AttributeControlType = AttributeControlType.RadioList
+            };
+
+            for (var i = 0; i < productAdidasTANGOSALABALLSizes.Length; ++i)
+            {
+                attrAdidasTANGOSALABALLSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+                {
+                    Name = productAdidasTANGOSALABALLSizes[i],
+                    Alias = productAdidasTANGOSALABALLSizes[i].ToLower(),
+                    DisplayOrder = i + 1,
+                    Quantity = 1,
+                    IsPreSelected = productAdidasTANGOSALABALLSizes[i] == "5"
+                });
+            }
+            entities.Add(attrAdidasTANGOSALABALLSize);
+
+            #endregion Soccer Adidas TANGO SALA BALL
+
+            #region Torfabrik official game ball
+
+            var productTorfabrikBall = _ctx.Set<Product>().First(x => x.Sku == "P-5002");
+            var productTorfabrikBallSizes = new string[] { "3", "4", "5" };
+            var productTorfabrikBallColors = new[]
+            {
+                new { Color = "Red", Code = "#ff0000" },
+                new { Color = "Yellow", Code = " #ffff00" },
+                new { Color = "Green", Code = "#008000" },
+                new { Color = "Blue", Code = "#0000ff" },
+                new { Color = "White", Code = "#ffffff" },
+            };
+
+            var attrTorfabrikBallColor = new ProductVariantAttribute
+            {
+                Product = productTorfabrikBall,
+                ProductAttribute = attrColor,
+                IsRequired = true,
+                DisplayOrder = 1,
+                AttributeControlType = AttributeControlType.Boxes
+            };
+
+            for (var i = 0; i < productTorfabrikBallColors.Length; ++i)
+            {
+                attrTorfabrikBallColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+                {
+                    Name = productTorfabrikBallColors[i].Color,
+                    Alias = productTorfabrikBallColors[i].Color.ToLower(),
+                    DisplayOrder = i + 1,
+                    Quantity = 1,
+                    Color = productTorfabrikBallColors[i].Code,
+                    IsPreSelected = productTorfabrikBallColors[i].Color == "White"
+                });
+            }
+            entities.Add(attrTorfabrikBallColor);
+
+            var attrTorfabrikSize = new ProductVariantAttribute
+            {
+                Product = productTorfabrikBall,
+                ProductAttribute = attrSize,
+                IsRequired = true,
+                DisplayOrder = 2,
+                AttributeControlType = AttributeControlType.RadioList
+            };
+
+            for (var i = 0; i < productTorfabrikBallSizes.Length; ++i)
+            {
+                attrTorfabrikSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+                {
+                    Name = productTorfabrikBallSizes[i],
+                    Alias = productTorfabrikBallSizes[i].ToLower(),
+                    DisplayOrder = i + 1,
+                    Quantity = 1,
+                    IsPreSelected = productTorfabrikBallSizes[i] == "5"
+                });
+            }
+            entities.Add(attrTorfabrikSize);
+
+            #endregion Soccer Torfabrik official game ball
+
+            this.Alter(entities);
 			return entities;
 		}
 
@@ -7739,7 +7941,7 @@ namespace SmartStore.Data.Setup
 				});
 			}
 
-			#endregion
+            #endregion
 
 			#region Furniture - Le Corbusier LC 6 table
 
@@ -7803,6 +8005,129 @@ namespace SmartStore.Data.Setup
 			#endregion
 
 			return entities;
+            #region Soccer Adidas TANGO SALA BALL
+
+            var productAdidasTANGOSALABALL = _ctx.Set<Product>().First(x => x.Sku == "P-5001");
+            var adidasTANGOSALABALLPictureIds = productAdidasTANGOSALABALL.ProductPictures.Select(x => x.PictureId).ToList();
+            var adidasTANGOSALABALLJacketPictures = _ctx.Set<Picture>().Where(x => adidasTANGOSALABALLPictureIds.Contains(x.Id)).ToList();
+
+            var adidasTANGOSALABALLColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productAdidasTANGOSALABALL.Id && x.ProductAttributeId == attrColor.Id);
+            var adidasTANGOSALABALLColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == adidasTANGOSALABALLColor.Id).ToList();
+
+            var adidasTANGOSALABALLSize = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productAdidasTANGOSALABALL.Id && x.ProductAttributeId == attrSize.Id);
+            var adidasTANGOSALABALLSizeValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == adidasTANGOSALABALLSize.Id).ToList();
+
+            var adidasTANGOSALABALLCombinations = new[]
+            {
+                new { Color = "Red", Size = "3" },
+                new { Color = "Red", Size = "4" },
+                new { Color = "Red", Size = "5" },
+                
+                new { Color = "Yellow", Size = "3" },
+                new { Color = "Yellow", Size = "4" },
+                new { Color = "Yellow", Size = "5" },
+               
+                new { Color = "Green", Size = "3" },
+                new { Color = "Green", Size = "4" },
+                new { Color = "Green", Size = "5" },
+                
+                new { Color = "Blue", Size = "3" },
+                new { Color = "Blue", Size = "4" },
+                new { Color = "Blue", Size = "5" },
+                
+                new { Color = "Gray", Size = "3" },
+                new { Color = "Gray", Size = "4" },
+                new { Color = "Gray", Size = "5" },
+
+                new { Color = "White", Size = "3" },
+                new { Color = "White", Size = "4" },
+                new { Color = "White", Size = "5" },
+
+                new { Color = "Brown", Size = "3" },
+                new { Color = "Brown", Size = "4" },
+                new { Color = "Brown", Size = "5" },
+
+            };
+
+            foreach (var comb in adidasTANGOSALABALLCombinations)
+            {
+                var lowerColor = comb.Color.ToLower();
+                var lowerSize = comb.Size.ToLower();
+
+                entities.Add(new ProductVariantAttributeCombination
+                {
+                    Product = productAdidasTANGOSALABALL,
+                    Sku = productAdidasTANGOSALABALL.Sku + string.Concat("-", lowerColor, "-", lowerSize),
+                    AttributesXml = FormatAttributeXml(
+                        adidasTANGOSALABALLColor.Id, adidasTANGOSALABALLColorValues.First(x => x.Alias == lowerColor).Id,
+                        adidasTANGOSALABALLSize.Id, adidasTANGOSALABALLSizeValues.First(x => x.Alias == lowerSize).Id),
+                    StockQuantity = 10000,
+                    AllowOutOfStockOrders = true,
+                    IsActive = true,
+                    AssignedPictureIds = adidasTANGOSALABALLJacketPictures.First(x => x.SeoFilename.EndsWith(lowerColor)).Id.ToString()
+                });
+            }
+
+            #endregion Soccer Adidas TANGO SALA BALL
+
+            #region Soccer Torfabrik official game ball
+
+            var productTorfabrikBall = _ctx.Set<Product>().First(x => x.Sku == "P-5002");
+            var torfabrikBallPictureIds = productTorfabrikBall.ProductPictures.Select(x => x.PictureId).ToList();
+            var torfabrikBallPictures = _ctx.Set<Picture>().Where(x => torfabrikBallPictureIds.Contains(x.Id)).ToList();
+
+            var torfabrikBallColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productTorfabrikBall.Id && x.ProductAttributeId == attrColor.Id);
+            var torfabrikBallColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == torfabrikBallColor.Id).ToList();
+
+            var torfabrikBallSize = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productTorfabrikBall.Id && x.ProductAttributeId == attrSize.Id);
+            var torfabrikBallSizeValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == torfabrikBallSize.Id).ToList();
+
+            var torfabrikBallSizeCombinations = new[]
+            {
+                new { Color = "Red", Size = "3" },
+                new { Color = "Red", Size = "4" },
+                new { Color = "Red", Size = "5" },
+
+                new { Color = "Yellow", Size = "3" },
+                new { Color = "Yellow", Size = "4" },
+                new { Color = "Yellow", Size = "5" },
+
+                new { Color = "Green", Size = "3" },
+                new { Color = "Green", Size = "4" },
+                new { Color = "Green", Size = "5" },
+
+                new { Color = "Blue", Size = "3" },
+                new { Color = "Blue", Size = "4" },
+                new { Color = "Blue", Size = "5" },
+
+                new { Color = "White", Size = "3" },
+                new { Color = "White", Size = "4" },
+                new { Color = "White", Size = "5" },
+
+            };
+
+            foreach (var comb in torfabrikBallSizeCombinations)
+            {
+                var lowerColor = comb.Color.ToLower();
+                var lowerSize = comb.Size.ToLower();
+
+                entities.Add(new ProductVariantAttributeCombination
+                {
+                    Product = productTorfabrikBall,
+                    Sku = productTorfabrikBall.Sku + string.Concat("-", lowerColor, "-", lowerSize),
+                    AttributesXml = FormatAttributeXml(
+                        torfabrikBallColor.Id, torfabrikBallColorValues.First(x => x.Alias == lowerColor).Id,
+                        torfabrikBallSize.Id, torfabrikBallSizeValues.First(x => x.Alias == lowerSize).Id),
+                    StockQuantity = 10000,
+                    AllowOutOfStockOrders = true,
+                    IsActive = true,
+                    AssignedPictureIds = torfabrikBallPictures.First(x => x.SeoFilename.EndsWith(lowerColor)).Id.ToString()
+                });
+            }
+
+            #endregion Soccer Torfabrik official game ball
+
+            return entities;
 		}
 
 		public IList<ProductTag> ProductTags()
@@ -9289,6 +9614,7 @@ namespace SmartStore.Data.Setup
                 Published = true,
                 MetaTitle = "Nike Strike Football",
                 Price = 59.90M,
+                OldPrice = 69.90M,
                 IsGiftCard = false,
                 ManageInventoryMethod = ManageInventoryMethod.ManageStock,
                 OrderMinimumQuantity = 1,
@@ -9313,6 +9639,43 @@ namespace SmartStore.Data.Setup
                 Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Nike").Single(),
                 DisplayOrder = 1,
             });
+
+            //attributes
+            productNikeStrikeFootball.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Manufacturer -> Nike
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder ==20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 20).Single()
+            });
+            productNikeStrikeFootball.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Material -> rubber
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 12).Single()
+            });
+
+            #region tierPrieces
+            productNikeStrikeFootball.TierPrices.Add(new TierPrice()
+            {
+                Quantity = 6,
+                Price = 26.90M
+            });
+            productNikeStrikeFootball.TierPrices.Add(new TierPrice()
+            {
+                Quantity = 12,
+                Price = 24.90M
+            });
+            productNikeStrikeFootball.TierPrices.Add(new TierPrice()
+            {
+                Quantity = 24,
+                Price = 22.90M
+            });
+            productNikeStrikeFootball.HasTierPrices = true;
+            #endregion tierPrieces
 
             #endregion product Nike Strike Football
 
@@ -9357,6 +9720,24 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 1,
             });
 
+            //attributes
+            productNikeEvoPowerBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Manufacturer -> Nike
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 20).Single()
+            });
+            productNikeEvoPowerBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Material -> leather
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
+            });
+
             #endregion Evopower 5.3 Trainer HS Ball
 
             #region product Torfabrik official game ball
@@ -9390,31 +9771,31 @@ namespace SmartStore.Data.Setup
 
             productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_white.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_white.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "white"),
                 DisplayOrder = 1,
             });
 
             productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_red.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_red.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "red"),
                 DisplayOrder = 1,
             });
 
             productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_yellow.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_yellow.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "yellow"),
                 DisplayOrder = 1,
             });
 
             productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_blue.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_blue.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "blue"),
                 DisplayOrder = 1,
             });
 
             productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_green.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_green.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "green"),
                 DisplayOrder = 1,
             });
 
@@ -9423,6 +9804,25 @@ namespace SmartStore.Data.Setup
                 Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
                 DisplayOrder = 1,
             });
+
+            //attributes
+            productTorfabrikOfficialGameBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Manufacturer -> Adidas
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 19).Single()
+            });
+            productTorfabrikOfficialGameBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Material -> leather
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
+            });
+
 
             #endregion Torfabrik official game ball
 
@@ -9457,43 +9857,43 @@ namespace SmartStore.Data.Setup
 
             productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-white.png"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-white.png"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-white"),
                 DisplayOrder = 1,
             });
 
             productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-yellow.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-yellow.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-yellow"),
                 DisplayOrder = 1,
             });
 
             productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-red.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-red.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-red"),
                 DisplayOrder = 1,
             });
 
             productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-green.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-green.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-green"),
                 DisplayOrder = 1,
             });
 
             productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-gray.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-gray.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-gray"),
                 DisplayOrder = 1,
             });
 
             productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-brown.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-brown.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-brown"),
                 DisplayOrder = 1,
             });
 
             productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-blue.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-blue.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-blue"),
                 DisplayOrder = 1,
             });
 
@@ -9501,6 +9901,24 @@ namespace SmartStore.Data.Setup
             {
                 Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
                 DisplayOrder = 1,
+            });
+
+            //attributes
+            productAdidasTangoSalaBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Manufacturer -> Adidas
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 19).Single()
+            });
+            productAdidasTangoSalaBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 3,
+                // Material -> leather
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 5).Single()
             });
 
             #endregion Adidas TANGO SALA BALL

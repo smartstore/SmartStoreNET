@@ -6711,12 +6711,12 @@ namespace SmartStore.Data.Setup
 
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
-				Name = "Prince of Persia \"The Forgotten Sands\"",
-				Alias = "prince-of-persia-the-forgotten-sands",
+				Name = "Horizon Zero Dawn - PlayStation 4",
+				Alias = "horizon-zero-dawn-playStation-4",
 				DisplayOrder = 3,
 				Quantity = 1,
 				ValueType = ProductVariantAttributeValueType.ProductLinkage,
-				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-princepersia").Id
+				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "PD-ZeroDown4PS4").Id
 			});
 
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
@@ -8390,9 +8390,10 @@ namespace SmartStore.Data.Setup
 				Name = "Gaming",
 				Alias = "Gaming",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming.png"), "image/png", GetSeName("Gaming")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ps4_bundle_minecraft.jpg"), "image/png", GetSeName("Gaming")),
 				Published = true,
 				DisplayOrder = 3,
+                ShowOnHomePage = true,
 				MetaTitle = "Gaming"
 			};
 
@@ -8581,7 +8582,7 @@ namespace SmartStore.Data.Setup
 				Alias = "Games",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.png"), "image/png", GetSeName("Games")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.jpg"), "image/png", GetSeName("Games")),
 				Published = true,
 				DisplayOrder = 3,
 				MetaTitle = "Games"
@@ -8612,9 +8613,22 @@ namespace SmartStore.Data.Setup
 
             //categories
 
-            #region Warner Home Video Games
+            #region EA Sports
 
             var manufacturerWarnerHome = new Manufacturer
+            {
+                Name = "EA Sports",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_EA_Sports.png"), "image/png", GetSeName("EA Sports")),
+                Published = true,
+                DisplayOrder = 1
+            };
+
+            #endregion EA Sports
+
+            #region Warner Home Video Games
+
+            var manufacturerEASports = new Manufacturer
             {
                 Name = "Warner Home Video Games",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
@@ -9017,7 +9031,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Manufacturer>
 			{
-              manufacturerWarnerHome,manufacturerBreitling,manufacturerTissot,manufacturerSeiko, manufacturerTitleist,manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
+              manufacturerEASports,manufacturerWarnerHome,manufacturerBreitling,manufacturerTissot,manufacturerSeiko, manufacturerTitleist,manufacturerApple,manufacturerSamsung,manufacturerLG,manufacturerTrekStor, manufacturerWesternDigital,manufacturerDell, manufacturerMSI,
 			  manufacturerCanon, manufacturerCasio, manufacturerPanasonic, manufacturerBlackBerry, manufacturerHTC, manufacturerFestina, manufacturerCertina, 
 			  manufacturerHP, manufacturerAcer, manufacturerSony, manufacturerUbisoft,manufacturerOakley,manufacturerRayban,manufacturerAdidas, manufacturerWilson,manufacturerPuma,manufacturerNike
             };
@@ -12563,7 +12577,8 @@ namespace SmartStore.Data.Setup
             #region gaming
 
             var manuSony = _ctx.Set<Manufacturer>().First(c => c.Name == "Sony");
-			var manuUbisoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Ubisoft");
+            var manuEASports = _ctx.Set<Manufacturer>().First(c => c.Name == "EA Sports");
+            var manuUbisoft = _ctx.Set<Manufacturer>().First(c => c.Name == "Ubisoft");
 			var categoryGaming = this._ctx.Set<Category>().First(c => c.Alias == "Gaming");
 			var categoryGamingAccessories = this._ctx.Set<Category>().First(c => c.Alias == "Gaming Accessories");
 			var categoryGamingGames = this._ctx.Set<Category>().First(c => c.Alias == "Games");
@@ -12610,7 +12625,7 @@ namespace SmartStore.Data.Setup
 			});
 
 
-			var productDualshock4Controller = new Product()
+            var productDualshock4Controller = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
@@ -12962,10 +12977,82 @@ namespace SmartStore.Data.Setup
 
 			productPrinceOfPersia.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-prince-of-persia.jpg"), "image/jpeg", GetSeName(productPrinceOfPersia.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_princeofpersia.jpg"), "image/jpeg", GetSeName(productPrinceOfPersia.Name)),
 				DisplayOrder = 1
 			});
+            #endregion Ps3PlusOneGame
 
+            #region Horizon Zero Down
+            var productHorizonZeroDown = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                //Sku = "Ubi-princepersia",
+                Sku = "PD-ZeroDown4PS4",
+                Name = "Horizon Zero Dawn - PlayStation 4",
+                ShortDescription = "Experience A Vibrant, Lush World Inhabited By Mysterious Mechanized Creatures",
+                FullDescription = "<ul>  <li>A Lush Post-Apocalyptic World – How have machines dominated this world, and what is their purpose? What happened to the civilization here before? Scour every corner of a realm filled with ancient relics and mysterious buildings in order to uncover your past and unearth the many secrets of a forgotten land.</li>  <li></li>  <li>Nature and Machines Collide – Horizon Zero Dawn juxtaposes two contrasting elements, taking a vibrant world rich with beautiful nature and filling it with awe-inspiring highly advanced technology. This marriage creates a dynamic combination for both exploration and gameplay.</li>  <li>Defy Overwhelming Odds – The foundation of combat in Horizon Zero Dawn is built upon the speed and cunning of Aloy versus the raw strength and size of the machines. In order to overcome a much larger and technologically superior enemy, Aloy must use every ounce of her knowledge, intelligence, and agility to survive each encounter.</li>  <li>Cutting Edge Open World Tech – Stunningly detailed forests, imposing mountains, and atmospheric ruins of a bygone civilization meld together in a landscape that is alive with changing weather systems and a full day/night cycle.</li></ul>",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "Horizon Zero Dawn - PlayStation 4",
+                Price = 69.90M,
+                OldPrice = 79.90M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = firstDeliveryTime
+            };
+
+            productHorizonZeroDown.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+            productHorizonZeroDown.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 2 });
+
+            productHorizonZeroDown.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_horizon.jpg"), "image/jpeg", GetSeName(productHorizonZeroDown.Name)),
+                DisplayOrder = 1
+            });
+            #endregion Horizon Zero Down
+
+            #region Fifa 17
+            var productFifa17 = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                //Sku = "Ubi-princepersia",
+                Sku = "PD-Fifa17",
+                Name = "FIFA 17 - PlayStation 4",
+                ShortDescription = "Powered by Frostbite",
+                FullDescription = "<ul>  <li>Powered by Frostbite: One of the industry’s leading game engines, Frostbite delivers authentic, true-to-life action, takes players to new football worlds, and introduces fans to characters full of depth and emotion in FIFA 17.</li>  <li>The Journey: For the first time ever in FIFA, live your story on and off the pitch as the Premier League’s next rising star, Alex Hunter. Play on any club in the premier league, for authentic managers and alongside some of the best players on the planet. Experience brand new worlds in FIFA 17, all while navigating your way through the emotional highs and lows of The Journey.</li>  <li>Own Every Moment: Complete innovation in the way players think and move, physically interact with opponents, and execute in attack puts you in complete control of every moment on the pitch.</li></ul>",
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "FIFA 17 - PlayStation 4",
+                Price = 79.90M,
+                OldPrice = 89.90M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 10000,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = firstDeliveryTime
+            };
+
+            productFifa17.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuEASports, DisplayOrder = 1 });
+            productFifa17.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 2 });
+
+            productFifa17.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_fifa17.jpg"), "image/jpeg", GetSeName(productFifa17.Name)),
+                DisplayOrder = 1
+            });
+            #endregion Fifa 17
 
             //productDriverSanFrancisco
             var productLegoWorlds = new Product()
@@ -13002,43 +13089,45 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1
 			});
 
-			var productPs3OneGame = new Product()
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Sku = "Sony-PS310111",
-				Name = "PlayStation 3 plus game cheaper",
-				ShortDescription = "Our special offer: PlayStation 3 plus one game of your choise cheaper.",
-				FullDescription = productPs3.FullDescription,
-				ProductTemplateId = productTemplateSimple.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "PlayStation 3 plus game cheaper",
-				Price = 160.00M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 3,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
+            #region Ps3PlusOneGame
+            var productPs3OneGame = new Product()
+            {
+                ProductType = ProductType.SimpleProduct,
+                VisibleIndividually = true,
+                Sku = "Sony-PS310111",
+                Name = "PlayStation 3 plus game cheaper",
+                ShortDescription = "Our special offer: PlayStation 3 plus one game of your choise cheaper.",
+                FullDescription = productPs3.FullDescription,
+                ProductTemplateId = productTemplateSimple.Id,
+                AllowCustomerReviews = true,
+                Published = true,
+                MetaTitle = "PlayStation 3 plus game cheaper",
+                Price = 160.00M,
+                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+                OrderMinimumQuantity = 1,
+                OrderMaximumQuantity = 3,
+                StockQuantity = 10000,
+                NotifyAdminForQuantityBelow = 1,
+                AllowBackInStockSubscriptions = false,
+                IsShipEnabled = true,
+                DeliveryTime = firstDeliveryTime
+            };
 
-			productPs3OneGame.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
-			productPs3OneGame.ProductCategories.Add(new ProductCategory() { Category = categoryGaming, DisplayOrder = 6 });
+            productPs3OneGame.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+            productPs3OneGame.ProductCategories.Add(new ProductCategory() { Category = categoryGaming, DisplayOrder = 6 });
 
-			productPs3OneGame.ProductPictures.Add(new ProductPicture()
-			{
+            productPs3OneGame.ProductPictures.Add(new ProductPicture()
+            {
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps3_plus_game.png"), "image/png", GetSeName(productPs3OneGame.Name)),
-				DisplayOrder = 1
-			});
+                DisplayOrder = 1
+            });
 
-			#endregion Ps3PlusOneGame
+            #endregion Ps3PlusOneGame
 
-			#endregion gaming
 
-			var entities = new List<Product>
+            #endregion gaming
+
+            var entities = new List<Product>
 			{
                 productTRANSOCEANCHRONOGRAPH,productTissotTTouchExpertSolar,productSeikoSRPA49K1,productTitleistSM6TourChrome,productTitleistProV1x,productGBBEpicSubZeroDriver,productSupremeGolfball,productBooksStoneOfTheWise,productNikeStrikeFootball,productNikeEvoPowerBall,
                 productTorfabrikOfficialGameBall,productAdidasTangoSalaBall,productAllCourtBasketball,productEvolutionHighSchoolGameBasketball,productRayBanTopBar,
@@ -13050,8 +13139,8 @@ namespace SmartStore.Data.Setup
 				productPs3, productMinecraft, productBundlePs3AssassinCreed,
 				productPs4, productDualshock4Controller, productPs4Camera, productBundlePs4,
 				productGroupAccessories,
-				productWatchDogs, productPrinceOfPersia, productLegoWorlds, productPs3OneGame
-			};
+				productWatchDogs, productPrinceOfPersia, productLegoWorlds,productHorizonZeroDown,productFifa17,productPs3OneGame
+            };
 
             entities.AddRange(GetFashionProducts());
 			entities.AddRange(GetFurnitureProducts());

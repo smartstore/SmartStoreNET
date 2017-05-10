@@ -732,7 +732,7 @@
     <Content Include="Content\samples\category_digitalproducts.jpg" />
     <Content Include="Content\samples\category_fashion.jpg" />
     <Content Include="Content\samples\category_furniture.jpg" />
-    <Content Include="Content\samples\category_games.png" />
+    <Content Include="Content\samples\category_games.jpg" />
     <Content Include="Content\samples\category_gaming.png" />
     <Content Include="Content\samples\category_gaming_accessories.png" />
     <Content Include="Content\samples\category_giftcards.png" />
@@ -746,6 +746,7 @@
     <Content Include="Content\samples\company_logo.png" />
     <Content Include="Content\samples\emblem_library.png" />
     <Content Include="Content\samples\iphone.png" />
+    <Content Include="Content\samples\manufacturer_EA_Sports.png" />
     <Content Include="Content\samples\manufacturer_wb.png" />
     <Content Include="Content\samples\manufacturer-android.png" />
     <Content Include="Content\samples\manufacturer-blackberry.png" />
@@ -786,6 +787,7 @@
     <Content Include="Content\samples\products_airpods_turquoise.jpg" />
     <Content Include="Content\samples\products_airpods_white.jpg" />
     <Content Include="Content\samples\products_nike-strike-football.jpg" />
+    <Content Include="Content\samples\products_princeofpersia.jpg" />
     <Content Include="Content\samples\product_97-ipad-gold.jpg" />
     <Content Include="Content\samples\product_97-ipad-lightblue.jpg" />
     <Content Include="Content\samples\product_97-ipad-mint.jpg" />
@@ -827,8 +829,10 @@
     <Content Include="Content\samples\product_dellinspiron23.png" />
     <Content Include="Content\samples\product_dualshock4.jpg" />
     <Content Include="Content\samples\product_evolution-high-school-game-basketball.jpg" />
+    <Content Include="Content\samples\product_fifa17.jpg" />
     <Content Include="Content\samples\product_gbb-epic-sub-zero-driver.jpg" />
     <Content Include="Content\samples\product_giftcart.png" />
+    <Content Include="Content\samples\product_horizon.jpg" />
     <Content Include="Content\samples\product_ipad_1.jpg" />
     <Content Include="Content\samples\product_ipad_2.jpg" />
     <Content Include="Content\samples\product_iphone-plus_all_colors.jpg" />
@@ -891,11 +895,10 @@
     <Content Include="Content\samples\product_watchseries2_2.jpg" />
     <Content Include="Content\samples\ps4_bundle_minecraft.jpg" />
     <Content Include="Content\samples\sony-ps3-white.jpg" />
-    <Content Include="Content\samples\sony-PS3AssassinsCreedBundle.png" />
+    <Content Include="Content\samples\sony-PS3AssassinsCreedBundle.jpg" />
     <Content Include="Content\samples\stone_of_wisdom.jpg" />
     <Content Include="Content\samples\ubisoft-assassins-creed-3.jpg" />
     <Content Include="Content\samples\ubisoft-driver-san-francisco.jpg" />
-    <Content Include="Content\samples\ubisoft-prince-of-persia.jpg" />
     <Content Include="Content\samples\ubisoft-watchdogs.jpg" />
     <Content Include="Content\samples\vivaldi-four-seasons-spring.mp3" />
     <Content Include="Content\smartstore.entitypicker.css" />

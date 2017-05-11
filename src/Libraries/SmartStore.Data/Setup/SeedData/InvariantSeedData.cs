@@ -5195,6 +5195,16 @@ namespace SmartStore.Data.Setup
 				Name = "glass",
 				DisplayOrder = 14,
 			});
+			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
+			{
+				Name = "spandex",
+				DisplayOrder = 15,
+			});
+			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
+			{
+				Name = "polyester",
+				DisplayOrder = 16,
+			});
 
 			#endregion sa8 material
 
@@ -5437,12 +5447,12 @@ namespace SmartStore.Data.Setup
 			};
 			sa17.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "3,5",
+				Name = "3.5",
 				DisplayOrder = 1,
 			});
 			sa17.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
 			{
-				Name = "2,5",
+				Name = "2.5",
 				DisplayOrder = 2,
 			});
 
@@ -5876,70 +5886,6 @@ namespace SmartStore.Data.Setup
 
             #endregion sa27 facial shape
 
-            #region sa28 color
-
-            //var sa28 = new SpecificationAttribute
-            //{
-            //    Name = "color",
-            //    DisplayOrder = 1,
-            //};
-
-            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "gray",
-            //    DisplayOrder = 1,
-            //});
-
-            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "silver",
-            //    DisplayOrder = 2,
-            //});
-
-            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "white",
-            //    DisplayOrder = 3,
-            //});
-
-            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "black",
-            //    DisplayOrder = 4,
-            //});
-
-            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "beige",
-            //    DisplayOrder = 5,
-            //});
-
-            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "red",
-            //    DisplayOrder = 6,
-            //});
-
-            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "blue",
-            //    DisplayOrder = 7,
-            //});
-
-            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "green",
-            //    DisplayOrder = 8,
-            //});
-
-            //sa28.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "yellow",
-            //    DisplayOrder = 9,
-            //});
-
-            #endregion sa28 color
-
             #region sa28 Dial window material type
 
             var sa28 = new SpecificationAttribute
@@ -5962,49 +5908,9 @@ namespace SmartStore.Data.Setup
 
             #endregion sa28 Dial window material type
 
-            #region sa29 type of fabric
-
-            var sa29 = new SpecificationAttribute
-            {
-                Name = "Type of fabric",
-                DisplayOrder = 29,
-            };
-
-            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            {
-                Name = "cotton",
-                DisplayOrder = 1,
-            });
-
-            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            {
-                Name = "polyamide",
-                DisplayOrder = 2,
-            });
-
-            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            {
-                Name = "spandex",
-                DisplayOrder = 3,
-            });
-
-            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            {
-                Name = "polyester",
-                DisplayOrder = 4,
-            });
-
-            sa29.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            {
-                Name = "leather",
-                DisplayOrder = 5,
-            });
-
-            #endregion sa29 type of fabric
-
             var entities = new List<SpecificationAttribute>
 			{
-				sa1,sa2,sa3,sa4,sa5,sa6,sa7,sa8,sa9,sa10,sa11,sa12,sa13,sa14,sa15,sa16,sa17,sa18,sa19,sa20,sa21,sa22,sa23,sa24,sa25,sa26,sa27,sa28,sa29
+				sa1,sa2,sa3,sa4,sa5,sa6,sa7,sa8,sa9,sa10,sa11,sa12,sa13,sa14,sa15,sa16,sa17,sa18,sa19,sa20,sa21,sa22,sa23,sa24,sa25,sa26,sa27,sa28
             };
 
 			this.Alter(entities);
@@ -6585,7 +6491,7 @@ namespace SmartStore.Data.Setup
 
 			attributeDualshock3ControllerColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
-				Name = "whith controller",
+				Name = "with controller",
 				Alias = "with_controller",
 				PriceAdjustment = 60.0M,
 				DisplayOrder = 2,
@@ -8468,38 +8374,6 @@ namespace SmartStore.Data.Setup
 
             #endregion tag gift
 
-            #region tag computer
-   //         var productTagComputer = new ProductTag
-			//{
-			//	Name = "computer"
-			//};
-
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagComputer);
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagComputer);
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagComputer);
-
-			#endregion tag computer
-
-			#region tag notebook
-			//var productTagNotebook = new ProductTag
-			//{
-			//	Name = "notebook"
-			//};
-
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagNotebook);
-
-			#endregion productTagNotebook
-
-			#region tag compact
-			//var productTagCompact = new ProductTag
-			//{
-			//	Name = "compact"
-			//};
-
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagCompact);
-
-			#endregion productTagCompact
-
 			#region tag book
 			var productTagBook = new ProductTag
 			{
@@ -8548,39 +8422,6 @@ namespace SmartStore.Data.Setup
 			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Motorcycle Adventures").FirstOrDefault().ProductTags.Add(productTagMotorbikes);
 
 			#endregion tag motorbikes
-
-			#region tag Intel
-			//var productTagIntel = new ProductTag
-			//{
-			//	Name = "Intel"
-			//};
-
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagIntel);
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagIntel);
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagIntel);
-
-			#endregion tag Intel
-
-			#region tag Dell
-			//var productTagDell = new ProductTag
-			//{
-			//	Name = "Dell"
-			//};
-
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagDell);
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagDell);
-
-			#endregion tag Dell
-
-			#region tag iPhone
-			//var productTagIphone = new ProductTag
-			//{
-			//	Name = "iPhone"
-			//};
-
-			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Apple iPhone 6").FirstOrDefault().ProductTags.Add(productTagIphone);
-
-			#endregion tag iPhone
 
 			#region tag mp3
 			var productTagMP3 = new ProductTag

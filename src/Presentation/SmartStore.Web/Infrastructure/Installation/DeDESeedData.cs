@@ -2441,335 +2441,196 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(entities);
 
             entities.WithKey(x => x.DisplayOrder)
-            #region Cpu-Hersteller
-.Alter(1, x =>
-                    {
-                        x.Name = "CPU-Hersteller";
-                        //var attributeOptionNames = x.SpecificationAttributeOptions.OrderBy(y => y.DisplayOrder).Select(y => y.Name).ToList();
-                        //foreach (var name in attributeOptionNames)
-                        //{
-                        //    name = 
-                        //}
-                    })
-            #endregion
-
-            #region Farbe
-.Alter(2, x =>
-                    {
-                        x.Name = "Farbe";
-                        var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                        attribOption1.First().Name = "weiss";
-
-                        var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                        attribOption2.First().Name = "schwarz";
-
-                        var attribOption3 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3);
-                        attribOption3.First().Name = "beige";
-
-                        var attribOption4 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4);
-                        attribOption4.First().Name = "rot";
-
-                        var attribOption5 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 5);
-                        attribOption5.First().Name = "blau";
-
-                        var attribOption6 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 6);
-                        attribOption6.First().Name = "grün";
-
-                        var attribOption7 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 7);
-                        attribOption7.First().Name = "gelb";
-
-                    })
-            #endregion
-
-            #region Festplatten-Kapazität
-.Alter(3, x =>
-                    {
-                        x.Name = "Festplatten-Kapazität";
-                    })
-
-            #endregion
-
-            #region Arbeitsspeicher
-.Alter(4, x =>
-                    {
-                        x.Name = "Arbeitsspeicher";
-                    })
-            #endregion
-
-            #region OS
-.Alter(5, x =>
-                    {
-                        x.Name = "Betriebssystem";
-                    })
-            #endregion
-
-            #region Anschluss
-.Alter(6, x =>
-                    {
-                        x.Name = "Anschluss";
-                    })
-            #endregion
-
-            #region Geschlecht
-.Alter(7, x =>
-                    {
-                        x.Name = "Geschlecht";
-                        var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                        attribOption1.First().Name = "Herren";
-
-                        var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                        attribOption2.First().Name = "Damen";
-                    })
-            #endregion
-
-            #region Material
-.Alter(8, x =>
-                    {
-                        x.Name = "Material";
-                        x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 1).Name = "Edelstahl";
-                        x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 2).Name = "Titan";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 3).Name = "Kunststoff";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 4).Name = "Aluminium";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 5).Name = "Leder";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 6).Name = "Nylon";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 7).Name = "Silikon";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 8).Name = "Keramik";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 9).Name = "Baumwolle";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 10).Name = "100% Bio-Baumwolle";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 11).Name = "Polyamid";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 12).Name = "Gummi";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 13).Name = "Holz";
-						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 14).Name = "Glas";
-					})
-            #endregion
-
-            #region Technische Ausführung
-            .Alter(9, x =>
-                    {
-                        x.Name = "Technische Ausführung";
-                        var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                        attribOption1.First().Name = "Automatik, selbstaufziehend";
-
-                        var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                        attribOption2.First().Name = "Automatik";
-
-                        var attribOption3 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3);
-                        attribOption3.First().Name = "Quarz, batteriebetrieben";
-                    })
-            #endregion
-
-            #region Verschluss
-.Alter(10, x =>
-                    {
-                        x.Name = "Verschluss";
-                        var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                        attribOption1.First().Name = "Faltschließe";
-
-                        var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                        attribOption2.First().Name = "Sicherheitsfaltschließe";
-
-                        var attribOption3 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3);
-                        attribOption2.First().Name = "Dornschließe";
-                    })
-            #endregion
-
-            #region Glas
-.Alter(11, x =>
-                    {
-                        x.Name = "Glas";
-                        var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                        attribOption1.First().Name = "Mineral";
-
-                        var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                        attribOption2.First().Name = "Saphir";
-                    })
-            #endregion
-
-            #region Sprache
-.Alter(12, x =>
-                    {
-                        x.Name = "Sprache";
-                        var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                        attribOption1.First().Name = "deutsch";
-
-                        var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                        attribOption2.First().Name = "englisch";
-
-                        var attribOption3 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3);
-                        attribOption2.First().Name = "französisch";
-
-                        var attribOption4 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4);
-                        attribOption2.First().Name = "italienisch";
-                    })
-            #endregion
-
-            #region Ausgabe
-            .Alter(13, x =>
-                    {
-                        x.Name = "Ausgabe";
-                        var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                        attribOption1.First().Name = "gebunden";
-
-                        var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                        attribOption2.First().Name = "Taschenbuch";
-                    })
-            #endregion
-
-            #region Kategorie
-            .Alter(14, x =>
-                    {
-                        x.Name = "Genre";
-                        var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                        attribOption1.First().Name = "Abenteuer";
-
-                        var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                        attribOption2.First().Name = "Science-Fiction";
-
-                        var attribOption3 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3);
-                        attribOption2.First().Name = "Geschichte";
-
-                        var attribOption4 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4);
-                        attribOption2.First().Name = "Internet & Computer";
-
-                        var attribOption5 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 5);
-                        attribOption2.First().Name = "Krimi";
-
-                        var attribOption6 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 6);
-                        attribOption2.First().Name = "Autos";
-
-                        var attribOption7 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 7);
-                        attribOption2.First().Name = "Roman";
-
-                        var attribOption8 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 8);
-                        attribOption2.First().Name = "Kochen & Backen";
-
-                        var attribOption9 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 9);
-                        attribOption2.First().Name = "Sachbuch";
-                    })
-
-            #endregion
-
-            #region Computer-Typ
-            .Alter(15, x =>
-            {
-                x.Name = "Computer-Typ";
-                var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                attribOption1.First().Name = "Desktop";
-
-                var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                attribOption2.First().Name = "All-in-One";
-
-                var attribOption3 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3);
-                attribOption2.First().Name = "Laptop";
-
-                var attribOption4 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4);
-                attribOption2.First().Name = "Tablet";
-            })
-
-            #endregion
-
-            #region Massenspeicher-Typ
-.Alter(16, x =>
-            {
-                x.Name = "Massenspeicher-Typ";
-            })
-
-            #endregion
-
-            #region Computer-Typ
-.Alter(17, x =>
-            {
-                x.Name = "Größe (externe HDD)";
-            })
-
-            #endregion
-
-            #region MP3-Qualität
-.Alter(18, x =>
-            {
-                x.Name = "MP3-Qualität";
-            })
-
-            #endregion
-
-            #region Musik-Genre
-.Alter(19, x =>
-            {
-                x.Name = "Genre";
-                var attribOption1 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1);
-                attribOption1.First().Name = "Blues";
-
-                var attribOption2 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2);
-                attribOption2.First().Name = "Jazz";
-
-                var attribOption3 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3);
-                attribOption2.First().Name = "Disko";
-
-                var attribOption4 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4);
-                attribOption2.First().Name = "pop";
-
-                var attribOption5 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 5);
-                attribOption2.First().Name = "Funk";
-
-                var attribOption6 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 6);
-                attribOption2.First().Name = "Klassik";
-
-                var attribOption7 = x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 7);
-                attribOption2.First().Name = "R&B";
-            })
-            #endregion
-
-            #region Hersteller
-.Alter(19, x =>
-            {
-                x.Name = "Hersteller";
-            })
-            #endregion
-
-            ;
-
-
-            #region old code
-            //entities.Clear();
-
-            //var sa1 = new SpecificationAttribute
-            //{
-            //    Name = "CPU-Hersteller",
-            //    DisplayOrder = 1,
-            //};
-            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "AMD''",
-            //    DisplayOrder = 1,
-            //});
-            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "Intel''",
-            //    DisplayOrder = 2,
-            //});
-            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "ARM''",
-            //    DisplayOrder = 3,
-            //});
-            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "Samsung''",
-            //    DisplayOrder = 4,
-            //});
-            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "Apple''",
-            //    DisplayOrder = 5,
-            //});
-
-
-            // add de-DE specific Tasks
-            //entities = new List<SpecificationAttribute>
-            //{
-            //    sa1,
-            //};
-            #endregion
+				.Alter(1, x =>
+                {
+                    x.Name = "CPU-Hersteller";
+                })
+				.Alter(2, x =>
+                {
+					x.Name = "Farbe";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Weiß";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Schwarz";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Beige";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4).First().Name = "Rot";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 5).First().Name = "Blau";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 6).First().Name = "Grün";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 7).First().Name = "Gelb";
+                })
+				.Alter(3, x =>
+				{
+					x.Name = "Festplatten-Kapazität";
+				})
+				.Alter(4, x =>
+				{
+					x.Name = "Arbeitsspeicher";
+				})
+				.Alter(5, x =>
+				{
+					x.Name = "Betriebssystem";
+				})
+				.Alter(6, x =>
+				{
+					x.Name = "Anschluss";
+				})
+				.Alter(7, x =>
+				{
+					x.Name = "Geschlecht";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Herren";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Damen";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Unisex";
+				})
+				.Alter(8, x =>
+				{
+					x.Name = "Material";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 1).Name = "Edelstahl";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 2).Name = "Titan";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 3).Name = "Kunststoff";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 4).Name = "Aluminium";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 5).Name = "Leder";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 6).Name = "Nylon";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 7).Name = "Silikon";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 8).Name = "Keramik";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 9).Name = "Baumwolle";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 10).Name = "100% Bio-Baumwolle";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 11).Name = "Polyamid";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 12).Name = "Gummi";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 13).Name = "Holz";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 14).Name = "Glas";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 15).Name = "Elasthan";
+					x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 16).Name = "Polyester";
+				})
+				.Alter(9, x =>
+				{
+					x.Name = "Technische Ausführung";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Automatik, selbstaufziehend";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Automatik";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Quarz, batteriebetrieben";
+				})
+				.Alter(10, x =>
+				{
+					x.Name = "Verschluss";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Faltschließe";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Sicherheitsfaltschließe";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Dornschließe";
+				})
+				.Alter(11, x =>
+				{
+					x.Name = "Glas";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Mineral";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Saphir";
+				})
+				.Alter(12, x =>
+				{
+					x.Name = "Sprache";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Deutsch";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Englisch";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Französisch";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4).First().Name = "Italienisch";
+				})
+				.Alter(13, x =>
+				{
+					x.Name = "Ausgabe";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Gebunden";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Taschenbuch";
+				})
+				.Alter(14, x =>
+				{
+					x.Name = "Genre";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Abenteuer";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Science-Fiction";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Geschichte";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4).First().Name = "Internet & Computer";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 5).First().Name = "Krimi";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 6).First().Name = "Autos";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 7).First().Name = "Roman";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 8).First().Name = "Kochen & Backen";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 9).First().Name = "Sachbuch";
+				})
+				.Alter(15, x =>
+				{
+					x.Name = "Computer-Typ";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Desktop";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "All-in-One";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Laptop";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4).First().Name = "Tablet";
+				})
+				.Alter(16, x =>
+				{
+					x.Name = "Massenspeicher-Typ";
+				})
+				.Alter(17, x =>
+				{
+					x.Name = "Größe (externe HDD)";
+				})
+				.Alter(18, x =>
+				{
+					x.Name = "MP3-Qualität";
+				})
+				.Alter(19, x =>
+				{
+					x.Name = "Genre";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Blues";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Jazz";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Disko";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4).First().Name = "Pop";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 5).First().Name = "Funk";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 6).First().Name = "Klassik";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 7).First().Name = "R&B";
+				})
+				.Alter(20, x =>
+				{
+					x.Name = "Hersteller";
+				})
+				.Alter(21, x =>
+				{
+					x.Name = "Für wen";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Für ihn";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Für sie";
+				})
+				.Alter(22, x =>
+				{
+					x.Name = "Angebot";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Räumung";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Permanent günstigster Preis";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Aktion";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4).First().Name = "Preisreduzierung";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 5).First().Name = "Angebotspreis";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 6).First().Name = "Tagesangebot";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 7).First().Name = "Wochenangebot";
+				})
+				.Alter(23, x =>
+				{
+					x.Name = "Größe";
+				})
+				.Alter(24, x =>
+				{
+					x.Name = "Durchmesser";
+				})
+				.Alter(25, x =>
+				{
+					x.Name = "Verschluss";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Schnappverschluss";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Faltverschluss";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Stechverschluss";
+				})
+				.Alter(26, x =>
+				{
+					x.Name = "Form";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Oval";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Rund";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 3).First().Name = "Herzförmig";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 4).First().Name = "Winkelförmig";
+				})
+				.Alter(27, x =>
+				{
+					x.Name = "Speicherkapazität";
+				})
+				.Alter(28, x =>
+				{
+					x.Name = "Scheibenmaterial";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 1).First().Name = "Mineral";
+					x.SpecificationAttributeOptions.Where(y => y.DisplayOrder == 2).First().Name = "Saphir";
+				});
         }
 
         protected override void Alter(IList<ProductAttribute> entities)
@@ -2783,7 +2644,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				})
 				.Alter("custom-text", x =>
 				{
-					x.Name = "eigener Text";
+					x.Name = "Eigener Text";
 				})
 				.Alter("hdd", x =>
 				{
@@ -2817,6 +2678,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.Name = "Farbe";
 				})
+				.Alter("ipad-color", x =>
+				{
+					x.Name = "Farbe";
+				})
 				.Alter("memory-capacity", x =>
 				{
 					x.Name = "Speicherkapazität";
@@ -2836,6 +2701,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("plate-thickness", x =>
 				{
 					x.Name = "Stärke der Tischplatte";
+				})
+				.Alter("ballsize", x =>
+				{
+					x.Name = "Ballgröße";
 				})
 				.Alter("leather-color", x =>
 				{
@@ -2905,12 +2774,26 @@ namespace SmartStore.Web.Infrastructure.Installation
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "fuliginous").Each(y => y.Name = "Rauchfarbig");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "tomato-red").Each(y => y.Name = "Tomatenrot");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "yellow").Each(y => y.Name = "Gelb");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "mint").Each(y => y.Name = "Mintgrün");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "lightblue").Each(y => y.Name = "Hellblau");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "turquoise").Each(y => y.Name = "Türkis");
 			});
 
-			entities.Where(x => x.ProductAttribute.Alias == "iphone-color").Each(x =>
+			entities.Where(x => x.ProductAttribute.Alias == "iphone-color" || x.ProductAttribute.Alias == "ipad-color").Each(x =>
 			{
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "black").Each(y => y.Name = "Schwarz");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "silver").Each(y => y.Name = "Silber");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "spacegray").Each(y => y.Name = "Space-Grau");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "purple").Each(y => y.Name = "Violett");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "lightblue").Each(y => y.Name = "Hellblau");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "turquoise").Each(y => y.Name = "Türkis");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "yellow").Each(y => y.Name = "Gelb");
+			});
+
+			entities.Where(x => x.ProductAttribute.Alias == "controller").Each(x =>
+			{
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "without_controller").Each(y => y.Name = "Ohne Controller");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "with_controller").Each(y => y.Name = "Mit Controller");
 			});
 
 			entities.Where(x => x.ProductAttribute.Alias == "game").Each(x =>
@@ -4117,11 +4000,11 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.Name = "Geschenk";
                 })
-                .Alter("compact", x =>
-                {
-                    x.Name = "kompakt";
-                })
-                .Alter("cooking", x =>
+				.Alter("book", x =>
+				{
+					x.Name = "Buch";
+				})
+				.Alter("cooking", x =>
                 {
                     x.Name = "Kochen";
                 })
@@ -4133,14 +4016,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.Name = "Motorräder";
                 })
-                .Alter("computer", x =>
-                {
-                    x.Name = "Computer";
-                })
-                .Alter("notebook", x =>
-                {
-                    x.Name = "Notebook";
-                })
                 .Alter("download", x =>
                 {
                     x.Name = "Download";
@@ -4148,10 +4023,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("watches", x =>
                 {
                     x.Name = "Uhren";
-                })
-                .Alter("book", x =>
-                {
-                    x.Name = "Buch";
                 });
         }
 

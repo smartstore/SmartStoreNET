@@ -44,7 +44,7 @@ namespace SmartStore.Core.Domain.Catalog
 			NumberOfBestsellersOnHomepage = 12;
             ShowPopularProductTagsOnHomepage = false;
             ShowManufacturersOnHomepage = true;
-            ShowManufacturerPictures = false;
+            ShowManufacturerPictures = true;
             ManufacturerItemsToDisplayOnHomepage = 18;
             ShowManufacturersInOffCanvas = true;
             ManufacturerItemsToDisplayInOffcanvasMenu = 20;

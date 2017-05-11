@@ -151,9 +151,14 @@ namespace SmartStore.Data.Migrations
 				setting.Value = "True";
 			}
 
-			// [...]
+            // Change CatalogSettings.ShowManufacturerPictures to true
+            setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.ShowManufacturerPictures");
+            if (setting != null)
+            {
+                setting.Value = "True";
+            }
 
-			context.SaveChanges();
+            context.SaveChanges();
 
 			context.MigrateSettings(x =>
 			{

@@ -3065,12 +3065,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 		private void AlterFashionProducts(IList<Product> entities)
 		{
 			entities.WithKey(x => x.Sku)
-				.Alter("Fashion-112345", x =>
-				{
-					x.Name = "Herren Shirt";
-					x.ShortDescription = "Herren Shirt mit trendigem Rollsaum";
-					x.FullDescription = "<p>Oberstoff (140 g/m²): 100% Baumwolle 100% Bio-Baumwolle, Single Jersey Rundhalsausschnitt und Ärmel mit Rollsaum. In den Trendfarben Heather Grey und Red</p>";
-				})
 				.Alter("Fashion-112355", x =>
 				{
 					x.ShortDescription = "Der Sneaker-Klassiker!";
@@ -3079,6 +3073,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("Fashion-987693502", x =>
 				{
 					x.Name = "Ärmelloses Shirt Meccanica";
+					x.ShortDescription = "Frauen Shirt mit trendigem Aufdruck";
 					x.FullDescription = "<p>Auch im Sommer geht der Ducati Stil mit der Mode! Mit dem ärmellosen Shirt Meccanica kann jede Frau ihrer Leidenschaft für Ducati mit einem bequemen und vielseitigen Kleidungsstück Ausdruck verleihen. Das Shirt gibt es in schwarz und vintagerot. Es trägt auf der Vorderseite den traditionellen Schriftzug in Plastisoldruck, wodurch er noch deutlicher und strahlender wird, während sich auf der Rückseite im Nackenbereich das berühmte Logo mit den typischen \"Flügeln\" der fünfziger Jahre befindet.</p>";
 				})
 				.Alter("Fashion-JN1107", x =>

@@ -6874,63 +6874,6 @@ namespace SmartStore.Data.Setup
 
 			#endregion attributePs3OneGameFree
 
-			#region Fashion - Men’s T
-
-			var productMensShirt = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112345");
-
-			var attrMensShirtSize = new ProductVariantAttribute
-			{
-				Product = productMensShirt,
-				ProductAttribute = attrSize,
-				IsRequired = true,
-				DisplayOrder = 1,
-				AttributeControlType = AttributeControlType.RadioList
-			};
-			attrMensShirtSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
-			{
-				Name = "M",
-				Alias = "medium",
-				DisplayOrder = 1,
-				Quantity = 1
-			});
-			attrMensShirtSize.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
-			{
-				Name = "L",
-				Alias = "large",
-				DisplayOrder = 2,
-				Quantity = 1
-			});
-			entities.Add(attrMensShirtSize);
-
-			var attrMensShirtColor = new ProductVariantAttribute
-			{
-				Product = productMensShirt,
-				ProductAttribute = attrColor,
-				IsRequired = true,
-				DisplayOrder = 2,
-				AttributeControlType = AttributeControlType.Boxes
-			};
-			attrMensShirtColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
-			{
-				Name = "Red",
-				Alias = "red",
-				DisplayOrder = 1,
-				Quantity = 1,
-				Color = "#e81010",
-				IsPreSelected = true
-			});
-			attrMensShirtColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
-			{
-				Name = "Gray",
-				Alias = "gray",
-				DisplayOrder = 2,
-				Quantity = 1,
-				Color = "#cfcfcf"
-			});
-			entities.Add(attrMensShirtColor);
-
-			#endregion
-
 			#region Fashion - Converse All Star
 
 			var productAllStar = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112355");
@@ -8118,69 +8061,6 @@ namespace SmartStore.Data.Setup
 
             #endregion Iphone 7 plus
 
-            #region Fashion - Men’s T
-
-            var productMensShirt = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112345");
-			var mensShirtPictureIds = productMensShirt.ProductPictures.Select(x => x.PictureId).ToList();
-			var mensShirtPictures = _ctx.Set<Picture>().Where(x => mensShirtPictureIds.Contains(x.Id)).ToList();
-
-			var mensShirtColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productMensShirt.Id && x.ProductAttributeId == attrColor.Id);
-			var mensShirtColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == mensShirtColor.Id).ToList();
-
-			var mensShirtSize = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productMensShirt.Id && x.ProductAttributeId == attrSize.Id);
-			var mensShirtSizeValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == mensShirtSize.Id).ToList();
-
-			entities.Add(new ProductVariantAttributeCombination
-			{
-				Product = productMensShirt,
-				Sku = productMensShirt.Sku + "-red-m",
-				AttributesXml = FormatAttributeXml(
-					mensShirtColor.Id, mensShirtColorValues.First(x => x.Alias == "red").Id,
-					mensShirtSize.Id, mensShirtSizeValues.First(x => x.Alias == "medium").Id),
-				StockQuantity = 10000,
-				AllowOutOfStockOrders = true,
-				IsActive = true,
-				AssignedPictureIds = mensShirtPictures.First(x => x.SeoFilename.EndsWith("-red")).Id.ToString()
-			});
-			entities.Add(new ProductVariantAttributeCombination
-			{
-				Product = productMensShirt,
-				Sku = productMensShirt.Sku + "-red-l",
-				AttributesXml = FormatAttributeXml(
-					mensShirtColor.Id, mensShirtColorValues.First(x => x.Alias == "red").Id,
-					mensShirtSize.Id, mensShirtSizeValues.First(x => x.Alias == "large").Id),
-				StockQuantity = 10000,
-				AllowOutOfStockOrders = true,
-				IsActive = true,
-				AssignedPictureIds = mensShirtPictures.First(x => x.SeoFilename.EndsWith("-red")).Id.ToString()
-			});
-			entities.Add(new ProductVariantAttributeCombination
-			{
-				Product = productMensShirt,
-				Sku = productMensShirt.Sku + "-gray-m",
-				AttributesXml = FormatAttributeXml(
-					mensShirtColor.Id, mensShirtColorValues.First(x => x.Alias == "gray").Id,
-					mensShirtSize.Id, mensShirtSizeValues.First(x => x.Alias == "medium").Id),
-				StockQuantity = 10000,
-				AllowOutOfStockOrders = true,
-				IsActive = true,
-				AssignedPictureIds = mensShirtPictures.First(x => x.SeoFilename.EndsWith("-gray")).Id.ToString()
-			});
-			entities.Add(new ProductVariantAttributeCombination
-			{
-				Product = productMensShirt,
-				Sku = productMensShirt.Sku + "-gray-l",
-				AttributesXml = FormatAttributeXml(
-					mensShirtColor.Id, mensShirtColorValues.First(x => x.Alias == "gray").Id,
-					mensShirtSize.Id, mensShirtSizeValues.First(x => x.Alias == "large").Id),
-				StockQuantity = 10000,
-				AllowOutOfStockOrders = true,
-				IsActive = true,
-				AssignedPictureIds = mensShirtPictures.First(x => x.SeoFilename.EndsWith("-gray")).Id.ToString()
-			});
-
-			#endregion
-
 			#region Fashion - Converse All Star
 
 			var productAllStar = _ctx.Set<Product>().First(x => x.Sku == "Fashion-112355");
@@ -8364,7 +8244,7 @@ namespace SmartStore.Data.Setup
 			entities.Add(new ProductVariantAttributeCombination
 			{
 				Product = productCorbusierTable,
-				Sku = productMensShirt.Sku + "-clear-15",
+				Sku = productCorbusierTable.Sku + "-clear-15",
 				AttributesXml = FormatAttributeXml(
 					corbusierTablePlate.Id, corbusierTablePlateValues.First(x => x.Alias == "clear-glass").Id,
 					corbusierTablePlateThickness.Id, corbusierTablePlateThicknessValues.First(x => x.Alias == "15mm").Id),
@@ -8376,7 +8256,7 @@ namespace SmartStore.Data.Setup
 			entities.Add(new ProductVariantAttributeCombination
 			{
 				Product = productCorbusierTable,
-				Sku = productMensShirt.Sku + "-clear-19",
+				Sku = productCorbusierTable.Sku + "-clear-19",
 				AttributesXml = FormatAttributeXml(
 					corbusierTablePlate.Id, corbusierTablePlateValues.First(x => x.Alias == "clear-glass").Id,
 					corbusierTablePlateThickness.Id, corbusierTablePlateThicknessValues.First(x => x.Alias == "19mm").Id),
@@ -8388,7 +8268,7 @@ namespace SmartStore.Data.Setup
 			entities.Add(new ProductVariantAttributeCombination
 			{
 				Product = productCorbusierTable,
-				Sku = productMensShirt.Sku + "-sandblasted-15",
+				Sku = productCorbusierTable.Sku + "-sandblasted-15",
 				AttributesXml = FormatAttributeXml(
 					corbusierTablePlate.Id, corbusierTablePlateValues.First(x => x.Alias == "sandblasted-glass").Id,
 					corbusierTablePlateThickness.Id, corbusierTablePlateThicknessValues.First(x => x.Alias == "15mm").Id),
@@ -8400,7 +8280,7 @@ namespace SmartStore.Data.Setup
 			entities.Add(new ProductVariantAttributeCombination
 			{
 				Product = productCorbusierTable,
-				Sku = productMensShirt.Sku + "-sandblasted-19",
+				Sku = productCorbusierTable.Sku + "-sandblasted-19",
 				AttributesXml = FormatAttributeXml(
 					corbusierTablePlate.Id, corbusierTablePlateValues.First(x => x.Alias == "sandblasted-glass").Id,
 					corbusierTablePlateThickness.Id, corbusierTablePlateThicknessValues.First(x => x.Alias == "19mm").Id),
@@ -9508,81 +9388,6 @@ namespace SmartStore.Data.Setup
 			var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
 			var specOptionCotton = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 9);
 
-			// Men’s T
-			var mensShirt = new Product
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Men’s T",
-				MetaTitle = "Mens shirt",
-				ShortDescription = "Men's shirt with trendy hem",
-				FullDescription = "<p>Topcloth (140 g/m²): 100% cotton 100% organic cotton, single jersey round neck and sleeve with hem. In the trendy colors heather grey and red.</p>",
-				Sku = "Fashion-112345",
-				ManufacturerPartNumber = "JN8002",
-				ProductTemplateId = productTemplateSimple.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				Price = 15.90M,
-				HasTierPrices = true,
-				OldPrice = 24.90M,
-				SpecialPrice = 12.00M,
-				SpecialPriceStartDateTimeUtc = new DateTime(2017, 5, 1, 0, 0, 0),
-				SpecialPriceEndDateTimeUtc = specialPriceEndDate,
-				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime,
-				DisplayOrder = 3
-			};
-
-			mensShirt.ProductCategories.Add(new ProductCategory
-			{
-				Category = fashionCategory,
-				DisplayOrder = 1
-			});
-
-			mensShirt.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_red.jpg"), "image/jpeg", "mens-tshirt-red"),
-				DisplayOrder = 1
-			});
-			mensShirt.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_mens_tshirt_gray.jpg"), "image/jpeg", "mens-tshirt-gray"),
-				DisplayOrder = 2
-			});
-
-			mensShirt.TierPrices.Add(new TierPrice
-			{
-				Quantity = 10,
-				Price = 10.00M
-			});
-			mensShirt.TierPrices.Add(new TierPrice
-			{
-				Quantity = 50,
-				Price = 8.00M
-			});
-
-			mensShirt.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 1,
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 10)
-			});
-			mensShirt.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 2,
-				SpecificationAttributeOption = specOptionCotton
-			});
-
-			result.Add(mensShirt);
-
 			// Converse All Star
 			var converseAllStar = new Product
 			{
@@ -9642,6 +9447,7 @@ namespace SmartStore.Data.Setup
 				VisibleIndividually = true,
 				Name = "Sleeveless shirt Meccanica",
 				MetaTitle = "Sleeveless shirt Meccanica",
+				ShortDescription = "Woman shirt with trendy imprint",
 				FullDescription = "<p>Also in summer, the Ducati goes with fashion style! With the sleeveless shirt Meccanica, every woman can express her passion for Ducati with a comfortable and versatile piece of clothing. The shirt is available in black and vintage red. It carries on the front the traditional lettering in plastisol print, which makes it even clearer and more radiant, while on the back in the neck area is the famous logo with the typical \"wings\" of the fifties.</p>",
 				Sku = "Fashion-987693502",
 				ManufacturerPartNumber = "987693502",
@@ -9664,6 +9470,17 @@ namespace SmartStore.Data.Setup
 			{
 				Category = fashionCategory,
 				DisplayOrder = 1
+			});
+
+			shirtMeccanica.TierPrices.Add(new TierPrice
+			{
+				Quantity = 10,
+				Price = 36.00M
+			});
+			shirtMeccanica.TierPrices.Add(new TierPrice
+			{
+				Quantity = 50,
+				Price = 29.00M
 			});
 
 			var shirtMeccanicaImages = new string[] { "product_shirt_meccanica_red_1.jpg", "product_shirt_meccanica_red_2.jpg", "product_shirt_meccanica_red_3.jpg",

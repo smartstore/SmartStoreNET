@@ -6186,6 +6186,21 @@ namespace SmartStore.Data.Setup
 				},
 				new ProductAttribute
 				{
+					Name = "Seat Shell",
+					Alias = "seat-shell"
+				},
+				new ProductAttribute
+				{
+					Name = "Base",
+					Alias = "base"
+				},
+				new ProductAttribute
+				{
+					Name = "Material",
+					Alias = "material"
+				},
+				new ProductAttribute
+				{
 					Name = "Style",
 					Alias = "style"
 				}
@@ -6261,6 +6276,9 @@ namespace SmartStore.Data.Setup
 			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
 			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
 			var attrStyle = _ctx.Set<ProductAttribute>().First(x => x.Alias == "style");
+			var attrSeatShell = _ctx.Set<ProductAttribute>().First(x => x.Alias == "seat-shell");
+			var attrBase = _ctx.Set<ProductAttribute>().First(x => x.Alias == "base");
+			var attrMaterial = _ctx.Set<ProductAttribute>().First(x => x.Alias == "material");
 
 			#region 9,7 iPad
 
@@ -7210,13 +7228,13 @@ namespace SmartStore.Data.Setup
 			#region Furniture - Ball chair
 
 			var productBallChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-ball-chair");
-			var ballChairVersions = new[]
+			var ballChairStyles = new[]
 			{
 				new { Name = "Leather Special - Black 62", Color = "#030301" },
-				new { Name = "Leather Special - White 63", Color = "#ffffff" },
+				new { Name = "Leather Special - White 63", Color = "#E2E4D7" },
 				new { Name = "Leather Special - Beige 120", Color = "#d1bc8a" },
 				new { Name = "Leather Special - Dark brown 71", Color = "#1d0c05" },
-				new { Name = "Leather Special - Natural 65", Color = "#ffffff" },
+				new { Name = "Leather Special - Natural 65", Color = "#BBB98B" },
 				new { Name = "Leather Special - Biscuit 64", Color = "#e0ccab" },
 				new { Name = "Leather Special - Red 1513", Color = "#fe0000" },
 				new { Name = "Leather Special - Dark red 66", Color = "#5e0000" },
@@ -7224,8 +7242,8 @@ namespace SmartStore.Data.Setup
 				new { Name = "Leather Special - Blue 7300", Color = "#0000ff" },
 				new { Name = "Leather Special - Light grey 72", Color = "#e3e3e5" },
 				new { Name = "Leather Special - Antracite 1501", Color = "#32312f" },
-				new { Name = "Leather Aniline - Black 380", Color = "#000000" },
-				new { Name = "Leather Aniline - White 001", Color = "#ffffff" },
+				new { Name = "Leather Aniline - Black 380", Color = "#030301" },
+				new { Name = "Leather Aniline - White 001", Color = "#E2E4D7" },
 				new { Name = "Leather Aniline - Beige 20", Color = "#d1bc8a" },
 				new { Name = "Leather Aniline - Orange 59103", Color = "#ff6501" },
 				new { Name = "Leather Aniline - Brown 410", Color = "#755232" },
@@ -7275,7 +7293,7 @@ namespace SmartStore.Data.Setup
 			});
 			entities.Add(attrBallChairColor);
 
-			var attrBallChairVersion = new ProductVariantAttribute
+			var attrBallChairStyle = new ProductVariantAttribute
 			{
 				Product = productBallChair,
 				ProductAttribute = attrStyle,
@@ -7284,19 +7302,145 @@ namespace SmartStore.Data.Setup
 				AttributeControlType = AttributeControlType.DropdownList
 			};
 
-			for (var i = 0; i < ballChairVersions.Length; ++i)
+			for (var i = 0; i < ballChairStyles.Length; ++i)
 			{
-				attrBallChairVersion.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				attrBallChairStyle.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
 				{
-					Name = ballChairVersions[i].Name,
-					Alias = ballChairVersions[i].Name.Replace(" - ", "-").Replace(" ", "-").ToLower(),
+					Name = ballChairStyles[i].Name,
+					Alias = ballChairStyles[i].Name.Replace(" - ", "-").Replace(" ", "-").ToLower(),
 					DisplayOrder = i + 1,
 					Quantity = 1,
-					Color = ballChairVersions[i].Color,
-					IsPreSelected = (ballChairVersions[i].Name == "Mixed Linen - Tomato red 2490")
+					Color = ballChairStyles[i].Color,
+					IsPreSelected = (ballChairStyles[i].Name == "Mixed Linen - Tomato red 2490")
 				});
 			}
-			entities.Add(attrBallChairVersion);
+			entities.Add(attrBallChairStyle);
+
+			#endregion
+
+			#region Furniture - Lounge chair
+
+			var productLoungeChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-lounge-chair");
+
+			var attrLoungeChairMaterial = new ProductVariantAttribute
+			{
+				Product = productLoungeChair,
+				ProductAttribute = attrMaterial,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+			attrLoungeChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Leather Special",
+				Alias = "leather-special",
+				DisplayOrder = 1,
+				Quantity = 1,
+				IsPreSelected = true
+			});
+			attrLoungeChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Leather Aniline",
+				Alias = "leather-aniline",
+				DisplayOrder = 2,
+				Quantity = 1
+			});
+			entities.Add(attrLoungeChairMaterial);
+
+			var loungeChairSeatShells = new string[] { "Palisander", "Cherry", "Walnut", "Wooden black lacquered" };
+			var attrLoungeChairSeatShell = new ProductVariantAttribute
+			{
+				Product = productLoungeChair,
+				ProductAttribute = attrSeatShell,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+
+			for (var i = 0; i < loungeChairSeatShells.Length; ++i)
+			{
+				attrLoungeChairSeatShell.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = loungeChairSeatShells[i],
+					Alias = loungeChairSeatShells[i].Replace(" ", "-").ToLower(),
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					IsPreSelected = (i == 0),
+					PriceAdjustment = (loungeChairSeatShells[i] == "Wooden black lacquered" ? 100.00M : decimal.Zero)
+				});
+			}
+			entities.Add(attrLoungeChairSeatShell);
+
+			var attrLoungeChairBase = new ProductVariantAttribute
+			{
+				Product = productLoungeChair,
+				ProductAttribute = attrBase,
+				IsRequired = true,
+				DisplayOrder = 3,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+			attrLoungeChairBase.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Top edge polished",
+				Alias = "top-edge-polished",
+				DisplayOrder = 1,
+				Quantity = 1,
+				IsPreSelected = true
+			});
+			attrLoungeChairBase.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Completely polished",
+				Alias = "completely-polished",
+				DisplayOrder = 2,
+				Quantity = 1,
+				PriceAdjustment = 150.00M
+			});
+			entities.Add(attrLoungeChairBase);
+
+			var loungeChairColors = new[]
+			{
+				new { Name = "Black", Color = "#000000" },
+				new { Name = "White", Color = "#ffffff" },
+				new { Name = "Anthracite", Color = "#32312f" },
+				new { Name = "Fuliginous", Color = "#5F5B5C" },
+				new { Name = "Light grey", Color = "#e3e3e5" },
+				new { Name = "Beige", Color = "#d1bc8a" },
+				new { Name = "Brown", Color = "#755232" },
+				new { Name = "Dark brown", Color = "#27160F" },
+				new { Name = "Natural", Color = "#BBB98B" },
+				new { Name = "Biscuit", Color = "#e0ccab" },
+				new { Name = "Hazelnut", Color = "#94703e" },
+				new { Name = "Dark green", Color = "#0a3210" },
+				new { Name = "Blue", Color = "#0000ff" },
+				new { Name = "Cognac", Color = "#e9aa1b" },
+				new { Name = "Orange", Color = "#ff6501" },
+				new { Name = "Rosso", Color = "#a10300" },
+				new { Name = "Red", Color = "#fe0000" },
+				new { Name = "Dark red", Color = "#5e0000" }
+			};
+
+			var attrLoungeChairColor = new ProductVariantAttribute
+			{
+				Product = productLoungeChair,
+				ProductAttribute = attrColor,
+				IsRequired = true,
+				DisplayOrder = 4,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+
+			for (var i = 0; i < loungeChairColors.Length; ++i)
+			{
+				attrLoungeChairColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = loungeChairColors[i].Name,
+					Alias = loungeChairColors[i].Name.Replace(" ", "-").ToLower(),
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					Color = loungeChairColors[i].Color,
+					IsPreSelected = (i == 1)
+				});
+			}
+			entities.Add(attrLoungeChairColor);
 
 			#endregion
 
@@ -7316,6 +7460,8 @@ namespace SmartStore.Data.Setup
 			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
 			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
 			var attrStyle = _ctx.Set<ProductAttribute>().First(x => x.Alias == "style");
+			var attrSeatShell = _ctx.Set<ProductAttribute>().First(x => x.Alias == "seat-shell");
+			var attrBase = _ctx.Set<ProductAttribute>().First(x => x.Alias == "base");
 
 			#region ps3
 
@@ -8230,23 +8376,23 @@ namespace SmartStore.Data.Setup
 			var ballChairPictureIds = productBallChair.ProductPictures.Select(x => x.PictureId).ToList();
 			var ballChairPictures = _ctx.Set<Picture>().Where(x => ballChairPictureIds.Contains(x.Id)).ToList();
 
-			var ballChairVersion = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrStyle.Id);
-			var ballChairVersionValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairVersion.Id).ToList();
+			var ballChairStyle = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrStyle.Id);
+			var ballChairStyleValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairStyle.Id).ToList();
 
 			var ballChairColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrColor.Id);
 			var ballChairColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairColor.Id).ToList();
 
-			foreach (var versionValue in ballChairVersionValues)
+			foreach (var styleValue in ballChairStyleValues)
 			{
 				foreach (var colorValue in ballChairColorValues)
 				{
 					decimal ballChairPrice = 2199.00M;
 
-					if (versionValue.Name.StartsWith("Leather Special"))
+					if (styleValue.Name.StartsWith("Leather Special"))
 					{
 						ballChairPrice = 2599.00M;
 					}
-					else if (versionValue.Name.StartsWith("Leather Aniline"))
+					else if (styleValue.Name.StartsWith("Leather Aniline"))
 					{
 						ballChairPrice = 2999.00M;
 					}
@@ -8254,8 +8400,8 @@ namespace SmartStore.Data.Setup
 					entities.Add(new ProductVariantAttributeCombination
 					{
 						Product = productBallChair,
-						Sku = productBallChair.Sku + string.Concat("-", colorValue.Alias, "-", versionValue.Alias),
-						AttributesXml = FormatAttributeXml(ballChairVersion.Id, versionValue.Id, ballChairColor.Id, colorValue.Id),
+						Sku = productBallChair.Sku + string.Concat("-", colorValue.Alias, "-", styleValue.Alias),
+						AttributesXml = FormatAttributeXml(ballChairStyle.Id, styleValue.Id, ballChairColor.Id, colorValue.Id),
 						StockQuantity = 10000,
 						AllowOutOfStockOrders = true,
 						IsActive = true,
@@ -9592,6 +9738,66 @@ namespace SmartStore.Data.Setup
 			});
 
 			result.Add(ballChair);
+
+			// Lounge chair
+			var loungeChair = new Product
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Name = "Charles Eames Lounge Chair (1956)",
+				MetaTitle = "Charles Eames Lounge Chair (1956)",
+				ShortDescription = "Club lounge chair, designer: Charles Eames, width 80 cm, depth 80 cm, height 60 cm, seat shell: plywood, foot (rotatable): Aluminium casting, cushion (upholstered) with leather cover.",
+				FullDescription = "<p>That's how you sit in a baseball glove. In any case, this was one of the ideas Charles Eames had in mind when designing this club chair. The lounge chair should be a comfort armchair, in which one can sink luxuriously. Through the construction of three interconnected, movable seat shells and a comfortable upholstery Charles Eames succeeded in the implementation. In fact, the club armchair with a swiveling foot is a contrast to the Bauhaus characteristics that emphasized minimalism and functionality. Nevertheless, he became a classic of Bauhaus history and still provides in many living rooms and clubs for absolute comfort with style.</p><p>Dimensions: Width 80 cm, depth 60 cm, height total 80 cm (height backrest: 60 cm). CBM: 0.70.</p><p>Lounge chair with seat shell of laminated curved plywood with rosewood veneer, walnut nature or in black. Rotatable base made of aluminium cast black with polished edges or optionally fully chromed. Elaborate upholstery of pillows in leather.</p><p>All upholstery units are removable at the Eames Lounge chair (seat, armrest, backrest, headrest).</p>",
+				Sku = "Furniture-lounge-chair",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				Price = 1799.00M,
+				OldPrice = 1999.00M,
+				HasTierPrices = true,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				IsShipEnabled = true,
+				DeliveryTime = thirdDeliveryTime
+			};
+
+			loungeChair.ProductCategories.Add(new ProductCategory
+			{
+				Category = furnitureCategory,
+				DisplayOrder = 1
+			});
+
+			loungeChair.ProductPictures.Add(new ProductPicture
+			{
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_charles_eames_lounge_chair_white.jpg"), "image/jpeg", "charles_eames_lounge_chair_white"),
+				DisplayOrder = 1
+			});
+			loungeChair.ProductPictures.Add(new ProductPicture
+			{
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_charles_eames_lounge_chair_black.jpg"), "image/jpeg", "charles_eames_lounge_chair_black"),
+				DisplayOrder = 2
+			});
+
+			loungeChair.TierPrices.Add(new TierPrice
+			{
+				Quantity = 2,
+				Price = 1709.05M
+			});
+			loungeChair.TierPrices.Add(new TierPrice
+			{
+				Quantity = 4,
+				Price = 1664.08M
+			});
+			loungeChair.TierPrices.Add(new TierPrice
+			{
+				Quantity = 6,
+				Price = 1619.10M
+			});
+
+			result.Add(loungeChair);
 
 			return result;
 		}

@@ -821,6 +821,8 @@
     <Content Include="Content\samples\product_ball_chair_white.jpg" />
     <Content Include="Content\samples\product_bestgrillingrecipes.jpg" />
     <Content Include="Content\samples\product_certina_ds_podium_big.png" />
+    <Content Include="Content\samples\product_charles_eames_lounge_chair_black.jpg" />
+    <Content Include="Content\samples\product_charles_eames_lounge_chair_white.jpg" />
     <Content Include="Content\samples\product_clark_premium_jeans.jpg" />
     <Content Include="Content\samples\product_cookingfortwo.jpg" />
     <Content Include="Content\samples\product_corbusier_lc6_table_1.jpg" />

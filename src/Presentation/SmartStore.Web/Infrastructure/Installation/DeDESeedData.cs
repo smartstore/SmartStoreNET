@@ -2834,6 +2834,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.Name = "Stärke der Tischplatte";
 				})
+				.Alter("seat-shell", x =>
+				{
+					x.Name = "Sitzschale";
+				})
+				.Alter("base", x =>
+				{
+					x.Name = "Fußgestell";
+				})
 				.Alter("style", x =>
 				{
 					x.Name = "Ausführung";
@@ -2878,6 +2886,16 @@ namespace SmartStore.Web.Infrastructure.Installation
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "blue").Each(y => y.Name = "Blau");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "purple").Each(y => y.Name = "Violett");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "green").Each(y => y.Name = "Grün");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "anthracite").Each(y => y.Name = "Anthrazit");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "brown").Each(y => y.Name = "Braun");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "dark-brown").Each(y => y.Name = "Dunkelbraun");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "natural").Each(y => y.Name = "Naturfarben");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "biscuit").Each(y => y.Name = "Biskuit");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "dark-green").Each(y => y.Name = "Dunkelgrün");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "light-grey").Each(y => y.Name = "Hellgrau");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "dark-red").Each(y => y.Name = "Dunkelrot");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "hazelnut").Each(y => y.Name = "Haselnuss");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "fuliginous").Each(y => y.Name = "Rauchfarbig");
 			});
 
 			entities.Where(x => x.ProductAttribute.Alias == "iphone-color").Each(x =>
@@ -2891,10 +2909,29 @@ namespace SmartStore.Web.Infrastructure.Installation
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "prince-of-persia-the-forgotten-sands").Each(y => y.Name = "Prince of Persia \"Die vergessene Zeit\"");
 			});
 
+			entities.Where(x => x.ProductAttribute.Alias == "seat-shell").Each(x =>
+			{
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "cherry").Each(y => y.Name = "Kirsche");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "walnut").Each(y => y.Name = "Walnuss");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "wooden-black-lacquered").Each(y => y.Name = "Holz schwarz lackiert");
+			});
+
+			entities.Where(x => x.ProductAttribute.Alias == "base").Each(x =>
+			{
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "top-edge-polished").Each(y => y.Name = "Oberkante poliert");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "completely-polished").Each(y => y.Name = "Vollständig poliert");
+			});
+
 			entities.Where(x => x.ProductAttribute.Alias == "plate").Each(x =>
 			{
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "clear-glass").Each(y => y.Name = "Klarglas");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "sandblasted-glass").Each(y => y.Name = "Sandgestrahltes Glas");
+			});
+
+			entities.Where(x => x.ProductAttribute.Alias == "material").Each(x =>
+			{
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "leather-special").Each(y => y.Name = "Leder Spezial");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "leather-aniline").Each(y => y.Name = "Leder Anilin");
 			});
 		}
 
@@ -3066,6 +3103,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.Name = "Eero Aarnio Kugelsessel (1966)";
 					x.FullDescription = "<p>Der Ball Chair oder auch Globe Chair genannt, ist ein echtes Meisterwerk des legendären Designers Eero Aarnio. Der Kugelsessel aus den sechziger Jahren hat Designergeschichte geschrieben. Der eiförmig gestaltet Sessel ruht auf einem Trompetenfuss und wird nicht zu letzt aufgrund seiner Form und der ruhigen Atmophäre im Innern dieses Möbels besonders geschätzt. Das Design des Möbelkörpers lässt  Geräusche und störende Außenweltelemente in den Hintergurnd tretten. Ein Platz, wie geschaffen zum ausruhen und entspannen. Mit der großen Auswahl an Farben passt passt sich der Eyeball Chair jeder Wohn- und Arbeitsumgebung gekonnt an. Ein Sessel, der sich durch zeitloses Design auszeichnet und die Moderne immer im Blick haben wird. Der Ball Chair ist 360° zu drehen, um den Blick auf die Umgebung zu veränderen. Die Aussenschale in Fiberglas weiss oder schwarz. Der Bezug ist in Leder oder Linen Mixed.<p><p>Abmessung: Breite 102 cm, Tiefe 87 cm, Höhe 124 cm, Sitzhöhe: 44 cm.</p>";
+				})
+				.Alter("Furniture-lounge-chair", x =>
+				{
+					x.Name = "Charles Eames Lounge Sessel (1956)";
+					x.ShortDescription = "Club Sessel, Lounge Chair, Designer: Charles Eames, Breite 80 cm, Tiefe 80 cm, Höhe 60 cm, Sitzschale: Sperrholz, Fuß (drehbar): Aluminiumguss, Kissen (gepolstert) mit Lederbezug.";
+					x.FullDescription = "<p>So sitzt man in einem Baseball-Handschuh. Das war jedenfalls eine der Vorstellungen, die Charles Eames beim Entwurf dieses Clubsessels im Kopf hatte. Der Lounge Chair sollte ein Komfort-Sessel sein, in den man luxuriös einsinken kann. Durch die Konstruktion aus drei miteinander verbundenen, beweglichen Sitzschalen und einer bequemen Polsterung gelang Charles Eames die Umsetzung. Eigentlich ist der Clubsessel mit drehbarem Fuß ein Gegensatz zu den Bauhaus-Charakteristiken, die Minimalismus und Funktionalität in den Vordergrund stellten. Dennoch wurde er zu einem Klassiker der Bauhaus-Geschichte und sorgt noch heute in vielen Wohnräumen und Clubs für absoluten Komfort mit Stil.</p><p>Abmessung: Breite 80 cm, Tiefe 60 cm,  Höhe Gesamt 80 cm (Höhe Rückenlehne: 60 cm). CBM: 0,70.</p><p>Verarbeitung: Lounge Chair mit Sitzschale aus schichtverleimten gebogenen Sperrholz mit Palisander furniert, Nussbaum natur oder in schwarz. Drehbarer Fuß aus Aluminiumguss schwarz mit polierten Kanten oder auch wahlweise vollständig verchromt. Aufwendige Polsterung der Kissen in Leder.</p><p>Alle POLSTEREINHEITEN sind bei dem EAMES LOUNGE CHAIR (Sitz, Armlehne, Rückenlehne, Kopflehne) abnehmbar.</p><p></p>";
 				});
 		}
 

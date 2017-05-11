@@ -318,19 +318,19 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                model.OperatingSystem = Environment.OSVersion.VersionString;
+                model.OperatingSystem = "{0} (x{1})".FormatInvariant(Environment.OSVersion.VersionString, Environment.Is64BitProcess ? "64" : "32");
             }
-            catch (Exception) { }
+            catch { }
             try
             {
                 model.AspNetInfo = RuntimeEnvironment.GetSystemVersion();
             }
-            catch (Exception) { }
+            catch { }
             try
             {
                 model.IsFullTrust = AppDomain.CurrentDomain.IsFullyTrusted.ToString();
             }
-            catch (Exception) { }
+            catch { }
 
             model.ServerTimeZone = TimeZone.CurrentTimeZone.StandardName;
             model.ServerLocalTime = DateTime.Now;

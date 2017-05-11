@@ -64,7 +64,7 @@
                 }
 
                 function hideClone(el) {
-                    el.stop(true, true).transition({
+                    el.stop(true, true).animate({
                         width: width,
                         height: height,
                         top: top,

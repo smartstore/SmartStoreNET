@@ -6819,26 +6819,26 @@ namespace SmartStore.Data.Setup
 
             #region attributePs3OneGameFree
 
-            var productPs3OneGameFree = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS310111");
+   //         var productPs3OneGameFree = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS310111");
 
-			var attributePs3OneGameFree = new ProductVariantAttribute()
-			{
-				Product = productPs3OneGameFree,
-				ProductAttribute = attrGames,
-				IsRequired = true,
-				DisplayOrder = 1,
-				AttributeControlType = AttributeControlType.DropdownList
-			};
+			//var attributePs3OneGameFree = new ProductVariantAttribute()
+			//{
+			//	Product = productPs3OneGameFree,
+			//	ProductAttribute = attrGames,
+			//	IsRequired = true,
+			//	DisplayOrder = 1,
+			//	AttributeControlType = AttributeControlType.DropdownList
+			//};
 
-			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "Minecraft - Playstation 4 Edition",
-				Alias = "minecraft-playstation4edition",
-				DisplayOrder = 1,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.ProductLinkage,
-				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "PD-Minecraft4ps4").Id
-			});
+			//attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "Minecraft - Playstation 4 Edition",
+			//	Alias = "minecraft-playstation4edition",
+			//	DisplayOrder = 1,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.ProductLinkage,
+			//	LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "PD-Minecraft4ps4").Id
+			//});
 
 			//attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			//{
@@ -6850,27 +6850,27 @@ namespace SmartStore.Data.Setup
 			//	LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-watchdogs").Id
 			//});
 
-			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "Horizon Zero Dawn - PlayStation 4",
-				Alias = "horizon-zero-dawn-playStation-4",
-				DisplayOrder = 3,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.ProductLinkage,
-				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "PD-ZeroDown4PS4").Id
-			});
+			//attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "Horizon Zero Dawn - PlayStation 4",
+			//	Alias = "horizon-zero-dawn-playStation-4",
+			//	DisplayOrder = 3,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.ProductLinkage,
+			//	LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "PD-ZeroDown4PS4").Id
+			//});
 
-			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "LEGO Worlds - PlayStation 4",
-                Alias = "lego-worlds-playstation_4",
-				DisplayOrder = 4,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.ProductLinkage,
-				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Gaming-Lego-001").Id
-			});
+			//attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "LEGO Worlds - PlayStation 4",
+   //             Alias = "lego-worlds-playstation_4",
+			//	DisplayOrder = 4,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.ProductLinkage,
+			//	LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Gaming-Lego-001").Id
+			//});
 
-			entities.Add(attributePs3OneGameFree);
+			//entities.Add(attributePs3OneGameFree);
 
 			#endregion attributePs3OneGameFree
 
@@ -12730,7 +12730,7 @@ namespace SmartStore.Data.Setup
                 ProductTemplateId = productTemplate.Id,
                 AllowCustomerReviews = true,
                 Published = true,
-                MetaTitle = "RANSOCEAN CHRONOGRAPH",
+                MetaTitle = "TRANSOCEAN CHRONOGRAPH",
                 ShowOnHomePage = true,
                 Price = 24110.00M,
                 OldPrice = 26230.00M,
@@ -13706,37 +13706,37 @@ namespace SmartStore.Data.Setup
             #endregion Lego Worlds
 
             #region Ps3PlusOneGame
-            var productPs3OneGame = new Product()
-            {
-                ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
-                Sku = "Sony-PS310111",
-                Name = "PlayStation 3 plus game cheaper",
-                ShortDescription = "Our special offer: PlayStation 3 plus one game of your choise cheaper.",
-                FullDescription = productPs3.FullDescription,
-                ProductTemplateId = productTemplate.Id,
-                AllowCustomerReviews = true,
-                Published = true,
-                MetaTitle = "PlayStation 3 plus game cheaper",
-                Price = 160.00M,
-                ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-                OrderMinimumQuantity = 1,
-                OrderMaximumQuantity = 3,
-                StockQuantity = 10000,
-                NotifyAdminForQuantityBelow = 1,
-                AllowBackInStockSubscriptions = false,
-                IsShipEnabled = true,
-                DeliveryTime = firstDeliveryTime
-            };
+            //var productPs3OneGame = new Product()
+            //{
+            //    ProductType = ProductType.SimpleProduct,
+            //    VisibleIndividually = true,
+            //    Sku = "Sony-PS310111",
+            //    Name = "PlayStation 3 plus game cheaper",
+            //    ShortDescription = "Our special offer: PlayStation 3 plus one game of your choise cheaper.",
+            //    FullDescription = productPs3.FullDescription,
+            //    ProductTemplateId = productTemplate.Id,
+            //    AllowCustomerReviews = true,
+            //    Published = true,
+            //    MetaTitle = "PlayStation 3 plus game cheaper",
+            //    Price = 160.00M,
+            //    ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+            //    OrderMinimumQuantity = 1,
+            //    OrderMaximumQuantity = 3,
+            //    StockQuantity = 10000,
+            //    NotifyAdminForQuantityBelow = 1,
+            //    AllowBackInStockSubscriptions = false,
+            //    IsShipEnabled = true,
+            //    DeliveryTime = firstDeliveryTime
+            //};
 
-            productPs3OneGame.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
-            productPs3OneGame.ProductCategories.Add(new ProductCategory() { Category = categoryGaming, DisplayOrder = 6 });
+            //productPs3OneGame.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuSony, DisplayOrder = 1 });
+            //productPs3OneGame.ProductCategories.Add(new ProductCategory() { Category = categoryGaming, DisplayOrder = 6 });
 
-            productPs3OneGame.ProductPictures.Add(new ProductPicture()
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps3_plus_game.png"), "image/png", GetSeName(productPs3OneGame.Name)),
-                DisplayOrder = 1
-            });
+            //productPs3OneGame.ProductPictures.Add(new ProductPicture()
+            //{
+            //    Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps3_plus_game.png"), "image/png", GetSeName(productPs3OneGame.Name)),
+            //    DisplayOrder = 1
+            //});
 
             #endregion Ps3PlusOneGame
 
@@ -13755,7 +13755,7 @@ namespace SmartStore.Data.Setup
 				productPs3, productMinecraft, productBundlePs3AssassinCreed,
 				productPs4, productDualshock4Controller, productPs4Camera, productBundlePs4,
 				productGroupAccessories,
-				productPrinceOfPersia, productLegoWorlds,productHorizonZeroDown,productFifa17,productPs3OneGame
+				productPrinceOfPersia, productLegoWorlds,productHorizonZeroDown,productFifa17
             };
 
             entities.AddRange(GetFashionProducts());

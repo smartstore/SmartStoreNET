@@ -3571,15 +3571,15 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 				#endregion computer
 
-				#region SmartPhones
+				#region Apple
 				
 				#region Apple iPhone
 				
-				.Alter("Apple iPhone 6", x =>
+				.Alter("iPhone Plus", x =>
 				{
-					x.ShortDescription = "Apple iPhone 6 Simlock frei Neu";
-					x.FullDescription = "<p>Das iPhone 6 ist nicht einfach nur größer. Es ist wirklich in allem besser. Es ist länger und breiter, aber deutlich dünner. Leistungsstärker, aber unglaublich energieeffizient. Seine glatte Oberfläche aus Metall schließt nahtlos an das neue Retina HD Display an. So entsteht eine durchgehende Form, in der Hardware und Software in perfekter Einheit zusammenarbeiten – für eine neue iPhone Generation, die nach allen Maßstäben besser ist.</p><p>Das iPhone 6 kommt mit einem A8 Chip auf Basis einer 64 Bit Desktoparchitektur der zweiten Generation. Seine unglaubliche Leistung wird durch einen M8 Motion Coprozessor erweitert, der Aktivität mit fortschrittlichen Sensoren ermittelt, darunter auch ein neues Barometer.</p><p>Mit keiner anderen Kamera werden von so vielen Menschen so viele Fotos gemacht wie mit dem iPhone. Jetzt hat die iSight Kamera einen neuen Sensor mit Focus Pixels und neue Videofunktionen wie 1080p HD Videos mit 60 Bildern pro Sekunde, Zeitlupenvideos mit 240 Bildern pro Sekunde und Zeitraffervideo.</p><p><ul><li>Abmessungen (HxBxT)	138.1 x 67 x 6.9 Millimeter</li><li>Gewicht	129 Gramm</li><li>Strahlungswert (SAR-Wert)	unbekannt</li><li>Erscheinungstermin	09/2014</li><li>Betriebssystem	Apple iOS</li><li>Systemversion	8.0</li><li>Netzstandards	GSM1800 GSM1900 GSM850 GSM900W-CDMA (UMTS)</li><li>Flugzeugmodus	ja</li><li>Akku-Typ	Li-Ionen</li><li>Akkuleistung	1810 mAh</li><li>max. Bereitschaftszeit	250 Stunden</li><li>max. Sprechzeit	840 Minuten</li></ul></p>";
-					x.Price = 579.00M;
+					x.ShortDescription = "Das ist iPhone. Das iPhone macht vieles von dem, was das iPhone zum iPhone macht, noch einmal viel besser. Es hat fortschrittliche neue Kamerasysteme. Die beste Leistung und Batterielaufzeit, die ein iPhone je hatte. Beeindruckende Stereo-Lautsprecher. Das hellste iPhone Display. Mit noch mehr Farben. Schutz vor Spritzwasser. Und es sieht so großartig aus, wie es ist. Das ist das iPhone.";
+					x.FullDescription = "";
+					x.Price = 799.00M;
 					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
@@ -3592,14 +3592,77 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.IsShipEnabled = true;
 					x.ProductReviews.Clear();
 				})
-				#endregion Apple iPhone
+                #endregion Apple iPhone
 
-				#endregion SmartPhones
+                #region Airpods
 
-				#region Instant Downloads
-				
+                .Alter("AirPods", x =>
+                {
+                    x.ShortDescription = "Einfach. Kabellos. Magisch.Du nimmst sie aus dem Case und sie sind bereit für all deine Geräte. Du steckst sie in die Ohren und sie verbinden sich sofort. Du sprichst hinein und deine Stimme ist klar zu verstehen. Die neuen AirPods. Einfachheit und Technologie, verbunden wie nie zuvor. Für ein Ergebnis, das einfach magisch ist.";
+                    x.FullDescription = "<p>  <br />  Die AirPods verändern für immer, wie du Kopfhörer verwendest. Wenn du deine AirPods aus dem Ladecase nimmst, schalten sie sich ein und verbinden sich mit deinem iPhone, iPad, Mac oder deiner Apple Watch.(1) Audio wird automatisch wiedergegeben, sobald du sie im Ohr hast, und pausiert, wenn du sie herausnimmst. Um die Lautstärke anzupassen, den Song zu wechseln, jemanden anzurufen oder dir den Weg sagen zu lassen, aktiviere einfach Siri mit einem Doppeltipp.  <br />  Die AirPods werden vom speziell entwickelten Apple W1 Chip gesteuert und erkennen durch optische Sensoren und einen Beschleunigungssensor, ob sie in deinem Ohr sind. Der W1 Chip leitet die Audiosignale automatisch weiter und aktiviert das Mikrofon – egal, ob du beide oder nur einen verwendest. Und wenn du gerade telefonierst oder mit Siri sprichst, filtert ein weiterer Beschleunigungsmesser mit wellenbündelnden Mikrofonen Hintergrundgeräusche heraus und hebt deine Stimme hervor. Da der extrem energieeffiziente W1 Chip die Batterieleistung so gut steuert, bieten die AirPods eine einzigartige Wiedergabedauer von bis zu 5 Std. pro Aufladung.(2) Und dank des Ladecase, das mehrere zusätzliche Aufladungen für insgesamt über 24 Std. Wiedergabe bietet, halten sie locker bei allem mit, was du so machst.(3) Schnell mal aufladen? Nach nur 15 Minuten im Ladecase kannst du 3 Stunden Musik hören.(4)</p><p><strong>Technische Daten</strong>  <br />  Bluetooth  <br />  Drahtlose Technologien  <br />  <strong>Gewicht</strong>  <br />  AirPods (jeweils): 4 g  <br />  Ladecase: 38 g  <br />  <strong>Abmessungen</strong>  <br />  AirPods (jeweils): 16,5 x 18,0 x 40,5 mm  <br />  Ladecase: 44,3 x 21,3 x 53,5 mm  <br />  <strong>Anschlüsse</strong>  <br />  AirPods: Bluetooth  <br />  Ladecase: Lightning Connector  <br />  <strong>AirPods Sensoren (jeweils):</strong>  <br />  Zwei Beamforming Mikrofone  <br />  Zwei optische Sensoren  <br />  Bewegungsbeschleunigungsmesser  <br />  Stimmbeschleunigungsmesser  <br />  <strong>Stromversorgung und Batterie</strong>  <br />  AirPods mit Ladecase: Mehr als 24 Stunden Wiedergabe, (3) bis zu 11 Stunden Sprechdauer(6)  <br />  AirPods (einzelne Ladung): Bis zu 5 Stunden Wiedergabe,(2) bis zu 2 Stunden Sprechdauer(5)  <br />  15 Minuten im Case entspricht 3 Stunden Wiedergabe(4) oder mehr als 1 Stunde Sprechdauer(7)</p><p></p>";
+                    //x.Price = 799.00M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion Airpods
+
+                #region Ultimate Apple Pro Hipster Bundle
+
+                .Alter("Ultimate Apple Pro Hipster Bundle", x =>
+                {
+                    x.ShortDescription = "Sparen Sie mit diesem Set 5%!";
+                    x.FullDescription = "<p>Als Apple-Fan und Hipster ist es Ihr Grundbedürfnis immer die neusten Apple-Produkte zu haben.&nbsp;  <br />  Damit Sie nicht vier Mal im Jahr vor dem Apple-Store nächtigen müssen, abonnieren Sie einfach das <strong>Ultimate Apple Pro Hipster Set im Jahres Abo</strong>!</p><p></p>";
+                    //x.Price = 799.00M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion Ultimate Apple Pro Hipster Bundle
+
+                #region 9,7 iPad
+
+                .Alter("9,7' iPad", x =>
+                {
+                    x.ShortDescription = "Macht einfach Spaß. Lernen, spielen, surfen, kreativ werden. Mit dem iPad hast du ein unglaubliches Display, großartige Leistung und Apps für alles, was du gerne machst. Überall. Einfach. Magisch.";
+                    x.FullDescription = "<ul>  <li>9,7'' Retina Display mit True Tone und Antireflex-Beschichtung (24,63 cm Diagonale)</li>  <li>A9X Chip der dritten Generation mit 64-Bit Desktoparchitektur</li>  <li>Touch ID Fingerabdrucksensor</li></ul>";
+                    //x.Price = 799.00M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion 9,7 iPad
+
+                #endregion Apple
+
+                #region Instant Downloads
+
                 #region Antonio Vivildi: then spring
-                
+
                 .Alter("Antonio Vivaldi: spring", x =>
 				{
 					x.Name = "Antonio Vivaldi: Der Frühling";
@@ -3629,7 +3692,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("Certina DS Podium Big Size", x =>
 				{
 					x.Name = "Certina DS Podium Big Size Herrenchronograph";
-					x.ShortDescription = "C001.617.26.037.00";
+					x.ShortDescription = "Die Transocean Chronograph interpretiert die sachliche Ästhetik klassischer Chronografen der 1950er- und 1960er-Jahre in einem entschieden zeitgenössischen Stil neu. ";
 					x.FullDescription = "<p><strong>Produktbeschreibung</strong></p> <ul> <li>Artikelnr.: 3528 C001.617.26.037.00</li> <li>Certina DS Podium Big Size Herrenchronograph</li> <li>Schweizer ETA Werk</li> <li>Silberfarbenes Edelstahlgeh&auml;use mit schwarzer L&uuml;nette</li> <li>Wei&szlig;es Zifferblatt mit silberfarbenen Ziffern und Indizes</li> <li>Schwarzes Lederarmband mit Faltschliesse</li> <li>Kratzfestes Saphirglas</li> <li>Datumsanzeige</li> <li>Tachymeterskala</li> <li>Chronograph mit Stoppfunktion</li> <li>Durchmesser: 42 mm</li> <li>Wasserdichtigkeits -Klassifizierung 10 Bar (nach ISO 2281): Perfekt zum Schwimmen und Schnorcheln</li> <li>100 Tage Niedrigpreisgarantie, bei uhrzeit.org kaufen Sie ohne Preisrisiko!</li> </ul>";
 					x.Price = 479.00M;
 					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
@@ -3645,13 +3708,79 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ProductReviews.Clear();
 				})
 
-				#endregion Certina DS Podium Big Size
-				
+                #endregion Certina DS Podium Big Size
+
+                #region productTRANSOCEANCHRONOGRAPH 
+                .Alter("TRANSOCEAN CHRONOGRAPH", x =>
+                {
+                    //x.Name = "TRANSOCEAN CHRONOGRAPH";
+                    x.ShortDescription = "Die Transocean Chronograph interpretiert die sachliche Ästhetik klassischer Chronografen der 1950er- und 1960er-Jahre in einem entschieden zeitgenössischen Stil neu. ";
+                    x.FullDescription = "<p>Die Transocean Chronograph interpretiert die sachliche Ästhetik klassischer Chronografen der 1950er- und 1960er-Jahre in einem entschieden zeitgenössischen Stil neu. In ihrem auf das Wesentliche reduzierten, formschönen Gehäuse arbeitet das vollständig in den Breitling-Ateliers konzipierte und hergestellte Hochleistungskaliber 01.</p><p></p><table>  <tbody>    <tr>      <td style='width: 162px;'>Kaliber      </td>      <td style='width: 205px;'>Breitling 01 (Manufakturkaliber)      </td>    </tr>    <tr>      <td style='width: 162px;'>Werk      </td>      <td style='width: 205px;'>Mechanisch, Automatikaufzug      </td>    </tr>    <tr>      <td style='width: 162px;'>Gangreserve      </td>      <td style='width: 205px;'>Min. 70 Stunden      </td>    </tr>    <tr>      <td style='width: 162px;'>Chronograf      </td>      <td style='width: 205px;'>1/4-Sekunde, 30 Minuten, 12 Stunden      </td>    </tr>    <tr>      <td style='width: 162px;'>Halbschwingungen      </td>      <td style='width: 205px;'>28 800 a/h      </td>    </tr>    <tr>      <td style='width: 162px;'>Rubine      </td>      <td style='width: 205px;'>47 Rubine      </td>    </tr>    <tr>      <td style='width: 162px;'>Kalender      </td>      <td style='width: 205px;'>Fenster      </td>    </tr>  </tbody></table>";
+                    //x.Price = 479.00M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+
+                #endregion productTRANSOCEANCHRONOGRAPH
+
+                #region productTissotTTouchExpertSolar 
+                .Alter("Tissot T-Touch Expert Solar", x =>
+                {
+                    //x.Name = "TRANSOCEAN CHRONOGRAPH";
+                    x.ShortDescription = "Der Strahlenkranz der Tissot T-Touch Expert Solar auf dem Zifferblatt sorgt einerseits dafür, dass die mit Super-LumiNova® beschichteten Indexe und Zeiger im Dunkeln leuchten und lädt andererseits den Akku der Uhr. Dieses Modell ist in jeder Beziehung ein Kraftpaket.";
+                    x.FullDescription = "<p>Der T-Touch Expert Solar ist ein wichtiges neues Modell im Tissot Sortiment.</p><p>Tissots Pioniergeist ist das, was 1999 zur Schaffung von taktilen Uhren geführt hat.</p><p>Heute ist es der erste, der eine Touchscreen-Uhr mit Sonnenenergie präsentiert und seine Position als Marktführer in der taktilen Technologie in der Uhrmacherei bestätigt.</p><p>Extrem gut entworfen, zeigt es saubere Linien in Sport und zeitlose Stücke.</p><p>Angetrieben von Solarenergie mit 25 Features wie Wettervorhersage, Höhenmesser, zweite Zeitzone und Kompass ist es der perfekte Reisebegleiter.</p>";
+                    //x.Price = 479.00M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+
+                #endregion productTRANSOCEANCHRONOGRAPH
+
+                #region productSeikoSRPA49K1 
+                .Alter("Seiko Mechanical Automatic SRPA49K1", x =>
+                {
+                    x.Name = "Seiko Automatikuhr SRPA49K1";
+                    x.ShortDescription = "Der perfekte Begleiter für den Alltag! Die formschöne Automatikuhr besticht durch ansprechendes Design und ergänzt stilvoll nahezu jedes Outfit.";
+                    x.FullDescription = "<p><strong>Seiko 5 Sport Automatikuhr SRPA49K1 SRPA49</strong></p><p></p><ul>  <li>Unidirektionale drehbare Lünette</li>  <li>Tages- und Datumsanzeige</li>  <li>Siehe durch Fall zurück</li>  <li>100M Wasserresistenz</li>  <li>Edelstahlgehäuse</li>  <li>Automatische Bewegung</li>  <li>24 Juwelen</li>  <li>Kaliber: 4R36</li></ul>";
+                    //x.Price = 479.00M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+
+                #endregion productSeikoSRPA49K1
+
                 #endregion watches
 
-				#region gaming
+                #region gaming
 
-				.Alter("Playstation 3 Super Slim", x =>
+                .Alter("Playstation 3 Super Slim", x =>
 				{
 					x.ShortDescription = "Die Sony PlayStation 3 ist die Multi-Media-Console für die nächste Generation digitalem Home-Entertainment. Mit der Blu-Ray-Technologie genießen Sie Filme in HD.";
 					x.FullDescription = ps3FullDescription;

@@ -1059,6 +1059,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\underscore.js" />
+    <Content Include="Themes\FlexBlue\preview.png" />
     <Content Include="Themes\FlexBlack\preview.png" />
     <Content Include="Themes\Flex\Content\css\fontastic.css" />
     <Content Include="Themes\Flex\Content\css\fonts\fontastic.svg" />
@@ -1199,6 +1200,14 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Themes\FlexBlack\theme.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Themes\FlexBlue\Content\_custom.scss" />
+    <Content Include="Themes\FlexBlue\Content\_user.scss" />
+    <Content Include="Themes\FlexBlue\theme.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Themes\FlexBlue\Views\Web.config">
       <SubType>Designer</SubType>
     </Content>
     <None Include="Themes\Flex\Content\vendors\photoswipe\LICENSE" />

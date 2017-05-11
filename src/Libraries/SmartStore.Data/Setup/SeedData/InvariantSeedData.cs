@@ -4838,90 +4838,6 @@ namespace SmartStore.Data.Setup
 
 		public IList<SpecificationAttribute> SpecificationAttributes()
 		{
-            // var entities = new List<SpecificationAttribute>
-
-            #region predefined older attributes
-
-            //    var sa1 = new SpecificationAttribute
-            //{
-            //    Name = "Screensize",
-            //    DisplayOrder = 1,
-            //};
-            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "10.0''",
-            //    DisplayOrder = 3,
-            //});
-            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "14.1''",
-            //    DisplayOrder = 4,
-            //});
-            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "15.4''",
-            //    DisplayOrder = 5,
-            //});
-            //sa1.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "16.0''",
-            //    DisplayOrder = 6,
-            //});
-            //var sa2 = new SpecificationAttribute
-            //{
-            //    Name = "CPU Type",
-            //    DisplayOrder = 2,
-            //};
-            //sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "AMD",
-            //    DisplayOrder = 1,
-            //});
-            //sa2.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "Intel",
-            //    DisplayOrder = 2,
-            //});
-            //var sa3 = new SpecificationAttribute
-            //{
-            //    Name = "Memory",
-            //    DisplayOrder = 3,
-            //};
-            //sa3.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "1 GB",
-            //    DisplayOrder = 1,
-            //});
-            //sa3.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "3 GB",
-            //    DisplayOrder = 2,
-            //});
-            //var sa4 = new SpecificationAttribute
-            //{
-            //    Name = "Hardrive",
-            //    DisplayOrder = 5,
-            //};
-            //sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "320 GB",
-            //    DisplayOrder = 7,
-            //});
-            //sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "250 GB",
-            //    DisplayOrder = 4,
-            //});
-            //sa4.SpecificationAttributeOptions.Add(new SpecificationAttributeOption()
-            //{
-            //    Name = "160 GB",
-            //    DisplayOrder = 3,
-            //});
-
-            #endregion predefined older attributes
-
-            #region new attributes
-
             #region sa1 CPU-Manufacturer
 
             var sa1 = new SpecificationAttribute
@@ -5269,12 +5185,22 @@ namespace SmartStore.Data.Setup
                 Name = "rubber",
                 DisplayOrder = 12,
             });
+			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
+			{
+				Name = "wood",
+				DisplayOrder = 13,
+			});
+			sa8.SpecificationAttributeOptions.Add(new SpecificationAttributeOption
+			{
+				Name = "glass",
+				DisplayOrder = 14,
+			});
 
-            #endregion sa8 material
+			#endregion sa8 material
 
-            #region sa9 movement
+			#region sa9 movement
 
-            var sa9 = new SpecificationAttribute
+			var sa9 = new SpecificationAttribute
 			{
 				Name = "Movement",
 				DisplayOrder = 9,
@@ -6075,10 +6001,6 @@ namespace SmartStore.Data.Setup
             });
 
             #endregion sa29 type of fabric
-
-
-
-            #endregion new attributes
 
             var entities = new List<SpecificationAttribute>
 			{
@@ -7451,10 +7373,10 @@ namespace SmartStore.Data.Setup
 			});
 			entities.Add(attrLoungeChairBase);
 
-			var attrLoungeChairColor = new ProductVariantAttribute
+			var attrLoungeChairLeatherColor = new ProductVariantAttribute
 			{
 				Product = productLoungeChair,
-				ProductAttribute = attrColor,
+				ProductAttribute = attrLeatherColor,
 				IsRequired = true,
 				DisplayOrder = 4,
 				AttributeControlType = AttributeControlType.Boxes
@@ -7462,7 +7384,7 @@ namespace SmartStore.Data.Setup
 
 			for (var i = 0; i < generalColors.Length; ++i)
 			{
-				attrLoungeChairColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				attrLoungeChairLeatherColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
 				{
 					Name = generalColors[i].Name,
 					Alias = generalColors[i].Name.Replace(" ", "-").ToLower(),
@@ -7472,7 +7394,62 @@ namespace SmartStore.Data.Setup
 					IsPreSelected = (generalColors[i].Name == "White")
 				});
 			}
-			entities.Add(attrLoungeChairColor);
+			entities.Add(attrLoungeChairLeatherColor);
+
+			#endregion
+
+			#region Furniture - Cube chair
+
+			var productCubeChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-cube-chair");
+
+			var attrCubeChairMaterial = new ProductVariantAttribute
+			{
+				Product = productCubeChair,
+				ProductAttribute = attrMaterial,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+			attrCubeChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Leather Special",
+				Alias = "leather-special",
+				DisplayOrder = 1,
+				Quantity = 1,
+				IsPreSelected = true
+			});
+			attrCubeChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Leather Aniline",
+				Alias = "leather-aniline",
+				DisplayOrder = 2,
+				Quantity = 1,
+				PriceAdjustment = 400.00M
+			});
+			entities.Add(attrCubeChairMaterial);
+
+			var attrCubeChairLeatherColor = new ProductVariantAttribute
+			{
+				Product = productCubeChair,
+				ProductAttribute = attrLeatherColor,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.Boxes
+			};
+
+			for (var i = 0; i < generalColors.Length; ++i)
+			{
+				attrCubeChairLeatherColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				{
+					Name = generalColors[i].Name,
+					Alias = generalColors[i].Name.Replace(" ", "-").ToLower(),
+					DisplayOrder = i + 1,
+					Quantity = 1,
+					Color = generalColors[i].Color,
+					IsPreSelected = (generalColors[i].Name == "Black")
+				});
+			}
+			entities.Add(attrCubeChairLeatherColor);
 
 			#endregion
 
@@ -9618,6 +9595,12 @@ namespace SmartStore.Data.Setup
 			var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
 			var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
 			var furnitureCategory = _ctx.Set<Category>().First(x => x.MetaTitle == "Furniture");
+			var specOptionLeather = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 5);
+			var specOptionWood = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 13);
+			var specOptionPlastic = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 3);
+			var specOptionGlass = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 14);
+			var specOptionSteel = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 1);
+			var specOptionAluminium = _ctx.Set<SpecificationAttribute>().First(x => x.DisplayOrder == 8).SpecificationAttributeOptions.First(x => x.DisplayOrder == 4);
 
 			// Le Corbusier LC 6 table
 			var corbusierTable = new Product
@@ -9672,6 +9655,21 @@ namespace SmartStore.Data.Setup
 				Price = 636.65M
 			});
 
+			corbusierTable.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 1,
+				SpecificationAttributeOption = specOptionSteel
+			});
+			corbusierTable.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 2,
+				SpecificationAttributeOption = specOptionGlass
+			});
+
 			result.Add(corbusierTable);
 
 			// Ball Chair
@@ -9681,7 +9679,7 @@ namespace SmartStore.Data.Setup
 				VisibleIndividually = true,
 				Name = "Eero Aarnio Ball Chair (1966)",
 				MetaTitle = "Eero Aarnio Ball Chair (1966)",
-				FullDescription = "<p>The ball chair, or also called the Globe chair, is a real masterpiece of the legendary designer Eero Aarnio. The ball chair from the Sixties has written designer history. The egg designed armchair rests on a trumpet foot and is not lastly appreciated due to its shape and the quiet atmosphere inside this furniture. The design of the furniture body allows noise and disturbing outer world elements in the Hintergurnd us. A place as created for resting and relaxing. With its wide range of colours, the eyeball chair fits in every living and working environment. A chair that stands out for its timeless design and always has the modern look. The ball chair is 360° to rotate to change the view of the surroundings. The outer shell in fiberglass white or black. The upholstery is mixed in leather or linen.</p><p>Dimension: Width 102 cm, depth 87 cm, height 124 cm, seat height: 44 cm.</p>",
+				FullDescription = "<p>The ball chair, or also called the globe chair, is a real masterpiece of the legendary designer Eero Aarnio. The ball chair from the Sixties has written designer history. The egg designed armchair rests on a trumpet foot and is not lastly appreciated due to its shape and the quiet atmosphere inside this furniture. The design of the furniture body allows noise and disturbing outer world elements in the Hintergurnd us. A place as created for resting and relaxing. With its wide range of colours, the eyeball chair fits in every living and working environment. A chair that stands out for its timeless design and always has the modern look. The ball chair is 360° to rotate to change the view of the surroundings. The outer shell in fiberglass white or black. The upholstery is mixed in leather or linen.</p><p>Dimension: Width 102 cm, depth 87 cm, height 124 cm, seat height: 44 cm.</p>",
 				Sku = "Furniture-ball-chair",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
@@ -9723,6 +9721,21 @@ namespace SmartStore.Data.Setup
 			{
 				Quantity = 4,
 				Price = 1869.15M
+			});
+
+			ballChair.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 1,
+				SpecificationAttributeOption = specOptionPlastic
+			});
+			ballChair.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 2,
+				SpecificationAttributeOption = specOptionLeather
 			});
 
 			result.Add(ballChair);
@@ -9785,7 +9798,86 @@ namespace SmartStore.Data.Setup
 				Price = 1619.10M
 			});
 
+			loungeChair.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 1,
+				SpecificationAttributeOption = specOptionWood
+			});
+			loungeChair.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 2,
+				SpecificationAttributeOption = specOptionLeather
+			});
+			loungeChair.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 3,
+				SpecificationAttributeOption = specOptionAluminium
+			});
+
 			result.Add(loungeChair);
+
+			// Cube chair
+			var cubeChair = new Product
+			{
+				ProductType = ProductType.SimpleProduct,
+				VisibleIndividually = true,
+				Name = "Josef Hoffmann cube chair (1910)",
+				MetaTitle = "Josef Hoffmann cube chair (1910)",
+				ShortDescription = "Armchair Cube, Designer: Josef Hoffmann, width 93 cm, depth 72 cm, height 77 cm, basic frame: solid beech wood, upholstery: solid polyurethane foam (shape resistant), Upholstery: leather",
+				FullDescription = "<p>The cube chair by Josef Hoffmann holds what the name promises and that is the same in two respects. It consists of many squares, both in terms of construction and in relation to the design of the surface. In addition, the cube, with its purely geometric form, was a kind of harbinger of cubism. The chair by Josef Hoffmann was designed in 1910 and still stands today as a replica in numerous business and residential areas.</p><p>Originally, the cube was a club chair. Together with the two-and three-seater sofa of the series, a cosy sitting area with a sophisticated charisma is created. The basic frame of the armchair is made of wood. The form-resistant upholstery is covered with leather and has been shaped visually to squares with a special sewing.</p><p>Dimensions: Width 93 cm, depth 72 cm, height 77 cm. CBM: 0.70.</p>",
+				Sku = "Furniture-cube-chair",
+				ProductTemplateId = productTemplateSimple.Id,
+				AllowCustomerReviews = true,
+				Published = true,
+				Price = 2299.00M,
+				HasTierPrices = true,
+				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+				OrderMinimumQuantity = 1,
+				OrderMaximumQuantity = 10000,
+				StockQuantity = 10000,
+				NotifyAdminForQuantityBelow = 1,
+				IsShipEnabled = true,
+				DeliveryTime = thirdDeliveryTime
+			};
+
+			cubeChair.ProductCategories.Add(new ProductCategory
+			{
+				Category = furnitureCategory,
+				DisplayOrder = 1
+			});
+
+			cubeChair.ProductPictures.Add(new ProductPicture
+			{
+				Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_hoffmann_cube_chair_black.jpg"), "image/jpeg", "hoffmann_cube_chair_black"),
+				DisplayOrder = 1
+			});
+
+			cubeChair.TierPrices.Add(new TierPrice
+			{
+				Quantity = 4,
+				Price = 1899.05M
+			});
+			cubeChair.TierPrices.Add(new TierPrice
+			{
+				Quantity = 6,
+				Price = 1799.10M
+			});
+
+			cubeChair.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
+			{
+				AllowFiltering = true,
+				ShowOnProductPage = true,
+				DisplayOrder = 1,
+				SpecificationAttributeOption = specOptionLeather
+			});
+
+			result.Add(cubeChair);
 
 			return result;
 		}

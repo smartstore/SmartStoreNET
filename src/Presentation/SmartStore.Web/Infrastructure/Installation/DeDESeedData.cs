@@ -2537,6 +2537,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 9).Name = "Baumwolle";
 						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 10).Name = "100% Bio-Baumwolle";
 						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 11).Name = "Polyamid";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 12).Name = "Gummi";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 13).Name = "Holz";
+						x.SpecificationAttributeOptions.First(y => y.DisplayOrder == 14).Name = "Glas";
 					})
             #endregion
 
@@ -3107,6 +3110,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.Name = "Charles Eames Lounge Sessel (1956)";
 					x.ShortDescription = "Club Sessel, Lounge Chair, Designer: Charles Eames, Breite 80 cm, Tiefe 80 cm, Höhe 60 cm, Sitzschale: Sperrholz, Fuß (drehbar): Aluminiumguss, Kissen (gepolstert) mit Lederbezug.";
 					x.FullDescription = "<p>So sitzt man in einem Baseball-Handschuh. Das war jedenfalls eine der Vorstellungen, die Charles Eames beim Entwurf dieses Clubsessels im Kopf hatte. Der Lounge Chair sollte ein Komfort-Sessel sein, in den man luxuriös einsinken kann. Durch die Konstruktion aus drei miteinander verbundenen, beweglichen Sitzschalen und einer bequemen Polsterung gelang Charles Eames die Umsetzung. Eigentlich ist der Clubsessel mit drehbarem Fuß ein Gegensatz zu den Bauhaus-Charakteristiken, die Minimalismus und Funktionalität in den Vordergrund stellten. Dennoch wurde er zu einem Klassiker der Bauhaus-Geschichte und sorgt noch heute in vielen Wohnräumen und Clubs für absoluten Komfort mit Stil.</p><p>Abmessung: Breite 80 cm, Tiefe 60 cm,  Höhe Gesamt 80 cm (Höhe Rückenlehne: 60 cm). CBM: 0,70.</p><p>Verarbeitung: Lounge Chair mit Sitzschale aus schichtverleimten gebogenen Sperrholz mit Palisander furniert, Nussbaum natur oder in schwarz. Drehbarer Fuß aus Aluminiumguss schwarz mit polierten Kanten oder auch wahlweise vollständig verchromt. Aufwendige Polsterung der Kissen in Leder.</p><p>Alle POLSTEREINHEITEN sind bei dem EAMES LOUNGE CHAIR (Sitz, Armlehne, Rückenlehne, Kopflehne) abnehmbar.</p><p></p>";
+				})
+				.Alter("Furniture-cube-chair", x =>
+				{
+					x.Name = "Josef Hoffmann Sessel Kubus (1910)";
+					x.ShortDescription = "Sessel Kubus, Designer: Josef Hoffmann, Breite 93 cm, Tiefe 72 cm, Höhe 77 cm, Grundgestell: massives Buchenholz, Polsterung: fester Polyurethan Schaum (formbeständig), Bezug: Leder";
+					x.FullDescription = "<p>Der Sessel Kubus von Josef Hoffmann hält, was der Name verspricht und das gleich in zweierlei Hinsicht. Er besteht aus vielen Quadraten, sowohl was die Konstruktion angeht als auch im Bezug auf das Design der Oberfläche. Zudem war der Kubus mit seiner rein geometrischen Form eine Art Vorbote des Kubismus. Der Sessel von Josef Hoffmann wurde 1910 entworfen und steht noch heute als Nachbau in zahlreichen Geschäfts- und Wohnräumen.</p><p>Ursprünglich war der Kubus ein Clubsessel. Zusammen mit dem zwei- und dem dreisitzigen Sofa der Serie entsteht eine gemütliche Sitzecke mit einer kultivierten und gehobenen Ausstrahlung. Das Grundgestell des Sessels besteht aus Holz. Die formbeständige Polsterung ist mit Leder überzogen und wurde mit einer speziellen Nähtechnik optisch zu Quadraten geformt.</p><p>Abmessung: Breite 93 cm, Tiefe 72 cm, Höhe 77 cm. CBM: 0,70.</p>";
 				});
 		}
 

@@ -837,6 +837,7 @@
     <Content Include="Content\samples\product_fifa17.jpg" />
     <Content Include="Content\samples\product_gbb-epic-sub-zero-driver.jpg" />
     <Content Include="Content\samples\product_giftcart.png" />
+    <Content Include="Content\samples\product_hoffmann_cube_chair_black.jpg" />
     <Content Include="Content\samples\product_horizon.jpg" />
     <Content Include="Content\samples\product_ipad_1.jpg" />
     <Content Include="Content\samples\product_ipad_2.jpg" />
@@ -856,8 +857,6 @@
     <Content Include="Content\samples\product_ladies_jacket_red.jpg" />
     <Content Include="Content\samples\product_ladies_jacket_silver.jpg" />
     <Content Include="Content\samples\product_legoworlds.jpg" />
-    <Content Include="Content\samples\product_mens_tshirt_red.jpg" />
-    <Content Include="Content\samples\product_mens_tshirt_gray.jpg" />
     <Content Include="Content\samples\product_minecraft.jpg" />
     <Content Include="Content\samples\product_nike-vopower-53-trainer-hs-ball.jpg" />
     <Content Include="Content\samples\product_productOriginalWayfarer_1.jpg" />

@@ -11,7 +11,7 @@
 {
     var tabGeneral = x.Add().Text(T("Common.General").Text).Content(@TabGeneral()).Selected(true);
     var tabFonts = x.Add().Text(T("Admin.Themes.Fonts").Text).Content(@TabFonts());
-    var tabLayout = x.Add().Text("Layout").Content(@TabLayout());
+    var tabLayout = x.Add().Text(T("Admin.Themes.Sections").Text).Content(@TabLayout());
     var tabButtons = x.Add().Text(T("Admin.Themes.Buttons").Text).Content(@TabButtons());
     var tabStates = x.Add().Text(T("Admin.Themes.States").Text).Content(@TabStates());
     var tabComponents = x.Add().Text(T("Admin.Themes.Components").Text).Content(@TabComponents());
@@ -44,6 +44,15 @@
         @ThemeVarEditor("brand-danger")
         @ThemeVarEditor("brand-info")
         @ThemeVarEditor("brand-success")
+
+        @ThemeVarEditor("boxed", "Layout", T("Admin.ThemeVar.Boxed"))
+
+        @ThemeVarEditor("body-bg", "Site Colors")
+        @ThemeVarEditor("site-bg")
+        @ThemeVarEditor("body-color")
+        @ThemeVarEditor("text-muted")
+        @ThemeVarEditor("link-color")
+
     </table>
 }
 
@@ -76,9 +85,7 @@
         <tr>
             <td colspan="2">
                 <div class="alert alert-info">
-                    
                     @T("Admin.Theme.GoogleFonts.Hint")
-
                 </div>
             </td>
         </tr>
@@ -92,14 +99,6 @@
 @helper TabLayout()
 {
     <table class="adminContent">
-        @ThemeVarEditor("boxed")
-
-        @ThemeVarEditor("body-bg", "Site Colors")
-        @ThemeVarEditor("site-bg")
-        @ThemeVarEditor("body-color")
-        @ThemeVarEditor("text-muted")
-        @ThemeVarEditor("link-color")
-
         @ThemeVarEditor("header-bg", "Header")
         @ThemeVarEditor("shopbar-label")
 
@@ -228,8 +227,8 @@
         @ThemeVarEditor("cart-footer-bg")
         @ThemeVarEditor("costep-progress-color", null, T("Admin.ThemeVar.CostepPogressColor"))
         @ThemeVarEditor("offcanvas-cart-footer")
-        @ThemeVarEditor("art-active-bg-color")
-        @ThemeVarEditor("art-active-border-color")
+        @ThemeVarEditor("art-active-bg-color", null, T("Admin.ThemeVar.ArtActiveBgColor"))
+        @ThemeVarEditor("art-active-border-color", null, T("Admin.ThemeVar.ArtActiveBorderColor"))
     </table>
 }
 

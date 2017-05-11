@@ -489,6 +489,10 @@
     <Compile Include="Migrations\201705032238367_RenameColorSquaresRgb.Designer.cs">
       <DependentUpon>201705032238367_RenameColorSquaresRgb.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705102339006_V3Final.cs" />
+    <Compile Include="Migrations\201705102339006_V3Final.Designer.cs">
+      <DependentUpon>201705102339006_V3Final.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -891,6 +895,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705032238367_RenameColorSquaresRgb.resx">
       <DependentUpon>201705032238367_RenameColorSquaresRgb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705102339006_V3Final.resx">
+      <DependentUpon>201705102339006_V3Final.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

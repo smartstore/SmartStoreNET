@@ -22,15 +22,18 @@ namespace SmartStore.Core.Logging
 
         public Log4netLoggerFactory()
         {
-            var configFile = GetConfigFile(CommonHelper.GetAppSetting<string>("log4net.Config", @"Config\log4net.config"));
+			if (HostingEnvironment.IsHosted)
+			{
+				var configFile = GetConfigFile(CommonHelper.GetAppSetting<string>("log4net.Config", @"Config\log4net.config"));
 
-            XmlConfigurator.ConfigureAndWatch(configFile);
+				XmlConfigurator.ConfigureAndWatch(configFile);
 
-            var repository = LogManager.GetRepository();
-            repository.ConfigurationChanged += OnConfigurationChanged;
-            TryConfigureDbAppender(repository);
+				var repository = LogManager.GetRepository();
+				repository.ConfigurationChanged += OnConfigurationChanged;
+				TryConfigureDbAppender(repository);
 
-			HostingEnvironment.RegisterObject(this);
+				HostingEnvironment.RegisterObject(this);
+			}
         }
 
 		private void OnConfigurationChanged(object sender, EventArgs e)

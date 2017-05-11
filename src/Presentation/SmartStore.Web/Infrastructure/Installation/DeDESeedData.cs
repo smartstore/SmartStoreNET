@@ -3511,7 +3511,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.Name = "Motorrad-Abenteuer: Fahrtechnik für Reise-Enduros";
 					x.ShortDescription = "Gebundene Ausgabe";
 					x.FullDescription = "<p> Moderne Reise-Enduros sind ideale Motorräder für eine Abenteuerreise. Ihre Technik ist jedoch komplex, ihr Gewicht beträchtlich. Das Fahrverhalten verändert sich je nach Zuladung und Strecke. Bevor die Reise losgeht, sollte man unbedingt ein Fahrtraining absolvieren. <br> Dieses hervorragend illustrierte Praxisbuch zeigt anhand vieler aussagekräftiger Serienfotos das richtige Fahren im Gelände in Sand und Schlamm, auf Schotter und Fels mit Gepäck und ohne. Neben dem Fahrtraining werden zahlreiche Informationen und Tipps zur Auswahl des richtigen Motorrades, zur Reiseplanung und zu praktischen Fragen unterwegs gegeben. </p>";
-					x.Price = 44.90M;
+					//x.Price = 44.90M;
 					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Ermäßigt").Single().Id;
 					x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
@@ -3524,15 +3524,33 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.IsShipEnabled = true;
 				})
 
-				#endregion Books : cars and motorcycles
+                #endregion Books : cars and motorcycles
 
-				#endregion Bücher
+                .Alter("The Prisoner of Heaven: A Novel", x =>
+                {
+                    x.Name = "Der Gefangene des Himmels";
+                    x.ShortDescription = "Gebundene Ausgabe";
+                    x.FullDescription = "<p>Der Gefangene des Himmels ist ein Roman des spanischen Autors Carlos Ruiz Zafón. </p><p>Er erschien 2011 bei Planeta S.A. in Barcelona unter dem Titel El prisionero del cielo.</p><p> Die deutsche Übersetzung stammt von Peter Schwaar und erschien 2012 im S. Fischer Verlag Frankfurt/Main. Der Roman ist der dritte Teil der Romantetralogie Friedhof der vergessenen Bücher, die noch die Bände Der Schatten des Windes, Das Spiel des Engels und Das Labyrinth der Lichter umfasst. Die wichtigsten Personen sind aus den beiden vorangegangenen Bänden bereits vertraut. Der dritte Roman beschreibt ihr Leben in den Jahren 1957–60 sowie in Rückblenden in den Jahren 1939–41./<p>";
+                    //x.Price = 22.99M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Ermäßigt").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                })
 
-				#region computer
+                #endregion Bücher
 
-				#region computer-desktops
+                #region computer
 
-				#region Dell Inspiron One 23
+                #region computer-desktops
+
+                #region Dell Inspiron One 23
                 .Alter("Dell Inspiron One 23", x =>
 				{
 					x.ShortDescription = "Dieser 58 cm (23'')-All-in-One-PC mit Full HD, Windows 8 und leistungsstarken Intel® Core™ Prozessoren der dritten Generation ermöglicht eine praktische Interaktion mit einem Touchscreen.";
@@ -3832,7 +3850,39 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.ShortDescription = "In Zusammenarbeit mit einigen der kreativsten Köpfe der Industrie entstanden, bietet die PlayStation® 4 atemberaubende und einzigartige Gaming-Erlebnis.";
 					x.FullDescription = ps4FullDescription;
 				})
-				.Alter("DUALSHOCK 4 Wireless Controller", x =>
+
+                .Alter("Playstation 4 Pro", x =>
+                {
+                    x.ShortDescription = "Die Sony PlayStation 4 Pro ist die Multi-Media-Konsole für die nächste Generation der digitalen Home Entertainment. Es bietet die Blu-ray-Technologie, mit der Sie Filme in High Definition genießen können.";
+                    x.FullDescription = ps4FullDescription;
+                })
+                .Alter("FIFA 17 - PlayStation 4", x =>
+                {
+                    x.ShortDescription = "Powered by Frostbite";
+                    x.FullDescription = "<ul>  <li>Powered by Frostbite: Einer der führenden Game-Engines der Branche, Frostbite liefert authentische, wahrheitsgetreue Action, nimmt Spieler auf neue Fußball-Welten und stellt Fans zu Charakteren voller Tiefe und Emotionen in der FIFA 17 vor.</li>  <li>Die Reise: Zum ersten Mal in der FIFA, lebe deine Geschichte auf und abseits des Platzes als der nächste aufsteigende Star der Premier League, Alex Hunter. Spielen Sie auf jedem Club in der Premier League, für authentische Manager und neben einigen der besten Spieler auf dem Planeten.</li>  <li>Erleben Sie brandneue Welten in der FIFA 17, während Sie sich durch die emotionalen Höhen und Tiefen der Reise bewegen.</li>  <li>Komplette Innovation in der Art und Weise, wie Spieler denken und bewegen, körperlich mit Gegnern interagieren und im Angriff ausführen, bringt euch die volle Kontrolle über jeden Moment auf dem Spielfeld.</li></ul>";
+                })
+                .Alter("Horizon Zero Dawn - PlayStation 4", x =>
+                {
+                    x.ShortDescription = "Erleben Sie eine lebendige, üppige Welt, die von geheimnisvollen mechanisierten Kreaturen bewohnt wird";
+                    x.FullDescription = "<Ul> <li> Eine üppige Post-Apokalyptische Welt - Wie haben Maschinen diese Welt dominiert und was ist ihr Zweck? Was ist mit der Zivilisation passiert? Scour jede Ecke eines Reiches mit alten Reliquien und geheimnisvollen Gebäuden gefüllt, um Ihre Vergangenheit aufzudecken und die vielen Geheimnisse eines vergessenen Landes zu entdecken. </ Li> <li> </ li> <li> Natur und Maschinen Collide - Horizon Zero Dawn stellt zwei kontrastierende Elemente vor, die eine lebendige Welt mit der wunderschönen Natur reichen und sie mit einer beeindruckenden hochentwickelten Technologie füllen. Diese Ehe schafft eine dynamische Kombination für Erkundung und Gameplay. </ Li> <li> Defy Overwhelming Odds - Die Gründung des Kampfes in Horizon Zero Dawn ist auf die Geschwindigkeit und Schlauheit von Aloy im Vergleich zu der Rohstärke und Größe der Maschinen gebaut. Um einen viel größeren und technologisch überlegenen Feind zu überwinden, muss Aloy jede Unze ihres Wissens, ihrer Intelligenz und ihrer Beweglichkeit nutzen, um jede Begegnung zu überleben. </ Li> <li> Cutting Edge Open World Tech - Atemberaubend detaillierte Wälder, Und atmosphärische Ruinen einer vergangenen Zivilisation verschmelzen in einer Landschaft, die mit wechselnden Wettersystemen und einem vollen Tag / Nacht-Zyklus lebendig ist. </ Li> </ ul>";
+                })
+                .Alter("LEGO Worlds - PlayStation 4", x =>
+                {
+                    x.ShortDescription = "Erleben Sie eine Galaxie von Welten, die ganz aus LEGO-Steinen hergestellt wurden.";
+                    x.FullDescription = "<Ul>   <Li> Erleben Sie eine Galaxie von Welten, die vollständig aus LEGO-Ziegeln hergestellt wurden. </ Li>   <Li> LEGO Worlds ist eine offene Umgebung von prozessual generierten Welten, die ganz aus LEGO-Steinen bestehen, die man mit LEGO-Modellen frei manipulieren und dynamisch bevölkern kann. </ Li>   <Li> Schaffen Sie alles, was Sie sich vorstellen können, einen Ziegelstein zu einer Zeit, oder verwenden Sie groß angelegte Landschafts-Werkzeuge, um riesige Gebirgszüge zu schaffen und Ihre Welt mit tropischen Inseln zu platzieren. </ Li>   <Li> Entdecken Sie mit Hubschraubern, Drachen, Motorrädern oder sogar Gorillas und entsperren Sie Schätze, die Ihr Gameplay verbessern. </ Li>   <Li> Beobachten Sie Ihre Kreationen durch Charaktere und Kreaturen, die mit Ihnen und einander in unerwarteter Weise interagieren, zum Leben. </ Li></ Ul><P></ P>";
+                })
+                .Alter("Minecraft - Playstation 4 Edition", x =>
+                {
+                    x.ShortDescription = "Third-Person Action-Abenteuer Titel Set.";
+                    x.FullDescription = "<P> <strong> Aufbau! Kunst! Erforschen! </ Strong> </ p> <p> Die kritisch gefeierte Minecraft kommt zu PlayStation 4 und bietet größere Welten und größere Distanz als die PS3- und PS-Vita-Editionen. </ P> <p> Erstellen Sie Ihre eigene Welt, dann bauen Sie Erforschen und erobern Wenn die Nacht fällt die Monster erscheinen, so sicher sein, einen Schutz zu errichten, bevor sie ankommen. </ P> <p> Die Welt ist nur durch Ihre Phantasie begrenzt! Größere Welten und größere Distanz als PS3 und PS Vita Editions Beinhaltet alle Features aus der PS3-Version Importieren Sie Ihre PS3 und PS Vita Welten auf die PS4-Bearbeitung. </ P>";
+                })
+                .Alter("PlayStation 4 Minecraft Bundle", x =>
+                {
+                    x.ShortDescription = "100GB PlayStation®4 system, 2 × DUALSHOCK®4 wireless controller unf Minecraft für PS4 Edition.";
+                    x.FullDescription = "'<Ul> <li> <h4> Prozessor </ h4> <ul> <li> Prozessortechnologie: Cell Broadband Engine ™ </ li> </ ul> </ li> <li> <h4> Allgemein </ h4 > <Ul> <li> Kommunikation: Ethernet (10BASE-T, 100BASE-TX, 1000BASE-T IEEE 802.11 b / g Wi-Fi <br tttdex=\'0\'> Bluetooth 2.0 (EDR) </ li> < Li> Eingänge und Ausgänge: USB 2.0 X 2 </ li> </ ul> </ li> <li> <h4> Grafik </ h4> <ul> <li> Grafikprozessor: RSX </ li> </ ul > </ Li> <li> <h4> Speicher </ h4> <ul> <li> Interner Speicher: 256MB XDR Haupt RAM <br> 256MB GDDR3 VRAM </ li> </ ul> </ li> <li> <H4> Power </ h4> <ul> <li> Stromverbrauch (im Betrieb): Ungefähr 250 Watt </ li> </ ul> </ li> <li> <h4> Speicher </ h4> <ul> <Li> Speicherkapazität: 2.5 'Serial ATA (500GB) </ li> </ ul> </ li> <li> <h4> Video </ h4> <ul> <li> Auflösung: 480i, 480p, 720p, 1080i, 1080p (24p / 60p) </ li> </ ul> </ li> <li> <h4> Gewichte und Maße </ h4> <ul> <li> Maße (ca.): Ungefähr 11.42 '( W) x 2,56 '(H) x 11,42' (D) (290 mm x 65 mm x 290 mm) </ li> <li> Gewicht (ungefähr): Ungefähr 7,05 kg (3,2 kg) </ li> </ ul > </ Li> </ ul> '";
+                })
+
+                .Alter("DUALSHOCK 4 Wireless Controller", x =>
 				{
 					x.ShortDescription = "Durch Kombination klassischer Steuerelemente mit innovativen neuen Möglichkeiten des Spielens, ist der Wireless Controller DUALSHOCK® 4 der evolutionäre Controller für eine neue Ära des Gaming.";
 					x.FullDescription = "<div><div><p>Der DualShock 4 Controller bietet einige neue Features, die völlig neue Wege des Spielens ermöglichen und wohlüberlegt mit Unterstützung aus der Entwickler-Community zusammengestellt wurden. Die “Share”-Taste erlaubt es Ihnen ganz einfach, Gameplay in Echtzeit über Streaming-Seiten wie Ustream zu veröffentlichen. Dort können andere Gamer Spiele kommentieren oder sogar direkt beitreten und aushelfen. Daneben können Sie über die “Share”-Taste Bilder oder Videos zu Facebook hochladen. Auf der Vorderseite des DualShock 4 befindet sich eine LED-Leuchte, die in unterschiedlichen Farben erstrahlen kann, um die Farbe des Charakters im Spiel abzubilden und einen Spieler so leicht zu identifizieren. Die Farben können dem Spieler auch nützliche Informationen liefern, zum Beispiel wenn der Charakter im Spiel Schaden nimmt.</p> <p>Der DualShock 4 wurde zusammen mit einem zweiten Peripherie-Gerät entwickelt, einer Kamera (nicht im Lieferumfang enthalten), die die Tiefe der Umgebung vor ihr wahrnehmen kann und die mithilfe der LED-Leuchte die Position des Controllers im dreidimensionalen Raum bestimmen kann.</p> <p>Der DualShock 4 bietet auf seiner Vorderseite ein Touchpad und somit eine neue Input-Methode. Zusätzlich gibt es einen eingebauten Lautsprecher und einen Headset-Anschluss, um hochklassige Soundeffekte aus den Spielen zu übertragen. Mithilfe eines Headsets (nicht im Lieferumfang enthalten) können Sie während des Online-Gamings mit Ihren Freunden chatten und Soundeffekte aus dem Controller hören können. Der DualShock 4 adaptiert die bekannte Form des kabellosen DualShock 3 Controllers und bietet einige entscheidende Verbesserungen:</p> <ul> <li>Ein neuer, hochsensibler SIXAXIS-Sensor ermöglicht eine erstklassige Bewegungssteuerung.</li> <li>Die Dual-Analogsticks wurden verbessert und bieten eine größere Präzision, ein besseres Material auf den Oberflächen sowie eine verbesserte Form, um eine noch genauere Steuerung zu ermöglichen.</li> <li>Die L2/R2-Tasten oben auf dem Controller wurden abgerundet und sind jetzt einfacher und flüssiger zu bedienen.</li> <li>Eine neue “Options”-Taste kombiniert die Funktionen der “Select”- und “Start”-Tasten auf dem DualShock 3 zur Steuerung der Ingame-Menüs.</li> </ul> <h4>Technische Spezifikationen</h4> <ul> <li>Außenabmessungen Ca. 162 × 52 × 98 mm (B × H × T) (vorläufig) </li><li>Gewicht Ca. 210 g (vorläufig) </li><li><b>Tasten / Schalter:</b> PS-Taste, SHARE-Taste, OPTIONS-Taste, Richtungstasten (oben/unten/links/rechts), Aktionstasten (Dreieck, Kreis, Kreuz, Quadrat), R1/L1/R2/L2-Taste, linker Stick / L3-Taste, rechter Stick / R3-Taste, Pad-Taste </li><li><b>Touchpad:</b> 2-Punkt-Touchpad, Klick-Mechanismus, kapazitiv</li> <li><b>Bewegungssensor:</b> Sechsachsiges Motion-Sensing-System (dreiachsiges Gyroskop, dreiachsiger Beschleunigungssensor) </li><li><b>Sonstige Funktionen:</b> Lichtbalken, Vibration, integrierter MonoLautsprecher</li> <li><b>Anschluss:</b> USB (Micro B), Erweiterungs-Port, Stereo-Kopfhörerbuchse </li><li><b>Wireless-Kommunikation:</b> Bluetooth 2.1+EDR</li> <li><b>Batterie:</b> Typ Eingebauter Lithium-Ionen-Akku</li> <li><b>Spannung:</b> 3,7 V Gleichspannung (vorläufig)</li> <li><b>Kapazität:</b> 1000 mAh (vorläufig)</li> <p></p> <p> <i>Kurzfristige Änderungen des Herstellers vorbehalten.</i> </p> </ul></div><div></div></div>";

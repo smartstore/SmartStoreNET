@@ -2903,13 +2903,9 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(entities);
 
 			entities.WithKey(x => x.ViewPath)
-				.Alter("ProductTemplate.Simple", x =>
+				.Alter("Product", x =>
 				{
-					x.Name = "Simple product";
-				})
-				.Alter("ProductTemplate.Grouped", x =>
-				{
-					x.Name = "Grouped product";
+					x.Name = "Standard Produkt Vorlage";
 				});
         }
 

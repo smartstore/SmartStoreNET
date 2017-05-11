@@ -1,8 +1,8 @@
 ﻿FriendlyName: Facebook
 SystemName: SmartStore.FacebookAuth
 Group: Security
-Version: 2.6.0
-MinAppVersion: 2.5.0
+Version: 3.0.0
+MinAppVersion: 3.0.0
 DisplayOrder: 5
 FileName: SmartStore.FacebookAuth.dll
 ResourceRootKey: Plugins.ExternalAuth.Facebook

@@ -2834,6 +2834,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.Name = "Stärke der Tischplatte";
 				})
+				.Alter("leather-color", x =>
+				{
+					x.Name = "Lederfarbe";
+				})
 				.Alter("seat-shell", x =>
 				{
 					x.Name = "Sitzschale";
@@ -2875,7 +2879,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			base.Alter(entities);
 
-			entities.Where(x => x.ProductAttribute.Alias == "color").Each(x =>
+			entities.Where(x => x.ProductAttribute.Alias == "color" || x.ProductAttribute.Alias == "leather-color").Each(x =>
 			{
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "black").Each(y => y.Name = "Schwarz");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "white").Each(y => y.Name = "Weiß");
@@ -2896,6 +2900,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "dark-red").Each(y => y.Name = "Dunkelrot");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "hazelnut").Each(y => y.Name = "Haselnuss");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "fuliginous").Each(y => y.Name = "Rauchfarbig");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "tomato-red").Each(y => y.Name = "Tomatenrot");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "yellow").Each(y => y.Name = "Gelb");
 			});
 
 			entities.Where(x => x.ProductAttribute.Alias == "iphone-color").Each(x =>
@@ -2932,6 +2938,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			{
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "leather-special").Each(y => y.Name = "Leder Spezial");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "leather-aniline").Each(y => y.Name = "Leder Anilin");
+				x.ProductVariantAttributeValues.Where(y => y.Alias == "mixed-linen").Each(y => y.Name = "Leinen gemischt");
 			});
 		}
 

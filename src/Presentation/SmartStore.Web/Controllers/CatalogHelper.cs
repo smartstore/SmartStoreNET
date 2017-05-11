@@ -860,7 +860,7 @@ namespace SmartStore.Web.Controllers
 				}
             }
 
-			var dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).SystemKeyword;
+			var dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId)?.SystemKeyword ?? string.Empty;
 
 			model.WeightValue = product.Weight;
 			if (!isBundle)

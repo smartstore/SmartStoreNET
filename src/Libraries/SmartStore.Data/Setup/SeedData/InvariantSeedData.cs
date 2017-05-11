@@ -6180,6 +6180,11 @@ namespace SmartStore.Data.Setup
 				},
 				new ProductAttribute
 				{
+					Name = "Leather color",
+					Alias = "leather-color"
+				},
+				new ProductAttribute
+				{
 					Name = "Seat Shell",
 					Alias = "seat-shell"
 				},
@@ -6275,10 +6280,33 @@ namespace SmartStore.Data.Setup
 			var attrLength = _ctx.Set<ProductAttribute>().First(x => x.Alias == "length");
 			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
 			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
-			var attrStyle = _ctx.Set<ProductAttribute>().First(x => x.Alias == "style");
+			var attrLeatherColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "leather-color");
 			var attrSeatShell = _ctx.Set<ProductAttribute>().First(x => x.Alias == "seat-shell");
 			var attrBase = _ctx.Set<ProductAttribute>().First(x => x.Alias == "base");
 			var attrMaterial = _ctx.Set<ProductAttribute>().First(x => x.Alias == "material");
+
+			var generalColors = new[]
+			{
+				new { Name = "Black", Color = "#000000" },
+				new { Name = "White", Color = "#ffffff" },
+				new { Name = "Anthracite", Color = "#32312f" },
+				new { Name = "Fuliginous", Color = "#5F5B5C" },
+				new { Name = "Light grey", Color = "#e3e3e5" },
+				new { Name = "Natural", Color = "#BBB98B" },
+				new { Name = "Biscuit", Color = "#e0ccab" },
+				new { Name = "Beige", Color = "#d1bc8a" },
+				new { Name = "Hazelnut", Color = "#94703e" },
+				new { Name = "Brown", Color = "#755232" },
+				new { Name = "Dark brown", Color = "#27160F" },
+				new { Name = "Dark green", Color = "#0a3210" },
+				new { Name = "Blue", Color = "#0000ff" },
+				new { Name = "Cognac", Color = "#e9aa1b" },
+				new { Name = "Yellow", Color = "#e6e60c" },
+				new { Name = "Orange", Color = "#ff6501" },
+				new { Name = "Tomato red", Color = "#b10101" },
+				new { Name = "Red", Color = "#fe0000" },
+				new { Name = "Dark red", Color = "#5e0000" }
+			};
 
 			#region 9,7 iPad
 
@@ -7228,52 +7256,45 @@ namespace SmartStore.Data.Setup
 			#region Furniture - Ball chair
 
 			var productBallChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-ball-chair");
-			var ballChairStyles = new[]
+
+			var attrBallChairMaterial = new ProductVariantAttribute
 			{
-				new { Name = "Leather Special - Black 62", Color = "#030301" },
-				new { Name = "Leather Special - White 63", Color = "#E2E4D7" },
-				new { Name = "Leather Special - Beige 120", Color = "#d1bc8a" },
-				new { Name = "Leather Special - Dark brown 71", Color = "#1d0c05" },
-				new { Name = "Leather Special - Natural 65", Color = "#BBB98B" },
-				new { Name = "Leather Special - Biscuit 64", Color = "#e0ccab" },
-				new { Name = "Leather Special - Red 1513", Color = "#fe0000" },
-				new { Name = "Leather Special - Dark red 66", Color = "#5e0000" },
-				new { Name = "Leather Special - Dark green 1506", Color = "#0a3210" },
-				new { Name = "Leather Special - Blue 7300", Color = "#0000ff" },
-				new { Name = "Leather Special - Light grey 72", Color = "#e3e3e5" },
-				new { Name = "Leather Special - Antracite 1501", Color = "#32312f" },
-				new { Name = "Leather Aniline - Black 380", Color = "#030301" },
-				new { Name = "Leather Aniline - White 001", Color = "#E2E4D7" },
-				new { Name = "Leather Aniline - Beige 20", Color = "#d1bc8a" },
-				new { Name = "Leather Aniline - Orange 59103", Color = "#ff6501" },
-				new { Name = "Leather Aniline - Brown 410", Color = "#755232" },
-				new { Name = "Leather Aniline - Cognac 425", Color = "#e9aa1b" },
-				new { Name = "Leather Aniline - Rosso 310", Color = "#a10300" },
-				new { Name = "Leather Aniline - Red 310", Color = "#fe0000" },
-				new { Name = "Leather Aniline - Dark Brown 430", Color = "#1e0c07" },
-				new { Name = "Leather Aniline - Antracite 400", Color = "#595854" },
-				new { Name = "Leather Aniline - Blue 9210", Color = "#0000ff" },
-				new { Name = "Leather Aniline - Nocciola 9050", Color = "#94703e" },
-				new { Name = "Leather Aniline - Fumo 224", Color = "#413d3e" },
-				new { Name = "Mixed Linen - Light blue", Color = "#00ccff" },
-				new { Name = "Mixed Linen - Old white 1419", Color = "#f8f7f3" },
-				new { Name = "Mixed Linen - Champagner 1476", Color = "#f9e3cb" },
-				new { Name = "Mixed Linen - Colza yellow 1404", Color = "#e6e60c" },
-				new { Name = "Mixed Linen - Tomato red 2490", Color = "#b10101" },
-				new { Name = "Mixed Linen - Red 1904", Color = "#ff0000" },
-				new { Name = "Mixed Linen - Raspberry red 1459", Color = "#b42042" },
-				new { Name = "Mixed Linen - Green 2763", Color = "#00ff00" },
-				new { Name = "Mixed Linen - Brown 1496", Color = "#663300" },
-				new { Name = "Mixed Linen - Blue 1470", Color = "#0000ff" },
-				new { Name = "Mixed Linen - Graphite black 1424", Color = "#2e2f31" }
+				Product = productBallChair,
+				ProductAttribute = attrMaterial,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.DropdownList
 			};
+			attrBallChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Leather Special",
+				Alias = "leather-special",
+				DisplayOrder = 1,
+				Quantity = 1,
+				IsPreSelected = true
+			});
+			attrBallChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Leather Aniline",
+				Alias = "leather-aniline",
+				DisplayOrder = 2,
+				Quantity = 1
+			});
+			attrBallChairMaterial.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+			{
+				Name = "Mixed Linen",
+				Alias = "mixed-linen",
+				DisplayOrder = 3,
+				Quantity = 1
+			});
+			entities.Add(attrBallChairMaterial);
 
 			var attrBallChairColor = new ProductVariantAttribute
 			{
 				Product = productBallChair,
 				ProductAttribute = attrColor,
 				IsRequired = true,
-				DisplayOrder = 1,
+				DisplayOrder = 2,
 				AttributeControlType = AttributeControlType.Boxes
 			};
 			attrBallChairColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
@@ -7293,28 +7314,28 @@ namespace SmartStore.Data.Setup
 			});
 			entities.Add(attrBallChairColor);
 
-			var attrBallChairStyle = new ProductVariantAttribute
+			var attrBallChairLeatherColor = new ProductVariantAttribute
 			{
 				Product = productBallChair,
-				ProductAttribute = attrStyle,
+				ProductAttribute = attrLeatherColor,
 				IsRequired = true,
-				DisplayOrder = 2,
-				AttributeControlType = AttributeControlType.DropdownList
+				DisplayOrder = 3,
+				AttributeControlType = AttributeControlType.Boxes
 			};
 
-			for (var i = 0; i < ballChairStyles.Length; ++i)
+			for (var i = 0; i < generalColors.Length; ++i)
 			{
-				attrBallChairStyle.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
+				attrBallChairLeatherColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
 				{
-					Name = ballChairStyles[i].Name,
-					Alias = ballChairStyles[i].Name.Replace(" - ", "-").Replace(" ", "-").ToLower(),
+					Name = generalColors[i].Name,
+					Alias = generalColors[i].Name.Replace(" ", "-").ToLower(),
 					DisplayOrder = i + 1,
 					Quantity = 1,
-					Color = ballChairStyles[i].Color,
-					IsPreSelected = (ballChairStyles[i].Name == "Mixed Linen - Tomato red 2490")
+					Color = generalColors[i].Color,
+					IsPreSelected = (generalColors[i].Name == "Tomato red")
 				});
 			}
-			entities.Add(attrBallChairStyle);
+			entities.Add(attrBallChairLeatherColor);
 
 			#endregion
 
@@ -7397,28 +7418,6 @@ namespace SmartStore.Data.Setup
 			});
 			entities.Add(attrLoungeChairBase);
 
-			var loungeChairColors = new[]
-			{
-				new { Name = "Black", Color = "#000000" },
-				new { Name = "White", Color = "#ffffff" },
-				new { Name = "Anthracite", Color = "#32312f" },
-				new { Name = "Fuliginous", Color = "#5F5B5C" },
-				new { Name = "Light grey", Color = "#e3e3e5" },
-				new { Name = "Beige", Color = "#d1bc8a" },
-				new { Name = "Brown", Color = "#755232" },
-				new { Name = "Dark brown", Color = "#27160F" },
-				new { Name = "Natural", Color = "#BBB98B" },
-				new { Name = "Biscuit", Color = "#e0ccab" },
-				new { Name = "Hazelnut", Color = "#94703e" },
-				new { Name = "Dark green", Color = "#0a3210" },
-				new { Name = "Blue", Color = "#0000ff" },
-				new { Name = "Cognac", Color = "#e9aa1b" },
-				new { Name = "Orange", Color = "#ff6501" },
-				new { Name = "Rosso", Color = "#a10300" },
-				new { Name = "Red", Color = "#fe0000" },
-				new { Name = "Dark red", Color = "#5e0000" }
-			};
-
 			var attrLoungeChairColor = new ProductVariantAttribute
 			{
 				Product = productLoungeChair,
@@ -7428,16 +7427,16 @@ namespace SmartStore.Data.Setup
 				AttributeControlType = AttributeControlType.Boxes
 			};
 
-			for (var i = 0; i < loungeChairColors.Length; ++i)
+			for (var i = 0; i < generalColors.Length; ++i)
 			{
 				attrLoungeChairColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue
 				{
-					Name = loungeChairColors[i].Name,
-					Alias = loungeChairColors[i].Name.Replace(" ", "-").ToLower(),
+					Name = generalColors[i].Name,
+					Alias = generalColors[i].Name.Replace(" ", "-").ToLower(),
 					DisplayOrder = i + 1,
 					Quantity = 1,
-					Color = loungeChairColors[i].Color,
-					IsPreSelected = (i == 1)
+					Color = generalColors[i].Color,
+					IsPreSelected = (generalColors[i].Name == "White")
 				});
 			}
 			entities.Add(attrLoungeChairColor);
@@ -7460,7 +7459,8 @@ namespace SmartStore.Data.Setup
             var attr97iPadColors = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
 			var attrPlate = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate");
 			var attrPlateThickness = _ctx.Set<ProductAttribute>().First(x => x.Alias == "plate-thickness");
-			var attrStyle = _ctx.Set<ProductAttribute>().First(x => x.Alias == "style");
+			var attrMaterial = _ctx.Set<ProductAttribute>().First(x => x.Alias == "material");
+			var attrLeatherColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "leather-color");
 			var attrSeatShell = _ctx.Set<ProductAttribute>().First(x => x.Alias == "seat-shell");
 			var attrBase = _ctx.Set<ProductAttribute>().First(x => x.Alias == "base");
 
@@ -8377,38 +8377,44 @@ namespace SmartStore.Data.Setup
 			var ballChairPictureIds = productBallChair.ProductPictures.Select(x => x.PictureId).ToList();
 			var ballChairPictures = _ctx.Set<Picture>().Where(x => ballChairPictureIds.Contains(x.Id)).ToList();
 
-			var ballChairStyle = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrStyle.Id);
-			var ballChairStyleValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairStyle.Id).ToList();
+			var ballChairMaterial = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrMaterial.Id);
+			var ballChairMaterialValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairMaterial.Id).ToList();
 
 			var ballChairColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrColor.Id);
 			var ballChairColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairColor.Id).ToList();
 
-			foreach (var styleValue in ballChairStyleValues)
+			var ballChairLeatherColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productBallChair.Id && x.ProductAttributeId == attrLeatherColor.Id);
+			var ballChairLeatherColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == ballChairLeatherColor.Id).ToList();
+
+			foreach (var materialValue in ballChairMaterialValues)
 			{
 				foreach (var colorValue in ballChairColorValues)
 				{
 					decimal ballChairPrice = 2199.00M;
 
-					if (styleValue.Name.StartsWith("Leather Special"))
+					if (materialValue.Alias.StartsWith("leather-special"))
 					{
 						ballChairPrice = 2599.00M;
 					}
-					else if (styleValue.Name.StartsWith("Leather Aniline"))
+					else if (materialValue.Alias.StartsWith("leather-aniline"))
 					{
 						ballChairPrice = 2999.00M;
 					}
 
-					entities.Add(new ProductVariantAttributeCombination
+					foreach (var leatherColorValue in ballChairLeatherColorValues)
 					{
-						Product = productBallChair,
-						Sku = productBallChair.Sku + string.Concat("-", colorValue.Alias, "-", styleValue.Alias),
-						AttributesXml = FormatAttributeXml(ballChairStyle.Id, styleValue.Id, ballChairColor.Id, colorValue.Id),
-						StockQuantity = 10000,
-						AllowOutOfStockOrders = true,
-						IsActive = true,
-						AssignedPictureIds = ballChairPictures.First(x => x.SeoFilename.EndsWith(colorValue.Alias)).Id.ToString(),
-						Price = ballChairPrice
-					});
+						entities.Add(new ProductVariantAttributeCombination
+						{
+							Product = productBallChair,
+							Sku = productBallChair.Sku + string.Concat("-", colorValue.Alias, "-", materialValue.Alias),
+							AttributesXml = FormatAttributeXml(ballChairMaterial.Id, materialValue.Id, ballChairColor.Id, colorValue.Id, ballChairLeatherColor.Id, leatherColorValue.Id),
+							StockQuantity = 10000,
+							AllowOutOfStockOrders = true,
+							IsActive = true,
+							AssignedPictureIds = ballChairPictures.First(x => x.SeoFilename.EndsWith(colorValue.Alias)).Id.ToString(),
+							Price = ballChairPrice
+						});
+					}
 				}
 			}
 
@@ -14374,6 +14380,15 @@ namespace SmartStore.Data.Setup
 				"<Attributes>",
 				FormatAttributeXml(attributeId1, valueId1, false),
 				FormatAttributeXml(attributeId2, valueId2, false),
+				"</Attributes>");
+		}
+		protected string FormatAttributeXml(int attributeId1, int valueId1, int attributeId2, int valueId2, int attributeId3, int valueId3)
+		{
+			return string.Concat(
+				"<Attributes>",
+				FormatAttributeXml(attributeId1, valueId1, false),
+				FormatAttributeXml(attributeId2, valueId2, false),
+				FormatAttributeXml(attributeId3, valueId3, false),
 				"</Attributes>");
 		}
 

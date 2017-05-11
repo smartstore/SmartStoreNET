@@ -210,12 +210,15 @@ namespace SmartStore.Web
 		{
 			try
 			{
-				var customerService = EngineContext.Current.Resolve<ICustomerService>();
-				var customer = customerService.FindGuestCustomerByClientIdent(maxAgeSeconds: 180);
-				if (customer != null)
+				if (DataSettings.DatabaseIsInstalled())
 				{
-					// We found our anonymous visitor: don't let ASP.NET create a new id.
-					args.AnonymousID = customer.CustomerGuid.ToString();
+					var customerService = EngineContext.Current.Resolve<ICustomerService>();
+					var customer = customerService.FindGuestCustomerByClientIdent(maxAgeSeconds: 180);
+					if (customer != null)
+					{
+						// We found our anonymous visitor: don't let ASP.NET create a new id.
+						args.AnonymousID = customer.CustomerGuid.ToString();
+					}
 				}
 			}
 			catch { }

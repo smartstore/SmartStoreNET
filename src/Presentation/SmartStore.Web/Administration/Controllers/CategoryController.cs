@@ -182,13 +182,13 @@ namespace SmartStore.Admin.Controllers
                 new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
             );
 
-            // add available badges
-            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "0", Text = "Default", Selected = model.BadgeStyle.ToString().Equals("0") });
-            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "1", Text = "Success", Selected = model.BadgeStyle.ToString().Equals("1") });
-            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "2", Text = "Warning", Selected = model.BadgeStyle.ToString().Equals("2") });
-            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "3", Text = "Important", Selected = model.BadgeStyle.ToString().Equals("3") });
-            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "4", Text = "Info", Selected = model.BadgeStyle.ToString().Equals("4") });
-            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "5", Text = "Inverse", Selected = model.BadgeStyle.ToString().Equals("5") });
+			// add available badges
+			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "0", Text = "Default", Selected = model.BadgeStyle == 0 });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "1", Text = "Primary", Selected = model.BadgeStyle == 1 });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "2", Text = "Success", Selected = model.BadgeStyle == 2 });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "3", Text = "Info", Selected = model.BadgeStyle == 3 });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "4", Text = "Warning", Selected = model.BadgeStyle == 4 });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "5", Text = "Danger", Selected = model.BadgeStyle == 5 });
         }
 
         [NonAction]

@@ -4,7 +4,7 @@ namespace SmartStore.Web.Framework.UI
 {   
     public enum BadgeStyle
     {
-        Default,
+		Default,
 		Primary,
 		Success,
 		Info,

@@ -3308,6 +3308,145 @@ namespace SmartStore.Web.Infrastructure.Installation
 
                 #endregion category Soccer
 
+                #region category Sunglasses
+
+                #region product Radar EV Prizm Sports Sunglasses
+
+                .Alter("Radar EV Prizm Sports Sunglasses", x =>
+                {
+                    x.Name = "Radar EV Prizm Sports Sonnenbrille";
+                    x.ShortDescription = "";
+                    x.FullDescription = "<p><strong>RADAR&nbsp;EV PATH&nbsp;PRIZM&nbsp;ROAD</strong></p><p>Ein neuer Meilenstein in der Geschichte des Performance-Designs: Die Radar® EV setzt den Innovationen eines ohnehin schon revolutionären Designs mit einem größeren Glas für ein erweitertes Blickfeld nach oben noch eins drauf. Vom Komfort und Schutz des Rahmens aus O Matter® bis zum griffigen Halt der Unobtainium®-Komponenten ist dieses Premium-Design im innovativen und stilvollen Erbe der Radar verwurzelt.</p><p><strong>EIGENSCHAFTEN</strong></p><ul>  <li>PRIZM™ ist eine neue Glastechnologie von Oakley, die die Sicht für spezielle Sportarten und Umgebungsbedingungen optimiert.</li>  <li>Path-Gläser für eine bessere Performance gegenüber traditionellen Gläsern, die Ihre Wangen berühren, und ein erweitertes Blickfeld</li>  <li>Speziell konstruiert für maximalen Luftstrom zur kühlenden Belüftung</li>  <li>Ohrbügel und Nasenpads aus Unobtainium® für einen sicheren Sitz der Gläser, der sich bei Schweiß sogar verstärkt</li>  <li>Wechselglassystem für sekundenschnelles Auswechseln der Gläser zur optimalen Sichtanpassung an jedes Sportumfeld</li></ul>";
+                    //x.Price = 29.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product Radar EV Prizm Sports Sunglasses
+
+                #region product Custom Flak Sunglasses
+
+                .Alter("Custom Flak Sunglasses", x =>
+                {
+                    x.Name = "Custom Flak® Sportsonnenbrille";
+                    x.ShortDescription = "";
+                    x.FullDescription = "Jede Brille wird  in Handarbeit für Sie zusammengesetzt.";
+                    //x.Price = 29.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product Custom Flak Sunglasses
+
+                #region product Rayban Top bar
+
+                .Alter("Ray-Ban Top Bar RB 3183", x =>
+                {
+                    x.Name = "Ray-Ban Top Bar RB 3183";
+                    x.ShortDescription = "";
+                    x.FullDescription = "<p>Die Sonnenbrille Ray-Ban ® RB3183 mir ihrer aerodynamischen Form eine reminiszenzist an Geschwindigkeit. Eine rechteckige Form und das auf den</p><p>Bügeln aufgedruckte klassische Ray-Ban Logo zeichnet dieses leichte Halbrand-Modell aus.</p>";
+                    //x.Price = 29.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product Rayban Top bar
+
+                #region product ORIGINAL WAYFARER AT COLLECTION
+
+                .Alter("ORIGINAL WAYFARER AT COLLECTION", x =>
+                {
+                    //x.Name = "ORIGINAL WAYFARER AT COLLECTION";
+                    x.ShortDescription = "Die Ray-Ban Original Wayfarer ist der bekannteste Style in der Geschichte der Sonnenbrillen. Mit dem original Design von 1952 ist die Wayfarer bei Prominenten, Musikern, Künstlern und Mode Experten beliebt. ";
+                    x.FullDescription = "";
+                    //x.Price = 29.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product ORIGINAL WAYFARER AT COLLECTION
+
+                #endregion category Sunglasses
+
+                #region category Basketball
+
+                #region product Wilson Evolution High School Game Basketball
+
+                .Alter("Evolution High School Game Basketball", x =>
+                {
+                    //x.Name = "Radar EV Prizm Sports Sonnenbrille";
+                    x.ShortDescription = "Für alle Positionen auf allen Spielstufen, Spieltag und jeden Tag";
+                    x.FullDescription = "<p>Die Wilson Evolution High School Spiel Basketball hat exklusive Mikrofaser-Composite-Leder-Konstruktion mit tiefen geprägten Kieselsteinen, um Ihnen die ultimative in Gefühl und Kontrolle.</p><p>Die patentierte Cushion Core Technologie erhöht die Haltbarkeit für längeres Spiel.</p><p>Diese Mikrofaser-Composite Evolution High School Basketball ist mit Composite-Kanäle für besseren Griff kieselig, hilft Spieler heben ihr Spiel auf die nächste Ebene.</p><p>Für alle Positionen auf allen Spielstufen, Spieltag und jeden Tag, liefert Wilson die Skill-Building-Performance, die Spieler verlangen. Diese Registern-Größe 29,5 'Wilson Basketball ist ein idealer Basketball für High-School - Spieler, und ist entweder für Freizeit - Nutzung oder für Liga - Spiele konzipiert.</ p >< p > Es ist NCAA und NFHS genehmigt, so dass Sie wissen, es ist ein qualitativ hochwertiger Basketball, der Ihnen helfen wird hone Ihr Shooting, Passing und Ball - Handling - Fähigkeiten.</ p >< p > Nehmen Sie Ihr Team den ganzen Weg zur Meisterschaft mit dem Wilson Evolution High School Game Basketball.</ p > ";
+                    //x.Price = 29.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product Wilson Evolution High School Game Basketball
+
+                #region product All Court Basketball
+
+                .Alter("All-Court Basketball", x =>
+                {
+                    //x.Name = "Custom Flak® Sportsonnenbrille";
+                    x.ShortDescription = "Ein langlebiger Basketball für alle Oberflächen";
+                    x.FullDescription = "<p></p><div>  <h2>All-Court Prep Ball  </h2>  <h4>Ein langlebiger Basketball für alle Oberflächen  </h4>  <div class='product-details-description clearfix'>    <div class='prod-details para-small' itemprop='description'>    </div>    <div class='prod-details para-small' itemprop='description'>Ob auf Parkett oder auf Asphalt – der adidas All-Court Prep Ball hat nur ein Ziel: den Korb. Dieser Basketball besteht aus langlebigem Kunstleder, was ihn sowohl für Hallenplätze als auch für Spiele im Freien prädestiniert.    </div>    <div class='prod-details para-small' itemprop='description'>    </div>    <ul class='bullets_list para-small'>      <li>Verbundüberzug aus Kunstleder</li>      <li>Für drinnen und draußen geeignet</li>      <li>Wird unaufgepumpt geliefert</li>    </ul>  </div></div>";
+                    //x.Price = 29.90M;
+                    x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
+                    x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
+                    x.ManageInventoryMethod = ManageInventoryMethod.DontManageStock;
+                    x.OrderMinimumQuantity = 1;
+                    x.OrderMaximumQuantity = 10000;
+                    x.StockQuantity = 10000;
+                    x.NotifyAdminForQuantityBelow = 1;
+                    x.AllowBackInStockSubscriptions = false;
+                    x.Published = true;
+                    x.IsShipEnabled = true;
+                    x.ProductReviews.Clear();
+                })
+                #endregion product All Court Basketball
+
+                #endregion category Basketball
 
                 #region category Gift Cards
                 .Alter("$5 Virtual Gift Card", x =>

@@ -28,16 +28,16 @@
 * Configurable media storage path for web farms
 * (Dev) log4net integration
 * (Dev) proper plugin view debugging
-* (Dev) changes to static plugin files (css, js, etc.) immediately apply to running project
+* (Dev) detect changes to static plugin files (css, js, etc.) and immediately apply them to running project
 * (Dev) Theming: plugins now support implicitly imported SASS files (Content/[public|admin].scss)
 * XML Sitemap optimized for very large catalogs:
 	* Partitions for very large sitemaps (> 50.000 nodes or > 10 MB)
 	* Generated in a background task. No instant invalidation anymore.
-* Added option to skip shipping method selection in checkout process when only one shipping method is active
+* Added option to skip shipping method selection in checkout process if only one shipping method is active
 * Added options to capture salutation and title in addresses and customer info
 * Added projection to control the export of individually visible associated products
-* #966 Implement new tax calculation logic for shipping and payment fees (Calculate with rate of highest cart amount)
-* #922 New option whether to include the weight of free shipping products in shipping by weight calculation
+* #966 Implement new tax calculation logic for shipping and payment fees (calculate with rate of highest cart amount)
+* #922 New option to specify whether to include the weight of free shipping products in shipping by weight calculation
 * #724 Allow discounts to be applied to manufacturers
 * Option to display manufacturers sorted in alphabetical order
 * #1093 New product properties required for selling abroad
@@ -54,6 +54,7 @@
 * Added setting to specify whether the product manufacturer should be displayed in product detail
 * #271 Implemented support for attribute images/icons
 * #330 Implement 'attribute option sets'
+* Two themes Flex Black and Flex Blue which are derived from Flex theme    
 
 
 ### Improvements
@@ -75,7 +76,7 @@
 * Order XML export includes more customer data like title and salutation
 * #1080 Do not resolve Order.OrderURLForCustomer token for guest customers
 * #1051 Display EAN in PDF packaging slip
-* #806 Can't create a user in the admin section without "Manage Customer Roles" permission 
+* #806 User couldn't be created in the admin section without "Manage Customer Roles" permission 
 * #491 Implemented option to determine a default delivery time
 * #1078 Implemented options for "Add to Cart" quantity input field on product level. Quantity control can now be hidden and can be configured to be increased and decreased in steps.
 * #696 Added textual resources for meta title and description for blog per month and by tag pages and enriched them with corresponding month plus year respectivly tag name
@@ -89,20 +90,20 @@
 
 
 ### Bugfixes
-* Currency wasn't displayed at shipping estimation
-* SKU, EAN, MPN of last attribute combination was exported for all combinations
+* Currency wasn't displayed for shipping estimation
+* SKU, EAN, MPN of last attribute combination were exported for all combinations
 * GMC:
 	* Id should be unique when exporting attribute combinations as products
 	* Attribute price adjustments were ignored when exporting attribute combinations as products
 	* Associated products that are not individually visible are not exported anymore. GMC rejects them because the frontend redirects to the grouped product.
 * Export:
-	* #999 Projected customer id ignored during price calculation
-	* #1104 Language projection ignored when creating product details URL
+	* #999 Projected customer id was ignored during price calculation
+	* #1104 Language projection was ignored when creating product details URL
 	* #1030: Orders didn't include data of attribute combinations
 	* Orders didn't include shipping address
-* Awarded reward points for a placed order sometimes wrong calculated
+* Awarded reward points for a placed order were occasionally calculated wrong
 * PayPal PLUS:
-	* A changed shipping address/costs was not transmitted to PayPal
+	* Changed shipping address/costs were not transmitted to PayPal
 	* Skip payment if cart total is zero
 	* Do not display payment wall if method is filtered
 * PayPal Express: Fixed net price issue.

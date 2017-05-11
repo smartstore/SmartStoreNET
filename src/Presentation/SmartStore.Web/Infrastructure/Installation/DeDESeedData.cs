@@ -3449,9 +3449,9 @@ namespace SmartStore.Web.Infrastructure.Installation
                 #endregion category Basketball
 
                 #region category Gift Cards
-                .Alter("$5 Virtual Gift Card", x =>
+                .Alter("$10 Virtual Gift Card", x =>
 				{
-					x.Name = "5 € Geschenkgutschein";
+					x.Name = "10 € Geschenkgutschein";
 					x.ShortDescription = "5 € Geschenkgutschein. Eine ideale Geschenkidee.";
 					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
 				})

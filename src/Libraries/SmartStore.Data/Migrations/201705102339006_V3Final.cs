@@ -1015,6 +1015,9 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.ThemeVar.ArtActiveBorderColor",
                 "Specifies the border color for product boxes when hovering over them.",
                 "Legt die Rahmenfarbe von Produktboxen für den Hover-Effekt fest.");
+            builder.AddOrUpdate("Content.CopyrightNotice",
+                "Copyright &amp;copy; {0} {1}. All rights reserved.",
+                "Copyright &amp;copy; {0} {1}. Alle Rechte vorbehalten.");
         }
 	}
 }

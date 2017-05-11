@@ -6553,88 +6553,88 @@ namespace SmartStore.Data.Setup
 
             #region iPhone
 
-            var productIphone = _ctx.Set<Product>().First(x => x.Sku == "Apple-1001");
+   //         var productIphone = _ctx.Set<Product>().First(x => x.Sku == "Apple-1001");
 
-			var attributeIphoneMemoryCapacity = new ProductVariantAttribute()
-			{
-				Product = productIphone,
-				ProductAttribute = attrMemoryCapacity,
-				IsRequired = true,
-				DisplayOrder = 1,
-				AttributeControlType = AttributeControlType.DropdownList
-			};
+			//var attributeIphoneMemoryCapacity = new ProductVariantAttribute()
+			//{
+			//	Product = productIphone,
+			//	ProductAttribute = attrMemoryCapacity,
+			//	IsRequired = true,
+			//	DisplayOrder = 1,
+			//	AttributeControlType = AttributeControlType.DropdownList
+			//};
 
-			attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "16 GB",
-				Alias = "16gb",
-				IsPreSelected = true,
-				DisplayOrder = 1,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.Simple
-			});
+			//attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "16 GB",
+			//	Alias = "16gb",
+			//	IsPreSelected = true,
+			//	DisplayOrder = 1,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.Simple
+			//});
 
-			attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "64 GB",
-				Alias = "64gb",
-				DisplayOrder = 2,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.Simple,
-				PriceAdjustment = 100.0M
-			});
+			//attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "64 GB",
+			//	Alias = "64gb",
+			//	DisplayOrder = 2,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.Simple,
+			//	PriceAdjustment = 100.0M
+			//});
 
-			attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "128 GB",
-				Alias = "128gb",
-				DisplayOrder = 3,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.Simple,
-				PriceAdjustment = 200.0M
-			});
+			//attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "128 GB",
+			//	Alias = "128gb",
+			//	DisplayOrder = 3,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.Simple,
+			//	PriceAdjustment = 200.0M
+			//});
 
-			entities.Add(attributeIphoneMemoryCapacity);
+			//entities.Add(attributeIphoneMemoryCapacity);
 
 
-			var attributeIphoneColor = new ProductVariantAttribute()
-			{
-				Product = productIphone,
-				ProductAttribute = attrIphoneColor,
-				IsRequired = true,
-				DisplayOrder = 2,
-				AttributeControlType = AttributeControlType.DropdownList
-			};
+			//var attributeIphoneColor = new ProductVariantAttribute()
+			//{
+			//	Product = productIphone,
+			//	ProductAttribute = attrIphoneColor,
+			//	IsRequired = true,
+			//	DisplayOrder = 2,
+			//	AttributeControlType = AttributeControlType.DropdownList
+			//};
 
-			attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "Silver",
-				Alias = "silver",
-				IsPreSelected = true,
-				DisplayOrder = 1,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.Simple
-			});
+			//attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "Silver",
+			//	Alias = "silver",
+			//	IsPreSelected = true,
+			//	DisplayOrder = 1,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.Simple
+			//});
 
-			attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "Gold",
-				Alias = "gold",
-				DisplayOrder = 2,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.Simple
-			});
+			//attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "Gold",
+			//	Alias = "gold",
+			//	DisplayOrder = 2,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.Simple
+			//});
 
-			attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "Space gray",
-				Alias = "spacegray",
-				DisplayOrder = 3,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.Simple
-			});
+			//attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "Space gray",
+			//	Alias = "spacegray",
+			//	DisplayOrder = 3,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.Simple
+			//});
 
-			entities.Add(attributeIphoneColor);
+			//entities.Add(attributeIphoneColor);
 
 			#endregion iPhone
 
@@ -6674,6 +6674,96 @@ namespace SmartStore.Data.Setup
 			entities.Add(attributeDualshock3ControllerColor);
 
             #endregion attributeDualshock3ControllerColor
+
+            #region attribute  Apple Airpod
+
+            var productAirpod = _ctx.Set<Product>().First(x => x.Sku == "P-2003");
+
+            var attributeAirpod = new ProductVariantAttribute()
+            {
+                Product = productAirpod,
+                ProductAttribute = attrColor,
+                IsRequired = true,
+                DisplayOrder = 1,
+                AttributeControlType = AttributeControlType.Boxes
+            };
+
+            attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Gold",
+                Alias = "gold",
+                DisplayOrder = 1,
+                Quantity = 1,
+                Color = "#e3d0ba",
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 5.00M
+                //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-acreed3").Id
+            });
+
+            attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Rose",
+                Alias = "rose",
+                DisplayOrder = 2,
+                Quantity = 1,
+                Color = "#d9a6ad",
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 10.00M,
+                //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-watchdogs").Id
+            });
+
+            attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Mint",
+                Alias = "mint",
+                DisplayOrder = 3,
+                Quantity = 1,
+                Color= "#a6dbb1",
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 15.00M
+                //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-princepersia").Id
+            });
+
+            attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Lightblue",
+                Alias = "lightblue",
+                DisplayOrder = 3,
+                Quantity = 1,
+                Color = "#a6b9df",
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 15.00M
+                //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-princepersia").Id
+            });
+
+            attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Turquoise",
+                Alias = "turquoise",
+                DisplayOrder = 3,
+                Quantity = 1,
+                Color = "#a4dbde",
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 15.00M
+                //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-princepersia").Id
+            });
+
+            attributeAirpod.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "White",
+                Alias = "white",
+                DisplayOrder = 3,
+                Quantity = 1,
+                Color = "#ffffff",
+                IsPreSelected = true,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 15.00M
+                //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-princepersia").Id
+            });
+
+            entities.Add(attributeAirpod);
+
+            #endregion attribute Apple Airpod
 
             #region attribute Evopower 5.3 Trainer HS Ball
 
@@ -6750,15 +6840,15 @@ namespace SmartStore.Data.Setup
 				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "PD-Minecraft4ps4").Id
 			});
 
-			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
-			{
-				Name = "Watch Dogs",
-				Alias = "watch-dogs",
-				DisplayOrder = 2,
-				Quantity = 1,
-				ValueType = ProductVariantAttributeValueType.ProductLinkage,
-				LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-watchdogs").Id
-			});
+			//attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			//{
+			//	Name = "Watch Dogs",
+			//	Alias = "watch-dogs",
+			//	DisplayOrder = 2,
+			//	Quantity = 1,
+			//	ValueType = ProductVariantAttributeValueType.ProductLinkage,
+			//	LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-watchdogs").Id
+			//});
 
 			attributePs3OneGameFree.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
 			{
@@ -7496,6 +7586,79 @@ namespace SmartStore.Data.Setup
 			});
 
             #endregion ps3
+
+            #region Apple Airpod
+
+            var productAirpod = _ctx.Set<Product>().First(x => x.Sku == "P-2003");
+            var airpodPictureIds = productAirpod.ProductPictures.Select(pp => pp.PictureId).ToList();
+            var picturesAirpod = _ctx.Set<Picture>().Where(x => airpodPictureIds.Contains(x.Id)).ToList();
+
+            var airpodAttributeColor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productAirpod.Id && x.ProductAttributeId == attrColor.Id);
+            var airpodAttributeColorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == airpodAttributeColor.Id).ToList();
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productAirpod,
+                Sku = productAirpod.Sku + "-gold",
+                AttributesXml = FormatAttributeXml(airpodAttributeColor.Id, airpodAttributeColorValues.First(x => x.Alias == "gold").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-gold")).Id.ToString()
+            });
+
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productAirpod,
+                Sku = productAirpod.Sku + "-rose",
+                AttributesXml = FormatAttributeXml(airpodAttributeColor.Id, airpodAttributeColorValues.First(x => x.Alias == "rose").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-rose")).Id.ToString()
+            });
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productAirpod,
+                Sku = productAirpod.Sku + "-mint",
+                AttributesXml = FormatAttributeXml(airpodAttributeColor.Id, airpodAttributeColorValues.First(x => x.Alias == "mint").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-mint")).Id.ToString()
+            });
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productAirpod,
+                Sku = productAirpod.Sku + "-lightblue",
+                AttributesXml = FormatAttributeXml(airpodAttributeColor.Id, airpodAttributeColorValues.First(x => x.Alias == "lightblue").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-lightblue")).Id.ToString()
+            });
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productAirpod,
+                Sku = productAirpod.Sku + "-turquoise",
+                AttributesXml = FormatAttributeXml(airpodAttributeColor.Id, airpodAttributeColorValues.First(x => x.Alias == "turquoise").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-turquoise")).Id.ToString()
+            });
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productAirpod,
+                Sku = productAirpod.Sku + "-white",
+                AttributesXml = FormatAttributeXml(airpodAttributeColor.Id, airpodAttributeColorValues.First(x => x.Alias == "white").Id),
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                AssignedPictureIds = picturesAirpod.First(x => x.SeoFilename.EndsWith("-white")).Id.ToString()
+            });
+
+            #endregion Apple Airpod
 
             #region 9,7 Ipad
 
@@ -8449,34 +8612,34 @@ namespace SmartStore.Data.Setup
             #endregion tag gift
 
             #region tag computer
-            var productTagComputer = new ProductTag
-			{
-				Name = "computer"
-			};
+   //         var productTagComputer = new ProductTag
+			//{
+			//	Name = "computer"
+			//};
 
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagComputer);
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagComputer);
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagComputer);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagComputer);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagComputer);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagComputer);
 
 			#endregion tag computer
 
 			#region tag notebook
-			var productTagNotebook = new ProductTag
-			{
-				Name = "notebook"
-			};
+			//var productTagNotebook = new ProductTag
+			//{
+			//	Name = "notebook"
+			//};
 
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagNotebook);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagNotebook);
 
 			#endregion productTagNotebook
 
 			#region tag compact
-			var productTagCompact = new ProductTag
-			{
-				Name = "compact"
-			};
+			//var productTagCompact = new ProductTag
+			//{
+			//	Name = "compact"
+			//};
 
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagCompact);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagCompact);
 
 			#endregion productTagCompact
 
@@ -8530,35 +8693,35 @@ namespace SmartStore.Data.Setup
 			#endregion tag motorbikes
 
 			#region tag Intel
-			var productTagIntel = new ProductTag
-			{
-				Name = "Intel"
-			};
+			//var productTagIntel = new ProductTag
+			//{
+			//	Name = "Intel"
+			//};
 
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagIntel);
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagIntel);
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagIntel);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagIntel);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagIntel);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Acer Aspire One 8.9").FirstOrDefault().ProductTags.Add(productTagIntel);
 
 			#endregion tag Intel
 
 			#region tag Dell
-			var productTagDell = new ProductTag
-			{
-				Name = "Dell"
-			};
+			//var productTagDell = new ProductTag
+			//{
+			//	Name = "Dell"
+			//};
 
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagDell);
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagDell);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Inspiron One 23").FirstOrDefault().ProductTags.Add(productTagDell);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Dell Optiplex 3010 DT Base").FirstOrDefault().ProductTags.Add(productTagDell);
 
 			#endregion tag Dell
 
 			#region tag iPhone
-			var productTagIphone = new ProductTag
-			{
-				Name = "iPhone"
-			};
+			//var productTagIphone = new ProductTag
+			//{
+			//	Name = "iPhone"
+			//};
 
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Apple iPhone 6").FirstOrDefault().ProductTags.Add(productTagIphone);
+			//_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Apple iPhone 6").FirstOrDefault().ProductTags.Add(productTagIphone);
 
 			#endregion tag iPhone
 
@@ -8596,7 +8759,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<ProductTag>
 			{
-			   productTagGift, productTagComputer, productTagNotebook, productTagCompact, productTagBook, productTagCooking, productTagCars, productTagMotorbikes, productTagIntel, productTagDell, productTagIphone,
+			   productTagGift, productTagBook, productTagCooking, productTagCars, productTagMotorbikes,
 			   productTagMP3, productTagDownload
 			};
 
@@ -8658,16 +8821,16 @@ namespace SmartStore.Data.Setup
 				MetaTitle = "Books"
 			};
 
-			var categoryComputers = new Category
-			{
-				Name = "Computers",
-                Alias = "Computers",
-				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_computers.png"), "image/png", GetSeName("Computers")),
-				Published = true,
-				DisplayOrder = 2,
-				MetaTitle = "Computers"
-			};
+			//var categoryComputers = new Category
+			//{
+			//	Name = "Computers",
+   //             Alias = "Computers",
+			//	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+   //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_computers.png"), "image/png", GetSeName("Computers")),
+			//	Published = true,
+			//	DisplayOrder = 2,
+			//	MetaTitle = "Computers"
+			//};
 
             var categoryFashion = new Category
             {
@@ -8693,17 +8856,17 @@ namespace SmartStore.Data.Setup
 				MetaTitle = "Gaming"
 			};
 
-			var categoryCellPhones = new Category
-			{
-				Name = "Cell phones",
-                Alias = "Cell phones",
-				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				//ParentCategoryId = categoryElectronics.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_cellphone.png"), "image/png", GetSeName("Cell phones")),
-				Published = true,
-				DisplayOrder = 4,
-				MetaTitle = "Cell phones"
-			};
+			//var categoryCellPhones = new Category
+			//{
+			//	Name = "Cell phones",
+   //             Alias = "Cell phones",
+			//	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+			//	//ParentCategoryId = categoryElectronics.Id,
+   //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_cellphone.png"), "image/png", GetSeName("Cell phones")),
+			//	Published = true,
+			//	DisplayOrder = 4,
+			//	MetaTitle = "Cell phones"
+			//};
 
 			var categoryDigitalDownloads = new Category
 			{
@@ -8745,7 +8908,7 @@ namespace SmartStore.Data.Setup
 
 			var entities = new List<Category>
 			{
-				categoryApple, categorySports, categoryBooks, categoryFurniture,categoryComputers, categoryCellPhones, categoryDigitalDownloads, categoryGaming,
+				categoryApple, categorySports, categoryBooks, categoryFurniture, categoryDigitalDownloads, categoryGaming,
 				categoryGiftCards, categoryFashion, categoryWatches
             };
 
@@ -8836,29 +8999,29 @@ namespace SmartStore.Data.Setup
 				MetaTitle = "Cook and enjoy"
 			};
 
-			var categoryDesktops = new Category
-			{
-				Name = "Desktops",
-                Alias = "Desktops",
-				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_desktops.png"), "image/png", GetSeName("Desktops")),
-				Published = true,
-				DisplayOrder = 1,
-				MetaTitle = "Desktops"
-			};
+			//var categoryDesktops = new Category
+			//{
+			//	Name = "Desktops",
+   //             Alias = "Desktops",
+			//	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+			//	ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_desktops.png"), "image/png", GetSeName("Desktops")),
+			//	Published = true,
+			//	DisplayOrder = 1,
+			//	MetaTitle = "Desktops"
+			//};
 
-			var categoryNotebooks = new Category
-			{
-				Name = "Notebooks",
-                Alias = "Notebooks",
-				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_notebooks.png"), "image/png", GetSeName("Notebooks")),
-				Published = true,
-				DisplayOrder = 2,
-				MetaTitle = "Notebooks"
-			};
+			//var categoryNotebooks = new Category
+			//{
+			//	Name = "Notebooks",
+   //             Alias = "Notebooks",
+			//	CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+			//	ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
+   //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_notebooks.png"), "image/png", GetSeName("Notebooks")),
+			//	Published = true,
+			//	DisplayOrder = 2,
+			//	MetaTitle = "Notebooks"
+			//};
 
 			var categoryGamingAccessories = new Category
 			{
@@ -8889,7 +9052,7 @@ namespace SmartStore.Data.Setup
 			var entities = new List<Category>
 			{
                 categorySportsSunglasses,categorySportsSoccer, categorySportsBasketball,categorySportsGolf, categoryBooksSpiegel, categoryBooksCookAndEnjoy,
-				categoryDesktops, categoryNotebooks, categoryGamingAccessories, categoryGamingGames
+				categoryGamingAccessories, categoryGamingGames
 			};
 
 			this.Alter(entities);
@@ -10809,6 +10972,7 @@ namespace SmartStore.Data.Setup
                 Published = true,
                 MetaTitle = "Watch Series 2",
                 Price = 299M,
+                OldPrice = 399M,
                 IsGiftCard = false,
                 ManageInventoryMethod = ManageInventoryMethod.ManageStock,
                 OrderMinimumQuantity = 1,
@@ -10839,6 +11003,42 @@ namespace SmartStore.Data.Setup
                 Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
                 DisplayOrder = 1,
             });
+
+            //attributes
+            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // offer type -> offer of the day
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
+            });
+            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // manufacturer -> apple
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // storage capacity -> 32gb
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+            });
+            
+            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            {
+                AllowFiltering = true,
+                ShowOnProductPage = true,
+                DisplayOrder = 1,
+                // operating system -> ios
+                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
+            });
+
 
             #endregion product Watch Series 2
 
@@ -10873,37 +11073,37 @@ namespace SmartStore.Data.Setup
 
             productAirpods.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_white.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_white.jpg"), "image/png", GetSeName(productAirpods.Name) + "-white"),
                 DisplayOrder = 1,
             });
 
             productAirpods.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_turquoise.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_turquoise.jpg"), "image/png", GetSeName(productAirpods.Name) + "-turquoise"),
                 DisplayOrder = 2,
             });
 
             productAirpods.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_lightblue.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_lightblue.jpg"), "image/png", GetSeName(productAirpods.Name) + "-lightblue"),
                 DisplayOrder = 3,
             });
 
             productAirpods.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_rose.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_rose.jpg"), "image/png", GetSeName(productAirpods.Name) + "-rose"),
                 DisplayOrder = 4,
             });
 
             productAirpods.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_gold.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_gold.jpg"), "image/png", GetSeName(productAirpods.Name) + "-gold"),
                 DisplayOrder = 5,
             });
 
             productAirpods.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_mint.jpg"), "image/png", GetSeName(productAirpods.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_mint.jpg"), "image/png", GetSeName(productAirpods.Name) + "-mint"),
                 DisplayOrder = 6,
             });
 
@@ -11865,415 +12065,415 @@ namespace SmartStore.Data.Setup
 
 			#region computer
 
-            var categoryComputer = this._ctx.Set<Category>().First(c => c.Alias == "Computers");
-            var categoryNotebooks = this._ctx.Set<Category>().First(c => c.Alias == "Notebooks");
-            var categoryDesktops = this._ctx.Set<Category>().First(c => c.Alias == "Desktops");
+   //         var categoryComputer = this._ctx.Set<Category>().First(c => c.Alias == "Computers");
+   //         var categoryNotebooks = this._ctx.Set<Category>().First(c => c.Alias == "Notebooks");
+   //         var categoryDesktops = this._ctx.Set<Category>().First(c => c.Alias == "Desktops");
 
-			#region productComputerDellInspiron23
+			//#region productComputerDellInspiron23
 
-			var productComputerDellInspiron23 = new Product()
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Dell Inspiron One 23",
-				ShortDescription = "This 58 cm (23'')-All-in-One PC with Full HD, Windows 8 and powerful Intel ® Core ™ processor third generation allows practical interaction with a touch screen.",
-				FullDescription = "<p>Ultra high performance all-in-one i7 PC with Windows 8, Intel ® Core ™ processor, huge 2TB hard drive and Blu-Ray drive. </p> <p> Intel® Core™ i7-3770S Processor ( 3,1 GHz, 6 MB Cache)<br> Windows 8 64bit , english<br> 8 GB1 DDR3 SDRAM at 1600 MHz<br> 2 TB-Serial ATA-Harddisk (7.200 rot/min)<br> 1GB AMD Radeon HD 7650<br> </p>",
-                Sku = "P-1012",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Dell Inspiron One 23",
-				Price = 589.00M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
-			};
+			//var productComputerDellInspiron23 = new Product()
+			//{
+			//	ProductType = ProductType.SimpleProduct,
+			//	VisibleIndividually = true,
+			//	Name = "Dell Inspiron One 23",
+			//	ShortDescription = "This 58 cm (23'')-All-in-One PC with Full HD, Windows 8 and powerful Intel ® Core ™ processor third generation allows practical interaction with a touch screen.",
+			//	FullDescription = "<p>Ultra high performance all-in-one i7 PC with Windows 8, Intel ® Core ™ processor, huge 2TB hard drive and Blu-Ray drive. </p> <p> Intel® Core™ i7-3770S Processor ( 3,1 GHz, 6 MB Cache)<br> Windows 8 64bit , english<br> 8 GB1 DDR3 SDRAM at 1600 MHz<br> 2 TB-Serial ATA-Harddisk (7.200 rot/min)<br> 1GB AMD Radeon HD 7650<br> </p>",
+   //             Sku = "P-1012",
+			//	ProductTemplateId = productTemplateSimple.Id,
+			//	AllowCustomerReviews = true,
+			//	Published = true,
+			//	MetaTitle = "Dell Inspiron One 23",
+			//	Price = 589.00M,
+			//	ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+			//	OrderMinimumQuantity = 1,
+			//	OrderMaximumQuantity = 10000,
+			//	StockQuantity = 10000,
+			//	NotifyAdminForQuantityBelow = 1,
+			//	AllowBackInStockSubscriptions = false,
+			//	IsShipEnabled = true,
+			//	DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
+			//};
 
-            productComputerDellInspiron23.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
-            productComputerDellInspiron23.ProductCategories.Add(new ProductCategory() { Category = categoryDesktops, DisplayOrder = 1 });
+   //         productComputerDellInspiron23.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
+   //         productComputerDellInspiron23.ProductCategories.Add(new ProductCategory() { Category = categoryDesktops, DisplayOrder = 1 });
 
-			#region pictures
+			//#region pictures
 
-			//pictures
-			productComputerDellInspiron23.ProductPictures.Add(new ProductPicture()
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_dellinspiron23.png"), "image/png", GetSeName(productComputerDellInspiron23.Name)),
-				DisplayOrder = 1,
-			});
-			productComputerDellInspiron23.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000954_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellInspiron23.Name)),
-				DisplayOrder = 2,
-			});
-			productComputerDellInspiron23.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000956_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellInspiron23.Name)),
-				DisplayOrder = 3,
-			});
+			////pictures
+			//productComputerDellInspiron23.ProductPictures.Add(new ProductPicture()
+			//{
+   //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_dellinspiron23.png"), "image/png", GetSeName(productComputerDellInspiron23.Name)),
+			//	DisplayOrder = 1,
+			//});
+			//productComputerDellInspiron23.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000954_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellInspiron23.Name)),
+			//	DisplayOrder = 2,
+			//});
+			//productComputerDellInspiron23.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000956_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellInspiron23.Name)),
+			//	DisplayOrder = 3,
+			//});
 
-			#endregion pictures
+			//#endregion pictures
 
-			#region manufacturer
+			//#region manufacturer
 
-			//manufacturer
-			productComputerDellInspiron23.ProductManufacturers.Add(new ProductManufacturer()
-			{
-				Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Dell").Single(),
-				DisplayOrder = 1,
-			});
+			////manufacturer
+			//productComputerDellInspiron23.ProductManufacturers.Add(new ProductManufacturer()
+			//{
+			//	Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Dell").Single(),
+			//	DisplayOrder = 1,
+			//});
 
-            #endregion manufacturer
+   //         #endregion manufacturer
 
-            #region SpecificationAttributes
-            //attributes
-            productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 1,
-                // CPU -> Intel
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 1).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
-            });
-            productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 2,
-				// RAM -> 4 GB 
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 4).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Harddisk-Typ / HDD
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 16).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 4,
-				// Harddisk-Capacity / 750 GB
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 3).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
-			});
-			productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 5,
-				// OS / Windows 7 32 Bit
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			#endregion SpecificationAttributes
+   //         #region SpecificationAttributes
+   //         //attributes
+   //         productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+   //         {
+   //             AllowFiltering = true,
+   //             ShowOnProductPage = true,
+   //             DisplayOrder = 1,
+   //             // CPU -> Intel
+   //             SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 1).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+   //         });
+   //         productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 2,
+			//	// RAM -> 4 GB 
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 4).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+			//});
+			//productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 3,
+			//	// Harddisk-Typ / HDD
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 16).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+			//});
+			//productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 4,
+			//	// Harddisk-Capacity / 750 GB
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 3).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
+			//});
+			//productComputerDellInspiron23.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 5,
+			//	// OS / Windows 7 32 Bit
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+			//});
+			//#endregion SpecificationAttributes
 
-			#endregion productComputerDellInspiron23
+			//#endregion productComputerDellInspiron23
 
-			#region productComputerDellOptiplex3010
+			//#region productComputerDellOptiplex3010
 
-			var productComputerDellOptiplex3010 = new Product()
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Dell Optiplex 3010 DT Base",
-				ShortDescription = "SPECIAL OFFER: Extra 50 € discount on all Dell OptiPlex desktops from a value of € 549. Online Coupon:? W8DWQ0ZRKTM1, valid until 04/12/2013.",
-				FullDescription = "<p>Also included in this system include To change these selections, the</p> <p> 1 Year Basic Service - On-Site NBD - No Upgrade Selected<br> No asset tag required </p> <p> The following options are default selections included with your order. <br> German (QWERTY) Dell KB212-B Multimedia USB Keyboard Black<br> X11301001<br> WINDOWS LIVE <br> OptiPlex ™ order - Germany  <br> OptiPlex ™ Intel ® Core ™ i3 sticker <br> Optical software is not required, operating system software sufficiently   <br> </p>",
-                Sku = "P-1013",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Dell Optiplex 3010 DT Base",
-				Price = 419.00M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
-			};
+			//var productComputerDellOptiplex3010 = new Product()
+			//{
+			//	ProductType = ProductType.SimpleProduct,
+			//	VisibleIndividually = true,
+			//	Name = "Dell Optiplex 3010 DT Base",
+			//	ShortDescription = "SPECIAL OFFER: Extra 50 € discount on all Dell OptiPlex desktops from a value of € 549. Online Coupon:? W8DWQ0ZRKTM1, valid until 04/12/2013.",
+			//	FullDescription = "<p>Also included in this system include To change these selections, the</p> <p> 1 Year Basic Service - On-Site NBD - No Upgrade Selected<br> No asset tag required </p> <p> The following options are default selections included with your order. <br> German (QWERTY) Dell KB212-B Multimedia USB Keyboard Black<br> X11301001<br> WINDOWS LIVE <br> OptiPlex ™ order - Germany  <br> OptiPlex ™ Intel ® Core ™ i3 sticker <br> Optical software is not required, operating system software sufficiently   <br> </p>",
+   //             Sku = "P-1013",
+			//	ProductTemplateId = productTemplateSimple.Id,
+			//	AllowCustomerReviews = true,
+			//	Published = true,
+			//	MetaTitle = "Dell Optiplex 3010 DT Base",
+			//	Price = 419.00M,
+			//	ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+			//	OrderMinimumQuantity = 1,
+			//	OrderMaximumQuantity = 10000,
+			//	StockQuantity = 10000,
+			//	NotifyAdminForQuantityBelow = 1,
+			//	AllowBackInStockSubscriptions = false,
+			//	IsShipEnabled = true,
+			//	DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
+			//};
 
-            productComputerDellOptiplex3010.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
-            productComputerDellOptiplex3010.ProductCategories.Add(new ProductCategory() { Category = categoryDesktops, DisplayOrder = 1 });
+   //         productComputerDellOptiplex3010.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
+   //         productComputerDellOptiplex3010.ProductCategories.Add(new ProductCategory() { Category = categoryDesktops, DisplayOrder = 1 });
 
-			#region pictures
+			//#region pictures
 
-			//pictures
-			productComputerDellOptiplex3010.ProductPictures.Add(new ProductPicture()
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_dellinspiron23.png"), "image/png", GetSeName(productComputerDellOptiplex3010.Name)),
-				DisplayOrder = 1,
-			});
-			productComputerDellOptiplex3010.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000954_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellOptiplex3010.Name)),
-				DisplayOrder = 2,
-			});
-			productComputerDellOptiplex3010.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000956_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellOptiplex3010.Name)),
-				DisplayOrder = 3,
-			});
+			////pictures
+			//productComputerDellOptiplex3010.ProductPictures.Add(new ProductPicture()
+			//{
+   //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_dellinspiron23.png"), "image/png", GetSeName(productComputerDellOptiplex3010.Name)),
+			//	DisplayOrder = 1,
+			//});
+			//productComputerDellOptiplex3010.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000954_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellOptiplex3010.Name)),
+			//	DisplayOrder = 2,
+			//});
+			//productComputerDellOptiplex3010.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000956_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellOptiplex3010.Name)),
+			//	DisplayOrder = 3,
+			//});
 
-			#endregion pictures
+			//#endregion pictures
 
-			#region manufacturer
+			//#region manufacturer
 
-			//manufacturer
-			productComputerDellOptiplex3010.ProductManufacturers.Add(new ProductManufacturer()
-			{
-				Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Dell").Single(),
-				DisplayOrder = 1,
-			});
+			////manufacturer
+			//productComputerDellOptiplex3010.ProductManufacturers.Add(new ProductManufacturer()
+			//{
+			//	Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Dell").Single(),
+			//	DisplayOrder = 1,
+			//});
 
-			#endregion manufacturer
+			//#endregion manufacturer
 
-			#region SpecificationAttributes
-			//attributes
-			productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 1,
-				// CPU -> Intel
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 1).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
-			});
-			productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 2,
-				// RAM -> 4 GB 
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 4).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
-			});
-			productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 3,
-				// Harddisk-Typ / HDD
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 16).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
-			});
-			productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 4,
-				// Harddisk-Capacity / 750 GB
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 3).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
-			});
-			productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 5,
-				// OS / Windows 7 32 Bit
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 4).Single()
-			});
-			#endregion SpecificationAttributes
+			//#region SpecificationAttributes
+			////attributes
+			//productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 1,
+			//	// CPU -> Intel
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 1).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+			//});
+			//productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 2,
+			//	// RAM -> 4 GB 
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 4).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+			//});
+			//productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 3,
+			//	// Harddisk-Typ / HDD
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 16).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+			//});
+			//productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 4,
+			//	// Harddisk-Capacity / 750 GB
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 3).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
+			//});
+			//productComputerDellOptiplex3010.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 5,
+			//	// OS / Windows 7 32 Bit
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 4).Single()
+			//});
+			//#endregion SpecificationAttributes
 
-			#endregion productComputerDellOptiplex3010
+			//#endregion productComputerDellOptiplex3010
 
-			#region productComputerAcerAspireOne
-			var productComputerAcerAspireOne = new Product()
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Acer Aspire One 8.9\" Mini-Notebook Case - (Black)",
-				ShortDescription = "Acer Aspire One 8.9\" Mini-Notebook and 6 Cell Battery model (AOA150-1447)",
-				FullDescription = "<p>Acer Aspire One 8.9&quot; Memory Foam Pouch is the perfect fit for Acer Aspire One 8.9&quot;. This pouch is made out of premium quality shock absorbing memory form and it provides extra protection even though case is very light and slim. This pouch is water resistant and has internal supporting bands for Acer Aspire One 8.9&quot;. Made In Korea.</p>",
-                Sku = "P-1014",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Acer Aspire One 8.9",
-				ShowOnHomePage = true,
-				Price = 210.6M,
-				IsShipEnabled = true,
-				Weight = 2,
-				Length = 2,
-				Width = 2,
-				Height = 3,
-				ManageInventoryMethod = ManageInventoryMethod.ManageStock,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				DisplayStockAvailability = true,
-				LowStockActivity = LowStockActivity.DisableBuyButton,
-				BackorderMode = BackorderMode.NoBackorders,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
-			};
+			//#region productComputerAcerAspireOne
+			//var productComputerAcerAspireOne = new Product()
+			//{
+			//	ProductType = ProductType.SimpleProduct,
+			//	VisibleIndividually = true,
+			//	Name = "Acer Aspire One 8.9\" Mini-Notebook Case - (Black)",
+			//	ShortDescription = "Acer Aspire One 8.9\" Mini-Notebook and 6 Cell Battery model (AOA150-1447)",
+			//	FullDescription = "<p>Acer Aspire One 8.9&quot; Memory Foam Pouch is the perfect fit for Acer Aspire One 8.9&quot;. This pouch is made out of premium quality shock absorbing memory form and it provides extra protection even though case is very light and slim. This pouch is water resistant and has internal supporting bands for Acer Aspire One 8.9&quot;. Made In Korea.</p>",
+   //             Sku = "P-1014",
+			//	ProductTemplateId = productTemplateSimple.Id,
+			//	AllowCustomerReviews = true,
+			//	Published = true,
+			//	MetaTitle = "Acer Aspire One 8.9",
+			//	ShowOnHomePage = true,
+			//	Price = 210.6M,
+			//	IsShipEnabled = true,
+			//	Weight = 2,
+			//	Length = 2,
+			//	Width = 2,
+			//	Height = 3,
+			//	ManageInventoryMethod = ManageInventoryMethod.ManageStock,
+			//	StockQuantity = 10000,
+			//	NotifyAdminForQuantityBelow = 1,
+			//	AllowBackInStockSubscriptions = false,
+			//	DisplayStockAvailability = true,
+			//	LowStockActivity = LowStockActivity.DisableBuyButton,
+			//	BackorderMode = BackorderMode.NoBackorders,
+			//	OrderMinimumQuantity = 1,
+			//	OrderMaximumQuantity = 10000,
+			//	DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
+			//};
 
-            productComputerAcerAspireOne.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
-            productComputerAcerAspireOne.ProductCategories.Add(new ProductCategory() { Category = categoryNotebooks, DisplayOrder = 1 });
+   //         productComputerAcerAspireOne.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
+   //         productComputerAcerAspireOne.ProductCategories.Add(new ProductCategory() { Category = categoryNotebooks, DisplayOrder = 1 });
 
-			#region manufacturer
+			//#region manufacturer
 
-			//manufacturer
-			productComputerAcerAspireOne.ProductManufacturers.Add(new ProductManufacturer()
-			{
-				Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Acer").Single(),
-				DisplayOrder = 1,
-			});
+			////manufacturer
+			//productComputerAcerAspireOne.ProductManufacturers.Add(new ProductManufacturer()
+			//{
+			//	Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Acer").Single(),
+			//	DisplayOrder = 1,
+			//});
 
-			#endregion manufacturer
+			//#endregion manufacturer
 
-			#region tierPrieces
-			productComputerAcerAspireOne.TierPrices.Add(new TierPrice()
-			{
-				Quantity = 2,
-				Price = 205
-			});
-			productComputerAcerAspireOne.TierPrices.Add(new TierPrice()
-			{
-				Quantity = 5,
-				Price = 189
-			});
-			productComputerAcerAspireOne.TierPrices.Add(new TierPrice()
-			{
-				Quantity = 10,
-				Price = 155
-			});
-			productComputerAcerAspireOne.HasTierPrices = true;
-			#endregion tierPrieces
+			//#region tierPrieces
+			//productComputerAcerAspireOne.TierPrices.Add(new TierPrice()
+			//{
+			//	Quantity = 2,
+			//	Price = 205
+			//});
+			//productComputerAcerAspireOne.TierPrices.Add(new TierPrice()
+			//{
+			//	Quantity = 5,
+			//	Price = 189
+			//});
+			//productComputerAcerAspireOne.TierPrices.Add(new TierPrice()
+			//{
+			//	Quantity = 10,
+			//	Price = 155
+			//});
+			//productComputerAcerAspireOne.HasTierPrices = true;
+			//#endregion tierPrieces
 
-			#region pictures
-			productComputerAcerAspireOne.ProductPictures.Add(new ProductPicture()
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_aceraspiresl1500.png"), "image/png", GetSeName(productComputerAcerAspireOne.Name)),
-				DisplayOrder = 1,
-			});
-			productComputerAcerAspireOne.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "01-12Hand_Aspire1.jpg"), "image/jpeg", GetSeName(productComputerAcerAspireOne.Name)),
-				DisplayOrder = 2,
-			});
-			productComputerAcerAspireOne.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "58_00007561.jpg"), "image/jpeg", GetSeName(productComputerAcerAspireOne.Name)),
-				DisplayOrder = 3,
-			});
+			//#region pictures
+			//productComputerAcerAspireOne.ProductPictures.Add(new ProductPicture()
+			//{
+   //             Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_aceraspiresl1500.png"), "image/png", GetSeName(productComputerAcerAspireOne.Name)),
+			//	DisplayOrder = 1,
+			//});
+			//productComputerAcerAspireOne.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "01-12Hand_Aspire1.jpg"), "image/jpeg", GetSeName(productComputerAcerAspireOne.Name)),
+			//	DisplayOrder = 2,
+			//});
+			//productComputerAcerAspireOne.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "58_00007561.jpg"), "image/jpeg", GetSeName(productComputerAcerAspireOne.Name)),
+			//	DisplayOrder = 3,
+			//});
 
-			#endregion tierPrieces
+			//#endregion tierPrieces
 
-			#endregion productComputerAcerAspireOne
+			//#endregion productComputerAcerAspireOne
 
 			#endregion computer
 
 			#region Smartphones
 
-            var categoryCellPhones = this._ctx.Set<Category>().First(c => c.Alias == "Cell phones");
+   //         var categoryCellPhones = this._ctx.Set<Category>().First(c => c.Alias == "Cell phones");
 
-			#region productSmartPhonesAppleIphone
+			//#region productSmartPhonesAppleIphone
 
-			var productSmartPhonesAppleIphone = new Product()
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Name = "Apple iPhone 6",
-				ShortDescription = "The biggest thing to happen to iPhone since iPhone.",
-				FullDescription = "<p>Available in silver, gold, and space gray, iPhone 6 Plus features an A8 chip, Touch ID, faster LTE wireless, a new 8MP iSight camera with Focus Pixels, and iOS 8.</p><p>Weight and Dimensions: Height: 6.22 inches (158.1 mm), Width: 3.06 inches (77.8 mm), Depth: 0.28 inch (7.1 mm), Weight: 6.07 ounces (172 grams).</p><p><ul><li>A8 chip with 64-bit architecture. M8 motion coprocessor.</li><li>New 8-megapixel iSight camera with 1.5µ pixels. Autofocus with Focus Pixels.</li><li>1080p HD video recording (30 fps or 60 fps).</li><li>Retina HD display. 4.7-inch (diagonal) LED-backlit widescreen Multi Touch display with IPS technology.</li><li>1334-by-750-pixel resolution at 326 ppi. 1400:1 contrast ratio (typical). 500 cd/m2 max brightness (typical).</li><li>Fingerprint identity sensor built into the Home button.</li><li>802.11a/b/g/n/ac Wi-Fi. Bluetooth 4.0 wireless technology. NFC.</li><li>RAM	1GB, Internal storage 16GB.</li><li>Colors: Silver, Gold, Space Gray.</li></ul></p>",
-                Sku = "Apple-1001",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Apple iPhone 6",
-				ShowOnHomePage = true,
-				Price = 579.00M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
-			};
+			//var productSmartPhonesAppleIphone = new Product()
+			//{
+			//	ProductType = ProductType.SimpleProduct,
+			//	VisibleIndividually = true,
+			//	Name = "Apple iPhone 6",
+			//	ShortDescription = "The biggest thing to happen to iPhone since iPhone.",
+			//	FullDescription = "<p>Available in silver, gold, and space gray, iPhone 6 Plus features an A8 chip, Touch ID, faster LTE wireless, a new 8MP iSight camera with Focus Pixels, and iOS 8.</p><p>Weight and Dimensions: Height: 6.22 inches (158.1 mm), Width: 3.06 inches (77.8 mm), Depth: 0.28 inch (7.1 mm), Weight: 6.07 ounces (172 grams).</p><p><ul><li>A8 chip with 64-bit architecture. M8 motion coprocessor.</li><li>New 8-megapixel iSight camera with 1.5µ pixels. Autofocus with Focus Pixels.</li><li>1080p HD video recording (30 fps or 60 fps).</li><li>Retina HD display. 4.7-inch (diagonal) LED-backlit widescreen Multi Touch display with IPS technology.</li><li>1334-by-750-pixel resolution at 326 ppi. 1400:1 contrast ratio (typical). 500 cd/m2 max brightness (typical).</li><li>Fingerprint identity sensor built into the Home button.</li><li>802.11a/b/g/n/ac Wi-Fi. Bluetooth 4.0 wireless technology. NFC.</li><li>RAM	1GB, Internal storage 16GB.</li><li>Colors: Silver, Gold, Space Gray.</li></ul></p>",
+   //             Sku = "Apple-1001",
+			//	ProductTemplateId = productTemplateSimple.Id,
+			//	AllowCustomerReviews = true,
+			//	Published = true,
+			//	MetaTitle = "Apple iPhone 6",
+			//	ShowOnHomePage = true,
+			//	Price = 579.00M,
+			//	ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+			//	OrderMinimumQuantity = 1,
+			//	OrderMaximumQuantity = 10000,
+			//	StockQuantity = 10000,
+			//	NotifyAdminForQuantityBelow = 1,
+			//	AllowBackInStockSubscriptions = false,
+			//	IsShipEnabled = true,
+			//	DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+			//};
 
-            productSmartPhonesAppleIphone.ProductCategories.Add(new ProductCategory() { Category = categoryCellPhones, DisplayOrder = 1 });
+   //         productSmartPhonesAppleIphone.ProductCategories.Add(new ProductCategory() { Category = categoryCellPhones, DisplayOrder = 1 });
 
-			#region pictures
+			//#region pictures
 
-			//pictures
-			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000789-apple-iphone.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone.Name)),
-				DisplayOrder = 1,
-			});
-			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000785-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
-				DisplayOrder = 2,
-			});
-			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000786-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
-				DisplayOrder = 3,
-			});
-			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000787-apple-iphone.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone.Name)),
-				DisplayOrder = 4,
-			});
-			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000788-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
-				DisplayOrder = 5,
-			});
+			////pictures
+			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000789-apple-iphone.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone.Name)),
+			//	DisplayOrder = 1,
+			//});
+			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000785-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
+			//	DisplayOrder = 2,
+			//});
+			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000786-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
+			//	DisplayOrder = 3,
+			//});
+			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000787-apple-iphone.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone.Name)),
+			//	DisplayOrder = 4,
+			//});
+			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000788-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
+			//	DisplayOrder = 5,
+			//});
 
 
 
-			#endregion pictures
+			//#endregion pictures
 
-			#region manufacturer
+			//#region manufacturer
 
-			//manufacturer
-			productSmartPhonesAppleIphone.ProductManufacturers.Add(new ProductManufacturer()
-			{
-				Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
-				DisplayOrder = 1,
-			});
+			////manufacturer
+			//productSmartPhonesAppleIphone.ProductManufacturers.Add(new ProductManufacturer()
+			//{
+			//	Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
+			//	DisplayOrder = 1,
+			//});
 
-			#endregion manufacturer
+			//#endregion manufacturer
 
-			#region SpecificationAttributes
-			//attributes
-			productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 1,
-				// housing > alu
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 4).Single()
-			});
-			productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 2,
-				// manufacturer > apple
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			});
-			productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			{
-				AllowFiltering = true,
-				ShowOnProductPage = true,
-				DisplayOrder = 5,
-				// OS / Windows 7 32 Bit
-				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
-			});
-            #endregion SpecificationAttributes
+			//#region SpecificationAttributes
+			////attributes
+			//productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 1,
+			//	// housing > alu
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 4).Single()
+			//});
+			//productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 2,
+			//	// manufacturer > apple
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
+			//});
+			//productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			//{
+			//	AllowFiltering = true,
+			//	ShowOnProductPage = true,
+			//	DisplayOrder = 5,
+			//	// OS / Windows 7 32 Bit
+			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
+			//});
+   //         #endregion SpecificationAttributes
 
-            #endregion productSmartPhonesAppleIphone
+            //#endregion productSmartPhonesAppleIphone
 
             #endregion Smartphones
 
@@ -13331,37 +13531,37 @@ namespace SmartStore.Data.Setup
 
 			#region Ps3PlusOneGame
 
-			var productWatchDogs = new Product()
-			{
-				ProductType = ProductType.SimpleProduct,
-				VisibleIndividually = true,
-				Sku = "Ubi-watchdogs",
-				Name = "Watch Dogs",
-				ShortDescription = "Hack and control the city – Use the city systems as weapons: traffic lights, security cameras, movable bridges, gas pipes, electricity grid and more.",
-				FullDescription = "<p>In today's hyper-connected world, Chicago has the country’s most advanced computer system – one which controls almost every piece of city technology and holds key information on all of the city's residents.</p><p>You play as Aiden Pearce, a brilliant hacker but also a former thug, whose criminal past lead to a violent family tragedy. Now on the hunt for those who hurt your family, you'll be able to monitor and hack all who surround you while manipulating the city's systems to stop traffic lights, download personal information, turn off the electrical grid and more.</p><p>Use the city of Chicago as your ultimate weapon and exact your own style of revenge.</p><p>Monitor the masses – Everyone leaves a digital shadow - access all data on anyone and use it to your advantage.</p><p>State of the art graphics</p>",
-				ProductTemplateId = productTemplate.Id,
-				AllowCustomerReviews = true,
-				Published = true,
-				MetaTitle = "Watch Dogs",
-				Price = 49.90M,
-				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-				OrderMinimumQuantity = 1,
-				OrderMaximumQuantity = 10000,
-				StockQuantity = 10000,
-				NotifyAdminForQuantityBelow = 1,
-				AllowBackInStockSubscriptions = false,
-				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
+			//var productWatchDogs = new Product()
+			//{
+			//	ProductType = ProductType.SimpleProduct,
+			//	VisibleIndividually = true,
+			//	Sku = "Ubi-watchdogs",
+			//	Name = "Watch Dogs",
+			//	ShortDescription = "Hack and control the city – Use the city systems as weapons: traffic lights, security cameras, movable bridges, gas pipes, electricity grid and more.",
+			//	FullDescription = "<p>In today's hyper-connected world, Chicago has the country’s most advanced computer system – one which controls almost every piece of city technology and holds key information on all of the city's residents.</p><p>You play as Aiden Pearce, a brilliant hacker but also a former thug, whose criminal past lead to a violent family tragedy. Now on the hunt for those who hurt your family, you'll be able to monitor and hack all who surround you while manipulating the city's systems to stop traffic lights, download personal information, turn off the electrical grid and more.</p><p>Use the city of Chicago as your ultimate weapon and exact your own style of revenge.</p><p>Monitor the masses – Everyone leaves a digital shadow - access all data on anyone and use it to your advantage.</p><p>State of the art graphics</p>",
+			//	ProductTemplateId = productTemplateSimple.Id,
+			//	AllowCustomerReviews = true,
+			//	Published = true,
+			//	MetaTitle = "Watch Dogs",
+			//	Price = 49.90M,
+			//	ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
+			//	OrderMinimumQuantity = 1,
+			//	OrderMaximumQuantity = 10000,
+			//	StockQuantity = 10000,
+			//	NotifyAdminForQuantityBelow = 1,
+			//	AllowBackInStockSubscriptions = false,
+			//	IsShipEnabled = true,
+			//	DeliveryTime = firstDeliveryTime
+			//};
 
-			productWatchDogs.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuUbisoft, DisplayOrder = 1 });
-			productWatchDogs.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 1 });
+			//productWatchDogs.ProductManufacturers.Add(new ProductManufacturer() { Manufacturer = manuUbisoft, DisplayOrder = 1 });
+			//productWatchDogs.ProductCategories.Add(new ProductCategory() { Category = categoryGamingGames, DisplayOrder = 1 });
 
-			productWatchDogs.ProductPictures.Add(new ProductPicture()
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-watchdogs.jpg"), "image/jpeg", GetSeName(productWatchDogs.Name)),
-				DisplayOrder = 1
-			});
+			//productWatchDogs.ProductPictures.Add(new ProductPicture()
+			//{
+			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-watchdogs.jpg"), "image/jpeg", GetSeName(productWatchDogs.Name)),
+			//	DisplayOrder = 1
+			//});
 
 			var productPrinceOfPersia = new Product()
 			{
@@ -13468,6 +13668,7 @@ namespace SmartStore.Data.Setup
             });
             #endregion Fifa 17
 
+            #region Lego Worlds
             //productDriverSanFrancisco
             var productLegoWorlds = new Product()
 			{
@@ -13502,6 +13703,7 @@ namespace SmartStore.Data.Setup
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_legoworlds.jpg"), "image/jpeg", GetSeName(productLegoWorlds.Name)),
 				DisplayOrder = 1
 			});
+            #endregion Lego Worlds
 
             #region Ps3PlusOneGame
             var productPs3OneGame = new Product()
@@ -13548,12 +13750,12 @@ namespace SmartStore.Data.Setup
                 productOriginalWayfarer,productCustomFlakSunglasses,productRadarEVPrizmSportsSunglasses,productAppleProHipsterBundle,product97ipad,productAirpods,
                 productIphoneplus,productWatchSeries2,product10GiftCard, product25GiftCard, product50GiftCard,product100GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
-				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
-				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,
+				productBooksMotorradAbenteuer,  
+				productInstantDownloadVivaldi,  productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,
 				productPs3, productMinecraft, productBundlePs3AssassinCreed,
 				productPs4, productDualshock4Controller, productPs4Camera, productBundlePs4,
 				productGroupAccessories,
-				productWatchDogs, productPrinceOfPersia, productLegoWorlds,productHorizonZeroDown,productFifa17,productPs3OneGame
+				productPrinceOfPersia, productLegoWorlds,productHorizonZeroDown,productFifa17,productPs3OneGame
             };
 
             entities.AddRange(GetFashionProducts());

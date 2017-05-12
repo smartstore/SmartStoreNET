@@ -8034,9 +8034,9 @@ namespace SmartStore.Data.Setup
                                     //Price = ballChairPrice
                             });
                         } 
-                        catch (Exception e)
+                        catch
                         {
-                            Console.WriteLine("An error occurred: '{0}'", (framecolorValue.Alias + "_" + lenscolorValue.Alias));
+                            Console.WriteLine("An error occurred: '{0}'", framecolorValue.Alias + "_" + lenscolorValue.Alias);
                         }
                     }
                 }

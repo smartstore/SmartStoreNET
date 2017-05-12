@@ -224,6 +224,8 @@ $art-border-color:              #ddd;
     font-size: $art-font-size;
     font-weight: $font-weight-medium;
     text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
     > a { color: $body-color; }
 }
 

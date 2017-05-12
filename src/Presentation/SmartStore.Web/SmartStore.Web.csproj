@@ -700,7 +700,6 @@
     <Content Include="Content\install\images\bg.png" />
     <Content Include="Content\placeholder.txt" />
     <Content Include="Content\print.css" />
-    <Content Include="Content\samples\0000740-antonio-vivaldi-der-fruhling-100.jpg" />
     <Content Include="Content\samples\0000785-apple-iphone.png" />
     <Content Include="Content\samples\0000786-apple-iphone.png" />
     <Content Include="Content\samples\0000787-apple-iphone.jpg" />
@@ -737,6 +736,7 @@
     <Content Include="Content\samples\category_gaming_accessories.png" />
     <Content Include="Content\samples\category_gift-cards.png" />
     <Content Include="Content\samples\category_giftcards.png" />
+    <Content Include="Content\samples\category_glasses.png" />
     <Content Include="Content\samples\category_golf.jpg" />
     <Content Include="Content\samples\category_notebooks.png" />
     <Content Include="Content\samples\category_soccer.png" />
@@ -938,6 +938,7 @@
     <Content Include="Content\samples\product_sony_ps4_camera.png" />
     <Content Include="Content\samples\product_supremeGolfball_1.jpg" />
     <Content Include="Content\samples\product_supremeGolfball_2.jpg" />
+    <Content Include="Content\samples\product_tissot-t-touch-expert-solar-t091_2.jpg" />
     <Content Include="Content\samples\product_tissot-t-touch-expert-solar.jpg" />
     <Content Include="Content\samples\product_titleist-pro-v1x.jpg" />
     <Content Include="Content\samples\product_titleist_sm6_tour_chrome.jpg" />
@@ -958,6 +959,10 @@
     <Content Include="Content\samples\ubisoft-driver-san-francisco.jpg" />
     <Content Include="Content\samples\ubisoft-watchdogs.jpg" />
     <Content Include="Content\samples\vivaldi-four-seasons-spring.mp3" />
+    <Content Include="Content\samples\vivaldi.jpg" />
+    <Content Include="Content\samples\wayfarer_havana.png" />
+    <Content Include="Content\samples\wayfarer_havana_black.png" />
+    <Content Include="Content\samples\wayfarer_rayban-black.png" />
     <Content Include="Content\smartstore.entitypicker.css" />
     <Content Include="Content\x-editable\bootstrap-editable.css" />
     <Content Include="Content\x-editable\img\clear.png" />

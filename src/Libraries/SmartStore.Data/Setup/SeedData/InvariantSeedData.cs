@@ -70,7 +70,12 @@ namespace SmartStore.Data.Setup
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_navy.jpg"), "image/jpeg", "all-star-navy"),
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_purple.jpg"), "image/jpeg", "all-star-purple"),
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_white.jpg"), "image/jpeg", "all-star-white"),
-			};
+
+                CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana.png"), "image/jpeg", "wayfarer_havana"),
+                CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana_black.png"), "image/jpeg", "wayfarer_havana_black"),
+                CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_rayban-black.png"), "image/jpeg", "wayfarer_rayban_black"),
+
+            };
 
 			this.Alter(entities);
 			return entities;
@@ -6050,6 +6055,16 @@ namespace SmartStore.Data.Setup
                 {
                     Name = "Lenstype",
                     Alias = "lenstype"
+                },
+                new ProductAttribute
+                {
+                    Name = "Lenscolor",
+                    Alias = "wayfarerlenscolor"
+                },
+                new ProductAttribute
+                {
+                    Name = "Framecolor",
+                    Alias = "wayfarerframecolor"
                 }
             };
 
@@ -6130,8 +6145,10 @@ namespace SmartStore.Data.Setup
 			var attrSeatShell = _ctx.Set<ProductAttribute>().First(x => x.Alias == "seat-shell");
 			var attrBase = _ctx.Set<ProductAttribute>().First(x => x.Alias == "base");
 			var attrMaterial = _ctx.Set<ProductAttribute>().First(x => x.Alias == "material");
+            var attrWayfarerLenscolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "wayfarerlenscolor");
+            var attrWayfarerFramecolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "wayfarerframecolor");
 
-			var generalColors = new[]
+            var generalColors = new[]
 			{
 				new { Name = "Black", Color = "#000000" },
 				new { Name = "White", Color = "#ffffff" },
@@ -6365,6 +6382,116 @@ namespace SmartStore.Data.Setup
             entities.Add(attributeLenscolor);
 
             #endregion Oakley custom flak
+
+
+            #region wayfarer
+
+            var productWayfarer = _ctx.Set<Product>().First(x => x.Sku == "P-3003");
+            var wayfarerFramePictures = _ctx.Set<Picture>().Where(x => x.SeoFilename.StartsWith("wayfarer_")).ToList();
+
+            var attributeWayfarerLenscolor = new ProductVariantAttribute()
+            {
+                Product = productWayfarer,
+                ProductAttribute = attrWayfarerLenscolor,
+                IsRequired = true,
+                DisplayOrder = 3,
+                AttributeControlType = AttributeControlType.Boxes
+            };
+
+            attributeWayfarerLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Blue-Gray classic",
+                Alias = "blue-gray-classic",
+                IsPreSelected = true,
+                DisplayOrder = 1,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#3e4659"
+            });
+
+            attributeWayfarerLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Brown course",
+                Alias = "brown-course",
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#3e4659"
+            });
+
+            attributeWayfarerLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Gray course",
+                Alias = "gray-course",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#727377"
+            });
+
+            attributeWayfarerLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Green classic",
+                Alias = "green-classic",
+                DisplayOrder = 4,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#3c432e"
+            });
+
+            entities.Add(attributeWayfarerLenscolor);
+
+            var attributeWayfarerFramecolor = new ProductVariantAttribute()
+            {
+                Product = productWayfarer,
+                ProductAttribute = attrWayfarerFramecolor,
+                IsRequired = true,
+                DisplayOrder = 3,
+                AttributeControlType = AttributeControlType.Boxes
+            };
+
+            var wayfarerFramePicture = wayfarerFramePictures.First(x => x.SeoFilename.EndsWith("_rayban_black"));
+
+            attributeWayfarerFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Black",
+                Alias = "rayban-black",
+                IsPreSelected = true,
+                DisplayOrder = 1,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                //Color = "#3e4659"
+                PictureId = wayfarerFramePicture.Id
+            });
+
+            wayfarerFramePicture = wayfarerFramePictures.First(x => x.SeoFilename.EndsWith("_havana_black"));
+            attributeWayfarerFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Havana; Black",
+                Alias = "havana-black",
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                //Color = "#3e4659"
+                PictureId = wayfarerFramePicture.Id
+            });
+
+            wayfarerFramePicture = wayfarerFramePictures.First(x => x.SeoFilename.EndsWith("_havana"));
+            attributeWayfarerFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Havana",
+                Alias = "havana",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                //Color = "#727377",
+                PictureId = wayfarerFramePicture.Id
+            });
+
+
+            entities.Add(attributeWayfarerFramecolor);
+
+            #endregion wayfarer
 
             #region 9,7 iPad
 
@@ -7614,7 +7741,257 @@ namespace SmartStore.Data.Setup
             var attrFlakLenstype = _ctx.Set<ProductAttribute>().First(x => x.Alias == "lenstype");
             var attrFlakFramecolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "framecolor");
             var attrFlakLenscolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "lenscolor");
+            var attrWayfarerLenscolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "wayfarerlenscolor");
+            var attrWayfarerFramecolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "wayfarerframecolor");
 
+
+            #region ORIGINAL WAYFARER AT COLLECTION
+
+            var productWayfarer = _ctx.Set<Product>().First(x => x.Sku == "P-3003");
+            var wayfarerPictureIds = productWayfarer.ProductPictures.Select(pp => pp.PictureId).ToList();
+            var picturesWayfarer = _ctx.Set<Picture>().Where(x => wayfarerPictureIds.Contains(x.Id)).ToList();
+
+            //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
+
+            var wayfarerLenscolor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productWayfarer.Id && x.ProductAttributeId == attrWayfarerLenscolor.Id);
+            var wayfarerLenscolorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == wayfarerLenscolor.Id).ToList();
+
+            var wayfarerFramecolor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productWayfarer.Id && x.ProductAttributeId == attrWayfarerFramecolor.Id);
+            var wayfarerFramecolorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == wayfarerFramecolor.Id).ToList();
+
+            #region blue-gray-classic-black
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_blue-gray-classic-black",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "blue-gray-classic").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "rayban-black").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_blue-gray-classic-black")).Id.ToString()
+            });
+
+            #endregion blue-gray-classic-black
+
+            #region gray-course-black
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_gray-course-black",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "gray-course").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "rayban-black").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_gray-course-black")).Id.ToString()
+            });
+
+            #endregion gray-course-black
+
+            #region brown-course-havana
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_brown-course-havana",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "brown-course").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "havana").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_gray-course-black")).Id.ToString()
+            });
+
+            #endregion brown-course-havana
+
+            #region green-classic-havana-black
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_green-classic-havana-black",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "green-classic").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "havana-black").Id),
+
+                StockQuantity = 10000,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+            });
+
+            #endregion green-classic-havana-black
+
+            // not available products not available products not available products not available products not available products
+
+            #region blue-gray-classic-havana-black
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_blue-gray-classic-havana-black",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "blue-gray-classic").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "havana-black").Id),
+
+                StockQuantity = 0,
+                AllowOutOfStockOrders = true,
+                IsActive = false,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+            });
+
+            #endregion green-classic-havana-black
+
+            #region blue-gray-classic-havana
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_blue-gray-classic-havana",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "blue-gray-classic").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "havana").Id),
+
+                StockQuantity = 0,
+                AllowOutOfStockOrders = true,
+                IsActive = false,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+            });
+
+            #endregion green-classic-rayban-black
+
+            // gray-course
+            #region gray-course-havana-black
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_gray-course-havana-black",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "gray-course").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "havana-black").Id),
+
+                StockQuantity = 0,
+                AllowOutOfStockOrders = true,
+                IsActive = true,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+            });
+
+            #endregion gray-course-havana-black
+            
+            #region gray-course-havana
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_gray-course-havana",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "gray-course").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "havana").Id),
+
+                StockQuantity = 0,
+                AllowOutOfStockOrders = true,
+                IsActive = false,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+            });
+
+            #endregion gray-course-rayban-black
+
+            #region green-classic-rayban-black
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_green-classic-rayban-black",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "green-classic").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "rayban-black").Id),
+
+                StockQuantity = 0,
+                AllowOutOfStockOrders = true,
+                IsActive = false,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+            });
+
+            #endregion green-classic-rayban-black
+
+            #region green-classic-havana
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_green-classic-havana",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "green-classic").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "havana").Id),
+
+                StockQuantity = 0,
+                AllowOutOfStockOrders = true,
+                IsActive = false,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+            });
+
+            #endregion gray-course-rayban-black
+
+            // brown-course
+            #region brown-course-havana-black
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_brown-course-havana-black",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "brown-course").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "havana-black").Id),
+
+                StockQuantity = 0,
+                AllowOutOfStockOrders = true,
+                IsActive = false,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+            });
+
+            #endregion brown-course-havana-black
+
+            #region brown-course-rayban-black
+            entities.Add(new ProductVariantAttributeCombination()
+            {
+                Product = productWayfarer,
+                Sku = productWayfarer.Sku + "_brown-course-rayban-black",
+
+                AttributesXml = FormatAttributeXml(
+                    wayfarerLenscolor.Id, wayfarerLenscolorValues.First(x => x.Alias == "brown-course").Id,
+                    wayfarerFramecolor.Id, wayfarerFramecolorValues.First(x => x.Alias == "rayban-black").Id),
+
+                StockQuantity = 0,
+                AllowOutOfStockOrders = true,
+                IsActive = false,
+                //Price = 299M,
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+            });
+
+            #endregion brown-course-rayban-black
+
+            #endregion ORIGINAL WAYFARER AT COLLECTION
 
             #region Custom Flak
 
@@ -8829,7 +9206,9 @@ namespace SmartStore.Data.Setup
                 Published = true,
                 DisplayOrder = 2,
                 MetaTitle = "Fashion",
-                ShowOnHomePage = true
+                ShowOnHomePage = true,
+                BadgeText = "SALE",
+                BadgeStyle = 4
             };
 
             var categoryGaming = new Category
@@ -8877,7 +9256,7 @@ namespace SmartStore.Data.Setup
 				Published = true,
 				DisplayOrder = 12,
 				MetaTitle = "Gift cards",
-                ShowOnHomePage = true
+                ShowOnHomePage = true,
             };
 
 			var categoryWatches = new Category
@@ -8889,7 +9268,9 @@ namespace SmartStore.Data.Setup
 				Published = true,
 				DisplayOrder = 10,
 				MetaTitle = "Watches",
-                ShowOnHomePage = true
+                ShowOnHomePage = true,
+                BadgeText = "%",
+                BadgeStyle = 5
             };
 
 			#endregion
@@ -8929,9 +9310,9 @@ namespace SmartStore.Data.Setup
                 Name = "Sunglasses",
                 Alias = "Sunglasses",
                 CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_sunglasses.jpg"), "image/png", GetSeName("Sunglasses")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_glasses.png"), "image/png", GetSeName("Sunglasses")),
                 Published = true,
-                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Sports").First().Id,
+                ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Fashion").First().Id,
                 DisplayOrder = 1,
                 MetaTitle = "Sunglasses",
                 ShowOnHomePage = true
@@ -10571,6 +10952,7 @@ namespace SmartStore.Data.Setup
                 Published = true,
                 MetaTitle = "Evolution High School Game Basketball",
                 Price = 25.90M,
+                OldPrice = 29.90M,
                 IsGiftCard = false,
                 ManageInventoryMethod = ManageInventoryMethod.ManageStock,
                 OrderMinimumQuantity = 1,
@@ -10595,6 +10977,26 @@ namespace SmartStore.Data.Setup
                 Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
                 DisplayOrder = 1,
             });
+
+            #region tierPrieces
+            productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice()
+            {
+                Quantity = 6,
+                Price = 24.90M
+            });
+            productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice()
+            {
+                Quantity = 12,
+                Price = 22.90M
+            });
+            productEvolutionHighSchoolGameBasketball.TierPrices.Add(new TierPrice()
+            {
+                Quantity = 24,
+                Price = 20.90M
+            });
+            productEvolutionHighSchoolGameBasketball.HasTierPrices = true;
+            #endregion tierPrieces
+
 
             #endregion Wilson Evolution High School Game Basketball
 
@@ -10734,37 +11136,37 @@ namespace SmartStore.Data.Setup
 
             productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_1.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_1.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_blue-gray-classic-black"),
                 DisplayOrder = 1,
             });
 
             productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_2.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_2.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_blue-gray-classic-black"),
                 DisplayOrder = 1,
             });
 
             productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_3.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_3.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_gray-course-black"),
                 DisplayOrder = 1,
             });
 
             productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_4.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_4.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_brown-course-havana"),
                 DisplayOrder = 1,
             });
 
             productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_5.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_5.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_green-classic-havana-black"),
                 DisplayOrder = 1,
             });
 
             productOriginalWayfarer.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_6.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_6.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_blue-gray-classic-black"),
                 DisplayOrder = 1,
             });
 
@@ -11277,7 +11679,7 @@ namespace SmartStore.Data.Setup
             });
 
             //attributes
-            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            productWatchSeries2.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -11285,8 +11687,8 @@ namespace SmartStore.Data.Setup
                 // offer type -> offer of the day
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
             });
-            
-            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+
+            productWatchSeries2.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -11294,8 +11696,8 @@ namespace SmartStore.Data.Setup
                 // storage capacity -> 32gb
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 27).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
             });
-            
-            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+
+            productWatchSeries2.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -11641,7 +12043,7 @@ namespace SmartStore.Data.Setup
             product10GiftCard.ProductPictures.Add(new ProductPicture()
 			{
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_10.png"), "image/png", GetSeName(product10GiftCard.Name)),
-				DisplayOrder = 1,
+				//DisplayOrder = 1,
 			});
 
             #endregion product10GiftCard
@@ -11678,7 +12080,7 @@ namespace SmartStore.Data.Setup
 			product25GiftCard.ProductPictures.Add(new ProductPicture()
 			{
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_25.png"), "image/png", GetSeName(product25GiftCard.Name)),
-				DisplayOrder = 2,
+				//DisplayOrder = 2,
 			});
 
 			#endregion product25GiftCard
@@ -11715,7 +12117,7 @@ namespace SmartStore.Data.Setup
 			product50GiftCard.ProductPictures.Add(new ProductPicture()
 			{
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_50.png"), "image/png", GetSeName(product50GiftCard.Name)),
-				DisplayOrder = 3,
+				//DisplayOrder = 3,
 			});
 
             #endregion product50GiftCard
@@ -11744,7 +12146,7 @@ namespace SmartStore.Data.Setup
                 StockQuantity = 10000,
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
-                DisplayOrder = 4
+                DisplayOrder = 4,
             };
 
             product100GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
@@ -11752,7 +12154,7 @@ namespace SmartStore.Data.Setup
             product100GiftCard.ProductPictures.Add(new ProductPicture()
             {
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_100.png"), "image/png", GetSeName(product100GiftCard.Name)),
-                DisplayOrder = 4,
+                //DisplayOrder = 4,
             });
 
             #endregion product100GiftCard
@@ -12864,7 +13266,7 @@ namespace SmartStore.Data.Setup
             //pictures
             productInstantDownloadVivaldi.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000740-antonio-vivaldi-der-fruhling-100.jpg"), "image/jpeg", GetSeName(productInstantDownloadVivaldi.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "vivaldi.jpg"), "image/jpeg", GetSeName(productInstantDownloadVivaldi.Name)),
                 DisplayOrder = 1,
             });
 
@@ -13132,6 +13534,12 @@ namespace SmartStore.Data.Setup
             productTissotTTouchExpertSolar.ProductPictures.Add(new ProductPicture()
             {
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_tissot-t-touch-expert-solar.jpg"), "image/png", GetSeName(productTissotTTouchExpertSolar.Name)),
+                DisplayOrder = 1,
+            });
+
+            productTissotTTouchExpertSolar.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_tissot-t-touch-expert-solar-t091_2.jpg"), "image/png", GetSeName(productTissotTTouchExpertSolar.Name)),
                 DisplayOrder = 1,
             });
 

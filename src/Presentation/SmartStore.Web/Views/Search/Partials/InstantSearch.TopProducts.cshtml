@@ -25,7 +25,7 @@
 						@if (hasThumbs && hit.ShortDescription.HasValue())
 						{
 							<span class="instasearch-hit-label-secondary d-block text-truncate">
-								@hit.ShortDescription
+								@hit.ShortDescription.RemoveHtml()
 							</span>
 						}
 					</span>

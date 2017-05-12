@@ -134,6 +134,15 @@ namespace SmartStore.Admin.Controllers
 					model.LicenseModel.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
 
 					var license = LicenseChecker.GetLicense(pluginDescriptor.SystemName);
+					if (license == null)
+					{
+						// Licensed plugin has not been used yet -> Check state.
+						var unused = LicenseChecker.CheckState(pluginDescriptor.SystemName);
+
+						// And try to get license data again.
+						license = LicenseChecker.GetLicense(pluginDescriptor.SystemName);
+					}
+
 					if (license != null)
 					{
 						// Licensed plugin has been used.

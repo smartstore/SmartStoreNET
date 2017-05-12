@@ -48,7 +48,7 @@
 
 		$(document).on('mousedown', function (e) {
 			// Close drop on outside click
-			if ($(e.srcElement).closest('.instasearch-form').length > 0)
+			if ($(e.target).closest('.instasearch-form').length > 0)
 				return;
 
 			shrinkBox();

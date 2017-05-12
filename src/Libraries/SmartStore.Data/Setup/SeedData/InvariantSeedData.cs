@@ -6035,6 +6035,21 @@ namespace SmartStore.Data.Setup
                 {
                     Name = "Controller",
                     Alias = "controller"
+                },
+                new ProductAttribute
+                {
+                    Name = "Framecolor",
+                    Alias = "framecolor"
+                },
+                new ProductAttribute
+                {
+                    Name = "Lenscolor",
+                    Alias = "lenscolor"
+                },
+                new ProductAttribute
+                {
+                    Name = "Lenstype",
+                    Alias = "lenstype"
                 }
             };
 
@@ -6102,7 +6117,10 @@ namespace SmartStore.Data.Setup
 			var attrGames = _ctx.Set<ProductAttribute>().First(x => x.Alias == "game");
             var attrBallsize = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ballsize");
             var attrMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "memory-capacity");
-			var attrIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
+            var attrLensType = _ctx.Set<ProductAttribute>().First(x => x.Alias == "lenstype");
+            var attrFramecolor = _ctx.Set<ProductAttribute>().First(x => x.Alias =="framecolor");
+            var attrLenscolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "lenscolor");
+            var attrIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iphone-color");
             var attr97iPadColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "ipad-color");
 			var attrWidth = _ctx.Set<ProductAttribute>().First(x => x.Alias == "width");
 			var attrLength = _ctx.Set<ProductAttribute>().First(x => x.Alias == "length");
@@ -6136,9 +6154,221 @@ namespace SmartStore.Data.Setup
 				new { Name = "Dark red", Color = "#5e0000" }
 			};
 
-			#region 9,7 iPad
 
-			var product97iPad = _ctx.Set<Product>().First(x => x.Sku == "P-2004");
+            #region Oakley custom flak
+
+            var productCustomFlak = _ctx.Set<Product>().First(x => x.Sku == "P-3002");
+
+            var attributeLensType = new ProductVariantAttribute()
+            {
+                Product = productCustomFlak,
+                ProductAttribute = attrLensType,
+                IsRequired = true,
+                DisplayOrder = 1,
+                AttributeControlType = AttributeControlType.RadioList
+            };
+
+            attributeLensType.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Standard",
+                Alias = "standard",
+                IsPreSelected = true,
+                DisplayOrder = 1,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 100.0M
+            });
+
+            attributeLensType.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Polarized",
+                Alias = "polarized",
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 200.0M
+            });
+            attributeLensType.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Prizm",
+                Alias = "prizm",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                PriceAdjustment = 200.0M
+            });
+
+            entities.Add(attributeLensType);
+
+
+            var attributeFramecolor = new ProductVariantAttribute()
+            {
+                Product = productCustomFlak,
+                ProductAttribute = attrFramecolor,
+                IsRequired = true,
+                DisplayOrder = 2,
+                AttributeControlType = AttributeControlType.Boxes
+            };
+
+            attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Matte Black",
+                Alias = "matteblack",
+                IsPreSelected = true,
+                DisplayOrder = 1,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#2d2d2d"
+            });
+
+            attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Polishedwhite",
+                Alias = "polishedwhite",
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#f5f5f5"
+            });
+
+            attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Sky Blue",
+                Alias = "skyblue",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#4187f6"
+            });
+
+            attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Orange Flare",
+                Alias = "orangeflare",
+                DisplayOrder = 4,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#f55700"
+            });
+
+            attributeFramecolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Redline",
+                Alias = "redline",
+                DisplayOrder = 5,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#cf0a02"
+            });
+
+            entities.Add(attributeFramecolor);
+
+            var attributeLenscolor = new ProductVariantAttribute()
+            {
+                Product = productCustomFlak,
+                ProductAttribute = attrLenscolor,
+                IsRequired = true,
+                DisplayOrder = 3,
+                AttributeControlType = AttributeControlType.Boxes
+            };
+
+            attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Gray",
+                Alias = "gray",
+                IsPreSelected = true,
+                DisplayOrder = 1,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#7A798B"
+            });
+
+            attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Sapphire Iridium",
+                Alias = "sapphireiridium",
+                DisplayOrder = 2,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#4460BB"
+            });
+
+            attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Violet Iridium",
+                Alias = "violetiridium",
+                DisplayOrder = 3,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#5C5A89"
+            });
+
+            attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Jade Iridium",
+                Alias = "jadeiridium",
+                DisplayOrder = 4,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#376559"
+            });
+
+            attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Ruby Iridium",
+                Alias = "rubyiridium",
+                DisplayOrder = 5,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#CCAD12"
+            });
+
+            attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "24K Iridium",
+                Alias = "24kiridium",
+                DisplayOrder = 6,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#CE9D12"
+            });
+
+            attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Positive Red Iridium",
+                Alias = "positiverediridium",
+                DisplayOrder = 7,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#764CDC"
+            });
+
+            attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Clear",
+                Alias = "clear",
+                DisplayOrder = 7,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#e2e2e3"
+            });
+            attributeLenscolor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+            {
+                Name = "Fire Iridium",
+                Alias = "fireiridium",
+                DisplayOrder = 7,
+                Quantity = 1,
+                ValueType = ProductVariantAttributeValueType.Simple,
+                Color = "#E2C724"
+            });
+
+            entities.Add(attributeLenscolor);
+
+            #endregion Oakley custom flak
+
+            #region 9,7 iPad
+
+            var product97iPad = _ctx.Set<Product>().First(x => x.Sku == "P-2004");
 
             var attribute97iPadMemoryCapacity = new ProductVariantAttribute()
             {
@@ -6843,7 +7073,7 @@ namespace SmartStore.Data.Setup
 				ProductAttribute = attrColor,
 				IsRequired = true,
 				DisplayOrder = 1,
-				AttributeControlType = AttributeControlType.DropdownList
+				AttributeControlType = AttributeControlType.Boxes
 			};
 
 			for (var i = 0; i < ladiesJacketColors.Length; ++i)
@@ -6866,7 +7096,7 @@ namespace SmartStore.Data.Setup
 				ProductAttribute = attrSize,
 				IsRequired = true,
 				DisplayOrder = 2,
-				AttributeControlType = AttributeControlType.DropdownList
+				AttributeControlType = AttributeControlType.RadioList
 			};
 
 			for (var i = 0; i < ladiesJacketSizes.Length; ++i)
@@ -7117,7 +7347,7 @@ namespace SmartStore.Data.Setup
 			#region Furniture - Ball chair
 
 			var productBallChair = _ctx.Set<Product>().First(x => x.Sku == "Furniture-ball-chair");
-
+            
 			var attrBallChairMaterial = new ProductVariantAttribute
 			{
 				Product = productBallChair,
@@ -7162,6 +7392,7 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "White",
 				Alias = "white",
+                Color = "#ffffff",
 				DisplayOrder = 1,
 				Quantity = 1,
 				IsPreSelected = true
@@ -7170,7 +7401,8 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Black",
 				Alias = "black",
-				DisplayOrder = 2,
+                Color = "#000000",
+                DisplayOrder = 2,
 				Quantity = 1
 			});
 			entities.Add(attrBallChairColor);
@@ -7379,10 +7611,68 @@ namespace SmartStore.Data.Setup
 			var attrLeatherColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "leather-color");
 			var attrSeatShell = _ctx.Set<ProductAttribute>().First(x => x.Alias == "seat-shell");
 			var attrBase = _ctx.Set<ProductAttribute>().First(x => x.Alias == "base");
+            var attrFlakLenstype = _ctx.Set<ProductAttribute>().First(x => x.Alias == "lenstype");
+            var attrFlakFramecolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "framecolor");
+            var attrFlakLenscolor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "lenscolor");
 
-			#region ps3
 
-			var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
+            #region Custom Flak
+
+            var productFlak = _ctx.Set<Product>().First(x => x.Sku == "P-3002");
+            var flakPictureIds = productFlak.ProductPictures.Select(pp => pp.PictureId).ToList();
+            var picturesFlak = _ctx.Set<Picture>().Where(x => flakPictureIds.Contains(x.Id)).ToList();
+
+            //var attributeColorIphone7Plus = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productIphone7Plus.Id && x.ProductAttributeId == attrColor.Id);
+
+            var flakLenscolor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productFlak.Id && x.ProductAttributeId == attrFlakLenscolor.Id);
+            var flakLenscolorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == flakLenscolor.Id).ToList();
+
+            var flakLenstype = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productFlak.Id && x.ProductAttributeId == attrFlakLenstype.Id);
+            var flakLenstypeValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == flakLenstype.Id).ToList();
+
+            var flakFramecolor = _ctx.Set<ProductVariantAttribute>().First(x => x.ProductId == productFlak.Id && x.ProductAttributeId == attrFlakFramecolor.Id);
+            var flakFramecolorValues = _ctx.Set<ProductVariantAttributeValue>().Where(x => x.ProductVariantAttributeId == flakFramecolor.Id).ToList();
+
+            //#region matteblack-gray-standard
+
+            foreach (var lenscolorValue in flakLenscolorValues)
+            {
+                foreach (var framecolorValue in flakFramecolorValues)
+                {
+
+                    foreach (var lenstypeValue in flakLenstypeValues)
+                    {
+                        try { 
+                            entities.Add(new ProductVariantAttributeCombination
+                                {
+                                    Product = productFlak,
+                                    Sku = productFlak.Sku + string.Concat("-", framecolorValue.Alias, "-", lenscolorValue.Alias, "-",lenstypeValue.Alias),
+                                    AttributesXml = FormatAttributeXml(flakLenscolor.Id, lenscolorValue.Id, flakLenstype.Id, lenstypeValue.Id, flakFramecolor.Id, framecolorValue.Id),
+                                    StockQuantity = 10000,
+                                    AllowOutOfStockOrders = true,
+                                    IsActive = true,
+                            
+                                    AssignedPictureIds = picturesFlak.First(x => x.SeoFilename.Contains(framecolorValue.Alias + "_" + lenscolorValue.Alias)).Id.ToString(),
+                            
+                                    //Price = ballChairPrice
+                            });
+                        } 
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("An error occurred: '{0}'", (framecolorValue.Alias + "_" + lenscolorValue.Alias));
+                        }
+                    }
+                }
+            }
+
+
+            
+
+            #endregion Custom Flak
+
+            #region ps3
+
+            var productPs3 = _ctx.Set<Product>().First(x => x.Sku == "Sony-PS399000");
 			var ps3PictureIds = productPs3.ProductPictures.Select(pp => pp.PictureId).ToList();
 			var picturesPs3 = _ctx.Set<Picture>().Where(x => ps3PictureIds.Contains(x.Id)).ToList();
 
@@ -8583,7 +8873,7 @@ namespace SmartStore.Data.Setup
 				Name = "Gift Cards",
                 Alias = "Gift Cards",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName("Gift Cards")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gift-cards.png"), "image/png", GetSeName("Gift Cards")),
 				Published = true,
 				DisplayOrder = 12,
 				MetaTitle = "Gift cards",
@@ -10560,15 +10850,257 @@ namespace SmartStore.Data.Setup
 
             productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlakSunglasses.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlakSunglasses.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlakSunglasses.jpg"),
                 DisplayOrder = 1,
             });
 
             productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "productCustomFlakSunglasses_black_white.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "productCustomFlakSunglasses_black_white.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "productCustomFlakSunglasses_black_white.jpg"),
                 DisplayOrder = 1,
             });
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_gray.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_clear.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_jadeiridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_positiverediridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_rubyiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_sapphireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_violetiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_24kiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_fireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_24kiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_clear.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_fireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_gray.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_jadeiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_positiverediridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_rubyiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_sapphireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_violetiridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_24kiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_clear.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_fireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_gray.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_jadeiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_rubyiridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_sapphireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_violetiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_positiverediridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_24kiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_clear.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_fireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_gray.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_jadeiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_positiverediridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_rubyiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_sapphireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_violetiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_24kiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_clear.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_fireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_gray.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_jadeiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_positiverediridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_rubyiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_sapphireiridium.jpg"),
+                DisplayOrder = 1,
+            });
+            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture()
+            {
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_violetiridium.jpg"),
+                DisplayOrder = 1,
+            });
+
+
 
             productCustomFlakSunglasses.ProductManufacturers.Add(new ProductManufacturer()
             {
@@ -10659,12 +11191,6 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 2,
             });
 
-            productIphoneplus.ProductManufacturers.Add(new ProductManufacturer()
-            {
-                Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
-                DisplayOrder = 1,
-            });
-
             //attributes
             productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
             {
@@ -10674,14 +11200,7 @@ namespace SmartStore.Data.Setup
                 // offer type -> Permanent low price
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 2).Single()
             });
-            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 1,
-                // manufacturer -> apple
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-            });
+
             productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
             {
                 AllowFiltering = true,
@@ -10714,7 +11233,7 @@ namespace SmartStore.Data.Setup
             var productWatchSeries2 = new Product()
             {
                 ProductType = ProductType.SimpleProduct,
-                VisibleIndividually = true,
+                VisibleIndividually = false,
                 Name = "Watch Series 2",
                 IsEsd = false,
                 ShortDescription = "Live a better day. Built-in GPS. Water resistance to 50 meters.1 A lightning-fast dual‑core processor. And a display that’s two times brighter than before. Full of features that help you stay active, motivated, and connected, Apple Watch Series 2 is the perfect partner for a healthy life.",
@@ -10766,14 +11285,7 @@ namespace SmartStore.Data.Setup
                 // offer type -> offer of the day
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
             });
-            productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 1,
-                // manufacturer -> apple
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-            });
+            
             productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
             {
                 AllowFiltering = true,
@@ -11056,14 +11568,7 @@ namespace SmartStore.Data.Setup
                 // offer type -> promotion
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 22).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
             });
-            product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-            {
-                AllowFiltering = true,
-                ShowOnProductPage = true,
-                DisplayOrder = 1,
-                // manufacturer -> apple
-                SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-            });
+            
             product97ipad.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
             {
                 AllowFiltering = true,
@@ -11135,7 +11640,7 @@ namespace SmartStore.Data.Setup
 
             product10GiftCard.ProductPictures.Add(new ProductPicture()
 			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName(product10GiftCard.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_10.png"), "image/png", GetSeName(product10GiftCard.Name)),
 				DisplayOrder = 1,
 			});
 
@@ -11172,7 +11677,7 @@ namespace SmartStore.Data.Setup
 
 			product25GiftCard.ProductPictures.Add(new ProductPicture()
 			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName(product25GiftCard.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_25.png"), "image/png", GetSeName(product25GiftCard.Name)),
 				DisplayOrder = 2,
 			});
 
@@ -11209,7 +11714,7 @@ namespace SmartStore.Data.Setup
 
 			product50GiftCard.ProductPictures.Add(new ProductPicture()
 			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName(product50GiftCard.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_50.png"), "image/png", GetSeName(product50GiftCard.Name)),
 				DisplayOrder = 3,
 			});
 
@@ -11225,7 +11730,7 @@ namespace SmartStore.Data.Setup
                 IsEsd = true,
                 ShortDescription = "$100 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
                 FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
-                Sku = "P-100999",
+                Sku = "P-10033",
                 ProductTemplateId = productTemplate.Id,
                 AllowCustomerReviews = true,
                 Published = true,
@@ -11246,7 +11751,7 @@ namespace SmartStore.Data.Setup
 
             product100GiftCard.ProductPictures.Add(new ProductPicture()
             {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "gift-card.jpg"), "image/png", GetSeName(product100GiftCard.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_100.png"), "image/png", GetSeName(product100GiftCard.Name)),
                 DisplayOrder = 4,
             });
 

@@ -2721,8 +2721,20 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("style", x =>
 				{
 					x.Name = "Ausführung";
-				});
-		}
+				})
+                .Alter("framecolor", x =>
+                {
+                    x.Name = "Rahmenfarbe";
+                })
+                .Alter("lenscolor", x =>
+                {
+                    x.Name = "Glasfarbe";
+                })
+                .Alter("lenstype", x =>
+                 {
+                     x.Name = "Glas";
+                 });
+        }
 
 		protected override void Alter(IList<ProductAttributeOptionsSet> entities)
 		{
@@ -2826,7 +2838,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "leather-aniline").Each(y => y.Name = "Leder Anilin");
 				x.ProductVariantAttributeValues.Where(y => y.Alias == "mixed-linen").Each(y => y.Name = "Leinen gemischt");
 			});
-		}
+
+            
+        }
 
         protected override void Alter(IList<ProductTemplate> entities)
         {

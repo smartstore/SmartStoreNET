@@ -156,6 +156,11 @@
     }
 }
 
+.ie11 .offcanvas-cart-footer-row .col {
+    width: auto;
+    -ms-flex-preferred-size: auto;
+}
+
 .offcanvas-cart-external-checkout {
     background: #fff; 
     padding: 0.5rem 1rem;

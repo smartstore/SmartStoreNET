@@ -8,9 +8,9 @@ SmartStore.NET is a free, open source, full-featured e-commerce solution for com
 
 **SmartStore.NET includes all essential features to create multilingual and multi-currency stores** targeting desktop or mobile devices and enabling SEO optimized rich product catalogs with support for an unlimited number of products and categories, variants, bundles, datasheets, ESD, discounts, coupons and many more.
 
-A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping handling, etc. makes SmartStore.NET a powerful all-in-one solution fulfilling all your needs... totally FREE!
+A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping handling, etc. makes SmartStore.NET a powerful all-in-one solution fulfilling all your needs.
 
-**SmartStore.NET delivers a beautiful and configurable shop front-end out-of-the-box**, built with a design approach on the highest level, including components like `Twitter Bootstrap`, `Less CSS` and others. The innovative ShopBar, a powerful layered navigation, reviews & ratings, an optimized checkout process... they all provide a perfect shopping experience for your buyers.
+**SmartStore.NET delivers a beautiful and configurable shop front-end out-of-the-box**, built with a design approach on the highest level, including components like `Bootstrap 4`, `Sass` and others. The supplied theme _Flex_ is modern, clean and fully responsive, giving buyers the best possible shopping experience on any device. 
 
 The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 5`, `Entity Framework 6` and Domain Driven Design approach - makes it easy to extend, extremely flexible and essentially fun to work with ;-)
 
@@ -25,12 +25,12 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 
 * State of the art architecture thanks to `ASP.NET 4.5`, `ASP.NET MVC 5`, `Entity Framework 6` and Domain Driven Design
 * Easy to extend and extremely flexible thanks to modular design
-* (NEW) A powerful theming engine lets you create themes & skins with minimum effort thanks to theme inheritance
-* Consistent and sophisticated use of modern components such as `jQuery`, `Twitter Bootstrap`, `LESS` & more in the front and back end.
-* Easy shop management thanks to modern and clean UI
-* Out of the box shop design on the highest level
-* Revolutionary Shopbar for the best shopping experience
+* Highly scalable thanks to full page caching and web farm support 
+* A powerful theming engine lets you create themes & skins with minimum effort thanks to theme inheritance
 * Point&Click Theme configuration
+* Highly professional search framework based on Lucene.NET, delivering ultra fast faceted search results
+* Consistent and sophisticated use of modern components such as `jQuery`, `Bootstrap 4`, `Sass` & more in the front and back end.
+* Easy shop management thanks to modern and clean UI
 
 ### Features
 
@@ -39,8 +39,9 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * Product Bundles
 * RESTful WebApi
 * Multi-language support
-* 100% Mobile optimized
-* Perfectly optimized for search engines
+* Modern, clean, SEO-optimized and fully responsive Theme based on Bootstrap 4
+* Ultra fast search framework with faceted search support
+* Extremely scalable thanks to output caching, REDIS & Microsoft Azure support.
 * Trusted Shops precertification
 * 100% compliant with German jurisdiction
 * Sales-, Customer- & Inventory-management
@@ -54,15 +55,25 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * and many more...
 
 ## Project Status
-SmartStore.NET V2.6.0 has been released on June 23, 2016. The highlights are:
+SmartStore.NET V3.0.0 has been released on May 15, 2017. The highlights are:
 
-* Major improvements in Importer & Exporter: better field mapping, higher performance, bug fixes etc.
-* 'PayPal PLUS' payment plugin
-* 'paydirekt' payment plugin
-* 'Viveum' payment plugin
-* 'BeezUP' export provider
-* (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
-* Lots of bug fixes
+* **Flex**: New mobile-first responsive Theme based on Bootstrap 4
+* **Mega Search \***: highly professional search framework based on Lucene.NET
+	* Ultra fast search results, even with millions of items
+	* Faceted search
+	* Synonyms
+	* Compound word splitting
+* **Mega Menu \***: highly customizable catalog menu widgets
+* **Content Slider \***: creates eye-catching content to boost sales
+* **Output Cache \*** with "donut hole caching" for maximum speed and scalability
+* **Microsoft AZURE \*** provider for media storage
+* Web Farms: **REDIS \*** providers for Business Cache, Output Cache and Session State
+* Product variant **option sets**
+* New product specification attribute type: **numeric range**
+* Image support for variant attributes
+* ...and a lot more new features, enhancements and fixes
+
+\* Commercial plugin
 
 
 

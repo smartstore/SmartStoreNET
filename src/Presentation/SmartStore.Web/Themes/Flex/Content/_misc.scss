@@ -54,3 +54,13 @@
 	font-weight: bold;
 	background: $gray-lightest;
 }
+
+
+//
+// Hacks
+// -------------------------------------------------
+.ie11 .pd-offer-actions .col,
+.ie11 .offcanvas-cart-footer-row .col {
+    width: auto;
+    -ms-flex-preferred-size: auto;
+}

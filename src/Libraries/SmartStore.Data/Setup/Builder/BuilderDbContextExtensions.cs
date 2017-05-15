@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SmartStore.Data.Setup
 {
 
 	public static class BuilderDbContextExtensions
 	{
-
 		#region Resource building
 
 		public static void MigrateLocaleResources(this SmartObjectContext ctx, Action<LocaleResourcesBuilder> fn, bool updateTouchedResources = false)
 		{
-			Guard.ArgumentNotNull(() => ctx);
-			Guard.ArgumentNotNull(() => fn);
+			Guard.NotNull(ctx, nameof(ctx));
+			Guard.NotNull(fn, nameof(fn));
 
 			var builder = new LocaleResourcesBuilder();
 			fn(builder);
@@ -26,13 +22,12 @@ namespace SmartStore.Data.Setup
 
 		#endregion
 
-
 		#region Settings building
 
 		public static void MigrateSettings(this SmartObjectContext ctx, Action<SettingsBuilder> fn)
 		{
-			Guard.ArgumentNotNull(() => ctx);
-			Guard.ArgumentNotNull(() => fn);
+			Guard.NotNull(ctx, nameof(ctx));
+			Guard.NotNull(fn, nameof(fn));
 
 			var builder = new SettingsBuilder();
 			fn(builder);
@@ -43,7 +38,6 @@ namespace SmartStore.Data.Setup
 		}
 
 		#endregion
-
 	}
 
 }

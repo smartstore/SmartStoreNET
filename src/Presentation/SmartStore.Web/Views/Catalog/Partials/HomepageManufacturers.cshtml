@@ -1,0 +1,49 @@
+﻿@model ManufacturerNavigationModel
+@using SmartStore.Web.Models.Catalog;
+
+<div class="manufacturer-grid block">
+    <div class="heading heading-center">
+        <h3 class="heading-title fs-h1">@T("Homepage.TopBrands")</h3>
+    </div>
+
+    <div class="artlist artlist-grid artlist-6-cols artlist-boxed block-body pt-3">
+        @foreach (var manufacturer in Model.Manufacturers)
+        {
+            @RenderManufacturer(manufacturer);
+        }
+
+		@if (Model.DisplayAllManufacturersLink)
+		{
+			<div class="art show-all-items d-flex p-0">
+				<a href="@Url.RouteUrl("ManufacturerList")" class="show-all-items-link">
+					<i class="fa fa-ellipsis-h fa-lg"></i>
+					<span>@T("Homepage.Brands.ShowAll")</span>
+				</a>
+			</div>
+		}
+    </div>
+</div>
+
+@helper RenderManufacturer(ManufacturerBriefInfoModel item)
+{
+    var url = Url.RouteUrl("Manufacturer", new { SeName = item.SeName });
+
+    <article class="art" data-id="@item.Id">
+        
+        @if (item.PictureUrl.HasValue() && Model.DisplayImages)
+        {
+            <div class="art-picture-block">
+                <a class="art-picture img-center-container" href="@url" title="@item.Name">
+                    <img src="@item.PictureUrl" alt="@item.Name" />
+                </a>
+            </div>
+        }
+                
+        <div class="art-genericname">
+            <a href="@url" title="@item.Name">
+                <span>@item.Name</span>
+            </a>
+        </div>
+    </article>
+}
+

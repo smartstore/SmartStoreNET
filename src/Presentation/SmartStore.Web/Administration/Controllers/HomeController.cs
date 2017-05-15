@@ -89,7 +89,7 @@ namespace SmartStore.Admin.Controllers
 		[ChildActionOnly]
 		public ActionResult MarketplaceFeed()
 		{
-			var result = _services.Cache.Get("Dashboard.MarketplaceFeed", () => {
+			var result = _services.Cache.Get("admin:marketplacefeed", () => {
 				try
 				{
 					string url = "http://community.smartstore.com/index.php?/rss/downloads/";
@@ -130,7 +130,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					return new List<FeedItemModel> {new FeedItemModel { IsError = true, Summary = ex.Message } };
 				}
-			}, 720 /* 12 h */);
+			}, TimeSpan.FromHours(12));
 
 			if (result.Any() && result.First().IsError)
 			{

@@ -173,6 +173,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		{
 			public int StoreId { get; set; }
 			public string StoreName { get; set; }
+			public string Label { get; set; }
 
 			public int DisplayOrder { get; set; }
 

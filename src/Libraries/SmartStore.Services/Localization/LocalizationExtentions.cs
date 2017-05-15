@@ -56,12 +56,13 @@ namespace SmartStore.Services.Localization
         /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
         /// <returns>Localized property</returns>
         public static TPropType GetLocalized<T, TPropType>(this T entity,
-            Expression<Func<T, TPropType>> keySelector, int languageId, 
-            bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true)
+            Expression<Func<T, TPropType>> keySelector, 
+			int languageId, 
+            bool returnDefaultValue = true, 
+			bool ensureTwoPublishedLanguages = true)
             where T : BaseEntity, ILocalizedEntity
         {
-			if (entity == null)
-                throw new ArgumentNullException("entity");
+			Guard.NotNull(entity, nameof(entity));
 
             var member = keySelector.Body as MemberExpression;
             if (member == null)
@@ -82,13 +83,13 @@ namespace SmartStore.Services.Localization
             TPropType result = default(TPropType);
             string resultStr = string.Empty;
 
-            //load localized value
+            // load localized value
             string localeKeyGroup = typeof(T).Name;
             string localeKey = propInfo.Name;
 
             if (languageId > 0)
             {
-                //ensure that we have at least two published languages
+                // ensure that we have at least two published languages
                 bool loadLocalizedValue = true;
                 if (ensureTwoPublishedLanguages)
                 {
@@ -97,7 +98,7 @@ namespace SmartStore.Services.Localization
                     loadLocalizedValue = totalPublishedLanguages >= 2;
                 }
 
-                //localized value
+                // localized value
                 if (loadLocalizedValue)
                 {
                     var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
@@ -129,8 +130,7 @@ namespace SmartStore.Services.Localization
         public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, IWorkContext workContext)
             where T : struct
         {
-            if (workContext == null)
-                throw new ArgumentNullException("workContext");
+			Guard.NotNull(workContext, nameof(workContext));
 
             return GetLocalizedEnum<T>(enumValue, localizationService, workContext.WorkingLanguage.Id);
         }
@@ -145,16 +145,16 @@ namespace SmartStore.Services.Localization
         public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, int languageId = 0)
             where T : struct
         {
-            if (localizationService == null)
-                throw new ArgumentNullException("localizationService");
+			Guard.NotNull(localizationService, nameof(localizationService));
 
-            if (!typeof(T).IsEnum) throw new ArgumentException("T must be an enumerated type");
+			if (!typeof(T).IsEnum) throw new ArgumentException("T must be an enumerated type");
 
             //localized value
             string resourceName = string.Format("Enums.{0}.{1}", 
                 typeof(T).ToString(), 
                 //Convert.ToInt32(enumValue)
                 enumValue.ToString());
+
             string result = localizationService.GetResource(resourceName, languageId, false, "", true);
 
             //set default value if required

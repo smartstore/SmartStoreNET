@@ -59,10 +59,5 @@ namespace SmartStore.Core
         /// Gets or sets a value indicating whether we're in admin area
         /// </summary>
 		bool IsAdmin { get; set; }
-
-        ///// <summary>
-        ///// Gets a value indicating whether we're in the public shop
-        ///// </summary>
-        //bool IsPublic { get; }
     }
 }

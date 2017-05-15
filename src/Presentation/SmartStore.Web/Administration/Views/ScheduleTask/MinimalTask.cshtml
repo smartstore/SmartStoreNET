@@ -1,15 +1,15 @@
 ﻿@model ScheduleTaskModel
 @{
-	Layout = null;
-	var widgetId = "minimal-task-widget-" + Model.Id;
-	var returnUrl = (string)ViewBag.ReturnUrl;
-	var hasPermission = ViewBag.HasPermission == true;
-	var cancellable = ViewBag.Cancellable == true;
-	var reloadPage = ViewBag.ReloadPage == true;
+    Layout = null;
+    var widgetId = "minimal-task-widget-" + Model.Id;
+    var returnUrl = (string)ViewBag.ReturnUrl;
+    var hasPermission = ViewBag.HasPermission == true;
+    var cancellable = ViewBag.Cancellable == true;
+    var reloadPage = ViewBag.ReloadPage == true;
 }
 <div id="@widgetId" class="minimal-task-widget clearfix">
 	<div class="task-info@(Model.IsRunning ? " hide" : "")">
-		@Html.Partial("_MinimalTaskWidget", Model)
+		@{ Html.RenderPartial("_MinimalTaskWidget", Model); }
 	</div>
 	<div class='task-progress pull-left text-success@(Model.IsRunning ? "" : " hide")' data-task-id='@Model.Id' data-running='@(Model.IsRunning ? "true" : "false")'></div>
 	@if (cancellable && hasPermission)

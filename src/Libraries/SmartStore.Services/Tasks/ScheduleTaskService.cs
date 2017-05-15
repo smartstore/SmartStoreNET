@@ -9,33 +9,20 @@ using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services.Tasks
 {
-    /// <summary>
-    /// Task service
-    /// </summary>
     public partial class ScheduleTaskService : IScheduleTaskService
     {
-        #region Fields
-
         private readonly IRepository<ScheduleTask> _taskRepository;
-		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly IDateTimeHelper _dtHelper;
 
-        #endregion
-
-        #region Ctor
-
-		public ScheduleTaskService(IRepository<ScheduleTask> taskRepository, IDateTimeHelper dateTimeHelper)
+		public ScheduleTaskService(IRepository<ScheduleTask> taskRepository, IDateTimeHelper dtHelper)
         {
-            this._taskRepository = taskRepository;
-			this._dateTimeHelper = dateTimeHelper;
+            _taskRepository = taskRepository;
+			_dtHelper = dtHelper;
 
 			T = NullLocalizer.Instance;
         }
 
 		public Localizer T { get; set; }
-
-        #endregion
-
-        #region Methods
 
         public virtual void DeleteTask(ScheduleTask task)
         {
@@ -72,6 +59,7 @@ namespace SmartStore.Services.Tasks
 				// do not throw an exception if the underlying provider failed on Open.
 				exc.Dump();
 			}
+
 			return null;
         }
 
@@ -166,8 +154,9 @@ namespace SmartStore.Services.Tasks
 					var entry = ex.Entries.Single();
 					var current = (ScheduleTask)entry.CurrentValues.ToObject(); // from current scope
 
-					// When 'StopOnError' is true, the 'Enabled' property could have been be set to true on exception.
-					var enabledModified = entry.Property("Enabled").IsModified;
+					// When 'StopOnError' is true, the 'Enabled' property could have been set to true on exception.
+					var prop = entry.Property("Enabled");
+					var enabledModified = !prop.CurrentValue.Equals(prop.OriginalValue);
 
 					// Save current cron expression
 					var cronExpression = task.CronExpression;
@@ -204,9 +193,32 @@ namespace SmartStore.Services.Tasks
 			} while (saveFailed);
         }
 
+		public ScheduleTask GetOrAddTask<T>(Action<ScheduleTask> newAction) where T : ITask
+		{
+			Guard.NotNull(newAction, nameof(newAction));
+
+			var type = typeof(T);
+
+			if (type.IsAbstract || type.IsInterface || type.IsNotPublic)
+			{
+				throw new InvalidOperationException("Only concrete public task types can be registered.");
+			}
+
+			var scheduleTask = this.GetTaskByType<T>();
+
+			if (scheduleTask == null)
+			{
+				scheduleTask = new ScheduleTask { Type = type.AssemblyQualifiedNameWithoutVersion() };
+				newAction(scheduleTask);
+				InsertTask(scheduleTask);
+			}
+
+			return scheduleTask;
+		}
+
 		public void CalculateFutureSchedules(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
 		{
-			Guard.ArgumentNotNull(() => tasks);
+			Guard.NotNull(tasks, nameof(tasks));
 			
 			using (var scope = new DbContextScope(autoCommit: false))
 			{
@@ -223,11 +235,21 @@ namespace SmartStore.Services.Tasks
 							task.LastEndUtc = task.LastStartUtc;
 							task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
 						}
+						FixTypeName(task);
 					}
 					this.UpdateTask(task);
 				}
 
 				scope.Commit();
+			}
+		}
+
+		private void FixTypeName(ScheduleTask task)
+		{
+			// in versions prior V3 a double space could exist in ScheduleTask type name
+			if (task.Type.IndexOf(",  ") > 0)
+			{
+				task.Type = task.Type.Replace(",  ", ", ");
 			}
 		}
 
@@ -237,17 +259,14 @@ namespace SmartStore.Services.Tasks
 			{
 				try
 				{
-					var baseTime = DateTime.UtcNow;
+					var baseTime = _dtHelper.ConvertToUserTime(DateTime.UtcNow);
 					var next = CronExpression.GetNextSchedule(task.CronExpression, baseTime);
-					return next;
+					return _dtHelper.ConvertToUtcTime(next, _dtHelper.CurrentTimeZone);
 				}
 				catch { }
 			}
 
 			return null;
 		}
-
-        #endregion
-
 	}
 }

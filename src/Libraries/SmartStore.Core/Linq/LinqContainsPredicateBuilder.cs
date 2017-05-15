@@ -19,8 +19,8 @@ namespace SmartStore.Linq
         /// <returns>The LINQ expression.</returns>
         public static Expression<Func<T, bool>> Build<T, TValue>(ICollection<TValue> collection, string targetProperty)
         {
-            Guard.ArgumentNotEmpty(collection, "collection");
-            Guard.ArgumentNotEmpty(targetProperty, "targetProperty");
+            Guard.NotEmpty(collection, nameof(collection));
+            Guard.NotEmpty(targetProperty, nameof(targetProperty));
 
             Expression completeExpression = null;
             ParameterExpression parameterExpression = Expression.Parameter(typeof(T), "t");

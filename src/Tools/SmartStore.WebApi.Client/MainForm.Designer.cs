@@ -68,6 +68,8 @@
 			this.lblIdentifier1 = new System.Windows.Forms.Label();
 			this.txtIdentfier2 = new System.Windows.Forms.TextBox();
 			this.lblIdentfier2 = new System.Windows.Forms.Label();
+			this.txtPictureId = new System.Windows.Forms.TextBox();
+			this.lblPictureId = new System.Windows.Forms.Label();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.SuspendLayout();
@@ -465,11 +467,29 @@
 			this.lblIdentfier2.TabIndex = 39;
 			this.lblIdentfier2.Text = "SKU, Name etc.";
 			// 
+			// txtPictureId
+			// 
+			this.txtPictureId.Location = new System.Drawing.Point(1045, 123);
+			this.txtPictureId.Name = "txtPictureId";
+			this.txtPictureId.Size = new System.Drawing.Size(61, 21);
+			this.txtPictureId.TabIndex = 40;
+			// 
+			// lblPictureId
+			// 
+			this.lblPictureId.AutoSize = true;
+			this.lblPictureId.Location = new System.Drawing.Point(989, 126);
+			this.lblPictureId.Name = "lblPictureId";
+			this.lblPictureId.Size = new System.Drawing.Size(50, 13);
+			this.lblPictureId.TabIndex = 41;
+			this.lblPictureId.Text = "PictureId";
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1154, 812);
+			this.Controls.Add(this.txtPictureId);
+			this.Controls.Add(this.lblPictureId);
 			this.Controls.Add(this.txtIdentfier2);
 			this.Controls.Add(this.lblIdentfier2);
 			this.Controls.Add(this.txtIdentfier1);
@@ -564,6 +584,8 @@
 		private System.Windows.Forms.Label lblIdentifier1;
 		private System.Windows.Forms.TextBox txtIdentfier2;
 		private System.Windows.Forms.Label lblIdentfier2;
+		private System.Windows.Forms.TextBox txtPictureId;
+		private System.Windows.Forms.Label lblPictureId;
 	}
 }
 

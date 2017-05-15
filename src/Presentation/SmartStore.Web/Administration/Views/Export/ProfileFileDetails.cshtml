@@ -12,10 +12,13 @@
 		{
 			foreach (var file in grp)
 			{
-				<div>
-					@Html.IconForFileExtension(file.FileExtension, false)
+				<div style="padding: 2px 0;">
+					<span class="label label-smnet label-info">
+						@Html.IconForFileExtension(file.FileExtension, false)
+						@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
+					</span>
 					<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = file.FileName, isDeployment = Model.IsForDeployment })"
-					   title="@ViewBag.DownloadString" download>@file.FileRootPath</a>
+					   title="@ViewBag.DownloadString" style="vertical-align: top;" download>@file.FileRootPath</a>
 				</div>
 			}
 			<p>&nbsp;</p>
@@ -24,7 +27,7 @@
 		@foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
 		{
 			var storeName = grp.First().StoreName;
-			<div style="margin-bottom: 10px;">
+			<div>
 				<div>
 					<span style="font-size: 1.15em;">@T("Admin.Common.PublicFiles")</span>
 					<span class="smaller">(@(storeName.HasValue() ? storeName : ViewBag.AllStoresString))</span>
@@ -32,11 +35,15 @@
 
 				@foreach (var file in grp)
 				{
-					<div class="clearfix">
+					<div class="clearfix" style="padding: 2px 0;">
 						<button type="button" class="btn btn-small pull-right copy-to-clipboard">
 							<i class="fa fa-clipboard"></i>
 						</button>
-						<a href="@file.FileUrl" title="@ViewBag.DownloadString" style="vertical-align: middle;" download>@file.FileUrl</a>
+						<span class="label label-smnet label-success">
+							@Html.IconForFileExtension(file.FileExtension, false)
+							@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
+						</span>
+						<a href="@file.FileUrl" title="@ViewBag.DownloadString" style="vertical-align: top;" download>@file.FileUrl</a>
 					</div>
 				}
 			</div>
@@ -62,7 +69,7 @@ else
 
 			var succeeded = window.copyTextToClipboard(url);
 
-			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded")' : '@T("Common.CopyToClipboard.Failded")')
+			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded")' : '@T("Common.CopyToClipboard.Failed")')
 				.tooltip('show');
 
 			setTimeout(function () {

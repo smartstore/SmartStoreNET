@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Web;
 using System.Linq;
+using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Services.Stores;
-using System.Web.Hosting;
-using System.Collections.Generic;
-using System.Threading;
-using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Async;
 
 namespace SmartStore.Services.Tasks
 {
@@ -32,12 +30,12 @@ namespace SmartStore.Services.Tasks
         bool IsActive { get; }
 
 		/// <summary>
-		/// Gets a <see cref="CancellationTokenSource"/> instance used 
-		/// to signal a task cancellation request.
+		/// Gets the unique key by which a <see cref="CancellationTokenSource"/> instance
+		/// can be retrieved from an <see cref="IAsyncState"/> instance
 		/// </summary>
-		/// <param name="scheduleTaskId">A <see cref="ScheduleTask"/> identifier</param>
-		/// <returns>A <see cref="CancellationTokenSource"/> instance if the task is running, <c>null</c> otherwise</returns>
-		CancellationTokenSource GetCancelTokenSourceFor(int scheduleTaskId);
+		/// <param name="scheduleTaskId">The schedule task id</param>
+		/// <returns>A unique string key</returns>
+		string GetAsyncStateKey(int scheduleTaskId);
 
 		/// <summary>
 		/// Starts/initializes the scheduler

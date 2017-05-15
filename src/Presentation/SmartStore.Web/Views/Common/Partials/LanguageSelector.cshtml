@@ -1,0 +1,31 @@
+﻿@model LanguageSelectorModel
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+
+@if (Model.AvailableLanguages.Count > 1)
+{
+    var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+    var activeLang = Model.AvailableLanguages.Where(x => x.Id == Model.CurrentLanguageId).FirstOrDefault();
+
+    <div class="dropdown language-selector">
+        <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+			<span>@activeLang.SeoCode.ToUpper()</span>
+            <i class="fa fa-angle-down"></i>
+        </a>
+        
+        <div class="dropdown-menu" aria-labelledby="dLabel">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null);
+                
+                <a href="@href" title="@lang.NativeName" rel="nofollow" class="dropdown-item" 
+                   data-selected="@(lang.Equals(activeLang) ? "true" : "false")" data-abbreviation="@lang.Name">
+                    @lang.Name
+                    <span class="abbreviation">(@lang.SeoCode.ToUpper())</span>
+                </a>
+            }
+        </div>
+    </div>
+}

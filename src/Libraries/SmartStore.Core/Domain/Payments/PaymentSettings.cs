@@ -9,7 +9,7 @@ namespace SmartStore.Core.Domain.Payments
         {
             ActivePaymentMethodSystemNames = new List<string>();
 			AllowRePostingPayments = true;
-			BypassPaymentMethodSelectionIfOnlyOne = true;
+			BypassPaymentMethodSelectionIfOnlyOne = false;
         }
 
         /// <summary>

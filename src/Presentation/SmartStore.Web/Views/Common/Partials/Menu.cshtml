@@ -1,0 +1,117 @@
+﻿@model MenuModel
+@using SmartStore.Web.Models.Common;
+
+@{
+    string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+}
+
+@{ Html.RenderWidget("header_menu_top"); }
+
+<nav class="menubar">
+    <nav class="menubar-group ml-0">
+        @{ 
+			Html.RenderAction("LanguageSelector", "Common");
+			Html.RenderAction("CurrencySelector", "Common");
+        }
+    </nav>
+
+    <nav class="menubar-group ml-auto">
+        
+        @{ Html.RenderWidget("header_menu_before"); }
+
+        @if (Model.HasContactUsPage)
+		{
+            <a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
+		}
+
+        <div class="dropdown service-links">
+            <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+				<span>@T("Menu.ServiceMenu")</span>
+                <i class="fa fa-angle-down menubar-caret"></i>
+            </a>
+
+            <div class="dropdown-menu" aria-labelledby="dLabel">
+                @{
+					Html.RenderAction("ServiceMenu", "Common", new { area = "" });
+                } 
+            </div>
+        </div>
+
+        @if (!Model.DisplayAdminLink && Model.DisplayLoginLink)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" rel="nofollow">
+                <i class="fa fa-user menubar-icon"></i>
+				<span>@T("Account.Login")</span>
+            </a>
+        }
+
+        @if (Model.IsCustomerImpersonated)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">
+                <i class="fa fa-sign-out menubar-icon"></i>
+				<span>@Model.CustomerEmailUsername</span>
+            </a>
+        }
+    </nav>
+
+    <nav class="menubar-group menubar-group--special">
+        @if (Model.NewsEnabled)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("NewsArchive")">
+                @T("News")
+            </a>
+        }
+        @if (Model.BlogEnabled)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("Blog")">
+                @T("Blog")
+            </a>
+        }
+        @if (Model.ForumEnabled)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("Boards")">
+                @T("Forum.Forums")
+            </a>
+        }
+        @{ Html.RenderWidget("header_menu_special_after"); }
+    </nav>
+
+    <nav id="menubar-my-account" class="menubar-group">
+        <div class="dropdown">
+            <a class="menubar-link" @(Model.IsAuthenticated ? "data-toggle=dropdown" : "") aria-haspopup="true" aria-expanded="false" href="@accountUrl" rel="nofollow">
+                <i class="fa fa-@(Model.IsAuthenticated ? "user" : "user-o") menubar-icon"></i>
+
+                @if (Model.IsAuthenticated)
+                {
+					<span title="@Model.CustomerEmailUsername">@Model.CustomerEmailUsername.Truncate(25, "...")</span>
+                    <i class="fa fa-angle-down menubar-caret"></i>
+                }
+                else
+                {
+                    <span>@T("Account.Login")</span>
+                }
+            </a>
+
+            @if (Model.IsAuthenticated)
+			{
+				Html.RenderAction("AccountDropdown", "Common");
+            }
+        </div>
+
+        @{ Html.RenderWidget("header_menu_after"); }
+
+    </nav>
+
+    @if (Model.DisplayAdminLink)
+    {
+        <nav class="menubar-group menubar-group--special d-none d-xl-block">
+            <a class="menubar-link" href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
+                <i class="fa fa-cog menubar-icon"></i>
+				<span>@T("Account.Administration")</span>  
+            </a>
+        </nav>
+    }
+</nav>
+
+@{ Html.RenderWidget("header_menu_bottom"); }
+

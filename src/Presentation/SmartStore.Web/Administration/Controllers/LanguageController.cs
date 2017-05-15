@@ -318,28 +318,27 @@ namespace SmartStore.Admin.Controllers
                     Text = x.Name,
                     Value = x.Id.ToString()
                 }).ToList();
+
             var language = _languageService.GetLanguageById(languageId);
             ViewBag.LanguageId = languageId;
             ViewBag.LanguageName = language.Name;
 
-            var resources = _services.Localization
-                .GetResourceValues(languageId, true)
-				.Where(x => x.Key != "!!___EOF___!!" && x.Value != null)
-                .OrderBy(x => x.Key)
-                .ToList();
+            var resources = _services.Localization.All(languageId);
+
             var gridModel = new GridModel<LanguageResourceModel>
             {
                 Data = resources
-                    .Take(_adminAreaSettings.GridPageSize)
-                    .Select(x => new LanguageResourceModel()
+					.Take(_adminAreaSettings.GridPageSize)
+					.ToList()
+                    .Select(x => new LanguageResourceModel
                     {
-                        LanguageId = languageId,
+						Id = x.Id,
+						LanguageId = languageId,
                         LanguageName = language.Name,
-                        Id = x.Value.Item1,
-                        Name = x.Key,
-                        Value = x.Value.Item2.EmptyNull(),
+                        ResourceName = x.ResourceName,
+                        ResourceValue = x.ResourceValue.EmptyNull(),
                     }),
-                Total = resources.Count
+                Total = resources.AsQueryable().Count()
             };
             return View(gridModel);
         }
@@ -353,23 +352,23 @@ namespace SmartStore.Admin.Controllers
 			{
 				var language = _languageService.GetLanguageById(languageId);
 
-				var resources = _services.Localization
-					.GetResourceValues(languageId, true)
-					.OrderBy(x => x.Key)
-					.Where(x => x.Key != "!!___EOF___!!" && x.Value != null)
-					.Select(x => new LanguageResourceModel
+				var resources = _services.Localization.All(languageId).ForCommand(command);
+
+				model.Data = resources.PagedForCommand(command).ToList().Select(x =>
+				{
+					var resModel = new LanguageResourceModel
 					{
+						Id = x.Id,
 						LanguageId = languageId,
 						LanguageName = language.Name,
-						Id = x.Value.Item1,
-						Name = x.Key,
-						Value = x.Value.Item2.EmptyNull(),
-					})
-					.ForCommand(command)
-					.ToList();
+						ResourceName = x.ResourceName,
+						ResourceValue = x.ResourceValue.EmptyNull(),
+					};
 
-				model.Data = resources.PagedForCommand(command);
-				model.Total = resources.Count;
+					return resModel;
+				});
+				
+				model.Total = resources.AsQueryable().Count();
 			}
 			else
 			{
@@ -389,10 +388,10 @@ namespace SmartStore.Admin.Controllers
         {
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
 			{
-				if (model.Name != null)
-					model.Name = model.Name.Trim();
-				if (model.Value != null)
-					model.Value = model.Value.Trim();
+				if (model.ResourceName != null)
+					model.ResourceName = model.ResourceName.Trim();
+				if (model.ResourceValue != null)
+					model.ResourceValue = model.ResourceValue.Trim();
 
 				if (!ModelState.IsValid)
 				{
@@ -402,17 +401,17 @@ namespace SmartStore.Admin.Controllers
 
 				var resource = _services.Localization.GetLocaleStringResourceById(model.Id);
 				// if the resourceName changed, ensure it isn't being used by another resource
-				if (!resource.ResourceName.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase))
+				if (!resource.ResourceName.Equals(model.ResourceName, StringComparison.InvariantCultureIgnoreCase))
 				{
-					var res = _services.Localization.GetLocaleStringResourceByName(model.Name, model.LanguageId, false);
+					var res = _services.Localization.GetLocaleStringResourceByName(model.ResourceName, model.LanguageId, false);
 					if (res != null && res.Id != resource.Id)
 					{
 						return Content(T("Admin.Configuration.Languages.Resources.NameAlreadyExists", res.ResourceName));
 					}
 				}
 
-				resource.ResourceName = model.Name;
-				resource.ResourceValue = model.Value;
+				resource.ResourceName = model.ResourceName;
+				resource.ResourceValue = model.ResourceValue;
 				resource.IsTouched = true;
 
 				_services.Localization.UpdateLocaleStringResource(resource);
@@ -426,10 +425,10 @@ namespace SmartStore.Admin.Controllers
         {
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
 			{
-				if (model.Name != null)
-					model.Name = model.Name.Trim();
-				if (model.Value != null)
-					model.Value = model.Value.Trim();
+				if (model.ResourceName != null)
+					model.ResourceName = model.ResourceName.Trim();
+				if (model.ResourceValue != null)
+					model.ResourceValue = model.ResourceValue.Trim();
 
 				if (!ModelState.IsValid)
 				{
@@ -437,19 +436,19 @@ namespace SmartStore.Admin.Controllers
 					return Content(modelStateErrors.FirstOrDefault());
 				}
 
-				var res = _services.Localization.GetLocaleStringResourceByName(model.Name, model.LanguageId, false);
+				var res = _services.Localization.GetLocaleStringResourceByName(model.ResourceName, model.LanguageId, false);
 				if (res == null)
 				{
 					var resource = new LocaleStringResource { LanguageId = id };
-					resource.ResourceName = model.Name;
-					resource.ResourceValue = model.Value;
+					resource.ResourceName = model.ResourceName;
+					resource.ResourceValue = model.ResourceValue;
 					resource.IsTouched = true;
 
 					_services.Localization.InsertLocaleStringResource(resource);
 				}
 				else
 				{
-					return Content(T("Admin.Configuration.Languages.Resources.NameAlreadyExists", model.Name));
+					return Content(T("Admin.Configuration.Languages.Resources.NameAlreadyExists", model.ResourceName));
 				}
 			}
 

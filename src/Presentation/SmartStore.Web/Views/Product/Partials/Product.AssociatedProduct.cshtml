@@ -1,0 +1,43 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web;
+
+@{ 
+	string updateUrl = Url.Action("UpdateProductDetails", "Product", new
+	{
+		productId = Model.Id,
+		bundleItemId = Model.BundleItem.Id,
+		itemType = "associateditem"
+	});
+}
+
+<hr />
+
+<article class="pd-variant row update-container" data-url="@updateUrl" itemscope itemtype="http://schema.org/Product">
+	<div class="col-4 col-sm-6 col-lg-3">
+		<div class="pd-variant-picture img-center-container">
+			@if (Model.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue())
+			{
+				<img class="pd-dyn-thumb" 
+					 src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
+					 alt="@Model.DetailsPictureModel.AlternateText"
+					 title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
+			}
+		</div>
+	</div>
+	<div class="col-8 col-sm-6 col-lg-4">
+		<!-- Title/Brand/ReviewSummary -->
+		@{ Html.RenderPartial("Product.Info", Model); }
+
+		<!-- Product attributes (SKU, EAN, Weight etc.) -->
+		<div class="pd-attrs-container" data-partial="Attrs">
+			@{ Html.RenderPartial("Product.Attrs", Model); }
+		</div>
+	</div>
+	<div class="col col-lg-5 d-flex">
+		<!-- Offer box -->
+		@{ Html.RenderPartial("Product.Offer", Model); }
+	</div>
+</article>
+
+

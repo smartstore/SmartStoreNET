@@ -1,0 +1,51 @@
+﻿@using SmartStore.Web.Models.Search
+
+@model SearchResultModel
+
+@{
+	var hitGroups = Model.HitGroups.Where(x => x.Hits.Any()).OrderBy(x => x.Ordinal).ToArray();
+	var hasContent = Model.TopProducts.Items.Count > 0 || hitGroups.Any();
+	var isMultiCol = false;
+	if (hasContent)
+	{
+		isMultiCol = 
+			Model.TopProducts.Items.Count > 0 
+			&& (hitGroups.Length > 1 && hitGroups.Sum(x => x.Hits.Count) > 4);
+	}
+}
+
+@if (!hasContent)
+{
+	return;
+}
+
+@if (isMultiCol)
+{
+	<div class="row no-gutters instasearch-row">
+		<div class="col col-sm-6 col-xl-5 instasearch-col">
+			@foreach (var group in hitGroups)
+            {
+                Html.RenderPartial("InstantSearch.HitGroup", group);
+            }
+		</div>
+		<div class="col col-sm-6 col-xl-7 instasearch-col">
+			<h6 class="instasearch-group-header">@T("Search.Hits")</h6>
+			@{ Html.RenderPartial("InstantSearch.TopProducts", Model); }
+		</div>
+	</div>
+}
+else
+{
+    foreach (var group in hitGroups)
+    {
+        Html.RenderPartial("InstantSearch.HitGroup", group);
+    }
+
+    if (Model.TopProducts.Items.Count > 0)
+    {
+		<h6 class="instasearch-group-header">@T("Search.Hits")</h6>
+
+		Html.RenderPartial("InstantSearch.TopProducts", Model);
+	}
+}
+

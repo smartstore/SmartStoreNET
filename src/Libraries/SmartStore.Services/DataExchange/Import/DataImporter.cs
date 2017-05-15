@@ -16,6 +16,10 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Utilities;
+using SmartStore.Data.Caching;
+using SmartStore.Services.Seo;
+using System.Collections.Generic;
+using SmartStore.Services.DataExchange.Import.Events;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -29,6 +33,9 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly Lazy<IEmailSender> _emailSender;
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
 		private readonly Lazy<DataExchangeSettings> _dataExchangeSettings;
+		private readonly IDbCache _dbCache;
+		private readonly IUrlRecordService _urlRecordService;
+		private readonly ILocalizedEntityService _localizedEntityService;
 
 		public DataImporter(
 			ICommonServices services,
@@ -38,7 +45,10 @@ namespace SmartStore.Services.DataExchange.Import
 			Lazy<IEmailAccountService> emailAccountService,
 			Lazy<IEmailSender> emailSender,
 			Lazy<ContactDataSettings> contactDataSettings,
-			Lazy<DataExchangeSettings> dataExchangeSettings)
+			Lazy<DataExchangeSettings> dataExchangeSettings,
+			IDbCache dbCache,
+			IUrlRecordService urlRecordService,
+			ILocalizedEntityService localizedEntityService)
 		{
 			_services = services;
 			_importProfileService = importProfileService;
@@ -48,6 +58,9 @@ namespace SmartStore.Services.DataExchange.Import
 			_emailSender = emailSender;
 			_contactDataSettings = contactDataSettings;
 			_dataExchangeSettings = dataExchangeSettings;
+			_dbCache = dbCache;
+			_urlRecordService = urlRecordService;
+			_localizedEntityService = localizedEntityService;
 
 			T = NullLocalizer.Instance;
 		}
@@ -94,16 +107,16 @@ namespace SmartStore.Services.DataExchange.Import
 			sb.AppendFormat("Warnings:\t\t{0}\r\n", result.Warnings);
 			sb.AppendFormat("Errors:\t\t\t{0}", result.Errors);
 
-			ctx.Log.Information(sb.ToString());
+			ctx.Log.Info(sb.ToString());
 
 			foreach (var message in result.Messages)
 			{
 				if (message.MessageType == ImportMessageType.Error)
-					ctx.Log.Error(message.ToString(), message.FullMessage);
+					ctx.Log.Error(new Exception(message.FullMessage), message.ToString());
 				else if (message.MessageType == ImportMessageType.Warning)
-					ctx.Log.Warning(message.ToString());
+					ctx.Log.Warn(message.ToString());
 				else
-					ctx.Log.Information(message.ToString());
+					ctx.Log.Info(message.ToString());
 			}
 		}
 
@@ -190,7 +203,7 @@ namespace SmartStore.Services.DataExchange.Import
 				var customer = _services.WorkContext.CurrentCustomer;
 				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
 
-				ctx.Log.Information(logHead.ToString());
+				ctx.Log.Info(logHead.ToString());
 			}
 
 			if (!File.Exists(filePath))
@@ -252,10 +265,17 @@ namespace SmartStore.Services.DataExchange.Import
 
 			using (var logger = new TraceLogger(logPath))
 			{
+				var scopes = new List<IDisposable>();
+
 				try
 				{
+					_dbCache.Enabled = false;
+					scopes.Add(_localizedEntityService.BeginScope());
+					scopes.Add(_urlRecordService.BeginScope());
+
 					ctx.Log = logger;
 
+					ctx.ExecuteContext.Request = ctx.Request;
 					ctx.ExecuteContext.DataExchangeSettings = _dataExchangeSettings.Value;
 					ctx.ExecuteContext.Services = _services;
 					ctx.ExecuteContext.Log = logger;
@@ -278,7 +298,9 @@ namespace SmartStore.Services.DataExchange.Import
 					if (!HasPermission(ctx))
 						throw new SmartException("You do not have permission to perform the selected import.");
 
-					ctx.Importer = _importerFactory(ctx.Request.Profile.EntityType);	
+					ctx.Importer = _importerFactory(ctx.Request.Profile.EntityType);
+
+					_services.EventPublisher.Publish(new ImportExecutingEvent(ctx.ExecuteContext));
 
 					files.ForEach(x => ImportCoreInner(ctx, x));
 				}
@@ -288,6 +310,18 @@ namespace SmartStore.Services.DataExchange.Import
 				}
 				finally
 				{
+					try
+					{
+						_dbCache.Enabled = true;
+						scopes.Each(x => x.Dispose());
+
+						_services.EventPublisher.Publish(new ImportExecutedEvent(ctx.ExecuteContext));
+					}
+					catch (Exception exception)
+					{
+						ctx.ExecuteContext.Result.AddError(exception);
+					}
+
 					try
 					{
 						// database context sharing problem: if there are entities in modified state left by the provider due to SaveChanges failure,
@@ -313,7 +347,6 @@ namespace SmartStore.Services.DataExchange.Import
 					try
 					{
 						ctx.ExecuteContext.Result.EndDateUtc = DateTime.UtcNow;
-
 						LogResult(ctx);
 					}
 					catch (Exception exception)
@@ -324,7 +357,6 @@ namespace SmartStore.Services.DataExchange.Import
 					try
 					{
 						ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.ExecuteContext.Result.Clone());
-
 						_importProfileService.UpdateImportProfile(ctx.Request.Profile);
 					}
 					catch (Exception exception)
@@ -347,8 +379,8 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public void Import(DataImportRequest request, CancellationToken cancellationToken)
 		{
-			Guard.ArgumentNotNull(() => request);
-			Guard.ArgumentNotNull(() => cancellationToken);
+			Guard.NotNull(request, nameof(request));
+			Guard.NotNull(cancellationToken, nameof(cancellationToken));
 
 			var ctx = new DataImporterContext(request, cancellationToken, T("Admin.DataExchange.Import.ProgressInfo"));
 

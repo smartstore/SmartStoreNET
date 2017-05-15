@@ -1,0 +1,68 @@
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Blog Styles
+// --------------------------------------------------
+
+.blog-page .blogpost {
+	padding: 20px 0;		
+    border-top: 1px solid #ddd;
+}
+
+.blog-page .blogpost:first-child {
+    border-top: none;
+}
+
+.blog-page .blogpost .blogpost-info {
+	.blogpost-comments {
+		position: relative;
+		display: block;
+		text-decoration: none;
+		font-weight: bold;
+		width: 50px;
+		height: 50px;	
+	}
+	
+	.blogpost-comments .blogpost-comments-icon {
+		position: absolute;
+		font-size: 50px;
+		line-height: 50px;
+		color: $gray-lighter;
+	}
+	
+	.blogpost-comments .blogpost-comments-count {
+		position: absolute;
+		top: 13px;
+		font-size: 13px;
+		line-height: 16px;
+		width: 38px;
+		text-align: center;
+		color: $gray-light;
+	}
+	
+    
+	.blogpost-comments.vivid {
+		.blogpost-comments-icon { color: $gray }
+		.blogpost-comments-count { color: $white }
+	}
+	
+	.blogpost-tags {
+        border-radius: $border-radius;
+        border: 1px solid $gray-lighter;
+        font-size: $font-size-sm;
+        background-color: $gray-lightest;
+	}
+}
+
+.comment-item {
+    padding: 2rem 0;
+    border-bottom: 1px solid rgba(0,0,0, 0.12);
+
+    &:last-child { border-bottom: none; }
+}
+
+.block-popular-blogtags {
+    overflow: hidden;
+}
+

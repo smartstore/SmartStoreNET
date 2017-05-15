@@ -1,0 +1,23 @@
+﻿@model BlogPostTagListModel
+@using SmartStore.Web.Models.Blogs
+
+@if (Model.Tags.Count > 0)
+{
+    <div class="block-popular-blogtags card">
+        <h5 class="card-header">
+            @T("Blog.TagCloud")
+        </h5>
+        <div class="listbox card-block">
+            <div class="tags fs-h4">
+                <ul class="list-inline">
+                    @foreach (var item in Model.Tags)
+                    {
+                        <li class="list-inline-item">
+                            <a class="color-body" href="@Url.RouteUrl("BlogByTag", new { tag = item.SeName })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}

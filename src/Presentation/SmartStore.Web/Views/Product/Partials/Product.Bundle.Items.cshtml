@@ -1,0 +1,83 @@
+﻿@model IList<ProductDetailsModel>
+
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web;
+
+
+<div class="pd-bundle-items">
+	@foreach (var item in Model)
+	{
+		string updateUrl = Url.Action("UpdateProductDetails", "Product", new
+		{
+			productId = item.Id,
+			bundleItemId = item.BundleItem.Id,
+			itemType = "bundleitem"
+		});
+
+		<div class="pd-bundle-item card-block update-container" data-url="@updateUrl">
+			<div class="pd-bundle-item-top row no-gutters">
+				@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
+				{
+					<div class="pd-bundle-item-image col" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">
+						<img src="@item.DetailsPictureModel.DefaultPictureModel.ImageUrl"
+							 class="img-fluid pd-dyn-thumb" 
+							 alt="@item.DetailsPictureModel.AlternateText" 
+							 title="@item.DetailsPictureModel.DefaultPictureModel.Title" />
+					</div>
+				}
+				<div class="pd-bundle-item-body col pl-3">
+					<div class="pd-bundle-item-name">
+						@if (item.BundleItem.Quantity > 1)
+						{
+							<span>@(item.BundleItem.Quantity)&nbsp;&#215;</span>
+						}
+						@if (item.VisibleIndividually)
+						{
+							<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">@item.Name</a>
+						}
+						else
+						{
+							<span>@item.Name</span>
+						}
+					</div>
+
+					@if (item.ShortDescription.HasValue())
+					{
+						var shortDescription = item.ShortDescription.Truncate(120, "...");
+						<div class="pd-bundle-item-description" @Html.Attr("title", item.ShortDescription, item.ShortDescription != shortDescription)>
+							@Html.Raw(shortDescription)
+						</div>
+					}
+
+					<div class="pd-bundle-item-offer pt-3">
+						<div class="pd-bundle-item-attribute-info">
+							@Html.Raw(item.AttributeInfo)
+						</div>
+						<div class="pd-offer-price-container" data-partial="BundleItemPrice">
+							@{ Html.RenderPartial("Product.Offer.Price", item); }
+						</div>
+						<div class="pd-stock-info-container" data-partial="BundleItemStock">
+							@{ Html.RenderPartial("Product.StockInfo", item); }
+						</div>
+					</div>
+				</div>
+			</div>
+
+			@if (item.ProductVariantAttributes.ShouldBeRendered())
+			{
+				<div class="pd-bundle-item-variants@(item.BundleItem.IsBundleItemPricing ? "" : " d-none") pt-3">
+					@{ Html.RenderPartial("Product.Variants", item.ProductVariantAttributes, new ViewDataDictionary()); }
+				</div>
+			}
+
+			@if (item.GiftCard.IsGiftCard)
+			{
+				var dataDictBundleItemGiftCard = new ViewDataDictionary();
+				dataDictBundleItemGiftCard.TemplateInfo.HtmlFieldPrefix = item.GiftCardFieldPrefix;
+				<div class="pd-bundle-item-giftcard pt-3">
+					@Html.Partial("Product.GiftCard", item.GiftCard, dataDictBundleItemGiftCard)
+				</div>
+			}
+		</div>
+	}
+</div>

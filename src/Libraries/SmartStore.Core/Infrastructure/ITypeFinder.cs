@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace SmartStore.Core.Infrastructure
@@ -11,9 +12,34 @@ namespace SmartStore.Core.Infrastructure
     /// </summary>
     public interface ITypeFinder
     {
-        IList<Assembly> GetAssemblies(bool ignoreInactivePlugins = false);
+		///// <summary>
+		///// Gets all SmartStore specific assemblies (core & all plugins)
+		///// </summary>
+		///// <param name="ignoreInactivePlugins">Indicates whether uninstalled plugin's assemblies should be ignored</param>
+		///// <returns>A list of assemblies that should be loaded by the SmartStore factory.</returns>
+		IEnumerable<Assembly> GetAssemblies(bool ignoreInactivePlugins = false);
 		IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true);
     }
+
+	public class NullTypeFinder : ITypeFinder
+	{
+		private static readonly ITypeFinder s_instance = new NullTypeFinder();
+
+		public static ITypeFinder Instance
+		{
+			get { return s_instance; }
+		}
+
+		public IEnumerable<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
+		{
+			return Enumerable.Empty<Assembly>();
+		}
+
+		public IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true)
+		{
+			return Enumerable.Empty<Type>();
+		}
+	}
 
 	public static class ITypeFinderExtensions
 	{

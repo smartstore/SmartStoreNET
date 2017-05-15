@@ -3,7 +3,7 @@
 
 @{    
     ViewBag.Title = string.Format(T("Admin.Configuration.Themes.Title"), Model.ThemeName);
-	string parsingError = (string)TempData["LessParsingError"];
+	string parsingError = (string)TempData["SassParsingError"];
 }
 
 @using (Html.BeginForm())
@@ -27,7 +27,7 @@
             @ViewBag.Title @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List", new { storeId = Model.StoreId })
         </div>
         <div class="options">
-			@Html.Widget("admin_button_toolbar_before")
+			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
             <button type="submit" name="save" value="save" class="btn btn-primary">
                 <i class="fa fa-check"></i>&nbsp;
@@ -49,7 +49,7 @@
                 @T("Admin.Common.Reset")
             </a>
 
-			@Html.Widget("admin_button_toolbar_after")
+			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
 
@@ -57,16 +57,16 @@
 	{
 		<div style="margin-bottom: 20px">
 			<h4 class="text-error">@T("Admin.Configuration.Themes.Validation.ErrorReportTitle")</h4>
-			<pre>
-				@parsingError
-			</pre>
+			<pre>@parsingError</pre>
 			<a class="btn" href='@Url.Action("Configure", new { theme = Model.ThemeName, storeId = Model.StoreId })'>
 				@T("Admin.Configuration.Themes.Validation.RestorePrevValues")
 			</a>	
 		</div>
 	}
-	
-    @Html.Action("ConfigureTheme", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId, area = (string)null })
+
+	<div class="theme-editor">
+		@{ Html.RenderAction("ConfigureTheme", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId, area = (string)null }); }
+	</div>
 }
 
 @*import variables window*@

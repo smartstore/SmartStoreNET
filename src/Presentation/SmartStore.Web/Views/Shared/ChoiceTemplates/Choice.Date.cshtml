@@ -1,0 +1,19 @@
+﻿@model ChoiceModel
+
+@using SmartStore.Web.Framework.UI.Choices;
+
+@{ 
+	var controlId = Model.BuildControlId();
+}
+
+@Html.DatePickerDropDowns(
+	controlId + "-day", 
+	controlId + "-month", 
+	controlId + "-year", 
+	Model.BeginYear, 
+	Model.EndYear, 
+	Model.SelectedDay, 
+	Model.SelectedMonth, 
+	Model.SelectedYear, 
+	true, 
+	Model.IsDisabled)

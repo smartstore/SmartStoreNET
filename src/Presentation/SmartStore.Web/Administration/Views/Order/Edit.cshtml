@@ -13,7 +13,7 @@
 			<a href='@Url.Action("List")'>(@T("Admin.Orders.BackToList"))</a>
         </div>
         <div class="options">
-			@Html.Widget("admin_button_toolbar_before")
+			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
             <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = false })" target="print" class="btn print-order-button" rel="nofollow">
                 <i class="fa fa-print"></i>
@@ -32,12 +32,12 @@
 			</button>
             <input type="submit" id="btnRefreshPage" name="btnRefreshPage" style="display: none" />
 
-			@Html.Widget("admin_button_toolbar_after")
+			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
-    
+
     @Html.ValidationSummary(false)
-    
+
     @Html.SmartStore().TabStrip().Name("order-edit").Items(x =>
 {
     var tabInfo = x.Add().Text(T("Admin.Orders.Info").Text).Content(TabInfo()).Selected(true);
@@ -734,6 +734,16 @@
 			</tr>
         }
 
+		@if (Model.DisplayCompletePaymentNote)
+		{
+			<tr>
+				<td colspan="2">
+					<div class="alert alert-warning">
+						@Html.Raw(T("Order.CompletePayment.AdminNote", Url.Action("Details", "Order", new { id = Model.Id, area = "" })))
+					</div>
+				</td>
+			</tr>
+		}
         @if (Model.DisplayPurchaseOrderNumber)
         {
             <tr>
@@ -843,13 +853,13 @@
                 @if (Model.CanPartiallyRefund)
 				{
 					<input type="submit" id="partiallyrefundorder" name="partiallyrefundorder" value="@T("Admin.Orders.Fields.PartialRefund")" class="btn btn-primary"
-						   onclick="javascript:OpenWindow('@(Url.Action("PartiallyRefundOrderPopup", "Order", new { id = Model.Id, online = true, btnId = "btnRefreshPage", formId = "order-form" }))', 960, 320, true); return false;"
+						   onclick="javascript:openPopup('@(Url.Action("PartiallyRefundOrderPopup", "Order", new { id = Model.Id, online = true, btnId = "btnRefreshPage", formId = "order-form" }))'); return false;"
 						   title="@T("Admin.Orders.Fields.PartialRefund.Hint")" />
 				}
                 @if (Model.CanPartiallyRefundOffline)
 				{
 					<input type="submit" id="partiallyrefundorderoffline" name="partiallyrefundorderoffline" value="@T("Admin.Orders.Fields.PartialRefundOffline")" class="btn"
-						   onclick="javascript:OpenWindow('@(Url.Action("PartiallyRefundOrderPopup", "Order", new { id = Model.Id, online = false, btnId = "btnRefreshPage", formId = "order-form" }))', 960, 320, true); return false;" 
+						   onclick="javascript:openPopup('@(Url.Action("PartiallyRefundOrderPopup", "Order", new { id = Model.Id, online = false, btnId = "btnRefreshPage", formId = "order-form" }))'); return false;" 
 						   title="@T("Admin.Orders.Fields.PartialRefundOffline.Hint")" />
 				}
                 @if (Model.CanVoid)
@@ -1510,7 +1520,7 @@
                                                     <a href="@Url.Action("DownloadFile", "Download", new { downloadId = item.LicenseDownloadId.Value })">@T("Admin.Orders.Products.License.DownloadLicense")</a>
                                                     <br />
                                                 }
-                                                <input type="submit" id="pvlicensefile" name="pvlicensefile" value="@T("Admin.Orders.Products.License.UploadFile")" onclick="javascript:OpenWindow('@(Url.Action("UploadLicenseFilePopup", "Order", new { id = Model.Id, orderItemId = item.Id, btnId = "btnRefreshPage", formId = "order-form" }))', 500, 300, true); return false;" class="btn" />
+                                                <input type="submit" id="pvlicensefile" name="pvlicensefile" value="@T("Admin.Orders.Products.License.UploadFile")" onclick="javascript:openPopup('@(Url.Action("UploadLicenseFilePopup", "Order", new { id = Model.Id, orderItemId = item.Id, btnId = "btnRefreshPage", formId = "order-form" }))'); return false;" class="btn" />
                                             </div>
                                         }
                                     </td>
@@ -1831,4 +1841,4 @@
     @Html.Action("GenericAttributes", "Common", new { entityName = "Order", entityId = Model.Id })
 }
 
-@Html.Partial("_AutoUpdateOrderItem", Model.AutoUpdateOrderItem)
+@{ Html.RenderPartial("_AutoUpdateOrderItem", Model.AutoUpdateOrderItem); }

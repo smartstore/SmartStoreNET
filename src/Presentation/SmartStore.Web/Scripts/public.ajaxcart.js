@@ -32,7 +32,7 @@ var AjaxCart = (function ($, window, document, undefined) {
         var cmd = {
             src: el,
             type: el.data("type") || "cart", // or "wishlist" or "compare",
-            action: el.data("action") || "add", // or "remove" or "addfromwishlist"
+            action: el.data("action") || "add", // or "remove" or "addfromwishlist" or "addfromcart"
             href: el.data("href") || el.attr("href"),
             data: undefined // wird weiter unten
         };
@@ -79,7 +79,7 @@ var AjaxCart = (function ($, window, document, undefined) {
             if (cmd.action === "add") {
                 EventBroker.publish("ajaxcart.item.adding", cmd);
             }
-            else if (cmd.action === "addfromwishlist") {
+            else if (cmd.action === "addfromwishlist" || cmd.action === "addfromcart") {
                 EventBroker.publish("ajaxcart.item.adding", cmd);
             }
             else if (cmd.action === "remove") {
@@ -104,7 +104,7 @@ var AjaxCart = (function ($, window, document, undefined) {
                     // success is optional and therefore true by default
                     isSuccess = response.success === undefined ? true : response.success;
 
-                    var msg = cmd.action === "add" || cmd.action === "addfromwishlist" ? "ajaxcart.item.added" : "ajaxcart.item.removed";
+                    var msg = cmd.action === "add" || cmd.action === "addfromwishlist" || cmd.action === "addfromcart" ? "ajaxcart.item.added" : "ajaxcart.item.removed";
                     EventBroker.publish(
                         isSuccess
                             ? msg
@@ -112,7 +112,7 @@ var AjaxCart = (function ($, window, document, undefined) {
                         $.extend(cmd, { response: response })
                     );
 
-                    if (isSuccess && cmd.action === "addfromwishlist") {
+                    if (isSuccess && (cmd.action === "addfromwishlist" || cmd.action === "addfromcart")) {
                         // special case when item was copied/moved from wishlist
                         if (response.wasMoved) {
                             // if an item was MOVED from Wishlist to cart,

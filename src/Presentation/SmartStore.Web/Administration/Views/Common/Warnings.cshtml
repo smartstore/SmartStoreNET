@@ -9,8 +9,9 @@
         @T("Admin.System.Warnings")
     </div>
 </div>
+
 <div class="system-warnings">
-    <ul>
+    <ul class="fa-ul">
         @foreach (var warning in Model)
         {
             <li>
@@ -18,26 +19,20 @@
                 {
                     case SystemWarningLevel.Pass:
                         {
-                            <span class="pass">
-                                <i class="fa fa-check"></i>
-                                @warning.Text
-                            </span>
+                            <i class="fa-li fa fa-check text-success"></i>
+                            @warning.Text
                         }
                         break;
                     case SystemWarningLevel.Warning:
                         {
-                            <span class="warning">
-                                <i class="fa fa-question-circle"></i>
-                                @warning.Text
-                            </span>
-                        }
-                        break;
-                    case SystemWarningLevel.Fail:
-                        {
-                            <span class="fail">
-                                <i class="fa fa-times-circle"></i>
-                                @warning.Text
-                            </span>
+                            <i class="fa-li fa fa-question-circle text-success"></i>
+							<span style="font-weight: 600">@warning.Text</span>
+						}
+						break;
+					case SystemWarningLevel.Fail:
+						{
+                            <i class="fa-li fa fa-exclamation-triangle text-danger"></i>
+							<span style="font-weight: 600" class="text-danger">@warning.Text</span>
                         }
                         break;
                 }

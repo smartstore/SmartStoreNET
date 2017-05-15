@@ -1,0 +1,221 @@
+﻿@using SmartStore.Core.Domain.Catalog;
+@using Telerik.Web.Mvc.UI;
+@model ProductAttributeOptionModel
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.ProductVariantAttributeId)
+@Html.HiddenFor(model => model.ProductAttributeOptionsSetId)
+@Html.HiddenFor(model => model.IsListTypeAttribute)
+
+<table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.ValueTypeId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.ValueTypeId, ((ProductVariantAttributeValueType)Model.ValueTypeId).ToSelectList())
+			@Html.ValidationMessageFor(model => model.ValueTypeId)
+		</td>
+	</tr>
+	<tr id="group-linked-product">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.LinkedProductId)
+		</td>
+		<td class="adminData">
+			@Html.HiddenFor(model => model.LinkedProductId)
+			<div id="linked-product-name">@Model.LinkedProductName</div>
+
+			<button type="button" id="RemoveProductLinkageButton" class="btn btn-below">
+				<i class="fa fa-times"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")
+			</button>
+
+			<button type="button" id="AddProductLinkageButton" class="btn btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
+				<i class="fa fa-link"></i>
+				@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct")
+			</button>
+
+			@Html.ValidationMessageFor(model => model.LinkedProductId)
+		</td>
+	</tr>
+	<tr id="group-quantity">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.Quantity)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.Quantity)
+			@Html.ValidationMessageFor(model => model.Quantity)
+		</td>
+	</tr>
+</table>
+
+<p></p>
+
+@(Html.LocalizedEditor<ProductAttributeOptionModel, ProductAttributeOptionLocalizedModel>("productattribute-localized",
+@<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Locales[item].Name)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => Model.Locales[item].Name)
+            @Html.ValidationMessageFor(model => model.Locales[item].Name)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Locales[item].Alias)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => Model.Locales[item].Alias)
+            @Html.ValidationMessageFor(model => model.Locales[item].Alias)
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.HiddenFor(model => model.Locales[item].LanguageId)
+        </td>
+    </tr>
+</table>
+,
+@<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Name)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </td>
+    </tr>
+	    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Alias)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Alias)
+            @Html.ValidationMessageFor(model => model.Alias)
+        </td>
+    </tr>
+</table>
+))
+<table class="adminContent">
+	@if (Model.IsListTypeAttribute)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PictureId)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.PictureId, new { transientUpload = true })
+				@Html.ValidationMessageFor(model => model.PictureId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Color)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Color)
+				@Html.ValidationMessageFor(model => model.Color)
+			</td>
+		</tr>
+	}
+	<tr id="group-price-adjustment">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PriceAdjustment)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.PriceAdjustment)
+			@Html.ValidationMessageFor(model => model.PriceAdjustment)
+		</td>
+	</tr>
+	<tr id="group-weight-adjustment">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.WeightAdjustment)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.WeightAdjustment)
+			@Html.ValidationMessageFor(model => model.WeightAdjustment)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.IsPreSelected)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.IsPreSelected)
+			@Html.ValidationMessageFor(model => model.IsPreSelected)
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplayOrder)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.DisplayOrder)
+            @Html.ValidationMessageFor(model => model.DisplayOrder)
+        </td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+
+		$('#@Html.FieldIdFor(model => model.ValueTypeId)').change(function () {
+			var selectedValueTypeId = $('#@Html.FieldIdFor(model => model.ValueTypeId)').val();
+
+			if (selectedValueTypeId == '@((int)ProductVariantAttributeValueType.Simple)') {
+				$('#group-linked-product').hide();
+				$('#group-quantity').hide();
+				$('#group-price-adjustment').show();
+				$('#group-weight-adjustment').show();
+			}
+			else if (selectedValueTypeId == '@((int)ProductVariantAttributeValueType.ProductLinkage)') {
+				$('#group-linked-product').show();
+				$('#group-quantity').show();
+				$('#group-price-adjustment').hide();
+				$('#group-weight-adjustment').hide();
+			}
+		}).trigger('change');
+
+		$('#RemoveProductLinkageButton').click(function () {
+			$('#linked-product-name').empty();
+			$('#@Html.FieldIdFor(model => model.LinkedProductId)').val('0');
+			toggleLinkageButtons();
+		});
+
+		toggleLinkageButtons();
+
+		// add product linkage
+		$(document).on('click', '#AddProductLinkageButton', function () {
+			$('#@(Html.FieldIdFor(x => x.LinkedProductId))').entityPicker('loadDialog', {
+				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				caption: '@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew")',
+				maxReturnValues: 1,
+				appendValue: false,
+				disableIds: '@Model.ProductId',
+				onLoadDialogBefore: function () {
+					$('#AddProductLinkageButton').button('loading').prop('disabled', true);
+				},
+				onLoadDialogComplete: function () {
+					$('#AddProductLinkageButton').prop('disabled', false).button('reset');
+				},
+				onOkClicked: function (ids) {
+					var dialog = $('#entity-picker-product-dialog'),
+						item = dialog.find('.entity-picker-list .selected').first();
+
+					$('#linked-product-name').html(item.find('.title').attr('title'));
+					return true;
+				}
+			});
+		});
+
+	});
+
+	function toggleLinkageButtons() {
+		var unlinked = ($('#@Html.FieldIdFor(model => model.LinkedProductId)').val() === '0');
+		$('#AddProductLinkageButton').toggle(unlinked);
+		$('#RemoveProductLinkageButton').toggle(!unlinked);
+	}
+</script>

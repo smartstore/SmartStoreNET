@@ -17,7 +17,6 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Packaging
 {
-	
 	public sealed class AppUpdater : DisposableObject
 	{
 		public const string UpdatePackagePath = "~/App_Data/Update";
@@ -91,7 +90,7 @@ namespace SmartStore.Core.Packaging
 				}
 				catch (Exception ex)
 				{
-					_logger.Error("An error occured while updating the application: {0}".FormatCurrent(ex.Message), ex);
+					_logger.Error(ex, "An error occured while updating the application");
 					return false;
 				}
 			}
@@ -124,7 +123,7 @@ namespace SmartStore.Core.Packaging
 				if (createLogger)
 				{
 					_logger = CreateLogger(package);
-					_logger.Information("Found update package '{0}'".FormatInvariant(package.GetFullName()));
+					_logger.Info("Found update package '{0}'".FormatInvariant(package.GetFullName()));
 				}
 				return package;
 			}
@@ -168,7 +167,7 @@ namespace SmartStore.Core.Packaging
 			if (localTempPath == null)
 			{
 				var exception = new SmartException("Too many backups in '{0}'.".FormatInvariant(tempPath));
-				_logger.Error(exception.Message, exception);
+				_logger.Error(exception);
 				throw exception;
 			}
 
@@ -176,7 +175,7 @@ namespace SmartStore.Core.Packaging
 			var folderUpdater = new FolderUpdater(_logger);
 			folderUpdater.Backup(source, backupFolder, "App_Data", "Media");
 
-			_logger.Information("Backup successfully created in folder '{0}'.".FormatInvariant(localTempPath));
+			_logger.Info("Backup successfully created in folder '{0}'.".FormatInvariant(localTempPath));
 		}
 
 		private PackageInfo ExecuteUpdate(IPackage package)
@@ -208,7 +207,7 @@ namespace SmartStore.Core.Packaging
 				Path = appPath
 			};
 
-			_logger.Information("Update '{0}' successfully executed.".FormatInvariant(info.Name));
+			_logger.Info("Update '{0}' successfully executed.".FormatInvariant(info.Name));
 
 			return info;
 		}
@@ -220,6 +219,8 @@ namespace SmartStore.Core.Packaging
 
 		internal void ExecuteMigrations()
 		{
+			TryMigrateDefaultTenant();	
+
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
 
@@ -238,6 +239,86 @@ namespace SmartStore.Core.Packaging
 
 			DataSettings.Current.AppVersion = currentVersion;
 			DataSettings.Current.Save();
+		}
+
+		private bool TryMigrateDefaultTenant()
+		{
+			// We introduced basic multi-tenancy in V3 [...]
+
+			if (!IsPreTenancyVersion())
+			{
+				return false;
+			}
+
+			var tenantDir = Directory.CreateDirectory(CommonHelper.MapPath("~/App_Data/Tenants/Default"));
+			var tenantTempDir = tenantDir.CreateSubdirectory("_temp");
+			
+			var appDataDir = CommonHelper.MapPath("~/App_Data");
+
+			// Move Settings.txt
+			File.Move(Path.Combine(appDataDir, "Settings.txt"), Path.Combine(tenantDir.FullName, "Settings.txt"));
+
+			// Move InstalledPlugins.txt
+			File.Move(Path.Combine(appDataDir, "InstalledPlugins.txt"), Path.Combine(tenantDir.FullName, "InstalledPlugins.txt"));
+
+			// Move SmartStore.db.sdf
+			var path = Path.Combine(appDataDir, "SmartStore.db.sdf");
+			if (File.Exists(path))
+			{
+				File.Move(path, Path.Combine(tenantDir.FullName, "SmartStore.db.sdf"));
+			}
+
+			Func<string, string, bool> moveTenantFolder = (sourceFolder, targetFolder) => 
+			{
+				var sourcePath = Path.Combine(appDataDir, sourceFolder);
+
+				if (Directory.Exists(sourcePath))
+				{
+					Directory.Move(sourcePath, Path.Combine(tenantDir.FullName, targetFolder ?? sourceFolder));
+					return true;
+				}
+
+				return false;
+			};
+
+			// Move tenant specific Folders
+			moveTenantFolder("ImportProfiles", null);
+			moveTenantFolder("ExportProfiles", null);
+			moveTenantFolder("Indexing", null);
+			moveTenantFolder("Lucene", null);
+			moveTenantFolder("_temp\\BizBackups", null);
+			moveTenantFolder("_temp\\ShopConnector", null);
+
+			// Move all media files and folders to new subfolder "Default"
+			var mediaInfos = (new DirectoryInfo(CommonHelper.MapPath("~/Media"))).GetFileSystemInfos().Where(x => !x.Name.IsCaseInsensitiveEqual("Default"));
+			var mediaFiles = mediaInfos.OfType<FileInfo>();
+			var mediaDirs = mediaInfos.OfType<DirectoryInfo>();
+			var tenantMediaDir = new DirectoryInfo(CommonHelper.MapPath("~/Media/Default"));
+			if (!tenantMediaDir.Exists)
+			{
+				tenantMediaDir.Create();
+			}
+
+			foreach (var file in mediaFiles)
+			{
+				file.MoveTo(Path.Combine(tenantMediaDir.FullName, file.Name));
+			}
+
+			foreach (var dir in mediaDirs)
+			{
+				dir.MoveTo(Path.Combine(tenantMediaDir.FullName, dir.Name));
+			}
+
+			return true;
+		}
+
+		private bool IsPreTenancyVersion()
+		{
+			var appDataDir = CommonHelper.MapPath("~/App_Data");
+
+			return File.Exists(Path.Combine(appDataDir, "Settings.txt"))
+				&& File.Exists(Path.Combine(appDataDir, "InstalledPlugins.txt"))
+				&& !Directory.Exists(Path.Combine(appDataDir, "Tenants\\Default"));
 		}
 
 		private void MigrateInitial()

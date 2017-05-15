@@ -17,6 +17,12 @@ namespace SmartStore.Core.Domain.Seo
 			CanonicalHostNameRule = CanonicalHostNameRule.NoRule;
 			LoadAllUrlAliasesOnStartup = true;
 
+			XmlSitemapEnabled = true;
+			XmlSitemapIncludesCategories = true;
+			XmlSitemapIncludesManufacturers = true;
+			XmlSitemapIncludesProducts = true;
+			XmlSitemapIncludesTopics = true;
+
 			ExtraRobotsDisallows = new List<string> { "/blog/tag/", "/blog/month/", "/producttags/" };
 
 			ReservedUrlRecordSlugs = new List<string>
@@ -88,5 +94,15 @@ namespace SmartStore.Core.Domain.Seo
 		/// A value indicating whether to load all URL records and active slugs on application startup
 		/// </summary>
 		public bool LoadAllUrlAliasesOnStartup { get; set; }
-    }
+
+		#region XML Sitemap
+
+		public bool XmlSitemapEnabled { get; set; }
+		public bool XmlSitemapIncludesCategories { get; set; }
+		public bool XmlSitemapIncludesManufacturers { get; set; }
+		public bool XmlSitemapIncludesProducts { get; set; }
+		public bool XmlSitemapIncludesTopics { get; set; }
+
+		#endregion
+	}
 }

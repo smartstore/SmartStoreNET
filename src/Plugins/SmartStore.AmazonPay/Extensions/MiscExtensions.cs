@@ -59,10 +59,14 @@ namespace SmartStore.AmazonPay.Extensions
 
 		public static AmazonPayCheckoutState GetAmazonPayState(this HttpContextBase httpContext, ILocalizationService localizationService)
 		{
-			AmazonPayCheckoutState state = null;
 			var checkoutState = httpContext.GetCheckoutState();
-			
-			if (checkoutState == null || (state = (AmazonPayCheckoutState)checkoutState.CustomProperties[AmazonPayCore.AmazonPayCheckoutStateKey]) == null)
+
+			if (checkoutState == null)
+				throw new SmartException(localizationService.GetResource("Plugins.Payments.AmazonPay.MissingCheckoutSessionState"));
+
+			var state = checkoutState.CustomProperties.Get(AmazonPayCore.AmazonPayCheckoutStateKey) as AmazonPayCheckoutState;
+
+			if (state == null)
 				throw new SmartException(localizationService.GetResource("Plugins.Payments.AmazonPay.MissingCheckoutSessionState"));
 
 			return state;

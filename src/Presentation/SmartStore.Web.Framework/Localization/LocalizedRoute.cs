@@ -6,6 +6,7 @@ using System.Web.Routing;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.Localization
 {
@@ -16,7 +17,7 @@ namespace SmartStore.Web.Framework.Localization
     {
         #region Fields
 
-        private bool? _seoFriendlyUrlsForLanguagesEnabled;
+        private static bool? _seoFriendlyUrlsForLanguagesEnabled;
 		private string _leftPart;
 
         #endregion
@@ -83,7 +84,7 @@ namespace SmartStore.Web.Framework.Localization
         /// </returns>
         public override RouteData GetRouteData(HttpContextBase httpContext)
         {
-            if (DataSettings.DatabaseIsInstalled() && this.SeoFriendlyUrlsForLanguagesEnabled)
+            if (DataSettings.DatabaseIsInstalled() && SeoFriendlyUrlsForLanguagesEnabled)
             {
                 var helper = new LocalizedUrlHelper(httpContext.Request);
                 if (helper.IsLocalizedUrl())
@@ -120,7 +121,7 @@ namespace SmartStore.Web.Framework.Localization
         {
             VirtualPathData data = base.GetVirtualPath(requestContext, values);
 
-            if (data != null && DataSettings.DatabaseIsInstalled() && this.SeoFriendlyUrlsForLanguagesEnabled)
+            if (data != null && DataSettings.DatabaseIsInstalled() && SeoFriendlyUrlsForLanguagesEnabled)
             {
                 var helper = new LocalizedUrlHelper(requestContext.HttpContext.Request, true);
                 string cultureCode;
@@ -132,10 +133,11 @@ namespace SmartStore.Web.Framework.Localization
 					}
                 }
             }
+
             return data;
         }
 
-        public virtual void ClearSeoFriendlyUrlsCachedValue()
+        public static void ClearSeoFriendlyUrlsCachedValue()
         {
             _seoFriendlyUrlsForLanguagesEnabled = null;
         }
@@ -146,14 +148,21 @@ namespace SmartStore.Web.Framework.Localization
 
         public bool IsClone { get; private set; }
 
-        protected bool SeoFriendlyUrlsForLanguagesEnabled
+        protected internal static bool SeoFriendlyUrlsForLanguagesEnabled
         {
             get
             {
                 if (!_seoFriendlyUrlsForLanguagesEnabled.HasValue)
-                    _seoFriendlyUrlsForLanguagesEnabled = EngineContext.Current.Resolve<LocalizationSettings>().SeoFriendlyUrlsForLanguagesEnabled;
-
-                return _seoFriendlyUrlsForLanguagesEnabled.Value;
+				{
+					try
+					{
+						var enabled = EngineContext.Current.Resolve<LocalizationSettings>().SeoFriendlyUrlsForLanguagesEnabled;
+						_seoFriendlyUrlsForLanguagesEnabled = enabled;
+					}
+					catch { }
+				}
+                    
+                return _seoFriendlyUrlsForLanguagesEnabled ?? false;
             }
         }
 
@@ -169,7 +178,6 @@ namespace SmartStore.Web.Framework.Localization
                 new RouteValueDictionary(this.DataTokens), 
                 new MvcRouteHandler());
             clone.RouteExistingFiles = this.RouteExistingFiles;
-            clone._seoFriendlyUrlsForLanguagesEnabled = this._seoFriendlyUrlsForLanguagesEnabled;
             clone.IsClone = true;
             return clone;
         }

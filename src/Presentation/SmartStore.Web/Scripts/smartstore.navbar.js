@@ -35,7 +35,7 @@
             inner.css("height", inner.data("initial-height"));
 
             var adjustHeight = function (el, height, animate) {
-                if (Modernizr.csstransitions || !animate) {
+                if (!animate) {
                     el.height(height);
                 }
                 else {

@@ -1,0 +1,33 @@
+﻿@{ 
+	var clientResKeys = new[]
+	{
+		"Common.Notification",
+		"Products.Longdesc.More",
+		"Products.Longdesc.Less",
+		"Jquery.Validate.Email",
+		"Jquery.Validate.Required",
+		"Jquery.Validate.Remote",
+		"Jquery.Validate.Url",
+		"Jquery.Validate.Date",
+		"Jquery.Validate.DateISO",
+		"Jquery.Validate.Number",
+		"Jquery.Validate.Digits",
+		"Jquery.Validate.Creditcard",
+		"Jquery.Validate.Equalto",
+		"Jquery.Validate.Maxlength",
+		"Jquery.Validate.Minlength",
+		"Jquery.Validate.Rangelength",
+		"jquery.Validate.Range",
+		"Jquery.Validate.Max",
+		"Jquery.Validate.Min",
+	};
+}
+
+<script>
+	window.Res = {
+		@foreach (var key in clientResKeys)
+		{
+			@Html.Raw("\"{0}\": {1},\n".FormatCurrentUI(key, T(key).Text.EncodeJsString()))
+		}
+	};
+</script>

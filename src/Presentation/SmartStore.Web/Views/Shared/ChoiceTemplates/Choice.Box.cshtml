@@ -1,0 +1,44 @@
+﻿@model ChoiceModel
+
+@using SmartStore.Web.Framework.UI.Choices;
+
+@{ 
+	var controlId = Model.BuildControlId();
+	var items = Model.Values ?? new List<ChoiceItemModel>();
+}
+
+<div class="choice-boxes" id="choice-boxes-@Model.Id">
+	<ul class="choice-box-group">
+		@foreach (var item in items)
+		{
+			string css = null;
+
+			var hasColor = item.Color.HasValue() && item.Color != "transparent";
+			if (hasColor)
+			{
+				css = "background-color: " + item.Color + ";";
+			}
+
+			if (item.ImageUrl.HasValue())
+			{
+				css += "background-image: url('" + item.ImageUrl + "');";
+			}
+
+			<li class="choice-box@(item.IsPreSelected ? " selected" : "")@(item.IsDisabled ? " disabled" : "")">
+				<label class="choice-box-label">
+					<input type="radio" class="choice-box-control-native" id="@(controlId)_@(item.Id)" name="@(controlId)" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
+					<span class="choice-box-content tooltip-toggle" title="@item.GetItemLabel()">
+						<span class="choice-box-element" @Html.Attr("style", css, css.HasValue())>
+							@if (!css.HasValue())
+							{
+								<span class="choice-box-text">@item.Name</span>
+							}
+						</span>
+					</span>
+				</label>
+			</li>
+		}
+	</ul>
+</div>
+
+

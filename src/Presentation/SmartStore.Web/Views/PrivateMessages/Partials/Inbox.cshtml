@@ -1,0 +1,111 @@
+﻿@model PrivateMessageListModel
+@using SmartStore.Web.Models.PrivateMessages;
+@using SmartStore.Web.Framework.UI;
+
+<div class="private-messages-box">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#select-all-inbox').click(function () {
+                $('#pm-inbox-table .rowcheckbox').attr('checked', $(this).is(':checked')).change();
+            });
+
+            $(document).on('change', '#pm-inbox-table .rowcheckbox', function (e) {
+                var numChkBoxes = $('#pm-inbox-table .rowcheckbox').length;
+                var numChkBoxesChecked = $('#pm-inbox-table .rowcheckbox:checked').length;
+                $('#select-all-inbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+            });
+        });
+    </script>
+    @if (Model.Messages.Count > 0)
+    {
+        using (Html.BeginForm("InboxUpdate", (string)null))
+        {
+            <table class="table table-responsive" cellspacing="0" cellpadding="4" id="pm-inbox-table">
+                <colgroup>
+                    <col width="5%" />
+                    <col width="20%" />
+                    <col width="50%" />
+                    <col width="25%" />
+                </colgroup>
+                <thead>
+                    <tr class="pm-grid-header-style">
+                        <th class="a-center">
+                            <input type="checkbox" id="select-all-inbox" />
+                        </th>
+                        <th class="a-center">
+                            @T("PrivateMessages.Inbox.FromColumn")
+                        </th>
+                        <th class="a-center">
+                            @T("PrivateMessages.Inbox.SubjectColumn")
+                        </th>
+                        <th class="a-center">
+                            @T("Common.Date")
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Messages.Count; i++)
+                    {
+                        var item = Model.Messages[i];
+
+                        <tr class="@((item.IsRead) ? "pm-read" : "pm-unread")">
+                            <td class="a-center">
+                                <input type="checkbox" name="pm@(item.Id)" class="rowcheckbox" />
+                            </td>
+                            <td class="a-left">
+                                @if (item.AllowViewingFromProfile)
+                                {
+                                    @Html.RouteLink(item.CustomerFromName, "CustomerProfile", new { Id = item.FromCustomerId })
+                                }
+                                else
+                                {
+                                    @item.CustomerFromName
+                                }
+                            </td>
+                            <td class="a-left">
+                                @Html.ActionLink(item.Subject, "View", new { id = item.Id }, new { @class = (item.IsRead) ? "pm-read" : "pm-unread" })
+                            </td>
+                            <td class="a-left">
+                                @item.CreatedOn
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            if (Model.TotalPages > 1)
+            {
+                @Html.SmartStore().Pager(Model).Name("paginator").Route("PrivateMessages", ViewData["PagerRouteValues"])
+            }
+
+            <div class="buttons row xs-gutters">
+                <div class="col col-lg-auto col-12 mt-2">
+                    <button class="btn btn-danger btn-block" name="delete-inbox" value="delete-inbox" type="submit">
+                        <i class="fa fa-trash-o"></i>
+                        <span>@T("PrivateMessages.Inbox.DeleteSelected")</span>
+                    </button>
+                </div>
+                <div class="col col-lg-auto col-12 mt-2">
+                    <button class="btn btn-secondary btn-block" name="mark-unread" value="mark-unread" type="submit">
+                        @T("PrivateMessages.Inbox.MarkAsUnread")
+                    </button>
+                </div>
+            </div>
+
+        }
+    }
+    else
+    {
+        <div class="no-items text-center p-5">
+            <h4 class="no-item-title">
+                @T("PrivateMessages.NoInboxItems.Title")
+            </h4>
+            <p class="no-item-icon">
+                <i class="fa fa-inbox fa-4x"></i>
+            </p>
+            <p class="no-item-info text-muted">
+                @T("PrivateMessages.NoInboxItems.Info")
+            </p>
+        </div>
+    }
+</div>

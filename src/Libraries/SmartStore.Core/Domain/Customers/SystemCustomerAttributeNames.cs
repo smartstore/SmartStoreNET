@@ -4,6 +4,7 @@ namespace SmartStore.Core.Domain.Customers
     public static partial class SystemCustomerAttributeNames
     {
         //Form fields
+        public static string Title { get { return "Title"; } }
         public static string FirstName { get { return "FirstName"; } }
         public static string LastName { get { return "LastName"; } }
         public static string Gender { get { return "Gender"; } }
@@ -46,8 +47,7 @@ namespace SmartStore.Core.Domain.Customers
 		public static string OfferedShippingOptions { get { return "OfferedShippingOptions"; } }
 		public static string LastContinueShoppingPage { get { return "LastContinueShoppingPage"; } }
 		public static string NotifiedAboutNewPrivateMessages { get { return "NotifiedAboutNewPrivateMessages"; } }
-		public static string WorkingDesktopThemeName { get { return "WorkingDesktopThemeName"; } }
-        public static string DontUseMobileVersion { get { return "DontUseMobileVersion"; } }
+		public static string WorkingThemeName { get { return "WorkingThemeName"; } }
 		public static string TaxDisplayTypeId { get { return "TaxDisplayTypeId"; } }
 		public static string UseRewardPointsDuringCheckout { get { return "UseRewardPointsDuringCheckout"; } }
     }

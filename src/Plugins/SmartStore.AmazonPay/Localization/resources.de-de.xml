@@ -43,9 +43,6 @@ Textvorschläge:<ul>
 			<![CDATA[<p>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Payments zurückgewiesen. Bitte kontaktieren Sie uns.</p>]]>
 		</Value>
 	</LocaleResource>
-	<LocaleResource Name="SelectionText">
-		<Value>oder</Value>
-	</LocaleResource>
 	<LocaleResource Name="AmazonPaymentsReports">
 		<Value>Amazon Payments meldet</Value>
 	</LocaleResource>

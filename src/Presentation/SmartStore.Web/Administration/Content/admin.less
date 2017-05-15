@@ -218,7 +218,7 @@ header {
 	border-left-color: #ccc;
 }
 
-#navbar .nav > li > a {
+#navbar .navbar-nav > li > a {
 	max-height: @navbarHeight - 12;
 	min-width: 40px;
 	max-width: 80px;
@@ -254,7 +254,7 @@ header {
 	}
 }
 
-#navbar .nav > li:hover > a {
+#navbar .navbar-nav > li:hover > a {
 	background: rgba(255,255,255, .15);
 	.opacity(100);
 }
@@ -883,6 +883,14 @@ td.adminSeparator hr {
     padding: 0;
 }
 
+.section-header .options .plugin-actions {
+	display: inline-block;
+}
+
+.plugin-config-container .plugin-actions {
+	display: none;
+}
+
 .plugin-configuration {
 	display: table;
 	width: 100%;
@@ -1170,39 +1178,12 @@ table.order-edit td {
 
 
 /* WARNINGS */
-.system-warnings ul {
-    padding-left: 5px;
-}
-.system-warnings .inprogress, .system-warnings .pass, .system-warnings .fail, .system-warnings .warning {
-    padding-left: 40px;
-    display: block;
-    min-height: 35px;
-    font-size: 120%;
-    vertical-align: middle;
-}
-.system-warnings .fa {
-	font-size: 22px;
-}
-.system-warnings .pass .fa {
-	color: @green;
-}
-.system-warnings .warning .fa {
-	color: @yellow;
-}
-.system-warnings .fail .fa {
-	color: @red;
+.system-warnings {
+	font-size: 1.2em;
 }
 
-.system-warnings .error {
-    color: Red;
-}
-.system-warnings .suggestion {
-    color: Red;
-    font-style: italic;
-    font-size: 120%;
-}
-.system-warnings ul {
-    list-style: none;
+.system-warnings li {
+	margin-bottom: 0.8em;
 }
 
 
@@ -1424,6 +1405,16 @@ table.payment-method-features td {
 	}
 }
 
+.theme-editor {
+	.form-control {
+		width: 400px;
+	}
+
+	.colorpicker-component .form-control {
+		width: 372px;
+	}
+}
+
 .themevar-chain-info {
 	color: #bbb;
 	margin-left: 10px;
@@ -1454,85 +1445,91 @@ table.payment-method-features td {
 
 /* On/Off switch button
 -------------------------------------------------------------- */
-.onoffswitch-container {
+
+.switch {
+	position: relative;
 	display: inline-block;
-	margin: 1px 2px 0 0;
-    vertical-align: middle;
-}
-
-.onoffswitch {
-    position: relative;
-    width: 60px;
-    .user-select(none);
-}
-
-.onoffswitch-checkbox {
-    display: none !important;
-}
-
-.onoffswitch-label {
-    display: block;
-    overflow: hidden;
-    cursor: pointer;
-    border: 1px solid #969696;
-    border-radius: 4px;
-    height: 14px;
-    padding: 0;
-    margin: 0;
-}
-
-.onoffswitch-inner {
-    width: 200%;
-    margin-left: -100%;
-}
-
-.onoffswitch-on, .onoffswitch-off {
-    float: left;
-    width: 50%;
-    height: 15px;
-    line-height: 15px;
-    padding: 0;
-    color: #fff; 
-    font-size: 10px; 
-    font-weight: normal;
-	text-align: center;
 	vertical-align: middle;
-    .box-sizing(border-box);
+	margin: 0;
+	padding: 0;
+	user-select: none;
+
+	> .switch-toggle {
+		position: relative;
+		display: inline-block;
+		vertical-align: middle;
+		width: 45px;
+		height: 20px;
+		border-radius: 20px;
+		background-color: #f2f2f2;
+		border: 1px solid rgba(0,0,0, 0.15);
+		box-sizing: border-box;
+		cursor: pointer;
+		transition: background-color 0.4s cubic-bezier(.54,1.85,.5,1);
+
+		&:before {
+			position: absolute;
+			left: 1px;
+			top: 1px;
+			content: ' ';
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background-color: #fff;
+			box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+			transition: left 0.4s cubic-bezier(.54,1.85,.5,1);
+		}
+
+		&:after {
+			position: absolute;
+			display: inline-block;
+			box-sizing: border-box;
+			width: 27px;
+			height: 100%;
+			padding: 3px;
+			vertical-align: middle;
+			text-transform: lowercase;
+			font-size: 10px;
+			line-height: 100%;
+			text-align: center;
+
+			content: 'Aus';
+			content: attr(data-off);
+			color: #bbb;
+			left: auto;
+			right: 0;
+		}
+	}
+
+	> input[type=checkbox] {
+		position: absolute;
+		z-index: 0;
+		opacity: 0;
+	}
+
+	> input[type=checkbox]:checked ~ .switch-toggle {
+		background-color: @orange;
+
+		&:before {
+			left: 26px;
+		}
+
+		&:after {
+			content: 'An';
+			content: attr(data-on);
+			color: rgba(255,255,255, 0.75);
+			left: 0;
+			right: auto;
+		}
+	}
 }
 
-.onoffswitch-on {
-    background-color: @orange;
-    color: #fff;
+.multi-store-override-switch {
+	margin-right: 8px;
 }
 
-.onoffswitch-off {
-    background-color: #fff;
-    color: #bbb;
-}
 
-.onoffswitch-switch {
-    width: 30px;
-	box-sizing: border-box;
-    margin: 0;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 30px;
-    background: #fff;
-    border: 1px solid #969696;
-    .border-radius(4px 0 0 4px);
-    .transition(all 0.05s ease-in);
-    #gradient > .vertical(#dddddd, #ffffff);
-}
 
-.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
-    margin-left: 0;
-}
-
-.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
-    right: 0; 
-	.border-radius(0 4px 4px 0);
-}
 #pnlAllFlags a.flag {
     min-width: 100px;
     display: inline-block;
@@ -1557,7 +1554,7 @@ table.payment-method-features td {
 		font-weight: bold;
 		max-width: 300px;
 		display: inline-block;
-		.ellipsis();
+		.text-overflow();
 	}
 }
 
@@ -1609,7 +1606,7 @@ table.payment-method-features td {
 	font-size: 0.9em;
 }
 .mapping-list-item {
-	.ellipsis();
+	.text-overflow();
 }
 
 .column-mapping {
@@ -1664,4 +1661,135 @@ table.payment-method-features td {
 			}
 		}
 	}
+}
+
+//
+// Choice Boxes
+// TODO: (mc) DELETE this stuff after SASSifying the backend theme,
+// 'cause choice-boxes are already contained in shared scss files.
+// ================================================================
+
+.choice-box-group {
+  padding: 0;
+  list-style-type: none;
+  position: relative;
+  margin: 0 -0.4rem;
+  box-sizing: border-box;
+
+  * { box-sizing: border-box }
+}
+
+.choice-box-group::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.choice-box-group .choice-box {
+  position: relative;
+  float: left;
+  display: block;
+  padding: 0.2rem;
+}
+
+.choice-box-group .choice-box-label {
+  margin: 0;
+}
+
+.choice-box-group .choice-box-content {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.choice-box-group .choice-box-element {
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background-color: #fff;
+  -webkit-transition: border-color 0.1s linear;
+  transition: border-color 0.1s linear;
+  height: 2.8rem;
+  line-height: 2.8rem;
+  min-width: 2.8rem;
+  vertical-align: middle;
+  text-align: center;
+  overflow: hidden;
+  font-weight: 600;
+}
+
+.choice-box-group .choice-box-element:hover {
+  border-color: rgba(0, 0, 0, 0.7);
+}
+
+.choice-box-group .choice-box-element .choice-box-img {
+  display: block;
+  position: relative;
+  max-width: ~"calc(2.8rem - 4px)";
+  max-height: ~"calc(100% - 4px)";
+  margin: auto;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.choice-box-group .choice-box-element .choice-box-text {
+  padding: 0 0.4rem;
+}
+
+.choice-box-control-native:checked + .choice-box-content:after {
+  box-sizing: content-box;
+  position: absolute;
+  z-index: 1;
+  display: block;
+  right: -6px;
+  top: -6px;
+  background-color: #ff9800;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  vertical-align: middle;
+  font-family: FontAwesome;
+  content: "\f00c";
+  color: #fff;
+  font-size: 10px;
+}
+
+.choice-box-control-native:checked + .choice-box-content .choice-box-element {
+  border-color: rgba(0, 0, 0, 0.7);
+}
+
+.choice-box-group .choice-box-control-native {
+  display: none !important;
+}
+
+.choice-box-group.choice-box-group-xl .choice-box-element {
+  height: 6rem;
+  line-height: 6rem;
+  min-width: 6rem;
+  .choice-box-img { max-width: ~"calc(6rem - 8px)"; }
+}
+
+.choice-box-group.choice-box-group-lg .choice-box-element {
+  height: 4rem;
+  line-height: 4rem;
+  min-width: 4rem;
+  .choice-box-img { max-width: ~"calc(4rem - 6px)"; }
+}
+
+.choice-box-group.choice-box-group-sm .choice-box-element {
+  height: 1.5rem;
+  line-height: 1.5rem;
+  min-width: 1.5rem;
+  .choice-box-img { max-width: ~"calc(1.5rem - 4px)"; }
+}
+
+
+
+/* Bootstrap 4 fixes 
+-------------------------------------------------------------- */
+.bootstrap-datetimepicker-widget th.switch {
+  display: table-cell;
 }

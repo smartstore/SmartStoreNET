@@ -1,0 +1,56 @@
+﻿@model ShoppingCartModel.DiscountBoxModel
+
+@using SmartStore.Web.Models.ShoppingCart;
+
+@{ 
+	if (!Model.Display)
+	{
+		return;
+	}
+
+	var isExpanded = Model.Message.HasValue() || Model.CurrentCode.HasValue();
+}
+
+<div class="cart-action cart-action-coupon">
+    <h5 class="cart-action-title@(isExpanded ? "" : " collapsed")" data-toggle="collapse" data-target="#cart-action-coupon-body" aria-controls="cart-action-coupon-body" aria-expanded="@isExpanded">
+		@T("ShoppingCart.DiscountCouponCode")
+	</h5>
+        
+    <div class="cart-action-body collapse@(isExpanded ? " show" : "")" id="cart-action-coupon-body" aria-expanded="@isExpanded">
+        @if (Model.Message.HasValue())
+        {
+            <div class="alert @(Model.IsWarning ? "alert-danger" : "alert-success") fade show">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                @Model.Message
+            </div>
+        }
+
+        <div class="coupon-code form-group">
+            <div class="input-group@(Model.CurrentCode.HasValue() ? " has-success" : "")">
+                <input name="discountcouponcode" type="text" class="form-control form-control-success discount-coupon-code" value="@Model.CurrentCode" placeholder="@T("ShoppingCart.DiscountCouponCode.Tooltip")" />
+				<span class="input-group-btn">
+					@if (Model.CurrentCode.HasValue())
+					{
+						<button type="submit"
+								class="btn btn-danger remove-discount-button"
+								name="removediscountcouponcode"
+								value="removediscountcouponcode">
+							<span>@T("Common.Remove")</span>
+						</button>
+					}
+					else
+					{
+						<button type="submit"
+								class="btn btn-primary apply-discount-coupon-code-button"
+								title="@T("ShoppingCart.DiscountCouponCode.Button")"
+								name="applydiscountcouponcode"
+								value="applydiscountcouponcode">
+							<i class="fa fa-check"></i>
+							<span>@T("ShoppingCart.DiscountCouponCode.Button")</span>
+						</button>
+					}
+				</span>
+            </div>
+        </div>
+    </div>
+</div>

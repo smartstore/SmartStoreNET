@@ -7,7 +7,6 @@ using SmartStore.Services;
 
 namespace SmartStore.Web.Framework.Plugins
 {
-	
 	public partial class ProviderManager : IProviderManager
 	{
 		private readonly IComponentContext _ctx;
@@ -40,12 +39,13 @@ namespace SmartStore.Web.Framework.Plugins
 				SetUserData(provider.Metadata);
 				return new Provider<TProvider>(provider);
 			}
+
 			return null;
 		}
 
 		public Provider<IProvider> GetProvider(string systemName, int storeId = 0)
 		{
-			Guard.ArgumentNotEmpty(() => systemName);
+			Guard.NotEmpty(systemName, nameof(systemName));
 
 			var provider = _ctx.ResolveOptionalNamed<Lazy<IProvider, ProviderMetadata>>(systemName);
 			if (provider != null)

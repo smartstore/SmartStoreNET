@@ -11,7 +11,6 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public abstract class NavigationItemBuilder<TItem, TBuilder> : IHideObjectMembers
         where TItem : NavigationItem
         where TBuilder : NavigationItemBuilder<TItem, TBuilder>
@@ -19,7 +18,7 @@ namespace SmartStore.Web.Framework.UI
 
         protected NavigationItemBuilder(TItem item)
         {
-            Guard.ArgumentNotNull(() => item);
+            Guard.NotNull(item, nameof(item));
 
             this.Item = item;
         }
@@ -140,7 +139,13 @@ namespace SmartStore.Web.Framework.UI
             return (this as TBuilder);
         }
 
-        public TBuilder Badge(string value, BadgeStyle style = BadgeStyle.Default, bool condition = true)
+		public TBuilder Summary(string value)
+		{
+			this.Item.Summary = value;
+			return (this as TBuilder);
+		}
+
+		public TBuilder Badge(string value, BadgeStyle style = BadgeStyle.Default, bool condition = true)
         {
             if (condition)
             {
@@ -178,7 +183,6 @@ namespace SmartStore.Web.Framework.UI
         {
             return this.Item;
         }
-
     }
 
     public abstract class NavigationItemtWithContentBuilder<TItem, TBuilder> : NavigationItemBuilder<TItem, TBuilder>
@@ -189,7 +193,7 @@ namespace SmartStore.Web.Framework.UI
         public NavigationItemtWithContentBuilder(TItem item, HtmlHelper htmlHelper)
             : base(item)
         {
-            Guard.ArgumentNotNull(() => htmlHelper);
+            Guard.NotNull(htmlHelper, nameof(htmlHelper));
 
             HtmlHelper = htmlHelper;
         }

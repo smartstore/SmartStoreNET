@@ -6,17 +6,19 @@ using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Price calculation service
-    /// </summary>
-    public partial interface IPriceCalculationService
+	/// <summary>
+	/// Price calculation service
+	/// </summary>
+	public partial interface IPriceCalculationService
     {
 		/// <summary>
 		/// Creates a price calculation context
 		/// </summary>
 		/// <param name="products">Products. <c>null</c> to lazy load data if required.</param>
+		/// <param name="customer">Customer, <c>null</c> to use current customer.</param>
+		/// <param name="storeId">Store identifier, <c>null</c> to use current store.</param>
 		/// <returns>Price calculation context</returns>
-		PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null);
+		PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null, Customer customer = null, int? storeId = null);
 
 		/// <summary>
 		/// Get product special price (is valid)
@@ -101,28 +103,31 @@ namespace SmartStore.Services.Catalog
 		/// Get the lowest possible price for a product.
 		/// </summary>
 		/// <param name="product">Product</param>
+		/// <param name="customer">The customer</param>
 		/// <param name="context">Object with cargo data for better performance</param>
 		/// <param name="displayFromMessage">Whether to display the from message.</param>
 		/// <returns>The lowest price.</returns>
-		decimal GetLowestPrice(Product product, PriceCalculationContext context, out bool displayFromMessage);
+		decimal GetLowestPrice(Product product, Customer customer, PriceCalculationContext context, out bool displayFromMessage);
 
 		/// <summary>
 		/// Get the lowest price of a grouped product.
 		/// </summary>
 		/// <param name="product">Grouped product</param>
+		/// <param name="customer">The customer</param>
 		/// <param name="context">Object with cargo data for better performance</param>
 		/// <param name="associatedProducts">Products associated to product</param>
 		/// <param name="lowestPriceProduct">The associated product with the lowest price</param>
 		/// <returns>The lowest price.</returns>
-		decimal? GetLowestPrice(Product product, PriceCalculationContext context, IEnumerable<Product> associatedProducts, out Product lowestPriceProduct);
+		decimal? GetLowestPrice(Product product, Customer customer, PriceCalculationContext context, IEnumerable<Product> associatedProducts, out Product lowestPriceProduct);
 
 		/// <summary>
 		/// Get the initial price including preselected attributes
 		/// </summary>
 		/// <param name="product">Product</param>
+		/// <param name="customer">The customer</param>
 		/// <param name="context">Object with cargo data for better performance</param>
 		/// <returns>Preselected price</returns>
-		decimal GetPreselectedPrice(Product product, PriceCalculationContext context);
+		decimal GetPreselectedPrice(Product product, Customer customer, PriceCalculationContext context);
 
 		/// <summary>
 		/// Gets the product cost

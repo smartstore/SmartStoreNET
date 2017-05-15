@@ -1,41 +1,30 @@
 ﻿@model CustomerAddressEditModel
-@using SmartStore.Web.Models.Customer;
-@{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
-    //title
-    Html.AddTitleParts(T("PageTitle.Account").Text);
+@using SmartStore.Web.Models.Customer;
+
+@{
+	Html.AddTitleParts(T("PageTitle.Account").Text);
+
+	Layout = "_MyAccount";
+	ViewBag.PageClassToken = "addresses";
+	ViewBag.PageTitle = T("Account.CustomerAddresses.AddNew").Text;
 }
-@section left
-{
-    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
-}
+
 @using (Html.BeginForm())
 {
-    <div class="page account-page address-edit-page">
-        <div class="page-title">
-            <h1>@T("Account.MyAccount") - @T("Account.CustomerAddresses.AddNew")</h1>
-        </div>
-        <div class="clear">
-        </div>
-        <div class="page-body">
-            @{
-                var dataDictAddress = new ViewDataDictionary();
-                //Merge ModelState (required for validation)
-                dataDictAddress.ModelState.Merge(ViewData.ModelState);
-                dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
-                @Html.Partial("_CreateOrUpdateAddress", Model.Address, dataDictAddress)              
-            }
-            <div class="clear">
-            </div>
+	var dataDictAddress = new ViewDataDictionary();
+	dataDictAddress["breakpoint"] = "lg";
+	//Merge ModelState (required for validation)
+	dataDictAddress.ModelState.Merge(ViewData.ModelState);
+	dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
+	Html.RenderPartial("_CreateOrUpdateAddress", Model.Address, dataDictAddress);
 
-            <div class="buttons form-horizontal">
-                <div class="control-group">
-                    <div class="controls">
-                        <button type="submit" class="btn save-address-button">@T("Common.Save")</button>
-                    </div>
-                </div>
-            </div>
+    <div class="form-group row">
+        <div class="col">
+            <button type="submit" class="btn btn-primary btn-lg save-address-button">
+                <i class="fa fa-check"></i>
+                <span>@T("Common.Save")</span>
+            </button>
         </div>
     </div>
 }

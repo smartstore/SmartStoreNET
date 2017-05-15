@@ -22,14 +22,14 @@ namespace SmartStore.Services.DataExchange
 
 		public void InsertSyncMapping(SyncMapping mapping)
 		{
-			Guard.ArgumentNotNull(() => mapping);
+			Guard.NotNull(mapping, nameof(mapping));
 
 			_syncMappingsRepository.Insert(mapping);
 		}
 
 		public void InsertSyncMappings(IEnumerable<SyncMapping> mappings)
 		{
-			Guard.ArgumentNotNull(() => mappings);
+			Guard.NotNull(mappings, nameof(mappings));
 
 			_syncMappingsRepository.InsertRange(mappings);
 		}
@@ -53,9 +53,9 @@ namespace SmartStore.Services.DataExchange
 
 		public SyncMapping GetSyncMappingByEntity(int entityId, string entityName, string contextName)
 		{
-			Guard.ArgumentIsPositive(entityId, "entityId");
-			Guard.ArgumentNotEmpty(() => entityName);
-			Guard.ArgumentNotEmpty(() => contextName);
+			Guard.IsPositive(entityId, nameof(entityId));
+			Guard.NotEmpty(entityName, nameof(entityName));
+			Guard.NotEmpty(contextName, nameof(contextName));
 
 			var query = from x in _syncMappingsRepository.Table
 						where 
@@ -69,9 +69,9 @@ namespace SmartStore.Services.DataExchange
 
 		public SyncMapping GetSyncMappingBySource(string sourceKey, string entityName, string contextName)
 		{
-			Guard.ArgumentNotEmpty(() => sourceKey);
-			Guard.ArgumentNotEmpty(() => entityName);
-			Guard.ArgumentNotEmpty(() => contextName);
+			Guard.NotEmpty(sourceKey, nameof(sourceKey));
+			Guard.NotEmpty(entityName, nameof(entityName));
+			Guard.NotEmpty(contextName, nameof(contextName));
 
 			var query = from x in _syncMappingsRepository.Table
 						where
@@ -85,21 +85,21 @@ namespace SmartStore.Services.DataExchange
 
 		public void DeleteSyncMapping(SyncMapping mapping)
 		{
-			Guard.ArgumentNotNull(() => mapping);
+			Guard.NotNull(mapping, nameof(mapping));
 
 			_syncMappingsRepository.Delete(mapping);
 		}
 
 		public void DeleteSyncMappings(IEnumerable<SyncMapping> mappings)
 		{
-			Guard.ArgumentNotNull(() => mappings);
+			Guard.NotNull(mappings, nameof(mappings));
 
 			_syncMappingsRepository.DeleteRange(mappings);
 		}
 
 		public void DeleteSyncMappingsFor<T>(T entity) where T : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
+			Guard.NotNull(entity, nameof(entity));
 
 			if (entity is SyncMapping)
 			{
@@ -116,7 +116,7 @@ namespace SmartStore.Services.DataExchange
 
 		public void DeleteSyncMappings(string contextName, string entityName = null)
 		{
-			Guard.ArgumentNotEmpty(() => contextName);
+			Guard.NotEmpty(contextName, nameof(contextName));
 
 			if (entityName.HasValue())
 			{
@@ -131,7 +131,7 @@ namespace SmartStore.Services.DataExchange
 
 		public void UpdateSyncMapping(SyncMapping mapping)
 		{
-			Guard.ArgumentNotNull(() => mapping);
+			Guard.NotNull(mapping, nameof(mapping));
 
 			mapping.SyncedOnUtc = DateTime.UtcNow;
 			_syncMappingsRepository.Update(mapping);

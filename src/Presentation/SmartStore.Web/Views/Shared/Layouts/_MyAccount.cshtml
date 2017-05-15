@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "_Layout";
+    Html.AddBodyCssClass("myaccount-page");
+}
+
+<div class="page page-myaccount page-myaccount-@ViewBag.PageClassToken">
+	<div class="page-body">
+		<div class="row">
+			<div class="col-md-4 col-lg-3">
+				@{ Html.RenderAction("MyAccountMenu", "Customer", new { selectedItem = ViewBag.PageClassToken }); }
+			</div>
+			<div class="col-md-8 col-lg-9">
+				<div class="page-title pt-4 pt-md-0">
+					<h1 class="h3">@ViewBag.PageTitle</h1>
+				</div>
+
+				@RenderBody()
+			</div>
+		</div>
+	</div>
+</div>
+

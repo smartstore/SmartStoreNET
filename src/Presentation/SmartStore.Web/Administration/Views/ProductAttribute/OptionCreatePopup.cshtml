@@ -1,0 +1,18 @@
+﻿@model ProductAttributeOptionModel
+@{    
+	Layout = "_AdminPopupLayout";
+	ViewBag.Title = T("Common.Options.Add").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Common.Options.Add")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+        </div>
+    </div>
+
+    Html.RenderPartial("_CreateOrUpdateOption", Model);
+}

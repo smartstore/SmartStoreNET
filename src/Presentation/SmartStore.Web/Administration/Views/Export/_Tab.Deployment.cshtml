@@ -124,8 +124,8 @@
 				</thead>
 				<tbody>
 					@foreach (var deployment in Model.Deployments)
-					{
-						var result = deployment.LastResult;
+                    {
+                        var result = deployment.LastResult;
 						<tr class="@(deployment.Enabled ? "" : "disabled")" data-deployment-id="@deployment.Id">
 							<td>
 								<div>
@@ -137,27 +137,27 @@
 							</td>
 							<td>
 								@if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
-								{
+                                {
 									@deployment.FileSystemPath.NaIfEmpty()
-								}
-								else if (deployment.DeploymentType == ExportDeploymentType.Email)
-								{
+                                }
+                                else if (deployment.DeploymentType == ExportDeploymentType.Email)
+                                {
 									@deployment.EmailAddresses.NaIfEmpty()
-								}
-								else if (deployment.DeploymentType == ExportDeploymentType.Http || deployment.DeploymentType == ExportDeploymentType.Ftp)
-								{
+                                }
+                                else if (deployment.DeploymentType == ExportDeploymentType.Http || deployment.DeploymentType == ExportDeploymentType.Ftp)
+                                {
 									@deployment.Url.NaIfEmpty()
-								}
-								else if (deployment.DeploymentType == ExportDeploymentType.PublicFolder)
-								{
+                                }
+                                else if (deployment.DeploymentType == ExportDeploymentType.PublicFolder)
+                                {
 									@deployment.PublicFolderUrl.NaIfEmpty()
-								}
+                                }
 							</td>
 							<td class="ac">
 								@Html.SymbolForBool(deployment.Enabled)
 							</td>
 							<td class="ac">
-								@Html.Partial("ProfileFileCount", deployment.FileCount)
+								@{ Html.RenderPartial("ProfileFileCount", deployment.FileCount); }
 							</td>
 							<td>
 								@if (result == null)

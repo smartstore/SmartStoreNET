@@ -15,6 +15,14 @@ namespace SmartStore.Web.Models.Customer
 		[DataType(DataType.EmailAddress)]
 		public string Email { get; set; }
 
-        public string Result { get; set; }
+        public string ResultMessage { get; set; }
+
+        public PasswordRecoveryResultState ResultState { get; set; }
+    }
+
+    public enum PasswordRecoveryResultState
+    {
+        Success,
+        Error
     }
 }

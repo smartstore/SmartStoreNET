@@ -1,0 +1,221 @@
+/// <reference path="bs4/scss/_variables.scss" />
+
+
+// Theme specific (non-bootstrap) variables
+// ========================================
+
+$boxed:                         false !default;
+$site-bg:                       $gray-lightest !default;
+
+$font-weight-light:             300 !default;
+$font-weight-medium:            600 !default;
+$headings-lg-font-weight:       400 !default;
+
+$header-bg:                     transparent !default;
+$header-color:                  $body-color !default;
+$header-color-muted:            $text-muted !default;
+$header-hover-bg:               rgba(#000, 0.03) !default;
+$header-border-color:           #ddd !default; 
+$header-inverse-color:          #fff !default;
+$header-inverse-color-muted:    rgba(#fff, 0.5) !default;
+$header-inverse-hover-bg:       rgba(#fff, 0.15) !default;
+$header-inverse-border-color:   rgba(#fff, 0.15) !default;
+$header-selected-color:         $brand-warning !default;
+$header-inverse-selected-color: $header-selected-color !default;
+
+$menubar-bg:                    transparent !default;
+$shopbar-bg:                    transparent !default;
+$megamenu-bg:                   $gray-lightest !default;
+$megamenu-navlink-font-size:    1rem !default;
+$megamenu-line-height:          1.8 !default;
+
+$menubar-color:                 lighten($header-color, 8%) !default;
+$menubar-inverse-color:         $header-inverse-color-muted !default;
+$shopbar-color:                 $header-color !default;
+$shopbar-color-muted:           rgba($shopbar-color, 0.5);
+$shopbar-inverse-color:         $header-inverse-color !default;
+$shopbar-inverse-color-muted:   rgba($shopbar-inverse-color, 0.5);
+$megamenu-color:                $header-color !default;
+$megamenu-inverse-color:        $header-inverse-color !default;
+
+$megamenu-dropdown-bg:          #fff !default;
+$megamenu-text-color:           $body-color !default;
+$megamenu-heading-color:        #222 !default;
+$megamenu-subitem-color:        #999 !default;
+$megamenu-rotator-bg:           rgba(255, 255, 255, 0.92) !default;
+
+$searchbox-bg:                  #fff !default;
+$searchbox-focus-bg:            #fff !default;
+$searchbox-border-color:        rgba(0,0,0, 0.12) !default;
+$searchbox-border-active-color: rgba(0,0,0, 0.2) !default;
+$searchbox-hit-tag-color:       darken($brand-warning, 10%) !default;
+
+$footer-bg:                     $gray-lightest !default;
+$footer-color:                  $body-color !default;
+$footer-color-muted:            $text-muted !default;
+$footer-inverse-color:          #fff !default;
+$footer-inverse-color-muted:    rgba(#fff, 0.5) !default;
+
+$footer-social-bg:              #aaa !default;
+$footer-social-color:           #fff !default;
+
+
+// Brand color variables
+
+$clr-brand-facebook:            #3b5998;
+$clr-brand-twitter:             #55acee;
+$clr-brand-github:              #bd2c00;
+$clr-brand-github2:             #ff9933;
+$clr-brand-github3:             #4183c4;
+$clr-brand-google:              #4285f4;
+$clr-brand-google2:             #db4437;
+$clr-brand-google3:             #f4b400;
+$clr-brand-google4:             #0f9d58;
+$clr-brand-google5:             #e7e6dd;
+$clr-brand-googleplus:          #dd4b39;
+$clr-brand-amazon:              #ff9900;
+$clr-brand-atlassian:           #003366;
+$clr-brand-dropbox:             #007ee5;
+$clr-brand-ebay:                #e53238;
+$clr-brand-flickr:              #0063dc;
+$clr-brand-html5:               #ec6231;
+$clr-brand-instagram:           #3f729b;
+$clr-brand-linkedin:            #007bb6;
+$clr-brand-paypal:              #3b7bbf;
+$clr-brand-pinterest:           #cc2127;
+$clr-brand-rss:                 #ee802f;
+$clr-brand-skype:               #00aff0;
+$clr-brand-stackoverflow:       #ef8236;
+$clr-brand-xing:                #126567;
+$clr-brand-youtube:             #cd201f;
+$clr-brand-microsoft:           #f65314;
+$clr-brand-windows:             #00bcf2;
+$clr-brand-bitbucket:           #205081;
+
+
+// Bootstrap variable overrides
+// ========================================
+
+$enable-rounded:                true;
+$enable-shadows:                true;
+$enable-gradients:              false;
+$enable-transitions:            true;
+$enable-hover-media-query:      false;
+$enable-grid-classes:           true;
+
+$spacer: 1rem;
+$spacers: (
+    0: 0,
+    1: ($spacer * .25),
+    2: ($spacer * .5),
+    3: $spacer,
+    4: ($spacer * 1.5),
+    5: ($spacer * 2.25),
+    6: ($spacer * 3)
+);
+
+$line-height-base:              1.5;
+$line-height-sm:                1.5;
+$line-height-lg:                (4 / 3);
+
+$lead-font-size:                1rem;
+$lead-font-weight:              $font-weight-light;
+$small-font-size:               90%;
+
+$display1-size:                 5.5rem;
+$display2-size:                 5rem;
+$display3-size:                 4.5rem;
+$display4-size:                 3rem;
+
+$display1-weight:               $font-weight-light;
+$display2-weight:               $font-weight-light;
+$display3-weight:               $font-weight-light;
+$display4-weight:               $font-weight-light;
+
+$btn-border-radius:             .125rem;
+$btn-border-radius-lg:          .1875rem;
+$btn-border-radius-sm:          .125rem;
+
+$input-box-shadow:              none;
+$input-box-shadow-focus:        none;
+$input-border-radius:           $btn-border-radius;
+$input-border-radius-lg:        $btn-border-radius-lg;
+$input-border-radius-sm:        $btn-border-radius-sm;
+
+$btn-font-weight:               $font-weight-medium;
+$btn-line-height:               1.5;
+$btn-padding-x:                 1rem;
+$btn-padding-y:                 0.625rem;
+$btn-padding-x-sm:              0.75rem;
+$btn-padding-y-sm:              0.5rem;
+$btn-padding-x-lg:              1.5rem;
+$btn-padding-y-lg:              0.875rem;
+
+$btn-secondary-border:          #ddd;
+$btn-box-shadow:                inset 0 1px 0 rgba(#fff, .15);
+$btn-focus-box-shadow:          0 0 0 2px rgba($brand-primary, .25);
+$btn-active-box-shadow:         inset 0 3px 5px rgba(#000, .125);
+$btn-transition:                box-shadow .12s ease-in-out;
+
+// Equalize input vertical paddings with button paddings
+$input-line-height:             $btn-line-height;
+$input-padding-y:               $btn-padding-y;
+$input-padding-y-sm:            $btn-padding-y-sm;
+$input-padding-y-lg:            $btn-padding-y-lg;
+$input-box-shadow:              none;
+$input-box-shadow-focus:        none;
+
+$input-height:                  (($font-size-base * $input-line-height) + ($input-padding-y * 2));
+$input-height-lg:               (($font-size-lg * $input-line-height) + ($input-padding-y-lg * 2));
+$input-height-sm:               (($font-size-sm * $input-line-height) + ($input-padding-y-sm * 2));
+
+
+// Dropdown
+
+$dropdown-link-hover-color:     darken($gray-dark, 5%);
+$dropdown-link-hover-bg:        $gray-lightest;
+$dropdown-link-active-color:    $dropdown-link-hover-color;
+$dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
+$dropdown-border-color:         rgba(#000, .075);
+
+
+// Pagination
+
+$pagination-color:              $body-color;
+$pagination-bg:                 transparent;
+$pagination-border-color:       #ddd;
+
+$pagination-hover-color:        $pagination-color;
+$pagination-hover-bg:           rgba(0,0,0, 0.06);
+$pagination-hover-border:       #ddd;
+
+$pagination-active-color:       $pagination-color;
+$pagination-active-bg:          transparent;
+$pagination-active-border:      $pagination-border-color;
+
+
+// List Group
+
+$list-group-color:              $body-color;
+$list-group-bg:                 #fff;
+$list-group-border-color:       rgba(#000,.125);
+
+$list-group-active-color:       $list-group-color;
+$list-group-active-bg:          $list-group-bg;
+$list-group-active-border:      $list-group-border-color;
+
+$list-group-link-color:         #636c72;
+$list-group-link-active-color:  $body-color;
+
+// Misc
+
+$card-deck-margin:              10px;
+$alert-border-radius:           0;
+$product-price-color:           $body-color !default;
+$login-box-bg:                  #fcfcfc !default;
+$cart-footer-bg:                $gray-lightest !default;
+$costep-progress-color:         $brand-warning !default;
+$offcanvas-cart-footer:         $brand-success !default;
+$art-active-bg-color:           #fff !default;
+$art-active-border-color:       rgba(0,0,0, 0.2) !default;
+$product-detail-addtocart-box-bg:   $gray-lightest !default;

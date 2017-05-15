@@ -1,49 +1,50 @@
 ﻿@model NewsItemListModel
-@using SmartStore.Web;
 @using SmartStore.Web.Models.News;
 @using SmartStore.Web.Framework.UI;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
-
-    //title
+    Layout = "_Layout";
     Html.AddTitleParts(T("PageTitle.NewsArchive").Text);
 }
+
 <div class="page news-list-page">
-    <div class="page-title">
-        <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("News.RSS.Hint")">
-            <i class="fa fa-rss muted"></i>
-            @T("News.RSS")
-        </a>
-        <h1>@T("News")</h1>
-    </div>
+	<div class="row mb-5">
+		<div class="col">
+			<div class="heading">
+				<h1 class="heading-title fs-h1">@T("News")</h1>
+			</div>
+		</div>
+		<div class="col col-auto">
+			<a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">
+				<i class="fa fa-rss"></i>
+				<span>@T("News.RSS")</span>
+			</a>
+		</div>
+	</div>
 
     <div class="page-body">
-        @Html.Widget("newslist_page_before_items")
+        @{ Html.RenderWidget("newslist_page_before_items"); }
 
-        <div class="news-items">
+        <div class="news-items mb-6">
             @foreach (var item in Model.NewsItems)
             {
-                <div class="news-item">
-                    <h4 class="news-title clearfix">
-                        <a class="news-title" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
-                            @item.Title
-                        </a>
-                        <span class="news-date muted pull-right">
-                           @item.CreatedOn.ToString("D")
-                        </span>
-                    </h4>
-                    <div class="news-details">
-                        @Html.Raw(item.Short)
-                    </div>
-                    <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="read-more">
-                        @T("News.MoreInfo")
-                    </a>
-                </div>
-            }
+				<div class="news-item mb-5">
+					<div class="text-muted small">
+						@item.CreatedOn.ToString("D")
+					</div>
+					<h4 class="news-title">
+						<a class="fs-h5 color-body" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+							@item.Title
+						</a>
+					</h4>
+					<p class="lead mt-2">
+						@Html.Raw(item.Short)
+					</p>
+				</div>
+			}
         </div>
 
-        @Html.SmartStore().Pager(Model.PagingFilteringContext).QueryParam("pagenumber")
+        @Html.SmartStore().Pager(Model.PagingFilteringContext).Alignment(PagerAlignment.Centered).Size(PagerSize.Large).QueryParam("pagenumber")
 
-        @Html.Widget("newslist_page_after_items")
+        @{ Html.RenderWidget("newslist_page_after_items"); }
     </div>
 </div>

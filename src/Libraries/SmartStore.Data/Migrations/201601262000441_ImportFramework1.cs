@@ -211,7 +211,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Order.NoRecurringProducts",
 				"There are no recurring products.",
-				"Keine wiederkehrenden Produkte.");
+                "Keine Abonnements.");
 
 			builder.AddOrUpdate("Order.NotFound",
 				"The order {0} was not found.",

@@ -1,59 +1,42 @@
-﻿@model RecentlyAddedProductsModel
-@{
-    Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+﻿@model ProductSummaryModel
 
-    //title
+@{
+    Layout = "_Layout";
+
     Html.AddTitleParts(T("PageTitle.RecentlyAddedProducts").Text);
 }
-@using SmartStore.Core;
-@using SmartStore.Core.Infrastructure;
+
 @using SmartStore.Web.Models.Catalog;
-@using SmartStore.Services.Catalog;
-@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Framework.UI;
 
 <div class="page recently-added-products-page">
-    <div class="page-title">
-        <a href="@Url.RouteUrl("RecentlyAddedProductsRSS")" class="link-rss" title="@T("Products.NewProducts.RSS.Hint")">
-			<i class="fa fa-rss muted"></i>
-			@T("Products.NewProducts.RSS")
-		</a>
-        <h1>@T("Products.NewProducts")</h1>
-    </div>
+	<div class="row align-items-center">
+		<div class="col">
+			<div class="heading">
+				<h1 class="heading-title">@T("Products.NewProducts")</h1>
+			</div>
+		</div>
 
-    <div class="clear"></div>
+        @{ Html.RenderWidget("recently_added_products_top"); }
+
+		<div class="col col-auto">
+			<a href="@Url.RouteUrl("RecentlyAddedProductsRSS")" class="btn btn-warning" title="@T("Products.NewProducts.RSS.Hint")">
+				<i class="fa fa-rss"></i>
+				<span>@T("Products.NewProducts.RSS")</span>
+			</a>
+		</div>
+	</div>
 
     <div class="page-body">
-
-        @if (Model.Products.Count > 0)
-        {
-            if (Model.PagingFilteringContext.ViewMode == "list")
-            {
-            @*list mode*@
-            <div class="product-list">
-                @foreach (var product in Model.Products)
-                {
-                    <article class="item-box details">
-                        @Html.Partial("_ProductBoxList", product)
-                    </article>
-                }
-            </div>     
-            }
-            else
-            {
-            @*grid mode*@
-            <div class="product-grid">
-                @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
-                    @<article class="item-box">
-                        @Html.Partial("_ProductBox", @item)
-                    </article>
-                ))
-            </div>
-            }     
-        }
-
-        <div class="clear">
-        </div>
-
+		@if (Model.Items.Count > 0)
+		{
+			Html.RenderPartial("Product.List", Model);
+		}
+		else
+		{
+			<div class="alert alert-warning">
+				@T("Common.ListIsEmpty")
+			</div>
+		}
     </div>
 </div>

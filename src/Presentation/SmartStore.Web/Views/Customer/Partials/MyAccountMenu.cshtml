@@ -1,0 +1,106 @@
+﻿@model MyAccountMenuModel     
+	      
+@using SmartStore.Web.Models.Customer;
+
+@{ 
+	var selItem = Model.SelectedItemToken != null ? Model.SelectedItemToken.ToLowerInvariant() : "";
+}
+
+@{ Html.RenderWidget("myaccount_menu_before"); }
+
+<div class="card myaccount-menu">
+    <h5 class="card-header" style="border-bottom: none">
+        @T("Account.Navigation")
+    </h5>
+    <div class="list-group list-group-flush has-icons">  
+        @{ Html.RenderWidget("myaccount_menu_firstitem_before"); }
+
+        @if(!Model.HideInfo)
+        {
+            <a href="@Url.Action("Info", "Customer")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "info" ? " active" : "")">
+                <i class="fa fa-fw fa-user-o list-group-item-icon"></i>
+				<span>@T("Account.CustomerInfo")</span>
+            </a>
+        }
+        @if (!Model.HideAddresses)
+        {
+            <a href="@Url.Action("Addresses", "Customer")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "addresses" ? " active" : "")">
+				<i class="fa fa-fw fa-address-book-o list-group-item-icon"></i>
+				<span>@T("Account.CustomerAddresses")</span>
+            </a>
+		}
+        @if (!Model.HideOrders)
+		{ 
+            <a href="@Url.Action("Orders", "Customer")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "orders" ? " active" : "")">
+				<i class="fa fa-fw fa-file-text list-group-item-icon"></i>
+				<span>@T("Account.CustomerOrders")</span>
+            </a>
+		}
+        @if (!Model.HideReturnRequests)
+		{ 
+            <a href="@Url.Action("ReturnRequests", "Customer")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "returnrequests" ? " active" : "")">
+				<i class="fa fa-fw fa-truck list-group-item-icon"></i>
+				<span>@T("Account.CustomerReturnRequests")</span>
+            </a>
+		}
+        @if (!Model.HideDownloadableProducts)
+		{ 
+            <a href="@Url.Action("DownloadableProducts", "Customer")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "downloads" ? " active" : "")">
+				<i class="fa fa-fw fa-download list-group-item-icon"></i>
+				<span>@T("Account.DownloadableProducts")</span>
+            </a>
+        }
+        @if (!Model.HideBackInStockSubscriptions)
+        { 
+            <a href="@Url.Action("BackInStockSubscriptions")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "backinstock" ? " active" : "")">
+				<i class="fa fa-fw fa-bullhorn list-group-item-icon"></i>
+				<span>@T("Account.BackInStockSubscriptions")</span>
+            </a>
+        }
+        @if (!Model.HideRewardPoints)
+        { 
+            <a href="@Url.Action("RewardPoints")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "rewardpoints" ? " active" : "")">
+				<i class="fa fa-fw fa-certificate list-group-item-icon"></i>
+				<span>@T("Account.RewardPoints")</span>
+            </a>
+        }
+        @if (!Model.HideChangePassword)
+        { 
+            <a href="@Url.Action("ChangePassword")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "changepassword" ? " active" : "")">
+				<i class="fa fa-fw fa-unlock-alt list-group-item-icon"></i>
+				<span>@T("Account.ChangePassword")</span>
+            </a>
+        }
+        @if (!Model.HideAvatar)
+        { 
+            <a href="@Url.Action("Avatar")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "avatar" ? " active" : "")">
+				<i class="fa fa-fw fa-user-circle list-group-item-icon"></i>
+				<span>@T("Account.Avatar")</span>
+            </a>
+        }
+        @if (!Model.HideForumSubscriptions)
+        { 
+            <a href="@Url.Action("ForumSubscriptions")" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "forumsubscriptions" ? " active" : "")">
+				<i class="fa fa-fw fa-bell list-group-item-icon"></i>
+				<span>@T("Account.ForumSubscriptions")</span>
+            </a>
+        }
+        @if (!Model.HidePrivateMessages)
+        {
+            <a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow" class="list-group-item list-group-item-action@(selItem == "privatemessages" ? " active" : "")">
+                <i class="fa fa-fw fa-envelope-o list-group-item-icon"></i>
+                <span>@T("PrivateMessages.Inbox")</span>
+                @if (Model.UnreadMessageCount > 0)
+                {
+                    <span class="badge badge-pill badge-warning ml-2">@Model.UnreadMessageCount</span>
+                }
+            </a>
+        }
+
+        @{ Html.RenderWidget("myaccount_menu_lastitem_after"); }
+    </div>
+</div>
+
+@{ Html.RenderWidget("myaccount_menu_after"); }
+
+@{ Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "MyAccountMenu" }); }

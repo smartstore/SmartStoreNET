@@ -1,0 +1,25 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	if (Model.Items.Count == 0)
+	{
+		return;
+	}
+}
+
+<div class="product-grid recently-viewed-product-grid block block-boxed">
+	<div class="block-title">
+		<h3>@T("Products.RecentlyViewedProducts")</h3>
+	</div>
+	<div class="block-body pt-0">
+		<div class="artlist-carousel">
+			@{
+				// TODO: (mc) Find a generic/smart way to make thumbnails for some mini carousel lists smaller (padding-top: 50% instead of 100% (?))
+				Html.RenderPartial("Product.List", Model);
+			}
+		</div>
+	</div>
+</div>
+

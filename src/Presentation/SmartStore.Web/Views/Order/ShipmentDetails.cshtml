@@ -1,133 +1,103 @@
 ﻿@model ShipmentDetailsModel
-@using SmartStore.Core.Domain.Orders;
+
+@using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Models.Order;
-@using SmartStore.Services.Localization;
 
 @{
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+	Layout = "_Layout";
 
-    Html.AddTitleParts(T("PageTitle.ShipmentDetails").Text);
+	Html.AddTitleParts(T("PageTitle.ShipmentDetails").Text);
 }
+
 <div class="page shipment-details">
     <div class="page-title">
-        <h1>@string.Format(T("Order.Shipments.Information").Text, Model.Id)</h1>
+        <h1 class="h2">
+			@T("Order.Shipments.Information", Model.Id)
+		</h1>
     </div>
 
     <div class="page-body">
-        <div class="overview">
-            <div class="order-id">
-                <strong>
-                    @T("Order.Shipments.Order#")@Model.Order.Id
-                </strong>
-            </div>
-            <div class="shipping-method">@T("Order.Shipments.ShippingMethod"): @Model.Order.ShippingMethod</div>
-            <div class="shipped-date">@T("Order.Shipments.ShippedDate"):
-                @if (Model.ShippedDate.HasValue)
-                {
-                    @Model.ShippedDate.Value.ToString("D")
-                }
-                else
-                {
-                    @T("Order.Shipments.ShippedDate.NotYet")
-                }
-            </div>
-            <div class="delivery-date">@T("Order.Shipments.DeliveryDate"):
-                @if (Model.DeliveryDate.HasValue)
-                {
-                    @Model.DeliveryDate.Value.ToString("D")
-                }
-                else
-                {
-                    @T("Order.Shipments.DeliveryDate.NotYet")
-                }
-            </div>
-            <div class="shipping-method">@T("Order.Shipments.ShippingMethod"): @Model.Order.ShippingMethod</div>
-            @if (!String.IsNullOrEmpty(Model.TrackingNumber))
-            {
-                <div class="tracking-number">@T("Order.Shipments.TrackingNumber"):
-                    @if (!string.IsNullOrEmpty(Model.TrackingNumberUrl))
-                    {
-                        <a href="@Model.TrackingNumberUrl" target="_blank" class="tracking-url" rel="nofollow">@Model.TrackingNumber</a>
-                    }
-                    else
-                    {
-                        @Model.TrackingNumber
-                    }
-                </div>
-            }
-			
-			<p></p>
-            <div class="shipping-address">
-                <div class="section-title">
-                    @T("Order.Shipments.ShippingAddress")
-                </div>
-                <div class="name">
-                    @Model.Order.ShippingAddress.FirstName @Model.Order.ShippingAddress.LastName
-                </div>
-                <div class="email">
-                    @T("Order.Shipments.Email"): @Model.Order.ShippingAddress.Email
-                </div>
-                <div class="phone">
-                    @T("Order.Shipments.Phone"): @Model.Order.ShippingAddress.PhoneNumber
-                </div>
-                <div class="fax">
-                    @T("Order.Shipments.Fax"): @Model.Order.ShippingAddress.FaxNumber</div>
-                @if (!String.IsNullOrEmpty(Model.Order.ShippingAddress.Company))
-                {
-                    <div class="company">
-                        @Model.Order.ShippingAddress.Company
-                    </div>
-                }
-                <div class="address1">
-                    @Model.Order.ShippingAddress.Address1</div>
-                @if (!String.IsNullOrEmpty(Model.Order.ShippingAddress.Address2))
-                {
-                    <div class="address2">
-                        @Model.Order.ShippingAddress.Address2
-                    </div>
-                }
-                <div class="city-state-zip">
-                    @Model.Order.ShippingAddress.City, @Model.Order.ShippingAddress.StateProvinceName
-                    @Model.Order.ShippingAddress.ZipPostalCode</div>
-                @if (!String.IsNullOrEmpty(Model.Order.ShippingAddress.CountryName))
-                {
-                    <div class="country">
-                        @Model.Order.ShippingAddress.CountryName
-                    </div>
-                }
-            </div>
-        </div>
-        <div class="clear"></div>
+		<div class="card card-block shipment-box mb-4">
+			<div class="row">
+				<div class="col-6 col-md-4">
+					<h5>@T("Order.Shipments.Order#")</h5>
+					<p>
+						<a href='@Url.Action("Details", "Order", new { id = Model.Order.Id })'>@Model.Order.Id</a>
+					</p>
+
+					<h5>@T("Order.Shipments.ShippedDate")</h5>
+					<p>
+						@if (Model.ShippedDate.HasValue)
+						{
+							@Model.ShippedDate.Value.ToString("D")
+						}
+						else
+						{
+							<span class="text-muted">@T("Order.Shipments.ShippedDate.NotYet")</span>
+						}
+					</p>
+
+					<h5>@T("Order.Shipments.DeliveryDate")</h5>
+					<p>
+						@if (Model.DeliveryDate.HasValue)
+						{
+							@Model.DeliveryDate.Value.ToString("D")
+						}
+						else
+						{
+							<span class="text-muted">@T("Order.Shipments.DeliveryDate.NotYet")</span>
+						}
+					</p>
+				</div>
+				<div class="col-6 col-md-4">
+					<h5>@T("Order.Shipments.ShippingMethod")</h5>
+					<p>@Model.Order.ShippingMethod</p>
+
+					@if (Model.TrackingNumber.HasValue())
+					{
+						<h5>@T("Order.Shipments.TrackingNumber")</h5>
+						<p>
+							@if (!string.IsNullOrEmpty(Model.TrackingNumberUrl))
+							{
+								<a href="@Model.TrackingNumberUrl" target="_blank" class="tracking-url" rel="nofollow">@Model.TrackingNumber</a>
+							}
+							else
+							{
+								@Model.TrackingNumber
+							}
+						</p>
+					}
+				</div>
+				<div class="col-12 col-md-4">
+					<h5>@T("Order.Shipments.ShippingAddress")</h5>
+					@RenderAddress(Model.Order.ShippingAddress)
+				</div>
+			</div>
+		</div>
 
         @if (Model.Items.Count > 0)
         {
-            <div class="products">
-                <div class="section-title">
-                    @T("Order.Shipments.Product(s)")</div>
-                <div class="clear">
-                </div>
-                <div class="products-box">
-                    <table class="table table-striped table-hover">
-                        @if (Model.ShowSku)
-                        {
-                            <col width="1" />
-                        }
-                        <col />
-                        <col />
+            <fieldset class="content-group">
+				<h4 class="mb-3">@T("Order.Shipments.Product(s)")</h4>
+
+                <div class="products-box table-responsive">
+                    <table class="table table-hover">
+						<colgroup>
+							@if (Model.ShowSku)
+							{
+								<col width="1" />
+							}
+							<col />
+							<col />
+						</colgroup>
                         <thead>
                             <tr>
                                 @if (Model.ShowSku)
                                 {
-                                    <th class="a-center">
-                                        @T("Order.Shipments.Product(s).SKU")
-                                    </th>
+                                    <th>@T("Order.Shipments.Product(s).SKU")</th>
                                 }
-                                <th class="a-center">
-                                    @T("Order.Shipments.Product(s).Name")
-                                </th>
-                                <th class="a-center">
-                                    @T("Order.Shipments.Product(s).Quantity")
-                                </th>
+                                <th>@T("Order.Shipments.Product(s).Name")</th>
+                                <th class="text-center">@T("Order.Shipments.Product(s).Quantity")</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -136,20 +106,18 @@
                                 <tr>
                                     @if (Model.ShowSku)
                                     {
-                                        <td class="a-left">
-                                            @item.Sku
-                                        </td>
+                                        <td>@item.Sku</td>
                                     }
-                                    <td class="a-left">
-                                        <em><a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a></em>
-                                        @if (!String.IsNullOrEmpty(item.AttributeInfo))
+                                    <td>
+                                        <div><a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a></div>
+                                        @if (item.AttributeInfo.HasValue())
                                         {
-                                            <div class="attributes">
+                                            <div class="attributes text-muted mt-1">
                                                 @Html.Raw(item.AttributeInfo)
                                             </div>
                                         }
                                     </td>
-                                    <td class="a-center">
+                                    <td class="text-center">
                                         @item.QuantityShipped
                                     </td>
                                 </tr>
@@ -157,52 +125,32 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div class="clear">
-            </div>
+            </fieldset>
         }
-        <div class="clear">
-        </div>
+
         @if (Model.ShipmentStatusEvents.Count > 0)
         {
             <div class="shipment-status-events">
-                <div class="section-title">
-                    @T("Order.ShipmentStatusEvents")
-                </div>
-                <div class="clear">
-                </div>
-                <div class="shipment-status-events-box">
-                    <table class="table table-striped table-hover">
+				<h4 class="mb-3">@T("Order.ShipmentStatusEvents")</h4>
+
+                <div class="shipment-status-events-box table-responsive">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th class="a-center">
-                                    @T("Order.ShipmentStatusEvents.Event")
-                                </th>
-                                <th class="a-center">
-                                    @T("Order.ShipmentStatusEvents.Location")
-                                </th>
-                                <th class="a-center">
-                                    @T("Order.ShipmentStatusEvents.Country")
-                                </th>
-                                <th class="a-center">
-                                    @T("Common.Date")
-                                </th>
+                                <th>@T("Order.ShipmentStatusEvents.Event")</th>
+                                <th>@T("Order.ShipmentStatusEvents.Location")</th>
+                                <th>@T("Order.ShipmentStatusEvents.Country")</th>
+                                <th>@T("Common.Date")</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model.ShipmentStatusEvents)
                             {
                                 <tr>
-                                    <td class="a-left">
-                                        @item.EventName
-                                    </td>
-                                    <td class="a-left">
-                                        @item.Location
-                                    </td>
-                                    <td class="a-left">
-                                        @item.Country
-                                    </td>
-                                    <td class="a-left">
+                                    <td>@item.EventName</td>
+                                    <td>@item.Location</td>
+                                    <td>@item.Country</td>
+                                    <td>
                                         @if (item.Date.HasValue)
                                         {
                                             @item.Date.Value.ToString("D")
@@ -217,3 +165,61 @@
         }
     </div>
 </div>
+
+
+@helper RenderAddress(AddressModel address)
+{
+	var cityStateZip = address.GetFormattedCityStateZip();
+
+	<div class="mb-2">
+		@if (address.CompanyEnabled && address.Company.HasValue())
+		{
+			<div class="company">
+				@address.Company
+			</div>
+		}
+		<div class="name">
+			@address.GetFormattedName()
+		</div>
+		@if (address.StreetAddressEnabled && address.Address1.HasValue())
+		{
+			<div class="address1">
+				@address.Address1
+			</div>
+		}
+		@if (address.StreetAddress2Enabled && address.Address2.HasValue())
+		{
+			<div class="address2">
+				@address.Address2
+			</div>
+		}
+		@if (cityStateZip.HasValue())
+		{
+			<div class="city-state-zip">
+				@Html.Raw(cityStateZip)
+			</div>
+		}
+		@if (address.CountryEnabled && address.CountryName.HasValue())
+		{
+			<div class="country">
+				@address.CountryName
+			</div>
+		}
+	</div>
+
+	<div class="email">
+		@T("Order.Email"): @address.Email
+	</div>
+	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
+	{
+		<div class="phone">
+			@T("Order.Phone"): @address.PhoneNumber
+		</div>
+	}
+	if (address.FaxEnabled && address.FaxNumber.HasValue())
+	{
+		<div class="fax">
+			@T("Order.Fax"): @address.FaxNumber
+		</div>
+	}
+}

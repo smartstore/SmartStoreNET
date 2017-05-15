@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Mime;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
@@ -51,7 +46,7 @@ namespace SmartStore.Services.Messages
 				{ "OrderCompleted.CustomerNotification", _pdfSettings.AttachOrderPdfToOrderCompletedEmail }
 			};
 			
-			bool shouldHandle = false;
+			var shouldHandle = false;
 			if (handledTemplates.TryGetValue(tpl.Name, out shouldHandle) && shouldHandle)
 			{
 				var orderId = eventMessage.Tokens.First(x => x.Key.IsCaseInsensitiveEqual("Order.ID")).Value.ToInt();
@@ -62,7 +57,7 @@ namespace SmartStore.Services.Messages
 				}
 				catch (Exception ex)
 				{
-					Logger.Error(T("Admin.System.QueuedEmails.ErrorCreatingAttachment"), ex);
+					Logger.Error(ex, T("Admin.System.QueuedEmails.ErrorCreatingAttachment"));
 				}
 			}
 		}
@@ -87,7 +82,7 @@ namespace SmartStore.Services.Messages
 			return new QueuedEmailAttachment
 			{
 				StorageLocation = EmailAttachmentStorageLocation.Blob,
-				Data = fileResponse.Data,
+				MediaStorage = new MediaStorage { Data = fileResponse.Data },
 				MimeType = fileResponse.ContentType,
 				Name = fileResponse.FileName
 			};

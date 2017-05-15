@@ -21,7 +21,7 @@ namespace SmartStore.Services.Media
             }
         }
 
-        private static Dictionary<byte[], Func<BinaryReader, Size>> imageFormatDecoders = new Dictionary<byte[], Func<BinaryReader, Size>>()
+        private static Dictionary<byte[], Func<BinaryReader, Size>> _imageFormatDecoders = new Dictionary<byte[], Func<BinaryReader, Size>>()
         { 
             { new byte[] { 0x42, 0x4D }, DecodeBitmap }, 
             { new byte[] { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61 }, DecodeGif }, 
@@ -30,13 +30,20 @@ namespace SmartStore.Services.Media
             { new byte[] { 0xff, 0xd8 }, DecodeJfif }, 
         };
 
-        /// <summary>        
-        /// Gets the dimensions of an image.        
-        /// </summary>        
-        /// <param name="path">The path of the image to get the dimensions of.</param>        
-        /// <returns>The dimensions of the specified image.</returns>        
-        /// <exception cref="ArgumentException">The image was of an unrecognised format.</exception>        
-        public static Size GetDimensions(string path)
+		private static int _maxMagicBytesLength = 0;
+
+		static ImageHeader()
+		{
+			_maxMagicBytesLength = _imageFormatDecoders.Keys.OrderByDescending(x => x.Length).First().Length;
+		}
+
+		/// <summary>        
+		/// Gets the dimensions of an image.        
+		/// </summary>        
+		/// <param name="path">The path of the image to get the dimensions of.</param>        
+		/// <returns>The dimensions of the specified image.</returns>        
+		/// <exception cref="ArgumentException">The image was of an unrecognised format.</exception>        
+		public static Size GetDimensions(string path)
         {
             try
             {
@@ -69,12 +76,11 @@ namespace SmartStore.Services.Media
         /// <exception cref="ArgumentException">The image was of an unrecognised format.</exception>            
         public static Size GetDimensions(BinaryReader binaryReader)
         {
-            int maxMagicBytesLength = imageFormatDecoders.Keys.OrderByDescending(x => x.Length).First().Length;
-            byte[] magicBytes = new byte[maxMagicBytesLength];
-            for (int i = 0; i < maxMagicBytesLength; i += 1)
+            byte[] magicBytes = new byte[_maxMagicBytesLength];
+            for (int i = 0; i < _maxMagicBytesLength; i += 1)
             {
                 magicBytes[i] = binaryReader.ReadByte();
-                foreach (var kvPair in imageFormatDecoders)
+                foreach (var kvPair in _imageFormatDecoders)
                 {
                     if (StartsWith(magicBytes, kvPair.Key))
                     {

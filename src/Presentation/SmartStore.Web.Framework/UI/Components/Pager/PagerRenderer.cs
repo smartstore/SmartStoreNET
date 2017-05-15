@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.UI;
-using System.Web.Mvc;
 using System.Web.Routing;
-using SmartStore.Services.Localization;
-using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.UI
-{
-   
+{   
     public class PagerRenderer : ComponentRenderer<Pager>
     {
-
         public PagerRenderer()
         {
         }
@@ -165,134 +158,6 @@ namespace SmartStore.Web.Framework.UI
             return (c.Model.PageIndex + num);
         }
 
-        #region Other renderers
-
-        ///// <summary>
-        ///// Can be overridden in a custom renderer in order to apply
-        ///// a custom numbering sequence.
-        ///// </summary>
-        ///// <param name="items"></param>
-        //protected virtual void AddPageItemsList3(List<PagerItem> items)
-        //{
-        //    var pager = base.Component;
-        //    var pageNumber = pager.Model.PageNumber;
-        //    var pageCount = pager.Model.TotalPages;
-
-        //    int start = 1;
-        //    int end = pageCount;
-
-        //    if (pageCount > pager.MaxPagesToDisplay)
-        //    {
-        //        int middle = (int)Math.Ceiling(pager.MaxPagesToDisplay / 2d) - 1; // 5
-        //        int below = (pageNumber - middle); // 8-5=3
-        //        int above = (pageNumber + middle); // 8+5=13
-
-        //        if (below < 4)
-        //        {
-        //            above = pager.MaxPagesToDisplay; // 12
-        //            below = 1;
-        //        }
-        //        else if (above > (pageCount - 4))
-        //        {
-        //            above = pageCount; // 20
-        //            below = (pageCount - pager.MaxPagesToDisplay); // 8
-        //        }
-
-        //        start = below; // 1
-        //        end = above; // 12
-        //    }
-
-        //    if (start > 3)
-        //    {
-        //        items.Add(new PagerItem("1", GenerateUrl(1)));
-        //        items.Add(new PagerItem("2", GenerateUrl(2)));
-        //        items.Add(new PagerItem("...", "", PagerItemType.Text));
-        //    }
-
-        //    for (int i = start; i <= end; i++)
-        //    {
-        //        var item = new PagerItem(i.ToString(), GenerateUrl(i));
-        //        if (i == pageNumber)
-        //        {
-        //            item.State = PagerItemState.Selected;
-        //        }
-        //        items.Add(item);
-        //    }
-
-        //    if (end < (pageCount - 3))
-        //    {
-        //        items.Add(new PagerItem("...", "", PagerItemType.Text));
-        //        items.Add(new PagerItem((pageCount - 1).ToString(), GenerateUrl(pageCount - 1)));
-        //        items.Add(new PagerItem(pageCount.ToString(), GenerateUrl(pageCount)));
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Can be overridden in a custom renderer in order to apply
-        ///// a custom numbering sequence.
-        ///// </summary>
-        ///// <param name="items"></param>
-        //protected virtual void AddPageItemsList2(List<PagerItem> items)
-        //{
-        //    var pager = base.Component;
-        //    var pageNumber = pager.Model.PageNumber;
-        //    var pageCount = pager.Model.TotalPages;
-
-        //    List<PagerItem> newList = new List<PagerItem>();
-
-        //    int p = 0;
-        //    int q = 0;
-
-        //    // the total magnitude ( e.g. 3 for 1.300 entries [ 10^3 = 1.000 ]
-        //    int m = (int)Math.Log10(pageCount);
-
-        //    // first item is always the selected currentIndex
-        //    newList.Add(new PagerItem(pageNumber.ToString(), GenerateUrl(pageNumber), PagerItemType.Page, PagerItemState.Selected));
-
-        //    // -2, -1, ..., +1, +2 from the current index
-        //    for (int i = 1; i <= 3; i++)
-        //    {
-        //        p = pageNumber + i;
-        //        if (p <= pageCount)
-        //            newList.Add(new PagerItem(p.ToString(), GenerateUrl(p)));
-
-        //        p = pageNumber - i;
-        //        if (p > 0)
-        //            newList.Insert(0, new PagerItem(p.ToString(), GenerateUrl(p)));
-        //    }
-
-        //    // ... -1.000, -500, -100, -50, -10, ..., +10, +50, +100, +500, +1.000 ..
-        //    for (var i = 1; i <= m; i++)
-        //    {
-        //        q = (int)Math.Pow(10, i);
-        //        if (i > 1)
-        //        {
-        //            // if > 10, do halfs .. (50, 500, 5000)
-        //            p = pageNumber + q / 2;
-        //            if (p < pageCount)
-        //                newList.Add(new PagerItem(p.ToString(), GenerateUrl(p)));
-
-        //            p = pageNumber - q / 2;
-        //            if (p > 1)
-        //                newList.Insert(0, new PagerItem(p.ToString(), GenerateUrl(p)));
-        //        }
-
-        //        // do full counts (10, 100, 1.000)
-        //        p = pageNumber + q;
-        //        if (p < pageCount)
-        //            newList.Add(new PagerItem(p.ToString(), GenerateUrl(p)));
-
-        //        p = pageNumber - q;
-        //        if (p > 1)
-        //            newList.Insert(0, new PagerItem(p.ToString(), GenerateUrl(p)));
-        //    }
-
-        //    items.AddRange(newList);
-        //}
-
-        #endregion
-
-
         protected virtual string GenerateUrl(int pageNumber)
         {
             var pager = base.Component;
@@ -310,20 +175,20 @@ namespace SmartStore.Web.Framework.UI
 
             var items = CreateItemList();
 
-            AppendCssClass(pager.HtmlAttributes, pager.Style == PagerStyle.Pagination ? "pagination" : "pager");
-            // Size
-            if (pager.Size != PagerSize.Medium)
-            {
-                AppendCssClass(pager.HtmlAttributes, "pagination-{0}".FormatInvariant(pager.Size.ToString().ToLower()));
-            }
-            // Alignment
-            if (pager.Alignment != PagerAlignment.Left)
-            {
-                AppendCssClass(pager.HtmlAttributes, "pagination-{0}".FormatInvariant(pager.Alignment.ToString().ToLower()));
-            }
-            writer.AddAttributes(pager.HtmlAttributes);
-            //writer.AddAttribute("id", pager.Id);
-            writer.RenderBeginTag("div");
+			// Alignment
+			if (pager.Alignment == PagerAlignment.Right)
+			{
+				pager.HtmlAttributes.AppendCssClass("text-right");
+			}
+			else if (pager.Alignment == PagerAlignment.Centered)
+			{
+				pager.HtmlAttributes.AppendCssClass("text-center");
+			}
+
+			writer.AddAttributes(pager.HtmlAttributes);
+            writer.AddAttribute("id", pager.Id);
+			writer.AddAttribute("aria-label", "Page navigation");
+			writer.RenderBeginTag("nav");
 
             if (pager.ShowSummary && pager.Model.TotalPages > 1)
             {
@@ -333,8 +198,36 @@ namespace SmartStore.Web.Framework.UI
                 writer.RenderEndTag(); // div
             }
 
-            writer.AddAttribute("class", "unstyled");
-            writer.RenderBeginTag("ul");
+			var ulAttrs = new RouteValueDictionary();
+
+			ulAttrs.AppendCssClass(pager.Style == PagerStyle.Pagination ? "pagination" : "pagination" /* formerly "pager" */); // TODO: (mc) Seems there's no "pager" in BS4 anymore
+
+			// Size
+			if (pager.Size == PagerSize.Large)
+			{
+				ulAttrs.AppendCssClass("pagination-lg");
+			}
+			else if (pager.Size == PagerSize.Small)
+			{
+				ulAttrs.AppendCssClass("pagination-sm");
+			}
+			else if (pager.Size == PagerSize.Mini)
+			{
+				ulAttrs.AppendCssClass("pagination-xs");
+			}
+
+			// BS 4 alignment
+			if (pager.Alignment == PagerAlignment.Centered)
+			{
+				ulAttrs.AppendCssClass("justify-content-center");
+			}
+			else if (pager.Alignment == PagerAlignment.Right)
+			{
+				ulAttrs.AppendCssClass("justify-content-end");
+			}
+
+			writer.AddAttributes(ulAttrs);
+			writer.RenderBeginTag("ul");
 
             foreach (var item in items)
             {
@@ -343,7 +236,6 @@ namespace SmartStore.Web.Framework.UI
 
             writer.RenderEndTag(); // ul
             writer.RenderEndTag(); // div
-            
         }
 
         protected virtual void RenderItem(HtmlTextWriter writer, PagerItem item)
@@ -352,25 +244,26 @@ namespace SmartStore.Web.Framework.UI
 
             if (item.State == PagerItemState.Disabled)
             {
-                //writer.AddAttribute("class", "disabled");
-                AppendCssClass(attrs, "disabled");
+				attrs.AppendCssClass("disabled");
             }
             else if (item.State == PagerItemState.Selected)
             {
-                //writer.AddAttribute("class", "active");
-                AppendCssClass(attrs, "active");
+				attrs.AppendCssClass("active");
             }
 
             if (item.Type == PagerItemType.Text)
             {
-                AppendCssClass(attrs, "shrinked");
+				attrs.AppendCssClass("shrinked");
             }
 
             if (Component.Style == PagerStyle.Blog && item.IsNavButton)
             {
-                AppendCssClass(attrs, (item.Type == PagerItemType.PreviousPage || item.Type == PagerItemType.FirstPage) ? "previous" : "next");
+				// TODO: (mg) BS4 doesn't seem to support this anymore
+				attrs.AppendCssClass((item.Type == PagerItemType.PreviousPage || item.Type == PagerItemType.FirstPage) ? "previous" : "next");
             }
 
+			attrs.AppendCssClass("page-item");
+            
             writer.AddAttributes(attrs);
             writer.RenderBeginTag("li");
 
@@ -381,10 +274,12 @@ namespace SmartStore.Web.Framework.UI
                 if (item.IsNavButton)
                 {
                     writer.AddAttribute("title", item.Text.AttributeEncode());
-                    if (Component.Style != PagerStyle.Blog)
+					writer.AddAttribute("aria-label", item.Text.AttributeEncode());
+					writer.AddAttribute("tab-index", "-1");
+					if (Component.Style != PagerStyle.Blog)
                     {
                         writer.AddAttribute("rel", "tooltip");
-                        writer.AddAttribute("class", "pager-nav");
+                        writer.AddAttribute("class", "page-link page-nav");
                     }
                 }
                 else
@@ -396,12 +291,16 @@ namespace SmartStore.Web.Framework.UI
                         writer.AddAttribute("rel", "tooltip");
                     }
                 }
+
+                writer.AddAttribute("class", "page-link");
+
                 writer.RenderBeginTag("a");
             }
             else
             {
-                // write span
-                writer.RenderBeginTag("span");
+				// write span
+				writer.AddAttribute("class", "page-link");
+				writer.RenderBeginTag("span");
             }
 
             this.RenderItemInnerContent(writer, item);
@@ -418,16 +317,16 @@ namespace SmartStore.Web.Framework.UI
             switch (type)
             {
                 case PagerItemType.FirstPage:
-                    writer.AddAttribute("class", "fa fa-step-backward");
+                    writer.AddAttribute("class", "fa fa-angle-double-left");
                     break;
                 case PagerItemType.PreviousPage:
-					writer.AddAttribute("class", "fa fa-chevron-left");
+					writer.AddAttribute("class", "fa fa-angle-left");
                     break;
                 case PagerItemType.NextPage:
-					writer.AddAttribute("class", "fa fa-chevron-right");
+					writer.AddAttribute("class", "fa fa-angle-right");
                     break;
                 case PagerItemType.LastPage:
-					writer.AddAttribute("class", "fa fa-step-forward");
+					writer.AddAttribute("class", "fa fa-angle-double-right");
                     break;
                 default:
                     writer.WriteEncodedText(item.Text);
@@ -451,20 +350,6 @@ namespace SmartStore.Web.Framework.UI
                 }
             }
         }
-
-        // TODO: (mc) Public util machen
-        private void AppendCssClass(IDictionary<string, object> attributes, string @class)
-        {
-            attributes.AppendInValue("class", " ", @class);
-        }
-
-        // TODO: (mc) Public util machen
-        private void PrependCssClass(IDictionary<string, object> attributes, string @class)
-        {
-            attributes.PrependInValue("class", " ", @class);
-        }
-
-
     }
 
 }

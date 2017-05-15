@@ -1,0 +1,111 @@
+﻿@model EstimateShippingModel
+
+@using SmartStore.Web.Models.ShoppingCart;
+
+@{ 
+	if (!Model.Enabled)
+	{
+		return;
+	}
+
+	var isExpanded = Model.CountryId > 0 || Model.StateProvinceId > 0 || Model.ZipPostalCode.HasValue();
+	isExpanded = Model.ShippingOptions.Any();
+}
+
+<div class="cart-action cart-action-shipping">
+	<h5 class="cart-action-title@(isExpanded ? "" : " collapsed")" data-toggle="collapse" data-target="#cart-action-shipping-body" aria-controls="cart-action-shipping-body" aria-expanded="@isExpanded">
+		@T("ShoppingCart.EstimateShipping")
+	</h5>
+
+    <div class="cart-action-body collapse@(isExpanded ? " show" : "")" id="cart-action-shipping-body" aria-expanded="@isExpanded">
+		@if (Model.Warnings.Count > 0)
+		{
+			<div class="alert alert-danger">
+				@for (int i = 0; i < Model.Warnings.Count; i++)
+				{
+					<p>@Model.Warnings[i]</p>
+				}
+			</div>
+		}
+		else if (Model.ShippingOptions.Count == 0)
+		{
+			<div class="alert alert-info">@T("ShoppingCart.EstimateShipping.Tooltip")</div>
+		}
+
+		@if (Model.ShippingOptions.Any())
+		{
+			<div class="alert alert-success">
+				@foreach (var shippingOption in Model.ShippingOptions)
+				{
+					<div class="shipping-option-item mb-2">
+						<div class="option-name font-weight-medium">
+							@Html.Raw(HttpUtility.HtmlDecode(shippingOption.Name))
+							(@shippingOption.Price)
+						</div>
+						<div class="option-description">
+							@Html.Raw(shippingOption.Description)
+						</div>
+					</div>
+				}
+			</div>
+		}
+
+        <div class="shipping-options">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CountryId)
+                @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries, T("Address.SelectCountry").Text, new { @class = "form-control noskin country-input" })
+                @Html.ValidationMessageFor(model => model.CountryId)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.StateProvinceId)
+                @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates, new { @class = "form-control noskin state-input" })
+                @Html.ValidationMessageFor(model => model.StateProvinceId)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.ZipPostalCode)
+                @Html.TextBoxFor(model => model.ZipPostalCode, new { @class = "zip-input form-control" })
+                @Html.ValidationMessageFor(model => model.ZipPostalCode)
+            </div>
+            <div class="form-group">
+                <input type="submit" name="estimateshipping" value="@T("ShoppingCart.EstimateShipping.Button")" class="btn btn-warning estimate-shipping-button" />
+            </div>
+        </div>
+
+        @if (Model.ShippingInfoUrl.HasValue())
+        {
+            <div class="text-muted">
+                @Html.Raw(T("ShoppingCart.ShippingInfoLink", Model.ShippingInfoUrl))
+            </div>
+		}
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("#@Html.FieldIdFor(model => model.CountryId)").change(function () {
+            var selectedItem = $(this).val() || 0;
+
+            var ddlStates = $("#@Html.FieldIdFor(model => model.StateProvinceId)");
+
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: "@(Url.Action("GetStatesByCountryId", "Country"))",
+                data: { "countryId": selectedItem, "addEmptyStateIfRequired": "false" },
+                success: function (data) {
+                    ddlStates.html('');
+                    $.each(data, function (id, option) {
+                        ddlStates.append($('<option></option>').val(option.id).html(option.name));
+                    });
+                    ddlStates.trigger("change");
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Failed to retrieve states.'); // TODO: Loc
+                },
+                complete: function () {
+                    
+                }
+            });
+        });
+    });
+</script>

@@ -9,11 +9,8 @@ namespace SmartStore.Admin.Models.Settings
     {
         public MediaSettingsModel()
         {
-            this.AvailablePictureZoomTypes = new List<SelectListItem>();
+            AvailablePictureZoomTypes = new List<SelectListItem>();
         }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase")]
-        public bool PicturesStoredIntoDatabase { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.AvatarPictureSize")]
         public int AvatarPictureSize { get; set; }
@@ -63,5 +60,8 @@ namespace SmartStore.Admin.Models.Settings
 
         public List<SelectListItem> AvailablePictureZoomTypes { get; set; }
 
-    }
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.StorageProvider")]
+		public string StorageProvider { get; set; }
+		public List<SelectListItem> AvailableStorageProvider { get; set; }
+	}
 }

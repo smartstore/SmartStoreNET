@@ -1,0 +1,8 @@
+﻿@for (var i = 1; i <= 3; i++)
+{
+	var googFont = GetThemeVariable("google-font-" + i);
+	if (googFont.HasValue())
+	{
+		<link href='https://fonts.googleapis.com/css?family=@googFont' rel='stylesheet' type='text/css'>
+	}
+}

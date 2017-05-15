@@ -1,0 +1,148 @@
+﻿@model ProductSummaryModel.SummaryItem
+
+@using System.Globalization;
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
+	var list = Model.Parent;
+	var picture = Model.Picture;
+
+	var showButtons = list.ShowButtons && (!Model.Price.DisableWishlistButton || list.CompareEnabled || (!Model.Price.DisableBuyButton && list.BuyEnabled));
+	var showVariants = (Model.ColorAttributes != null && Model.ColorAttributes.Any()) || (Model.Attributes != null && Model.Attributes.Any());
+	var showDrop = showButtons || showVariants;
+	var showAttrs = list.ViewMode == ProductSummaryViewMode.List && (list.ShowSku || list.ShowWeight || list.ShowDimensions);
+}
+
+<article class="art" data-id="@Model.Id">
+	<div class="art-picture-block">
+		@if (picture.Title.HasValue())
+		{
+			<a class='art-picture img-center-container@(picture.PictureId == 0 ? " no-picture" : "")' href="@artDetailUrl" title="@picture.Title" @Html.Attr("data-content", T("Common.NoImageAvail"), picture.PictureId == 0)>
+				<img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+			</a>
+		}
+	</div>
+
+	@if (Model.Badges.Any())
+	{
+		@* TODO: (mc) Let user define one free badge per product in backend *@
+		<div class="art-badges">
+			@foreach (var badge in Model.Badges.OrderBy(x => x.DisplayOrder))
+			{
+				@* TODO: (mc) Move BS4 label/tag class definitions to art-badge.art-badge-[style] (?)  *@
+				<span class="badge badge-@badge.Style.ToString().ToLowerInvariant() art-badge">@Html.Raw(badge.Label)</span>
+			}
+		</div>
+	}
+
+	<div class="art-data-block">
+		<div class="art-info-block">
+			@if (list.ShowRatings || list.ShowBrand)
+			{
+				if (list.ViewMode == ProductSummaryViewMode.List)
+				{
+					<div class="art-info-group@(list.ShowRatings && list.ShowBrand ? " floating" : "")">
+						@if (list.ShowBrand) { Html.RenderPartial("Product.List.Item.Brand", Model); }
+						@if (list.ShowRatings) { Html.RenderPartial("Product.List.Item.Rating", Model); }
+					</div>
+				}
+				else
+				{
+					if (list.ShowRatings) { Html.RenderPartial("Product.List.Item.Rating", Model); }
+					if (list.ShowBrand) { Html.RenderPartial("Product.List.Item.Brand", Model); }
+				}
+			}
+
+			<h3 class="art-name">
+				<a href="@artDetailUrl" title="@Model.Name">
+					<span>@Model.Name</span>
+				</a>
+			</h3>
+
+			@if (list.ShowDescription)
+			{
+				<div class="art-description" title="@Model.ShortDescription">
+					@Html.Raw(Model.ShortDescription.Truncate(160, "..."))
+				</div>
+			}
+
+			@if (showAttrs)
+			{
+				<table class="art-attrs">
+					@if (list.ShowSku && Model.Sku.HasValue())
+					{
+						<tr>
+							<td>@T("Products.Sku"):</td>
+							<td>@Model.Sku</td>
+						</tr>
+					}
+					@if (list.ShowWeight && Model.Weight.HasValue())
+					{
+						<tr>
+							<td>@T("Products.Weight"):</td>
+							<td>@Model.Weight</td>
+						</tr>
+					}
+					@if (list.ShowDimensions && Model.Dimensions.HasValue())
+					{
+						<tr>
+							<td>@T("Products.Dimensions") (@Model.DimensionMeasureUnit):</td>
+							<td>@Model.Dimensions</td>
+						</tr>
+					}
+				</table>
+			}
+
+			@if (list.ViewMode != ProductSummaryViewMode.List)
+			{ 
+				Html.RenderPartial("Product.List.Item.Price", Model);
+			}
+
+			@if (list.ViewMode == ProductSummaryViewMode.List && showVariants)
+			{
+				Html.RenderPartial("Product.List.Item.Variants", Model);
+			}
+
+			@if (list.ShowLegalInfo)
+			{
+				<div class="art-legalinfo">
+					* @Html.Raw(Model.LegalInfo)
+				</div>
+			}
+		</div>
+
+		@if (list.ViewMode == ProductSummaryViewMode.List)
+		{
+			<div class="art-actions-block">
+				@{ 
+					Html.RenderPartial("Product.List.Item.Price", Model);
+					if (showButtons)
+					{
+						Html.RenderPartial("Product.List.Item.Buttons", Model);
+					}
+				}
+			</div>
+		}
+	</div>
+
+	@{ 
+		if (list.ViewMode != ProductSummaryViewMode.List)
+		{
+			if (showDrop)
+			{
+				<div class="art-drop">
+					@if (showVariants) 
+					{
+						Html.RenderPartial("Product.List.Item.Variants", Model);
+					}
+					@if (showButtons)
+					{
+						Html.RenderPartial("Product.List.Item.Buttons", Model);
+					}
+				</div>
+			}
+		}
+	}
+</article>
+

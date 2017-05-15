@@ -1,0 +1,20 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="EnableMiniProfilerInPublicStore">
+    <Value>Mini-Profiler für Frontend aktivieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="EnableMiniProfilerInPublicStore.Hint">
+    <Value>Aktiviert den Mini-Profiler für das Frontend. Mit dem Profiler können Sie die Requests einer Seite, inklusive Datenbankzugriffen analysieren. Die Anzeige ist auf angemeldete Administratoren beschränkt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayWidgetZones">
+    <Value>Widget-Zonen darstellen</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayWidgetZones.Hint">
+    <Value>Injiziert Tooltips in jede Widget-Zone, die den Namen der jeweiligen Widget-Zone enthalten. Die Anzeige ist auf angemeldete Administratoren beschränkt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayMachineName">
+    <Value>Rechnernamen anzeigen</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayMachineName.Hint">
+    <Value>Stellt den Rechnernamen unterhalb des Footers dar. Mit dieser Funktion können Sie in einer verteilten Anwendung den gerade genutzten Rechner ermitteln.</Value>
+  </LocaleResource>
+</Language>

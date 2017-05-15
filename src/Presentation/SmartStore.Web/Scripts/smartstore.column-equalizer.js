@@ -140,7 +140,6 @@
 
         if (options.responsive) {
             EventBroker.subscribe("page.resized", function (data) {
-                //console.log("Must equalize columns");
                 reset();
                 equalize(true);
             });

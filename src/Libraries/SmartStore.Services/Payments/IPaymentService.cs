@@ -6,20 +6,30 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Payments
 {
-    /// <summary>
-    /// Payment service interface
-    /// </summary>
-    public partial interface IPaymentService
+	/// <summary>
+	/// Payment service interface
+	/// </summary>
+	public partial interface IPaymentService
     {
-        /// <summary>
-        /// Load active payment methods
-        /// </summary>
+		/// <summary>
+		/// Determines whether a payment method is active\enabled for a shop
+		/// </summary>
+		bool IsPaymentMethodActive(string systemName, int storeId = 0);
+
+		/// <summary>
+		/// Determines whether a payment method is excluded by a filter
+		/// </summary>
+		bool IsPaymentMethodFiltered(PaymentFilterRequest filterRequest);
+
+		/// <summary>
+		/// Load active payment methods
+		/// </summary>
 		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
 		/// <param name="cart">Filter payment methods by cart amount; null to load all records</param>
 		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
 		/// <param name="types">Filter payment methods by payment method types</param>
 		/// <param name="provideFallbackMethod">Provide a fallback payment method if none is active</param>
-        /// <returns>Payment methods</returns>
+		/// <returns>Payment methods</returns>
 		IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
 			Customer customer = null,
 			IList<OrganizedShoppingCartItem> cart = null,
@@ -28,15 +38,10 @@ namespace SmartStore.Services.Payments
 			bool provideFallbackMethod = true);
 
 		/// <summary>
-		/// Determines whether a payment method is active\enabled for a shop
+		/// Load payment provider by system name
 		/// </summary>
-		bool IsPaymentMethodActive(string systemName, int storeId = 0);
-
-        /// <summary>
-        /// Load payment provider by system name
-        /// </summary>
-        /// <param name="systemName">System name</param>
-        /// <returns>Found payment provider</returns>
+		/// <param name="systemName">System name</param>
+		/// <returns>Found payment provider</returns>
 		Provider<IPaymentMethod> LoadPaymentMethodBySystemName(string systemName, bool onlyWhenActive = false, int storeId = 0);
 
         /// <summary>

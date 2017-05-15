@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using SmartStore.Core.Domain.Common;
+using FluentValidation.Attributes;
+using SmartStore.Admin.Validators.Settings;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Web.Framework;
-using SmartStore.Admin.Validators.Settings;
-using FluentValidation.Attributes;
-using SmartStore.Core.Domain.Localization;
-using System.Collections;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
-    [Validator(typeof(GeneralCommonSettingsValidator))]
+	[Validator(typeof(GeneralCommonSettingsValidator))]
 	public partial class GeneralCommonSettingsModel : ModelBase
     {
         public GeneralCommonSettingsModel()
@@ -23,7 +21,6 @@ namespace SmartStore.Admin.Models.Settings
 			CaptchaSettings = new CaptchaSettingsModel();
             PdfSettings = new PdfSettingsModel();
             LocalizationSettings = new LocalizationSettingsModel(); 
-            FullTextSettings = new FullTextSettingsModel();
             CompanyInformationSettings = new CompanyInformationSettingsModel();
             ContactDataSettings = new ContactDataSettingsModel();
             BankConnectionSettings = new BankConnectionSettingsModel();
@@ -36,7 +33,6 @@ namespace SmartStore.Admin.Models.Settings
 		public CaptchaSettingsModel CaptchaSettings { get; set; }
         public PdfSettingsModel PdfSettings { get; set; }
         public LocalizationSettingsModel LocalizationSettings { get; set; }
-        public FullTextSettingsModel FullTextSettings { get; set; }
         public CompanyInformationSettingsModel CompanyInformationSettings { get; set; }
         public ContactDataSettingsModel ContactDataSettings { get; set; }
         public BankConnectionSettingsModel BankConnectionSettings { get; set; }
@@ -115,7 +111,10 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.HideAdminMenuItemsBasedOnPermissions")]
             public bool HideAdminMenuItemsBasedOnPermissions { get; set; }
-        }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ForceSslForAllPages")]
+			public bool ForceSslForAllPages { get; set; }
+		}
 
 		public partial class CaptchaSettingsModel
 		{
@@ -185,9 +184,6 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SeoFriendlyUrlsForLanguagesEnabled")]
             public bool SeoFriendlyUrlsForLanguagesEnabled { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.LoadAllLocaleRecordsOnStartup")]
-            public bool LoadAllLocaleRecordsOnStartup { get; set; }
-
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DefaultLanguageRedirectBehaviour")]
             public DefaultLanguageRedirectBehaviour DefaultLanguageRedirectBehaviour { get; set; }
 
@@ -196,17 +192,6 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DetectBrowserUserLanguage")]
             public bool DetectBrowserUserLanguage { get; set; }
-        }
-
-		public partial class FullTextSettingsModel
-        {
-            public bool Supported { get; set; }
-
-            public bool Enabled { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.SearchMode")]
-            public FulltextSearchMode SearchMode { get; set; }
-            public SelectList SearchModeValues { get; set; }
         }
 
 		public partial class CompanyInformationSettingsModel

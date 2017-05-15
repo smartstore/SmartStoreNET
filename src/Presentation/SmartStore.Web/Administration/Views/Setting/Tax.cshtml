@@ -1,73 +1,77 @@
-﻿@model TaxSettingsModel
-@using Telerik.Web.Mvc.UI;
+﻿@using Telerik.Web.Mvc.UI
+@using SmartStore.Core.Domain.Tax
+
+@model TaxSettingsModel
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Tax").Text;
 }
 @using (Html.BeginForm())
-{
-    
+{    
 <script type="text/javascript">
-    $(document).ready(function () {
+	$(document).ready(function () {
 
-        $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectTaxDisplayType)").click(toggleTaxDisplayType);
-        $("#@Html.FieldIdFor(model => model.ShippingIsTaxable)").click(toggleShipping);
-        $("#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)").click(togglePayment);
-        $("#@Html.FieldIdFor(model => model.EuVatEnabled)").click(toggleEUVAT);
-          
-          
-        toggleTaxDisplayType();
-        toggleShipping();
-        togglePayment();
-        toggleEUVAT();
-    });
+		$("#@Html.FieldIdFor(model => model.AllowCustomersToSelectTaxDisplayType)").click(toggleTaxDisplayType);
+		$("#@Html.FieldIdFor(model => model.ShippingIsTaxable)").click(toggleShipping);
+		$("#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)").click(togglePayment);
+		$("#@Html.FieldIdFor(model => model.EuVatEnabled)").click(toggleEUVAT);
 
-    function toggleTaxDisplayType() {
-        if ($('#@Html.FieldIdFor(model => model.AllowCustomersToSelectTaxDisplayType)').is(':checked')) {
-            $('#pnlTaxDisplayType').hide();
-        }
-        else {
-            $('#pnlTaxDisplayType').show();
-        }
-    }
 
-    function toggleShipping() {
-        if ($('#@Html.FieldIdFor(model => model.ShippingIsTaxable)').is(':checked')) {
-            $('#pnlShippingPriceIncludesTax').show();
-            $('#pnlShippingTaxClass').show();
-        }
-        else {
-            $('#pnlShippingPriceIncludesTax').hide();
-            $('#pnlShippingTaxClass').hide();
-        }
-    }
+		toggleTaxDisplayType();
+		toggleShipping();
+		togglePayment();
+		toggleEUVAT();
 
-    function togglePayment() {
-        if ($('#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)').is(':checked')) {
-            $('#pnlPaymentMethodAdditionalFeeIncludesTax').show();
-            $('#pnlPaymentMethodAdditionalFeeTaxClass').show();
-        }
-        else {
-            $('#pnlPaymentMethodAdditionalFeeIncludesTax').hide();
-            $('#pnlPaymentMethodAdditionalFeeTaxClass').hide();
-        }
-    }
+		// taxing of auxiliary services
+		$('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').change(updateAuxiliaryServicesTaxCategories).trigger('change');
 
-    function toggleEUVAT() {
-        if ($('#@Html.FieldIdFor(model => model.EuVatEnabled)').is(':checked')) {
-            $('#pnlEuVatShopCountry').show();
-            $('#pnlEuVatAllowVATExemption').show();
-            $('#pnlEuVatUseWebService').show();
-            $('#pnlEuVatEmailAdminWhenNewVATSubmitted').show();
-            $('#pnlVatRequired').show();
-        }
-        else {
-            $('#pnlEuVatShopCountry').hide();
-            $('#pnlEuVatAllowVATExemption').hide();
-            $('#pnlEuVatUseWebService').hide();
-            $('#pnlEuVatEmailAdminWhenNewVATSubmitted').hide();
-            $('#pnlVatRequired').hide();
-        }
-    }
+	});
+
+	function updateAuxiliaryServicesTaxCategories() {
+		var showCategories = ($('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').val() === '@((int)AuxiliaryServicesTaxType.SpecifiedTaxCategory)'),
+			shippingIsTaxable = $('#@Html.FieldIdFor(model => model.ShippingIsTaxable)').is(':checked'),
+			paymentFeeIsTaxable = $('#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)').is(':checked');
+
+		$('#pnlShippingTaxClass').toggle(showCategories && shippingIsTaxable);
+		$('#pnlPaymentMethodAdditionalFeeTaxClass').toggle(showCategories && paymentFeeIsTaxable);
+	}
+
+	function toggleTaxDisplayType() {
+		if ($('#@Html.FieldIdFor(model => model.AllowCustomersToSelectTaxDisplayType)').is(':checked')) {
+			$('#pnlTaxDisplayType').hide();
+		}
+		else {
+			$('#pnlTaxDisplayType').show();
+		}
+	}
+
+	function toggleShipping() {
+		$('#pnlShippingPriceIncludesTax').toggle($('#@Html.FieldIdFor(model => model.ShippingIsTaxable)').is(':checked'));
+
+		updateAuxiliaryServicesTaxCategories();
+	}
+
+	function togglePayment() {
+		$('#pnlPaymentMethodAdditionalFeeIncludesTax').toggle($('#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)').is(':checked'));
+
+		updateAuxiliaryServicesTaxCategories();
+	}
+
+	function toggleEUVAT() {
+		if ($('#@Html.FieldIdFor(model => model.EuVatEnabled)').is(':checked')) {
+			$('#pnlEuVatShopCountry').show();
+			$('#pnlEuVatAllowVATExemption').show();
+			$('#pnlEuVatUseWebService').show();
+			$('#pnlEuVatEmailAdminWhenNewVATSubmitted').show();
+			$('#pnlVatRequired').show();
+		}
+		else {
+			$('#pnlEuVatShopCountry').hide();
+			$('#pnlEuVatAllowVATExemption').hide();
+			$('#pnlEuVatUseWebService').hide();
+			$('#pnlEuVatEmailAdminWhenNewVATSubmitted').hide();
+			$('#pnlVatRequired').hide();
+		}
+	}
 </script>
     
     <div class="section-header">
@@ -78,8 +82,10 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-	@Html.Action("StoreScopeConfiguration", "Setting")
-	@Html.ValidationSummary(false)
+
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
+    @Html.ValidationSummary(false)
 
     <table class="adminContent">
         <tr>
@@ -209,6 +215,16 @@
                 <hr />
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AuxiliaryServicesTaxingType)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.AuxiliaryServicesTaxingType)
+				@Html.DropDownListFor(model => model.AuxiliaryServicesTaxingType, Model.AvailableAuxiliaryServicesTaxTypes)
+				@Html.ValidationMessageFor(model => model.AuxiliaryServicesTaxingType)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShippingIsTaxable)
@@ -238,8 +254,8 @@
             </td>
         </tr>
         <tr>
-            <td class="adminSeparator" colspan="2">
-                <hr />
+            <td colspan="2">
+                &nbsp;
             </td>
         </tr>
         <tr>

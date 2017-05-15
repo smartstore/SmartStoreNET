@@ -14,25 +14,11 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-    
-    <script>
-        $(function () {
-            $("#@Html.FieldIdFor(model => model.DefaultPictureZoomEnabled)").click(togglePictureZoomType);
-            togglePictureZoomType();
-        });
 
-        function togglePictureZoomType() {
-            if ($('#@Html.FieldIdFor(model => model.DefaultPictureZoomEnabled)').is(':checked')) {
-                $('#pnlPictureZoomType').show();
-            }
-            else {
-                $('#pnlPictureZoomType').hide();
-            }
-        }
-    </script>
-	@Html.Action("StoreScopeConfiguration", "Setting")
-	@Html.ValidationSummary(false)
-	
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
+    @Html.ValidationSummary(false)
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -86,16 +72,6 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.DefaultPictureZoomEnabled)
                 @Html.ValidationMessageFor(model => model.DefaultPictureZoomEnabled)
-            </td>
-        </tr>
-        <tr id="pnlPictureZoomType">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PictureZoomType)
-            </td>
-            <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.PictureZoomType)
-                @Html.DropDownListFor(model => model.PictureZoomType, Model.AvailablePictureZoomTypes)
-                @Html.ValidationMessageFor(model => model.PictureZoomType)
             </td>
         </tr>
         <tr>
@@ -173,28 +149,53 @@
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
-					<div class="title">@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase")</div>
+					<div class="title">
+						@(T("Admin.Configuration.Settings.Media.MediaIsStoredIn"))&hellip;
+					</div>
 				</div>
 				<div class="alert alert-warning">
-					@T("Admin.Configuration.Settings.Media.MovePicturesNote")
+					@T("Admin.Configuration.Settings.Media.MoveMediaNote")
+					<p></p>
+					@(T("Admin.Configuration.Settings.Media.CurrentStorageLocation")): 
+					<strong>@Model.StorageProvider</strong>
 				</div>
-				<strong style="text-transform: capitalize">
-					@T(Model.PicturesStoredIntoDatabase ? "Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database" : "Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.FileSystem")
-				</strong>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StorageProvider)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.StorageProvider, Model.AvailableStorageProvider)
 
-				<button type="submit" name="change-picture-storage" value="change-picture-storage" class="btn btn-right">
-					@if (Model.PicturesStoredIntoDatabase)
-					{
-						<i class="fa fa-fw fa-hdd-o"></i>
-						@T("Admin.Configuration.Settings.Media.MoveToFs")
-					}
-					else
-					{
-						<i class="fa fa-fw fa-database"></i>
-						@T("Admin.Configuration.Settings.Media.MoveToDb")
-					}
+				<button type="button" id="MoveMediaButton" class="btn btn-info" data-url="@Url.Action("ChangeMediaStorage")">
+					<i class="fa fa-fw fa-gears"></i>
+					@(T("Admin.Common.MoveNow"))!
 				</button>
+
+				@Html.ValidationMessageFor(model => model.StorageProvider)			
 			</td>
 		</tr>
     </table>
 }
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+    	// move media
+    	$('#MoveMediaButton').click(function () {
+    		if (confirm('@T("Admin.Common.AskToProceed")')) {
+
+    			$.throbber.show({
+    				speed: 0,
+    				message: '@T("Admin.Common.WaitProcessingMessage")'
+    			});
+
+    			$(this).doPostData({
+    				data: { targetProvider: $('#@Html.FieldIdFor(model => model.StorageProvider)').val() }
+    			});
+
+    		}
+    	});
+    });
+</script>

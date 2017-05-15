@@ -775,8 +775,8 @@ Arts & Entertainment > Hobbies & Creative Arts > Musical Instruments > Woodwinds
 Arts & Entertainment > Hobbies & Creative Arts > Musical Instruments > Woodwinds > Train Whistles
 Arts & Entertainment > Party & Celebration
 Arts & Entertainment > Party & Celebration > Gift Giving
-Arts & Entertainment > Party & Celebration > Gift Giving > Corsage & BoutonniÃ¨re Pins
-Arts & Entertainment > Party & Celebration > Gift Giving > Corsages & BoutonniÃ¨res
+Arts & Entertainment > Party & Celebration > Gift Giving > Corsage & Boutonnière Pins
+Arts & Entertainment > Party & Celebration > Gift Giving > Corsages & Boutonnières
 Arts & Entertainment > Party & Celebration > Gift Giving > Fresh Cut Flowers
 Arts & Entertainment > Party & Celebration > Gift Giving > Gift Cards & Certificates
 Arts & Entertainment > Party & Celebration > Gift Giving > Gift Wrapping
@@ -812,7 +812,7 @@ Arts & Entertainment > Party & Celebration > Party Supplies > Party Games
 Arts & Entertainment > Party & Celebration > Party Supplies > Party Hats
 Arts & Entertainment > Party & Celebration > Party Supplies > Party Streamers & Curtains
 Arts & Entertainment > Party & Celebration > Party Supplies > Party Supply Kits
-Arts & Entertainment > Party & Celebration > Party Supplies > PiÃ±atas
+Arts & Entertainment > Party & Celebration > Party Supplies > Piñatas
 Arts & Entertainment > Party & Celebration > Party Supplies > Place Card Holders
 Arts & Entertainment > Party & Celebration > Party Supplies > Place Cards
 Arts & Entertainment > Party & Celebration > Party Supplies > Response Cards
@@ -1811,7 +1811,7 @@ Food, Beverages & Tobacco > Food Items > Fruits & Vegetables > Fresh & Frozen Fr
 Food, Beverages & Tobacco > Food Items > Fruits & Vegetables > Fresh & Frozen Fruits > Longan
 Food, Beverages & Tobacco > Food Items > Fruits & Vegetables > Fresh & Frozen Fruits > Loquats
 Food, Beverages & Tobacco > Food Items > Fruits & Vegetables > Fresh & Frozen Fruits > Lychees
-Food, Beverages & Tobacco > Food Items > Fruits & Vegetables > Fresh & Frozen Fruits > MadroÃ±o
+Food, Beverages & Tobacco > Food Items > Fruits & Vegetables > Fresh & Frozen Fruits > Madroño
 Food, Beverages & Tobacco > Food Items > Fruits & Vegetables > Fresh & Frozen Fruits > Mamey
 Food, Beverages & Tobacco > Food Items > Fruits & Vegetables > Fresh & Frozen Fruits > Mangosteens
 Food, Beverages & Tobacco > Food Items > Fruits & Vegetables > Fresh & Frozen Fruits > Melons
@@ -1935,7 +1935,7 @@ Food, Beverages & Tobacco > Food Items > Nuts & Seeds
 Food, Beverages & Tobacco > Food Items > Pasta & Noodles
 Food, Beverages & Tobacco > Food Items > Prepared Foods
 Food, Beverages & Tobacco > Food Items > Prepared Foods > Prepared Appetizers & Side Dishes
-Food, Beverages & Tobacco > Food Items > Prepared Foods > Prepared Meals & EntrÃ©es
+Food, Beverages & Tobacco > Food Items > Prepared Foods > Prepared Meals & Entrées
 Food, Beverages & Tobacco > Food Items > Seasonings & Spices
 Food, Beverages & Tobacco > Food Items > Seasonings & Spices > Herbs & Spices
 Food, Beverages & Tobacco > Food Items > Seasonings & Spices > MSG
@@ -2653,7 +2653,7 @@ Health & Beauty > Health Care > Fitness & Nutrition
 Health & Beauty > Health Care > Fitness & Nutrition > Nutrition Bars
 Health & Beauty > Health Care > Fitness & Nutrition > Nutrition Drinks & Shakes
 Health & Beauty > Health Care > Fitness & Nutrition > Nutrition Gels & Chews
-Health & Beauty > Health Care > Fitness & Nutrition > Nutritional Food PurÃ©es
+Health & Beauty > Health Care > Fitness & Nutrition > Nutritional Food Purées
 Health & Beauty > Health Care > Fitness & Nutrition > Tube Feeding Supplements
 Health & Beauty > Health Care > Fitness & Nutrition > Vitamins & Supplements
 Health & Beauty > Health Care > Hearing Aids
@@ -3367,7 +3367,7 @@ Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware & Bakeware Combo Sets
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Casserole Dishes
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Cookware Sets
-Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > CrÃªpe & Blini Pans
+Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Crêpe & Blini Pans
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Double Boilers
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Dutch Ovens
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Fermentation & Pickling Crocks
@@ -3376,7 +3376,7 @@ Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Grill Presse
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Paella Pans
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Pressure Cookers & Canners
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Saucepans
-Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > SautÃ© Pans
+Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Sauté Pans
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Skillets & Frying Pans
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Stock Pots
 Home & Garden > Kitchen & Dining > Cookware & Bakeware > Cookware > Stovetop Kettles
@@ -4304,7 +4304,7 @@ Sporting Goods > Athletics > Dancing > Ballet Barres
 Sporting Goods > Athletics > Fencing
 Sporting Goods > Athletics > Fencing > Fencing Protective Gear
 Sporting Goods > Athletics > Fencing > Fencing Protective Gear > Fencing Gloves & Cuffs
-Sporting Goods > Athletics > Fencing > Fencing Protective Gear > Fencing Jackets & LamÃ©s
+Sporting Goods > Athletics > Fencing > Fencing Protective Gear > Fencing Jackets & Lamés
 Sporting Goods > Athletics > Fencing > Fencing Protective Gear > Fencing Masks
 Sporting Goods > Athletics > Fencing > Fencing Weapons
 Sporting Goods > Athletics > Field Hockey & Lacrosse

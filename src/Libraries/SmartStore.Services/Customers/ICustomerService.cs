@@ -122,17 +122,29 @@ namespace SmartStore.Services.Customers
         /// <returns>Customer</returns>
         Customer GetCustomerByUsername(string username);
 
-        /// <summary>
-        /// Insert a guest customer
-        /// </summary>
-        /// <returns>Customer</returns>
-        Customer InsertGuestCustomer();
+		/// <summary>
+		/// Insert a guest customer
+		/// </summary>
+		/// <param name="customerGuid">The customer GUID. Pass <c>null</c> to create a random one.</param>
+		/// <returns>Customer</returns>
+		Customer InsertGuestCustomer(Guid? customerGuid = null);
 
-        /// <summary>
-        /// Insert a customer
-        /// </summary>
-        /// <param name="customer">Customer</param>
-        void InsertCustomer(Customer customer);
+		/// <summary>
+		/// Tries to find a guest/anonymous customer record by client ident. This method should be called when an
+		/// anonymous visitor rejects cookies and therefore cannot be identified automatically.
+		/// </summary>
+		/// <param name="clientIdent">
+		/// The client ident string, which is a hashed combination of client IP address and user agent. 
+		/// Call <see cref="IWebHelper.GetClientIdent()"/> to obtain an ident string, or pass <c>null</c> to let this method obtain it automatically.</param>
+		/// <param name="maxAgeSeconds">The max age of the newly created guest customer record. The shorter, the better (default is 1 min.)</param>
+		/// <returns>The identified customer or <c>null</c></returns>
+		Customer FindGuestCustomerByClientIdent(string clientIdent = null, int maxAgeSeconds = 60);
+
+		/// <summary>
+		/// Insert a customer
+		/// </summary>
+		/// <param name="customer">Customer</param>
+		void InsertCustomer(Customer customer);
 
         /// <summary>
         /// Updates the customer

@@ -19,14 +19,10 @@ namespace SmartStore.Admin.Models.Catalog
     {
         public CategoryModel()
         {
-            if (PageSize < 1)
-            {
-                PageSize = 12;
-            }
-
             Locales = new List<CategoryLocalizedModel>();
             AvailableCategoryTemplates = new List<SelectListItem>();
             AvailableDefaultViewModes = new List<SelectListItem>();
+            AvailableBadgeStyles = new List<SelectListItem>();
         }
 
 		public int GridPageSize { get; set; }
@@ -46,7 +42,15 @@ namespace SmartStore.Admin.Models.Catalog
 		[AllowHtml]
 		public string BottomDescription { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Alias")]
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BadgeText")]
+        [AllowHtml]
+        public string BadgeText { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BadgeStyle")]
+        public int BadgeStyle { get; set; }
+        public IList<SelectListItem> AvailableBadgeStyles { get; set; }
+        
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Alias")]
 		public string Alias { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.CategoryTemplate")]
@@ -78,17 +82,13 @@ namespace SmartStore.Admin.Models.Catalog
         public int PictureId { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.PageSize")]
-        public int PageSize { get; set; }
+        public int? PageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.AllowCustomersToSelectPageSize")]
-        public bool AllowCustomersToSelectPageSize { get; set; }
+        public bool? AllowCustomersToSelectPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.PageSizeOptions")]
         public string PageSizeOptions { get; set; }
-
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.PriceRanges")]
-        [AllowHtml]
-        public string PriceRanges { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.ShowOnHomePage")]
         public bool ShowOnHomePage { get; set; }
@@ -188,6 +188,10 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BottomDescription")]
 		[AllowHtml]
 		public string BottomDescription { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BadgeText")]
+        [AllowHtml]
+        public string BadgeText { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.MetaKeywords")]
         [AllowHtml]

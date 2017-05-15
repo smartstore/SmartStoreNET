@@ -102,6 +102,7 @@
 							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
 						columns.Bound(x => x.IsSystemAccount)
 							.ClientTemplate("<i class='fa fa-fw icon-active-<#= IsSystemAccount #>'></i>&nbsp;<#= SystemAccountName #>")
+							.Centered()
 							.Width(220);
 						columns.Bound(x => x.CreatedOn)
 							.Width(200);

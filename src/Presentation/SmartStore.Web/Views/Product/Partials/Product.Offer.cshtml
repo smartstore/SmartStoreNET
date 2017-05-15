@@ -1,0 +1,49 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Web;
+
+<div class="pd-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+	<meta itemprop="itemCondition" content="http://schema.org/NewCondition" />
+
+	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
+	{
+		if (Model.AddToCart.CustomerEntersPrice)
+		{
+			var dataDictCustomerPrice = new ViewDataDictionary();
+			dataDictCustomerPrice.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+			Html.RenderPartial("Product.CustomerPrice", Model, dataDictCustomerPrice);
+		}
+		else
+		{
+			<div class="pd-offer-price-container" data-partial="Price">
+				@{ Html.RenderPartial("Product.Offer.Price", Model); }
+			</div>
+		}
+	}
+
+	<div class="pd-stock-info-container" data-partial="Stock">
+		@{ Html.RenderPartial("Product.StockInfo", Model); }
+	</div>
+
+	@if (Model.GiftCard.IsGiftCard)
+	{
+		var dataDictGiftCard = new ViewDataDictionary();
+		dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = Model.GiftCardFieldPrefix;
+		Html.RenderPartial("Product.GiftCard", Model.GiftCard, dataDictGiftCard);
+	}
+
+	@if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
+	{
+		var dataDictVariants = new ViewDataDictionary();
+		dataDictVariants.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+		Html.RenderPartial("Product.Variants", Model.ProductVariantAttributes, dataDictVariants);
+	}
+
+	@{ 
+		var dataDictAddToCart = new ViewDataDictionary();
+		dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+		Html.RenderPartial("Product.Offer.Actions", Model, dataDictAddToCart);
+	}
+</div>

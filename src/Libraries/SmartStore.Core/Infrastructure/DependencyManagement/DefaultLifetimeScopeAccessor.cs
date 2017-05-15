@@ -17,7 +17,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public DefaultLifetimeScopeAccessor(ILifetimeScope rootContainer)
 		{
-			Guard.ArgumentNotNull(() => rootContainer);
+			Guard.NotNull(rootContainer, nameof(rootContainer));
 
 			//rootContainer.ChildLifetimeScopeBeginning += OnScopeBeginning;
 
@@ -46,13 +46,6 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				var scope = _state.GetState();
 				if (scope != null)
 				{
-					try
-					{
-						if (DataSettings.DatabaseIsInstalled())
-							scope.Resolve<ILogger>().Flush();
-					}
-					catch { }
-
 					scope.Dispose();
 					_state.RemoveState();
 				}

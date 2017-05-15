@@ -3,6 +3,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Tests;
 using NUnit.Framework;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Data.Tests.Logging
 {
@@ -20,7 +21,8 @@ namespace SmartStore.Data.Tests.Logging
                 IpAddress = "127.0.0.1",
                 PageUrl = "http://www.someUrl1.com",
                 ReferrerUrl = "http://www.someUrl2.com",
-                CreatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+				Logger = "UnitTest"
             };
 
             var fromDb = SaveAndLoadEntity(log);
@@ -42,8 +44,9 @@ namespace SmartStore.Data.Tests.Logging
                 LogLevel = LogLevel.Error,
                 ShortMessage = "ShortMessage1",
                 Customer = GetTestCustomer(),
-                CreatedOnUtc = new DateTime(2010, 01, 01)
-            };
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+				Logger = "UnitTest"
+			};
 
             var fromDb = SaveAndLoadEntity(log);
             fromDb.ShouldNotBeNull();

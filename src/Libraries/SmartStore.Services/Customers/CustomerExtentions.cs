@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Infrastructure;
@@ -43,7 +44,7 @@ namespace SmartStore.Services.Customers
         /// <returns>Result</returns>
         public static bool IsBackgroundTaskAccount(this Customer customer)
         {
-			Guard.ArgumentNotNull(() => customer);
+			Guard.NotNull(customer, nameof(customer));
 
 			if (!customer.IsSystemAccount || customer.SystemName.IsEmpty())
 				return false;
@@ -53,13 +54,13 @@ namespace SmartStore.Services.Customers
         }
 
         /// <summary>
-        /// Gets a value indicating whether customer a search engine
+        /// Gets a value indicating whether customer is a search engine
         /// </summary>
         /// <param name="customer">Customer</param>
         /// <returns>Result</returns>
         public static bool IsSearchEngineAccount(this Customer customer)
         {
-			Guard.ArgumentNotNull(() => customer);
+			Guard.NotNull(customer, nameof(customer));
 
 			if (!customer.IsSystemAccount || customer.SystemName.IsEmpty())
 				return false;
@@ -75,7 +76,7 @@ namespace SmartStore.Services.Customers
 		/// <returns>Result</returns>
 		public static bool IsPdfConverter(this Customer customer)
 		{
-			Guard.ArgumentNotNull(() => customer);
+			Guard.NotNull(customer, nameof(customer));
 
 			if (!customer.IsSystemAccount || customer.SystemName.IsEmpty())
 				return false;
@@ -290,14 +291,12 @@ namespace SmartStore.Services.Customers
 
 		public static List<OrganizedShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null)
 		{
-			var rawItems = customer.ShoppingCartItems.Filter(cartType, storeId);
-
-			var organizedItems = rawItems
+			var items = customer.ShoppingCartItems
+				.Filter(cartType, storeId)
 				.OrderByDescending(x => x.Id)
-				.ToList()
 				.Organize();
 
-			return organizedItems.ToList();
+			return items;
 		}
 
 		#endregion

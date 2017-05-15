@@ -39,7 +39,7 @@ namespace SmartStore.Services.Messages
         private readonly IEventPublisher _eventPublisher;
         private readonly IWorkContext _workContext;
         private readonly HttpRequestBase _httpRequest;
-		private readonly IDownloadService _downloadServioce;
+		private readonly IDownloadService _downloadService;
 
         #endregion
 
@@ -58,7 +58,7 @@ namespace SmartStore.Services.Messages
             IEventPublisher eventPublisher,
             IWorkContext workContext,
             HttpRequestBase httpRequest,
-			IDownloadService downloadServioce)
+			IDownloadService downloadService)
         {
             this._messageTemplateService = messageTemplateService;
             this._queuedEmailService = queuedEmailService;
@@ -72,7 +72,7 @@ namespace SmartStore.Services.Messages
             this._eventPublisher = eventPublisher;
             this._workContext = workContext;
             this._httpRequest = httpRequest;
-			this._downloadServioce = downloadServioce;
+			this._downloadService = downloadService;
 
 			T = NullLocalizer.Instance;
 		}
@@ -135,7 +135,7 @@ namespace SmartStore.Services.Messages
 
 			if (fileIds.Any())
 			{
-				var files = _downloadServioce.GetDownloadsByIds(fileIds);
+				var files = _downloadService.GetDownloadsByIds(fileIds);
 				foreach (var file in files)
 				{
 					email.Attachments.Add(new QueuedEmailAttachment
@@ -1115,8 +1115,8 @@ namespace SmartStore.Services.Messages
 
         public virtual int SendGenericMessage(string messageTemplateName, Action<GenericMessageContext> cfg)
         {
-            Guard.ArgumentNotNull(() => cfg);
-            Guard.ArgumentNotEmpty(() => messageTemplateName);
+            Guard.NotNull(cfg, nameof(cfg));
+            Guard.NotEmpty(messageTemplateName, nameof(messageTemplateName));
 
             var ctx = new GenericMessageContext();
             ctx.MessagenTokenProvider = _messageTokenProvider;

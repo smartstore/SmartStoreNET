@@ -1,0 +1,125 @@
+﻿@model ShopBarModel
+
+@using SmartStore.Web.Models.Common;
+
+@{ 
+	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
+}
+
+<div class="shopbar-col shopbar-tools">
+
+	<!-- Hamburger Menu -->
+	<div class="shopbar-tool d-lg-none" id="shopbar-menu">
+		<a class="shopbar-button" href="#" data-toggle="offcanvas" data-autohide="true" data-placement="left" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-menu">
+			<span class="shopbar-button-icon">
+				<i class="icm icm-menu"></i>
+			</span>
+			<span class="shopbar-button-label-sm">
+				@T("Common.Menu")
+			</span>
+		</a>
+	</div>
+
+    @{ Html.RenderWidget("shopbar_tools_before"); }
+
+	<!-- User -->
+	<div class="shopbar-tool d-lg-none" id="shopbar-user">
+		<a class="shopbar-button" href="@accountUrl">
+			<span class="shopbar-button-icon">
+				<i class="icm icm-user"></i>
+			</span>
+			<span class="shopbar-button-label-sm">
+				@T(Model.IsAuthenticated ? "Account.MyAccount" : "Account.Login")
+			</span>
+		</a>
+	</div>
+
+	@if (Model.CompareProductsEnabled)
+	{
+		<div class="shopbar-tool" id="shopbar-compare" data-target="#compare-tab">
+			<a href="@Url.Action("CompareProducts", "Catalog")"  class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
+			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+				<span class="shopbar-button-icon">
+					<i class="icm icm-repeat"></i>
+					<span class='badge badge-pill label-cart-amount badge-@labelStyle ' style="@(Model.CompareItems == 0 ? "display:none" : "")" data-bind-to="CompareSummary">@Model.CompareItems</span>
+				</span>
+				<span class="shopbar-button-label">
+					<span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
+					<strong>@T("Common.Shopbar.CompareProductsPartTwo")</strong>
+				</span>
+				<span class="shopbar-button-label-sm">
+					@T("Common.Shopbar.Compare")
+				</span>
+			</a>
+		</div>
+	}
+
+	@if (Model.WishlistEnabled)
+	{
+		<div class="shopbar-tool" id="shopbar-wishlist" data-target="#wishlist-tab">
+			<a href="@Url.RouteUrl("Wishlist")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
+				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+				<span class="shopbar-button-icon">
+					<i class="icm icm-heart"></i>
+					<span class='badge badge-pill label-cart-amount badge-@labelStyle' style="@(Model.WishlistItems == 0 ? "display:none" : "")" data-bind-to="TotalProducts">@Model.WishlistItems</span>
+				</span>
+				<span class="shopbar-button-label">
+					<span>@T("Common.Shopbar.WishlistPartOne")</span><br />
+					<strong>@T("Common.Shopbar.WishlistPartTwo")</strong>
+				</span>
+				<span class="shopbar-button-label-sm">
+					@T("Wishlist")
+				</span>
+			</a>
+		</div>
+	}
+
+	@if (Model.ShoppingCartEnabled)
+	{
+		<div class="shopbar-tool" id="shopbar-cart" data-target="#cart-tab">
+			<a href="@Url.RouteUrl("ShoppingCart")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
+			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+				<span class="shopbar-button-icon">
+					<i class="icm icm-bag"></i>
+					<span class='badge badge-pill label-cart-amount badge-@(labelStyle)' style="@(Model.ShoppingCartItems == 0 ? "display:none" : "")" data-bind-to="TotalProducts">
+						@Model.ShoppingCartItems
+					</span>
+				</span>
+				<span class="shopbar-button-label">
+					<span>@T("Common.Shopbar.BasketPartOne")</span><br />
+					<strong>@T("Common.Shopbar.BasketPartTwo")</strong>
+				</span>
+				<span class="shopbar-button-label-sm">
+					@T("Common.Shopbar.Basket")
+				</span>
+			</a>
+		</div>
+	}
+
+    @{ Html.RenderWidget("shopbar_tools_after"); }
+
+</div>
+
+@using (Html.BeginZoneContent("end", key: "offcanvas-menu"))
+{
+	<aside id="offcanvas-menu" class="offcanvas offcanvas-overlay offcanvas-left offcanvas-shadow" data-blocker="true" data-overlay="true">
+        <div class="offcanvas-content">
+            <div id="menu-container" 
+                 data-url-home="@(Url.Action("OffCanvasMenu", "Catalog"))" 
+                 data-url-item="@(Url.Action("OffCanvasMenuCategories", "Catalog"))"
+                 data-url-manufacturer="@(Url.Action("OffCanvasMenuManufacturers", "Catalog"))">
+                <!-- AJAX -->
+            </div>
+        </div>
+	</aside>
+}
+
+@using (Html.BeginZoneContent("end", key: "offcanvas-cart"))
+{
+	<aside id="offcanvas-cart" class="offcanvas offcanvas-lg offcanvas-overlay offcanvas-right offcanvas-shadow" data-lg="true" data-blocker="true" data-overlay="true">
+		<div class="offcanvas-content">
+			@Html.Action("OffCanvasCart", "ShoppingCart", new { area = "" })
+		</div>
+	</aside>
+}

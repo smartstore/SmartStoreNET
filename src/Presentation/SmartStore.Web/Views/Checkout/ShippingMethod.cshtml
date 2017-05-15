@@ -1,59 +1,67 @@
 ﻿@model CheckoutShippingMethodModel
-@using SmartStore.Core.Domain.Orders;
 @using SmartStore.Web.Models.Checkout;
-@using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_Checkout.cshtml";
-
-    //title
+    Layout = "_Checkout";
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
-      
+    Html.AddBodyCssClass("no-offcanvas-cart");
 }
 
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Shipping })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Shipping }); }
 }
 
 <div class="page shipping-method-page">
     <div class="page-title">
-        <h1>@T("Checkout.SelectShippingMethod")</h1>
+        <h1 class="h3">@T("Checkout.SelectShippingMethod")</h1>
     </div>
     <div class="page-body checkout-data">
         @using (Html.BeginForm())
-        {
-            @Html.Widget("checkout_shipping_method_top")
-            <div class="opt-list shipping-options">
-                @if (Model.Warnings.Count == 0)
-                {
-                    for (int i = 0; i < Model.ShippingMethods.Count; i++)
-                    {
-                        var shippingMethod = Model.ShippingMethods[i];
-                                
-                        <div class="opt-list-item@(shippingMethod.Selected ? " selected" : "") shipping-option-item">
+		{
+			Html.RenderWidget("checkout_shipping_method_top");
+
+			if (Model.Warnings.Count > 0)
+			{
+				<div class="alert alert-danger">
+					<ul>
+						@for (int i = 0; i < Model.Warnings.Count; i++)
+						{
+							<li>@Model.Warnings[i]</li>
+						}
+					</ul>
+				</div>
+			}
+			else
+			{
+				<ul class="list-group opt-list shipping-options">
+					@for (int i = 0; i < Model.ShippingMethods.Count; i++)
+					{
+						var shippingMethod = Model.ShippingMethods[i];
+
+						<li class="list-group-item opt-list-item shipping-option-item@(shippingMethod.Selected ? " active" : "")">
 							<div class="opt-data">
+								<div class="form-check opt-control option-name radio">
+									<label class="form-check-label">
+										<input id="shippingoption_@(i)" type="radio" name="shippingoption" class="opt-radio form-check-input"
+											   @Html.Attr("checked", "checked", shippingMethod.Selected)
+											   value="@(shippingMethod.Name)___@(shippingMethod.ShippingRateComputationMethodSystemName)" />
+										<span class="opt-name">@Html.Raw(HttpUtility.HtmlDecode(shippingMethod.Name))</span>
+									</label>
+								</div>
 								@if (shippingMethod.FeeRaw != 0)
 								{
-									<div class="opt-fee shipping-fee pull-right text-success">
+									<div class="opt-fee shipping-fee text-danger">
 										@shippingMethod.Fee
 									</div>
 								}
-								<div class="opt-control option-name">
-									<label for="shippingoption_@(i)" class="radio">
-										<input id="shippingoption_@(i)" type="radio" name="shippingoption" class="opt-radio"
-											   @Html.Attr("checked", "checked", shippingMethod.Selected)
-											   value="@(shippingMethod.Name)___@(shippingMethod.ShippingRateComputationMethodSystemName)" />
-                                        <span class="opt-name">@Html.Raw(HttpUtility.HtmlDecode(shippingMethod.Name))</span>
-									</label>
-								</div>
 							</div>
-							@if (!String.IsNullOrEmpty(shippingMethod.Description))
+							@if (shippingMethod.Description.HasValue())
 							{
-								<div class="opt-info muted shipping-option-description">
-									@if (!String.IsNullOrEmpty(shippingMethod.BrandUrl))
+								<div class="opt-info text-muted shipping-option-description">
+									@if (shippingMethod.BrandUrl.HasValue())
 									{
 										<div class="media">
 											<span class="pull-left">
-												<img class="media-object img-responsive" src="@Url.Content(shippingMethod.BrandUrl)" alt="@shippingMethod.Name" />
+												<img class="media-object img-fluid" src="@Url.Content(shippingMethod.BrandUrl)" alt="@shippingMethod.Name" />
 											</span>
 											<div class="media-body">
 												@Html.Raw(shippingMethod.Description)
@@ -65,52 +73,41 @@
 										@Html.Raw(shippingMethod.Description)
 									}
 								</div>
-							}
-                        </div>
-                    }
-                }
-                else
-                {
-                    <div class="alert alert-error">
-                        <ul>
-                            @for (int i = 0; i < Model.Warnings.Count; i++)
-                            {
-                                <li>@Model.Warnings[i]</li>
-                            }
-                        </ul>
-                    </div>
-                }
-            </div>
-			
-            <div class="select-button clearfix">
-                <a class="btn pull-left" href="@Url.Action("ShippingAddress")">
-                    <i class="fa fa-caret-left"></i>&nbsp;
-                    @T("Common.Back")
-                </a>    
-                <input type="submit" name="nextstep" id="nextstep" style="display:none" />
+						}
+						</li>
+					}
+				</ul>
+			}
 
-                <button class="btn btn-warning pull-right shipping-method-next-step-button" onclick="$('#nextstep').trigger('click');return false;">
-                    @T("Checkout.NextButton")
-                    &nbsp;<i class="fa fa-caret-right"></i>
+            <div class="buttons">
+                <a class="btn btn-secondary btn-lg" href="@Url.Action("ShippingAddress")">
+                    <i class="fa fa-angle-left"></i>
+                    <span>@T("Common.Back")</span>
+                </a>    
+
+                <input type="submit" name="nextstep" id="nextstep" class="d-none" />
+
+                <button class="btn btn-warning btn-lg shipping-method-next-step-button" onclick="$('#nextstep').trigger('click');return false;">
+					<span>@T("Checkout.NextButton")</span>
+                    <i class="fa fa-angle-right"></i>
                 </button>
             </div>
-			
-            @Html.Widget("checkout_shipping_method_bottom")
+
+            Html.RenderWidget("checkout_shipping_method_bottom");
         }
     </div>
 </div>
 
 <script>
 	$(function () {
-
 		$('.checkout-data .opt-radio').on('change', function (e) {
 			var radio = $(this);
 			var systemName = radio.val();
 
-			$('.checkout-data .opt-list-item').removeClass('selected');
+			$('.checkout-data .opt-list-item').removeClass('active');
 
 			var item = radio.closest('.opt-list-item');
-			item.addClass("selected");
+			item.addClass("active");
 		});
 	});
 </script>

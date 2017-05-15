@@ -1,0 +1,33 @@
+﻿@model IList<CategoryModel>
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	if (Model.Count == 0)
+	{
+		return;
+	}
+}
+
+<div class="artlist artlist-grid artlist-6-cols artlist-boxed artlist-homepage-categories">
+	@foreach (var item in Model)
+	{
+		var picture = item.PictureModel;
+		var url = Url.RouteUrl("Category", new { SeName = item.SeName });
+		<article class="art" data-id="@item.Id">
+			<div class="art-picture-block">
+				@if (picture != null && picture.ImageUrl.HasValue())
+				{
+					<a class="art-picture img-center-container" href="@url" title="@picture.Title">
+						<img src="@picture.ImageUrl" alt="@picture.AlternateText" />
+					</a>
+				}
+			</div>
+			<div class="art-genericname">
+				<a href="@url" title="@item.Name">
+					<span>@item.Name</span>
+				</a>
+			</div>
+		</article>
+	}
+</div>

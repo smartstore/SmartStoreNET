@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
+    Layout = "_AdminPopupLayout";
 }
 @model SpecificationAttributeOptionModel
 @{    
@@ -16,5 +16,6 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdateOption", Model)
+
+    Html.RenderPartial("_CreateOrUpdateOption", Model);
 }

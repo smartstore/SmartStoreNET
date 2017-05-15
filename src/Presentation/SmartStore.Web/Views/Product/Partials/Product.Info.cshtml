@@ -1,0 +1,59 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	var brand = Model.Manufacturers == null ? null : Model.Manufacturers.FirstOrDefault();
+}
+
+<div class="pd-info pd-group">
+	<!-- Brand -->
+	@if (brand != null)
+	{
+		<div class="pd-brand-block">
+			<a class="pd-brand" href="@Url.RouteUrl("Manufacturer", new { SeName = brand.SeName })">
+				@if (brand.Picture != null && brand.Picture.ImageUrl.HasValue() && brand.Picture.PictureId != 0)
+				{
+					<img class="pd-brand-picture" src="@brand.Picture.ImageUrl" alt="@brand.Picture.AlternateText" title="@brand.Picture.Title" />
+				}
+				else
+				{
+					<span>@brand.Name</span>
+				}
+			</a>
+			<meta itemprop="brand" content="@brand.Name">
+		</div>
+	}
+
+	<!-- Title -->
+	<div class="page-title">
+		<h1 class="pd-name pd-name-sm" itemprop="name">
+			@if (Model.IsAssociatedProduct && Model.VisibleIndividually)
+			{
+				<a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@T("Products.Details")">@Model.Name</a>
+			}
+			else
+			{
+				@Model.Name
+			}	
+		</h1>
+	</div>
+
+	<!-- Short description -->
+	@if (Model.ShortDescription.HasValue())
+	{
+		<div class="pd-description">
+			@Html.Raw(Model.ShortDescription)
+		</div>
+	}
+</div>
+
+<!-- Review Overview -->
+@if (!Model.IsAssociatedProduct && Model.DisplayProductReviews)
+{
+	Html.RenderAction("ReviewSummary", new { id = Model.Id });
+}
+
+
+
+

@@ -1,0 +1,91 @@
+﻿@model NavigationModel
+@using SmartStore.Collections;
+@{ 
+    Html.AppendScriptParts(true, Url.Content("~/Themes/Flex/Scripts/smartstore.megamenu.js"));
+    var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null ? Model.SelectedNode.Parent.Value.EntityId : Model.SelectedNode.Value.EntityId;
+}
+
+@functions {
+    private string GetNodeLink(TreeNode<MenuItem> node)
+    {
+        return node.Value.GenerateUrl(this.Url);
+    }
+
+    private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state)
+    {
+        var liClasses = new List<string>();
+
+        liClasses.Add("nav-item");
+
+        if (node.Depth <= 1 && node.HasChildren)
+        {
+            liClasses.Add(node.Depth > 0 ? "dropdown-submenu" : "dropdown");
+        }
+
+        if ((state & NodePathState.Expanded) == NodePathState.Expanded)
+        {
+            liClasses.Add("expanded");
+        }
+
+        if ((state & NodePathState.Selected) == NodePathState.Selected)
+        {
+            liClasses.Add("selected");
+        }
+
+        return liClasses.Count > 0 ? String.Join(" ", liClasses) : null;
+    }
+}
+
+<div class="megamenu-nav megamenu-nav--prev">
+    <a href = "#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-left"></i></a>
+</div>
+
+<ul class="navbar-nav flex-row flex-nowrap" 
+    data-selected-menu-item="@currentNavItem" 
+    data-current-category-id="@CurrentCategoryId" 
+    data-current-product-id="@CurrentProductId"
+    data-current-manufacturer-id="@CurrentManufacturerId">
+
+    @{ Html.RenderWidget("mainmenu_before_first_item"); }
+
+    @foreach(var node in Model.Root.Children)
+    {
+        var item = node.Value;
+
+        if (!item.Visible)
+        {
+            continue;
+        }
+
+        var itemUrl = GetNodeLink(node);
+        var itemState = node.GetNodePathState(Model.Path);
+        var isMegaMenuActive = node.GetMetadata<bool?>("IsMegaMenuActive", false);
+        var isDropDownActive = isMegaMenuActive == null ? true : (bool)isMegaMenuActive;
+        
+        <li class='@(GetCssClassForNode(node, itemState))' id="main-nav-item-@item.EntityId" data-id="@item.EntityId">
+            @if(node.HasChildren && isDropDownActive)
+            {   
+                <a href="@itemUrl" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu-@item.EntityId">
+                    @item.Text
+                </a>
+            }
+            else
+            {
+                <a href="@itemUrl" class="nav-link">
+                    @item.Text
+                </a>
+            }
+
+            @if(!String.IsNullOrEmpty(item.BadgeText))
+            {
+                <label class="badge badge-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
+            }
+        </li>
+    }
+
+    @{ Html.RenderWidget("mainmenu_after_last_item"); }
+</ul>
+
+<div class="megamenu-nav megamenu-nav--next">
+    <a href = "#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-right"></i></a>
+</div>

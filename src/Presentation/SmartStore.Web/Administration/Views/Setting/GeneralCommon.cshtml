@@ -69,23 +69,22 @@
 		}
 	}
 </script>
-    @Html.Action("StoreScopeConfiguration", "Setting")
+
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
     @Html.ValidationSummary(false)
     
     @(Html.SmartStore().TabStrip().Name("generalsettings-edit").Items(x =>
-    {
-        x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings()).Selected(true);
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SEOSettings").Text).Content(@TabSEOSettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SecuritySettings").Text).Content(@TabSecuritySettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.LocalizationSettings").Text).Content(TabLocalizationSettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.PdfSettings").Text).Content(@TabPdfSettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings").Text).Content(@TabCompanyInformationSettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.ContactDataSettings").Text).Content(@TabContactDataSettings()); 
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SocialSettings").Text).Content(@TabSocialSettings());
-        
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings").Text).Content(@TabFullTextSettings());
-    }))
-    
+     {
+         x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings()).Selected(true);
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SEOSettings").Text).Content(@TabSEOSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SecuritySettings").Text).Content(@TabSecuritySettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.LocalizationSettings").Text).Content(TabLocalizationSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.PdfSettings").Text).Content(@TabPdfSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings").Text).Content(@TabCompanyInformationSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.ContactDataSettings").Text).Content(@TabContactDataSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SocialSettings").Text).Content(@TabSocialSettings());
+     }))
 }
 @helper TabStoreInformationSettings()
     {
@@ -292,6 +291,15 @@
 				</td>
 			</tr>
 			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SecuritySettings.ForceSslForAllPages)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SecuritySettings.ForceSslForAllPages)
+					@Html.ValidationMessageFor(model => model.SecuritySettings.ForceSslForAllPages)
+				</td>
+			</tr>
+			<tr>
 				<td colspan="2">&nbsp;</td>
 			</tr>
 			<tr>
@@ -469,15 +477,6 @@
 @helper TabLocalizationSettings()
 {
     <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LocalizationSettings.LoadAllLocaleRecordsOnStartup)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LocalizationSettings.LoadAllLocaleRecordsOnStartup)
-                @Html.ValidationMessageFor(model => model.LocalizationSettings.LoadAllLocaleRecordsOnStartup)
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
@@ -890,72 +889,5 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.YoutubeLink)
             </td>
         </tr>
-    </table>
-}
-
-@helper TabFullTextSettings()
-{
-    <table class="adminContent">
-        <tr>
-            <td colspan="2">
-                @if (Model.FullTextSettings.Supported)
-                {
-                    <div class="alert alert-success fade in">
-                        @T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Supported")
-                    </div>
-                }
-                else
-                {
-                    <div class="alert alert-danger fade in">
-                        @T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.NotSupported")
-                    </div>
-                }
-            </td>
-        </tr>
-        @if (Model.FullTextSettings.Supported)
-        {
-            <tr>
-                <td class="adminTitle">
-                    <div class="ctl-label">
-                        @if (Model.FullTextSettings.Enabled)
-                        {
-                            @T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.CurrenlyEnabled")
-                        }
-                        else
-                        {
-                            @T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.CurrenlyDisabled")
-                        }
-                    </div>
-                </td>
-                <td class="adminData">
-                    @if (Model.FullTextSettings.Enabled)
-                    {
-                        <button type="submit" name="togglefulltext" value="togglefulltext" class="btn btn-success">
-                            <i class="fa fa-power-off"></i>&nbsp;&nbsp;
-                            @T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Disable").Text
-                        </button>
-                    }
-                    else
-                    {
-                        <button type="submit" name="togglefulltext" value="togglefulltext" class="btn btn-primary">
-                            <i class="fa fa-power-off"></i>&nbsp;&nbsp;
-                            @T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Enable").Text
-                        </button>
-                    }
-                </td>
-            </tr>
-            if (Model.FullTextSettings.Enabled)
-            {   
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.FullTextSettings.SearchMode)
-                    </td>
-                    <td class="adminData">
-                        @Html.DropDownListFor(model => model.FullTextSettings.SearchMode, Model.FullTextSettings.SearchModeValues)
-                        @Html.ValidationMessageFor(model => model.FullTextSettings.SearchMode)
-                    </td>
-                </tr>
-            }
-        }
     </table>
 }

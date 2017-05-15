@@ -1,0 +1,56 @@
+﻿@model ProfileInfoModel
+
+@using SmartStore.Web.Models.Profile;
+
+<div class="profile-info-box row">
+
+    <div class="user-details col-2 text-center">
+        @if (Model.AvatarEnabled && !String.IsNullOrEmpty(Model.AvatarUrl))
+        {
+            <div class="avatar">
+                <img src="@(Model.AvatarUrl)" class="avatar-img img-thumbnail" alt="Avatar" />
+            </div>         
+        }
+        @if (Model.LocationEnabled)
+        {
+            <div class="profile-stat">
+                @T("Profile.Country"): <span class="profile-stat-value">@Model.Location</span>
+            </div>  
+        }
+        @if (Model.PMEnabled)
+        {
+            <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerProfileId })'>
+                <i class="fa fa-user"></i>
+                <span>@T("Forum.PrivateMessages.PM")</span>
+            </a>
+        }
+        
+        @{ Html.RenderWidget("profile_page_info_userdetails"); }
+    </div>
+
+    <div class="user-stats col-10">
+        <div class="title h4">
+            @T("Profile.Statistics")
+        </div>
+        @if (Model.TotalPostsEnabled)
+        {
+            <div class="profile-stat">
+                @T("Profile.TotalPosts"): <span class="profile-stat-value">@Model.TotalPosts</span>
+            </div>         
+        }
+        @if (Model.JoinDateEnabled)
+        {
+            <div class="profile-stat">
+                @T("Profile.JoinDate"): <span class="profile-stat-value">@Model.JoinDate</span>
+            </div>
+        }
+        @if (Model.DateOfBirthEnabled)
+        {
+            <div class="profile-stat">
+                @T("Profile.DateOfBirth"): <span class="profile-stat-value">@Model.DateOfBirth</span>
+            </div>
+        }
+
+        @{ Html.RenderWidget("profile_page_info_userstats"); }
+    </div>
+</div>

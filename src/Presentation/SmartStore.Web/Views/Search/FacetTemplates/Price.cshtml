@@ -1,0 +1,49 @@
+﻿@model FacetGroup
+
+@using SmartStore.Core.Search.Facets
+@using SmartStore.Services.Search.Extensions;
+
+@{ 
+	var customRangeFacet = Model.Facets.FirstOrDefault(x => x.Key == "custom");
+}
+
+<div class="facet-body-inner">
+	@foreach (var facet in Model.Facets)
+	{
+		if (facet.Key != "custom" && facet.Published)
+		{
+			<div class="facet-item facet-radio" data-href="@Url.FacetToggle(facet)">
+				<label>
+					<input class="facet-control-native" type="radio" name="optradio-@(Model.Key)" value="@facet.Value.ToString()" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+					<span class="facet-control-ui"></span>
+					<span class="facet-label has-count" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>
+						@(facet.Value.Label ?? facet.Value.ToString())
+					</span>
+				</label>
+			</div>
+		}
+	}
+
+	@if (customRangeFacet != null)
+	{
+		string value = customRangeFacet.Value.Value != null ? customRangeFacet.Value.Value.ToString() : "";
+		string upperValue = customRangeFacet.Value.UpperValue != null ? customRangeFacet.Value.UpperValue.ToString() : "";
+
+		<div class="facet-range-container d-flex align-items-center mt-2">
+			<div class="flex-grow-1 pr-2">
+				<input type="number" maxlength="7" id="price-range-from" class="facet-range-from form-control form-control-sm" value="@value" placeholder="@T("Search.PriceRange.From")" />
+			</div>
+			<div class="flex-grow-0 font-weight-700">
+				<span>-</span>
+			</div>
+			<div class="flex-grow-1 pl-2">
+				<input type="number" maxlength="7" id="price-range-to" class="facet-range-to form-control form-control-sm" value="@upperValue" placeholder="@T("Search.PriceRange.To")" />
+			</div>
+			<div class="flex-grow-0 pl-3">
+				<button type="button" class="btn-custom-range btn btn-primary btn-sm btn-icon" id="btn-custom-price-range" data-qname="p">
+					<i class="fa fa-angle-right fs-h5"></i>
+				</button>
+			</div>
+		</div>
+	}
+</div>

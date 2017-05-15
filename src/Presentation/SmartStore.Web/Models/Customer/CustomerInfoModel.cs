@@ -42,6 +42,10 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.Fields.Gender")]
         public string Gender { get; set; }
 
+        public bool TitleEnabled { get; set; }
+        [SmartResourceDisplayName("Account.Fields.Title")]
+        public string Title { get; set; }
+        
         [SmartResourceDisplayName("Account.Fields.FirstName")]
         [AllowHtml]
         public string FirstName { get; set; }
@@ -139,17 +143,12 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.AssociatedExternalAuth")]
         public IList<AssociatedExternalAuthModel> AssociatedExternalAuthRecords { get; set; }
 
-        public CustomerNavigationModel NavigationModel { get; set; }
-
-
         #region Nested classes
 
         public partial class AssociatedExternalAuthModel : EntityModelBase
         {
             public string Email { get; set; }
-
             public string ExternalIdentifier { get; set; }
-
             public string AuthMethodName { get; set; }
         }
         

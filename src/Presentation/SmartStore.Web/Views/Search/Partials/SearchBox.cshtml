@@ -1,0 +1,34 @@
+﻿@using SmartStore.Web.Models.Catalog;
+@model SearchBoxModel
+@{
+	var labelStyle = GetThemeVariable<string>("search-button-style", "primary");
+	if (GetThemeVariable<bool>("search-button-flat"))
+	{
+		labelStyle += " btn-flat";
+	}
+}
+
+@using (Html.BeginRouteForm("Search", FormMethod.Get, new { @class = "instasearch-form" }))
+{
+	<input type="text"
+			id="instasearch"
+			class="instasearch-term form-control"
+			name="q"
+			value="@Model.CurrentQuery"
+			placeholder="@T("Search.SearchBox.Tooltip")"
+		    data-instasearch="@(Model.InstantSearchEnabled ? "true" : "false")"
+			data-minlength="@(Model.SearchTermMinimumLength.ToString())"
+			data-showthumbs="@(Model.ShowProductImagesInInstantSearch.ToString().ToLower())"
+			data-url="@Url.RouteUrl("InstantSearch")"
+			@(Model.InstantSearchEnabled ? Html.Raw(" autocomplete=\"off\"") : null) />
+
+	<button type="submit" class="btn btn-@labelStyle btn-icon instasearch-button" title="@T("Search")">
+		<i class="icm icm-magnifier instasearch-icon"></i>
+	</button>
+
+	<div id="instasearch-drop">
+		<div class="instasearch-drop-body clearfix"></div>
+	</div>
+
+    Html.RenderWidget("searchbox");
+}

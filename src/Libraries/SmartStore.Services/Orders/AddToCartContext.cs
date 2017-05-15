@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Services.Orders
 {
@@ -24,8 +24,8 @@ namespace SmartStore.Services.Orders
 		public Customer Customer { get; set; }
 		public Product Product { get; set; }
 		public ShoppingCartType CartType { get; set; }
-		public NameValueCollection AttributeForm { get; set; }
-		public string Attributes { get; set; }
+		public ProductVariantQuery VariantQuery { get; set; }
+		public string AttributesXml { get; set; }
 		public decimal CustomerEnteredPrice { get; set; }
 		public int Quantity { get; set; }
 		public bool AddRequiredProducts { get; set; }

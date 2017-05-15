@@ -54,35 +54,33 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * and many more...
 
 ## Project Status
-SmartStore.NET V2.5.0 has been released on March 03, 2016. The highlights are:
+SmartStore.NET V2.6.0 has been released on June 23, 2016. The highlights are:
 
- * New import/export framework (profiles, filters, mapping, projections, scheduling, deployment... just everything!)
- * TaskScheduler: Rewritten from scratch to be suitable for Web Farms (including support for cron expressions)
- * Payment and shipping methods by customer roles
- * Restrict payment methods to countries
- * Restrict payment methods to shipping methods
- * Email attachment support for message templates
- * Attach order invoice PDF automatically to order notification emails
- * Overall performance increase
- * Lots of bug fixes
+* Major improvements in Importer & Exporter: better field mapping, higher performance, bug fixes etc.
+* 'PayPal PLUS' payment plugin
+* 'paydirekt' payment plugin
+* 'Viveum' payment plugin
+* 'BeezUP' export provider
+* (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
+* Lots of bug fixes
 
 
 
-##Try it online
+## Try it online
 
 We have set up a live online demo for you so you are able to test SmartStore.NET without local installation. Get a first impression and test all available features in the front- and in the backend. Please keep in mind that the backend demo is shared and other testers can modify data at the same time.
 
 * [**Frontend**](http://frontend.smartstore.net/en) (User: demo, PWD: 1234)
 * [**Backend**](http://backend.smartstore.net/en/login) (User: demo, PWD: 1234)
 
-##How to install
+## How to install
 
 * Download the latest stable release from the download tab and unzip it to your web folder
 * Setup a website in IIS and point the file directory to your unzipped folder
 * Fire up your browser and follow the installation instructions
 * Enjoy ;-)
 
-###System requirements
+### System requirements
 
 * IIS 7+
 * ASP.NET 4.5

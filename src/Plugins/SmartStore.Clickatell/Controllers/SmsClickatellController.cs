@@ -1,98 +1,94 @@
 ﻿using System;
 using System.Web.Mvc;
-using SmartStore.Core.Plugins;
 using SmartStore.Clickatell.Models;
-using SmartStore.Clickatell;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Localization;
+using SmartStore.Core.Plugins;
+using SmartStore.Services;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Clickatell.Controllers
 {
-
 	[AdminAuthorize]
     public class SmsClickatellController : PluginControllerBase
     {
-        private readonly ClickatellSettings _clickatellSettings;
-        private readonly ISettingService _settingService;
+		private readonly ICommonServices _services;
         private readonly IPluginFinder _pluginFinder;
-        private readonly ILocalizationService _localizationService;
 
-        public SmsClickatellController(ClickatellSettings clickatellSettings,
-            ISettingService settingService, IPluginFinder pluginFinder,
-            ILocalizationService localizationService)
+        public SmsClickatellController(
+			ICommonServices services,
+			IPluginFinder pluginFinder)
         {
-            this._clickatellSettings = clickatellSettings;
-            this._settingService = settingService;
-            this._pluginFinder = pluginFinder;
-            this._localizationService = localizationService;
+			_services = services;
+            _pluginFinder = pluginFinder;
         }
 
-        public ActionResult Configure()
-        {
-            var model = new SmsClickatellModel();
-            model.Enabled = _clickatellSettings.Enabled; 
-            model.PhoneNumber = _clickatellSettings.PhoneNumber;
-            model.ApiId = _clickatellSettings.ApiId;
-            model.Username = _clickatellSettings.Username;
-            model.Password = _clickatellSettings.Password;
-            return View(model);
+		public ActionResult Configure()
+		{
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<ClickatellSettings>(storeScope);
+
+			var model = new SmsClickatellModel
+			{
+				Enabled = settings.Enabled,
+				PhoneNumber = settings.PhoneNumber,
+				ApiId = settings.ApiId
+			};
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
+
+			return View(model);
         }
 
-        [HttpPost, ActionName("Configure")]
-        [FormValueRequired("save")]
-        public ActionResult ConfigurePOST(SmsClickatellModel model)
+        [HttpPost, FormValueRequired("save")]
+        public ActionResult Configure(SmsClickatellModel model, FormCollection form)
         {
-            if (!ModelState.IsValid)
-            {
-                return Configure();
-            }
-            
-            //save settings
-            _clickatellSettings.Enabled = model.Enabled; 
-            _clickatellSettings.PhoneNumber = model.PhoneNumber;
-            _clickatellSettings.ApiId = model.ApiId;
-            _clickatellSettings.Username = model.Username;
-            _clickatellSettings.Password = model.Password;
-            _settingService.SaveSetting(_clickatellSettings);
+			if (ModelState.IsValid)
+			{
+				var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+				int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+				var settings = _services.Settings.LoadSetting<ClickatellSettings>(storeScope);
 
-            return View(model);
-        }
+				settings.Enabled = model.Enabled;
+				settings.PhoneNumber = model.PhoneNumber;
+				settings.ApiId = model.ApiId;
 
-        [HttpPost, ActionName("Configure")]
-        [FormValueRequired("test-sms")]
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
+
+				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			}
+
+			return Configure();
+		}
+
+        [HttpPost, ActionName("Configure"), FormValueRequired("test-sms")]
         public ActionResult TestSms(SmsClickatellModel model)
         {
             try
             {
-                if (String.IsNullOrEmpty(model.TestMessage))
+                if (model.TestMessage.IsEmpty())
                 {
-                    model.TestSmsResult = "Enter test message";
+					model.TestSucceeded = false;
+					model.TestSmsResult = T("Plugins.Sms.Clickatell.EnterMessage");
                 }
                 else
                 {
                     var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.Clickatell");
-                    if (pluginDescriptor == null)
-                        throw new Exception("Cannot load the plugin");
                     var plugin = pluginDescriptor.Instance() as ClickatellSmsProvider;
-                    if (plugin == null)
-                        throw new Exception("Cannot load the plugin");
 
-                    if (!plugin.SendSms(model.TestMessage)) 
-                    {
-                        model.TestSmsResult = _localizationService.GetResource("Plugins.Sms.Clickatell.TestFailed");
-                    }
-                    else
-                    {
-                        model.TestSmsResult = _localizationService.GetResource("Plugins.Sms.Clickatell.TestSuccess");
-                    }
+					plugin.SendSms(model.TestMessage);
+
+					model.TestSucceeded = true;
+					model.TestSmsResult = T("Plugins.Sms.Clickatell.TestSuccess");
                 }
             }
-            catch(Exception exc)
+            catch (Exception exception)
             {
-                model.TestSmsResult = exc.ToString();
+				model.TestSucceeded = false;
+				model.TestSmsResult = T("Plugins.Sms.Clickatell.TestFailed");
+				model.TestSmsDetailResult = exception.Message;
             }
 
             return View("Configure", model);

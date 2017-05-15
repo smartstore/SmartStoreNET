@@ -1,0 +1,26 @@
+﻿@model ProductSummaryModel.SummaryItem
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	var list = Model.Parent;
+	int ratingPercent = 0;
+	if (Model.TotalReviews != 0)
+	{
+		ratingPercent = ((Model.RatingSum * 100) / Model.TotalReviews) / 5;
+	}
+
+	string reviewTitle = "";
+	if (Model.TotalReviews > 0)
+	{
+		reviewTitle = Model.TotalReviews + " " + (Model.TotalReviews == 1 ? T("Reviews.Overview.Review") : T("Reviews.Overview.Reviews"));
+	}
+}
+
+<div class="art-rating" title="@reviewTitle">
+	<div class="rating">
+		<div style="width: @(ratingPercent)%"></div>
+	</div>
+</div>
+
+

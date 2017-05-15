@@ -10,7 +10,6 @@ using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public abstract class ComponentBuilder<TComponent, TBuilder> : IHtmlString, IHideObjectMembers 
         where TComponent : Component
         where TBuilder : ComponentBuilder<TComponent, TBuilder>
@@ -19,8 +18,8 @@ namespace SmartStore.Web.Framework.UI
 
         protected ComponentBuilder(TComponent component, HtmlHelper htmlHelper)
         {
-            Guard.ArgumentNotNull(() => component);
-            Guard.ArgumentNotNull(() => htmlHelper);
+            Guard.NotNull(component, nameof(component));
+            Guard.NotNull(htmlHelper, nameof(htmlHelper));
             
             this.Component = component;
             this.HtmlHelper = htmlHelper;
@@ -72,28 +71,39 @@ namespace SmartStore.Web.Framework.UI
             renderer.ViewData = this.HtmlHelper.ViewData;
         }
 
-        public TBuilder WithRenderer<T>()
+		public TBuilder WithRenderer(ComponentRenderer<TComponent> instance)
+		{
+			Guard.NotNull(instance, nameof(instance));
+
+			return this.WithRenderer<ComponentRenderer<TComponent>>(instance);
+		}
+
+		public TBuilder WithRenderer<T>(ComponentRenderer<TComponent> instance) 
             where T : ComponentRenderer<TComponent>
         {
-            return this.WithRenderer(typeof(T));
-        }
+            Guard.NotNull(instance, nameof(instance));
 
-        public TBuilder WithRenderer<T>(ComponentRenderer<TComponent> instance) 
-            where T : ComponentRenderer<TComponent>
-        {
-            Guard.ArgumentNotNull(() => instance);
-            return this.WithRenderer(typeof(T));
-        }
+			this.Renderer = instance;
+			return this as TBuilder;
+		}
 
-        public TBuilder WithRenderer(Type rendererType)
+		public TBuilder WithRenderer<T>()
+			where T : ComponentRenderer<TComponent>
+		{
+			return this.WithRenderer(typeof(T));
+		}
+
+		public TBuilder WithRenderer(Type rendererType)
         {
-            Guard.ArgumentNotNull(() => rendererType);
+            Guard.NotNull(rendererType, nameof(rendererType));
             Guard.Implements<ComponentRenderer<TComponent>>(rendererType);
+
             var renderer = Activator.CreateInstance(rendererType) as ComponentRenderer<TComponent>;
             if (renderer != null)
             {
                 this.Renderer = renderer;
             }
+
             return this as TBuilder;
         }
 
@@ -103,7 +113,13 @@ namespace SmartStore.Web.Framework.UI
             return this as TBuilder;
         }
 
-        public virtual TBuilder HtmlAttributes(object attributes)
+		public virtual TBuilder ComponentVersion(BootstrapVersion value)
+		{
+			this.Component.ComponentVersion = value;
+			return this as TBuilder;
+		}
+
+		public virtual TBuilder HtmlAttributes(object attributes)
         {
             return this.HtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }

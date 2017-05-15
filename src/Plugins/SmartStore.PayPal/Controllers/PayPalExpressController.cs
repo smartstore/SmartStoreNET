@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Services;
@@ -66,38 +67,21 @@ namespace SmartStore.PayPal.Controllers
 
 		private string GetCheckoutButtonUrl(PayPalExpressPaymentSettings settings)
 		{
-			const string expressCheckoutButton = "https://www.paypalobjects.com/{0}/i/btn/btn_xpressCheckout.gif";
+			var expressCheckoutButton = "~/Plugins/SmartStore.PayPal/Content/checkout-button-default.png";
+            var cultureString = Services.WorkContext.WorkingLanguage.LanguageCulture;
 
-			HttpWebResponse response = null;
-			var culture = Services.WorkContext.WorkingLanguage.LanguageCulture;
+            if (cultureString.StartsWith("en-"))
+            {
+                expressCheckoutButton = "~/Plugins/SmartStore.PayPal/Content/checkout-button-en.png";
+            }
+            else if (cultureString.StartsWith("de-"))
+            {
+                expressCheckoutButton = "~/Plugins/SmartStore.PayPal/Content/checkout-button-de.png";
+            }
 
-			if (settings.SecurityProtocol.HasValue)
-			{
-				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
-			}
+            return expressCheckoutButton;
 
-			var buttonUrl = expressCheckoutButton.FormatInvariant(culture.Replace("-", "_"));
-			var request = (HttpWebRequest)WebRequest.Create(buttonUrl);
-			request.Method = "HEAD";
-
-			try
-			{
-				response = (HttpWebResponse)request.GetResponse();
-				return buttonUrl;
-			}
-			catch (WebException)
-			{
-				/* A WebException will be thrown if the status of the response is not `200 OK` */
-				return expressCheckoutButton.FormatInvariant("en_US");
-			}
-			finally
-			{
-				if (response != null)
-				{
-					response.Close();
-				}
-			}
-		}
+        }
 
 		[AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure()
@@ -134,12 +118,14 @@ namespace SmartStore.PayPal.Controllers
 
             model.Copy(settings, false);
 
-            storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+			using (Services.Settings.BeginScope())
+			{
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
 
-			// multistore context not possible, see IPN handling
-			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+				// multistore context not possible, see IPN handling
+				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+			}
 
-            Services.Settings.ClearCache();
             NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
 			return Configure();
@@ -275,7 +261,7 @@ namespace SmartStore.PayPal.Controllers
 						error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
 					}
 
-					Logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, customer);
+					Logger.Error(new Exception(error.ToString()), resp.Errors[0].ShortMessage);
                     
                     NotifyError(error.ToString(), false);
 
@@ -284,7 +270,7 @@ namespace SmartStore.PayPal.Controllers
 			}
 			catch (Exception ex)
 			{
-				Logger.InsertLog(LogLevel.Error, ex.Message, ex.StackTrace, Services.WorkContext.CurrentCustomer);
+				Logger.Error(ex);
 
                 NotifyError(ex.Message, false);
 
@@ -336,9 +322,9 @@ namespace SmartStore.PayPal.Controllers
                     error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
                 }
 
-				Logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, Services.WorkContext.CurrentCustomer);
+				Logger.Error(new Exception(error.ToString()), resp.Errors[0].ShortMessage);
 
-                NotifyError(error.ToString(), false);
+				NotifyError(error.ToString(), false);
 
                 return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
             }

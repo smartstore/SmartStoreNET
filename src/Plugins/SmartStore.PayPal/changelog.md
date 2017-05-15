@@ -1,5 +1,33 @@
 ﻿#Release Notes
 
+##Paypal 2.6.0.7
+###Bugfixes
+* PayPal Express: Fixed net price issue.
+
+##Paypal 2.6.0.6
+###Bugfixes
+* PayPal PLUS: Skip payment if cart total is zero.
+* PayPal PLUS: Do not display payment wall if method is filtered
+###Improvements
+* PayPal PLUS: Log more information in case of a request failure.
+
+##Paypal 2.6.0.5
+###Bugfixes
+* PayPal PLUS: Fixed "Cannot perform runtime binding on a null reference" when rendering the payment wall.
+
+##Paypal 2.6.0.4
+###Bugfixes
+* PayPal PLUS: Excluding tax issue. Fixed "Transaction amount details (subtotal, tax, shipping) must add up to specified amount total".
+
+##Paypal 2.6.0.3
+###Bugfixes
+* PayPal PLUS: Integration review through PayPal
+* PayPal PLUS: Generic attribute caching problem. Fixed "Item amount must add up to specified amount subtotal (or total if amount details not specified)".
+
+##PayPal 2.6.0.1
+###Improvements
+* Added PayPal partner attribution Id as request header
+
 ##Paypal 2.5.0.2
 ###New Features
 * PayPal PLUS payment provider

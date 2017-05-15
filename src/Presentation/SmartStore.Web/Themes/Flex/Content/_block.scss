@@ -1,0 +1,44 @@
+/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+.block {
+    &:not(:last-child) {
+        margin-bottom: 1.8rem;
+    }
+
+    .block-title {
+        font-size: $font-size-h3;
+        border-bottom: 1px solid rgba(0,0,0, 0.12);
+        padding-top: 0.75em;
+        padding-bottom: 0.75em;
+
+        > * {
+            // Most probably a heading tag
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    .block-body {
+        padding-top: 1rem;
+    }
+
+    &.block-boxed {
+        border: 1px dotted rgba(0,0,0, 0.2);
+        .block-title > * { font-weight: $font-weight-normal; }
+    }
+
+    &.block-boxed .block-title {
+        color: $gray-light;
+        margin-left: 1.5rem;
+        margin-right: 1.5rem;
+    }
+}
+
+.page-body > .block:not(.block-boxed):first-child {
+    margin-top: 0 !important;
+
+    .block-title {
+        padding-top: 0;
+    }
+}

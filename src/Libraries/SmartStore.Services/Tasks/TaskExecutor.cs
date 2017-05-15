@@ -15,7 +15,6 @@ using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Tasks
 {
-
 	public class TaskExecutor : ITaskExecutor
     {
         private readonly IScheduleTaskService _scheduledTaskService;
@@ -24,15 +23,17 @@ namespace SmartStore.Services.Tasks
 		private readonly IWorkContext _workContext;
         private readonly Func<Type, ITask> _taskResolver;
 		private readonly IComponentContext _componentContext;
+		private readonly IAsyncState _asyncState;
 
-        public const string CurrentCustomerIdParamName = "CurrentCustomerId";
+		public const string CurrentCustomerIdParamName = "CurrentCustomerId";
 
         public TaskExecutor(
 			IScheduleTaskService scheduledTaskService, 
 			IDbContext dbContext,
  			ICustomerService customerService,
 			IWorkContext workContext,
-			IComponentContext componentContext, 
+			IComponentContext componentContext,
+			IAsyncState asyncState,
 			Func<Type, ITask> taskResolver)
         {
             this._scheduledTaskService = scheduledTaskService;
@@ -40,6 +41,7 @@ namespace SmartStore.Services.Tasks
 			this._customerService = customerService;
 			this._workContext = workContext;
 			this._componentContext = componentContext;
+			this._asyncState = asyncState;
             this._taskResolver = taskResolver;
 
             Logger = NullLogger.Instance;
@@ -72,7 +74,10 @@ namespace SmartStore.Services.Tasks
 			{
 				taskType = Type.GetType(task.Type);
 
-				Debug.WriteLineIf(taskType == null, "Invalid task type: " + task.Type.NaIfEmpty());
+				if (taskType == null)
+				{
+					Logger.DebugFormat("Invalid scheduled task type: {0}", task.Type.NaIfEmpty());
+				}
 
 				if (taskType == null)
 					return;
@@ -118,7 +123,7 @@ namespace SmartStore.Services.Tasks
 
 				// create & set a composite CancellationTokenSource which also contains the global app shoutdown token
 				var cts = CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, new CancellationTokenSource().Token);
-				AsyncState.Current.SetCancelTokenSource<ScheduleTask>(cts, stateName);
+				_asyncState.SetCancelTokenSource<ScheduleTask>(cts, stateName);
 
 				var ctx = new TaskExecutionContext(_componentContext, task)
 				{
@@ -127,7 +132,8 @@ namespace SmartStore.Services.Tasks
 					Parameters = taskParameters ?? new Dictionary<string, string>()
 				};
 
-                instance.Execute(ctx);
+				Logger.DebugFormat("Executing scheduled task: {0}", task.Type);
+				instance.Execute(ctx);
             }
             catch (Exception exception)
             {
@@ -136,9 +142,9 @@ namespace SmartStore.Services.Tasks
 				lastError = exception.Message.Truncate(995, "...");
 
 				if (canceled)
-					Logger.Warning(T("Admin.System.ScheduleTasks.Cancellation", task.Name), exception);
+					Logger.Warn(exception, T("Admin.System.ScheduleTasks.Cancellation", task.Name));
 				else
-					Logger.Error(string.Concat(T("Admin.System.ScheduleTasks.RunningError", task.Name), ": ", exception.Message), exception);
+					Logger.Error(exception, string.Concat(T("Admin.System.ScheduleTasks.RunningError", task.Name), ": ", exception.Message));
 
                 if (throwOnError)
                 {
@@ -150,7 +156,7 @@ namespace SmartStore.Services.Tasks
 				// remove from AsyncState
 				if (stateName.HasValue())
 				{
-					AsyncState.Current.Remove<ScheduleTask>(stateName);
+					_asyncState.Remove<ScheduleTask>(stateName);
 				}
 
 				task.ProgressPercent = null;
@@ -159,7 +165,7 @@ namespace SmartStore.Services.Tasks
 				var now = DateTime.UtcNow;
 				task.LastError = lastError;
 				task.LastEndUtc = now;
-
+				
 				if (faulted)
 				{
 					if ((!canceled && task.StopOnError) || instance == null)
@@ -171,6 +177,8 @@ namespace SmartStore.Services.Tasks
 				{
 					task.LastSuccessUtc = now;
 				}
+
+				Logger.DebugFormat("Executed scheduled task: {0}. Elapsed: {1} ms.", task.Type, (now - task.LastStartUtc.Value).TotalMilliseconds);
 
 				if (task.Enabled)
 				{
@@ -186,5 +194,4 @@ namespace SmartStore.Services.Tasks
 			return CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, userCancellationToken);
 		}
     }
-
 }

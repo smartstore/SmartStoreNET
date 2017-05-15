@@ -21,21 +21,28 @@ namespace SmartStore.Web.Framework.Theming
 
         public static MvcHtmlString ThemeVarLabel(this HtmlHelper html, ThemeVariableInfo info)
         {
-            Guard.ArgumentNotNull(info, "info");
+            Guard.NotNull(info, "info");
 
             var result = new StringBuilder();
             var resKey = "ThemeVar.{0}.{1}".FormatInvariant(info.Manifest.ThemeName, info.Name);
             var langId = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id;
             var locService = EngineContext.Current.Resolve<ILocalizationService>();
 
-            var displayName = locService.GetResource(resKey, langId, false, Inflector.Titleize(info.Name));
+            var displayName = locService.GetResource(resKey, langId, false, "", true);
 
-            var hint = locService.GetResource(resKey + ".Hint", langId, false, "", true);
-            hint = "@(var_){0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
+			string hint = null;
+			if (displayName.HasValue())
+			{
+				hint = locService.GetResource(resKey + ".Hint", langId, false, "", true);
+				hint = "${0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
+			}
 
             result.Append("<div class='ctl-label'>");
-            result.Append(html.Label(html.NameForThemeVar(info), displayName));
-            result.Append(html.Hint(hint).ToHtmlString());
+            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name));
+			if (hint.HasValue())
+			{
+				result.Append(html.Hint(hint).ToHtmlString());
+			}
             result.Append("</div>");
 
             return MvcHtmlString.Create(result.ToString());
@@ -43,7 +50,7 @@ namespace SmartStore.Web.Framework.Theming
          
         public static MvcHtmlString ThemeVarEditor(this HtmlHelper html, ThemeVariableInfo info, object value)
         {
-            Guard.ArgumentNotNull(info, "info");
+            Guard.NotNull(info, "info");
 
             string expression = html.NameForThemeVar(info);
 
@@ -61,16 +68,25 @@ namespace SmartStore.Web.Framework.Theming
 
 			var currentTheme = ThemeHelper.ResolveCurrentTheme();
 			var isDefault = strValue.IsCaseInsensitiveEqual(info.DefaultValue);
+			var isValidColor = info.Type == ThemeVariableType.Color 
+				&& ((strValue.HasValue() && ThemeVarsRepository.IsValidColor(strValue)) || (strValue.IsEmpty() && ThemeVarsRepository.IsValidColor(info.DefaultValue)));
 
 			MvcHtmlString control;
 
-            if (info.Type == ThemeVariableType.Color)
+            if (isValidColor)
             {
 				control = html.ColorBox(expression, strValue, info.DefaultValue);
             }
             else if (info.Type == ThemeVariableType.Boolean)
             {
+				var locService = EngineContext.Current.Resolve<ILocalizationService>();
 				control = html.CheckBox(expression, strValue.ToBool());
+				var custom = "<label class='switch'>{0}<span class='switch-toggle' data-on='{1}' data-off='{2}'></span></label>".FormatInvariant(
+					control.ToString(),
+					locService.GetResource("Common.On").Truncate(3),
+					locService.GetResource("Common.Off").Truncate(3));
+
+				control = MvcHtmlString.Create(custom);
             }
 			else if (info.Type == ThemeVariableType.Select)
 			{
@@ -78,7 +94,7 @@ namespace SmartStore.Web.Framework.Theming
 			}
 			else
 			{
-				control = html.TextBox(expression, isDefault ? "" : strValue, new { placeholder = info.DefaultValue });
+				control = html.TextBox(expression, isDefault ? "" : strValue, new { placeholder = info.DefaultValue, @class = "form-control" });
 			}
 
 			if (currentTheme != info.Manifest)
@@ -108,11 +124,11 @@ namespace SmartStore.Web.Framework.Theming
                              select new SelectListItem 
                              { 
                                  Value = x, 
-                                 Text = x, // TODO: (MC) Localize
+                                 Text = x, // TODO: (mc) Localize
                                  Selected = x.IsCaseInsensitiveEqual(value) 
                              };
 
-			return html.DropDownList(expression, selectList, new { placeholder = info.DefaultValue });
+			return html.DropDownList(expression, selectList, new { placeholder = info.DefaultValue, @class = "form-control" });
         }
 
         public static string NameForThemeVar(this HtmlHelper html, ThemeVariableInfo info)

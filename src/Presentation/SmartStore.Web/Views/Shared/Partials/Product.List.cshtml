@@ -1,0 +1,124 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Core.Domain.Media;
+@using SmartStore.Utilities;
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
+
+	// TODO: (mc) Fetch this from the (new) parent model or the product category
+	var thumbAspectRatio = EngineContext.Current.Resolve<MediaSettings>().DefaultThumbnailAspectRatio;
+	var paddingTop = string.Empty;
+
+	if (thumbAspectRatio != 1 && thumbAspectRatio > 0.2 && thumbAspectRatio < 2)
+	{
+		paddingTop = (thumbAspectRatio * 100) + "%";
+	}
+
+	string pagerHtml = null;
+	pagerHtml = Html.Partial("Product.List.Pager", Model).ToHtmlString();
+
+	// TODO: (mc) AllowFiltering (?)
+	var hasActions = Model.PagedList.TotalPages > 1
+		|| Model.AllowSorting
+		|| Model.AllowViewModeChanging
+		|| Model.AllowFiltering;
+
+	var listCssClasses = new List<string> { "artlist" };
+	if (Model.ViewMode == ProductSummaryViewMode.List)
+	{
+		listCssClasses.Add("artlist-lines");
+	}
+	else
+	{
+		listCssClasses.Add("artlist-grid");
+
+		if (Model.BoxedStyleItems)
+		{
+			listCssClasses.Add("artlist-boxed");
+		}
+
+		// TODO: (mh) make 6-cols layout fit better per CSS (hide some elements etc.)
+		var colspan = (int)Model.GridColumnSpan;
+		listCssClasses.Add("artlist-{0}-cols".FormatInvariant(colspan));
+	}
+}
+
+@if (Model.ViewMode != ProductSummaryViewMode.List && paddingTop.HasValue())
+{
+	<style type="text/css">
+		#@id .art-picture { 
+			padding-top: @paddingTop;
+		}
+	</style>
+}
+
+@if (Model.ViewMode == ProductSummaryViewMode.List)
+{
+	var maxPictureSize = Model.ThumbSize ?? Model.Items.Select(x => x.Picture)
+		.Where(x => x != null)
+		.Max(x => x.Size);
+
+	if (maxPictureSize.HasValue)
+	{
+		<style type="text/css">
+		#@id .art-picture-block {
+			width: @("{0}px".FormatInvariant(maxPictureSize.Value));
+		}
+		</style>
+	}
+}
+
+@if (Model.PagedList.TotalCount > 0 && hasActions)
+{
+	<div class="artlist-actions artlist-actions--top d-flex flex-wrap">
+		@if (Model.AllowSorting || Model.AllowFiltering)
+		{
+			<div class="artlist-action-group artlist-action-group--filtersort">
+				@{ Html.RenderPartial("Product.List.FilterSort", Model); }
+			</div>
+		}
+
+		@if (pagerHtml.HasValue() || Model.AllowViewModeChanging)
+		{
+			<div class="artlist-action-group artlist-action-group--page">
+				@* ViewMode *@
+				@if (Model.AllowViewModeChanging && Model.ViewMode == ProductSummaryViewMode.Grid || Model.ViewMode == ProductSummaryViewMode.List)
+				{
+					Html.RenderPartial("Product.List.ViewMode", Model);
+				}
+
+				@* Pager *@
+				@if (pagerHtml.HasValue())
+				{
+					@Html.Raw(pagerHtml)
+				}
+			</div>
+		}
+	</div>
+}
+
+@if (Model.AllowFiltering)
+{
+	Html.RenderAction("ActiveFilters", "Search", new { area = "" });
+}
+
+@if (Model.PagedList.TotalCount > 0)
+{
+	<div id="@id" class='@String.Join(" ", listCssClasses)'>
+		@foreach (var product in Model.Items)
+		{
+			Html.RenderPartial("Product.List.Item", product);
+		}
+	</div>
+}
+
+@if (Model.PagedList.TotalPages > 1 && pagerHtml.HasValue())
+{	
+	<div class="artlist-actions artlist-actions--bottom">
+		<div class="artlist-action-group artlist-action-group--page">
+			@Html.Raw(pagerHtml)
+		</div>
+	</div>
+}

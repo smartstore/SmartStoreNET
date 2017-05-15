@@ -11,9 +11,9 @@ using SmartStore.ComponentModel;
 
 namespace SmartStore.Utilities
 {
-
     public static partial class CommonHelper
     {
+		private static bool? _isDevEnvironment;
 		
 		/// <summary>
         /// Generate random digit code
@@ -54,7 +54,7 @@ namespace SmartStore.Utilities
 		/// </remarks>
 		public static string MapPath(string path, bool findAppRoot = true)
 		{
-			Guard.ArgumentNotNull(() => path);
+			Guard.NotNull(path, nameof(path));
 
 			if (HostingEnvironment.IsHosted)
 			{
@@ -91,22 +91,32 @@ namespace SmartStore.Utilities
 		{
 			get 
 			{
-				if (!HostingEnvironment.IsHosted)
-					return true;
+				if (!_isDevEnvironment.HasValue)
+				{
+					_isDevEnvironment = IsDevEnvironmentInternal();
+				}
 
-				if (HostingEnvironment.IsDevelopmentEnvironment)
-					return true;
-
-				if (System.Diagnostics.Debugger.IsAttached)
-					return true;
-
-				// if there's a 'SmartStore.NET.sln' in one of the parent folders,
-				// then we're likely in a dev environment
-				if (FindSolutionRoot(HostingEnvironment.MapPath("~/")) != null)
-					return true;
-
-				return false;
+				return _isDevEnvironment.Value;
 			}
+		}
+
+		private static bool IsDevEnvironmentInternal()
+		{
+			if (!HostingEnvironment.IsHosted)
+				return true;
+
+			if (HostingEnvironment.IsDevelopmentEnvironment)
+				return true;
+
+			if (System.Diagnostics.Debugger.IsAttached)
+				return true;
+
+			// if there's a 'SmartStore.NET.sln' in one of the parent folders,
+			// then we're likely in a dev environment
+			if (FindSolutionRoot(HostingEnvironment.MapPath("~/")) != null)
+				return true;
+
+			return false;
 		}
 
 		private static DirectoryInfo FindSolutionRoot(string currentDir)
@@ -153,7 +163,7 @@ namespace SmartStore.Utilities
 
 		public static ExpandoObject ToExpando(object value)
 		{
-			Guard.ArgumentNotNull(() => value);
+			Guard.NotNull(value, nameof(value));
 
 			var anonymousDictionary = HtmlHelper.AnonymousObjectToHtmlAttributes(value);
 			IDictionary<string, object> expando = new ExpandoObject();
@@ -166,7 +176,7 @@ namespace SmartStore.Utilities
 
 		public static IDictionary<string, object> ObjectToDictionary(object obj)
 		{
-			Guard.ArgumentNotNull(() => obj);
+			Guard.NotNull(obj, nameof(obj));
 
 			return FastProperty.ObjectToDictionary(
 				obj,
@@ -182,7 +192,7 @@ namespace SmartStore.Utilities
 		/// <returns>The casted setting value</returns>
 		public static T GetAppSetting<T>(string key, T defValue = default(T))
 		{
-			Guard.ArgumentNotEmpty(() => key);
+			Guard.NotEmpty(key, nameof(key));
 
 			var setting = ConfigurationManager.AppSettings[key];
 
@@ -194,9 +204,20 @@ namespace SmartStore.Utilities
 			return setting.Convert<T>();
 		}
 
+		public static bool HasConnectionString(string connectionStringName)
+		{
+			var conString = ConfigurationManager.ConnectionStrings[connectionStringName];
+			if (conString != null && conString.ConnectionString.HasValue())
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		private static bool TryAction<T>(Func<T> func, out T output)
 		{
-			Guard.ArgumentNotNull(() => func);
+			Guard.NotNull(func, nameof(func));
 
 			try
 			{
@@ -209,6 +230,5 @@ namespace SmartStore.Utilities
 				return false;
 			}
 		}
-
 	}
 }

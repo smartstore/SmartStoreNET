@@ -3,6 +3,8 @@ using System.Linq;
 using System.Web.Routing;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Data;
+using SmartStore.Data.Setup;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 
@@ -31,7 +33,7 @@ namespace SmartStore.DevTools
         {
 			_settingService.SaveSetting(new ProfilerSettings());
 			base.Install();
-			Logger.Information(string.Format("Plugin installed: SystemName: {0}, Version: {1}, Description: '{2}'", PluginDescriptor.SystemName, PluginDescriptor.Version, PluginDescriptor.FriendlyName));
+			Logger.Info(string.Format("Plugin installed: SystemName: {0}, Version: {1}, Description: '{2}'", PluginDescriptor.SystemName, PluginDescriptor.Version, PluginDescriptor.FriendlyName));
         }
 
         /// <summary>
@@ -42,5 +44,33 @@ namespace SmartStore.DevTools
 			_settingService.DeleteSetting<ProfilerSettings>();
 			base.Uninstall();
         }
+
+		private static bool? _hasPendingMigrations;
+		internal static bool HasPendingMigrations()
+		{
+			bool result = true;
+
+			if (_hasPendingMigrations == null)
+			{
+				try
+				{
+					var migrator = new DbSeedingMigrator<SmartObjectContext>();
+					result = migrator.GetPendingMigrations().Any();
+
+					if (result == false)
+					{
+						// Don't check again
+						_hasPendingMigrations = false;
+					}
+				}
+				catch { }
+			}
+			else
+			{
+				result = _hasPendingMigrations.Value;
+			}
+
+			return result;
+		}
     }
 }

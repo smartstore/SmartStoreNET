@@ -11,139 +11,85 @@ using System.Linq.Expressions;
 using System.Reflection;
 using SmartStore.ComponentModel;
 using System.Collections;
+using SmartStore.Utilities;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Configuration
 {
-    /// <summary>
-    /// Setting manager
-    /// </summary>
-    public partial class SettingService : ISettingService
+    public partial class SettingService : ScopedServiceBase, ISettingService
     {
-        #region Constants
-        private const string SETTINGS_ALL_KEY = "SmartStore.setting.all";
-        #endregion
-
-        #region Fields
+        private const string SETTINGS_ALL_KEY = "setting:all";
 
         private readonly IRepository<Setting> _settingRepository;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="eventPublisher">Event publisher</param>
-        /// <param name="settingRepository">Setting repository</param>
         public SettingService(ICacheManager cacheManager, IEventPublisher eventPublisher, IRepository<Setting> settingRepository)
         {
-            this._cacheManager = cacheManager;
-            this._eventPublisher = eventPublisher;
-            this._settingRepository = settingRepository;
+            _cacheManager = cacheManager;
+            _eventPublisher = eventPublisher;
+            _settingRepository = settingRepository;
+
+			Logger = NullLogger.Instance;
         }
 
-        #endregion
+		public ILogger Logger { get; set; }
 
-		#region Nested classes
-
-		[Serializable]
-		public class SettingForCaching
+		protected virtual IDictionary<string, CachedSetting> GetAllCachedSettings()
 		{
-			public int Id { get; set; }
-			public string Name { get; set; }
-			public string Value { get; set; }
-			public int StoreId { get; set; }
-		}
-
-		#endregion
-
-        #region Utilities
-
-		/// <summary>
-		/// Gets all settings
-		/// </summary>
-		/// <returns>Setting collection</returns>
-		protected virtual IDictionary<string, IList<SettingForCaching>> GetAllSettingsCached()
-		{
-			//cache
 			string key = string.Format(SETTINGS_ALL_KEY);
 			return _cacheManager.Get(key, () =>
 			{
 				var query = from s in _settingRepository.TableUntracked
 							orderby s.Name, s.StoreId
 							select s;
+
 				var settings = query.ToList();
-				var dictionary = new Dictionary<string, IList<SettingForCaching>>(StringComparer.OrdinalIgnoreCase);
+				var dictionary = new Dictionary<string, CachedSetting>(StringComparer.OrdinalIgnoreCase);
 				foreach (var s in settings)
 				{
-					var settingName = s.Name.ToLowerInvariant();
-					var settingForCaching = new SettingForCaching()
+					var settingKey = CreateCacheKey(s.Name, s.StoreId);
+
+					var cachedSetting = new CachedSetting
 					{
 						Id = s.Id,
 						Name = s.Name,
 						Value = s.Value,
 						StoreId = s.StoreId
 					};
-					if (!dictionary.ContainsKey(settingName))
-					{
-						//first setting
-						dictionary.Add(settingName, new List<SettingForCaching>()
-                        {
-                            settingForCaching
-                        });
-					}
-					else
-					{
-						//already added
-						//most probably it's the setting with the same name but for some certain store (storeId > 0)
-						dictionary[settingName].Add(settingForCaching);
-					}
+
+					dictionary[settingKey] = cachedSetting;
 				}
+
 				return dictionary;
 			});
 		}
 
-        /// <summary>
-        /// Adds a setting
-        /// </summary>
-        /// <param name="setting">Setting</param>
-        /// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
-        public virtual void InsertSetting(Setting setting, bool clearCache = true)
+		public virtual void InsertSetting(Setting setting, bool clearCache = true)
         {
-            if (setting == null)
-                throw new ArgumentNullException("setting");
+			Guard.NotNull(setting, nameof(setting));
 
-            _settingRepository.Insert(setting);
+			_settingRepository.Insert(setting);
 
-            //cache
-            if (clearCache)
-                _cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);
+			HasChanges = true;
 
-            //event notification
+			if (clearCache)
+				ClearCache();
+
             _eventPublisher.EntityInserted(setting);
         }
 
-        /// <summary>
-        /// Updates a setting
-        /// </summary>
-        /// <param name="setting">Setting</param>
-        /// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
         public virtual void UpdateSetting(Setting setting, bool clearCache = true)
         {
-            if (setting == null)
-                throw new ArgumentNullException("setting");
+			Guard.NotNull(setting, nameof(setting));
 
             _settingRepository.Update(setting);
 
-            //cache
-            if (clearCache)
-                _cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);
+			HasChanges = true;
 
-            //event notification
+			if (clearCache)
+				ClearCache();
+
             _eventPublisher.EntityUpdated(setting);
         }
 
@@ -170,10 +116,7 @@ namespace SmartStore.Services.Configuration
 			var storeId = 0;
 
 			var rawSettings = JsonConvert.SerializeObject(settings);
-			SetSetting(key, rawSettings, storeId, false);
-
-			// and now clear cache
-			ClearCache();
+			SetSetting(key, rawSettings, storeId, true);
 		}
 
 		private void DeleteSettingsJson<T>()
@@ -190,15 +133,7 @@ namespace SmartStore.Services.Configuration
 			}
 		}
 
-		#endregion
 
-        #region Methods
-
-        /// <summary>
-        /// Gets a setting by identifier
-        /// </summary>
-        /// <param name="settingId">Setting identifier</param>
-        /// <returns>Setting</returns>
         public virtual Setting GetSettingById(int settingId)
         {
             if (settingId == 0)
@@ -208,42 +143,38 @@ namespace SmartStore.Services.Configuration
             return setting;
         }
 
-        /// <summary>
-        /// Get setting value by key
-        /// </summary>
-        /// <typeparam name="T">Type</typeparam>
-        /// <param name="key">Key</param>
-        /// <param name="defaultValue">Default value</param>
-		/// <param name="storeId">Store identifier</param>
-		/// <param name="loadSharedValueIfNotFound">A value indicating whether a shared (for all stores) value should be loaded if a value specific for a certain is not found</param>
-        /// <returns>Setting value</returns>
-		public virtual T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0, bool loadSharedValueIfNotFound = false)
+		public virtual T GetSettingByKey<T>(
+			string key, 
+			T defaultValue = default(T), 
+			int storeId = 0, 
+			bool loadSharedValueIfNotFound = false)
         {
-            if (String.IsNullOrEmpty(key))
-                return defaultValue;
+			Guard.NotEmpty(key, nameof(key));
 
-			var settings = GetAllSettingsCached();
-			key = key.Trim().ToLowerInvariant();
-			if (settings.ContainsKey(key))
+			var settings = GetAllCachedSettings();
+
+			var cacheKey = CreateCacheKey(key, storeId);
+
+			CachedSetting cachedSetting;
+
+			if (settings.TryGetValue(cacheKey, out cachedSetting))
 			{
-				var settingsByKey = settings[key];
-				var setting = settingsByKey.FirstOrDefault(x => x.StoreId == storeId);
+				return cachedSetting.Value.Convert<T>();
+			}
 
-				// load shared value?
-				if (setting == null && storeId > 0 && loadSharedValueIfNotFound)
-					setting = settingsByKey.FirstOrDefault(x => x.StoreId == 0);
-
-				if (setting != null)
-					return setting.Value.Convert<T>();
+			// fallback to shared (storeId = 0) if desired
+			if (storeId > 0 && loadSharedValueIfNotFound)
+			{
+				cacheKey = CreateCacheKey(key, 0);
+				if (settings.TryGetValue(cacheKey, out cachedSetting))
+				{
+					return cachedSetting.Value.Convert<T>();
+				}
 			}
 
             return defaultValue;
         }
 
-		/// <summary>
-		/// Gets all settings
-		/// </summary>
-		/// <returns>Setting collection</returns>
 		public virtual IList<Setting> GetAllSettings()
 		{
 			var query = from s in _settingRepository.Table
@@ -253,17 +184,10 @@ namespace SmartStore.Services.Configuration
 			return settings;
 		}
 
-		/// <summary>
-		/// Determines whether a setting exists
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <typeparam name="TPropType">Property type</typeparam>
-		/// <param name="settings">Entity</param>
-		/// <param name="keySelector">Key selector</param>
-		/// <param name="storeId">Store identifier</param>
-		/// <returns>true -setting exists; false - does not exist</returns>
-		public virtual bool SettingExists<T, TPropType>(T settings,
-			Expression<Func<T, TPropType>> keySelector, int storeId = 0)
+		public virtual bool SettingExists<T, TPropType>(
+			T settings,
+			Expression<Func<T, TPropType>> keySelector, 
+			int storeId = 0)
 			where T : ISettings, new()
 		{
 			var member = keySelector.Body as MemberExpression;
@@ -288,10 +212,6 @@ namespace SmartStore.Services.Configuration
 			return setting != null;
 		}
 
-		/// Load settings
-		/// </summary>
-		/// <typeparam name="T">Type</typeparam>
-		/// <param name="storeId">Store identifier for which settigns should be loaded</param>
 		public virtual T LoadSetting<T>(int storeId = 0) where T : ISettings, new()
 		{
 			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
@@ -301,15 +221,17 @@ namespace SmartStore.Services.Configuration
 
 			var settings = Activator.CreateInstance<T>();
 
+			var prefix = typeof(T).Name;
+
 			foreach (var fastProp in FastProperty.GetProperties(typeof(T)).Values)
 			{
 				var prop = fastProp.Property;
-				
+
 				// get properties we can read and write to
 				if (!prop.CanWrite)
 					continue;
 
-				var key = typeof(T).Name + "." + prop.Name;
+				var key = prefix + "." + prop.Name;
 				// load by store
 				string setting = GetSettingByKey<string>(key, storeId: storeId, loadSharedValueIfNotFound: true);
 
@@ -317,7 +239,7 @@ namespace SmartStore.Services.Configuration
 				{
 					if (fastProp.IsSequenceType)
                     {
-                        if ((fastProp.GetValue(settings) as IEnumerable) != null)
+						if ((fastProp.GetValue(settings) as IEnumerable) != null)
                         {
                             // Instance of IEnumerable<> was already created, most likely in the constructor of the settings concrete class.
                             // In this case we shouldn't let the EnumerableConverter create a new instance but keep this one.
@@ -357,47 +279,61 @@ namespace SmartStore.Services.Configuration
                 if (converter == null || !converter.CanConvertFrom(typeof(string)))
 					continue;
 
-                object value = converter.ConvertFrom(setting);
+				try
+				{
+					object value = converter.ConvertFrom(setting);
 
-				//set property
-				fastProp.SetValue(settings, value);
+					// Set property
+					fastProp.SetValue(settings, value);
+				}
+				catch (Exception ex)
+				{
+					var msg = "Could not convert setting '{0}' to type '{1}'".FormatInvariant(key, prop.PropertyType.Name);
+					Logger.Error(ex, msg);
+				}
 			}
 
 			return settings;
 		}
 
-        /// <summary>
-        /// Set setting value
-        /// </summary>
-        /// <typeparam name="T">Type</typeparam>
-        /// <param name="key">Key</param>
-        /// <param name="value">Value</param>
-		/// <param name="storeId">Store identifier</param>
-        /// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
 		public virtual void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true)
         {
-            Guard.ArgumentNotEmpty(() => key);
+            Guard.NotEmpty(key, nameof(key));
 
-            key = key.Trim().ToLowerInvariant();
 			var str = value.Convert<string>();
+			var allSettings = GetAllCachedSettings();
+			var cacheKey = CreateCacheKey(key, storeId);
+			CachedSetting cachedSetting;
+			var insert = false;
 
-			var allSettings = GetAllSettingsCached();
-			var settingForCaching = allSettings.ContainsKey(key) ?
-				allSettings[key].FirstOrDefault(x => x.StoreId == storeId) : null;
-
-			if (settingForCaching != null)
+			if (allSettings.TryGetValue(cacheKey, out cachedSetting))
 			{
-				//update
-				var setting = GetSettingById(settingForCaching.Id);
-				setting.Value = str;
-				UpdateSetting(setting, clearCache);
+				var setting = GetSettingById(cachedSetting.Id);
+				if (setting != null)
+				{
+					// Update
+					if (setting.Value != str)
+					{
+						setting.Value = str;
+						UpdateSetting(setting, clearCache);
+					}
+				}
+				else
+				{
+					insert = true;
+				}
 			}
 			else
 			{
-				//insert
+				insert = true;
+			}
+
+			if (insert)
+			{
+				// Insert
 				var setting = new Setting
 				{
-					Name = key,
+					Name = key.ToLowerInvariant(),
 					Value = str,
 					StoreId = storeId
 				};
@@ -405,55 +341,43 @@ namespace SmartStore.Services.Configuration
 			}
         }
 
-        /// <summary>
-        /// Save settings object
-        /// </summary>
-        /// <typeparam name="T">Type</typeparam>
-		/// <param name="settings">Setting instance</param>
-		/// <param name="storeId">Store identifier</param>
 		public virtual void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new()
         {
-			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
+			using (BeginScope())
 			{
-				SaveSettingsJson<T>(settings);
-				return;
+				if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
+				{
+					SaveSettingsJson<T>(settings);
+					return;
+				}
+
+				/* We do not clear cache after each setting update.
+				 * This behavior can increase performance because cached settings will not be cleared 
+				 * and loaded from database after each update */
+				foreach (var prop in FastProperty.GetProperties(typeof(T)).Values)
+				{
+					// get properties we can read and write to
+					if (!prop.IsPublicSettable)
+						continue;
+
+					var converter = TypeConverterFactory.GetConverter(prop.Property.PropertyType);
+					if (converter == null || !converter.CanConvertFrom(typeof(string)))
+						continue;
+
+					string key = typeof(T).Name + "." + prop.Name;
+					// Duck typing is not supported in C#. That's why we're using dynamic type
+					dynamic value = prop.GetValue(settings);
+
+					SetSetting(key, value ?? "", storeId, false);
+				}
 			}
-
-			/* We do not clear cache after each setting update.
-			 * This behavior can increase performance because cached settings will not be cleared 
-			 * and loaded from database after each update */
-			foreach (var prop in FastProperty.GetProperties(typeof(T)).Values)
-			{
-				// get properties we can read and write to
-				if (!prop.IsPublicSettable)
-					continue;
-
-				var converter = TypeConverterFactory.GetConverter(prop.Property.PropertyType);
-				if (converter == null || !converter.CanConvertFrom(typeof(string)))
-					continue;
-
-				string key = typeof(T).Name + "." + prop.Name;
-				// Duck typing is not supported in C#. That's why we're using dynamic type
-				dynamic value = prop.GetValue(settings);
-
-				SetSetting(key, value ?? "", storeId, false);
-			}
-
-			//and now clear cache
-			ClearCache();
         }
 
-		/// Save settings object
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <typeparam name="TPropType">Property type</typeparam>
-		/// <param name="settings">Settings</param>
-		/// <param name="keySelector">Key selector</param>
-		/// <param name="storeId">Store ID</param>
-		/// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
-		public virtual void SaveSetting<T, TPropType>(T settings,
+		public virtual void SaveSetting<T, TPropType>(
+			T settings,
 			Expression<Func<T, TPropType>> keySelector,
-			int storeId = 0, bool clearCache = true) where T : ISettings, new()
+			int storeId = 0, 
+			bool clearCache = true) where T : ISettings, new()
 		{
 			var member = keySelector.Body as MemberExpression;
 			if (member == null)
@@ -476,21 +400,21 @@ namespace SmartStore.Services.Configuration
 			var fastProp = FastProperty.GetProperty(propInfo, PropertyCachingStrategy.EagerCached);
 			dynamic value = fastProp.GetValue(settings);
 
-			SetSetting(key, value ?? "", storeId, false);
+			SetSetting(key, value ?? "", storeId, clearCache);
 		}
 
-		public virtual void UpdateSetting<T, TPropType>(T settings, Expression<Func<T, TPropType>> keySelector, bool overrideForStore, int storeId = 0)  where T : ISettings, new()
+		public virtual void UpdateSetting<T, TPropType>(
+			T settings, 
+			Expression<Func<T, TPropType>> keySelector, 
+			bool overrideForStore, 
+			int storeId = 0)  where T : ISettings, new()
 		{
 			if (overrideForStore || storeId == 0)
-				SaveSetting(settings, keySelector, storeId, false);
+				SaveSetting(settings, keySelector, storeId, true);
 			else if (storeId > 0)
 				DeleteSetting(settings, keySelector, storeId);
 		}
 
-		/// <summary>
-		/// Deletes a setting
-		/// </summary>
-		/// <param name="setting">Setting</param>
 		public virtual void DeleteSetting(Setting setting)
 		{
 			if (setting == null)
@@ -498,47 +422,42 @@ namespace SmartStore.Services.Configuration
 
 			_settingRepository.Delete(setting);
 
-			//cache
-			_cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);
+			HasChanges = true;
 
-			//event notification
+			ClearCache();
+
 			_eventPublisher.EntityDeleted(setting);
 		}
 
-        /// <summary>
-        /// Delete all settings
-        /// </summary>
-        /// <typeparam name="T">Type</typeparam>
         public virtual void DeleteSetting<T>() where T : ISettings, new()
         {
-			// codehint: sm-add
-			if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
+			using (BeginScope())
 			{
-				DeleteSettingsJson<T>();
-				return;
-			}
+				if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
+				{
+					DeleteSettingsJson<T>();
+					return;
+				}
 
-			var settingsToDelete = new List<Setting>();
-			var allSettings = GetAllSettings();
-			foreach (var prop in typeof(T).GetProperties())
-			{
-				string key = typeof(T).Name + "." + prop.Name;
-				settingsToDelete.AddRange(allSettings.Where(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)));
-			}
+				var settingsToDelete = new List<Setting>();
+				var allSettings = GetAllSettings();
+				foreach (var prop in typeof(T).GetProperties())
+				{
+					string key = typeof(T).Name + "." + prop.Name;
+					settingsToDelete.AddRange(allSettings.Where(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)));
+				}
 
-			foreach (var setting in settingsToDelete)
-				DeleteSetting(setting);
+				foreach (var setting in settingsToDelete)
+				{
+					DeleteSetting(setting);
+				}
+			}
         }
 
-		/// Delete settings object
-		/// </summary>
-		/// <typeparam name="T">Entity type</typeparam>
-		/// <typeparam name="TPropType">Property type</typeparam>
-		/// <param name="settings">Settings</param>
-		/// <param name="keySelector">Key selector</param>
-		/// <param name="storeId">Store ID</param>
-		public virtual void DeleteSetting<T, TPropType>(T settings,
-			Expression<Func<T, TPropType>> keySelector, int storeId = 0) where T : ISettings, new()
+		public virtual void DeleteSetting<T, TPropType>(
+			T settings,
+			Expression<Func<T, TPropType>> keySelector, 
+			int storeId = 0) where T : ISettings, new()
 		{
 			var member = keySelector.Body as MemberExpression;
 			if (member == null)
@@ -577,40 +496,62 @@ namespace SmartStore.Services.Configuration
 			}
 		}
 
-		/// <summary>
-		/// Deletes all settings with its key beginning with rootKey.
-		/// </summary>
-		/// <returns>Number of deleted settings</returns>
 		public virtual int DeleteSettings(string rootKey) {
 			int result = 0;
 
-			if (rootKey.HasValue())
-			{
-				try
-				{
-					string sqlDelete = "DELETE FROM [Setting] WHERE [Name] LIKE '{0}%'".FormatWith(rootKey.EndsWith(".") ? rootKey : rootKey + ".");
-					result = _settingRepository.Context.ExecuteSqlCommand(sqlDelete);
+			if (rootKey.IsEmpty())
+				return 0;
 
-                    // cache
-                    _cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);
-				}
-				catch (Exception exc)
-				{
-					exc.Dump();
-				}
+			try
+			{
+				string sqlDelete = "DELETE FROM [Setting] WHERE [Name] LIKE '{0}%'".FormatWith(rootKey.EndsWith(".") ? rootKey : rootKey + ".");
+				result = _settingRepository.Context.ExecuteSqlCommand(sqlDelete);
+
+				if (result > 0)
+					HasChanges = true;
+
+				ClearCache();
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
 			}
 
 			return result;
 		}
 
-        /// <summary>
-        /// Clear cache
-        /// </summary>
-        public virtual void ClearCache()
-        {
-            _cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);
-        }
+		protected override void OnClearCache()
+		{
+			_cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);
+		}
 
-		#endregion
+		protected string CreateCacheKey(string name, int storeId)
+		{
+			return name.Trim().ToLowerInvariant() + "/" + storeId.ToString();
+		} 
     }
+
+	//[Serializable]
+	//public class SettingKey : ComparableObject
+	//{
+	//	[ObjectSignature]
+	//	public string Name { get; set; }
+
+	//	[ObjectSignature]
+	//	public int StoreId { get; set; }
+
+	//	public override string ToString()
+	//	{
+	//		return Name + "@__!__@" + StoreId;
+	//	}
+	//}
+
+	[Serializable]
+	public class CachedSetting
+	{
+		public int Id { get; set; }
+		public string Name { get; set; }
+		public string Value { get; set; }
+		public int StoreId { get; set; }
+	}
 }

@@ -1,0 +1,33 @@
+﻿@using SmartStore.Licensing
+@model PluginLicenseModel
+@{
+	Layout = null;
+}
+@if (Model.IsLicensable && !Model.HideLabel)
+{
+	if (Model.LicenseState == LicensingState.Licensed)
+	{
+		<span class="label label-success">@T("Admin.Common.Licensed")</span>
+	}
+	else if (Model.LicenseState == LicensingState.Unlicensed && Model.TruncatedLicenseKey.HasValue())
+	{
+		<span class="label label-important">@T("Admin.Common.Unlicensed")</span>
+	}
+	else
+	{
+		<span class="label @(Model.RemainingDemoUsageDaysLabel)">
+			@if (!Model.RemainingDemoUsageDays.HasValue)
+			{
+				@T("Admin.Plugins.LicensingDemoNotStarted")
+			}
+			else if (Model.RemainingDemoUsageDays <= 0)
+			{
+				@T("Admin.Plugins.LicensingDemoExpired")
+			}
+			else
+			{
+				@T("Admin.Plugins.LicensingDemoRemainingDays", Model.RemainingDemoUsageDays)
+			}
+		</span>
+	}
+}

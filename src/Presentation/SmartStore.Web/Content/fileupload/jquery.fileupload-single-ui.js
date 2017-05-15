@@ -42,18 +42,18 @@
             var dfd = $.Deferred();
             if ($.support.transition && node.hasClass('fade')) {
                 node.on(
-                    $.support.transition.end,
+                    $.support.transitionEnd,
                     function (e) {
                         // Make sure we don't respond to other transitions events
                         // in the container element, e.g. from button elements:
                         if (e.target === node[0]) {
-                            node.off($.support.transition.end);
+                        	node.off($.support.transitionEnd);
                             dfd.resolveWith(node);
                         }
                     }
-                ).toggleClass('in');
+                ).toggleClass('show in');
             } else {
-                node.toggleClass('in');
+                node.toggleClass('show in');
                 dfd.resolveWith(node);
             }
             return dfd;
@@ -129,7 +129,7 @@
             	    }
 
             	    toggleButtons(true);
-            	    el.find('.fileupload-progress').addClass("in");
+            	    el.find('.fileupload-progress').addClass("show in");
 
             	    if (data.dataType && data.dataType.substr(0, 6) === 'iframe') {
             	        // Iframe Transport does not support progress events.
@@ -145,7 +145,7 @@
             	})
 			    .on(pre + 'always.' + ns, function (e, data) {
 			        var elProgress = el.find('.fileupload-progress');
-			        if (!elProgress.hasClass("in")) {
+			        if (!elProgress.hasClass("show in")) {
 			            return
 			        }
 			        self._transition(elProgress).done(
@@ -168,10 +168,11 @@
 			            extendedProgressNode.html(self._getProgressInfo(data));
 			        }
 
+			        console.log(progress);
 			        elProgress
 	                    .find('.progress')
 	                    .attr('aria-valuenow', progress)
-	                    .find('.bar').css('width', progress + '%');
+	                    .find('.progress-bar').css('width', progress + '%');
 			    })
             // cancel button
                 .on('click.' + ns, 'button.cancel', eventData, function (e) {
@@ -230,5 +231,4 @@
         }
 
     });
-
 })(jQuery);

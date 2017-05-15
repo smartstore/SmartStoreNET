@@ -30,10 +30,10 @@ namespace SmartStore.Core.Email
 		public EmailMessage(string to, string subject, string body, string from) 
 			: this()
 		{
-			Guard.ArgumentNotEmpty(() => to);
-			Guard.ArgumentNotEmpty(() => from);
-			Guard.ArgumentNotEmpty(() => subject);
-			Guard.ArgumentNotEmpty(() => body);
+			Guard.NotEmpty(to, nameof(to));
+			Guard.NotEmpty(from, nameof(from));
+			Guard.NotEmpty(subject, nameof(subject));
+			Guard.NotEmpty(body, nameof(body));
 			
 			this.To.Add(new EmailAddress(to));
 			this.Subject = subject;
@@ -44,10 +44,10 @@ namespace SmartStore.Core.Email
 		public EmailMessage(EmailAddress to, string subject, string body, EmailAddress from)
 			: this()
 		{
-			Guard.ArgumentNotNull(() => to);
-			Guard.ArgumentNotNull(() => from);
-			Guard.ArgumentNotEmpty(() => subject);
-			Guard.ArgumentNotEmpty(() => body);
+			Guard.NotNull(to, nameof(to));
+			Guard.NotNull(from, nameof(from));
+			Guard.NotEmpty(subject, nameof(subject));
+			Guard.NotEmpty(body, nameof(body));
 			
 			this.To.Add(to);
 			this.Subject = subject;

@@ -18,7 +18,8 @@
             <button type="submit" id="language-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdate", Model)
+
+    Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("language-delete")
 @*import resources form*@

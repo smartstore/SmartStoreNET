@@ -10,27 +10,7 @@ using SmartStore.Services.Media;
 namespace SmartStore.Web
 {
 	public static class ProductDetailsExtensions
-	{
-		
-		public static string UpdateProductDetailsUrl(this ProductDetailsModel model, string itemType = null)
-		{
-			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
-
-			string url = urlHelper.Action("UpdateProductDetails", "Product", new
-			{
-				productId = model.Id,
-				bundleItemId = model.BundleItem.Id,
-				itemType = itemType
-			});
-
-			return url;
-		}
-
-		public static bool RenderBundleTitle(this ProductDetailsModel model)
-		{
-			return model.BundleTitleText.HasValue() && model.BundledItems.Where(x => x.BundleItem.Visible).Count() > 0;
-		}
-
+	{		
 		public static Picture GetAssignedPicture(this ProductDetailsModel model, IPictureService pictureService, IList<Picture> pictures, int productId = 0)
 		{
 			if (model != null && model.SelectedCombination != null)
@@ -60,7 +40,7 @@ namespace SmartStore.Web
 			string result = "";
 
 			if (model.PriceAdjustment.HasValue())
-				result = " [{0}]".FormatWith(model.PriceAdjustment);
+				result = " ({0})".FormatWith(model.PriceAdjustment);
 
 			if (model.QuantityInfo > 1)
 				return " × {1}".FormatWith(result, model.QuantityInfo) + result;
@@ -75,7 +55,7 @@ namespace SmartStore.Web
 				case AttributeControlType.DropdownList:
 				case AttributeControlType.RadioList:
 				case AttributeControlType.Checkboxes:
-				case AttributeControlType.ColorSquares:
+				case AttributeControlType.Boxes:
 					return (variantAttribute.Values.Count > 0);
 				default:
 					return true;
@@ -84,15 +64,7 @@ namespace SmartStore.Web
 
 		public static bool ShouldBeRendered(this IEnumerable<ProductDetailsModel.ProductVariantAttributeModel> variantAttributes)
 		{
-			if (variantAttributes != null)
-			{
-				foreach (var item in variantAttributes)
-				{
-					if (item.ShouldBeRendered())
-						return true;
-				}
-			}
-			return false;
+			return variantAttributes?.FirstOrDefault(x => x.ShouldBeRendered()) != null;
 		}
 	}
 }

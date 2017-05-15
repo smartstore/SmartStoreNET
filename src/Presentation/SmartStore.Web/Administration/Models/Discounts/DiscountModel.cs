@@ -9,12 +9,13 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Discounts
 {
-    [Validator(typeof(DiscountValidator))]
+	[Validator(typeof(DiscountValidator))]
     public class DiscountModel : EntityModelBase
     {
         public DiscountModel()
         {
             AppliedToCategoryModels = new List<AppliedToCategoryModel>();
+			AppliedToManufacturerModels = new List<AppliedToManufacturerModel>();
             AppliedToProductModels = new List<AppliedToProductModel>();
             AvailableDiscountRequirementRules = new List<SelectListItem>();
             DiscountRequirementMetaInfos = new List<DiscountRequirementMetaInfo>();
@@ -33,11 +34,39 @@ namespace SmartStore.Admin.Models.Discounts
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountPercentage")]
         public decimal DiscountPercentage { get; set; }
 
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountAmount")]
-        public decimal DiscountAmount { get; set; }
-        public string PrimaryStoreCurrencyCode { get; set; }
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountPercentage")]
+		public string FormattedDiscountPercentage
+		{
+			get
+			{
+				if (UsePercentage)
+				{
+					return string.Format("{0:0.##}", DiscountPercentage);
+				}
 
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.StartDate")]
+				return string.Empty;
+			}
+		}
+
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountAmount")]
+        public decimal DiscountAmount { get; set; }
+		public string PrimaryStoreCurrencyCode { get; set; }
+
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.DiscountAmount")]
+		public string FormattedDiscountAmount
+		{
+			get
+			{
+				if (!UsePercentage)
+				{
+					return string.Format("{0:0.00}", DiscountAmount);
+				}
+
+				return string.Empty;
+			}
+		}
+
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.StartDate")]
         public DateTime? StartDateUtc { get; set; }
 
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.EndDate")]
@@ -60,7 +89,10 @@ namespace SmartStore.Admin.Models.Discounts
         [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToCategories")]
         public IList<AppliedToCategoryModel> AppliedToCategoryModels { get; set; }
 
-        [SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToProducts")]
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToManufacturers")]
+		public IList<AppliedToManufacturerModel> AppliedToManufacturerModels { get; set; }
+
+		[SmartResourceDisplayName("Admin.Promotions.Discounts.Fields.AppliedToProducts")]
         public IList<AppliedToProductModel> AppliedToProductModels { get; set; }
 
 
@@ -99,12 +131,20 @@ namespace SmartStore.Admin.Models.Discounts
             public string Name { get; set; }
         }
 
-        public class AppliedToProductModel : ModelBase
+        public class AppliedToManufacturerModel : ModelBase
         {
-            public int ProductId { get; set; }
+            public int ManufacturerId { get; set; }
 
-            public string ProductName { get; set; }
+            public string ManufacturerName { get; set; }
         }
-        #endregion
-    }
+
+		public class AppliedToProductModel : ModelBase
+		{
+			public int ProductId { get; set; }
+
+			public string ProductName { get; set; }
+		}
+
+		#endregion
+	}
 }

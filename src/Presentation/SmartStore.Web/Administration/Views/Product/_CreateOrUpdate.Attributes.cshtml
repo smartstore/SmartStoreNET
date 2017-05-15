@@ -6,67 +6,91 @@
     <h3>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes")</h3>
 
     @if (Model.Id > 0)
-    {
-        if (Model.NumberOfAvailableProductAttributes > 0)
-        {
-            <script>
-                function onProductVariantAttributeEdit(e) {
-                	$(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
-                	$(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+	{
+		if (Model.NumberOfAvailableProductAttributes > 0)
+		{
+			<script type="text/javascript">
+				function onProductVariantAttributeEdit(e) {
+					var id = parseInt(e.dataItem['Id']);
 
-                	if (parseInt(e.dataItem['Id']) === 0) {
-                		$(e.form).find('#IsRequired').prop('checked', true);
-                	}
-                }
-            </script>
-			
+					$(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
+					$(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+
+					if (id === 0) {
+						$(e.form).find('#IsRequired').prop('checked', true);
+					}
+					else {
+						var optionsSetsChoice = $('#OptionsSetsContainer' + id);
+
+						if (optionsSetsChoice.find('option').length > 0) {
+							$('#EditOptionsLink' + id).hide();
+							optionsSetsChoice.show();
+							$('#OptionsSetsChoice' + id).selectWrapper();
+						}
+					}
+				}
+
+				function onProductVariantAttributeRowDataBound(e) {
+					var id = parseInt(e.dataItem['Id']);
+
+					$('#EditOptionsLink' + id).show();
+					$('#OptionsSetsContainer' + id).hide();
+				}
+			</script>
+
 			@(Html.Telerik().Grid<ProductModel.ProductVariantAttributeModel>()
-            .Name("productvariantattributes-grid")
-            .DataKeys(keys =>
-            {
-                keys.Add(x => x.Id);
-            })
-            .DataBinding(dataBinding =>
-            {
-                dataBinding.Ajax()
-                    .Select("ProductVariantAttributeList", "Product", new { productId = Model.Id })
-                    .Insert("ProductVariantAttributeInsert", "Product", new { productId = Model.Id })
-                    .Update("ProductVariantAttributeUpdate", "Product")
-                    .Delete("ProductVariantAttributeDelete", "Product");
-            })
-            .Columns(columns =>
-            {
-                columns.Bound(x => x.ProductAttribute)
-                    .Width(150);
-                columns.Bound(x => x.TextPrompt)
-                    .Width(150)
-                    .Centered();
-                columns.Bound(x => x.IsRequired)
-                    .Width(100)
-                    .Template(item => @Html.SymbolForBool(item.IsRequired))
-                    .ClientTemplate(@Html.SymbolForBool("IsRequired"))
-                    .Centered();
-                columns.Bound(x => x.AttributeControlType)
-                    .Width(150)
-                    .Centered();
-                columns.Bound(x => x.DisplayOrder1)
-                    .Width(100)
-                    .Centered();
-                columns.Bound(x => x.ViewEditUrl)
-                    .Width(200)
-                    .ClientTemplate("<a href=\"<#= ViewEditUrl #>\"><#= ViewEditText #></a>")
-                    .ReadOnly()
-                    .Title(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text);
-                columns.Command(commands =>
-                {
-                    commands.Edit().Localize(T);
-                    commands.Delete().Localize(T);
-                })
-                .Width(180);
-            })
-            .ToolBar(commands => commands.Insert())
-            .ClientEvents(events => events.OnEdit("onProductVariantAttributeEdit"))
-            .EnableCustomBinding(true))
+				.Name("productvariantattributes-grid")
+				.DataKeys(keys =>
+				{
+					keys.Add(x => x.Id);
+				})
+				.DataBinding(dataBinding =>
+				{
+					dataBinding.Ajax()
+						.Select("ProductVariantAttributeList", "Product", new { productId = Model.Id })
+						.Insert("ProductVariantAttributeInsert", "Product", new { productId = Model.Id })
+						.Update("ProductVariantAttributeUpdate", "Product")
+						.Delete("ProductVariantAttributeDelete", "Product");
+				})
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.ProductAttribute)
+						.Width(150);
+					columns.Bound(x => x.TextPrompt)
+						.Width(150)
+						.Centered();
+					columns.Bound(x => x.IsRequired)
+						.Width(100)
+						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
+						.Centered();
+					columns.Bound(x => x.AttributeControlType)
+						.Width(150)
+						.Centered();
+					columns.Bound(x => x.DisplayOrder1)
+						.Width(100)
+						.Centered();
+					columns.Bound(x => x.ViewEditUrl)
+						.Width(200)
+						.ClientTemplate(
+							"<a id='EditOptionsLink<#= Id #>' href='<#= ViewEditUrl #>'><#= ViewEditText #></a>" +
+							"<div id='OptionsSetsContainer<#= Id #>' class='hide'><select id='OptionsSetsChoice<#= Id #>' data-valcount='<#= ValueCount #>'><#= OptionsSets #></select></div>"
+						)
+						.ReadOnly()
+						.Title(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text);
+					columns.Command(commands =>
+					{
+						commands.Edit().Localize(T);
+						commands.Delete().Localize(T);
+					})
+					.Width(160);
+				})
+				.ToolBar(commands => commands.Insert())
+				.ClientEvents(events =>
+				{
+					events.OnEdit("onProductVariantAttributeEdit");
+					events.OnRowDataBound("onProductVariantAttributeRowDataBound");
+				})
+				.EnableCustomBinding(true))
         }
         else
         {
@@ -118,10 +142,7 @@
                 <script type="text/javascript">
                     $(document).ready(function () {
                         $('.add-new-combination').on('click', function (e) {
-                            OpenWindow('@(Url.Action("AttributeCombinationCreatePopup", "Product", new { productId = Model.Id }))&btnId=btnRefreshCombinations&formId=product-form',
-                                1000,
-                                800,
-                                true);
+                        	openPopup('@(Url.Action("AttributeCombinationCreatePopup", "Product", new { productId = Model.Id }))&btnId=btnRefreshCombinations&formId=product-form');
                             return false;
                         });
 
@@ -162,7 +183,7 @@
 					.Columns(columns =>
 					{
 						columns.Bound(x => x.AttributesXml)
-							.ClientTemplate("<a href=\"#\" onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form', 1000, 800, true); return false;\"><#= AttributesXml #></a><br /><span style=\"color: red\"><#= Warnings #></span>")
+							.ClientTemplate("<a href=\"#\" onclick=\"" + "openPopup('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form'); return false;\"><#= AttributesXml #></a><br /><span style=\"color: red\"><#= Warnings #></span>")
 							.Width(460)
 							.Encoded(false)
 							.ReadOnly();
@@ -191,7 +212,7 @@
 						//columns.Bound(x => x.Id)
 						//    .Width(90)
 						//    .Centered()
-						//    .ClientTemplate("<button onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form', 1000, 800, true); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
+						//    .ClientTemplate("<button onclick=\"" + "openPopup('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form'); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
 						//    .Title("");
 						columns.Command(commands =>
 						{

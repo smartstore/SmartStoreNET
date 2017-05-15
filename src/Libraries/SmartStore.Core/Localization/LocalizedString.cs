@@ -3,7 +3,6 @@ using System.Web;
 
 namespace SmartStore.Core.Localization
 {
-
 	[Serializable]
 	public class LocalizedString : IHtmlString
     {
@@ -81,6 +80,5 @@ namespace SmartStore.Core.Localization
             var that = (LocalizedString)obj;
             return string.Equals(_localized, that._localized);
         }
-
     }
 }

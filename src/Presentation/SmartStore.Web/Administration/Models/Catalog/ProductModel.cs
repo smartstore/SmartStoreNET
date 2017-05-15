@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Admin.Models.Catalog
 {
@@ -31,7 +32,8 @@ namespace SmartStore.Admin.Models.Catalog
 			AddPictureModel = new ProductPictureModel();
 			AddSpecificationAttributeModel = new AddProductSpecificationAttributeModel();
 			AvailableManageInventoryMethods = new List<SelectListItem>();
-        }
+			AvailableCountries = new List<SelectListItem>();
+		}
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ID")]
 		public override int Id { get; set; }
@@ -118,7 +120,14 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.GTIN")]
 		[AllowHtml]
-		public virtual string Gtin { get; set; }
+		public string Gtin { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.CustomsTariffNumber")]
+		public string CustomsTariffNumber { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.CountryOfOriginId")]
+		public int? CountryOfOriginId { get; set; }
+		public IList<SelectListItem> AvailableCountries { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsGiftCard")]
 		public bool IsGiftCard { get; set; }
@@ -232,8 +241,17 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.OrderMaximumQuantity")]
 		public int OrderMaximumQuantity { get; set; }
+        
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.QuantityStep")]
+        public int QuantityStep { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AllowedQuantities")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.QuantiyControlType")]
+        public QuantityControlType QuantiyControlType { get; set; }
+        
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.HideQuantityControl")]
+        public bool HideQuantityControl { get; set; }
+        
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.AllowedQuantities")]
 		public string AllowedQuantities { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DisableBuyButton")]
@@ -393,7 +411,6 @@ namespace SmartStore.Admin.Models.Catalog
             {
                 AvailableAttributes = new List<SelectListItem>();
                 AvailableOptions = new List<SelectListItem>();
-				AllowFiltering = true;
             }
             
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.SpecificationAttribute")]
@@ -403,10 +420,10 @@ namespace SmartStore.Admin.Models.Catalog
             public int SpecificationAttributeOptionId { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.AllowFiltering")]
-            public bool AllowFiltering { get; set; }
+            public bool? AllowFiltering { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.ShowOnProductPage")]
-            public bool ShowOnProductPage { get; set; }
+            public bool? ShowOnProductPage { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.DisplayOrder")]
             public int DisplayOrder { get; set; }
@@ -594,19 +611,21 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.IsRequired")]
 			public bool IsRequired { get; set; }
 
-			public int AttributeControlTypeId { get; set; }
             [SmartResourceDisplayName("Admin.Catalog.Attributes.AttributeControlType")]
 			[UIHint("AttributeControlType")]
 			public string AttributeControlType { get; set; }
+			public int AttributeControlTypeId { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.DisplayOrder")]
 			//we don't name it DisplayOrder because Telerik has a small bug 
 			//"if we have one more editor with the same name on a page, it doesn't allow editing"
 			//in our case it's category.DisplayOrder
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.DisplayOrder")]
 			public int DisplayOrder1 { get; set; }
 
 			public string ViewEditUrl { get; set; }
 			public string ViewEditText { get; set; }
+			public string OptionsSets { get; set; }
+			public int ValueCount { get; set; }
 		}
 
 		public class ProductVariantAttributeValueListModel : ModelBase
@@ -620,6 +639,7 @@ namespace SmartStore.Admin.Models.Catalog
 			public string ProductVariantAttributeName { get; set; }
 		}
 
+		// TODO: DRY. see ProductAttributeOptionModelBase
 		[Validator(typeof(ProductVariantAttributeValueModelValidator))]
 		public class ProductVariantAttributeValueModel : EntityModelBase, ILocalizedModel<ProductVariantAttributeValueLocalizedModel>
 		{
@@ -637,13 +657,18 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name")]
 			[AllowHtml]
 			public string Name { get; set; }
+			public string NameString { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ColorSquaresRgb")]
 			[AllowHtml, UIHint("Color")]
-			public string ColorSquaresRgb { get; set; }
-			public bool DisplayColorSquaresRgb { get; set; }
+			public string Color { get; set; }
+			public bool IsListTypeAttribute { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
+            [UIHint("Picture")]
+            [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Picture")]
+            public int PictureId { get; set; }
+            
+            [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
 			public decimal PriceAdjustment { get; set; }
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
 			public string PriceAdjustmentString { get; set; }
@@ -682,6 +707,9 @@ namespace SmartStore.Admin.Models.Catalog
 		public class ProductVariantAttributeValueLocalizedModel : ILocalizedModelLocal
 		{
 			public int LanguageId { get; set; }
+
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias")]
+			public string Alias { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name")]
 			[AllowHtml]

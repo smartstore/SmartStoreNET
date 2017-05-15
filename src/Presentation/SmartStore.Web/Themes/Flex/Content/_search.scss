@@ -1,0 +1,466 @@
+/// <reference path="_variables.scss" />
+/// <reference path="shared/_mixins.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// InstantSearch Box & Drop Styles
+// --------------------------------------------------
+
+$facet-selection-color:             darken($brand-success, 15%);
+
+.instasearch-form {
+    position: relative;
+}
+
+#instasearch-progress {
+    position: absolute;
+    z-index: 2;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    margin-top: -10px;
+    right: 56px;
+}
+
+.instasearch-term {
+    position: relative;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 2px;
+    background: $searchbox-bg;
+    border-color: $searchbox-border-color;
+    box-shadow: none;
+    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+    padding-right: 60px;
+
+    &:hover, &:focus, &:active {
+        box-shadow: 0 2px 6px 0 rgba(0,0,0, 0.12);
+    }
+     &:focus, &:active {
+        background-color: $searchbox-focus-bg;
+        border-color: $searchbox-border-active-color;
+    }
+}
+
+.instasearch-button {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-left-color: transparent;
+    height: initial;
+    font-size: 1.2rem;
+    padding: 0 0.25rem;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    box-shadow: none;
+}
+
+.instasearch-icon {
+    position: relative;
+    top: 0.12rem;
+}
+
+#instasearch-drop {
+    position: absolute;
+    display: none;
+    left: 0;
+    top: 100%;
+    margin-top: -1px;
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 50px;
+    border: 1px solid $searchbox-border-active-color;
+    box-shadow: 0 6px 6px 0 rgba(0,0,0, 0.12);
+    background-color: $dropdown-bg;
+    z-index: $zindex-dropdown + 100;
+    border-radius: 0 0 2px 2px;   
+
+    &.open {
+        display: block;
+    } 
+}
+
+.instasearch-drop-body {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.instasearch-match {
+    font-weight: bold;
+}
+
+.instasearch-group-header {
+    margin: 0 20px;
+    padding-bottom: 0.3rem;
+    font-size: 22px; // rem gets too small on mobile
+    color: $brand-info;
+    font-weight: $font-weight-light;
+
+    ~ .instasearch-group-header {
+        margin-top: 1.2rem;
+    }
+}
+
+.instasearch-hits {
+    @include list-unstyled;
+    margin: 0;
+    margin-bottom: 1rem;
+
+    &:last-child { margin-bottom: 0; }
+    .instasearch-col:first-child &:last-child {
+        margin-bottom: 1rem;
+    }
+
+    &.has-thumbs li {
+        border-bottom: 1px solid rgba(#000, 0.12);
+    }
+    &.has-thumbs li:last-child {
+        border-bottom: none;
+    }
+}
+
+@include media-breakpoint-up(sm) {
+    .instasearch-col {
+        &:first-child { border-right: 1px solid rgba(0,0,0, 0.1)  }
+    }
+}
+@include media-breakpoint-up(lg) {
+    #instasearch-drop {
+        max-width: none;
+    }
+    .instasearch-row {
+        width: 850px;
+    }
+}
+
+.instasearch-hit {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 8px 20px;
+    clear: both;
+    white-space: normal;
+    text-decoration: none;
+    color: $dropdown-link-color;
+    font-size: 14px; // rem gets too small on mobile
+    line-height: 1.3;
+
+    &:focus, &:hover, &.active, &.key-hover {
+        color: $dropdown-link-hover-color;
+        text-decoration: none;
+        background-color: $dropdown-link-hover-bg;
+    }
+}
+
+.instasearch-hit-tag {
+    color: $searchbox-hit-tag-color;
+    font-size: 13px;
+    padding-left: 0.2rem;
+}
+
+.instasearch-hit-wrapper {
+    overflow: hidden;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.instasearch-hit-thumb {
+    width: 48px; 
+    min-width: 48px; 
+    max-height: 36px; 
+    padding-right: 12px;
+}
+
+.instasearch-hit-label-secondary {
+    padding-top: 4px;
+    color: $text-muted;
+}
+
+//
+// Search Page Styles
+// --------------------------------------------------
+
+.search-term {
+    color: $brand-danger;
+}
+
+.search-hitcount {
+    color: $text-muted;
+}
+
+
+//
+// Facetes
+// --------------------------------------------------
+
+.facet-group {
+	position: relative;
+	border-bottom: 1px solid rgba(0,0,0, 0.12);
+    font-size: 14px;
+}
+
+.facet-group-header {
+	position: relative;
+	display: block;
+    padding: 0.75rem 0;
+    font-size: 16px;
+	font-weight: $font-weight-medium;
+	color: $body-color !important;
+	text-decoration: none !important;
+}
+
+.facet-toggle {
+    &:after {
+	    display: block;
+	    position: absolute;
+	    font-family: FontAwesome;
+	    font-size: 1.2rem;
+	    line-height: 1;
+	    content: "\f106";
+        color: $body-color;
+	    //content: "\f077";
+        right: 0;
+	    top: 50%;
+	    margin-top: -7px;
+	    transition: transform 0.3s ease-in-out;
+    }
+
+    &.collapsed:after {
+	    transform: rotate(180deg);
+    }
+
+    .facet-selection {
+        display: none;
+    }
+}
+
+.facet-body {
+    padding-bottom: 1rem;
+}
+
+.facet-body-inner {
+	line-height: 1.3;
+    padding: 4px 0; // padding ensures that check/radio animations do not get cropped
+
+    &.scrollable {
+	    max-height: 215px;
+	    overflow-y: auto;
+    }
+}
+
+.btn-remove-group-filters {
+    display: block;
+    margin-top: 0.5rem;
+}
+
+
+//
+// Facetes (Check/Radio)
+// --------------------------------------------------
+
+$facet-control-size:        20px;
+
+.facet-control-ui {
+    position: absolute;
+    display: block;
+    left: 2px;
+    width: $facet-control-size;
+    height: $facet-control-size;
+    line-height: $facet-control-size;
+
+    border: 1px solid rgba(#000, 0.2);
+    border-radius: 2px;
+    box-shadow: none;
+
+    &:after {
+        @include fontawesome("\f00c");
+        display: block;
+        opacity: 0;
+        transition: all 0.2s ease-in;
+        width: $facet-control-size - 1px;
+        height: $facet-control-size - 1px;
+        line-height: $facet-control-size - 1px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 14px;
+        color: $facet-selection-color;
+    }
+
+    *:checked + & {
+        vertical-align: middle;
+        text-align: center;
+        box-shadow: none;
+
+        &:after {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+}
+
+.facet-item input:checked + .facet-control-ui,
+.facet-item:hover .facet-control-ui {
+    border-color: rgba(#000, 0.35);
+}
+
+.facet-check,
+.facet-radio {
+    position: relative;
+    display: block;
+
+    label {
+        cursor: pointer;
+        padding-bottom: 0.75rem;
+        margin-bottom: 0;
+        min-height: $facet-control-size;
+    }
+
+    &:last-child label {
+        padding-bottom: 0;
+    }
+
+    input[type=checkbox],
+    input[type=radio] {
+        position: absolute;
+        clip: rect(0, 0, 0, 0);
+    }
+}
+
+.facet-check .facet-control-native {
+    + .facet-control-ui {
+        border-radius: 2px;
+    }
+}
+
+.facet-radio .facet-control-native {
+    + .facet-control-ui {
+        border-radius: 50%;
+
+        &:after {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: $facet-selection-color;
+            margin: 3px 0 0 3px;
+        }
+    }
+}
+
+
+//
+// Facet Label
+// --------------------------------------------------
+
+.facet-label {
+    position: relative;
+    display: block;
+    padding-left: $facet-control-size + ($facet-control-size / 1.5);
+    padding-top: 1px;
+    padding-right: 8px;
+
+    .facet-control-native:checked ~ & {
+        font-weight: $font-weight-medium;
+    }
+}
+
+.facet-body-rating .rating {
+    vertical-align: sub;
+    margin-right: 3px;
+}
+
+
+//
+// Facetes (active filters)
+// --------------------------------------------------
+
+.active-filters-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.active-filters {
+    position: relative;
+    margin: -0.25rem;
+}
+
+.active-filter-item {
+    display: block;
+    padding: 0.25rem;
+    float: left;
+}
+
+.active-filter-link {
+    position: relative;
+    font-weight: 400;
+    padding: 0.2rem 0.6rem;
+    max-width: 12rem;
+    padding-right: 1.5rem;
+    border-width: 0;
+
+    &:after {
+        position: absolute;
+        display: block;
+        content: '\00d7';
+        right: 0.375rem;
+        top: 2px;
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+}
+
+.active-filter-label {
+    display: block;
+    @include text-truncate();
+}
+
+
+//
+// Offcanvas Facet Widget (overrides)
+// --------------------------------------------------
+
+.offcanvas {
+    .facet-toggle,
+    .facet-body {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .facet-toggle:after {
+        right: 1rem;
+    }
+
+    .facet-toggle.has-selection {
+        color: $facet-selection-color !important;
+
+        .facet-selection {
+            display: inline;
+            color: rgba(#000, 0.4);
+            font-size: $font-size-base;
+            position: absolute;
+            text-align: right;
+            right: 2.5rem;
+            vertical-align: middle;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+    }
+
+    .facet-body-inner {
+        // On touch devices, having multiple scrollable areas is rather unintuitive
+    	max-height: none !important;
+	    overflow-y: visible !important;
+    }
+
+    .facet-label {
+        padding-right: 0;
+    }
+}
+
+
+.has-active-filter .hide-on-active-filter {
+    display: none !important;
+}

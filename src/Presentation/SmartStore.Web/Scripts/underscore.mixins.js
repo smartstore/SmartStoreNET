@@ -281,7 +281,6 @@
 				console.error(err);
 			}
 		}
-		
 	};
 
     // underscore.string mixins

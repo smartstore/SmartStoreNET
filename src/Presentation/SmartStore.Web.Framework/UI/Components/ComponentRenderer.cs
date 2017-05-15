@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using System.Web;
 using System.Web.UI;
 using System.IO;
 
 namespace SmartStore.Web.Framework.UI
-{
-    
+{ 
     public abstract class ComponentRenderer<TComponent> : IHtmlString where TComponent : Component
     {
-
         protected ComponentRenderer()
         {
         }
@@ -48,7 +43,8 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual void VerifyState()
         {
-            Guard.NotNull(() => this.Component);
+            Guard.NotNull(this.Component, nameof(this.Component));
+
             if (this.Component.NameIsRequired && !this.Component.Id.HasValue())
             {
                 throw Error.InvalidOperation("A component must have a unique 'Name'. Please provide a name.");
@@ -68,7 +64,7 @@ namespace SmartStore.Web.Framework.UI
             throw new NotImplementedException();
         }
 
-        public void Render()
+        public virtual void Render()
         {
             using (HtmlTextWriter htmlTextWriter = new HtmlTextWriter(this.ViewContext.Writer))
             {
@@ -76,7 +72,7 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        public string ToHtmlString()
+        public virtual string ToHtmlString()
         {
             string str;
             using (var stringWriter = new StringWriter())
@@ -95,7 +91,5 @@ namespace SmartStore.Web.Framework.UI
         {
             return id.SanitizeHtmlId();
         }
-
     }
-
 }

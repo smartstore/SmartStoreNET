@@ -1,0 +1,41 @@
+﻿@model ChoiceModel
+
+@using SmartStore.Web.Framework.UI.Choices;
+
+@{
+	var controlId = Model.BuildControlId();
+	var items = Model.Values ?? new List<ChoiceItemModel>();
+
+	// TODO: (mc) Replace .radio with .form-radio
+}
+
+@foreach (var item in items)
+{
+	var checkId = controlId + "_" + item.Id;
+	var hasColor = item.Color.HasValue() && item.Color != "transparent";
+	<div class="radio">
+		<label class="form-radio-label">
+			<input class="form-radio-input" type="radio" id="@checkId" name="@controlId" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
+
+			@if (item.ImageUrl.HasValue())
+			{
+				if (item.SeName.HasValue())
+				{
+					<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" class="choice-item-img">
+						<img src="@item.ImageUrl" />
+					</a>
+				}
+				else
+				{
+					<img src="@item.ImageUrl" class="choice-item-img" />
+				}
+			}
+			else if (hasColor)
+			{
+				<span class="choice-item-color" style="background-color: @item.Color"></span>
+			}
+
+			@item.GetItemLabel()
+		</label>
+	</div>
+}

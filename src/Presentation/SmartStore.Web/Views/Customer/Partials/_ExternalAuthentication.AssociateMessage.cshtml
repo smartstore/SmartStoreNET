@@ -1,0 +1,15 @@
+﻿@using SmartStore.Services.Authentication.External;
+
+@{
+    var openAuthParameters = ExternalAuthorizerHelper.RetrieveParametersFromRoundTrip(false);
+}
+
+@if (openAuthParameters != null)
+{
+    <div class="alert alert-warning external-auth-association">
+        @T("Account.AssociatedExternalAuth.YourAccountWillBeLinkedTo") <strong class="identifier">@openAuthParameters.ExternalIdentifier</strong>
+		<a href="@Url.Action("RemoveParameterAssociation", "ExternalAuthentication", new { ReturnUrl = Request.Url.ToString() })" class="remove" rel="nofollow">
+			@T("Common.Remove")
+		</a>            
+    </div>
+}

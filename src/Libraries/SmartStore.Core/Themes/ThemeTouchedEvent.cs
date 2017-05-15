@@ -6,7 +6,7 @@ namespace SmartStore.Core.Themes
 	{
 		public ThemeTouchedEvent(string themeName)
 		{
-			Guard.ArgumentNotEmpty(() => themeName);
+			Guard.NotEmpty(themeName, nameof(themeName));
 			this.ThemeName = themeName;
 		}
 		

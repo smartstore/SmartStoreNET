@@ -35,7 +35,7 @@ namespace SmartStore.Web.Framework.Events
         /// <remarks>Should only be called for admin tabstrips</remarks>
         public void AddWidget(RouteInfo routeInfo)
         {
-            Guard.ArgumentNotNull(() => routeInfo);
+            Guard.NotNull(routeInfo, nameof(routeInfo));
 
             if (_widgets == null)
             {

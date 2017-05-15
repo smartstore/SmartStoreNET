@@ -18,7 +18,7 @@ namespace SmartStore.Services.Pdf
 		
 		public PdfHtmlContent(string html)
 		{
-			Guard.ArgumentNotEmpty(() => html);
+			Guard.NotEmpty(html, nameof(html));
 
 			_originalHtml = html;
 			_html = html;

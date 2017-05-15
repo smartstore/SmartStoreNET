@@ -9,13 +9,12 @@ using SmartStore.Core.Logging;
 using Log = SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
-using SmartStore.Core.IO.VirtualPath;
+using SmartStore.Core.IO;
 using SmartStore.Core;
 using SmartStore.Core.Localization;
 
 namespace SmartStore.Core.Packaging
 {
-
 	public class PackageInstaller : IPackageInstaller
 	{
 		private readonly IVirtualPathProvider _virtualPathProvider;
@@ -61,7 +60,7 @@ namespace SmartStore.Core.Packaging
 
 		public PackageInfo Install(Stream packageStream, string location, string applicationPath)
 		{
-			Guard.ArgumentNotNull(() => packageStream);
+			Guard.NotNull(packageStream, nameof(packageStream));
 			
 			IPackage package;
 			try
@@ -89,7 +88,6 @@ namespace SmartStore.Core.Packaging
 		/// <returns>An instance of <see cref="PackageInfo"/> type</returns>
 		protected PackageInfo InstallPackage(IPackage package, IPackageRepository packageRepository, string location, string applicationPath)
 		{
-
 			bool previousInstalled;
 
 			// 1. See if extension was previous installed and backup its folder if so
@@ -192,7 +190,6 @@ namespace SmartStore.Core.Packaging
 
 		public void Uninstall(string packageId, string applicationFolder)
 		{
-
 			string extensionFullPath = string.Empty;
 
 			if (packageId.StartsWith(PackagingUtils.GetExtensionPrefix("Theme")))

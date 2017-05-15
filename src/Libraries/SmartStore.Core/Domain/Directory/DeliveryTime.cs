@@ -34,6 +34,10 @@ namespace SmartStore.Core.Domain.Directory
 		[DataMember]
 		public int DisplayOrder { get; set; }
 
+        /// <summary>
+        /// Gets or sets the display order
+        /// </summary>
+		[DataMember]
+        public bool? IsDefault { get; set; }
     }
-
 }

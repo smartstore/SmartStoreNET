@@ -1,81 +1,68 @@
 ﻿@model CustomerRewardPointsModel
+
 @using SmartStore.Web.Models.Customer;
+
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Html.AddTitleParts(T("PageTitle.Account").Text);
 
-    //title
-    Html.AddTitleParts(T("PageTitle.Account").Text);
+	Layout = "_MyAccount";
+	ViewBag.PageClassToken = "rewardpoints";
+	ViewBag.PageTitle = T("Account.RewardPoints").Text;
 }
-@section left
-{
-    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
-}
-<div class="page account-page reward-points-page">
-    <h4 class="muted">@T("Account.MyAccount")</h4>
-    <div class="page-title">
-        <h1>@T("Account.RewardPoints")</h1>
-    </div>
 
-    <div class="page-body">
-        <div class="reward-points-overview">
-            @Model.RewardPointsBalance
-        </div>
-
-        <div class="block">
-            <div class="block-title">
-                @T("RewardPoints.History")
-            </div>
-            <div class="block-body">
-                <div class="reward-points-history">
-                    @if (Model.RewardPoints.Count > 0)
-                    {
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        @T("Common.CreatedOn")
-                                    </th>
-                                    <th>
-                                        @T("RewardPoints.Fields.Points")
-                                    </th>
-                                    <th>
-                                        @T("RewardPoints.Fields.PointsBalance")
-                                    </th>
-                                    <th>
-                                        @T("RewardPoints.Fields.Message")
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < Model.RewardPoints.Count; i++)
-                                {
-                                    var item = Model.RewardPoints[i];
-                                    <tr>
-                                        <td>
-                                            @item.CreatedOn
-                                        </td>
-                                        <td>
-                                            @item.Points
-                                        </td>
-                                        <td>
-                                            @item.PointsBalance
-                                        </td>
-                                        <td>
-                                            @item.Message
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        @T("RewardPoints.NoHistory")
-                    }
-                </div>
-            </div>
-        </div>
-
-
-    </div>
+<div class="alert alert-info">
+    @Model.RewardPointsBalance
 </div>
+
+<fieldset class="content-group mt-4">
+    <legend class="mb-0"><span>@T("RewardPoints.History")</span></legend>
+    <div class="reward-points-history">
+        @if (Model.RewardPoints.Count == 0)
+		{
+			<div class="alert alert-warning mt-3">
+				@T("RewardPoints.NoHistory")
+			</div>
+		}
+		else
+		{
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th class="border-top-0">
+                            @T("Common.CreatedOn")
+                        </th>
+                        <th class="border-top-0">
+                            @T("RewardPoints.Fields.Points")
+                        </th>
+                        <th class="border-top-0">
+                            @T("RewardPoints.Fields.PointsBalance")
+                        </th>
+                        <th class="border-top-0">
+                            @T("RewardPoints.Fields.Message")
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.RewardPoints.Count; i++)
+                    {
+                        var item = Model.RewardPoints[i];
+                        <tr>
+                            <td>
+                                @item.CreatedOn
+                            </td>
+                            <td>
+                                @item.Points.ToString("N0")
+                            </td>
+                            <td>
+                                @item.PointsBalance.ToString("N0")
+                            </td>
+                            <td>
+                                @item.Message
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</fieldset>

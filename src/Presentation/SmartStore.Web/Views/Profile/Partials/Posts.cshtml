@@ -1,0 +1,39 @@
+﻿@model ProfilePostsModel
+@using SmartStore.Web.Models.Profile;
+@using SmartStore.Web.Framework.UI;
+
+<div class="user-last-posts">
+    @if (Model.Posts.Count > 0)
+    {
+        for (int i = 0; i < Model.Posts.Count; i++)
+        {
+            var item = Model.Posts[i];
+            
+            <div class="card mt-3">
+                <div class="card-header d-flex flex-wrap justify-content-between">
+                    <div>
+                        <span class="mr-1">@T("Profile.Topic"):</span>
+                        @Html.RouteLink(item.ForumTopicTitle, "TopicSlug", new { id = item.ForumTopicId, slug = item.ForumTopicSlug })
+                    </div>
+                    <div class="text-muted">
+                        <span>@T("Profile.PostedOn")</span>: <span>@item.Posted</span>
+                    </div>
+                </div>
+                <div class="card-block">
+                    @Html.Raw(item.ForumPostText)
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        @T("Profile.LatestPosts.NoPosts")
+    }
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="mt-3">
+            @Html.SmartStore().Pager(Model).Name("paginator").QueryParam("page").Route("CustomerProfile", ViewData["PagerRouteValues"])
+        </div>
+    }
+</div>

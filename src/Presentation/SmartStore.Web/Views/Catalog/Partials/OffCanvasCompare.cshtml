@@ -1,0 +1,89 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Web.Models.Catalog;
+
+<div class="offcanvas-cart-body offcanvas-scrollable">
+    @if (Model.Items.Count == 0)
+    {
+        <div class="no-items">
+            <h4 class="no-item-title">
+                @T("ShoppingCart.Mini.EmptyCompare.Title")
+            </h4>
+            <p class="no-item-icon">
+                <i class="fa fa-retweet fa-4x"></i>
+            </p>
+            <p class="no-item-info text-muted">
+                @T("ShoppingCart.Mini.EmptyCompare.Info", "fa fa-lg fa-retweet")
+            </p>
+        </div>
+    }
+
+    @if (Model.Items.Count > 0)
+    {
+        <div class="offcanvas-cart-items">
+            @foreach (var item in Model.Items)
+            {
+                <div class="offcanvas-cart-item">
+                    <div class="row sm-gutters">
+                        <div class="col col-alpha">
+                            @if (item.Picture.ImageUrl.HasValue())
+                            {
+                                <a class="img-center-container" href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@item.Picture.Title">
+                                    <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+                                </a>
+                            }
+                        </div>
+
+                        <div class="col col-data">
+                            <a class="name font-weight-medium" href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@item.Name">@item.Name</a>
+                            <div class="short-desc text-muted">
+                                @Html.Raw(item.ShortDescription.Truncate(120, "..."))
+                            </div>
+
+                            <div class="d-flex align-items-center sm-gutters mt-2">
+                                <div class="col">
+                                    <span class="price unit-price">
+                                        @item.Price.Price
+                                    </span>
+                                </div>
+                                <div class="col-auto text-nowrap">
+                                    <a class="btn btn-secondary btn-to-danger btn-sm btn-icon remove ajax-cart-link"
+                                       href="#"
+                                       rel="nofollow"
+                                       data-href='@Url.Action("RemoveProductFromCompare", "Catalog", new { id = item.Id })'
+                                       data-type="compare"
+                                       data-action="remove"
+                                       title='@T("Common.Remove")'>
+                                        <i class="fa fa-trash-o"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @{ Html.RenderWidget("offcanvas_compare_items_after"); }
+        </div>
+    }
+</div>
+
+@if (Model.Items.Count > 0)
+{
+    <div class="offcanvas-cart-footer">
+        <div class="offcanvas-cart-footer-row px-0">
+            <div class="col pr-2">
+                <a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("CompareProducts")">
+                    <i class="fa fa-check"></i>
+                    <span>@T("Products.Compare.CompareNow")</span>
+                </a>
+            </div>
+            <div class="col pl-2">
+                <a class="btn btn-clear btn-block btn-action ajax-cart-link" href="#" data-href="@Url.Action("ClearCompareList")" rel="nofollow" data-type="compare" data-action="remove">
+                    <i class="fa fa-trash"></i>
+                    <span>@T("Products.Compare.Clear")</span>
+                </a>
+            </div>
+        </div>
+    </div>
+}

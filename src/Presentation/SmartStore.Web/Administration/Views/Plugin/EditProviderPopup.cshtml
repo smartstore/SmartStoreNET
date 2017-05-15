@@ -2,22 +2,11 @@
 @model SmartStore.Web.Framework.Plugins.ProviderModel
 
 @{
-    Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
+    Layout = "_AdminPopupLayout";
 }
 
 @{    
     ViewBag.Title = T("Common.Edit") + ": " + Model.FriendlyName.Truncate(30, "...");
-}
-
-@if (ViewBag.RefreshPage == true)
-{
-	<script type="text/javascript">
-		try { window.opener.document.getElementById('@(ViewBag.btnId)').click(); }
-		catch (e) { }
-        window.close();
-	</script>
-	
-	return;
 }
 
 @using (Html.BeginForm())

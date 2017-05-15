@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Web.Framework</RootNamespace>
     <AssemblyName>SmartStore.Web.Framework</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -23,6 +23,8 @@
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,29 +68,33 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+    <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Autofac.Integration.WebApi, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.WebApi.3.1.0\lib\net40\Autofac.Integration.WebApi.dll</HintPath>
-    </Reference>
-    <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
+    <Reference Include="Autofac.Integration.WebApi, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.WebApi2.4.0.1\lib\net45\Autofac.Integration.WebApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="BundleTransformer.Core, Version=1.8.23.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\BundleTransformer.Core.1.8.23\lib\net40\BundleTransformer.Core.dll</HintPath>
+    <Reference Include="AutoMapper, Version=6.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="BundleTransformer.Less, Version=1.8.25.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\BundleTransformer.Less.1.8.25\lib\net40\BundleTransformer.Less.dll</HintPath>
+    <Reference Include="BundleTransformer.Core, Version=1.9.152.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BundleTransformer.Core.1.9.152\lib\net40\BundleTransformer.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BundleTransformer.Less, Version=1.9.143.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BundleTransformer.Less.1.9.143\lib\net40\BundleTransformer.Less.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BundleTransformer.SassAndScss, Version=1.9.154.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BundleTransformer.SassAndScss.1.9.154\lib\net40\BundleTransformer.SassAndScss.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -98,32 +104,40 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+    <Reference Include="FluentValidation, Version=6.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.6.4.1\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.Core, Version=1.2.4.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.1.2.4\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.2.4.0\lib\net45\JavaScriptEngineSwitcher.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Data.Edm, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.Data.Edm.5.6.1\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    <Reference Include="LibSassHost, Version=1.0.3.0, Culture=neutral, PublicKeyToken=3e24e88796a38e46, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibSassHost.1.0.3\lib\net45\LibSassHost.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.Data.OData.5.6.1\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    <Reference Include="Microsoft.Data.Edm, Version=5.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Data.Edm.5.8.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\CommonServiceLocator.1.2\lib\portable-windows8+net40+sl5+windowsphone8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    <Reference Include="Microsoft.Data.OData, Version=5.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Data.OData.5.8.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Data.Services.Client.5.8.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -132,42 +146,42 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.1.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Spatial, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\System.Spatial.5.6.1\lib\net40\System.Spatial.dll</HintPath>
+    <Reference Include="System.Spatial, Version=5.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Spatial.5.8.2\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
-    <Reference Include="System.Web.Cors, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.Cors.5.1.2\lib\net45\System.Web.Cors.dll</HintPath>
+    <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.1.2\lib\net45\System.Web.Http.dll</HintPath>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Http.Cors, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Cors.5.1.1\lib\net45\System.Web.Http.Cors.dll</HintPath>
+    <Reference Include="System.Web.Http.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Cors.5.2.3\lib\net45\System.Web.Http.Cors.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Http.OData, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.OData.5.1.2\lib\net45\System.Web.Http.OData.dll</HintPath>
+    <Reference Include="System.Web.Http.OData, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.OData.5.7.0\lib\net45\System.Web.Http.OData.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Http.WebHost, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.1.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -215,9 +229,12 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\AdminControllerBase.cs" />
+    <Compile Include="Extensions\ActionResultExtensions.cs" />
+    <Compile Include="Extensions\HtmlZoneExtensions.cs" />
     <Compile Include="Filters\JsonNetAttribute.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
     <Compile Include="Modelling\Results\JsonNetResult.cs" />
+    <Compile Include="Plugins\PluginRazorHost.cs" />
     <Compile Include="Theming\AdminThemedAttribute.cs" />
     <Compile Include="Filters\HandleExceptionFilter.cs" />
     <Compile Include="Filters\NotifyAttribute.cs" />
@@ -238,7 +255,6 @@
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Filters\HandleInstallFilter.cs" />
     <Compile Include="Extensions\PostedFileResult.cs" />
-    <Compile Include="Extensions\RouteExtensions.cs" />
     <Compile Include="Extensions\TelerikExtensions.cs" />
     <Compile Include="Localization\ErrorMessageProvider.cs" />
     <Compile Include="Filters\CompressAttribute.cs" />
@@ -255,18 +271,26 @@
     <Compile Include="Plugins\ProviderManager.cs" />
     <Compile Include="Seo\CanonicalHostNameAttribute.cs" />
     <Compile Include="SmartUrlRoutingModule.cs" />
+    <Compile Include="Theming\HttpHandlers\CssHttpHandlerBase.cs" />
+    <Compile Include="Theming\HttpHandlers\SassCssHttpHandler.cs" />
     <Compile Include="Theming\LocalizedDisplayMode.cs" />
+    <Compile Include="Theming\ModuleImportsVirtualFile.cs" />
     <Compile Include="Theming\ThemeFileResolver.cs" />
     <Compile Include="Theming\InheritedVirtualThemeFile.cs" />
     <Compile Include="Theming\TwoLevelViewLocationCache.cs" />
     <Compile Include="Theming\WebViewPage.cs" />
+    <Compile Include="Theming\WebViewPageHelper.cs" />
+    <Compile Include="UI\Choices\ChoiceItemModel.cs" />
+    <Compile Include="UI\Choices\GenericChoiceModel.cs" />
+    <Compile Include="UI\Choices\ChoiceModel.cs" />
+    <Compile Include="UI\Components\Menu\CatalogMenuProvider.cs" />
+    <Compile Include="UI\Components\ViewBasedComponentRenderer.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />
     <Compile Include="UI\Components\Menu\MenuPublisher.cs" />
     <Compile Include="UI\HtmlAttribute.cs" />
-    <Compile Include="UI\HtmlAttributeExtensions.cs" />
+    <Compile Include="UI\Extensions\HtmlAttributeExtensions.cs" />
     <Compile Include="Localization\LanguageSeoCodeAttribute.cs" />
     <Compile Include="Localization\IText.cs" />
-    <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Localization\Text.cs" />
     <Compile Include="Bundling\BundlePublisher.cs" />
     <Compile Include="Bundling\IBundleProvider.cs" />
@@ -279,7 +303,7 @@
     <Compile Include="Seo\GenericPathRouteExtensions.cs" />
     <Compile Include="Settings\StoreDependingSettingData.cs" />
     <Compile Include="Settings\StoreDependingSettingHelper.cs" />
-    <Compile Include="Theming\LessCssHttpHandler.cs" />
+    <Compile Include="Theming\HttpHandlers\LessCssHttpHandler.cs" />
     <Compile Include="Theming\SmartStyleBundle.cs" />
     <Compile Include="Theming\ThemeHelper.cs" />
     <Compile Include="Theming\ThemeVarsVirtualFile.cs" />
@@ -291,14 +315,14 @@
     <Compile Include="UI\Components\Menu\MenuExtensions.cs" />
     <Compile Include="UI\Components\Menu\NavigationModel.cs" />
     <Compile Include="UI\Components\Menu\NodePathState.cs" />
-    <Compile Include="UI\Components\Pager\MobilePagerRenderer.cs" />
     <Compile Include="UI\Components\Window\WindowRenderer.cs" />
     <Compile Include="UI\Components\Window\WindowBuilder.cs" />
     <Compile Include="UI\Components\Window\Window.cs" />
+    <Compile Include="UI\Breadcrumb.cs" />
     <Compile Include="UI\IWidgetProvider.cs" />
     <Compile Include="UI\IWidgetSelector.cs" />
     <Compile Include="UI\BundleBuilder.cs" />
-    <Compile Include="UI\ScaffoldExtensions.cs" />
+    <Compile Include="UI\Extensions\ScaffoldExtensions.cs" />
     <Compile Include="Security\AdminValidateIpAddressAttribute.cs" />
     <Compile Include="Security\FilePermissionHelper.cs" />
     <Compile Include="Filters\StoreClosedAttribute.cs" />
@@ -314,7 +338,6 @@
     <Compile Include="Modelling\Results\XmlDownloadResult.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\HtmlExtensions.cs" />
-    <Compile Include="Modelling\PictureResult.cs" />
     <Compile Include="Modelling\IModelAttribute.cs" />
     <Compile Include="Localization\ILocalizedModel.cs" />
     <Compile Include="Localization\ILocalizedModelLocal.cs" />
@@ -326,6 +349,11 @@
     <Compile Include="Modelling\SmartMetadataProvider.cs" />
     <Compile Include="Modelling\SmartModelBinder.cs" />
     <Compile Include="Localization\SmartResourceDisplayName.cs" />
+    <Compile Include="UI\SiteMap\ISiteMap.cs" />
+    <Compile Include="UI\SiteMap\ISiteMapService.cs" />
+    <Compile Include="UI\SiteMap\SiteMapBase.cs" />
+    <Compile Include="UI\SiteMap\SiteMapBuiltEvent.cs" />
+    <Compile Include="UI\SiteMap\SiteMapService.cs" />
     <Compile Include="UI\WidgetZoneModel.cs" />
     <Compile Include="Validators\SmartBaseValidator.cs" />
     <Compile Include="Validators\SmartValidatorFactory.cs" />
@@ -339,7 +367,7 @@
     <Compile Include="Theming\ThemeableVirtualPathProviderViewEngine.cs" />
     <Compile Include="Theming\ThemeableRazorViewEngine.cs" />
     <Compile Include="Theming\ThemeContext.cs" />
-    <Compile Include="UI\Components\BadgeStyle.cs" />
+    <Compile Include="UI\Components\Enums.cs" />
     <Compile Include="UI\Components\Button\Button.cs" />
     <Compile Include="UI\Components\Component.cs" />
     <Compile Include="UI\Components\ComponentBuilder.cs" />
@@ -349,28 +377,28 @@
     <Compile Include="UI\Captcha\HtmlExtensions.cs" />
     <Compile Include="UI\Captcha\CaptchaValidatorAttribute.cs" />
     <Compile Include="UI\ResourceLocation.cs" />
-    <Compile Include="UI\LayoutExtensions.cs" />
+    <Compile Include="UI\Extensions\LayoutExtensions.cs" />
     <Compile Include="UI\IPageAssetsBuilder.cs" />
     <Compile Include="UI\PageAssetsBuilder.cs" />
-    <Compile Include="UI\DataListExtensions.cs" />
+    <Compile Include="UI\Extensions\DataListExtensions.cs" />
     <Compile Include="UI\Components\HtmlHelperExtensions.cs" />
     <Compile Include="UI\Components\IUiComponent.cs" />
     <Compile Include="UI\Components\IContentContainer.cs" />
     <Compile Include="UI\Components\IHtmlAttributesContainer.cs" />
-    <Compile Include="UI\Components\INavigatable.cs" />
+    <Compile Include="UI\INavigatable.cs" />
     <Compile Include="UI\Components\Menu\IMenuProvider.cs" />
     <Compile Include="UI\Components\Menu\MenuItem.cs" />
     <Compile Include="UI\Components\Menu\MenuItemBuilder.cs" />
     <Compile Include="UI\Components\NavigationItemBuilder.cs" />
     <Compile Include="UI\Components\NavigatableComponentBuilder.cs" />
-    <Compile Include="UI\Components\NavigatableExtensions.cs" />
+    <Compile Include="UI\Extensions\NavigatableExtensions.cs" />
     <Compile Include="UI\Components\NavigationItem.cs" />
     <Compile Include="UI\Components\Pager\ForumTopicPagerRenderer.cs" />
     <Compile Include="UI\Components\Pager\Pager.cs" />
     <Compile Include="UI\Components\Pager\PagerBuilder.cs" />
     <Compile Include="UI\Components\Pager\PagerItem.cs" />
     <Compile Include="UI\Components\Pager\PagerRenderer.cs" />
-    <Compile Include="UI\Components\RouteValueDictionaryExtensions.cs" />
+    <Compile Include="UI\Extensions\RouteValueDictionaryExtensions.cs" />
     <Compile Include="UI\Components\TabStrip\TabStrip.cs" />
     <Compile Include="UI\Components\TabStrip\TabStripBuilder.cs" />
     <Compile Include="UI\Components\TabStrip\Tab.cs" />

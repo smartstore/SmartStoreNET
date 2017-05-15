@@ -9,12 +9,13 @@ using System.IO;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using HtmlAgilityPack;
 
 namespace SmartStore
 {
     public static class StringExtensions
     {
-        public const string CarriageReturnLineFeed = "\r\n";
+		public const string CarriageReturnLineFeed = "\r\n";
         public const string Empty = "";
         public const char CarriageReturn = '\r';
         public const char LineFeed = '\n';
@@ -54,7 +55,7 @@ namespace SmartStore
 
         internal static void WriteCharAsUnicode(char c, TextWriter writer)
         {
-            Guard.ArgumentNotNull(writer, "writer");
+            Guard.NotNull(writer, "writer");
 
             char h1 = ((c >> 12) & '\x000f').ToHex();
             char h2 = ((c >> 8) & '\x000f').ToHex();
@@ -207,7 +208,7 @@ namespace SmartStore
 		[DebuggerStepThrough]
         public static bool IsWhiteSpace(this string value)
         {
-            Guard.ArgumentNotNull(value, "value");
+            Guard.NotNull(value, "value");
 
             if (value.Length == 0)
                 return false;
@@ -264,13 +265,46 @@ namespace SmartStore
 			return value;
 		}
 
-        [DebuggerStepThrough]
-        public static bool IsWebUrl(this string value)
+        private static bool IsWebUrlInternal(this string value, bool schemeIsOptional)
         {
-            return !String.IsNullOrEmpty(value) && RegularExpressions.IsWebUrl.IsMatch(value.Trim());
-        }
+			if (String.IsNullOrEmpty(value))
+				return false;
 
-        [DebuggerStepThrough]
+			value = value.Trim().ToLowerInvariant();
+
+			if (schemeIsOptional && value.StartsWith("//"))
+			{
+				value = "http:" + value;
+			}
+
+			return Uri.IsWellFormedUriString(value, UriKind.Absolute) &&
+				(value.StartsWith("http://") || value.StartsWith("https://") || value.StartsWith("ftp://"));
+
+			#region Old (obsolete)
+			//// Uri.TryCreate() does not accept port numbers in uri strings.
+			//if (schemeIsOptional)
+			//{
+			//	Uri uri;
+			//	return Uri.TryCreate(value, UriKind.Absolute, out uri);
+			//}
+
+			//return RegularExpressions.IsWebUrl.IsMatch(value.Trim());
+			#endregion
+		}
+
+		[DebuggerStepThrough]
+		public static bool IsWebUrl(this string value)
+		{
+			return value.IsWebUrlInternal(false);
+		}
+
+		[DebuggerStepThrough]
+		public static bool IsWebUrl(this string value, bool schemeIsOptional)
+		{
+			return value.IsWebUrlInternal(schemeIsOptional);
+		}
+
+		[DebuggerStepThrough]
         public static bool IsEmail(this string value)
         {
             return !String.IsNullOrEmpty(value) && RegularExpressions.IsEmail.IsMatch(value.Trim());
@@ -317,8 +351,8 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static string Truncate(this string value, int maxLength, string suffix = "")
         {
-            Guard.ArgumentNotNull(suffix, "suffix");
-            Guard.ArgumentIsPositive(maxLength, "maxLength");
+            Guard.NotNull(suffix, "suffix");
+            Guard.IsPositive(maxLength, nameof(maxLength));
 
             int subStringLength = maxLength - suffix.Length;
 
@@ -349,8 +383,8 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static string EnsureStartsWith(this string value, string startsWith)
 		{
-			Guard.ArgumentNotNull(value, "value");
-			Guard.ArgumentNotNull(startsWith, "startsWith");
+			Guard.NotNull(value, "value");
+			Guard.NotNull(startsWith, "startsWith");
 
 			return value.StartsWith(startsWith) ? value : (startsWith + value);
 		}
@@ -364,8 +398,8 @@ namespace SmartStore
 		[DebuggerStepThrough]
         public static string EnsureEndsWith(this string value, string endWith)
         {
-            Guard.ArgumentNotNull(value, "value");
-            Guard.ArgumentNotNull(endWith, "endWith");
+            Guard.NotNull(value, "value");
+            Guard.NotNull(endWith, "endWith");
 
             if (value.Length >= endWith.Length)
             {
@@ -411,42 +445,44 @@ namespace SmartStore
             return HttpUtility.HtmlDecode(value);
         }
 
-        [DebuggerStepThrough]
-        public static string RemoveHtml(this string value)
-        {
-            return RemoveHtmlInternal(value, null);
-        }
+		[Obsolete("The 'removeTags' parameter is not supported anymore. Use the parameterless method instead.")]
+		public static string RemoveHtml(this string source, ICollection<string> removeTags)
+		{
+			return RemoveHtml(source);
+		}
 
-        public static string RemoveHtml(this string value, ICollection<string> removeTags)
-        {
-            return RemoveHtmlInternal(value, removeTags);
-        }
+		public static string RemoveHtml(this string source)
+		{
+			if (source.IsEmpty())
+				return string.Empty;
 
-        private static string RemoveHtmlInternal(string s, ICollection<string> removeTags)
-        {
-            List<string> removeTagsUpper = null;
-            if (removeTags != null)
-            {
-                removeTagsUpper = new List<string>(removeTags.Count);
+			var doc = new HtmlDocument()
+			{
+				OptionOutputOriginalCase = true,
+				OptionFixNestedTags = true,
+				OptionAutoCloseOnEnd = true,
+				OptionDefaultStreamEncoding = Encoding.UTF8
+			};
 
-                foreach (string tag in removeTags)
-                {
-                    removeTagsUpper.Add(tag.ToUpperInvariant());
-                }
-            }
+			doc.LoadHtml(source);
+			var nodes = doc.DocumentNode.Descendants().Where(n =>
+			   n.NodeType == HtmlNodeType.Text &&
+			   n.ParentNode.Name != "script" &&
+			   n.ParentNode.Name != "style" &&
+			   n.ParentNode.Name != "svg");
 
-            return RegularExpressions.RemoveHTML.Replace(s, delegate(Match match)
-            {
-                string tag = match.Groups["tag"].Value.ToUpperInvariant();
+			var sb = new StringBuilder();
+			foreach (var node in nodes)
+			{
+				var text = node.InnerText;
+				if (text.HasValue())
+				{
+					sb.AppendLine(node.InnerText);
+				}
+			}
 
-                if (removeTagsUpper == null)
-                    return string.Empty;
-                else if (removeTagsUpper.Contains(tag))
-                    return string.Empty;
-                else
-                    return match.Value;
-            });
-        }
+			return sb.ToString().HtmlDecode();
+		}
 
 		/// <summary>
 		/// Replaces pascal casing with spaces. For example "CustomerId" would become "Customer Id".
@@ -478,17 +514,47 @@ namespace SmartStore
             return sb.ToString();
         }
 
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Splits a string into a string array
+		/// </summary>
+		/// <param name="value">String value to split</param>
+		/// <param name="separator">If <c>null</c> then value is searched for a common delimiter like pipe, semicolon or comma</param>
+		/// <returns>String array</returns>
+		[DebuggerStepThrough]
 		public static string[] SplitSafe(this string value, string separator) 
         {
 			if (string.IsNullOrEmpty(value))
 				return new string[0];
+
+			// do not use separator.IsEmpty() here because whitespace like " " is a valid separator.
+			// an empty separator "" returns array with value.
+			if (separator == null)
+			{
+				separator = "|";
+
+				if (value.IndexOf(separator) < 0)
+				{
+					if (value.IndexOf(';') > -1)
+					{
+						separator = ";";
+					}
+					else if (value.IndexOf(',') > -1)
+					{
+						separator = ",";
+					}
+					else if (value.IndexOf(Environment.NewLine) > -1)
+					{
+						separator = Environment.NewLine;
+					}
+				}
+			}
+
 			return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 		}
 
 		/// <summary>Splits a string into two strings</summary>
 		/// <returns>true: success, false: failure</returns>
-        [DebuggerStepThrough]
+		[DebuggerStepThrough]
         [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
 		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter)
 		{
@@ -834,14 +900,23 @@ namespace SmartStore
         {
             var result = input.ToSafe();
 
-            char[] invalidChars = isPath ? Path.GetInvalidPathChars() : Path.GetInvalidFileNameChars();
+            var invalidChars = new HashSet<char>(isPath ? Path.GetInvalidPathChars() : Path.GetInvalidFileNameChars());
 
-            foreach (var c in invalidChars)
-            {
-                result = result.Replace(c.ToString(), replacement ?? "-");
-            }
+			var sb = new StringBuilder();
+			foreach (var c in input)
+			{
+				if (invalidChars.Contains(c))
+				{
+					sb.Append(replacement ?? "-");
+				}
+				else
+				{
+					sb.Append(c);
+				}
+				result = result.Replace(c.ToString(), replacement ?? "-");
+			}
 
-            return result;
+			return sb.ToString();
         }
 
 		[DebuggerStepThrough]
@@ -884,11 +959,37 @@ namespace SmartStore
 			return s.Replace("'", "");
 		}
 
+		[DebuggerStepThrough]
+		public static string HighlightKeywords(this string input, string keywords, string preMatch = "<strong>", string postMatch = "</strong>")
+		{
+			Guard.NotNull(preMatch, nameof(preMatch));
+			Guard.NotNull(postMatch, nameof(postMatch));
+
+			if (input.IsEmpty() || keywords.IsEmpty())
+			{
+				return input;
+			}
+
+			var pattern = String.Join("|", keywords.Trim().Split(' ', '-')
+				.Select(x => x.Trim())
+				.Where(x => x.HasValue())
+				.Select(x => Regex.Escape(x))
+				.Distinct());
+
+			if (pattern.HasValue())
+			{
+				var rg = new Regex(pattern, RegexOptions.IgnoreCase);
+				input = rg.Replace(input, m => preMatch + m.Value + postMatch);
+			}
+
+			return input;
+		}
+
 		#endregion
 
-        #region Helper
+		#region Helper
 
-        private static void EncodeJsChar(TextWriter writer, char c, char delimiter)
+		private static void EncodeJsChar(TextWriter writer, char c, char delimiter)
         {
             switch (c)
             {

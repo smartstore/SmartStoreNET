@@ -38,7 +38,6 @@ namespace SmartStore.Core.Html.CodeFormatter
             string result = match.Value;
             result = Highlight(options, result);
             return result;
-
         }
 
         /// <summary>

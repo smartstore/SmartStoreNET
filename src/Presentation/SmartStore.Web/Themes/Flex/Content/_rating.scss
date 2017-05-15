@@ -1,0 +1,115 @@
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+
+//
+// Ratings
+// --------------------------------------------------
+
+.rating {
+	display: inline-block;
+	height: 16px;
+	width: 80px;
+	background-repeat: repeat-x;
+	background-position: 0 50%;
+    //background-image: url('images/star-off.png');
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNAay06AAAAInSURBVDiNnZI/TBNhGMZ/vV7va3vXu4otYCSNxYIJhBhDAiZUEjdlcXJhAMKkCXFycyNOmJgYZiMDAWTBxdGlaU10hiJaSgKKloZE24Y7Kr3PgT8BQ5vos715/rxvvueDBsikU5cz6VRPI43aiASmgBhwq55AabA9GQqZw5FINJlJp4b/KSCTTnmB6eaWFqLRKMBUJp0yztN6/jL2Aq3AndbWSxPhC2GkdCmVynzf3p4DngOVgeTg2klAJp1KAO+AmK4b+DQflhVGDwbZrzpIKdE0DcepUtzZwXVr2LYN8AO4pwwkB3P5/MZ0KBSi81onbW1tBAICZ98GQEqJbduoqpf2q+10dfdgmibZ1ezrgeTgRy/A0tKb9zf7+2JCiBuqquI4NlJyElCrHeA4NgcHv9n+9pXl5ZW3o2PjI3CqxpXV1QemZcWFJm77g36qVQePRwEktVoNVfVRKe+Rz298yOXW75/7iDOvXsbj8Sv5REeCSqWConhwXYmULoYRIvdlnc3NrdjI6NjWuTU2NTUlgvphW16vghCCQCCAqh4equs6VtjqOO05EyCE6DF0AyECBIMG5fIev36WEELH7w9iWiZC0/pOe858ZVX1deuGQaFQYKdQyDmO80xKKsVi8Ulzc0vXxUgEn0/rrxsgpXv989qn/O7u7ovJyaczK9ls6YiaW5iffRiJRB8ritJLPczPzY7XJY+wuLjwaGjobvh49sjjwv8TfwCXtcZoRHu4ugAAAABJRU5ErkJggg==');
+}
+.rating > * {
+    position: relative;
+    display: inline-block;
+	height: 16px;
+	//background-image: url('images/star-on.png');
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNAay06AAAAHxSURBVDiNpZIxaNNBFMZ/7/5/i6k1xDa1CCYa0ii2HaQIGUToVBy03QQHuziqKLrUoSpOLhYSECcX3dpFp3RwFS2aQehQEoJFBYeKjW1qYu5/dw5pYgtJQPzg8R73vu/dd7yDLviQ3Z9YeRpKdOP43ZqnTsYyIiJQuNiN1xaF59HxWi5ia0sR+3VxaLwTT3VqxI8cmFOuLB5lGRwI3funAeVXh69gytOiQPmg7MbUdm5oph1XsjP0X5qIXPN7+054vkt5nk4p9avfkwqeD6LAGTD0YWzohzU9RRNIMahuF3JvN5741Tra1n5OmaB8hh5gXyPEBxyIgHNgTQWrK/1GkzaatA0kX62T8V6vUE8PsxCPMiHCURGQpj8H1jYc2ADs3/wuX2LycpZND2Bxmd/jCRYSg5wTiDfFzu2IzR7xm+UC5y88YhN2XQawdJdjpxOsKQ+Uary/ZcY2hhS/kTg7x1rbLeRLrBuNMxoCDUEdzE4OdKP++In1jmtMDTJiNGLq0IxgV200JKOM7Nbs+crDA4wZDa5hfxPhhQjOOWacJewcHD/EGPC+rYNwSI2agFrNHJwvbcWS8Vtcj93kxmo5lqzZ8LzRUvWQ0Y4OVqO3q0b1zk5ffZiBrdb55IMv34E7L5/d/+zbygA8bvXEOcf/4A98LtzAZGRLlgAAAABJRU5ErkJggg==');
+}
+.rating.rating-small {
+	height: 11px;
+	width: 60px;
+	padding: 1px 0;
+    //background-image: url('images/star-off-12.png');
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAALCAYAAABLcGxfAAAACXBIWXMAAArrAAAK6wGCiw1aAAABqElEQVR4nHXQv08TYRwG8JPz1NxgYGlM2sV0qIlL33CMJFwnR4kbClZCWhbCn1BvMVAolGuZwE2rG2kFBgM4GAyUk6PUpFzveu97P9prCRMrw8NmotXhuzxPPsPz5QBwf1+xoMaLBXXsX11fMCJJg18q5c+7O9u7I5L06L9AFEWeEHK/Ut5KtizzymH0ulLemieEPBBFceA3SMhyJCHLzz+VPs5rJ8cF46Jh9noBut0ODKPhVKtH2VLpw2xClscTsvyYS6dTw98O9nTGbARBG5eXAXrdDoLARxC00W57cBjF/t5XI5WaGeUEQbj76uXEix+H323fd+F5FL7vwPMoGLPguhTHR4f+1NTkpCAIAgeAi0ajA/n8SvJXvQZKTVjWBUyzgVbLQP38DMWCOhOLxfg/RitvM091XQNjFmy7CdtuglIT+ukJFCXzpO9LS9nFCctswnXZTb1e69Rquu849Ma2TWSzC8k+kMstv9O0qvt+c2NjNp16Nj39ZkxV8+unPzV3Jbe83gcUJfOakLgUiUSGeJ6/A4ALhUIPCYkPr62tzoXD4XsAuFsNdFcqOpvrDgAAAABJRU5ErkJggg==');
+}
+.rating.rating-small > * {
+	height: 11px;
+	//background-image: url('images/star-on-12.png');
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAALCAYAAABLcGxfAAAACXBIWXMAAAsSAAALEgHS3X78AAABkUlEQVR4nH2QzyvDcRzGn+9nM/t+5+t7wpm2UiQpXyOyE7kYLiSEcXHQDtSYA+1GmdYkbLG20BZJ8quU4uIfwMlBttmwkcks7e0gByaH5/I8z+vwPCAi/JZnNEdes4jyX1mGUVOSJV6s5geuPAWBujKV+C+gVIBN9UmtyT0+9H4ohGwmqVWpAPsB6HWc1CxnlxurecNYh9D7upt7ntpn9HHEKHkgnY93Cr0tNbzBqFeX1xZzErxDTI64+NMHnyb47FenEluMkjug913Q2w6jxJY6Fd/QBO89/On2CKtCZRE0xxMYDi8hHPOCnjdALwFQYhP04gc9rYOiKwif2TCs10EDIkJFIZQH4zBF3aBHDyju+1LMC3pYBZ1MYkDWQvljtLkJYmgB6cgyKOoG3btBURfobhE00YbcjJdsbSi5mQPdOpAOOhELzSMWdCJ96wDNdqI0A1jp59qvp1n8clrw27sUPfYuRffFjOC/nmFx3yA6MgC72WByWRssslaVJ/KMy+EZJ2tVecvWRovdXD/w3fsEds8eHEa+5bkAAAAASUVORK5CYII=');
+}
+
+
+//
+// Reviews
+// --------------------------------------------------
+
+.review-list, 
+.review-item,
+.review-title {
+    position: relative;
+}
+
+.review-item {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0, 0.12);
+
+    &:last-child { border-width: 0; }
+}
+
+.review-title {
+    margin-bottom: 0.2rem;
+
+    .rating {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        > * { vertical-align: top; }
+    }
+
+    h4 {
+        position: relative;
+        margin: 0;
+        padding-left: 90px;
+        font-size: inherit;
+        font-weight: $font-weight-medium;
+    }
+}
+
+.review-meta {
+    font-size: 0.8125em;
+    .review-meta-label { font-weight: bold; }
+    .review-meta-value + .review-meta-label { padding-left: 0.5rem; }
+}
+
+.review-text {
+    line-height: 1.4;
+    margin-top: 1rem;
+}
+
+.review-vote {
+    font-size: 0.8125em;
+    color: $text-muted;
+
+    .review-vote-label { padding-right: 0.5rem; }
+    .review-vote-count { font-weight: bold; }
+
+    .review-vote-link {
+	    text-decoration: none;
+	    margin-right: 0.3rem;
+	    padding: 0 0.3rem;
+	    &.review-vote-link-yes { color: $brand-success; }
+	    &.review-vote-link-yes:hover { background: $brand-success; color: #fff }
+	    &.review-vote-link-no { color: $brand-danger; }
+	    &.review-vote-link-no:hover { background: $brand-danger; color: #fff }
+
+        .fa { font-size: $font-size-lg; }
+    }   
+}
+
+
+//
+// Write review form
+// --------------------------------------------------
+
+.write-review {
+    background-color: $gray-lightest;
+    padding: 2rem;
+}

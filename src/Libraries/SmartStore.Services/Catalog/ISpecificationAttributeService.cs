@@ -4,10 +4,10 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Specification attribute service interface
-    /// </summary>
-    public partial interface ISpecificationAttributeService
+	/// <summary>
+	/// Specification attribute service interface
+	/// </summary>
+	public partial interface ISpecificationAttributeService
     {
         #region Specification attribute
 
@@ -130,8 +130,6 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="productSpecificationAttribute">Product specification attribute mapping</param>
         void UpdateProductSpecificationAttribute(ProductSpecificationAttribute productSpecificationAttribute);
-
-		void UpdateProductSpecificationMapping(int specificationAttributeId, string field, bool value);
 
         #endregion
     }

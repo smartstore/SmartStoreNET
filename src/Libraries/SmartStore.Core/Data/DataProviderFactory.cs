@@ -6,7 +6,7 @@ namespace SmartStore.Core.Data
     {
         protected DataProviderFactory(DataSettings settings)
         {
-			Guard.ArgumentNotNull(() => settings);
+			Guard.NotNull(settings, nameof(settings));
             this.Settings = settings;
         }
 

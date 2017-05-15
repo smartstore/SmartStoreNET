@@ -7,11 +7,11 @@
 @using SmartStore.Web.Framework.UI;
 
 @{
-	Layout = "";
-	
-	Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
-	Html.AddCssFileParts(true, "~/Plugins/SmartStore.GoogleMerchantCenter/Content/smartstore.gmc.css");
-	Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+    Layout = "";
+
+    Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
+    Html.AddCssFileParts(true, "~/Plugins/SmartStore.GoogleMerchantCenter/Content/smartstore.gmc.css");
+    Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
 }
 
 <div class="plugin-configuration">
@@ -21,7 +21,7 @@
 			@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
 		</div>
 		<div>
-			@Html.Action("InfoProfile", "Export", new { systemName = GmcXmlExportProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" })
+			@{ Html.RenderAction("InfoProfile", "Export", new { systemName = GmcXmlExportProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" }); }
 		</div>
 	</div>
 	<div>

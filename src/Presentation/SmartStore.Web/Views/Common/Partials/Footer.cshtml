@@ -1,0 +1,226 @@
+﻿@model FooterModel
+@using SmartStore.Web.Models.Common;
+
+@{ 
+    var socialLinks = new List<Tuple<string, string>>();
+    if (Model.FacebookLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
+    }
+
+    if (Model.GooglePlusLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
+    }
+
+    if (Model.TwitterLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.TwitterLink, "twitter"));
+    }
+
+    if (Model.PinterestLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
+    }
+
+    if (Model.YoutubeLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "youtube"));
+    }
+
+	var invserseFooter = GetThemeVariable<bool>("inverse-footer");
+}
+
+@if (Model.ShowSocialLinks && socialLinks.Any())
+{
+	<div class="footer-social-wrapper">
+		<div class="container footer-social">
+			<div class="row">
+				<div class="col text-center">
+					@foreach (var link in socialLinks)
+					{
+						<a href="@link.Item1" target="_blank" class="btn x-btn-@(invserseFooter ? "clear" : "secondary") btn-circle btn-social btn-brand-@link.Item2">
+							<i class="fa fa-@link.Item2"></i>
+						</a>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<div class="footer-main-wrapper">
+	<div class="container footer-main">
+		<div class="row sm-gutters">
+
+			<div class="col-md-3">
+				<nav class="footer-links nav-collapsible">
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-info" aria-controls="footer-info" aria-expanded="false">@T("Footer.Info")</h4>
+					<div class="collapse nav-collapse" id="footer-info">
+						<ul class="list-unstyled">
+							@if (Model.ManufacturerEnabled)
+							{
+								<li><a class="footer-link" href="@Url.RouteUrl("ManufacturerList")">@T("Manufacturers.List")</a></li>
+							}
+							@if (Model.RecentlyAddedProductsEnabled)
+							{
+								<li><a class="footer-link" href="@Url.RouteUrl("RecentlyAddedProducts")">@T("Products.NewProducts")</a></li>
+							}
+							@if (Model.RecentlyViewedProductsEnabled)
+							{
+								<li><a class="footer-link" href="@Url.RouteUrl("RecentlyViewedProducts")">@T("Products.RecentlyViewedProducts")</a></li>
+							}
+							@if (Model.CompareProductsEnabled)
+							{
+								<li><a class="footer-link" href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>
+							}
+						</ul>
+					</div>
+				</nav>
+			</div>
+
+			<div class="col-md-3">
+				<nav class="footer-links nav-collapsible">
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-service" aria-controls="footer-service" aria-expanded="false">@T("Footer.Service")</h4>
+					<div class="collapse nav-collapse" id="footer-service">
+						<ul class="list-unstyled">
+							@if (Model.TopicPageUrls.ContainsKey("contactus"))
+							{
+								<li><a class="footer-link" href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
+							}
+							@if (Model.BlogEnabled)
+							{
+								<li><a class="footer-link" href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+							}
+							@if (Model.ForumEnabled)
+							{
+								<li><a class="footer-link" href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
+							{
+								<li><a class="footer-link" href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
+							{
+								<li><a class="footer-link" href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
+							}
+						</ul>
+
+					</div>
+				</nav>
+			</div>
+
+			<div class="col-md-3">
+				<nav class="footer-links company nav-collapsible">
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-company" aria-controls="footer-company" aria-expanded="false">@T("Footer.Company")</h4>
+					<div class="collapse nav-collapse" id="footer-company">
+						<ul class="list-unstyled">
+							@if (Model.TopicPageUrls.ContainsKey("aboutus"))
+							{
+								<li><a class="footer-link" href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("imprint"))
+							{
+								<li><a class="footer-link" href="@Model.TopicPageUrls["imprint"]">@T("Imprint")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("disclaimer"))
+							{
+								<li><a class="footer-link" href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
+							{
+								<li><a class="footer-link" href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
+							{
+								<li><a class="footer-link" href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
+							}
+						</ul>
+					</div>
+				</nav>
+			</div>
+
+			<div class="col-md-3">
+				@if (!Model.HideNewsletterBlock)
+				{
+					<div class="footer-newsletter nav-collapsible" data-subscription-url="@(Url.RouteUrl("SubscribeNewsletter"))">
+						<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-newsletter" aria-controls="footer-newsletter" aria-expanded="false">@T("Newsletter.Title")</h4>
+						<div class="collapse nav-collapse" id="footer-newsletter">
+							<div id="newsletter-subscribe-block">
+								<div class="input-group has-icon mb-2">
+									@Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email", @class = "form-control", placeholder = T("Newsletter.Email") })
+									<span class="input-group-icon text-muted">
+										<i class="fa fa-envelope"></i>
+									</span>
+									<span class="input-group-btn">
+										<button id="newsletter-subscribe-button" class="btn btn-primary btn-icon" title="@T("Newsletter.Button")">
+											<i class="fa fa-angle-right"></i>
+										</button>
+									</span>
+								</div>
+
+								<div class="d-none d-lg-block">
+									<div class="form-check form-check-inline">
+										<label class="form-check-label">
+											<input class="form-check-input" type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked">
+											<span>@T("Newsletter.Subscribe")</span>
+										</label>
+									</div>
+
+									<div class="form-check form-check-inline">
+										<label class="form-check-label">
+											<input class="form-check-input" type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios">
+											<span>@T("Newsletter.Unsubscribe")</span>
+										</label>
+									</div>
+								</div>
+
+								@Html.ValidationMessageFor(x => x.NewsletterEmail)
+
+							</div>
+							<div id="newsletter-result-block" class="alert alert-success d-none"></div>
+						</div>
+					</div>
+				}
+
+				@if (Model.ShowThemeSelector)
+				{
+					<div class="theme-selector d-none d-md-block">
+						<h4>@T("Footer.Themes")</h4>
+						<div class="content">
+							@{
+								Html.RenderAction("StoreThemeSelector", "Common");
+							}
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+</div>
+
+@{ Html.RenderWidget("footer"); }
+
+<div class="footer-bottom-wrapper">
+	<div class="container footer-bottom">
+		<div class="row sm-gutters">
+			<div class="col pb-1 pb-sm-0">
+			@if (Model.ShowLegalInfo)
+			{
+				@Html.Raw(Model.LegalInfo)
+			}
+			</div>
+
+			@if (Model.SmartStoreHint.HasValue())
+			{
+				<div class="col-12 col-sm-auto pb-1 pb-sm-0 text-sm-center">
+					@Html.Raw(Model.SmartStoreHint)
+				</div>
+			}
+
+			<div class="col text-sm-right">
+				@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)
+			</div>
+		</div>
+	</div>
+</div>

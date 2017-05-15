@@ -16,8 +16,9 @@
         </div>
     </div>
 
-	@Html.Action("StoreScopeConfiguration", "Setting")
-	@Html.ValidationSummary(false)
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
+    @Html.ValidationSummary(false)
 
 	<div class="alert alert-info">
 		<button class="close" data-dismiss="alert">×</button>

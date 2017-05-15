@@ -1,0 +1,56 @@
+/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Brands
+// -------------------------------------------------
+
+.manufacturer-list-title {
+    font-weight: bold;
+    padding-bottom: 0.5rem;
+}
+
+.manufacturer-nav {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2rem;
+
+    .navbar {
+        padding: 0;
+        margin-bottom: .5rem;
+
+        .nav-item {
+            margin: 0 1rem;
+        }
+        .nav-link {
+            font-size: 1.25rem;
+            padding: 0;
+        }
+    }
+}
+
+//
+// File Upload
+// -------------------------------------------------
+
+// overwrite for bluimp file upload control
+.fileupload .fileupload-progress.collapse {
+    display: none !important; 
+    width: 100%;
+}
+.fileupload .fileupload-progress.collapse.show {
+    display: block !important; 
+}
+
+
+//
+// Other stuff
+// -------------------------------------------------
+
+#iframe-backinstocksubsription {
+    max-width: 100%;
+}
+
+.pm-unread {
+	font-weight: bold;
+	background: $gray-lightest;
+}

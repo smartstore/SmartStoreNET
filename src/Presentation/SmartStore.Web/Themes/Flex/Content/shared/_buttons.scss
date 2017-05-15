@@ -1,0 +1,512 @@
+/// <reference path="../theme.scss" />
+
+$btn-wide-padding-x:    1.8rem;
+$btn-wide-padding-x-lg: 2.5rem;
+$btn-wide-padding-x-sm: 1.2rem;
+
+/*$btn-size:              ($btn-padding-y * 2) + ($font-size-base * $btn-line-height);
+$btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-lg * $btn-line-height);
+$btn-size-sm:           ($btn-padding-y-sm * 2) + ($font-size-sm * $btn-line-height);*/
+
+$btn-size:              $input-height;
+$btn-size-lg:           $input-height-lg;
+$btn-size-sm:           $input-height-sm;
+
+@mixin btn-padding($p) {
+    padding-left: $p;
+    padding-right: $p;
+}
+
+@mixin btn-square($size) {
+    $bw: $border-width * 2;
+    width: calc(#{$size} + #{$bw});
+    height: calc(#{$size} + #{$bw});
+    line-height: $size;
+}
+
+
+// General
+// --------------------------------------------------
+
+.btn {
+    cursor: pointer;
+}
+
+.btn-secondary {
+    &:hover,
+    &:active,
+    &.active,
+    .show > &.dropdown-toggle {
+        background-color: #f2f2f2;
+    }
+}
+
+.btn-secondary.hover        { @extend .btn-secondary:hover; }
+.btn-primary.hover          { @extend .btn-primary:hover; }
+.btn-warning.hover          { @extend .btn-warning:hover; }
+.btn-danger.hover           { @extend .btn-danger:hover; }
+.btn-info.hover             { @extend .btn-info:hover; }
+.btn-success.hover          { @extend .btn-success:hover; }
+
+
+// btn-gray
+// --------------------------------------------------
+
+$btn-gray-bg:       $gray-lightest;
+
+.btn-gray {
+    @include button-variant($btn-secondary-color, $gray-lightest, $btn-secondary-border);
+}
+
+.btn-gray.hover             { @extend .btn-gray:hover; }
+
+
+// btn-icon, btn-circle
+// --------------------------------------------------
+
+.btn-icon,
+.btn-circle {
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+    position: relative;
+    @include btn-square($btn-size);
+
+    &.btn-lg {
+        @include btn-square($btn-size-lg);
+    }
+    &.btn-sm {
+        @include btn-square($btn-size-sm);
+    }
+
+    > i {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate3d(-50%, -50%, 0);
+    }
+
+    // Move caret to bottom right corner
+    &.dropdown-toggle:after {
+        position: absolute;
+        right: 0.3rem;
+        bottom: 0.5em;
+    }
+}
+
+.btn-circle {
+    border-radius: 50%;
+}
+
+
+// btn-flat
+// --------------------------------------------------
+
+.btn-flat {
+    color: inherit;
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+
+    &:hover:not(:active):not(:focus),
+    &.hover:not(:active):not(:focus) { 
+        border-color: transparent;  
+    }
+}
+
+.btn-flat-light {
+    color: rgba(255,255,255, 0.8);
+
+    &:hover, &.hover, &:active, &.active {
+        border-color: rgba(255,255,255, 1) !important;
+    }
+
+    &:focus, &.focus {
+        box-shadow:  0 0 0 2px rgba(#fff, .4);
+    }
+}
+
+
+// btn-clear
+// --------------------------------------------------
+
+.btn-clear {
+    color: rgba(255,255,255, 1) !important;
+    background: rgba(255,255,255, 0);
+    border-color: rgba(255,255,255, 0.6);
+    box-shadow: none;
+
+    &:hover, &.hover {
+        background: rgba(255,255,255, 0.15);
+    }
+
+    &:active, &.active {
+        border-color: #fff;
+        box-shadow: none;
+    }
+
+    &:focus, &.focus {
+        border-color: #fff;
+        box-shadow:  0 0 0 2px rgba(#fff, .25);
+    }
+}
+
+.btn-clear-dark {
+    color: rgba(0, 0, 0, 0.7);
+    background: transparent;
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: none;
+
+    &:hover, &.hover {
+        color: rgba(0, 0, 0, 0.85);
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    &:active, &.active {
+        box-shadow: none;
+    }
+
+    &:focus, &.focus {
+        box-shadow:  0 0 0 2px rgba(#000, .08);
+    }
+}
+
+
+
+// btn-labeled
+// --------------------------------------------------
+
+.btn-labeled {
+    position: relative;
+    padding-left: $btn-padding-x + $btn-size;
+
+    > b {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0, .12);
+        display: block;
+        width: $btn-size;
+        line-height: $btn-size;
+        text-align: center;
+        > .fa { vertical-align: middle; }
+    }
+    &.btn-lg {
+        padding-left: $btn-padding-x-lg + $btn-size-lg;
+        > b { width: $btn-size-lg; line-height: $btn-size-lg; }
+    }
+    &.btn-sm {
+        padding-left: $btn-padding-x-sm + $btn-size-sm;
+        > b { width: $btn-size-sm; line-height: $btn-size-sm; }
+    }
+
+    &.icon-right {
+        padding-left: $btn-padding-x;
+        padding-right: $btn-padding-x + $btn-size;
+
+        > b {
+            left: auto;
+            right: 0;
+        }
+    }
+}
+
+
+// btn-animate
+// --------------------------------------------------
+
+.btn-animate {
+    position: relative;
+    overflow: hidden;
+    padding-left: $btn-padding-x * 1.5;
+    padding-right: $btn-padding-x * 1.5;
+    transition: all 0.2s ease-out;
+
+    > span {
+        display: block;
+        width: 100%;
+        height: 100%;
+
+        transition: transform 0.2s ease-out;
+        transform: translateX(0);
+
+        > .fa {
+            position: absolute;
+            display: block;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 1.25em;
+            text-align: left;
+            opacity: 0;
+            line-height: $btn-line-height;
+            transition: opacity 0.2s ease-out;
+            transform: translateX(-100%);
+        }
+    }
+
+    &:hover > span {
+        transform: translateX(10px);
+        > .fa { opacity: 1; }
+    }
+
+    &.btn-lg {
+        padding-left: $btn-padding-x-lg * 1.5;
+        padding-right: $btn-padding-x-lg * 1.5;
+    }
+    &.btn-sm {
+        padding-left: $btn-padding-x-sm * 1.5;
+        padding-right: $btn-padding-x-sm * 1.5;
+        > span > .fa { 
+            top: 1px;
+        }
+    }
+}
+
+.btn-animate.btn-animate-right {
+    > span > .fa {
+        left: auto;
+        right: 0;
+        text-align: right;
+        transform: translateX(100%);
+    }
+
+    &:hover > span {
+        transform: translateX(-10px);
+    }
+}
+
+.btn-animate.btn-animate-down {
+    > span {
+        text-align: center;
+    }
+    > span > .fa {
+        left: 50%;
+        margin-left: -0.625em;
+        right: 0;
+        top: 0;
+        text-align: center;
+        transform: translateY(-100%);
+    }
+
+    &:hover > span {
+        transform: translateY(100%);
+    }
+}
+.btn-animate.btn-animate-down.btn-lg {
+    > span > .fa {
+        font-size: 1.5rem;
+        line-height: 1.5rem;
+        transform: translateY(-$btn-size-lg);
+    }
+    &:hover > span {
+        transform: translateY($btn-size-lg);
+    }
+}
+.btn-animate.btn-animate-down.btn-sm {
+    > span > .fa {
+        transform: translateY(-$btn-size-sm);
+    }
+    &:hover > span {
+        transform: translateY($btn-size-sm);
+    }
+}
+
+
+// btn-to-[danger|primary]
+// --------------------------------------------------
+
+.btn.btn-to-danger {
+    transition: none;
+    &:hover {
+        @extend .btn-danger:hover;
+    }
+    &:active, &.active {
+        @extend .btn-danger:active;
+    }
+    &:focus, &.focus {
+        @extend .btn-danger:focus;
+    }
+}
+
+.btn.btn-to-primary {
+    transition: none;
+    &:hover {
+        @extend .btn-primary:hover;
+    }
+    &:active, &.active {
+        @extend .btn-primary:active;
+    }
+    &:focus, &.focus {
+        @extend .btn-primary:focus;
+    }
+}
+
+
+// btn-no-border
+// --------------------------------------------------
+
+.btn.btn-no-border {
+    border-color: transparent !important;
+    &:active, &.active {
+        box-shadow: none;
+    }
+}
+
+
+// btn-wide
+// --------------------------------------------------
+
+.btn-wide {
+    @include btn-padding($btn-wide-padding-x);
+
+    &.btn-lg {
+        @include btn-padding($btn-wide-padding-x-lg);
+    }
+    &.btn-sm {
+        @include btn-padding($btn-wide-padding-x-sm);
+    }
+}
+
+.btn-wide.btn-animate {
+    @include btn-padding($btn-wide-padding-x * 1.5);
+    span > .fa {
+        width: 1.5em;
+    }
+
+    &.btn-lg {
+        @include btn-padding($btn-wide-padding-x-lg * 1.5);
+    }
+    &.btn-sm {
+        @include btn-padding($btn-wide-padding-x-sm * 1.5); 
+    }
+}
+
+.btn-wide.btn-labeled {
+    padding-left: $btn-wide-padding-x + $btn-size;
+
+    &.btn-lg {
+        padding-left: $btn-wide-padding-x-lg + $btn-size-lg;
+    }
+    &.btn-sm {
+        padding-left: $btn-wide-padding-x-sm + $btn-size-sm;
+    }
+
+    &.icon-right {
+        padding-left: $btn-wide-padding-x;
+        padding-right: $btn-wide-padding-x + $btn-size;
+
+        &.btn-lg {
+            padding-right: $btn-wide-padding-x-lg + $btn-size-lg;
+        }
+        &.btn-sm {
+            padding-right: $btn-wide-padding-x-sm + $btn-size-sm;
+        }
+    }
+}
+
+
+// .mf-dropdown (Mobile Friendly dropdown)
+// --------------------------------------------------
+
+.mf-dropdown {
+    display: inline-block;
+    position: relative;
+
+    .btn {
+        border-radius: 0;
+        position: relative;
+    }
+
+    .btn > em {
+        font-style: normal;
+        font-variant: normal;
+        font-weight: normal;
+        color: $text-muted;
+        font-size: $font-size-sm;
+        font-size: 0.85em; // make it smaller
+    }
+
+    .btn > em > span {
+        font-weight: $font-weight-medium;
+        font-size: 1.166666em; // make it regular again
+        color: $body-color;
+    }
+
+    .btn.has-caret {
+        text-align: left;
+        padding-right: $btn-padding-x * 2;
+        &.btn-sm { padding-right: $btn-padding-x-sm * 2; }
+        &.btn-lg { padding-right: $btn-padding-x-lg * 2; }
+
+        > em,
+        > span {
+            display: block;
+            margin-bottom: 1px; // equalizes button heights
+            @include text-truncate();
+        }
+    }
+
+    .btn.has-caret:after {
+        @include fontawesome("\f0d7");
+        position: absolute;
+        display: block;
+        right: $btn-padding-x;
+        line-height: 1;
+        top: 50%;
+        transform: translate3d(50%, -50%, 0);
+    }
+    .btn-sm.has-caret:after { right: $btn-padding-x-sm; }
+    .btn-lg.has-caret:after { right: $btn-padding-x-lg; }
+
+    select {
+        position: absolute;
+        opacity: 0;
+        left: 0;
+        width: 100%;
+        top: 0;
+        bottom: 0;
+        cursor: pointer;
+    }
+}
+
+
+// Social buttons
+// --------------------------------------------------
+
+.btn-brand-facebook {
+    @include button-variant(#fff, $clr-brand-facebook, $clr-brand-facebook);
+}
+
+.btn-brand-twitter {
+    @include button-variant(#fff, $clr-brand-twitter, $clr-brand-twitter);
+}
+
+.btn-brand-youtube {
+    @include button-variant(#fff, $clr-brand-youtube, $clr-brand-youtube);
+}
+
+.btn-brand-pinterest {
+    @include button-variant(#fff, $clr-brand-pinterest, $clr-brand-pinterest);
+}
+
+.btn-brand-google-plus  {
+    @include button-variant(#fff, $clr-brand-googleplus , $clr-brand-googleplus );
+}
+
+/*.btn-brand-flickr {
+    @include button-variant(#fff, $clr-brand-flickr, $clr-brand-flickr);
+}
+
+.btn-brand-instagram {
+    @include button-variant(#fff, $clr-brand-instagram, $clr-brand-instagram);
+}
+
+.btn-brand-linkedin {
+    @include button-variant(#fff, $clr-brand-linkedin, $clr-brand-linkedin);
+}
+
+.btn-brand-xing {
+    @include button-variant(#fff, $clr-brand-xing, $clr-brand-xing);
+}*/

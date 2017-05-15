@@ -1,0 +1,318 @@
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="shared/_mixins.scss" />
+/// <reference path="shared/_offcanvas.scss" />
+
+$ocm-border-color:                      rgba(#000, 0.1);
+$ocm-horizontal-padding:                1.6rem;
+$ocm-selected-color:                    $brand-warning;
+
+
+//
+// Category Menu
+// ------------------------------------------------------
+
+.catmenu {
+    .catmenu-path-item {
+        font-weight: $font-weight-medium;
+        background: rgba($list-group-hover-bg, 0.5);
+    }
+
+    .catmenu-path-item.expanded,
+    .catmenu-item.parent {
+        padding-right: $list-group-item-padding-x * 1.5;
+
+        &:after {
+            @include fontawesome("\f105", 1.2rem);   
+            display: block;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%); 
+        }
+    }
+
+    .catmenu-path-item.expanded {
+        color: $body-color;
+        &:after { content: '\f148'; font-size: inherit; }
+    }
+
+    .catmenu-path-item.active {
+        font-size: 1rem;
+        &:before { display: none !important; }
+    }
+}
+
+
+//
+// Sidebar Navigation Menus (Category menu etc.)
+// ------------------------------------------------------
+
+#offcanvas-menu {
+    .tab-pane {
+        padding: 0;
+    }
+
+    .ocm-home-layer {
+        padding: 0;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        > * { width: 100%; z-index: 1; }
+    }
+
+    .tab-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .offcanvas-menu-footer {
+        padding: 1rem;
+        border-top: 1px solid  $ocm-border-color;
+        
+        .mf-dropdown {
+            display: block;
+            
+            .btn-labeled > b {
+                background: transparent;
+            }
+        }
+    }
+    
+    .menubar-link,
+    .manufacturer-container .ocm-item,
+    .category-container .ocm-item {
+        margin: 0;
+        border-bottom: 1px solid $ocm-border-color;
+        display: block;
+        font-size: 1rem;
+        position: relative;
+
+        .ocm-link {
+            display: block;
+            color: $body-color;
+            line-height: 1.3;
+            padding: 1rem 2.5rem 1rem 2rem;
+            text-decoration: none !important;
+                
+            &:active,
+            &:focus { 
+                background-color: rgba(#000, 0.05);
+            } 
+        }
+        
+        &.has-children:after {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            @include fontawesome('\f105');
+            color: #646464;
+            font-size: 20px;
+            width: 20px;
+            text-align: center;
+        }
+
+        &.has-children.animated:after {
+            animation: fa-spin .6s infinite linear;
+            margin-top: -9px;
+            @include fontastic('\e8d3');
+        }
+
+        &.selected:before,
+        &.expanded:before {
+            @include active-list-item(5px, $ocm-selected-color);
+        }
+    }
+   
+    .ocm-nav .navigate-back {
+        padding-left: 0;
+
+        .fa {
+            font-size: 1.375rem;
+            vertical-align: text-bottom;
+            padding-right: .425rem;
+        }
+    }
+
+    .ocm-nav .show-current-cat {
+        font-weight: $font-weight-medium;
+    }
+
+    .button-bar {
+        background: $gray-lightest;
+        padding: 1rem $ocm-horizontal-padding;    
+        span {
+            margin-right: 1rem;
+        }
+    }
+    .category-info {
+        padding: 0 $ocm-horizontal-padding;
+        .category-name {
+            padding-top: 1rem;
+        }
+    }
+
+    // manufacturer tab
+    .manufacturer-container {
+        .ocm-item {
+            padding: 0 1.25rem;
+
+            .col-img {
+                width: 100px;
+                min-width: 100px;
+                max-width: 100px;
+
+                .ocm-img-link {
+                    padding: 0.5rem;
+                    display: block;
+                    > img {
+                        width: 100%;
+                    }
+                }
+            }
+            .ocm-link { padding-left: 0.75rem; }
+            .col-img ~ .col-data > .ocm-link { padding-left: 0; }
+        }
+
+        .ocm-nav {
+            margin-bottom: 0;
+        }
+        .show-all-manufacturers {
+            padding: 1rem;
+            border-bottom: 0;
+        }
+    }
+}
+
+
+//
+// Offcanvas animation
+// ------------------------------------------------------
+
+#offcanvas-menu {
+    .layer {
+        transition: transform 0.3s ease-out;
+        background: #fff;
+        transform: translateX(-30%);
+        z-index: 0;
+        border-left: 1px solid $ocm-border-color;
+        border-right: 1px solid $ocm-border-color;
+
+        &.show {
+            transform: translateX(0);
+            z-index: 1;
+            border-color: none;
+        }
+
+        &.show ~ .layer {
+            transform: translateX(100%);
+            z-index: 2;
+        }
+    }
+
+    .ocm-nav-layer {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+}
+
+//
+// Offcanvas Service menu 
+// ------------------------------------------------------
+
+#ocm-service {
+    .menubar {
+        flex-direction: column;
+    }
+
+    .menubar-group {
+        margin-left: 0 !important;
+        flex-direction: column;
+    }
+
+    .menubar-link {
+        text-transform: initial;
+        padding: 1rem 2rem;
+        border-bottom: 1px solid $ocm-border-color;
+        background-color: #fff;
+        color: $body-color;
+    }
+
+    .menubar-icon {
+        display: none;
+    }
+
+    .menubar-caret {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .show .menubar-caret:before {
+        content: "\f106";
+    }
+
+    .dropdown-menu {
+        position: relative;
+        float: initial;
+        min-width: initial;
+        padding: initial;
+        margin: initial;
+        border: none;
+        border-bottom: 1px solid $ocm-border-color;
+        border-radius: initial;
+        box-shadow: initial;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .dropdown-divider {
+        display: none;
+    }
+    
+    .dropdown.show > .menubar-link {
+        font-weight: $font-weight-medium;
+    }
+
+    .menubar-link span {
+        padding-left: 0;
+    }
+
+    .dropdown-item {
+        padding-left: 2.75rem;
+        font-size: 1rem;
+
+        span:not(.badge) {
+            padding-left: 0;
+        }
+    }
+}
+
+
+//
+// Misc
+// ------------------------------------------------------
+
+// very weird hack to prevent loading icon from wobbling :-/ font-size is 20px
+.touchevents .category-container .ocm-item.has-children.animated:after {
+    max-height: 18px;
+}
+
+
+body > .select2-container {
+    // one higher than .offcanvas-overlay
+    z-index: $offcanvas-z-index + 1;
+}

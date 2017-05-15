@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using NCrontab;
-using CronExpressionDescriptor;
 using System.Threading;
+using CronExpressionDescriptor;
+using NCrontab;
 
 namespace SmartStore.Services.Tasks
 {
-	
 	public static class CronExpression
 	{
-
 		public static bool IsValid(string expression)
 		{
 			try
@@ -41,7 +38,7 @@ namespace SmartStore.Services.Tasks
 
 		public static IEnumerable<DateTime> GetFutureSchedules(string expression, DateTime baseTime, DateTime endTime, int max = 10)
 		{
-			Guard.ArgumentNotEmpty(() => expression);
+			Guard.NotEmpty(expression, nameof(expression));
 
 			var schedule = CrontabSchedule.Parse(expression);
 			return schedule.GetNextOccurrences(baseTime, endTime).Take(max);
@@ -49,8 +46,6 @@ namespace SmartStore.Services.Tasks
 
 		public static string GetFriendlyDescription(string expression)
 		{
-			Guard.ArgumentNotEmpty(() => expression);
-
 			var options = new Options 
 			{ 
 				DayOfWeekStartIndexZero = true, 

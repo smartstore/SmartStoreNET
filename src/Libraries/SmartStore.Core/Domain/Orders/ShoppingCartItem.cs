@@ -8,8 +8,8 @@ namespace SmartStore.Core.Domain.Orders
     /// <summary>
     /// Represents a shopping cart item
     /// </summary>
-    public partial class ShoppingCartItem : BaseEntity
-    {
+    public partial class ShoppingCartItem : BaseEntity, IAuditable
+	{
 		/// <summary>
 		/// Gets or sets the store identifier
 		/// </summary>

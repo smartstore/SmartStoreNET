@@ -31,8 +31,8 @@ namespace SmartStore.Data.Migrations
 				"Ask for price",
 				"Preis anfragen");
 			builder.AddOrUpdate("ThemeVar.Alpha.DisplayNavbar",
-				"Display Megamenu",
-				"Zeige Megamenu");
+				"Display Mega Menu",
+				"Zeige Mega Menu");
 
 			// Tax & VAT stuff
 			builder.Delete("ShoppingCart.Totals.TaxRateLine");

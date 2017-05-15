@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -12,20 +13,24 @@ namespace SmartStore.Web.Framework.Theming
 	/// Without this attribute the view resolver would directly fallback to the default nameless area
 	/// when a view could not be resolved from within the plugin area.
 	/// </remarks>
-	public class AdminThemedAttribute : ActionFilterAttribute
+	public class AdminThemedAttribute : FilterAttribute, IResultFilter
 	{
-		public override void OnActionExecuting(ActionExecutingContext filterContext)
+		public virtual void OnResultExecuting(ResultExecutingContext filterContext)
 		{
-			if (filterContext == null)
+			if (filterContext == null || filterContext.Result == null)
 				return;
 
 			// add extra view location formats to all view results (even the partial ones)
-			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[] 
+			// {0} is appended by view engine
+			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[]
 			{
 				"~/Administration/Views/{1}/{0}",
 				"~/Administration/Views/Shared/{0}"
 			};
 		}
 
+		public virtual void OnResultExecuted(ResultExecutedContext filterContext)
+		{
+		}
 	}
 }

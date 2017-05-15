@@ -10,10 +10,10 @@ using BundleTransformer.Core.Bundles;
 using SmartStore.Core;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public enum BundleType
     {
         Script,
@@ -69,7 +69,13 @@ namespace SmartStore.Web.Framework.UI
             }
 
             if (type == BundleType.Script)
-                return Scripts.Render(bundleVirtualPath).ToString();
+			{
+				return Scripts.Render(bundleVirtualPath).ToString();
+
+				//// Uncomment this if you want to bypass asset caching on mobile browsers
+				//return Scripts.RenderFormat("<script src='{0}?" + CommonHelper.GenerateRandomDigitCode(5) + "'></script>", 
+				//	files.Select(x => VirtualPathUtility.ToAppRelative(x)).ToArray()).ToString();
+			}   
 
             return Styles.Render(bundleVirtualPath).ToString();
         }
@@ -105,7 +111,7 @@ namespace SmartStore.Web.Framework.UI
                 hash = HttpServerUtility.UrlTokenEncode(input);
 
                 // append StoreId & ThemeName to hash in order to vary cache by store/theme combination
-                if (type == BundleType.Stylesheet && !_workContext.IsAdmin && files.Any(x => x.EndsWith(".less", StringComparison.OrdinalIgnoreCase)))
+                if (type == BundleType.Stylesheet && !_workContext.IsAdmin && files.Any(x => x.EndsWith(".scss", StringComparison.OrdinalIgnoreCase)))
                 {
                     hash += "-s" + _storeContext.CurrentStore.Id;
 					hash += "-t" + _themeContext.CurrentTheme.ThemeName;
@@ -120,7 +126,5 @@ namespace SmartStore.Web.Framework.UI
 			sb.Append(postfix); 
             return sb.ToString();
         }
-
     }
-
 }

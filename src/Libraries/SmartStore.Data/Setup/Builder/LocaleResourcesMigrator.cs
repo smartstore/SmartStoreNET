@@ -19,7 +19,7 @@ namespace SmartStore.Data.Setup
 		
 		public LocaleResourcesMigrator(SmartObjectContext ctx)
 		{
-			Guard.ArgumentNotNull(() => ctx);
+			Guard.NotNull(ctx, nameof(ctx));
 
 			_ctx = ctx;
 			_languages = _ctx.Set<Language>();
@@ -28,7 +28,7 @@ namespace SmartStore.Data.Setup
 		
 		public void Migrate(IEnumerable<LocaleResourceEntry> entries, bool updateTouchedResources = false)
 		{
-			Guard.ArgumentNotNull(() => entries);
+			Guard.NotNull(entries, nameof(entries));
 
 			if (!entries.Any() || !_languages.Any())
 				return;

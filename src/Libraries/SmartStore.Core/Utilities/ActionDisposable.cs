@@ -14,6 +14,8 @@ namespace SmartStore.Utilities
 
         public ActionDisposable(Action action)
         {
+			Guard.NotNull(action, nameof(action));
+
             _action = action;
         }
 

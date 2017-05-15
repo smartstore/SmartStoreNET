@@ -1,0 +1,139 @@
+﻿/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Forum Styles
+// --------------------------------------------------
+
+$forum-unobstrusive-link-color: #646464;
+
+/* Forum Inputs
+================================================ */
+.forum-post-text,
+.bb-editor-text{
+    height:300px;
+}
+.watch-topic-link-button,
+.watch-topic-link-button:hover {
+	color: $forum-unobstrusive-link-color;
+	font-weight: $font-weight-bold;
+}
+
+/* Forum Main
+================================================ */
+.forum-group .forum .image,
+.active-discussionstopics .image,
+.topics-group .image {
+	vertical-align: middle;
+	text-align: center;
+	i { font-size: 2rem; }
+}
+.active-discussionstopics .topic-starter,
+.topics-group .topic-starter {
+	font-size: $font-size-sm;
+	a { color: $forum-unobstrusive-link-color }
+}
+
+.forum-group .forum .topics,
+.forum-group .forum .posts,
+.active-discussionstopics .replies,
+.active-discussionstopics .views,
+.topics-group .replies,
+.topics-group .views {
+	text-align: center;
+}
+.forum-spacer,
+.active-discussionstopics .topic-name,
+.topics-group .topic-name {
+	width: 100%;
+}
+.forums-main .group-header .last-post,
+.active-discussions-header .last-post,
+.topics-group .last-post {
+	min-width: 200px;
+}
+.forum-group .last-post,
+.topics-group .last-post, 
+.active-discussionstopics .last-post {
+	font-size: $font-size-sm;
+}
+.forum-group .forum-title a,
+.active-discussionstopics .topic-title,
+.topics-group .topic-title {
+	font-weight: $font-weight-bold;
+}
+.forums-main .group-header th,
+.active-discussions-header th,
+.topics-group th {
+	white-space: nowrap;
+}
+
+/* Forum Topic
+================================================ */
+.forum-topic {
+    .post-info {
+        .user-info .button-pm {
+	        min-width: 100px
+        }
+    }
+    .block .block-title {
+	    font-size: $font-size-base;
+        a {
+            padding-right: 0.75rem;
+        }
+    }
+    .post-content {
+	    .functions {
+	        right: 10px;
+	        bottom: 10px;
+	        .fa-quote-left { font-size: 10px;}
+        }
+        .signature {
+	        position: absolute;
+	        bottom: 10px;
+	        right: 0;
+	        left: 0;
+	        text-align: center;
+	        margin-top: 20px;
+        }
+    }
+}
+.post-info .user-info .user-stats, 
+.post-content .posttime {
+    font-size: $font-size-xs;
+}
+.posttext .quotefrom {
+	color: inherit;
+	display: inline-block;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+.posttext blockquote {
+	margin-bottom: 0;
+}
+.post-content .posttime {
+	margin-bottom: 5px;
+}
+
+/* Forum Search
+================================================ */
+.forum-search-box {
+	font-size: .9em;
+	text-align: right;
+	padding: 15px 0 0 0;
+}
+.basic-search,
+#advanced-search-block label {
+	padding-right: 10px;
+    @include media-breakpoint-up(sm) { 
+	    text-align: right;
+    }
+}
+#advanced-search-block,
+.search-input,
+.search-error,
+.search-results {
+    margin-top: 2rem;
+}
+.page.post-edit .form-group .col-sm-10 span {
+    vertical-align: -webkit-baseline-middle;
+}

@@ -7,6 +7,7 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Infrastructure
@@ -15,9 +16,18 @@ namespace SmartStore.Core.Infrastructure
     {
         private ContainerManager _containerManager;
 
-        #region Utilities
+		public SmartStoreEngine()
+		{
+			Logger = NullLogger.Instance;
+		}
 
-        protected virtual void RunStartupTasks()
+		protected ILogger Logger
+		{
+			get;
+			private set;
+		}
+
+		protected virtual void RunStartupTasks()
         {
 			var typeFinder = _containerManager.Resolve<ITypeFinder>();
             var startUpTaskTypes = typeFinder.FindClassesOfType<IStartupTask>(ignoreInactivePlugins: true);
@@ -32,7 +42,18 @@ namespace SmartStore.Core.Infrastructure
 			var groupedTasks = startUpTasks.OrderBy(st => st.Order).ToLookup(x => x.Order);
 			foreach (var tasks in groupedTasks)
 			{
-				Parallel.ForEach(tasks, task => { task.Execute(); });
+				Parallel.ForEach(tasks, task => 
+				{
+					try
+					{
+						Logger.DebugFormat("Executing startup task '{0}'", task.GetType().FullName);
+						task.Execute();
+					}
+					catch (Exception ex)
+					{
+						Logger.ErrorFormat(ex, "Error while executing startup task '{0}'", task.GetType().FullName);
+					}
+				});
 			}
         }
 
@@ -54,6 +75,8 @@ namespace SmartStore.Core.Infrastructure
 			var container = builder.Build();
 			var typeFinder = CreateTypeFinder();
 
+			_containerManager = new ContainerManager(container);
+
 			// core dependencies
 			builder = new ContainerBuilder();
 			builder.RegisterInstance(this).As<IEngine>();
@@ -69,9 +92,19 @@ namespace SmartStore.Core.Infrastructure
 			builder.RegisterInstance(dependencyResolver);
 			DependencyResolver.SetResolver(dependencyResolver);
 
-			builder.Update(container);
+			// Logging dependencies should be available very early
+			builder.RegisterModule(new LoggingModule());
 
-			// register dependencies provided by other assemblies
+#pragma warning disable 612, 618
+			builder.Update(container);
+#pragma warning restore 612, 618
+
+			// Propagate logger
+			var logger = container.Resolve<ILoggerFactory>().GetLogger("SmartStore.Bootstrapper");
+			this.Logger = logger;
+			((AppDomainTypeFinder)typeFinder).Logger = logger;
+
+			// Register dependencies provided by other assemblies
 			builder = new ContainerBuilder();
 			var registrarTypes = typeFinder.FindClassesOfType<IDependencyRegistrar>();
 			var registrarInstances = new List<IDependencyRegistrar>();
@@ -79,34 +112,43 @@ namespace SmartStore.Core.Infrastructure
 			{
 				registrarInstances.Add((IDependencyRegistrar)Activator.CreateInstance(type));
 			}
-			// sort
-			registrarInstances = registrarInstances.AsQueryable().OrderBy(t => t.Order).ToList();
+
+			// Sort
+			registrarInstances = registrarInstances.OrderBy(t => t.Order).ToList();
 			foreach (var registrar in registrarInstances)
 			{
-				registrar.Register(builder, typeFinder, PluginManager.IsActivePluginAssembly(registrar.GetType().Assembly));
+				var type = registrar.GetType();
+				logger.DebugFormat("Executing dependency registrar '{0}'", type.FullName);
+				registrar.Register(builder, typeFinder, PluginManager.IsActivePluginAssembly(type.Assembly));
 			}
+
+#pragma warning disable 612, 618
 			builder.Update(container);
+#pragma warning restore 612, 618
 
-			return new ContainerManager(container);
+			return _containerManager;
 		}
-
-        #endregion
-
-        #region Methods
         
         /// <summary>
         /// Initialize components and plugins in the sm environment.
         /// </summary>
         public void Initialize()
         {
-			_containerManager = RegisterDependencies();
+			RegisterDependencies();
+
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				RunStartupTasks();
 			}
         }
 
-        public T Resolve<T>(string name = null) where T : class
+		public bool IsFullyInitialized
+		{
+			get;
+			set;
+		}
+
+		public T Resolve<T>(string name = null) where T : class
 		{
             if (name.HasValue())
             {
@@ -130,10 +172,6 @@ namespace SmartStore.Core.Infrastructure
             return ContainerManager.ResolveAll<T>();
         }
 
-		#endregion
-
-        #region Properties
-
         public IContainer Container
         {
             get { return _containerManager.Container; }
@@ -143,8 +181,5 @@ namespace SmartStore.Core.Infrastructure
         {
             get { return _containerManager; }
         }
-
-        #endregion
-
 	}
 }

@@ -61,6 +61,19 @@ namespace SmartStore.Services.Seo
         }
 
         /// <summary>
+        /// Gets blog post SE (search engine) name
+        /// </summary>
+        /// <param name="blogPost">Blog post</param>
+        /// <returns>Blog post SE (search engine) name</returns>
+        public static string GetSeName(this BlogPostTag blogPostTag)
+        {
+            if (blogPostTag == null)
+                throw new ArgumentNullException("blogPostTag");
+            string seName = GetSeName(blogPostTag.Name);
+            return seName;
+        }
+
+        /// <summary>
         /// Gets news item SE (search engine) name
         /// </summary>
         /// <param name="newsItem">News item</param>
@@ -174,6 +187,7 @@ namespace SmartStore.Services.Seo
 					result = urlRecordService.GetActiveSlug(entity.Id, entityName, languageId);
 				}
 			}
+
 			// set default value if required
 			if (String.IsNullOrEmpty(result) && returnDefaultValue)
 			{
@@ -213,8 +227,8 @@ namespace SmartStore.Services.Seo
 			Func<string, UrlRecord> extraSlugLookup = null)
 			where T : BaseEntity, ISlugSupported
 		{
-			Guard.ArgumentNotNull(() => urlRecordService);
-			Guard.ArgumentNotNull(() => seoSettings);
+			Guard.NotNull(urlRecordService, nameof(urlRecordService));
+			Guard.NotNull(seoSettings, nameof(seoSettings));
 
 			if (entity == null)
 				throw new ArgumentNullException("entity");

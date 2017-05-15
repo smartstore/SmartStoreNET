@@ -9,9 +9,10 @@
         @T("Admin.Promotions.newsLetterSubscriptions")
     </div>
     <div class="options">
-		@Html.Widget("admin_button_toolbar_before")
+		@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-		@Html.Widget("admin_button_toolbar_after")
+
+        @{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
 </div>
 

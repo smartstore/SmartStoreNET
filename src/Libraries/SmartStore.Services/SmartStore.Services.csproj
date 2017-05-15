@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Services</RootNamespace>
     <AssemblyName>SmartStore.Services</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -62,12 +62,17 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CronExpressionDescriptor">
-      <HintPath>..\..\packages\CronExpressionDescriptor.1.17.0\lib\net45\CronExpressionDescriptor.dll</HintPath>
+    <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CronExpressionDescriptor, Version=1.21.2.0, Culture=neutral, PublicKeyToken=a2ab0e0f73f9b037, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CronExpressionDescriptor.1.21.2\lib\net45\CronExpressionDescriptor.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -77,20 +82,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus, Version=4.0.3.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EPPlus.4.0.3\lib\net20\EPPlus.dll</HintPath>
+    <Reference Include="EPPlus, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ImageResizer, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageResizer.4.0.4\lib\net45\ImageResizer.dll</HintPath>
+      <HintPath>..\..\packages\ImageResizer.4.0.5\lib\net45\ImageResizer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ImageResizer.Plugins.PrettyGifs, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageResizer.Plugins.PrettyGifs.4.0.4\lib\net45\ImageResizer.Plugins.PrettyGifs.dll</HintPath>
+      <HintPath>..\..\packages\ImageResizer.Plugins.PrettyGifs.4.0.5\lib\net45\ImageResizer.Plugins.PrettyGifs.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LumenWorks.Framework.IO, Version=3.9.0.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LumenWorksCsvReader.3.9\lib\net20\LumenWorks.Framework.IO.dll</HintPath>
+    <Reference Include="LumenWorks.Framework.IO, Version=3.9.1.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LumenWorksCsvReader.3.9.1\lib\net20\LumenWorks.Framework.IO.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MaxMind.GeoIP">
@@ -101,16 +106,17 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="NCrontab">
-      <HintPath>..\..\packages\ncrontab.2.0.0\lib\net20\NCrontab.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="NCrontab, Version=3.2.20120.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ncrontab.3.3.0\lib\net35\NCrontab.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NReco.PdfGenerator, Version=1.1.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NReco.PdfGenerator.1.1.5.0\lib\net20\NReco.PdfGenerator.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NReco.PdfGenerator, Version=1.1.15.0, Culture=neutral, PublicKeyToken=231663d50a41b451, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NReco.PdfGenerator.1.1.15\lib\net20\NReco.PdfGenerator.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -119,8 +125,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Linq.Dynamic">
-      <HintPath>..\..\packages\System.Linq.Dynamic.1.0.0\lib\net40\System.Linq.Dynamic.dll</HintPath>
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceModel" />
@@ -154,8 +161,8 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UAParser, Version=2.0.0.0, Culture=neutral, PublicKeyToken=f7377bf021646069, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\UAParser.2.0.0.0\lib\net40-Client\UAParser.dll</HintPath>
+    <Reference Include="UAParser, Version=2.1.0.0, Culture=neutral, PublicKeyToken=f7377bf021646069, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\UAParser.2.1.0.0\lib\net40-Client\UAParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -166,8 +173,18 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Catalog\Extensions\ProductUrlHelper.cs" />
+    <Compile Include="Catalog\Extensions\ProductUrlHelperExtensions.cs" />
     <Compile Include="Catalog\Importer\CategoryImporter.cs" />
     <Compile Include="Catalog\Importer\ProductImporter.cs" />
+    <Compile Include="Catalog\Modelling\CheckoutAttributeQueryItem.cs" />
+    <Compile Include="Catalog\Modelling\GiftCardQueryItem.cs" />
+    <Compile Include="Catalog\Modelling\IProductVariantQueryFactory.cs" />
+    <Compile Include="Catalog\Modelling\ProductVariantQuery.cs" />
+    <Compile Include="Catalog\Extensions\ProductVariantQueryExtensions.cs" />
+    <Compile Include="Catalog\Modelling\ProductVariantQueryFactory.cs" />
+    <Compile Include="Catalog\Modelling\ProductVariantQueryItem.cs" />
+    <Compile Include="Catalog\Modelling\ProductVariantQueryModelBinder.cs" />
     <Compile Include="Catalog\PriceCalculationContext.cs" />
     <Compile Include="Common\IUserAgent.cs" />
     <Compile Include="Common\TempFileCleanupTask.cs" />
@@ -192,6 +209,8 @@
     <Compile Include="DataExchange\Export\ExportConfigurationInfo.cs" />
     <Compile Include="DataExchange\Import\DataImporter.cs" />
     <Compile Include="DataExchange\Import\EntityImporterBase.cs" />
+    <Compile Include="DataExchange\Import\Events\ImportExecutingEvent.cs" />
+    <Compile Include="DataExchange\Import\Events\ImportExecutedEvent.cs" />
     <Compile Include="DataExchange\Import\IEntityImporter.cs" />
     <Compile Include="DataExchange\Import\ImportExtraData.cs" />
     <Compile Include="DataExchange\Import\ImportExecuteContext.cs" />
@@ -219,7 +238,7 @@
     <Compile Include="DataExchange\ISyncMappingService.cs" />
     <Compile Include="DataExchange\SyncMappingService.cs" />
     <Compile Include="DataExchange\Export\Internal\OrderExportContext.cs" />
-    <Compile Include="DataExchange\Export\Internal\ProductExportContext.cs" />
+    <Compile Include="DataExchange\Export\ProductExportContext.cs" />
     <Compile Include="DataExchange\Export\ExportExecuteContext.cs" />
     <Compile Include="DataExchange\Export\ExportExtensions.cs" />
     <Compile Include="DataExchange\Export\ExportFeaturesAttribute.cs" />
@@ -232,9 +251,30 @@
     <Compile Include="DataExchange\Export\IExportProfileService.cs" />
     <Compile Include="DataExchange\Import\ImportDataSegmenter.cs" />
     <Compile Include="DataExchange\Import\ImportRow.cs" />
-    <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
-    <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
+    <Compile Include="Events\DefaultMessageBus.cs" />
+    <Compile Include="Events\IMessageBroker.cs" />
+    <Compile Include="Events\IMessageBus.cs" />
+    <Compile Include="Hooks\LocalizedEntityRelationHook.cs" />
+    <Compile Include="Hooks\PictureHook.cs" />
+    <Compile Include="Hooks\SearchQueryAliasHook.cs" />
+    <Compile Include="Hooks\SlugSupportedHook.cs" />
+    <Compile Include="Hooks\AuditableHook.cs" />
+    <Compile Include="Hooks\StoreMappingEntityHook.cs" />
+    <Compile Include="IScopedService.cs" />
+    <Compile Include="Localization\LocalizedUrlHelper.cs" />
+    <Compile Include="Logging\DbLogService.cs" />
+    <Compile Include="Logging\ILogService.cs" />
+    <Compile Include="Media\MediaFileSystem.cs" />
+    <Compile Include="Media\Storage\DatabaseMediaStorageProvider.cs" />
+    <Compile Include="Media\Storage\FileSystemMediaStorageProvider.cs" />
+    <Compile Include="Media\Storage\IMediaStorageProvider.cs" />
     <Compile Include="Media\MediaExtensions.cs" />
+    <Compile Include="Media\Storage\IMediaMover.cs" />
+    <Compile Include="Media\Storage\ISupportsMediaMoving.cs" />
+    <Compile Include="Media\Storage\MediaMoverContext.cs" />
+    <Compile Include="Media\Storage\MediaStorageExtensions.cs" />
+    <Compile Include="Media\Storage\MediaItem.cs" />
+    <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
     <Compile Include="Messages\QueuedMessagesClearTask.cs" />
@@ -247,9 +287,8 @@
     <Compile Include="Pdf\Content\PdfUrlContent.cs" />
     <Compile Include="Pdf\IPdfConverter.cs" />
     <Compile Include="Directory\EcbExchangeRateProvider.cs" />
-    <Compile Include="Directory\McExchangeRateProvider.cs" />
     <Compile Include="Catalog\AdjustInventoryResult.cs" />
-    <Compile Include="Hooks\SoftDeletablePreUpdateHook.cs" />
+    <Compile Include="Hooks\SoftDeletableHook.cs" />
     <Compile Include="Affiliates\AffiliateService.cs" />
     <Compile Include="Affiliates\IAffiliateService.cs" />
     <Compile Include="Authentication\External\AuthorizeState.cs" />
@@ -282,16 +321,14 @@
     <Compile Include="Catalog\ManufacturerTemplateService.cs" />
     <Compile Include="Catalog\ICategoryTemplateService.cs" />
     <Compile Include="Catalog\IProductTemplateService.cs" />
-    <Compile Include="Catalog\ProductSearchContext.cs" />
-    <Compile Include="Catalog\ProductsSearchingEvent.cs" />
     <Compile Include="Catalog\ProductTemplateService.cs" />
     <Compile Include="Catalog\ICopyProductService.cs" />
     <Compile Include="Catalog\CopyProductService.cs" />
     <Compile Include="Catalog\IProductTagService.cs" />
     <Compile Include="Catalog\ProductTagService.cs" />
     <Compile Include="Catalog\IRecentlyViewedProductsService.cs" />
-    <Compile Include="Hooks\ProductVariantAttributePostDeleteHook.cs" />
-    <Compile Include="Hooks\ProductVariantAttributeValuePostDeleteHook.cs" />
+    <Compile Include="Hooks\ProductVariantAttributeHook.cs" />
+    <Compile Include="Hooks\ProductVariantAttributeValueHook.cs" />
     <Compile Include="Catalog\RecentlyViewedProductsService.cs" />
     <Compile Include="Catalog\TierPriceExtensions.cs" />
     <Compile Include="Catalog\ProductExtensions.cs" />
@@ -310,8 +347,6 @@
     <Compile Include="CommonServices.cs" />
     <Compile Include="Common\AddressService.cs" />
     <Compile Include="Common\AddressExtentions.cs" />
-    <Compile Include="Common\FulltextService.cs" />
-    <Compile Include="Common\IFulltextService.cs" />
     <Compile Include="Common\IGenericAttributeService.cs" />
     <Compile Include="Common\GenericAttributeService.cs" />
     <Compile Include="Common\IMaintenanceService.cs" />
@@ -332,16 +367,9 @@
     <Compile Include="Directory\DeliveryTimeService.cs" />
     <Compile Include="Events\EventPublisher.cs" />
     <Compile Include="Events\DefaultConsumerFactory.cs" />
-    <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
-    <Compile Include="Filter\FilterCriteria.cs" />
-    <Compile Include="Filter\FilterExtensions.cs" />
-    <Compile Include="Filter\FilterMisc.cs" />
-    <Compile Include="Filter\FilterOperator.cs" />
-    <Compile Include="Filter\FilterService.cs" />
-    <Compile Include="Filter\IFilterService.cs" />
     <Compile Include="Forums\ForumExtensions.cs" />
     <Compile Include="ICommonServices.cs" />
-    <Compile Include="Hooks\LocalizedEntityPostDeleteHook.cs" />
+    <Compile Include="Hooks\LocalizedEntityHook.cs" />
     <Compile Include="Logging\DeleteLogsTask.cs" />
     <Compile Include="Media\CachedImageResult.cs" />
     <Compile Include="Media\IImageCache.cs" />
@@ -350,7 +378,7 @@
     <Compile Include="Media\ImageCacheExtensions.cs" />
     <Compile Include="Media\ImageHeader.cs" />
     <Compile Include="Media\ImageResizerService.cs" />
-    <Compile Include="Media\ImageResizerUtils.cs" />
+    <Compile Include="Media\ImageResizerUtil.cs" />
     <Compile Include="Media\ImageTypes.cs" />
     <Compile Include="Messages\EventPublisherExtensions.cs" />
     <Compile Include="Messages\GenericMessageContext.cs" />
@@ -472,7 +500,25 @@
     </Compile>
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
-    <Compile Include="Hooks\AclEntityPostDeleteHook.cs" />
+    <Compile Include="Hooks\AclEntityHook.cs" />
+    <Compile Include="ScopedServiceBase.cs" />
+    <Compile Include="Search\CatalogSearchQuery.cs" />
+    <Compile Include="Search\Extensions\FacetUtility.cs" />
+    <Compile Include="Search\Extensions\UrlHelperExtensions.cs" />
+    <Compile Include="Search\Modelling\CatalogSearchQueryAliasMapper.cs" />
+    <Compile Include="Search\Modelling\CatalogSearchQueryFactory.cs" />
+    <Compile Include="Search\CatalogSearchResult.cs" />
+    <Compile Include="Search\CatalogSearchService.cs" />
+    <Compile Include="Search\Modelling\CatalogSearchQueryModelBinder.cs" />
+    <Compile Include="Search\Extensions\FacetUrlHelper.cs" />
+    <Compile Include="Search\Modelling\ICatalogSearchQueryAliasMapper.cs" />
+    <Compile Include="Search\Modelling\ICatalogSearchQueryFactory.cs" />
+    <Compile Include="Search\ICatalogSearchService.cs" />
+    <Compile Include="Search\LinqCatalogSearchService.cs" />
+    <Compile Include="Search\CatalogSearchEvents.cs" />
+    <Compile Include="Search\Rendering\FacetTemplateProvider.cs" />
+    <Compile Include="Search\Rendering\IFacetTemplateProvider.cs" />
+    <Compile Include="Search\Rendering\IFacetTemplateSelector.cs" />
     <Compile Include="Security\AclService.cs" />
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />
@@ -484,12 +530,12 @@
     <Compile Include="Customers\CustomerRegistrationResult.cs" />
     <Compile Include="Directory\StateProvinceService.cs" />
     <Compile Include="Security\StandardPermissionProvider.cs" />
-    <Compile Include="Seo\BaseSitemapGenerator.cs" />
     <Compile Include="Seo\IUrlRecordService.cs" />
     <Compile Include="Seo\SeoExtensions.cs" />
-    <Compile Include="Seo\ISitemapGenerator.cs" />
-    <Compile Include="Seo\SitemapGenerator.cs" />
-    <Compile Include="Seo\UpdateFrequency.cs" />
+    <Compile Include="Seo\IXmlSitemapGenerator.cs" />
+    <Compile Include="Seo\Tasks\RebuildXmlSitemapTask.cs" />
+    <Compile Include="Seo\XmlSitemapGenerator.cs" />
+    <Compile Include="Seo\XmlSitemapNode.cs" />
     <Compile Include="Seo\UrlRecordService.cs" />
     <Compile Include="ServiceCacheConsumer.cs" />
     <Compile Include="Shipping\IShipmentService.cs" />
@@ -544,7 +590,6 @@
     <Compile Include="Catalog\IProductService.cs" />
     <Compile Include="Localization\LanguageService.cs" />
     <Compile Include="Localization\LocalizationService.cs" />
-    <Compile Include="Logging\DefaultLogger.cs" />
     <Compile Include="Catalog\ManufacturerService.cs" />
     <Compile Include="Catalog\ProductAttributeService.cs" />
     <Compile Include="Catalog\ProductService.cs" />
@@ -603,7 +648,9 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Seo\Hooks\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>

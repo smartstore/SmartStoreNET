@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {  
@@ -17,7 +18,36 @@ namespace SmartStore.Web.Framework.UI
             return this;
         }
 
-        public TabStripBuilder Position(TabsPosition value)
+		public TabStripBuilder Responsive(bool value, string breakpoint = "<lg")
+		{
+			base.Component.IsResponsive = value;
+			base.Component.Breakpoint = breakpoint;
+			return this;
+		}
+
+		public TabStripBuilder TabContentHeaderContent(string value)
+		{
+			if (value.IsEmpty())
+			{
+				// do nothing
+				return this;
+			}
+
+			return this.TabContentHeaderContent(x => new HelperResult(writer => writer.Write(value)));
+		}
+
+		public TabStripBuilder TabContentHeaderContent(Func<dynamic, HelperResult> value)
+		{
+			return this.TabContentHeaderContent(value(null));
+		}
+
+		public TabStripBuilder TabContentHeaderContent(HelperResult value)
+		{
+			base.Component.TabContentHeaderContent = value;
+			return this;
+		}
+
+		public TabStripBuilder Position(TabsPosition value)
         {
             base.Component.Position = value;
             return this;

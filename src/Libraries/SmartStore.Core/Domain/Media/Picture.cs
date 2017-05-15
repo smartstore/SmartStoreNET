@@ -1,27 +1,21 @@
-using System.Collections.Generic;
-using SmartStore.Core.Domain.Catalog;
-using System.Runtime.Serialization;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Core.Domain.Media
 {
-    /// <summary>
-    /// Represents a picture
-    /// </summary>
 	[DataContract]
-	public partial class Picture : BaseEntity, ITransient
-    {
-		public Picture()
-		{
-			this.UpdatedOnUtc = DateTime.UtcNow;
-		}
-		
+	public partial class Picture : BaseEntity, ITransient, IHasMedia
+	{
 		private ICollection<ProductPicture> _productPictures;
-        /// <summary>
-        /// Gets or sets the picture binary
-        /// </summary>
-        public byte[] PictureBinary { get; set; }
+
+		/// <summary>
+		/// Gets or sets the picture binary
+		/// </summary>
+		[Obsolete("Use property MediaStorage instead")]
+		public byte[] PictureBinary { get; set; }
 
         /// <summary>
         /// Gets or sets the picture mime type
@@ -29,9 +23,21 @@ namespace SmartStore.Core.Domain.Media
 		[DataMember]
 		public string MimeType { get; set; }
 
-        /// <summary>
-        /// Gets or sets the SEO friednly filename of the picture
-        /// </summary>
+		/// <summary>
+		/// Gets or sets the picture width
+		/// </summary>
+		[DataMember]
+		public int? Width { get; set; }
+
+		/// <summary>
+		/// Gets or sets the picture height
+		/// </summary>
+		[DataMember]
+		public int? Height { get; set; }
+
+		/// <summary>
+		/// Gets or sets the SEO friednly filename of the picture
+		/// </summary>
 		[DataMember]
 		public string SeoFilename { get; set; }
 
@@ -55,9 +61,20 @@ namespace SmartStore.Core.Domain.Media
 		[Index("IX_UpdatedOn_IsTransient", 0)]
 		public DateTime UpdatedOnUtc { get; set; }
 
-        /// <summary>
-        /// Gets or sets the product pictures
-        /// </summary>
+		/// <summary>
+		/// Gets or sets the media storage identifier
+		/// </summary>
+		[DataMember]
+		public int? MediaStorageId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the media storage
+		/// </summary>
+		public virtual MediaStorage MediaStorage { get; set; }
+
+		/// <summary>
+		/// Gets or sets the product pictures
+		/// </summary>
 		[DataMember]
 		public virtual ICollection<ProductPicture> ProductPictures
         {

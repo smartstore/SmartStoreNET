@@ -1,0 +1,113 @@
+﻿@model ActiveDiscussionsModel
+@using SmartStore.Web.Models.Boards;
+@using SmartStore.Web.Framework.UI;
+
+@{ 
+    var isPartial = Model.ViewAllLinkEnabled;
+}
+
+@if (!isPartial)
+{
+    Html.RenderPartial("_SearchBox");
+}
+
+<div class="active-discussions mt-5">
+    <div class="row">
+        <div class="col">
+            <div class="heading mb-4">
+                <h3 class="heading-title @(!isPartial ? "fs-h1" : "")">@T("Forum.ActiveDiscussions")</h3>
+            </div>
+        </div>
+        <div class="col col-auto mb-3 mb-0-sm">
+            @if (Model.ActiveDiscussionsFeedEnabled == true)
+            {
+                <a class="btn btn-warning" href="@Url.Action("ActiveDiscussionsRSS")" title="@T("Forum.ActiveDiscussionsRSSLinkTitle")">
+                    <i class="fa fa-rss"></i>
+                    <span>@T("Forum.RSS")</span>
+                </a>
+            }
+            
+            @if (isPartial)
+            {        
+                <button class="btn btn-outline-info btn-flat" onclick="setLocation('@Url.Action("ActiveDiscussions")')">
+                    <i class="fa fa-th-list"></i>
+                    <span>@T("Forum.ActiveDiscussions.ViewAll")</span>
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="active-discussionstopics clearfix">
+        <table class="table table-responsive">
+            @if (Model.ForumTopics.Count > 0)
+            {
+                <thead>
+                    <tr class="active-discussions-header">
+                        <th></th>
+                        <th class="topic-name">
+                            @T("Forum.TopicTitle")
+                        </th>
+                        <th class="replies d-none d-md-table-cell">
+                            @T("Forum.Replies")
+                        </th>
+                        <th class="views d-none d-md-table-cell">
+                            @T("Forum.Views")
+                        </th>
+                        <th class="last-post d-none d-md-table-cell">
+                            @T("Forum.LatestPost")
+                        </th>
+                    </tr>
+                </thead>
+            }
+
+            @foreach (var topic in Model.ForumTopics)
+            {
+                <tr class="topic">
+                    <td class="image">
+                        <i class="fa fa-comments-o"></i>
+                    </td>
+                    <td class="topic-name">
+                        @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
+                        <div>
+                            <div class="topic-starter text-muted pull-left">
+                                @if (topic.CustomerId > 0)
+                                {
+                                    var authorText = T("Forum.Author");
+                                    if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+                                    {
+                                        @T("Forum.Author")<text>:</text> @Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })
+                                    }
+                                    else
+                                    {
+                                        @T("Forum.Author")<text>:</text> @topic.CustomerName
+                                    }
+                                }
+                            </div>
+                            @if (@topic.NumPosts > Model.PostsPageSize)
+                            {
+                                @(Html.SmartStore().Pager(topic.TotalPostPages)
+                                    .HtmlAttributes(new { @class = "topics-pager" })
+                                    .WithRenderer<ForumTopicPagerRenderer>()
+                                    .ShowPrevious(false)
+                                    .ShowNext(false)
+                                    .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
+                                    .Alignment(PagerAlignment.Left)
+                                    .Size(PagerSize.Mini)
+                                    .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
+                            }
+                        </div>
+                    </td>
+                    <td class="replies d-none d-md-table-cell">
+                        @topic.NumReplies
+                    </td>
+                    <td class="views d-none d-md-table-cell">
+                        @topic.Views
+                    </td>
+                    <td class="last-post d-none d-md-table-cell">
+                        @{ Html.RenderAction("LastPost", new { forumPostId = topic.LastPostId, showTopic = false }); }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

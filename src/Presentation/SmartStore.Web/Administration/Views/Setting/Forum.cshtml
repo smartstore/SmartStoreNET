@@ -14,8 +14,11 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-	@Html.Action("StoreScopeConfiguration", "Setting")
+
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
     @Html.ValidationSummary(false)
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">

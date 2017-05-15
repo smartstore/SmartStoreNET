@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using SmartStore.Collections;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Product attribute service interface
-    /// </summary>
-    public partial interface IProductAttributeService
+	/// <summary>
+	/// Product attribute service interface
+	/// </summary>
+	public partial interface IProductAttributeService
     {
         #region Product attributes
 
@@ -43,15 +43,94 @@ namespace SmartStore.Services.Catalog
         /// <param name="productAttribute">Product attribute</param>
         void UpdateProductAttribute(ProductAttribute productAttribute);
 
-        #endregion
+		#endregion
 
-        #region Product variant attributes mappings (ProductVariantAttribute)
+		#region Product attribute options
 
-        /// <summary>
-        /// Deletes a product variant attribute mapping
-        /// </summary>
-        /// <param name="productVariantAttribute">Product variant attribute mapping</param>
-        void DeleteProductVariantAttribute(ProductVariantAttribute productVariantAttribute);
+		/// <summary>
+		/// Gets an attribute option by id
+		/// </summary>
+		/// <param name="id">Product attribute option identifier</param>
+		/// <returns>Product attribute option</returns>
+		ProductAttributeOption GetProductAttributeOptionById(int id);
+
+		/// <summary>
+		/// Gets all attribute options by options set identifier
+		/// </summary>
+		/// <param name="optionsSetId">Attribute options set identifier</param>
+		/// <returns>List of attribute options</returns>
+		IList<ProductAttributeOption> GetProductAttributeOptionsByOptionsSetId(int optionsSetId);
+
+		/// <summary>
+		/// Gets all attribute options by attribute identifier
+		/// </summary>
+		/// <param name="attributeId">Attribute identifier</param>
+		/// <returns>List of attribute options</returns>
+		IList<ProductAttributeOption> GetProductAttributeOptionsByAttributeId(int attributeId);
+
+		/// <summary>
+		/// Deletes an attribute option
+		/// </summary>
+		/// <param name="productAttributeOption">Product attribute option</param>
+		void DeleteProductAttributeOption(ProductAttributeOption productAttributeOption);
+
+		/// <summary>
+		/// Inserts an attribute option
+		/// </summary>
+		/// <param name="productAttributeOption">Product attribute option</param>
+		void InsertProductAttributeOption(ProductAttributeOption productAttributeOption);
+
+		/// <summary>
+		/// Updates an attribute option
+		/// </summary>
+		/// <param name="productAttributeOption">Product attribute option</param>
+		void UpdateProductAttributeOption(ProductAttributeOption productAttributeOption);
+
+		#endregion
+
+		#region Product attribute options sets
+
+		/// <summary>
+		/// Gets an attribute options set by id
+		/// </summary>
+		/// <param name="id">Product attribute options set identifier</param>
+		/// <returns>Product attribute options set</returns>
+		ProductAttributeOptionsSet GetProductAttributeOptionsSetById(int id);
+
+		/// <summary>
+		/// Gets all attribute options sets by attribute identifier
+		/// </summary>
+		/// <param name="productAttributeId"></param>
+		/// <returns></returns>
+		IList<ProductAttributeOptionsSet> GetProductAttributeOptionsSetsByAttributeId(int productAttributeId);
+
+		/// <summary>
+		/// Deletes an attribute options set
+		/// </summary>
+		/// <param name="productAttributeOptionsSet">Product attribute options set</param>
+		void DeleteProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet);
+
+		/// <summary>
+		/// Inserts an attribute options set
+		/// </summary>
+		/// <param name="productAttributeOptionsSet">Product attribute options set</param>
+		void InsertProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet);
+
+		/// <summary>
+		/// Updates an attribute options set
+		/// </summary>
+		/// <param name="productAttributeOptionsSet">Product attribute options set</param>
+		void UpdateProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet);
+
+		#endregion
+
+		#region Product variant attributes mappings (ProductVariantAttribute)
+
+		/// <summary>
+		/// Deletes a product variant attribute mapping
+		/// </summary>
+		/// <param name="productVariantAttribute">Product variant attribute mapping</param>
+		void DeleteProductVariantAttribute(ProductVariantAttribute productVariantAttribute);
 
         /// <summary>
         /// Gets product variant attribute mappings by product identifier
@@ -95,15 +174,24 @@ namespace SmartStore.Services.Catalog
         /// <param name="productVariantAttribute">The product variant attribute mapping</param>
         void UpdateProductVariantAttribute(ProductVariantAttribute productVariantAttribute);
 
-        #endregion
+		/// <summary>
+		/// Copies attribute options (if any) to product variant attribute values. Existing values are ignored (identified by name field).
+		/// </summary>
+		/// <param name="productVariantAttribute">The product variant attribute mapping</param>
+		/// <param name="productAttributeOptionsSetId">Product attribute options set identifier</param>
+		/// <param name="deleteExistingValues">Indicates whether to delete all existing product variant attribute values</param>
+		/// <returns>Number of inserted product variant attribute values</returns>
+		int CopyAttributeOptions(ProductVariantAttribute productVariantAttribute, int productAttributeOptionsSetId, bool deleteExistingValues);
 
-        #region Product variant attribute values (ProductVariantAttributeValue)
+		#endregion
 
-        /// <summary>
-        /// Deletes a product variant attribute value
-        /// </summary>
-        /// <param name="productVariantAttributeValue">Product variant attribute value</param>
-        void DeleteProductVariantAttributeValue(ProductVariantAttributeValue productVariantAttributeValue);
+		#region Product variant attribute values (ProductVariantAttributeValue)
+
+		/// <summary>
+		/// Deletes a product variant attribute value
+		/// </summary>
+		/// <param name="productVariantAttributeValue">Product variant attribute value</param>
+		void DeleteProductVariantAttributeValue(ProductVariantAttributeValue productVariantAttributeValue);
 
         /// <summary>
         /// Gets product variant attribute values by product identifier

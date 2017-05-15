@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Web.Http;
+using System.Web.Http.Dependencies;
 using System.Web.Http.OData.Routing;
-using SmartStore.Core;
 using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.WebApi
@@ -71,24 +70,19 @@ namespace SmartStore.Web.Framework.WebApi
 		/// <summary>
 		/// Further entity processing typically used by OData actions.
 		/// </summary>
-		/// <param name="process">Return an error string or null if your processing succeeded.</param>
-		public static void ProcessEntity(this ApiController apiController, Func<string> process)
+		/// <param name="process">Action for entity processing.</param>
+		public static void ProcessEntity(this ApiController apiController, Action process)
 		{
-			string error = null;
-
 			try
 			{
-				error = process();
+				process();
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				error = exc.Message;
+				throw apiController.ExceptionUnprocessableEntity(exception.Message);
 			}
-
-			if (error.HasValue())
-				throw apiController.ExceptionUnprocessableEntity(error);
 		}
-		
+
 		public static bool GetNormalizedKey(this ODataPath odataPath, int segmentIndex, out int key)
 		{
 			if (odataPath.Segments.Count > segmentIndex)
@@ -126,6 +120,11 @@ namespace SmartStore.Web.Framework.WebApi
 					FileSystemHelper.Delete(file.LocalFileName);
 			}
 			catch { }
+		}
+
+		public static T GetService<T>(this IDependencyScope dependencyScope)
+		{
+			return (T)dependencyScope.GetService(typeof(T));
 		}
 	}
 }

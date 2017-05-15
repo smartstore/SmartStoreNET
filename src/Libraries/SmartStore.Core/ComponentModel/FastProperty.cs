@@ -56,7 +56,7 @@ namespace SmartStore.ComponentModel
 		[SuppressMessage("ReSharper", "VirtualMemberCallInContructor")]
 		public FastProperty(PropertyInfo property)
 		{
-			Guard.ArgumentNotNull(() => property);
+			Guard.NotNull(property, nameof(property));
 
 			Property = property;
 			Name = property.Name;
@@ -221,8 +221,8 @@ namespace SmartStore.ComponentModel
 			string propertyName,
 			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
-			Guard.ArgumentNotNull(() => type);
-			Guard.ArgumentNotEmpty(() => propertyName);
+			Guard.NotNull(type, nameof(type));
+			Guard.NotEmpty(propertyName, nameof(propertyName));
 
 			FastProperty fastProperty = null;
 
@@ -234,7 +234,7 @@ namespace SmartStore.ComponentModel
 			var key = new PropertyKey(type, propertyName);
 			if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
 			{
-				var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.IgnoreCase);
+				var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.IgnoreCase);
 				if (pi != null)
 				{
 					fastProperty = CreateInstance(pi);
@@ -252,7 +252,7 @@ namespace SmartStore.ComponentModel
 			PropertyInfo propertyInfo,
 			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
-			Guard.ArgumentNotNull(() => propertyInfo);
+			Guard.NotNull(propertyInfo, nameof(propertyInfo));
 
 			FastProperty fastProperty = null;
 

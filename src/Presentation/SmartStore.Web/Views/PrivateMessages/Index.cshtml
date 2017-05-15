@@ -1,27 +1,29 @@
 ﻿@model PrivateMessageIndexModel
 @using SmartStore.Web.Models.PrivateMessages;
 @using SmartStore.Web.Framework.UI;
-
 @{    
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
-
+    Layout = "_Layout";
     Html.AddTitleParts(T("PageTitle.PrivateMessages").Text);
-}
-<div class="page private-messages-page">
-    <div class="page-title">
-        <h1>@T("PrivateMessages.PrivateMessages")</h1>
-    </div>
-    <div class="page-body">
-        @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
-        {
-            x.Add().Text(@T("PrivateMessages.Inbox"))
-                .Content( Html.Action("Inbox", new { page = Model.InboxPage, tab = "inbox" }).ToString() )
-                .Selected(!Model.SentItemsTabSelected);
-            
-            x.Add().Text(@T("PrivateMessages.SentItems"))
-                .Content( Html.Action("SentItems", new { page = Model.SentItemsPage, tab = "sent" }).ToString() )
-                .Selected(Model.SentItemsTabSelected);
-        })
 
-    </div>
-</div>
+    Layout = "_MyAccount";
+    ViewBag.PageClassToken = "privatemessages";
+    ViewBag.PageTitle = T("PrivateMessages.PrivateMessages").Text;
+}
+
+@Html.SmartStore().TabStrip().Name("pm-tabs").HtmlAttributes(new { @class = "pm-tabs" }).SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
+{
+    x.Add().Text(@T("PrivateMessages.Inbox"))
+        .Content(Html.Action("Inbox", new { page = Model.InboxPage, tab = "inbox" }).ToString())
+        .Selected(true);
+
+    x.Add().Text(@T("PrivateMessages.SentItems"))
+        .Content(Html.Action("SentItems", new { page = Model.SentItemsPage, tab = "sent" }).ToString())
+        .Selected(Model.SentItemsTabSelected);
+}).TabContentHeaderContent(TabContentHeader()).ComponentVersion(BootstrapVersion.V4).Fade(false)
+
+@helper TabContentHeader()
+{{
+	<a href="javascript:void()" class="btn btn-success btn-no-border btn-icon offcanvas-closer rounded-0" title="@T("Common.Close")">
+		<i class="fa fa-2x fa-lg fa-angle-left"></i>
+	</a>
+}}

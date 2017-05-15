@@ -1,47 +1,44 @@
 ﻿@model CheckoutCompletedModel
-@using SmartStore.Core.Domain.Orders;
 @using SmartStore.Web.Models.Checkout;
-@using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_Checkout.cshtml";
-
-    //title
+    Layout = "_Checkout";
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
+    Html.AddBodyCssClass("no-offcanvas-cart");
 }
+
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Complete })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Complete }); }
 }
 
 <div class="page checkout-completed-page">
-    
-    <div class="page-title">
-        <h1 class="text-success">@T("Checkout.OrderHasBeenReceived")</h1>
-    </div>
+	<div class="heading mt-3">
+		<h1 class="heading-title font-weight-light">@T("Checkout.OrderHasBeenReceived")</h1>
+	</div>
 
-	<h3 class="thank-you">
+	<h3 class="text-muted font-weight-light">
 		@T("Checkout.ThankYou")
 	</h3>
     
-    <div class="page-body checkout-data">
+    <div class="page-body checkout-data pt-4">
         <div class="order-completed">
-            @Html.Widget("checkout_completed_top")
-            <div class="body">
+            @{ Html.RenderWidget("checkout_completed_top"); }
+            <div class="body fs-h5">
                 <p>
-                    @T("Checkout.OrderNumber"): 
-					<a href="@Url.Action("Details", "Order", new { id = Model.OrderId })" rel="nofollow">@Model.OrderNumber</a>
+                    @T("Checkout.OrderNumber"): &nbsp;
+					<a href="@Url.Action("Details", "Order", new { id = Model.OrderId })" rel="nofollow"><strong>@Model.OrderNumber</strong></a>
                 </p>
             </div>
-            <p class="select-button">
+            <p class="pt-3 mb-5">
 				<a href="@Url.Action("Details", "Order", new { id = Model.OrderId })" class="btn btn-warning" rel="nofollow">
-					<i class="fa fa-fw fa-list-alt"></i>
-					@T("Checkout.PlacedOrderDetails")
+					@*<i class="fa fa-list-alt"></i>*@
+					<span>@T("Checkout.PlacedOrderDetails")</span>
 				</a>
-                <a href="@Url.RouteUrl("HomePage")" class="btn order-completed-continue-button">
-                    <i class="fa fa-fw fa-home"></i>
-                    @T("Checkout.Continue")
+                <a href="@Url.RouteUrl("HomePage")" class="btn btn-secondary order-completed-continue-button">
+                    @*<i class="fa fa-home"></i>*@
+                    <span>@T("Checkout.Continue")</span>
                 </a>
             </p>
-            @Html.Widget("checkout_completed_bottom")
+            @{ Html.RenderWidget("checkout_completed_bottom"); }
         </div>
     </div>
 </div>

@@ -70,6 +70,20 @@ namespace SmartStore.Services.Payments
 
 		#region Methods
 
+		public virtual bool IsPaymentMethodActive(string systemName, int storeId = 0)
+		{
+			var method = LoadPaymentMethodBySystemName(systemName, true, storeId);
+			return method != null;
+		}
+
+		public virtual bool IsPaymentMethodFiltered(PaymentFilterRequest filterRequest)
+		{
+			Guard.NotNull(filterRequest, nameof(filterRequest));
+
+			var allFilters = GetAllPaymentMethodFilters();
+			return allFilters.Any(x => x.IsExcluded(filterRequest));
+		}
+
 		/// <summary>
 		/// Load active payment methods
 		/// </summary>
@@ -141,19 +155,10 @@ namespace SmartStore.Services.Payments
         }
 
 		/// <summary>
-		/// Determines whether a payment method is active\enabled for a shop
+		/// Load payment provider by system name
 		/// </summary>
-		public virtual bool IsPaymentMethodActive(string systemName, int storeId = 0)
-		{
-			var method = LoadPaymentMethodBySystemName(systemName, true, storeId);
-			return method != null;
-		}
-
-        /// <summary>
-        /// Load payment provider by system name
-        /// </summary>
-        /// <param name="systemName">System name</param>
-        /// <returns>Found payment provider</returns>
+		/// <param name="systemName">System name</param>
+		/// <returns>Found payment provider</returns>
 		public virtual Provider<IPaymentMethod> LoadPaymentMethodBySystemName(string systemName, bool onlyWhenActive = false, int storeId = 0)
         {
 			var provider = _providerManager.GetProvider<IPaymentMethod>(systemName, storeId);
@@ -164,11 +169,11 @@ namespace SmartStore.Services.Payments
 			return provider;
         }
 
-        /// <summary>
-        /// Load all payment providers
-        /// </summary>
+		/// <summary>
+		/// Load all payment providers
+		/// </summary>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
-        /// <returns>Payment providers</returns>
+		/// <returns>Payment providers</returns>
 		public virtual IEnumerable<Provider<IPaymentMethod>> LoadAllPaymentMethods(int storeId = 0)
         {
 			return _providerManager.GetAllProviders<IPaymentMethod>(storeId);
@@ -636,8 +641,7 @@ namespace SmartStore.Services.Payments
 				{
 					if (_paymentMethodFilterTypes == null)
 					{
-						_paymentMethodFilterTypes = _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true)
-							.ToList();
+						_paymentMethodFilterTypes = _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true).ToList();
 					}
 				}
 			}

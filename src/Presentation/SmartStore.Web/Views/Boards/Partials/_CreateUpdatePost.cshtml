@@ -1,0 +1,65 @@
+﻿@model EditForumPostModel
+@using SmartStore.Core.Domain.Forums;
+@using SmartStore.Web;
+@using SmartStore.Web.Models.Boards;
+
+@using (Html.BeginForm())
+{
+    <div class="page post-edit">
+        <div class="page-title">
+            <h2>@(Model.IsEdit ? T("Forum.EditPost") : T("Forum.NewPost"))</h2>
+        </div>
+
+        <div class="message-error">
+            @Html.ValidationSummary(true)
+        </div>
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.ForumTopicId)
+
+        <div class="form-group row pt-3">
+            <label class="col-sm-3">@T("Forum.ForumName")</label>
+            <div class="col-sm-9">@Model.ForumName</div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-3">@T("Forum.TopicSubject")</label>
+            <div class="col-sm-9">@Model.ForumTopicSubject</div>
+        </div>
+
+        <div class="row">
+            <div class="push-sm-3 col-sm-9 my-3">
+                @if (Model.ForumEditor == EditorType.BBCodeEditor)
+                {
+                    @Html.BBCodeEditor("Text");
+                }
+                @Html.TextAreaFor(model => model.Text, new { @class = "form-control forum-post-text", TextMode = "MultiLine" })
+                @Html.ValidationMessageFor(model => model.Text)
+            </div>
+        </div>
+
+        @if (Model.IsCustomerAllowedToSubscribe)
+        {
+            <div class="row">
+                <div class="push-sm-3 col-sm-9 mt-3 checkbox">
+                    <label class="form-check-label">
+                        @Html.CheckBox("Subscribed", @Model.Subscribed, new { @class = "check-box form-check-input" })
+                        @T("Forum.NotifyWhenSomeonePostsInThisTopic")
+                    </label>
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div class="push-sm-3 col-sm-9 mt-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-reply"></i>
+                    <span>@T("Forum.Submit")</span>
+                </button>
+                <button class="btn btn-secondary" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName })'); return false;">
+                    <i class="fa fa-times"></i>
+                    <span>@T("Forum.Cancel")</span>
+                </button>
+            </div>
+        </div>
+    </div>
+}

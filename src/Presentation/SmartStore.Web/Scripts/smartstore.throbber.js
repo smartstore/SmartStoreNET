@@ -84,7 +84,7 @@
             }
 
             self.visible = true;
-            self.throbber.delay(opts.delay).transition({ opacity: 1 }, opts.speed || 0, "linear", show);
+            self.throbber.delay(opts.delay).animate({ opacity: 1 }, opts.speed || 0, "linear", show);
 
             if (opts.timeout) {
                 var hideFn = _.bind(self.hide, this);
@@ -103,7 +103,7 @@
 
                 !defaults.speed || _.isTrue(immediately)
             		? self.throbber.stop(true).hide(0, hide)
-                    : self.throbber.stop(true).transition({ opacity: 0 }, opts.speed || 0, "linear", hide);
+                    : self.throbber.stop(true).animate({ opacity: 0 }, opts.speed || 0, "linear", hide);
             }
 
         }

@@ -25,6 +25,11 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			Projection = XmlHelper.Deserialize<ExportProjection>(request.Profile.Projection);
 			IsPreview = isPreview;
 
+			if (request.Profile.Projection.IsEmpty())
+			{
+				Projection.DescriptionMergingId = (int)ExportDescriptionMerging.Description;
+			}
+
 			FolderContent = request.Profile.GetExportFolder(true, true);
 
 			Categories = new Dictionary<int, Category>();
@@ -48,7 +53,9 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			};
 
 			ExecuteContext = new ExportExecuteContext(Result, CancellationToken, FolderContent);
-			ExecuteContext.Projection = XmlHelper.Deserialize<ExportProjection>(request.Profile.Projection);
+			ExecuteContext.Filter = Filter;
+			ExecuteContext.Projection = Projection;
+			ExecuteContext.ProfileId = request.Profile.Id;
 
 			if (!IsPreview)
 			{

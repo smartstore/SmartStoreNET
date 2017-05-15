@@ -1,119 +1,109 @@
 ﻿@model SubmitReturnRequestModel
-@using SmartStore.Web.Models.Order;
-@{
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
-    //title
+@using SmartStore.Web.Models.Order;
+
+@{
+    Layout = "_Layout";
+
     Html.AddTitleParts(T("PageTitle.ReturnItems").Text);
 }
+
 <div class="page return-request-page">
     <div class="page-title">
-        <h1>@string.Format(@T("ReturnRequests.Title").Text, Model.OrderId)</h1>
+        <h1 class="h3">@string.Format(@T("ReturnRequests.Title").Text, Model.OrderId)</h1>
     </div>
 
     <div class="page-body">
         @if (!String.IsNullOrEmpty(Model.Result))
         {
-            <div class="result">
-                @Model.Result</div>
-        }
-        else
-        {
-            using (Html.BeginForm())
-            {
-            <fieldset class="form-fields products-box">
-                <legend>@T("ReturnRequests.SelectProduct(s)")</legend>
-                <dl>
-                    <dd>
-                        <table class="table table-striped table-hover">
-							<colgroup>
-								<col />
-								<col />
-								<col width="1" />								
-							</colgroup>
-                            <thead>
-                                <tr>
-                                    <th class="a-center">
-                                        @T("ReturnRequests.Products.Name")
-                                    </th>
-                                    <th class="a-center">
-                                        @T("ReturnRequests.Products.Price")
-                                    </th>
-                                    <th class="a-center">
-                                        @T("ReturnRequests.Products.Quantity")
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.Items)
-                                {   
-                                    <tr>
-                                        <td class="a-left">
-											<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-                                            @if (!String.IsNullOrEmpty(item.AttributeInfo))
-                                            {
-                                                <div class="attributes">
-                                                    @Html.Raw(item.AttributeInfo)
-                                                </div>
-                                            }
-                                        </td>
-                                        <td class="a-left">
-                                            @item.UnitPrice
-                                        </td>
-                                        <td class="a-left">
-                                            <select name="quantity@(item.Id)">
-                                                @for (int i = 0; i <= item.Quantity; i++)
-                                                {
-                                                    <option value="@(i)">@(i)</option>
-                                                }
-                                            </select>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </dd>
-                </dl>
-            </fieldset>
+            <div class="alert alert-success">
+                @Model.Result
+			</div>
+		}
+		else
+		{
+			using (Html.BeginForm())
+			{
+				<h2 class="h4 font-weight-normal text-muted mb-4">@T("ReturnRequests.SelectProduct(s)")</h2>
+
+				<div class="card">
+					<div class="cart cart-editable mb-0">
+						<div class="cart-head">
+							<div class="cart-row">
+								<div class="cart-col cart-col-main">
+									@T("ReturnRequests.Products.Name")
+								</div>
+								<div class="cart-col cart-col-price">
+									@T("ReturnRequests.Products.Price")
+								</div>
+								<div class="cart-col cart-col-price">
+									@T("ReturnRequests.Products.Quantity")
+								</div>
+							</div>
+						</div>
+						<div class="cart-body">
+							@foreach (var item in Model.Items)
+							{
+								<div class="cart-row">
+									<div class="cart-col cart-col-main">
+										<a class="cart-item-link fs-h6" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+										@if (item.AttributeInfo.HasValue())
+										{
+											<div class="cart-item-attrs text-muted">
+												@Html.Raw(item.AttributeInfo)
+											</div>
+										}
+									</div>
+									<div class="cart-col cart-col-price" data-caption="@T("ReturnRequests.Products.Price")">
+										<span class="price">@item.UnitPrice</span>
+									</div>
+									<div class="cart-col cart-col-price" data-caption="@T("ReturnRequests.Products.Quantity")">
+										<select name="quantity@(item.Id)" class="form-control noskin">
+											@for (int i = 0; i <= item.Quantity; i++)
+											{
+												<option value="@(i)">@(i)</option>
+											}
+										</select>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+				
+				<div class="mt-5">
+					<div class="form-group row">
+						<div class="col-md-3">
+							@Html.LabelFor(model => model.ReturnReason, new { @class = "col-form-label" })
+						</div>
+						<div class="col-md-9">
+							@Html.DropDownListFor(model => model.ReturnReason, Model.AvailableReturnReasons, new { @class = "form-control noskin return-reasons" })
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col-md-3">
+							@Html.LabelFor(model => model.ReturnAction, new { @class = "col-form-label" })
+						</div>
+						<div class="col-md-9">
+							@Html.DropDownListFor(model => model.ReturnAction, Model.AvailableReturnActions, new { @class = "form-control noskin return-actions" })
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col-md-3">
+							@Html.LabelFor(model => model.Comments, new { @class = "col-form-label" })
+						</div>
+						<div class="col-md-9">
+							@Html.TextAreaFor(model => model.Comments, new { @class = "form-control comment" })
+							@Html.ValidationMessageFor(model => model.Comments)
+						</div>
+					</div>
+				</div>
 			
-			<table class="table table-striped table-hover">
-			<tbody>
-				<tr>
-					<td>
-						@Html.LabelFor(model => model.ReturnReason)
-					</td>
-					<td>
-						@Html.DropDownListFor(model => model.ReturnReason, Model.AvailableReturnReasons, new { @class = "return-reasons" })
-					</td>
-				</tr>
-				<tr>
-					<td>
-						@Html.LabelFor(model => model.ReturnAction)
-					</td>
-					<td>
-						@Html.DropDownListFor(model => model.ReturnAction, Model.AvailableReturnActions, new { @class = "return-actions" })
-					</td>
-				</tr>
-				<tr>
-					<td>
-						@Html.LabelFor(model => model.Comments)
-					</td>
-					<td>
-						@Html.TextAreaFor(model => model.Comments, new { @class = "comment", style = "width:400px;" })
-						@Html.ValidationMessageFor(model => model.Comments)
-					</td>
-				</tr>
-			</tbody>
-			</table>
-			
-            <div class="clear"></div>
-			
-            <div class="buttons">
-				<button type="submit" name="submit-return-request" value="save" class="btn btn-primary">
-					<i class="fa fa-check"></i>
-					@T("ReturnRequests.Submit")
-				</button>
-            </div>
+				<div class="buttons mt-5">
+					<button type="submit" name="submit-return-request" value="save" class="btn btn-primary btn-lg">
+						@T("ReturnRequests.Submit")
+					</button>
+				</div>
             }
         }
     </div>

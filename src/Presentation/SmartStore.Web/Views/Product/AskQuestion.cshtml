@@ -1,9 +1,8 @@
 ﻿@model ProductAskQuestionModel
 @using SmartStore.Web.Models.Catalog;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_Layout";
 
-    //title
     Html.AddTitleParts(Model.ProductName);
     Html.AddTitleParts(T("Products.AskQuestion.Title").Text);
     Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
@@ -28,53 +27,42 @@
                 @Html.ValidationSummary(true)
             }
 
-            <div class="control-group">
-                @Html.LabelFor(model => model.SenderEmail, new { @class="control-label required" , @for="SenderEmail" } )
-                <div class="controls">
-                    @Html.TextBoxFor(model => model.SenderEmail)
-                    @Html.ValidationMessageFor(model => model.SenderEmail)
-                </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SenderEmail, new { @class = "control-label required", @for = "SenderEmail" })
+                @Html.TextBoxFor(model => model.SenderEmail, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SenderEmail, null, new { @class = "text-danger" })
             </div>
 
-            <div class="control-group">
-                @Html.LabelFor(model => model.SenderName, new { @class="control-label required" , @for="SenderName" } )
-                <div class="controls">
-                    @Html.TextBoxFor(model => model.SenderName)
-                    @Html.ValidationMessageFor(model => model.SenderName)
-                </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SenderName, new { @class = "control-label required", @for = "SenderName" })
+                @Html.TextBoxFor(model => model.SenderName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SenderName, null, new { @class = "text-danger" })
             </div>
 
-            <div class="control-group">
-                @Html.LabelFor(model => model.SenderPhone, new { @class="control-label" , @for="SenderPhone" } )
-                <div class="controls">
-                    @Html.TextBoxFor(model => model.SenderPhone, new { placeholder = T("Common.Optional") })
-                    @Html.ValidationMessageFor(model => model.SenderPhone)
-                </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SenderPhone, new { @class = "control-label", @for = "SenderPhone" })
+                @Html.TextBoxFor(model => model.SenderPhone, new { placeholder = T("Common.Optional"), @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SenderPhone, null, new { @class = "text-danger" })
             </div>
 
-            <div class="control-group">
-                @Html.LabelFor(model => model.Question, new { @class="control-label required" , @for="Question" } )
-                <div class="controls">
-                    @Html.TextAreaFor(model => model.Question, new { style = "width:80%; height:150px" })
-                    @Html.ValidationMessageFor(model => model.Question)
-                </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Question, new { @class = "control-label required", @for = "Question" })
+                @Html.TextAreaFor(model => model.Question, new { @class = "personal-message form-control" })
+                @Html.ValidationMessageFor(model => model.Question, null, new { @class = "text-danger" })
             </div>
 
             @if (Model.DisplayCaptcha)
             {
-                <div class="control-group">
-                    <div class="controls">
-                        <div class="captcha-box">
-                            @Html.Raw(Html.GenerateCaptcha())
-                        </div>
-                    </div>
+                <div class="captcha-box">
+                    @Html.Raw(Html.GenerateCaptcha())
                 </div>
             }
 
             <div class="control-group">
                 <div class="controls">
                     <button type="submit" name="send-email" class="btn btn-primary">
-                        <i class="fa fa-caret-right"></i>&nbsp;@T("Common.Send")
+                        <i class="fa fa-caret-right"></i>
+						<span>@T("Common.Send")</span>
                     </button>
                 </div>
             </div>

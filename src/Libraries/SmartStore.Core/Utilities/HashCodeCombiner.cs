@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Utilities
 {
-	internal struct HashCodeCombiner
+	public struct HashCodeCombiner
 	{
 		private long _combinedHash64;
 

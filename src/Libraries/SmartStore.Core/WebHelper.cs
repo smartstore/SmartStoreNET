@@ -25,7 +25,7 @@ namespace SmartStore.Core
 		private static object s_lock = new object();
 		private static bool? s_optimizedCompilationsEnabled;
 		private static AspNetHostingPermissionLevel? s_trustLevel;
-		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|scss|less|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static ConcurrentDictionary<int, string> s_safeLocalHostNames = new ConcurrentDictionary<int, string>();
@@ -34,6 +34,7 @@ namespace SmartStore.Core
         private bool? _isCurrentConnectionSecured;
 		private string _storeHost;
 		private string _storeHostSsl;
+		private string _ipAddress;
 		private bool? _appPathPossiblyAppended;
 		private bool? _appPathPossiblyAppendedSsl;
 
@@ -46,30 +47,84 @@ namespace SmartStore.Core
 
         public virtual string GetUrlReferrer()
         {
-            string referrerUrl = string.Empty;
+            string referrerUrl = null;
 
             if (_httpContext != null &&
                 _httpContext.Request != null &&
                 _httpContext.Request.UrlReferrer != null)
                 referrerUrl = _httpContext.Request.UrlReferrer.ToString();
 
-            return referrerUrl;
+            return referrerUrl.EmptyNull();
         }
 
-        public virtual string GetCurrentIpAddress()
-        {
+		public virtual string GetClientIdent()
+ 		{
+ 			var ipAddress = this.GetCurrentIpAddress();
+ 			var userAgent = _httpContext.Request != null ? _httpContext.Request.UserAgent : string.Empty;
+ 
+ 			if (ipAddress.HasValue() && userAgent.HasValue())
+ 			{
+ 				return (ipAddress + userAgent).GetHashCode().ToString();
+ 			}
+ 
+ 			return null;
+ 		}
+
+		public virtual string GetCurrentIpAddress()
+		{
+			if (_ipAddress != null)
+			{
+				return _ipAddress;
+			}
+
+			if (_httpContext == null && _httpContext.Request == null)
+			{
+				return string.Empty;
+			}
+
+			var vars = _httpContext.Request.ServerVariables;
+
+			var keysToCheck = new string[]
+			{
+				"HTTP_CLIENT_IP",
+				"HTTP_X_FORWARDED_FOR",
+				"HTTP_X_FORWARDED",
+				"HTTP_X_CLUSTER_CLIENT_IP",
+				"HTTP_FORWARDED_FOR",
+				"HTTP_FORWARDED",
+				"REMOTE_ADDR",
+				"HTTP_CF_CONNECTING_IP"
+			};
+
 			string result = null;
 
-			if (_httpContext != null && _httpContext.Request != null)
-				result = _httpContext.Request.UserHostAddress;
+			foreach (var key in keysToCheck)
+			{
+				var ipString = vars[key];
+				if (ipString.HasValue())
+				{
+					var arrStrings = ipString.Split(',');
+					// Take the last entry
+					ipString = arrStrings[arrStrings.Length - 1].Trim();
+
+					IPAddress address;
+					if (IPAddress.TryParse(ipString, out address))
+					{
+						result = ipString;
+						break;
+					}
+				}
+			}
 
 			if (result == "::1")
+			{
 				result = "127.0.0.1";
+			}
 
-			return result.EmptyNull();
-        }
-        
-        public virtual string GetThisPageUrl(bool includeQueryString)
+			return (_ipAddress = result.EmptyNull());
+		}
+
+		public virtual string GetThisPageUrl(bool includeQueryString)
         {
             bool useSsl = IsCurrentConnectionSecured();
             return GetThisPageUrl(includeQueryString, useSsl);
@@ -307,14 +362,14 @@ namespace SmartStore.Core
 
 		public static bool IsStaticResourceRequested(HttpRequest request)
 		{
-			Guard.ArgumentNotNull(() => request);
+			Guard.NotNull(request, nameof(request));
 			return s_staticExts.IsMatch(request.Path);
 		}
 
 		public static bool IsStaticResourceRequested(HttpRequestBase request)
 		{
 			// unit testable
-			Guard.ArgumentNotNull(() => request);
+			Guard.NotNull(request, nameof(request));
 			return s_staticExts.IsMatch(request.Path);
 		}
         
@@ -348,7 +403,7 @@ namespace SmartStore.Core
 
 			var result = string.Concat(
 				parts[0],
-				current.ToString(),
+				current.ToString(false),
 				anchor.NullEmpty() == null ? (curAnchor == null ? "" : "#" + curAnchor) : "#" + anchor
 			);
 
@@ -366,7 +421,7 @@ namespace SmartStore.Core
 				current.Remove(queryString);
 			}
 
-			var result = string.Concat(parts[0], current.ToString());
+			var result = string.Concat(parts[0], current.ToString(false));
 			return result;
         }
         
@@ -538,7 +593,7 @@ namespace SmartStore.Core
 		/// </remarks>
 		public static string MakeAllUrlsAbsolute(string html, HttpRequestBase request)
 		{
-			Guard.ArgumentNotNull(() => request);
+			Guard.NotNull(request, nameof(request));
 
 			if (request.Url == null)
 			{
@@ -560,9 +615,9 @@ namespace SmartStore.Core
 		/// </remarks>
 		public static string MakeAllUrlsAbsolute(string html, string protocol, string host)
 		{
-			Guard.ArgumentNotEmpty(() => html);
-			Guard.ArgumentNotEmpty(() => protocol);
-			Guard.ArgumentNotEmpty(() => host);
+			Guard.NotEmpty(html, nameof(html));
+			Guard.NotEmpty(protocol, nameof(protocol));
+			Guard.NotEmpty(host, nameof(host));
 
 			string baseUrl = string.Format("{0}://{1}", protocol, host.TrimEnd('/'));
 
@@ -584,8 +639,8 @@ namespace SmartStore.Core
 		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
 		public static string GetAbsoluteUrl(string url, HttpRequestBase request)
 		{
-			Guard.ArgumentNotEmpty(() => url);
-			Guard.ArgumentNotNull(() => request);
+			Guard.NotEmpty(url, nameof(url));
+			Guard.NotNull(request, nameof(request));
 
 			if (request.Url == null)
 			{
@@ -680,7 +735,7 @@ namespace SmartStore.Core
 
 		public static HttpWebRequest CreateHttpRequestForSafeLocalCall(Uri requestUri)
 		{
-			Guard.ArgumentNotNull(() => requestUri);
+			Guard.NotNull(requestUri, nameof(requestUri));
 
 			var safeHostName = GetSafeLocalHostName(requestUri);
 

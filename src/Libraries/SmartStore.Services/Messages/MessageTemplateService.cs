@@ -13,15 +13,9 @@ namespace SmartStore.Services.Messages
 {
     public partial class MessageTemplateService: IMessageTemplateService
     {
-        #region Constants
-
         private const string MESSAGETEMPLATES_ALL_KEY = "SmartStore.messagetemplate.all-{0}";
         private const string MESSAGETEMPLATES_BY_NAME_KEY = "SmartStore.messagetemplate.name-{0}-{1}";
         private const string MESSAGETEMPLATES_PATTERN_KEY = "SmartStore.messagetemplate.";
-
-        #endregion
-
-        #region Fields
 
         private readonly IRepository<MessageTemplate> _messageTemplateRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
@@ -29,24 +23,10 @@ namespace SmartStore.Services.Messages
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-		/// <param name="storeMappingRepository">Store mapping repository</param>
-		/// <param name="languageService">Language service</param>
-		/// <param name="localizedEntityService">Localized entity service</param>
-		/// <param name="storeMappingService">Store mapping service</param>
-        /// <param name="messageTemplateRepository">Message template repository</param>
-        /// <param name="eventPublisher">Event published</param>
         public MessageTemplateService(
-			ICacheManager cacheManager,
+			IRequestCache requestCache,
 			IRepository<StoreMapping> storeMappingRepository,
 			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
@@ -54,7 +34,7 @@ namespace SmartStore.Services.Messages
             IRepository<MessageTemplate> messageTemplateRepository,
             IEventPublisher eventPublisher)
         {
-			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
 			this._storeMappingRepository = storeMappingRepository;
 			this._languageService = languageService;
 			this._localizedEntityService = localizedEntityService;
@@ -67,14 +47,6 @@ namespace SmartStore.Services.Messages
 
 		public DbQuerySettings QuerySettings { get; set; }
 
-        #endregion
-
-        #region Methods
-
-		/// <summary>
-		/// Delete a message template
-		/// </summary>
-		/// <param name="messageTemplate">Message template</param>
 		public virtual void DeleteMessageTemplate(MessageTemplate messageTemplate)
 		{
 			if (messageTemplate == null)
@@ -82,16 +54,12 @@ namespace SmartStore.Services.Messages
 
 			_messageTemplateRepository.Delete(messageTemplate);
 
-			_cacheManager.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityDeleted(messageTemplate);
 		}
 
-        /// <summary>
-        /// Inserts a message template
-        /// </summary>
-        /// <param name="messageTemplate">Message template</param>
         public virtual void InsertMessageTemplate(MessageTemplate messageTemplate)
         {
             if (messageTemplate == null)
@@ -99,16 +67,12 @@ namespace SmartStore.Services.Messages
 
             _messageTemplateRepository.Insert(messageTemplate);
 
-            _cacheManager.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(messageTemplate);
         }
 
-        /// <summary>
-        /// Updates a message template
-        /// </summary>
-        /// <param name="messageTemplate">Message template</param>
         public virtual void UpdateMessageTemplate(MessageTemplate messageTemplate)
         {
             if (messageTemplate == null)
@@ -116,17 +80,12 @@ namespace SmartStore.Services.Messages
 
             _messageTemplateRepository.Update(messageTemplate);
 
-            _cacheManager.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(messageTemplate);
         }
 
-        /// <summary>
-        /// Gets a message template
-        /// </summary>
-        /// <param name="messageTemplateId">Message template identifier</param>
-        /// <returns>Message template</returns>
         public virtual MessageTemplate GetMessageTemplateById(int messageTemplateId)
         {
             if (messageTemplateId == 0)
@@ -135,19 +94,13 @@ namespace SmartStore.Services.Messages
             return _messageTemplateRepository.GetById(messageTemplateId);
         }
 
-        /// <summary>
-        /// Gets a message template
-        /// </summary>
-        /// <param name="messageTemplateName">Message template name</param>
-		/// <param name="storeId">Store identifier</param>
-        /// <returns>Message template</returns>
 		public virtual MessageTemplate GetMessageTemplateByName(string messageTemplateName, int storeId)
         {
             if (string.IsNullOrWhiteSpace(messageTemplateName))
                 throw new ArgumentException("messageTemplateName");
 
             string key = string.Format(MESSAGETEMPLATES_BY_NAME_KEY, messageTemplateName, storeId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
 				var query = _messageTemplateRepository.Table;
 				query = query.Where(t => t.Name == messageTemplateName);
@@ -165,15 +118,10 @@ namespace SmartStore.Services.Messages
 
         }
 
-        /// <summary>
-        /// Gets all message templates
-        /// </summary>
-		/// <param name="storeId">Store identifier; pass 0 to load all records</param>
-        /// <returns>Message template list</returns>
 		public virtual IList<MessageTemplate> GetAllMessageTemplates(int storeId)
         {
 			string key = string.Format(MESSAGETEMPLATES_ALL_KEY, storeId);
-			return _cacheManager.Get(key, () =>
+			return _requestCache.Get(key, () =>
             {
 				var query = _messageTemplateRepository.Table;
 				query = query.OrderBy(t => t.Name);
@@ -200,11 +148,6 @@ namespace SmartStore.Services.Messages
             });
         }
 
-		/// <summary>
-		/// Create a copy of message template with all depended data
-		/// </summary>
-		/// <param name="messageTemplate">Message template</param>
-		/// <returns>Message template copy</returns>
 		public virtual MessageTemplate CopyMessageTemplate(MessageTemplate messageTemplate)
 		{
 			if (messageTemplate == null)
@@ -255,7 +198,5 @@ namespace SmartStore.Services.Messages
 
 			return mtCopy;
 		}
-
-        #endregion
     }
 }

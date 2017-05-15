@@ -2,13 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
-using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Data
 {
@@ -92,8 +91,8 @@ namespace SmartStore.Data
                 {
                     if (batchSize <= 0)
                     {
-                        // insert all in one step
-                        entities.Each(x => this.Entities.Add(x));
+						// insert all in one step
+						this.Entities.AddRange(entities);
 						if (this.AutoCommitEnabledInternal)
                             _context.SaveChanges();
                     }
@@ -205,8 +204,8 @@ namespace SmartStore.Data
 		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         public IQueryable<T> Expand(IQueryable<T> query, string path)
         {
-            Guard.ArgumentNotNull(query, "query");
-            Guard.ArgumentNotEmpty(path, "path");
+            Guard.NotNull(query, "query");
+            Guard.NotEmpty(path, "path");
 
             return query.Include(path);
         }
@@ -214,15 +213,15 @@ namespace SmartStore.Data
 		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         public IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path)
         {
-            Guard.ArgumentNotNull(query, "query");
-            Guard.ArgumentNotNull(path, "path");
+            Guard.NotNull(query, "query");
+            Guard.NotNull(path, "path");
 
             return query.Include(path);
         }
 
 		public virtual bool IsModified(T entity)
 		{
-			Guard.ArgumentNotNull(() => entity);
+			Guard.NotNull(entity, nameof(entity));
 			var ctx = InternalContext;
 			var entry = ctx.Entry(entity);
 

@@ -1,0 +1,203 @@
+﻿@model WishlistModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Web.Models.ShoppingCart;
+
+@helper SimpleProduct(WishlistModel.ShoppingCartItemModel item)
+{
+    <div class="cart-row">
+        <div class="cart-col cart-col-main">
+            <div class="row sm-gutters">
+                @if (Model.DisplayAddToCart && !Model.IsEditable)
+                {   
+                    <div class="checkbox mx-3 mt-1">
+                        <input type="checkbox" name="addtocart" value="@(item.Id)" />
+                    </div>
+                }
+
+                @if (Model.ShowProductImages && item.Picture != null && item.Picture.ImageUrl.HasValue())
+                {
+                    <div class="col cart-item-img">
+                        <img class="img-fluid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+                    </div>
+                }
+
+                <div class="col">
+                    <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+
+                    @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
+                    {
+                        <div class="cart-item-desc text-smaller text-muted">
+                            @Html.Raw(item.ShortDesc.Truncate(180, "..."))
+                        </div>
+                    }
+
+                    <div class="cart-item-attributes text-smaller my-2">
+                        <div class="text-nowrap row cart-item-attr d-none d-md-flex d-lg-none">
+                            <span class="col-3">@T("Order.Product(s).Price"):</span>
+                            <span class="col-9">@item.UnitPrice</span>
+                        </div>
+
+                        @if (Model.ShowSku && !String.IsNullOrEmpty(item.Sku))
+                        {
+                            <div class="text-nowrap row cart-item-attr">
+                                <span class="col-3">@T("ShoppingCart.SKU"):</span>
+                                <span class="col-9">@item.Sku</span>
+                            </div>
+                        }
+                    </div>
+
+                    @if (!String.IsNullOrEmpty(item.AttributeInfo))
+                    {
+                        <div class="attributes text-muted text-smaller mb-2">
+                            @Html.Raw(item.AttributeInfo)
+                        </div>
+                    }
+                    @if (!String.IsNullOrEmpty(item.RecurringInfo))
+                    {
+                        <div class="recurring-info">
+                            @Html.Raw(item.RecurringInfo)
+                        </div>
+                    }
+                </div>
+
+                @if (Model.IsEditable)
+                {
+                    <div class="col col-auto">
+                        <div class="cart-row-actions btn-group-vertical card-shadow">
+                            <a class="btn btn-gray btn-to-danger btn-sm btn-icon ajax-action-link" title="@T("Common.Remove")"
+                               href="#"
+                               rel="nofollow"
+                               data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id, wishlistItem = true })'
+                               data-name="@item.ProductName"
+                               data-type="wishlist"
+                               data-action="remove">
+                                <i class="fa fa-2x">×</i>
+                            </a>
+                            <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
+                               href="#"
+                               rel="nofollow"
+                               data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.Wishlist, isCartPage = true })"
+                               data-name="@item.ProductName"
+                               data-type="cart"
+                               data-action="addfromcart">
+                                <i class="fa fa-cart-arrow-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="cart-col cart-col-price" data-caption="@T("Order.Product(s).Price")">
+            <span class="price">@item.UnitPrice</span>
+        </div>
+
+        <div class="cart-col cart-col-qty" data-caption="@T("Order.Product(s).Quantity")">
+            @if (Model.IsEditable)
+            {
+                @Html.EditorFor(x => item, "QtyInput", new { htmlAttributes = new {
+                   @class = "ajax-action-link",
+                   data_href= Url.Action("UpdateCartItem", "ShoppingCart", new { sciItemId = item.Id, isCartPage = true }),
+                   data_sci_item = item.Id,
+                   id = "itemquantity{0}".FormatWith(item.Id),
+                   Name = "itemquantity{0}".FormatWith(item.Id)
+               } })
+            }
+            else
+            {
+                <span>@item.EnteredQuantity</span>
+            }
+        </div>
+
+        <div class="cart-col cart-col-price cart-col-subtotal" data-caption="@T("Order.Product(s).Total")">
+            <span class="price">@item.SubTotal</span>
+            @if (!String.IsNullOrEmpty(item.Discount))
+            {
+                <div class="discount">
+                    @T("ShoppingCart.ItemYouSave"):<br/> @item.Discount
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@helper BundleProducts(WishlistModel.ShoppingCartItemModel parentItem)
+{
+    if (parentItem.ChildItems != null)
+    {
+        foreach (var item in parentItem.ChildItems.OrderBy(x => x.BundleItem.DisplayOrder))
+        {
+            <div class="cart-row cart-row-child">
+                <div class="cart-col cart-col-main">
+                    <div class="product">
+                        <div class="bundle-item">
+                            @if (Model.ShowProductBundleImages)
+                            {
+                                <div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatInvariant(Model.BundleThumbSize + 10))">
+                                    @if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
+                                    {
+                                        <img src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
+                                    }
+                                </div>
+                            }
+                            <div class="bundle-item-body">
+                                <div class="bundle-item-name">
+                                    @if (item.VisibleIndividually)
+                                    {
+                                        <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+                                    }
+                                    else
+                                    {
+										<span class="cart-item-link">@item.ProductName</span>
+                                    }
+                                    @if (item.EnteredQuantity > 1 && item.BundlePerItemShoppingCart)
+                                    {
+                                        <text>&#215;&nbsp;@item.EnteredQuantity</text>
+                                    }
+                                </div>
+                                @if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
+                                {
+                                    <div class="bundle-item-description cart-item-desc text-smaller text-muted">
+                                        @Html.Raw(item.ShortDesc.Truncate(210, "..."))
+                                    </div>
+                                }
+                                @if (!String.IsNullOrEmpty(item.AttributeInfo))
+                                {
+                                    <div class="bundle-item-attribute-info text-muted">
+                                        @Html.Raw(item.AttributeInfo)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cart-col cart-col-price">
+                    @if (!String.IsNullOrWhiteSpace(item.BundleItem.PriceWithDiscount))
+                    {
+                        @Html.Raw(item.BundleItem.PriceWithDiscount)
+                    }
+                    else
+                    {
+                        <text>&nbsp;</text>
+                    }
+                </div>
+                <div class="cart-col">&nbsp;</div>
+                <div class="cart-col">&nbsp;</div>
+            </div>
+        }
+    }
+}
+
+@foreach (var item in Model.Items)
+{
+    if (item.ProductType == ProductType.BundledProduct)
+    {
+        @SimpleProduct(item)
+        @BundleProducts(item)
+    }
+    else
+    {
+        @SimpleProduct(item)
+    }
+}

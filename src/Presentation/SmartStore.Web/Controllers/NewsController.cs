@@ -20,12 +20,14 @@ using SmartStore.Services.News;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
+using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.News;
 
 namespace SmartStore.Web.Controllers
@@ -105,6 +107,8 @@ namespace SmartStore.Web.Controllers
             if (model == null)
                 throw new ArgumentNullException("model");
 
+			Services.DisplayControl.Announce(newsItem);
+
             model.Id = newsItem.Id;
             model.MetaTitle = newsItem.MetaTitle;
             model.MetaDescription = newsItem.MetaDescription;
@@ -113,27 +117,31 @@ namespace SmartStore.Web.Controllers
             model.Title = newsItem.Title;
             model.Short = newsItem.Short;
             model.Full = newsItem.Full;
-            model.AllowComments = newsItem.AllowComments;
-            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize;
-            model.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsItem.CreatedOnUtc, DateTimeKind.Utc);
-            model.NumberOfComments = newsItem.ApprovedCommentCount;
-            model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnNewsCommentPage;
-			model.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
+			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsItem.CreatedOnUtc, DateTimeKind.Utc);
+			model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnNewsCommentPage;
+
+			model.Comments.AllowComments = newsItem.AllowComments;
+            model.Comments.AvatarPictureSize = _mediaSettings.AvatarPictureSize;
+            model.Comments.NumberOfComments = newsItem.ApprovedCommentCount;
+			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
+
             if (prepareComments)
             {
                 var newsComments = newsItem.NewsComments.Where(n => n.IsApproved).OrderBy(pr => pr.CreatedOnUtc);
                 foreach (var nc in newsComments)
                 {
-                    var commentModel = new NewsCommentModel()
-                    {
-                        Id = nc.Id,
-                        CustomerId = nc.CustomerId,
-                        CustomerName = nc.Customer.FormatUserName(),
-                        CommentTitle = nc.CommentTitle,
-                        CommentText = nc.CommentText,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(nc.CreatedOnUtc, DateTimeKind.Utc),
+					var commentModel = new CommentModel(model.Comments)
+					{
+						Id = nc.Id,
+						CustomerId = nc.CustomerId,
+						CustomerName = nc.Customer.FormatUserName(),
+						CommentTitle = nc.CommentTitle,
+						CommentText = nc.CommentText,
+						CreatedOn = _dateTimeHelper.ConvertToUserTime(nc.CreatedOnUtc, DateTimeKind.Utc),
+						CreatedOnPretty = nc.CreatedOnUtc.RelativeFormat(true, "f"),
                         AllowViewingProfiles = _customerSettings.AllowViewingProfiles && nc.Customer != null && !nc.Customer.IsGuest(),
                     };
+
                     if (_customerSettings.AllowCustomersToUploadAvatars)
                     {
                         var customer = nc.Customer;
@@ -142,7 +150,8 @@ namespace SmartStore.Web.Controllers
                             avatarUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.AvatarPictureSize, PictureType.Avatar);
                         commentModel.CustomerAvatarUrl = avatarUrl;
                     }
-                    model.Comments.Add(commentModel);
+
+                    model.Comments.Comments.Add(commentModel);
                 }
             }
         }
@@ -160,7 +169,10 @@ namespace SmartStore.Web.Controllers
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
 				var newsItems = _newsService.GetAllNews(_workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id, 0, _newsSettings.MainPageNewsCount);
-                return new HomePageNewsItemsModel()
+
+				Services.DisplayControl.AnnounceRange(newsItems);
+
+				return new HomePageNewsItemsModel()
                 {
                     WorkingLanguageId = _workContext.WorkingLanguage.Id,
                     NewsItems = newsItems
@@ -174,12 +186,15 @@ namespace SmartStore.Web.Controllers
                 };
             });
 
-            //"Comments" property of "NewsItemModel" object depends on the current customer.
-            //Furthermore, we just don't need it for home page news. So let's update reset it.
-            //But first we need to clone the cached model (the updated one should not be cached)
+            // "Comments" property of "NewsItemModel" object depends on the current customer.
+            // Furthermore, we just don't need it for home page news. So let's update reset it.
+            // But first we need to clone the cached model (the updated one should not be cached)
             var model = (HomePageNewsItemsModel)cachedModel.Clone();
             foreach (var newsItemModel in model.NewsItems)
-                newsItemModel.Comments.Clear();
+			{
+				newsItemModel.Comments.Comments.Clear();
+			}
+                
             return PartialView(model);
         }
 
@@ -208,6 +223,8 @@ namespace SmartStore.Web.Controllers
                     return newsModel;
                 })
                 .ToList();
+
+			Services.DisplayControl.AnnounceRange(newsItems);
 
             return View(model);
         }
@@ -239,7 +256,7 @@ namespace SmartStore.Web.Controllers
 
 			foreach (var news in newsItems)
 			{
-				var newsUrl = Url.RouteUrl("NewsItem", new { SeName = news.GetSeName(news.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
+				var newsUrl = Url.RouteUrl("NewsItem", new { SeName = news.GetSeName(news.LanguageId, ensureTwoPublishedLanguages: false) }, protocol);
 
 				var item = feed.CreateItem(news.Title, news.Short, newsUrl, news.CreatedOnUtc, news.Full);
 
@@ -247,6 +264,8 @@ namespace SmartStore.Web.Controllers
 			}
 
 			feed.Items = items;
+
+			Services.DisplayControl.AnnounceRange(newsItems);
 
             return new RssActionResult { Feed = feed };
         }
@@ -303,9 +322,7 @@ namespace SmartStore.Web.Controllers
                     IpAddress = _webHelper.GetCurrentIpAddress(),
                     CommentTitle = model.AddNewComment.CommentTitle,
                     CommentText = model.AddNewComment.CommentText,
-                    IsApproved = true,
-                    CreatedOnUtc = DateTime.UtcNow,
-                    UpdatedOnUtc = DateTime.UtcNow,
+                    IsApproved = true
                 };
                 _customerContentService.InsertCustomerContent(comment);
 

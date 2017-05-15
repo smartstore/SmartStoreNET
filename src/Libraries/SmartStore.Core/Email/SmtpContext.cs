@@ -12,8 +12,8 @@ namespace SmartStore.Core.Email
 
         public SmtpContext(string host, int port = 25)
         {
-			Guard.ArgumentNotEmpty(() => host);
-			Guard.ArgumentIsPositive(port, "port");
+			Guard.NotEmpty(host, nameof(host));
+			Guard.IsPositive(port, nameof(port));
 			
 			this.Host = host;
             this.Port = port;
@@ -21,7 +21,7 @@ namespace SmartStore.Core.Email
 
 		public SmtpContext(EmailAccount account)
 		{
-			Guard.ArgumentNotNull(() => account);
+			Guard.NotNull(account, nameof(account));
 
 			this.Host = account.Host;
 			this.Port = account.Port;

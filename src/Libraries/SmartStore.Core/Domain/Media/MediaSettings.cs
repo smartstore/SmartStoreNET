@@ -7,23 +7,24 @@ namespace SmartStore.Core.Domain.Media
 		public MediaSettings()
 		{
 			AvatarPictureSize = 85;
-			ProductThumbPictureSize = 100;
-			ProductDetailsPictureSize = 300;
+			ProductThumbPictureSize = 250;
+			CategoryThumbPictureSize = 250;
+			ManufacturerThumbPictureSize = 250;
+			ProductDetailsPictureSize = 600;
 			ProductThumbPictureSizeOnProductDetailsPage = 70;
 			MessageProductThumbPictureSize = 70;
-			AssociatedProductPictureSize = 125;
+			AssociatedProductPictureSize = 600;
 			BundledProductPictureSize = 70;
-			CategoryThumbPictureSize = 125;
-			ManufacturerThumbPictureSize = 125;
-			CartThumbPictureSize = 80;
+			CartThumbPictureSize = ProductThumbPictureSize;
 			CartThumbBundleItemPictureSize = 32;
-			MiniCartThumbPictureSize = 32;
-			VariantValueThumbPictureSize = 20;
+			MiniCartThumbPictureSize = ProductThumbPictureSize;
+			VariantValueThumbPictureSize = 70;
 			MaximumImageSize = 1280;
 			DefaultPictureZoomEnabled = true;
 			PictureZoomType = "window";
 			DefaultImageQuality = 90;
 			MultipleThumbDirectories = true;
+			DefaultThumbnailAspectRatio = 1;
 		}
 		
 		public int AvatarPictureSize { get; set; }
@@ -49,6 +50,15 @@ namespace SmartStore.Core.Domain.Media
         /// Geta or sets a default quality used for image generation
         /// </summary>
         public int DefaultImageQuality { get; set; }
+
+		/// <summary>
+		/// Gets or sets the height to width ratio for thumbnails in grid style lists (0.2 - 2)
+		/// </summary>
+		/// <remarks>
+		/// A value greater than 1 indicates, that your product pictures are generally
+		/// in portrait format, less than 1 indicates landscape format.
+		/// </remarks>
+		public int DefaultThumbnailAspectRatio { get; set; }
 
         /// <summary>
         /// Geta or sets a vaue indicating whether single (/media/thumbs/) or multiple (/media/thumbs/0001/ and /media/thumbs/0002/) directories will used for picture thumbs

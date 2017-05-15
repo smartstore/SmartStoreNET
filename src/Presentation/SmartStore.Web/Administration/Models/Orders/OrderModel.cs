@@ -7,12 +7,13 @@ using SmartStore.Admin.Models.Common;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
-    public class OrderModel : TabbableModel
+	public class OrderModel : TabbableModel
     {
         public OrderModel()
         {
@@ -179,8 +180,10 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         public string DirectDebitIban { get; set; }
 
-        //misc payment info
-        public bool DisplayPurchaseOrderNumber { get; set; }
+		//misc payment info
+		public bool DisplayCompletePaymentNote { get; set; }
+		public bool DisplayPurchaseOrderNumber { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.Fields.PurchaseOrderNumber")]
         public string PurchaseOrderNumber { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.AuthorizationTransactionID")]
@@ -467,6 +470,14 @@ namespace SmartStore.Admin.Models.Orders
 
                 public string Name { get; set; }
 
+				public string GiftCardFieldPrefix
+				{
+					get
+					{
+						return GiftCardQueryItem.CreateKey(ProductId, 0, null);
+					}
+				}
+
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.UnitPriceInclTax")]
                 public decimal UnitPriceInclTax { get; set; }
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.UnitPriceExclTax")]
@@ -517,7 +528,12 @@ namespace SmartStore.Admin.Models.Orders
                 public AttributeControlType AttributeControlType { get; set; }
 
                 public IList<ProductVariantAttributeValueModel> Values { get; set; }
-            }
+
+				public string GetControlId(int productId, int bundleItemId)
+				{
+					return ProductVariantQueryItem.CreateKey(productId, bundleItemId, ProductAttributeId, Id);
+				}
+			}
 
             public class ProductVariantAttributeValueModel : EntityModelBase
             {

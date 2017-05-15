@@ -3,7 +3,7 @@ namespace SmartStore.Data.Migrations
 	using System;
 	using System.Data.Entity;
 	using System.Data.Entity.Migrations;
-	using System.Linq;
+	using Setup;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -14,20 +14,23 @@ namespace SmartStore.Data.Migrations
 			ContextKey = "SmartStore.Core";
 		}
 
+		public void SeedDatabase(SmartObjectContext context)
+		{
+			Seed(context);
+		}
+
 		protected override void Seed(SmartObjectContext context)
 		{
-			//  This method will be called after migrating to the latest version.
+			context.MigrateLocaleResources(MigrateLocaleResources);
+			MigrateSettings(context);
+        }
 
-			//  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-			//  to avoid creating duplicate seed data. E.g.
-			//
-			//    context.People.AddOrUpdate(
-			//      p => p.FullName,
-			//      new Person { FullName = "Andrew Peters" },
-			//      new Person { FullName = "Brice Lambson" },
-			//      new Person { FullName = "Rowan Miller" }
-			//    );
-			//
+		public void MigrateSettings(SmartObjectContext context)
+		{
 		}
-	}
+
+		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+		{
+        }
+    }
 }

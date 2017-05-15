@@ -1,0 +1,124 @@
+﻿@model ForumPostModel
+@using SmartStore.Web.Models.Boards;
+@Html.Raw(String.Format("<a name=\"{0}\"></a>", @Model.Id))
+
+<div class="block block-bordered forum-post card" id="@Html.Encode(String.Format("post{0}", @Model.Id))">
+    <div class="block-title card-header">
+        @if (@Model.CustomerId > 0)
+        {
+            if (Model.AllowViewingProfiles && !Model.IsCustomerGuest)
+            {
+                @Html.RouteLink(Model.CustomerName, "CustomerProfile", new { id = Model.CustomerId }, new { @class = "username" })
+            }
+            else
+            {
+                <span class="username">@Model.CustomerName</span>
+            }
+        }
+
+        <div>
+
+            @if (Model.IsCurrentCustomerAllowedToEditPost)
+            {
+                    <i class="fa fa-pencil-square-o"></i>
+                    @Html.ActionLink(@T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
+            }
+                
+            @if (Model.IsCurrentCustomerAllowedToDeletePost)
+            {
+                    <i class="fa fa-times"></i>
+                    @Html.ActionLink(@T("Forum.DeletePost").Text, "PostDelete", new { id = Model.Id }, new { onClick = String.Format("return confirm('{0}');", T("Common.AreYouSure").Text), @class = "delete-post-link-button" })
+            }
+
+            @if (@Model.CurrentTopicPage > 1)
+            {
+                    @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName, page = Model.CurrentTopicPage }, new { @class = "post-link", title = T("Forum.PostLinkTitle") })
+            }
+            else
+            {
+                    @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, @Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { @class = "post-link pr-0", title = T("Forum.PostLinkTitle") })
+            }
+        </div>
+    </div>
+
+    <div class="block-body card-block row">
+        <div class="post-info col-3 d-none d-sm-block">
+            <div class="user-info mt-3 text-center">
+                @if (!String.IsNullOrEmpty(Model.CustomerAvatarUrl))
+                {
+                    <div class="avatar">
+                        <img src="@(Model.CustomerAvatarUrl)" class="avatar-img img-thumbnail" alt="Avatar" />
+                    </div>
+                }
+
+                <div class="user-stats mt-2">
+                    @if (Model.IsCustomerForumModerator)
+                    {
+                        <div class="status">
+                            @T("Forum.Status"): <span class="stat-value">@T("Forum.Moderator")</span>
+                        </div>
+                    }
+
+                    @if (Model.ShowCustomersPostCount)
+                    {
+                        <div class="totalposts">
+                            @T("Forum.TotalPosts"): <span class="stat-value">@Model.ForumPostCount</span>
+                        </div>
+                    }
+
+                    @if (Model.ShowCustomersJoinDate && !Model.IsCustomerGuest)
+                    {
+                        <div class="joined">
+                            @T("Forum.Joined"): <span class="stat-value">@Model.CustomerJoinDate.ToString("d")</span>
+                        </div>
+                    }
+
+                    @if (Model.ShowCustomersLocation && !Model.IsCustomerGuest & !String.IsNullOrEmpty(Model.CustomerLocation))
+                    {
+                        <div class="location">
+                            @T("Forum.Location"): <span class="stat-value">@Model.CustomerLocation</span>
+                        </div>
+                    }
+
+                    @if (Model.AllowPrivateMessages && !Model.IsCustomerGuest)
+				    {
+                        <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })'>
+                            <i class="fa fa-user"></i>
+                            <span>@T("Forum.PrivateMessages.PM")</span>
+                        </a>
+				    }
+                </div>
+            </div>
+        </div>
+        <div class="post-content col col-sm-9">
+            <div class="posttime text-muted">
+                @T("Forum.Posted"): <span class="stat-value">@Model.PostCreatedOnStr</span>
+            </div>
+            <div class="post-body">
+                <div class="posttext">
+                    @Html.Raw(@Model.FormattedText)
+                </div>
+                @Html.Hidden("Id", @Model.Id)
+            </div>
+
+            @if (Model.SignaturesEnabled & !String.IsNullOrEmpty(Model.FormattedSignature))
+            {
+                <div class="signature text-muted">
+                    @Html.Raw(@Model.FormattedSignature)
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="text-right">
+        <div class="functions">
+            <a href="#" class="btn btn-link btn-sm font-weight-600">
+                @T("Forum.Top")
+            </a>
+            <button class="btn btn-outline-info btn-flat btn-sm" onclick="setLocation('@Url.Action("PostCreate", new { id = Model.ForumTopicId, quote = Model.Id })')">
+                <i class="fa fa-quote-left"></i>
+                <span>@T("Forum.QuotePost")</span>
+            </button>
+        </div>
+    </div>
+</div>

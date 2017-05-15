@@ -451,6 +451,10 @@
                     />@customerRole.Name
                 </label>
             }
+            if (!Model.AllowManagingCustomerRoles)
+            {
+                <input type="hidden" name="SelectedCustomerRoleIds" value="3" />
+            }
         }
         else
         {

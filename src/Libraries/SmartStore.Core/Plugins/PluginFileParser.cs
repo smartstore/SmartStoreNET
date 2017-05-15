@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SmartStore.Core.Data;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Plugins
@@ -40,13 +41,19 @@ namespace SmartStore.Core.Plugins
             "Developer",
 			"Sales",
 			"Design",
+			"Performance",
             "Misc"
         };
         public readonly static IComparer<string> KnownGroupComparer = new GroupComparer();
 
-		public readonly static string InstalledPluginsFilePath = CommonHelper.MapPath("~/App_Data/InstalledPlugins.txt");
+		public readonly static string InstalledPluginsFilePath;
 
-        public static HashSet<string> ParseInstalledPluginsFile(string filePath = null)
+		static PluginFileParser()
+		{
+			InstalledPluginsFilePath = Path.Combine(CommonHelper.MapPath(DataSettings.Current.TenantPath), "InstalledPlugins.txt");
+		}
+
+		public static HashSet<string> ParseInstalledPluginsFile(string filePath = null)
         {
 			filePath = filePath ?? InstalledPluginsFilePath;
 

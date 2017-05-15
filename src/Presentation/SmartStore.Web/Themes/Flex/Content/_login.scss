@@ -1,0 +1,24 @@
+/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Login & Registration Styles
+// --------------------------------------------------
+
+.login-box {
+    background-color: $login-box-bg;
+
+    hr {
+		width: 100%;
+		margin-top: 1.5rem;
+		margin-bottom: 1.5rem;
+    }
+
+	.form-group:last-child {
+		margin-bottom: 0;
+	}
+
+	.input-group-icon > i {
+		line-height: inherit;
+	}
+}

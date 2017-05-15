@@ -1,98 +1,83 @@
 ﻿@model ContactUsModel
 @using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_Layout";
 
-    //title
-    Html.AddTitleParts(T("PageTitle.ContactUs").Text);
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
+
 <div class="page contact-page">
-    @Html.Action("TopicBlock", "Topic", new { systemName = "ContactUs" })
+	<div class="page-title">
+		<h1 class="h2">@T("PageTitle.ContactUs")</h1>
+	</div>
+
+    @{ Html.RenderAction("TopicBlock", "Topic", new { systemName = "ContactUs", isLead = true, bodyOnly = true }); }
 
     <div class="page-body">
-        @Html.Widget("contactus_top")
+
+        @{ Html.RenderWidget("contactus_top"); }
+
         @if (Model.SuccessfullySent)
         {
-            <div class="alert alert-info fade in">
-                <button class="close" data-dismiss="alert">x</button>
+            <div class="alert alert-success">
                 @Model.Result
             </div>        
         }
         else
         {
-            using (Html.BeginRouteForm("ContactUs", FormMethod.Post, new { @class = "form-horizontal" }))
+            using (Html.BeginRouteForm("ContactUs", FormMethod.Post, new { @class = "contact-form" }))
             {
-            <fieldset>
+				if (!ViewData.ModelState.IsValid)
+				{
+					@Html.ValidationSummary(true)
+				}
 
-                <legend>@T("PageTitle.ContactUs")</legend>
+				<div class="form-group row">
+					@Html.LabelFor(model => model.FullName, new { @class = "col-sm-3 col-form-label required" })
+					<div class="col-sm-9">
+						@Html.TextBoxFor(model => model.FullName, new { @class = "form-control", placeholder = T("ContactUs.FullName.Hint") })
+						@Html.ValidationMessageFor(model => model.FullName)
+					</div>
+				</div>
 
-                <div class="control-group">
-                    @Html.LabelFor(model => model.FullName, new { @class="control-label required" , @for="FullName" } )
-                    <div class="controls">
-                        @Html.TextBoxFor(model => model.FullName, new { @class = "fullname", placeholder = T("ContactUs.FullName.Hint") })
-                        @Html.ValidationMessageFor(model => model.FullName)
-                    </div>
-                </div>
+				<div class="form-group row">
+					@Html.LabelFor(model => model.Email, new { @class = "col-sm-3 col-form-label required" })
+					<div class="col-sm-9">
+						@Html.TextBoxFor(model => model.Email, new { @class = "form-control", placeholder = T("ContactUs.Email.Hint") })
+						@Html.ValidationMessageFor(model => model.Email)
+					</div>
+				</div>
 
-                <div class="control-group">
-                    @Html.LabelFor(model => model.Email, new { @class="control-label required" , @for="Email" } )
-                    <div class="controls">
-                        @Html.TextBoxFor(model => model.Email, new { @class = "email", @type = "email", placeholder = T("ContactUs.Email.Hint") })
-                        @Html.ValidationMessageFor(model => model.Email)
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    @Html.LabelFor(model => model.Enquiry, new { @class="control-label required" , @for="Enquiry" } )
-                    <div class="controls">
-                        @Html.TextAreaFor(model => model.Enquiry, new { @class = "enquiry", placeholder = T("ContactUs.Enquiry.Hint") })
-                        @Html.ValidationMessageFor(model => model.Enquiry)
-                    </div>
-                </div>
+				<div class="form-group row">
+					@Html.LabelFor(model => model.Enquiry, new { @class = "col-sm-3 col-form-label required" })
+					<div class="col-sm-9">
+						@Html.TextAreaFor(model => model.Enquiry, new { @class = "form-control", rows = "6", placeholder = T("ContactUs.Enquiry.Hint") })
+						@Html.ValidationMessageFor(model => model.Enquiry)
+					</div>
+				</div>
                 
-                @if(Model.DisplayPrivacyAgreement)
-                { 
-                    @Html.HiddenFor(model => model.DisplayPrivacyAgreement)
-                    
-                    <div class="control-group">
-                        @Html.LabelFor(model => model.PrivacyAgreement, new { @class = "control-label required", @for = "PrivacyAgreement" })
-                        <div class="controls">
-                            <div>
-                                <label class="checkbox">
-                                    @Html.CheckBoxFor(model => model.PrivacyAgreement)
-                                    @Html.Raw(T("ContactUs.PrivacyAgreement.DetailText").Text.FormatWith(
-                                        Url.RouteUrl("Topic", new { SystemName = "PrivacyInfo" })
-                                    ))
-                                </label>
-                            </div>
-                            <div>
-                                @Html.ValidationMessageFor(model => model.PrivacyAgreement)
-                            </div>
-                        </div>
-                    </div>
-                }
-
-                @if (Model.DisplayCaptcha)
-                {
-                    <div class="control-group">
-                        <div class="controls captcha-box">
-                            @Html.Raw(Html.GenerateCaptcha())
-                        </div>
-                    </div>
-                }
+				if (Model.DisplayCaptcha)
+				{
+					<div class="form-group row">
+						<div class="col-sm-offset-2 col-sm-10 captcha-box">
+							@Html.Raw(Html.GenerateCaptcha())
+						</div>
+					</div>
+				}
                 
-                <div class="control-group">
-                    <div class="controls">
-                        <button type="submit" name="send-email" class="btn btn-primary">
-							<i class="fa fa-check"></i>
+				<div class="form-group row">
+					<div class="col col-sm-auto offset-sm-3">
+						<button type="submit" name="send-email" class="btn btn-primary btn-lg btn-block">
 							@T("ContactUs.Button")
 						</button>
-                    </div>
-                </div>
-
-            </fieldset> 
+					</div>
+				</div>
             }
         }
-        @Html.Widget("contactus_bottom")
+
+        @{ Html.RenderWidget("contactus_bottom"); }
+
     </div>
 </div>

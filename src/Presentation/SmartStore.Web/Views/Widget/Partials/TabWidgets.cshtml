@@ -1,0 +1,5 @@
+﻿@model IEnumerable<RouteInfo>
+
+@foreach (var widget in Model) {
+	Html.RenderAction(widget.Action, widget.Controller, widget.RouteValues);
+}

@@ -3,26 +3,17 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)@*otherwise we get a model state error*@
 
-@if (ViewBag.RefreshPage == true)
-{
-    <script type="text/javascript">
-    try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-    catch (e){} 
-    window.close();
-    </script>
-}
-
 <div class="well" style="margin-bottom:8px;">
 	@if (ViewBag.IsEdit)
-	{
+    {
 		<div>
 			@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
 		</div>
-	}
-	else
-	{
+    }
+    else
+    {
 		<div id="ProductVariantAttributeContainer">
-			@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes)
+			@{ Html.RenderPartial("_ProductAttributes", Model); }
 		</div>
 	}
 </div>
@@ -61,15 +52,21 @@
                 @Html.SmartLabelFor(model => model.AssignedPictureIds)
             </td>
             <td class="adminData">
-                @foreach (var x in Model.AssignablePictures)
-                {
-                    <div class="pull-left" style="min-width:80px; min-height:65px; margin:1px 25px 1px 0;">
-                        <label class="x-checkbox">
-                            <input type="checkbox" name="AssignedPictureIds" value="@x.Id" @Html.Attr("checked", "checked", x.IsAssigned) />
-                            <img src="@x.PictureUrl" style="max-width:50px; max-height:50px; vertical-align:middle;" />
-                        </label>
-                    </div>
-                }
+				<ul class="choice-box-group choice-box-group-xl" id="assigned-pictures" style="margin-bottom: 10px">
+					@foreach (var x in Model.AssignablePictures)
+					{
+						<li class="choice-box">
+							<label class="choice-box-label">
+								<input type="checkbox" class="choice-box-control-native" name="AssignedPictureIds" value="@x.Id" @Html.Attr("checked", "checked", x.IsAssigned)>
+								<span class="choice-box-content">
+									<span class="choice-box-element">
+										<img class="choice-box-img" src="@x.PictureUrl" alt="">
+									</span>
+								</span>
+							</label>
+						</li>
+					}
+				</ul>
             </td>
         </tr>
         <tr>

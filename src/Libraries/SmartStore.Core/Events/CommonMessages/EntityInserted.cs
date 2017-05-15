@@ -1,5 +1,4 @@
-﻿
-namespace SmartStore.Core.Events
+﻿namespace SmartStore.Core.Events
 {
     /// <summary>
     /// A container for entities that have been inserted.

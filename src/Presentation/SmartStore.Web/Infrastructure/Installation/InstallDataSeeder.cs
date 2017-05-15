@@ -4,47 +4,47 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Domain.Tax;
-using SmartStore.Services.Configuration;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Data;
-using SmartStore.Core.Caching;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Utilities;
-using SmartStore.Core.Domain.Configuration;
-using SmartStore.Data.Setup;
 using SmartStore.Core.Events;
-using SmartStore.Services.Common;
-using SmartStore.Services.Media;
+using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
+using SmartStore.Data;
+using SmartStore.Data.Setup;
+using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
-using System.Data.Entity.Migrations;
-using SmartStore.Data.Migrations;
 using SmartStore.Services.Stores;
-using SmartStore.Core.Domain.Orders;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-    public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
+	public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
     {
-        #region Fields & Constants
+		#region Fields & Constants
 
+		private ILogger _logger;
 		private SmartObjectContext _ctx;
         private SeedDataConfiguration _config;
         private InvariantSeedData _data;
 		private ISettingService _settingService;
 		private IGenericAttributeService _gaService;
-		private IPictureService _pictureService;
 		private ILocalizationService _locService;
 		private IUrlRecordService _urlRecordService;
 		private int _defaultStoreId;
@@ -53,15 +53,15 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         #region Ctor
 
-		public InstallDataSeeder(SeedDataConfiguration configuration)
+		public InstallDataSeeder(SeedDataConfiguration configuration, ILogger logger)
         {
-			Guard.ArgumentNotNull(() => configuration);
-
-			Guard.ArgumentNotNull(configuration.Language, "Language");
-			Guard.ArgumentNotNull(configuration.Data, "SeedData");
+			Guard.NotNull(configuration, nameof(configuration));
+			Guard.NotNull(configuration.Language, "Language");
+			Guard.NotNull(configuration.Data, "SeedData");
 
 			_config = configuration;
 			_data = configuration.Data;
+			_logger = logger;
         }
 
         #endregion Ctor
@@ -180,8 +180,23 @@ namespace SmartStore.Web.Infrastructure.Installation
             Save(adminUser);
 
 			// Set default customer name
-			this.GenericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.FirstName, adminUser.Addresses.FirstOrDefault().FirstName);
-			this.GenericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.LastName, adminUser.Addresses.FirstOrDefault().LastName);
+			var firstAddress = adminUser.Addresses.FirstOrDefault();
+			GenericAttributeService.InsertAttribute(new GenericAttribute
+			{
+				EntityId = adminUser.Id,
+				Key = "FirstName",
+				KeyGroup = "Customer",
+				Value = firstAddress.FirstName,
+				StoreId = 0
+			});
+			GenericAttributeService.InsertAttribute(new GenericAttribute
+			{
+				EntityId = adminUser.Id,
+				Key = "LastName",
+				KeyGroup = "Customer",
+				Value = firstAddress.LastName,
+				StoreId = 0
+			});
 			_ctx.SaveChanges();
 
 			// Built-in user for search engines (crawlers)
@@ -381,17 +396,59 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Save(product);
         }
 
-		private void MovePictures()
+		private void MoveMedia()
 		{
 			if (!_config.StoreMediaInDB)
 			{
-				// All pictures have initially been stored in the DB.
-				// Move the binaries to disk
-				var pics = _ctx.Set<Picture>().ToList();
+				// All pictures have initially been stored in the DB. Move the binaries to disk.
+				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new MediaFileSystem());
+				var mediaStorages = _ctx.Set<MediaStorage>();
+
+				// pictures
+				var pics = _ctx.Set<Picture>()
+					.Expand(x => x.MediaStorage)
+					.Where(x => x.MediaStorageId != null)
+					.ToList();
+
 				foreach (var pic in pics)
 				{
-					this.PictureService.UpdatePicture(pic.Id, pic.PictureBinary, pic.MimeType, pic.SeoFilename, pic.IsNew, false);
+					if (pic.MediaStorage != null && pic.MediaStorage.Data != null && pic.MediaStorage.Data.LongLength > 0)
+					{
+						fileSystemStorageProvider.Save(pic.ToMedia(), pic.MediaStorage.Data);
+
+						try
+						{
+							mediaStorages.Remove(pic.MediaStorage);
+						}
+						catch { }
+
+						pic.MediaStorageId = null;
+					}
 				}
+
+				_ctx.SaveChanges();
+
+				// downloads
+				var downloads = _ctx.Set<Download>()
+					.Expand(x => x.MediaStorage)
+					.ToList();
+
+				foreach (var download in downloads)
+				{
+					if (download.MediaStorage != null && download.MediaStorage.Data != null && download.MediaStorage.Data.LongLength > 0)
+					{
+						fileSystemStorageProvider.Save(download.ToMedia(), download.MediaStorage.Data);
+
+						try
+						{
+							mediaStorages.Remove(download.MediaStorage);
+						}
+						catch { }
+
+						download.MediaStorageId = null;
+					}
+				}
+
 				_ctx.SaveChanges();
 			}
 		}
@@ -445,42 +502,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rsOrder = new EfRepository<Order>(_ctx);
 					rs.AutoCommitEnabled = false;
 
-					_gaService = new GenericAttributeService(NullCache.Instance, rs, NullEventPublisher.Instance, rsOrder);
+					_gaService = new GenericAttributeService(rs, NullEventPublisher.Instance, rsOrder);
 				}
 
 				return _gaService;
-			}
-		}
-
-		protected IPictureService PictureService
-		{
-			get
-			{
-				if (_pictureService == null)
-				{
-					var rs = new EfRepository<Picture>(_ctx);
-					rs.AutoCommitEnabled = false;
-
-					var rsMap = new EfRepository<ProductPicture>(_ctx);
-					rs.AutoCommitEnabled = false;
-					
-					var mediaSettings = new MediaSettings();
-					var webHelper = new WebHelper(null);
-
-					_pictureService = new PictureService(
-						rs, 
-						rsMap,
-						this.SettingService,
-						webHelper,
-						NullLogger.Instance,
-						NullEventPublisher.Instance,
-						mediaSettings,
-						new ImageResizerService(),
-						new ImageCache(mediaSettings, webHelper, null, null),
-						new Notifier());
-				}
-
-				return _pictureService;
 			}
 		}
 
@@ -497,13 +522,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(NullCache.Instance, new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
+					var storeService = new StoreService(new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
 					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
 
 					var locSettings = new LocalizationSettings();
 
 					var languageService = new LanguageService(
-						NullCache.Instance, 
+						NullRequestCache.Instance, 
+						NullCache.Instance,
 						rsLanguage,
 						this.SettingService,
 						locSettings,
@@ -518,7 +544,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 						null /* IWorkContext: not needed during install */,
 						rsResources,
 						languageService,
-						locSettings,
 						NullEventPublisher.Instance);
 				}
 
@@ -532,7 +557,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         public virtual void Seed(SmartObjectContext context)
         {
-			Guard.ArgumentNotNull(() => context);
+			Guard.NotNull(context, nameof(context));
 
 			_ctx = context;
 			_data.Initialize(_ctx);
@@ -546,7 +571,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             // special mandatory (non-visible) settings
 			_ctx.MigrateSettings(x =>
 			{
-				x.Add("Media.Images.StoreInDB", _config.StoreMediaInDB);
+				x.Add("Media.Storage.Provider", _config.StoreMediaInDB ? DatabaseMediaStorageProvider.SystemName : FileSystemMediaStorageProvider.SystemName);
 			});
 
 			Populate("PopulatePictures", _data.Pictures());
@@ -574,10 +599,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 
             if (_config.SeedSampleData)
             {
+				_logger.Info("Seeding sample data");
+
 				_config.ProgressMessageCallback("Progress.CreatingSampleData");
 
 				Populate("PopulateSpecificationAttributes", _data.SpecificationAttributes());
 				Populate("PopulateProductAttributes", _data.ProductAttributes());
+				Populate("PopulateProductAttributeOptionsSets", _data.ProductAttributeOptionsSets());
+				Populate("PopulateProductAttributeOptions", _data.ProductAttributeOptions());
 				Populate("PopulateCategories", PopulateCategories);
 				Populate("PopulateManufacturers", PopulateManufacturers);
 				Populate("PopulateProducts", PopulateProducts);
@@ -593,7 +622,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				Populate("PopulatePolls", _data.Polls());
             }
 
-			Populate("MovePictures", MovePictures);
+			Populate("MovePictures", MoveMedia);
         }
 
 		public bool RollbackOnFailure
@@ -630,11 +659,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			try
 			{
+				_logger.DebugFormat("Populate: {0}", stage);
 				SaveRange(entities);
 			}
 			catch (Exception ex)
 			{
-				throw new SeedDataException(stage, ex);
+				var ex2 = new SeedDataException(stage, ex);
+				_logger.Error(ex2);
+				throw ex2;
 			}
 		}
 
@@ -642,11 +674,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			try
 			{
+				_logger.DebugFormat("Populate: {0}", stage);
 				populateAction();
 			}
 			catch (Exception ex)
 			{
-				throw new SeedDataException(stage, ex);
+				var ex2 = new SeedDataException(stage, ex);
+				_logger.Error(ex2);
+				throw ex2;
 			}
 		}
 

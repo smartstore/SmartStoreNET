@@ -1,10 +1,4 @@
-﻿SmartStore.NET is a derivation of 'nopCommerce' and licensed under GPLv3
-Please find more info here: http://www.gnu.org/licenses/gpl-3.0.txt
-========================================================================
-
-
-
-                    GNU GENERAL PUBLIC LICENSE
+﻿                    GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>

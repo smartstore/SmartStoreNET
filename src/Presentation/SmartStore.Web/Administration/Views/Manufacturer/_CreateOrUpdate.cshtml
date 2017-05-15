@@ -9,6 +9,7 @@
     x.Add().Text(T("Admin.Catalog.Manufacturers.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
     x.Add().Text(T("Admin.Catalog.Manufacturers.Products").Text).Content(TabProducts());
+	x.Add().Text(T("Admin.Promotions.Discounts").Text).Content(TabDiscounts());
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
     
     //generate an event
@@ -99,15 +100,6 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.PictureId, new { transientUpload = true })
                 @Html.ValidationMessageFor(model => model.PictureId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PriceRanges)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.PriceRanges)
-                @Html.ValidationMessageFor(model => model.PriceRanges)
             </td>
         </tr>
         <tr>
@@ -234,9 +226,9 @@
                        <td class="adminData">
                            @Html.TextAreaFor(x => x.SeName)
 							@if (Model.Id != 0)
-							{
-								@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Manufacturer", entityId = @Model.Id })
-							}
+                            {
+                                @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Manufacturer", entityId = @Model.Id })
+                            }
                            @Html.ValidationMessageFor(model => model.SeName)
                        </td>
                    </tr>
@@ -334,6 +326,26 @@
     {
             @T("Admin.Catalog.Manufacturers.Products.SaveBeforeEdit")
     }
+}
+
+@helper TabDiscounts()
+{
+	if (Model.AvailableDiscounts != null && Model.AvailableDiscounts.Any())
+	{
+		foreach (var discount in Model.AvailableDiscounts)
+		{
+			<label class="checkbox">
+				<input type="checkbox" name="SelectedDiscountIds" value="@discount.Id"
+					   @if (Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) { <text> checked="checked" </text>  } />@discount.Name
+				</label>
+		}
+	}
+	else
+	{
+		<div class="alert alert-info">
+			@T("Admin.Promotions.Discounts.NoDiscountsAvailable")
+		</div>
+	}
 }
 
 @helper TabStores()

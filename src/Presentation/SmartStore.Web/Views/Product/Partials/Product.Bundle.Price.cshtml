@@ -1,0 +1,16 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Web.Models.Catalog;
+
+<div class="pd-bundle-price alert alert-success m-b-0">
+	@if (Model.ProductPrice.PriceWithDiscount.HasValue())
+	{
+		@Html.Raw(T("Products.Bundle.YouSave",
+					"<span class='pd-bundle-price-offer'>" + Model.ProductPrice.PriceWithDiscount + "</span>",
+					"<span class='pd-bundle-price-regular'>" + Model.ProductPrice.Price + "</span>"));
+	}
+	else
+	{
+		@Html.Raw(T("Products.Bundle.YouSaveWithoutDiscount", "<span class='pd-bundle-price-offer'>" + Model.ProductPrice.Price + "</span>"));
+	}
+</div>

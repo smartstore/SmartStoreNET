@@ -175,6 +175,13 @@ namespace SmartStore.Services.Catalog
         void UpdateProductCategory(ProductCategory productCategory);
 
 		/// <summary>
+		/// Gets the category trail
+		/// </summary>
+		/// <param name="category">Category</param>
+		/// <returns>Trail</returns>
+		ICollection<Category> GetCategoryTrail(Category category);
+
+		/// <summary>
 		/// Builds a category breadcrumb (path) for a particular product
 		/// </summary>
 		/// <param name="product">The product</param>

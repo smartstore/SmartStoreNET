@@ -3,29 +3,47 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Utilities
 {
 	public static class FileSystemHelper
 	{
 		/// <summary>
-		/// Returns physical path to temp directory
+		/// Returns physical path to application temp directory
 		/// </summary>
 		/// <param name="subDirectory">Name of a sub directory to be created and returned (optional)</param>
 		public static string TempDir(string subDirectory = null)
 		{
-			string path = CommonHelper.GetAppSetting("sm:TempDirectory", "~/App_Data/_temp");
-			path = CommonHelper.MapPath(path);
+			return TempDirInternal(CommonHelper.GetAppSetting("sm:TempDirectory", "~/App_Data/_temp"), subDirectory);
+		}
+
+		/// <summary>
+		/// Returns physical path to current tenant temp directory
+		/// </summary>
+		/// <param name="subDirectory">Name of a sub directory to be created and returned (optional)</param>
+		public static string TempDirTenant(string subDirectory = null)
+		{
+			return TempDirInternal(DataSettings.Current.TenantPath + "/_temp", subDirectory);
+		}
+
+		private static string TempDirInternal(string virtualPath, string subDirectory = null)
+		{
+			var path = CommonHelper.MapPath(virtualPath);
 
 			if (!Directory.Exists(path))
+			{
 				Directory.CreateDirectory(path);
-
+			}
+				
 			if (subDirectory.HasValue())
 			{
 				path = Path.Combine(path, subDirectory);
 
 				if (!Directory.Exists(path))
+				{
 					Directory.CreateDirectory(path);
+				}	
 			}
 
 			return path;
@@ -60,19 +78,22 @@ namespace SmartStore.Utilities
 		{
 			try
 			{
-				var dir = TempDir();
+				var dirs = new string[] { TempDir(), TempDirTenant() };
 
-				if (Directory.Exists(dir))
+				foreach (var dir in dirs)
 				{
-					var oldestDate = DateTime.Now.Subtract(new TimeSpan(0, 5, 0, 0));
-					var files = Directory.EnumerateFiles(dir);
-
-					foreach (string file in files)
+					if (Directory.Exists(dir))
 					{
-						var fi = new FileInfo(file);
+						var oldestDate = DateTime.Now.Subtract(new TimeSpan(0, 5, 0, 0));
+						var files = Directory.EnumerateFiles(dir);
 
-						if (fi.LastWriteTime < oldestDate)
-							Delete(file);
+						foreach (string file in files)
+						{
+							var fi = new FileInfo(file);
+
+							if (fi.LastWriteTime < oldestDate)
+								Delete(file);
+						}
 					}
 				}
 			}
@@ -289,6 +310,19 @@ namespace SmartStore.Utilities
 					File.WriteAllText(path, "");
 			}
 			catch (Exception) { }
+		}
+
+		/// <summary>
+		/// Checks whether the given path is a fully qualified absolute path (either UNC or rooted with drive letter)
+		/// </summary>
+		/// <param name="path">Path to check</param>
+		/// <returns><c>true</c> if path is fully qualified</returns>
+		public static bool IsFullPath(string path)
+		{
+			return !String.IsNullOrWhiteSpace(path)
+				&& path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
+				&& Path.IsPathRooted(path)
+				&& !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
 		}
 	}
 }

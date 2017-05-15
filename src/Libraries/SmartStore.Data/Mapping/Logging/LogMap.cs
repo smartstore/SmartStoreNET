@@ -9,13 +9,17 @@ namespace SmartStore.Data.Mapping.Logging
         {
             this.ToTable("Log");
             this.HasKey(l => l.Id);
-            this.Property(l => l.ShortMessage).IsRequired();
+            this.Property(l => l.ShortMessage).IsRequired().HasMaxLength(4000);
+			this.Property(l => l.Logger).IsRequired().HasMaxLength(400);
 			this.Property(l => l.FullMessage).IsMaxLength();
             this.Property(l => l.IpAddress).HasMaxLength(200);
-			this.Property(l => l.ContentHash).HasMaxLength(40);
+			this.Property(l => l.UserName).HasMaxLength(100);
+			this.Property(l => l.HttpMethod).HasMaxLength(10);
+			this.Property(l => l.PageUrl).HasMaxLength(1500);
+			this.Property(l => l.ReferrerUrl).HasMaxLength(1500);
 
-            this.Ignore(l => l.LogLevel);
-
+			this.Ignore(l => l.LogLevel);
+			
             this.HasOptional(l => l.Customer)
                 .WithMany()
                 .HasForeignKey(l => l.CustomerId)

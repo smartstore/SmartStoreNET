@@ -2,6 +2,7 @@
 using SmartStore.Tests;
 using SmartStore.Web.Models.News;
 using NUnit.Framework;
+using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.MVC.Tests.Public.Models.News
 {
@@ -16,6 +17,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Models.News
             {
                 WorkingLanguageId = 1,
             };
+
             var newsItemModel1 = new NewsItemModel()
             {
                 Id = 1,
@@ -23,17 +25,17 @@ namespace SmartStore.Web.MVC.Tests.Public.Models.News
                 Title = "Title 1",
                 Short = "Short 1",
                 Full = "Full 1",
-                AllowComments = true,
-                NumberOfComments = 2,
                 CreatedOn = new DateTime(2010, 01, 01),
-                AddNewComment = new AddNewsCommentModel()
+                AddNewComment = new AddNewsCommentModel
                 {
                     CommentTitle = "CommentTitle 1",
                     CommentText = "CommentText 1",
                     DisplayCaptcha = true
                 }
             };
-            newsItemModel1.Comments.Add(new NewsCommentModel()
+			newsItemModel1.Comments.AllowComments = true;
+			newsItemModel1.Comments.NumberOfComments = 2;
+			newsItemModel1.Comments.Comments.Add(new CommentModel(newsItemModel1.Comments)
             {
                 Id = 3,
                 CustomerId = 4,
@@ -57,19 +59,19 @@ namespace SmartStore.Web.MVC.Tests.Public.Models.News
             newsItemModel2.Title.ShouldEqual("Title 1");
             newsItemModel2.Short.ShouldEqual("Short 1");
             newsItemModel2.Full.ShouldEqual("Full 1");
-            newsItemModel2.AllowComments.ShouldEqual(true);
-            newsItemModel2.NumberOfComments.ShouldEqual(2);
+            newsItemModel2.Comments.AllowComments.ShouldEqual(true);
+            newsItemModel2.Comments.NumberOfComments.ShouldEqual(2);
             newsItemModel2.CreatedOn.ShouldEqual(new DateTime(2010, 01, 01));
-            newsItemModel2.Comments.ShouldNotBeNull();
-            newsItemModel2.Comments.Count.ShouldEqual(1);
-            newsItemModel2.Comments[0].Id.ShouldEqual(3);
-            newsItemModel2.Comments[0].CustomerId.ShouldEqual(4);
-            newsItemModel2.Comments[0].CustomerName.ShouldEqual("CustomerName 1");
-            newsItemModel2.Comments[0].CustomerAvatarUrl.ShouldEqual("CustomerAvatarUrl 1");
-            newsItemModel2.Comments[0].CommentTitle.ShouldEqual("CommentTitle 1");
-            newsItemModel2.Comments[0].CommentText.ShouldEqual("CommentText 1");
-            newsItemModel2.Comments[0].CreatedOn.ShouldEqual(new DateTime(2010, 01, 02));
-            newsItemModel2.Comments[0].AllowViewingProfiles.ShouldEqual(true);
+            newsItemModel2.Comments.Comments.ShouldNotBeNull();
+            newsItemModel2.Comments.Comments.Count.ShouldEqual(1);
+            newsItemModel2.Comments.Comments[0].Id.ShouldEqual(3);
+            newsItemModel2.Comments.Comments[0].CustomerId.ShouldEqual(4);
+            newsItemModel2.Comments.Comments[0].CustomerName.ShouldEqual("CustomerName 1");
+            newsItemModel2.Comments.Comments[0].CustomerAvatarUrl.ShouldEqual("CustomerAvatarUrl 1");
+            newsItemModel2.Comments.Comments[0].CommentTitle.ShouldEqual("CommentTitle 1");
+            newsItemModel2.Comments.Comments[0].CommentText.ShouldEqual("CommentText 1");
+            newsItemModel2.Comments.Comments[0].CreatedOn.ShouldEqual(new DateTime(2010, 01, 02));
+            newsItemModel2.Comments.Comments[0].AllowViewingProfiles.ShouldEqual(true);
             newsItemModel2.AddNewComment.ShouldNotBeNull();
             newsItemModel2.AddNewComment.CommentTitle.ShouldEqual("CommentTitle 1");
             newsItemModel2.AddNewComment.CommentText.ShouldEqual("CommentText 1");

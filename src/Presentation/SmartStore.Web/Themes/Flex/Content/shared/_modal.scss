@@ -1,0 +1,81 @@
+/// <reference path="../_variables.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// FLEX MODAL
+// ------------------------------------
+
+.modal-backdrop.show {
+    opacity: 0.7;
+}
+
+.modal-backdrop.fade,
+.modal.fade {
+    transition: opacity 0.2s linear, transform 0.2s ease-out;
+}
+
+.modal.fade .modal-dialog {
+    transition: opacity 0.2s linear, transform 0.2s ease-out;
+    transform: translate(0, -75px) scale(0.9, 0.9);
+}
+
+.modal.show .modal-dialog {
+    transform: translate(0, 0);
+}
+
+.modal-content {
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 0;
+    border: none;
+}
+
+.modal-header {
+    background-color: $gray-lightest;
+    border-bottom: none;
+}
+
+.modal-title {
+    font-weight: $font-weight-medium;
+}
+
+.modal-flex {
+    .modal-dialog {
+        position: fixed;
+        margin: 0;
+        width: auto;
+        height: auto;
+        max-width: none;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+
+        @include media-breakpoint-up(md) {
+            left: 5%;
+            top: 5%;
+            bottom: 5%;
+            right: 5%;
+        }
+    }
+
+    .modal-content {
+        max-height: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
+
+    .modal-body {
+        display: flex;
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+        min-height: 1px;
+    }
+}

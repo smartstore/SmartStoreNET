@@ -1,0 +1,91 @@
+﻿@model CheckoutProgressModel
+@using SmartStore.Web.Models.Checkout;
+
+@{
+	var progresses = new List<dynamic> {
+        // Cart
+        new {
+			Step = CheckoutProgressStep.Cart,
+			StepName = "cart",
+			Label =  T("Checkout.Progress.Cart").Text,
+			Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Cart,
+			Active = Model.CheckoutProgressStep == CheckoutProgressStep.Cart,
+			Href = Url.RouteUrl("ShoppingCart")
+		},
+        // Address
+        new {
+			Step = CheckoutProgressStep.Address,
+			StepName = "address",
+			Label =  T("Checkout.Progress.Address").Text,
+			Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Address,
+			Active = Model.CheckoutProgressStep == CheckoutProgressStep.Address,
+			Href = Url.Action("BillingAddress")
+		},
+        // Shipping
+        new {
+			Step = CheckoutProgressStep.Shipping,
+			StepName = "shipping",
+			Label =  T("Checkout.Progress.Shipping").Text,
+			Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Shipping,
+			Active = Model.CheckoutProgressStep == CheckoutProgressStep.Shipping,
+			Href = Url.Action("ShippingMethod")
+		},
+        // Payment
+        new {
+			Step = CheckoutProgressStep.Payment,
+			StepName = "payment",
+			Label =  T("Checkout.Progress.Payment").Text,
+			Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Payment,
+			Active = Model.CheckoutProgressStep == CheckoutProgressStep.Payment,
+			Href = Url.Action("PaymentMethod")
+		},
+        // Confirm
+        new {
+			Step = CheckoutProgressStep.Confirm,
+			StepName = "confirm",
+			Label =  T("Checkout.Progress.Confirm").Text,
+			Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Confirm,
+			Active = Model.CheckoutProgressStep == CheckoutProgressStep.Confirm,
+			Href = Url.Action("Confirm")
+		},
+        // Complete
+        new {
+			Step = CheckoutProgressStep.Complete,
+			StepName = "complete",
+			Label =  T("Checkout.Progress.Complete").Text,
+			Visited = Model.CheckoutProgressStep > CheckoutProgressStep.Complete,
+			Active = Model.CheckoutProgressStep == CheckoutProgressStep.Complete,
+			Href = "javascript:void(0)"
+		}
+	};
+}
+
+@{ Html.RenderWidget("checkout_steps_before"); }
+
+<div class="costeps row no-gutters">
+	@foreach (var p in progresses)
+	{
+		string stateClass = null;
+		string href = p.Visited || p.Active ? p.Href : "javascript:void(0)";
+		if (p.Visited)
+		{
+			stateClass = "visited";
+		}
+		else if (p.Active)
+		{
+			stateClass = "active";
+		}
+		else
+		{
+			stateClass = "inactive";
+		}
+		<div class="col-2 costep @stateClass" data-step="@p.StepName">
+			<a class="costep-link" href="@href">
+				<i class="costep-icon"></i>
+				<span class="costep-label">@p.Label</span>
+			</a>
+		</div>
+	}
+</div>
+
+@{ Html.RenderWidget("checkout_steps_after"); }

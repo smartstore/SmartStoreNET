@@ -1,0 +1,23 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	if (!Model.Items.Any())
+	{
+		return;
+	}
+}
+   
+<div class="pd-also-purchased block block-boxed mb-3">
+    <div class="block-title">
+        <h3>@T("Products.AlsoPurchased")</h3>
+    </div>
+    <div class="block-body pt-0">
+		<div class="artlist-carousel">
+			@{
+				Html.RenderPartial("Product.List", Model);
+			}
+		</div>
+    </div>
+</div>

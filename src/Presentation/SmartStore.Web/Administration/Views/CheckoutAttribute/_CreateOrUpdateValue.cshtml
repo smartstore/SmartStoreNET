@@ -6,16 +6,6 @@
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.CheckoutAttributeId)
 
-
-@if (ViewBag.RefreshPage == true)
-{
-    <script type="text/javascript">
-        try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-        catch (e){} 
-        window.close();
-    </script>
-}
-
 @(Html.LocalizedEditor<CheckoutAttributeValueModel, CheckoutAttributeValueLocalizedModel>("checkoutattributevalue-localized",
 @<table class="adminContent">
     <tr>

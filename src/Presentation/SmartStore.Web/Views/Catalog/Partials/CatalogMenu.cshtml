@@ -1,0 +1,56 @@
+﻿@model NavigationModel
+@using SmartStore.Collections;
+
+@{
+    Layout = "";
+}
+
+<div class="megamenu simple">
+    @{ Html.RenderPartial("CatalogMenu.Navbar", Model); }
+</div>
+
+<div class="megamenu-dropdown-container simple">
+    @foreach (var node in Model.Root.Children)
+    {
+        <div id="dropdown-menu-@node.Value.EntityId" data-id="@node.Value.EntityId">
+             @CreateDrilldownMenu(node.Children, true)
+        </div>
+    }
+</div>
+
+@helper CreateDrilldownMenu(IEnumerable<TreeNode<MenuItem>> nodes, bool isRoot)
+{
+    if (isRoot)
+    {
+        @Html.Raw("<div class='dropdown-menu'>")
+    }
+    
+    foreach (var node in nodes)
+	{
+		var item = node.Value;
+
+		if (!item.Visible)
+		{
+			continue;
+		}
+
+		var itemUrl = item.GenerateUrl(this.Url);
+		var itemState = node.GetNodePathState(Model.Path);
+		
+        <a class='dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " selected" : "")' 
+           href="@itemUrl" id="dropdown-item-@item.EntityId" data-id="@item.EntityId">
+            @item.Text
+        </a>
+    }
+    
+    if (isRoot)
+    {
+        @Html.Raw("</div>")
+    }
+}
+
+<script type="text/javascript">
+    $(function () {
+        $(".megamenu-container").megaMenu();
+    });
+</script>    

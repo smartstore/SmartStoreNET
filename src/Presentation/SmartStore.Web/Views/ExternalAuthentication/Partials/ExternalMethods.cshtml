@@ -1,0 +1,25 @@
+﻿@model List<ExternalAuthenticationMethodModel>
+
+@using SmartStore.Web.Models.Customer;
+
+@{ 
+	if (Model.Count == 0)
+	{
+		return;
+	}
+}
+
+<div class="form-group external-auth-buttons">
+	<div class="text-center text-uppercase mb-3">
+		- @T("Common.Or") -
+	</div>
+
+	<div class="row flex-wrap justify-content-center xs-gutters">
+		@foreach (var eam in Model)
+		{
+			<div class="col-auto">
+				@{ Html.RenderAction(eam.ActionName, eam.ControllerName, eam.RouteValues); }
+			</div>
+		}
+	</div>
+</div>

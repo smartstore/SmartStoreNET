@@ -19,16 +19,16 @@ namespace SmartStore.Core.Packaging
 			switch (level)
 			{
 				case MessageLevel.Debug:
-					//_logger.Debug(String.Format(message, args));
+					_logger.Debug(String.Format(message, args));
 					break;
 				case MessageLevel.Error:
 					_logger.Error(String.Format(message, args));
 					break;
 				case MessageLevel.Info:
-					_logger.Information(String.Format(message, args));
+					_logger.Info(String.Format(message, args));
 					break;
 				case MessageLevel.Warning:
-					_logger.Warning(String.Format(message, args));
+					_logger.Warn(String.Format(message, args));
 					break;
 			}
 		}

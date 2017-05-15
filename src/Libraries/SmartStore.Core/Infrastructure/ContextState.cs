@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Remoting.Messaging;
-using System.Threading;
 using System.Web;
 
 namespace SmartStore.Core.Infrastructure
@@ -27,55 +26,64 @@ namespace SmartStore.Core.Infrastructure
 
 		public T GetState()
 		{
+			var key = BuildKey();
+
 			if (HttpContext.Current == null)
 			{
-				var data = CallContext.GetData(_name);
-
+				var data = CallContext.GetData(key);
+				
 				if (data == null)
 				{
 					if (_defaultValue != null)
 					{
-						CallContext.SetData(_name, data = _defaultValue());
+						CallContext.SetData(key, data = _defaultValue());
 						return data as T;
 					}
 				}
-
+				
 				return data as T;
 			}
 
-			if (HttpContext.Current.Items[_name] == null)
+			if (HttpContext.Current.Items[key] == null)
 			{
-				HttpContext.Current.Items[_name] = _defaultValue == null ? null : _defaultValue();
+				HttpContext.Current.Items[key] = _defaultValue?.Invoke();
 			}
 
-			return HttpContext.Current.Items[_name] as T;
+			return HttpContext.Current.Items[key] as T;
 		}
 
 		public void SetState(T state)
 		{
 			if (HttpContext.Current == null)
 			{
-				CallContext.SetData(_name, state);
+				CallContext.SetData(BuildKey(), state);
 			}
 			else
 			{
-				HttpContext.Current.Items[_name] = state;
+				HttpContext.Current.Items[BuildKey()] = state;
 			}
 		}
 
 		public void RemoveState()
 		{
+			var key = BuildKey();
+
 			if (HttpContext.Current == null)
 			{
-				CallContext.FreeNamedDataSlot(_name);
+				CallContext.FreeNamedDataSlot(key);
 			}
 			else
 			{
-				if (HttpContext.Current.Items.Contains(_name)) 
+				if (HttpContext.Current.Items.Contains(key)) 
 				{
-					HttpContext.Current.Items.Remove(_name);
+					HttpContext.Current.Items.Remove(key);
 				}
 			}
+		}
+
+		private string BuildKey()
+		{
+			return "__ContextState." + _name;
 		}
 	}
 }

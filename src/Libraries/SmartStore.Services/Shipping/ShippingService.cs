@@ -21,13 +21,10 @@ namespace SmartStore.Services.Shipping
 {
 	public partial class ShippingService : IShippingService
     {
-		#region Fields
-
 		private readonly static object _lock = new object();
 		private static IList<Type> _shippingMethodFilterTypes = null;
 
 		private readonly IRepository<ShippingMethod> _shippingMethodRepository;
-        private readonly ILogger _logger;
         private readonly IProductAttributeParser _productAttributeParser;
 		private readonly IProductService _productService;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
@@ -39,29 +36,8 @@ namespace SmartStore.Services.Shipping
 		private readonly IProviderManager _providerManager;
 		private readonly ITypeFinder _typeFinder;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="shippingMethodRepository">Shipping method repository</param>
-        /// <param name="logger">Logger</param>
-        /// <param name="productAttributeParser">Product attribute parser</param>
-		/// <param name="productService">Product service</param>
-        /// <param name="checkoutAttributeParser">Checkout attribute parser</param>
-		/// <param name="genericAttributeService">Generic attribute service</param>
-        /// <param name="localizationService">Localization service</param>
-        /// <param name="shippingSettings">Shipping settings</param>
-        /// <param name="pluginFinder">Plugin finder</param>
-        /// <param name="eventPublisher">Event published</param>
-        /// <param name="shoppingCartSettings">Shopping cart settings</param>
-		/// <param name="settingService">Setting service</param>
         public ShippingService(
             IRepository<ShippingMethod> shippingMethodRepository,
-            ILogger logger,
             IProductAttributeParser productAttributeParser,
 			IProductService productService,
             ICheckoutAttributeParser checkoutAttributeParser,
@@ -74,7 +50,6 @@ namespace SmartStore.Services.Shipping
 			ITypeFinder typeFinder)
         {
             this._shippingMethodRepository = shippingMethodRepository;
-            this._logger = logger;
             this._productAttributeParser = productAttributeParser;
 			this._productService = productService;
             this._checkoutAttributeParser = checkoutAttributeParser;
@@ -87,13 +62,11 @@ namespace SmartStore.Services.Shipping
 			this._typeFinder = typeFinder;
 
 			T = NullLocalizer.Instance;
+			Logger = NullLogger.Instance;
 		}
 
 		public Localizer T { get; set; }
-
-		#endregion
-
-		#region Methods
+		public ILogger Logger { get; set; }
 
 		#region Shipping rate computation methods
 
@@ -253,21 +226,16 @@ namespace SmartStore.Services.Shipping
 
         #region Workflow
 
-        /// <summary>
-        /// Gets shopping cart item weight (of one item)
-        /// </summary>
-        /// <param name="shoppingCartItem">Shopping cart item</param>
-        /// <returns>Shopping cart item weight</returns>
 		public virtual decimal GetShoppingCartItemWeight(OrganizedShoppingCartItem shoppingCartItem)
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
 
-            decimal weight = decimal.Zero;
+            var weight = decimal.Zero;
 
             if (shoppingCartItem.Item.Product != null)
             {
-                decimal attributesTotalWeight = decimal.Zero;
+                var attributesTotalWeight = decimal.Zero;
 
                 if (!String.IsNullOrEmpty(shoppingCartItem.Item.AttributesXml))
                 {
@@ -293,33 +261,36 @@ namespace SmartStore.Services.Shipping
             return weight;
         }
 
-        /// <summary>
-        /// Gets shopping cart item total weight
-        /// </summary>
-        /// <param name="shoppingCartItem">Shopping cart item</param>
-        /// <returns>Shopping cart item weight</returns>
 		public virtual decimal GetShoppingCartItemTotalWeight(OrganizedShoppingCartItem shoppingCartItem)
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
 
-            decimal totalWeight = GetShoppingCartItemWeight(shoppingCartItem) * shoppingCartItem.Item.Quantity;
+            var totalWeight = GetShoppingCartItemWeight(shoppingCartItem) * shoppingCartItem.Item.Quantity;
             return totalWeight;
         }
 
-        /// <summary>
-        /// Gets shopping cart weight
-        /// </summary>
-        /// <param name="cart">Cart</param>
-        /// <returns>Shopping cart weight</returns>
-		public virtual decimal GetShoppingCartTotalWeight(IList<OrganizedShoppingCartItem> cart)
+		public virtual decimal GetShoppingCartTotalWeight(IList<OrganizedShoppingCartItem> cart, bool includeFreeShippingProducts = true)
         {
-            Customer customer = cart.GetCustomer();
+			var totalWeight = decimal.Zero;
+			var customer = cart.GetCustomer();
 
-            decimal totalWeight = decimal.Zero;
-            // shopping cart items
-            foreach (var shoppingCartItem in cart)
-                totalWeight += GetShoppingCartItemTotalWeight(shoppingCartItem);
+			// shopping cart items
+			foreach (var cartItem in cart)
+			{
+				var product = cartItem.Item.Product;
+				if (product != null)
+				{
+					if (!includeFreeShippingProducts && product.IsFreeShipping)
+					{
+						// skip product
+					}
+					else
+					{
+						totalWeight += GetShoppingCartItemTotalWeight(cartItem);
+					}
+				}
+			}
 
             // checkout attributes
             if (customer != null)
@@ -329,20 +300,15 @@ namespace SmartStore.Services.Shipping
 				{
 					var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(checkoutAttributesXml);
 					foreach (var caValue in caValues)
+					{
 						totalWeight += caValue.WeightAdjustment;
+					}
 				}
             }
 
             return totalWeight;
         }
 
-        /// <summary>
-        /// Create shipment package from shopping cart
-        /// </summary>
-        /// <param name="cart">Shopping cart</param>
-        /// <param name="shippingAddress">Shipping address</param>
-		/// <param name="storeId">Store identifier</param>
-        /// <returns>Shipment package</returns>
 		public virtual GetShippingOptionRequest CreateShippingOptionRequest(IList<OrganizedShoppingCartItem> cart, Address shippingAddress, int storeId)
         {
             var request = new GetShippingOptionRequest();
@@ -365,16 +331,11 @@ namespace SmartStore.Services.Shipping
 
         }
 
-        /// <summary>
-        ///  Gets available shipping options
-        /// </summary>
-        /// <param name="cart">Shopping cart</param>
-        /// <param name="shippingAddress">Shipping address</param>
-        /// <param name="allowedShippingRateComputationMethodSystemName">Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods</param>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
-        /// <returns>Shipping options</returns>
-		public virtual GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart, Address shippingAddress, 
-			string allowedShippingRateComputationMethodSystemName = "", int storeId = 0)
+		public virtual GetShippingOptionResponse GetShippingOptions(
+			IList<OrganizedShoppingCartItem> cart, 
+			Address shippingAddress, 
+			string allowedShippingRateComputationMethodSystemName = "", 
+			int storeId = 0)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");
@@ -415,7 +376,7 @@ namespace SmartStore.Services.Shipping
                     foreach (string error in getShippingOptionResponse.Errors)
                     {
                         result.AddError(error);
-						_logger.Warning(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
+						Logger.Warn(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
                     }
                 }
             }
@@ -456,8 +417,6 @@ namespace SmartStore.Services.Shipping
 
 			return shippingMethodFilters;
         }
-
-        #endregion
 
         #endregion
     }

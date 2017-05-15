@@ -1,0 +1,10 @@
+﻿@model ChoiceModel
+
+@using SmartStore.Web.Framework.UI.Choices;
+
+@{ 
+	var controlId = Model.BuildControlId();
+	var placeholder = Model.Description.RemoveHtml().TrimSafe();
+}
+
+<input name="@(controlId)" type="text" class="form-control" id="@(controlId)" placeholder="@placeholder" value="@Model.TextValue" @Html.Attr("disabled", "disabled", Model.IsDisabled) />

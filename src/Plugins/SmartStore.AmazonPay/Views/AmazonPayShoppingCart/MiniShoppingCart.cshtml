@@ -1,12 +1,9 @@
 ﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
 
-<div class="clearfix" style="padding: 0 20px 8px 20px; float: right;">
-	<div style="text-align: right; padding-bottom: 3px;">
-		@T("Plugins.Payments.AmazonPay.SelectionText")
-	</div>
-	<div id="@Model.GetWidgetId">
-		<img src="@Model.ButtonUrl" style="cursor: pointer;" />
-	</div>
-</div>
+<div class="external-checkout-button">
+	<span id="@Model.GetWidgetId">
+		<img src="@Model.ButtonUrl" />
+	</span>
 
-@Html.Partial("ScriptingLoginButton", Model)
+	@{ Html.RenderPartial("ScriptingLoginButton", Model); }
+</div>

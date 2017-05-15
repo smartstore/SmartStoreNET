@@ -9,8 +9,8 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
-using Autofac;
 using SmartStore.Services.Helpers;
+using Autofac;
 
 namespace SmartStore.Services
 {	
@@ -21,8 +21,23 @@ namespace SmartStore.Services
 			get;
 		}
 
+		IApplicationEnvironment ApplicationEnvironment
+		{
+			get;
+		}
+
 		ICacheManager Cache 
 		{ 
+			get;
+		}
+
+		IRequestCache RequestCache
+		{
+			get;
+		}
+
+		IDisplayControl DisplayControl
+		{
 			get;
 		}
 
@@ -82,6 +97,11 @@ namespace SmartStore.Services
 		}
 
 		IDateTimeHelper DateTimeHelper
+		{
+			get;
+		}
+
+		IChronometer Chronometer
 		{
 			get;
 		}

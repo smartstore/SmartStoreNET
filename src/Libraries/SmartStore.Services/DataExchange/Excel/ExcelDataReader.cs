@@ -27,7 +27,7 @@ namespace SmartStore.Services.DataExchange.Excel
 
 		public ExcelDataReader(Stream source, bool hasHeaders)
 		{
-			Guard.ArgumentNotNull(() => source);
+			Guard.NotNull(source, nameof(source));
 
 			_package = new ExcelPackage(source);
 
@@ -130,7 +130,7 @@ namespace SmartStore.Services.DataExchange.Excel
 
 		public int GetColumnIndex(string name)
 		{
-			Guard.ArgumentNotEmpty(name, "name");
+			Guard.NotEmpty(name, nameof(name));
 
 			EnsureInitialize();
 

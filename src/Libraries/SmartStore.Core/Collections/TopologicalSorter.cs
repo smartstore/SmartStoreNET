@@ -22,7 +22,7 @@ namespace SmartStore.Collections
 
 		public static ITopologicSortable<T>[] SortTopological<T>(this ITopologicSortable<T>[] items, IEqualityComparer<T> comparer)
 		{
-			Guard.ArgumentNotNull(() => items);
+			Guard.NotNull(items, nameof(items));
 
 			var sortedIndexes = SortIndexesTopological(items, comparer);
 			var sortedList = new List<ITopologicSortable<T>>(sortedIndexes.Length);
@@ -43,7 +43,7 @@ namespace SmartStore.Collections
 
 		public static int[] SortIndexesTopological<T>(this ITopologicSortable<T>[] items, IEqualityComparer<T> comparer)
 		{
-			Guard.ArgumentNotNull(() => items);
+			Guard.NotNull(items, nameof(items));
 
 			if (items.Length == 0)
 			{

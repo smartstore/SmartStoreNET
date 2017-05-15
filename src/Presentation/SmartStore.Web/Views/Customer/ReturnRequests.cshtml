@@ -1,56 +1,38 @@
 ﻿@model CustomerReturnRequestsModel
+
 @using SmartStore.Web.Models.Customer;
+
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Html.AddTitleParts(T("PageTitle.Account").Text);
 
-    Html.AddTitleParts(T("PageTitle.Account").Text);
+	Layout = "_MyAccount";
+	ViewBag.PageClassToken = "returnrequests";
+	ViewBag.PageTitle = T("Account.CustomerReturnRequests").Text;
 }
-@section left
-{
-    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
-}
-<div class="page account-page return-request-list-page">
-    <div class="page-title">
-        <h1>@T("Account.MyAccount") - @T("Account.CustomerReturnRequests")</h1>
-    </div>
 
-    <div class="clear"></div>
-
-    <div class="page-body">
-        @foreach (var item in Model.Items)
-        {
-            <fieldset class="request-item">
-                <legend class="title">
-					@string.Format(T("Account.CustomerReturnRequests.Title").Text, item.Id, item.ReturnRequestStatus)
-				</legend>
-                <div class="info">
-                    <div class="product">
-                        @T("Account.CustomerReturnRequests.Item") 
+<div class="card-deck card-cols-sm-1 return-request-grid">
+	@foreach (var item in Model.Items)
+	{
+		<div class="card card-shadow return-request-item">
+			<div class="card-block">
+				<h4 class="card-title mb-4">@string.Format(T("Account.CustomerReturnRequests.Title").Text, item.Id, item.ReturnRequestStatus)</h4>
+				<dl class="row mb-0">
+					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Item")</dt>
+					<dd class="col-sm-8">
+						<span>@item.Quantity x</span>
 						<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-                        x @item.Quantity
-                    </div>
-                    <div class="reason">
-                        @string.Format(T("Account.CustomerReturnRequests.Reason").Text, item.ReturnReason)
-                    </div>
-                    <div class="action">
-                        @string.Format(T("Account.CustomerReturnRequests.Action").Text, item.ReturnAction)
-                    </div>
-                    <div class="date">
-                        @string.Format(T("Account.CustomerReturnRequests.Date").Text, item.CreatedOn.ToString())
-                    </div>
-                    @if (!String.IsNullOrEmpty(item.Comments))
-                    {
-                        <div class="comments-label">
-                            @T("Account.CustomerReturnRequests.Comments")
-                        </div>
-                        <div class="comments">
-                            @Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(item.Comments, false, true, false, false, false, false))
-                        </div>
-                    }
-                </div>
-            </fieldset>
-			
-            <div class="clear"></div>
-        }
-    </div>
+					</dd>
+					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Reason")</dt>
+					<dd class="col-sm-8">@item.ReturnReason</dd>
+					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Action")</dt>
+					<dd class="col-sm-8">@item.ReturnAction</dd>
+					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Date")</dt>
+					<dd class="col-sm-8">@item.CreatedOn.ToString()</dd>
+					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Comments")</dt>
+					<dd class="col-sm-8">@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(item.Comments, false, true, false, false, false, false))</dd>
+				</dl>
+			</div>
+		</div>
+	}
 </div>
+

@@ -1,9 +1,8 @@
 ﻿@model CustomerReportsModel
+@using Telerik.Web.Mvc.UI
 @{
-    //page title
     ViewBag.Title = T("Admin.Customers.Reports").Text;
 }
-@using Telerik.Web.Mvc.UI
 <div class="section-header">
     <div class="title">
         <i class="fa fa-bar-chart-o"></i>
@@ -12,6 +11,7 @@
     <div class="options">
     </div>
 </div>
+
 @Html.SmartStore().TabStrip().Name("customer-reports").Items(x =>
 {
     x.Add().Text(T("Admin.Customers.Reports.BestBy.BestByOrderTotal").Text).Content(TabBestByOrderTotal()).Selected(true);
@@ -21,19 +21,21 @@
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-reports", this.Html, this.Model));
 })
+
 @helper TabBestByOrderTotal()
-    {
-        var dataDictAttributes = new ViewDataDictionary();
-        dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbyordertotal";
+{
+    var dataDictAttributes = new ViewDataDictionary();
+    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbyordertotal";
     @Html.Partial("_ReportBestCustomersByOrderTotal", Model.BestCustomersByOrderTotal, dataDictAttributes)
 }
+
 @helper TabBestByNumberOfOrders()
-    {
-        var dataDictAttributes = new ViewDataDictionary();
-        dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbynumberoforders";
+{
+    var dataDictAttributes = new ViewDataDictionary();
+    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbynumberoforders";
     @Html.Partial("_ReportBestCustomersByNumberOfOrders", Model.BestCustomersByOrderTotal, dataDictAttributes)
 }
 @helper TabRegisteredCustomers()
-    {
+{
     @Html.Action("ReportRegisteredCustomers")
 }

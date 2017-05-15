@@ -4,12 +4,11 @@
     var isPopup = ViewBag.IsPopup;
     if (isPopup == null || isPopup == false)
     {
-        Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+        Layout = "_Layout";
     }
     else
     {
-        /*pop-up windows*/
-        Layout = "~/Views/Shared/_RootPopup.cshtml";
+        Layout = "_Layout.Popup.cshtml";
     }
 
     if (!Model.IsPasswordProtected)
@@ -24,7 +23,7 @@
     // For popup topics, use a minimal layout that includes the Ajax and jQuery scripts
     if (isPopup != null && isPopup == true)
     {
-        Layout = "~/Views/Shared/_RootPopup.cshtml";
+        Layout = "_RootPopup";
     }    
     <script type="text/javascript">
         $(document).ready(function () {

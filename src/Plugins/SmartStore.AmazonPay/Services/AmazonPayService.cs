@@ -172,13 +172,12 @@ namespace SmartStore.AmazonPay.Services
 				if (exception != null)
 				{
 					shortMessage = exception.Message;
-					fullMessage = exception.ToString();
 					exception.Dump();
 				}
 
 				if (shortMessage.HasValue())
 				{
-					Logger.InsertLog(LogLevel.Error, shortMessage, fullMessage.EmptyNull());
+					Logger.Error(exception, shortMessage);
 
 					if (notify)
 						_services.Notifier.Error(new LocalizedString(shortMessage));
@@ -197,7 +196,7 @@ namespace SmartStore.AmazonPay.Services
 
 				if (exception.GetErrorStrings(out shortMessage, out fullMessage))
 				{
-					Logger.InsertLog(LogLevel.Error, shortMessage, fullMessage);
+					Logger.Error(exception, shortMessage);
 
 					if (notify)
 						_services.Notifier.Error(new LocalizedString(shortMessage));
@@ -395,7 +394,7 @@ namespace SmartStore.AmazonPay.Services
 
 					if (checkoutState == null)
 					{
-						Logger.InsertLog(LogLevel.Warning, "Checkout state is null in AmazonPayService.ValidateAndInitiateCheckout!");
+						Logger.Warn("Checkout state is null in AmazonPayService.ValidateAndInitiateCheckout!");
 						model.Result = AmazonPayResultType.Redirect;
 						return model;
 					}
@@ -840,7 +839,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 
 			if (errorId.HasValue())
-				Logger.InsertLog(LogLevel.Warning, T("Plugins.Payments.AmazonPay.OrderNotFound", errorId), "");
+				Logger.Warn(T("Plugins.Payments.AmazonPay.OrderNotFound", errorId));
 
 			return order;
 		}
@@ -1281,23 +1280,16 @@ namespace SmartStore.AmazonPay.Services
 
 		public void DataPollingTaskInit()
 		{
-			var task = _scheduleTaskService.GetTaskByType(AmazonPayCore.DataPollingTaskType);
-			if (task == null)
+			_scheduleTaskService.GetOrAddTask<DataPollingTask>(x => 
 			{
-				_scheduleTaskService.InsertTask(new ScheduleTask
-				{
-					Name = "{0} data polling".FormatWith(AmazonPayCore.SystemName),
-					CronExpression = "*/30 * * * *", // Every 30 minutes
-					Type = AmazonPayCore.DataPollingTaskType,
-					Enabled = false,
-					StopOnError = false,
-				});
-			}
+				x.Name = "{0} data polling".FormatWith(AmazonPayCore.SystemName);
+				x.CronExpression = "*/30 * * * *"; // Every 30 minutes
+			});
 		}
 
 		public void DataPollingTaskUpdate(bool enabled, int seconds)
 		{
-			var task = _scheduleTaskService.GetTaskByType(AmazonPayCore.DataPollingTaskType);
+			var task = _scheduleTaskService.GetTaskByType<DataPollingTask>();
 			if (task != null)
 			{
 				task.Enabled = enabled;
@@ -1309,9 +1301,7 @@ namespace SmartStore.AmazonPay.Services
 
 		public void DataPollingTaskDelete()
 		{
-			var task = _scheduleTaskService.GetTaskByType(AmazonPayCore.DataPollingTaskType);
-			if (task != null)
-				_scheduleTaskService.DeleteTask(task);
+			_scheduleTaskService.TryDeleteTask<DataPollingTask>();
 		}
 	}
 }

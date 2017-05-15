@@ -1,0 +1,70 @@
+﻿@model ISearchResultModel
+
+@using SmartStore.Core.Search.Facets
+@using SmartStore.Web.Models.Search
+@using SmartStore.Services.Search.Extensions;
+
+@functions {
+	private Facet[] FlattenFacets(IEnumerable<Facet> facets)
+	{
+		var flattened = new List<Facet>();
+
+		foreach (var facet in facets)
+		{
+			if (facet.IsChoice)
+			{
+				if (facet.Value.IsSelected)
+				{
+					flattened.Add(facet);
+				}
+			}
+			else if (facet.Children.Count > 0)
+			{
+				flattened.AddRange(FlattenFacets(facet.Children));
+			}
+		}
+
+		return flattened.ToArray();
+	}
+}
+
+@{
+	Layout = "";
+
+	var result = Model.SearchResult;
+	var activeFilters = FlattenFacets(result.Facets.SelectMany(x => x.Value.Facets));
+}
+
+@{ Html.RenderWidget("active_filters_before"); }
+
+@if (activeFilters.Length > 0)
+{
+	Html.AddBodyCssClass("has-active-filter");
+	<div class="active-filters-container">
+		<ul class="list-unstyled clearfix active-filters">
+			@foreach (var filter in activeFilters)
+			{
+				<li class="active-filter-item" data-key="@filter.Key" data-group="@filter.FacetGroup.Key">
+					<a class="btn btn-gray btn-sm active-filter-link" href='@Url.FacetRemove(filter)' title="@T("Search.Facet.RemoveFilter", filter.FacetGroup.Label, filter.Value.Label)">
+						<span class="active-filter-label">@(filter.Value.Label ?? filter.Value.ToString())</span>
+					</a>
+				</li>
+			}
+			<li class="active-filter-item active-filter-item-clear">
+				<a class="btn btn-secondary btn-to-danger btn-flat btn-sm active-filter-link" href='@Url.FacetRemove(activeFilters)'>
+					<span class="active-filter-label">@T("Search.Facet.RemoveAllFilters")</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+}
+
+@if (activeFilters.Length > 0 && Model.SearchResult.TotalHitsCount == 0)
+{
+	<div class="alert alert-warning">
+		@T("Search.FilterNoResultsText")
+	</div>
+}
+
+@{ Html.RenderWidget("active_filters_after"); }
+

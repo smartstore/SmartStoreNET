@@ -7,6 +7,7 @@ using Autofac;
 using Autofac.Builder;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {
@@ -89,6 +90,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				{
 					TryResolveAll(activator.ParameterTypes, out parameterInstances, scope);
                 }
+
 				if (parameterInstances != null)
 				{
 					return activator.Activate(parameterInstances);
@@ -120,20 +122,39 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				instances = instances2;
 				return true;
 			}
-			catch
+			catch (Exception ex)
 			{
+				_container.Resolve<ILoggerFactory>().GetLogger(this.GetType()).Error(ex);
 				return false;
 			}
 		}
 
 		public bool TryResolve(Type serviceType, ILifetimeScope scope, out object instance)
         {
-			return (scope ?? Scope()).TryResolve(serviceType, out instance);
+			instance = null;
+
+			try
+			{
+				return (scope ?? Scope()).TryResolve(serviceType, out instance);
+			}
+			catch
+			{
+				return false;
+			}	
         }
 
 		public bool TryResolve<T>(ILifetimeScope scope, out T instance)
 		{
-			return (scope ?? Scope()).TryResolve<T>(out instance);
+			instance = default(T);
+
+			try
+			{
+				return (scope ?? Scope()).TryResolve<T>(out instance);
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		public bool IsRegistered(Type serviceType, ILifetimeScope scope = null)
@@ -174,16 +195,6 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
     public static class ContainerManagerExtensions
     {
-		public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> WithStaticCache<TLimit, TReflectionActivatorData, TStyle>(this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration) where TReflectionActivatorData : ReflectionActivatorData
-		{
-			return registration.WithParameter(Autofac.Core.ResolvedParameter.ForNamed<ICacheManager>("static"));
-		}
-
-		public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> WithAspNetCache<TLimit, TReflectionActivatorData, TStyle>(this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration) where TReflectionActivatorData : ReflectionActivatorData
-		{
-			return registration.WithParameter(Autofac.Core.ResolvedParameter.ForNamed<ICacheManager>("aspnet"));
-		}
-
 		public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> WithNullCache<TLimit, TReflectionActivatorData, TStyle>(this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration) where TReflectionActivatorData : ReflectionActivatorData
 		{
 			return registration.WithParameter(Autofac.Core.ResolvedParameter.ForNamed<ICacheManager>("null"));

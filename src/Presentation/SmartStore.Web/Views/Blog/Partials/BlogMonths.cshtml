@@ -1,0 +1,31 @@
+﻿@model IList<BlogPostYearModel>
+@using SmartStore.Web.Models.Blogs;
+
+@if (Model.Count > 0)
+{
+    <div class="block-blog-archive card mb-3">
+        <h5 class="card-header">
+            @T("Blog.Archive")
+        </h5>
+        <div class="listbox card-block py-1">
+            <ul id="blog-month-list" class="list-unstyled">
+                @foreach (var yearItem in Model)
+                {
+                    <li class="year my-2 font-weight-bold">@(yearItem.Year)
+                        <ul id="blog-year-@(yearItem.Year)" class="list-unstyled">
+                            @foreach (var monthItem in yearItem.Months)
+                            {
+                                <li class="ml-3">
+                                    <a href="@Url.RouteUrl("BlogByMonth", new { month = yearItem.Year + "-" + monthItem.Month })" class="font-weight-normal color-body">
+                                        @(new DateTime(yearItem.Year, monthItem.Month, 1).ToString("MMMM"))
+                                        (@(monthItem.BlogPostCount))
+                                    </a> 
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}

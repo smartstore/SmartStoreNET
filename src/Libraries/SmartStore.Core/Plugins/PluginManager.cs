@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Compilation;
-using System.Web.Hosting;
-using Microsoft.Web.Infrastructure;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
-using SmartStore.ComponentModel;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Packaging;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
+using System.Runtime.InteropServices;
 
-//Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
-//SEE THIS POST for full details of what this does
+// Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
+// SEE THIS POST for full details of what this does
 //http://shazwazza.com/post/Developing-a-plugin-framework-in-ASPNET-with-medium-trust.aspx
 
 [assembly: PreApplicationStartMethod(typeof(PluginManager), "Initialize")]
@@ -33,20 +29,24 @@ namespace SmartStore.Core.Plugins
     /// </summary>
     public class PluginManager
     {
-        #region Fields
+		[DllImport("kernel32.dll", SetLastError = true)]
+		private static extern bool SetDllDirectory(string lpPathName);
 
-        private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
+		private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
         private static DirectoryInfo _shadowCopyFolder;
-        //private static readonly string _installedPluginsFilePath = CommonHelper.MapPath("~/App_Data/InstalledPlugins.txt");
         private static readonly string _pluginsPath = "~/Plugins";
         private static readonly string _shadowCopyPath = "~/Plugins/bin";
         private static bool _clearShadowDirectoryOnStartup;
 		private static readonly ConcurrentDictionary<string, PluginDescriptor> _referencedPlugins = new ConcurrentDictionary<string, PluginDescriptor>(StringComparer.OrdinalIgnoreCase);
         private static HashSet<Assembly> _inactiveAssemblies = new HashSet<Assembly>();
 
-        #endregion
-
-        #region Methods
+		/// <summary>
+		/// Returns the virtual path of the plugins folder relative to the application
+		/// </summary>
+		public static string PluginsLocation
+		{
+			get { return _pluginsPath; }
+		}
 
 		/// <summary> 
 		/// Returns a collection of all referenced plugin assemblies that have been shadow copied
@@ -97,10 +97,11 @@ namespace SmartStore.Core.Plugins
 				updater.ExecuteMigrations();
 			}
 			
-			// adding a process-specific environment path (either bin/x86 or bin/amd64)
+			// adding a process-specific environment path (either bin/x86 or bin/x64)
 			// ensures that unmanaged native dependencies can be resolved successfully.
-			SetPrivateEnvPath();
-			
+			SetNativeDllPath();
+			//SetPrivateEnvPath();
+
 			DynamicModuleUtility.RegisterModule(typeof(AutofacRequestLifetimeHttpModule));
 			
 			using (Locker.GetWriteLock())
@@ -161,7 +162,6 @@ namespace SmartStore.Core.Plugins
 							}
 						}
 					}
-
                 }
                 catch (Exception ex)
                 {
@@ -183,7 +183,7 @@ namespace SmartStore.Core.Plugins
 
 		private static LoadPluginResult LoadPluginFromFolder(string pluginFolderPath, ICollection<string> installedPluginSystemNames)
 		{
-			Guard.ArgumentNotEmpty(() => pluginFolderPath);
+			Guard.NotEmpty(pluginFolderPath, nameof(pluginFolderPath));
 
 			var folder = new DirectoryInfo(pluginFolderPath);
 			if (!folder.Exists)
@@ -340,7 +340,7 @@ namespace SmartStore.Core.Plugins
         /// <param name="systemName">Plugin system name</param>
         public static void MarkPluginAsUninstalled(string systemName)
         {
-			Guard.ArgumentNotEmpty(() => systemName);
+			Guard.NotEmpty(systemName, nameof(systemName));
 
 			var installedPluginSystemNames = GetInstalledPluginNames();
 			bool alreadyMarkedAsInstalled = installedPluginSystemNames.Contains(systemName);
@@ -389,7 +389,7 @@ namespace SmartStore.Core.Plugins
         /// <returns><c>true</c> when the plugin is assumed to be compatible</returns>
         public static bool IsAssumedCompatible(PluginDescriptor descriptor)
         {
-			Guard.ArgumentNotNull(() => descriptor);
+			Guard.NotNull(descriptor, nameof(descriptor));
 
 			return IsAssumedCompatible(descriptor.MinAppVersion);
         }
@@ -407,7 +407,7 @@ namespace SmartStore.Core.Plugins
 		/// <returns><c>true</c> when the extension's version is assumed to be compatible</returns>
 		public static bool IsAssumedCompatible(Version minAppVersion)
 		{
-			Guard.ArgumentNotNull(() => minAppVersion);
+			Guard.NotNull(minAppVersion, nameof(minAppVersion));
 			
 			if (SmartStoreVersion.Version == minAppVersion)
 			{
@@ -448,7 +448,7 @@ namespace SmartStore.Core.Plugins
 		/// <returns><c>true</c> if the plugin exists, <c>false</c> otherwise</returns>
 		public static bool PluginExists(string systemName)
 		{
-			Guard.ArgumentNotEmpty(() => systemName);
+			Guard.NotEmpty(systemName, nameof(systemName));
 			return _referencedPlugins.ContainsKey(systemName);
 		}
 
@@ -463,25 +463,41 @@ namespace SmartStore.Core.Plugins
             return !_inactiveAssemblies.Contains(assembly);
         }
 
-        #endregion
-
-        #region Utilities
-
 		private static void SetPrivateEnvPath()
 		{
-			string dir = Environment.Is64BitProcess ? "amd64" : "x86";
-			string envPath = String.Concat(Environment.GetEnvironmentVariable("PATH"), ";", Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, dir));
+			string envPath = Environment.GetEnvironmentVariable("PATH");
+
+			if (Environment.Is64BitProcess)
+			{
+				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "amd64");
+				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "x64");
+			}
+			else
+			{
+				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "x86");
+			}
+
+
 			Environment.SetEnvironmentVariable("PATH", envPath, EnvironmentVariableTarget.Process);
 		}
 
-        /// <summary>
-        /// Indicates whether assembly file is already loaded
-        /// </summary>
-        /// <param name="fileInfo">File info</param>
-        /// <returns>Result</returns>
-        private static bool IsAlreadyLoaded(FileInfo fileInfo)
+		private static void SetNativeDllPath()
+		{
+			var currentDomain = AppDomain.CurrentDomain;
+			var privateBinPath = currentDomain.SetupInformation.PrivateBinPath.NullEmpty() ?? currentDomain.BaseDirectory;
+			var dir = Path.Combine(privateBinPath, Environment.Is64BitProcess ? "x64" : "x86");
+
+			SetDllDirectory(dir);
+		}
+
+		/// <summary>
+		/// Indicates whether assembly file is already loaded
+		/// </summary>
+		/// <param name="fileInfo">File info</param>
+		/// <returns>Result</returns>
+		private static bool IsAlreadyLoaded(FileInfo fileInfo)
         {
-            //do not compare the full assembly name, just filename
+            // do not compare the full assembly name, just filename
             try
             {
                 string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileInfo.FullName);
@@ -493,9 +509,9 @@ namespace SmartStore.Core.Plugins
                         return true;
                 }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                Debug.WriteLine("Cannot validate whether an assembly is already loaded. " + exc);
+                Debug.WriteLine("Cannot validate whether an assembly is already loaded. " + ex);
             }
             return false;
         }
@@ -647,7 +663,5 @@ namespace SmartStore.Core.Plugins
             if (!folder.Parent.Name.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
-
-        #endregion
     }
 }

@@ -172,7 +172,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public virtual ImportProfile InsertImportProfile(string fileName, string name, ImportEntityType entityType)
 		{
-			Guard.ArgumentNotEmpty(() => fileName);
+			Guard.NotEmpty(fileName, nameof(fileName));
 
 			if (name.IsEmpty())
 				name = GetNewProfileName(entityType);
@@ -227,7 +227,8 @@ namespace SmartStore.Services.DataExchange.Import
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
-			profile.FolderName = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/App_Data/ImportProfiles"), profile.FolderName);
+			var path = DataSettings.Current.TenantPath + "/ImportProfiles";
+			profile.FolderName = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath(path), profile.FolderName);
 
 			_importProfileRepository.Insert(profile);
 

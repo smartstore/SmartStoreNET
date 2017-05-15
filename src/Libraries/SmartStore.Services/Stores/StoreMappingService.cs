@@ -15,8 +15,8 @@ namespace SmartStore.Services.Stores
 	{
 		#region Constants
 
-		private const string STOREMAPPING_BY_ENTITYID_NAME_KEY = "SmartStore.storemapping.entityid-name-{0}-{1}";
-		private const string STOREMAPPING_PATTERN_KEY = "SmartStore.storemapping.";
+		private const string STOREMAPPING_BY_ENTITYID_NAME_KEY = "storemapping:entityid-name-{0}-{1}";
+		private const string STOREMAPPING_PATTERN_KEY = "storemapping:";
 
 		#endregion
 

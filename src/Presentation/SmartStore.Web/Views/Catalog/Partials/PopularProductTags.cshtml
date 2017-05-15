@@ -1,0 +1,39 @@
+﻿@model PopularProductTagsModel
+@using SmartStore.Web.Models.Catalog;
+@if (Model.Tags.Count > 0)
+{
+    <div class="block block-popular-tags mb-6">
+		<div class="row">
+			<div class="col">
+				<div class="heading">
+					<h3 class="heading-title fs-h1">
+						@T("Products.Tags.Popular")
+					</h3>
+				</div>
+			</div>
+			@if (Model.TotalTags > Model.Tags.Count)
+			{
+				<div class="col col-auto">
+					<a class="btn btn-outline-info btn-flat" href="@Url.RouteUrl("ProductTagsAll")">
+						<span>@T("Products.Tags.Popular.ViewAll")</span>
+						<i class="fa fa-angle-right"></i>
+					</a>
+				</div>
+			}
+
+		</div>
+
+        <div class="listbox block-body">
+            <div class="tags fs-h4">
+                <ul class="list-inline">
+                    @foreach (var item in Model.Tags)
+                    {
+                        <li class="list-inline-item">
+                            <a class="color-body" href="@Url.RouteUrl("ProductsByTag", new { productTagId = item.Id, SeName = item.SeName })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}

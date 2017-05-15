@@ -1,90 +1,72 @@
 ﻿@model CustomerDownloadableProductsModel
+
 @using SmartStore.Web.Models.Customer;
+
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Html.AddTitleParts(T("PageTitle.Account").Text);
 
-    Html.AddTitleParts(T("PageTitle.Account").Text);
+	Layout = "_MyAccount";
+	ViewBag.PageClassToken = "downloads";
+	ViewBag.PageTitle = T("Account.DownloadableProducts").Text;
 }
-@section left
+
+@if (Model.Items.Count == 0)
 {
-    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+	<div class="alert alert-warning">
+		@T("DownloadableProducts.NoItems")
+	</div>
+	return;
 }
-<div class="page account-page downloadable-products-page">
-    <h4 class="muted">@T("Account.MyAccount")</h4>
-    <div class="page-title">
-        <h1>@T("Account.DownloadableProducts")</h1>
-    </div>
 
-    <div class="page-body">
-        @if (Model.Items.Count > 0)
-        {
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>
-                           @T("DownloadableProducts.Fields.Order")
-                        </th>
-                        <th>
-                            @T("Common.CreatedOn")
-                        </th>
-                        <th>
-                            @T("DownloadableProducts.Fields.Product")
-                        </th>
-                        <th>
-                            @T("DownloadableProducts.Fields.Download")
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Model.Items.Count; i++)
-                    {
-                        var item = Model.Items[i];
-                        <tr>
-                            <td>
-								<a class="link" href="@Url.Action("Details", "Order", new { id = item.OrderId })" rel="nofollow">@item.OrderId</a>
-                            </td>
-                            <td>
-                                @item.CreatedOn.ToString("d")
-                            </td>
-                            <td>
-								<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
-                                @if (!String.IsNullOrEmpty(item.ProductAttributes))
-                                {
-                                    <div class="attributes">
-                                        @Html.Raw(item.ProductAttributes)
-                                    </div>
-                                }
-                            </td>
-                            <td class="a-center">
-                                @if (item.DownloadId > 0)
-                                {
-                                    <div>
-										<a class="link" href="@Url.Action("GetDownload", "Download", new { id = item.OrderItemGuid })" rel="nofollow">@T("DownloadableProducts.Fields.Download")</a>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div>
-                                        @T("DownloadableProducts.Fields.Download.NA")
-                                    </div>
-                                }
-                                @if (item.LicenseId > 0)
-                                {
-                                    <div>
-										<a class="link" href="@Url.Action("GetLicense", "Download", new { id = item.OrderItemGuid })" rel="nofollow">@T("DownloadableProducts.Fields.DownloadLicense")</a>
-                                    </div>
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <div class="no-data">
-                @T("DownloadableProducts.NoItems")
-            </div>
-        }
-    </div>
+<div class="card-deck card-cols-sm-1 esd-list">
+	@foreach (var item in Model.Items)
+	{
+		<div class="card card-shadow esd-item">
+			<div class="card-block">
+				<h4 class="card-title mb-4">@item.ProductName.Truncate(50, "...")</h4>
+				<dl class="row mb-0">
+					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.Order#")</dt>
+					<dd class="col-sm-9"><a href="@Url.Action("Details", "Order", new { id = item.OrderId })" rel="nofollow">@item.OrderId</a></dd>
+					<dt class="col-sm-3 font-weight-400 text-muted">@T("Common.CreatedOn")</dt>
+					<dd class="col-sm-9">@item.CreatedOn.ToString("d")</dd>
+					<dt class="col-sm-3 font-weight-400 text-muted">@T("DownloadableProducts.Fields.Product")</dt>
+					<dd class="col-sm-9">
+						<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+						@if (item.ProductAttributes.HasValue())
+						{
+							<div>
+								@Html.Raw(item.ProductAttributes)
+							</div>
+						}
+					</dd>
+				</dl>
+			</div>
+
+			@if (item.DownloadId > 0 || item.LicenseId > 0)
+			{
+				<div class="card-footer d-flex p-0">
+					@if (item.DownloadId > 0)
+					{
+						<a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("GetDownload", "Download", new { id = item.OrderItemGuid })" rel="nofollow">
+							<i class="fa fa-download"></i>
+							<span>@T("DownloadableProducts.Fields.Download")</span>
+						</a>
+					}
+					else
+					{
+						<a class="btn btn-secondary btn-flat rounded-0 disabled" href="javascript:void(0)" rel="nofollow">
+                            <span>@T("DownloadableProducts.Fields.Download.NA")</span>
+						</a>
+					}
+
+					@if (item.LicenseId > 0)
+					{
+						<a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("GetLicense", "Download", new { id = item.OrderItemGuid })" rel="nofollow">
+							<span>@T("DownloadableProducts.Fields.DownloadLicense")</span>
+						</a>
+					}
+				</div>
+			}
+		</div>
+	}
 </div>

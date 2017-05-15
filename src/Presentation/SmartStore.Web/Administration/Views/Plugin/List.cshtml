@@ -1,17 +1,14 @@
-﻿@model LocalPluginsModel
-@using SmartStore.Web.Framework.UI;
+﻿@using SmartStore.Web.Framework.UI;
 @using Newtonsoft.Json;
-@using SmartStore.Licensing;
-
+@model LocalPluginsModel
 @{    
-    //page title
     ViewBag.Title = T("Admin.Configuration.Plugins").Text;
 
-	var allPluginsSelectList = Model.AllPlugins.Select(x => new SelectListItem { Value = x.SystemName, Text = x.FriendlyName });
-	var availableStores = JsonConvert.SerializeObject(Model.AvailableStores.Select(x => new { value = x.Id, text = x.Name }).ToArray());
+    var allPluginsSelectList = Model.AllPlugins.Select(x => new SelectListItem { Value = x.SystemName, Text = x.FriendlyName });
+    var availableStores = JsonConvert.SerializeObject(Model.AvailableStores.Select(x => new { value = x.Id, text = x.Name }).ToArray());
 
-	Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
-	Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+    Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
+    Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
 }
 
 @helper PluginList(IEnumerable<PluginModel> plugins)
@@ -33,34 +30,9 @@
 						{
 							<span class="label label-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
 						}
-						@if (plugin.IsLicensable)
-						{
-							if (plugin.LicenseState == LicensingState.Licensed)
-							{
-								<span class="label label-success">@T("Admin.Common.Licensed")</span>
-							}
-							else if (plugin.LicenseState == LicensingState.Unlicensed && plugin.TruncatedLicenseKey.HasValue())
-							{
-								<span class="label label-important">@T("Admin.Common.Unlicensed")</span>
-							}
-							else
-							{
-								<span class="label @(plugin.RemainingDemoUsageDaysLabel)">
-									@if (!plugin.RemainingDemoUsageDays.HasValue)
-									{
-										@T("Admin.Plugins.LicensingDemoNotStarted")
-									}
-									else if (plugin.RemainingDemoUsageDays <= 0)
-									{
-										@T("Admin.Plugins.LicensingDemoExpired")
-									}
-									else
-									{
-										@T("Admin.Plugins.LicensingDemoRemainingDays", plugin.RemainingDemoUsageDays)
-									}
-								</span>
-							}
-						}
+						<span class="license-label">
+							@Html.Partial("Partials/LicenseLabel", plugin.LicenseModel)
+						</span>
 					</div>
 					<div class="module-info">
 						@if (plugin.Url.HasValue())
@@ -116,9 +88,9 @@
 										@T("Admin.Configuration.Plugins.Fields.Configure")
 									</a>
 								}
-								@if (plugin.LicenseUrl.HasValue())
+								@if (plugin.LicenseModel.LicenseUrl.HasValue())
 								{
-									<button class="btn btn-small plugin-licence" type="button" data-url="@plugin.LicenseUrl">
+									<button class="btn btn-small plugin-licence" type="button" data-url="@plugin.LicenseModel.LicenseUrl">
 										<i class="fa fa-key"></i>
 										@T("Admin.Common.License")
 									</button>
@@ -143,7 +115,6 @@
 							@T("Admin.Configuration.Plugins.Fields.Install")
 						</a>
 					}
-
 				</div>
 
 			</div>
@@ -155,7 +126,7 @@
 {
     @Html.DropDownList("pluginsToInstall", allPluginsSelectList, new { @class = "hide", multiple = "multiple" })
     @Html.DropDownList("pluginsToUninstall", allPluginsSelectList, new { @class = "hide", multiple = "multiple" })
-    
+
     <div class="section-header">
         <div class="title">
             <i class="fa fa-puzzle-piece"></i>
@@ -195,7 +166,7 @@
             </div>
         </div>
     </div>
-	
+
     <div class="alert alert-info fade in">
         <button class="close" data-dismiss="alert">x</button>
         <h4>@T("Admin.Configuration.Plugins.Description")</h4>
@@ -206,7 +177,7 @@
             <li>@Html.Raw(T("Admin.Configuration.Plugins.Description.Step4"))</li>
         </ol>
     </div>
-    
+
     <table class="adminContent" id="local-plugins">
         <tr>
             <td>
@@ -231,14 +202,6 @@
 			<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
 			<h4 class="caption">
 				@T("Admin.Common.License")
-				@if (Model.IsSandbox)
-				{
-					<span class="label label-warning">Sandbox</span>
-				}
-				@if (Model.IsLocalhost)
-				{
-					<span class="label label-success">Localhost</span>
-				}
 			</h4>
 		</div>
 		<div class="modal-body"></div>
@@ -294,7 +257,7 @@
 		}, 800);
 
 		var mainContainer = $('#local-plugins');
-		$('#filter-query').on('keyup', function (e) {
+		$('#filter-query').on('input propertychange paste', function (e) {
 			var el = $(this);
 
 			// Retrieve the input field text and reset the count to zero
@@ -445,14 +408,11 @@
 
 		// edit plugin
 		$('#plugins-form').on('click', '.plugin-edit', function (e) {
-			OpenWindow(
+			openPopup(
                 '{0}?systemName={1}&btnId=btnRefresh&formId=plugins-form'.format(
                     '@Url.Content("~/Admin/Plugin/EditPopup")',
                     $(this).data("systemname")
-                ),
-                1000,
-                480,
-                true
+                )
             );
             return false;
         });
@@ -482,19 +442,27 @@
     					}
     					return false;
     				});
-
-    				dialog.find('.licensing-reset-status-check').click(function() {
-    					$({}).doAjax({
-    						type: 'POST',
-    						url: dialog.find('form:first').attr('data-resetcheckurl')
-    					});
-    				});
     			}
     		});
 
     		dialog.find('.modal').modal('show');
     		return false;
     	});
+
+		// reset license status
+		$('#plugin-licence-modal').on('click', '.licensing-reset-status-check', function() {
+			var licenseForm = $('#plugin-licence-modal').find('.modal-body form:first');
+			$({}).doAjax({
+				type: 'POST',
+				url: licenseForm.attr('data-resetcheckurl'),
+				callbackSuccess: function (resp) {
+					if (resp.length > 0) {
+						var systemName = licenseForm.attr('data-systemname');
+						$('#local-plugins').find('div[data-system-name="' + systemName + '"]').find('.license-label').html(resp);
+					}
+				}
+			});
+		});
 
         $('#btnRefresh').click(function () {
             // reload page
@@ -504,4 +472,4 @@
     });
 </script>
 
-@Html.Action("UploadPackage", "Packaging", new { isTheme = false })
+@{ Html.RenderAction("UploadPackage", "Packaging", new { isTheme = false }); }

@@ -1,0 +1,435 @@
+/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+$pd-offer-bg:                   $product-detail-addtocart-box-bg;
+$pd-price-color:                $product-price-color;
+$pd-price-offer-color:          $brand-danger;
+$pd-line-height:                1.3;
+
+$pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
+
+//
+// Article Detail Styles
+// --------------------------------------------------
+
+.pd-section,
+.pd-picture-block,
+.pd-info,
+.pd-offer {
+    position: relative;
+}
+
+.pd-section {
+    margin-bottom: 2rem;
+}
+
+.pd-data-col {
+    // turn off flex 'cause of carousel
+    display: block !important;
+}
+
+.pd-group {
+    margin-bottom: 1rem;
+    > * { margin-bottom: 0.125rem; }
+}
+
+.pd-description {
+    color: $text-muted;
+    line-height: 1.3;
+}
+
+.pd-tabs {
+    margin-bottom: 1rem;
+}
+
+
+// Picture
+// =====================================================
+
+.pd-picture {
+    display: block;
+    position: relative;
+    height: 0;
+    width: 100%;
+    padding-top: 100%;
+    text-decoration: none !important;
+    outline: none !important;
+
+    > img {
+        position: absolute;
+        max-width: 100%;
+        max-height: 100%;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+}
+
+
+// Info
+// =====================================================
+
+.pd-name {
+    font-size: 1.8rem;
+}
+
+.pd-name-sm {
+    font-size: 1.2rem;
+    font-weight: $font-weight-medium;
+}
+
+.pd-info .page-title {
+    margin-bottom: 0;
+}
+
+.pd-brand {
+    color: inherit !important;
+    text-decoration: none !important;
+    font-weight: $font-weight-medium;
+}
+
+.pd-brand-picture {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    max-height: 32px;
+}
+
+.pd-attrs {
+    td { 
+        padding: 0.2rem 0; 
+        vertical-align: middle; 
+        line-height: $pd-line-height;
+    }
+    td:first-child { 
+        padding-right: 1rem; 
+        font-weight: 700; 
+    }
+}
+
+.pd-stock {
+    &.pd-instock {
+        color: darken($brand-success, 10%);
+    }
+    &.pd-outofstock {
+        font-weight: bold;
+        color: $brand-danger;
+    } 
+}
+
+// Specification attributes
+// =====================================================
+
+.pd-specs-table tr:first-child td {
+    border-top-width: 0;
+}
+
+.pd-spec-name {
+    font-weight: bold;
+    width: 20%;
+}
+
+
+
+// Reviews
+// =====================================================
+
+.pd-review-summary {
+    line-height: $pd-line-height;
+    > * { display: inline-block; }
+    .pd-rating-box .rating {
+        vertical-align: sub;
+    }
+    .pd-review-link {
+        position: relative;
+        font-weight: $font-weight-medium;
+        &:before {
+            content: '|';
+            display: inline-block;
+            padding: 0 0.5rem;
+            color: $text-muted;
+        }
+    }
+}
+
+
+// Offer Box
+// =====================================================
+
+.pd-offer {
+    background: $pd-offer-bg;
+    padding: $grid-gutter-width-base / 2;
+    line-height: $pd-line-height;
+    width: 100%;
+}
+
+.row.pd-offer-actions {
+    margin-left: -0.2rem;
+    margin-right: -0.2rem;
+    margin-top: auto;
+
+    > * {
+        padding-left: 0.2rem;
+        padding-right: 0.2rem;
+    }
+
+    .pd-offer-action-qty { max-width: 120px; min-width: 90px; }
+
+    // hide elements when container is too small
+    @media (max-width: 400px), (min-width: 768px) and (max-width: 1199px) {
+        .pd-offer-action-qty { display: none !important; }
+    }
+}
+
+
+// Prices
+// =====================================================
+
+.pd-offer-price {
+    margin-bottom: 1rem;
+}
+
+.pd-price-block {
+    float: left;
+}
+
+.pd-price-block + .pd-price-block {
+    margin-left: 1rem;
+    .pd-price {
+        text-decoration: line-through;
+        color: $pd-offer-muted-color;
+        font-weight: 400;
+    }
+}
+
+.pd-price {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: $pd-price-color;
+
+    &.pd-price-sm {
+        font-size: 1.5rem;
+    }
+    &.pd-price--offer {
+        color: $pd-price-offer-color;
+    }
+    &.pd-price--call {
+        font-size: 1rem;
+        color: $text-muted;
+        font-weight: 400;
+    }
+}
+
+.pd-price-label {
+    line-height: 1;
+    font-weight: $font-weight-medium;
+}
+
+.pd-oldprice {
+    display: inline-block;
+    padding-left: 0.25rem;
+    color: $text-muted;
+    text-decoration: line-through;
+}
+
+.pd-saving-percent {
+    font-weight: $font-weight-medium;
+    color: $brand-danger;
+}
+
+.pd-callforprice {
+    font-size: 1.2rem;
+}
+
+.pd-legalinfo {
+    font-size: $font-size-sm;
+    color: $pd-offer-muted-color;
+}
+
+
+// Tier prices
+// =====================================================
+
+.pd-tierprices {
+    .table {
+        background-color: #fff;
+        margin-bottom: 0;
+        font-size: $font-size-sm;
+        overflow-x: auto;
+
+        th, td { padding-left: 0.5rem; padding-right: 0.5rem; }
+        th { font-weight: $font-weight-medium; }
+        .pd-tierprice-qty { font-weight: bold }
+    }
+}
+
+
+// Tags
+// =====================================================
+
+.pd-tag {
+    text-decoration: none !important;
+    display: inline-block;
+    padding: 0.5rem;
+    margin: 0 0.2rem 0.4rem 0;
+    font-weight: $font-weight-medium;
+    color: $body-color;
+    font-size: $font-size-base;
+    line-height: 1;
+    background-color: $gray-lightest;
+    border: 1px solid rgba(0,0,0, 0.15);
+    border-radius: 2px;
+}
+
+.pd-tag-count {
+    color: $text-muted;
+    font-weight: 400;
+    padding-left: 0.25rem;
+}
+
+
+// Bundles
+// =====================================================
+
+.pd-bundle-item {
+    border-top: 1px solid $list-group-border-color;
+    .form-group:last-child { margin-bottom: 0; }
+}
+
+.pd-bundle-item-name {
+    font-weight: $font-weight-medium;
+    > a { color: $body-color; }
+}
+
+.pd-bundle-item-description {
+    @extend .pd-description;
+}
+
+.pd-bundle-item-offer {
+    line-height: $pd-line-height;
+
+    > * + * { margin-top: 0.5rem; }
+}
+
+.pd-bundle-price-offer {
+    font-weight: $font-weight-medium;
+    font-size: $font-size-lg;
+}
+
+.pd-bundle-price-regular {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.pd-bundle-summary {
+    display: inline-flex; 
+    flex-direction: row; 
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pd-bundle-summary-item {
+    position: relative;
+    line-height: $pd-line-height;
+    padding: 0.2rem;
+    a:hover {
+        text-decoration: none;
+    }
+    &:after {
+        display: inline-block;
+        font-family: FontAwesome;
+        content: "\f067"; // plus
+        padding: 0 0.2rem;
+    }
+    &:last-child:after {
+        display: none;
+        content: '';
+    }
+}
+
+.pd-bundle-summary-item-qty {
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 80%;
+}
+
+
+// Variants & Associated products
+// =====================================================
+
+.pd-variants:not(:last-child) {
+    margin-bottom: 1.5rem;
+}
+
+.pd-variant {
+    position: relative;
+    padding: 0.5rem 0;
+
+    .pd-name { font-size: 1rem !important }
+
+    // Associated product's offer box should stretch vertically
+    .pd-offer {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+
+//
+// Compare table
+// ------------------------------------------------------
+
+.table-compare {
+    td, th {
+        width: 20%;
+    }
+    
+    th {
+        font-weight: $font-weight-medium;
+    }
+
+    tbody {
+        font-size: $font-size-sm;
+    }
+}
+
+
+//
+// Delivery times
+// ------------------------------------------------------
+
+.deliverytime-group .delivery-time { 
+    vertical-align: top; 
+    padding-left: 0.25rem;
+}
+
+.delivery-time {
+    display: inline-block;
+    color: $brand-danger;
+    vertical-align: middle;
+    max-width: 100%;
+    @include text-truncate();
+
+    .delivery-time-status {
+        padding-right: 0.2rem;
+        font-size: 0.85em;
+    }
+}
+
+
+// Misc
+// =====================================================
+
+.btn-edit-product {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: rgba(#fff, 0.5);
+
+    .pd-section-top:hover & { display: inline-block; }
+}

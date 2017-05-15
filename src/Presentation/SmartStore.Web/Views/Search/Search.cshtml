@@ -1,0 +1,96 @@
+﻿@using SmartStore.Web.Models.Search;
+@using SmartStore.Web.Framework.UI;
+
+@model SearchResultModel
+@{
+	if (Model.Term.HasValue())
+	{
+		Html.AddTitleParts(T("Search.PageTitle", "\"" + Model.Term + "\""));
+	}
+	else
+	{
+		Html.AddTitleParts(T("Search.Title"));
+	}
+
+	int firstItemIndex = 0;
+	int lastItemIndex = 0;
+	var suggestions = new string[0];
+	if (Model.TotalProductsCount > 0)
+	{
+		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
+		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
+		suggestions = Model.SearchResult.SpellCheckerSuggestions;
+	}
+
+	Layout = "_Layout";
+
+	ViewBag.HideLeftCol = true; // ...on mobile
+}
+
+@if (Model.SearchResult.Facets.Count > 0)
+{
+	@section left {
+		@{ 
+			Html.RenderAction("Filters", new { model = Model });
+		}
+	}
+}
+
+<div class="page search-page">
+	<div class="page-title">
+		<h1 class="h3">
+			@if (Model.Term.HasValue())
+			{
+				@T("Search.PageTitle", "<small class='search-term'>" + Model.Term + "</small>")
+			}
+			else
+			{
+				@T("Search.Title")
+			}		
+		</h1>
+		@if (Model.TotalProductsCount > 0)
+		{
+			<h5 class="search-hitcount">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0")), Model.TotalProductsCount.ToString("N0"))</h5>
+		}
+	</div>
+
+    <div class="page-body">
+		@if (Model.AttemptedTerm.HasValue())
+		{
+			<div class="alert alert-warning">
+				@T("Search.TermCorrectedHint", "<strong>\"" + Model.Term + "\"</strong>", "<strong>\"" + Model.AttemptedTerm + "\"</strong>")
+			</div>
+		}
+
+		@if (Model.Error.HasValue())
+		{
+			<div class="alert alert-danger">
+				@Model.Error
+			</div>
+		}
+		else if (Model.TotalProductsCount == 0)
+		{
+			<div class="alert alert-warning">
+				@T("Search.NoResultsText")
+			</div>
+		}
+
+		@if (suggestions.Any() && (Model.AttemptedTerm.HasValue() || Model.TotalProductsCount == 0))
+		{
+			<p class="search-suggestions">
+				<strong>@T("Search.DidYouMean")</strong>
+				@{ 
+					var links = String.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("Search", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
+				}
+				@Html.Raw(links)
+			</p>
+		}
+
+        <div class="search-results">
+            @if (Model.TotalProductsCount > 0)
+            {
+				Html.RenderPartial("Product.List", Model.TopProducts);
+            }
+        </div>
+    </div>
+</div>

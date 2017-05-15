@@ -344,8 +344,6 @@ namespace SmartStore.Services.Orders
             if (order == null)
                 throw new ArgumentNullException("order");
 
-			order.UpdatedOnUtc = DateTime.UtcNow;
-
             _orderRepository.Update(order);
 
             //event notifications
@@ -506,7 +504,7 @@ namespace SmartStore.Services.Orders
 
 		public virtual Multimap<int, OrderItem> GetOrderItemsByOrderIds(int[] orderIds)
 		{
-			Guard.ArgumentNotNull(() => orderIds);
+			Guard.NotNull(orderIds, nameof(orderIds));
 
 			var query =
 				from x in _orderItemRepository.TableUntracked.Expand(x => x.Product)

@@ -22,7 +22,6 @@ namespace SmartStore.Services.Tests.Shipping
     public class ShippingServiceTests : ServiceTest
     {
         IRepository<ShippingMethod> _shippingMethodRepository;
-        ILogger _logger;
         IProductAttributeParser _productAttributeParser;
 		IProductService _productService;
         ICheckoutAttributeParser _checkoutAttributeParser;
@@ -42,7 +41,6 @@ namespace SmartStore.Services.Tests.Shipping
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
 
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
-            _logger = new NullLogger();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
 			_productService = MockRepository.GenerateMock<IProductService>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
@@ -57,7 +55,6 @@ namespace SmartStore.Services.Tests.Shipping
             _shoppingCartSettings = new ShoppingCartSettings();
             _shippingService = new ShippingService(
                 _shippingMethodRepository, 
-                _logger,
                 _productAttributeParser,
 				_productService,
                 _checkoutAttributeParser,

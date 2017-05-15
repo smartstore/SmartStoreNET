@@ -1,0 +1,21 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+.breadcrumb {
+    padding: 0;
+    background: none;
+    font-size: $font-size-sm;
+    margin-bottom: 1.5rem;
+}
+.breadcrumb-item:after {
+    content: '|';
+    padding: 0 0.5rem;
+}
+.breadcrumb-item:last-of-type:after { 
+    display: none; 
+}
+.breadcrumb > li + li::before {
+    display: none !important;
+}
+.breadcrumb-item > a {
+    color: $body-color !important;
+}

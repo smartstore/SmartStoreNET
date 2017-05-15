@@ -1,0 +1,44 @@
+﻿@model HomePageNewsItemsModel
+@using SmartStore.Web.Models.News;
+
+@if (Model.NewsItems.Count > 0)
+{
+    <div class="block news-list-homepage mb-6">
+		<div class="row">
+			<div class="col">
+				<div class="heading">
+					<h3 class="heading-title fs-h1">@T("News")</h3>
+				</div>
+			</div>
+			<div class="col col-auto">
+				<a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">
+					<i class="fa fa-rss"></i>
+					<span>@T("News.RSS")</span>
+				</a>
+				<a class="btn btn-outline-info btn-flat" href="@Url.RouteUrl("NewsArchive")">
+					<span>@T("News.ViewAll")</span>
+					<i class="fa fa-angle-right"></i>
+				</a>
+			</div>
+		</div>
+
+        <div class="block-body news-items">
+            @foreach (var item in Model.NewsItems)
+            {
+                <div class="news-item mb-4">
+					<div class="text-muted small">
+						@item.CreatedOn.ToString("D")
+					</div>
+					<h4 class="news-title">
+                        <a class="fs-h5 color-body" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                            @item.Title
+                        </a>
+                    </h4>
+                    <p class="lead mt-2">
+                        @Html.Raw(item.Short)
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+}

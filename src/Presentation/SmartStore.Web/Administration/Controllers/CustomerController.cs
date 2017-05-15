@@ -259,10 +259,10 @@ namespace SmartStore.Admin.Controllers
 				.Select(cr => cr.ToModel())
 				.ToList();
 
-			if (model.SelectedCustomerRoleIds == null)
+			if (model.SelectedCustomerRoleIds == null || model.SelectedCustomerRoleIds.Count() == 0)
 			{
-				model.SelectedCustomerRoleIds = new int[0];
-			}
+                model.SelectedCustomerRoleIds = new int[] { 3 };      // 3 = CustomerRole > registered 
+            }
 
 			model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
 			//form fields

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Utilities;
 
@@ -15,7 +16,8 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <returns>Folder path</returns>
 		public static string GetImportFolder(this ImportProfile profile, bool content = false, bool create = false)
 		{
-			var path = CommonHelper.MapPath(string.Concat("~/App_Data/ImportProfiles/", profile.FolderName, content ? "/Content" : ""));
+			var basePath = DataSettings.Current.TenantPath + "/ImportProfiles/";
+			var path = CommonHelper.MapPath(string.Concat(basePath, profile.FolderName, content ? "/Content" : ""));
 
 			if (create && !System.IO.Directory.Exists(path))
 				System.IO.Directory.CreateDirectory(path);

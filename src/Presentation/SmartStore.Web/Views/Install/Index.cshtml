@@ -20,14 +20,12 @@
         }
     </script>
 
-    @Html.Partial("ConditionalComments")
-
     @* styles *@ 
 	<link href='~/Content/font-awesome.css' type='text/css' rel='stylesheet' />
     <link href='~/Content/install/install.less' type='text/css' rel='stylesheet' />
 
     @* scripts (head) *@
-    <script src='~/Scripts/modernizr-2.7.2.js' type='text/javascript'></script>
+    <script src='~/Scripts/modernizr.js' type='text/javascript'></script>
     <script src='~/Scripts/jquery-2.1.1.min.js' type='text/javascript'></script>
 	<script src='~/Scripts/jquery-migrate-1.2.1.min.js' type='text/javascript'></script>
     <script src='~/Content/bootstrap/js/bootstrap-button.js' type='text/javascript'></script>
@@ -167,7 +165,7 @@
                     </p>
                     <p class="install-intro hide">@ILS.GetResource("Tooltip2")</p>
 
-                    <div id="messages" class="alert alert-error fade hide">
+                    <div id="messages" class="alert alert-danger fade hide">
                         <button type="button" class="close" data-dismiss="alert">×</button>
                         @Html.ValidationSummary(false)
                     </div>
@@ -365,11 +363,9 @@
     <script src='~/Scripts/underscore.string.min.js' type='text/javascript'></script>
     <script src='~/Scripts/underscore.mixins.js' type='text/javascript'></script>
 
-    <script src='~/Scripts/jquery.transit.js' type='text/javascript'></script>
     <script src='~/Scripts/jquery.addeasing.js' type='text/javascript'></script>
     <script src='~/Scripts/smartstore.throbber.js' type='text/javascript'></script>
     <script src='~/Scripts/jquery.scrollTo.js' type='text/javascript'></script>
-    <script src='~/Scripts/jquery.serialScroll.js' type='text/javascript'></script>
     <script src='~/Scripts/public.common.js' type='text/javascript'></script>
 
     <script>

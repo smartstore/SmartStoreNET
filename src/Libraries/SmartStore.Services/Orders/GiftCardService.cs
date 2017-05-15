@@ -145,12 +145,7 @@ namespace SmartStore.Services.Orders
             return giftCards;
         }
 
-        /// <summary>
-        /// Get active gift cards that are applied by a customer
-        /// </summary>
-        /// <param name="customer">Customer</param>
-        /// <returns>Active gift cards</returns>
-        public virtual IList<GiftCard> GetActiveGiftCardsAppliedByCustomer(Customer customer)
+        public virtual IList<GiftCard> GetActiveGiftCardsAppliedByCustomer(Customer customer, int storeId)
         {
             var result = new List<GiftCard>();
             if (customer == null)
@@ -162,7 +157,7 @@ namespace SmartStore.Services.Orders
                 var giftCards = GetAllGiftCards(null, null, null, true, couponCode);
                 foreach (var gc in giftCards)
                 {
-                    if (gc.IsGiftCardValid())
+                    if (gc.IsGiftCardValid(storeId))
                         result.Add(gc);
                 }
             }

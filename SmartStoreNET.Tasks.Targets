@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
 	
 	<!-- General -->
 	<UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Web\Microsoft.Web.Publishing.Tasks.dll"/>
@@ -19,7 +19,7 @@
 		<MsBuildTasksFolder>$(RootFolder)\buildtasks</MsBuildTasksFolder>
 		<ArtifactsFolder>$(RootFolder)\artifacts</ArtifactsFolder>
 		<SqlCeFolder>$(LibFolder)\sqlce</SqlCeFolder>
-		<V8Folder>$(LibFolder)\ClearScript.V8</V8Folder>
+		<Msvcp140Folder>$(LibFolder)\msvcp140</Msvcp140Folder>
 		<SourceArtifactFolder>$(ArtifactsFolder)\Source</SourceArtifactFolder>
 		<MsDeployArtifactFolder>$(ArtifactsFolder)\MsDeploy</MsDeployArtifactFolder>
 		<GalleryArtifactFolder>$(ArtifactsFolder)\Gallery</GalleryArtifactFolder>
@@ -28,13 +28,9 @@
 		<WebPluginsFolder>$(WebFolder)\Plugins</WebPluginsFolder>
 		<WebThemesFolder>$(WebFolder)\Themes</WebThemesFolder>
 
-		<CompileFolder>$(BuildFolder)\Compile</CompileFolder>
-		<WebSitesFolder>$(CompileFolder)\_PublishedWebsites</WebSitesFolder>
 		<StageFolder>$(BuildFolder)\Web</StageFolder>
 		<MsDeployFolder>$(BuildFolder)\MsDeploy</MsDeployFolder>
 		<PrecompiledFolder>$(BuildFolder)\Precompiled</PrecompiledFolder>
-		<ProfilingFolder>$(BuildFolder)\Profiling</ProfilingFolder>
-		<GalleryFolder>$(BuildFolder)\Gallery</GalleryFolder>
 
 		<TransformInputFile>$(WebFolder)\Web.config</TransformInputFile>
 		<TransformFile>$(WebFolder)\Web.$(Configuration).config</TransformFile>
@@ -44,11 +40,11 @@
 		<BuildPlatform Condition="$(BuildPlatform) == ''">x86</BuildPlatform>
 
 		<xVersion>$(BUILD_NUMBER)</xVersion>
-		<Version>2.6.0</Version>
+		<Version>3.0.0</Version>
 		<ZipDirectory>$(StageFolder)</ZipDirectory>
 		<ZipVersionFileSuffix Condition="$(Version) != ''">.$(Version)</ZipVersionFileSuffix>
 		<ZipVersionFileSuffix Condition="$(Version) == ''"></ZipVersionFileSuffix>
-		<ZipFileSuffix>.Web</ZipFileSuffix>
+		<ZipFileSuffix>.Community</ZipFileSuffix>
 	</PropertyGroup>
 
 	<Import Project="$(LibFolder)\MSBuild\MSBuild.Community.Tasks.Targets"/>
@@ -101,11 +97,14 @@
 			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*.sql" />
 			<MigrationFiles Include="$(WebFolder)\App_Data\Migrations\**\*.txt" />
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
-		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
-		  	<SqlCe-Native-Binaries-amd64 Include="$(SqlCeFolder)\amd64\**\*"/>
-		  	<V8-Libs Include="$(V8Folder)\lib\**\*"/>
-		  	<V8-Native-Binaries-x86 Include="$(V8Folder)\Native\x86\**\*"/>
-		  	<V8-Native-Binaries-amd64 Include="$(V8Folder)\Native\amd64\**\*"/>
+		  <SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
+		  <SqlCe-Native-Binaries-x64 Include="$(SqlCeFolder)\x64\**\*"/>
+		  <Msvcp140-Binaries-x86 Include="$(Msvcp140Folder)\x86\**\*"/>
+		  <Msvcp140-Binaries-x64 Include="$(Msvcp140Folder)\x64\**\*"/>
+		  <V8-Native-Binaries-x86 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\runtimes\win7-x86\native\**\*"/>
+		  <V8-Native-Binaries-x64 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.2.4.0\runtimes\win7-x64\native\**\*"/>
+		  <LibSass-Native-Binaries-x86 Include="$(SrcFolder)\packages\LibSassHost.Native.win-x86.1.0.3\runtimes\win7-x86\native\**\*"/>
+		  <LibSass-Native-Binaries-x64 Include="$(SrcFolder)\packages\LibSassHost.Native.win-x64.1.0.3\runtimes\win7-x64\native\**\*"/>
 		</ItemGroup>
 
 		<!-- delete the build folder -->
@@ -126,7 +125,7 @@
 		<Copy SourceFiles="@(PluginFiles)" DestinationFolder="$(StageFolder)\Plugins\%(RecursiveDir)" />
 		<MakeDir Directories="$(StageFolder)\Plugins\bin\" />
 		<!-- Ensure that an initially empty folder gets successfully zipped -->
-		<Copy SourceFiles="$(StageFolder)\Media\Thumbs\placeholder.txt" DestinationFolder="$(StageFolder)\Plugins\bin\" />
+		<Copy SourceFiles="$(StageFolder)\Content\placeholder.txt" DestinationFolder="$(StageFolder)\Plugins\bin\" />
 		
 		<!-- copy the migration sql scripts to the stage directory -->
 		<Copy SourceFiles="@(MigrationFiles)" DestinationFolder="$(StageFolder)\App_Data\Migrations\%(RecursiveDir)" />
@@ -137,13 +136,13 @@
 		   Properties="WebProjectOutputDir=$(StageFolder)\Administration\;
 		   OutDir=$(StageFolder)\Administration\bin\;Configuration=$(Configuration)" />
 
-		<!-- move SmartStore.Admin/bin/ to the root bin/ -->
-        <CreateItem Include="$(StageFolder)\Administration\bin\*.dll">
-            <Output TaskParameter="Include" ItemName="AdminCompileOutput" />
-        </CreateItem>
+		<!-- move SmartStore.Admin/bin/ to root bin/ -->
+    <CreateItem Include="$(StageFolder)\Administration\bin\*.dll">
+        <Output TaskParameter="Include" ItemName="AdminCompileOutput" />
+    </CreateItem>
 		<Copy SourceFiles="@(AdminCompileOutput)" DestinationFolder="$(StageFolder)\bin\" />
 
-		<!-- delete the bin in SmartStore.Admin -->
+		<!-- delete \bin in SmartStore.Admin -->
 		<RemoveDir Directories="$(StageFolder)\Administration\bin\" />
 
 		<!-- delete the packages.config files -->
@@ -153,17 +152,19 @@
 		<!--<RemoveDir Directories="$(StageFolder)\Media\uploaded\" />
 		<Copy SourceFiles="@(UploadedImages)" DestinationFolder="$(StageFolder)\Media\uploaded\%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />-->
 
-		<!-- copy SQL Compact native binaries-->
+		<!-- copy native binaries-->
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
-		<Copy SourceFiles="@(SqlCe-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
-		
-		<!-- copy ClearScript.V8 Javascript engine files -->
-		<Copy SourceFiles="@(V8-Libs)" DestinationFolder="$(StageFolder)\bin\ClearScript.V8\%(RecursiveDir)" />
+		<Copy SourceFiles="@(SqlCe-Native-Binaries-x64)" DestinationFolder="$(StageFolder)\bin\x64\%(RecursiveDir)" />
+		<Copy SourceFiles="@(Msvcp140-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
+		<Copy SourceFiles="@(Msvcp140-Binaries-x64)" DestinationFolder="$(StageFolder)\bin\x64\%(RecursiveDir)" />
 		<Copy SourceFiles="@(V8-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
-		<Copy SourceFiles="@(V8-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
+		<Copy SourceFiles="@(V8-Native-Binaries-x64)" DestinationFolder="$(StageFolder)\bin\x64\%(RecursiveDir)" />
+		<Copy SourceFiles="@(LibSass-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
+		<Copy SourceFiles="@(LibSass-Native-Binaries-x64)" DestinationFolder="$(StageFolder)\bin\x64\%(RecursiveDir)" />
 
 		<!-- transform config files -->
 		<TransformXml Source="$(TransformInputFile)" Transform="$(TransformFile)" Destination="$(TransformOutputFile)" />
+		<TransformXml Source="$(WebFolder)\Config\log4net.Config" Transform="$(WebFolder)\Config\log4net.$(Configuration).Config" Destination="$(StageFolder)\Config\log4net.Config" />
 
 		<!-- delete obsolete config files -->							
 		<Attrib Files="$(StageFolder)\Web.Release.config" ReadOnly="false"/>
@@ -176,7 +177,19 @@
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/trace/@enabled" Value="false" />
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/machineKey/@validationKey" Value="AutoGenerate" />
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/machineKey/@decryptionKey" Value="AutoGenerate" />
-
+		
+		<!-- remove satellite dll folders gathered from nuget packages -->
+		<CallTarget Targets="Remove-Satellites"/>
+	</Target>
+	
+	<Target Name="Remove-Satellites">
+		<PropertyGroup>
+			<BinDir>$(StageFolder)\bin</BinDir>
+		</PropertyGroup>
+		<ItemGroup>
+			<SatelliteDirs Include="$(BinDir)\da;$(BinDir)\fi;$(BinDir)\ja;$(BinDir)\ko;$(BinDir)\mk;$(BinDir)\nl;$(BinDir)\pt;$(BinDir)\no;$(BinDir)\pl;$(BinDir)\ru-ru;$(BinDir)\sv;$(BinDir)\tr;$(BinDir)\uk;$(BinDir)\zh-CHS;$(BinDir)\zh-Hans;$(BinDir)\zh-Hant" />
+		</ItemGroup>	
+		<RemoveDir Directories="@(SatelliteDirs)" />
 	</Target>
   
 	<Target Name="Package-Zip">

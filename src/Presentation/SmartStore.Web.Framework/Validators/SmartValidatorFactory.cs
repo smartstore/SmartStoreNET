@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.Validators
 
 					// Validators can depend on some scoped dependencies settings (such as working language),
 					// that's why we do not cache validators in a singleton cache.
-					var requestCache = container.Resolve<ICacheManager>();
+					var requestCache = container.Resolve<IRequestCache>();
 
 					string cacheKey = "FluentValidator.{0}".FormatInvariant(attribute.ValidatorType.ToString());
 					var result = requestCache.Get(cacheKey, () => 
@@ -33,7 +33,6 @@ namespace SmartStore.Web.Framework.Validators
             }
 
             return null;
-
         }
     }
 }

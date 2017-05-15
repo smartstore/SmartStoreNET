@@ -24,9 +24,10 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.CustomerId)
-                            .Template(x => Html.ActionLink(x.CustomerEmail, "Edit", "Customer", new { id = x.CustomerId }, new { }))
                             .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
-                        columns.Bound(x => x.TotalItems).Width(100);
+                        columns.Bound(x => x.TotalItems)
+							.Centered()
+							.Width(100);
                     })
                     .DetailView(details => details.ClientTemplate(
                             Html.Telerik().Grid<ShoppingCartItemModel>()
@@ -34,13 +35,20 @@
                             .Columns(columns =>
                             {
                                 columns.Bound(sci => sci.ProductName)
-									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-                                columns.Bound(sci => sci.Quantity).Width(100);
-                                columns.Bound(sci => sci.UnitPrice).Width(100);
-                                columns.Bound(sci => sci.Total).Width(100);
-								columns.Bound(sci => sci.Store).Width(150);
-                                columns.Bound(sci => sci.UpdatedOn).Width(100);
+                                columns.Bound(sci => sci.Quantity)
+									.Centered()
+									.Width(100);
+                                columns.Bound(sci => sci.UnitPrice)
+									.RightAlign()
+									.Width(120);
+                                columns.Bound(sci => sci.Total)
+									.RightAlign()
+									.Width(120);
+								columns.Bound(sci => sci.Store)
+									.Width(220);
+                                columns.Bound(sci => sci.UpdatedOn)
+									.Width(140);
                             })
                             .DataBinding(dataBinding => dataBinding.Ajax()
                             .Select("GetWishlistDetails", "ShoppingCart", new

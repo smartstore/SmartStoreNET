@@ -148,7 +148,8 @@ namespace SmartStore.ShippingByWeight
                     continue;
                 subTotal += _priceCalculationService.GetSubTotal(shoppingCartItem, true);
             }
-            decimal weight = _shippingService.GetShoppingCartTotalWeight(request.Items);
+
+            var weight = _shippingService.GetShoppingCartTotalWeight(request.Items, _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts);
 
             var shippingMethods = _shippingService.GetAllShippingMethods(request);
             foreach (var shippingMethod in shippingMethods)

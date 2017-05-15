@@ -5,7 +5,6 @@ using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {
-
 	[Serializable]
 	public class SelectedTabInfo
 	{
@@ -21,11 +20,10 @@ namespace SmartStore.Web.Framework.UI
 
     public class Tab : NavigationItemWithContent
     {
-
         public Tab()
         {
-            // [...]
-        }
+			// [...]
+		}
 
         public string Name
         {
@@ -38,7 +36,5 @@ namespace SmartStore.Web.Framework.UI
             get;
             set;
         }
-
-    }
-
+	}
 }

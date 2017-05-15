@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
 using SmartStore.Core.IO;
@@ -49,7 +50,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					queuedEmail.Attachments.Add(new QueuedEmailAttachment
 					{
 						StorageLocation = EmailAttachmentStorageLocation.Blob,
-						Data = File.ReadAllBytes(path),
+						MediaStorage = new MediaStorage { Data = File.ReadAllBytes(path) },
 						Name = name,
 						MimeType = MimeTypes.MapNameToMimeType(name)
 					});
@@ -59,7 +60,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				++count;
 			}
 
-			context.Log.Information("{0} email(s) created and queued for deployment.".FormatInvariant(count));
+			context.Log.Info("{0} email(s) created and queued for deployment.".FormatInvariant(count));
 		}
 	}
 }

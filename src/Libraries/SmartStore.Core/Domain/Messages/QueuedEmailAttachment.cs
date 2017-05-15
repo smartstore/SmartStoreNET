@@ -1,13 +1,13 @@
-﻿using SmartStore.Core.Domain.Media;
+﻿using System;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Core.Domain.Messages
 {
 	/// <summary>
-	/// Reperesents an e-mail attachment
+	/// Represents an e-mail attachment
 	/// </summary>
-	public partial class QueuedEmailAttachment : BaseEntity
+	public partial class QueuedEmailAttachment : BaseEntity, IHasMedia
 	{
-
 		/// <summary>
 		/// Gets or sets the queued email identifier
 		/// </summary>
@@ -44,6 +44,7 @@ namespace SmartStore.Core.Domain.Messages
 		/// <summary>
 		/// The attachment's binary data (only applicable if location is <c>Blob</c>)
 		/// </summary>
+		[Obsolete("Use property MediaStorage instead")]
 		public byte[] Data { get; set; }
 
 		/// <summary>
@@ -56,6 +57,14 @@ namespace SmartStore.Core.Domain.Messages
 		/// </summary>
 		public string MimeType { get; set; }
 
-	}
+		/// <summary>
+		/// Gets or sets the media storage identifier
+		/// </summary>
+		public int? MediaStorageId { get; set; }
 
+		/// <summary>
+		/// Gets or sets the media storage
+		/// </summary>
+		public virtual MediaStorage MediaStorage { get; set; }
+	}
 }

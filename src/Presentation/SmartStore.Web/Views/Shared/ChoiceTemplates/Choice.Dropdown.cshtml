@@ -1,0 +1,27 @@
+﻿@model ChoiceModel
+
+@using SmartStore.Web.Framework.UI.Choices;
+
+@{ 
+	var controlId = Model.BuildControlId();
+	var items = Model.Values ?? new List<ChoiceItemModel>();
+}
+
+<select id="@controlId" name="@controlId" class="form-control" @Html.Attr("disabled", "disabled", Model.IsDisabled)>
+	@if (!Model.IsRequired)
+	{
+		<option>@T("Common.Unspecified")</option>
+	}
+	else if (items.Count > 0 && !items.Any(x => x.IsPreSelected))
+	{
+		<option>@T("Common.PleaseSelect")</option>
+	}
+	@foreach (var item in items)
+	{
+		var hasColor = item.Color.HasValue() && item.Color != "transparent";
+		var hasImage = item.ImageUrl.HasValue();
+		<option value="@item.Id" @Html.Attr("selected", "selected", item.IsPreSelected) @Html.Attr("data-imageurl", item.ImageUrl, hasImage) @Html.Attr("data-color", item.Color, hasColor && !hasImage)>
+			@item.GetItemLabel()
+		</option>
+	}
+</select>

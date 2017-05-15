@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -542,14 +543,14 @@ namespace SmartStore.Services.Customers.Importer
 							currentPictures.Add(picture);
 						}
 
-						pictureBinary = _pictureService.ValidatePicture(pictureBinary);
+						var size = Size.Empty;
+						pictureBinary = _pictureService.ValidatePicture(pictureBinary, out size);
 						pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
-							if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false)) != null)
+							if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false)) != null)
 							{
-								_pictureRepository.Context.SaveChanges();
 								SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
 							}
 						}

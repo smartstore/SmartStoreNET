@@ -47,6 +47,7 @@ namespace SmartStore.Admin.Models.Orders
 			public string ProductTypeName { get; set; }
 			public string ProductTypeLabelHint { get; set; }
             public string Sku { get; set; }
+            public string Gtin { get; set; }
             public string AttributeInfo { get; set; }
 
             //weight of one item (product)

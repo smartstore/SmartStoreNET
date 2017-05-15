@@ -1,0 +1,151 @@
+﻿@model WishlistModel
+@using SmartStore.Web.Models.ShoppingCart;
+@using SmartStore.Core.Domain.Orders;
+
+@{
+    int descMaxLength = Model.ShowProductImages ? 120 : 140;
+    int attrMaxLength = Model.ShowProductImages ? 50 : 70;
+}
+
+<div class="offcanvas-cart-body offcanvas-scrollable">
+	@if (Model.Items.Count == 0) 
+	{
+		<div class="no-items">
+			<h4 class="no-item-title">
+				@T("ShoppingCart.Mini.EmptyWishlist.Title")
+			</h4>
+			<p class="no-item-icon">
+				<i class="fa fa-heart-o fa-4x"></i>
+			</p>
+			<p class="no-item-info text-muted">
+				@T("ShoppingCart.Mini.EmptyWishlist.Info", "fa fa-lg fa-heart-o")
+			</p>
+		</div>
+	}
+
+    @if (Model.Items.Count > 0)
+	{
+		// Items added in the last 2 seconds are considered to be current
+		var currentItem = Model.Items.FirstOrDefault(x => x.CreatedOnUtc >= DateTime.UtcNow.AddSeconds(-2));
+
+		if (currentItem != null)
+		{
+			<div class="alert alert-success alert-dismissible fade show" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				@Html.Raw(T("ShoppingCart.Mini.AddedItemToWishlist", "<strong>" + currentItem.ProductName.Truncate(50, "...") + "</strong>").Text)
+			</div>
+        }
+
+        <div class="offcanvas-cart-items">
+			@foreach (var item in Model.Items)
+            {
+                <div class="offcanvas-cart-item">
+                    <div class="row sm-gutters">
+                        @if (Model.ShowProductImages)
+                        {
+                            <div class="col col-alpha">
+                                @if (item.Picture.ImageUrl.HasValue())
+                                {
+                                    <a class="img-center-container" href="@item.ProductUrl" title="@item.Picture.Title">
+                                        <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+                                    </a>
+                                }
+                            </div>
+                        }
+
+                        <div class="col col-data">
+                            <a class="name font-weight-medium" href="@item.ProductUrl" title="@item.ProductName">@item.ProductName</a>
+                            <div class="short-desc text-muted">
+                                @Html.Raw(item.ShortDesc.Truncate(descMaxLength, "..."))
+                            </div>
+
+                            @if (item.AttributeInfo.HasValue())
+                            {
+                                <div class="attributes">
+                                    @Html.Raw(item.AttributeInfo)
+                                </div>
+                            }
+
+                            @if (item.ChildItems.Count > 0)
+                            {
+                                <div class="mb-bundle-pictures mt-3">
+                                    @for (int j = 0, bundlelength = item.ChildItems.Count; j < bundlelength; j++)
+                                    {
+                                        var bundleItem = item.ChildItems[j];
+
+                                        if (bundleItem.Picture.ImageUrl.HasValue())
+                                        {
+                                            <a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
+                                                <img alt="@bundleItem.ProductName" src="@bundleItem.Picture.ImageUrl" title="@bundleItem.ProductName" />
+                                            </a>
+                                        }
+
+                                        if (bundlelength != (j + 1))
+                                        {
+                                            <i class="fa fa-plus"></i>
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row sm-gutters flex-wrap align-items-center mt-2">
+                        <div class="col col-alpha">
+                            @Html.EditorFor(x => item, "QtyInput",
+                                new { htmlAttributes = new { data_update_url = Url.Action("UpdateCartItem", "ShoppingCart"), data_type = "wishlist", data_sci_id = item.Id }
+                            })
+                        </div>
+                        <div class="col">
+                            <span class="price unit-price">
+                                @item.UnitPrice
+                            </span>
+                        </div>
+
+                        <div class="ml-auto text-nowrap">
+                            @if (Model.ShowItemsFromWishlistToCartButton)
+                            {
+                                <a class="btn btn-secondary btn-sm btn-icon ajax-cart-link" title='@T("ShoppingCart.AddToCart")'
+                                    href="#"
+                                    rel="nofollow"
+                                    data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.Wishlist })"
+                                    data-name="@item.ProductName"
+                                    data-type="cart"
+                                    data-action="addfromwishlist">
+                                    <i class="fa fa-cart-arrow-down"></i>
+                                </a>
+                            }
+                            <a class="btn btn-secondary btn-to-danger btn-sm btn-icon remove ajax-cart-link"
+                                href="#"
+                                rel="nofollow"
+                                data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id, wishlistItem = true })'
+                                data-name="@item.ProductName"
+                                data-type="wishlist"
+                                data-action="remove"
+                                title='@T("Common.Remove")'>
+                                <i class="fa fa-trash-o"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+            @{ Html.RenderWidget("offcanvas_wishlist_items_after"); }
+        </div>
+    }
+</div>
+
+@if (Model.Items.Count > 0)
+{
+    <div class="offcanvas-cart-footer">
+        <div class="offcanvas-cart-footer-row">
+            <a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("Wishlist")">
+                <i class="fa fa-check"></i>
+                <span>@T("Wishlist.Mini.ViewWishlist")</span>
+            </a>
+        </div>
+    </div>
+}

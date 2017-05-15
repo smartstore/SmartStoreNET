@@ -6,12 +6,15 @@ using System.Web.Routing;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
+using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -23,16 +26,18 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Order;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class OrderController : PublicControllerBase
+	public partial class OrderController : PublicControllerBase
     {
 		#region Fields
 
@@ -48,18 +53,23 @@ namespace SmartStore.Web.Controllers
         private readonly ICountryService _countryService;
 		private readonly IProductService _productService;
 		private readonly IProductAttributeFormatter _productAttributeFormatter;
-		private readonly IProductAttributeParser _productAttributeParser;
 		private readonly IStoreService _storeService;
         private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _services;
         private readonly IQuantityUnitService _quantityUnitService;
+		private readonly ProductUrlHelper _productUrlHelper;
+		private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IPictureService _pictureService;
+		private readonly CatalogSettings _catalogSettings;
+		private readonly MediaSettings _mediaSettings;
+		private readonly ShoppingCartSettings _shoppingCartSettings;
 
-        #endregion
+		#endregion
 
 		#region Constructors
 
-        public OrderController(
+		public OrderController(
 			IOrderService orderService, 
             IShipmentService shipmentService,
             ICurrencyService currencyService, 
@@ -74,11 +84,15 @@ namespace SmartStore.Web.Controllers
 			IStoreService storeService,
 			IProductService productService,
 			IProductAttributeFormatter productAttributeFormatter,
-			IProductAttributeParser productAttributeParser,
-			Lazy<IPictureService> pictureService,
 			PluginMediator pluginMediator,
 			ICommonServices services,
-            IQuantityUnitService quantityUnitService)
+            IQuantityUnitService quantityUnitService,
+			ProductUrlHelper productUrlHelper,
+			IProductAttributeParser productAttributeParser,
+			IPictureService pictureService,
+			CatalogSettings catalogSettings,
+			MediaSettings mediaSettings,
+			ShoppingCartSettings shoppingCartSettings)
         {
             this._orderService = orderService;
             this._shipmentService = shipmentService;
@@ -92,12 +106,17 @@ namespace SmartStore.Web.Controllers
             this._countryService = countryService;
 			this._productService = productService;
 			this._productAttributeFormatter = productAttributeFormatter;
-			this._productAttributeParser = productAttributeParser;
 			this._storeService = storeService;
             this._checkoutAttributeFormatter = checkoutAttributeFormatter;
 			this._pluginMediator = pluginMediator;
 			this._services = services;
             this._quantityUnitService = quantityUnitService;
+			this._productUrlHelper = productUrlHelper;
+			this._pictureService = pictureService;
+			this._catalogSettings = catalogSettings;
+			this._productAttributeParser = productAttributeParser;
+			this._mediaSettings = mediaSettings;
+			this._shoppingCartSettings = shoppingCartSettings;
         }
 
         #endregion
@@ -125,6 +144,7 @@ namespace SmartStore.Web.Controllers
 			model.MerchantCompanyInfo = companyInfoSettings;
             model.Id = order.Id;
 			model.StoreId = order.StoreId;
+            model.CustomerComment = order.CustomerOrderComment;
             model.OrderNumber = order.GetOrderNumber();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc);
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_services.Localization, _services.WorkContext);
@@ -158,8 +178,7 @@ namespace SmartStore.Web.Controllers
                     model.Shipments.Add(shipmentModel);
                 }
             }
-
-
+            
             //billing info
 			model.BillingAddress.PrepareModel(order.BillingAddress, false, addressSettings);
 
@@ -325,17 +344,21 @@ namespace SmartStore.Web.Controllers
                 .OrderByDescending(on => on.CreatedOnUtc)
                 .ToList())
             {
-                model.OrderNotes.Add(new OrderDetailsModel.OrderNote
+				var createdOn = _dateTimeHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc);
+
+				model.OrderNotes.Add(new OrderDetailsModel.OrderNote
                 {
                     Note = orderNote.FormatOrderNoteText(),
-                    CreatedOn = _dateTimeHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc)
-                });
+                    CreatedOn = createdOn,
+					FriendlyCreatedOn = createdOn.RelativeFormat(false, "f")
+				});
             }
 
 
-            //purchased products
+            // purchased products
 			model.ShowSku = catalogSettings.ShowProductSku;
-            var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
+			model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
+			var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
 
             foreach (var orderItem in orderItems)
             {
@@ -416,8 +439,6 @@ namespace SmartStore.Web.Controllers
 
                 orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
 
-				var attributeQueryData = new List<List<int>>();
-
                 var shipmentItemModel = new ShipmentDetailsModel.ShipmentItemModel
                 {
                     Id = shipmentItem.Id,
@@ -430,20 +451,9 @@ namespace SmartStore.Web.Controllers
                     QuantityShipped = shipmentItem.Quantity
                 };
 
-				if (orderItem.Product.ProductType != ProductType.BundledProduct)
-				{
-					_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
-				}
-				else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
-				{
-					var bundleData = orderItem.GetBundleData();
+				shipmentItemModel.ProductUrl = _productUrlHelper.GetProductUrl(shipmentItemModel.ProductSeName, orderItem);
 
-					bundleData.ForEach(x => _productAttributeParser.DeserializeQueryData(attributeQueryData, x.AttributesXml, x.ProductId, x.BundleItemId));
-				}
-
-				shipmentItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, shipmentItemModel.ProductSeName);
-
-                model.Items.Add(shipmentItemModel);
+				model.Items.Add(shipmentItemModel);
             }
 
             model.Order = PrepareOrderDetailsModel(order);
@@ -453,7 +463,7 @@ namespace SmartStore.Web.Controllers
 
 		private OrderDetailsModel.OrderItemModel PrepareOrderItemModel(Order order, OrderItem orderItem)
 		{
-			var attributeQueryData = new List<List<int>>();
+			var language = _services.WorkContext.WorkingLanguage;
 
 			orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
 
@@ -468,11 +478,6 @@ namespace SmartStore.Web.Controllers
 				Quantity = orderItem.Quantity,
 				AttributeInfo = orderItem.AttributeDescription
 			};
-
-			if (orderItem.Product.ProductType != ProductType.BundledProduct)
-			{
-				_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
-			}
 
             var quantityUnit = _quantityUnitService.GetQuantityUnitById(orderItem.Product.QuantityUnitId);
             model.QuantityUnit = (quantityUnit == null ? "" : quantityUnit.GetLocalized(x => x.Name));
@@ -497,57 +502,92 @@ namespace SmartStore.Web.Controllers
 						AttributeInfo = bundleItem.AttributesInfo
 					};
 
-					bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(bundleItem.AttributesXml, bundleItem.ProductId, bundleItemModel.ProductSeName);
-
-					if (orderItem.Product.BundlePerItemPricing)
-					{
-						_productAttributeParser.DeserializeQueryData(attributeQueryData, bundleItem.AttributesXml, bundleItem.ProductId, bundleItem.BundleItemId);
-					}
+					bundleItemModel.ProductUrl = _productUrlHelper.GetProductUrl(bundleItem.ProductId, bundleItemModel.ProductSeName, bundleItem.AttributesXml);
 
 					if (model.BundlePerItemShoppingCart)
 					{
 						decimal priceWithDiscount = _currencyService.ConvertCurrency(bundleItem.PriceWithDiscount, order.CurrencyRate);
-						bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(priceWithDiscount, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false, false);
+						bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(priceWithDiscount, true, order.CustomerCurrencyCode, language, false, false);
 					}
 					
 					model.BundleItems.Add(bundleItemModel);
 				}
 			}
 
-			//unit price, subtotal
+			// Unit price, subtotal
 			switch (order.CustomerTaxDisplayType)
 			{
 				case TaxDisplayType.ExcludingTax:
 					{
 						var unitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceExclTax, order.CurrencyRate);
-						model.UnitPrice = _priceFormatter.FormatPrice(unitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false, false);
+						model.UnitPrice = _priceFormatter.FormatPrice(unitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, false, false);
 
 						var priceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceExclTax, order.CurrencyRate);
-						model.SubTotal = _priceFormatter.FormatPrice(priceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false, false);
+						model.SubTotal = _priceFormatter.FormatPrice(priceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, false, false);
 					}
 					break;
 
 				case TaxDisplayType.IncludingTax:
 					{
 						var unitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceInclTax, order.CurrencyRate);
-						model.UnitPrice = _priceFormatter.FormatPrice(unitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, true, false);
+						model.UnitPrice = _priceFormatter.FormatPrice(unitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, true, false);
 
 						var priceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.PriceInclTax, order.CurrencyRate);
-						model.SubTotal = _priceFormatter.FormatPrice(priceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, true, false);
+						model.SubTotal = _priceFormatter.FormatPrice(priceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, language, true, false);
 					}
 					break;
 			}
 
-			model.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, model.ProductSeName);
+			model.ProductUrl = _productUrlHelper.GetProductUrl(model.ProductSeName, orderItem);
+			
+			if (_shoppingCartSettings.ShowProductImagesOnShoppingCart)
+			{
+				model.Picture = PrepareOrderItemPictureModel(orderItem.Product, _mediaSettings.CartThumbPictureSize, model.ProductName, orderItem.AttributesXml);
+			}				
 
 			return model;
 		}
 
-        #endregion
+		private PictureModel PrepareOrderItemPictureModel(Product product, int pictureSize, string productName, string attributesXml)
+		{
+			Guard.NotNull(product, nameof(product));
 
-        #region Order details
+			var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+			Picture picture = null;
+
+			if (combination != null)
+			{
+				var picturesIds = combination.GetAssignedPictureIds();
+				if (picturesIds != null && picturesIds.Length > 0)
+					picture = _pictureService.GetPictureById(picturesIds[0]);
+			}
+
+			// no attribute combination image, then load product picture
+			if (picture == null)
+				picture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
+
+			if (picture == null && !product.VisibleIndividually && product.ParentGroupedProductId > 0)
+			{
+				// let's check whether this product has some parent "grouped" product
+				picture = _pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault();
+			}
+			
+			return new PictureModel
+			{
+				PictureId = picture != null ? picture.Id : 0,
+				Size = pictureSize,
+				ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
+				Title = T("Media.Product.ImageLinkTitleFormat", productName),
+				AlternateText = T("Media.Product.ImageAlternateTextFormat", productName)
+			};
+		}
+
+		#endregion
+
+		#region Order details
+
+		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
         public ActionResult Details(int id)
         {
 			var order = _orderService.GetOrderById(id);

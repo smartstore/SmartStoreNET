@@ -9,10 +9,10 @@
         /// Initial state
         /// </summary>
         Initial = 0,
-        /// <summary>
-        /// Position (display order)
-        /// </summary>
-        Position = 1,
+		/// <summary>
+		/// Relevance
+		/// </summary>
+		Relevance = 1,
         /// <summary>
         /// Name: A to Z
         /// </summary>

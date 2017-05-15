@@ -15,7 +15,7 @@
             @T("Admin.Orders")
         </div>
         <div class="options">
-			@Html.Widget("admin_button_toolbar_before")
+			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
 			<div class="btn-group">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -36,7 +36,7 @@
 				</ul>
 			</div>
 
-			@Html.Widget("admin_button_toolbar_after")
+			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
 

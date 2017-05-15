@@ -1,29 +1,41 @@
-﻿@using SmartStore.Web.Framework.Theming;
-
-@{
-    Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+﻿@{
+	Layout = "_Layout";
 }
 
 <div class="page home-page">
     <div class="page-body">
-        @Html.Widget("home_page_top")
-        @Html.Action("TopicBlock", "Topic", new { systemName = "HomePageText" })
+		@{
+            Html.RenderWidget("home_page_top");
 
-        @Html.Action("HomepageCategories", "Catalog")
+            Html.RenderAction("TopicBlock", "Topic", new { systemName = "HomePageText", isLead = true });
+            Html.RenderWidget("home_page_after_intro");
 
-        @Html.Action("HomepageProducts", "Catalog")
+            Html.RenderAction("HomepageCategories", "Catalog");
+            Html.RenderWidget("home_page_after_categories");
 
-        @Html.Action("HomepageBestSellers", "Catalog")
+            Html.RenderAction("HomepageProducts", "Catalog");
+            Html.RenderWidget("home_page_after_products");
 
-        @Html.Action("HomePageNews", "News")
+            Html.RenderAction("HomepageBestSellers", "Catalog");
+            Html.RenderWidget("home_page_after_bestsellers");
 
-        @Html.Action("HomePagePolls", "Poll")
-        @Html.Widget("home_page_bottom")
+            Html.RenderAction("HomepageManufacturers", "Catalog");
+            Html.RenderWidget("home_page_after_manufacturers");
+
+            Html.RenderAction("PopularProductTags", "Catalog", new { area = "" });
+            Html.RenderWidget("home_page_after_tags");
+
+            Html.RenderAction("HomePageNews", "News");
+            Html.RenderWidget("home_page_after_news");
+
+            Html.RenderAction("HomePagePolls", "Poll");
+            Html.RenderWidget("home_page_after_polls");
+
+			@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
+            Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" });
+
+            Html.RenderWidget("home_page_bottom");
+		}
     </div>
 </div>
 
-@section teaser {
-
-    @Html.Action("ContentSlider", "Home")
-
-}

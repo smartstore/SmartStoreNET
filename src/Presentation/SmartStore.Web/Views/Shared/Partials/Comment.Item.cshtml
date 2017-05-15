@@ -1,0 +1,48 @@
+﻿@model CommentModel
+
+@using SmartStore.Web.Models.Common;
+
+@{
+
+}
+
+<div class="row sm-gutters comment-item">
+	@if (Model.Parent.HasAnyAvatar())
+	{
+		<div class="col comment-avatar-col">
+			@if (Model.CustomerAvatarUrl.HasValue())
+			{
+				<div class="comment-avatar text-center">
+					<img class="img-fluid img-thumbnail" src="@(Model.CustomerAvatarUrl)" title="avatar" alt="avatar" />
+				</div>
+			}
+		</div>
+	}
+	<div class="col comment-content-col">
+		<div class="comment-content">
+			<div class="comment-meta">
+				<span class="comment-time text-muted">
+					@Model.CreatedOnPretty
+				</span>
+				<span class="px-2 text-muted">|</span>
+				@if (Model.AllowViewingProfiles)
+				{
+					<a class="comment-user" href="@Url.RouteUrl("CustomerProfile", new { id = Model.CustomerId })" rel="nofollow">@(Model.CustomerName)</a>
+				}
+				else
+				{
+					<span class="comment-user font-weight-medium">@(Model.CustomerName)</span>
+				}
+			</div>
+			@if (Model.CommentTitle.HasValue())
+			{
+				<h5 class="comment-title mt-2">
+					@Html.Raw(Model.CommentTitle)
+				</h5>
+			}
+			<p class="comment-body text-body mt-4 mb-0">
+				@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(Model.CommentText, false, true, false, false, false, false))
+			</p>
+		</div>
+	</div>
+</div>

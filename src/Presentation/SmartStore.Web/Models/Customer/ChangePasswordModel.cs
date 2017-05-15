@@ -26,8 +26,5 @@ namespace SmartStore.Web.Models.Customer
         public string ConfirmNewPassword { get; set; }
 
         public string Result { get; set; }
-
-        public CustomerNavigationModel NavigationModel { get; set; }
-
     }
 }

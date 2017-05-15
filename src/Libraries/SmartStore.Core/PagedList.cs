@@ -6,7 +6,6 @@ namespace SmartStore.Core
 {
     public abstract class PagedListBase : IPageable
     {
-
         protected PagedListBase()
         {
             this.PageIndex = 0;
@@ -36,7 +35,7 @@ namespace SmartStore.Core
 
         public void Init(IPageable pageable)
         {
-            Guard.ArgumentNotNull(pageable, "pageable");
+            Guard.NotNull(pageable, "pageable");
 
             this.PageIndex = pageable.PageIndex;
             this.PageSize = pageable.PageSize;

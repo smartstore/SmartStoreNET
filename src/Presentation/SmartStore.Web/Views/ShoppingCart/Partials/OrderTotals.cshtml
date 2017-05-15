@@ -1,0 +1,167 @@
+﻿@model OrderTotalsModel
+@using SmartStore.Web.Models.ShoppingCart;
+
+@if (Model.ShowConfirmOrderLegalHint && !Model.IsEditable)
+{
+    <div class="alert alert-warning confirm-order-legal-hint">
+        @T("OrderSummary.ConfirmOrderLegalHint")
+    </div>
+}
+
+<table class="cart-summary">
+    @if (Model.DisplayWeight)
+	{
+		<tr class="cart-summary-weight">
+			<td class="cart-summary-label">@T("ShoppingCart.Weight"):</td>
+			<td class="cart-summary-value">@(Model.Weight.ToString("N2")) @Model.WeightMeasureUnitName</td>
+		</tr>
+	}
+	<tr class="cart-summary-subtotal">
+		<td class="cart-summary-label">@T("ShoppingCart.Totals.SubTotal"):</td>
+		<td class="cart-summary-value">@Model.SubTotal</td>
+	</tr>
+    @if (Model.SubTotalDiscount.HasValue())
+    {
+		<tr class="cart-summary-subtotaldiscount cart-summary-pos">
+			<td class="cart-summary-label">
+				<span class="text-nowrap">
+					@if (Model.AllowRemovingSubTotalDiscount)
+					{
+						<button type="submit"
+								class="tooltip-toggle remove-discount-button mr-1"
+								title="@T("Common.Remove")"
+								name="removesubtotaldiscount"
+								value="removesubtotaldiscount">
+							<i class="fa">×</i>
+						</button>
+					}
+					@T("ShoppingCart.Totals.SubTotalDiscount"):
+				</span>
+			</td>
+			<td class="cart-summary-value">@Model.SubTotalDiscount</td>
+		</tr>
+	}
+	<tr class="cart-summary-shipping">
+		<td class="cart-summary-label">
+			<span class="text-nowrap">@T("ShoppingCart.Totals.Shipping"):</span>
+			@if (Model.RequiresShipping && Model.SelectedShippingMethod.HasValue())
+			{
+				<span class="font-weight-medium">
+					@Model.SelectedShippingMethod
+				</span>
+			}
+		</td>
+		<td class="cart-summary-value">
+			@if (Model.RequiresShipping)
+			{
+				if (Model.Shipping.HasValue())
+				{
+					<span class="cart-summary-neg">@Model.Shipping</span>
+				}
+				else
+				{
+					<span class="text-muted text-wrap">@T("ShoppingCart.Totals.CalculatedDuringCheckout")</span>
+				}
+			}
+			else
+			{
+				<span class="text-muted text-wrap">@T("ShoppingCart.Totals.Shipping.NotRequired")</span>
+			}
+		</td>
+	</tr>
+
+    @if (Model.PaymentMethodAdditionalFee.HasValue())
+    {
+		<tr class="cart-summary-payfee cart-summary-neg">
+			<td class="cart-summary-label">@T("ShoppingCart.Totals.PaymentMethodAdditionalFee"):</td>
+			<td class="cart-summary-value">@Model.PaymentMethodAdditionalFee</td>
+		</tr>
+	}
+    @if (Model.DisplayTaxRates && Model.TaxRates.Count > 0)
+    {
+        foreach (var taxRate in Model.TaxRates)
+        {
+			<tr class="cart-summary-tax">
+				<td class="cart-summary-label">@taxRate.Label:</td>
+				<td class="cart-summary-value">@taxRate.Value</td>
+			</tr>
+		}
+	}
+    @if (Model.DisplayTax)
+    {
+		<tr class="cart-summary-tax">
+			<td class="cart-summary-label">@T("ShoppingCart.Totals.Tax"):</td>
+			<td class="cart-summary-value">@Model.Tax</td>
+		</tr>
+	}
+    @if (Model.OrderTotalDiscount.HasValue())
+    {
+		<tr class="cart-summary-totaldiscount cart-summary-pos">
+			<td class="cart-summary-label">
+				<span class="text-nowrap">
+					@if (Model.AllowRemovingOrderTotalDiscount)
+					{
+						<button type="submit"
+								class="tooltip-toggle remove-discount-button mr-1"
+								title="@T("Common.Remove")"
+								name="removeordertotaldiscount"
+								value="removeordertotaldiscount">
+							<i class="fa">×</i>
+						</button>
+					}
+					@T("ShoppingCart.Totals.OrderTotalDiscount"):
+				</span>
+			</td>
+			<td class="cart-summary-value">@Model.OrderTotalDiscount</td>
+		</tr>
+	}
+    @if (Model.GiftCards.Count > 0)
+    {
+        foreach (var gc in Model.GiftCards)
+        {
+			<tr class="cart-summary-giftcard">
+				<td class="cart-summary-label">
+					<div class="row xs-gutters">
+						@if (Model.IsEditable)
+						{
+							<div class="col col-auto">
+								<button type="submit"
+										class="tooltip-toggle remove-gift-card-button"
+										title="@T("Common.Remove")"
+										name="removegiftcard"
+										value="removegiftcard">
+									<i class="fa">×</i>
+								</button>
+							</div>
+						}
+						<div class="col cart-summary-pos">
+							@T("ShoppingCart.Totals.GiftCardInfo", gc.CouponCode)
+							<span class="text-muted text-nowrap small">@T("ShoppingCart.Totals.GiftCardInfo.Remaining", gc.Remaining)</span>
+						</div>
+					</div>
+				</td>
+				<td class="cart-summary-value cart-summary-pos">@gc.Amount</td>
+			</tr>
+		}
+	}
+    @if (Model.RedeemedRewardPoints > 0)
+    {
+		<tr class="cart-summary-rewardpoints cart-summary-pos">
+			<td class="cart-summary-label">@T("ShoppingCart.Totals.RewardPoints", Model.RedeemedRewardPoints):</td>
+			<td class="cart-summary-value">@Model.RedeemedRewardPointsAmount</td>
+		</tr>
+	}
+	<tr class="cart-summary-total">
+		<td class="cart-summary-label">@T("ShoppingCart.Totals.OrderTotal"):</td>
+		<td class="cart-summary-value">
+			@if (Model.OrderTotal.HasValue())
+			{
+				<span>@Model.OrderTotal</span>
+			}
+			else
+			{
+				<span class="text-muted fs-h6 font-weight-normal text-wrap">@T("ShoppingCart.Totals.CalculatedDuringCheckout")</span>
+			}
+		</td>
+	</tr>
+</table>

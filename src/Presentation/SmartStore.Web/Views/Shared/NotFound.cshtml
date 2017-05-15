@@ -1,26 +1,29 @@
 ﻿@model HandleErrorInfo
 
 @{
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    Layout = "_Layout";
 
-    //title
 	Html.AddTitleParts(T("NotFoundPage.Title").Text);
 }
 
-<div class="page not-found-page">
+<div class="page not-found-page text-center">
     <div class="page-title">
-        <h1>@T("NotFoundPage.Title")</h1>
+        <h1 class="text-muted" style="font-size: 220px; line-height: 280px">@T("NotFoundPage.Title")</h1>
     </div>
-    <p class="page-body">
+    <p class="page-body lead fs-h4">
 		@T("NotFoundPage.Body")
     </p>
 
-	<p class="buttons">
-		<a class="btn btn-default btn-large" href="~/">
-			@T("Homepage")
-		</a>
-		<a class="btn btn-warning btn-large" href="@Url.RouteUrl("ContactUs")">
-			@T("ContactUs")
-		</a>
-	</p>
+	<div class="row buttons my-6 xs-gutters">
+		<div class="col-sm-3 offset-sm-3">
+			<a class="btn btn-secondary btn-block btn-lg" href="~/">
+				@T("Homepage")
+			</a>
+		</div>
+		<div class="col-sm-3 mt-3 mt-sm-0">
+			<a class="btn btn-warning btn-block btn-lg" href="@Url.RouteUrl("ContactUs")">
+				@T("ContactUs")
+			</a>
+		</div>
+	</div>
 </div>

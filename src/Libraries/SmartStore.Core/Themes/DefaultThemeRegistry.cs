@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -9,19 +8,17 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using SmartStore.Collections;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.IO.WebSite;
+using SmartStore.Core.Logging;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Themes
 {
     public partial class DefaultThemeRegistry : DisposableObject, IThemeRegistry
     {
-		#region Fields
-
 		private readonly bool _enableMonitoring;
 		private readonly string _themesBasePath;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly IApplicationEnvironment _env;
 		private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string, ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
 		private readonly ConcurrentDictionary<EventThrottleKey, Timer> _eventQueue = new ConcurrentDictionary<EventThrottleKey, Timer>();
 
@@ -30,15 +27,14 @@ namespace SmartStore.Core.Themes
 		private FileSystemWatcher _monitorFolders;
 		private FileSystemWatcher _monitorFiles;
 
-		#endregion
-
-		#region Constructors
-
-		public DefaultThemeRegistry(IEventPublisher eventPublisher, bool? enableMonitoring, string themesBasePath, bool autoLoadThemes)
+		public DefaultThemeRegistry(IEventPublisher eventPublisher, IApplicationEnvironment env, bool? enableMonitoring, string themesBasePath, bool autoLoadThemes)
         {
 			this._enableMonitoring = enableMonitoring ?? CommonHelper.GetAppSetting("sm:MonitorThemesFolder", true);
-			this._themesBasePath = themesBasePath.NullEmpty() ?? CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 			this._eventPublisher = eventPublisher;
+			this._env = env;
+			this._themesBasePath = themesBasePath.NullEmpty() ?? _env.ThemesFolder.RootPath;
+
+			Logger = NullLogger.Instance;
 
 			if (autoLoadThemes)
 			{
@@ -52,7 +48,7 @@ namespace SmartStore.Core.Themes
 			this.StartMonitoring(false);
         }
 
-		#endregion 
+		public ILogger Logger { get; set; }
 
 		#region IThemeRegistry
 
@@ -101,7 +97,7 @@ namespace SmartStore.Core.Themes
 
 		private void AddThemeManifestInternal(ThemeManifest manifest, bool isInit)
 		{
-			Guard.ArgumentNotNull(() => manifest);
+			Guard.NotNull(manifest, nameof(manifest));
 
 			if (!isInit)
 			{
@@ -190,7 +186,7 @@ namespace SmartStore.Core.Themes
 
 		public IEnumerable<ThemeManifest> GetChildrenOf(string themeName, bool deep = true)
 		{
-			Guard.ArgumentNotEmpty(() => themeName);
+			Guard.NotEmpty(themeName, nameof(themeName));
 
 			if (!ThemeManifestExists(themeName))
 				Enumerable.Empty<ThemeManifest>();
@@ -212,16 +208,16 @@ namespace SmartStore.Core.Themes
 		{
 			_themes.Clear();
 			
-			var folder = EngineContext.Current.Resolve<IWebSiteFolder>();
+			var folder = _env.ThemesFolder;
 			var folderDatas = new List<ThemeFolderData>();
-			var dirs = folder.ListDirectories(_themesBasePath);
+			var dirs = folder.ListDirectories("");
 
 			// create folder (meta)datas first
 			foreach (var path in dirs)
 			{
 				try
 				{
-					var folderData = ThemeManifest.CreateThemeFolderData(CommonHelper.MapPath(path), _themesBasePath);
+					var folderData = ThemeManifest.CreateThemeFolderData(folder.MapPath(path), _themesBasePath);
 					if (folderData != null)
 					{
 						folderDatas.Add(folderData);
@@ -229,7 +225,7 @@ namespace SmartStore.Core.Themes
 				}
 				catch (Exception ex)
 				{
-					Debug.WriteLine("ERR - unable to create folder data for folder '{0}': {1}".FormatCurrent(path, ex.Message));
+					Logger.Error(ex, "Unable to create folder data for folder '{0}'".FormatCurrent(path));
 				}
 			}
 
@@ -241,7 +237,9 @@ namespace SmartStore.Core.Themes
 			}
 			catch (CyclicDependencyException)
 			{
-				throw new CyclicDependencyException("Cyclic theme dependencies detected. Please check the 'baseTheme' attribute of your themes and ensure that they do not reference themselves (in)directly.");
+				var ex = new CyclicDependencyException("Cyclic theme dependencies detected. Please check the 'baseTheme' attribute of your themes and ensure that they do not reference themselves (in)directly.");
+				Logger.Error(ex);
+				throw ex;
 			}
 			catch
 			{
@@ -261,7 +259,7 @@ namespace SmartStore.Core.Themes
 				}
 				catch (Exception ex)
 				{
-					Debug.WriteLine("ERR - unable to create manifest for theme '{0}': {1}".FormatCurrent(themeFolder.FolderName, ex.Message));
+					Logger.Error(ex, "Unable to create manifest for theme '{0}'".FormatCurrent(themeFolder.FolderName));
 				}
 			}
 		}
@@ -417,7 +415,7 @@ namespace SmartStore.Core.Themes
 							};
 						}
 
-						Debug.WriteLine("Changed theme manifest for '{0}'".FormatCurrent(name));
+						Logger.Debug("Changed theme manifest for '{0}'".FormatCurrent(name));
 					}
 					else
 					{
@@ -427,8 +425,8 @@ namespace SmartStore.Core.Themes
 				} 
 				catch (Exception ex)
 				{
+					Logger.Error(ex, "Could not touch theme manifest '{0}': {1}".FormatCurrent(name, ex.Message));
 					TryRemoveManifest(di.Name);
-					Debug.WriteLine("ERR - Could not touch theme manifest '{0}': {1}".FormatCurrent(name, ex.Message));
 				}
 			}
 
@@ -456,12 +454,12 @@ namespace SmartStore.Core.Themes
 				if (newManifest != null)
 				{
 					this.AddThemeManifestInternal(newManifest, false);
-					Debug.WriteLine("Changed theme manifest for '{0}'".FormatCurrent(name));
+					Logger.Debug("Changed theme manifest for '{0}'".FormatCurrent(name));
 				}
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine("ERR - Could not touch theme manifest '{0}': {1}".FormatCurrent(name, ex.Message));
+				Logger.Error(ex, "Could not touch theme manifest '{0}'".FormatCurrent(name));
 			}
 
 			RaiseThemeFolderRenamed(new ThemeFolderRenamedEventArgs

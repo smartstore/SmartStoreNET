@@ -21,6 +21,7 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -28,6 +29,8 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Blogs;
+using SmartStore.Web.Models.Common;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Web.Controllers
 {
@@ -50,11 +53,12 @@ namespace SmartStore.Web.Controllers
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILanguageService _languageService;
 
-        private readonly MediaSettings _mediaSettings;
+		private readonly MediaSettings _mediaSettings;
         private readonly BlogSettings _blogSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CustomerSettings _customerSettings;
         private readonly CaptchaSettings _captchaSettings;
+        private readonly SeoSettings _seoSettings;
 
         #endregion
 
@@ -77,7 +81,8 @@ namespace SmartStore.Web.Controllers
 			BlogSettings blogSettings,
             LocalizationSettings localizationSettings,
 			CustomerSettings customerSettings,
-            CaptchaSettings captchaSettings)
+            CaptchaSettings captchaSettings,
+            SeoSettings seoSettings)
         {
             this._blogService = blogService;
             this._workContext = workContext;
@@ -98,6 +103,7 @@ namespace SmartStore.Web.Controllers
             this._localizationSettings = localizationSettings;
             this._customerSettings = customerSettings;
             this._captchaSettings = captchaSettings;
+            this._seoSettings = seoSettings;
         }
 
         #endregion
@@ -120,27 +126,34 @@ namespace SmartStore.Web.Controllers
             model.SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false);
             model.Title = blogPost.Title;
             model.Body = blogPost.Body;
-            model.AllowComments = blogPost.AllowComments;
-            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize; 
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
-            model.Tags = blogPost.ParseTags().ToList();
-            model.NumberOfComments = blogPost.ApprovedCommentCount;
+            model.Tags = blogPost.ParseTags().Select(x => new BlogPostTagModel { Name = x, SeName = SeoHelper.GetSeName(x,
+                _seoSettings.ConvertNonWesternChars,
+                _seoSettings.AllowUnicodeCharsInUrls,
+                _seoSettings.SeoNameCharConversion)
+            }).ToList();
             model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnBlogCommentPage;
-			model.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
+			model.Comments.AllowComments = blogPost.AllowComments;
+			model.Comments.AvatarPictureSize = _mediaSettings.AvatarPictureSize;
+			model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;
+			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
+
             if (prepareComments)
             {
                 var blogComments = blogPost.BlogComments.Where(pr => pr.IsApproved).OrderBy(pr => pr.CreatedOnUtc);
                 foreach (var bc in blogComments)
                 {
-                    var commentModel = new BlogCommentModel()
+                    var commentModel = new CommentModel(model.Comments)
                     {
                         Id = bc.Id,
                         CustomerId = bc.CustomerId,
                         CustomerName = bc.Customer.FormatUserName(),
                         CommentText = bc.CommentText,
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(bc.CreatedOnUtc, DateTimeKind.Utc),
-                        AllowViewingProfiles = _customerSettings.AllowViewingProfiles && bc.Customer != null && !bc.Customer.IsGuest()
+						CreatedOnPretty = bc.CreatedOnUtc.RelativeFormat(true, "f"),
+						AllowViewingProfiles = _customerSettings.AllowViewingProfiles && bc.Customer != null && !bc.Customer.IsGuest()
                     };
+
                     if (_customerSettings.AllowCustomersToUploadAvatars)
                     {
                         var customer = bc.Customer;
@@ -149,10 +162,12 @@ namespace SmartStore.Web.Controllers
                             avatarUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.AvatarPictureSize, PictureType.Avatar);
                         commentModel.CustomerAvatarUrl = avatarUrl;
                     }
-                    model.Comments.Add(commentModel);
-                    
+
+                    model.Comments.Comments.Add(commentModel);
                 }
             }
+
+			Services.DisplayControl.Announce(blogPost);
         }
 
         [NonAction]
@@ -264,6 +279,8 @@ namespace SmartStore.Web.Controllers
 				var item = feed.CreateItem(blogPost.Title, blogPost.Body, blogPostUrl, blogPost.CreatedOnUtc);
 
 				items.Add(item);
+
+				Services.DisplayControl.Announce(blogPost);
 			}
 
 			feed.Items = items;
@@ -317,15 +334,13 @@ namespace SmartStore.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var comment = new BlogComment()
+                var comment = new BlogComment
                 {
                     BlogPostId = blogPost.Id,
                     CustomerId = _workContext.CurrentCustomer.Id,
                     IpAddress = _webHelper.GetCurrentIpAddress(),
                     CommentText = model.AddNewComment.CommentText,
-                    IsApproved = true,
-                    CreatedOnUtc = DateTime.UtcNow,
-                    UpdatedOnUtc = DateTime.UtcNow,
+                    IsApproved = true
                 };
                 _customerContentService.InsertCustomerContent(comment);
 
@@ -363,7 +378,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        //[OutputCache(Duration = 120, VaryByCustom = "WorkingLanguage")]
         public ActionResult BlogTags()
         {
             if (!_blogSettings.Enabled)
@@ -386,6 +400,7 @@ namespace SmartStore.Web.Controllers
                     model.Tags.Add(new BlogPostTagModel()
                     {
                         Name = tag.Name,
+                        SeName = tag.GetSeName(),
                         BlogPostCount = tag.BlogPostCount
                     });
                 return model;
@@ -395,7 +410,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        //[OutputCache(Duration = 120, VaryByCustom = "WorkingLanguage")]
         public ActionResult BlogMonths()
         {
             if (!_blogSettings.Enabled)
@@ -454,6 +468,7 @@ namespace SmartStore.Web.Controllers
                 }
                 return model;
             });
+
             return PartialView(cachedModel);
         }
 

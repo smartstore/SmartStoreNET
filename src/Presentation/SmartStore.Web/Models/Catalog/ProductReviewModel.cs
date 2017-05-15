@@ -24,17 +24,36 @@ namespace SmartStore.Web.Models.Catalog
         public ProductReviewsModel()
         {
             Items = new List<ProductReviewModel>();
-            AddProductReview = new AddProductReviewModel();
         }
+
         public int ProductId { get; set; }
-
         public string ProductName { get; set; }
-
         public string ProductSeName { get; set; }
 
+		public int TotalReviewsCount { get; set; }
         public IList<ProductReviewModel> Items { get; set; }
-        public AddProductReviewModel AddProductReview { get; set; }
-    }
+
+		#region Add
+
+		[AllowHtml]
+		[SmartResourceDisplayName("Reviews.Fields.Title")]
+		public string Title { get; set; }
+
+		[AllowHtml]
+		[SmartResourceDisplayName("Reviews.Fields.ReviewText")]
+		public string ReviewText { get; set; }
+
+		[SmartResourceDisplayName("Reviews.Fields.Rating")]
+		public int Rating { get; set; }
+
+		public bool DisplayCaptcha { get; set; }
+
+		public bool CanCurrentCustomerLeaveReview { get; set; }
+		public bool SuccessfullyAdded { get; set; }
+		public string Result { get; set; }
+
+		#endregion
+	}
 
     public partial class ProductReviewModel : EntityModelBase
     {
@@ -63,25 +82,5 @@ namespace SmartStore.Web.Models.Catalog
         public int HelpfulYesTotal { get; set; }
 
         public int HelpfulNoTotal { get; set; }
-    }
-
-    public partial class AddProductReviewModel : ModelBase
-    {
-        [AllowHtml]
-        [SmartResourceDisplayName("Reviews.Fields.Title")]
-        public string Title { get; set; }
-
-        [AllowHtml]
-        [SmartResourceDisplayName("Reviews.Fields.ReviewText")]
-        public string ReviewText { get; set; }
-
-        [SmartResourceDisplayName("Reviews.Fields.Rating")]
-        public int Rating { get; set; }
-
-        public bool DisplayCaptcha { get; set; }
-
-        public bool CanCurrentCustomerLeaveReview { get; set; }
-        public bool SuccessfullyAdded { get; set; }
-        public string Result { get; set; }
     }
 }

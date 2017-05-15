@@ -9,7 +9,8 @@ namespace SmartStore.GoogleMerchantCenter
         {
 			var menuItem = new MenuItem().ToBuilder()
                 .Text("Google Merchant Center")
-				.ResKey("Plugins.FriendlyName.SmartStore.GoogleMerchantCenter")
+                .Icon("google")
+                .ResKey("Plugins.FriendlyName.SmartStore.GoogleMerchantCenter")
 				.Action("ConfigurePlugin", "Plugin", new { systemName = GoogleMerchantCenterFeedPlugin.SystemName, area = "Admin" })
                 .ToItem();
 

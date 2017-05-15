@@ -21,7 +21,7 @@ namespace SmartStore.Core.Themes
 
 		public static ThemeManifest Create(string themePath, string virtualBasePath = "~/Themes/")
 		{
-			Guard.ArgumentNotEmpty(() => themePath);
+			Guard.NotEmpty(themePath, nameof(themePath));
 
 			var folderData = CreateThemeFolderData(themePath, virtualBasePath);
 			if (folderData != null)
@@ -34,7 +34,7 @@ namespace SmartStore.Core.Themes
 
 		internal static ThemeManifest Create(ThemeFolderData folderData)
 		{
-			Guard.ArgumentNotNull(() => folderData);
+			Guard.NotNull(folderData, nameof(folderData));
 
 			var materializer = new ThemeManifestMaterializer(folderData);
 			var manifest = materializer.Materialize();
@@ -121,12 +121,6 @@ namespace SmartStore.Core.Themes
 		}
 
         public bool SupportRtl 
-		{ 
-			get; 
-			protected internal set; 
-		}
-
-        public bool MobileTheme 
 		{ 
 			get; 
 			protected internal set; 

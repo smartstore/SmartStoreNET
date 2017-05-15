@@ -1,0 +1,44 @@
+﻿@model ShoppingCartModel.GiftCardBoxModel
+
+@using SmartStore.Web.Models.ShoppingCart;
+
+@{ 
+	if (!Model.Display)
+	{
+		return;
+	}
+
+	var isExpanded = Model.Message.HasValue();
+}
+
+
+<div class="cart-action cart-action-giftcard">
+	<h5 class="cart-action-title@(isExpanded ? "" : " collapsed")" data-toggle="collapse" data-target="#cart-action-giftcard-body" aria-controls="cart-action-giftcard-body" aria-expanded="@isExpanded">
+		@T("ShoppingCart.GiftCardCouponCode")
+	</h5>
+
+    <div class="cart-action-body collapse@(isExpanded ? " show" : "")" id="cart-action-giftcard-body" aria-expanded="@isExpanded">
+        @if (Model.Message.HasValue())
+        {
+            <div class="alert @(Model.IsWarning ? "alert-danger" : "alert-success") fade show">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                @Model.Message
+            </div>
+        }
+
+        <div class="coupon-code form-group">
+            <div class="input-group">
+                <input name="giftcardcouponcode" type="text" class="form-control gift-card-coupon-code" placeholder="@T("ShoppingCart.GiftCardCouponCode.Tooltip")" />
+				<span class="input-group-btn">
+					<button type="submit"
+							class="btn btn-primary apply-gift-card-coupon-code-button"
+							name="applygiftcardcouponcode"
+							value="applygiftcardcouponcode">
+						<i class="fa fa-check"></i>
+						<span>@T("ShoppingCart.GiftCardCouponCode.Button")</span>
+					</button>
+				</span>
+            </div>
+        </div>
+    </div>
+</div>

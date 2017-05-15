@@ -33,8 +33,8 @@
                             .Centered()
                             .Width(100)
                             .Filterable(false)
-                            .Template(x => "<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Product/EditProductTag/") + x.Id + "?btnId=btnRefresh&formId=product-tags-form', 800, 250, true); return false;\" class='btn' />")
-                            .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Product/EditProductTag/") + "<#= Id #>?btnId=btnRefresh&formId=product-tags-form', 800, 250, true); return false;\" class='btn' />")
+                            .Template(x => "<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:openPopup('" + @Url.Content("~/Admin/Product/EditProductTag/") + x.Id + "?btnId=btnRefresh&formId=product-tags-form'); return false;\" class='btn' />")
+                            .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:openPopup('" + @Url.Content("~/Admin/Product/EditProductTag/") + "<#= Id #>?btnId=btnRefresh&formId=product-tags-form'); return false;\" class='btn' />")
                             .Title(T("Admin.Common.Edit").Text);
                         columns.Command(commands =>
                         {

@@ -15,6 +15,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Utilities;
 using System.IO;
+using SmartStore.Core.Caching;
 
 namespace SmartStore.DevTools.Filters
 {
@@ -23,34 +24,40 @@ namespace SmartStore.DevTools.Filters
 		private readonly ICommonServices _services;
 		private readonly Lazy<IWidgetProvider> _widgetProvider;
 		private readonly ProfilerSettings _profilerSettings;
+		private readonly IDisplayControl _displayControl;
 
-        public WidgetZoneFilter(
+		public WidgetZoneFilter(
 			ICommonServices services, 
 			Lazy<IWidgetProvider> widgetProvider, 
-			ProfilerSettings profilerSettings)
+			ProfilerSettings profilerSettings,
+			IDisplayControl displayControl)
 		{
-			this._services = services;
-			this._widgetProvider = widgetProvider;
-			this._profilerSettings = profilerSettings;
+			_services = services;
+			_widgetProvider = widgetProvider;
+			_profilerSettings = profilerSettings;
+			_displayControl = displayControl;
 		}
 
 		public void OnActionExecuting(ActionExecutingContext filterContext)
 		{
+			if (filterContext.IsChildAction)
+				return;
+
 			if (!_profilerSettings.DisplayWidgetZones)
 				return;
+
+			_displayControl.MarkRequestAsUncacheable();
 		}
 
 		public void OnActionExecuted(ActionExecutedContext filterContext)
 		{
-            if (!_profilerSettings.DisplayWidgetZones)
-                return;
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
             if (!_profilerSettings.DisplayWidgetZones)
                 return;
-			
+
 			// should only run on a full view rendering result
 			var result = filterContext.Result as ViewResultBase;
 			if (result == null)
@@ -71,7 +78,7 @@ namespace SmartStore.DevTools.Filters
 					"DevTools",
 					new { area = "SmartStore.DevTools" });
 			}
-
+		
 			var viewName = result.ViewName;
 
 			if (viewName.IsEmpty())
@@ -87,26 +94,17 @@ namespace SmartStore.DevTools.Filters
                     {
                         ViewName = "~/Plugins/SmartStore.DevTools/Views/DevTools/WidgetZone.cshtml",
                     };
-                    filterContext.RouteData.Values.Add("widgetZone", model.WidgetZone);
+
+                    if(filterContext.RouteData.Values["widgetZone"] == null)
+                    {
+                        filterContext.RouteData.Values.Add("widgetZone", model.WidgetZone);
+                    }
                 }
 			}
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)
 		{
-            if (!_profilerSettings.DisplayWidgetZones)
-                return;
-
-			// should only run on a full view rendering result
-			if (!(filterContext.Result is ViewResultBase))
-			{
-				return;
-			}
-
-			if (!this.ShouldRender(filterContext.HttpContext))
-			{
-				return;
-			} 
 		}
 
 		private bool ShouldRender(HttpContextBase ctx)

@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Configuration;
-using SmartStore.Core;
-using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Services.Configuration;
 using SmartStore.Core.Caching;
@@ -76,9 +74,9 @@ namespace SmartStore.Services.Tests.Configuration
             return settings;
         }
 
-		public override void ClearCache()
-        {
-            throw new NotImplementedException();
-        }
-    }
+		protected override void OnClearCache()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

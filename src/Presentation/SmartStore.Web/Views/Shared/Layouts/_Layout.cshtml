@@ -1,0 +1,141 @@
+﻿@{
+	Layout = "_Document";
+
+	Html.RenderWidget("body_start_html_tag_after");
+	Html.RenderPartial("_Notifications");
+
+	var hasLeftCol = IsSectionDefined("left");
+	var hasRightCol = IsSectionDefined("right");
+	var hideLeftCol = ViewBag.HideLeftCol == true;
+	var hideRightCol = ViewBag.HideRightCol == true;
+
+	int mainColspan = 12;
+	int cols = 1;
+	if (hasLeftCol)
+	{
+		mainColspan -= 3;
+		cols += 1;
+	}
+	if (hasRightCol)
+	{
+		mainColspan -= 3;
+		cols += 1;
+	}
+
+	Html.AddBodyCssClass("lyt-cols-" + cols);
+
+	if (GetThemeVariable<bool>("boxed"))
+	{
+		Html.AddBodyCssClass("boxed");
+	}
+}
+
+<div id="page">
+    <div class="canvas-blocker canvas-slidable"></div>
+
+    <div class="page-main canvas-slidable">
+        @if (IsSectionDefined("header"))
+        {
+            @RenderSection("header")
+        }
+        else
+        {
+            <header id="header">
+                <div class="menubar-section d-none d-lg-block @(GetThemeVariable<bool>("inverse-menubar") ? "menubar-inverse" : "menubar-light")">
+                    <div class="container menubar-container">
+                        @{ 
+                            Html.RenderAction("Menu", "Common", new { area = "" });
+						}
+                    </div>
+                </div>
+                <div class="shopbar-section @(GetThemeVariable<bool>("inverse-shopbar") ? "shopbar-inverse" : "shopbar-light")"> 
+                    <div class="container shopbar-container">
+                        @{ 
+                            Html.RenderAction("ShopBar", "Common", new { area = "" });
+						}
+                    </div>
+                </div>
+                <div class="megamenu-section d-none d-lg-block">
+                    <nav class='navbar @(GetThemeVariable<bool>("inverse-navbar") ? "navbar-inverse" : "navbar-light")'>
+                        <div class="container megamenu-container">
+                            @{ 
+                                Html.RenderAction("CatalogMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
+							}
+						</div>
+					</nav>
+				</div>
+			</header>
+        }
+
+        @{ 
+            Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
+			Html.RenderWidget("content_before");
+		}
+
+        <div id="content-wrapper">
+            <section id="content" class="container mt-3">
+				@{ 
+					@RenderSection("teaser", required: false);
+					Html.RenderAction("Breadcrumb", "Common", new { area = "" });
+					Html.RenderZone("teaser");
+					Html.RenderWidget("after_teaser");
+				}
+                <div id="content-body" class="row mt-4">
+
+					@if (hasLeftCol)
+					{
+						<aside id="content-left" class="col-lg-3 mb-4 mb-lg-0@(hideLeftCol ? " d-none d-lg-block" : "")">
+							@{
+								Html.RenderWidget("aside_left_before");
+								@RenderSection("left");
+								Html.RenderWidget("aside_left_after");
+							}
+						</aside>
+					}
+
+					<div id="content-center" class="col-lg-@mainColspan">
+						@{ 
+							Html.RenderWidget("main_column_before");
+							@RenderBody();
+							Html.RenderWidget("main_column_after");
+						}
+					</div>
+
+					@if (hasRightCol)
+					{
+						<aside id="content-right" class="col-lg-3 mt-4 mt-lg-0@(hideRightCol ? " d-none d-lg-block" : "")">
+							@{
+								Html.RenderWidget("aside_right_before");
+								@RenderSection("right");
+								Html.RenderWidget("aside_right_after");
+							}
+						</aside>
+					}
+
+                    @{ Html.RenderWidget("content_after"); }
+                </div>
+            </section>
+        </div>
+
+        @if (IsSectionDefined("footer"))
+        {
+            @RenderSection("footer")
+        }
+        else
+        {
+            <footer id="footer" class="@(GetThemeVariable<bool>("inverse-footer") ? "footer-inverse" : "footer-light")">
+                @{ Html.RenderAction("Footer", "Common", new { area = "" }); }
+			</footer>
+        }
+
+		@{ Html.RenderZone("page-end"); }
+    </div>
+
+	<a href="#" id="scroll-top" class="d-flex align-items-center justify-content-center">
+		<i class="fa fa-2x fa-angle-up"></i>
+	</a>
+</div>
+
+@{ Html.RenderWidget("body_end_html_tag_before"); }
+
+

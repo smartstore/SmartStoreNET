@@ -1,0 +1,113 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+/* Theme: FLEX 
+======================================== */
+
+
+//
+// Virtual file which fetches all theme variables 
+// from the database. We use these variables to 
+// override bootstrap defaults.
+// --------------------------------------------------
+
+@import '~/.app/themevars.scss';
+
+//
+// Contains theme specific variable defaults
+// and bootstrap variable overrides.
+// --------------------------------------------------
+
+@import '_variables-custom.scss'; 
+@import '_variables.scss'; 
+
+//
+// Bootstrap 4
+// --------------------------------------------------
+
+@import "bs4/scss/bootstrap.scss"; 
+
+
+//
+// Vendors
+// --------------------------------------------------
+
+@import "vendors/photoswipe/photoswipe.scss";
+@import "vendors/slick/slick.scss";
+@import "vendors/select2/scss/core.scss";
+
+
+//
+// Global / Shared
+// --------------------------------------------------
+
+/*@import 'shared/_colors.scss';*/ // <-- uncomment this for convenient prototyping
+@import 'shared/_mixins.scss'; 
+@import 'shared/_typo.scss';
+@import 'shared/_alert.scss';
+@import 'shared/_buttons.scss'; 
+@import 'shared/_card.scss';
+@import 'shared/_forms.scss';
+@import 'shared/_breadcrumb.scss';
+@import 'shared/_pagination.scss';
+@import 'shared/_nav.scss';
+@import 'shared/_nav-collapsible.scss';
+@import "shared/_modal.scss"; 
+@import "shared/_throbber.scss";
+@import "shared/_spinner.scss";
+@import "shared/_star-rating.scss";
+@import "shared/_sortable-grip.scss";
+@import "shared/_offcanvas.scss";
+@import "shared/_animate.scss";
+
+
+//
+// Component skinning
+// --------------------------------------------------
+
+@import "skinning/_select2.scss";
+@import "skinning/_touchspin.scss";
+@import "skinning/_pnotify.scss";
+@import "skinning/_photoswipe.scss";
+@import "skinning/_slick.scss";
+@import "skinning/_drift.scss";
+
+
+//
+// Main
+// --------------------------------------------------
+
+@import "_core.scss";
+@import "_layout.scss";
+@import "_block.scss";
+@import "_shopbar.scss";
+@import "_footer.scss";
+@import "_menu.scss";
+@import "_megamenu.scss";
+@import "_text-expander.scss";
+@import "_choice.scss";
+@import "_search.scss";
+@import "_blog.scss";
+@import "_forum.scss";
+@import "_login.scss";
+@import "_rating.scss";
+@import "_artlist.scss";
+@import "_product.scss";
+@import "_gallery.scss";
+@import "_cart.scss";
+@import "_checkout.scss";
+@import "_misc.scss";
+
+
+//
+// Custom imports from plugins
+// --------------------------------------------------
+
+@import '~/.app/moduleimports.scss';
+
+
+//
+// Customization
+// --------------------------------------------------
+
+@import "_custom.scss";
+@import "_user.scss";

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
 using SmartStore.Core.Domain.Orders;
@@ -13,8 +12,6 @@ namespace SmartStore.PayPal.Services
 	public interface IPayPalService
 	{
 		void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false);
-
-		void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null, bool isWarning = false);
 
 		PayPalPaymentInstruction ParsePaymentInstruction(dynamic json);
 
@@ -35,6 +32,12 @@ namespace SmartStore.PayPal.Services
 			string providerSystemName,
 			string returnUrl,
 			string cancelUrl);
+
+		PayPalResponse PatchShipping(
+			PayPalApiSettingsBase settings,
+			PayPalSessionData session,
+			List<OrganizedShoppingCartItem> cart,
+			string providerSystemName);
 
 		PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 

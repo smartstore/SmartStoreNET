@@ -1,0 +1,21 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	if (Model.Items.Count == 0)
+	{
+		return;
+	}
+}
+
+<div class="product-grid bestsellers block">
+	<div class="heading heading-center">
+		<h3 class="heading-title fs-h1">@T("Bestsellers")</h3>
+	</div>
+    <div class="block-body pt-3 artlist-no-separators">
+		@{
+			Html.RenderPartial("Product.List", Model);
+		}
+    </div>
+</div>

@@ -32,6 +32,9 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.IsDefault")]
+        public bool IsDefault { get; set; }
+        
         public IList<DeliveryTimeLocalizedModel> Locales { get; set; }
     }
 

@@ -20,10 +20,10 @@ namespace SmartStore.Core
             new Version("2.0"),
 			new Version("2.1"),
 			new Version("2.2"),
-            new Version("2.5")
-        };
+            new Version("2.5"),
+			new Version("3.0")
+		};
 
-		//private const string HELP_BASEURL = "http://docs.smartstore.com/display/SMNET25/";
 		private const string HELP_BASEURL = "http://docs.smartstore.com/display/";
 
 		static SmartStoreVersion()
@@ -79,7 +79,10 @@ namespace SmartStore.Core
 
 		public static string GetUserGuideSpaceKey(string languageCode)
 		{
-			return "SMNET25";
+            if(languageCode.Equals("de"))
+                return "SDDE30";
+
+            return "SMNET30";
 		}
 
         /// <summary>

@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
-using SmartStore.Core.Domain.Localization;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Search;
 
 namespace SmartStore.Core.Domain.Catalog
 {
-    /// <summary>
-    /// Represents a specification attribute option
-    /// </summary>
+	/// <summary>
+	/// Represents a specification attribute option
+	/// </summary>
 	[DataContract]
-	public partial class SpecificationAttributeOption : BaseEntity, ILocalizedEntity
-    {
+	public partial class SpecificationAttributeOption : BaseEntity, ILocalizedEntity, ISearchAlias
+	{
         private ICollection<ProductSpecificationAttribute> _productSpecificationAttributes;
 
         /// <summary>
@@ -24,15 +25,27 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public string Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the display order
-        /// </summary>
+		/// <summary>
+		/// Gets or sets the specification attribute option alias
+		/// </summary>
+		[DataMember]
+		public string Alias { get; set; }
+
+		/// <summary>
+		/// Gets or sets the display order
+		/// </summary>
 		[DataMember]
 		public int DisplayOrder { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the specification attribute
-        /// </summary>
+
+		/// <summary>
+		/// Gets or sets the number value for range filtering
+		/// </summary>
+		[DataMember]
+		public decimal NumberValue { get; set; }
+
+		/// <summary>
+		/// Gets or sets the specification attribute
+		/// </summary>
 		[DataMember]
 		public virtual SpecificationAttribute SpecificationAttribute { get; set; }
 

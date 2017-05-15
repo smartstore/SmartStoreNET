@@ -91,7 +91,7 @@ namespace SmartStore.Services.DataExchange.Export
 				GenericAttribute entity = genericAttribute.Entity;
 
 				_writer.WriteStartElement("GenericAttribute");
-				_writer.Write("Id", entity.ToString());
+				_writer.Write("Id", entity.Id.ToString());
 				_writer.Write("EntityId", entity.EntityId.ToString());
 				_writer.Write("KeyGroup", entity.KeyGroup);
 				_writer.Write("Key", entity.Key);
@@ -115,6 +115,8 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			_writer.Write("Id", entity.Id.ToString());
+			_writer.Write("Salutation", entity.Salutation);
+			_writer.Write("Title", entity.Title);
 			_writer.Write("FirstName", entity.FirstName);
 			_writer.Write("LastName", entity.LastName);
 			_writer.Write("Email", entity.Email);
@@ -202,6 +204,38 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("DomainEndings", entity.DomainEndings);
 
 			WriteLocalized(currency);
+
+			if (node.HasValue())
+			{
+				_writer.WriteEndElement();
+			}
+		}
+
+		public void WriteCountry(dynamic country, string node)
+		{
+			if (country == null)
+				return;
+
+			Country entity = country.Entity;
+
+			if (node.HasValue())
+			{
+				_writer.WriteStartElement(node);
+			}
+
+			_writer.Write("Id", entity.Id.ToString());
+			_writer.Write("Name", entity.Name);
+			_writer.Write("AllowsBilling", entity.AllowsBilling.ToString());
+			_writer.Write("AllowsShipping", entity.AllowsShipping.ToString());
+			_writer.Write("TwoLetterIsoCode", entity.TwoLetterIsoCode);
+			_writer.Write("ThreeLetterIsoCode", entity.ThreeLetterIsoCode);
+			_writer.Write("NumericIsoCode", entity.NumericIsoCode.ToString());
+			_writer.Write("SubjectToVat", entity.SubjectToVat.ToString());
+			_writer.Write("Published", entity.Published.ToString());
+			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
+			_writer.Write("LimitedToStores", entity.LimitedToStores.ToString());
+
+			WriteLocalized(country);
 
 			if (node.HasValue())
 			{
@@ -346,11 +380,10 @@ namespace SmartStore.Services.DataExchange.Export
 				_writer.Write("MetaTitle", (string)category.MetaTitle);
 				_writer.Write("SeName", (string)category.SeName);
 				_writer.Write("ParentCategoryId", entity.ParentCategoryId.ToString());
-				_writer.Write("PictureId", entity.PictureId.HasValue ? entity.PictureId.Value.ToString() : "");
+				_writer.Write("PictureId", entity.PictureId.ToString());
 				_writer.Write("PageSize", entity.PageSize.ToString());
 				_writer.Write("AllowCustomersToSelectPageSize", entity.AllowCustomersToSelectPageSize.ToString());
 				_writer.Write("PageSizeOptions", entity.PageSizeOptions);
-				_writer.Write("PriceRanges", entity.PriceRanges);
 				_writer.Write("ShowOnHomePage", entity.ShowOnHomePage.ToString());
 				_writer.Write("HasDiscountsApplied", entity.HasDiscountsApplied.ToString());
 				_writer.Write("Published", entity.Published.ToString());
@@ -394,16 +427,16 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("MetaKeywords", (string)manufacturer.MetaKeywords);
 			_writer.Write("MetaDescription", (string)manufacturer.MetaDescription);
 			_writer.Write("MetaTitle", (string)manufacturer.MetaTitle);
-			_writer.Write("PictureId", entity.PictureId.HasValue ? entity.PictureId.Value.ToString() : "");
+			_writer.Write("PictureId", entity.PictureId.ToString());
 			_writer.Write("PageSize", entity.PageSize.ToString());
 			_writer.Write("AllowCustomersToSelectPageSize", entity.AllowCustomersToSelectPageSize.ToString());
 			_writer.Write("PageSizeOptions", entity.PageSizeOptions);
-			_writer.Write("PriceRanges", entity.PriceRanges);
 			_writer.Write("Published", entity.Published.ToString());
 			_writer.Write("Deleted", entity.Deleted.ToString());
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
 			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
 			_writer.Write("UpdatedOnUtc", entity.UpdatedOnUtc.ToString(_culture));
+			_writer.Write("HasDiscountsApplied", entity.HasDiscountsApplied.ToString());
 
 			WritePicture(manufacturer.Picture, "Picture");
 
@@ -494,7 +527,8 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("AllowBackInStockSubscriptions", entity.AllowBackInStockSubscriptions.ToString());
 			_writer.Write("OrderMinimumQuantity", entity.OrderMinimumQuantity.ToString());
 			_writer.Write("OrderMaximumQuantity", entity.OrderMaximumQuantity.ToString());
-			_writer.Write("AllowedQuantities", entity.AllowedQuantities);
+            _writer.Write("HideQuantityControl", entity.HideQuantityControl.ToString());
+            _writer.Write("AllowedQuantities", entity.AllowedQuantities);
 			_writer.Write("DisableBuyButton", entity.DisableBuyButton.ToString());
 			_writer.Write("DisableWishlistButton", entity.DisableWishlistButton.ToString());
 			_writer.Write("AvailableForPreOrder", entity.AvailableForPreOrder.ToString());
@@ -530,12 +564,15 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("BundlePerItemShoppingCart", entity.BundlePerItemShoppingCart.ToString());
 			_writer.Write("LowestAttributeCombinationPrice", lowestAttributeCombinationPrice.HasValue ? lowestAttributeCombinationPrice.Value.ToString(_culture) : "");
 			_writer.Write("IsEsd", entity.IsEsd.ToString());
+			_writer.Write("CustomsTariffNumber", entity.CustomsTariffNumber);
 
 			WriteLocalized(product);
 
 			WriteDeliveryTime(product.DeliveryTime, "DeliveryTime");
 
 			WriteQuantityUnit(product.QuantityUnit, "QuantityUnit");
+
+			WriteCountry(product.CountryOfOrigin, "CountryOfOrigin");
 
 			if (product.AppliedDiscounts != null)
 			{
@@ -631,7 +668,7 @@ namespace SmartStore.Services.DataExchange.Export
 						_writer.Write("Id", entityPvav.Id.ToString());
 						_writer.Write("Alias", (string)value.Alias);
 						_writer.Write("Name", (string)value.Name);
-						_writer.Write("ColorSquaresRgb", (string)value.ColorSquaresRgb);
+						_writer.Write("Color", (string)value.Color);
 						_writer.Write("PriceAdjustment", ((decimal)value.PriceAdjustment).ToString(_culture));
 						_writer.Write("WeightAdjustment", ((decimal)value.WeightAdjustment).ToString(_culture));
 						_writer.Write("IsPreSelected", entityPvav.IsPreSelected.ToString());
@@ -774,13 +811,19 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("SpecificationAttributeId", entitySao.SpecificationAttributeId.ToString());
 					_writer.Write("DisplayOrder", entitySao.DisplayOrder.ToString());
 					_writer.Write("Name", (string)option.Name);
+					_writer.Write("Alias", (string)option.Alias);
 
 					WriteLocalized(option);
 
 					_writer.WriteStartElement("SpecificationAttribute");
 					_writer.Write("Id", entitySa.Id.ToString());
 					_writer.Write("Name", (string)option.SpecificationAttribute.Name);
+					_writer.Write("Alias", (string)option.SpecificationAttribute.Alias);
 					_writer.Write("DisplayOrder", entitySa.DisplayOrder.ToString());
+					_writer.Write("AllowFiltering", entitySa.AllowFiltering.ToString());
+					_writer.Write("ShowOnProductPage", entitySa.ShowOnProductPage.ToString());
+					_writer.Write("FacetSorting", ((int)entitySa.FacetSorting).ToString());
+					_writer.Write("FacetTemplateHint", ((int)entitySa.FacetTemplateHint).ToString());
 
 					WriteLocalized(option.SpecificationAttribute);
 
@@ -845,9 +888,6 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("CustomerGuid", entity.CustomerGuid.ToString());
 			_writer.Write("Username", entity.Username);
 			_writer.Write("Email", entity.Email);
-			_writer.Write("Password", entity.Password);
-			_writer.Write("PasswordFormatId", entity.PasswordFormatId.ToString());
-			_writer.Write("PasswordSalt", entity.PasswordSalt);
 			_writer.Write("AdminComment", entity.AdminComment);
 			_writer.Write("IsTaxExempt", entity.IsTaxExempt.ToString());
 			_writer.Write("AffiliateId", entity.AffiliateId.ToString());

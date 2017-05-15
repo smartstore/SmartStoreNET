@@ -1,0 +1,45 @@
+﻿@model ManufacturerNavigationModel
+@using SmartStore.Web.Models.Catalog;
+@{
+    Layout = "";
+
+    if (Model.Manufacturers.Count == 0 || !Model.DisplayManufacturers)
+    {
+        return;
+    }
+}
+
+<div class="manufacturer-container">
+    <ul class="ocm-nav list-unstyled">
+        @foreach (var manufacturer in Model.Manufacturers)
+        {
+            <li class="ocm-item" data-ajax="false" data-id="@manufacturer.Id">
+                <div class="row sm-gutters align-items-center">
+                    @if (Model.DisplayImages)
+                    {
+                        <div class="col col-img">
+                            @if(manufacturer.PictureUrl.HasValue())
+                            { 
+                                <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-img-link">
+                                    <img src="@manufacturer.PictureUrl" alt="@manufacturer.Name" title="@manufacturer.Name" />
+                                </a>
+                            }
+                        </div>
+                    }
+                    <div class="col col-data">
+                        <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link">
+                            @manufacturer.Name
+                        </a>
+                    </div>
+                </div>
+            </li>
+        }
+
+        @if (Model.DisplayAllManufacturersLink)
+        {
+            <li class="show-all-manufacturers ocm-item" data-ajax="false">
+                <a href="@Url.RouteUrl("ManufacturerList")" class="btn btn-block btn-warning">@T("Manufacturers.ViewAll")</a>
+            </li>
+        }
+    </ul>
+</div>

@@ -15,6 +15,7 @@ namespace SmartStore.Admin.Models.Plugins
         public PluginModel()
         {
             Locales = new List<PluginLocalizedModel>();
+			LicenseModel = new PluginLicenseModel();
         }
 
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Group")]
@@ -52,8 +53,25 @@ namespace SmartStore.Admin.Models.Plugins
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Installed")]
         public bool Installed { get; set; }
 
+		public PluginLicenseModel LicenseModel { get; set; }
+
+		public bool IsConfigurable { get; set; }
+
+		public RouteInfo ConfigurationRoute { get; set; }
+
+        public string IconUrl { get; set; }
+
+        public IList<PluginLocalizedModel> Locales { get; set; }
+
+		public int[] SelectedStoreIds { get; set; }
+    }
+
+
+	public class PluginLicenseModel
+	{
 		public string LicenseUrl { get; set; }
 		public bool IsLicensable { get; set; }
+		public bool HideLabel { get; set; }
 		public LicensingState LicenseState { get; set; }
 		public string TruncatedLicenseKey { get; set; }
 		public int? RemainingDemoUsageDays { get; set; }
@@ -73,20 +91,10 @@ namespace SmartStore.Admin.Models.Plugins
 				return "label-success";
 			}
 		}
-
-		public bool IsConfigurable { get; set; }
-
-		public RouteInfo ConfigurationRoute { get; set; }
-
-        public string IconUrl { get; set; }
-
-        public IList<PluginLocalizedModel> Locales { get; set; }
-
-		public int[] SelectedStoreIds { get; set; }
-    }
+	}
 
 
-    public class PluginLocalizedModel : ILocalizedModelLocal
+	public class PluginLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 

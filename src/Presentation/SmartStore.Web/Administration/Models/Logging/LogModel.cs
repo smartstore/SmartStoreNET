@@ -40,13 +40,16 @@ namespace SmartStore.Admin.Models.Logging
         [SmartResourceDisplayName("Admin.System.Log.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.Log.Fields.UpdatedOn")]
-		public DateTime? UpdatedOn { get; set; }
+		[SmartResourceDisplayName("Admin.System.Log.Fields.Logger")]
+		public string Logger { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.Log.Fields.Frequency")]
-		public int Frequency { get; set; }
+		[SmartResourceDisplayName("Admin.System.Log.Fields.Logger")]
+		public string LoggerShort { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.Log.Fields.ContentHash")]
-		public string ContentHash { get; set; }
+		[SmartResourceDisplayName("Admin.System.Log.Fields.HttpMethod")]
+		public string HttpMethod { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.Log.Fields.UserName")]
+		public string UserName { get; set; }
     }
 }

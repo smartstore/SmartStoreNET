@@ -3,19 +3,11 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
-using System.Data.Entity.Migrations.Infrastructure;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core.Data;
-using SmartStore.Utilities;
+using SmartStore.Data.Migrations;
 
 namespace SmartStore.Data.Setup
 {
-
 	/// <summary>
 	///     An implementation of <see cref="IDatabaseInitializer{TContext}" /> that will use Code First Migrations
 	///     to update the database to the latest version.
@@ -66,15 +58,15 @@ namespace SmartStore.Data.Setup
 		/// Initializes the database.
 		/// </summary>
 		/// <param name="context">The context.</param>
-		/// <inheritdoc />
 		public virtual void InitializeDatabase(TContext context)
 		{
 			if (!context.Database.Exists())
 			{
-				throw Error.InvalidOperation("Database migration failed becuase the target database does not exist. Ensure the database was initialized and seeded with the 'InstallDatabaseInitializer'.");
+				throw Error.InvalidOperation("Database migration failed because the target database does not exist. Ensure the database was initialized and seeded with the 'InstallDatabaseInitializer'.");
 			}
 
 			var config = CreateConfiguration();
+			
 			var migrator = new DbSeedingMigrator<TContext>(config);
 			var tablesExist = CheckTables(context);
 
@@ -100,6 +92,17 @@ namespace SmartStore.Data.Setup
 			if (appliedCount > 0)
 			{
 				Seed(context);
+			}
+			else
+			{
+				var coreConfig = config as MigrationsConfiguration;
+				if (coreConfig != null && context is SmartObjectContext)
+				{
+					// DB is up-to-date and no migration ran.
+					// Call the main Seed method anyway (on every startup),
+					// we could have locale resources or settings to add/update.
+					coreConfig.SeedDatabase(context as SmartObjectContext);
+				}
 			}
 
 			// not needed anymore
@@ -151,8 +154,6 @@ namespace SmartStore.Data.Setup
 		}
 
 		#endregion
-
-
 	}
 
 }

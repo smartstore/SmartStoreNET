@@ -1,0 +1,57 @@
+﻿@model ForumGroupModel
+@using SmartStore.Web.Models.Boards;
+
+<div class="forum-group">
+    <div class="group-title">
+        <h3 class="fs-h3">
+            @Html.RouteLink(Model.Name, "ForumGroupSlug", new { id = Model.Id, slug = Model.SeName })
+        </h3>
+    </div>
+
+    <table class="groups table table-responsive">
+        <thead>
+            <tr class="group-header">
+                <th class="forum-name">
+                    @T("Forum.Forum")
+                </th>
+                <th class="forum-spacer">
+                </th>
+                <th class="topics d-none d-md-table-cell">
+                    @T("Forum.Topics")
+                </th>
+                <th class="posts d-none d-md-table-cell">
+                    @T("Forum.Posts")
+                </th>
+                <th class="last-post d-none d-md-table-cell">
+                    @T("Forum.LatestPost")
+                </th>
+            </tr>
+        </thead>
+
+        @foreach (var forum in Model.Forums)
+        {
+            <tr class="forum">
+                <td class="image">
+                    <i class="fa fa-folder-open"></i>
+                </td>
+                <td class="forum-name">
+                    <div class="forum-title">
+                        @Html.RouteLink(@forum.Name, "ForumSlug", new { id = @forum.Id, slug = @forum.SeName })
+                    </div>
+                    <div class="forum-description">
+                        @forum.Description
+                    </div>
+                </td>
+                <td class="topics d-none d-md-table-cell">
+                    @forum.NumTopics
+                </td>
+                <td class="posts d-none d-md-table-cell">
+                    @forum.NumPosts
+                </td>
+                <td class="last-post d-none d-md-table-cell">
+                    @{ Html.RenderAction("LastPost", new { forumPostId = @forum.LastPostId, showTopic = true }); }
+                </td>
+            </tr>            
+        }
+    </table>
+</div>

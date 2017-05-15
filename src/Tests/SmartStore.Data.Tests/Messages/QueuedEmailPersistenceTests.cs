@@ -74,7 +74,11 @@ namespace SmartStore.Data.Tests.Messages
 			var download = new Download
 			{
 				ContentType = "text/plain",
-				DownloadBinary = new byte[10],
+				MediaStorage = new MediaStorage
+				{
+					Data = new byte[10]
+				},
+				UpdatedOnUtc = DateTime.UtcNow,
 				DownloadGuid = Guid.NewGuid(),
 				Extension = "txt",
 				Filename = "file"

@@ -1,0 +1,138 @@
+/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Footer Styles
+// --------------------------------------------------
+
+#footer {
+    border-top: 1px solid rgba(0,0,0, 0.1);
+    background: $footer-bg;
+    margin-top: 1.5rem;
+}
+
+.footer-social-wrapper {
+    padding: 2rem 0;
+}
+
+.footer-main-wrapper {
+    padding-top: 2rem;
+}
+
+.footer-social-wrapper ~ .footer-main-wrapper {
+    padding-top: 0;
+}
+
+.footer-main .footer-title {
+    margin-bottom: 1.25rem;
+    font-weight: $font-weight-normal;
+}
+
+.footer-links {
+    font-size: 1rem;
+    line-height: 1.8;
+
+    a {
+        display: block;
+        text-decoration: none;     
+    }
+}
+
+.footer-bottom {
+    padding: 1rem 0;
+    font-size: 90%;
+}
+
+@include media-breakpoint-up(md) {
+    .footer-bottom {
+        margin-top: 1rem;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .footer-main-wrapper {
+        padding-top: 0;
+    }
+
+    .footer-main, 
+    .footer-bottom {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: 100% !important;
+    }
+
+    .footer-bottom {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .nav-collapsible {
+        border-top: 1px solid darken($footer-bg, 10%);
+        border-bottom: 1px solid darken($footer-bg, 10%);
+        margin-top: -1px;
+    }
+
+    .footer-inverse .nav-collapsible {
+        border-top-color: lighten($footer-bg, 10%);
+        border-bottom-color: lighten($footer-bg, 10%);
+    }
+}
+
+.footer-light {
+    $ftmh: darken($footer-color-muted, 30%);
+    color: $footer-color;
+
+    .footer-title {
+        color: $footer-color;
+    }
+
+    a.footer-link {
+        color: $footer-color-muted;
+        &:hover { color: $ftmh; }
+    }
+
+    .btn-social:not(:hover):not(:active):not(:focus) {
+        background-color: $footer-social-bg;
+        color: $footer-social-color;
+    }
+
+    .footer-bottom-wrapper {
+        background: rgba(#000, 0.03);
+        color: lighten($footer-color-muted, 5%);
+        a { color: $ftmh; }
+    }
+}
+
+.footer-inverse {
+    $ftmh: opacify($footer-inverse-color-muted, 0.2);
+    color: $footer-inverse-color;
+
+    .footer-title {
+        color: $footer-inverse-color;
+    }
+
+    a.footer-link {
+        color: $footer-inverse-color-muted;
+        &:hover { color: $ftmh; }
+    }
+
+    .btn-social:not(:hover):not(:active):not(:focus) {
+        background-color: transparent;
+        color: $footer-inverse-color-muted !important;
+    }
+
+    .footer-bottom-wrapper {
+        background: rgba(#fff, 0.06);
+        color: darken($footer-inverse-color-muted, 10%);
+        a { color: $ftmh; }
+    }
+}
+
+.footer-social .btn-social {
+    display: inline-block;
+    border-color: transparent !important;
+    box-shadow: none;
+    margin: 0 0.4rem;
+}

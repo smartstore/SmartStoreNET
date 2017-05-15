@@ -27,10 +27,6 @@
 // NICER PAGE TITLES & TYPO STUFF
 // ------------------------------
 
-.ellipsis {
-	.text-overflow();
-}
-
 .font-inherit() {
 	font-family: inherit;
 	font-weight: inherit;
@@ -77,6 +73,17 @@
 // THUMB ZOOMER
 // ------------
 
+.zoomable-thumb-container {
+    width: 50px;
+    height: 32px;
+	line-height: 32px;
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+
+	> img { max-height: 100%; max-width: 100%; }
+}
+
 .zoomable-thumb {
     max-width: 50px;
     max-height: 32px;
@@ -84,6 +91,7 @@
 
 .zoomable-thumb-clone {
     border: 1px solid #bbb;
+	background-color: #fff;
 }
 
 // MORE RESET
@@ -133,6 +141,7 @@ span.field-validation-error {
 // WELL TWEAKS
 // ------------
 .well {
+	margin: 10px 0;
 	border: 1px solid #e5e5e5;
     border-color: rgba(0,0,0, 0.1);
 	border-radius: 3px;
@@ -526,6 +535,12 @@ th label {
     -webkit-flex-direction: column;
         -ms-flex-direction: column;
             flex-direction: column;
+	
+	&.modal-fluid {
+		margin: 0 !important;
+		left: 3% !important;
+		width: 94% !important;
+	}
 
     &.fade.in {
         display: -webkit-box !important;

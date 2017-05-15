@@ -1,0 +1,207 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Web;
+
+@{
+	Layout = "_Layout";
+
+	Html.AddTitleParts(Model.MetaTitle.NullEmpty() ?? Model.Name);
+	Html.AddMetaDescriptionParts(Model.MetaDescription);
+	Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+	Html.AddScriptParts("~/Themes/Flex/Scripts/public.product.js");
+
+	if (Model.CanonicalUrlsEnabled)
+	{
+		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+		Html.AddCanonicalUrlParts(productUrl);
+	}
+
+	string updateUrl = Url.Action("UpdateProductDetails", "Product", new
+	{
+		productId = Model.Id,
+		bundleItemId = Model.BundleItem.Id,
+		itemType = (string)null // TODO: (mc) WTF!?
+	});
+
+	/* TODO: (mc)
+	 * - Badges
+	 * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
+	 * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
+	 */
+}
+
+<div class="page product-details-page">
+	@{ Html.RenderWidget("productdetails_top"); }
+
+	<article class="pd page-body">
+		<div id="main-update-container" class="update-container" data-url="@updateUrl" itemscope itemtype="http://schema.org/Product">
+			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "pd-form" }))
+            {
+			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
+				<section class="row pd-section pd-section-top">
+					<!-- Picture -->
+					<div class="col-12 col-md-6 col-lg-7 pd-data-col">
+                        @{ Html.RenderWidget("productdetails_pictures_top"); }
+						
+                        <div id="pd-gallery-container">
+							@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
+						</div>
+
+                        @{ Html.RenderWidget("productdetails_info_bottom"); }
+					</div>
+					<!-- Sidebar: Info, Price, Buttons etc. -->
+					<aside class="col-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
+
+                        @{ Html.RenderWidget("productdetails_info_top"); }
+						<!-- Title/Brand/ReviewSummary -->
+						@{ Html.RenderPartial("Product.Info", Model); }
+
+						<!-- Bundle Items -->
+						@if (Model.ProductType == ProductType.BundledProduct)
+						{
+							<div class="pd-bundle-container pd-group card card-shadow">
+								@{ Html.RenderPartial("Product.Bundle", Model); }
+							</div>
+						}
+
+						@if (Model.ProductType != ProductType.GroupedProduct)
+                        {
+                            Html.RenderWidget("productdetails_attrs_top");
+
+							<!-- Product attributes (SKU, EAN, Weight etc.) -->
+							<div class="pd-attrs-container" data-partial="Attrs">
+								@{ Html.RenderPartial("Product.Attrs", Model); }
+							</div>
+
+							<!-- Offer box -->
+							Html.RenderPartial("Product.Offer", Model);
+						}
+
+						@if (Model.ProductType == ProductType.GroupedProduct)
+                        {
+                            var showActionLinks = Model.AskQuestionEnabled || Model.TellAFriendEnabled || Model.CompareEnabled;
+                            if (showActionLinks)
+                            {
+								<ul class="pd-action-links pd-group list-unstyled">
+									@if (Model.AskQuestionEnabled)
+                                    {
+										<li>
+											<a class="pretty-link action-ask-question" href="@Url.Action("AskQuestion", new { id = Model.Id })" rel="nofollow">
+												<i class="fa fa-fw fa-envelope"></i>
+												<span>@T("Products.AskQuestion")</span>
+											</a>
+										</li>
+                                    }
+									@if (Model.TellAFriendEnabled)
+                                    {
+										<li>
+											<a class="pretty-link action-tell" href="@Url.Action("EmailAFriend", new { id = Model.Id })" rel="nofollow">
+												<i class="fa fa-fw fa-bullhorn"></i>
+												<span>@T("Products.EmailAFriend")</span>
+											</a>
+										</li>
+                                    }
+									@if (Model.CompareEnabled)
+                                    {
+										<li>
+											<a data-href="@Url.Action("AddProductToCompare", "Catalog", new { id = Model.Id })" 
+											   href="#" 
+											   class="pretty-link action-compare ajax-cart-link" 
+											   rel="nofollow"
+											   data-type="compare"
+											   data-action="add">
+												<i class="fa fa-fw fa-retweet"></i>
+												<span>@T("Products.Compare.AddToCompareList")</span>
+											</a>
+										</li>
+                                    }
+
+                                    @{ Html.RenderWidget("productdetail_action_links_after"); }
+								</ul>
+							}
+						}
+
+						<!-- social share -->
+						@if (Model.ProductShareCode.HasValue())
+						{
+							<div class="pd-share d-flex justify-content-@(Model.ProductType == ProductType.GroupedProduct ? "start mt-4" : "center mt-3")">
+								@Html.Raw(Model.ProductShareCode)
+							</div>
+						}
+
+						@if (Model.DisplayAdminLink)
+						{
+							<a class="btn btn-secondary btn-flat btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+								<i class="fa fa-gear"></i>
+								<span>@T("Common.Catalog.EditProduct")</span>
+							</a>
+						}
+					</aside>
+				</section>
+
+				if (Model.ProductType == ProductType.GroupedProduct)
+				{
+					<section class="pd-section pd-section-variants">
+						@if (Model.AssociatedProducts.Count == 0)
+						{
+							<div class="pd-no-associated-products alert alert-warning">
+								@T("Products.NoAssociatedProducts")
+							</div>
+						}
+						else
+						{
+							foreach (var product in Model.AssociatedProducts)
+							{
+								var dataDictProduct = new ViewDataDictionary();
+								dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
+								Html.RenderPartial("Product.AssociatedProduct", product, dataDictProduct);
+							}
+						}
+					</section>
+				}
+			}
+		</div>
+
+		<!-- Bottom Content: Full Description, Specification, Review etc. -->
+		<section class="pd-section pd-section-bottom">
+			@{
+                <!-- Tabs -->
+                Html.RenderPartial("Product.Tabs", Model);
+                Html.RenderWidget("productdetail_tabs_after");
+
+                <!-- Tags -->
+                Html.RenderAction("ProductTags", new { productId = Model.Id });
+                Html.RenderWidget("productdetail_tags_after");
+
+                <!-- Related products -->
+                Html.RenderAction("RelatedProducts", new { productId = Model.Id });
+                Html.RenderWidget("productdetail_related_products_after");
+
+                <!-- Products also purchased -->
+                Html.RenderAction("ProductsAlsoPurchased", new { productId = Model.Id });
+                Html.RenderWidget("productdetail_also_purchased_after");
+            }
+		</section>
+	</article>
+
+	@{ Html.RenderWidget("productdetails_bottom"); }
+
+	@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
+	@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
+</div>
+
+<script>
+    $(function () {
+        var settings = {
+            galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
+            enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)')
+        };
+
+    	$('#pd-form').productDetail(settings);
+    });
+</script>
+

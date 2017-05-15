@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Media;
+using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    public partial class ManufacturerModel : EntityModelBase
-    {
+    public partial class ManufacturerModel : EntityModelBase, ISearchResultModel
+	{
         public ManufacturerModel()
         {
             PictureModel = new PictureModel();
-            FeaturedProducts = new List<ProductOverviewModel>();
-            Products = new List<ProductOverviewModel>();
-            PagingFilteringContext = new CatalogPagingFilteringModel();
         }
 
         public string Name { get; set; }
@@ -21,12 +20,14 @@ namespace SmartStore.Web.Models.Catalog
         public string MetaTitle { get; set; }
         public string SeName { get; set; }
 
-
         public PictureModel PictureModel { get; set; }
+        public ProductSummaryModel FeaturedProducts { get; set; }
+        public ProductSummaryModel Products { get; set; }
 
-        public CatalogPagingFilteringModel PagingFilteringContext { get; set; }
-
-        public IList<ProductOverviewModel> FeaturedProducts { get; set; }
-        public IList<ProductOverviewModel> Products { get; set; }
-    }
+		public CatalogSearchResult SearchResult
+		{
+			get;
+			set;
+		}
+	}
 }

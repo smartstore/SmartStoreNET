@@ -17,7 +17,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a product
     /// </summary>
     [DataContract]
-	public partial class Product : BaseEntity, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
+	public partial class Product : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
 	{
         private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
@@ -468,10 +468,28 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public int OrderMaximumQuantity { get; set; }
 
-		/// <summary>
-		/// Gets or sets the comma seperated list of allowed quantities. null or empty if any quantity is allowed
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets the quantity step
+        /// </summary>
+        [DataMember]
+        public int QuantityStep { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quantity control type
+        /// </summary>
+        [DataMember]
+        public QuantityControlType QuantiyControlType { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value to specify whether or not to hide the quantity input control
+        /// </summary>
+        [DataMember]
+        public bool HideQuantityControl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the comma seperated list of allowed quantities. null or empty if any quantity is allowed
+        /// </summary>
+        [DataMember]
 		public string AllowedQuantities { get; set; }
 
 		/// <summary>
@@ -728,6 +746,23 @@ namespace SmartStore.Core.Domain.Catalog
         [DataMember]
         public virtual QuantityUnit QuantityUnit { get; set; }
 
+		/// <summary>
+		/// Gets or sets the customs tariff number
+		/// </summary>
+		[DataMember]
+		public string CustomsTariffNumber { get; set; }
+
+		/// <summary>
+		/// Gets or sets the country of origin identifier
+		/// </summary>
+		[DataMember]
+		public int? CountryOfOriginId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the country of origin
+		/// </summary>
+		[DataMember]
+		public virtual Country CountryOfOrigin { get; set; }
 
 		/// <summary>
 		/// Gets or sets if base price quotation (PAnGV) is enabled

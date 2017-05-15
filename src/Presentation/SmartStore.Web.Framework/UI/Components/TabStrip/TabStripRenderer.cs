@@ -8,6 +8,8 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.UI
 { 
@@ -64,6 +66,12 @@ namespace SmartStore.Web.Framework.UI
 				tab.HtmlAttributes.Add("data-ajax-oncomplete", tab.OnAjaxComplete);
 			}
 
+			if (tab.IsResponsive)
+			{
+				tab.HtmlAttributes.AppendCssClass("nav-responsive");
+				tab.HtmlAttributes.Add("data-breakpoint", tab.Breakpoint);
+			}
+
 			writer.AddAttributes(tab.HtmlAttributes);
 
 			writer.RenderBeginTag("div"); // root div
@@ -73,10 +81,24 @@ namespace SmartStore.Web.Framework.UI
 
 				// Tabs
 				var ulAttrs = new Dictionary<string, object>();
-				ulAttrs.AppendCssClass("nav nav-{0}".FormatInvariant(tab.Style.ToString().ToLower()));
+				ulAttrs.AppendCssClass("nav");
+
+				if (tab.Style == TabsStyle.Tabs)
+				{
+					ulAttrs.AppendCssClass("nav-tabs");
+				}
+				else if (tab.Style == TabsStyle.Pills)
+				{
+					ulAttrs.AppendCssClass("nav-pills");
+				}
+				else if (tab.Style == TabsStyle.Material)
+				{
+					ulAttrs.AppendCssClass("nav-tabs nav-tabs-line");
+				}
+
 				if (tab.Stacked)
 				{
-					ulAttrs.AppendCssClass("nav-stacked");
+					ulAttrs.AppendCssClass("nav-stacked flex-column");
 				}
 				writer.AddAttributes(ulAttrs);
 
@@ -127,7 +149,12 @@ namespace SmartStore.Web.Framework.UI
 					}
 				}
 
-				writer.RenderEndTag(); // div.tabbable    
+				writer.RenderEndTag(); // div.tabbable
+				
+				if (tab.IsResponsive /* && tab.TabContentHeaderContent != null*/)
+				{
+					writer.WriteLine(@"<script>$(function() {{ $('#{0}').responsiveNav(); }})</script>".FormatInvariant(tab.Id));
+				}    
 			}
 		}
 
@@ -209,13 +236,28 @@ namespace SmartStore.Web.Framework.UI
             
             writer.AddAttribute("class", "tab-content");
             writer.RenderBeginTag("div");
+
+			// Tab content header
+			if (tab.IsResponsive && tab.TabContentHeaderContent != null)
+			{
+				//writer.WriteLine(item.Content.ToHtmlString());
+				writer.AddAttribute("class", "tab-content-header");
+				writer.RenderBeginTag("div");
+				{
+					writer.WriteLine(tab.TabContentHeaderContent.ToHtmlString());
+				}
+				writer.RenderEndTag(); // div.tab-content-header
+			}
+
+			// All tab items
             int i = 1;
             foreach (var item in tab.Items)
             {
                 this.RenderItemContent(writer, item, i);
                 i++;
             }
-            writer.RenderEndTag(); // div
+
+            writer.RenderEndTag(); // div.tab-content
         }
 
         protected virtual string RenderItemLink(HtmlTextWriter writer, Tab item, int index)
@@ -223,17 +265,12 @@ namespace SmartStore.Web.Framework.UI
 			string temp = "";
 			string loadedTabName = null;
 
-			// <li [class="active [hide]"]><a href="#{id}" data-toggle="tab">{text}</a></li>
-			if (item.Selected)
+            // <li [class="active [hide]"]><a href="#{id}" data-toggle="tab">{text}</a></li>
+            item.HtmlAttributes.AppendCssClass("nav-item" + (item.Selected && this.Component.ComponentVersion == BootstrapVersion.V2 ? " active" : "")); // .active for BS2
+
+			if (!item.Selected && !item.Visible)
 			{
-				item.HtmlAttributes.AppendCssClass("active");
-			}
-			else
-			{
-				if (!item.Visible)
-				{
-					item.HtmlAttributes.AppendCssClass("hide");
-				}
+				item.HtmlAttributes.AppendCssClass("d-none");
 			}
 
 			if (item.Pull == TabPull.Right)
@@ -246,12 +283,13 @@ namespace SmartStore.Web.Framework.UI
 			writer.RenderBeginTag("li");
 			{
 				var itemId = "#" + BuildItemId(item, index);
-
-				if (item.Content != null)
+                
+                if (item.Content != null)
 				{
 					writer.AddAttribute("href", itemId);
 					writer.AddAttribute("data-toggle", "tab");
 					writer.AddAttribute("data-loaded", "true");
+                    writer.AddAttribute("class", "nav-link" + (item.Selected && this.Component.ComponentVersion == BootstrapVersion.V4 ? " active" : "")); // .active for BS4
 					loadedTabName = GetTabName(item) ?? itemId;
 				}
 				else
@@ -270,7 +308,8 @@ namespace SmartStore.Web.Framework.UI
 							writer.AddAttribute("href", itemId);
 							writer.AddAttribute("data-ajax-url", url);
 							writer.AddAttribute("data-toggle", "tab");
-						}
+                            writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
+                        }
 						else
 						{
 							writer.AddAttribute("href", url);
@@ -314,12 +353,9 @@ namespace SmartStore.Web.Framework.UI
 						writer.WriteEncodedText(item.Text);
 						writer.RenderEndTag(); // span > badge
 
-						// label
-						temp = "label";
-						if (item.BadgeStyle != BadgeStyle.Default)
-						{
-							temp += " label-" + item.BadgeStyle.ToString().ToLower();
-						}
+						// label/badge
+						temp = "ml-2 badge";
+						temp += " badge-" + item.BadgeStyle.ToString().ToLower();
 						if (base.Component.Position == TabsPosition.Left)
 						{
 							temp += " pull-right"; // looks nicer 
@@ -333,6 +369,16 @@ namespace SmartStore.Web.Framework.UI
 					{
 						writer.WriteEncodedText(item.Text);
 					}
+
+					// nav link short summary for collapsed state
+					if (this.Component.IsResponsive && item.Summary.HasValue())
+					{
+						writer.AddAttribute("class", "nav-link-summary");
+						writer.RenderBeginTag("span");
+						writer.WriteEncodedText(item.Summary);
+						writer.RenderEndTag();
+					}
+
 					writer.RenderEndTag(); // a
 				}
 				writer.RenderEndTag(); // li
@@ -363,7 +409,7 @@ namespace SmartStore.Web.Framework.UI
 			{
 				if (base.Component.Fade)
 				{
-					item.ContentHtmlAttributes.AppendCssClass("in");
+					item.ContentHtmlAttributes.AppendCssClass("show in"); // .in for BS2, .show for BS4
 				}
 				item.ContentHtmlAttributes.AppendCssClass("active");
 			}

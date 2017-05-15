@@ -2,16 +2,15 @@
 using System.Runtime.Serialization;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartStore.Core
-{
-    
+{   
     /// <summary>
     /// A collection of objects that has been split into pages.
     /// </summary>
     public interface IPageable : IEnumerable
     {
-
         /// <summary>
         /// The 0-based current page index
         /// </summary>
@@ -82,7 +81,19 @@ namespace SmartStore.Core
 	/// </summary>
 	public interface IPagedList<T> : IPageable, IList<T>
 	{
-		// codehint: sm-delete (members of IPageable now)
+		/// <summary>
+		/// Return the original query without any paging applied
+		/// </summary>
+		IQueryable<T> SourceQuery { get; }
+
+		/// <summary>
+		/// Applies the initial paging arguments to the passed query
+		/// </summary>
+		/// <param name="query">The query</param>
+		/// <returns>A query with applied paging args</returns>
+		IQueryable<T> ApplyPaging(IQueryable<T> query);
+
+		IPagedList<T> Load(bool force = false);
 	}
 
 }

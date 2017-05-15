@@ -1,0 +1,220 @@
+﻿@model ShoppingCartModel.OrderReviewDataModel
+
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Web.Models.ShoppingCart;
+
+@{ 
+	if (!Model.Display)
+	{
+		return;
+	}
+}
+
+<div class="card card-block order-review-data-box mb-3">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="row">
+				<div class="col mb-4 mb-lg-0 billinginfo">
+					<div class="row sm-gutters">
+						<div class="col">
+							<div class="heading">
+								<h5 class="heading-title font-weight-medium">@T("Order.BillingAddress")</h5>
+							</div>
+						</div>
+						<div class="col col-auto">
+							<a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("BillingAddress", "Checkout")'>@T("Common.Change")</a>
+						</div>
+					</div>
+					@RenderAddress(Model.BillingAddress)
+				</div>
+
+				@if (Model.IsShippable && Model.ShippingAddress != null)
+				{
+					<div class="col mb-4 mb-lg-0 shippinginfo">
+						<div class="row sm-gutters">
+							<div class="col">
+								<div class="heading">
+									<h5 class="heading-title font-weight-medium">@T("Order.ShippingAddress")</h5>
+								</div>
+							</div>
+							<div class="col col-auto">
+								<a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingAddress", "Checkout")'>@T("Common.Change")</a>
+							</div>
+						</div>
+						@RenderAddress(Model.ShippingAddress)
+					</div>
+				}
+			</div>
+		</div>
+
+		@if (Model.PaymentMethod.HasValue() || (Model.IsShippable && Model.ShippingMethod.HasValue()))
+		{
+			<div class="col-md-4">
+				<div class="row">
+					<div class="col">
+						@if (Model.IsShippable && Model.ShippingMethod.HasValue())
+						{
+							<div class="row sm-gutters">
+								<div class="col">
+									<div class="heading">
+										<h5 class="heading-title font-weight-medium">@T("Order.ShippingMethod")</h5>
+									</div>
+								</div>
+								<div class="col col-auto">
+									<a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
+								</div>
+							</div>
+							<p>@Model.ShippingMethod</p>
+						}
+						@if (Model.PaymentMethod.HasValue())
+						{
+							<div class="row sm-gutters">
+								<div class="col">
+									<div class="heading">
+										<h5 class="heading-title font-weight-medium">@T("Order.PaymentMethod")</h5>
+									</div>
+								</div>
+								@if (!Model.IsPaymentSelectionSkipped)
+								{
+									<div class="col col-auto">
+										<a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("PaymentMethod", "Checkout")'>@T("Common.Change")</a>
+									</div>
+								}
+
+							</div>
+							<p>@Model.PaymentMethod</p>
+							if (Model.PaymentSummary.HasValue())
+							{
+								<div class="text-muted">@Model.PaymentSummary</div>
+							}
+						}
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+    <div class="row d-none">
+        <div class="billinginfo col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header d-flex flex-nowrap justify-content-between">
+                    <h5 class="m-0">@T("Order.BillingAddress")</h5>
+                    <a class="change-checkout-data" href='@Url.Action("BillingAddress", "Checkout")'>@T("Common.Change")</a>
+                </div>
+                <div class="card-block">
+					@RenderAddress(Model.BillingAddress)
+				</div>
+            </div>
+        </div>
+
+        @if (Model.IsShippable)
+        {
+            <div class="shippinginfo col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header d-flex flex-nowrap justify-content-between">
+                        <h5 class="m-0">@T("Order.ShippingAddress")</h5>
+                        <a class="change-checkout-data" href='@Url.Action("ShippingAddress", "Checkout")'>@T("Common.Change")</a>
+                    </div>
+                    <div class="card-block">
+						@RenderAddress(Model.ShippingAddress)
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+    @if (Model.PaymentMethod.HasValue())
+    {
+        <div class="payment-method mb-3 d-none">
+            <div class="card">
+                <div class="card-header d-flex flex-nowrap justify-content-between">
+                    <h5 class="m-0">@T("Order.PaymentMethod")</h5>
+					@if (!Model.IsPaymentSelectionSkipped)
+					{
+						<a class="change-checkout-data" href='@Url.Action("PaymentMethod", "Checkout")'>@T("Common.Change")</a>
+					}
+                </div>
+                <div class="card-block">
+                    @Model.PaymentMethod
+					@if (Model.PaymentSummary.HasValue())
+					{
+						<span class="text-muted">@Model.PaymentSummary</span>
+					}
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.ShippingMethod.HasValue())
+    {
+        <div class="shipping-method mb-3 d-none">
+            <div class="card">
+                <div class="card-header d-flex flex-nowrap justify-content-between">
+                    <h5 class="m-0">@T("Order.ShippingMethod")</h5>
+					<a class="change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
+                </div>
+                <div class="card-block">
+                    @Model.ShippingMethod
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@helper RenderAddress(AddressModel address)
+{
+	var cityStateZip = address.GetFormattedCityStateZip();
+
+	<div class="mb-2">
+		@if (address.CompanyEnabled && address.Company.HasValue())
+		{
+			<div class="company">
+				@address.Company
+			</div>
+		}
+		<div class="name">
+			@address.GetFormattedName()
+		</div>
+		@if (address.StreetAddressEnabled && address.Address1.HasValue())
+		{
+			<div class="address1">
+				@address.Address1
+			</div>
+		}
+		@if (address.StreetAddress2Enabled && address.Address2.HasValue())
+		{
+			<div class="address2">
+				@address.Address2
+			</div>
+		}
+		@if (cityStateZip.HasValue())
+		{
+			<div class="city-state-zip">
+				@Html.Raw(cityStateZip)
+			</div>
+		}
+		@if (address.CountryEnabled && address.CountryName.HasValue())
+		{
+			<div class="country">
+				@address.CountryName
+			</div>
+		}
+	</div>
+
+	<div class="email">
+		@T("Order.Email"): @address.Email
+	</div>
+	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
+	{
+		<div class="phone">
+			@T("Order.Phone"): @address.PhoneNumber
+		</div>
+	}
+	if (address.FaxEnabled && address.FaxNumber.HasValue())
+	{
+		<div class="fax">
+			@T("Order.Fax"): @address.FaxNumber
+		</div>
+	}
+}

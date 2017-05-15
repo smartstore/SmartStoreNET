@@ -23,6 +23,11 @@ namespace SmartStore.Services.DataExchange.Export
 		}
 
 		/// <summary>
+		/// Identifier of the export profile
+		/// </summary>
+		public int ProfileId { get; internal set; }
+
+		/// <summary>
 		/// Provides the data to be exported
 		/// </summary>
 		public IExportDataSegmenterConsumer DataSegmenter { get; set; }
@@ -48,7 +53,12 @@ namespace SmartStore.Services.DataExchange.Export
 		public dynamic Language { get; internal set; }
 
 		/// <summary>
-		/// Projection data
+		/// Filter settings
+		/// </summary>
+		public ExportFilter Filter { get; internal set; }
+
+		/// <summary>
+		/// Projection settings
 		/// </summary>
 		public ExportProjection Projection { get; internal set; }
 
@@ -121,6 +131,11 @@ namespace SmartStore.Services.DataExchange.Export
 		public string PublicFolderPath { get; internal set; }
 
 		/// <summary>
+		/// The URL of the public export folder "Exchange". <c>null</c> if the profile has no public deployment.
+		/// </summary>
+		public string PublicFolderUrl { get; internal set; }
+
+		/// <summary>
 		/// Provider specific configuration data
 		/// </summary>
 		public object ConfigurationData { get; internal set; }
@@ -148,7 +163,7 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			++RecordsFailed;
 
-			Log.Error("Error while processing record with id {0}: {1}".FormatInvariant(entityId, exception.ToAllMessages()), exception);
+			Log.ErrorFormat(exception, "Error while processing record with id {0}", entityId);
 
 			if (IsMaxFailures)
 				_result.LastError = exception.ToString();
@@ -189,5 +204,15 @@ namespace SmartStore.Services.DataExchange.Export
 		/// The name of the file to be created
 		/// </summary>
 		public string FileName { get; set; }
+
+		/// <summary>
+		/// Short optional text that describes the content of the file
+		/// </summary>
+		public string Label { get; set; }
+
+		/// <summary>
+		/// Whether to display the file in the profile file dialog
+		/// </summary>
+		public bool DisplayInFileDialog { get; set; }
 	}
 }

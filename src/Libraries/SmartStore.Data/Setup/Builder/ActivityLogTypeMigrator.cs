@@ -13,7 +13,7 @@ namespace SmartStore.Data.Setup
 
 		public ActivityLogTypeMigrator(SmartObjectContext ctx)
 		{
-			Guard.ArgumentNotNull(() => ctx);
+			Guard.NotNull(ctx, nameof(ctx));
 
 			_ctx = ctx;
 			_activityLogTypeRecords = _ctx.Set<ActivityLogType>();
@@ -44,9 +44,9 @@ namespace SmartStore.Data.Setup
 
 		public void AddActivityLogType(string systemKeyword, string enName, string deName)
 		{
-			Guard.ArgumentNotEmpty(() => systemKeyword);
-			Guard.ArgumentNotEmpty(() => enName);
-			Guard.ArgumentNotEmpty(() => deName);
+			Guard.NotEmpty(systemKeyword, nameof(systemKeyword));
+			Guard.NotEmpty(enName, nameof(enName));
+			Guard.NotEmpty(deName, nameof(deName));
 
 			var record = _activityLogTypeRecords.FirstOrDefault(x => x.SystemKeyword == systemKeyword);
 

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Catalog
 {
-    [TestFixture]
+	[TestFixture]
     public class ProductPersistenceTests : PersistenceTest
     {
         [Test]
@@ -218,7 +218,6 @@ namespace SmartStore.Data.Tests.Catalog
                             ParentCategoryId = 2,
                             //PictureId = 3,
                             PageSize = 4,
-                            PriceRanges = "1-3;",
                             ShowOnHomePage = false,
                             Published = true,
                             Deleted = false,
@@ -266,14 +265,11 @@ namespace SmartStore.Data.Tests.Catalog
                             MetaTitle = "Meta title",
                             //PictureId = 3,
                             PageSize = 4,
-                            PriceRanges = "1-3;",
                             Published = true,
                             Deleted = false,
                             DisplayOrder = 5,
-                            CreatedOnUtc =
-                                new DateTime(2010, 01, 01),
-                            UpdatedOnUtc =
-                                new DateTime(2010, 01, 02),
+                            CreatedOnUtc = new DateTime(2010, 01, 01),
+                            UpdatedOnUtc = new DateTime(2010, 01, 02),
                         }
                     }
                 );
@@ -300,19 +296,22 @@ namespace SmartStore.Data.Tests.Catalog
                 CreatedOnUtc = new DateTime(2010, 01, 01),
                 UpdatedOnUtc = new DateTime(2010, 01, 02)
             };
-            product.ProductPictures.Add
-                (
-                    new ProductPicture
-                    {
-                        DisplayOrder = 1,
-                        Picture = new Picture
-                        {
-                            PictureBinary = new byte[] { 1, 2, 3 },
-                            MimeType = "image/pjpeg",
-                            IsNew = true
-                        }
-                    }
-                );
+
+            product.ProductPictures.Add(new ProductPicture
+			{
+				DisplayOrder = 1,
+				Picture = new Picture
+				{
+					MediaStorage = new MediaStorage
+					{
+						Data = new byte[] { 1, 2, 3 }
+					},
+					UpdatedOnUtc = DateTime.UtcNow,
+					MimeType = "image/pjpeg",
+					IsNew = true
+				}
+			});
+
             var fromDb = SaveAndLoadEntity(product);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("Name 1");

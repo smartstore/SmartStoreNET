@@ -1,0 +1,64 @@
+﻿@model TreeNode<string>
+@using SmartStore.Collections;
+
+@helper TokenSelector(TreeNode<string> root)
+{
+    if (root.HasChildren)
+    {
+        <div class="btn-group message-token-selector">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                @T("Admin.Common.ChooseToken")
+                <span class="caret"></span>
+            </a>
+            @TokenList(root)
+        </div>
+    }
+}
+
+@helper TokenList(TreeNode<string> node)
+{
+    <ul class="dropdown-menu">
+        @foreach (var child in node.Children)
+        {
+            if (child.IsLeaf)
+            {
+                List<string> tokens = new List<string>();
+                var curNode = child;
+                while (!curNode.IsRoot)
+                {
+                    tokens.Insert(0, curNode.Value);
+                    curNode = curNode.Parent;
+                }
+                <li><a tabindex="-1" href="#" class="message-token" @Html.Attr("data-token", String.Join(".", tokens), tokens.Count > 0)>@child.Value</a></li>
+            }
+            else
+            {
+                <li class="dropdown-submenu">
+                    <a tabindex="-1" href="#" class="message-token">@child.Value</a>
+                    @TokenList(child)
+                </li>
+            }
+        }
+    </ul>
+}
+
+@TokenSelector(Model)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.message-token-selector').on('click', '.message-token', function (e) {
+            e.preventDefault();
+
+            var el = $(this);
+            var token = el.data("token");
+
+            if (!token)
+                return false;
+
+            CKEDITOR.instances.Body.insertHtml('%{0}%'.format(token));
+
+            return false;
+        }); 
+    });
+</script>

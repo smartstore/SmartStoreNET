@@ -179,4 +179,35 @@
 			@Html.ValidationMessageFor(model => model.OrderMaximumQuantity)
 		</td>
 	</tr>
+
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.QuantityStep)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.QuantityStep)
+            @Html.ValidationMessageFor(model => model.QuantityStep)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.HideQuantityControl)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.HideQuantityControl)
+            @Html.ValidationMessageFor(model => model.HideQuantityControl)
+        </td>
+    </tr>
+
+    @* TODO: comment in when dropdown was implemented *@
+    @* Can be hidden if HideQuantityControl == true *@
+    <tr style="display:none">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.QuantiyControlType)
+        </td>
+        <td class="adminData">
+            @Html.EnumSettingEditorFor(model => model.QuantiyControlType)
+            @Html.ValidationMessageFor(model => model.QuantiyControlType)
+        </td>
+    </tr>
 </table>

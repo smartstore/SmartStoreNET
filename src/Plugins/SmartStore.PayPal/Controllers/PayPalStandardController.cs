@@ -63,12 +63,14 @@ namespace SmartStore.PayPal.Controllers
 
             model.Copy(settings, false);
 
-            storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+			using (Services.Settings.BeginScope())
+			{
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
 
-			// multistore context not possible, see IPN handling
-			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+				// multistore context not possible, see IPN handling
+				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+			}
 
-            Services.Settings.ClearCache();
             NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
             return Configure();
@@ -129,9 +131,9 @@ namespace SmartStore.PayPal.Controllers
 					{
 						total = decimal.Parse(values["mc_gross"], new CultureInfo("en-US"));
 					}
-					catch (Exception exc)
+					catch (Exception ex)
 					{
-						Logger.Error(T("Plugins.Payments.PayPalStandard.FailedGetGross"), exc);
+						Logger.Error(ex, T("Plugins.Payments.PayPalStandard.FailedGetGross"));
 					}
 
 					string payer_status = string.Empty;

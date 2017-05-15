@@ -1,0 +1,54 @@
+﻿<script type="text/javascript">
+    $(function () {
+    	$('#Username').closest(".input-group-btn").after(createCircularSpinner(24).attr('id', 'cua-loader').css('margin-left', '10px'));
+    	$('#Username').on('input propertychange paste', function (e) {
+    		$('#username-availabilty').text('');
+    		$('#check-availability-button')
+				.removeClass("btn-success btn-warning")
+				.addClass("btn-secondary")
+				.find(">i")
+				.removeClass("fa-check fa-exclamation-circle")
+				.addClass("fa-question-circle");
+    	});
+        $('#check-availability-button').on('click', function (e) {
+            var btn = $('#check-availability-button');
+            $('#username-availabilty').text('');
+            if ($("#Username").val().length > 0) {
+                $('#cua-loader').addClass("active");
+                btn.attr('disabled', 'disabled');
+                $.ajax({
+                    cache: false,
+                    type: 'POST',
+                    url: '@Url.Action("CheckUsernameAvailability")',
+                    data: $('#Username').serialize(),
+                    dataType: 'json',
+                    success: function (data) {
+                        btn.removeAttr('disabled');
+                        btn
+                            .removeClass("btn-success btn-warning btn-secondary")
+                            .addClass(data.Available ? "btn-success" : "btn-warning")
+                            .find(">i")
+                            .removeClass("fa-check fa-question-circle fa-exclamation-circle")
+                            .addClass(data.Available ? "fa-check" : "fa-exclamation-circle");
+
+                        displayNotification(data.Text, data.Available ? "success" : "error");
+                    },
+                    complete: function () {
+                        btn.removeAttr('disabled');
+                        $('#cua-loader').removeClass("active");
+                    }
+                });
+            } else {
+                $('#username-availabilty').attr('class', 'not-available-status');
+                $('#username-availabilty').text('*');
+            }
+            return false;
+        });
+    });
+</script>
+
+<span class="input-group-btn">
+	<button type="button" id="check-availability-button" class="btn btn-secondary check-username-availability-button tooltip-toggle" title="@T("Account.CheckUsernameAvailability.Button")">
+		<i class="fa fa-question-circle"></i>
+	</button>
+</span>

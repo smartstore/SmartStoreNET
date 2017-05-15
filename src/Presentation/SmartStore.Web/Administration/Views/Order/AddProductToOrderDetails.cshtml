@@ -43,7 +43,7 @@
     </div>
     <div class="clear">
     </div>
-    
+
     if (Model.ProductType == ProductType.SimpleProduct)
     {
         <div>
@@ -101,14 +101,14 @@
 		    <div class="clear"></div>
 
             <div id="ProductAddAttributeContainer">
-                @Html.Partial("_ProductAddAttributes", Model.ProductVariantAttributes)
+                @{ Html.RenderPartial("_ProductAddAttributes", Model); }
             </div>
 
             <div class="clear"></div>
 
             @{
-                var dataDictGiftCard = new ViewDataDictionary();
-                dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = "giftcard";
+				var dataDictGiftCard = new ViewDataDictionary();
+				dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = Model.GiftCardFieldPrefix;
                 @Html.Partial("_ProductAddGiftCardInfo", Model.GiftCard, dataDictGiftCard)
             }
             

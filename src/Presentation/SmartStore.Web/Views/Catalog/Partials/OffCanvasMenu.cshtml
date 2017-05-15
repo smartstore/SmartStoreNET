@@ -1,0 +1,49 @@
+﻿@{ 
+	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
+}
+
+<div class="ocm-home-layer layer show" data-id="0">
+
+    <div class="offcanvas-menu-header offcanvas-tabs">
+        <ul class="nav nav-tabs nav-tabs-line row no-gutters" role="tablist">
+            <li class="nav-item col">
+                <a id="category-tab" class="nav-link" data-toggle="tab" href="#ocm-categories" role="tab" data-initialized="false">
+                    <span class="title">@T("Offcanvas.Menu.Categories")</span>
+                </a>
+            </li>
+            @if (ViewBag.ShowManufacturers == true)
+            {
+                <li class="nav-item col">
+                    <a id="manufacturer-tab" class="nav-link" data-toggle="tab" href="#ocm-manufacturers" role="tab" data-initialized="false">
+                        <span class="title">@T("Offcanvas.Menu.Brands")</span>
+                    </a>
+                </li>
+            }
+            <li class="nav-item col">
+                <a id="service-tab" class="nav-link" data-toggle="tab" href="#ocm-service" role="tab" data-initialized="false">
+                    <span class="title">@T("Offcanvas.Menu.Service")</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content offcanvas-scrollable">
+        <div class="tab-pane fade" id="ocm-categories" role="tabpanel"></div>
+        @if (ViewBag.ShowManufacturers == true)
+        {
+            <div class="tab-pane fade" id="ocm-manufacturers" role="tabpanel"></div>
+        }
+        <div class="tab-pane fade" id="ocm-service" role="tabpanel"></div>
+    </div>
+
+    <div class="offcanvas-menu-footer d-none">
+        <div class="row xs-gutters justify-content-around">
+            <div id="ocm-currency-selector" class="col d-none">
+                <select class="form-control skin" style="width:100%"></select>
+            </div>
+            <div id="ocm-language-selector" class="col d-none">
+                <select class="form-control skin"></select>
+            </div>
+        </div>
+    </div>
+</div>

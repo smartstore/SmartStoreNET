@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Core</RootNamespace>
     <AssemblyName>SmartStore.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -62,12 +62,12 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+    <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -78,28 +78,43 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Web.XmlTransform">
-      <HintPath>..\..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NuGet.Core, Version=2.8.50126.400, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NuGet.Core.2.8.0\lib\net40-Client\NuGet.Core.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NuGet.Core, Version=2.14.0.832, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NuGet.Core.2.14.0\lib\net40-Client\NuGet.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Linq.Dynamic">
-      <HintPath>..\..\packages\System.Linq.Dynamic.1.0.0\lib\net40\System.Linq.Dynamic.dll</HintPath>
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Caching" />
@@ -143,15 +158,27 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Async\AsyncState.cs" />
-    <Compile Include="Caching\DefaultCacheManager.cs" />
-    <Compile Include="Caching\AspNetCache.cs" />
+    <Compile Include="Async\AsyncLock.cs" />
+    <Compile Include="Async\AsyncStateInfo.cs" />
+    <Compile Include="Async\IAsyncState.cs" />
+    <Compile Include="Async\LocalAsyncState.cs" />
+    <Compile Include="Caching\ISet.cs" />
+    <Compile Include="Caching\MemoryCacheManager.cs" />
+    <Compile Include="Caching\OutputCache\DisplayControl.cs" />
+    <Compile Include="Caching\IRequestCache.cs" />
+    <Compile Include="Caching\OutputCache\IDisplayControl.cs" />
+    <Compile Include="Caching\OutputCache\IOutputCacheInvalidationObserver.cs" />
+    <Compile Include="Caching\OutputCache\ICacheableRouteRegistrar.cs" />
+    <Compile Include="Caching\OutputCache\IOutputCacheProvider.cs" />
+    <Compile Include="Caching\MemorySet.cs" />
+    <Compile Include="Caching\OutputCache\NullOutputCacheProvider.cs" />
+    <Compile Include="Caching\OutputCache\OutputCacheItem.cs" />
     <Compile Include="Caching\RequestCache.cs" />
-    <Compile Include="Caching\StaticCache.cs" />
-    <Compile Include="Caching\ICache.cs" />
+    <Compile Include="Collections\ConcurrentMultimap.cs" />
     <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="Collections\TreeNodeBase.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\NullableConverter.cs" />
@@ -163,8 +190,23 @@
     <Compile Include="ComponentModel\TypeConversion\TypeConverterAdapter.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterBase.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterFactory.cs" />
+    <Compile Include="Data\Hooks\HookableAttribute.cs" />
+    <Compile Include="Data\Hooks\HookMetadata.cs" />
+    <Compile Include="Data\Hooks\ImportantAttribute.cs" />
+    <Compile Include="Data\Hooks\DbLoadHook.cs" />
+    <Compile Include="Data\Hooks\DbSaveHook.cs" />
+    <Compile Include="Data\Hooks\DefaultDbHookHandler.cs" />
+    <Compile Include="Data\Hooks\HookedEntity.cs" />
+    <Compile Include="Data\Hooks\IDbHook.cs" />
+    <Compile Include="Data\Hooks\IDbLoadHook.cs" />
+    <Compile Include="Data\Hooks\IDbSaveHook.cs" />
+    <Compile Include="Data\Hooks\IDbHookHandler.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
+    <Compile Include="Domain\Catalog\ProductAttributeOption.cs" />
+    <Compile Include="Domain\Catalog\ProductAttributeOptionsSet.cs" />
+    <Compile Include="Domain\Catalog\QuantiyControlType.cs" />
+    <Compile Include="Domain\Catalog\IPagingOptions.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
     <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
@@ -179,14 +221,20 @@
     <Compile Include="Domain\DataExchange\ExportEnums.cs" />
     <Compile Include="Domain\DataExchange\ExportFilter.cs" />
     <Compile Include="Domain\DataExchange\ExportProfile.cs" />
+    <Compile Include="Domain\Media\MediaStorage.cs" />
+    <Compile Include="Domain\Media\IHasMedia.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
     <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />
     <Compile Include="Domain\Orders\CheckoutEnums.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
+    <Compile Include="Domain\Tax\AuxiliaryServicesTaxType.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Data\IQueryableExtensions.cs" />
+    <Compile Include="Extensions\RegexExtensions.cs" />
+    <Compile Include="Extensions\RouteExtensions.cs" />
     <Compile Include="Extensions\XPathExtensions.cs" />
     <Compile Include="Fakes\FakeController.cs" />
     <Compile Include="IActivatable.cs" />
@@ -194,9 +242,28 @@
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeAccessor.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeProvider.cs" />
     <Compile Include="Infrastructure\DependencyManagement\ILifetimeScopeAccessor.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\Work.cs" />
+    <Compile Include="Infrastructure\ApplicationEnvironment.cs" />
+    <Compile Include="Infrastructure\IApplicationEnvironment.cs" />
+    <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
+    <Compile Include="IO\VirtualPath\IVirtualFolder.cs" />
+    <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />
+    <Compile Include="IO\VirtualPath\VirtualFolder.cs" />
+    <Compile Include="IO\IFileSystemExtensions.cs" />
+    <Compile Include="IO\LockFile\ILockFile.cs" />
+    <Compile Include="IO\LockFile\ILockFileManager.cs" />
+    <Compile Include="IO\LockFile\LockFile.cs" />
+    <Compile Include="IO\LockFile\LockFileManager.cs" />
+    <Compile Include="IAuditable.cs" />
     <Compile Include="ITransient.cs" />
     <Compile Include="Collections\MostRecentlyUsedList.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />
+    <Compile Include="Logging\IChronometer.cs" />
+    <Compile Include="Logging\ILoggerFactory.cs" />
+    <Compile Include="Logging\log4net\Log4netLogger.cs" />
+    <Compile Include="Logging\log4net\Log4netLoggerFactory.cs" />
+    <Compile Include="Logging\log4net\SmartFileAppender.cs" />
+    <Compile Include="Logging\LoggingModule.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
@@ -212,20 +279,6 @@
     <Compile Include="Data\DbContextScope.cs" />
     <Compile Include="Data\DbQuerySettings.cs" />
     <Compile Include="Data\EntityState.cs" />
-    <Compile Include="Data\Hooks\HookedEntityEntry.cs" />
-    <Compile Include="Data\Hooks\HookEntityMetadata.cs" />
-    <Compile Include="Data\Hooks\HooksEventConsumer.cs" />
-    <Compile Include="Data\Hooks\IHook.cs" />
-    <Compile Include="Data\Hooks\IPostActionHook .cs" />
-    <Compile Include="Data\Hooks\IPreActionHook.cs" />
-    <Compile Include="Data\Hooks\PostActionHook.cs" />
-    <Compile Include="Data\Hooks\PostDeleteHook.cs" />
-    <Compile Include="Data\Hooks\PostInsertHook.cs" />
-    <Compile Include="Data\Hooks\PostUpdateHook.cs" />
-    <Compile Include="Data\Hooks\PreActionHook.cs" />
-    <Compile Include="Data\Hooks\PreDeleteHook.cs" />
-    <Compile Include="Data\Hooks\PreInsertHook.cs" />
-    <Compile Include="Data\Hooks\PreUpdateHook.cs" />
     <Compile Include="Data\IDbContext.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
     <Compile Include="Data\SqlFileTokenizer.cs" />
@@ -234,7 +287,6 @@
     <Compile Include="Domain\Catalog\ProductBundleItem.cs" />
     <Compile Include="Domain\Catalog\ProductType.cs" />
     <Compile Include="Domain\Catalog\ProductVariantAttributeValueType.cs" />
-    <Compile Include="Domain\Cms\ContentSliderSettings.cs" />
     <Compile Include="Domain\Common\CompanyInformationSettings.cs" />
     <Compile Include="Domain\Common\ContactDataSettings.cs" />
     <Compile Include="Domain\Common\BankConnectionSettings.cs" />
@@ -265,15 +317,11 @@
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IMergedData.cs" />
     <Compile Include="Async\AsyncRunner.cs" />
-    <Compile Include="IO\Media\FileSystemStorageProvider.cs" />
-    <Compile Include="IO\Media\IStorageFile.cs" />
-    <Compile Include="IO\Media\IStorageFolder.cs" />
-    <Compile Include="IO\Media\IStorageProvider.cs" />
+    <Compile Include="IO\LocalFileSystem.cs" />
+    <Compile Include="IO\IFile.cs" />
+    <Compile Include="IO\IFolder.cs" />
+    <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="IO\MimeTypes.cs" />
-    <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
-    <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />
-    <Compile Include="IO\WebSite\IWebSiteFolder.cs" />
-    <Compile Include="IO\WebSite\WebSiteFolder.cs" />
     <Compile Include="ISoftDeletable.cs" />
     <Compile Include="IStoreContext.cs" />
     <Compile Include="Linq\Expanders\IPathExpander.cs" />
@@ -287,7 +335,6 @@
     <Compile Include="Localization\NullLocalizer.cs" />
     <Compile Include="Logging\ICustomerActivityService.cs" />
     <Compile Include="Logging\ILogger.cs" />
-    <Compile Include="Logging\LogContext.cs" />
     <Compile Include="Logging\LoggingExtensions.cs" />
     <Compile Include="Logging\Notifier.cs" />
     <Compile Include="Logging\NotifyEntry.cs" />
@@ -309,7 +356,7 @@
     <Compile Include="Packaging\PackagingResult.cs" />
     <Compile Include="Packaging\PackagingUtils.cs" />
     <Compile Include="PagedList.cs" />
-    <Compile Include="Collections\MultiMap.cs" />
+    <Compile Include="Collections\Multimap.cs" />
     <Compile Include="Collections\TreeNode.cs" />
     <Compile Include="ComponentModel\HybridExpando.cs" />
     <Compile Include="ComponentModel\PropertyBag.cs" />
@@ -318,7 +365,6 @@
     <Compile Include="Domain\Catalog\SmartStoreProductVariantAttributeCombination.cs" />
     <Compile Include="Domain\Cms\WidgetSettings.cs" />
     <Compile Include="Domain\Common\AddressSettings.cs" />
-    <Compile Include="Domain\Common\FulltextSearchMode.cs" />
     <Compile Include="Domain\Common\GenericAttribute.cs" />
     <Compile Include="Domain\Orders\Events.cs" />
     <Compile Include="Domain\Security\AclRecord.cs" />
@@ -374,10 +420,42 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
+    <Compile Include="Search\AcquireWriterContext.cs" />
+    <Compile Include="Search\DefaultIndexManager.cs" />
+    <Compile Include="Search\Facets\Facet.cs" />
+    <Compile Include="Search\Facets\FacetExtensions.cs" />
+    <Compile Include="Search\Facets\FacetGroup.cs" />
+    <Compile Include="Search\Facets\FacetDescriptor.cs" />
+    <Compile Include="Search\Facets\FacetEnums.cs" />
+    <Compile Include="Search\Facets\FacetValue.cs" />
+    <Compile Include="Search\Filter\CombinedSearchFilter.cs" />
+    <Compile Include="Search\Filter\RangeSearchFilter.cs" />
+    <Compile Include="Search\Filter\SearchFilterBase.cs" />
+    <Compile Include="Search\IIndexDocument.cs" />
+    <Compile Include="Search\IIndexManager.cs" />
+    <Compile Include="Search\IIndexProvider.cs" />
+    <Compile Include="Search\IIndexStore.cs" />
+    <Compile Include="Search\IndexDocument.cs" />
+    <Compile Include="Search\IndexField.cs" />
+    <Compile Include="Search\IndexProviderBase.cs" />
+    <Compile Include="Search\ISearchAlias.cs" />
+    <Compile Include="Search\ISearchBits.cs" />
+    <Compile Include="Search\ISearchEngine.cs" />
+    <Compile Include="Search\Filter\ISearchFilter.cs" />
+    <Compile Include="Search\ISearchHit.cs" />
+    <Compile Include="Search\ISearchQuery.cs" />
+    <Compile Include="Search\NullIndexStore.cs" />
+    <Compile Include="Search\Filter\SearchFilter.cs" />
+    <Compile Include="Search\SearchDocumentType.cs" />
+    <Compile Include="Search\SearchEnums.cs" />
+    <Compile Include="Search\SearchQuery.cs" />
+    <Compile Include="Search\SearchSettings.cs" />
+    <Compile Include="Search\SearchSort.cs" />
     <Compile Include="Security\SmartStorePrincipal.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />
+    <Compile Include="Utilities\ColorHelper.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Domain\Affiliates\Affiliate.cs" />
@@ -553,7 +631,6 @@
     <Compile Include="Domain\Catalog\SpecificationAttribute.cs" />
     <Compile Include="Domain\Catalog\SpecificationAttributeOption.cs" />
     <Compile Include="Domain\Catalog\TierPrice.cs" />
-    <Compile Include="IO\FileSystemSettings.cs" />
     <Compile Include="Domain\Customers\PasswordFormat.cs" />
     <Compile Include="HttpSecurityMode.cs" />
     <Compile Include="RouteInfo.cs" />
@@ -589,7 +666,7 @@
     <Compile Include="Domain\Localization\Language.cs" />
     <Compile Include="Domain\Localization\LocaleStringResource.cs" />
     <Compile Include="Domain\Logging\Log.cs" />
-    <Compile Include="Domain\Logging\LogLevel.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Domain\Configuration\Setting.cs" />
     <Compile Include="SmartException.cs" />
     <Compile Include="PagedList`T.cs" />
@@ -610,6 +687,10 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

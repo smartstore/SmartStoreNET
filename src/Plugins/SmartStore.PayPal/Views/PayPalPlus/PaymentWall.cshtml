@@ -2,26 +2,26 @@
 @using SmartStore.PayPal.Models;
 @model PayPalPlusCheckoutModel
 @{
-	Layout = "~/Views/Shared/_Checkout.cshtml";
-	Html.AddTitleParts(T("PageTitle.Checkout").Text);
+    Layout = "_Checkout";
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 @section orderProgress
 {
-	@Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment })
+	@{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment }); }
 }
 
-@Html.Partial("PaymentWallScripting")
+@{ Html.RenderPartial("PaymentWallScripting"); }
 
 <div id="PayPalPlusPage" class="page payment-method-page">
 	<div class="page-title">
 		<h1>@T("Checkout.SelectPaymentMethod")</h1>
 	</div>
-	<div class="page-body checkout-data" style="padding-bottom: 20px;">
-		@Html.Widget("checkout_payment_method_top")
+	<div class="page-body checkout-data">
+		@{ Html.RenderWidget("checkout_payment_method_top"); }
 
 		@if (Model.ErrorMessage.HasValue())
 		{
-			<div class="alert alert-error">
+			<div class="alert alert-danger">
 				@Html.Raw(T("Plugins.Payments.PayPalPlus.MethodUnavailable"))
 				<br />
 				@if (!Model.ApprovalUrl.HasValue())
@@ -33,7 +33,7 @@
 		}
 		else if (Model.PayPalPlusPseudoMessageFlag.HasValue() && Model.PayPalPlusPseudoMessageFlag == "1")
 		{
-			<div class="alert alert-error">
+			<div class="alert alert-danger">
 				@Html.Raw(T("Plugins.Payments.PayPalPlus.SorryFailure"))
 			</div>
 		}
@@ -47,23 +47,25 @@
 
 		@if (Model.HasAnyFees)
 		{
-			<div id="PayPalPlusPaymentFeeContainer" class="alert alert-info payment-fee" style="visibility:hidden; margin-bottom:0;">
+			<div id="PayPalPlusPaymentFeeContainer" class="alert alert-info payment-fee mb-0" style="visibility:hidden;">
 				@T("Plugins.Payments.PayPalPlus.PaymentFeeMessage")
 			</div>
 		}
 
 		<div id="PayPalPlusPaymentWall"></div>
 
-		<div class="select-button clearfix">
-			<a class="btn pull-left" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
-				<i class="fa fa-caret-left"></i>&nbsp;@T("Common.Back")
+		<div class="select-button buttons">
+			<a class="btn btn-secondary btn-lg" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
+                <i class="fa fa-angle-left"></i>
+                <span>@T("Common.Back")</span>
 			</a>
 
-			<button id="PayPalPlusNextCheckoutStep" class="btn btn-warning pull-right payment-method-next-step-button hide">
-				@T("Checkout.NextButton")&nbsp;<i class="fa fa-caret-right"></i>
+			<button id="PayPalPlusNextCheckoutStep" class="btn btn-warning btn-lg payment-method-next-step-button hide">
+                <span>@T("Checkout.NextButton")</span>
+                <i class="fa fa-angle-right"></i>
 			</button>
 		</div>
 
-		@Html.Widget("checkout_payment_method_bottom")
+		@{ Html.RenderWidget("checkout_payment_method_bottom"); }
 	</div>
 </div>

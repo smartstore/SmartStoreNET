@@ -16,12 +16,12 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Filters
 {
-	public class JsonNetAttribute : ActionFilterAttribute
+	public class JsonNetAttribute : FilterAttribute, IResultFilter
 	{
 		public Lazy<IDateTimeHelper> DateTimeHelper { get; set; }
 
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-		public override void OnActionExecuted(ActionExecutedContext filterContext)
+		public virtual void OnResultExecuting(ResultExecutingContext filterContext)
 		{
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
@@ -37,7 +37,7 @@ namespace SmartStore.Web.Framework.Filters
 			if (filterContext.Result.GetType() != typeof(JsonResult))
 				return;
 
-	        var jsonResult = filterContext.Result as JsonResult;
+			var jsonResult = filterContext.Result as JsonResult;
 
 			filterContext.Result = new JsonNetResult(DateTimeHelper.Value)
 			{
@@ -46,6 +46,10 @@ namespace SmartStore.Web.Framework.Filters
 				ContentEncoding = jsonResult.ContentEncoding,
 				JsonRequestBehavior = jsonResult.JsonRequestBehavior
 			};
+		}
+
+		public virtual void OnResultExecuted(ResultExecutedContext filterContext)
+		{
 		}
 	}
 

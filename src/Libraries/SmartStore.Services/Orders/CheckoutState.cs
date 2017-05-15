@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Routing;
 
 namespace SmartStore.Services.Orders
 {
@@ -9,31 +8,30 @@ namespace SmartStore.Services.Orders
 	{
 		public CheckoutState()
 		{
-			CustomProperties = new RouteValueDictionary();
+			CustomProperties = new Dictionary<string, object>();
+			PaymentData = new Dictionary<string, object>();
 		}
 
 		public static string CheckoutStateSessionKey { get { return "SmCheckoutState"; } }
 
-		public string PaymentSummary
-		{
-			get
-			{
-				return CustomProperties["_PaymentSummary"] as string;
-			}
-			set
-			{
-				CustomProperties["_PaymentSummary"] = value;
-			}
-		}
+		/// <summary>
+		/// The payment summary as displayed on the checkout confirmation page
+		/// </summary>
+		public string PaymentSummary { get; set; }
 
 		/// <summary>
-		/// Indicated whether the page with the payment method selection was skipped during checkout.
+		/// Indicates whether the payment method selection page was skipped
 		/// </summary>
 		public bool IsPaymentSelectionSkipped { get; set; }
 
 		/// <summary>
-		/// Use this dictionary for any custom data required along checkout flow.
+		/// Use this dictionary for any custom data required along checkout flow
 		/// </summary>
 		public IDictionary<string, object> CustomProperties { get; set; }
+
+		/// <summary>
+		/// Payment data entered on payment method selection page
+		/// </summary>
+		public IDictionary<string, object> PaymentData { get; set; }
 	}
 }

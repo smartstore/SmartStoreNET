@@ -1,0 +1,32 @@
+﻿@model CurrencySelectorModel
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+@using System.Globalization;
+
+@if (Model.AvailableCurrencies.Count > 1)
+{
+    var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+    var activeCurr = Model.AvailableCurrencies.Where(x => x.Id == Model.CurrentCurrencyId).FirstOrDefault();
+
+    <div class="dropdown currency-selector">
+        <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+			<span>@activeCurr.ISOCode (@activeCurr.Symbol)</span>
+            <i class="fa fa-angle-down"></i>
+        </a>
+
+        <div class="dropdown-menu">
+            @foreach (var curr in Model.AvailableCurrencies)
+            {
+                var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = curr.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
+
+                <a href="@href" class="dropdown-item" title="@curr.Name" rel="nofollow" 
+                   data-selected="@(curr.Equals(activeCurr) ? "true" : "false")" data-abbreviation="@("{0} ({1})".FormatWith(curr.ISOCode, curr.Symbol))">
+                    @curr.Name
+                    <span class="abbreviation"> - @curr.ISOCode (@curr.Symbol)</span>
+                </a>
+            }
+        </div>
+    </div>
+}

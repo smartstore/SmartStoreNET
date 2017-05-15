@@ -1,0 +1,349 @@
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+$megamenu-zindex-base:          ($zindex-dropdown - 20);
+
+.megamenu-section .navbar {
+    background: $megamenu-bg;
+    padding: 0; 
+}
+
+.megamenu {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    
+    .nav-link {
+        font-weight: $font-weight-medium;
+        font-size: $megamenu-navlink-font-size;
+    }
+}
+
+.navbar-light .megamenu .nav-item {
+    .nav-link { color: $megamenu-color; }
+
+     &.active .nav-link, 
+     .nav-link:focus, 
+     .nav-link:hover { 
+         background: $header-hover-bg;
+     }
+}
+
+.navbar-inverse .megamenu .nav-item {
+    .nav-link { color: $megamenu-inverse-color; }
+
+     &.active .nav-link, 
+     .nav-link:focus, 
+     .nav-link:hover { 
+         background: $header-inverse-hover-bg; 
+     }
+} 
+
+// horizontal main navbar 
+.megamenu .navbar-nav {
+	position: relative;
+	white-space: nowrap;
+	/* overwrites inline width */
+	width: auto !important;
+	transition: margin-left 0.12s ease-in-out;
+	margin-left: 0;
+    line-height: $megamenu-line-height;
+
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .nav-item {
+        position: relative;
+
+        .badge {
+            position: absolute;
+            right: 3px;
+            top: 7px;
+            font-size: $font-size-xs;
+        }
+        .badge-important { background: $brand-primary; }
+        .badge-inverse { background: $brand-danger; }
+
+        &:before, &:after { content: ""; }
+
+        &.active:before {
+            content: "";
+            right: 0;
+            position: absolute;
+            border-bottom: 10px solid $megamenu-dropdown-bg;
+            border-right: 12px solid transparent;
+            border-left: 12px solid transparent;
+            bottom: -1px;
+            z-index: ($megamenu-zindex-base + 3);
+        }
+
+        &.active:after {
+            content: "";
+            right: -2px;
+            position: absolute;
+            border-bottom: 12px solid $dropdown-border-color;
+            border-right: 14px solid transparent;
+            border-left: 14px solid transparent;
+            bottom: -2px;
+            z-index: ($megamenu-zindex-base + 2);
+        }
+
+        &.selected .nav-link:before,
+        &.expanded .nav-link:before {
+            content: ' ';
+            display: block;
+            position: absolute;
+            width: 100%;
+            left: 0;
+            bottom: 1px;
+            height: 3px;
+            background: $header-selected-color;
+        }
+    }
+
+    .nav-item + .nav-item { 
+        margin-left: 0; 
+    }
+}
+.touchevents .megamenu .nav-slider {
+	overflow-x: auto !important;
+}
+
+// horizontal navbar navigation buttons
+.megamenu-nav {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    transition: opacity .5s ease-in-out .1s;
+    opacity: 0;
+    z-index: $megamenu-zindex-base;
+    display: none;
+
+    &.megamenu-nav--prev a { padding-right: 10px; }
+    &.megamenu-nav--next {
+        right: 0;
+        a { padding-left: 10px; }
+    }   
+
+    .megamenu-nav-btn {
+        border: none;
+        box-shadow: none;
+        position: relative;
+        z-index: ($megamenu-zindex-base + 10);
+        padding: 0px;
+        width: 40px;
+        height: 98%;
+    }
+
+    i {
+        font-size: 38px;
+        transition: all .2s ease-in-out;
+        height: 58px;
+        line-height: 58px;
+        vertical-align: middle;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+        display: inline-block;
+        opacity: 0.4;
+
+        &:hover { opacity: 0.6; }
+        &:active { opacity: 1; } 
+    }
+}
+.megamenu.megamenu-blend--next .megamenu-nav--next,
+.megamenu.megamenu-blend--prev .megamenu-nav--prev {
+    opacity: 1;
+    display: block;
+}
+.megamenu .megamenu-nav--prev .megamenu-nav-btn {
+    background-image: linear-gradient(to left, rgba($megamenu-bg, 0), $megamenu-bg 40%, $megamenu-bg 100%);
+}
+.megamenu .megamenu-nav--next .megamenu-nav-btn {
+    background-image: linear-gradient(to right, rgba($megamenu-bg, 0), $megamenu-bg 40%, $megamenu-bg 100%);
+}
+
+.touchevents .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i,
+.touchevents .megamenu-section .megamenu-nav-btn i,
+.megamenu .megamenu-nav i {
+    color: $header-color;
+    display: none;
+}
+.touchevents .megamenu-section .navbar-inverse.navbar:hover .show-scroll-buttons .megamenu-nav-btn i,
+.touchevents .megamenu-section .navbar-inverse .megamenu-nav-btn i,
+.navbar-inverse .megamenu .megamenu-nav i {
+    color: $header-inverse-color;
+}
+.megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i {
+    display: block;
+}
+
+.megamenu-container {
+    position: relative;
+
+    .nav-link {
+        padding: 1em .6em;
+    }
+
+    .megamenu-dropdown-container {
+        position: relative;
+
+        .empty {
+            margin-bottom: -1rem !important;
+        }
+        .megamenu-cat-img img {
+            max-width: 100%;
+            max-height: 100%;
+            padding: 20px;
+        }
+        .picture-container {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+        .below-preview-pic-text {
+            margin: 10px;
+            font-size: $font-size-sm;
+        }
+        .megamenu-html-text {
+            overflow: hidden;
+        }
+    }
+
+    .mega-menu-dropdown {
+        background-color: $megamenu-dropdown-bg;
+        color: $megamenu-text-color;
+        z-index: ($megamenu-zindex-base + 1);
+        width: 100%;
+        top: -3px;
+        background-repeat: no-repeat;
+        background-position: bottom right;
+        padding: 1.5rem;
+     
+        label { 
+            vertical-align: top;
+            margin-bottom: 0;
+        }
+        .col-md-3 {
+            overflow: hidden;
+        }
+    }
+
+    .mega-menu-dropdown-heading {
+        font-size: 1rem;
+        font-weight: $font-weight-medium; 
+        line-height: 1.4rem;
+        text-decoration: none;
+        display: block;
+        color: $megamenu-heading-color;
+        padding-bottom: 0.4rem;
+
+        &:not(:first-child) { padding-top: 1rem; }
+    }
+    .mega-menu-dropdown-heading + .mega-menu-dropdown-heading {
+        padding-top: .5rem;
+    }
+
+    .mega-menu-subitem {
+        font-size: $font-size-sm;
+        text-decoration: none;
+        display: block;
+        color: $megamenu-subitem-color;
+
+        &:hover { color: #222; } 
+        &.more-link {
+            font-weight: bold;
+            color: #464646;
+            font-size: $font-size-sm;
+        }
+    }
+
+    .inline-container {
+        line-height: 1.25rem;
+
+        .mega-menu-subitem {
+            font-size: $font-size-sm;
+            line-height: .875rem;
+
+            &:hover { text-decoration: underline; }
+        }
+    }
+    
+    .mega-menu-subitem-wrap {
+        white-space: nowrap;
+    }
+    
+    .comma-separated {
+        .mega-menu-subitem {
+            display: inline;
+            margin-right: -.15rem;
+
+            &.more-link {
+                display: block;
+            }
+            &:focus, 
+            &:hover {
+                background-color: transparent;
+                color: #888;
+            }
+        }
+    }
+}
+
+/* Product rotator */
+.megamenu-container .rotator-container {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: $megamenu-rotator-bg;
+    overflow: hidden;
+
+    .rotator-heading {
+        padding: 0.5rem 0;
+    }
+    .rotator-content > div.placeholder {
+        height: 280px;
+        background-color: rgba(255,255,255, 0.85);
+
+        .empty {
+            background-color: transparent;
+        }
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .megamenu-dropdown-container .picture-container {
+        display: none;
+    }
+}
+
+// exclusive for .simple
+.megamenu-dropdown-container.simple {
+    position: initial;
+    
+    .dropdown-menu {
+        margin-top: -1px;
+        min-width: 250px;
+        z-index: ($megamenu-zindex-base + 1);
+    }
+    .dropdown-item {
+        padding-top: 0.35rem;
+        padding-bottom: 0.35rem;
+        font-size: $font-size-sm;
+    }
+    .nav-item.active:before {
+        right: initial;
+        left: 12px;
+    }
+    .nav-item.active:after {
+        right: initial;
+        left: 10px;
+    }
+}
+.megamenu.simple .navbar-nav .nav-item.active:before{ 
+    border-bottom: 10px solid $dropdown-bg;
+}
+.boxed .megamenu-dropdown-container.simple .dropdown-menu {
+    margin-left: 20px;
+}

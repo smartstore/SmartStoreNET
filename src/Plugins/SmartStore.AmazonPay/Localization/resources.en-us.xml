@@ -43,9 +43,6 @@ Text suggestions:<ul>
 			<![CDATA[<p>Unfortunately Amazon Payments declined the payment for your order in our online shop. Please contact us.</p>]]>
 		</Value>
 	</LocaleResource>
-	<LocaleResource Name="SelectionText">
-		<Value>or</Value>
-	</LocaleResource>
 	<LocaleResource Name="AmazonPaymentsReports">
 		<Value>Amazon Payments reports</Value>
 	</LocaleResource>

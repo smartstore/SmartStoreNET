@@ -11,12 +11,15 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 		{
 			var targetFolder = deployment.GetDeploymentFolder(true);
 
+			if (targetFolder.IsEmpty())
+				return;
+
 			if (!FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(targetFolder)))
 			{
 				context.Result.LastError = context.T("Admin.DataExchange.Export.Deployment.CopyFileFailed");
 			}
 
-			context.Log.Information("Copied export data files to " + targetFolder);
+			context.Log.Info("Copied export data files to " + targetFolder);
 		}
 	}
 }

@@ -1,0 +1,312 @@
+﻿@model ShoppingCartModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Web.Models.ShoppingCart;
+
+<div class="order-summary-content">
+
+    @{ Html.RenderWidget("order_summary_content_before"); }
+
+    @{ Html.RenderPartial("_OrderReviewData", Model.OrderReviewData); }
+
+    @if (Model.DisplayCommentBox && !Model.IsEditable)
+    {
+        Html.RenderPartial("_CommentBox", Model);
+    }
+
+    @if (!Model.IsEditable && (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None || Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None))
+    {
+        <div class="card newsletter-subscription mb-3">
+            <div class="card-header h5">
+                <span>@T("Common.Options")</span>
+            </div>
+            <div class="card-block">
+                @if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+                {
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+                            <span>@T("Checkout.SubscribeToNewsLetter")</span>
+                        </label>
+                    </div>
+                }
+                @if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+                {
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+                            <span>@Model.ThirdPartyEmailHandOverLabel</span>
+                        </label>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    @if (Model.Items.Count > 0)
+    {
+        if (Model.Warnings.Count > 0)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @for (int i = 0; i < Model.Warnings.Count; i++)
+                    {
+                        <li>@Model.Warnings[i]</li>
+                    }
+                </ul>
+            </div> 
+        }
+
+        @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
+        using (Html.BeginRouteForm("ShoppingCart", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="card">
+				<div id="cart-items" class="cart mb-0@(Model.IsEditable ? " cart-editable" : "")">
+					<div class="cart-head">
+						<div class="cart-row">
+							<div class="cart-col cart-col-main">
+								@T("ShoppingCart.Product(s)")
+							</div>
+							<div class="cart-col cart-col-price">
+								@T("ShoppingCart.UnitPrice")
+							</div>
+							<div class="cart-col cart-col-qty">
+								@T("ShoppingCart.Quantity")
+							</div>
+							<div class="cart-col cart-col-price cart-col-subtotal">
+								@T("ShoppingCart.ItemTotal")
+							</div>
+						</div>
+					</div>
+					<div class="cart-body">
+                        @{ Html.RenderPartial("CartItems", Model); }
+					</div>
+				</div>
+
+				<div class="cart-footer rounded-bottom">
+					<div class="row">
+						<div class="col-md-6">
+							@if (Model.IsEditable)
+							{
+								Html.RenderWidget("order_summary_actions_before");
+								Html.RenderPartial("_DiscountBox", Model.DiscountBox);
+								Html.RenderPartial("_GiftCardBox", Model.GiftCardBox);
+								Html.RenderPartial("EstimateShipping", Model.EstimateShipping);
+								Html.RenderWidget("order_summary_actions_after");
+							}
+							else
+							{
+								if (Model.CheckoutAttributeInfo.HasValue())
+								{
+									<div class="selected-checkout-attributes">
+										@Html.Raw(Model.CheckoutAttributeInfo)
+									</div>
+								}
+							}
+						</div>
+						<div class="col-md-6">
+							@{
+								if (Model.IsEditable)
+								{
+									Html.RenderPartial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary());
+
+									if (Model.MinOrderSubtotalWarning.HasValue())
+									{
+										<div class="alert alert-warning">
+											@Model.MinOrderSubtotalWarning
+										</div>
+									}
+								}
+								Html.RenderWidget("order_summary_totals_before");
+
+								<div id="order-totals">
+									@{ Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable }); }
+								</div>
+
+								Html.RenderWidget("order_summary_totals_after");
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			if (Model.IsEditable)
+			{
+				Html.RenderWidget("order_summary_buttons_before");
+
+				<div class="cart-buttons my-4 row">
+					<div class="col-sm-6 col-lg-4 order-last order-sm-first mt-3 mt-sm-0">
+						<button class="btn btn-secondary btn-block btn-lg btn-continue-shopping" type="submit" name="continueshopping" value="continueshopping">
+							<i class="fa fa-angle-left mr-3"></i>
+							<span>@T("ShoppingCart.ContinueShopping")</span>
+						</button>
+					</div>
+					<div class="col-sm-6 col-lg-4 ml-lg-auto">
+						@if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
+						{
+							<div class="checkout-buttons">
+								<input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" class="d-none" />
+								<button type="button" id="checkout" name="checkout"
+										class="btn btn-danger btn-lg btn-block btn-checkout"
+										onclick="$('#startcheckout').trigger('click'); return false;">
+									<span>@T("Checkout.Button")</span>
+									<i class="fa fa-angle-right ml-3"></i>
+								</button>
+							</div>
+
+                            if (Model.ButtonPaymentMethods.Items.Any())
+                            {
+
+
+                                <div class="addon-buttons">
+                                    <div class="d-flex justify-content-sm-end justify-content-center flex-wrap">
+                                        <div class="mt-3 mb-1 d-block col-12 text-center text-sm-right">
+                                            <span>@T("ShoppingCart.AlternativePaymentButtons")</span>
+                                        </div>
+
+                                        @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
+                                        @foreach (var item in Model.ButtonPaymentMethods.Items)
+                                        {
+                                            Html.RenderAction(item.ActionName, item.ControllerName, item.RouteValues);
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+					</div>
+				</div>
+
+				Html.RenderWidget("order_summary_buttons_after");
+			}
+        }
+
+        Html.RenderWidget("order_summary_content_after");
+
+        if (Model.IsEditable)
+        {
+            Html.RenderAction("CrossSellProducts", "Product");
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning fade show">
+            @T("ShoppingCart.CartIsEmpty")
+        </div>
+    }
+</div>
+
+@if (!Model.IsEditable && Model.Items.Any(x => x.IsDownload && x.HasUserAgreement))
+{
+    using (Html.BeginZoneContent("end", key: "user-agreement-modal"))
+    {
+        <div id="user-agreement-modal" class="modal modal-flex fade" tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body p-3"></div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('a.download-user-agreement').on("click", function () {
+                var url = '@(Url.Action("GetUserAgreement", "Download"))?productId=' + $(this).attr('data-id'),
+                    dialog = $('#user-agreement-modal');
+
+                dialog.find('.modal-body').empty();
+
+                $.get(url, function (html) {
+                    dialog.find('.modal-body').html(html);
+                });
+
+                dialog.modal();
+
+                return false;
+            });
+        });
+    </script>
+}
+
+@if (Model.IsEditable)
+{
+    <script type="text/javascript">
+
+        var orderSummary = $(".order-summary-content");
+
+        // remove cart item & move to wishlist
+        orderSummary.on("click", ".ajax-action-link", function (e) {
+            e.preventDefault();
+            var link = $(this);
+            updateShoppingCartItems(link, link.data);
+            return false;
+        });
+
+        // quantity touchspin change
+        orderSummary.on('change', '.qty-input .form-control', function (e) {
+            e.preventDefault();
+            var link = $(this);
+            updateShoppingCartItems(link, { "sciItemId": link.data("sci-id"), "newQuantity": link.val() });
+            return false;
+        });
+
+        function updateShoppingCartItems(link, data) {
+
+            showThrobber();
+
+            $.ajax({
+                cache: false,
+                url: link.data("href"),
+                data: data,
+                type: 'POST',
+                success: function (response) {
+
+                    if (response.cartItemCount == 0) {
+                        orderSummary.html('<div class="alert alert-warning fade show">@T("ShoppingCart.CartIsEmpty")</div>');
+                    }
+
+                    var cartBody = $(".cart-body");
+                    var totals = $("#order-totals");
+
+                    if (response.success) {
+                        // replace html
+                        cartBody.html(response.cartHtml);
+                        totals.html(response.totalsHtml);
+                    }
+
+                    displayNotification(response.message, response.success ? "success" : "error");
+
+                    // reinit qty ctls
+                    applyCommonPlugins(cartBody);
+
+                    // update shopbar
+                    ShopBar.loadSummary("cart", true);
+
+                    if (link.data("type") == "wishlist") {
+                        ShopBar.loadSummary("wishlist", true);
+                    }
+
+                    hideThrobber();
+                }
+            });
+        }
+
+        function showThrobber() {
+            var cnt = $("#cart-items");
+            var throbber = cnt.data('throbber');
+            if (!throbber) {
+                throbber = cnt.throbber({ white: true, small: true, message: '', show: false, speed: 0 }).data('throbber');
+            }
+
+            throbber.show();
+        }
+
+        function hideThrobber () {      	
+            var cnt = $("#cart-items");
+            _.delay(function () { cnt.data("throbber").hide(); }, 100);
+        }
+
+    </script>
+}

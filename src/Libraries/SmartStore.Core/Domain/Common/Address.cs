@@ -10,6 +10,18 @@ namespace SmartStore.Core.Domain.Common
         /// <summary>
         /// Gets or sets the first name
         /// </summary>
+        [DataMember]
+        public string Salutation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the first name
+        /// </summary>
+        [DataMember]
+        public string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the first name
+        /// </summary>
 		[DataMember]
 		public string FirstName { get; set; }
 
@@ -102,6 +114,8 @@ namespace SmartStore.Core.Domain.Common
         {
             var addr = new Address()
             {
+                Salutation = this.Salutation,
+                Title = this.Title,
                 FirstName = this.FirstName,
                 LastName = this.LastName,
                 Email = this.Email,

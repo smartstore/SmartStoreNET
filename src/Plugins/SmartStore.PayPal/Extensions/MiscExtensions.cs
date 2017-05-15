@@ -34,7 +34,7 @@ namespace SmartStore.PayPal
 			if (!state.CustomProperties.ContainsKey(PayPalPlusProvider.SystemName))
 				state.CustomProperties.Add(PayPalPlusProvider.SystemName, new PayPalSessionData());
 
-			return state.CustomProperties[PayPalPlusProvider.SystemName] as PayPalSessionData;
+			return state.CustomProperties.Get(PayPalPlusProvider.SystemName) as PayPalSessionData;
 		}
 	}
 }

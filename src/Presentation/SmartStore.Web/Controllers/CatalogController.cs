@@ -235,7 +235,7 @@ namespace SmartStore.Web.Controllers
 				catIds = catIds.Concat(_helper.GetChildCategoryIds(categoryId)).ToArray();
 			}
 
-			query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, catIds);
+			query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? (bool?)null : false, catIds);
 
 			var searchResult = _catalogSearchService.Search(query);
 			model.SearchResult = searchResult;

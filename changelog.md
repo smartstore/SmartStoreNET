@@ -1,4 +1,12 @@
-# Release Notes
+﻿# Release Notes
+
+## SmartStore.NET 3.0.1
+### Improvements
+* **BeezUP**:
+	* Exports up to 9 product images
+	* Export stock quantity when stock is managed by attributes
+	* Export parent child relation data when exporting attribute combinations as products
+	* Flatten and append attribute data when exporting attribute combinations as products
 
 ## SmartStore.NET 3.0
 

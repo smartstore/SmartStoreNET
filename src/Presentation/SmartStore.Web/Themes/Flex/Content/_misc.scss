@@ -64,3 +64,7 @@
     width: auto;
     -ms-flex-preferred-size: auto;
 }
+
+.ie11 .megamenu-dropdown-container.simple {
+    position: static;
+}

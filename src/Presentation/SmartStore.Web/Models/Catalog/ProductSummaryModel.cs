@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartStore.Web.Models.Media;
-using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.UI;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Catalog.Modelling;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    public partial class ProductSummaryModel : ModelBase, IListActions, IDisposable
+	public partial class ProductSummaryModel : ModelBase, IListActions, IDisposable
     {
 		public static ProductSummaryModel Empty = new ProductSummaryModel(new PagedList<Product>(new List<Product>(), 0, int.MaxValue));
 
@@ -18,6 +17,8 @@ namespace SmartStore.Web.Models.Catalog
 			Guard.NotNull(products, nameof(products));
 
 			Items = new List<SummaryItem>();
+			AvailableSortOptions = new Dictionary<int, string>();
+			AvailablePageSizes = new int[0];
 			PagedList = products;
 		}
 

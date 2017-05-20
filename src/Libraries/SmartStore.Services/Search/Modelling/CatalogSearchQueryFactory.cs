@@ -83,6 +83,9 @@ namespace SmartStore.Services.Search.Modelling
 				fields.Add("shortdescription");
 				fields.Add("tagname");
 
+				if (_searchSettings.SearchFields.Contains("manufacturer"))
+					fields.Add("manufacturer");
+
 				if (_searchSettings.SearchFields.Contains("sku"))
 					fields.Add("sku");
 

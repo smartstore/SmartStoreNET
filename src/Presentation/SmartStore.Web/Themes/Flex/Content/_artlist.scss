@@ -480,6 +480,10 @@ $art-border-color:              #ddd;
     @include media-breakpoint-down(xs) {
         .art-picture-block { max-width: 30%; }
     }
+
+    .delivery-time {
+        white-space: normal;
+    }
 }
 
 

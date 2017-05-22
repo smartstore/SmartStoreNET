@@ -1,20 +1,14 @@
-﻿using SmartStore.Core;
+﻿using System;
+using System.Web.Mvc;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Stores;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using SmartStore.Core.Data;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tasks
 {
-    public class InitializeSchedulerFilter : IAuthorizationFilter
+	public class InitializeSchedulerFilter : IAuthorizationFilter
     {
         private readonly static object s_lock = new object();
 		private static int s_errCount;
@@ -38,18 +32,23 @@ namespace SmartStore.Services.Tasks
                 {
                     s_initializing = true;
 
-					// The very first request must set app state to 'fully initialized'
-					EngineContext.Current.IsFullyInitialized = true;
-
+					var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
 					var logger = EngineContext.Current.Resolve<ILoggerFactory>().CreateLogger<InitializeSchedulerFilter>();
+
+					// The very first request must set app state to 'fully initialized'
+					if (!EngineContext.Current.IsFullyInitialized)
+					{
+						EngineContext.Current.IsFullyInitialized = true;
+						eventPublisher.Publish(new AppStartedEvent { HttpContext = filterContext.HttpContext });
+					}
+					
 					ITaskScheduler taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
 
 					try
 					{
 						var taskService = EngineContext.Current.Resolve<IScheduleTaskService>();
 						var storeService = EngineContext.Current.Resolve<IStoreService>();
-						var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
-
+						
 						var tasks = taskService.GetAllTasks(true);
 						taskService.CalculateFutureSchedules(tasks, true /* isAppStart */);
 

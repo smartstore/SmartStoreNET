@@ -229,6 +229,7 @@
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Domain\Tax\AuxiliaryServicesTaxType.cs" />
+    <Compile Include="Events\CommonMessages\AppStartedEvent.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />

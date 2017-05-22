@@ -10,7 +10,7 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Localization;
+using SmartStore.Core.Html;
 using SmartStore.Core.Plugins;
 using SmartStore.Licensing;
 using SmartStore.Services;
@@ -82,7 +82,8 @@ namespace SmartStore.Admin.Controllers
         {
             var model = pluginDescriptor.ToModel();
 
-            model.Group = T("Admin.Plugins.KnownGroup." + pluginDescriptor.Group);
+			// Using GetResource because T could fallback to NullLocalizer here.
+			model.Group = _services.Localization.GetResource("Admin.Plugins.KnownGroup." + pluginDescriptor.Group);
 
 			if (forList)
 			{
@@ -90,7 +91,7 @@ namespace SmartStore.Admin.Controllers
 				model.Description = pluginDescriptor.GetLocalizedValue(_services.Localization, "Description");
 			}
 
-            //locales
+            // Locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
 				locale.FriendlyName = pluginDescriptor.GetLocalizedValue(_services.Localization, "FriendlyName", languageId, false);
@@ -478,7 +479,15 @@ namespace SmartStore.Admin.Controllers
 			}
 			else
 			{
-				NotifyError(result.ToString());
+				var message = HtmlUtils.ConvertPlainTextToHtml(result.ToString());
+				if (result.IsFailureWarning)
+				{
+					NotifyWarning(message);
+				}
+				else
+				{
+					NotifyError(message);
+				}
 			}
 
 			return PartialView("Partials/LicenseLabel", model);

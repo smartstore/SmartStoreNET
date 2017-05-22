@@ -241,7 +241,7 @@ namespace SmartStore.Admin.Controllers
 				path = uri.PathAndQuery;
 			}
 
-			var root = _fileSystem.Root;
+			var root = HttpContext.GetContentUrl(_fileSystem.Root);
 
 			if (path.StartsWith(root, StringComparison.OrdinalIgnoreCase))
 			{
@@ -249,8 +249,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return path.TrimStart('/', '\\');
-
-			//return _fileSystem.GetStoragePath(path) ?? path;
 		}
 
 		private string GetUniqueFileName(string folder, string fileName)
@@ -370,8 +368,10 @@ namespace SmartStore.Admin.Controllers
 				else
 					Response.Write(",");
 
+				var url = _fileSystem.GetPublicUrl(file.Path);
+
 				Response.Write("{");
-				Response.Write("\"p\":\"" + HttpContext.GetContentUrl(_fileSystem.GetPublicUrl(file.Path)) + "\"");
+				Response.Write("\"p\":\"" + url + "\"");
 				Response.Write(",\"t\":\"" + file.LastUpdated.ToUnixTime().ToString() + "\"");
 				Response.Write(",\"s\":\"" + file.Size.ToString() + "\"");
 				Response.Write(",\"w\":\"" + width.ToString() + "\"");
@@ -752,16 +752,16 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void CopyDirCore(string path, string dest)
+		private void CopyDirCore(string path, string targetPath)
 		{
-			if (!_fileSystem.FolderExists(dest))
+			if (!_fileSystem.FolderExists(targetPath))
 			{
-				_fileSystem.CreateFolder(dest);
+				_fileSystem.CreateFolder(targetPath);
 			}
 
 			foreach (var file in _fileSystem.ListFiles(path))
 			{
-				var newPath = _fileSystem.Combine(dest, file.Name);
+				var newPath = _fileSystem.Combine(targetPath, file.Name);
 
 				if (!_fileSystem.FileExists(newPath))
 				{
@@ -771,16 +771,16 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var folder in _fileSystem.ListFolders(path))
 			{
-				var newPath = _fileSystem.Combine(dest, folder.Name);
+				var newPath = _fileSystem.Combine(targetPath, folder.Name);
 
 				CopyDirCore(folder.Path, newPath);
 			}
 		}
 
-		private void CopyDir(string path, string newPath)
+		private void CopyDir(string path, string targetPath)
 		{
 			path = GetRelativePath(path);
-			newPath = GetRelativePath(newPath);
+			targetPath = GetRelativePath(targetPath);
 
 			if (!_fileSystem.FolderExists(path))
 			{
@@ -789,14 +789,19 @@ namespace SmartStore.Admin.Controllers
 
 			var folder = _fileSystem.GetFolder(path);
 
-			newPath = _fileSystem.Combine(newPath, folder.Name);
+			targetPath = _fileSystem.Combine(targetPath, folder.Name);
 
-			if (_fileSystem.FolderExists(newPath))
+			if (_fileSystem.FolderExists(targetPath))
 			{
 				throw new Exception(LangRes("E_DirAlreadyExists"));
 			}
 
-			CopyDirCore(path, newPath);
+			if (targetPath.Contains(path))
+			{
+				throw new Exception(T("Common.CannotCopyFolderIntoItself"));
+			}
+
+			CopyDirCore(path, targetPath);
 
 			Response.Write(GetResultString());
 		}

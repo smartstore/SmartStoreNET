@@ -8,10 +8,13 @@
 	* Export parent child relation data when exporting attribute combinations as products
 	* Flatten and append attribute data when exporting attribute combinations as products
 * Instant search should search manufacturer/brand name
+* (Dev) New 'ApplicationStarted' event
 
 ### Bugfixes
+* #1145: Fixed HTTP 404 after switching language
 * Fixed null reference exception in product lists if sorting is not allowed
 * The file manager did not work correctly under a virtual folder
+* Item row in list style product list should not wrap on small devices
 
 
 ## SmartStore.NET 3.0

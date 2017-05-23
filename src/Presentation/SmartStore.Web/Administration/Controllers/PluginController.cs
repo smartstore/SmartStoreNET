@@ -454,6 +454,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			// Reset state for current store.
 			var result = LicenseChecker.ResetState(systemName);
+			LicenseCheckerResult subShopResult = null;
 
 			var model = new PluginLicenseModel
 			{
@@ -464,17 +465,26 @@ namespace SmartStore.Admin.Controllers
 				RemainingDemoUsageDays = result.RemainingDemoDays
 			};
 
+			// Reset state for all other stores.
 			if (result.Success)
 			{
-				// Reset state for all other stores.
 				var currentStoreId = Services.StoreContext.CurrentStore.Id;
 				var allStores = Services.StoreService.GetAllStores();
 
 				foreach (var store in allStores.Where(x => x.Id != currentStoreId && x.Url.HasValue()))
 				{
-					LicenseChecker.ResetState(systemName, store.Url);
+					subShopResult = LicenseChecker.ResetState(systemName, store.Url);
+					if (!subShopResult.Success)
+					{
+						result = subShopResult;
+						break;
+					}
 				}
+			}
 
+			// Notify about result.
+			if (result.Success)
+			{
 				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 			}
 			else

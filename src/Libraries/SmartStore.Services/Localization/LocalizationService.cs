@@ -272,6 +272,7 @@ namespace SmartStore.Services.Localization
 					{
 						_defaultLanguageId = _languageService.GetDefaultLanguageId();
 					}
+
 					var defaultLangId = _defaultLanguageId.Value;
 					if (defaultLangId > 0 && defaultLangId != languageId)
 					{

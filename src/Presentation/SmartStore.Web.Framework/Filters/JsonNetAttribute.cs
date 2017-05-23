@@ -1,16 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Threading;
-using System.Web;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Helpers;
 using SmartStore.Web.Framework.Modelling;
 
@@ -44,7 +36,9 @@ namespace SmartStore.Web.Framework.Filters
 				Data = jsonResult.Data,
 				ContentType = jsonResult.ContentType,
 				ContentEncoding = jsonResult.ContentEncoding,
-				JsonRequestBehavior = jsonResult.JsonRequestBehavior
+				JsonRequestBehavior = jsonResult.JsonRequestBehavior,
+				MaxJsonLength = jsonResult.MaxJsonLength,
+				RecursionLimit = jsonResult.RecursionLimit
 			};
 		}
 

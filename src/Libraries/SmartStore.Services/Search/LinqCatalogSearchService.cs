@@ -25,41 +25,41 @@ namespace SmartStore.Services.Search
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
 		private readonly IRepository<ProductCategory> _productCategoryRepository;
-		private readonly IRepository<Manufacturer> _manufacturerRepository;
-		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IRepository<AclRecord> _aclRepository;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ICommonServices _services;
 		private readonly IDeliveryTimeService _deliveryTimeService;
+		private readonly IManufacturerService _manufacturerService;
+		private readonly ICategoryService _categoryService;
 
 		public LinqCatalogSearchService(
 			IProductService productService,
 			IRepository<Product> productRepository,
 			IRepository<ProductManufacturer> productManufacturerRepository,
 			IRepository<ProductCategory> productCategoryRepository,
-			IRepository<Manufacturer> manufacturerRepository,	
-			IRepository<Category> categoryRepository,
 			IRepository<LocalizedProperty> localizedPropertyRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IRepository<AclRecord> aclRepository,
 			IEventPublisher eventPublisher,
 			ICommonServices services,
-			IDeliveryTimeService deliveryTimeService)
+			IDeliveryTimeService deliveryTimeService,
+			IManufacturerService manufacturerService,
+			ICategoryService categoryService)
 		{
 			_productService = productService;
 			_productRepository = productRepository;
 			_productManufacturerRepository = productManufacturerRepository;
 			_productCategoryRepository = productCategoryRepository;
-			_manufacturerRepository = manufacturerRepository;
-			_categoryRepository = categoryRepository;
 			_localizedPropertyRepository = localizedPropertyRepository;
 			_storeMappingRepository = storeMappingRepository;
 			_aclRepository = aclRepository;
 			_eventPublisher = eventPublisher;
 			_services = services;
 			_deliveryTimeService = deliveryTimeService;
+			_manufacturerService = manufacturerService;
+			_categoryService = categoryService;
 
 			QuerySettings = DbQuerySettings.Default;
 			Logger = NullLogger.Instance;
@@ -567,6 +567,7 @@ namespace SmartStore.Services.Search
 		protected virtual IDictionary<string, FacetGroup> GetFacets(CatalogSearchQuery searchQuery, int totalHits)
 		{
 			var result = new Dictionary<string, FacetGroup>();
+			var storeId = searchQuery.StoreId ?? _services.StoreContext.CurrentStore.Id;
 			var languageId = searchQuery.LanguageId ?? _services.WorkContext.WorkingLanguage.Id;
 
 			foreach (var key in searchQuery.FacetDescriptors.Keys)
@@ -579,31 +580,16 @@ namespace SmartStore.Services.Search
 				{
 					#region Category
 
-					// order by product count
-					var categoryQuery =
-						from c in _categoryRepository.TableUntracked
-						where !c.Deleted && c.Published
-						join pc in _productCategoryRepository.TableUntracked on c.Id equals pc.CategoryId into pcm
-						from pc in pcm.DefaultIfEmpty()
-						group c by c.Id into grp
-						orderby grp.Count() descending
-						select new
-						{
-							Id = grp.FirstOrDefault().Id,
-							Name = grp.FirstOrDefault().Name,
-							DisplayOrder = grp.FirstOrDefault().DisplayOrder
-						};
-
+					var categoryQuery = _categoryService.GetCategories(null, false, null, true, storeId);
+					categoryQuery = categoryQuery.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
 					if (descriptor.MaxChoicesCount > 0)
 					{
 						categoryQuery = categoryQuery.Take(descriptor.MaxChoicesCount);
 					}
 
 					var categories = categoryQuery.ToList();
-
 					var nameQuery = _localizedPropertyRepository.TableUntracked
 						.Where(x => x.LocaleKeyGroup == "Category" && x.LocaleKey == "Name" && x.LanguageId == languageId);
-
 					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
 
 					foreach (var category in categories)
@@ -629,31 +615,14 @@ namespace SmartStore.Services.Search
 				{
 					#region Brand
 
-					// order by product count
-					var manufacturerQuery =
-						from m in _manufacturerRepository.TableUntracked
-						where !m.Deleted && m.Published
-						join pm in _productManufacturerRepository.TableUntracked on m.Id equals pm.ManufacturerId into pmm
-						from pm in pmm.DefaultIfEmpty()
-						group m by m.Id into grp
-						orderby grp.Count() descending
-						select new
-						{
-							Id = grp.FirstOrDefault().Id,
-							Name = grp.FirstOrDefault().Name,
-							DisplayOrder = grp.FirstOrDefault().DisplayOrder
-						};
-
+					var manufacturers = _manufacturerService.GetAllManufacturers(null, storeId);
 					if (descriptor.MaxChoicesCount > 0)
 					{
-						manufacturerQuery = manufacturerQuery.Take(descriptor.MaxChoicesCount);
+						manufacturers = manufacturers.Take(descriptor.MaxChoicesCount).ToList();
 					}
-
-					var manufacturers = manufacturerQuery.ToList();
 
 					var nameQuery = _localizedPropertyRepository.TableUntracked
 						.Where(x => x.LocaleKeyGroup == "Manufacturer" && x.LocaleKey == "Name" && x.LanguageId == languageId);
-
 					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
 
 					foreach (var manu in manufacturers)

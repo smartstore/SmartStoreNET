@@ -26,14 +26,14 @@ namespace SmartStore.Services.Tests.Search
 		private IRepository<Product> _productRepository;
 		private IRepository<ProductManufacturer> _productManufacturerRepository;
 		private IRepository<ProductCategory> _productCategoryRepository;
-		private IRepository<Manufacturer> _manufacturerRepository;
-		private IRepository<Category> _categoryRepository;
 		private IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private IRepository<StoreMapping> _storeMappingRepository;
 		private IRepository<AclRecord> _aclRepository;
 		private IEventPublisher _eventPublisher;
 		private ICommonServices _services;
 		private IDeliveryTimeService _deliveryTimeService;
+		private IManufacturerService _manufacturerService;
+		private ICategoryService _categoryService;
 
 		private void InitMocks(CatalogSearchQuery query, IEnumerable<Product> products, IEnumerable<LocalizedProperty> localized)
 		{
@@ -90,28 +90,28 @@ namespace SmartStore.Services.Tests.Search
 			_productRepository = MockRepository.GenerateMock<IRepository<Product>>();
 			_productManufacturerRepository = MockRepository.GenerateMock<IRepository<ProductManufacturer>>();
 			_productCategoryRepository = MockRepository.GenerateMock<IRepository<ProductCategory>>();
-			_manufacturerRepository = MockRepository.GenerateMock<IRepository<Manufacturer>>();
-			_categoryRepository = MockRepository.GenerateMock<IRepository<Category>>();
 			_localizedPropertyRepository = MockRepository.GenerateMock<IRepository<LocalizedProperty>>();
 			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 			_aclRepository = MockRepository.GenerateMock<IRepository<AclRecord>>();
 			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
 			_deliveryTimeService = MockRepository.GenerateMock<IDeliveryTimeService>();
+			_manufacturerService = MockRepository.GenerateMock<IManufacturerService>();
+			_categoryService = MockRepository.GenerateMock<ICategoryService>();
 
 			_linqCatalogSearchService = new LinqCatalogSearchService(
 				_productService,
 				_productRepository,
 				_productManufacturerRepository,
 				_productCategoryRepository,
-				_manufacturerRepository,
-				_categoryRepository,
 				_localizedPropertyRepository, 
 				_storeMappingRepository, 
 				_aclRepository, 
 				_eventPublisher,
 				_services,
-				_deliveryTimeService);
+				_deliveryTimeService,
+				_manufacturerService,
+				_categoryService);
 		}
 
 		[Test]

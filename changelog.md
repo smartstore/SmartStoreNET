@@ -15,6 +15,7 @@
 * Fixed null reference exception in product lists if sorting is not allowed
 * The file manager did not work correctly under a virtual folder
 * Item row in list style product list should not wrap on small devices
+* Item row in list style product list squashed on Android system browser
 * Linq search: Filter for manufacturers and categories were not limited by store
 
 

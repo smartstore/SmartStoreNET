@@ -129,11 +129,12 @@
 										class="tooltip-toggle remove-gift-card-button"
 										title="@T("Common.Remove")"
 										name="removegiftcard"
-										value="removegiftcard">
+										value="@gc.Id">
 									<i class="fa">×</i>
 								</button>
 							</div>
 						}
+						<input type="hidden" name="giftCardId" value="@gc.Id" />
 						<div class="col cart-summary-pos">
 							@T("ShoppingCart.Totals.GiftCardInfo", gc.CouponCode)
 							<span class="text-muted text-nowrap small">@T("ShoppingCart.Totals.GiftCardInfo.Remaining", gc.Remaining)</span>

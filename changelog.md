@@ -15,6 +15,7 @@
 * Fixed null reference exception in product lists if sorting is not allowed
 * The file manager did not work correctly under a virtual folder
 * Item row in list style product list should not wrap on small devices
+* Linq search: Filter for manufacturers and categories were not limited by store
 
 
 ## SmartStore.NET 3.0

@@ -70,7 +70,7 @@ namespace SmartStore.Core.Logging
 
 			if (exception != null && !exception.IsFatal())
 			{
-				message = message.Grow(exception.ToAllMessages(), Environment.NewLine);
+				message = message.Grow(exception.ToString(), Environment.NewLine);
 			}
 
 			if (message.HasValue())

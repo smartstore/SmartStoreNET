@@ -440,21 +440,23 @@ namespace SmartStore.Core.IO
 		internal static string ValidatePath(string basePath, string mappedPath)
 		{
 			bool valid = false;
+			string error = null;
 
 			try
 			{
 				// Check that we are indeed within the storage directory boundaries
 				valid = Path.GetFullPath(mappedPath).StartsWith(Path.GetFullPath(basePath), StringComparison.OrdinalIgnoreCase);
 			}
-			catch
+			catch (Exception exception)
 			{
 				// Make sure that if invalid for medium trust we give a proper exception
 				valid = false;
+				error = exception.Message;
 			}
 
 			if (!valid)
 			{
-				throw new ArgumentException("Invalid path");
+				throw new ArgumentException($"{error ?? "Invalid path."} mappedPath: {mappedPath.NaIfEmpty()}");
 			}
 
 			return mappedPath;

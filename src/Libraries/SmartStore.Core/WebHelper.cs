@@ -237,8 +237,8 @@ namespace SmartStore.Core
             }
             else
             {
-				//let's resolve IWorkContext  here.
-				//Do not inject it via contructor because it'll cause circular references
+				// Let's resolve IWorkContext  here.
+				// Do not inject it via contructor because it'll cause circular references
 
 				if (_currentStore == null)
 				{

@@ -63,7 +63,7 @@ namespace SmartStore.Web.Framework.Modelling
 			{
 				serializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
 				serializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-				
+
 				var utcDateTimeConverter = new UTCDateTimeConverter(_dateTimeHelper, new JavaScriptDateTimeConverter());
 				serializerSettings.Converters.Add(utcDateTimeConverter);
 			}

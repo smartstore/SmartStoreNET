@@ -552,7 +552,7 @@ namespace SmartStore.Core.Plugins
 			var shadowCopiedAssembly = Assembly.Load(AssemblyName.GetAssemblyName(shadowCopiedPlug.FullName));
 
 			// add the reference to the build manager
-			//Debug.WriteLine("Adding to BuildManager: '{0}'", shadowCopiedAssembly.FullName);	// codehint: sm-edit
+			//Debug.WriteLine("Adding to BuildManager: '{0}'", shadowCopiedAssembly.FullName);
 			BuildManager.AddReferencedAssembly(shadowCopiedAssembly);
 
 			return shadowCopiedAssembly;

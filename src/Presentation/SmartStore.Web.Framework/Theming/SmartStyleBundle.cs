@@ -60,7 +60,7 @@ namespace SmartStore.Web.Framework.Theming
             {
                 response.Files = _transformedBundleFiles;
             }
-            // update cache WITH LESS @imports, because they need to be monitored for cache invalidation
+            // update cache WITH Sass/Less @imports, because they need to be monitored for cache invalidation
             base.UpdateCache(context, response);
             // now clean. @imports are not needed anymore
             CleanBundleFiles(response);

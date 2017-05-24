@@ -158,13 +158,11 @@
 						columns.Bound(x => x.Name)
 							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
 							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
-						columns.Bound(x => x.Sku)
-							.Sortable(false);
+						columns.Bound(x => x.Sku);
 						columns.Bound(x => x.Price)
 							.Format("{0:0.00}")
 							.RightAlign();
 						columns.Bound(x => x.StockQuantity)
-							.Sortable(false)
 							.Centered();
 						columns.Bound(x => x.LimitedToStores)
 							.Sortable(false)
@@ -173,8 +171,7 @@
 							.Hidden(Model.AvailableStores.Count <= 1)
 							.Centered();
 						columns.Bound(x => x.CreatedOn);
-						columns.Bound(x => x.UpdatedOn)
-							.Sortable(false);
+						columns.Bound(x => x.UpdatedOn);
 						columns.Bound(x => x.Published)
 							.Sortable(false)
 							.Template(item => @Html.SymbolForBool(item.Published))

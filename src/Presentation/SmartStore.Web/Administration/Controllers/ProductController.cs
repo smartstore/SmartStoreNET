@@ -1001,6 +1001,13 @@ namespace SmartStore.Admin.Controllers
 						else
 							query = query.OrderByDescending(x => x.Name);
 					}
+					else if (sort.Member == "Sku")
+					{
+						if (sort.SortDirection == ListSortDirection.Ascending)
+							query = query.OrderBy(x => x.Sku);
+						else
+							query = query.OrderByDescending(x => x.Sku);
+					}
 					else if (sort.Member == "Price")
 					{
 						if (sort.SortDirection == ListSortDirection.Ascending)
@@ -1008,12 +1015,26 @@ namespace SmartStore.Admin.Controllers
 						else
 							query = query.OrderByDescending(x => x.Price);
 					}
+					else if (sort.Member == "StockQuantity")
+					{
+						if (sort.SortDirection == ListSortDirection.Ascending)
+							query = query.OrderBy(x => x.StockQuantity);
+						else
+							query = query.OrderByDescending(x => x.StockQuantity);
+					}
 					else if (sort.Member == "CreatedOn")
 					{
 						if (sort.SortDirection == ListSortDirection.Ascending)
 							query = query.OrderBy(x => x.CreatedOnUtc);
 						else
 							query = query.OrderByDescending(x => x.CreatedOnUtc);
+					}
+					else if (sort.Member == "UpdatedOn")
+					{
+						if (sort.SortDirection == ListSortDirection.Ascending)
+							query = query.OrderBy(x => x.UpdatedOnUtc);
+						else
+							query = query.OrderByDescending(x => x.UpdatedOnUtc);
 					}
 					else
 					{

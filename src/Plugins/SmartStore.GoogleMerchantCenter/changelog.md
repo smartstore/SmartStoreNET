@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Google Merchant Center (GMC) 3.0.0.1
+###Improvements
+* Perf: Added missing database indexes
+
 ##Google Merchant Center (GMC) 2.6.0.1
 ###Bugfixes
 * Id should be unique when exporting attribute combinations as products

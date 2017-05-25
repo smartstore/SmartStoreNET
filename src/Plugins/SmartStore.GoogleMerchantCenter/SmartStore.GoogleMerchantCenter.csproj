@@ -173,6 +173,10 @@
     <Compile Include="Data\Migrations\201601061649324_IsBundle.Designer.cs">
       <DependentUpon>201601061649324_IsBundle.cs</DependentUpon>
     </Compile>
+    <Compile Include="Data\Migrations\201705250945238_Indexes.cs" />
+    <Compile Include="Data\Migrations\201705250945238_Indexes.Designer.cs">
+      <DependentUpon>201705250945238_Indexes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Data\Migrations\Configuration.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Domain\GoogleProductRecord.cs" />
@@ -224,6 +228,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Data\Migrations\201601061649324_IsBundle.resx">
       <DependentUpon>201601061649324_IsBundle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Migrations\201705250945238_Indexes.resx">
+      <DependentUpon>201705250945238_Indexes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

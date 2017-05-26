@@ -375,7 +375,7 @@ namespace SmartStore.Web.Controllers
 
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
-                var helper = new LocalizedUrlHelper(HttpContext.Request.ApplicationPath, returnUrl, true);
+                var helper = new LocalizedUrlHelper(HttpContext.Request.ApplicationPath, returnUrl, false);
 				helper.PrependSeoCode(_services.WorkContext.WorkingLanguage.UniqueSeoCode, true);
                 returnUrl = helper.GetAbsolutePath();
             }

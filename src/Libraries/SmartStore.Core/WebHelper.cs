@@ -444,6 +444,7 @@ namespace SmartStore.Core
 
 			if (aggressive)
 			{
+				DeleteMvcTypeCacheFiles();
 				TryWriteBinFolder();
 			}
 			else
@@ -475,42 +476,20 @@ namespace SmartStore.Core
             }
         }
 
-	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
-	    private bool TryWriteWebConfig()
-        {
-            try
-            {
-                // In medium trust, "UnloadAppDomain" is not supported. Touch web.config
-                // to force an AppDomain restart.
-                File.SetLastWriteTimeUtc(MapPath("~/web.config"), DateTime.UtcNow);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+		private void DeleteMvcTypeCacheFiles()
+		{
+			try
+			{
+				var userCacheDir = Path.Combine(HttpRuntime.CodegenDir, "UserCache");
 
-	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
-	    private bool TryWriteGlobalAsax()
-        {
-            try
-            {
-                //When a new plugin is dropped in the Plugins folder and is installed into SmartSTore.NET, 
-                //even if the plugin has registered routes for its controllers, 
-                //these routes will not be working as the MVC framework can't
-                //find the new controller types in order to instantiate the requested controller. 
-                //That's why you get these nasty errors 
-                //i.e "Controller does not implement IController".
-                //The solution is to touch the 'top-level' global.asax file
-                File.SetLastWriteTimeUtc(MapPath("~/global.asax"), DateTime.UtcNow);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+				File.Delete(Path.Combine(userCacheDir, "MVC-ControllerTypeCache.xml"));
+				File.Delete(Path.Combine(userCacheDir, "MVC-AreaRegistrationTypeCache.xml"));
+			}
+			catch
+			{
+
+			}
+		}
 
 		private bool TryWriteBinFolder()
 		{
@@ -554,10 +533,10 @@ namespace SmartStore.Core
 		{
 			if (!s_trustLevel.HasValue)
 			{
-				//set minimum
+				// set minimum
 				s_trustLevel = AspNetHostingPermissionLevel.None;
 
-				//determine maximum
+				// determine maximum
 				foreach (AspNetHostingPermissionLevel trustLevel in
 						new [] {
                                 AspNetHostingPermissionLevel.Unrestricted,

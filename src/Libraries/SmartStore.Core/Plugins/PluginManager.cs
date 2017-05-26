@@ -85,6 +85,12 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public static void Initialize()
         {
+			var isFullTrust = WebHelper.GetTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
+			if (!isFullTrust)
+			{
+				throw new ApplicationException("SmartStore.NET requires Full Trust mode. Please enable Full Trust for your web site or contact your hosting provider.");
+			}
+
 			using (var updater = new AppUpdater())
 			{
 				// update from NuGet package, if it exists and is valid
@@ -103,7 +109,7 @@ namespace SmartStore.Core.Plugins
 			//SetPrivateEnvPath();
 
 			DynamicModuleUtility.RegisterModule(typeof(AutofacRequestLifetimeHttpModule));
-			
+
 			using (Locker.GetWriteLock())
             {
                 // TODO: Add verbose exception handling / raising here since this is happening on app startup and could
@@ -113,15 +119,16 @@ namespace SmartStore.Core.Plugins
 
                 var incompatiblePlugins = new List<string>();
 				_clearShadowDirectoryOnStartup = CommonHelper.GetAppSetting<bool>("sm:ClearPluginsShadowDirectoryOnStartup", true);
+
                 try
                 {	
                     Debug.WriteLine("Creating shadow copy folder and querying for dlls");
-                    //ensure folders are created
+                    // ensure folders are created
                     Directory.CreateDirectory(pluginFolderPath);
                     Directory.CreateDirectory(_shadowCopyFolder.FullName);
 
                     // get list of all files in bin
-                    var binFiles = _shadowCopyFolder.GetFiles("*", SearchOption.AllDirectories);
+                    var binFiles = _shadowCopyFolder.GetFiles("*", SearchOption.AllDirectories).ToArray();
                     if (_clearShadowDirectoryOnStartup)
                     {
                         // clear out shadow copied plugins
@@ -239,7 +246,7 @@ namespace SmartStore.Core.Plugins
 			try
 			{
 				// get list of all DLLs in plugin folders (not in 'bin' or '_Backup'!)
-				var pluginBinaries = descriptionFile.Directory.GetFiles("*.dll", SearchOption.AllDirectories)
+				var pluginBinaries = descriptionFile.Directory.GetFiles("*.dll", SearchOption.AllDirectories).ToArray()
 					// just make sure we're not registering shadow copied plugins
 					.Where(x => IsPackagePluginFolder(x.Directory))
 					.ToList();
@@ -524,8 +531,10 @@ namespace SmartStore.Core.Plugins
         private static Assembly Probe(FileInfo plug)
         {
 			if (plug.Directory == null || plug.Directory.Parent == null)
+			{
 				throw new InvalidOperationException("The plugin directory for the " + plug.Name +
 													" file exists in a folder outside of the allowed SmartStore folder hierarchy");
+			}
 
 			FileInfo shadowCopiedPlug;
 
@@ -543,7 +552,6 @@ namespace SmartStore.Core.Plugins
 			else
 			{
 				var directory = AppDomain.CurrentDomain.DynamicDirectory;
-				//Debug.WriteLine(plug.FullName + " to " + directory);	// codehint: sm-edit
 				// we're running in full trust so copy to standard dynamic folder
 				shadowCopiedPlug = InitializeFullTrust(plug, new DirectoryInfo(directory));
 			}

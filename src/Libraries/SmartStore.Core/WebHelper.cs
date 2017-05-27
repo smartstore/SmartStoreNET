@@ -444,7 +444,10 @@ namespace SmartStore.Core
 
 			if (aggressive)
 			{
-				DeleteMvcTypeCacheFiles();
+				if (OptimizedCompilationsEnabled)
+				{
+					DeleteMvcTypeCacheFiles();
+				}
 				TryWriteBinFolder();
 			}
 			else

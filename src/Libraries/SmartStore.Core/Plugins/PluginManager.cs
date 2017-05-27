@@ -201,7 +201,7 @@ namespace SmartStore.Core.Plugins
 				Descriptor = descriptor
 			};
 
-			//ensure that version of plugin is valid
+			// Ensure that version of plugin is valid
 			if (!IsAssumedCompatible(descriptor))
 			{
 				result.IsIncompatible = true;

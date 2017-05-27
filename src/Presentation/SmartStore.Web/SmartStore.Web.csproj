@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props" Condition="Exists('..\..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" />
   <Import Project="..\..\packages\LibSassHost.Native.win-x86.1.0.3\build\LibSassHost.Native.win-x86.props" Condition="Exists('..\..\packages\LibSassHost.Native.win-x86.1.0.3\build\LibSassHost.Native.win-x86.props')" />
   <Import Project="..\..\packages\LibSassHost.Native.win-x64.1.0.3\build\LibSassHost.Native.win-x64.props" Condition="Exists('..\..\packages\LibSassHost.Native.win-x64.1.0.3\build\LibSassHost.Native.win-x64.props')" />
   <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props')" />
@@ -147,6 +149,10 @@
     </Reference>
     <Reference Include="LibSassHost, Version=1.0.3.0, Culture=neutral, PublicKeyToken=3e24e88796a38e46, processorArchitecture=MSIL">
       <HintPath>..\..\packages\LibSassHost.1.0.3\lib\net45\LibSassHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -2208,55 +2214,62 @@
     </VisualStudio>
   </ProjectExtensions>
   <Target Name="ExcludeRootBinariesDeployment">
-    <ItemGroup>
-      <RootBinFiles Include="bin\*">
-        <InProject>false</InProject>
-      </RootBinFiles>
-    </ItemGroup>
     <PropertyGroup>
       <ExcludeFilesFromDeployment>
-		**\*.cs;
-		**\*.orig;
-		**\*.bak;
-		**\*.log;
-		**\*.csproj;
-		**\*.csproj.user;
-		**\*.DotSettings.user;
-		**\packages.config;
-		**\*.Debug.config;
-		**\*.Release.config;
-		**\*.PluginDev.config;
-		**\*.EFMigrations.config;
-		**\obj\**;
-		**\bin\*.xml;
-		**\bin\HostRestart\**;
-		Administration\bin\**;
-		App_Data\_Backup\**;
-		App_Data\_temp\**;
-		App_Data\Tenants\**;
-		App_Data\Migrations\**;
-		App_Data\Logs\**;
-		App_Data\Licenses.lic;
-		App_Data\Settings.txt;
-		App_Data\SmartStore.Db.sdf;
-		Exchange\**; 
-		Content\Files\ExportImport\**;
-		Content\Images\Thumbs\**;
-		Media\**;
-		Properties\**;
-		Plugins\*\bin\**;		
+        **\*.cs;
+        **\*.orig;
+        **\*.bak;
+        **\*.log;
+        **\*.csproj;
+        **\*.csproj.user;
+        **\*.DotSettings.user;
+        **\packages.config;
+        **\*.Debug.config;
+        **\*.Release.config;
+        **\*.PluginDev.config;
+        **\*.EFMigrations.config;
+        **\obj\**;
+        **\bin\*.xml; 
+        App_Data\Licenses.lic;
+        App_Data\Settings.txt;
+        App_Data\InstalledPlugins.txt;
+        App_Data\SmartStore.Db.sdf;
+        Plugins\*\bin\**;
+        Themes\*\Content\compiled\**;
       </ExcludeFilesFromDeployment>
+      <ExcludeFoldersFromDeployment>
+	    x64;
+	    x86;
+        roslyn;
+		bin\da; bin\fi; bin\ja; bin\ko; bin\mk; bin\nl; bin\pt; bin\no; bin\pl; bin\pl; bin\ru-ru; bin\sv; bin\tr; bin\uk; bin\zh-CHS; bin\zh-Hans; bin\zh-Hant;
+      	Exchange;
+      	Media;
+      	Properties;
+      	App_Data\_Backup;
+        App_Data\_temp;
+        App_Data\Tenants;
+        App_Data\Migrations;
+        App_Data\Logs;
+        bin\HostRestart;
+        Administration\bin;
+        Content\Files\ExportImport;
+        Content\Images\Thumbs;
+      </ExcludeFoldersFromDeployment>
     </PropertyGroup>
   </Target>
   <Target Name="ExcludeRootBinariesPackage" DependsOnTargets="ExcludeRootBinariesDeployment" BeforeTargets="ExcludeFilesFromPackage">
     <ItemGroup>
+      <ExcludeFromPackageFolders Include="$(ExcludeFoldersFromDeployment)">
+        <FromTarget>Project</FromTarget>
+        <InProject>false</InProject>
+      </ExcludeFromPackageFolders>
       <ExcludeFromPackageFiles Include="$(ExcludeFilesFromDeployment)" />
     </ItemGroup>
   </Target>
   <Target Name="CopyNativeBinaries">
     <ItemGroup>
       <SqlCeBinariesx86 Include="$(SolutionDir)..\lib\sqlce\x86\**\*" />
-      <SqlCeBinariesx64 Include="$(SolutionDir)..\lib\sqlce\amd64\**\*" />
+      <SqlCeBinariesx64 Include="$(SolutionDir)..\lib\sqlce\x64\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(SqlCeBinariesx86)" DestinationFolder="$(OutputPath)\x86\%(RecursiveDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(SqlCeBinariesx64)" DestinationFolder="$(OutputPath)\x64\%(RecursiveDir)" SkipUnchangedFiles="true" />
@@ -2281,5 +2294,7 @@
     <Error Condition="!Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props'))" />
     <Error Condition="!Exists('..\..\packages\LibSassHost.Native.win-x64.1.0.3\build\LibSassHost.Native.win-x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LibSassHost.Native.win-x64.1.0.3\build\LibSassHost.Native.win-x64.props'))" />
     <Error Condition="!Exists('..\..\packages\LibSassHost.Native.win-x86.1.0.3\build\LibSassHost.Native.win-x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LibSassHost.Native.win-x86.1.0.3\build\LibSassHost.Native.win-x86.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>
 </Project>

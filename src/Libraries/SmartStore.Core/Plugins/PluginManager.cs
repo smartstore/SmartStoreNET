@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 namespace SmartStore.Core.Plugins
 {
     /// <summary>
-    /// Sets the application up for the plugin referencing
+    /// Sets the application up for plugin referencing
     /// </summary>
     public class PluginManager
     {
@@ -33,10 +33,9 @@ namespace SmartStore.Core.Plugins
 		private static extern bool SetDllDirectory(string lpPathName);
 
 		private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
-        private static DirectoryInfo _shadowCopyFolder;
         private static readonly string _pluginsPath = "~/Plugins";
-        private static readonly string _shadowCopyPath = "~/Plugins/bin";
-        private static bool _clearShadowDirectoryOnStartup;
+		private static DirectoryInfo _shadowCopyDir;
+		//private static int? _pluginsHash;
 		private static readonly ConcurrentDictionary<string, PluginDescriptor> _referencedPlugins = new ConcurrentDictionary<string, PluginDescriptor>(StringComparer.OrdinalIgnoreCase);
         private static HashSet<Assembly> _inactiveAssemblies = new HashSet<Assembly>();
 
@@ -85,6 +84,12 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public static void Initialize()
         {
+			var isFullTrust = WebHelper.GetTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
+			if (!isFullTrust)
+			{
+				throw new ApplicationException("SmartStore.NET requires Full Trust mode. Please enable Full Trust for your web site or contact your hosting provider.");
+			}
+
 			using (var updater = new AppUpdater())
 			{
 				// update from NuGet package, if it exists and is valid
@@ -103,46 +108,26 @@ namespace SmartStore.Core.Plugins
 			//SetPrivateEnvPath();
 
 			DynamicModuleUtility.RegisterModule(typeof(AutofacRequestLifetimeHttpModule));
-			
+
 			using (Locker.GetWriteLock())
             {
                 // TODO: Add verbose exception handling / raising here since this is happening on app startup and could
                 // prevent app from starting altogether
                 var pluginFolderPath = CommonHelper.MapPath(_pluginsPath);
-				_shadowCopyFolder = new DirectoryInfo(CommonHelper.MapPath(_shadowCopyPath));
 
                 var incompatiblePlugins = new List<string>();
-				_clearShadowDirectoryOnStartup = CommonHelper.GetAppSetting<bool>("sm:ClearPluginsShadowDirectoryOnStartup", true);
-                try
-                {	
-                    Debug.WriteLine("Creating shadow copy folder and querying for dlls");
-                    //ensure folders are created
-                    Directory.CreateDirectory(pluginFolderPath);
-                    Directory.CreateDirectory(_shadowCopyFolder.FullName);
 
-                    // get list of all files in bin
-                    var binFiles = _shadowCopyFolder.GetFiles("*", SearchOption.AllDirectories);
-                    if (_clearShadowDirectoryOnStartup)
-                    {
-                        // clear out shadow copied plugins
-                        foreach (var f in binFiles)
-                        {
-                            Debug.WriteLine("Deleting " + f.Name);
-                            try
-                            {
-                                File.Delete(f.FullName);
-                            }
-                            catch (Exception exc)
-                            {
-                                Debug.WriteLine("Error deleting file " + f.Name + ". Exception: " + exc);
-                            }
-                        }
-                    }
+                try
+                {
+					_shadowCopyDir = new DirectoryInfo(AppDomain.CurrentDomain.DynamicDirectory);
+
+					// Ensure folders are created
+					Directory.CreateDirectory(pluginFolderPath);
 
 					// determine all plugin folders
-					var pluginPaths = from x in Directory.EnumerateDirectories(pluginFolderPath)
+					var pluginPaths = (from x in Directory.EnumerateDirectories(pluginFolderPath).ToArray()
 									  where !x.IsMatch("bin") && !x.IsMatch("_Backup")
-									  select Path.Combine(pluginFolderPath, x);
+									  select Path.Combine(pluginFolderPath, x)).ToArray();
 
 					var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile();
 					
@@ -233,22 +218,22 @@ namespace SmartStore.Core.Plugins
 				installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile();
 			}
 
-			// set 'Installed' property
+			// Set 'Installed' property
 			descriptor.Installed = installedPluginSystemNames.Contains(descriptor.SystemName);
 
 			try
 			{
-				// get list of all DLLs in plugin folders (not in 'bin' or '_Backup'!)
-				var pluginBinaries = descriptionFile.Directory.GetFiles("*.dll", SearchOption.AllDirectories)
+				// Get list of all DLLs in plugin folders (not in 'bin' or '_Backup'!)
+				var pluginBinaries = descriptionFile.Directory.GetFiles("*.dll", SearchOption.AllDirectories).ToArray()
 					// just make sure we're not registering shadow copied plugins
 					.Where(x => IsPackagePluginFolder(x.Directory))
 					.ToList();
 
-				// other plugin description info
+				// Other plugin description info
 				var mainPluginFile = pluginBinaries.Where(x => x.Name.IsCaseInsensitiveEqual(descriptor.PluginFileName)).FirstOrDefault();
 				descriptor.OriginalAssemblyFile = mainPluginFile;
 
-				// shadow copy main plugin file
+				// Shadow copy main plugin file
 				descriptor.ReferencedAssembly = Probe(mainPluginFile);
 
 				if (!descriptor.Installed)
@@ -256,10 +241,10 @@ namespace SmartStore.Core.Plugins
 					_inactiveAssemblies.Add(descriptor.ReferencedAssembly);
 				}
 
-				// load all other referenced assemblies now
-				var otherAssemblies = from x in pluginBinaries
+				// Load all other referenced assemblies now
+				var otherAssemblies = (from x in pluginBinaries
 									  where !x.Name.IsCaseInsensitiveEqual(mainPluginFile.Name)
-									  select x;
+									  select x).ToArray();
 
 				foreach (var assemblyFile in otherAssemblies)
 				{
@@ -269,7 +254,7 @@ namespace SmartStore.Core.Plugins
 					}
 				}
 
-				// init plugin type (only one plugin per assembly is allowed)
+				// Init plugin type (only one plugin per assembly is allowed)
 				var exportedTypes = descriptor.ReferencedAssembly.ExportedTypes;
 				bool pluginFound = false;
 				bool preStarterFound = !descriptor.Installed;
@@ -519,77 +504,63 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Perform file deply
         /// </summary>
-        /// <param name="plug">Plugin file info</param>
+        /// <param name="plugin">Plugin main dll file info</param>
 		/// <returns>Reference to the shadow copied Assembly</returns>
-        private static Assembly Probe(FileInfo plug)
+        private static Assembly Probe(FileInfo plugin)
         {
-			if (plug.Directory == null || plug.Directory.Parent == null)
-				throw new InvalidOperationException("The plugin directory for the " + plug.Name +
+			if (plugin.Directory == null || plugin.Directory.Parent == null)
+			{
+				throw new InvalidOperationException("The plugin directory for the " + plugin.Name +
 													" file exists in a folder outside of the allowed SmartStore folder hierarchy");
-
-			FileInfo shadowCopiedPlug;
-
-			if (WebHelper.GetTrustLevel() != AspNetHostingPermissionLevel.Unrestricted)
-			{
-				// TODO: (mc) SMNET does not support Medium Trust, so this code is actually obsolete!
-
-				// all plugins will need to be copied to ~/Plugins/bin/
-				// this is aboslutely required because all of this relies on probingPaths being set statically in the web.config
-
-				// were running in med trust, so copy to custom bin folder
-				var shadowCopyPlugFolder = Directory.CreateDirectory(_shadowCopyFolder.FullName);
-				shadowCopiedPlug = InitializeMediumTrust(plug, shadowCopyPlugFolder);
 			}
-			else
-			{
-				var directory = AppDomain.CurrentDomain.DynamicDirectory;
-				//Debug.WriteLine(plug.FullName + " to " + directory);	// codehint: sm-edit
-				// we're running in full trust so copy to standard dynamic folder
-				shadowCopiedPlug = InitializeFullTrust(plug, new DirectoryInfo(directory));
-			}
+
+			var probedPlugin = InitializeFullTrust(plugin);
 
 			// we can now register the plugin definition
-			var shadowCopiedAssembly = Assembly.Load(AssemblyName.GetAssemblyName(shadowCopiedPlug.FullName));
+			var probedAssembly = Assembly.Load(AssemblyName.GetAssemblyName(probedPlugin.FullName));
 
 			// add the reference to the build manager
 			//Debug.WriteLine("Adding to BuildManager: '{0}'", shadowCopiedAssembly.FullName);
-			BuildManager.AddReferencedAssembly(shadowCopiedAssembly);
+			BuildManager.AddReferencedAssembly(probedAssembly);
 
-			return shadowCopiedAssembly;
+			return probedAssembly;
         }
 
         /// <summary>
         /// Used to initialize plugins when running in Full Trust
         /// </summary>
-        /// <param name="plug"></param>
-        /// <param name="shadowCopyPlugFolder"></param>
+        /// <param name="plugin">Plugin main dll file info</param>
         /// <returns></returns>
-        private static FileInfo InitializeFullTrust(FileInfo plug, DirectoryInfo shadowCopyPlugFolder)
+        private static FileInfo InitializeFullTrust(FileInfo plugin)
         {
-            var shadowCopiedPlug = new FileInfo(Path.Combine(shadowCopyPlugFolder.FullName, plug.Name));
+            var probedPlugin = new FileInfo(Path.Combine(_shadowCopyDir.FullName, plugin.Name));
+
             try
             {
-                File.Copy(plug.FullName, shadowCopiedPlug.FullName, true);
+                File.Copy(plugin.FullName, probedPlugin.FullName, true);
             }
             catch (IOException)
             {
-                Debug.WriteLine(shadowCopiedPlug.FullName + " is locked, attempting to rename");
-                //this occurs when the files are locked,
-                //for some reason devenv locks plugin files some times and for another crazy reason you are allowed to rename them
-                //which releases the lock, so that it what we are doing here, once it's renamed, we can re-shadow copy
+                Debug.WriteLine(probedPlugin.FullName + " is locked, attempting to rename");
+
+                // This occurs when the files are locked,
+                // For some reason devenv locks plugin files some times and for another crazy reason you are allowed to rename them
+                // Which releases the lock, so that it what we are doing here, once it's renamed, we can re-shadow copy
                 try
                 {
-                    var oldFile = shadowCopiedPlug.FullName + Guid.NewGuid().ToString("N") + ".old";
-                    File.Move(shadowCopiedPlug.FullName, oldFile);
+                    var oldFile = probedPlugin.FullName + Guid.NewGuid().ToString("N") + ".old";
+                    File.Move(probedPlugin.FullName, oldFile);
                 }
                 catch (IOException exc)
                 {
-                    throw new IOException(shadowCopiedPlug.FullName + " rename failed, cannot initialize plugin", exc);
+                    throw new IOException(probedPlugin.FullName + " rename failed, cannot initialize plugin", exc);
                 }
-                //ok, we've made it this far, now retry the shadow copy
-                File.Copy(plug.FullName, shadowCopiedPlug.FullName, true);
+
+                // OK, we've made it this so far, now retry the shadow copy
+                File.Copy(plugin.FullName, probedPlugin.FullName, true);
             }
-            return shadowCopiedPlug;
+
+            return probedPlugin;
         }
 
         /// <summary>
@@ -650,7 +621,7 @@ namespace SmartStore.Core.Plugins
 
             return shadowCopiedPlug;
         }
-        
+
         /// <summary>
         /// Determines if the folder is a bin plugin folder for a package
         /// </summary>
@@ -663,5 +634,27 @@ namespace SmartStore.Core.Plugins
             if (!folder.Parent.Name.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase)) return false;
             return true;
         }
-    }
+
+		///// <summary>
+		///// Returns the hash string for all active plugins/folders
+		///// </summary>
+		///// <returns></returns>
+		//internal static int GetPluginsHash(IEnumerable<FileInfo> plugins)
+		//{
+		//	if (_pluginsHash == null)
+		//	{
+		//		var hashCombiner = new HashCodeCombiner();
+
+		//		// Add each unique folder to the hash
+		//		foreach (var i in plugins.Select(x => x.Directory).DistinctBy(x => x.FullName))
+		//		{
+		//			hashCombiner.AddFolder(i);
+		//		}
+
+		//		_pluginsHash = hashCombiner.CombinedHash;
+		//	}
+
+		//	return _pluginsHash.Value;
+		//}
+	}
 }

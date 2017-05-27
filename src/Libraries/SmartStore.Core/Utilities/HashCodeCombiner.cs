@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -75,10 +76,51 @@ namespace SmartStore.Utilities
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public HashCodeCombiner Add(DateTime d)
+		{
+			return Add(d.GetHashCode());
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public HashCodeCombiner Add<TValue>(TValue value, IEqualityComparer<TValue> comparer)
 		{
 			var hashCode = value != null ? comparer.GetHashCode(value) : 0;
 			return Add(hashCode);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public HashCodeCombiner AddFolder(DirectoryInfo d)
+		{
+			AddCaseInsensitiveString(d.FullName);
+			Add(d.CreationTimeUtc);
+			Add(d.LastWriteTimeUtc);
+			foreach (var f in d.GetFiles())
+			{
+				AddFile(f);
+			}
+			foreach (var s in d.GetDirectories())
+			{
+				AddFolder(d);
+			}
+
+			return this;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public HashCodeCombiner AddFile(FileInfo f)
+		{
+			AddCaseInsensitiveString(f.FullName);
+			Add(f.CreationTimeUtc);
+			Add(f.LastWriteTimeUtc);
+			Add(f.Length.GetHashCode());
+
+			return this;
+		}
+
+		internal void AddCaseInsensitiveString(string s)
+		{
+			if (s != null)
+				Add((StringComparer.InvariantCultureIgnoreCase).GetHashCode(s));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

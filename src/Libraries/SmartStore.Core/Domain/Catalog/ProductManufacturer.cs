@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
+
 namespace SmartStore.Core.Domain.Catalog
 {
-    /// <summary>
-    /// Represents a product manufacturer mapping
-    /// </summary>
+	/// <summary>
+	/// Represents a product manufacturer mapping
+	/// </summary>
 	[DataContract]
 	public partial class ProductManufacturer : BaseEntity
     {
@@ -23,6 +25,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether the product is featured
         /// </summary>
 		[DataMember]
+		[Index]
 		public bool IsFeaturedProduct { get; set; }
 
         /// <summary>

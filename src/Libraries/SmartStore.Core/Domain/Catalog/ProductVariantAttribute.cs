@@ -42,6 +42,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the attribute control type identifier
         /// </summary>
 		[DataMember]
+		[Index]
 		public int AttributeControlTypeId { get; set; }
 
         /// <summary>

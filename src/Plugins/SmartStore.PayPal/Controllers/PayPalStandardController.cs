@@ -109,7 +109,10 @@ namespace SmartStore.PayPal.Controllers
 			var provider = PaymentService.LoadPaymentMethodBySystemName(SystemName, true);
             var processor = (provider != null ? provider.Value as PayPalStandardProvider : null);
 			if (processor == null)
-				throw new SmartException(T("Plugins.Payments.PayPal.NoModuleLoading"));
+			{
+				Logger.Warn(null, T("Plugins.Payments.PayPal.NoModuleLoading", "PDTHandler"));
+				return RedirectToAction("Completed", "Checkout", new { area = "" });
+			}
 
 			var settings = Services.Settings.LoadSetting<PayPalStandardPaymentSettings>();
 

@@ -126,7 +126,7 @@
         <Value>Specifies whether to apply a percentage additional fee to the order total. A fixed value is used if not enabled.</Value>
       </LocaleResource>
       <LocaleResource Name="NoModuleLoading">
-        <Value>The payment module cannot be loaded.</Value>
+        <Value>The payment method is not active ({0}).</Value>
       </LocaleResource>
       <LocaleResource Name="IpnRecurringPaymentInfo">
         <Value>PayPal IPN. Recurring payment.</Value>

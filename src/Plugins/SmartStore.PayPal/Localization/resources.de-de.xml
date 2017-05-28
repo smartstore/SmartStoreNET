@@ -126,7 +126,7 @@
         <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
       </LocaleResource>
       <LocaleResource Name="NoModuleLoading">
-        <Value>Das Zahlungsmodul Modul konnte nicht geladen werden.</Value>
+        <Value>Die Zahlart ist nicht aktiv ({0}).</Value>
       </LocaleResource>
       <LocaleResource Name="IpnLogInfo">
         <Value>PayPal IPN. Wiederkehrende Zahlung.</Value>

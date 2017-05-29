@@ -21,7 +21,7 @@ namespace SmartStore.AmazonPay.Services
 
 		string GetWidgetUrl();
 
-		AmazonPayViewModel ProcessPluginRequest(AmazonPayRequestType type, TempDataDictionary tempData, string orderReferenceId = null);
+		AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData, string orderReferenceId = null);
 
 		void ApplyRewardPoints(bool useRewardPoints);
 

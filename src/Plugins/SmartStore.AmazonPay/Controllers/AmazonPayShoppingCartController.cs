@@ -14,7 +14,7 @@ namespace SmartStore.AmazonPay.Controllers
 
 		public ActionResult LoginHandler(string orderReferenceId)
 		{
-			var model = _apiService.ProcessPluginRequest(AmazonPayRequestType.LoginHandler, TempData, orderReferenceId);
+			var model = _apiService.CreateViewModel(AmazonPayRequestType.LoginHandler, TempData, orderReferenceId);
 
 			return GetActionResult(model);
 		}
@@ -24,7 +24,7 @@ namespace SmartStore.AmazonPay.Controllers
 		{
 			if (ControllerContext.ParentActionViewContext.RequestContext.RouteData.IsRouteEqual("ShoppingCart", "Cart"))
 			{
-				var model = _apiService.ProcessPluginRequest(AmazonPayRequestType.ShoppingCart, TempData);
+				var model = _apiService.CreateViewModel(AmazonPayRequestType.ShoppingCart, TempData);
 
 				return GetActionResult(model);
 			}
@@ -36,7 +36,7 @@ namespace SmartStore.AmazonPay.Controllers
 		{
 			if (renderAmazonPayView)
 			{
-				var model = _apiService.ProcessPluginRequest(AmazonPayRequestType.OrderReviewData, TempData);
+				var model = _apiService.CreateViewModel(AmazonPayRequestType.OrderReviewData, TempData);
 
 				return View(model);
 			}
@@ -48,7 +48,7 @@ namespace SmartStore.AmazonPay.Controllers
 		{
 			if (renderAmazonPayView)
 			{
-				var model = _apiService.ProcessPluginRequest(AmazonPayRequestType.MiniShoppingCart, TempData);
+				var model = _apiService.CreateViewModel(AmazonPayRequestType.MiniShoppingCart, TempData);
 
 				return GetActionResult(model);
 			}
@@ -58,13 +58,15 @@ namespace SmartStore.AmazonPay.Controllers
 		[ChildActionOnly]
 		public ActionResult WidgetLibrary()
 		{
-			// not possible to load it asynchronously cause of document.write inside
-			string widgetUrl = _apiService.GetWidgetUrl();
+			// Not possible to load it asynchronously cause of document.write inside.
+			//var widgetUrl = _apiService.GetWidgetUrl();
 
-			if (widgetUrl.HasValue())
-			{
-				return this.Content("<script src=\"{0}\" type=\"text/javascript\"></script>".FormatWith(widgetUrl));
-			}
+			//if (widgetUrl.HasValue())
+			//{
+			//	//return this.Content("<script src=\"{0}\" type=\"text/javascript\"></script>".FormatWith(widgetUrl));
+			//	return Content($"<script async=\"async\" src=\"{widgetUrl}\" type=\"text/javascript\"></script>");
+			//}
+
 			return new EmptyResult();
 		}
 	}

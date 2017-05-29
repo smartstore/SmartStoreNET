@@ -20,13 +20,14 @@ namespace SmartStore.AmazonPay.Services
 		public static string UrlApiEuSandbox { get { return "https://mws-eu.amazonservices.com/OffAmazonPayments_Sandbox/2013-01-01/"; } }
 		public static string UrlApiEuProduction { get { return "https://mws-eu.amazonservices.com/OffAmazonPayments/2013-01-01/"; } }
 
-		public static string UrlWidgetSandbox { get { return "https://static-eu.payments-amazon.com/OffAmazonPayments/{0}/sandbox/js/Widgets.js"; } }
-		public static string UrlWidgetProduction { get { return "https://static-eu.payments-amazon.com/OffAmazonPayments/{0}/js/Widgets.js"; } }
+		public static string UrlWidgetSandbox { get { return "https://static-eu.payments-amazon.com/OffAmazonPayments/eur/sandbox/lpa/js/Widgets.js"; } }
+		public static string UrlWidgetProduction { get { return "https://static-eu.payments-amazon.com/OffAmazonPayments/eur/lpa/js/Widgets.js"; } }
 
-		public static string UrlButtonSandbox { get { return "https://payments-sandbox.amazon.{0}/gp/widgets/button"; } }
-		public static string UrlButtonProduction { get { return "https://payments.amazon.{0}/gp/widgets/button"; } }
+		//public static string UrlWidgetSandboxOld { get { return "https://static-eu.payments-amazon.com/OffAmazonPayments/{0}/sandbox/js/Widgets.js"; } }
+		//public static string UrlWidgetProductionOld { get { return "https://static-eu.payments-amazon.com/OffAmazonPayments/{0}/js/Widgets.js"; } }
 
-		public static string UrlIpnSchema { get { return "https://amazonpayments.s3.amazonaws.com/documents/payments_ipn.xsd"; } }
+		//public static string UrlButtonSandbox { get { return "https://payments-sandbox.amazon.{0}/gp/widgets/button"; } }
+		//public static string UrlButtonProduction { get { return "https://payments.amazon.{0}/gp/widgets/button"; } }
 	}
 
 
@@ -142,7 +143,8 @@ namespace SmartStore.AmazonPay.Services
 		OrderReviewData,
 		ShippingMethod,
 		MiniShoppingCart,
-		LoginHandler
+		LoginHandler,
+		LoginPage
 	}
 
 	public enum AmazonPayTransactionType

@@ -19,14 +19,14 @@ namespace SmartStore.AmazonPay.Controllers
 
 		public ActionResult ShippingAddress()
 		{
-			var model = _apiService.ProcessPluginRequest(AmazonPayRequestType.Address, TempData);
+			var model = _apiService.CreateViewModel(AmazonPayRequestType.Address, TempData);
 
 			return GetActionResult(model);
 		}
 
 		public ActionResult PaymentMethod()
 		{
-			var model = _apiService.ProcessPluginRequest(AmazonPayRequestType.Payment, TempData);
+			var model = _apiService.CreateViewModel(AmazonPayRequestType.Payment, TempData);
 
 			return GetActionResult(model);
 		}

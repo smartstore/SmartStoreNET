@@ -1,5 +1,4 @@
-﻿using System;
-using SmartStore.AmazonPay.Services;
+﻿using SmartStore.AmazonPay.Services;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.AmazonPay.Models
@@ -12,7 +11,8 @@ namespace SmartStore.AmazonPay.Models
 			RedirectAction = "Cart";
 			RedirectController = "ShoppingCart";
 			Result = AmazonPayResultType.PluginView;
-			WidgetUrl = AmazonPayCore.UrlWidgetProduction.FormatWith("de");
+			//WidgetUrl = AmazonPayCore.UrlWidgetProductionOld.FormatWith("de");
+			ButtonType = (Type == AmazonPayRequestType.LoginPage ? "Login" : "PwA");
 		}
 
 		public string SystemName { get { return AmazonPayCore.SystemName; } }
@@ -27,13 +27,19 @@ namespace SmartStore.AmazonPay.Models
 		public bool IsShippable { get; set; }
 		public bool IsRecurring { get; set; }
 
+		public string LanguageCode { get; set; }
 		public AmazonPayRequestType Type { get; set; }
 		public AmazonPayResultType Result { get; set; }
+		
 		public string RedirectAction { get; set; }
 		public string RedirectController { get; set; }
 
 		public string OrderReferenceId { get; set; }
 		public string Warning { get; set; }
+
+		public string ButtonType { get; set; }
+		public string ButtonColor { get; set; }
+		public string ButtonSize { get; set; }
 
 		public int AddressWidgetWidth { get; set; }
 		public int AddressWidgetHeight { get; set; }

@@ -358,7 +358,7 @@ namespace SmartStore.AmazonPay.Services
 			return "";
 		}
 
-		public AmazonPayViewModel ProcessPluginRequest(AmazonPayRequestType type, TempDataDictionary tempData, string orderReferenceId = null)
+		public AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData, string orderReferenceId = null)
 		{
 			var model = new AmazonPayViewModel();
 			model.Type = type;
@@ -367,7 +367,28 @@ namespace SmartStore.AmazonPay.Services
 			{
 				var store = _services.StoreContext.CurrentStore;
 				var customer = _services.WorkContext.CurrentCustomer;
+				var language = _services.WorkContext.WorkingLanguage;
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+
+				switch (language.UniqueSeoCode.EmptyNull().ToLower())
+				{
+					case "en":
+						model.LanguageCode = "en-GB";
+						break;
+					case "fr":
+						model.LanguageCode = "fr-FR";
+						break;
+					case "it":
+						model.LanguageCode = "it-IT";
+						break;
+					case "es":
+						model.LanguageCode = "es-ES";
+						break;
+					case "de":
+					default:
+						model.LanguageCode = "de-DE";
+						break;
+				}
 
 				if (type == AmazonPayRequestType.LoginHandler)
 				{
@@ -455,7 +476,7 @@ namespace SmartStore.AmazonPay.Services
 				model.IsShippable = cart.RequiresShipping();
 				model.IsRecurring = cart.IsRecurring();
 				model.WidgetUrl = settings.GetWidgetUrl();
-				model.ButtonUrl = settings.GetButtonUrl(type);
+				//model.ButtonUrl = settings.GetButtonUrl(type);
 				model.AddressWidgetWidth = Math.Max(settings.AddressWidgetWidth, 200);
 				model.AddressWidgetHeight = Math.Max(settings.AddressWidgetHeight, 228);
 				model.PaymentWidgetWidth = Math.Max(settings.PaymentWidgetWidth, 200);

@@ -1,9 +1,9 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
 	<LocaleResource Name="Plugins.FriendlyName.SmartStore.AmazonPay" AppendRootKey="false">
-		<Value>Bezahlen mit Amazon</Value>
+		<Value>Login und Bezahlen mit Amazon</Value>
 	</LocaleResource>
   <LocaleResource Name="Plugins.FriendlyName.Widgets.AmazonPay" AppendRootKey="false">
-    <Value>Bezahlen mit Amazon</Value>
+    <Value>Login und Bezahlen mit Amazon</Value>
   </LocaleResource>
 
 	<LocaleResource Name="AdminInstruction">

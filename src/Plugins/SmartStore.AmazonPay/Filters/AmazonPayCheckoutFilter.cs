@@ -37,7 +37,7 @@ namespace SmartStore.AmazonPay.Filters
 
 			if (actionName.IsCaseInsensitiveEqual("ShippingMethod"))
 			{
-				var model = _apiService.Value.ProcessPluginRequest(AmazonPayRequestType.ShippingMethod, filterContext.Controller.TempData);
+				var model = _apiService.Value.CreateViewModel(AmazonPayRequestType.ShippingMethod, filterContext.Controller.TempData);
 
 				if (model.Result == AmazonPayResultType.Redirect) // shipping to selected address not possible
 				{

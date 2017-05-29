@@ -12,8 +12,8 @@ namespace SmartStore.AmazonPay.Settings
 			DataFetching = AmazonPayDataFetchingType.Ipn;
 			TransactionType = AmazonPayTransactionType.Authorize;
 			SaveEmailAndPhone = AmazonPaySaveDataType.OnlyIfEmpty;
-			AmazonButtonColor = "orange";
-			AmazonButtonSize = "x-large";
+			AmazonButtonColor = "Gold";
+			AmazonButtonSize = "small";
 			AddressWidgetWidth = PaymentWidgetWidth = 400;
 			AddressWidgetHeight = PaymentWidgetHeight = 260;
 			AddOrderNotes = true;
@@ -64,34 +64,36 @@ namespace SmartStore.AmazonPay.Settings
 			if (SellerId.IsEmpty())
 				return null;
 
-			string url = (UseSandbox ? AmazonPayCore.UrlWidgetSandbox : AmazonPayCore.UrlWidgetProduction);
-			url = url.FormatWith(Marketplace ?? "de");
+			return (UseSandbox ? AmazonPayCore.UrlWidgetSandbox : AmazonPayCore.UrlWidgetProduction);
 
-			return "{0}?sellerId={1}".FormatWith(
-				url,
-				HttpUtility.UrlEncode(SellerId)
-			);
+			//string url = (UseSandbox ? AmazonPayCore.UrlWidgetSandboxOld : AmazonPayCore.UrlWidgetProductionOld);
+			//url = url.FormatWith(Marketplace ?? "de");
+
+			//return "{0}?sellerId={1}".FormatWith(
+			//	url,
+			//	HttpUtility.UrlEncode(SellerId)
+			//);
 		}
 
-		public string GetButtonUrl(AmazonPayRequestType view)
-		{
-			//bool isGerman = _services.WorkContext.WorkingLanguage.UniqueSeoCode.IsCaseInsensitiveEqual("DE");
-			string marketplace = Marketplace ?? "de";
-			if (marketplace.IsCaseInsensitiveEqual("uk"))
-				marketplace = "co.uk";
+		//public string GetButtonUrl(AmazonPayRequestType view)
+		//{
+		//	//bool isGerman = _services.WorkContext.WorkingLanguage.UniqueSeoCode.IsCaseInsensitiveEqual("DE");
+		//	string marketplace = Marketplace ?? "de";
+		//	if (marketplace.IsCaseInsensitiveEqual("uk"))
+		//		marketplace = "co.uk";
 
-			string buttonSize = (view == AmazonPayRequestType.MiniShoppingCart ? "large" : AmazonButtonSize);
+		//	string buttonSize = (view == AmazonPayRequestType.MiniShoppingCart ? "large" : AmazonButtonSize);
 
-			string url = (UseSandbox ? AmazonPayCore.UrlButtonSandbox : AmazonPayCore.UrlButtonProduction);
-			url = url.FormatWith(marketplace);
+		//	string url = (UseSandbox ? AmazonPayCore.UrlButtonSandbox : AmazonPayCore.UrlButtonProduction);
+		//	url = url.FormatWith(marketplace);
 
-			return "{0}?sellerId={1}&size={2}&color={3}".FormatWith(
-				url,
-				HttpUtility.UrlEncode(SellerId),
-				HttpUtility.UrlEncode(buttonSize ?? "x-large"),
-				HttpUtility.UrlEncode(AmazonButtonColor ?? "orange")
-			);
-		}
+		//	return "{0}?sellerId={1}&size={2}&color={3}".FormatWith(
+		//		url,
+		//		HttpUtility.UrlEncode(SellerId),
+		//		HttpUtility.UrlEncode(buttonSize ?? "x-large"),
+		//		HttpUtility.UrlEncode(AmazonButtonColor ?? "orange")
+		//	);
+		//}
 
 		public bool CanSaveEmailAndPhone(string value)
 		{

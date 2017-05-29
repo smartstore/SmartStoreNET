@@ -1,4 +1,4 @@
-﻿FriendlyName: Pay with Amazon
+﻿FriendlyName: Login and Pay with Amazon
 SystemName: SmartStore.AmazonPay
 Group: Payment
 Version: 3.0.0

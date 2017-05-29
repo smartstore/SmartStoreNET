@@ -6,7 +6,6 @@
     Layout = "_Checkout";
 
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
-    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 }
 
 @section orderProgress{
@@ -36,7 +35,7 @@
             }
 
 			<div class="amazon-pay-widget clearfix">
-				<div id="@Model.GetWidgetId"></div>
+				<div id="@Model.WidgetId"></div>
 			</div>
 
             <div class="buttons mt-3">
@@ -71,7 +70,7 @@
 				onError: function (e) {
 					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
 				}
-			}).bind('@Model.GetWidgetId');
+			}).bind('@Model.WidgetId');
 		}
 		catch (e) {
 			alert(e.description);

@@ -19,11 +19,9 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
@@ -140,20 +138,20 @@ namespace SmartStore.AmazonPay.Services
 					var serializer = new XmlSerializer(typeof(AmazonPayOrderAttribute));
 					serializer.Serialize(writer, attribute);
 
-					_genericAttributeService.SaveAttribute<string>(order, AmazonPayCore.AmazonPayOrderAttributeKey, sb.ToString(), order.StoreId);
+					_genericAttributeService.SaveAttribute<string>(order, AmazonPayPlugin.SystemName + ".OrderAttribute", sb.ToString(), order.StoreId);
 				}
 			}
 		}
 		private AmazonPayOrderAttribute DeserializeOrderAttribute(Order order)
 		{
-			var serialized = order.GetAttribute<string>(AmazonPayCore.AmazonPayOrderAttributeKey, _genericAttributeService, order.StoreId);
+			var serialized = order.GetAttribute<string>(AmazonPayPlugin.SystemName + ".OrderAttribute", _genericAttributeService, order.StoreId);
 
 			if (!serialized.HasValue())
 			{
 				var attribute = new AmazonPayOrderAttribute();
 				
 				// legacy < v.1.14
-				attribute.OrderReferenceId = order.GetAttribute<string>(AmazonPayCore.SystemName + ".OrderReferenceId", order.StoreId);
+				attribute.OrderReferenceId = order.GetAttribute<string>(AmazonPayPlugin.SystemName + ".OrderReferenceId", order.StoreId);
 
 				return attribute;
 			}
@@ -210,12 +208,13 @@ namespace SmartStore.AmazonPay.Services
 
 		private bool IsActive(int storeId, bool logInactive = false)
 		{
-			bool isActive = _paymentService.IsPaymentMethodActive(AmazonPayCore.SystemName, storeId);
+			var isActive = _paymentService.IsPaymentMethodActive(AmazonPayPlugin.SystemName, storeId);
 
 			if (!isActive && logInactive)
 			{
 				LogError(null, T("Plugins.Payments.AmazonPay.PaymentMethodNotActive", _services.StoreContext.CurrentStore.Name));
 			}
+
 			return isActive;
 		}
 
@@ -229,7 +228,7 @@ namespace SmartStore.AmazonPay.Services
 				var sb = new StringBuilder();
 
 				string[] orderNoteStrings = T("Plugins.Payments.AmazonPay.OrderNoteStrings").Text.SplitSafe(";");
-				string faviconUrl = "{0}Plugins/{1}/Content/images/favicon.png".FormatWith(_services.WebHelper.GetStoreLocation(false), AmazonPayCore.SystemName);
+				string faviconUrl = "{0}Plugins/{1}/Content/images/favicon.png".FormatWith(_services.WebHelper.GetStoreLocation(false), AmazonPayPlugin.SystemName);
 
 				sb.AppendFormat("<img src=\"{0}\" style=\"float: left; width: 16px; height: 16px;\" />", faviconUrl);
 
@@ -330,7 +329,7 @@ namespace SmartStore.AmazonPay.Services
 
 			model.ConfigGroups = T("Plugins.Payments.AmazonPay.ConfigGroups").Text.SplitSafe(";");
 
-			var task = _scheduleTaskService.GetTaskByType(AmazonPayCore.DataPollingTaskType);
+			var task = _scheduleTaskService.GetTaskByType("SmartStore.AmazonPay.DataPollingTask, SmartStore.AmazonPay");
 
 			if (task == null)
 				model.PollingTaskMinutes = 30;
@@ -338,25 +337,25 @@ namespace SmartStore.AmazonPay.Services
 				model.PollingTaskMinutes = 30; // (task.Seconds / 60);
 		}
 
-		public string GetWidgetUrl()
-		{
-			try
-			{
-				var store = _services.StoreContext.CurrentStore;
+		//public string GetWidgetUrl()
+		//{
+		//	try
+		//	{
+		//		var store = _services.StoreContext.CurrentStore;
 
-				if (IsActive(store.Id))
-				{
-					var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
-					if (settings.SellerId.HasValue())
-						return settings.GetWidgetUrl();
-				}
-			}
-			catch (Exception exc)
-			{
-				LogError(exc);
-			}
-			return "";
-		}
+		//		if (IsActive(store.Id))
+		//		{
+		//			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
+		//			if (settings.SellerId.HasValue())
+		//				return settings.WidgetUrl;
+		//		}
+		//	}
+		//	catch (Exception exc)
+		//	{
+		//		LogError(exc);
+		//	}
+		//	return "";
+		//}
 
 		public AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData, string orderReferenceId = null)
 		{
@@ -392,7 +391,7 @@ namespace SmartStore.AmazonPay.Services
 
 				if (type == AmazonPayRequestType.LoginHandler)
 				{
-					if (string.IsNullOrWhiteSpace(orderReferenceId))
+					if (orderReferenceId.IsEmpty())
 					{
 						LogError(null, T("Plugins.Payments.AmazonPay.MissingOrderReferenceId"), null, true);
 						model.Result = AmazonPayResultType.Redirect;
@@ -412,6 +411,7 @@ namespace SmartStore.AmazonPay.Services
 					}
 
 					var checkoutState = _httpContext.GetCheckoutState();
+					var checkoutStateKey = AmazonPayPlugin.SystemName + ".CheckoutState";
 
 					if (checkoutState == null)
 					{
@@ -420,17 +420,17 @@ namespace SmartStore.AmazonPay.Services
 						return model;
 					}
 
-					var state = new AmazonPayCheckoutState()
+					var state = new AmazonPayCheckoutState
 					{
 						OrderReferenceId = orderReferenceId
 					};
 
-					if (checkoutState.CustomProperties.ContainsKey(AmazonPayCore.AmazonPayCheckoutStateKey))
-						checkoutState.CustomProperties[AmazonPayCore.AmazonPayCheckoutStateKey] = state;
+					if (checkoutState.CustomProperties.ContainsKey(checkoutStateKey))
+						checkoutState.CustomProperties[checkoutStateKey] = state;
 					else
-						checkoutState.CustomProperties.Add(AmazonPayCore.AmazonPayCheckoutStateKey, state);
+						checkoutState.CustomProperties.Add(checkoutStateKey, state);
 
-					//_httpContext.Session.SafeSet(AmazonPayCore.AmazonPayCheckoutStateKey, state);
+					//_httpContext.Session.SafeSet(checkoutStateKey, state);
 
 					model.RedirectAction = "Index";
 					model.RedirectController = "Checkout";
@@ -475,7 +475,7 @@ namespace SmartStore.AmazonPay.Services
 				model.ClientId = settings.AccessKey;
 				model.IsShippable = cart.RequiresShipping();
 				model.IsRecurring = cart.IsRecurring();
-				model.WidgetUrl = settings.GetWidgetUrl();
+				model.WidgetUrl = settings.WidgetUrl;
 				//model.ButtonUrl = settings.GetButtonUrl(type);
 				model.AddressWidgetWidth = Math.Max(settings.AddressWidgetWidth, 200);
 				model.AddressWidgetHeight = Math.Max(settings.AddressWidgetHeight, 228);
@@ -500,7 +500,7 @@ namespace SmartStore.AmazonPay.Services
 						return model;
 					}
 
-					var shippingToCountryNotAllowed = tempData[AmazonPayCore.SystemName + "ShippingToCountryNotAllowed"];
+					var shippingToCountryNotAllowed = tempData[AmazonPayPlugin.SystemName + "ShippingToCountryNotAllowed"];
 
 					if (shippingToCountryNotAllowed != null && true == (bool)shippingToCountryNotAllowed)
 						model.Warning = T("Plugins.Payments.AmazonPay.ShippingToCountryNotAllowed");
@@ -511,7 +511,7 @@ namespace SmartStore.AmazonPay.Services
 
 					if (model.IsShippable)
 					{
-						var client = new AmazonPayClient(settings);
+						var client = _api.CreateClient(settings);
 						var details = _api.GetOrderReferenceDetails(client, model.OrderReferenceId);
 
 						if (_api.FindAndApplyAddress(details, customer, model.IsShippable, true))
@@ -522,7 +522,7 @@ namespace SmartStore.AmazonPay.Services
 						}
 						else
 						{
-							tempData[AmazonPayCore.SystemName + "ShippingToCountryNotAllowed"] = true;
+							tempData[AmazonPayPlugin.SystemName + "ShippingToCountryNotAllowed"] = true;
 							model.RedirectAction = "ShippingAddress";
 							model.RedirectController = "Checkout";
 							model.Result = AmazonPayResultType.Redirect;
@@ -546,9 +546,9 @@ namespace SmartStore.AmazonPay.Services
 						}
 					}
 
-					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, AmazonPayCore.SystemName, store.Id);
+					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, AmazonPayPlugin.SystemName, store.Id);
 
-					var client = new AmazonPayClient(settings);
+					var client = _api.CreateClient(settings);
 					var unused = _api.SetOrderReferenceDetails(client, model.OrderReferenceId, store.PrimaryStoreCurrency.CurrencyCode, cart);
 
 					// this is ugly...
@@ -588,7 +588,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
-		private string GetAuthorizationState(AmazonPayClient client, string authorizationId)
+		private string GetAuthorizationState(AmazonPayApiClient client, string authorizationId)
 		{
 			try
 			{
@@ -618,7 +618,7 @@ namespace SmartStore.AmazonPay.Services
 
 			try
 			{
-				var client = new AmazonPayClient(settings);
+				var client = _api.CreateClient(settings);
 
 				var orderAttribute = DeserializeOrderAttribute(order);
 
@@ -634,7 +634,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
-		private void ProcessAuthorizationResult(AmazonPayClient client, Order order, AmazonPayApiData data, OffAmazonPaymentsService.Model.AuthorizationDetails details)
+		private void ProcessAuthorizationResult(AmazonPayApiClient client, Order order, AmazonPayApiData data, OffAmazonPaymentsService.Model.AuthorizationDetails details)
 		{
 			string formattedAddress;
 			var orderAttribute = DeserializeOrderAttribute(order);
@@ -688,7 +688,7 @@ namespace SmartStore.AmazonPay.Services
 				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
 			}
 		}
-		private void ProcessCaptureResult(AmazonPayClient client, Order order, AmazonPayApiData data)
+		private void ProcessCaptureResult(AmazonPayApiClient client, Order order, AmazonPayApiData data)
 		{
 			if (data.State.IsCaseInsensitiveEqual("Pending"))
 				return;
@@ -717,7 +717,7 @@ namespace SmartStore.AmazonPay.Services
 				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
 			}
 		}
-		private void ProcessRefundResult(AmazonPayClient client, Order order, AmazonPayApiData data)
+		private void ProcessRefundResult(AmazonPayApiClient client, Order order, AmazonPayApiData data)
 		{
 			if (data.State.IsCaseInsensitiveEqual("Pending"))
 				return;
@@ -774,7 +774,7 @@ namespace SmartStore.AmazonPay.Services
 						data.Settings = _services.Settings.LoadSetting<AmazonPaySettings>(data.Order.StoreId);
 
 					if (data.Client == null)
-						data.Client = new AmazonPayClient(data.Settings);
+						data.Client = _api.CreateClient(data.Settings);
 
 					if (!poll())
 						break;
@@ -835,12 +835,12 @@ namespace SmartStore.AmazonPay.Services
 
 			if (data.MessageType.IsCaseInsensitiveEqual("AuthorizationNotification"))
 			{
-				if ((order = _orderService.GetOrderByPaymentAuthorization(AmazonPayCore.SystemName, data.AuthorizationId)) == null)
+				if ((order = _orderService.GetOrderByPaymentAuthorization(AmazonPayPlugin.SystemName, data.AuthorizationId)) == null)
 					errorId = "AuthorizationId {0}".FormatWith(data.AuthorizationId);
 			}
 			else if (data.MessageType.IsCaseInsensitiveEqual("CaptureNotification"))
 			{
-				if ((order = _orderService.GetOrderByPaymentCapture(AmazonPayCore.SystemName, data.CaptureId)) == null)
+				if ((order = _orderService.GetOrderByPaymentCapture(AmazonPayPlugin.SystemName, data.CaptureId)) == null)
 					order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
 
 				if (order == null)
@@ -848,7 +848,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 			else if (data.MessageType.IsCaseInsensitiveEqual("RefundNotification"))
 			{
-				var attribute = _genericAttributeService.GetAttributes(AmazonPayCore.AmazonPayRefundIdKey, "Order")
+				var attribute = _genericAttributeService.GetAttributes(AmazonPayPlugin.SystemName + ".RefundId", "Order")
 					.Where(x => x.Value == data.RefundId)
 					.FirstOrDefault();
 
@@ -921,7 +921,7 @@ namespace SmartStore.AmazonPay.Services
 				var currency = store.PrimaryStoreCurrency;
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
-				var client = new AmazonPayClient(settings);
+				var client = _api.CreateClient(settings);
 
 				if (!IsActive(store.Id, true))
 				{
@@ -990,7 +990,7 @@ namespace SmartStore.AmazonPay.Services
 				var currency = store.PrimaryStoreCurrency;
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
-				var client = new AmazonPayClient(settings);
+				var client = _api.CreateClient(settings);
 
 				informCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				informCustomerAddErrors = settings.InformCustomerAddErrors;
@@ -1084,7 +1084,7 @@ namespace SmartStore.AmazonPay.Services
 			try
 			{
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
-				var client = new AmazonPayClient(settings);
+				var client = _api.CreateClient(settings);
 
 				_api.Capture(client, request, result);
 			}
@@ -1109,17 +1109,17 @@ namespace SmartStore.AmazonPay.Services
 			try
 			{
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
-				var client = new AmazonPayClient(settings);
+				var client = _api.CreateClient(settings);
 
-				string amazonRefundId = _api.Refund(client, request, result);
+				var amazonRefundId = _api.Refund(client, request, result);
 
 				if (amazonRefundId.HasValue() && request.Order.Id != 0)
 				{
-					_genericAttributeService.InsertAttribute(new GenericAttribute()
+					_genericAttributeService.InsertAttribute(new GenericAttribute
 					{
 						EntityId = request.Order.Id,
 						KeyGroup = "Order",
-						Key = AmazonPayCore.AmazonPayRefundIdKey,
+						Key = AmazonPayPlugin.SystemName + ".RefundId",
 						Value = amazonRefundId,
 						StoreId = request.Order.StoreId
 					});
@@ -1133,6 +1133,7 @@ namespace SmartStore.AmazonPay.Services
 			{
 				LogError(exc, errors: result.Errors);
 			}
+
 			return result;
 		}
 
@@ -1164,7 +1165,7 @@ namespace SmartStore.AmazonPay.Services
 				if (request.Order.PaymentStatus == PaymentStatus.Pending || request.Order.PaymentStatus == PaymentStatus.Authorized)
 				{
 					var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
-					var client = new AmazonPayClient(settings);
+					var client = _api.CreateClient(settings);
 
 					var orderAttribute = DeserializeOrderAttribute(request.Order);
 
@@ -1192,7 +1193,7 @@ namespace SmartStore.AmazonPay.Services
 				if (order == null || !IsActive(order.StoreId))
 					return;
 
-				var client = new AmazonPayClient(_services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId));
+				var client = _api.CreateClient(_services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId));
 
 				if (client.Settings.DataFetching != AmazonPayDataFetchingType.Ipn)
 					return;
@@ -1235,7 +1236,7 @@ namespace SmartStore.AmazonPay.Services
 
 				var query =
 					from x in _orderRepository.Table
-					where x.PaymentMethodSystemName == AmazonPayCore.SystemName && x.CreatedOnUtc > isTooOld &&
+					where x.PaymentMethodSystemName == AmazonPayPlugin.SystemName && x.CreatedOnUtc > isTooOld &&
 						!x.Deleted && x.OrderStatusId < (int)OrderStatus.Complete && x.PaymentStatusId != (int)PaymentStatus.Voided
 					orderby x.Id descending
 					select x;
@@ -1248,7 +1249,7 @@ namespace SmartStore.AmazonPay.Services
 				{
 					try
 					{
-						var client = new AmazonPayClient(_services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId));
+						var client = _api.CreateClient(_services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId));
 
 						if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
 						{
@@ -1303,7 +1304,7 @@ namespace SmartStore.AmazonPay.Services
 		{
 			_scheduleTaskService.GetOrAddTask<DataPollingTask>(x => 
 			{
-				x.Name = "{0} data polling".FormatWith(AmazonPayCore.SystemName);
+				x.Name = "{0} data polling".FormatWith(AmazonPayPlugin.SystemName);
 				x.CronExpression = "*/30 * * * *"; // Every 30 minutes
 			});
 		}

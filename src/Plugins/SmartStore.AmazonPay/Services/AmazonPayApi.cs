@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using OffAmazonPaymentsService;
 using OffAmazonPaymentsService.Model;
 using SmartStore.AmazonPay.Extensions;
 using SmartStore.AmazonPay.Services;
@@ -14,7 +13,6 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Common;
@@ -28,6 +26,8 @@ namespace SmartStore.AmazonPay.Api
 {
 	public class AmazonPayApi : IAmazonPayApi
 	{
+		private const string PLATFORM_ID = "A3OJ83WFYM72IY";
+
 		private readonly ICountryService _countryService;
 		private readonly IStateProvinceService _stateProvinceService;
 		private readonly IOrderService _orderService;
@@ -36,6 +36,7 @@ namespace SmartStore.AmazonPay.Api
 		private readonly CurrencySettings _currencySettings;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ICommonServices _services;
+		private readonly IPluginFinder _pluginFinder;
 
 		public AmazonPayApi(
 			ICountryService countryService,
@@ -45,7 +46,8 @@ namespace SmartStore.AmazonPay.Api
 			IDateTimeHelper dateTimeHelper,
 			CurrencySettings currencySettings,
 			IOrderTotalCalculationService orderTotalCalculationService,
-			ICommonServices services)
+			ICommonServices services,
+			IPluginFinder pluginFinder)
 		{
 			_countryService = countryService;
 			_stateProvinceService = stateProvinceService;
@@ -55,12 +57,26 @@ namespace SmartStore.AmazonPay.Api
 			_currencySettings = currencySettings;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_services = services;
+			_pluginFinder = pluginFinder;
 		}
 
 		private string GetRandomId(string prefix)
 		{
-			string str = prefix + CommonHelper.GenerateRandomDigitCode(20);
+			var str = prefix + CommonHelper.GenerateRandomDigitCode(20);
 			return str.Truncate(32);
+		}
+
+		public AmazonPayApiClient CreateClient(AmazonPaySettings settings)
+		{
+			var appVersion = "1.0";
+			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(AmazonPayPlugin.SystemName);
+
+			if (descriptor != null)
+			{
+				appVersion = descriptor.Version.ToString();
+			}
+
+			return new AmazonPayApiClient(settings, appVersion);
 		}
 
 		public void GetConstraints(OrderReferenceDetails details, IList<string> warnings)
@@ -157,7 +173,7 @@ namespace SmartStore.AmazonPay.Api
 			if (details == null)
 			{
 				AmazonPayApiData data;
-				details = GetAuthorizationDetails(new AmazonPayClient(settings), order.AuthorizationTransactionId, out data);
+				details = GetAuthorizationDetails(CreateClient(settings), order.AuthorizationTransactionId, out data);
 			}
 
 			if (details == null || !details.IsSetAuthorizationBillingAddress())
@@ -186,7 +202,7 @@ namespace SmartStore.AmazonPay.Api
 			return true;
 		}
 
-		public OrderReferenceDetails GetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, string addressConsentToken = null)
+		public OrderReferenceDetails GetOrderReferenceDetails(AmazonPayApiClient client, string orderReferenceId, string addressConsentToken = null)
 		{
 			var request = new GetOrderReferenceDetailsRequest();
 			request.SellerId = client.Settings.SellerId;
@@ -205,7 +221,7 @@ namespace SmartStore.AmazonPay.Api
 			return null;
 		}
 
-		public OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, decimal? orderTotalAmount,
+		public OrderReferenceDetails SetOrderReferenceDetails(AmazonPayApiClient client, string orderReferenceId, decimal? orderTotalAmount,
 			string currencyCode, string orderGuid = null, string storeName = null)
 		{
 			var request = new SetOrderReferenceDetailsRequest();
@@ -214,7 +230,7 @@ namespace SmartStore.AmazonPay.Api
 
 			var attributes = new OrderReferenceAttributes();
 			//attributes.SellerNote = client.Settings.SellerNoteOrderReference.Truncate(1024);
-			attributes.PlatformId = AmazonPayCore.PlatformId;
+			attributes.PlatformId = PLATFORM_ID;
 
 			if (orderTotalAmount.HasValue)
 			{
@@ -248,7 +264,7 @@ namespace SmartStore.AmazonPay.Api
 			return null;
 		}
 
-		public OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, string currencyCode, List<OrganizedShoppingCartItem> cart)
+		public OrderReferenceDetails SetOrderReferenceDetails(AmazonPayApiClient client, string orderReferenceId, string currencyCode, List<OrganizedShoppingCartItem> cart)
 		{
 			decimal orderTotalDiscountAmountBase = decimal.Zero;
 			Discount orderTotalAppliedDiscount = null;
@@ -268,7 +284,7 @@ namespace SmartStore.AmazonPay.Api
 		}
 
 		/// <summary>Confirm an order reference informs Amazon that the buyer has placed the order.</summary>
-		public void ConfirmOrderReference(AmazonPayClient client, string orderReferenceId)
+		public void ConfirmOrderReference(AmazonPayApiClient client, string orderReferenceId)
 		{
 			var request = new ConfirmOrderReferenceRequest();
 			request.SellerId = client.Settings.SellerId;
@@ -277,7 +293,7 @@ namespace SmartStore.AmazonPay.Api
 			var response = client.Service.ConfirmOrderReference(request);
 		}
 
-		public void CancelOrderReference(AmazonPayClient client, string orderReferenceId)
+		public void CancelOrderReference(AmazonPayApiClient client, string orderReferenceId)
 		{
 			var request = new CancelOrderReferenceRequest();
 			request.SellerId = client.Settings.SellerId;
@@ -286,7 +302,7 @@ namespace SmartStore.AmazonPay.Api
 			var response = client.Service.CancelOrderReference(request);
 		}
 
-		public void CloseOrderReference(AmazonPayClient client, string orderReferenceId)
+		public void CloseOrderReference(AmazonPayApiClient client, string orderReferenceId)
 		{
 			var request = new CloseOrderReferenceRequest();
 			request.SellerId = client.Settings.SellerId;
@@ -296,7 +312,7 @@ namespace SmartStore.AmazonPay.Api
 		}
 
 		/// <summary>Asynchronous as long as we do not set TransactionTimeout to 0. So transaction is always in pending state after return.</summary>
-		public void Authorize(AmazonPayClient client, ProcessPaymentResult result, List<string> errors, string orderReferenceId, decimal orderTotalAmount, string currencyCode, string orderGuid)
+		public void Authorize(AmazonPayApiClient client, ProcessPaymentResult result, List<string> errors, string orderReferenceId, decimal orderTotalAmount, string currencyCode, string orderGuid)
 		{
 			var request = new AuthorizeRequest();
 			request.SellerId = client.Settings.SellerId;
@@ -355,7 +371,7 @@ namespace SmartStore.AmazonPay.Api
 			result.NewPaymentStatus = Core.Domain.Payments.PaymentStatus.Pending;
 		}
 	
-		public AuthorizationDetails GetAuthorizationDetails(AmazonPayClient client, string authorizationId, out AmazonPayApiData data)
+		public AuthorizationDetails GetAuthorizationDetails(AmazonPayApiClient client, string authorizationId, out AmazonPayApiData data)
 		{
 			data = new AmazonPayApiData();
 
@@ -426,7 +442,7 @@ namespace SmartStore.AmazonPay.Api
 			return details;
 		}
 
-		public void Capture(AmazonPayClient client, CapturePaymentRequest capture, CapturePaymentResult result)
+		public void Capture(AmazonPayApiClient client, CapturePaymentRequest capture, CapturePaymentResult result)
 		{
 			result.NewPaymentStatus = capture.Order.PaymentStatus;
 
@@ -462,7 +478,7 @@ namespace SmartStore.AmazonPay.Api
 			}
 		}
 
-		public CaptureDetails GetCaptureDetails(AmazonPayClient client, string captureId, out AmazonPayApiData data)
+		public CaptureDetails GetCaptureDetails(AmazonPayApiClient client, string captureId, out AmazonPayApiData data)
 		{
 			data = new AmazonPayApiData();
 
@@ -523,7 +539,7 @@ namespace SmartStore.AmazonPay.Api
 			return details;
 		}
 
-		public string Refund(AmazonPayClient client, RefundPaymentRequest refund, RefundPaymentResult result)
+		public string Refund(AmazonPayApiClient client, RefundPaymentRequest refund, RefundPaymentResult result)
 		{
 			result.NewPaymentStatus = refund.Order.PaymentStatus;
 
@@ -561,7 +577,7 @@ namespace SmartStore.AmazonPay.Api
 			return amazonRefundId;
 		}
 
-		public RefundDetails GetRefundDetails(AmazonPayClient client, string refundId, out AmazonPayApiData data)
+		public RefundDetails GetRefundDetails(AmazonPayApiClient client, string refundId, out AmazonPayApiData data)
 		{
 			data = new AmazonPayApiData();
 
@@ -783,33 +799,5 @@ namespace SmartStore.AmazonPay.Api
 			
 			return data;
 		}
-	}
-
-
-	public class AmazonPayClient
-	{
-		public AmazonPayClient(AmazonPaySettings settings)
-		{
-			string appVersion = "1.0";
-
-			try
-			{
-				appVersion = EngineContext.Current.Resolve<IPluginFinder>().GetPluginDescriptorBySystemName(AmazonPayCore.SystemName).Version.ToString();
-			}
-			catch (Exception) { }
-
-			var config = new OffAmazonPaymentsServiceConfig()
-			{
-				ServiceURL = (settings.UseSandbox ? AmazonPayCore.UrlApiEuSandbox : AmazonPayCore.UrlApiEuProduction)
-			};
-
-			config.SetUserAgent(AmazonPayCore.AppName, appVersion);
-
-			Settings = settings;
-			Service = new OffAmazonPaymentsServiceClient(AmazonPayCore.AppName, appVersion, settings.AccessKey, settings.SecretKey, config);
-		}
-
-		public IOffAmazonPaymentsService Service { get; private set; }
-		public AmazonPaySettings Settings { get; private set; }
 	}
 }

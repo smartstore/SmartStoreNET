@@ -13,13 +13,13 @@ using SmartStore.Services.Payments;
 namespace SmartStore.AmazonPay
 {
 	[DependentWidgets("Widgets.AmazonPay")]
-	public class Plugin : PaymentPluginBase, IConfigurable
+	public class AmazonPayPlugin : PaymentPluginBase, IConfigurable
 	{
 		private readonly IAmazonPayService _apiService;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ICommonServices _services;
 
-		public Plugin(
+		public AmazonPayPlugin(
 			IAmazonPayService apiService,
 			IOrderTotalCalculationService orderTotalCalculationService,
 			ICommonServices services)
@@ -27,6 +27,11 @@ namespace SmartStore.AmazonPay
 			_apiService = apiService;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_services = services;
+		}
+
+		public static string SystemName
+		{
+			get { return "SmartStore.AmazonPay"; }
 		}
 
 		public override void Install()
@@ -108,14 +113,14 @@ namespace SmartStore.AmazonPay
 		{
 			actionName = "Configure";
 			controllerName = "AmazonPay";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", AmazonPayCore.SystemName } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", AmazonPayPlugin.SystemName } };
 		}
 
 		public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
 		{
 			actionName = "ShoppingCart";
 			controllerName = "AmazonPayShoppingCart";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", AmazonPayCore.SystemName } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", AmazonPayPlugin.SystemName } };
 		}
 
 		public override Type GetControllerType()

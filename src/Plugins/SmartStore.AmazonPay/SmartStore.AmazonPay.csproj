@@ -144,8 +144,12 @@
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Filters\AmazonPayCheckoutFilter.cs" />
     <Compile Include="Models\AmazonPayViewModel.cs" />
+    <Compile Include="Services\AmazonPayApiData.cs" />
+    <Compile Include="Services\AmazonPayApiPrice.cs" />
     <Compile Include="Services\AmazonPayApi.cs" />
-    <Compile Include="Services\AmazonPayCore.cs" />
+    <Compile Include="Services\AmazonPayApiClient.cs" />
+    <Compile Include="Services\AmazonPayUtilities.cs" />
+    <Compile Include="Services\AmazonPayEnums.cs" />
     <Compile Include="Services\IAmazonPayApi.cs" />
     <Compile Include="Services\IAmazonPayService.cs" />
     <Compile Include="Services\AmazonPayService.cs" />
@@ -201,9 +205,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\images\logo.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\smartstore.amazonpay.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Description.txt">

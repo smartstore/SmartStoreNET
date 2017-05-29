@@ -210,7 +210,7 @@ namespace SmartStore.AmazonPay.Api
 				if (amazonOrderReferenceId.HasValue())
 				{
 					var orders = orderRepository.Table
-						.Where(x => x.PaymentMethodSystemName == AmazonPayCore.SystemName && x.AuthorizationTransactionId.StartsWith(amazonOrderReferenceId))
+						.Where(x => x.PaymentMethodSystemName == AmazonPayPlugin.SystemName && x.AuthorizationTransactionId.StartsWith(amazonOrderReferenceId))
 						.ToList();
 
 					if (orders.Count() == 1)

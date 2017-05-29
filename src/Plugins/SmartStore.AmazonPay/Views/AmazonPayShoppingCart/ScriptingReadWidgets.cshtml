@@ -14,7 +14,7 @@
 				onError: function (e) {
 					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
 				}
-			}).bind('@(Model.GetWidgetId)Address');
+			}).bind('@(Model.WidgetId)Address');
 		}
 		catch (e) {
 			if (e.description) alert(e.description);
@@ -31,7 +31,7 @@
 				onError: function (e) {
 					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
 				}
-			}).bind('@(Model.GetWidgetId)Wallet');
+			}).bind('@(Model.WidgetId)Wallet');
 		}
 		catch (e) {
 			if (e.description) alert(e.description);

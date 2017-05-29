@@ -11,36 +11,38 @@ namespace SmartStore.AmazonPay.Api
 {
 	public partial interface IAmazonPayApi
 	{
+		AmazonPayApiClient CreateClient(AmazonPaySettings settings);
+
 		void GetConstraints(OrderReferenceDetails details, IList<string> warnings);
 
 		bool FindAndApplyAddress(OrderReferenceDetails details, Customer customer, bool isShippable, bool forceToTakeAmazonAddress);
 		bool FulfillBillingAddress(AmazonPaySettings settings, Order order, AuthorizationDetails details, out string formattedAddress);
 
-		OrderReferenceDetails GetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, string addressConsentToken = null);
+		OrderReferenceDetails GetOrderReferenceDetails(AmazonPayApiClient client, string orderReferenceId, string addressConsentToken = null);
 
-		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, decimal? orderTotalAmount,
+		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayApiClient client, string orderReferenceId, decimal? orderTotalAmount,
 			string currencyCode, string orderGuid = null, string storeName = null);
 
-		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, string currencyCode, List<OrganizedShoppingCartItem> cart);
+		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayApiClient client, string orderReferenceId, string currencyCode, List<OrganizedShoppingCartItem> cart);
 
-		void ConfirmOrderReference(AmazonPayClient client, string orderReferenceId);
+		void ConfirmOrderReference(AmazonPayApiClient client, string orderReferenceId);
 
-		void CancelOrderReference(AmazonPayClient client, string orderReferenceId);
+		void CancelOrderReference(AmazonPayApiClient client, string orderReferenceId);
 
-		void CloseOrderReference(AmazonPayClient client, string orderReferenceId);
+		void CloseOrderReference(AmazonPayApiClient client, string orderReferenceId);
 
-		void Authorize(AmazonPayClient client, ProcessPaymentResult result, List<string> errors, string orderReferenceId, decimal orderTotalAmount,
+		void Authorize(AmazonPayApiClient client, ProcessPaymentResult result, List<string> errors, string orderReferenceId, decimal orderTotalAmount,
 			string currencyCode, string orderGuid);
 
-		AuthorizationDetails GetAuthorizationDetails(AmazonPayClient client, string authorizationId, out AmazonPayApiData data);
+		AuthorizationDetails GetAuthorizationDetails(AmazonPayApiClient client, string authorizationId, out AmazonPayApiData data);
 
-		void Capture(AmazonPayClient client, CapturePaymentRequest capture, CapturePaymentResult result);
+		void Capture(AmazonPayApiClient client, CapturePaymentRequest capture, CapturePaymentResult result);
 
-		CaptureDetails GetCaptureDetails(AmazonPayClient client, string captureId, out AmazonPayApiData data);
+		CaptureDetails GetCaptureDetails(AmazonPayApiClient client, string captureId, out AmazonPayApiData data);
 
-		string Refund(AmazonPayClient client, RefundPaymentRequest refund, RefundPaymentResult result);
+		string Refund(AmazonPayApiClient client, RefundPaymentRequest refund, RefundPaymentResult result);
 
-		RefundDetails GetRefundDetails(AmazonPayClient client, string refundId, out AmazonPayApiData data);
+		RefundDetails GetRefundDetails(AmazonPayApiClient client, string refundId, out AmazonPayApiData data);
 
 		string ToInfoString(AmazonPayApiData data);
 

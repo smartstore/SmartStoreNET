@@ -1,6 +1,5 @@
-﻿using System.Web;
+﻿using SmartStore.AmazonPay.Services;
 using SmartStore.Core.Configuration;
-using SmartStore.AmazonPay.Services;
 
 namespace SmartStore.AmazonPay.Settings
 {
@@ -54,25 +53,25 @@ namespace SmartStore.AmazonPay.Settings
 		public bool InformCustomerAboutErrors { get; set; }
 		public bool InformCustomerAddErrors { get; set; }
 
-		public string GetApiUrl()
+		public string WidgetUrl
 		{
-			return (UseSandbox ? AmazonPayCore.UrlApiEuSandbox : AmazonPayCore.UrlApiEuProduction);
-		}
+			get
+			{
+				if (SellerId.IsEmpty())
+					return null;
 
-		public string GetWidgetUrl()
-		{
-			if (SellerId.IsEmpty())
-				return null;
+				return UseSandbox
+					? "https://static-eu.payments-amazon.com/OffAmazonPayments/eur/sandbox/lpa/js/Widgets.js"
+					: "https://static-eu.payments-amazon.com/OffAmazonPayments/eur/lpa/js/Widgets.js";
 
-			return (UseSandbox ? AmazonPayCore.UrlWidgetSandbox : AmazonPayCore.UrlWidgetProduction);
+				//string url = (UseSandbox ? AmazonPayCore.UrlWidgetSandboxOld : AmazonPayCore.UrlWidgetProductionOld);
+				//url = url.FormatWith(Marketplace ?? "de");
 
-			//string url = (UseSandbox ? AmazonPayCore.UrlWidgetSandboxOld : AmazonPayCore.UrlWidgetProductionOld);
-			//url = url.FormatWith(Marketplace ?? "de");
-
-			//return "{0}?sellerId={1}".FormatWith(
-			//	url,
-			//	HttpUtility.UrlEncode(SellerId)
-			//);
+				//return "{0}?sellerId={1}".FormatWith(
+				//	url,
+				//	HttpUtility.UrlEncode(SellerId)
+				//);
+			}
 		}
 
 		//public string GetButtonUrl(AmazonPayRequestType view)

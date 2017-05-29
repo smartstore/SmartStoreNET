@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Web;
 using System.Web.Routing;
-using SmartStore.Web.Models.ShoppingCart;
-using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Extensions;
-using SmartStore.Services.Cms;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Cms;
+using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.AmazonPay.Widgets
 {
 	[SystemName("Widgets.AmazonPay")]
-	[FriendlyName("Pay with Amazon")]
+	[FriendlyName("Login and Pay with Amazon")]
 	public class AmazonPayWidget : IWidget
 	{
 		private readonly HttpContextBase _httpContext;
@@ -25,20 +24,20 @@ namespace SmartStore.AmazonPay.Widgets
 			return new List<string>()
 			{
 				"order_summary_content_before",
-                "offcanvas_cart_summary",
-				"head_html_tag"
+                "offcanvas_cart_summary"
+				//"head_html_tag"
 			};
 		}
 
 		public void GetDisplayWidgetRoute(string widgetZone, object model, int storeId, out string actionName, out string controllerName, out RouteValueDictionary routeValues)
 		{
-			bool renderAmazonPayView = true;
+			var renderAmazonPayView = true;
 
-			if (widgetZone.IsCaseInsensitiveEqual("head_html_tag"))
-			{
-				actionName = "WidgetLibrary";
-			}
-			else if (widgetZone.IsCaseInsensitiveEqual("offcanvas_cart_summary"))
+			//if (widgetZone.IsCaseInsensitiveEqual("head_html_tag"))
+			//{
+			//	actionName = "WidgetLibrary";
+			//}
+			if (widgetZone.IsCaseInsensitiveEqual("offcanvas_cart_summary"))
 			{
 				actionName = "MiniShoppingCart";
 
@@ -65,7 +64,7 @@ namespace SmartStore.AmazonPay.Widgets
 			routeValues = new RouteValueDictionary()
             {
                 { "Namespaces", "SmartStore.AmazonPay.Controllers" },
-                { "area", AmazonPayCore.SystemName },
+                { "area", AmazonPayPlugin.SystemName },
 				{ "renderAmazonPayView", renderAmazonPayView }
             };
 		}

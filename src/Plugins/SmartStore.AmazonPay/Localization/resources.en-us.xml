@@ -9,15 +9,15 @@
 	<LocaleResource Name="AdminInstruction">
 		<Value>
 			<![CDATA[<p>Register now at <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
-<p>How to set up "Pay with Amazon":</p><ul>
+<p>How to set up "Login and Pay with Amazon":</p><ul>
 <li>Enter your Amazon credentials in the fields provided below. You can find these credentials in your <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> account.</li>
 <li>You can find the Merchant ID in Seller Central at <b>Settings > Integration Settings</b>.</li>
 <li>You can find both access keys in Seller Central at <b>Integration > MWS Access Key</b>.</li>
 <li>If you would like to receive instant payment notifications (SSL required!) enter the IPN URL listed bewlow under <b>Settings > Integration Settings > Instant Notification Settings > Merchant URL</b>.</li>
 </ul>
-<p>Please add information about "Pay with Amazon" on your payment page (see <b>CMS > Topics</b>). You will find picture material <a href="https://payments.amazon.de/resources#marks">here</a>.
+<p>Please add information about "Login and Pay with Amazon" on your payment page (see <b>CMS > Topics</b>). You will find picture material <a href="https://payments.amazon.de/resources#marks">here</a>.
 Text suggestions:<ul>
-<li>Option 1: Pay with Amazon: Pay now with the payment and shipping information from your Amazon account.</li>
+<li>Option 1: Login and Pay with Amazon: Pay now with the payment and shipping information from your Amazon account.</li>
 <li>Option 2: Already Amazon customer? Pay now with the payment and shipping information from your Amazon account.</li>
 <li>Option 3: Already Amazon customer? Pay now with the data from your Amazon account.</li>
 </ul></p>]]>
@@ -30,13 +30,13 @@ Text suggestions:<ul>
 		<Value>There was no order reference ID transmitted by Amazon!</Value>
 	</LocaleResource>
 	<LocaleResource Name="PaymentMethodNotActive">
-		<Value>Payment method "Pay with Amazon" is not available for store "{0}".</Value>
+		<Value>Payment method "Login and Pay with Amazon" is not available for store "{0}".</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingCheckoutSessionState">
-		<Value>Missing checkout session state for "Pay with Amazon". Your payment cannot be processed. Please go to your shopping cart and checkout again.</Value>
+		<Value>Missing checkout session state for "Login and Pay with Amazon". Your payment cannot be processed. Please go to your shopping cart and checkout again.</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderNotFound">
-		<Value>Cannot find an order with the payment method "Pay with Amazon" and the identification {0}.</Value>
+		<Value>Cannot find an order with the payment method "Login and Pay with Amazon" and the identification {0}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>
@@ -113,7 +113,7 @@ Text suggestions:<ul>
 		<Value>Size of Amazon login button</Value>
 	</LocaleResource>
 	<LocaleResource Name="AmazonButtonSize.Hint">
-		<Value>The size of the "Pay with Amazon" button on the shopping cart page.</Value>
+		<Value>The size of the Amazon Pay button on the shopping cart page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AmazonButtonSize.Medium">
 		<Value>Medium (126 x 24 pixel)</Value>
@@ -176,7 +176,7 @@ Text suggestions:<ul>
 		<Value>Show button in mini shopping cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
-		<Value>Specifies to show the "Pay with Amazon" button in the mini shopping cart too.</Value>
+		<Value>Specifies to show the Amazon Pay button in the mini shopping cart too.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AddressWidgetWidth">
 		<Value>Width of address widget</Value>

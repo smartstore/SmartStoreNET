@@ -25,7 +25,7 @@
 		try {
 			var authRequest;
 
-			OffAmazonPayments.Button('@Html.Raw(Model.GetWidgetId)', '@Html.Raw(Model.SellerId)', {
+			OffAmazonPayments.Button('@Html.Raw(Model.WidgetId)', '@Html.Raw(Model.SellerId)', {
 				type: '@Model.ButtonType',
 				color: '@(Model.ButtonColor ?? "Gold")',
 				size:  '@(Model.ButtonSize ?? "small")',
@@ -33,7 +33,7 @@
 				authorization: function() {
 					authRequest = amazon.Login.authorize({
 							scope: 'profile payments:widget payments:shipping_address payments:billing_address',
-							popup: true
+							popup: @(Model.UseLoginPopupWindow.ToString().ToLower()),
 						},
 						'@Model.LoginHandlerUrl'	// TODO: orderReferenceId?
 					);
@@ -63,7 +63,7 @@
 				onError: function (error) {
 					alert(error.getErrorCode() + ': ' + error.getErrorMessage());
 				}
-			}).bind('@Model.GetWidgetId');
+			}).bind('@Model.WidgetId');
 
 		}
 		catch (e) {

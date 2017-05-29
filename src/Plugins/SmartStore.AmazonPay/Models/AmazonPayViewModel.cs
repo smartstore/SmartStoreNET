@@ -11,11 +11,11 @@ namespace SmartStore.AmazonPay.Models
 			RedirectAction = "Cart";
 			RedirectController = "ShoppingCart";
 			Result = AmazonPayResultType.PluginView;
-			//WidgetUrl = AmazonPayCore.UrlWidgetProductionOld.FormatWith("de");
 			ButtonType = (Type == AmazonPayRequestType.LoginPage ? "Login" : "PwA");
+			UseLoginPopupWindow = true;
 		}
 
-		public string SystemName { get { return AmazonPayCore.SystemName; } }
+		public string SystemName { get { return AmazonPayPlugin.SystemName; } }
 
 		public string SellerId { get; set; }
 		public string ClientId { get; set; }
@@ -40,6 +40,7 @@ namespace SmartStore.AmazonPay.Models
 		public string ButtonType { get; set; }
 		public string ButtonColor { get; set; }
 		public string ButtonSize { get; set; }
+		public bool UseLoginPopupWindow { get; set; }
 
 		public int AddressWidgetWidth { get; set; }
 		public int AddressWidgetHeight { get; set; }
@@ -54,7 +55,7 @@ namespace SmartStore.AmazonPay.Models
 
 		public string ShippingMethod { get; set; }
 
-		public string GetWidgetId
+		public string WidgetId
 		{
 			get
 			{

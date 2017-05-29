@@ -9,15 +9,15 @@
 	<LocaleResource Name="AdminInstruction">
 		<Value>
 			<![CDATA[<p>Registrieren Sie sich zunächst bei <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
-<p>So richten Sie "Bezahlen mit Amazon" ein:</p><ul>
+<p>So richten Sie "Login und Bezahlen mit Amazon" ein:</p><ul>
 <li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein. Sie finden diese Daten in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto.</li>
 <li>Ihre Händlernummer finden Sie dort rechts oben unter <b>Einstellungen > Integrationseinstellungen</b>.</li>
 <li>Die beiden Zugangsschlüssel finden Sie dort links oben unter <b>Integration > MWS Access Key</b>. In <a href="http://download.smartstore.com/pub/docs/14_Amazon_Payments_Getting_AWS_Keys_DE.pdf">diesem Dokument</a> finden Sie Bilder, wie Sie diese erstellen.</li>
 <li>Falls Sie Sofortbenachrichtigungen (IPN) erhalten möchten (SSL zwingend erforderlich!), so tragen Sie die unten aufgeführte IPN URL unter <b>Einstellungen > Integrationseinstellungen > Sofortbenachrichtigungs-Einstellungen > Händler-URL</b> ein.</li>
 </ul>
-<p>Bitte fügen Sie Informationen zu "Bezahlen mit Amazon" auf Ihrer Seite der Zahlungsarten ein (siehe <b>CMS > Seiten</b>). Bildmaterial finden Sie <a href="https://payments.amazon.de/resources#marks">hier</a>.
+<p>Bitte fügen Sie Informationen zu "Login und Bezahlen mit Amazon" auf Ihrer Seite der Zahlungsarten ein (siehe <b>CMS > Seiten</b>). Bildmaterial finden Sie <a href="https://payments.amazon.de/resources#marks">hier</a>.
 Textvorschläge:<ul>
-<li>Option 1: Bezahlen mit Amazon: Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
+<li>Option 1: Login und Bezahlen mit Amazon: Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
 <li>Option 2: Sie sind Amazon-Kunde? Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
 <li>Option 3: Sie sind Amazon-Kunde? Zahlen Sie jetzt mit den Daten aus Ihrem Amazon-Konto.</li>
 </ul></p>]]>
@@ -30,13 +30,13 @@ Textvorschläge:<ul>
 		<Value>Es wurde keine Auftrags-Referenz-ID durch Amazon übermittelt!</Value>
 	</LocaleResource>
 	<LocaleResource Name="PaymentMethodNotActive">
-		<Value>Die Zahlungsart "Bezahlen mit Amazon" ist für Shop "{0}" nicht verfügbar.</Value>
+		<Value>Die Zahlungsart "Login und Bezahlen mit Amazon" ist für Shop "{0}" nicht verfügbar.</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingCheckoutSessionState">
-		<Value>Fehlender Checkout-Sitzungsstatus für "Bezahlen mit Amazon". Ihre Zahlung kann leider nicht bearbeitet werden. Bitte gehen Sie zurück in den Warenkorb und Durchlaufen Sie den Checkout erneut.</Value>
+		<Value>Fehlender Checkout-Sitzungsstatus für "Login und Bezahlen mit Amazon". Ihre Zahlung kann leider nicht bearbeitet werden. Bitte gehen Sie zurück in den Warenkorb und Durchlaufen Sie den Checkout erneut.</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderNotFound">
-		<Value>Ein Auftrag mit der Zahlungsart "Bezahlen mit Amazon" und der Kennung {0} wurde nicht gefunden.</Value>
+		<Value>Ein Auftrag mit der Zahlungsart "Login und Bezahlen mit Amazon" und der Kennung {0} wurde nicht gefunden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>
@@ -113,7 +113,7 @@ Textvorschläge:<ul>
 		<Value>Größe des Amazon-Login-Buttons</Value>
 	</LocaleResource>
 	<LocaleResource Name="AmazonButtonSize.Hint">
-		<Value>Die Größe "Bezahlen mit Amazon" Buttons auf der Warenkorbseite.</Value>
+		<Value>Die Größe Amazon Pay Buttons auf der Warenkorbseite.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AmazonButtonSize.Medium">
 		<Value>Medium (126 x 24 Pixel)</Value>
@@ -176,7 +176,7 @@ Textvorschläge:<ul>
 		<Value>Button im Miniwarenkorb anzeigen</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
-		<Value>Legt fest, ob der "Bezahlen mit Amazon" Button auch im Miniwarenkorb angezeigt werden soll.</Value>
+		<Value>Legt fest, ob der Amazon Pay Button auch im Miniwarenkorb angezeigt werden soll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AddressWidgetWidth">
 		<Value>Breite des Adressen-Widgets</Value>

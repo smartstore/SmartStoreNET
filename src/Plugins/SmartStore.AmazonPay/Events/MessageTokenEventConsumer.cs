@@ -33,12 +33,12 @@ namespace SmartStore.AmazonPay.Events
 
 			var storeId = _services.StoreContext.CurrentStore.Id;
 
-			if (!_pluginFinder.IsPluginReady(_services.Settings, AmazonPayCore.SystemName, storeId))
+			if (!_pluginFinder.IsPluginReady(_services.Settings, AmazonPayPlugin.SystemName, storeId))
 				return;
 
 			var order = _orderService.SearchOrders(storeId, _services.WorkContext.CurrentCustomer.Id, null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
 
-			var isAmazonPayment = (order != null && order.PaymentMethodSystemName.IsCaseInsensitiveEqual(AmazonPayCore.SystemName));
+			var isAmazonPayment = (order != null && order.PaymentMethodSystemName.IsCaseInsensitiveEqual(AmazonPayPlugin.SystemName));
 			var tokenValue = (isAmazonPayment ? _services.Localization.GetResource("Plugins.Payments.AmazonPay.BillingAddressMessageNote") : "");
 
 			messageTokenEvent.Tokens.Add(new Token("SmartStore.AmazonPay.BillingAddressMessageNote", tokenValue));

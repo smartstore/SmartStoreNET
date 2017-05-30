@@ -97,32 +97,38 @@ Text suggestions:<ul>
 	<LocaleResource Name="SecretKey.Hint">
 		<Value>You can find the secret key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor">
-		<Value>Amazon login button color</Value>
+	<LocaleResource Name="PayButtonColor">
+		<Value>Pay button color</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor.Hint">
-		<Value>The prefered color of the Amazon login button on shopping cart page.</Value>
+	<LocaleResource Name="PayButtonColor.Hint">
+		<Value>Specifies the prefered color of the Pay button.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor.Orange">
+	<LocaleResource Name="ButtonColor.Gold">
 		<Value>Orange</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor.Tan">
+	<LocaleResource Name="ButtonColor.LightGray">
 		<Value>Light gray</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize">
-		<Value>Size of Amazon login button</Value>
+  <LocaleResource Name="ButtonColor.DarkGray">
+    <Value>Dark gray</Value>
+  </LocaleResource>
+	<LocaleResource Name="PayButtonSize">
+		<Value>Pay button size</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Hint">
-		<Value>The size of the Amazon Pay button on the shopping cart page.</Value>
+	<LocaleResource Name="PayButtonSize.Hint">
+		<Value>Specifies the size of the Pay button.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Medium">
-		<Value>Medium (126 x 24 pixel)</Value>
+  <LocaleResource Name="ButtonSize.Medium">
+    <Value>Small (height 32 pixel)</Value>
+  </LocaleResource>
+	<LocaleResource Name="ButtonSize.Medium">
+		<Value>Medium (height 46 pixel)</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Large">
-		<Value>Large (151 x 27 pixel)</Value>
+	<LocaleResource Name="ButtonSize.Large">
+		<Value>Large (height 64 pixel)</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Xlarge">
-		<Value>Extra large (173 x 27 ixel)</Value>
+	<LocaleResource Name="ButtonSize.Xlarge">
+		<Value>Extra large (height 92 pixel)</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching">
 		<Value>Updating the payment status</Value>

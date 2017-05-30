@@ -11,14 +11,15 @@ namespace SmartStore.AmazonPay.Settings
 			DataFetching = AmazonPayDataFetchingType.Ipn;
 			TransactionType = AmazonPayTransactionType.Authorize;
 			SaveEmailAndPhone = AmazonPaySaveDataType.OnlyIfEmpty;
-			AmazonButtonColor = "Gold";
-			AmazonButtonSize = "small";
 			AddressWidgetWidth = PaymentWidgetWidth = 400;
 			AddressWidgetHeight = PaymentWidgetHeight = 260;
 			AddOrderNotes = true;
 			InformCustomerAboutErrors = true;
 			InformCustomerAddErrors = true;
 			PollingMaxOrderCreationDays = 31;
+
+			PayButtonColor = "Gold";
+			PayButtonSize = "small";
 		}
 
 		public bool UseSandbox { get; set; }
@@ -35,9 +36,6 @@ namespace SmartStore.AmazonPay.Settings
 		public bool ShowButtonInMiniShoppingCart { get; set; }
 
 		public int PollingMaxOrderCreationDays { get; set; }
-
-		public string AmazonButtonColor { get; set; }
-		public string AmazonButtonSize { get; set; }
 
 		public int AddressWidgetWidth { get; set; }
 		public int AddressWidgetHeight { get; set; }
@@ -73,6 +71,9 @@ namespace SmartStore.AmazonPay.Settings
 				//);
 			}
 		}
+
+		public string PayButtonColor { get; set; }
+		public string PayButtonSize { get; set; }
 
 		//public string GetButtonUrl(AmazonPayRequestType view)
 		//{

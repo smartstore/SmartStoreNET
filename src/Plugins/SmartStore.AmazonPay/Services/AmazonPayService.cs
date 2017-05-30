@@ -445,8 +445,8 @@ namespace SmartStore.AmazonPay.Services
 						return model;
 					}
 
-					string storeLocation = _services.WebHelper.GetStoreLocation(store.SslEnabled);
-					model.LoginHandlerUrl = "{0}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/LoginHandler".FormatWith(storeLocation);
+					var storeLocation = _services.WebHelper.GetStoreLocation(store.SslEnabled);
+					model.LoginHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/LoginHandler";
 				}
 				else
 				{
@@ -476,19 +476,25 @@ namespace SmartStore.AmazonPay.Services
 				model.IsShippable = cart.RequiresShipping();
 				model.IsRecurring = cart.IsRecurring();
 				model.WidgetUrl = settings.WidgetUrl;
-				//model.ButtonUrl = settings.GetButtonUrl(type);
 				model.AddressWidgetWidth = Math.Max(settings.AddressWidgetWidth, 200);
 				model.AddressWidgetHeight = Math.Max(settings.AddressWidgetHeight, 228);
 				model.PaymentWidgetWidth = Math.Max(settings.PaymentWidgetWidth, 200);
 				model.PaymentWidgetHeight = Math.Max(settings.PaymentWidgetHeight, 228);
 
-				if (type == AmazonPayRequestType.MiniShoppingCart)
+				if (type == AmazonPayRequestType.MiniShoppingCart && !settings.ShowButtonInMiniShoppingCart)
 				{
-					if (!settings.ShowButtonInMiniShoppingCart)
-					{
-						model.Result = AmazonPayResultType.None;
-						return model;
-					}
+					model.Result = AmazonPayResultType.None;
+					return model;
+				}
+
+				if (type == AmazonPayRequestType.MiniShoppingCart || type == AmazonPayRequestType.ShoppingCart)
+				{
+					model.ButtonColor = settings.PayButtonColor;
+					model.ButtonSize = settings.PayButtonSize;
+				}
+				else if (type == AmazonPayRequestType.LoginPage)
+				{
+					// TODO
 				}
 				else if (type == AmazonPayRequestType.Address)
 				{

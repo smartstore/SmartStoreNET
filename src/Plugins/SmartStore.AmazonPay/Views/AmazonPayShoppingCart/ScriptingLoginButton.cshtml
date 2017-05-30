@@ -23,7 +23,7 @@
 		}
 
 		try {
-			var authRequest;
+			var authRequest, addressConsentToken;
 
 			OffAmazonPayments.Button('@Html.Raw(Model.WidgetId)', '@Html.Raw(Model.SellerId)', {
 				type: '@Model.ButtonType',
@@ -35,10 +35,23 @@
 							scope: 'profile payments:widget payments:shipping_address payments:billing_address',
 							popup: @(Model.UseLoginPopupWindow.ToString().ToLower()),
 						},
-						'@Model.LoginHandlerUrl'	// TODO: orderReferenceId?
+						function (response) {
+							addressConsentToken = response.access_token;
+						}
 					);
 				},
-				onError: function (error) { 
+				onSignIn: function (orderReference) {
+					var referenceId = orderReference.getAmazonOrderReferenceId();
+					if (referenceId) {
+						window.location = '@Model.LoginHandlerUrl' + 
+							'?orderReferenceId=' + encodeURIComponent(referenceId) +
+							'&accessToken=' + encodeURIComponent(addressConsentToken);
+					}
+					else {
+						alert('@T("Plugins.Payments.AmazonPay.MissingOrderReferenceId")');
+					}
+				},
+				onError: function (error) {
 					alert(error.getErrorCode() + ': ' + error.getErrorMessage());
 				}
 			});

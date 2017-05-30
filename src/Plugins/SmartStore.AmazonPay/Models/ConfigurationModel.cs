@@ -26,12 +26,6 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.Marketplace")]
 		public string Marketplace { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AmazonButtonColor")]
-		public string AmazonButtonColor { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AmazonButtonSize")]
-		public string AmazonButtonSize { get; set; }
-
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.DataFetching")]
 		public AmazonPayDataFetchingType DataFetching { get; set; }
 		public List<SelectListItem> DataFetchings { get; set; }
@@ -81,6 +75,12 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.InformCustomerAddErrors")]
 		public bool InformCustomerAddErrors { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PayButtonColor")]
+		public string PayButtonColor { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PayButtonSize")]
+		public string PayButtonSize { get; set; }
+
 		public void Copy(AmazonPaySettings settings, bool fromSettings)
 		{
 			if (fromSettings)
@@ -95,8 +95,6 @@ namespace SmartStore.AmazonPay.Models
 				TransactionType = settings.TransactionType;
 				SaveEmailAndPhone = settings.SaveEmailAndPhone;
 				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
-				AmazonButtonColor = settings.AmazonButtonColor;
-				AmazonButtonSize = settings.AmazonButtonSize;
 				AddressWidgetWidth = settings.AddressWidgetWidth;
 				AddressWidgetHeight = settings.AddressWidgetHeight;
 				PaymentWidgetWidth = settings.PaymentWidgetWidth;
@@ -106,6 +104,9 @@ namespace SmartStore.AmazonPay.Models
 				AddOrderNotes = settings.AddOrderNotes;
 				InformCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				InformCustomerAddErrors = settings.InformCustomerAddErrors;
+
+				PayButtonColor = settings.PayButtonColor;
+				PayButtonSize = settings.PayButtonSize;
 			}
 			else
 			{
@@ -119,8 +120,6 @@ namespace SmartStore.AmazonPay.Models
 				settings.TransactionType = TransactionType;
 				settings.SaveEmailAndPhone = SaveEmailAndPhone;
 				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
-				settings.AmazonButtonColor = AmazonButtonColor;
-				settings.AmazonButtonSize = AmazonButtonSize;
 				settings.AddressWidgetWidth = AddressWidgetWidth;
 				settings.AddressWidgetHeight = AddressWidgetHeight;
 				settings.PaymentWidgetWidth = PaymentWidgetWidth;
@@ -130,6 +129,9 @@ namespace SmartStore.AmazonPay.Models
 				settings.AddOrderNotes = AddOrderNotes;
 				settings.InformCustomerAboutErrors = InformCustomerAboutErrors;
 				settings.InformCustomerAddErrors = InformCustomerAddErrors;
+
+				settings.PayButtonColor = PayButtonColor;
+				settings.PayButtonSize = PayButtonSize;
 			}
 		}
 	}

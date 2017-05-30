@@ -3,7 +3,8 @@
 ##Login and Pay with Amazon 3.0.1
 ###Improvements
 * Implemented new Login and Pay with Amazon
-	* Widget script is now loaded asynchronously.
+	* Perf: Widget script is now loaded asynchronously.
+	* Supports more languages and presentation settings.
 
 ##Pay with Amazon 2.2.0.3
 ###Improvements

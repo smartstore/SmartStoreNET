@@ -97,38 +97,44 @@ Textvorschläge:<ul>
 	<LocaleResource Name="SecretKey.Hint">
 		<Value>Den geheimen Schlüssel finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor">
-		<Value>Farbe des Amazon-Login-Button</Value>
+	<LocaleResource Name="PayButtonColor">
+		<Value>Farbe des Zahlungs-Button</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor.Hint">
-		<Value>Die bevorzugte Farbe des Amazon-Login-Button im Warenkorb.</Value>
+	<LocaleResource Name="PayButtonColor.Hint">
+		<Value>Legt die bevorzugte Farbe des Zahlungs-Button (Pay-Button) fest.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor.Orange">
+	<LocaleResource Name="ButtonColor.Gold">
 		<Value>Orange</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor.Tan">
+	<LocaleResource Name="ButtonColor.LightGray">
 		<Value>Hellgrau</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize">
-		<Value>Größe des Amazon-Login-Buttons</Value>
+  <LocaleResource Name="ButtonColor.DarkGray">
+    <Value>Dunkelgrau</Value>
+  </LocaleResource>
+	<LocaleResource Name="PayButtonSize">
+		<Value>Größe des Zahlungs-Buttons</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Hint">
-		<Value>Die Größe Amazon Pay Buttons auf der Warenkorbseite.</Value>
+	<LocaleResource Name="PayButtonSize.Hint">
+		<Value>Legt die Größe Zahlungs-Buttons (Pay-Button) fest.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Medium">
-		<Value>Medium (126 x 24 Pixel)</Value>
+  <LocaleResource Name="ButtonSize.Small">
+    <Value>Klein (Höhe 32 Pixel)</Value>
+  </LocaleResource>
+	<LocaleResource Name="ButtonSize.Medium">
+		<Value>Medium (Höhe 46 Pixel)</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Large">
-		<Value>Groß (151 x 27 Pixel)</Value>
+	<LocaleResource Name="ButtonSize.Large">
+		<Value>Groß (Höhe 64 Pixel)</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Xlarge">
-		<Value>Extra-Groß (173 x 27 Pixel)</Value>
+	<LocaleResource Name="ButtonSize.Xlarge">
+		<Value>Extra-Groß (Höhe 92 Pixel)</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching">
 		<Value>Aktualisierung des Zahlungsstatus</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Hint">
-		<Value>Legt die Methode fest mit deren Hilfe der Zahlungsstatus aktualisiert werden soll.</Value>
+		<Value>Legt die Methode fest, mit deren Hilfe der Zahlungsstatus aktualisiert werden soll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Warning">
 		<Value>IPN (Sofortbenachrichtigungen) erfordert, dass ein gültiges SSL-Zertifikat auf diesem Server installiert ist. Achten Sie darauf, das das SSL-Zertifikat von einer vertrauenswürdigen Zertifizierungsstelle ausgegeben werden muss, selbstsignierte Zertifikate sind nicht zulässig.</Value>

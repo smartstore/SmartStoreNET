@@ -176,7 +176,7 @@
             @Html.SmartLabelFor(model => model.PollingTaskMinutes)
         </td>
         <td class="adminData">
-			@Html.EditorFor(model => model.PollingTaskMinutes)
+			@Html.EditorFor(model => model.PollingTaskMinutes, null, new { small = true })
 			@Html.ValidationMessageFor(model => model.PollingTaskMinutes)
         </td>
     </tr>
@@ -185,7 +185,7 @@
             @Html.SmartLabelFor(model => model.PollingMaxOrderCreationDays)
         </td>
         <td class="adminData">
-			@Html.EditorFor(model => model.PollingMaxOrderCreationDays)
+			@Html.EditorFor(model => model.PollingMaxOrderCreationDays, null, new { small = true })
 			@Html.ValidationMessageFor(model => model.PollingMaxOrderCreationDays)
         </td>
     </tr>
@@ -206,31 +206,33 @@
 	</tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AmazonButtonColor)
+            @Html.SmartLabelFor(model => model.PayButtonColor)
         </td>
         <td class="adminData">
-			@Html.SettingOverrideCheckbox(model => model.AmazonButtonColor)
-			@Html.DropDownListFor(model => model.AmazonButtonColor, new List<SelectListItem>()
+			@Html.SettingOverrideCheckbox(model => model.PayButtonColor)
+			@Html.DropDownListFor(model => model.PayButtonColor, new List<SelectListItem>
 			{
-				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonColor.Orange"), Value = "orange" },
-				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonColor.Tan"), Value = "tan" }
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonColor.Gold"), Value = "Gold" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonColor.LightGray"), Value = "LightGray" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonColor.DarkGray"), Value = "DarkGray" }
 			})
-            @Html.ValidationMessageFor(model => model.AmazonButtonColor)
+            @Html.ValidationMessageFor(model => model.PayButtonColor)
         </td>
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AmazonButtonSize)
+            @Html.SmartLabelFor(model => model.PayButtonSize)
         </td>
         <td class="adminData">
-			@Html.SettingOverrideCheckbox(model => model.AmazonButtonSize)
-			@Html.DropDownListFor(model => model.AmazonButtonSize, new List<SelectListItem>()
+			@Html.SettingOverrideCheckbox(model => model.PayButtonSize)
+			@Html.DropDownListFor(model => model.PayButtonSize, new List<SelectListItem>
 			{
-				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonSize.Medium"), Value = "medium" },
-				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonSize.Large"), Value = "large" },
-				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonSize.Xlarge"), Value = "x-large" }
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonSize.Small"), Value = "small" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonSize.Medium"), Value = "medium" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonSize.Large"), Value = "large" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonSize.Xlarge"), Value = "x-large" }
 			})
-            @Html.ValidationMessageFor(model => model.AmazonButtonSize)
+            @Html.ValidationMessageFor(model => model.PayButtonSize)
         </td>
     </tr>
     <tr>
@@ -238,7 +240,7 @@
             @Html.SmartLabelFor(model => model.AddressWidgetWidth)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.AddressWidgetWidth)
+            @Html.SettingEditorFor(model => model.AddressWidgetWidth, null, new { small = true })
             @Html.ValidationMessageFor(model => model.AddressWidgetWidth)
         </td>
     </tr>
@@ -247,7 +249,7 @@
             @Html.SmartLabelFor(model => model.AddressWidgetHeight)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.AddressWidgetHeight)
+            @Html.SettingEditorFor(model => model.AddressWidgetHeight, null, new { small = true })
             @Html.ValidationMessageFor(model => model.AddressWidgetHeight)
         </td>
     </tr>
@@ -256,7 +258,7 @@
             @Html.SmartLabelFor(model => model.PaymentWidgetWidth)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.PaymentWidgetWidth)
+            @Html.SettingEditorFor(model => model.PaymentWidgetWidth, null, new { small = true })
             @Html.ValidationMessageFor(model => model.PaymentWidgetWidth)
         </td>
     </tr>
@@ -265,7 +267,7 @@
             @Html.SmartLabelFor(model => model.PaymentWidgetHeight)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.PaymentWidgetHeight)
+            @Html.SettingEditorFor(model => model.PaymentWidgetHeight, null, new { small = true })
             @Html.ValidationMessageFor(model => model.PaymentWidgetHeight)
         </td>
     </tr>
@@ -291,7 +293,7 @@
             @Html.SmartLabelFor(model => model.AdditionalFee)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.AdditionalFee)
+            @Html.SettingEditorFor(model => model.AdditionalFee, null, new { small = true })
             @Html.ValidationMessageFor(model => model.AdditionalFee)
         </td>
     </tr>

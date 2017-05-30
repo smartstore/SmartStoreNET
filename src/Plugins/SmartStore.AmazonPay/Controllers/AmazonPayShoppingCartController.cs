@@ -12,7 +12,7 @@ namespace SmartStore.AmazonPay.Controllers
 			_apiService = apiService;
 		}
 
-		public ActionResult LoginHandler(string orderReferenceId)
+		public ActionResult LoginHandler(string orderReferenceId, string accessToken)
 		{
 			var model = _apiService.CreateViewModel(AmazonPayRequestType.LoginHandler, TempData, orderReferenceId);
 

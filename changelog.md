@@ -18,6 +18,7 @@
 * Item row in list style product list should not wrap on small devices
 * Item row in list style product list squashed on Android system browser
 * Linq search: Filter for manufacturers and categories were not limited by store
+* **GMC**: Fixes duplicate occurrence of application path in absolute product URL
 
 
 ## SmartStore.NET 3.0

@@ -2,6 +2,7 @@
 
 ## SmartStore.NET 3.0.1
 ### Improvements
+* (Perf) Much faster application startup
 * **BeezUP**:
 	* Exports up to 9 product images
 	* Export stock quantity when stock is managed by attributes

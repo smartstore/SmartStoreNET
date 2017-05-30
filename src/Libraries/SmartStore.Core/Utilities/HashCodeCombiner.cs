@@ -89,38 +89,40 @@ namespace SmartStore.Utilities
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public HashCodeCombiner AddFolder(DirectoryInfo d)
+		public HashCodeCombiner Add(FileSystemInfo fi, bool deep = true)
 		{
-			AddCaseInsensitiveString(d.FullName);
-			Add(d.CreationTimeUtc);
-			Add(d.LastWriteTimeUtc);
-			foreach (var f in d.GetFiles())
+			Guard.NotNull(fi, nameof(fi));
+
+			if (!fi.Exists)
+				return this;
+
+			Add(fi.FullName.ToLower());
+			Add(fi.CreationTimeUtc);
+			Add(fi.LastWriteTimeUtc);
+
+			var file = fi as FileInfo;
+			if (file != null)
 			{
-				AddFile(f);
+				Add(file.Length.GetHashCode());
 			}
-			foreach (var s in d.GetDirectories())
+
+			var dir = fi as DirectoryInfo;
+			if (dir != null)
 			{
-				AddFolder(d);
+				foreach (var f in dir.GetFiles())
+				{
+					Add(f);
+				}
+				if (deep)
+				{
+					foreach (var s in dir.GetDirectories())
+					{
+						Add(s);
+					}
+				}
 			}
 
 			return this;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public HashCodeCombiner AddFile(FileInfo f)
-		{
-			AddCaseInsensitiveString(f.FullName);
-			Add(f.CreationTimeUtc);
-			Add(f.LastWriteTimeUtc);
-			Add(f.Length.GetHashCode());
-
-			return this;
-		}
-
-		internal void AddCaseInsensitiveString(string s)
-		{
-			if (s != null)
-				Add((StringComparer.InvariantCultureIgnoreCase).GetHashCode(s));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

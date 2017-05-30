@@ -266,6 +266,7 @@
     <Compile Include="Logging\log4net\SmartFileAppender.cs" />
     <Compile Include="Logging\LoggingModule.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
+    <Compile Include="Plugins\PluginManager.Cache.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
     <Compile Include="Plugins\Providers\IsHiddenAttribute.cs" />

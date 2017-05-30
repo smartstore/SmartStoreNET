@@ -184,7 +184,6 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Notes.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -20,6 +20,7 @@
 * Item row in list style product list squashed on Android system browser
 * Linq search: Filter for manufacturers and categories were not limited by store
 * **GMC**: Fixes duplicate occurrence of application path in absolute product URL
+* Products with stock managed by attributes sometimes not displayed in category lists
 
 
 ## SmartStore.NET 3.0

@@ -14,10 +14,12 @@ namespace SmartStore.AmazonPay.Settings
 			AddressWidgetWidth = PaymentWidgetWidth = 400;
 			AddressWidgetHeight = PaymentWidgetHeight = 260;
 			AddOrderNotes = true;
+			UsePopupDialog = true;
 			InformCustomerAboutErrors = true;
 			InformCustomerAddErrors = true;
 			PollingMaxOrderCreationDays = 31;
 
+			PayButtonType = "PwA";
 			PayButtonColor = "Gold";
 			PayButtonSize = "small";
 		}
@@ -47,6 +49,7 @@ namespace SmartStore.AmazonPay.Settings
 		public bool AdditionalFeePercentage { get; set; }
 
 		public bool AddOrderNotes { get; set; }
+		public bool UsePopupDialog { get; set; }
 
 		public bool InformCustomerAboutErrors { get; set; }
 		public bool InformCustomerAddErrors { get; set; }
@@ -72,6 +75,7 @@ namespace SmartStore.AmazonPay.Settings
 			}
 		}
 
+		public string PayButtonType { get; set; }
 		public string PayButtonColor { get; set; }
 		public string PayButtonSize { get; set; }
 

@@ -26,14 +26,14 @@
 			var authRequest, addressConsentToken;
 
 			OffAmazonPayments.Button('@Html.Raw(Model.WidgetId)', '@Html.Raw(Model.SellerId)', {
-				type: '@Model.ButtonType',
+				type: '@(Model.ButtonType ?? (Model.Type == AmazonPayRequestType.LoginPage ? "Login" : "PwA"))',
 				color: '@(Model.ButtonColor ?? "Gold")',
 				size:  '@(Model.ButtonSize ?? "small")',
 				language: '@(Model.LanguageCode ?? "de-DE")',
 				authorization: function() {
 					authRequest = amazon.Login.authorize({
 							scope: 'profile payments:widget payments:shipping_address payments:billing_address',
-							popup: @(Model.UseLoginPopupWindow.ToString().ToLower()),
+							popup: @(Model.UsePopupWindow.ToString().ToLower()),
 						},
 						function (response) {
 							addressConsentToken = response.access_token;
@@ -43,7 +43,7 @@
 				onSignIn: function (orderReference) {
 					var referenceId = orderReference.getAmazonOrderReferenceId();
 					if (referenceId) {
-						window.location = '@Model.LoginHandlerUrl' + 
+						window.location = '@Model.LoginHandlerUrl' +
 							'?orderReferenceId=' + encodeURIComponent(referenceId) +
 							'&accessToken=' + encodeURIComponent(addressConsentToken);
 					}

@@ -11,8 +11,7 @@ namespace SmartStore.AmazonPay.Models
 			RedirectAction = "Cart";
 			RedirectController = "ShoppingCart";
 			Result = AmazonPayResultType.PluginView;
-			ButtonType = (Type == AmazonPayRequestType.LoginPage ? "Login" : "PwA");
-			UseLoginPopupWindow = true;
+			UsePopupWindow = true;
 		}
 
 		public string SystemName { get { return AmazonPayPlugin.SystemName; } }
@@ -40,7 +39,7 @@ namespace SmartStore.AmazonPay.Models
 		public string ButtonType { get; set; }
 		public string ButtonColor { get; set; }
 		public string ButtonSize { get; set; }
-		public bool UseLoginPopupWindow { get; set; }
+		public bool UsePopupWindow { get; set; }
 
 		public int AddressWidgetWidth { get; set; }
 		public int AddressWidgetHeight { get; set; }

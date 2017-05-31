@@ -489,6 +489,7 @@ namespace SmartStore.AmazonPay.Services
 
 				if (type == AmazonPayRequestType.MiniShoppingCart || type == AmazonPayRequestType.ShoppingCart)
 				{
+					model.ButtonType = settings.PayButtonType;
 					model.ButtonColor = settings.PayButtonColor;
 					model.ButtonSize = settings.PayButtonSize;
 				}

@@ -5,7 +5,6 @@
 @model ConfigurationModel
 @{
     Layout = "";
-	Html.AddScriptParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Scripts/smartstore.amazonpay.js"));
 }
 
 <div class="plugin-configuration">
@@ -206,6 +205,21 @@
 	</tr>
     <tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PayButtonType)
+        </td>
+        <td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.PayButtonType)
+			@Html.DropDownListFor(model => model.PayButtonType, new List<SelectListItem>
+			{
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.PayButtonType.Pwa"), Value = "PwA" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.PayButtonType.Pay"), Value = "Pay" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.PayButtonType.A"), Value = "A" }
+			})
+            @Html.ValidationMessageFor(model => model.PayButtonType)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.PayButtonColor)
         </td>
         <td class="adminData">
@@ -290,6 +304,22 @@
     </tr>
     <tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.UsePopupDialog)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.UsePopupDialog)
+            @Html.ValidationMessageFor(model => model.UsePopupDialog)
+        </td>
+    </tr>
+	<tr id="UsePopupDialogWarning" class="hide">
+		<td colspan="2">
+			<div class="alert alert-warning">
+				@T("Plugins.Payments.AmazonPay.UsePopupDialog.Warning")
+			</div>
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.AdditionalFee)
         </td>
         <td class="adminData">
@@ -318,6 +348,36 @@
 
 <script type="text/javascript">
 	jQuery(document).ready(function () {
-		amazonpay.init();
+
+		// show/hide transaction type warning
+		$('#@(Html.FieldIdFor(x => x.TransactionType))').change(function () {
+			$('#TransactionTypeWarning').toggle($(this).val() === '2');
+		}).trigger('change');
+
+		// show/hide status fetching warning
+		$('#@(Html.FieldIdFor(x => x.DataFetching))').change(function () {
+			var val = $(this).val(),
+				configTable = $('#AmazonPayConfigTable');
+
+			$('#DataFetchingWarning').toggle(val === '1');
+
+			configTable.find('.data-fetching').hide();
+			if (val === '1')
+				configTable.find('.data-fetching-ipn').show();
+			else if (val === '2')
+				configTable.find('.data-fetching-polling').show();
+
+		}).trigger('change');
+
+		// show/hide inform customer add errors option
+		$('#@(Html.FieldIdFor(x => x.InformCustomerAboutErrors))').change(function () {
+			$('#InformCustomerAddErrorsContainer').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+		// show/hide pop-up dialog warning
+		$('#@(Html.FieldIdFor(x => x.UsePopupDialog))').change(function () {
+			$('#UsePopupDialogWarning').toggle($(this).is(':checked'));
+		}).trigger('change');
+
 	});
 </script>

@@ -97,6 +97,21 @@ Text suggestions:<ul>
 	<LocaleResource Name="SecretKey.Hint">
 		<Value>You can find the secret key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
 	</LocaleResource>
+  <LocaleResource Name="PayButtonType">
+    <Value>Pay button type</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayButtonType.Hint">
+    <Value>Specifies the prefered type of the Pay button.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayButtonType.Pwa">
+    <Value>Amazon Pay</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayButtonType.Pay">
+    <Value>Pay</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayButtonType.A">
+    <Value>Icon</Value>
+  </LocaleResource>
 	<LocaleResource Name="PayButtonColor">
 		<Value>Pay button color</Value>
 	</LocaleResource>
@@ -229,6 +244,15 @@ Text suggestions:<ul>
 	<LocaleResource Name="AddOrderNotes.Hint">
 		<Value>Specifies that order notes should be created in context of the data exchange with Amazon Payments.</Value>
 	</LocaleResource>
+  <LocaleResource Name="UsePopupDialog">
+    <Value>Authenticate through pop-up dialog</Value>
+  </LocaleResource>
+  <LocaleResource Name="UsePopupDialog.Hint">
+    <Value>Specifies whether to authenticate through pop-up dialog. Otherwise the user will be redirected to an Amazon page.</Value>
+  </LocaleResource>
+  <LocaleResource Name="UsePopupDialog.Warning">
+    <Value>Authentication through a pop-up dialog requires valid SSL certificate to be installed on this server. Pay attention that the SSL certificate must be issued by a trusted Certificate Authority, self-signed certificates are not permittted.</Value>
+  </LocaleResource>
 	<LocaleResource Name="PollingTaskMinutes">
 		<Value>Frequency (in minutes)</Value>
 	</LocaleResource>

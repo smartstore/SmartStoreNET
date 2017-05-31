@@ -69,11 +69,18 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AddOrderNotes")]
 		public bool AddOrderNotes { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.UsePopupDialog")]
+		public bool UsePopupDialog { get; set; }
+
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.InformCustomerAboutErrors")]
 		public bool InformCustomerAboutErrors { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.InformCustomerAddErrors")]
 		public bool InformCustomerAddErrors { get; set; }
+
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PayButtonType")]
+		public string PayButtonType { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PayButtonColor")]
 		public string PayButtonColor { get; set; }
@@ -102,9 +109,11 @@ namespace SmartStore.AmazonPay.Models
 				AdditionalFee = settings.AdditionalFee;
 				AdditionalFeePercentage = settings.AdditionalFeePercentage;
 				AddOrderNotes = settings.AddOrderNotes;
+				UsePopupDialog = settings.UsePopupDialog;
 				InformCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				InformCustomerAddErrors = settings.InformCustomerAddErrors;
 
+				PayButtonType = settings.PayButtonType;
 				PayButtonColor = settings.PayButtonColor;
 				PayButtonSize = settings.PayButtonSize;
 			}
@@ -127,9 +136,11 @@ namespace SmartStore.AmazonPay.Models
 				settings.AdditionalFee = AdditionalFee;
 				settings.AdditionalFeePercentage = AdditionalFeePercentage;
 				settings.AddOrderNotes = AddOrderNotes;
+				settings.UsePopupDialog = UsePopupDialog;
 				settings.InformCustomerAboutErrors = InformCustomerAboutErrors;
 				settings.InformCustomerAddErrors = InformCustomerAddErrors;
 
+				settings.PayButtonType = PayButtonType;
 				settings.PayButtonColor = PayButtonColor;
 				settings.PayButtonSize = PayButtonSize;
 			}

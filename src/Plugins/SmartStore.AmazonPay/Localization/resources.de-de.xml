@@ -61,6 +61,7 @@ Textvorschläge:<ul>
 	<LocaleResource Name="MessageStrings">
 		<Value>Mitteilungstyp;Mitteilungs ID;Autorisierungs ID;Buchungs ID;Rückerstatattungs ID;Referenz ID;Status;Statusaktualisierung;Gebühr;Autorisierungsbetrag;Buchungsbetrag;Erstattungsbetrag;Sofort buchen;Erstellt am;Verfällt am</Value>
 	</LocaleResource>
+
 	<LocaleResource Name="UseSandbox">
 		<Value>Sandbox benutzen</Value>
 	</LocaleResource>
@@ -97,7 +98,22 @@ Textvorschläge:<ul>
 	<LocaleResource Name="SecretKey.Hint">
 		<Value>Den geheimen Schlüssel finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
 	</LocaleResource>
-	<LocaleResource Name="PayButtonColor">
+  <LocaleResource Name="PayButtonType">
+    <Value>Art des Zahlungs-Button</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayButtonType.Hint">
+    <Value>Legt die bevorzugte Art des Zahlungs-Button (Pay-Button) fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayButtonType.Pwa">
+    <Value>Amazon Pay</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayButtonType.Pay">
+    <Value>Pay</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayButtonType.A">
+    <Value>Icon</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayButtonColor">
 		<Value>Farbe des Zahlungs-Button</Value>
 	</LocaleResource>
 	<LocaleResource Name="PayButtonColor.Hint">
@@ -229,6 +245,15 @@ Textvorschläge:<ul>
 	<LocaleResource Name="AddOrderNotes.Hint">
 		<Value>Legt fest, dass Auftragsnotizen hinsichtlich des Datenaustausches mit Amazon Payment angelegt werden sollen.</Value>
 	</LocaleResource>
+  <LocaleResource Name="UsePopupDialog">
+    <Value>Authentifizierung über Dialogfenster</Value>
+  </LocaleResource>
+  <LocaleResource Name="UsePopupDialog.Hint">
+    <Value>Legt fest, ob die Authentifizierung über ein Dialogfenster erfolgen soll. Ist diese Option deaktiviert, wird auf eine Amazon Seite zwecks Authentifizierung weitergeleitet.</Value>
+  </LocaleResource>
+  <LocaleResource Name="UsePopupDialog.Warning">
+    <Value>Die Authentifizierung über ein Dialogfenster erfordert, dass ein gültiges SSL-Zertifikat auf diesem Server installiert ist. Achten Sie darauf, das das SSL-Zertifikat von einer vertrauenswürdigen Zertifizierungsstelle ausgegeben werden muss, selbstsignierte Zertifikate sind nicht zulässig.</Value>
+  </LocaleResource>
 	<LocaleResource Name="PollingTaskMinutes">
 		<Value>Zeitspanne (in Minuten)</Value>
 	</LocaleResource>

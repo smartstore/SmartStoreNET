@@ -21,6 +21,7 @@
 * Linq search: Filter for manufacturers and categories were not limited by store
 * **GMC**: Fixes duplicate occurrence of application path in absolute product URL
 * Products with stock managed by attributes sometimes not displayed in category lists
+* Fixed System.MissingMethodException for SmartStore.Core.Search.Facets.FacetGroup
 
 
 ## SmartStore.NET 3.0

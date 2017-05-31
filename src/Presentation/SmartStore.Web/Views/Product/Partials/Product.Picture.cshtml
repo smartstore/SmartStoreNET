@@ -63,7 +63,7 @@
 				else if (defaultPicture.ImageUrl.HasValue())
 				{
 					<div class="gal-item">
-						<div class="gal-item-viewport no-picture" data-content="@T("Common.NoImageAvail")">
+						<div class="gal-item-viewport@(defaultPicture.PictureId == 0 ? " no-picture" : "")" @Html.Attr("data-content", T("Common.NoImageAvail"), defaultPicture.PictureId == 0)>
 							<img class="gal-item-content" src="@defaultPicture.ImageUrl" alt="@defaultPicture.AlternateText" title="@defaultPicture.Title" />
 						</div>
 					</div>

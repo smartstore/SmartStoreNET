@@ -271,6 +271,7 @@
     <Compile Include="Models\Orders\CheckoutAttributeListModel.cs" />
     <Compile Include="Models\Orders\ReturnRequestListModel.cs" />
     <Compile Include="Models\Payments\PaymentMethodEditModel.cs" />
+    <Compile Include="Models\Plugins\LicenseLabelModel.cs" />
     <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />

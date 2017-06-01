@@ -520,7 +520,7 @@
     <Compile Include="Domain\Security\SecuritySettings.cs" />
     <Compile Include="Domain\Shipping\ShippingStatus.cs" />
     <Compile Include="Domain\StoreInformationSettings.cs" />
-    <Compile Include="GenericComparer.cs" />
+    <Compile Include="GenericEqualityComparer.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="IHideObjectMembers.cs" />
     <Compile Include="Infrastructure\ComparableObject.cs" />

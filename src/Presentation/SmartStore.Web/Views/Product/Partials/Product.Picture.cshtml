@@ -15,8 +15,11 @@
 				<div class="gal-list">
 					<div class="gal-track" itemscope itemtype="http://schema.org/ImageGallery">
 						@for (int i = 0; i < Model.PictureModels.Count; i++)
-						{
-							var picture = Model.PictureModels[i];
+                        {
+                            var picture = Model.PictureModels[i];
+                            var title = T("Product.ThumbTitle", picture.Title, (i + 1).ToString());
+                            var alternateText = T("Product.ThumbAlternateText", picture.AlternateText, (i + 1).ToString());
+
 							<figure class="gal-item" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
 								<a class="gal-item-viewport" 
 								   itemprop="contentUrl" 
@@ -24,9 +27,9 @@
 								   data-width="@picture.FullSizeImageWidth" 
 								   data-height="@picture.FullSizeImageHeight" 
 								   data-medium-image="@picture.ImageUrl" 
-								   title="@Model.Name" 
+								   title="@title" 
 								   data-picture-id="@picture.PictureId">
-									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@alternateText" />
 								</a>
 							</figure>
 						}

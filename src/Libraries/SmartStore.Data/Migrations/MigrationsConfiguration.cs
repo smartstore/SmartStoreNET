@@ -31,6 +31,8 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+            builder.AddOrUpdate("Product.ThumbTitle", "{0}, Picture {1}", "{0}, Bild {1}");
+            builder.AddOrUpdate("Product.ThumbAlternateText", "{0}, Picture {1}", "{0}, Bild {1}");
         }
     }
 }

@@ -160,23 +160,12 @@ namespace SmartStore.Core.IO
 		public IFile GetFile(string path)
 		{
 			var fileInfo = new FileInfo(MapStorage(path));
-			if (!fileInfo.Exists)
-			{
-				throw new ArgumentException("File " + path + " does not exist");
-			}
-
 			return new LocalFile(Fix(path), fileInfo);
 		}
 
 		public IFolder GetFolder(string path)
 		{
 			var directoryInfo = new DirectoryInfo(MapStorage(path));
-
-			if (!directoryInfo.Exists)
-			{
-				throw new ArgumentException("Folder " + path + " does not exist");
-			}
-
 			return new LocalFolder(Fix(path), directoryInfo);
 		}
 
@@ -499,6 +488,11 @@ namespace SmartStore.Core.IO
 				get { return _fileInfo.Extension; }
 			}
 
+			public bool Exists
+			{
+				get { return _fileInfo.Exists; }
+			}
+
 			public Stream OpenRead()
 			{
 				return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
@@ -549,6 +543,11 @@ namespace SmartStore.Core.IO
 			public long Size
 			{
 				get { return GetDirectorySize(_directoryInfo); }
+			}
+
+			public bool Exists
+			{
+				get { return _directoryInfo.Exists; }
 			}
 
 			public IFolder Parent

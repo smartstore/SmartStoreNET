@@ -27,7 +27,7 @@ namespace SmartStore.Data.Migrations
 				Sql($"UPDATE [dbo].[QueuedEmail] SET [Body] = REPLACE([Body],'/Media/Thumbs/','{thumbsPath}')");
 				Sql($"UPDATE [dbo].[Topic] SET [Body] = REPLACE([Body],'/Media/Uploaded/','{uploadedPath}')");
 
-				Sql($"UPDATE [dbo].[LocalizedProperty] SET [LocaleValue] = REPLACE([LocaleValue],'/Media/Uploaded/','{uploadedPath}') WHERE [LocaleKeyGroup] = 'Category' Or [LocaleKeyGroup] = 'Manufacturer' Or [LocaleKeyGroup] = 'ShippingMethod' Or [LocaleKeyGroup] = 'PaymentMethod' Or [LocaleKeyGroup] = 'BlogPost' Or [LocaleKeyGroup] = 'News' Or [LocaleKeyGroup] = 'Campaign' Or [LocaleKeyGroup] = 'QueuedEmail' Or [LocaleKeyGroup] = 'Topic' Or [LocaleKeyGroup] = 'Product'");
+				Sql($"UPDATE [dbo].[LocalizedProperty] SET [LocaleValue] = REPLACE([LocaleValue],'/Media/Uploaded/','{uploadedPath}') WHERE [LocaleKey] = 'Description' Or [LocaleKey] = 'BottomDescription' Or [LocaleKey] = 'FullDescription' Or [LocaleKey] = 'Body' Or [LocaleKey] = 'Full'");
 
 				Sql($"UPDATE [dbo].[Product] SET [FullDescription] = REPLACE([FullDescription],'/Media/Uploaded/','{uploadedPath}')");
 			}

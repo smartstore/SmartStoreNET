@@ -22,6 +22,7 @@
 * **GMC**: Fixes duplicate occurrence of application path in absolute product URL
 * Products with stock managed by attributes sometimes not displayed in category lists
 * Fixed System.MissingMethodException for SmartStore.Core.Search.Facets.FacetGroup
+* Fixed uploaded image paths in HTML fields (Media/Uploaded > Media/<TenantName>/Uploaded)
 
 
 ## SmartStore.NET 3.0

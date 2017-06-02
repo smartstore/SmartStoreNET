@@ -575,6 +575,7 @@ namespace SmartStore.Core
 					}
 				}
 			}
+
 			return s_trustLevel.Value;
 		}
 

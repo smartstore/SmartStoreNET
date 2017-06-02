@@ -21,6 +21,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Email;
 using SmartStore.Core.Events;
 using SmartStore.Core.Fakes;
+using SmartStore.Core.Html;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.IO;
@@ -642,6 +643,10 @@ namespace SmartStore.Web.Framework
 			// Model binding
 			builder.RegisterModelBinders(foundAssemblies);
 			builder.RegisterModelBinderProvider();
+
+			// Html Filters
+			builder.RegisterType<FixUploadPathsHtmlFilter>().As<IHtmlFilter>().InstancePerRequest();
+			builder.RegisterType<AbsolutizePathsHtmlFilter>().As<IHtmlFilter>().InstancePerRequest();
 
 			var pageHelperRegistration = builder.RegisterType<WebViewPageHelper>().InstancePerRequest();
 

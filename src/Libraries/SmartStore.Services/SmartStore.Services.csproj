@@ -264,6 +264,7 @@
     <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
+    <Compile Include="Media\HtmlFilters\FixUploadPathsHtmlFilter.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />
     <Compile Include="Media\Storage\DatabaseMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\FileSystemMediaStorageProvider.cs" />

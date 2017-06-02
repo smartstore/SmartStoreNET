@@ -238,6 +238,10 @@
     <Compile Include="Extensions\RouteExtensions.cs" />
     <Compile Include="Extensions\XPathExtensions.cs" />
     <Compile Include="Fakes\FakeController.cs" />
+    <Compile Include="Html\HtmlFilter\AbsolutizePathsHtmlFilter.cs" />
+    <Compile Include="Html\HtmlFilter\DefaultHtmlFilterProcessor.cs" />
+    <Compile Include="Html\HtmlFilter\IHtmlFilter.cs" />
+    <Compile Include="Html\HtmlFilter\IHtmlFilterProcessor.cs" />
     <Compile Include="IActivatable.cs" />
     <Compile Include="Infrastructure\ContextState.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeAccessor.cs" />

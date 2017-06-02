@@ -27,6 +27,7 @@ namespace SmartStore.Services.Media
 			{
 				path = "/Media/" + DataSettings.Current.TenantName;
 			}
+
 			return path;
 		}
 	}

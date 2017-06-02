@@ -5,21 +5,14 @@ using System.Text.RegularExpressions;
 
 namespace SmartStore.Core.Html
 {
-    /// <summary>
-    /// Represents a ResolveLinks helper
-    /// </summary>
     public partial class ResolveLinksHelper
     {
-        #region Fields
         /// <summary>
         /// The regular expression used to parse links.
         /// </summary>
         private static readonly Regex regex = new Regex("((http://|https://|www\\.)([A-Z0-9.\\-]{1,})\\.[0-9A-Z?;~&\\(\\)#,=\\-_\\./\\+]{2,})", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private const string link = "<a href=\"{0}{1}\" rel=\"nofollow\">{2}</a>";
         private const int MAX_LENGTH = 50;
-        #endregion
-
-        #region Utilities
 
         /// <summary>
         /// Shortens any absolute URL to a specified maximum length
@@ -80,9 +73,7 @@ namespace SmartStore.Core.Html
 
             return url;
         }
-        #endregion
 
-        #region Methods
         /// <summary>
         /// Formats the text
         /// </summary>
@@ -108,6 +99,5 @@ namespace SmartStore.Core.Html
 
             return text;
         }
-        #endregion
     }
 }

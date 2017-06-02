@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Core.Html;
 using SmartStore.Core.Localization;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -40,12 +41,13 @@ namespace SmartStore.Services.Messages
         private readonly IWorkContext _workContext;
         private readonly HttpRequestBase _httpRequest;
 		private readonly IDownloadService _downloadService;
+		private readonly IHtmlFilterProcessor _htmlFilterProcessor;
 
-        #endregion
+		#endregion
 
-        #region Ctor
+		#region Ctor
 
-        public WorkflowMessageService(
+		public WorkflowMessageService(
 			IMessageTemplateService messageTemplateService,
             IQueuedEmailService queuedEmailService, 
 			ILanguageService languageService,
@@ -58,21 +60,23 @@ namespace SmartStore.Services.Messages
             IEventPublisher eventPublisher,
             IWorkContext workContext,
             HttpRequestBase httpRequest,
-			IDownloadService downloadService)
+			IDownloadService downloadService,
+			IHtmlFilterProcessor htmlFilterProcessor)
         {
-            this._messageTemplateService = messageTemplateService;
-            this._queuedEmailService = queuedEmailService;
-            this._languageService = languageService;
-            this._tokenizer = tokenizer;
-            this._emailAccountService = emailAccountService;
-            this._messageTokenProvider = messageTokenProvider;
-			this._storeService = storeService;
-			this._storeContext = storeContext;
-            this._emailAccountSettings = emailAccountSettings;
-            this._eventPublisher = eventPublisher;
-            this._workContext = workContext;
-            this._httpRequest = httpRequest;
-			this._downloadService = downloadService;
+            _messageTemplateService = messageTemplateService;
+            _queuedEmailService = queuedEmailService;
+            _languageService = languageService;
+            _tokenizer = tokenizer;
+            _emailAccountService = emailAccountService;
+            _messageTokenProvider = messageTokenProvider;
+			_storeService = storeService;
+			_storeContext = storeContext;
+            _emailAccountSettings = emailAccountSettings;
+            _eventPublisher = eventPublisher;
+            _workContext = workContext;
+            _httpRequest = httpRequest;
+			_downloadService = downloadService;
+			_htmlFilterProcessor = htmlFilterProcessor;
 
 			T = NullLocalizer.Instance;
 		}
@@ -101,8 +105,8 @@ namespace SmartStore.Services.Messages
             // Replace subject and body tokens 
             var subjectReplaced = _tokenizer.Replace(subject, tokens, false);
             var bodyReplaced = _tokenizer.Replace(body, tokens, true);
-			
-            bodyReplaced = WebHelper.MakeAllUrlsAbsolute(bodyReplaced, _httpRequest);
+
+			bodyReplaced = _htmlFilterProcessor.ProcessFilters(bodyReplaced, "html", new Dictionary<string, object> { { "outbound", true } });
 			
             var email = new QueuedEmail
             {

@@ -11,7 +11,7 @@ namespace SmartStore.Data.Migrations
         {
 			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
 			{
-				var tenantName = DataSettings.Current.TenantName;
+				var tenantName = DataSettings.Current.TenantName.NullEmpty() ?? "Default";
 				var uploadedPath = $"/Media/{tenantName}/Uploaded/";
 				var thumbsPath = $"/Media/{tenantName}/Thumbs/";
 
@@ -26,10 +26,19 @@ namespace SmartStore.Data.Migrations
 				Sql($"UPDATE [dbo].[QueuedEmail] SET [Body] = REPLACE([Body],'/Media/Uploaded/','{uploadedPath}')");
 				Sql($"UPDATE [dbo].[QueuedEmail] SET [Body] = REPLACE([Body],'/Media/Thumbs/','{thumbsPath}')");
 				Sql($"UPDATE [dbo].[Topic] SET [Body] = REPLACE([Body],'/Media/Uploaded/','{uploadedPath}')");
-
-				Sql($"UPDATE [dbo].[LocalizedProperty] SET [LocaleValue] = REPLACE([LocaleValue],'/Media/Uploaded/','{uploadedPath}') WHERE [LocaleKey] = 'Description' Or [LocaleKey] = 'BottomDescription' Or [LocaleKey] = 'FullDescription' Or [LocaleKey] = 'Body' Or [LocaleKey] = 'Full'");
-
+				Sql($"UPDATE [dbo].[MessageTemplate] SET [Body] = REPLACE([Body],'/Media/Uploaded/','{uploadedPath}')");
 				Sql($"UPDATE [dbo].[Product] SET [FullDescription] = REPLACE([FullDescription],'/Media/Uploaded/','{uploadedPath}')");
+
+				// LocalizedProperty
+				Sql($"UPDATE [dbo].[LocalizedProperty] SET [LocaleValue] = REPLACE([LocaleValue],'/Media/Thumbs/','{thumbsPath}') WHERE [LocaleKey] = 'Body' AND [LocaleKeyGroup] = 'QueuedEmail'");
+				Sql($@"
+UPDATE [dbo].[LocalizedProperty] SET [LocaleValue] = REPLACE([LocaleValue],'/Media/Uploaded/','{uploadedPath}') 
+WHERE 
+	([LocaleKey] = 'BottomDescription' AND [LocaleKeyGroup] = 'Category') OR
+	([LocaleKey] = 'Full' AND [LocaleKeyGroup] = 'News') OR
+	([LocaleKey] = 'Description' AND [LocaleKeyGroup] IN ('Category', 'Manufacturer', 'ShippingMethod')) OR
+	([LocaleKey] = 'FullDescription' AND [LocaleKeyGroup] IN ('PaymentMethod', 'Product')) OR
+	([LocaleKey] = 'Body' AND [LocaleKeyGroup] IN ('BlogPost', 'Campaign', 'QueuedEmail', 'MessageTemplate', 'Topic'))");
 			}
 		}
         

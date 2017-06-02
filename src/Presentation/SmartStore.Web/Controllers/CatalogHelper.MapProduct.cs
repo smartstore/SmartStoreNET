@@ -56,7 +56,19 @@ namespace SmartStore.Web.Controllers
 					return dict;
 				});
 
-				model.CurrentSortOrderName = model.AvailableSortOptions.Get(model.CurrentSortOrder ?? 1) ?? model.AvailableSortOptions.First().Value;
+				if (!searchQuery.Origin.IsCaseInsensitiveEqual("Search/Search"))
+				{
+					model.RelevanceSortOrderName = T("Products.Sorting.Featured");
+					if ((int)ProductSortingEnum.Relevance == (model.CurrentSortOrder ?? 1))
+					{
+						model.CurrentSortOrderName = model.RelevanceSortOrderName;
+					}
+				}
+
+				if (model.CurrentSortOrderName.IsEmpty())
+				{
+					model.CurrentSortOrderName = model.AvailableSortOptions.Get(model.CurrentSortOrder ?? 1) ?? model.AvailableSortOptions.First().Value;
+				}
 			}
 			
 			// Pagination

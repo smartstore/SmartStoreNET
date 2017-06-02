@@ -1,6 +1,6 @@
-﻿@model ProductSummaryModel
-
-@using SmartStore.Web.Models.Catalog;
+﻿@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Catalog;
+@model ProductSummaryModel
 
 <!-- Filter -->
 <div class="artlist-action artlist-action--filter flex-grow-1 d-lg-none">
@@ -28,7 +28,8 @@
 		<select class="artlist-action-select form-control noskin" name="artlist-action-sort" id="artlist-action-sort" data-qname="o" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
 			@foreach (var sort in Model.AvailableSortOptions)
 			{
-				<option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@sort.Value</option>
+				var sortName = ((int)ProductSortingEnum.Relevance == sort.Key ? (Model.RelevanceSortOrderName ?? sort.Value) : sort.Value);
+				<option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@sortName</option>
 			}
 		</select>
 	</div>

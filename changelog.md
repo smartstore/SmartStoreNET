@@ -23,6 +23,7 @@
 * Products with stock managed by attributes sometimes not displayed in category lists
 * Fixed System.MissingMethodException for SmartStore.Core.Search.Facets.FacetGroup
 * Fixed uploaded image paths in HTML fields (Media/Uploaded > Media/<TenantName>/Uploaded)
+* **MegaSearch**: Product category order, product manufacturer order and product order were not recognized (sorting)
 
 
 ## SmartStore.NET 3.0

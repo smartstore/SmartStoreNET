@@ -11,6 +11,7 @@
 * Instant search should search manufacturer/brand name
 * (Dev) New 'ApplicationStarted' event
 * **GMC**: Added missing database indexes.
+* **Web API**: Added endpoints for blog post and blog comment
 
 ### Bugfixes
 * #1145: Fixed HTTP 404 after switching language

@@ -25,6 +25,7 @@
 * Fixed System.MissingMethodException for SmartStore.Core.Search.Facets.FacetGroup
 * Fixed uploaded image paths in HTML fields (Media/Uploaded > Media/<TenantName>/Uploaded)
 * **MegaSearch**: Product category order, product manufacturer order and product order were not recognized (sorting)
+* Standard search: Fixed sorting of recently added products
 
 
 ## SmartStore.NET 3.0

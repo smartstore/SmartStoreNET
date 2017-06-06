@@ -667,6 +667,7 @@ namespace SmartStore.Web.Controllers
 				return View(ProductSummaryModel.Empty);
 			}
 
+			query.Sorting.Clear();
 			query = query
 				.SortBy(ProductSortingEnum.CreatedOn)
 				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
@@ -702,7 +703,11 @@ namespace SmartStore.Web.Controllers
 				
 			var items = new List<SyndicationItem>();
 
-			query = query.SortBy(ProductSortingEnum.CreatedOn).Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
+			query.Sorting.Clear();
+			query = query
+				.SortBy(ProductSortingEnum.CreatedOn)
+				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
+
 			var result = _catalogSearchService.Search(query);
 
 			var storeUrl = _services.StoreContext.CurrentStore.Url;

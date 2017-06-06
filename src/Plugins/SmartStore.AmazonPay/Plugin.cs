@@ -13,6 +13,7 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.AmazonPay
 {
+	[DisplayOrder(1)]
 	[DependentWidgets("Widgets.AmazonPay")]
 	public class AmazonPayPlugin : PaymentPluginBase, IConfigurable, IExternalAuthenticationMethod
 	{
@@ -121,7 +122,7 @@ namespace SmartStore.AmazonPay
 		{
 			actionName = "AuthenticationPublicInfo";
 			controllerName = "AmazonPay";
-			routeValues = new RouteValueDictionary { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", AmazonPayPlugin.SystemName } };
+			routeValues = new RouteValueDictionary { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", SystemName } };
 		}
 
 		public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)

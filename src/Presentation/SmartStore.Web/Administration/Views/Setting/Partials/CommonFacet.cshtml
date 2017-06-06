@@ -26,6 +26,13 @@
 		</tr>
 	</table>
 }
+else if (Model.Locales.Count <= 1)
+{
+	@*Avoid providing an empty tab*@
+	<div class="alert alert-info">
+		@T("Admin.Configuration.Settings.NoMoreSettingsAvailable")
+	</div>
+}
 
 @(Html.LocalizedEditor<CommonFacetSettingsModel, CommonFacetSettingsLocalizedModel>(fieldPrefix + "-localized",
 	@<table class="adminContent">

@@ -26,6 +26,7 @@
 * Fixed uploaded image paths in HTML fields (Media/Uploaded > Media/<TenantName>/Uploaded)
 * **MegaSearch**: Product category order, product manufacturer order and product order were not recognized (sorting)
 * Standard search: Fixed sorting of recently added products
+* Alias for search filters couldn't be set if there's only one language
 
 
 ## SmartStore.NET 3.0

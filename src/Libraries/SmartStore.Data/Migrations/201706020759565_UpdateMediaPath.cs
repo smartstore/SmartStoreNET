@@ -62,9 +62,6 @@ WHERE
 		{
 			builder.AddOrUpdate("Common.For", "For: {0}", "Für: {0}");
 			builder.AddOrUpdate("Products.Sorting.Featured", "Featured", "Empfehlung");
-			builder.AddOrUpdate("Admin.Configuration.Settings.NoMoreSettingsAvailable",
-				"No more settings available.",
-				"Keine weiteren Einstellungen verfügbar.");
 		}
 	}
 }

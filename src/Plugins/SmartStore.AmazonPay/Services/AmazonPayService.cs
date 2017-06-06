@@ -490,7 +490,7 @@ namespace SmartStore.AmazonPay.Services
 					if (model.IsShippable)
 					{
 						var client = _api.CreateClient(settings);
-						var details = _api.GetOrderReferenceDetails(client, model.OrderReferenceId);
+						var details = _api.GetOrderReferenceDetails(client, model.OrderReferenceId, model.AddressConsentToken);
 
 						if (_api.FindAndApplyAddress(details, customer, model.IsShippable, true))
 						{
@@ -918,14 +918,12 @@ namespace SmartStore.AmazonPay.Services
 
 				_api.ConfirmOrderReference(client, state.OrderReferenceId);
 
-				// address and payment cannot be changed if order is in open state, amazon widgets then might show an error.
+				// Address and payment cannot be changed if order is in open state, amazon widgets then might show an error.
 				//state.IsOrderConfirmed = true;
 
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 				var isShippable = cart.RequiresShipping();
-
-				// note: billing address is only available after authorization is in a non-pending and non-declined state.
-				var details = _api.GetOrderReferenceDetails(client, state.OrderReferenceId);
+				var details = _api.GetOrderReferenceDetails(client, state.OrderReferenceId, state.AddressConsentToken);
 
 				_api.FindAndApplyAddress(details, customer, isShippable, false);
 

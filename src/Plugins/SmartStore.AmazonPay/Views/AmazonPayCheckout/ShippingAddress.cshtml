@@ -46,15 +46,27 @@
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function () {
+	window.onAmazonLoginReady = function() {
+		try {
+			amazon.Login.setClientId('@Html.Raw(Model.ClientId)');
+		}
+		catch (e) {
+			console.log(e);
+			alert(e);
+		}
+	};
+
+	window.onAmazonPaymentsReady = function () {
 		try {
 			new OffAmazonPayments.Widgets.AddressBook({
 				sellerId: '@Model.SellerId',
+				scope: 'payments:shipping_address payments:billing_address',
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				onAddressSelect: function (orderReference) {
 					$('#AmazonPayNextCheckoutStep').fadeIn();
 				},
 				design: {
+					designMode: 'responsive',
 					size: { width: '@(Model.AddressWidgetWidth)px', height: '@(Model.AddressWidgetHeight)px' }
 				},
 				onError: function (e) {
@@ -63,7 +75,9 @@
 			}).bind('@Model.WidgetId');
 		}
 		catch (e) {
-			alert(e.description);
+			console.log(e);
+			alert(e);
 		}
-	});
+	};
 </script>
+<script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

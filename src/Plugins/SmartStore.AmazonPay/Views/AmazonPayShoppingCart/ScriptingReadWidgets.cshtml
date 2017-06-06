@@ -1,14 +1,24 @@
 ﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
 
 <script type="text/javascript">
-	$(document).ready(function () {
+	window.onAmazonLoginReady = function () {
+		try {
+			amazon.Login.setClientId('@Html.Raw(Model.ClientId)');
+		}
+		catch (e) {
+			console.log(e);
+			alert(e);
+		}
+	};
 
+	window.onAmazonPaymentsReady = function () {
 		try {
 			new OffAmazonPayments.Widgets.AddressBook({
 				sellerId: '@Model.SellerId',
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				displayMode: 'Read',
 				design: {
+					designMode: 'responsive',
 					size: { width: '400px', height: '185px' }
 				},
 				onError: function (e) {
@@ -17,7 +27,8 @@
 			}).bind('@(Model.WidgetId)Address');
 		}
 		catch (e) {
-			if (e.description) alert(e.description);
+			console.log(e);
+			alert(e);
 		}
 
 		try {
@@ -26,6 +37,7 @@
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				displayMode: 'Read',
 				design: {
+					designMode: 'responsive',
 					size: { width: '400px', height: '185px' }
 				},
 				onError: function (e) {
@@ -34,8 +46,9 @@
 			}).bind('@(Model.WidgetId)Wallet');
 		}
 		catch (e) {
-			if (e.description) alert(e.description);
+			console.log(e);
+			alert(e);
 		}
-
-	});
+	};
 </script>
+<script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

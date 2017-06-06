@@ -56,12 +56,24 @@
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function () {
+	window.onAmazonLoginReady = function () {
+		try {
+			amazon.Login.setClientId('@Html.Raw(Model.ClientId)');
+		}
+		catch (e) {
+			console.log(e);
+			alert(e);
+		}
+	};
+
+	window.onAmazonPaymentsReady = function () {
 		try {
 			new OffAmazonPayments.Widgets.Wallet({
 				sellerId: '@Model.SellerId',
+				scope: '',
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				design: {
+					designMode: 'responsive',
 					size: { width: '@(Model.PaymentWidgetWidth)px', height: '@(Model.PaymentWidgetHeight)px' }
 				},
 				onPaymentSelect: function (orderReference) {
@@ -73,7 +85,9 @@
 			}).bind('@Model.WidgetId');
 		}
 		catch (e) {
-			alert(e.description);
+			console.log(e);
+			alert(e);
 		}
-	});
+	};
 </script>
+<script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

@@ -107,28 +107,6 @@ namespace SmartStore.AmazonPay.Services
 			return pluginUrl;
 		}
 
-		//private decimal? GetOrderTotal()
-		//{
-		//	decimal orderTotalDiscountAmountBase = decimal.Zero;
-		//	Discount orderTotalAppliedDiscount = null;
-		//	List<AppliedGiftCard> appliedGiftCards = null;
-		//	int redeemedRewardPoints = 0;
-		//	decimal redeemedRewardPointsAmount = decimal.Zero;
-
-		//	var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
-
-		//	decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart,
-		//		out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
-
-		//	if (shoppingCartTotalBase.HasValue)		// shipping method needs to be selected here!
-		//	{
-		//		decimal shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTotalBase.Value, _services.WorkContext.WorkingCurrency);
-
-		//		return shoppingCartTotal;
-		//	}
-		//	return null;
-		//}
-
 		private void SerializeOrderAttribute(AmazonPayOrderAttribute attribute, Order order)
 		{
 			if (attribute != null)
@@ -338,27 +316,11 @@ namespace SmartStore.AmazonPay.Services
 				model.PollingTaskMinutes = 30; // (task.Seconds / 60);
 		}
 
-		//public string GetWidgetUrl()
-		//{
-		//	try
-		//	{
-		//		var store = _services.StoreContext.CurrentStore;
-
-		//		if (IsActive(store.Id))
-		//		{
-		//			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
-		//			if (settings.SellerId.HasValue())
-		//				return settings.WidgetUrl;
-		//		}
-		//	}
-		//	catch (Exception exc)
-		//	{
-		//		LogError(exc);
-		//	}
-		//	return "";
-		//}
-
-		public AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData, string orderReferenceId = null)
+		public AmazonPayViewModel CreateViewModel(
+			AmazonPayRequestType type,
+			TempDataDictionary tempData,
+			string orderReferenceId = null,
+			string addressConsentToken = null)
 		{
 			var model = new AmazonPayViewModel();
 			model.Type = type;
@@ -395,9 +357,10 @@ namespace SmartStore.AmazonPay.Services
 
 				if (type == AmazonPayRequestType.LoginHandler)
 				{
-					if (orderReferenceId.IsEmpty())
+					if (orderReferenceId.IsEmpty() || addressConsentToken.IsEmpty())
 					{
-						LogError(null, T("Plugins.Payments.AmazonPay.MissingOrderReferenceId"), null, true);
+						var msg = orderReferenceId.IsEmpty() ? T("Plugins.Payments.AmazonPay.MissingOrderReferenceId") : T("Plugins.Payments.AmazonPay.MissingAddressConsentToken");
+						LogError(null, msg, null, true);
 						model.Result = AmazonPayResultType.Redirect;
 						return model;
 					}
@@ -426,7 +389,8 @@ namespace SmartStore.AmazonPay.Services
 
 					var state = new AmazonPayCheckoutState
 					{
-						OrderReferenceId = orderReferenceId
+						OrderReferenceId = orderReferenceId,
+						AddressConsentToken = addressConsentToken
 					};
 
 					if (checkoutState.CustomProperties.ContainsKey(checkoutStateKey))
@@ -469,6 +433,7 @@ namespace SmartStore.AmazonPay.Services
 
 					var state = _httpContext.GetAmazonPayState(_services.Localization);
 					model.OrderReferenceId = state.OrderReferenceId;
+					model.AddressConsentToken = state.AddressConsentToken;
 					//model.IsOrderConfirmed = state.IsOrderConfirmed;
 				}
 

@@ -29,6 +29,9 @@ Textvorschläge:<ul>
 	<LocaleResource Name="MissingOrderReferenceId">
 		<Value>Es wurde keine Auftrags-Referenz-ID durch Amazon übermittelt!</Value>
 	</LocaleResource>
+  <LocaleResource Name="MissingAddressConsentToken">
+    <Value>Es wurde keine Adress-Token durch Amazon übermittelt!</Value>
+  </LocaleResource>
 	<LocaleResource Name="PaymentMethodNotActive">
 		<Value>Die Zahlungsart "Login und Bezahlen mit Amazon" ist für Shop "{0}" nicht verfügbar.</Value>
 	</LocaleResource>
@@ -87,18 +90,17 @@ Textvorschläge:<ul>
 		<Value>Großbritannien</Value>
 	</LocaleResource>
 	<LocaleResource Name="AccessKey">
-		<Value>Ihr Zugangsschlüssel</Value>
+		<Value>Ihre Client-ID</Value>
 	</LocaleResource>
 	<LocaleResource Name="AccessKey.Hint">
-		<Value>Den Zugangsschlüssel finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
+		<Value>Die Client-ID finden Sie bei Amazon's Seller Central unter Login mit Amazon - Einstellungen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="SecretKey">
-		<Value>Ihr geheimer Schlüssel</Value>
+		<Value>Ihr Client-Secret</Value>
 	</LocaleResource>
 	<LocaleResource Name="SecretKey.Hint">
-		<Value>Den geheimen Schlüssel finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
+		<Value>Den Client-Secret finden Sie bei Amazon's Seller Central unter Login mit Amazon - Einstellungen.</Value>
 	</LocaleResource>
-
   <LocaleResource Name="PayButtonType">
     <Value>Art des Zahlungs-Button</Value>
   </LocaleResource>

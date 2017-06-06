@@ -9,6 +9,7 @@ namespace SmartStore.AmazonPay.Services
 	public class AmazonPayCheckoutState
 	{
 		public string OrderReferenceId { get; set; }
+		public string AddressConsentToken { get; set; }
 	}
 
 

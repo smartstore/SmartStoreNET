@@ -64,7 +64,8 @@
             @Html.SmartLabelFor(model => model.AccessKey)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.AccessKey)
+			@Html.SettingOverrideCheckbox(model => model.AccessKey)
+            @Html.TextBoxFor(model => model.AccessKey, new { @class = "input-large" })
             @Html.ValidationMessageFor(model => model.AccessKey)
         </td>
     </tr>
@@ -73,8 +74,9 @@
             @Html.SmartLabelFor(model => model.SecretKey)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.SecretKey)
-            @Html.ValidationMessageFor(model => model.SecretKey)
+			@Html.SettingOverrideCheckbox(model => model.SecretKey)
+			@Html.TextBoxFor(model => model.SecretKey, new { @class = "input-large" })
+			@Html.ValidationMessageFor(model => model.SecretKey)
         </td>
     </tr>
     <tr>

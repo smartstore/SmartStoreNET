@@ -29,7 +29,10 @@ Text suggestions:<ul>
 	<LocaleResource Name="MissingOrderReferenceId">
 		<Value>There was no order reference ID transmitted by Amazon!</Value>
 	</LocaleResource>
-	<LocaleResource Name="PaymentMethodNotActive">
+  <LocaleResource Name="MissingAddressConsentToken">
+    <Value>There was no address token transmitted by Amazon!</Value>
+  </LocaleResource>
+  <LocaleResource Name="PaymentMethodNotActive">
 		<Value>Payment method "Login and Pay with Amazon" is not available for store "{0}".</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingCheckoutSessionState">
@@ -86,16 +89,16 @@ Text suggestions:<ul>
 		<Value>United Kingdom of Great Britain</Value>
 	</LocaleResource>
 	<LocaleResource Name="AccessKey">
-		<Value>Your access key</Value>
+		<Value>Your Client ID</Value>
 	</LocaleResource>
 	<LocaleResource Name="AccessKey.Hint">
-		<Value>You can find the access key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+		<Value>You can find the Client ID at Amazon's Seller Central under Login with Amazon - Settings.</Value>
 	</LocaleResource>
 	<LocaleResource Name="SecretKey">
-		<Value>Your secret key</Value>
+		<Value>Your Client Secret</Value>
 	</LocaleResource>
 	<LocaleResource Name="SecretKey.Hint">
-		<Value>You can find the secret key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+		<Value>You can find the Cleint Secret at Amazon's Seller Central under Login with Amazon - Settings.</Value>
 	</LocaleResource>
   <LocaleResource Name="PayButtonType">
     <Value>Pay button type</Value>

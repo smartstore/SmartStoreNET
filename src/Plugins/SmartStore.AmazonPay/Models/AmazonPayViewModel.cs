@@ -34,6 +34,7 @@ namespace SmartStore.AmazonPay.Models
 		public string RedirectController { get; set; }
 
 		public string OrderReferenceId { get; set; }
+		public string AddressConsentToken { get; set; }
 		public string Warning { get; set; }
 
 		public string ButtonType { get; set; }

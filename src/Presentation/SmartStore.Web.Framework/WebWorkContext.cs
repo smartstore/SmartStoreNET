@@ -249,7 +249,7 @@ namespace SmartStore.Web.Framework
 
                 #endregion
 
-				if (_localizationSettings.DetectBrowserUserLanguage && (customerLangId == 0 || !_languageService.IsPublishedLanguage(customerLangId, storeId)))
+				if (_localizationSettings.DetectBrowserUserLanguage && !CurrentCustomer.IsSystemAccount && (customerLangId == 0 || !_languageService.IsPublishedLanguage(customerLangId, storeId)))
                 {
                     #region Get Browser UserLanguage
 

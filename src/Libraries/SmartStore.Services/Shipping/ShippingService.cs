@@ -373,10 +373,15 @@ namespace SmartStore.Services.Shipping
                 //log errors
                 if (!getShippingOptionResponse.Success)
                 {
-                    foreach (string error in getShippingOptionResponse.Errors)
+					var hasItemsToShip = getShippingOptionRequest.Items != null && getShippingOptionRequest.Items.Count > 0;
+
+					foreach (string error in getShippingOptionResponse.Errors)
                     {
                         result.AddError(error);
-						Logger.Warn(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
+						if (hasItemsToShip)
+						{
+							Logger.Warn(error);
+						}
                     }
                 }
             }

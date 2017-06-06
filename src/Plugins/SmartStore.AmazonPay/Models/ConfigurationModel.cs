@@ -88,6 +88,15 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PayButtonSize")]
 		public string PayButtonSize { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AuthButtonType")]
+		public string AuthButtonType { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AuthButtonColor")]
+		public string AuthButtonColor { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AuthButtonSize")]
+		public string AuthButtonSize { get; set; }
+
 		public void Copy(AmazonPaySettings settings, bool fromSettings)
 		{
 			if (fromSettings)
@@ -116,6 +125,9 @@ namespace SmartStore.AmazonPay.Models
 				PayButtonType = settings.PayButtonType;
 				PayButtonColor = settings.PayButtonColor;
 				PayButtonSize = settings.PayButtonSize;
+				AuthButtonType = settings.AuthButtonType;
+				AuthButtonColor = settings.AuthButtonColor;
+				AuthButtonSize = settings.AuthButtonSize;
 			}
 			else
 			{
@@ -143,6 +155,9 @@ namespace SmartStore.AmazonPay.Models
 				settings.PayButtonType = PayButtonType;
 				settings.PayButtonColor = PayButtonColor;
 				settings.PayButtonSize = PayButtonSize;
+				settings.AuthButtonType = AuthButtonType;
+				settings.AuthButtonColor = AuthButtonColor;
+				settings.AuthButtonSize = AuthButtonSize;
 			}
 		}
 	}

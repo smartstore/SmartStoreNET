@@ -196,10 +196,13 @@
     <Content Include="Views\AmazonPayShoppingCart\MiniShoppingCart.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\AmazonPayShoppingCart\ScriptingLoginButton.cshtml">
+    <Content Include="Views\Shared\ScriptingLoginButton.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\AmazonPayShoppingCart\ScriptingReadWidgets.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\AmazonPay\AuthenticationPublicInfo.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

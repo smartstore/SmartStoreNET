@@ -3,9 +3,7 @@ using System.Web.Mvc;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Settings;
-using SmartStore.Services;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
@@ -15,17 +13,10 @@ namespace SmartStore.AmazonPay.Controllers
 	public class AmazonPayController : PaymentControllerBase
 	{
 		private readonly IAmazonPayService _apiService;
-		private readonly ICommonServices _services;
-		private readonly IStoreService _storeService;
 
-		public AmazonPayController(
-			IAmazonPayService apiService,
-			ICommonServices services,
-			IStoreService storeService)
+		public AmazonPayController(IAmazonPayService apiService)
 		{
 			_apiService = apiService;
-			_services = services;
-			_storeService = storeService;
 		}
 
 		[NonAction]
@@ -46,15 +37,15 @@ namespace SmartStore.AmazonPay.Controllers
 		public ActionResult Configure()
 		{
 			var model = new ConfigurationModel();
-			int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
+			int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
 
 			model.Copy(settings, true);
 
 			_apiService.SetupConfiguration(model);
 
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
+			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
 
 			return View(model);
 		}
@@ -68,24 +59,31 @@ namespace SmartStore.AmazonPay.Controllers
 			ModelState.Clear();
 
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
+			int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
 
 			model.Copy(settings, false);
 
-			using (_services.Settings.BeginScope())
+			using (Services.Settings.BeginScope())
 			{
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
 
-				_services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
-				_services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
+				Services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
+				Services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
 			}
 
 			_apiService.DataPollingTaskUpdate(settings.DataFetching == AmazonPayDataFetchingType.Polling, model.PollingTaskMinutes * 60);
 
-			NotifySuccess(_services.Localization.GetResource("Plugins.Payments.AmazonPay.ConfigSaveNote"));
+			NotifySuccess(Services.Localization.GetResource("Plugins.Payments.AmazonPay.ConfigSaveNote"));
 
 			return Configure();
+		}
+
+		[ChildActionOnly]
+		public ActionResult AuthenticationPublicInfo()
+		{
+			var model = _apiService.CreateViewModel(AmazonPayRequestType.Authentication, TempData);
+			return View(model);
 		}
 
 		[HttpPost]

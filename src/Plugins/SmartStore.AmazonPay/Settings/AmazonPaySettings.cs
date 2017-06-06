@@ -22,6 +22,9 @@ namespace SmartStore.AmazonPay.Settings
 			PayButtonType = "PwA";
 			PayButtonColor = "Gold";
 			PayButtonSize = "small";
+			AuthButtonType = "Login";
+			AuthButtonColor = "Gold";
+			AuthButtonSize = "medium";
 		}
 
 		public bool UseSandbox { get; set; }
@@ -79,6 +82,10 @@ namespace SmartStore.AmazonPay.Settings
 		public string PayButtonColor { get; set; }
 		public string PayButtonSize { get; set; }
 
+		public string AuthButtonType { get; set; }
+		public string AuthButtonColor { get; set; }
+		public string AuthButtonSize { get; set; }
+
 		//public string GetButtonUrl(AmazonPayRequestType view)
 		//{
 		//	//bool isGerman = _services.WorkContext.WorkingLanguage.UniqueSeoCode.IsCaseInsensitiveEqual("DE");
@@ -101,9 +108,7 @@ namespace SmartStore.AmazonPay.Settings
 
 		public bool CanSaveEmailAndPhone(string value)
 		{
-			return (
-				SaveEmailAndPhone == AmazonPaySaveDataType.Always || (SaveEmailAndPhone == AmazonPaySaveDataType.OnlyIfEmpty && value.IsEmpty())
-			);
+			return (SaveEmailAndPhone == AmazonPaySaveDataType.Always || (SaveEmailAndPhone == AmazonPaySaveDataType.OnlyIfEmpty && value.IsEmpty()));
 		}
 	}
 }

@@ -98,6 +98,7 @@ Textvorschläge:<ul>
 	<LocaleResource Name="SecretKey.Hint">
 		<Value>Den geheimen Schlüssel finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
 	</LocaleResource>
+
   <LocaleResource Name="PayButtonType">
     <Value>Art des Zahlungs-Button</Value>
   </LocaleResource>
@@ -129,10 +130,10 @@ Textvorschläge:<ul>
     <Value>Dunkelgrau</Value>
   </LocaleResource>
 	<LocaleResource Name="PayButtonSize">
-		<Value>Größe des Zahlungs-Buttons</Value>
+		<Value>Größe des Zahlungs-Button</Value>
 	</LocaleResource>
 	<LocaleResource Name="PayButtonSize.Hint">
-		<Value>Legt die Größe Zahlungs-Buttons (Pay-Button) fest.</Value>
+		<Value>Legt die Größe Zahlungs-Button (Pay-Button) fest.</Value>
 	</LocaleResource>
   <LocaleResource Name="ButtonSize.Small">
     <Value>Klein (Höhe 32 Pixel)</Value>
@@ -146,6 +147,30 @@ Textvorschläge:<ul>
 	<LocaleResource Name="ButtonSize.Xlarge">
 		<Value>Extra-Groß (Höhe 92 Pixel)</Value>
 	</LocaleResource>
+  <LocaleResource Name="AuthButtonType">
+    <Value>Art des Anmelde-Button</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonType.Hint">
+    <Value>Legt die bevorzugte Art des Anmelde-Button (Loogin-Button) fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonType.Login">
+    <Value>Login</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonType.LwA">
+    <Value>Login mit Amazon</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonColor">
+    <Value>Farbe des Anmelde-Button</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonColor.Hint">
+    <Value>Legt die bevorzugte Farbe des Anmelde-Button (Login-Button) fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonSize">
+    <Value>Größe des Anmelde-Button</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonSize.Hint">
+    <Value>Legt die Größe Anmelde-Button (Login-Button) fest.</Value>
+  </LocaleResource>
 	<LocaleResource Name="DataFetching">
 		<Value>Aktualisierung des Zahlungsstatus</Value>
 	</LocaleResource>

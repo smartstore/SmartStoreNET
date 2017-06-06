@@ -145,6 +145,30 @@ Text suggestions:<ul>
 	<LocaleResource Name="ButtonSize.Xlarge">
 		<Value>Extra large (height 92 pixel)</Value>
 	</LocaleResource>
+  <LocaleResource Name="AuthButtonType">
+    <Value>Login button type</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonType.Hint">
+    <Value>Specifies the prefered type of the Login button.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonType.Login">
+    <Value>Login</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonType.LwA">
+    <Value>Login with Amazon</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonColor">
+    <Value>Login button color</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonColor.Hint">
+    <Value>Specifies the prefered color of the Login button.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonSize">
+    <Value>Login button size</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonSize.Hint">
+    <Value>Specifies the size of the Login button.</Value>
+  </LocaleResource>
 	<LocaleResource Name="DataFetching">
 		<Value>Updating the payment status</Value>
 	</LocaleResource>

@@ -10,7 +10,7 @@
 		ShippingMethod,
 		MiniShoppingCart,
 		LoginHandler,
-		LoginPage
+		Authentication
 	}
 
 	public enum AmazonPayTransactionType

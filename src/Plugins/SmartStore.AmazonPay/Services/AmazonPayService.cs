@@ -25,6 +25,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
+using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -36,7 +37,7 @@ using SmartStore.Services.Tasks;
 
 namespace SmartStore.AmazonPay.Services
 {
-	public class AmazonPayService : IAmazonPayService
+	public class AmazonPayService : IAmazonPayService, IExternalProviderAuthorizer
 	{
 		private readonly IAmazonPayApi _api;
 		private readonly HttpContextBase _httpContext;
@@ -369,6 +370,9 @@ namespace SmartStore.AmazonPay.Services
 				var language = _services.WorkContext.WorkingLanguage;
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
+				var storeLocation = _services.WebHelper.GetStoreLocation(store.SslEnabled);
+				model.LoginHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/LoginHandler";
+
 				switch (language.UniqueSeoCode.EmptyNull().ToLower())
 				{
 					case "en":
@@ -444,9 +448,10 @@ namespace SmartStore.AmazonPay.Services
 						model.Result = AmazonPayResultType.None;
 						return model;
 					}
-
-					var storeLocation = _services.WebHelper.GetStoreLocation(store.SslEnabled);
-					model.LoginHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/LoginHandler";
+				}
+				else if (type == AmazonPayRequestType.Authentication)
+				{
+					// No validation, no further data required.
 				}
 				else
 				{
@@ -463,7 +468,6 @@ namespace SmartStore.AmazonPay.Services
 					}
 
 					var state = _httpContext.GetAmazonPayState(_services.Localization);
-
 					model.OrderReferenceId = state.OrderReferenceId;
 					//model.IsOrderConfirmed = state.IsOrderConfirmed;
 				}
@@ -493,9 +497,11 @@ namespace SmartStore.AmazonPay.Services
 					model.ButtonColor = settings.PayButtonColor;
 					model.ButtonSize = settings.PayButtonSize;
 				}
-				else if (type == AmazonPayRequestType.LoginPage)
+				else if (type == AmazonPayRequestType.Authentication)
 				{
-					// TODO
+					model.ButtonType = settings.AuthButtonType;
+					model.ButtonColor = settings.AuthButtonColor;
+					model.ButtonSize = settings.AuthButtonSize;
 				}
 				else if (type == AmazonPayRequestType.Address)
 				{
@@ -1332,5 +1338,14 @@ namespace SmartStore.AmazonPay.Services
 		{
 			_scheduleTaskService.TryDeleteTask<DataPollingTask>();
 		}
+
+		#region IExternalProviderAuthorizer
+
+		public AuthorizeState Authorize(string returnUrl, bool? verifyResponse = null)
+		{
+			throw new NotImplementedException();
+		}
+
+		#endregion
 	}
 }

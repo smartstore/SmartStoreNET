@@ -249,6 +249,52 @@
             @Html.ValidationMessageFor(model => model.PayButtonSize)
         </td>
     </tr>
+
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AuthButtonType)
+		</td>
+		<td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.AuthButtonType)
+			@Html.DropDownListFor(model => model.AuthButtonType, new List<SelectListItem>
+			{
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AuthButtonType.Login"), Value = "Login" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AuthButtonType.LwA"), Value = "LwA" }
+			})
+			@Html.ValidationMessageFor(model => model.AuthButtonType)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AuthButtonColor)
+		</td>
+		<td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.AuthButtonColor)
+			@Html.DropDownListFor(model => model.AuthButtonColor, new List<SelectListItem>
+			{
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonColor.Gold"), Value = "Gold" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonColor.LightGray"), Value = "LightGray" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonColor.DarkGray"), Value = "DarkGray" }
+			})
+			@Html.ValidationMessageFor(model => model.AuthButtonColor)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AuthButtonSize)
+		</td>
+		<td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.AuthButtonSize)
+			@Html.DropDownListFor(model => model.AuthButtonSize, new List<SelectListItem>
+			{
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonSize.Small"), Value = "small" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonSize.Medium"), Value = "medium" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonSize.Large"), Value = "large" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.ButtonSize.Xlarge"), Value = "x-large" }
+			})
+			@Html.ValidationMessageFor(model => model.AuthButtonSize)
+		</td>
+	</tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.AddressWidgetWidth)

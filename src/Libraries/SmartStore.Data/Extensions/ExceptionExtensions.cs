@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity.Core;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 
@@ -31,6 +32,37 @@ namespace SmartStore
 				default:
 					return false;
 			}
+		}
+
+		/// <summary>
+		/// Checks whether the inner exception indicates a deadlock error
+		/// </summary>
+		/// <param name="exception">The exception wrapper</param>
+		/// <returns></returns>
+		public static bool IsDeadlockException(this EntityCommandExecutionException exception)
+		{
+			var sqlException = exception?.InnerException as SqlException;
+
+			if (sqlException == null)
+				sqlException = exception?.InnerException?.InnerException as SqlException;
+
+			if (sqlException == null)
+				return false;
+
+			return sqlException.IsDeadlockException();
+		}
+
+		/// <summary>
+		/// Checks whether the exception indicates a deadlock error (1205)
+		/// </summary>
+		/// <param name="exception">The exception wrapper</param>
+		/// <returns></returns>
+		public static bool IsDeadlockException(this SqlException exception)
+		{
+			if (exception == null)
+				return false;
+
+			return exception.Number == 1205;
 		}
 
 		/// <summary>

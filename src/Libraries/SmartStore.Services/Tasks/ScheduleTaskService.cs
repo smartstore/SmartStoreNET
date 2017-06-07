@@ -5,6 +5,7 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
+using SmartStore.Utilities;
 using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services.Tasks

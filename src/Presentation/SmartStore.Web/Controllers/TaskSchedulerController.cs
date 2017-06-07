@@ -12,8 +12,7 @@ using SmartStore.Services;
 using SmartStore.Collections;
 
 namespace SmartStore.Web.Controllers
-{
-   
+{ 
 	[SessionState(SessionStateBehavior.ReadOnly)]
     public class TaskSchedulerController : Controller
     {

@@ -3,9 +3,21 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Utilities
 {
+	/// <summary>
+	/// Provides functionality to automatically try the given piece of logic some number of times before re-throwing the exception. 
+	/// This is useful for any piece of code which may experience transient failures. Be cautious of passing code with two distinct 
+	/// actions given that if the second or subsequent piece of logic fails, the first will also be retried upon each retry. 
+	/// </summary>
 	public static class Retry
 	{
-		public static void Execute(Action operation, int times, TimeSpan? wait = null, Func<int, Exception, bool> retry = null)
+		/// <summary>
+		/// Executes an action with retry logic.
+		/// </summary>
+		/// <param name="operation">The action to be executed.</param>
+		/// <param name="attempts">The maximum number of attempts.</param>
+		/// <param name="wait">Timespan to wait between attempts of the operation</param>
+		/// <param name="onFailed">The callback executed when an attempt is failed.</param>
+		public static void Run(Action operation, int attempts, TimeSpan? wait = null, Action<int, Exception> onFailed = null)
 		{
 			Guard.NotNull(operation, nameof(operation));
 
@@ -15,16 +27,23 @@ namespace SmartStore.Utilities
 				return true;
 			};
 
-			Execute(wrapper, times, wait, retry);
+			Run(wrapper, attempts, wait, onFailed);
 		}
 
-		public static T Execute<T>(Func<T> operation, int times, TimeSpan? wait, Func<int, Exception, bool> retry = null)
+		/// <summary>
+		/// Executes a function with retry logic.
+		/// </summary>
+		/// <param name="operation">The function to be executed.</param>
+		/// <param name="attempts">The maximum number of attempts.</param>
+		/// <param name="wait">Timespan to wait between attempts of the operation</param>
+		/// <param name="onFailed">The callback executed when an attempt is failed.</param>
+		public static T Run<T>(Func<T> operation, int attempts, TimeSpan? wait, Action<int, Exception> onFailed = null)
 		{
 			Guard.NotNull(operation, nameof(operation));
 
-			if (times < 1)
+			if (attempts < 1)
 			{
-				throw new ArgumentOutOfRangeException(nameof(times), times, "The maximum number of attempts must not be less than 1.");
+				throw new ArgumentOutOfRangeException(nameof(attempts), attempts, "The maximum number of attempts must not be less than 1.");
 			}
 
 			var attempt = 0;
@@ -45,12 +64,9 @@ namespace SmartStore.Utilities
 				{
 					attempt++;
 
-					if (retry != null && !retry(attempt, ex))
-					{
-						throw;
-					}
+					onFailed?.Invoke(attempt, ex);
 
-					if (attempt >= times)
+					if (attempt >= attempts)
 					{
 						throw;
 					}
@@ -59,7 +75,14 @@ namespace SmartStore.Utilities
 		}
 
 
-		public static async Task ExecuteAsync(Func<Task> operation, int times, TimeSpan? wait = null, Func<int, Exception, bool> retry = null)
+		/// <summary>
+		/// Executes an asynchronous action with retry logic.
+		/// </summary>
+		/// <param name="operation">The asynchronous action to be executed.</param>
+		/// <param name="attempts">The maximum number of attempts.</param>
+		/// <param name="wait">Timespan to wait between attempts of the operation</param>
+		/// <param name="onFailed">The callback executed when an attempt is failed.</param>
+		public static async Task RunAsync(Func<Task> operation, int attempts, TimeSpan? wait = null, Action<int, Exception> onFailed = null)
 		{
 			Guard.NotNull(operation, nameof(operation));
 
@@ -69,16 +92,23 @@ namespace SmartStore.Utilities
 				return true;
 			};
 
-			await ExecuteAsync(wrapper, times, wait, retry);
+			await RunAsync(wrapper, attempts, wait, onFailed);
 		}
 
-		public static async Task<T> ExecuteAsync<T>(Func<Task<T>> operation, int times, TimeSpan? wait, Func<int, Exception, bool> retry = null)
+		/// <summary>
+		/// Executes an asynchronous function with retry logic.
+		/// </summary>
+		/// <param name="operation">The asynchronous function to be executed.</param>
+		/// <param name="attempts">The maximum number of attempts.</param>
+		/// <param name="wait">Timespan to wait between attempts of the operation</param>
+		/// <param name="onFailed">The callback executed when an attempt is failed.</param>
+		public static async Task<T> RunAsync<T>(Func<Task<T>> operation, int attempts, TimeSpan? wait, Action<int, Exception> onFailed = null)
 		{
 			Guard.NotNull(operation, nameof(operation));
 
-			if (times < 1)
+			if (attempts < 1)
 			{
-				throw new ArgumentOutOfRangeException(nameof(times), times, "The maximum number of attempts must not be less than 1.");
+				throw new ArgumentOutOfRangeException(nameof(attempts), attempts, "The maximum number of attempts must not be less than 1.");
 			}
 
 			var attempt = 0;
@@ -99,12 +129,9 @@ namespace SmartStore.Utilities
 				{
 					attempt++;
 
-					if (retry != null && !retry(attempt, ex))
-					{
-						throw;
-					}
+					onFailed?.Invoke(attempt, ex);
 
-					if (attempt >= times)
+					if (attempt >= attempts)
 					{
 						throw;
 					}

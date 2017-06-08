@@ -62,6 +62,10 @@ WHERE
 		{
 			builder.AddOrUpdate("Common.For", "For: {0}", "Für: {0}");
 			builder.AddOrUpdate("Products.Sorting.Featured", "Featured", "Empfehlung");
+
+			builder.AddOrUpdate("Common.AdditionalShippingSurcharge",
+				"Plus <b>{0}</b> shipping surcharge",
+				"zzgl. <b>{0}</b> zusätzlicher Versandgebühr");
 		}
 	}
 }

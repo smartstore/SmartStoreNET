@@ -39,8 +39,11 @@ namespace SmartStore.Services.Tasks
             if (taskId == 0)
                 return null;
 
-            return _taskRepository.GetById(taskId);
-        }
+			return Retry.Run(
+				() => _taskRepository.GetById(taskId),
+				3, TimeSpan.FromMilliseconds(100),
+				RetryOnDeadlockException);
+		}
 
         public virtual ScheduleTask GetTaskByType(string type)
         {
@@ -74,7 +77,7 @@ namespace SmartStore.Services.Tasks
             }
             query = query.OrderByDescending(t => t.Enabled);
 
-			return Retry.Execute(
+			return Retry.Run(
 				() => query.ToList(),
 				3, TimeSpan.FromMilliseconds(100),
 				RetryOnDeadlockException);
@@ -89,7 +92,7 @@ namespace SmartStore.Services.Tasks
                         orderby t.NextRunUtc
                         select t;
 
-			return Retry.Execute(
+			return Retry.Run(
 				() => query.ToList(),
 				3, TimeSpan.FromMilliseconds(100),
 				RetryOnDeadlockException);
@@ -115,7 +118,7 @@ namespace SmartStore.Services.Tasks
 		{
 			var query = GetRunningTasksQuery();
 
-			return Retry.Execute(
+			return Retry.Run(
 				() => query.ToList(), 
 				3, TimeSpan.FromMilliseconds(100), 
 				RetryOnDeadlockException);
@@ -281,21 +284,17 @@ namespace SmartStore.Services.Tasks
 			return null;
 		}
 
-		private static bool RetryOnDeadlockException(int attemp, Exception ex)
+		private static void RetryOnDeadlockException(int attemp, Exception ex)
 		{
-			var commandExecException = ex as EntityCommandExecutionException;
-			if (commandExecException != null && commandExecException.IsDeadlockException())
-			{
-				return true;
-			}
+			var isDeadLockException = 
+				(ex as EntityCommandExecutionException).IsDeadlockException() || 
+				(ex as SqlException).IsDeadlockException();
 
-			var sqlException = ex as SqlException;
-			if (sqlException != null && sqlException.IsDeadlockException())
+			if (!isDeadLockException)
 			{
-				return true;
+				// we only want to retry on deadlock stuff
+				throw ex;
 			}
-
-			return false;
 		}
 	}
 }

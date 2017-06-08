@@ -472,7 +472,21 @@ namespace SmartStore.Data
 
 		public void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
 		{
-			this.Entry(entity).Reload();
+			var entry = this.Entry(entity);
+
+			try
+			{
+				entry.Reload();
+			}
+			catch
+			{
+				// Can occur when entity has been detached in the meantime (for whatever fucking reasons)
+				if (entry.State == System.Data.Entity.EntityState.Detached)
+				{
+					entry.State = System.Data.Entity.EntityState.Unchanged;
+					entry.Reload();
+				}
+			}
 		}
 
 		#endregion

@@ -27,6 +27,7 @@
 * **MegaSearch**: Product category order, product manufacturer order and product order were not recognized (sorting)
 * Standard search: Fixed sorting of recently added products
 * Alias for search filters couldn't be set if there's only one language
+* #1168 Cart: MinOrderAmount sometimes ignored
 
 
 ## SmartStore.NET 3.0

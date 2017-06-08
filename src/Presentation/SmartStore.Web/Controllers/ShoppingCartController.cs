@@ -686,12 +686,7 @@ namespace SmartStore.Web.Controllers
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
 			));
 
-			bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
-			if (!minOrderSubtotalAmountOk)
-			{
-				decimal minOrderSubtotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderSubtotalAmount, _workContext.WorkingCurrency);
-				model.MinOrderSubtotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderSubtotalAmount"), _priceFormatter.FormatPrice(minOrderSubtotalAmount, true, false));
-			}
+			model.IsValidMinOrderSubtotal = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
 			model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 
 			//gift card and gift card boxes
@@ -2042,8 +2037,15 @@ namespace SmartStore.Web.Controllers
                 model.DisplayWeight = _shoppingCartSettings.ShowWeight;
                 model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
 
-                //total
-                decimal orderTotalDiscountAmountBase = decimal.Zero;
+				var minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
+				if (!minOrderSubtotalAmountOk)
+				{
+					var minOrderSubtotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderSubtotalAmount, _workContext.WorkingCurrency);
+					model.MinOrderSubtotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderSubtotalAmount"), _priceFormatter.FormatPrice(minOrderSubtotalAmount, true, false));
+				}
+
+				//total
+				decimal orderTotalDiscountAmountBase = decimal.Zero;
                 Discount orderTotalAppliedDiscount = null;
                 List<AppliedGiftCard> appliedGiftCards = null;
                 int redeemedRewardPoints = 0;
@@ -2217,6 +2219,7 @@ namespace SmartStore.Web.Controllers
 
             var cartHtml = String.Empty;
             var totalsHtml = String.Empty;
+			var showCheckoutButtons = true;
 
             if (isCartPage)
             {
@@ -2234,7 +2237,8 @@ namespace SmartStore.Web.Controllers
                     PrepareShoppingCartModel(model, cart);
                     cartHtml = this.RenderPartialViewToString("CartItems", model);
                     totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
-                }
+					showCheckoutButtons = model.IsValidMinOrderSubtotal;
+				}
             }
 
             return Json(new
@@ -2243,7 +2247,8 @@ namespace SmartStore.Web.Controllers
                 SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(),
                 message = warnings,
                 cartHtml = cartHtml,
-                totalsHtml = totalsHtml
+                totalsHtml = totalsHtml,
+				showCheckoutButtons = showCheckoutButtons
             });
         }
 

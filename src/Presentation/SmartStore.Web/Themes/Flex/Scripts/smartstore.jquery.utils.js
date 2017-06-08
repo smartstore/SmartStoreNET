@@ -240,8 +240,20 @@
         },
 
         moreLess: function () {
-            return this.each(function () {
-            	var el = $(this);
+        	return this.each(function () {
+        		var el = $(this);
+
+        		// iOS Safari freaks out when a YouTube video starts playing while the block is collapsed:
+        		// the video disapperars after a while! Other video embeds like Vimeo seem to behave correctly.
+				// So: shit on moreLess in this case.
+        		if (Modernizr.touchevents && /iPhone|iPad/.test(navigator.userAgent)) {
+        			var containsToxicEmbed = el.find("iframe[src*='youtube.com']").length > 0;
+        			if (containsToxicEmbed) {
+        				el.removeClass('more-less');
+        				return;
+        			}
+        		}
+
             	var inner = el.find('> .more-block');
             	var actualHeight = inner.length > 0 ? inner.outerHeight(false) : el.outerHeight(false);
             	var maxHeight = el.data('max-height') || 260;

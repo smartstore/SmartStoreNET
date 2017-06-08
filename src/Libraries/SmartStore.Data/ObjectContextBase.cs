@@ -440,23 +440,26 @@ namespace SmartStore.Data
 
 		public int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class
 		{
-			Func<DbEntityEntry, bool> predicate = x => 
+			return DetachEntities(o => o is TEntity, unchangedEntitiesOnly);
+		}
+
+		public int DetachEntities(Func<object, bool> predicate, bool unchangedEntitiesOnly = true)
+		{
+			Guard.NotNull(predicate, nameof(predicate));
+
+			Func<DbEntityEntry, bool> predicate2 = x =>
 			{
-				if (x.Entity is TEntity)
+				if (x.State > System.Data.Entity.EntityState.Detached && predicate(x.Entity))
 				{
-					if (x.State == System.Data.Entity.EntityState.Detached)
-						return false;
-
-					if (unchangedEntitiesOnly)
-						return x.State == System.Data.Entity.EntityState.Unchanged;
-
-					return true;
+					return unchangedEntitiesOnly 
+						? x.State == System.Data.Entity.EntityState.Unchanged
+						: true;
 				}
 
 				return false;
 			};
-			
-			var attachedEntities = this.ChangeTracker.Entries().Where(predicate).ToList();
+
+			var attachedEntities = this.ChangeTracker.Entries().Where(predicate2).ToList();
 			attachedEntities.Each(entry => entry.State = System.Data.Entity.EntityState.Detached);
 			return attachedEntities.Count;
 		}

@@ -55,7 +55,11 @@ Textvorschläge:<ul>
 	<LocaleResource Name="ConfigSaveNote">
 		<Value>Die Einstellungen wurden erfolgreich gespeichert. Starten Sie die Anwendung bitte neu, falls "Aktualisierung des Zahlungsstatus" geändert wurde.</Value>
 	</LocaleResource>
-	<LocaleResource Name="ConfigGroups">
+  <LocaleResource Name="AuthenticationNotActive">
+    <Value>Amazon Authentifizierung ist nicht aktiv!</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ConfigGroups">
 		<Value>Zugangsdaten;Datenaustausch;Gestaltung;Sonstiges</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderNoteStrings">

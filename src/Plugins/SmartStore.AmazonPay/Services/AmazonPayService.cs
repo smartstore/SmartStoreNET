@@ -333,7 +333,7 @@ namespace SmartStore.AmazonPay.Services
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
 				var storeLocation = _services.WebHelper.GetStoreLocation(store.SslEnabled);
-				model.LoginHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/LoginHandler";
+				model.ButtonHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/PayButtonHandler";
 
 				switch (language.UniqueSeoCode.EmptyNull().ToLower())
 				{
@@ -355,7 +355,7 @@ namespace SmartStore.AmazonPay.Services
 						break;
 				}
 
-				if (type == AmazonPayRequestType.LoginHandler)
+				if (type == AmazonPayRequestType.PayButtonHandler)
 				{
 					if (orderReferenceId.IsEmpty() || addressConsentToken.IsEmpty())
 					{
@@ -413,9 +413,12 @@ namespace SmartStore.AmazonPay.Services
 						return model;
 					}
 				}
-				else if (type == AmazonPayRequestType.Authentication)
+				else if (type == AmazonPayRequestType.AuthenticationPublicInfo)
 				{
-					// No validation, no further data required.
+					model.ButtonHandlerUrl = string.Concat(
+						storeLocation,
+						"Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler?returnUrl=",
+						_httpContext.Request.QueryString["ReturnUrl"]);
 				}
 				else
 				{
@@ -462,7 +465,7 @@ namespace SmartStore.AmazonPay.Services
 					model.ButtonColor = settings.PayButtonColor;
 					model.ButtonSize = settings.PayButtonSize;
 				}
-				else if (type == AmazonPayRequestType.Authentication)
+				else if (type == AmazonPayRequestType.AuthenticationPublicInfo)
 				{
 					model.ButtonType = settings.AuthButtonType;
 					model.ButtonColor = settings.AuthButtonColor;
@@ -508,7 +511,7 @@ namespace SmartStore.AmazonPay.Services
 						}
 					}
 				}
-				else if (type == AmazonPayRequestType.Payment)
+				else if (type == AmazonPayRequestType.PaymentMethod)
 				{
 					if (_rewardPointsSettings.Enabled && !model.IsRecurring)
 					{

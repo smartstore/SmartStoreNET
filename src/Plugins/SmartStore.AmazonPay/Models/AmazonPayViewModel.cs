@@ -19,9 +19,11 @@ namespace SmartStore.AmazonPay.Models
 		public string SellerId { get; set; }
 		public string ClientId { get; set; }
 
+		/// <summary>
+		/// Amazon widget script URL
+		/// </summary>
 		public string WidgetUrl { get; set; }
-		public string ButtonUrl { get; set; }
-		public string LoginHandlerUrl { get; set; }
+		public string ButtonHandlerUrl { get; set; }
 
 		public bool IsShippable { get; set; }
 		public bool IsRecurring { get; set; }

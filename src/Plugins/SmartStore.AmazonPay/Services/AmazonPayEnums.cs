@@ -5,12 +5,20 @@
 		None = 0,
 		ShoppingCart,
 		Address,
-		Payment,
+		PaymentMethod,
 		OrderReviewData,
 		ShippingMethod,
 		MiniShoppingCart,
-		LoginHandler,
-		Authentication
+
+		/// <summary>
+		/// Amazon payment button clicked
+		/// </summary>
+		PayButtonHandler,
+
+		/// <summary>
+		/// Display authentication button on login page
+		/// </summary>
+		AuthenticationPublicInfo
 	}
 
 	public enum AmazonPayTransactionType

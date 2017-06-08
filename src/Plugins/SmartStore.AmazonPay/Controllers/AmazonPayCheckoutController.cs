@@ -26,7 +26,7 @@ namespace SmartStore.AmazonPay.Controllers
 
 		public ActionResult PaymentMethod()
 		{
-			var model = _apiService.CreateViewModel(AmazonPayRequestType.Payment, TempData);
+			var model = _apiService.CreateViewModel(AmazonPayRequestType.PaymentMethod, TempData);
 
 			return GetActionResult(model);
 		}

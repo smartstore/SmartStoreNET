@@ -55,7 +55,11 @@ Text suggestions:<ul>
 	<LocaleResource Name="ConfigSaveNote">
 		<Value>The settings were successfully saved. Please restart the application if "Updating the payment status" has been changed.</Value>
 	</LocaleResource>
-	<LocaleResource Name="ConfigGroups">
+  <LocaleResource Name="AuthenticationNotActive">
+    <Value>Amazon authentication is not active!</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ConfigGroups">
 		<Value>Access data;Data exchange;Layout;Miscellaneous</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderNoteStrings">

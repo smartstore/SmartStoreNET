@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Settings;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Payments;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
@@ -13,10 +17,17 @@ namespace SmartStore.AmazonPay.Controllers
 	public class AmazonPayController : PaymentControllerBase
 	{
 		private readonly IAmazonPayService _apiService;
+		private readonly Lazy<IOpenAuthenticationService> _openAuthenticationService;
+		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
 
-		public AmazonPayController(IAmazonPayService apiService)
+		public AmazonPayController(
+			IAmazonPayService apiService,
+			Lazy<IOpenAuthenticationService> openAuthenticationService,
+			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings)
 		{
 			_apiService = apiService;
+			_openAuthenticationService = openAuthenticationService;
+			_externalAuthenticationSettings = externalAuthenticationSettings;
 		}
 
 		[NonAction]
@@ -79,13 +90,6 @@ namespace SmartStore.AmazonPay.Controllers
 			return Configure();
 		}
 
-		[ChildActionOnly]
-		public ActionResult AuthenticationPublicInfo()
-		{
-			var model = _apiService.CreateViewModel(AmazonPayRequestType.Authentication, TempData);
-			return View(model);
-		}
-
 		[HttpPost]
 		[ValidateInput(false)]
 		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
@@ -93,6 +97,28 @@ namespace SmartStore.AmazonPay.Controllers
 		{
 			_apiService.ProcessIpn(Request);
 			return Content("OK");
+		}
+
+		// Authentication
+
+		[ChildActionOnly]
+		public ActionResult AuthenticationPublicInfo()
+		{
+			var model = _apiService.CreateViewModel(AmazonPayRequestType.AuthenticationPublicInfo, TempData);
+			return View(model);
+		}
+
+		public ActionResult AuthenticationButtonHandler(string addressConsentToken, string returnUrl)
+		{
+			var processor = _openAuthenticationService.Value.LoadExternalAuthenticationMethodBySystemName(AmazonPayPlugin.SystemName, Services.StoreContext.CurrentStore.Id);
+			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings.Value))
+			{
+				throw new SmartException(T("Plugins.Payments.AmazonPay.AuthenticationNotActive"));
+			}
+
+			return HttpContext.Request.IsAuthenticated ?
+				RedirectToReferrer(returnUrl, "~/") :
+				new RedirectResult(Url.LogOn(returnUrl));
 		}
 	}
 }

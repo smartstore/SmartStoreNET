@@ -28,6 +28,7 @@
 * Standard search: Fixed sorting of recently added products
 * Alias for search filters couldn't be set if there's only one language
 * #1168 Cart: MinOrderAmount sometimes ignored
+* Moving products from wishlist to cart was out of function
 
 
 ## SmartStore.NET 3.0

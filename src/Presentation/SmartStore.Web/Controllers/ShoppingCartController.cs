@@ -2294,8 +2294,67 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        // ajax
-        [HttpPost]
+		[ValidateInput(false)]
+		[HttpPost, ActionName("Wishlist")]
+		[FormValueRequired("addtocartbutton")]
+		public ActionResult AddItemstoCartFromWishlist(Guid? customerGuid, FormCollection form)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
+				return RedirectToRoute("HomePage");
+
+			if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
+				return RedirectToRoute("HomePage");
+
+			var pageCustomer = customerGuid.HasValue
+				? _customerService.GetCustomerByGuid(customerGuid.Value)
+				: _workContext.CurrentCustomer;
+
+			if (pageCustomer == null)
+				return RedirectToRoute("HomePage");
+
+			var store = _storeContext.CurrentStore;
+			var pageCart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, store.Id);
+
+			var allWarnings = new List<string>();
+			var numberOfAddedItems = 0;
+			var allIdsToAdd = form["addtocart"] != null 
+				? form["addtocart"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList()
+				: new List<int>();
+
+			foreach (var sci in pageCart)
+			{
+				if (allIdsToAdd.Contains(sci.Item.Id))
+				{
+					var warnings = _shoppingCartService.Copy(sci, _workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, store.Id, true);
+
+					if (warnings.Count == 0)
+						numberOfAddedItems++;
+
+					if (_shoppingCartSettings.MoveItemsFromWishlistToCart && !customerGuid.HasValue && 	warnings.Count == 0)
+					{
+						_shoppingCartService.DeleteShoppingCartItem(sci.Item);
+					}
+					allWarnings.AddRange(warnings);
+				}
+			}
+
+			if (numberOfAddedItems > 0)
+			{
+				return RedirectToRoute("ShoppingCart");
+			}
+
+			var cart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, store.Id);
+			var model = new WishlistModel();
+
+			PrepareWishlistModel(model, cart, !customerGuid.HasValue);
+
+			NotifyInfo(_localizationService.GetResource("Products.SelectProducts"), true);
+
+			return View(model);
+		}
+
+		// ajax
+		[HttpPost]
         [ActionName("MoveItemBetweenCartAndWishlist")]
         public ActionResult MoveItemBetweenCartAndWishlistAjax(int cartItemId, ShoppingCartType cartType, bool isCartPage = false)
         {

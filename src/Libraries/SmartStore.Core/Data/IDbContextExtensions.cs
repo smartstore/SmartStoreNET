@@ -10,7 +10,6 @@ namespace SmartStore
 {
 	public static class IDbContextExtensions
 	{
-
 		/// <summary>
 		/// Detaches all entities from the current object context
 		/// </summary>

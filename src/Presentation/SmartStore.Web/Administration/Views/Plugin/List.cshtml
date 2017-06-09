@@ -31,7 +31,7 @@
 							<span class="label label-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
 						}
 						<span class="license-label">
-							@Html.Partial("Partials/LicenseLabel", plugin.LicenseModel)
+							@Html.Partial("Partials/LicenseLabel", plugin.LicenseLabel)
 						</span>
 					</div>
 					<div class="module-info">
@@ -88,9 +88,9 @@
 										@T("Admin.Configuration.Plugins.Fields.Configure")
 									</a>
 								}
-								@if (plugin.LicenseModel.LicenseUrl.HasValue())
+								@if (plugin.LicenseLabel.LicenseUrl.HasValue())
 								{
-									<button class="btn btn-small plugin-licence" type="button" data-url="@plugin.LicenseModel.LicenseUrl">
+									<button class="btn btn-small plugin-licence" type="button" data-url="@plugin.LicenseLabel.LicenseUrl">
 										<i class="fa fa-key"></i>
 										@T("Admin.Common.License")
 									</button>

@@ -64,7 +64,10 @@
     width: auto;
     -ms-flex-preferred-size: auto;
 }
-
 .ie11 .megamenu-dropdown-container.simple {
     position: static;
+}
+.edge .offcanvas-cart-footer-col.d-flex {
+    display: -webkit-box !important;
+    display: -ms-flexbox !important;
 }

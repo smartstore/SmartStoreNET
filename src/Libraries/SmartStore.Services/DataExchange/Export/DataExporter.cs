@@ -12,10 +12,12 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Email;
 using SmartStore.Core.Localization;
@@ -246,42 +248,63 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			try
 			{
-				_dbContext.DetachAll();
-			}
-			catch (Exception exception)
-			{
-				ctx.Log.Warn(exception, "Detaching all entities failed.");
-			}
-
-			try
-			{
-				// now again attach what is globally required
-				_dbContext.Attach(ctx.Request.Profile);
-				_dbContext.AttachRange(ctx.Stores.Values);
-            }
-			catch (Exception exception)
-			{
-				ctx.Log.Warn(exception, "Re-attaching entities failed.");
-			}
-
-			try
-			{
 				if (ctx.ProductExportContext != null)
+				{
+					_dbContext.DetachEntities(x =>
+					{
+						return x is Product || x is Discount || x is ProductVariantAttributeCombination || x is ProductVariantAttribute || 
+							   x is Picture || x is ProductBundleItem || x is ProductCategory || x is ProductManufacturer ||
+							   x is ProductPicture || x is ProductTag || x is ProductSpecificationAttribute || x is TierPrice;
+					});
+
 					ctx.ProductExportContext.Clear();
+				}
 
 				if (ctx.OrderExportContext != null)
-					ctx.OrderExportContext.Clear();
+				{
+					_dbContext.DetachEntities(x =>
+					{
+						return x is Order || x is Address || x is GenericAttribute || x is Customer ||
+							   x is OrderItem || x is RewardPointsHistory || x is Shipment;
+					});
 
-				if (ctx.ManufacturerExportContext != null)
-					ctx.ManufacturerExportContext.Clear();
+					ctx.OrderExportContext.Clear();
+				}
 
 				if (ctx.CategoryExportContext != null)
+				{
+					_dbContext.DetachEntities(x =>
+					{
+						return x is Category || x is Picture || x is ProductCategory;
+					});
+
 					ctx.CategoryExportContext.Clear();
+				}
+
+				if (ctx.ManufacturerExportContext != null)
+				{
+					_dbContext.DetachEntities(x =>
+					{
+						return x is Manufacturer || x is Picture || x is ProductManufacturer;
+					});
+
+					ctx.ManufacturerExportContext.Clear();
+				}
 
 				if (ctx.CustomerExportContext != null)
+				{
+					_dbContext.DetachEntities(x =>
+					{
+						return x is Customer || x is GenericAttribute || x is CustomerContent;
+					});
+
 					ctx.CustomerExportContext.Clear();
+				}
 			}
-			catch {	}
+			catch (Exception ex)
+			{
+				ctx.Log.Warn(ex, "Detaching entities failed.");
+			}
 		}
 
 		private IExportDataSegmenterProvider CreateSegmenter(DataExporterContext ctx, int pageIndex = 0)

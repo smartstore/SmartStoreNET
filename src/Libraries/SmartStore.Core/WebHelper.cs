@@ -444,11 +444,25 @@ namespace SmartStore.Core
 
 			if (aggressive)
 			{
+				// When plugins are (un)installed, 'aggressive' is always true.
 				if (OptimizedCompilationsEnabled)
 				{
+					// Very hackish:
+					// If optimizedCompilations is on per web.config, touching top-level resources
+					// like global.asax or bin folder is meaningless, 'cause ASP.NET skips these for
+					// hash calculation. This way we can throw in plugins like crazy without invalidating
+					// ASP.NET temp files, which boosts app startup performance dramatically.
+					// Unfortunately, MVC keeps a controller cache file in the temp files folder, which NEVER
+					// gets nuked, unless the 'compilation' element in web.config is changed.
+					// We MUST delete this file to ensure that it gets re-created with our new controller types in it.
 					DeleteMvcTypeCacheFiles();
 				}
-				TryWriteBinFolder();
+				else
+				{
+					// Without optimizedCompilations, touching anything in the bin folder nukes ASP.NET temp folder completely,
+					// including compiled views, MVC cache files etc.
+					TryWriteBinFolder();
+				}
 			}
 			else
 			{

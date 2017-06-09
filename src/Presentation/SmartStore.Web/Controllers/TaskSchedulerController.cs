@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.SessionState;
-using SmartStore.Core.Domain.Tasks;
 using SmartStore.Services.Tasks;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Services.Security;
 using SmartStore.Services;
 using SmartStore.Collections;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Controllers
-{
-   
+{ 
 	[SessionState(SessionStateBehavior.ReadOnly)]
     public class TaskSchedulerController : Controller
     {
@@ -40,12 +36,12 @@ namespace SmartStore.Web.Controllers
             if (!_taskScheduler.VerifyAuthToken(Request.Headers["X-AUTH-TOKEN"]))
                 return new HttpUnauthorizedResult();
 
-            var pendingTasks = _scheduledTaskService.GetPendingTasks();
+			var pendingTasks = _scheduledTaskService.GetPendingTasks();
 			var prevTaskStart = DateTime.UtcNow;
 			var count = 0;
 
-            for (var i = 0; i < pendingTasks.Count; i++)
-            {
+			for (var i = 0; i < pendingTasks.Count; i++)
+			{
 				var task = pendingTasks[i];
 
 				if (i > 0)
@@ -63,9 +59,9 @@ namespace SmartStore.Web.Controllers
 					_taskExecutor.Execute(task);
 					count++;
 				}
-            }
-            
-            return Content("{0} of {1} pending tasks executed".FormatInvariant(count, pendingTasks.Count));
+			}
+
+			return Content("{0} of {1} pending tasks executed".FormatInvariant(count, pendingTasks.Count));
         }
 
         [HttpPost]

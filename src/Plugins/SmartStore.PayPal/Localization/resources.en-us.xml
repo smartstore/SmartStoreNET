@@ -414,7 +414,7 @@ Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
 <li>Click the name of the application and enter <b>Client-ID</b> and <b>Secret</b> below on this page. Save.</li>
 <li>Optional: Click <b>Add</b> next to <b>Experience profile ID</b> to create a new profile. Your shop data (name, logo etc.) can now be displayed to customers when paying on PayPal pages.</li>
 <li>Optional: Click <b>Add</b> next to <b>Webhook-ID</b> to create a webhook. Through a webhook the shop receives PayPal messages und possibly updates the payment state of your orders.</li>
-</ol></p>]]>
+</ol><p>To define images for other payment methods, you have to store files with the following name pattern in the content folder of the plugin: <b>branding.&lt;Plugin-Systemname|Provider-Systemname&gt;.&lt;jpg|jpeg|png|gif&gt;</b><br />For prepayment the pfad is for example <b>\Plugins\SmartStore.OfflinePayment\Content\branding.Payments.Prepayment.jpg</b>. Important: The shop must support SSL for this.</p></p>]]>
         </Value>
       </LocaleResource>
       <LocaleResource Name="MethodUnavailable">

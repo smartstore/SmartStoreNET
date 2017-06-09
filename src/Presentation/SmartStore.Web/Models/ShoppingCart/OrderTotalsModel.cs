@@ -40,10 +40,11 @@ namespace SmartStore.Web.Models.ShoppingCart
         public string WeightMeasureUnitName { get; set; }
 
         public bool ShowConfirmOrderLegalHint { get; set; }
+		public string MinOrderSubtotalWarning { get; set; }
 
-        #region Nested classes
+		#region Nested classes
 
-        public partial class TaxRate: ModelBase
+		public partial class TaxRate: ModelBase
         {
             public string Rate { get; set; }
             public string Value { get; set; }

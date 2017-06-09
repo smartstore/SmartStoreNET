@@ -15,8 +15,11 @@
 				<div class="gal-list">
 					<div class="gal-track" itemscope itemtype="http://schema.org/ImageGallery">
 						@for (int i = 0; i < Model.PictureModels.Count; i++)
-						{
-							var picture = Model.PictureModels[i];
+                        {
+                            var picture = Model.PictureModels[i];
+                            var title = T("Product.ThumbTitle", picture.Title, (i + 1).ToString());
+                            var alternateText = T("Product.ThumbAlternateText", picture.AlternateText, (i + 1).ToString());
+
 							<figure class="gal-item" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
 								<a class="gal-item-viewport" 
 								   itemprop="contentUrl" 
@@ -24,9 +27,9 @@
 								   data-width="@picture.FullSizeImageWidth" 
 								   data-height="@picture.FullSizeImageHeight" 
 								   data-medium-image="@picture.ImageUrl" 
-								   title="@Model.Name" 
+								   title="@title" 
 								   data-picture-id="@picture.PictureId">
-									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@alternateText" />
 								</a>
 							</figure>
 						}
@@ -45,14 +48,13 @@
 						var picture = Model.PictureModels[i];
 						<div class="gal-item">
 							<a class="gal-item-viewport" href="@picture.FullSizeImageUrl" data-thumg-image="@picture.ThumbImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-picture-id="@picture.PictureId">
-								@if (i == Model.GalleryStartIndex)
-								{
-									<img class="gal-item-content" src="@picture.ImageUrl" data-zoom="@picture.FullSizeImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
-								}
-								else
-								{
-									<img class="gal-item-content" data-lazy="@picture.ImageUrl" data-zoom="@picture.FullSizeImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
-								}
+								<img class="gal-item-content"
+									 @Html.Attr(i == Model.GalleryStartIndex ? "src" : "data-lazy", picture.ImageUrl)
+									 data-zoom="@picture.FullSizeImageUrl"
+									 data-zoom-width="@picture.FullSizeImageWidth"
+									 data-zoom-height="@picture.FullSizeImageHeight"
+									 alt="@picture.AlternateText"
+									 title="@picture.Title" />
 							</a>
 						</div>
 					}
@@ -60,7 +62,7 @@
 				else if (defaultPicture.ImageUrl.HasValue())
 				{
 					<div class="gal-item">
-						<div class="gal-item-viewport no-picture" data-content="@T("Common.NoImageAvail")">
+						<div class="gal-item-viewport@(defaultPicture.PictureId == 0 ? " no-picture" : "")" @Html.Attr("data-content", T("Common.NoImageAvail"), defaultPicture.PictureId == 0)>
 							<img class="gal-item-content" src="@defaultPicture.ImageUrl" alt="@defaultPicture.AlternateText" title="@defaultPicture.Title" />
 						</div>
 					</div>

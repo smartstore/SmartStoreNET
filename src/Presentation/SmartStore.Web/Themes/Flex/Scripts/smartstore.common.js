@@ -197,6 +197,14 @@
 	    return spinner;
 	}
 
+	window.getImageSize = function (url, callback) {
+		var img = new Image();
+		img.src = url;
+		img.onload = function () {
+			callback.apply(this, [img.naturalWidth, img.naturalHeight]);
+		};
+	}
+
     // on document ready
 	$(function () {
 

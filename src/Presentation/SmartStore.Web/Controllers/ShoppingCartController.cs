@@ -686,12 +686,7 @@ namespace SmartStore.Web.Controllers
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
 			));
 
-			bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
-			if (!minOrderSubtotalAmountOk)
-			{
-				decimal minOrderSubtotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderSubtotalAmount, _workContext.WorkingCurrency);
-				model.MinOrderSubtotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderSubtotalAmount"), _priceFormatter.FormatPrice(minOrderSubtotalAmount, true, false));
-			}
+			model.IsValidMinOrderSubtotal = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
 			model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 
 			//gift card and gift card boxes
@@ -2042,8 +2037,15 @@ namespace SmartStore.Web.Controllers
                 model.DisplayWeight = _shoppingCartSettings.ShowWeight;
                 model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
 
-                //total
-                decimal orderTotalDiscountAmountBase = decimal.Zero;
+				var minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
+				if (!minOrderSubtotalAmountOk)
+				{
+					var minOrderSubtotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderSubtotalAmount, _workContext.WorkingCurrency);
+					model.MinOrderSubtotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderSubtotalAmount"), _priceFormatter.FormatPrice(minOrderSubtotalAmount, true, false));
+				}
+
+				//total
+				decimal orderTotalDiscountAmountBase = decimal.Zero;
                 Discount orderTotalAppliedDiscount = null;
                 List<AppliedGiftCard> appliedGiftCards = null;
                 int redeemedRewardPoints = 0;
@@ -2217,6 +2219,7 @@ namespace SmartStore.Web.Controllers
 
             var cartHtml = String.Empty;
             var totalsHtml = String.Empty;
+			var showCheckoutButtons = true;
 
             if (isCartPage)
             {
@@ -2234,7 +2237,8 @@ namespace SmartStore.Web.Controllers
                     PrepareShoppingCartModel(model, cart);
                     cartHtml = this.RenderPartialViewToString("CartItems", model);
                     totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
-                }
+					showCheckoutButtons = model.IsValidMinOrderSubtotal;
+				}
             }
 
             return Json(new
@@ -2243,7 +2247,8 @@ namespace SmartStore.Web.Controllers
                 SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(),
                 message = warnings,
                 cartHtml = cartHtml,
-                totalsHtml = totalsHtml
+                totalsHtml = totalsHtml,
+				showCheckoutButtons = showCheckoutButtons
             });
         }
 
@@ -2289,8 +2294,67 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        // ajax
-        [HttpPost]
+		[ValidateInput(false)]
+		[HttpPost, ActionName("Wishlist")]
+		[FormValueRequired("addtocartbutton")]
+		public ActionResult AddItemstoCartFromWishlist(Guid? customerGuid, FormCollection form)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
+				return RedirectToRoute("HomePage");
+
+			if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
+				return RedirectToRoute("HomePage");
+
+			var pageCustomer = customerGuid.HasValue
+				? _customerService.GetCustomerByGuid(customerGuid.Value)
+				: _workContext.CurrentCustomer;
+
+			if (pageCustomer == null)
+				return RedirectToRoute("HomePage");
+
+			var store = _storeContext.CurrentStore;
+			var pageCart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, store.Id);
+
+			var allWarnings = new List<string>();
+			var numberOfAddedItems = 0;
+			var allIdsToAdd = form["addtocart"] != null 
+				? form["addtocart"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList()
+				: new List<int>();
+
+			foreach (var sci in pageCart)
+			{
+				if (allIdsToAdd.Contains(sci.Item.Id))
+				{
+					var warnings = _shoppingCartService.Copy(sci, _workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, store.Id, true);
+
+					if (warnings.Count == 0)
+						numberOfAddedItems++;
+
+					if (_shoppingCartSettings.MoveItemsFromWishlistToCart && !customerGuid.HasValue && 	warnings.Count == 0)
+					{
+						_shoppingCartService.DeleteShoppingCartItem(sci.Item);
+					}
+					allWarnings.AddRange(warnings);
+				}
+			}
+
+			if (numberOfAddedItems > 0)
+			{
+				return RedirectToRoute("ShoppingCart");
+			}
+
+			var cart = pageCustomer.GetCartItems(ShoppingCartType.Wishlist, store.Id);
+			var model = new WishlistModel();
+
+			PrepareWishlistModel(model, cart, !customerGuid.HasValue);
+
+			NotifyInfo(_localizationService.GetResource("Products.SelectProducts"), true);
+
+			return View(model);
+		}
+
+		// ajax
+		[HttpPost]
         [ActionName("MoveItemBetweenCartAndWishlist")]
         public ActionResult MoveItemBetweenCartAndWishlistAjax(int cartItemId, ShoppingCartType cartType, bool isCartPage = false)
         {

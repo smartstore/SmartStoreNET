@@ -497,6 +497,10 @@
     <Compile Include="Migrations\201705281903241_MoreIndexes.Designer.cs">
       <DependentUpon>201705281903241_MoreIndexes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706020759565_UpdateMediaPath.cs" />
+    <Compile Include="Migrations\201706020759565_UpdateMediaPath.Designer.cs">
+      <DependentUpon>201706020759565_UpdateMediaPath.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -905,6 +909,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705281903241_MoreIndexes.resx">
       <DependentUpon>201705281903241_MoreIndexes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706020759565_UpdateMediaPath.resx">
+      <DependentUpon>201706020759565_UpdateMediaPath.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

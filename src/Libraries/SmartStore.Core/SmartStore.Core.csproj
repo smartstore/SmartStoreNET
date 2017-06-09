@@ -266,6 +266,7 @@
     <Compile Include="Logging\log4net\SmartFileAppender.cs" />
     <Compile Include="Logging\LoggingModule.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
+    <Compile Include="Plugins\PluginManager.Cache.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
     <Compile Include="Plugins\Providers\IsHiddenAttribute.cs" />
@@ -519,7 +520,7 @@
     <Compile Include="Domain\Security\SecuritySettings.cs" />
     <Compile Include="Domain\Shipping\ShippingStatus.cs" />
     <Compile Include="Domain\StoreInformationSettings.cs" />
-    <Compile Include="GenericComparer.cs" />
+    <Compile Include="GenericEqualityComparer.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="IHideObjectMembers.cs" />
     <Compile Include="Infrastructure\ComparableObject.cs" />
@@ -652,6 +653,7 @@
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="ComponentModel\FastActivator.cs" />
+    <Compile Include="Utilities\Retry.cs" />
     <Compile Include="Utilities\SeoHelper.cs" />
     <Compile Include="Utilities\SmartSyndicationFeed.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />

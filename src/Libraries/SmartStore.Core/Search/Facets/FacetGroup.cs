@@ -25,6 +25,11 @@ namespace SmartStore.Core.Search.Facets
 		private readonly Dictionary<string, Facet> _facets;
 		private FacetGroupKind? _kind;
 
+		public FacetGroup()
+			: this (string.Empty, string.Empty, false, 0, Enumerable.Empty<Facet>())
+		{
+		}
+
 		public FacetGroup(
 			string key,
 			string label,

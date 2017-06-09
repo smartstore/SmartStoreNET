@@ -2,6 +2,7 @@
 
 ## SmartStore.NET 3.0.1
 ### Improvements
+* (Perf) Much faster application startup
 * **BeezUP**:
 	* Exports up to 9 product images
 	* Export stock quantity when stock is managed by attributes
@@ -10,6 +11,7 @@
 * Instant search should search manufacturer/brand name
 * (Dev) New 'ApplicationStarted' event
 * **GMC**: Added missing database indexes.
+* **Web API**: Added endpoints for blog post and blog comment
 
 ### Bugfixes
 * #1145: Fixed HTTP 404 after switching language
@@ -18,6 +20,15 @@
 * Item row in list style product list should not wrap on small devices
 * Item row in list style product list squashed on Android system browser
 * Linq search: Filter for manufacturers and categories were not limited by store
+* **GMC**: Fixes duplicate occurrence of application path in absolute product URL
+* Products with stock managed by attributes sometimes not displayed in category lists
+* Fixed System.MissingMethodException for SmartStore.Core.Search.Facets.FacetGroup
+* Fixed uploaded image paths in HTML fields (Media/Uploaded > Media/<TenantName>/Uploaded)
+* **MegaSearch**: Product category order, product manufacturer order and product order were not recognized (sorting)
+* Standard search: Fixed sorting of recently added products
+* Alias for search filters couldn't be set if there's only one language
+* #1168 Cart: MinOrderAmount sometimes ignored
+* Moving products from wishlist to cart was out of function
 
 
 ## SmartStore.NET 3.0

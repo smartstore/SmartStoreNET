@@ -1071,8 +1071,18 @@ namespace SmartStore.Web.Controllers
 									var picture = productPicture.Value.FirstOrDefault();
 									if (picture != null)
 									{
-										item.ImageUrl = _pictureService.Value.GetPictureUrl(picture.Picture, _mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
-											!_catalogSettings.HideProductDefaultPictures, storeLocation);
+										try
+										{
+											item.ImageUrl = _pictureService.Value.GetPictureUrl(
+												picture.Picture,
+												_mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
+												!_catalogSettings.HideProductDefaultPictures,
+												storeLocation);
+										}
+										catch (Exception exception)
+										{
+											exception.Dump();
+										}
 									}
 								}
 

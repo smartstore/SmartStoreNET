@@ -228,9 +228,15 @@ namespace SmartStore.Services.Tasks
 				{
 					if (response != null)
 					{
-						msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
+						var statusCode = (int)response.StatusCode;
+						if (statusCode < 500)
+						{
+							// Any internal server error (>= 500) already handled by TaskSchedulerController's exception filter
+							msg += " HTTP {0}, {1}".FormatCurrent(statusCode, response.StatusDescription);
+							Logger.Error(msg);
+						}
 					}
-					Logger.Error(msg);
+					
 				}
 			}
 		}

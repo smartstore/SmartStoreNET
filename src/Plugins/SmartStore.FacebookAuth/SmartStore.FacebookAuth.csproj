@@ -220,7 +220,6 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Notes.txt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\ExternalAuthFacebook\Configure.cshtml">

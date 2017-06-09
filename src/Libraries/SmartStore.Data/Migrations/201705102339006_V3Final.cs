@@ -231,7 +231,6 @@ namespace SmartStore.Data.Migrations
 				"Ergebnisse für {0} werden angezeigt. Ihre Suche nach {1} ergab leider keine Treffer.");
 
 			builder.Delete("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Position");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Relevance", "Relevance", "Relevanz");
 
 			builder.Delete(
 				"Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteEnabled",

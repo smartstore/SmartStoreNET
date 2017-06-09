@@ -56,6 +56,7 @@ namespace SmartStore.Web.Models.Catalog
 		public bool AllowSorting { get; set; }
 		public int? CurrentSortOrder { get; set; }
 		public string CurrentSortOrderName { get; set; }
+		public string RelevanceSortOrderName { get; set; }
 		public IDictionary<int, string> AvailableSortOptions { get; set; }
 
 		public IEnumerable<int> AvailablePageSizes { get; set; }

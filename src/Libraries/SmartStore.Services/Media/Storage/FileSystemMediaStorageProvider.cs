@@ -32,7 +32,9 @@ namespace SmartStore.Services.Media.Storage
 
 		public Stream OpenRead(MediaItem media)
 		{
-			return _fileSystem.GetFile(GetPicturePath(media))?.OpenRead();
+			var file = _fileSystem.GetFile(GetPicturePath(media));
+
+			return file.Exists ? file.OpenRead() : null;
 		}
 
 		public byte[] Load(MediaItem media)
@@ -92,7 +94,6 @@ namespace SmartStore.Services.Media.Storage
 			foreach (var media in medias)
 			{
 				var filePath = GetPicturePath(media);
-
 				_fileSystem.DeleteFile(filePath);
 			}
 		}

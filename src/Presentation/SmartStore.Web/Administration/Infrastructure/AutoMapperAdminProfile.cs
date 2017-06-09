@@ -409,7 +409,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.IconUrl, mo => mo.Ignore())
 				.ForMember(dest => dest.ConfigurationRoute, mo => mo.Ignore())
-				.ForMember(dest => dest.LicenseModel, mo => mo.Ignore());
+				.ForMember(dest => dest.LicenseLabel, mo => mo.Ignore());
 			//newsLetter subscriptions
 			CreateMap<NewsLetterSubscription, NewsLetterSubscriptionModel>()
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())

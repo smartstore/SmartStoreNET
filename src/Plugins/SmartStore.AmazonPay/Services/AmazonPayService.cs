@@ -37,7 +37,7 @@ using SmartStore.Services.Tasks;
 
 namespace SmartStore.AmazonPay.Services
 {
-	public class AmazonPayService : IAmazonPayService, IExternalProviderAuthorizer
+	public class AmazonPayService : IAmazonPayService
 	{
 		private readonly IAmazonPayApi _api;
 		private readonly HttpContextBase _httpContext;
@@ -418,7 +418,7 @@ namespace SmartStore.AmazonPay.Services
 					model.ButtonHandlerUrl = string.Concat(
 						storeLocation,
 						"Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler?returnUrl=",
-						_httpContext.Request.QueryString["ReturnUrl"]);
+						_httpContext.Request.QueryString["returnUrl"]);
 				}
 				else
 				{
@@ -1309,7 +1309,16 @@ namespace SmartStore.AmazonPay.Services
 
 		public AuthorizeState Authorize(string returnUrl, bool? verifyResponse = null)
 		{
-			throw new NotImplementedException();
+			var addressConsentToken = _httpContext.Request.QueryString["addressConsentToken"];
+			if (addressConsentToken.IsEmpty())
+			{
+				var result = new AuthorizeState("", OpenAuthenticationStatus.Error);
+				result.AddError(T("Plugins.Payments.AmazonPay.MissingAddressConsentToken"));
+				return result;
+			}
+
+
+			return new AuthorizeState("", OpenAuthenticationStatus.Unknown);
 		}
 
 		#endregion

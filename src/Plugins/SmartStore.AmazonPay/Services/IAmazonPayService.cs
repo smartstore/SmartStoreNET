@@ -7,10 +7,11 @@ using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Authentication.External;
 
 namespace SmartStore.AmazonPay.Services
 {
-	public partial interface IAmazonPayService
+	public partial interface IAmazonPayService : IExternalProviderAuthorizer
 	{
 		void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null);
 		void LogAmazonError(OffAmazonPaymentsServiceException exception, bool notify = false, IList<string> errors = null);

@@ -116,6 +116,21 @@ namespace SmartStore.AmazonPay.Controllers
 				throw new SmartException(T("Plugins.Payments.AmazonPay.AuthenticationNotActive"));
 			}
 
+			var result = _apiService.Authorize(returnUrl);
+
+			switch (result.AuthenticationStatus)
+			{
+				case OpenAuthenticationStatus.Error:
+					result.Errors.Each(x => NotifyError(x));
+					break;
+				//...
+			}
+
+			if (result.Result != null)
+			{
+				return result.Result;
+			}
+
 			return HttpContext.Request.IsAuthenticated ?
 				RedirectToReferrer(returnUrl, "~/") :
 				new RedirectResult(Url.LogOn(returnUrl));

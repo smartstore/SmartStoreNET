@@ -29,6 +29,7 @@
 * Alias for search filters couldn't be set if there's only one language
 * #1168 Cart: MinOrderAmount sometimes ignored
 * Moving products from wishlist to cart was out of function
+* Facebook login out of function due to Facebook API changes (always returns "Unknown error")
 
 
 ## SmartStore.NET 3.0

@@ -179,6 +179,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\ExternalAuthFacebookController.cs" />
+    <Compile Include="Core\FacebookOAuth2Client.cs" />
     <Compile Include="Core\FacebookProviderAuthorizer.cs" />
     <Compile Include="Core\IOAuthProviderFacebookAuthorizer.cs" />
     <Compile Include="Core\OAuthAuthenticationParameters.cs" />

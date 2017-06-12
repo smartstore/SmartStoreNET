@@ -1,26 +1,116 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using OffAmazonPaymentsService;
 using OffAmazonPaymentsService.Model;
-using SmartStore.AmazonPay.Extensions;
 using SmartStore.AmazonPay.Services;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 
-namespace SmartStore.AmazonPay.Api
+namespace SmartStore.AmazonPay
 {
-	public static class AmazonPayApiExtensions
+	internal static class AmazonPayExtensions
 	{
-		public static bool GetErrorStrings(this OffAmazonPaymentsServiceException exception, out string shortMessage, out string fullMessage)
+		internal static void ToFirstAndLastName(this string name, out string firstName, out string lastName)
+		{
+			if (!string.IsNullOrWhiteSpace(name))
+			{
+				int index = name.LastIndexOf(' ');
+				if (index == -1)
+				{
+					firstName = "";
+					lastName = name;
+				}
+				else
+				{
+					firstName = name.Substring(0, index);
+					lastName = name.Substring(index + 1);
+				}
+
+				firstName = firstName.EmptyNull().Truncate(4000);
+				lastName = lastName.EmptyNull().Truncate(4000);
+			}
+			else
+			{
+				firstName = lastName = "";
+			}
+		}
+
+		internal static void ToFirstAndLastName(this SmartStore.Core.Domain.Common.Address address, string name)
+		{
+			string firstName, lastName;
+			name.ToFirstAndLastName(out firstName, out lastName);
+
+			address.FirstName = firstName;
+			address.LastName = lastName;
+		}
+
+		internal static SmartStore.Core.Domain.Common.Address FindAddress(
+			this List<SmartStore.Core.Domain.Common.Address> addresses,
+			SmartStore.Core.Domain.Common.Address address,
+			bool uncompleteToo)
+		{
+			var match = addresses.FindAddress(address.FirstName, address.LastName,
+				address.PhoneNumber, address.Email, address.FaxNumber, address.Company,
+				address.Address1, address.Address2,
+				address.City, address.StateProvinceId, address.ZipPostalCode, address.CountryId);
+
+			if (match == null && uncompleteToo)
+			{
+				// Compare with ToAddress
+				match = addresses.FirstOrDefault(x =>
+					x.FirstName == null && x.LastName == null &&
+					x.Address1 == null && x.Address2 == null &&
+					x.City == address.City && x.ZipPostalCode == address.ZipPostalCode &&
+					x.PhoneNumber == null &&
+					x.CountryId == address.CountryId && x.StateProvinceId == address.StateProvinceId
+				);
+			}
+
+			return match;
+		}
+
+		internal static bool HasAmazonPayState(this HttpContextBase httpContext)
+		{
+			var checkoutState = httpContext.GetCheckoutState();
+			var checkoutStateKey = AmazonPayPlugin.SystemName + ".CheckoutState";
+
+			if (checkoutState != null && checkoutState.CustomProperties.ContainsKey(checkoutStateKey))
+			{
+				var state = checkoutState.CustomProperties[checkoutStateKey] as AmazonPayCheckoutState;
+
+				return (state != null && state.OrderReferenceId.HasValue());
+			}
+			return false;
+		}
+
+		internal static AmazonPayCheckoutState GetAmazonPayState(this HttpContextBase httpContext, ILocalizationService localizationService)
+		{
+			var checkoutState = httpContext.GetCheckoutState();
+
+			if (checkoutState == null)
+				throw new SmartException(localizationService.GetResource("Plugins.Payments.AmazonPay.MissingCheckoutSessionState"));
+
+			var state = checkoutState.CustomProperties.Get(AmazonPayPlugin.SystemName + ".CheckoutState") as AmazonPayCheckoutState;
+
+			if (state == null)
+				throw new SmartException(localizationService.GetResource("Plugins.Payments.AmazonPay.MissingCheckoutSessionState"));
+
+			return state;
+		}
+
+
+		internal static bool GetErrorStrings(this OffAmazonPaymentsServiceException exception, out string shortMessage, out string fullMessage)
 		{
 			shortMessage = fullMessage = null;
 
 			try
 			{
-
 				if (exception.Message.HasValue())
 				{
 					shortMessage = exception.Message;
@@ -44,7 +134,7 @@ namespace SmartStore.AmazonPay.Api
 			return shortMessage.HasValue();
 		}
 
-		public static string ToFormatedAddress(this Address amazonAddress, ICountryService countryService, IStateProvinceService stateProvinceService)
+		internal static string ToFormatedAddress(this Address amazonAddress, ICountryService countryService, IStateProvinceService stateProvinceService)
 		{
 			var sb = new StringBuilder();
 
@@ -101,8 +191,8 @@ namespace SmartStore.AmazonPay.Api
 
 			return sb.ToString();
 		}
-		
-		public static void ToAddress(this Address amazonAddress, SmartStore.Core.Domain.Common.Address address, ICountryService countryService,
+
+		internal static void ToAddress(this Address amazonAddress, SmartStore.Core.Domain.Common.Address address, ICountryService countryService,
 			IStateProvinceService stateProvinceService, out bool countryAllowsShipping, out bool countryAllowsBilling)
 		{
 			countryAllowsShipping = countryAllowsBilling = true;
@@ -181,8 +271,8 @@ namespace SmartStore.AmazonPay.Api
 			if (address.StateProvinceId == 0)
 				address.StateProvinceId = null;
 		}
-		
-		public static void ToAddress(this OrderReferenceDetails details, SmartStore.Core.Domain.Common.Address address, ICountryService countryService,
+
+		internal static void ToAddress(this OrderReferenceDetails details, SmartStore.Core.Domain.Common.Address address, ICountryService countryService,
 			IStateProvinceService stateProvinceService, out bool countryAllowsShipping, out bool countryAllowsBilling)
 		{
 			countryAllowsShipping = countryAllowsBilling = true;
@@ -198,7 +288,7 @@ namespace SmartStore.AmazonPay.Api
 			}
 		}
 
-		public static Order GetOrderByAmazonId(this IRepository<Order> orderRepository, string amazonId)
+		internal static Order GetOrderByAmazonId(this IRepository<Order> orderRepository, string amazonId)
 		{
 			// S02-9777218-8608106				OrderReferenceId
 			// S02-9777218-8608106-A088344		Auth ID

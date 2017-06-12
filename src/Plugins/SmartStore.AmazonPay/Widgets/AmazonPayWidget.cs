@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web;
 using System.Web.Routing;
-using SmartStore.AmazonPay.Extensions;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Cms;
 using SmartStore.Web.Models.ShoppingCart;

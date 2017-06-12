@@ -11,7 +11,6 @@ using System.Xml.Serialization;
 using Autofac;
 using OffAmazonPaymentsService;
 using SmartStore.AmazonPay.Api;
-using SmartStore.AmazonPay.Extensions;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Async;
@@ -57,6 +56,9 @@ namespace SmartStore.AmazonPay.Services
 		private readonly IScheduleTaskService _scheduleTaskService;
 		private readonly IWorkflowMessageService _workflowMessageService;
 
+		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
+		private readonly Lazy<IExternalAuthorizer> _authorizer;
+
 		public AmazonPayService(
 			IAmazonPayApi api,
 			HttpContextBase httpContext,
@@ -74,7 +76,9 @@ namespace SmartStore.AmazonPay.Services
 			IRepository<Order> orderRepository,
 			IOrderProcessingService orderProcessingService,
 			IScheduleTaskService scheduleTaskService,
-			IWorkflowMessageService workflowMessageService)
+			IWorkflowMessageService workflowMessageService,
+			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings,
+			Lazy<IExternalAuthorizer> authorizer)
 		{
 			_api = api;
 			_httpContext = httpContext;
@@ -93,6 +97,8 @@ namespace SmartStore.AmazonPay.Services
 			_orderProcessingService = orderProcessingService;
 			_scheduleTaskService = scheduleTaskService;
 			_workflowMessageService = workflowMessageService;
+			_externalAuthenticationSettings = externalAuthenticationSettings;
+			_authorizer = authorizer;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -320,7 +326,7 @@ namespace SmartStore.AmazonPay.Services
 			AmazonPayRequestType type,
 			TempDataDictionary tempData,
 			string orderReferenceId = null,
-			string addressConsentToken = null)
+			string accessToken = null)
 		{
 			var model = new AmazonPayViewModel();
 			model.Type = type;
@@ -357,7 +363,7 @@ namespace SmartStore.AmazonPay.Services
 
 				if (type == AmazonPayRequestType.PayButtonHandler)
 				{
-					if (orderReferenceId.IsEmpty() || addressConsentToken.IsEmpty())
+					if (orderReferenceId.IsEmpty() || accessToken.IsEmpty())
 					{
 						var msg = orderReferenceId.IsEmpty() ? T("Plugins.Payments.AmazonPay.MissingOrderReferenceId") : T("Plugins.Payments.AmazonPay.MissingAddressConsentToken");
 						LogError(null, msg, null, true);
@@ -390,7 +396,7 @@ namespace SmartStore.AmazonPay.Services
 					var state = new AmazonPayCheckoutState
 					{
 						OrderReferenceId = orderReferenceId,
-						AddressConsentToken = addressConsentToken
+						AddressConsentToken = accessToken
 					};
 
 					if (checkoutState.CustomProperties.ContainsKey(checkoutStateKey))
@@ -444,7 +450,7 @@ namespace SmartStore.AmazonPay.Services
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 
 				model.SellerId = settings.SellerId;
-				model.ClientId = settings.AccessKey;
+				model.ClientId = settings.ClientId;
 				model.IsShippable = cart.RequiresShipping();
 				model.IsRecurring = cart.IsRecurring();
 				model.WidgetUrl = settings.WidgetUrl;
@@ -1309,16 +1315,39 @@ namespace SmartStore.AmazonPay.Services
 
 		public AuthorizeState Authorize(string returnUrl, bool? verifyResponse = null)
 		{
-			var addressConsentToken = _httpContext.Request.QueryString["addressConsentToken"];
-			if (addressConsentToken.IsEmpty())
+			var email = _httpContext.Request.QueryString["email"];
+			var name = _httpContext.Request.QueryString["name"];
+			var customerId = _httpContext.Request.QueryString["customerId"];
+
+			if (email.IsEmpty() || name.IsEmpty() || customerId.IsEmpty())
 			{
-				var result = new AuthorizeState("", OpenAuthenticationStatus.Error);
-				result.AddError(T("Plugins.Payments.AmazonPay.MissingAddressConsentToken"));
-				return result;
+				var msg = T("Plugins.Payments.AmazonPay.IncompleteProfileDetails") +
+					$" Email: {email.NaIfEmpty()}, name: {name.NaIfEmpty()}, customerId: {customerId.NaIfEmpty()}.";
+
+				var state = new AuthorizeState("", OpenAuthenticationStatus.Error);
+				state.AddError(msg);
+				Logger.Error(msg);
+				return state;
 			}
 
+			string firstName, lastName;
+			name.ToFirstAndLastName(out firstName, out lastName);
 
-			return new AuthorizeState("", OpenAuthenticationStatus.Unknown);
+			var claims = new UserClaims();
+			claims.Name = new NameClaims();
+			claims.Contact = new ContactClaims();
+			claims.Contact.Email = email;
+			claims.Name.FullName = name;
+			claims.Name.First = firstName;
+			claims.Name.Last = lastName;
+
+			var parameters = new AmazonAuthenticationParameters();
+			parameters.ExternalIdentifier = customerId;
+			parameters.AddClaim(claims);
+
+			var result = _authorizer.Value.Authorize(parameters);
+
+			return new AuthorizeState(returnUrl, result);
 		}
 
 		#endregion

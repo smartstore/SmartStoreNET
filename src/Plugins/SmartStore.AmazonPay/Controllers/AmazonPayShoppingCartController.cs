@@ -12,9 +12,9 @@ namespace SmartStore.AmazonPay.Controllers
 			_apiService = apiService;
 		}
 
-		public ActionResult PayButtonHandler(string orderReferenceId, string addressConsentToken)
+		public ActionResult PayButtonHandler(string orderReferenceId, string accessToken)
 		{
-			var model = _apiService.CreateViewModel(AmazonPayRequestType.PayButtonHandler, TempData, orderReferenceId, addressConsentToken);
+			var model = _apiService.CreateViewModel(AmazonPayRequestType.PayButtonHandler, TempData, orderReferenceId, accessToken);
 
 			return GetActionResult(model);
 		}

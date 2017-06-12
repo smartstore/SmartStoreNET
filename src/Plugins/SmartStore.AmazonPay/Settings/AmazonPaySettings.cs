@@ -32,6 +32,8 @@ namespace SmartStore.AmazonPay.Settings
 		public string SellerId { get; set; }
 		public string AccessKey { get; set; }
 		public string SecretKey { get; set; }
+		public string ClientId { get; set; }
+		//public string ClientSecret { get; set; }
 		public string Marketplace { get; set; }
 		
 		public AmazonPayDataFetchingType DataFetching { get; set; }

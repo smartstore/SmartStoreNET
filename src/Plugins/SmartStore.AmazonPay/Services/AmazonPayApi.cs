@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using OffAmazonPaymentsService.Model;
-using SmartStore.AmazonPay.Extensions;
 using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Customers;

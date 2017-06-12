@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
-using SmartStore.AmazonPay.Extensions;
 using SmartStore.AmazonPay.Services;
 
 namespace SmartStore.AmazonPay.Filters

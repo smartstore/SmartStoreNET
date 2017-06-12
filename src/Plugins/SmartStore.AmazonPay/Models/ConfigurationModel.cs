@@ -23,6 +23,12 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.SecretKey")]
 		public string SecretKey { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ClientId")]
+		public string ClientId { get; set; }
+
+		//[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ClientSecret")]
+		//public string ClientSecret { get; set; }
+
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.Marketplace")]
 		public string Marketplace { get; set; }
 
@@ -105,7 +111,10 @@ namespace SmartStore.AmazonPay.Models
 				SellerId = settings.SellerId;
 				AccessKey = settings.AccessKey;
 				SecretKey = settings.SecretKey;
+				ClientId = settings.ClientId;
+				//ClientSecret = settings.ClientSecret;
 				Marketplace = settings.Marketplace;
+
 				DataFetching = settings.DataFetching;
 				PollingMaxOrderCreationDays = settings.PollingMaxOrderCreationDays;
 				TransactionType = settings.TransactionType;
@@ -135,7 +144,10 @@ namespace SmartStore.AmazonPay.Models
 				settings.SellerId = SellerId;
 				settings.AccessKey = AccessKey;
 				settings.SecretKey = SecretKey;
+				settings.ClientId = ClientId;
+				//settings.ClientSecret = ClientSecret;
 				settings.Marketplace = Marketplace;
+
 				settings.DataFetching = DataFetching;
 				settings.PollingMaxOrderCreationDays = PollingMaxOrderCreationDays;
 				settings.TransactionType = TransactionType;

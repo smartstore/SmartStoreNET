@@ -32,6 +32,9 @@ Text suggestions:<ul>
   <LocaleResource Name="MissingAddressConsentToken">
     <Value>There was no address token transmitted by Amazon!</Value>
   </LocaleResource>
+  <LocaleResource Name="IncompleteProfileDetails">
+    <Value>Incomplete Amazon profile data!</Value>
+  </LocaleResource>
   <LocaleResource Name="PaymentMethodNotActive">
 		<Value>Payment method "Login and Pay with Amazon" is not available for store "{0}".</Value>
 	</LocaleResource>
@@ -92,18 +95,30 @@ Text suggestions:<ul>
 	<LocaleResource Name="Marketplace.Uk">
 		<Value>United Kingdom of Great Britain</Value>
 	</LocaleResource>
-	<LocaleResource Name="AccessKey">
+  <LocaleResource Name="AccessKey">
+    <Value>Your Access Key ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="AccessKey.Hint">
+    <Value>You can find the Access Key ID at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+  </LocaleResource>
+  <LocaleResource Name="SecretKey">
+    <Value>Your Secret Access Key</Value>
+  </LocaleResource>
+  <LocaleResource Name="SecretKey.Hint">
+    <Value>You can find the Sexret Access Key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+  </LocaleResource>
+	<LocaleResource Name="ClientKey">
 		<Value>Your Client ID</Value>
 	</LocaleResource>
-	<LocaleResource Name="AccessKey.Hint">
-		<Value>You can find the Client ID at Amazon's Seller Central under Login with Amazon - Settings.</Value>
+	<LocaleResource Name="ClientKey.Hint">
+		<Value>You can find the Client ID at Amazon's Seller Central under Integration - MWS Access Key.</Value>
 	</LocaleResource>
-	<LocaleResource Name="SecretKey">
+	<!--<LocaleResource Name="ClientSecret">
 		<Value>Your Client Secret</Value>
 	</LocaleResource>
-	<LocaleResource Name="SecretKey.Hint">
-		<Value>You can find the Cleint Secret at Amazon's Seller Central under Login with Amazon - Settings.</Value>
-	</LocaleResource>
+	<LocaleResource Name="ClientSecret.Hint">
+		<Value>You can find the Cleint Secret at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+	</LocaleResource>-->
   <LocaleResource Name="PayButtonType">
     <Value>Pay button type</Value>
   </LocaleResource>

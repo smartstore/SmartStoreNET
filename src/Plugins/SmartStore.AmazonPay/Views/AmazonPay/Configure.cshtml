@@ -1,7 +1,6 @@
 ﻿@using SmartStore.Web.Framework;
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.AmazonPay.Models;
-@using SmartStore.AmazonPay.Extensions;
 @model ConfigurationModel
 @{
     Layout = "";
@@ -79,6 +78,26 @@
 			@Html.ValidationMessageFor(model => model.SecretKey)
         </td>
     </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ClientId)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.ClientId)
+				@Html.TextBoxFor(model => model.ClientId, new { @class = "input-large" })
+				@Html.ValidationMessageFor(model => model.ClientId)
+			</td>
+		</tr>
+		@*<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ClientSecret)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.ClientSecret)
+				@Html.TextBoxFor(model => model.ClientSecret, new { @class = "input-large" })
+				@Html.ValidationMessageFor(model => model.ClientSecret)
+			</td>
+		</tr>*@
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Marketplace)

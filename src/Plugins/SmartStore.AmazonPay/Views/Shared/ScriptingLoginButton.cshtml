@@ -23,7 +23,13 @@
 		}
 
 		try {
-			var authRequest, addressConsentToken;
+			var isAuthentication = @((Model.Type == AmazonPayRequestType.AuthenticationPublicInfo).ToString().ToLower());
+			var handlerUrl = '@Html.Raw(string.Concat(Model.ButtonHandlerUrl, Model.ButtonHandlerUrl.Contains('?') ? "&" : "?"))';
+			var accessToken, scope = 'profile';
+
+			if (!isAuthentication) {
+				scope += ' payments:widget payments:shipping_address payments:billing_address';
+			}
 
 			OffAmazonPayments.Button('@Html.Raw(Model.WidgetId)', '@Html.Raw(Model.SellerId)', {
 				type: '@(Model.ButtonType ?? (Model.Type == AmazonPayRequestType.AuthenticationPublicInfo ? "Login" : "PwA"))',
@@ -31,30 +37,34 @@
 				size:  '@(Model.ButtonSize ?? "small")',
 				language: '@(Model.LanguageCode ?? "de-DE")',
 				authorization: function() {
-					authRequest = amazon.Login.authorize({
-							scope: 'profile payments:widget payments:shipping_address payments:billing_address',
+					amazon.Login.authorize({
+							scope: scope,
 							popup: @(Model.UsePopupWindow.ToString().ToLower()),
 						},
-						function (response) {
-							addressConsentToken = response.access_token;
+						function (authorizeResponse) {
+							accessToken = authorizeResponse.access_token;
+
+							if (isAuthentication) {
+								amazon.Login.retrieveProfile(accessToken, function (response) {
+									handlerUrl += 'email=' + encodeURIComponent(response.profile.PrimaryEmail);
+									handlerUrl += '&name=' + encodeURIComponent(response.profile.Name);
+									handlerUrl += '&customerId=' + encodeURIComponent(response.profile.CustomerId);
+									window.location = handlerUrl;
+								});
+							}
 						}
 					);
 				},
 				onSignIn: function (orderReference) {
-					var isAuthButton = @((Model.Type == AmazonPayRequestType.AuthenticationPublicInfo).ToString().ToLower());
-					var handlerUrl = '@string.Concat(Model.ButtonHandlerUrl, Model.ButtonHandlerUrl.Contains('?') ? "&" : "?", "addressConsentToken=")';
-					handlerUrl += encodeURIComponent(addressConsentToken);
-
-					if (isAuthButton) {
-						window.location = handlerUrl;
-					}
-					else {
+					if (!isAuthentication) {
 						var referenceId = orderReference.getAmazonOrderReferenceId();
 						if (referenceId) {
-							window.location = handlerUrl + '&orderReferenceId=' + encodeURIComponent(referenceId);
+							handlerUrl += 'orderReferenceId=' + encodeURIComponent(referenceId);
+							handlerUrl += '&accessToken=' + encodeURIComponent(accessToken);
+							window.location = handlerUrl;
 						}
 						else {
-							alert('@T("Plugins.Payments.AmazonPay.MissingOrderReferenceId")');
+							displayNotification('@T("Plugins.Payments.AmazonPay.MissingOrderReferenceId")', 'error');
 						}
 					}
 				},

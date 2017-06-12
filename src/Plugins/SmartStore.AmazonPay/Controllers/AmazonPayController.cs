@@ -108,7 +108,7 @@ namespace SmartStore.AmazonPay.Controllers
 			return View(model);
 		}
 
-		public ActionResult AuthenticationButtonHandler(string addressConsentToken, string returnUrl)
+		public ActionResult AuthenticationButtonHandler(string returnUrl)
 		{
 			var processor = _openAuthenticationService.Value.LoadExternalAuthenticationMethodBySystemName(AmazonPayPlugin.SystemName, Services.StoreContext.CurrentStore.Id);
 			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings.Value))
@@ -122,18 +122,24 @@ namespace SmartStore.AmazonPay.Controllers
 			{
 				case OpenAuthenticationStatus.Error:
 					result.Errors.Each(x => NotifyError(x));
-					break;
-				//...
-			}
+					return new RedirectResult(Url.LogOn(returnUrl));
+				case OpenAuthenticationStatus.AssociateOnLogon:
+					return new RedirectResult(Url.LogOn(returnUrl));
+				case OpenAuthenticationStatus.AutoRegisteredEmailValidation:
+					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.EmailValidation });
+				case OpenAuthenticationStatus.AutoRegisteredAdminApproval:
+					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.AdminApproval });
+				case OpenAuthenticationStatus.AutoRegisteredStandard:
+					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Standard });
+				default:
+					if (result.Result != null)
+						return result.Result;
 
-			if (result.Result != null)
-			{
-				return result.Result;
-			}
+					if (HttpContext.Request.IsAuthenticated)
+						return RedirectToReferrer(returnUrl, "~/");
 
-			return HttpContext.Request.IsAuthenticated ?
-				RedirectToReferrer(returnUrl, "~/") :
-				new RedirectResult(Url.LogOn(returnUrl));
+					return new RedirectResult(Url.LogOn(returnUrl));
+			}
 		}
 	}
 }

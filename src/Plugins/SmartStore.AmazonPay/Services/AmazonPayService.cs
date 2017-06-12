@@ -13,6 +13,7 @@ using OffAmazonPaymentsService;
 using SmartStore.AmazonPay.Api;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Settings;
+using SmartStore.Core;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
@@ -23,6 +24,7 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
@@ -55,6 +57,7 @@ namespace SmartStore.AmazonPay.Services
 		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly IScheduleTaskService _scheduleTaskService;
 		private readonly IWorkflowMessageService _workflowMessageService;
+		private readonly IPluginFinder _pluginFinder;
 
 		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
 		private readonly Lazy<IExternalAuthorizer> _authorizer;
@@ -77,6 +80,7 @@ namespace SmartStore.AmazonPay.Services
 			IOrderProcessingService orderProcessingService,
 			IScheduleTaskService scheduleTaskService,
 			IWorkflowMessageService workflowMessageService,
+			IPluginFinder pluginFinder,
 			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings,
 			Lazy<IExternalAuthorizer> authorizer)
 		{
@@ -97,6 +101,7 @@ namespace SmartStore.AmazonPay.Services
 			_orderProcessingService = orderProcessingService;
 			_scheduleTaskService = scheduleTaskService;
 			_workflowMessageService = workflowMessageService;
+			_pluginFinder = pluginFinder;
 			_externalAuthenticationSettings = externalAuthenticationSettings;
 			_authorizer = authorizer;
 
@@ -252,7 +257,29 @@ namespace SmartStore.AmazonPay.Services
 
 		public void SetupConfiguration(ConfigurationModel model)
 		{
-			model.DataFetchings = new List<SelectListItem>()
+			var store = _services.StoreContext.CurrentStore;
+			var language = _services.WorkContext.WorkingLanguage;
+			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(AmazonPayPlugin.SystemName);
+			var allStores = _services.StoreService.GetAllStores();
+
+			model.PollingTaskMinutes = 30;
+			model.IpnUrl = GetPluginUrl("IPNHandler", store.SslEnabled);
+			model.ConfigGroups = T("Plugins.Payments.AmazonPay.ConfigGroups").Text.SplitSafe(";");
+
+			model.RegisterUrl = "https://payments-eu.amazon.com/register";
+			model.SoftwareVersion = SmartStoreVersion.CurrentFullVersion;
+			if (descriptor != null)
+			{
+				model.PluginVersion = descriptor.Version.ToString();
+			}
+			model.LeadCode = AmazonPayApi.LeadCode;
+			model.PlatformId = AmazonPayApi.PlatformId;
+			model.LanguageLocale = language.UniqueSeoCode.ToAmazonLanguageCode('_');
+			model.MerchantLoginDomains = allStores.Select(x => x.SslEnabled ? x.SecureUrl.EmptyNull().TrimEnd('/') : x.Url.EmptyNull().TrimEnd('/')).ToArray();
+			model.MerchantLoginRedirectURLs = new string[0];
+			model.MerchantStoreDescription = store.Name.Truncate(2048);
+
+			model.DataFetchings = new List<SelectListItem>
 			{
 				new SelectListItem
 				{
@@ -273,7 +300,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 			};
 
-			model.TransactionTypes = new List<SelectListItem>()
+			model.TransactionTypes = new List<SelectListItem>
 			{
 				new SelectListItem
 				{
@@ -289,7 +316,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 			};
 
-			model.SaveEmailAndPhones = new List<SelectListItem>()
+			model.SaveEmailAndPhones = new List<SelectListItem>
 			{
 				new SelectListItem
 				{
@@ -309,17 +336,6 @@ namespace SmartStore.AmazonPay.Services
 					Value = ((int)AmazonPaySaveDataType.Always).ToString()
 				}
 			};
-
-			model.IpnUrl = GetPluginUrl("IPNHandler", _services.StoreContext.CurrentStore.SslEnabled);
-
-			model.ConfigGroups = T("Plugins.Payments.AmazonPay.ConfigGroups").Text.SplitSafe(";");
-
-			var task = _scheduleTaskService.GetTaskByType("SmartStore.AmazonPay.DataPollingTask, SmartStore.AmazonPay");
-
-			if (task == null)
-				model.PollingTaskMinutes = 30;
-			else
-				model.PollingTaskMinutes = 30; // (task.Seconds / 60);
 		}
 
 		public AmazonPayViewModel CreateViewModel(
@@ -337,29 +353,10 @@ namespace SmartStore.AmazonPay.Services
 				var customer = _services.WorkContext.CurrentCustomer;
 				var language = _services.WorkContext.WorkingLanguage;
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
-
 				var storeLocation = _services.WebHelper.GetStoreLocation(store.SslEnabled);
-				model.ButtonHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/PayButtonHandler";
 
-				switch (language.UniqueSeoCode.EmptyNull().ToLower())
-				{
-					case "en":
-						model.LanguageCode = "en-GB";
-						break;
-					case "fr":
-						model.LanguageCode = "fr-FR";
-						break;
-					case "it":
-						model.LanguageCode = "it-IT";
-						break;
-					case "es":
-						model.LanguageCode = "es-ES";
-						break;
-					case "de":
-					default:
-						model.LanguageCode = "de-DE";
-						break;
-				}
+				model.ButtonHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/PayButtonHandler";
+				model.LanguageCode = language.UniqueSeoCode.ToAmazonLanguageCode();
 
 				if (type == AmazonPayRequestType.PayButtonHandler)
 				{

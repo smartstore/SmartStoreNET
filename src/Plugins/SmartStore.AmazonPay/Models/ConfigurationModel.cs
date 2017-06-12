@@ -103,6 +103,20 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AuthButtonSize")]
 		public string AuthButtonSize { get; set; }
 
+		#region Registration data
+
+		public string RegisterUrl { get; set; }
+		public string SoftwareVersion { get; set; }
+		public string PluginVersion { get; set; }
+		public string LeadCode { get; set; }
+		public string PlatformId { get; set; }
+		public string LanguageLocale { get; set; }
+		public string[] MerchantLoginDomains { get; set; }
+		public string[] MerchantLoginRedirectURLs { get; set; }
+		public string MerchantStoreDescription { get; set; }
+
+		#endregion
+
 		public void Copy(AmazonPaySettings settings, bool fromSettings)
 		{
 			if (fromSettings)

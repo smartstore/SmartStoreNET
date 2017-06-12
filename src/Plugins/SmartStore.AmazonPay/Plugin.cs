@@ -15,7 +15,7 @@ namespace SmartStore.AmazonPay
 {
 	[DisplayOrder(1)]
 	[DependentWidgets("Widgets.AmazonPay")]
-	public class AmazonPayPlugin : PaymentPluginBase, IConfigurable, IExternalAuthenticationMethod
+	public class AmazonPayPlugin : PaymentPluginBase, IExternalAuthenticationMethod, IConfigurable
 	{
 		private readonly IAmazonPayService _apiService;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;

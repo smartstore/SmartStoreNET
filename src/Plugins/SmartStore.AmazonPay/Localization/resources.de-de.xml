@@ -9,13 +9,16 @@
 	<LocaleResource Name="AdminInstruction">
 		<Value>
 			<![CDATA[<p>Registrieren Sie sich zunächst bei <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
-<p>So richten Sie "Login und Bezahlen mit Amazon" ein:</p><ul>
-<li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein. Sie finden diese Daten in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto.</li>
+<p>So richten Sie <b>Login und Bezahlen mit Amazon</b> ein:</p><ul>
+<li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein oder klicken Sie auf <a href="javascript:void(0)" class="register-now">Jetzt Zugangsdaten erhalten</a>.
+<ul>
+<li>Die Zugangsdaten finden Sie in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto.</li>
 <li>Ihre Händlernummer finden Sie dort rechts oben unter <b>Einstellungen > Integrationseinstellungen</b>.</li>
 <li>Die beiden Zugangsschlüssel finden Sie dort links oben unter <b>Integration > MWS Access Key</b>. In <a href="http://download.smartstore.com/pub/docs/14_Amazon_Payments_Getting_AWS_Keys_DE.pdf">diesem Dokument</a> finden Sie Bilder, wie Sie diese erstellen.</li>
+</ul></li>
 <li>Falls Sie Sofortbenachrichtigungen (IPN) erhalten möchten (SSL zwingend erforderlich!), so tragen Sie die unten aufgeführte IPN URL unter <b>Einstellungen > Integrationseinstellungen > Sofortbenachrichtigungs-Einstellungen > Händler-URL</b> ein.</li>
 </ul>
-<p>Bitte fügen Sie Informationen zu "Login und Bezahlen mit Amazon" auf Ihrer Seite der Zahlungsarten ein (siehe <b>CMS > Seiten</b>). Bildmaterial finden Sie <a href="https://payments.amazon.de/resources#marks">hier</a>.
+<p>Bitte fügen Sie Informationen zu <b>Login und Bezahlen mit Amazon</b> auf Ihrer Seite der Zahlungsarten ein (siehe <b>CMS > Seiten</b>). Bildmaterial finden Sie <a href="https://payments.amazon.de/resources#marks">hier</a>.
 Textvorschläge:<ul>
 <li>Option 1: Login und Bezahlen mit Amazon: Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
 <li>Option 2: Sie sind Amazon-Kunde? Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
@@ -63,6 +66,9 @@ Textvorschläge:<ul>
   </LocaleResource>
   <LocaleResource Name="AsyncPaymentAuthrizationNote">
     <Value>Ihre Zahlung mit Amazon Pay ist derzeit noch in Prüfung. Bitte beachten Sie, dass wir uns mit Ihnen in Kürze per Email in Verbindung setzen werden, falls noch Unklarheiten bestehen sollten.</Value>
+  </LocaleResource>
+  <LocaleResource Name="RegisterNow">
+    <Value>Jetzt Zugangsdaten erhalten</Value>
   </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">

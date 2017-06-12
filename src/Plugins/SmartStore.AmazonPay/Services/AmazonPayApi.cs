@@ -25,8 +25,6 @@ namespace SmartStore.AmazonPay.Api
 {
 	public class AmazonPayApi : IAmazonPayApi
 	{
-		private const string PLATFORM_ID = "A3OJ83WFYM72IY";
-
 		private readonly ICountryService _countryService;
 		private readonly IStateProvinceService _stateProvinceService;
 		private readonly IOrderService _orderService;
@@ -63,6 +61,16 @@ namespace SmartStore.AmazonPay.Api
 		{
 			var str = prefix + CommonHelper.GenerateRandomDigitCode(20);
 			return str.Truncate(32);
+		}
+
+		public static string PlatformId
+		{
+			get	{ return "A3OJ83WFYM72IY"; }
+		}
+
+		public static string LeadCode
+		{
+			get { return "SPEXDEAPA-SmartStore.Net-CP-DP"; }
 		}
 
 		public AmazonPayApiClient CreateClient(AmazonPaySettings settings)
@@ -229,7 +237,7 @@ namespace SmartStore.AmazonPay.Api
 
 			var attributes = new OrderReferenceAttributes();
 			//attributes.SellerNote = client.Settings.SellerNoteOrderReference.Truncate(1024);
-			attributes.PlatformId = PLATFORM_ID;
+			attributes.PlatformId = PlatformId;
 
 			if (orderTotalAmount.HasValue)
 			{
@@ -311,7 +319,14 @@ namespace SmartStore.AmazonPay.Api
 		}
 
 		/// <summary>Asynchronous as long as we do not set TransactionTimeout to 0. So transaction is always in pending state after return.</summary>
-		public void Authorize(AmazonPayApiClient client, ProcessPaymentResult result, List<string> errors, string orderReferenceId, decimal orderTotalAmount, string currencyCode, string orderGuid)
+		public void Authorize(
+			AmazonPayApiClient client,
+			ProcessPaymentResult result,
+			List<string> errors,
+			string orderReferenceId,
+			decimal orderTotalAmount, 
+			string currencyCode, 
+			string orderGuid)
 		{
 			var request = new AuthorizeRequest();
 			request.SellerId = client.Settings.SellerId;

@@ -22,6 +22,24 @@
 
 @{ Html.RenderAction("StoreScopeConfiguration", "Setting", new { area = "Admin" }); }
 
+<form id="RegisterNowForm" method="POST" action="@Model.RegisterUrl" target="_blank">
+	<input type="hidden" name="spId" value="@Model.PlatformId" />
+	<input type="hidden" name="locale" value="@Model.LanguageLocale" />
+	@foreach (var item in Model.MerchantLoginDomains)
+	{
+		<input type="hidden" name="merchantLoginDomains[]" value="@item" />
+	}
+	<input type="hidden" name="spSoftwareVersion" value="@Model.SoftwareVersion" />
+	<input type="hidden" name="spAmazonPluginVersion" value="@Model.PluginVersion" />
+	<input type="hidden" name="ld" value="@Model.LeadCode" />
+	@foreach (var item in Model.MerchantLoginRedirectURLs)
+	{
+		<input type="hidden" name="merchantLoginRedirectURLs[]" value="@item" />
+	}
+	<input type="hidden" name="merchantStoreDescription" value="@Model.MerchantStoreDescription" />
+	<input type="hidden" name="source" value="SPPL" />
+</form>
+
 @using (Html.BeginForm())
 {
 	<div class="plugin-actions">
@@ -40,6 +58,16 @@
 			</div>
 		</td>
 	</tr>
+    <tr>
+        <td class="adminTitle">
+            &nbsp;
+        </td>
+        <td class="adminData">
+			<a href="javascript:void(0)" class="btn btn-info register-now">
+				<i class="fa fa-sign-in"></i>&nbsp;@T("Plugins.Payments.AmazonPay.RegisterNow")
+			</a>
+        </td>
+    </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.UseSandbox)
@@ -446,5 +474,9 @@
 			$('#UsePopupDialogWarning').toggle($(this).is(':checked'));
 		}).trigger('change');
 
+		// Register now
+		$('a.register-now').click(function () {
+			alert('TODO');
+		});
 	});
 </script>

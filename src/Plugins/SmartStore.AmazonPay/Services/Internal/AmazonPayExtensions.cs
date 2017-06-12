@@ -75,6 +75,25 @@ namespace SmartStore.AmazonPay
 			return match;
 		}
 
+		internal static string ToAmazonLanguageCode(this string twoLetterLanguageCode, char delimiter = '-')
+		{
+			switch (twoLetterLanguageCode.EmptyNull().ToLower())
+			{
+				case "en":
+					return $"en{delimiter}GB";
+				case "fr":
+					return $"fr{delimiter}FR";
+				case "it":
+					return $"it{delimiter}IT";
+				case "es":
+					return $"es{delimiter}ES";
+				case "de":
+				default:
+					return $"de{delimiter}DE";
+			}
+		}
+
+
 		internal static bool HasAmazonPayState(this HttpContextBase httpContext)
 		{
 			var checkoutState = httpContext.GetCheckoutState();

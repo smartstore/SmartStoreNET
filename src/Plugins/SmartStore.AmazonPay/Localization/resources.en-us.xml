@@ -61,6 +61,9 @@ Text suggestions:<ul>
   <LocaleResource Name="AuthenticationNotActive">
     <Value>Amazon authentication is not active!</Value>
   </LocaleResource>
+  <LocaleResource Name="AsyncPaymentAuthrizationNote">
+    <Value>Your transaction with Amazon Pay is currently being validated. Please be aware that we will inform you shortly as needed.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Access data;Data exchange;Layout;Miscellaneous</Value>

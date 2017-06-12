@@ -61,6 +61,9 @@ Textvorschläge:<ul>
   <LocaleResource Name="AuthenticationNotActive">
     <Value>Amazon Authentifizierung ist nicht aktiv!</Value>
   </LocaleResource>
+  <LocaleResource Name="AsyncPaymentAuthrizationNote">
+    <Value>Ihre Zahlung mit Amazon Pay ist derzeit noch in Prüfung. Bitte beachten Sie, dass wir uns mit Ihnen in Kürze per Email in Verbindung setzen werden, falls noch Unklarheiten bestehen sollten.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Zugangsdaten;Datenaustausch;Gestaltung;Sonstiges</Value>

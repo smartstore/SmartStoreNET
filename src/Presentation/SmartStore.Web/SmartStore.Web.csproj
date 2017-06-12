@@ -2270,9 +2270,13 @@
     <ItemGroup>
       <SqlCeBinariesx86 Include="$(SolutionDir)..\lib\sqlce\x86\**\*" />
       <SqlCeBinariesx64 Include="$(SolutionDir)..\lib\sqlce\x64\**\*" />
+      <VC14Binariesx86 Include="$(SolutionDir)..\lib\msvcp140\x86\**\*" />
+      <VC14Binariesx64 Include="$(SolutionDir)..\lib\msvcp140\x64\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(SqlCeBinariesx86)" DestinationFolder="$(OutputPath)\x86\%(RecursiveDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(SqlCeBinariesx64)" DestinationFolder="$(OutputPath)\x64\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(VC14Binariesx86)" DestinationFolder="$(OutputPath)\x86\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(VC14Binariesx64)" DestinationFolder="$(OutputPath)\x64\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
   <PropertyGroup>
     <PlaceholderFile>$(ProjectDir)Content\placeholder.txt</PlaceholderFile>

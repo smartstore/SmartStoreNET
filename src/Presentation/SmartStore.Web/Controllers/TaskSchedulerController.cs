@@ -16,7 +16,7 @@ namespace SmartStore.Web.Controllers
         private readonly IScheduleTaskService _scheduledTaskService;
         private readonly ITaskExecutor _taskExecutor;
         private readonly ICommonServices _services;
-		private readonly DateTime _sweepStart;
+		//private readonly DateTime _sweepStart;
 
         public TaskSchedulerController(
 			ITaskScheduler taskScheduler,

@@ -70,7 +70,6 @@ namespace SmartStore.Services.Tasks
 
     public static class ITaskSchedulerExtensions
     {
-
 		internal static void SetBaseUrl(this ITaskScheduler scheduler, IStoreService storeService, HttpContextBase httpContext)
         {
             string url = "";
@@ -91,6 +90,5 @@ namespace SmartStore.Services.Tasks
 
             scheduler.BaseUrl = url;
         }
-
     }
 }

@@ -188,10 +188,5 @@ namespace SmartStore.Services.Tasks
 				_scheduledTaskService.UpdateTask(task);
             }
         }
-
-		private CancellationTokenSource CreateCompositeCancellationTokenSource(CancellationToken userCancellationToken)
-		{
-			return CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, userCancellationToken);
-		}
     }
 }

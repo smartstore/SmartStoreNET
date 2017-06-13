@@ -312,6 +312,7 @@ namespace SmartStore.Services.Customers
 						where c.CustomerGuid == customerGuid
                         orderby c.Id
                         select c;
+
             var customer = query.FirstOrDefault();
             return customer;
         }

@@ -16,7 +16,7 @@ namespace SmartStore.Services.Tasks
 {
 	public class DefaultTaskScheduler : DisposableObject, ITaskScheduler, IRegisteredObject
     {
-		private readonly IAsyncState _asyncState;
+		private readonly ICacheManager _cache;
 
 		private bool _intervalFixed;
 		private int _sweepInterval;
@@ -25,9 +25,9 @@ namespace SmartStore.Services.Tasks
         private bool _shuttingDown;
 		private int _errCount;
 
-        public DefaultTaskScheduler(IAsyncState asyncState)
+        public DefaultTaskScheduler(ICacheManager cache)
         {
-			_asyncState = asyncState;
+			_cache = cache;
 
 			_sweepInterval = 1;
 			_timer = new System.Timers.Timer();
@@ -105,8 +105,7 @@ namespace SmartStore.Services.Tasks
 		{
 			string authToken = Guid.NewGuid().ToString();
 
-			var cacheManager = EngineContext.Current.Resolve<ICacheManager>();
-			cacheManager.Put(GenerateAuthTokenCacheKey(authToken), true, TimeSpan.FromMinutes(1));
+			_cache.Put(GenerateAuthTokenCacheKey(authToken), true, TimeSpan.FromMinutes(1));
 
 			return authToken;
 		}
@@ -121,11 +120,10 @@ namespace SmartStore.Services.Tasks
             if (authToken.IsEmpty())
                 return false;
 
-			var cacheManager = EngineContext.Current.Resolve<ICacheManager>();
 			var cacheKey = GenerateAuthTokenCacheKey(authToken);
-			if (cacheManager.Contains(cacheKey))
+			if (_cache.Contains(cacheKey))
 			{
-				cacheManager.Remove(cacheKey);
+				_cache.Remove(cacheKey);
 				return true;
 			}
 
@@ -263,5 +261,4 @@ namespace SmartStore.Services.Tasks
             HostingEnvironment.UnregisterObject(this); 
         }
     }
-
 }

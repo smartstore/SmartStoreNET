@@ -144,9 +144,13 @@ namespace SmartStore.Core
                 string rawUrl;
                 if (appPathPossiblyAppended)
                 {
-                    string temp = _httpContext.Request.AppRelativeCurrentExecutionFilePath.TrimStart('~');
-                    rawUrl = temp;
-                }
+                    rawUrl = _httpContext.Request.AppRelativeCurrentExecutionFilePath.TrimStart('~');
+
+					if (_httpContext.Request.Url != null && _httpContext.Request.Url.Query != null)
+					{
+						rawUrl += _httpContext.Request.Url.Query;
+					}
+				}
                 else
                 {
                     rawUrl = _httpContext.Request.RawUrl;

@@ -10,7 +10,7 @@
 		<Value>
 			<![CDATA[<p>Register now at <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
 <p>How to set up <b>Login and Pay with Amazon</b>:</p><ul>
-<li>Enter your Amazon credentials in the fields provided below or click <a href="javascript:void(0)" class="register-now">Get credentials now</a>.
+<li>Enter your Amazon credentials in the fields provided below.
 <ul>
 <li>You can find these credentials in your <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> account.</li>
 <li>You can find the Merchant ID in Seller Central at <b>Settings > Integration Settings</b>.</li>
@@ -68,7 +68,16 @@ Text suggestions:<ul>
     <Value>Your transaction with Amazon Pay is currently being validated. Please be aware that we will inform you shortly as needed.</Value>
   </LocaleResource>
   <LocaleResource Name="RegisterNow">
-    <Value>Get credentials now</Value>
+    <Value>Register now</Value>
+  </LocaleResource>
+  <LocaleResource Name="SaveAccessData">
+    <Value>Save access data</Value>
+  </LocaleResource>
+  <LocaleResource Name="PasteAccessData">
+    <Value>Paste access data</Value>
+  </LocaleResource>
+  <LocaleResource Name="PasteAccessData.Hint">
+    <Value>Paste here your access data (merchant_id, access_key, secret_key, client_id etc.)...</Value>
   </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">

@@ -10,7 +10,7 @@
 		<Value>
 			<![CDATA[<p>Registrieren Sie sich zunächst bei <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
 <p>So richten Sie <b>Login und Bezahlen mit Amazon</b> ein:</p><ul>
-<li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein oder klicken Sie auf <a href="javascript:void(0)" class="register-now">Jetzt Zugangsdaten erhalten</a>.
+<li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein.
 <ul>
 <li>Die Zugangsdaten finden Sie in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto.</li>
 <li>Ihre Händlernummer finden Sie dort rechts oben unter <b>Einstellungen > Integrationseinstellungen</b>.</li>
@@ -68,7 +68,16 @@ Textvorschläge:<ul>
     <Value>Ihre Zahlung mit Amazon Pay ist derzeit noch in Prüfung. Bitte beachten Sie, dass wir uns mit Ihnen in Kürze per Email in Verbindung setzen werden, falls noch Unklarheiten bestehen sollten.</Value>
   </LocaleResource>
   <LocaleResource Name="RegisterNow">
-    <Value>Jetzt Zugangsdaten erhalten</Value>
+    <Value>Jetzt registrieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="SaveAccessData">
+    <Value>Zugangsdaten speichern</Value>
+  </LocaleResource>
+  <LocaleResource Name="PasteAccessData">
+    <Value>Zugangsdaten einfügen</Value>
+  </LocaleResource>
+  <LocaleResource Name="PasteAccessData.Hint">
+    <Value>Fügen Sie hier Ihre Zugangsdaten ein (merchant_id, access_key, secret_key, client_id etc.)...</Value>
   </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">

@@ -1,5 +1,4 @@
 ﻿@using SmartStore.Web.Framework;
-@using SmartStore.Web.Framework.UI;
 @using SmartStore.AmazonPay.Models;
 @model ConfigurationModel
 @{
@@ -9,7 +8,7 @@
 <div class="plugin-configuration">
 	<div>
 		<div class="alert alert-info">
-			<button class="close" data-dismiss="alert">×</button>
+			<button class="close" data-dismiss="alert">&#215;</button>
 			@Html.Raw(@T("Plugins.Payments.AmazonPay.AdminInstruction"))
 		</div>
 	</div>
@@ -22,7 +21,7 @@
 
 @{ Html.RenderAction("StoreScopeConfiguration", "Setting", new { area = "Admin" }); }
 
-<form id="RegisterNowForm" method="POST" action="@Model.RegisterUrl" target="_blank">
+<form id="register-now-form" method="POST" action="@Model.RegisterUrl" target="_blank">
 	<input type="hidden" name="spId" value="@Model.PlatformId" />
 	<input type="hidden" name="locale" value="@Model.LanguageLocale" />
 	@foreach (var item in Model.MerchantLoginDomains)
@@ -66,6 +65,9 @@
 			<a href="javascript:void(0)" class="btn btn-info register-now">
 				<i class="fa fa-sign-in"></i>&nbsp;@T("Plugins.Payments.AmazonPay.RegisterNow")
 			</a>
+			<button type="button" class="btn paste-access-data">
+				<i class="fa fa-paste"></i>&nbsp;@T("Plugins.Payments.AmazonPay.PasteAccessData")
+			</button>
         </td>
     </tr>
     <tr>
@@ -441,15 +443,37 @@
 	</table>
 }
 
+<div id="register-now-dialog">
+	<div class="modal modal-large hide fade" tabindex="-1">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
+			<h4 class="caption">
+				@T("Plugins.Payments.AmazonPay.PasteAccessData")
+			</h4>
+		</div>
+		<div class="modal-body">
+			<div class="form-group">
+				<textarea id="amazon-access-data" rows="12" class="form-control" style="width: 98%;" placeholder="@T("Plugins.Payments.AmazonPay.PasteAccessData.Hint")"></textarea>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" data-dismiss="modal" disabled="disabled">
+				@T("Plugins.Payments.AmazonPay.SaveAccessData")
+			</button>
+			<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+		</div>
+	</div>
+</div>
+
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 
-		// show/hide transaction type warning
+		// Show/hide transaction type warning
 		$('#@(Html.FieldIdFor(x => x.TransactionType))').change(function () {
 			$('#TransactionTypeWarning').toggle($(this).val() === '2');
 		}).trigger('change');
 
-		// show/hide status fetching warning
+		// Show/hide status fetching warning
 		$('#@(Html.FieldIdFor(x => x.DataFetching))').change(function () {
 			var val = $(this).val(),
 				configTable = $('#AmazonPayConfigTable');
@@ -464,19 +488,37 @@
 
 		}).trigger('change');
 
-		// show/hide inform customer add errors option
+		// Show/hide inform customer add errors option
 		$('#@(Html.FieldIdFor(x => x.InformCustomerAboutErrors))').change(function () {
 			$('#InformCustomerAddErrorsContainer').toggle($(this).is(':checked'));
 		}).trigger('change');
 
-		// show/hide pop-up dialog warning
+		// Show/hide pop-up dialog warning
 		$('#@(Html.FieldIdFor(x => x.UsePopupDialog))').change(function () {
 			$('#UsePopupDialogWarning').toggle($(this).is(':checked'));
 		}).trigger('change');
 
 		// Register now
 		$('a.register-now').click(function () {
-			alert('TODO');
+			$('#register-now-form').submit();
 		});
+
+		// Paste access data
+		$('button.paste-access-data').click(function () {
+			var dialog = $('#register-now-dialog');
+			$('#amazon-access-data').trigger('change');
+
+			dialog.find('.btn-primary').click(function (e) {
+				// TODO
+			});
+
+			dialog.find('.modal').modal('show');
+		});
+
+		// Textarea access data changed
+		$('#amazon-access-data').change(function () {
+			$('#register-now-dialog').find('.btn-primary').prop('disabled', $(this).val().length == 0);
+		});
+
 	});
 </script>

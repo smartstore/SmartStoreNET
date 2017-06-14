@@ -403,7 +403,10 @@ namespace SmartStore.Services.Customers
 
 				var dateFrom = DateTime.UtcNow.AddSeconds(maxAgeSeconds * -1);
 
-				var query = from a in _gaRepository.TableUntracked
+				IQueryable<Customer> query;
+				if (DataSettings.Current.IsSqlServer)
+				{
+					query = from a in _gaRepository.TableUntracked
 							join c in _customerRepository.Table on a.EntityId equals c.Id into Customers
 							from c in Customers.DefaultIfEmpty()
 							where c.LastActivityDateUtc >= dateFrom
@@ -413,6 +416,20 @@ namespace SmartStore.Services.Customers
 								&& a.Key == "ClientIdent"
 								&& a.Value == clientIdent
 							select c;
+				}
+				else
+				{
+					query = from a in _gaRepository.TableUntracked
+							join c in _customerRepository.Table on a.EntityId equals c.Id into Customers
+							from c in Customers.DefaultIfEmpty()
+							where c.LastActivityDateUtc >= dateFrom
+								&& c.Username == null
+								&& c.Email == null
+								&& a.KeyGroup == "Customer"
+								&& a.Key == "ClientIdent"
+								&& a.Value.Contains(clientIdent) // SQLCE doesn't like ntext in WHERE clauses
+							select c;
+				}
 
 				return query.FirstOrDefault();
 			}

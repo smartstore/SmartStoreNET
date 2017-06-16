@@ -91,14 +91,14 @@ We have set up a live online demo for you so you are able to test SmartStore.NET
 * Fire up your browser and follow the installation instructions
 * Enjoy ;-)
 
-NOTE: SmartStore.NET 3 requires [Visual C++ Redistributable für Visual Studio 2015](https://www.microsoft.com/en-in/download/details.aspx?id=48145) which is already pre-installed on most systems. If, nevertheless, it is missing on your web server, just download and execute the installer or ask your hosting provider to do that for you.
+NOTE: SmartStore.NET 3 requires [Visual C++ Redistributable für Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=52685) which is already pre-installed on most systems. If, nevertheless, it is missing on your web server, just download and execute the installer or ask your hosting provider to do that for you.
 
 ### System requirements
 
 * IIS 7+
 * ASP.NET 4.5+
 * MS SQL Server 2008 Express (or higher) OR MS SQL Server Compact 4
-* Visual C++ Redistributable für Visual Studio 2015 ([Download](https://www.microsoft.com/en-in/download/details.aspx?id=48145))
+* Visual C++ Redistributable für Visual Studio 2015 ([Download](https://www.microsoft.com/en-US/download/details.aspx?id=52685))
 * Full Trust
 
 

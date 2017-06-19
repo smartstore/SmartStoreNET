@@ -965,7 +965,7 @@ namespace SmartStore.Admin.Controllers
 				if (_searchSettings.SearchFields.Contains("shortdescription"))
 					fields.Add("shortdescription");
 
-				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName)
+				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName, SearchMode.Contains)
 					.HasStoreId(model.SearchStoreId)
 					.WithLanguage(_workContext.WorkingLanguage);
 

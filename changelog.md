@@ -21,6 +21,7 @@
 * Added the widget zone 'productdetails_pictures_bottom'
 * Added config setting *sm:PdfEngineBaseUrl*. There are cases where the PDF converter exits with a network error, when it is unable to load automatically resolved URLs.
 * (Dev) Added *Retry* utility class
+* #1176 Admin > Product Search: It ain't possible to search for parts of a product name
 
 ### Bugfixes
 * #1145: Fixed HTTP 404 after switching language

@@ -15,7 +15,7 @@
 
 <script>
     $(function () {
-        var zoneChooser = $("#@id"),
+    	var zoneChooser = $("#@id"),
             zones;
 
         if (zoneChooser.data("available-zones")) {
@@ -258,8 +258,16 @@
         	});
         }
 
-        zoneChooser.select2({
-            tags: zones
+    	zoneChooser.select2({
+			multiple: true,
+			data: zones,
+			initSelection: function (el, fn) {
+				var data = [];
+				$(el.val().split(",")).each(function () {
+					data.push({ id: this, text: this });
+				});
+				fn(data);
+			}
         });
     });
 </script>

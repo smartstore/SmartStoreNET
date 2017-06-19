@@ -53,6 +53,7 @@
 * Better error logging for TaskScheduler
 * Fixed several queries which caused problems with SQL CE
 * Fixed missing CurrencyCode exception in product exports
+* #1179 Error while downloading a downloadable product
 
 
 ## SmartStore.NET 3.0

@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.0.1
 ### Improvements
@@ -51,6 +51,7 @@
 * (Theming) Dozens of layout fixes for mobile devices (especially iOS and Android native browser)
 * Better error logging for TaskScheduler
 * Fixed several queries which caused problems with SQL CE
+* Fixed missing CurrencyCode exception in product exports
 
 
 ## SmartStore.NET 3.0

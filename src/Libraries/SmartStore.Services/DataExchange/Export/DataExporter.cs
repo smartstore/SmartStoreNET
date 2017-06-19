@@ -666,6 +666,8 @@ namespace SmartStore.Services.DataExchange.Export
 				var createdTo = f.CreatedTo.HasValue ? (DateTime?)_services.DateTimeHelper.ConvertToUtcTime(f.CreatedTo.Value, _services.DateTimeHelper.CurrentTimeZone) : null;
 
 				var searchQuery = new CatalogSearchQuery()
+					.WithCurrency(ctx.ContextCurrency)
+					.WithLanguage(ctx.ContextLanguage)
 					.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : f.StoreId)
 					.VisibleIndividuallyOnly(true)
 					.PriceBetween(f.PriceMinimum, f.PriceMaximum)

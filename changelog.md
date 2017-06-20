@@ -14,7 +14,7 @@
 * (Dev) Enabled C# 6 features in plugin views
 * (GMC) Added missing database indexes.
 * (WebApi) Added endpoints for blog post and blog comment
-* Added more sortable columns to backend product grid
+* Added more sortable columns to backend product grids
 * #1160 Append suffix 'Picture (1...n)' to thumbnail's alt-attribute on product detail pages
 * (Perf) Faster catalog indexing thanks to new database indexes
 * (Perf) Faster dynamic view compilation thanks to *Roslyn* compiler

@@ -269,38 +269,71 @@ namespace SmartStore.Data
 			var props = new Dictionary<string, object>();
 
 			// be aware of the entity state. you cannot get modified properties for detached entities.
-			if (entry.State != System.Data.Entity.EntityState.Detached)
+			if (entry.State == System.Data.Entity.EntityState.Modified)
 			{
-				var modifiedProperties = from p in entry.CurrentValues.PropertyNames
-										 let prop = entry.Property(p)
-										 where PropIsModified(prop) // prop.IsModified seems to return true even if values are equal
-										 select prop;
+				var detectChangesEnabled = this.Configuration.AutoDetectChangesEnabled;
+				var mergeable = entry.Entity as IMergedData;
+				var mergedProps = mergeable?.MergedDataValues;
+				var ignoreMerge = false;
 
-				foreach (var prop in modifiedProperties)
+				if (mergeable != null)
 				{
-					props.Add(prop.Name, prop.OriginalValue);
+					ignoreMerge = mergeable.MergedDataIgnore;
+					mergeable.MergedDataIgnore = true;
+				}
+
+				try
+				{
+					var modifiedProperties = from p in entry.CurrentValues.PropertyNames
+											 let prop = entry.Property(p)
+											 // prop.IsModified seems to return true even if values are equal
+											 where PropIsModified(prop, detectChangesEnabled, mergedProps)
+											 select prop;
+
+					foreach (var prop in modifiedProperties)
+					{
+						props.Add(prop.Name, prop.OriginalValue);
+					}
+				}
+				finally
+				{
+					if (mergeable != null)
+						mergeable.MergedDataIgnore = ignoreMerge;
 				}
 			}
 
 			return props;
 		}
 
-		private static bool PropIsModified(DbPropertyEntry prop)
+		private static bool PropIsModified(DbPropertyEntry prop, bool detectChangesEnabled, IDictionary<string, object> mergedProps)
 		{
-			// TODO: "CurrentValues cannot be used for entities in the Deleted state."
-			var cur = prop.CurrentValue;
-			// TODO: "OriginalValues cannot be used for entities in the Added state."
-			var orig = prop.OriginalValue;
+			var propIsModified = prop.IsModified;
 
-			if (cur == null && orig == null)
-				return false;
+			if (detectChangesEnabled && !propIsModified)
+				return false; // Perf
 
-			if (orig != null)
+			object mergedValue;
+			if (propIsModified && mergedProps != null && mergedProps.TryGetValue(prop.Name, out mergedValue))
 			{
-				return !orig.Equals(cur);
+				// EF "thinks" that prop has changed because merged value differs
+				return false;
 			}
 
-			return !cur.Equals(orig);	
+			// INFO: "CurrentValue" cannot be used for entities in the Deleted state.
+			// INFO: "OriginalValues" cannot be used for entities in the Added state.
+			return detectChangesEnabled 
+				? propIsModified
+				: !AreEqual(prop.CurrentValue, prop.OriginalValue);
+		}
+
+		private static bool AreEqual(object cur, object orig)
+		{
+			if (cur == null && orig == null)
+				return true;
+
+			return orig != null 
+				? orig.Equals(cur)
+				: cur.Equals(orig);
 		}
 
         // required for UoW implementation

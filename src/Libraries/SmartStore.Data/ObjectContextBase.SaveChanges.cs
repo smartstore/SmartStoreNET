@@ -35,11 +35,11 @@ namespace SmartStore.Data
 		{
 			var state = entry.State;
 
-			if (state.HasFlag(EntityState.Added) || state.HasFlag(EntityState.Deleted))
+			if (state == EntityState.Added || state == EntityState.Deleted)
 			{
 				return true;
 			}
-			else if (state.HasFlag(EntityState.Modified))
+			else if (state == EntityState.Modified)
 			{
 				var mergeable = entry.Entity as IMergedData;
 
@@ -56,20 +56,21 @@ namespace SmartStore.Data
 					// (to merge variant with product attributes), and at least one attribute has been 
 					// overwritten on variant level.
 
-					mergeable.MergedDataIgnore = true;
-
-					// After ignoring merged data, this should return an empty dict
-					// if no other property has been changed
+					// This should return an empty dict if no other property has been changed.
+					// GetModifiedProperties() can handle/ignore merged properties very well.
 					var modProps = GetModifiedProperties(entry);
 
 					if (modProps.Count == 0)
 					{
-						// Set state to unchanged: no 'real' prop changed!
-						entry.State = EntityState.Unchanged;
-						return false;
+						try
+						{
+							// Set state to unchanged: no 'real' prop changed!
+							entry.State = EntityState.Unchanged;
+						}
+						catch { }
 					}
 
-					return true;
+					return modProps.Count > 0;
 				}
 			}
 
@@ -152,9 +153,7 @@ namespace SmartStore.Data
 
 			using (new ActionDisposable(() => IgnoreMergedData(changedEntries, false)))
 			{
-				// Ignored in GetChangedEntries() already
-				//IgnoreMergedData(changedEntries, true);
-
+				IgnoreMergedData(changedEntries, true);
 				return base.SaveChanges();
 			}		
 		}
@@ -169,9 +168,7 @@ namespace SmartStore.Data
 
 			using (new ActionDisposable(() => IgnoreMergedData(changedEntries, false)))
 			{
-				// Ignored in GetChangedEntries() already
-				//IgnoreMergedData(changedEntries, true);
-
+				IgnoreMergedData(changedEntries, true);
 				return base.SaveChangesAsync(cancellationToken);
 			}
 		}

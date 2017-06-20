@@ -48,7 +48,7 @@
         <div class="form-group row">
             @if (Model.SalutationEnabled)
             {
-                @Html.LabelFor(model => model.Salutation, new { @class = "col-{0}-3 col-form-label required".FormatInvariant(breakpoint) })
+                @Html.LabelFor(model => model.Salutation, new { @class = "col-{0}-3 col-form-label".FormatInvariant(breakpoint) })
                 <div class="col-@breakpoint-3">
                     @Html.DropDownListFor(model => model.Salutation, Model.AvailableSalutations, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Salutation)
@@ -57,7 +57,7 @@
 
             @if (Model.TitleEnabled)
             {
-                @Html.LabelFor(model => model.Title, new { @class = "col-{0}-3 col-form-label required{1}".FormatInvariant(breakpoint, Model.SalutationEnabled ? " text-right" : "") })
+                @Html.LabelFor(model => model.Title, new { @class = "col-{0}-3 col-form-label {1}".FormatInvariant(breakpoint, Model.SalutationEnabled ? " text-right" : "") })
                 <div class="col-@breakpoint-3">
                     @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Title)

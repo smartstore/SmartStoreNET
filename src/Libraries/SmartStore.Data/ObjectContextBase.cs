@@ -254,16 +254,19 @@ namespace SmartStore.Data
             get
             {
                 return this.ChangeTracker.Entries()
-                           .Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
+                           .Where(x => x.State > System.Data.Entity.EntityState.Unchanged)
                            .Any();
             }
         }
 
 		public IDictionary<string, object> GetModifiedProperties(BaseEntity entity)
 		{
-			var props = new Dictionary<string, object>();
+			return GetModifiedProperties(this.Entry(entity));
+		}
 
-			var entry = this.Entry(entity);
+		private IDictionary<string, object> GetModifiedProperties(DbEntityEntry entry)
+		{
+			var props = new Dictionary<string, object>();
 
 			// be aware of the entity state. you cannot get modified properties for detached entities.
 			if (entry.State != System.Data.Entity.EntityState.Detached)

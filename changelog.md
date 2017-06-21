@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.0.1
 ### Improvements
@@ -55,7 +55,11 @@
 * Fixed several queries which caused problems with SQL CE
 * Fixed missing CurrencyCode exception in product exports
 * #1179 Error while downloading a downloadable product
-
+* If a dropdown has contained 2 level hierarchy categories only they were not broken into the next column
+* Hide sort dropdown when option is off
+* HTTP 301 redirects for legacy media URLs
+* Added missing resources of broken migration 'AddressEnhancement' again
+* Checkout: Title and salutation missing when entering new addresses
 
 ## SmartStore.NET 3.0
 

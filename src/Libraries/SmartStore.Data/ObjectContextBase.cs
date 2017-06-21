@@ -302,6 +302,8 @@ namespace SmartStore.Data
 				}
 			}
 
+			//System.Diagnostics.Debug.WriteLine("GetModifiedProperties: " + String.Join(", ", props.Select(x => x.Key)));
+
 			return props;
 		}
 

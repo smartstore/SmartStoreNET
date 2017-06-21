@@ -10,6 +10,7 @@
 	* Export parent child relation data when exporting attribute combinations as products
 	* Flatten and append attribute data when exporting attribute combinations as products
 * Instant search should search manufacturer/brand name
+* HTTP 301 redirects for legacy media URLs
 * (Dev) New 'ApplicationStarted' event
 * (Dev) Enabled C# 6 features in plugin views
 * (GMC) Added missing database indexes.

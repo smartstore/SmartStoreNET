@@ -106,6 +106,9 @@ WHERE
                 "Nur individuell sichtbare Produkte",
                 "Specifies whether to only export individually visible associated products.",
                 "Legt fest, ob nur individuell sichtbare, verknüpfte Produkte exportiert werden sollen.");
-        }
+
+			builder.AddOrUpdate("Product.ThumbTitle", "{0}, Picture {1} large", "{0}, Bild {1} groß");
+			builder.AddOrUpdate("Product.ThumbAlternateText", "{0}, Picture {1}", "{0}, Bild {1}");
+		}
 	}
 }

@@ -6,8 +6,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Data.Caching;
 using System.Web.Hosting;
-using SmartStore.Utilities;
-using System.Data.Entity.Migrations;
 
 namespace SmartStore.Data
 {

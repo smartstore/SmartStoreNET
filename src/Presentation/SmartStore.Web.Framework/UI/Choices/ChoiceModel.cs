@@ -69,8 +69,10 @@ namespace SmartStore.Web.Framework.UI.Choices
 
 		public virtual string GetDescription()
 		{
+			var containsImg = Description.IsEmpty() ? false : Description.Contains("<img");
+
 			var desc = Description.RemoveHtml();
-			if (desc.HasValue() && !desc.Trim().IsCaseInsensitiveEqual(GetLabel()))
+			if (containsImg || (desc.HasValue() && !desc.Trim().IsCaseInsensitiveEqual(GetLabel())))
 			{
 				return Description;
 			}

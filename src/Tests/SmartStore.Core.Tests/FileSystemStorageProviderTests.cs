@@ -41,10 +41,10 @@ namespace SmartStore.Core.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void GetFileThatDoesNotExistShouldThrow()
 		{
-			_fileSystem.GetFile("notexisting");
+			var file = _fileSystem.GetFile("notexisting");
+			Assert.That(file.Exists, Is.EqualTo(false));
 		}
 
 		[Test]
@@ -171,15 +171,16 @@ namespace SmartStore.Core.Tests
 		public void RenameFileTakesShortPathWithAnyKindOfSlash()
 		{
 			Assert.That(GetFile(@"Subfolder1/one.txt"), Is.Not.Null);
+
 			_fileSystem.RenameFile(@"SubFolder1\one.txt", @"SubFolder1/testfile2.txt");
 			_fileSystem.RenameFile(@"SubFolder1\testfile2.txt", @"SubFolder1\testfile3.txt");
 			_fileSystem.RenameFile(@"SubFolder1/testfile3.txt", @"SubFolder1\testfile4.txt");
 			_fileSystem.RenameFile(@"SubFolder1/testfile4.txt", @"SubFolder1/testfile5.txt");
-			Assert.That(GetFile(Path.Combine("SubFolder1", "one.txt")), Is.Null);
-			Assert.That(GetFile(Path.Combine("SubFolder1", "testfile2.txt")), Is.Null);
-			Assert.That(GetFile(Path.Combine("SubFolder1", "testfile3.txt")), Is.Null);
-			Assert.That(GetFile(Path.Combine("SubFolder1", "testfile4.txt")), Is.Null);
-			Assert.That(GetFile(Path.Combine("SubFolder1", "testfile5.txt")), Is.Not.Null);
+			Assert.That(GetFile(Path.Combine("SubFolder1", "one.txt")).Exists, Is.EqualTo(false));
+			Assert.That(GetFile(Path.Combine("SubFolder1", "testfile2.txt")).Exists, Is.EqualTo(false));
+			Assert.That(GetFile(Path.Combine("SubFolder1", "testfile3.txt")).Exists, Is.EqualTo(false));
+			Assert.That(GetFile(Path.Combine("SubFolder1", "testfile4.txt")).Exists, Is.EqualTo(false));
+			Assert.That(GetFile(Path.Combine("SubFolder1", "testfile5.txt")).Exists, Is.EqualTo(true));
 		}
 	}
 }

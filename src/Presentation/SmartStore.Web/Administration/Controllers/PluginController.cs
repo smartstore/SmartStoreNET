@@ -10,7 +10,7 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Localization;
+using SmartStore.Core.Html;
 using SmartStore.Core.Plugins;
 using SmartStore.Licensing;
 using SmartStore.Services;
@@ -73,16 +73,54 @@ namespace SmartStore.Admin.Controllers
 			this._services = services;
 		}
 
-		#endregion 
+		#endregion
 
-        #region Utilities
+		#region Utilities
 
-        [NonAction]
+		private LicensingData PrepareLicenseLabelModel(LicenseLabelModel model, PluginDescriptor pluginDescriptor, string url = null)
+		{
+			if (LicenseChecker.IsLicensablePlugin(pluginDescriptor))
+			{
+				// We always show license button to serve ability to delete a key.
+				model.IsLicensable = true;
+				model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
+
+				var license = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
+				if (license == null)
+				{
+					// Licensed plugin has not been used yet -> Check state.
+					var unused = LicenseChecker.CheckState(pluginDescriptor.SystemName, url);
+
+					// And try to get license data again.
+					license = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
+				}
+
+				if (license != null)
+				{
+					// Licensed plugin has been used.
+					model.LicenseState = license.State;
+					model.TruncatedLicenseKey = license.TruncatedLicenseKey;
+					model.RemainingDemoUsageDays = license.RemainingDemoDays;
+				}
+				else
+				{
+					// It's confusing to display a license state when there is no license data yet.
+					model.HideLabel = true;
+				}
+
+				return license;
+			}
+
+			return null;
+		}
+
+		[NonAction]
         protected PluginModel PreparePluginModel(PluginDescriptor pluginDescriptor, bool forList = true)
         {
             var model = pluginDescriptor.ToModel();
 
-            model.Group = T("Admin.Plugins.KnownGroup." + pluginDescriptor.Group);
+			// Using GetResource because T could fallback to NullLocalizer here.
+			model.Group = _services.Localization.GetResource("Admin.Plugins.KnownGroup." + pluginDescriptor.Group);
 
 			if (forList)
 			{
@@ -90,7 +128,7 @@ namespace SmartStore.Admin.Controllers
 				model.Description = pluginDescriptor.GetLocalizedValue(_services.Localization, "Description");
 			}
 
-            //locales
+            // Locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
 				locale.FriendlyName = pluginDescriptor.GetLocalizedValue(_services.Localization, "FriendlyName", languageId, false);
@@ -126,36 +164,8 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 
-				// License data
-				if (LicenseChecker.IsLicensablePlugin(pluginDescriptor))
-				{
-					// We always show license button to serve ability to delete a key.
-					model.LicenseModel.IsLicensable = true;
-					model.LicenseModel.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
-
-					var license = LicenseChecker.GetLicense(pluginDescriptor.SystemName);
-					if (license == null)
-					{
-						// Licensed plugin has not been used yet -> Check state.
-						var unused = LicenseChecker.CheckState(pluginDescriptor.SystemName);
-
-						// And try to get license data again.
-						license = LicenseChecker.GetLicense(pluginDescriptor.SystemName);
-					}
-
-					if (license != null)
-					{
-						// Licensed plugin has been used.
-						model.LicenseModel.LicenseState = license.State;
-						model.LicenseModel.TruncatedLicenseKey = license.TruncatedLicenseKey;
-						model.LicenseModel.RemainingDemoUsageDays = license.RemainingDemoDays;
-					}
-					else
-					{
-						// It's confusing to display a license state when there is no license data yet.
-						model.LicenseModel.HideLabel = true;
-					}
-				}
+				// License label
+				PrepareLicenseLabelModel(model.LicenseLabel, pluginDescriptor);
             }
 
             return model;
@@ -359,10 +369,10 @@ namespace SmartStore.Admin.Controllers
 			var model = new LicensePluginModel
 			{
 				SystemName = systemName,
-				Licenses = new List<LicensePluginModel.LicenseModel>()
+				StoreLicenses = new List<LicensePluginModel.StoreLicenseModel>()
 			};
 
-			// validate store url
+			// Validate store url
 			foreach (var store in stores)
 			{
 				if (!_services.StoreService.IsStoreDataValid(store))
@@ -374,31 +384,34 @@ namespace SmartStore.Admin.Controllers
 
 			if (singleLicenseForAllStores)
 			{
-				var licenseModel = new LicensePluginModel.LicenseModel();
-				var license = LicenseChecker.GetLicense(systemName, "");
+				var licenseModel = new LicensePluginModel.StoreLicenseModel();
+
+				// License label
+				var license = PrepareLicenseLabelModel(licenseModel.LicenseLabel, descriptor);
 
 				if (license != null)
 					licenseModel.LicenseKey = license.TruncatedLicenseKey;
 
-				model.Licenses.Add(licenseModel);
+				model.StoreLicenses.Add(licenseModel);
 			}
 			else
 			{
 				foreach (var store in stores)
 				{
-					var licenseModel = new LicensePluginModel.LicenseModel
+					var licenseModel = new LicensePluginModel.StoreLicenseModel
 					{
 						StoreId = store.Id,
 						StoreName = store.Name,
 						StoreUrl = store.Url
 					};
 
-					var license = LicenseChecker.GetLicense(systemName, store.Url);
+					// License label
+					var license = PrepareLicenseLabelModel(licenseModel.LicenseLabel, descriptor, store.Url);
 
 					if (license != null)
 						licenseModel.LicenseKey = license.TruncatedLicenseKey;
 
-					model.Licenses.Add(licenseModel);
+					model.StoreLicenses.Add(licenseModel);
 				}
 			}
 
@@ -419,9 +432,9 @@ namespace SmartStore.Admin.Controllers
 			if (!isLicensable)
 				return HttpNotFound();
 
-			if (model.Licenses != null)
+			if (model.StoreLicenses != null)
 			{
-				foreach (var item in model.Licenses)
+				foreach (var item in model.StoreLicenses)
 				{
 					var result = LicenseChecker.Activate(item.LicenseKey, descriptor.SystemName, item.StoreUrl);
 
@@ -453,8 +466,9 @@ namespace SmartStore.Admin.Controllers
 		{
 			// Reset state for current store.
 			var result = LicenseChecker.ResetState(systemName);
+			LicenseCheckerResult subShopResult = null;
 
-			var model = new PluginLicenseModel
+			var model = new LicenseLabelModel
 			{
 				IsLicensable = true,
 				LicenseUrl = Url.Action("LicensePlugin", new { systemName = systemName }),
@@ -463,22 +477,39 @@ namespace SmartStore.Admin.Controllers
 				RemainingDemoUsageDays = result.RemainingDemoDays
 			};
 
+			// Reset state for all other stores.
 			if (result.Success)
 			{
-				// Reset state for all other stores.
 				var currentStoreId = Services.StoreContext.CurrentStore.Id;
 				var allStores = Services.StoreService.GetAllStores();
 
 				foreach (var store in allStores.Where(x => x.Id != currentStoreId && x.Url.HasValue()))
 				{
-					LicenseChecker.ResetState(systemName, store.Url);
+					subShopResult = LicenseChecker.ResetState(systemName, store.Url);
+					if (!subShopResult.Success)
+					{
+						result = subShopResult;
+						break;
+					}
 				}
+			}
 
+			// Notify about result.
+			if (result.Success)
+			{
 				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 			}
 			else
 			{
-				NotifyError(result.ToString());
+				var message = HtmlUtils.ConvertPlainTextToHtml(result.ToString());
+				if (result.IsFailureWarning)
+				{
+					NotifyWarning(message);
+				}
+				else
+				{
+					NotifyError(message);
+				}
 			}
 
 			return PartialView("Partials/LicenseLabel", model);

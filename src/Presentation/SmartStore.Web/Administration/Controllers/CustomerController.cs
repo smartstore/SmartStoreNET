@@ -223,7 +223,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected CustomerModel PrepareCustomerModelForList(Customer customer)
         {
-            return new CustomerModel()
+            return new CustomerModel
             {
                 Id = customer.Id,
                 Email = !String.IsNullOrEmpty(customer.Email) ? customer.Email : (customer.IsGuest() ? _localizationService.GetResource("Admin.Customers.Guest") : "".NaIfEmpty()),
@@ -491,7 +491,7 @@ namespace SmartStore.Admin.Controllers
             
             if (ModelState.IsValid)
             {
-                var customer = new Customer()
+                var customer = new Customer
                 {
                     CustomerGuid = Guid.NewGuid(),
                     Email = model.Email,

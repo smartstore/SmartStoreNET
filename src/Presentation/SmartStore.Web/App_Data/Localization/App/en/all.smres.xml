@@ -333,6 +333,9 @@
 	<LocaleResource Name="Account.Fields.Timezone">
 		<Value>Time zone</Value>
 	</LocaleResource>
+	<LocaleResource Name="Account.Fields.Title">
+		<Value>Title</Value>
+	</LocaleResource>
 	<LocaleResource Name="Account.Fields.Username">
 		<Value>Username</Value>
 	</LocaleResource>
@@ -807,11 +810,17 @@
 	<LocaleResource Name="Address.Fields.Required.Hint">
 		<Value>* Input elements with asterisk are required and have to be filled out.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Address.Fields.Salutation">
+		<Value>Salutation</Value>
+	</LocaleResource>
 	<LocaleResource Name="Address.Fields.StateProvince">
 		<Value>State / province</Value>
 	</LocaleResource>
 	<LocaleResource Name="Address.Fields.StateProvince.Required">
 		<Value>State / province is required.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Address.Fields.Title">
+		<Value>Title</Value>
 	</LocaleResource>
 	<LocaleResource Name="Address.Fields.ZipPostalCode">
 		<Value>Zip / postal code</Value>
@@ -5291,6 +5300,18 @@
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneRequired.Hint">
 		<Value>Check the box if 'Phone number' is required.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.SalutationEnabled">
+		<Value>'Salutation' enabled</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.SalutationEnabled.Hint">
+		<Value>Set if 'Salutation' is enabled.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations">
+		<Value>Salutations</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations.Hint">
+		<Value>Comma separated list of salutations (e.g. Mr., Mrs). Define the entries which will populate the dropdown list for salutation when entering addresses.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceEnabled">
 		<Value>'State/province' enabled</Value>
 	</LocaleResource>
@@ -5320,6 +5341,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressRequired.Hint">
 		<Value>Check the box if 'Street address' is required.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.TitleEnabled">
+		<Value>'Title' enabled</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.TitleEnabled.Hint">
+		<Value>Set if 'Title' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeEnabled">
 		<Value>'Zip / postal code' enabled</Value>
@@ -5599,6 +5626,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddressRequired.Hint">
 		<Value>Check the box if 'Street address' is required.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.TitleEnabled">
+		<Value>'Title' enabled</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.TitleEnabled.Hint">
+		<Value>Set if 'Title' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.UsernamesEnabled">
 		<Value>'Usernames' enabled</Value>
@@ -6778,6 +6811,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.ShippingOriginAddress.Hint">
 		<Value>Shipping origin address</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Shipping.SkipShippingIfSingleOption">
+		<Value>Display shipping options during checkout process only if more then one option is available</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Shipping.SkipShippingIfSingleOption.Hint">
+		<Value>Display shipping options during the checkout process only if more then one shipping option is available.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart">
 		<Value>Shopping cart settings</Value>
@@ -9547,6 +9586,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Projection.NumberOfPictures.Hint">
 		<Value>Specifies the number of images per object to be exported.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Projection.OnlyIndividuallyVisibleAssociated">
+		<Value>Only individually visible products</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Projection.OnlyIndividuallyVisibleAssociated.Hint">
+		<Value>Specifies whether to only export individually visible associated products.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Projection.OrderStatusChange">
 		<Value>Change order status to</Value>
@@ -13102,7 +13147,7 @@
 		<Value>Active</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.AdditionalShippingSurcharge">
-		<Value>zzgl. &lt;b&gt;{0}&lt;/b&gt; zusätzlicher Versandgebühr</Value>
+		<Value>Plus &lt;b&gt;{0}&lt;/b&gt; shipping surcharge</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.AddNew">
 		<Value>Add new</Value>
@@ -13358,6 +13403,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Filter">
 		<Value>Filter</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.For">
+		<Value>For: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.FreeShipping">
 		<Value>Free shipping</Value>
@@ -15716,6 +15764,12 @@
 	<LocaleResource Name="PrivateMessages.YouHaveUnreadPM">
 		<Value>You have {0} unread message(s) in your Inbox</Value>
 	</LocaleResource>
+	<LocaleResource Name="Product.ThumbAlternateText">
+		<Value>{0}, Picture {1}</Value>
+	</LocaleResource>
+	<LocaleResource Name="Product.ThumbTitle">
+		<Value>{0}, Picture {1} large</Value>
+	</LocaleResource>
 	<LocaleResource Name="Products.AlsoPurchased">
 		<Value>Customers who bought this item also bought</Value>
 	</LocaleResource>
@@ -16000,6 +16054,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.SortByX">
 		<Value>Sort by {0}</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Sorting.Featured">
+		<Value>Featured</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.Specs">
 		<Value>Features</Value>

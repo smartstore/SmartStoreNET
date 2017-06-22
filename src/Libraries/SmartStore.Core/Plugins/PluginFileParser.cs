@@ -59,16 +59,15 @@ namespace SmartStore.Core.Plugins
 
 			var lines = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-			// read and parse the file
+			// Read and parse the file
             if (!File.Exists(filePath))
 				return lines;
 
             var text = File.ReadAllText(filePath);
-            if (String.IsNullOrEmpty(text))
+            if (text.IsEmpty())
+			{
 				return lines;
-            
-            //Old way of file reading. This leads to unexpected behavior when a user's FTP program transfers these files as ASCII (\r\n becomes \n).
-            //var lines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+			}		
             
             using (var reader = new StringReader(text))
             {
@@ -77,13 +76,15 @@ namespace SmartStore.Core.Plugins
                 {
                     if (str.IsEmpty() || lines.Contains(str, StringComparer.CurrentCultureIgnoreCase))
                         continue;
+
                     lines.Add(str.Trim());
                 }
             }
+
             return lines;
         }
 
-        public static void SaveInstalledPluginsFile(ICollection<String> pluginSystemNames, string filePath = null)
+        public static void SaveInstalledPluginsFile(ICollection<string> pluginSystemNames, string filePath = null)
         {
             if (pluginSystemNames == null || pluginSystemNames.Count == 0)
                 return;
@@ -158,7 +159,7 @@ namespace SmartStore.Core.Plugins
                     case "SupportedVersions": // compat
                     case "MinAppVersion":
                         {
-                            //parse supported min app version
+                            // Parse supported min app version
                             descriptor.MinAppVersion = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => x.Trim())
                                 .FirstOrDefault() // since V1.2 take the first only

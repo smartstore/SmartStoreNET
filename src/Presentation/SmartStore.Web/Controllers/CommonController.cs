@@ -221,7 +221,7 @@ namespace SmartStore.Web.Controllers
                     }
                 }
 
-                model.ReturnUrls[lang.SeoCode] = helper.GetAbsolutePath();
+                model.ReturnUrls[lang.SeoCode] = helper.RelativePath;
             }
 
             return model;
@@ -316,7 +316,7 @@ namespace SmartStore.Web.Controllers
 				var host = _services.WebHelper.GetStoreLocation();
 				foreach (var lang in model.AvailableLanguages)
 				{
-					_pageAssetsBuilder.AddLinkPart("alternate", host + model.ReturnUrls[lang.SeoCode].TrimStart('/'), hreflang: lang.SeoCode);
+					_pageAssetsBuilder.AddLinkPart("alternate", host.EnsureEndsWith("/") + model.ReturnUrls[lang.SeoCode].TrimStart('/'), hreflang: lang.SeoCode);
 				}
 			}
 
@@ -375,7 +375,7 @@ namespace SmartStore.Web.Controllers
 
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
-                var helper = new LocalizedUrlHelper(HttpContext.Request.ApplicationPath, returnUrl, true);
+                var helper = new LocalizedUrlHelper(HttpContext.Request.ApplicationPath, returnUrl, false);
 				helper.PrependSeoCode(_services.WorkContext.WorkingLanguage.UniqueSeoCode, true);
                 returnUrl = helper.GetAbsolutePath();
             }
@@ -1071,8 +1071,18 @@ namespace SmartStore.Web.Controllers
 									var picture = productPicture.Value.FirstOrDefault();
 									if (picture != null)
 									{
-										item.ImageUrl = _pictureService.Value.GetPictureUrl(picture.Picture, _mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
-											!_catalogSettings.HideProductDefaultPictures, storeLocation);
+										try
+										{
+											item.ImageUrl = _pictureService.Value.GetPictureUrl(
+												picture.Picture,
+												_mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
+												!_catalogSettings.HideProductDefaultPictures,
+												storeLocation);
+										}
+										catch (Exception exception)
+										{
+											exception.Dump();
+										}
 									}
 								}
 

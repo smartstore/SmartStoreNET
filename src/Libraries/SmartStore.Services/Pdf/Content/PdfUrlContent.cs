@@ -6,12 +6,27 @@ using System.Text;
 using System.Web;
 using System.Web.Security;
 using SmartStore.Core;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Pdf
 {
 	public class PdfUrlContent : IPdfContent
 	{
+		private static readonly Uri _engineBaseUri;
 		private readonly string _url;
+
+		static PdfUrlContent()
+		{
+			var baseUrl = CommonHelper.GetAppSetting<string>("sm:PdfEngineBaseUrl").TrimSafe().NullEmpty();
+			if (baseUrl != null)
+			{
+				Uri uri;
+				if (Uri.TryCreate(baseUrl, UriKind.Absolute, out uri))
+				{
+					_engineBaseUri = uri;
+				}
+			}
+		}
 
 		public PdfUrlContent(string url)
 		{
@@ -59,7 +74,17 @@ namespace SmartStore.Services.Pdf
 
 		protected virtual string GetAbsoluteUrl()
 		{
-			if (HttpContext.Current != null && HttpContext.Current.Request != null)
+			if (_engineBaseUri != null)
+			{
+				var url = _url;
+				if (url.StartsWith("~"))
+				{
+					url = VirtualPathUtility.ToAbsolute(url);
+				}
+
+				return  _engineBaseUri.ToString() + url.TrimStart('/');
+			}
+			else if (HttpContext.Current?.Request != null)
 			{
 				return WebHelper.GetAbsoluteUrl(_url, new HttpRequestWrapper(HttpContext.Current.Request));
 			}

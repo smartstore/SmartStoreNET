@@ -79,7 +79,7 @@ namespace SmartStore.Core.Plugins
         public Type PluginType { get; set; }
 
         /// <summary>
-        /// The assembly that has been shadow copied that is active in the application
+        /// The assembly that has been shadow copied and was loaded into the AppDomain
         /// </summary>
         public Assembly ReferencedAssembly { get; internal set; }
 
@@ -87,6 +87,16 @@ namespace SmartStore.Core.Plugins
         /// The original assembly file that a shadow copy was made from it
         /// </summary>
         public FileInfo OriginalAssemblyFile { get; internal set; }
+
+		/// <summary>
+		/// The list of assembly files found in the plugin folder, except the main plugin assembly.
+		/// </summary>
+		public IEnumerable<FileInfo> ReferencedLocalAssemblyFiles { get; internal set; }
+
+		/// <summary>
+		/// Gets any exception thrown during plugin activation & initializing
+		/// </summary>
+		public Exception ActivationException { get; internal set; }
 
         /// <summary>
         /// Gets or sets the plugin group
@@ -157,10 +167,16 @@ namespace SmartStore.Core.Plugins
 		public int DisplayOrder { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating whether plugin is installed
+        /// Gets or sets a value indicating whether the plugin is installed
         /// </summary>
 		[DataMember]
 		public bool Installed { get; set; }
+
+		/// <summary>
+		/// Gets a value indicating whether the plugin is incompatible with the current application version
+		/// </summary>
+		[DataMember]
+		public bool Incompatible { get; set; }
 
 		/// <summary>
 		/// Gets or sets the value indicating whether the plugin is configurable
@@ -174,41 +190,44 @@ namespace SmartStore.Core.Plugins
 		/// <summary>
 		/// Gets or sets the root key of string resources.
 		/// </summary>
-		/// <remarks>Tries to get it from first entry of resource XML file if not specified. In that case the first resource name should not contain a dot if it's not part of the root key.
-		/// Otherwise you get the wrong root key.</remarks>
+		/// <remarks>
+		/// Tries to get it from first entry of resource XML file if not specified.
+		/// In that case the first resource name should not contain a dot if it's not part of the root key.
+		/// Otherwise you get the wrong root key.
+		/// </remarks>
 		public string ResourceRootKey 
 		{
 			get {
 				if (_resourceRootKey == null) 
 				{
 					_resourceRootKey = "";
+
 					try 
 					{
-						// try to get root-key from first entry of XML file
-						string localizationDir = Path.Combine(PhysicalPath, "Localization");
+						// Try to get root-key from first entry of XML file
+						var localizationDir = new DirectoryInfo(Path.Combine(PhysicalPath, "Localization"));
 
-						if (System.IO.Directory.Exists(localizationDir)) 
+						if (localizationDir.Exists) 
 						{
-							string filePath = System.IO.Directory.EnumerateFiles(localizationDir, "*.xml").FirstOrDefault();
-							if (filePath.HasValue()) 
+							var localizationFile = localizationDir.EnumerateFiles("*.xml").FirstOrDefault();
+							if (localizationFile != null) 
 							{
 								XmlDocument doc = new XmlDocument();
-								doc.Load(filePath);
-								var node = doc.SelectSingleNode(@"//Language/LocaleResource");
-								if (node != null) 
+								doc.Load(localizationFile.FullName);
+								var key = doc.SelectSingleNode(@"//Language/LocaleResource")?.Attributes["Name"]?.InnerText;
+								if (key.HasValue() && key.Contains('.'))
 								{
-									string key = node.Attributes["Name"].InnerText;
-									if (key.HasValue() && key.Contains('.'))
-										_resourceRootKey = key.Substring(0, key.LastIndexOf('.'));
-								}
+									_resourceRootKey = key.Substring(0, key.LastIndexOf('.'));
+								}	
 							}
 						}
 					}
-					catch (Exception exc) 
+					catch (Exception ex) 
 					{
-						exc.Dump();
+						ex.Dump();
 					}
 				}
+
 				return _resourceRootKey;
 			}
 			set {
@@ -221,12 +240,14 @@ namespace SmartStore.Core.Plugins
             object instance;
             if (!EngineContext.Current.ContainerManager.TryResolve(PluginType, null, out instance))
             {
-                //not resolved
+                // Not registered
                 instance = EngineContext.Current.ContainerManager.ResolveUnregistered(PluginType);
             }
+
             var typedInstance = instance as T;
             if (typedInstance != null)
                 typedInstance.PluginDescriptor = this;
+
             return typedInstance;
         }
 

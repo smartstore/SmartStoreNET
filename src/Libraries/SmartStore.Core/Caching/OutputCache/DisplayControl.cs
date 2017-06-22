@@ -236,11 +236,7 @@ namespace SmartStore.Core.Caching
 			}
 			else if (type == typeof(Topic))
 			{
-				var topic = ((Topic)entity);
-				if (!topic.RenderAsWidget)
-				{
-					yield return "t" + topic.Id;
-				}
+				yield return "t" + entity.Id;
 			}
 		}
 

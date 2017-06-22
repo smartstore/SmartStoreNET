@@ -143,6 +143,8 @@ namespace SmartStore.Data.Migrations
 					Name = "Media.Storage.Provider",
 					Value = (storeMediaInDb ? "MediaStorage.SmartStoreDatabase" : "MediaStorage.SmartStoreFileSystem")
 				});
+
+				context.SaveChanges();
 			}
 
 			#region Pictures

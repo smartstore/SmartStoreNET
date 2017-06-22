@@ -74,12 +74,12 @@ namespace SmartStore.Web.Controllers
 			return GetFileContentResultFor(download, product);
         }
 
-		public ActionResult GetDownload(Guid orderItemId, bool agree = false)
+		public ActionResult GetDownload(Guid id, bool agree = false)
         {
-			if (orderItemId == Guid.Empty)
+			if (id == Guid.Empty)
 				return HttpNotFound();
 
-			var orderItem = _orderService.GetOrderItemByGuid(orderItemId);
+			var orderItem = _orderService.GetOrderItemByGuid(id);
             if (orderItem == null)
 				return HttpNotFound();
 
@@ -125,7 +125,7 @@ namespace SmartStore.Web.Controllers
             
             if (hasNotification)
             {
-                return RedirectToAction("UserAgreement", "Customer", new { id = orderItemId });
+                return RedirectToAction("UserAgreement", "Customer", new { id = id });
             }
             
             if (download.UseDownloadUrl)
@@ -142,7 +142,7 @@ namespace SmartStore.Web.Controllers
 				if (data == null || data.LongLength == 0)
                 {
                     NotifyError(T("Common.Download.NoDataAvailable"));
-                    return RedirectToAction("UserAgreement", "Customer", new { id = orderItemId });
+                    return RedirectToAction("UserAgreement", "Customer", new { id = id });
                 }
                 
                 orderItem.DownloadCount++;
@@ -152,12 +152,12 @@ namespace SmartStore.Web.Controllers
             }
         }
 
-		public ActionResult GetLicense(Guid orderItemId)
+		public ActionResult GetLicense(Guid id)
         {
-			if (orderItemId == Guid.Empty)
+			if (id == Guid.Empty)
 				return HttpNotFound();
 			
-			var orderItem = _orderService.GetOrderItemByGuid(orderItemId);
+			var orderItem = _orderService.GetOrderItemByGuid(id);
             if (orderItem == null)
 				return HttpNotFound();
 

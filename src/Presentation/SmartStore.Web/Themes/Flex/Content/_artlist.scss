@@ -474,11 +474,22 @@ $art-border-color:              #ddd;
             padding-left: 0;
             padding-top: 1rem;
             width: 100%;
+            /*position: static;*/
+        }
+
+        .art-info-block {
+            // Fix Android default browser layout glitch
+            flex-basis: initial;
+            flex-grow: initial;
         }
     }
 
     @include media-breakpoint-down(xs) {
         .art-picture-block { max-width: 30%; }
+    }
+
+    .delivery-time {
+        white-space: normal;
     }
 }
 

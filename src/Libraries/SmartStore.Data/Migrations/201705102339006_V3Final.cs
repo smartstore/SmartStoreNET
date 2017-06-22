@@ -231,7 +231,6 @@ namespace SmartStore.Data.Migrations
 				"Ergebnisse für {0} werden angezeigt. Ihre Suche nach {1} ergab leider keine Treffer.");
 
 			builder.Delete("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Position");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Relevance", "Relevance", "Relevanz");
 
 			builder.Delete(
 				"Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteEnabled",
@@ -1018,6 +1017,10 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Content.CopyrightNotice",
                 "Copyright &copy; {0} {1}. All rights reserved.",
                 "Copyright &copy; {0} {1}. Alle Rechte vorbehalten.");
-        }
+
+			builder.AddOrUpdate("Common.CannotCopyFolderIntoItself",
+				"Cannot copy a folder into itself.",
+				"Ein Ordner kann nicht in sich selbst kopiert werden.");
+		}
 	}
 }

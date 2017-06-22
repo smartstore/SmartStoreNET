@@ -56,8 +56,16 @@
             if (!token)
                 return false;
 
-            CKEDITOR.instances.Body.insertHtml('%{0}%'.format(token));
+            var id = $("#messagetemplate-localized .tab-pane.active .cke").siblings("textarea").attr("id");
 
+            if (id != null) {
+                CKEDITOR.instances[id].insertHtml('%{0}%'.format(token));
+            }
+            else
+            {
+                CKEDITOR.instances.Body.insertHtml('%{0}%'.format(token));
+            }
+            
             return false;
         }); 
     });

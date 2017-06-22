@@ -235,7 +235,7 @@ namespace SmartStore.Web.Controllers
 				catIds = catIds.Concat(_helper.GetChildCategoryIds(categoryId)).ToArray();
 			}
 
-			query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, catIds);
+			query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? (bool?)null : false, catIds);
 
 			var searchResult = _catalogSearchService.Search(query);
 			model.SearchResult = searchResult;
@@ -667,6 +667,7 @@ namespace SmartStore.Web.Controllers
 				return View(ProductSummaryModel.Empty);
 			}
 
+			query.Sorting.Clear();
 			query = query
 				.SortBy(ProductSortingEnum.CreatedOn)
 				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
@@ -702,7 +703,11 @@ namespace SmartStore.Web.Controllers
 				
 			var items = new List<SyndicationItem>();
 
-			query = query.SortBy(ProductSortingEnum.CreatedOn).Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
+			query.Sorting.Clear();
+			query = query
+				.SortBy(ProductSortingEnum.CreatedOn)
+				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
+
 			var result = _catalogSearchService.Search(query);
 
 			var storeUrl = _services.StoreContext.CurrentStore.Url;

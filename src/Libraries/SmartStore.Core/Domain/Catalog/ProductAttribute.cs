@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Search;
@@ -36,6 +37,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets whether the attribute can be filtered
 		/// </summary>
 		[DataMember]
+		[Index]
 		public bool AllowFiltering { get; set; }
 
 		/// <summary>

@@ -59,7 +59,7 @@
         <input id="fileupload-@random" type="file" name="file" />
     </span>
 
-    <button class="btn btn-warning cancel">
+    <button class="btn btn-warning cancel hide">
         <i class="fa fa-times"></i>
         <span>@T("Common.Fileuploader.Cancel")</span>
     </button>
@@ -83,7 +83,9 @@
         var el = $('#@clientId'),
             img = el.find('img'),
             elHidden = el.find('.hidden'),
-            elRemove = el.find('.remove');
+            elRemove = el.find('.remove'),
+            elCancel = el.find('.cancel')
+            elFile = el.find('.fileinput-button');
 
         $('#@clientId').fileupload({
             url: el.data('upload-url'),
@@ -98,6 +100,9 @@
                     img.attr('src', result.imageUrl);
                     elHidden.val(result.pictureId);
                     elRemove.show();
+
+                    elCancel.hide();
+                    elFile.show();
                 }
             },
 
@@ -115,6 +120,8 @@
             e.preventDefault();
         });
 
+        $("#addProductPicture").on("click", function () {
+            elRemove.trigger("click");
+        });
     });
-
 </script>

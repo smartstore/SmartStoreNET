@@ -1157,7 +1157,6 @@ namespace SmartStore.Web.Framework
 					{
 						if (c.Resolve<IEngine>().IsFullyInitialized && c.TryResolve(out storeContext))
 						{
-							//currentStoreId = storeContext.CurrentStoreIdIfMultiStoreMode;
 							currentStoreId = storeContext.CurrentStore.Id;
 							//uncomment the code below if you want load settings per store only when you have two stores installed.
 							//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
@@ -1166,13 +1165,20 @@ namespace SmartStore.Web.Framework
 							////although it's better to connect to your database and execute the following SQL:
 							//DELETE FROM [Setting] WHERE [StoreId] > 0
 
-							return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+							//return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
 						}
 					}
 					catch { }
 
-					// Unit tests & tooling
-					return new TSettings();
+					try
+					{
+						return c.Resolve<ISettingService>().LoadSetting<TSettings>(currentStoreId);
+					}
+					catch
+					{
+						// Unit tests & tooling
+						return new TSettings();
+					}
 				})
                 .InstancePerRequest()
                 .CreateRegistration();

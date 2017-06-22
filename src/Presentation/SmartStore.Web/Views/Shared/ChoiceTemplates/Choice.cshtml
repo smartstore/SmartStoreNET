@@ -8,7 +8,7 @@
 	var label = Model.GetLabel();
 	var description = Model.GetDescription();
 
-	var isTextInput = Model.AttributeControlType == AttributeControlType.TextBox || Model.AttributeControlType != AttributeControlType.MultilineTextbox;
+	var isTextInput = Model.AttributeControlType == AttributeControlType.TextBox || Model.AttributeControlType == AttributeControlType.MultilineTextbox;
 	string templateSuffix = null;
 	switch (Model.AttributeControlType)
 	{

@@ -327,6 +327,19 @@
 				if (img.data("drift") || !img.attr(zoomOpts.sourceAttribute) || self.zoomWindowContainer.length === 0)
 					return;
 
+				var triggerW = img.width();
+				var zoomW = img.data("zoom-width");
+				if (_.isNumber(zoomW) && zoomW > 0) {
+					if (zoomW <= triggerW) {
+						// Cannot zoom smaller or equal sized image
+						return;
+					}
+					else {
+						// set correct zoomFactor
+						zoomOpts.zoomFactor = zoomW / triggerW;
+					}
+				}
+
 				zoomOpts = $.extend(zoomOpts, {
 					paneContainer: self.zoomWindowContainer[0],
 					onShow: function () {
@@ -547,7 +560,7 @@
 		startIndex: 0,
 		// zoom options
 		zoom: {
-			enabled: true
+			enabled: true,
 			/* {...} 'Drift' options are passed through */
 		},
 		// full size image box options

@@ -152,7 +152,7 @@ namespace SmartStore.Web.Framework.Localization
         {
             get
             {
-                if (!_seoFriendlyUrlsForLanguagesEnabled.HasValue)
+                if (_seoFriendlyUrlsForLanguagesEnabled == null && EngineContext.Current.IsFullyInitialized)
 				{
 					try
 					{

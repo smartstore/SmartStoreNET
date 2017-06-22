@@ -30,13 +30,15 @@ namespace SmartStore.Services.Pdf
 				var converter = CreateWkConverter(settings);
 
 				var input = settings.Page.Process("page");
-
+				
 				if (settings.Page.Kind == PdfContentKind.Url)
 				{
+					Logger.DebugFormat("Generating PDF from URL '{0}'. CustomWkHtmlPageArgs: {1}", input, converter.CustomWkHtmlPageArgs);
 					return converter.GeneratePdfFromFile(input, null);
 				}
 				else
 				{
+					Logger.DebugFormat("Generating PDF from HTML. CustomWkHtmlPageArgs: {0}", converter.CustomWkHtmlPageArgs);
 					return converter.GeneratePdf(input, null);
 				}
 			}

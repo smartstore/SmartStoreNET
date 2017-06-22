@@ -27,6 +27,27 @@
 	</table>
 }
 
+@if (Model.Locales.Count == 1)
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[0].Alias)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.Locales[0].Alias)
+				@Html.ValidationMessageFor(model => model.Locales[0].Alias)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				@Html.HiddenFor(model => model.Locales[0].LanguageId)
+			</td>
+		</tr>
+	</table>
+}
+else
+{
 @(Html.LocalizedEditor<CommonFacetSettingsModel, CommonFacetSettingsLocalizedModel>(fieldPrefix + "-localized",
 	@<table class="adminContent">
 		<tr>
@@ -44,3 +65,4 @@
 			</td>
 		</tr>
 	</table>, null))
+}

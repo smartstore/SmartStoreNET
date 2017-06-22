@@ -225,7 +225,15 @@ namespace SmartStore.Services.Catalog.Extensions
 					}
 				}
 
-				url = store.Url.TrimEnd('/') + urlHelper.GetAbsolutePath();
+				var storeUrl = store.Url.TrimEnd('/');
+
+				// Prevent duplicate occurrence of application path.
+				if (urlHelper.ApplicationPath.HasValue() && storeUrl.EndsWith(urlHelper.ApplicationPath, StringComparison.OrdinalIgnoreCase))
+				{
+					storeUrl = storeUrl.Substring(0, storeUrl.Length - urlHelper.ApplicationPath.Length).TrimEnd('/');
+				}
+
+				url = storeUrl + urlHelper.GetAbsolutePath();
 			}
 
 			if (attributesXml.HasValue())

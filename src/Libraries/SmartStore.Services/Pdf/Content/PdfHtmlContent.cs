@@ -5,17 +5,33 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using SmartStore.Core;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Pdf
 {
 	public class PdfHtmlContent : IPdfContent
 	{
+		private static readonly Uri _engineBaseUri;
+
 		private string _html;
 		private string _originalHtml;
 		private bool _processed;
 		private string _tempFilePath;
 		private PdfContentKind _kind = PdfContentKind.Html;
 		
+		static PdfHtmlContent()
+		{
+			var baseUrl = CommonHelper.GetAppSetting<string>("sm:PdfEngineBaseUrl").TrimSafe().NullEmpty();
+			if (baseUrl != null)
+			{
+				Uri uri;
+				if (Uri.TryCreate(baseUrl, UriKind.Absolute, out uri))
+				{
+					_engineBaseUri = uri;
+				}
+			}
+		}
+
 		public PdfHtmlContent(string html)
 		{
 			Guard.NotEmpty(html, nameof(html));
@@ -33,14 +49,20 @@ namespace SmartStore.Services.Pdf
 		{
 			if (!_processed)
 			{
-				if (HttpContext.Current != null && HttpContext.Current.Request != null)
+				if (_engineBaseUri != null)
+				{
+					_html = WebHelper.MakeAllUrlsAbsolute(_html, _engineBaseUri.Scheme, _engineBaseUri.Authority);
+				}
+				else if (HttpContext.Current?.Request != null)
 				{
 					_html = WebHelper.MakeAllUrlsAbsolute(_html, new HttpRequestWrapper(HttpContext.Current.Request));
-					if (!flag.IsCaseInsensitiveEqual("page"))
-					{
-						CreateTempFile();
-					}
 				}
+
+				if (!flag.IsCaseInsensitiveEqual("page"))
+				{
+					CreateTempFile();
+				}
+
 				_processed = true;
 			}
 			

@@ -254,50 +254,87 @@ namespace SmartStore.Data
             get
             {
                 return this.ChangeTracker.Entries()
-                           .Where(x => x.State != System.Data.Entity.EntityState.Unchanged && x.State != System.Data.Entity.EntityState.Detached)
+                           .Where(x => x.State > System.Data.Entity.EntityState.Unchanged)
                            .Any();
             }
         }
 
 		public IDictionary<string, object> GetModifiedProperties(BaseEntity entity)
 		{
+			return GetModifiedProperties(this.Entry(entity));
+		}
+
+		private IDictionary<string, object> GetModifiedProperties(DbEntityEntry entry)
+		{
 			var props = new Dictionary<string, object>();
 
-			var entry = this.Entry(entity);
-
 			// be aware of the entity state. you cannot get modified properties for detached entities.
-			if (entry.State != System.Data.Entity.EntityState.Detached)
+			if (entry.State == System.Data.Entity.EntityState.Modified)
 			{
-				var modifiedProperties = from p in entry.CurrentValues.PropertyNames
-										 let prop = entry.Property(p)
-										 where PropIsModified(prop) // prop.IsModified seems to return true even if values are equal
-										 select prop;
+				var detectChangesEnabled = this.Configuration.AutoDetectChangesEnabled;
+				var mergeable = entry.Entity as IMergedData;
+				var mergedProps = mergeable?.MergedDataValues;
+				var ignoreMerge = false;
 
-				foreach (var prop in modifiedProperties)
+				if (mergeable != null)
 				{
-					props.Add(prop.Name, prop.OriginalValue);
+					ignoreMerge = mergeable.MergedDataIgnore;
+					mergeable.MergedDataIgnore = true;
+				}
+
+				try
+				{
+					var modifiedProperties = from p in entry.CurrentValues.PropertyNames
+											 let prop = entry.Property(p)
+											 // prop.IsModified seems to return true even if values are equal
+											 where PropIsModified(prop, detectChangesEnabled, mergedProps)
+											 select prop;
+
+					foreach (var prop in modifiedProperties)
+					{
+						props.Add(prop.Name, prop.OriginalValue);
+					}
+				}
+				finally
+				{
+					if (mergeable != null)
+						mergeable.MergedDataIgnore = ignoreMerge;
 				}
 			}
+
+			//System.Diagnostics.Debug.WriteLine("GetModifiedProperties: " + String.Join(", ", props.Select(x => x.Key)));
 
 			return props;
 		}
 
-		private static bool PropIsModified(DbPropertyEntry prop)
+		private static bool PropIsModified(DbPropertyEntry prop, bool detectChangesEnabled, IDictionary<string, object> mergedProps)
 		{
-			// TODO: "CurrentValues cannot be used for entities in the Deleted state."
-			var cur = prop.CurrentValue;
-			// TODO: "OriginalValues cannot be used for entities in the Added state."
-			var orig = prop.OriginalValue;
+			var propIsModified = prop.IsModified;
 
-			if (cur == null && orig == null)
-				return false;
+			if (detectChangesEnabled && !propIsModified)
+				return false; // Perf
 
-			if (orig != null)
+			if (propIsModified && mergedProps != null && mergedProps.ContainsKey(prop.Name))
 			{
-				return !orig.Equals(cur);
+				// EF "thinks" that prop has changed because merged value differs
+				return false;
 			}
 
-			return !cur.Equals(orig);	
+			// INFO: "CurrentValue" cannot be used for entities in the Deleted state.
+			// INFO: "OriginalValues" cannot be used for entities in the Added state.
+			return detectChangesEnabled 
+				? propIsModified
+				: !AreEqual(prop.CurrentValue, prop.OriginalValue);
+		}
+
+		private static bool AreEqual(object cur, object orig)
+		{
+			if (cur == null && orig == null)
+				return true;
+
+			return orig != null 
+				? orig.Equals(cur)
+				: cur.Equals(orig);
 		}
 
         // required for UoW implementation
@@ -440,23 +477,26 @@ namespace SmartStore.Data
 
 		public int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class
 		{
-			Func<DbEntityEntry, bool> predicate = x => 
+			return DetachEntities(o => o is TEntity, unchangedEntitiesOnly);
+		}
+
+		public int DetachEntities(Func<object, bool> predicate, bool unchangedEntitiesOnly = true)
+		{
+			Guard.NotNull(predicate, nameof(predicate));
+
+			Func<DbEntityEntry, bool> predicate2 = x =>
 			{
-				if (x.Entity is TEntity)
+				if (x.State > System.Data.Entity.EntityState.Detached && predicate(x.Entity))
 				{
-					if (x.State == System.Data.Entity.EntityState.Detached)
-						return false;
-
-					if (unchangedEntitiesOnly)
-						return x.State == System.Data.Entity.EntityState.Unchanged;
-
-					return true;
+					return unchangedEntitiesOnly 
+						? x.State == System.Data.Entity.EntityState.Unchanged
+						: true;
 				}
 
 				return false;
 			};
-			
-			var attachedEntities = this.ChangeTracker.Entries().Where(predicate).ToList();
+
+			var attachedEntities = this.ChangeTracker.Entries().Where(predicate2).ToList();
 			attachedEntities.Each(entry => entry.State = System.Data.Entity.EntityState.Detached);
 			return attachedEntities.Count;
 		}
@@ -469,7 +509,21 @@ namespace SmartStore.Data
 
 		public void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
 		{
-			this.Entry(entity).Reload();
+			var entry = this.Entry(entity);
+
+			try
+			{
+				entry.Reload();
+			}
+			catch
+			{
+				// Can occur when entity has been detached in the meantime (for whatever fucking reasons)
+				if (entry.State == System.Data.Entity.EntityState.Detached)
+				{
+					entry.State = System.Data.Entity.EntityState.Unchanged;
+					entry.Reload();
+				}
+			}
 		}
 
 		#endregion

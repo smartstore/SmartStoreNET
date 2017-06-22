@@ -4,10 +4,8 @@ using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.Pdf
 {
-
 	public class PdfHeaderFooterVariables
 	{
-
 		/// <summary>
 		/// The number of the page currently being printed
 		/// </summary>
@@ -57,6 +55,5 @@ namespace SmartStore.Web.Framework.Pdf
 		/// The number of pages in the current site being converted
 		/// </summary>
 		public int SitePages { get; set; }
-
 	}
 }

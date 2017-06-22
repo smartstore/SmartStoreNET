@@ -28,6 +28,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the product variant attribute name
         /// </summary>
 		[DataMember]
+		[Index]
 		public string Name { get; set; }
 
         /// <summary>
@@ -71,6 +72,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the type Id
 		/// </summary>
 		[DataMember]
+		[Index]
 		public int ValueTypeId { get; set; }
 
 		/// <summary>

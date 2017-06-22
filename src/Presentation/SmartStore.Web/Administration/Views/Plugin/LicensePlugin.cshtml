@@ -1,38 +1,57 @@
-﻿@model LicensePluginModel
-
+﻿@using SmartStore.Licensing
+@model LicensePluginModel
 @{
 	Layout = null;
 }
-
 <form method="POST" action="@Url.Action("LicensePlugin", "Plugin", new { systemName = Model.SystemName })" data-systemname="@Model.SystemName"
 	data-resetcheckurl="@Url.Action("LicenseResetStatusCheck", "Plugin", new { systemName = Model.SystemName })">
 
 	@if (Model.InvalidDataStoreId == 0)
 	{
 		<table class="adminContent">
-			@for (int i = 0; i < Model.Licenses.Count; ++i)
+			@for (int i = 0; i < Model.StoreLicenses.Count; ++i)
 			{
+				var storeLicense = Model.StoreLicenses[i];
+				var keyAttributes = new RouteValueDictionary(new { @class = "input-large", autocomplete = "off" });
+				if (storeLicense.LicenseLabel.LicenseState == LicensingState.Licensed && string.IsNullOrWhiteSpace(storeLicense.LicenseKey) && !storeLicense.LicenseLabel.HideLabel)
+				{
+					keyAttributes.Add("disabled", "disabled");
+				}
 				<tr>
 					<td colspan="2">
-						<div class="admin-config-group" style="@(i==0 ? "" : "margin-top: 12px;")">
+						<div class="admin-config-group@(i==0 ? "" : " mt-2")">
 							<div class="small-title">
-								@Model.Licenses[i].StoreUrl <span class="muted">(@Model.Licenses[i].StoreName)</span>
-								- <a href="@Url.Action("Edit", "Store", new { id = Model.Licenses[i].StoreId })">
-									@T("Admin.Common.Change")
-								</a>
+								<span style="padding-right: 5px;">
+									@storeLicense.StoreName
+								</span>
+								<span class="license-label">
+									@Html.Partial("Partials/LicenseLabel", storeLicense.LicenseLabel)
+								</span>
 							</div>
 						</div>
 					</td>
 				</tr>
 				<tr>
 					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.Licenses[i].LicenseKey)
+						@Html.SmartLabelFor(model => model.StoreLicenses[i].LicenseKey)
 					</td>
 					<td class="adminData">
-						@Html.HiddenFor(model => model.Licenses[i].StoreId)
-						@Html.HiddenFor(model => model.Licenses[i].StoreUrl)
-
-						@Html.TextBoxFor(model => model.Licenses[i].LicenseKey, new { @class = "input-large", autocomplete = "off" })
+						@Html.HiddenFor(model => model.StoreLicenses[i].StoreId)
+						@Html.HiddenFor(model => model.StoreLicenses[i].StoreUrl)
+						@Html.TextBoxFor(model => model.StoreLicenses[i].LicenseKey, keyAttributes)
+					</td>
+				</tr>
+				<tr>
+					<td>
+						&nbsp;
+					</td>
+					<td>
+						<span class="help-inline">
+							@T("Common.For", storeLicense.StoreUrl)
+							<a href="@Url.Action("Edit", "Store", new { id = storeLicense.StoreId })">
+								@T("Admin.Common.Change")
+							</a>
+						</span>
 					</td>
 				</tr>
 			}

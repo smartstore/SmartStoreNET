@@ -130,7 +130,7 @@ namespace SmartStore.Core.Infrastructure
 		}
         
         /// <summary>
-        /// Initialize components and plugins in the sm environment.
+        /// Initialize components and plugins
         /// </summary>
         public void Initialize()
         {

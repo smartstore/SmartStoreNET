@@ -116,37 +116,42 @@ namespace SmartStore.Services.Orders
         public IList<string> ParseValues(string attributes, int checkoutAttributeId)
         {
             var selectedCheckoutAttributeValues = new List<string>();
-            try
-            {
-                var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(attributes);
 
-                var nodeList1 = xmlDoc.SelectNodes(@"//Attributes/CheckoutAttribute");
-                foreach (XmlNode node1 in nodeList1)
-                {
-                    if (node1.Attributes != null && node1.Attributes["ID"] != null)
-                    {
-                        string str1 = node1.Attributes["ID"].InnerText.Trim();
-                        int id = 0;
-                        if (int.TryParse(str1, out id))
-                        {
-                            if (id == checkoutAttributeId)
-                            {
-                                var nodeList2 = node1.SelectNodes(@"CheckoutAttributeValue/Value");
-                                foreach (XmlNode node2 in nodeList2)
-                                {
-                                    string value = node2.InnerText.Trim();
-                                    selectedCheckoutAttributeValues.Add(value);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                Debug.Write(exc.ToString());
-            }
+			if (attributes.HasValue())
+			{
+				try
+				{
+					var xmlDoc = new XmlDocument();
+					xmlDoc.LoadXml(attributes);
+
+					var nodeList1 = xmlDoc.SelectNodes(@"//Attributes/CheckoutAttribute");
+					foreach (XmlNode node1 in nodeList1)
+					{
+						if (node1.Attributes != null && node1.Attributes["ID"] != null)
+						{
+							string str1 = node1.Attributes["ID"].InnerText.Trim();
+							int id = 0;
+							if (int.TryParse(str1, out id))
+							{
+								if (id == checkoutAttributeId)
+								{
+									var nodeList2 = node1.SelectNodes(@"CheckoutAttributeValue/Value");
+									foreach (XmlNode node2 in nodeList2)
+									{
+										string value = node2.InnerText.Trim();
+										selectedCheckoutAttributeValues.Add(value);
+									}
+								}
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Debug.Write(ex.ToString());
+				}
+			}
+
             return selectedCheckoutAttributeValues;
         }
 

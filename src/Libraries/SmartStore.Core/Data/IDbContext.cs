@@ -110,6 +110,13 @@ namespace SmartStore.Core.Data
 		int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class;
 
 		/// <summary>
+		/// Detaches all entities matching the passed <paramref name="predicate"/> from the current object context
+		/// </summary>
+		/// <param name="unchangedEntitiesOnly">When <c>true</c>, only entities in unchanged state get detached.</param>
+		/// <returns>The count of detached entities</returns>
+		int DetachEntities(Func<object, bool> predicate, bool unchangedEntitiesOnly = true);
+
+		/// <summary>
 		/// Change the state of an entity object
 		/// </summary>
 		/// <typeparam name="TEntity">Type of entity</typeparam>

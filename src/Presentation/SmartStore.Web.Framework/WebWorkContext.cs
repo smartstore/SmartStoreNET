@@ -122,6 +122,14 @@ namespace SmartStore.Web.Framework
 				}
 
 				_cachedCustomer = customer;
+
+				if (customer == null || customer.Deleted || !customer.Active)
+				{
+					// Yes, really! We can deactivate or delete guest accounts
+					_httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+					_httpContext.Response.End();
+				}
+
 				return _cachedCustomer;
             }
             set
@@ -168,21 +176,20 @@ namespace SmartStore.Web.Framework
 
 			var anonymousId = _httpContext.Request.AnonymousID;
 
-			if (anonymousId != null && anonymousId.HasValue())
+			if (anonymousId.HasValue())
 			{
 				Guid.TryParse(anonymousId, out customerGuid);
 			}
 
 			if (customerGuid == Guid.Empty)
 			{
-				_httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-				_httpContext.Response.End();
+				return null;
 			}
 
 			// Try to load an existing record...
 			customer = _customerService.GetCustomerByGuid(customerGuid);
 
-			if (customer == null || customer.Deleted || !customer.Active || customer.IsRegistered())
+			if (customer == null)
 			{
 				// ...but no record yet. Create one.
 				customer = _customerService.InsertGuestCustomer(customerGuid);
@@ -249,7 +256,7 @@ namespace SmartStore.Web.Framework
 
                 #endregion
 
-				if (_localizationSettings.DetectBrowserUserLanguage && (customerLangId == 0 || !_languageService.IsPublishedLanguage(customerLangId, storeId)))
+				if (_localizationSettings.DetectBrowserUserLanguage && !CurrentCustomer.IsSystemAccount && (customerLangId == 0 || !_languageService.IsPublishedLanguage(customerLangId, storeId)))
                 {
                     #region Get Browser UserLanguage
 

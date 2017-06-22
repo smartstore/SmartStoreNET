@@ -30,7 +30,7 @@
         <td class="adminData">
             @Html.EditorFor(model => model.Slug)
             @Html.ValidationMessageFor(model => model.Slug)
-			@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "NewsItem", entityId = @Model.Id })
+			@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = Model.EntityName, entityId = @Model.EntityId })
         </td>
     </tr>
 	<tr>

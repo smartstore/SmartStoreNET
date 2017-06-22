@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -67,7 +63,7 @@ namespace SmartStore.Web.Framework.Modelling
 			{
 				serializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
 				serializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-				
+
 				var utcDateTimeConverter = new UTCDateTimeConverter(_dateTimeHelper, new JavaScriptDateTimeConverter());
 				serializerSettings.Converters.Add(utcDateTimeConverter);
 			}

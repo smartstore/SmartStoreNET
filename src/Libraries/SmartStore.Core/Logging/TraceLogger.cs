@@ -70,12 +70,13 @@ namespace SmartStore.Core.Logging
 
 			if (exception != null && !exception.IsFatal())
 			{
-				message = message.Grow(exception.ToAllMessages(), Environment.NewLine);
+				message = message.Grow(exception.ToString(), Environment.NewLine);
 			}
 
 			if (message.HasValue())
 			{
-				_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), message));
+				var msg = (args == null ? message : message.FormatInvariant(args));
+				_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), msg));
 			}
 		}
 

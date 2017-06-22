@@ -361,6 +361,9 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							WriteString(writer, "brand", brand);
 							WriteString(writer, "mpn", mpn);
 
+							var identifierExists = brand.HasValue() && (gtin.HasValue() || mpn.HasValue());
+							WriteString(writer, "identifier_exists", identifierExists ? "yes" : "no");
+
 							if (config.Gender.IsCaseInsensitiveEqual(Unspecified))
 								WriteString(writer, "gender", "");
 							else
@@ -376,8 +379,6 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							WriteString(writer, "material", gmc != null && gmc.Material.HasValue() ? gmc.Material : config.Material);
 							WriteString(writer, "pattern", gmc != null && gmc.Pattern.HasValue() ? gmc.Pattern : config.Pattern);
 							WriteString(writer, "item_group_id", gmc != null && gmc.ItemGroupId.HasValue() ? gmc.ItemGroupId : "");
-
-							WriteString(writer, "identifier_exists", gtin.HasValue() || brand.HasValue() || mpn.HasValue() ? "TRUE" : "FALSE");
 
 							if (config.ExpirationDays > 0)
 							{
@@ -418,8 +419,8 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							if (gmc != null)
 							{
 								WriteString(writer, "multipack", gmc.Multipack > 1 ? gmc.Multipack.ToString() : null);
-								WriteString(writer, "is_bundle", gmc.IsBundle.HasValue ? (gmc.IsBundle.Value ? "TRUE" : "FALSE") : null);
-								WriteString(writer, "adult", gmc.IsAdult.HasValue ? (gmc.IsAdult.Value ? "TRUE" : "FALSE") : null);
+								WriteString(writer, "is_bundle", gmc.IsBundle.HasValue ? (gmc.IsBundle.Value ? "yes" : "no") : null);
+								WriteString(writer, "adult", gmc.IsAdult.HasValue ? (gmc.IsAdult.Value ? "yes" : "no") : null);
 								WriteString(writer, "energy_efficiency_class", gmc.EnergyEfficiencyClass.HasValue() ? gmc.EnergyEfficiencyClass : null);
 
 								WriteString(writer, "custom_label_0", gmc.CustomLabel0.HasValue() ? gmc.CustomLabel0 : null);

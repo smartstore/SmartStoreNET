@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.SessionState;
-using SmartStore.Core.Domain.Tasks;
 using SmartStore.Services.Tasks;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Services.Security;
 using SmartStore.Services;
 using SmartStore.Collections;
 
 namespace SmartStore.Web.Controllers
-{
-   
+{ 
 	[SessionState(SessionStateBehavior.ReadOnly)]
     public class TaskSchedulerController : Controller
     {
@@ -21,6 +16,7 @@ namespace SmartStore.Web.Controllers
         private readonly IScheduleTaskService _scheduledTaskService;
         private readonly ITaskExecutor _taskExecutor;
         private readonly ICommonServices _services;
+		//private readonly DateTime _sweepStart;
 
         public TaskSchedulerController(
 			ITaskScheduler taskScheduler,
@@ -28,10 +24,13 @@ namespace SmartStore.Web.Controllers
             ITaskExecutor taskExecutor,
             ICommonServices services)
         {
-			this._taskScheduler = taskScheduler;
-            this._scheduledTaskService = scheduledTaskService;
-            this._taskExecutor = taskExecutor;
-            this._services = services;
+			_taskScheduler = taskScheduler;
+            _scheduledTaskService = scheduledTaskService;
+            _taskExecutor = taskExecutor;
+            _services = services;
+
+			//// Fuzzy: substract the possible max time passed since timer trigger in ITaskScheduler
+			//_sweepStart = DateTime.UtcNow.AddMilliseconds(-500);
         }
 
         [HttpPost]
@@ -40,15 +39,14 @@ namespace SmartStore.Web.Controllers
             if (!_taskScheduler.VerifyAuthToken(Request.Headers["X-AUTH-TOKEN"]))
                 return new HttpUnauthorizedResult();
 
-            var pendingTasks = _scheduledTaskService.GetPendingTasks();
-			var prevTaskStart = DateTime.UtcNow;
+			var pendingTasks = _scheduledTaskService.GetPendingTasks();
 			var count = 0;
-
-            for (var i = 0; i < pendingTasks.Count; i++)
-            {
+			
+			for (var i = 0; i < pendingTasks.Count; i++)
+			{
 				var task = pendingTasks[i];
 
-				if (i > 0)
+				if (i > 0 /*&& (DateTime.UtcNow - _sweepStart).TotalMinutes > _taskScheduler.SweepIntervalMinutes*/)
 				{
 					// Maybe a subsequent Sweep call or another machine in a webfarm executed 
 					// successive tasks already.
@@ -59,13 +57,12 @@ namespace SmartStore.Web.Controllers
 
 				if (task.IsPending)
 				{
-					prevTaskStart = DateTime.UtcNow;
 					_taskExecutor.Execute(task);
 					count++;
 				}
-            }
-            
-            return Content("{0} of {1} pending tasks executed".FormatInvariant(count, pendingTasks.Count));
+			}
+
+			return Content("{0} of {1} pending tasks executed".FormatInvariant(count, pendingTasks.Count));
         }
 
         [HttpPost]

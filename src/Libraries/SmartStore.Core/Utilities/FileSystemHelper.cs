@@ -159,6 +159,12 @@ namespace SmartStore.Utilities
 		/// <param name="overwrite">Whether to override existing files</param>
 		public static bool CopyDirectory(DirectoryInfo source, DirectoryInfo target, bool overwrite = true)
 		{
+			if (target.FullName.Contains(source.FullName))
+			{
+				// Cannot copy a folder into itself.
+				return false;
+			}
+
 			var result = true;
 
 			foreach (FileInfo fi in source.GetFiles())

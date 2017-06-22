@@ -27,17 +27,10 @@ namespace SmartStore.Web.Framework.Theming
 
 			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|scss|less|js|cshtml|svg|json)$".FormatInvariant(ThemesBasePath);
 			s_inheritableThemeFilePattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-			s_themeVarsPattern = new Regex(@"^~/\.(db|app)/themevars(.scss|.less)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-			s_moduleImportsPattern = new Regex(@"^~/\.app/moduleimports.scss$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			s_themeVarsPattern = new Regex(@"\.(db|app)/themevars(.scss|.less)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			s_moduleImportsPattern = new Regex(@"\.app/moduleimports.scss$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_extensionlessPathPattern = new Regex(@"~/(.+)/([^/.]*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 		}
-
-        internal static bool PathListContainsThemeVars(IEnumerable<string> pathes)
-        {
-            Guard.NotNull(pathes, nameof(pathes));
-
-            return pathes.Any(x => PathIsThemeVars(x));
-        }
 
         internal static bool PathIsThemeVars(string virtualPath)
         {
@@ -51,11 +44,6 @@ namespace SmartStore.Web.Framework.Theming
 
 			if (string.IsNullOrEmpty(virtualPath))
 				return false;
-
-			if (virtualPath[0] != '~')
-			{
-				virtualPath = VirtualPathUtility.ToAppRelative(virtualPath);
-			}
 
 			var match = s_themeVarsPattern.Match(virtualPath);
 			if (match.Success)
@@ -71,11 +59,6 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			if (string.IsNullOrEmpty(virtualPath))
 				return false;
-
-			if (virtualPath[0] != '~')
-			{
-				virtualPath = VirtualPathUtility.ToAppRelative(virtualPath);
-			}
 
 			return s_moduleImportsPattern.IsMatch(virtualPath);
 		}

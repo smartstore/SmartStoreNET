@@ -221,7 +221,7 @@ namespace SmartStore.Web.Controllers
                     }
                 }
 
-                model.ReturnUrls[lang.SeoCode] = helper.GetAbsolutePath();
+                model.ReturnUrls[lang.SeoCode] = helper.RelativePath;
             }
 
             return model;
@@ -316,7 +316,7 @@ namespace SmartStore.Web.Controllers
 				var host = _services.WebHelper.GetStoreLocation();
 				foreach (var lang in model.AvailableLanguages)
 				{
-					_pageAssetsBuilder.AddLinkPart("alternate", host + model.ReturnUrls[lang.SeoCode].TrimStart('/'), hreflang: lang.SeoCode);
+					_pageAssetsBuilder.AddLinkPart("alternate", host.EnsureEndsWith("/") + model.ReturnUrls[lang.SeoCode].TrimStart('/'), hreflang: lang.SeoCode);
 				}
 			}
 

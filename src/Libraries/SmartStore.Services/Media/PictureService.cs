@@ -135,7 +135,7 @@ namespace SmartStore.Services.Media
 							buffer = (byte[])source;
 						}
 
-						if (buffer == null || buffer.Length == 0)
+						if (buffer == null || buffer.LongLength == 0)
 						{
 							return string.Empty;
 						}

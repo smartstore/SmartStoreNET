@@ -206,7 +206,7 @@ namespace SmartStore.Core.Data
 				this.TenantName = curTenant;
 				this.TenantPath = tenantPath;
 
-				if (File.Exists(filePath))
+				if (File.Exists(filePath) && !s_TestMode)
 				{
 					string text = File.ReadAllText(filePath);
 					var settings = ParseSettings(text);

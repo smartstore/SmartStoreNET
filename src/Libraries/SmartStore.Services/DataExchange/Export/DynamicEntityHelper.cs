@@ -573,7 +573,8 @@ namespace SmartStore.Services.DataExchange.Export
 			DataExporterContext ctx, 
 			Product product,
 			ICollection<ProductVariantAttributeCombination> combinations,
-			ProductVariantAttributeCombination combination)
+			ProductVariantAttributeCombination combination,
+			bool isParent)
 		{
 			product.MergeWithCombination(combination);
 
@@ -605,6 +606,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			#region gerneral data
 
+			dynObject._IsParent = isParent;
 			dynObject._CategoryName = null;
 			dynObject._CategoryPath = null;
 			dynObject._AttributeCombination = null;
@@ -1049,13 +1051,16 @@ namespace SmartStore.Services.DataExchange.Export
 		private List<dynamic> Convert(DataExporterContext ctx, Product product)
 		{
 			var result = new List<dynamic>();
-
 			var combinations = ctx.ProductExportContext.AttributeCombinations.GetOrLoad(product.Id);
 
 			if (!ctx.IsPreview && ctx.Projection.AttributeCombinationAsProduct && combinations.Where(x => x.IsActive).Count() > 0)
 			{
-				//var productType = typeof(Product);
-				//var productValues = new Dictionary<string, object>();
+				if (ctx.Supports(ExportFeatures.UsesAttributeCombinationParent))
+				{
+					var dynObject = ToDynamic(ctx, product, combinations, null, true);
+					result.Add(dynObject);
+				}
+
 				var dbContext = _dbContext as DbContext;
 
 				foreach (var combination in combinations.Where(x => x.IsActive))
@@ -1063,19 +1068,19 @@ namespace SmartStore.Services.DataExchange.Export
 					product = _dbContext.Attach(product);
 					var entry = dbContext.Entry(product);
 
-					// the returned object is not the entity and is not being tracked by the context.
-					// it also does not have any relationships set to other objects.
+					// The returned object is not the entity and is not being tracked by the context.
+					// It also does not have any relationships set to other objects.
 					// CurrentValues only includes database (thus primitive) values.
 					var productClone = entry.CurrentValues.ToObject() as Product;
 					_dbContext.DetachEntity(product);
 
-					var dynObject = ToDynamic(ctx, productClone, combinations, combination);
+					var dynObject = ToDynamic(ctx, productClone, combinations, combination, false);
 					result.Add(dynObject);
 				}
 			}
 			else
 			{
-				var dynObject = ToDynamic(ctx, product, combinations, null);
+				var dynObject = ToDynamic(ctx, product, combinations, null, false);
 				result.Add(dynObject);
 			}
 

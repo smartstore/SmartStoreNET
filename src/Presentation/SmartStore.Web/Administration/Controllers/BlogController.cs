@@ -145,7 +145,9 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+
             var model = new BlogPostModel();
+			model.CreatedOnUtc = DateTime.UtcNow;
 			
 			//Stores
 			PrepareStoresMappingModel(model, null, false);

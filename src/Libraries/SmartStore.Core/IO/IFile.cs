@@ -11,6 +11,7 @@ namespace SmartStore.Core.IO
 		long Size { get; }
 		DateTime LastUpdated { get; }
 		string FileType { get; }
+		bool Exists { get; }
 
 		/// <summary>
 		/// Creates a stream for reading from the file.

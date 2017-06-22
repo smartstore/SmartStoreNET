@@ -144,9 +144,13 @@ namespace SmartStore.Core
                 string rawUrl;
                 if (appPathPossiblyAppended)
                 {
-                    string temp = _httpContext.Request.AppRelativeCurrentExecutionFilePath.TrimStart('~');
-                    rawUrl = temp;
-                }
+                    rawUrl = _httpContext.Request.AppRelativeCurrentExecutionFilePath.TrimStart('~');
+
+					if (_httpContext.Request.Url != null && _httpContext.Request.Url.Query != null)
+					{
+						rawUrl += _httpContext.Request.Url.Query;
+					}
+				}
                 else
                 {
                     rawUrl = _httpContext.Request.RawUrl;
@@ -237,8 +241,8 @@ namespace SmartStore.Core
             }
             else
             {
-				//let's resolve IWorkContext  here.
-				//Do not inject it via contructor because it'll cause circular references
+				// Let's resolve IWorkContext  here.
+				// Do not inject it via contructor because it'll cause circular references
 
 				if (_currentStore == null)
 				{
@@ -444,7 +448,25 @@ namespace SmartStore.Core
 
 			if (aggressive)
 			{
-				TryWriteBinFolder();
+				// When plugins are (un)installed, 'aggressive' is always true.
+				if (OptimizedCompilationsEnabled)
+				{
+					// Very hackish:
+					// If optimizedCompilations is on per web.config, touching top-level resources
+					// like global.asax or bin folder is meaningless, 'cause ASP.NET skips these for
+					// hash calculation. This way we can throw in plugins like crazy without invalidating
+					// ASP.NET temp files, which boosts app startup performance dramatically.
+					// Unfortunately, MVC keeps a controller cache file in the temp files folder, which NEVER
+					// gets nuked, unless the 'compilation' element in web.config is changed.
+					// We MUST delete this file to ensure that it gets re-created with our new controller types in it.
+					DeleteMvcTypeCacheFiles();
+				}
+				else
+				{
+					// Without optimizedCompilations, touching anything in the bin folder nukes ASP.NET temp folder completely,
+					// including compiled views, MVC cache files etc.
+					TryWriteBinFolder();
+				}
 			}
 			else
 			{
@@ -475,42 +497,20 @@ namespace SmartStore.Core
             }
         }
 
-	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
-	    private bool TryWriteWebConfig()
-        {
-            try
-            {
-                // In medium trust, "UnloadAppDomain" is not supported. Touch web.config
-                // to force an AppDomain restart.
-                File.SetLastWriteTimeUtc(MapPath("~/web.config"), DateTime.UtcNow);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+		private void DeleteMvcTypeCacheFiles()
+		{
+			try
+			{
+				var userCacheDir = Path.Combine(HttpRuntime.CodegenDir, "UserCache");
 
-	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
-	    private bool TryWriteGlobalAsax()
-        {
-            try
-            {
-                //When a new plugin is dropped in the Plugins folder and is installed into SmartSTore.NET, 
-                //even if the plugin has registered routes for its controllers, 
-                //these routes will not be working as the MVC framework can't
-                //find the new controller types in order to instantiate the requested controller. 
-                //That's why you get these nasty errors 
-                //i.e "Controller does not implement IController".
-                //The solution is to touch the 'top-level' global.asax file
-                File.SetLastWriteTimeUtc(MapPath("~/global.asax"), DateTime.UtcNow);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+				File.Delete(Path.Combine(userCacheDir, "MVC-ControllerTypeCache.xml"));
+				File.Delete(Path.Combine(userCacheDir, "MVC-AreaRegistrationTypeCache.xml"));
+			}
+			catch
+			{
+
+			}
+		}
 
 		private bool TryWriteBinFolder()
 		{
@@ -554,10 +554,10 @@ namespace SmartStore.Core
 		{
 			if (!s_trustLevel.HasValue)
 			{
-				//set minimum
+				// set minimum
 				s_trustLevel = AspNetHostingPermissionLevel.None;
 
-				//determine maximum
+				// determine maximum
 				foreach (AspNetHostingPermissionLevel trustLevel in
 						new [] {
                                 AspNetHostingPermissionLevel.Unrestricted,

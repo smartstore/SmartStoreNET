@@ -108,10 +108,12 @@ namespace SmartStore.Services.Localization
         {
             string path = this.ApplicationPath.EnsureEndsWith("/");
             path = path + this.RelativePath;
+
             if (path.Length > 1 && path[0] != '/')
             {
                 path = "/" + path;
             }
+
             return path;
         }
 
@@ -128,6 +130,7 @@ namespace SmartStore.Services.Localization
             {
                 result = "/" + result;
             }
+
             return result;
         }
     }

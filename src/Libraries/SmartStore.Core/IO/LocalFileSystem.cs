@@ -160,23 +160,12 @@ namespace SmartStore.Core.IO
 		public IFile GetFile(string path)
 		{
 			var fileInfo = new FileInfo(MapStorage(path));
-			if (!fileInfo.Exists)
-			{
-				throw new ArgumentException("File " + path + " does not exist");
-			}
-
 			return new LocalFile(Fix(path), fileInfo);
 		}
 
 		public IFolder GetFolder(string path)
 		{
 			var directoryInfo = new DirectoryInfo(MapStorage(path));
-
-			if (!directoryInfo.Exists)
-			{
-				throw new ArgumentException("Folder " + path + " does not exist");
-			}
-
 			return new LocalFolder(Fix(path), directoryInfo);
 		}
 
@@ -440,21 +429,23 @@ namespace SmartStore.Core.IO
 		internal static string ValidatePath(string basePath, string mappedPath)
 		{
 			bool valid = false;
+			string error = null;
 
 			try
 			{
 				// Check that we are indeed within the storage directory boundaries
 				valid = Path.GetFullPath(mappedPath).StartsWith(Path.GetFullPath(basePath), StringComparison.OrdinalIgnoreCase);
 			}
-			catch
+			catch (Exception exception)
 			{
 				// Make sure that if invalid for medium trust we give a proper exception
 				valid = false;
+				error = exception.Message;
 			}
 
 			if (!valid)
 			{
-				throw new ArgumentException("Invalid path");
+				throw new ArgumentException($"{error ?? "Invalid path."} mappedPath: {mappedPath.NaIfEmpty()}");
 			}
 
 			return mappedPath;
@@ -495,6 +486,11 @@ namespace SmartStore.Core.IO
 			public string FileType
 			{
 				get { return _fileInfo.Extension; }
+			}
+
+			public bool Exists
+			{
+				get { return _fileInfo.Exists; }
 			}
 
 			public Stream OpenRead()
@@ -547,6 +543,11 @@ namespace SmartStore.Core.IO
 			public long Size
 			{
 				get { return GetDirectorySize(_directoryInfo); }
+			}
+
+			public bool Exists
+			{
+				get { return _directoryInfo.Exists; }
 			}
 
 			public IFolder Parent

@@ -29,14 +29,20 @@
 
             // Handle grid thumbs scaling on hover
             el.on("mouseenter", "img.zoomable-thumb", function (e) {
-                var img = $(this).css("position", "relative"),
+            	var img = $(this).css("position", "relative"),
                     offset = img.position(),
                     left = offset.left,
                     top = offset.top,
                     width = img.width(),
-                    height = img.height(),
-                    realWidth = Math.min(120, img[0].naturalWidth),
-                    realHeight = Math.min(120, img[0].naturalHeight);
+                    height = img.height();
+
+            	var maxSize = 120;
+            	var ratioX = maxSize / img[0].naturalWidth;
+            	var ratioY = maxSize / img[0].naturalHeight;
+            	var ratio = Math.min(ratioX, ratioY);
+
+                var realWidth = img[0].naturalWidth * ratio;
+                var realHeight = img[0].naturalHeight * ratio;
 
                 if (realWidth <= width - 5 && realHeight <= height - 5) {
                     // don't scale if thumb real size is insignificantly greater

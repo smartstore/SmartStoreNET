@@ -1,6 +1,13 @@
 ﻿@model OrderTotalsModel
 @using SmartStore.Web.Models.ShoppingCart;
 
+@if (Model.MinOrderSubtotalWarning.HasValue() && Model.IsEditable)
+{
+	<div class="alert alert-warning">
+		@Model.MinOrderSubtotalWarning
+	</div>
+}
+
 @if (Model.ShowConfirmOrderLegalHint && !Model.IsEditable)
 {
     <div class="alert alert-warning confirm-order-legal-hint">
@@ -134,6 +141,7 @@
 								</button>
 							</div>
 						}
+						<input type="hidden" name="giftCardId" value="@gc.Id" />
 						<div class="col cart-summary-pos">
 							@T("ShoppingCart.Totals.GiftCardInfo", gc.CouponCode)
 							<span class="text-muted text-nowrap small">@T("ShoppingCart.Totals.GiftCardInfo.Remaining", gc.Remaining)</span>

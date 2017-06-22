@@ -5,7 +5,10 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
+using SmartStore.Utilities;
 using SmartStore.Services.Helpers;
+using System.Data.Entity.Core;
+using System.Data.SqlClient;
 
 namespace SmartStore.Services.Tasks
 {
@@ -26,8 +29,7 @@ namespace SmartStore.Services.Tasks
 
         public virtual void DeleteTask(ScheduleTask task)
         {
-            if (task == null)
-                throw new ArgumentNullException("task");
+			Guard.NotNull(task, nameof(task));
 
             _taskRepository.Delete(task);
         }
@@ -37,8 +39,11 @@ namespace SmartStore.Services.Tasks
             if (taskId == 0)
                 return null;
 
-            return _taskRepository.GetById(taskId);
-        }
+			return Retry.Run(
+				() => _taskRepository.GetById(taskId),
+				3, TimeSpan.FromMilliseconds(100),
+				RetryOnDeadlockException);
+		}
 
         public virtual ScheduleTask GetTaskByType(string type)
         {
@@ -72,9 +77,11 @@ namespace SmartStore.Services.Tasks
             }
             query = query.OrderByDescending(t => t.Enabled);
 
-            var tasks = query.ToList();
-            return tasks;
-        }
+			return Retry.Run(
+				() => query.ToList(),
+				3, TimeSpan.FromMilliseconds(100),
+				RetryOnDeadlockException);
+		}
 
         public virtual IList<ScheduleTask> GetPendingTasks()
         {
@@ -85,8 +92,11 @@ namespace SmartStore.Services.Tasks
                         orderby t.NextRunUtc
                         select t;
 
-            return query.ToList();
-        }
+			return Retry.Run(
+				() => query.ToList(),
+				3, TimeSpan.FromMilliseconds(100),
+				RetryOnDeadlockException);
+		}
 
 		public virtual bool HasRunningTasks()
 		{
@@ -106,7 +116,12 @@ namespace SmartStore.Services.Tasks
 
 		public virtual IList<ScheduleTask> GetRunningTasks()
 		{
-			return GetRunningTasksQuery().ToList();
+			var query = GetRunningTasksQuery();
+
+			return Retry.Run(
+				() => query.ToList(), 
+				3, TimeSpan.FromMilliseconds(100), 
+				RetryOnDeadlockException);
 		}
 
 		private IQueryable<ScheduleTask> GetRunningTasksQuery()
@@ -267,6 +282,19 @@ namespace SmartStore.Services.Tasks
 			}
 
 			return null;
+		}
+
+		private static void RetryOnDeadlockException(int attemp, Exception ex)
+		{
+			var isDeadLockException = 
+				(ex as EntityCommandExecutionException).IsDeadlockException() || 
+				(ex as SqlException).IsDeadlockException();
+
+			if (!isDeadLockException)
+			{
+				// we only want to retry on deadlock stuff
+				throw ex;
+			}
 		}
 	}
 }

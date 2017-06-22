@@ -8,6 +8,7 @@ using System.Web;
 using SmartStore.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using SmartStore.Core;
 
 namespace SmartStore
 {
@@ -200,11 +201,24 @@ namespace SmartStore
 			return dictionary;
 		}
 
-        #endregion
+		/// <summary>The distinct by.</summary>
+		/// <param name="source">The source.</param>
+		/// <param name="keySelector">The key selector.</param>
+		/// <typeparam name="TSource">Source type</typeparam>
+		/// <typeparam name="TKey">Key type</typeparam>
+		/// <returns>the unique list</returns>
+		public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+			where TKey : IEquatable<TKey>
+		{
+			return source.Distinct(GenericEqualityComparer<TSource>.CompareMember(keySelector));
+		}
 
-        #region Multimap
 
-        public static Multimap<TKey, TValue> ToMultimap<TSource, TKey, TValue>(
+		#endregion
+
+		#region Multimap
+
+		public static Multimap<TKey, TValue> ToMultimap<TSource, TKey, TValue>(
                                                 this IEnumerable<TSource> source,
                                                 Func<TSource, TKey> keySelector,
                                                 Func<TSource, TValue> valueSelector)

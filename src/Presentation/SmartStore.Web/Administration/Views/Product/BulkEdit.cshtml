@@ -80,59 +80,66 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<BulkEditProductModel>()
-                    .Name("products-grid")
-                    .DataKeys(keys =>
-                    {
-                        keys.Add(p => p.Id);
-                    })
-                    .ToolBar(commands =>
-                    {
-                        commands.SubmitChanges();
-                    })
-                    .DataBinding(dataBinding =>
-                        dataBinding.Ajax()
-                            .Select("BulkEditSelect", "Product")
-                            .Update("BulkEditSave", "Product")
-                    )
-                    .Columns(columns =>
-                    {
-                        columns.Bound(p => p.Name)
-                            .ReadOnly()
+					.Name("products-grid")
+					.DataKeys(keys =>
+					{
+						keys.Add(p => p.Id);
+					})
+					.ToolBar(commands =>
+					{
+						commands.SubmitChanges();
+					})
+					.DataBinding(dataBinding =>
+						dataBinding.Ajax()
+							.Select("BulkEditSelect", "Product")
+							.Update("BulkEditSave", "Product")
+					)
+					.Columns(columns =>
+					{
+						columns.Bound(p => p.Name)
+							.ReadOnly()
 							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
 							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
-                        columns.Bound(p => p.Sku).Width(150);
-                        columns.Bound(p => p.Price)
+						columns.Bound(p => p.Sku)
+							.Width(150);
+						columns.Bound(p => p.Price)
 							.Format("{0:0.00}")
 							.RightAlign()
 							.Width(120);
-                        columns.Bound(p => p.OldPrice)
+						columns.Bound(p => p.OldPrice)
 							.Format("{0:0.00}")
 							.RightAlign()
 							.Width(120);
-                        columns.Bound(p => p.ManageInventoryMethod)
-                            .ReadOnly();
-                        columns.Bound(p => p.StockQuantity)
+						columns.Bound(p => p.ManageInventoryMethod)
+							.ReadOnly();
+						columns.Bound(p => p.StockQuantity)
 							.Centered()
 							.Width(80);
-                        columns.Bound(p => p.Published)
-                            .Width(80)
-                            .Template(item => @Html.SymbolForBool(item.Published))
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
-                        columns.Bound(x => x.Id)
-                            .ReadOnly()
-                            .Width(90)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                        columns.Command(
-                            commands => commands.Delete().Localize(T)
-                        ).Width(90);
-                    })
-                    .ClientEvents(events => events.OnDataBinding("Grid_onDataBinding").OnError("Grid_onError").OnSubmitChanges("Grid_onSubmitChanges"))
-                    .Editable(editing => editing.Mode(GridEditMode.InCell))
-                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+						columns.Bound(p => p.Published)
+							.Width(80)
+							.Template(item => @Html.SymbolForBool(item.Published))
+							.ClientTemplate(@Html.SymbolForBool("Published"))
+							.Centered();
+						columns.Bound(x => x.Id)
+							.ReadOnly()
+							.Sortable(false)
+							.Width(90)
+							.Centered()
+							.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+							.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+							.Title(T("Admin.Common.Edit").Text);
+						columns.Command(
+							commands => commands.Delete().Localize(T)
+						).Width(90);
+					})
+					.Sortable(x =>
+					{
+						x.AllowUnsort(true);
+						x.SortMode(GridSortMode.SingleColumn);
+					})
+					.ClientEvents(events => events.OnDataBinding("Grid_onDataBinding").OnError("Grid_onError").OnSubmitChanges("Grid_onSubmitChanges"))
+					.Editable(editing => editing.Mode(GridEditMode.InCell))
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                 )
 
                 <script type="text/javascript">

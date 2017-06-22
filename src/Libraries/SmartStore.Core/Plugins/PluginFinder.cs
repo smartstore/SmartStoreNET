@@ -11,7 +11,6 @@ namespace SmartStore.Core.Plugins
     /// </summary>
     public class PluginFinder : IPluginFinder
     {
-
 		private IList<PluginDescriptor> _plugins;
 		private readonly IDictionary<string, PluginDescriptor> _nameMap = new Dictionary<string, PluginDescriptor>(StringComparer.InvariantCultureIgnoreCase);
 		private readonly IDictionary<Assembly, PluginDescriptor> _assemblyMap = new Dictionary<Assembly, PluginDescriptor>();

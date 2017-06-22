@@ -332,16 +332,25 @@ namespace SmartStore.Web.Controllers
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
 
-			var query = _services.DbContext.QueryForCollection<Product, ProductReview>(product, x => x.ProductReviews)
-				.Expand(x => x.Customer.CustomerRoles)
-				.Expand(x => x.Customer.CustomerContent)
-				.Where(pr => pr.IsApproved)
-				.OrderByDescending(pr => pr.CreatedOnUtc);
+			var query = _services.DbContext
+				.QueryForCollection<Product, ProductReview>(product, x => x.ProductReviews)
+				.Where(x => x.IsApproved);
+
+			if (DataSettings.Current.IsSqlServer)
+			{
+				// SQCE throw NotImplementedException with .Expand()
+				query = query
+					.Expand(x => x.Customer.CustomerRoles)
+					.Expand(x => x.Customer.CustomerContent);
+			}
 
 			int totalCount = query.Count();
 			model.TotalReviewsCount = totalCount;
 
-			var reviews = query.Take(take).ToList();
+			var reviews = query
+				.OrderByDescending(x => x.CreatedOnUtc)
+				.Take(take)
+				.ToList();
 
 			foreach (var review in reviews)
 			{

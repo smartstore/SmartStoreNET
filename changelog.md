@@ -39,27 +39,28 @@
 * Standard search: Fixed sorting of recently added products
 * Alias for search filters couldn't be set if there's only one language
 * #1168 Cart: MinOrderAmount sometimes ignored
-* Moving products from wishlist to cart was out of function
-* Fixed several issues with parallely executed data export tasks
+* Moving products from editable wishlist to cart was out of function
+* Fixed several issues with parallelly executed data export tasks
 * Fixed several issues with *PayPal* payment providers
 * Facebook login out of function due to Facebook API changes (always returns "Unknown error")
 * Fixed 'no picture available' watermark on some product pictures
 * #1153 Removing already applied gift card causes error
 * (Theming) *Drift* zoom uses static zoomFactor. Made it dynamic.
 * (Theming) IE11: simple menu dropdowns weren't positioned correctly
-* Removed "trust" element from web.config (makes problems on some shared hosting spaces)
+* Removed "trust" element from web.config (causes problems on some shared hosting spaces)
 * Fixed ThumbZoomer unproportional rescale issue in product grid
 * #1134 JavaScript error (IE 11 in VS debug mode) after removing the last item in shopping cart
-* (Theming) Dozens of layout fixes for mobile devices (especially iOS and Android native browser)
+* (Theming) Dozens of layout fs for ixemobile devices (especially iOS and Android native browser)
 * Better error logging for TaskScheduler
 * Fixed several queries which caused problems with SQL CE
 * Fixed missing CurrencyCode exception in product exports
 * #1179 Error while downloading a downloadable product
-* If a dropdown has contained 2 level hierarchy categories only they were not broken into the next column
+* Mega Menu: If a dropdown has contained 2 level hierarchy categories only they were not broken into the next column
 * Hide sort dropdown when option is off
 * HTTP 301 redirects for legacy media URLs
 * Added missing resources of broken migration 'AddressEnhancement' again
-* Checkout: Title and salutation missing when entering new addresses
+* Checkout: Title and salutation were missing when entering new addresses
+* #1163 ContentSlider: pictures won't be displayed when placed on top or bottom on IOS 
 
 ## SmartStore.NET 3.0
 

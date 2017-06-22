@@ -314,8 +314,7 @@ namespace SmartStore.Data
 			if (detectChangesEnabled && !propIsModified)
 				return false; // Perf
 
-			object mergedValue;
-			if (propIsModified && mergedProps != null && mergedProps.TryGetValue(prop.Name, out mergedValue))
+			if (propIsModified && mergedProps != null && mergedProps.ContainsKey(prop.Name))
 			{
 				// EF "thinks" that prop has changed because merged value differs
 				return false;

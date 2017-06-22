@@ -55,7 +55,7 @@
 * Fixed several queries which caused problems with SQL CE
 * Fixed missing CurrencyCode exception in product exports
 * #1179 Error while downloading a downloadable product
-* Mega Menu: If a dropdown has contained 2 level hierarchy categories only they were not broken into the next column
+* Mega Menu: If a dropdown contains two level hierarchy categories only, they are not wrapped to the next column
 * Hide sort dropdown when option is off
 * HTTP 301 redirects for legacy media URLs
 * Added missing resources of broken migration 'AddressEnhancement' again

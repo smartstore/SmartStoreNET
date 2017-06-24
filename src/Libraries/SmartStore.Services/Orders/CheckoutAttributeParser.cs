@@ -6,9 +6,6 @@ using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Orders
 {
-    /// <summary>
-    /// Checkout attribute parser
-    /// </summary>
     public partial class CheckoutAttributeParser : ICheckoutAttributeParser
     {
         private readonly ICheckoutAttributeService _checkoutAttributeService;
@@ -18,11 +15,6 @@ namespace SmartStore.Services.Orders
             this._checkoutAttributeService = checkoutAttributeService;
         }
 
-        /// <summary>
-        /// Gets selected checkout attribute identifiers
-        /// </summary>
-        /// <param name="attributes">Attributes</param>
-        /// <returns>Selected checkout attribute identifiers</returns>
         public IList<int> ParseCheckoutAttributeIds(string attributes)
         {
             var ids = new List<int>();
@@ -55,11 +47,6 @@ namespace SmartStore.Services.Orders
             return ids;
         }
 
-        /// <summary>
-        /// Gets selected checkout attributes
-        /// </summary>
-        /// <param name="attributes">Attributes</param>
-        /// <returns>Selected checkout attributes</returns>
         public IList<CheckoutAttribute> ParseCheckoutAttributes(string attributes)
         {
             var caCollection = new List<CheckoutAttribute>();
@@ -75,11 +62,6 @@ namespace SmartStore.Services.Orders
             return caCollection;
         }
 
-        /// <summary>
-        /// Get checkout attribute values
-        /// </summary>
-        /// <param name="attributes">Attributes</param>
-        /// <returns>Checkout attribute values</returns>
         public IList<CheckoutAttributeValue> ParseCheckoutAttributeValues(string attributes)
         {
             var caValues = new List<CheckoutAttributeValue>();
@@ -107,12 +89,6 @@ namespace SmartStore.Services.Orders
             return caValues;
         }
 
-        /// <summary>
-        /// Gets selected checkout attribute value
-        /// </summary>
-        /// <param name="attributes">Attributes</param>
-        /// <param name="checkoutAttributeId">Checkout attribute identifier</param>
-        /// <returns>Checkout attribute value</returns>
         public IList<string> ParseValues(string attributes, int checkoutAttributeId)
         {
             var selectedCheckoutAttributeValues = new List<string>();
@@ -155,13 +131,6 @@ namespace SmartStore.Services.Orders
             return selectedCheckoutAttributeValues;
         }
 
-        /// <summary>
-        /// Adds an attribute
-        /// </summary>
-        /// <param name="attributes">Attributes</param>
-        /// <param name="ca">Checkout attribute</param>
-        /// <param name="value">Value</param>
-        /// <returns>Attributes</returns>
         public string AddCheckoutAttribute(string attributes, CheckoutAttribute ca, string value)
         {
             string result = string.Empty;
@@ -223,12 +192,6 @@ namespace SmartStore.Services.Orders
             return result;
         }
 
-        /// <summary>
-        /// Removes checkout attributes which cannot be applied to the current cart and returns an update attributes in XML format
-        /// </summary>
-        /// <param name="attributes">Attributes in XML format</param>
-        /// <param name="cart">Shopping cart items</param>
-        /// <returns>Updated attributes in XML format</returns>
         public virtual string EnsureOnlyActiveAttributes(string attributes, IList<OrganizedShoppingCartItem> cart)
         {
             if (String.IsNullOrEmpty(attributes))

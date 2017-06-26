@@ -714,7 +714,7 @@ namespace SmartStore.Web.Controllers
 
 			foreach (var product in result.Hits)
 			{
-				string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
+				string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, protocol);
 				if (productUrl.HasValue())
 				{
 					var item = feed.CreateItem(

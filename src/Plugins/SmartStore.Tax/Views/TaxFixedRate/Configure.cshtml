@@ -2,14 +2,14 @@
     Layout = "";
 }
 
-@model Telerik.Web.Mvc.GridModel<SmartStore.Tax.Models.FixedTaxRateModel>
+@model Telerik.Web.Mvc.GridModel<FixedTaxRateModel>
 @using Telerik.Web.Mvc.UI;
-@using System.Linq;
+@using SmartStore.Tax.Models;
 
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid(Model.Data)
+            @(Html.Telerik().Grid<FixedTaxRateModel>(Model.Data)
             .Name("Grid")
             .DataKeys(keys => keys.Add(x => x.TaxCategoryId).RouteKey("TaxCategoryId"))
             .Columns(columns =>

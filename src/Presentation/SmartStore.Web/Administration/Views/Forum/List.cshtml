@@ -18,7 +18,7 @@
 <table class="adminContent">
     <tr>
         <td>
-            @{Html.Telerik().Grid(Model)
+            @{Html.Telerik().Grid<ForumGroupModel>(Model)
                 .Name("forumgroup-grid")
                 .ToolBar(commands =>
                 {

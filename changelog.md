@@ -1,4 +1,8 @@
-# Release Notes
+﻿# Release Notes
+
+## SmartStore.NET 3.1
+### Bugfixes
+* RSS: Item URLs in feeds ignored SSL
 
 ## SmartStore.NET 3.0.1
 ### Improvements

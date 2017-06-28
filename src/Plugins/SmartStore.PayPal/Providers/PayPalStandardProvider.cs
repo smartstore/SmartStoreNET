@@ -226,7 +226,8 @@ namespace SmartStore.PayPal
 			{
 				address = postProcessPaymentRequest.Order.ShippingAddress ?? postProcessPaymentRequest.Order.BillingAddress;
 
-				builder.AppendFormat("&no_shipping=2", new object[0]);
+				// 0 means the buyer is prompted to include a shipping address.
+				builder.AppendFormat("&no_shipping={0}", settings.IsShippingAddressRequired ? "2" : "1");
 			}
 			else
 			{
@@ -250,8 +251,8 @@ namespace SmartStore.PayPal
 				builder.AppendFormat("&notify_url={0}", ipnUrl);
 			}
 
-			//address
-			builder.AppendFormat("&address_override=1");
+			// Address
+			builder.AppendFormat("&address_override={0}", settings.UsePayPalAddress ? "0" : "1");
 			builder.AppendFormat("&first_name={0}", HttpUtility.UrlEncode(address.FirstName));
 			builder.AppendFormat("&last_name={0}", HttpUtility.UrlEncode(address.LastName));
 			builder.AppendFormat("&address1={0}", HttpUtility.UrlEncode(address.Address1));

@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Paypal 3.0.0.2
+###New Features
+* PayPal Standard: New settings "UsePayPalAddress" and "IsShippingAddressRequired" to avoid payment rejection due to address validation.
+
 ##Paypal 2.6.0.7
 ###Bugfixes
 * PayPal Express: Fixed net price issue.

@@ -125,6 +125,18 @@
       <LocaleResource Name="AdditionalFeePercentage.Hint">
         <Value>Specifies whether to apply a percentage additional fee to the order total. A fixed value is used if not enabled.</Value>
       </LocaleResource>
+      <LocaleResource Name="UsePayPalAddress">
+        <Value>Show PayPal address</Value>
+      </LocaleResource>
+      <LocaleResource Name="UsePayPalAddress.Hint">
+        <Value>Specifies whether to show the shipping address stored at PayPal (address_override).</Value>
+      </LocaleResource>
+      <LocaleResource Name="IsShippingAddressRequired">
+        <Value>Shipping address required</Value>
+      </LocaleResource>
+      <LocaleResource Name="IsShippingAddressRequired.Hint">
+        <Value>Specifies whether a shipping address is required (no_shipping).</Value>
+      </LocaleResource>
       <LocaleResource Name="NoModuleLoading">
         <Value>The payment method is not active ({0}).</Value>
       </LocaleResource>
@@ -352,7 +364,7 @@
         <Value>Check the box if IPN (Instant Payment Notification) is enabled.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn.Hint2">
-        <Value>Leave blank to use the default IPN handler URL.</Value>
+        <Value>Please leave blank to use the default IPN handler URL.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.IpnUrl">
         <Value>IPN Handler</Value>

@@ -58,6 +58,9 @@
 					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-info" aria-controls="footer-info" aria-expanded="false">@T("Footer.Info")</h4>
 					<div class="collapse nav-collapse" id="footer-info">
 						<ul class="list-unstyled">
+
+                            @{ Html.RenderWidget("footer_col_1_before"); }
+
 							@if (Model.ManufacturerEnabled)
 							{
 								<li><a class="footer-link" href="@Url.RouteUrl("ManufacturerList")">@T("Manufacturers.List")</a></li>
@@ -74,6 +77,9 @@
 							{
 								<li><a class="footer-link" href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>
 							}
+
+                            @{ Html.RenderWidget("footer_col_1_after"); }
+
 						</ul>
 					</div>
 				</nav>
@@ -84,6 +90,9 @@
 					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-service" aria-controls="footer-service" aria-expanded="false">@T("Footer.Service")</h4>
 					<div class="collapse nav-collapse" id="footer-service">
 						<ul class="list-unstyled">
+
+                            @{ Html.RenderWidget("footer_col_2_before"); }
+
 							@if (Model.TopicPageUrls.ContainsKey("contactus"))
 							{
 								<li><a class="footer-link" href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
@@ -104,8 +113,10 @@
 							{
 								<li><a class="footer-link" href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
 							}
-						</ul>
 
+                            @{ Html.RenderWidget("footer_col_2_after"); }
+
+						</ul>
 					</div>
 				</nav>
 			</div>
@@ -115,6 +126,9 @@
 					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-company" aria-controls="footer-company" aria-expanded="false">@T("Footer.Company")</h4>
 					<div class="collapse nav-collapse" id="footer-company">
 						<ul class="list-unstyled">
+
+                            @{ Html.RenderWidget("footer_col_3_before"); }
+
 							@if (Model.TopicPageUrls.ContainsKey("aboutus"))
 							{
 								<li><a class="footer-link" href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
@@ -135,6 +149,9 @@
 							{
 								<li><a class="footer-link" href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
 							}
+
+                            @{ Html.RenderWidget("footer_col_3_after"); }
+
 						</ul>
 					</div>
 				</nav>

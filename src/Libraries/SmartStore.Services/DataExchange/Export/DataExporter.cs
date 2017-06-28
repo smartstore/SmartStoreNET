@@ -630,7 +630,8 @@ namespace SmartStore.Services.DataExchange.Export
 		public virtual ProductExportContext CreateProductExportContext(
 			IEnumerable<Product> products = null,
 			Customer customer = null,
-			int? storeId = null)
+			int? storeId = null,
+			int? maxPicturesPerProduct = null)
 		{
 			if (customer == null)
 				customer = _services.WorkContext.CurrentCustomer;
@@ -647,7 +648,7 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
 				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
 				x => _productService.Value.GetBundleItemsByProductIds(x, true),
-				x => _pictureService.Value.GetPicturesByProductIds(x, withBlobs: true),
+				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
 				x => _productService.Value.GetProductPicturesByProductIds(x),
 				x => _productService.Value.GetProductTagsByProductIds(x)
 			);

@@ -562,7 +562,7 @@ namespace SmartStore.Services.Media
             return pics;
         }
 
-		public virtual Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1, bool withBlobs = false)
+		public virtual Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = null, bool withBlobs = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 

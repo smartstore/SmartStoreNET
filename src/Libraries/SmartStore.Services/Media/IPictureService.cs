@@ -173,10 +173,10 @@ namespace SmartStore.Services.Media
 		/// Gets a pictures map by product identifiers
 		/// </summary>
 		/// <param name="productIds">The ids of products to retrieve pictures for</param>
-		/// <param name="maxPicturesPerProduct">Max number of pictures to retrieve per product</param>
+		/// <param name="maxPicturesPerProduct">Max number of pictures to retrieve per product, <c>null</c> to load all pictures</param>
 		/// <param name="withBlobs">Whether the blob in MediaStorage table should be eager loaded</param>
 		/// <returns>A lookup map of product ids and pictures</returns>
-		Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1, bool withBlobs = false);
+		Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = null, bool withBlobs = false);
 
 		/// <summary>
 		/// Gets pictures by picture identifier

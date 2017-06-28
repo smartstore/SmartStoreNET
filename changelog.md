@@ -3,6 +3,7 @@
 ## SmartStore.NET 3.1
 ### Bugfixes
 * RSS: Item URLs in feeds ignored SSL
+* Fixed "The view 'ProfileImportResult' or its master was not found"
 
 ## SmartStore.NET 3.0.1
 ### Improvements

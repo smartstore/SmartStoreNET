@@ -355,7 +355,7 @@ namespace SmartStore.Admin.Controllers
 
 					return Json(new
 					{
-						importResult = this.RenderPartialViewToString("ProfileImportResult", importResult)
+						importResult = this.RenderPartialViewToString("~/Administration/Views/Import/ProfileImportResult.cshtml", importResult)
 					},
 					JsonRequestBehavior.AllowGet);
 				}

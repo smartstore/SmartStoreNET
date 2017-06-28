@@ -51,7 +51,7 @@
                 })
                 .DetailView(detailView => detailView.Template(
                     @<text>
-                        @(Html.Telerik().Grid(item.ForumModels)
+                        @(Html.Telerik().Grid<ForumModel>(item.ForumModels)
                             .Name("forums_" + item.Id)
                             .Columns(columns =>
                             {

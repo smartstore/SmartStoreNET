@@ -33,7 +33,7 @@ namespace SmartStore.Web.Framework.Theming
 				ContextCondition = IsMobileDevice
 			};
 			var desktopDisplayMode = new LocalizedDisplayMode(DisplayModeProvider.DefaultDisplayModeId, EnableLocalizedViews);
-			
+
 			DisplayModeProvider.Modes.Add(mobileDisplayMode);
 			DisplayModeProvider.Modes.Add(desktopDisplayMode);
 		}

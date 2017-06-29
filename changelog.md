@@ -5,6 +5,7 @@
 * PayPal Standard: New settings "UsePayPalAddress" and "IsShippingAddressRequired" to avoid payment rejection due to address validation.
 
 ### Bugfixes
+* Fixed memory leak in MegaSearch plugin, which caused HTTP 503
 * RSS: Item URLs in feeds ignored SSL
 * Fixed "The view 'ProfileImportResult' or its master was not found"
 * Fixed #1187 Search: Do not hide multi-selectable filters of the same group if there are no hits

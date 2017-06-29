@@ -138,8 +138,9 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<ApplicationEnvironment>().As<IApplicationEnvironment>().SingleInstance();
-			
+
 			// sources
+			builder.RegisterGeneric(typeof(WorkValues<>)).InstancePerRequest();
 			builder.RegisterSource(new SettingsSource());
 			builder.RegisterSource(new WorkSource());
 
@@ -1120,7 +1121,6 @@ namespace SmartStore.Web.Framework
 				return keyed => cc.ResolveKeyed<IEntityImporter>(keyed);
 			});
 		}
-
 	}
 
 	#endregion
@@ -1226,15 +1226,43 @@ namespace SmartStore.Web.Framework
 					var accessor = c.Resolve<ILifetimeScopeAccessor>();
 					return new Work<T>(w => 
 					{
-						T value = accessor.GetLifetimeScope(null).Resolve<T>();
+						var scope = accessor.GetLifetimeScope(null);
+						if (scope == null)
+							return default(T);
+
+						var workValues = scope.Resolve<WorkValues<T>>();
+
+						T value;
+						if (!workValues.Values.TryGetValue(w, out value))
+						{
+							value = (T)workValues.ComponentContext.ResolveComponent(valueRegistration, p);
+							workValues.Values[w] = value;
+						}
+
 						return value;
+
+						////T value = default(T); // accessor.GetLifetimeScope(null).Resolve<T>();
+						//return accessor.GetLifetimeScope(null).Resolve<T>();
 					});
 				})
 				.As(providedService)
-				.Targeting(valueRegistration);
+				.Targeting(valueRegistration)
+				.SingleInstance();
 
 			return rb.CreateRegistration();
 		}
+	}
+
+	class WorkValues<T> where T : class
+	{
+		public WorkValues(IComponentContext componentContext)
+		{
+			ComponentContext = componentContext;
+			Values = new Dictionary<Work<T>, T>();
+		}
+
+		public IComponentContext ComponentContext { get; private set; }
+		public IDictionary<Work<T>, T> Values { get; private set; }
 	}
 
 	#endregion

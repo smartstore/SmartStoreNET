@@ -643,16 +643,24 @@ namespace SmartStore.Services.Search.Modelling
 
 						if (form != null)
 						{
-							form.AllKeys
-								.Where(x => !_tokens.Contains(x))
-								.Each(key => _aliases.AddRange(key, form[key].SplitSafe(",")));
+							foreach (var key in form.AllKeys)
+							{
+								if (key.HasValue() && !_tokens.Contains(key))
+								{
+									_aliases.AddRange(key, form[key].SplitSafe(","));
+								}
+							}
 						}
 
 						if (query != null)
 						{
-							query.AllKeys
-								.Where(x => !_tokens.Contains(x))
-								.Each(key => _aliases.AddRange(key, query[key].SplitSafe(",")));
+							foreach (var key in query.AllKeys)
+							{
+								if (key.HasValue() && !_tokens.Contains(key))
+								{
+									_aliases.AddRange(key, query[key].SplitSafe(","));
+								}
+							}
 						}
 					}
 				}

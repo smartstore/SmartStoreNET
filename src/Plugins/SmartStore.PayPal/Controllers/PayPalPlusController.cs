@@ -326,21 +326,35 @@ namespace SmartStore.PayPal.Controllers
 
 			model.ApprovalUrl = session.ApprovalUrl;
 
+			if (session.SessionExpired)
+			{
+				session.SessionExpired = false;
+				NotifyInfo(T("Plugins.SmartStore.PayPal.SessionExpired"));
+			}
+
 			return View(model);
 		}
 
 		[HttpPost]
 		public ActionResult PatchShipping()
 		{
+			var session = HttpContext.GetPayPalSessionData();
+			if (session.AccessToken.IsEmpty() || session.PaymentId.IsEmpty())
+			{
+				// Session expired. Reload payment wall and create new payment (we need the payment id).				
+				session.SessionExpired = true;
+
+				return new JsonResult { Data = new { success = false, error = string.Empty, reload = true } };
+			}
+
 			var store = Services.StoreContext.CurrentStore;
 			var customer = Services.WorkContext.CurrentCustomer;
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
-			var session = HttpContext.GetPayPalSessionData();
 
-			var apiResult = PayPalService.PatchShipping(settings, session, cart, PayPalPlusProvider.SystemName);
+			var result = PayPalService.PatchShipping(settings, session, cart, PayPalPlusProvider.SystemName);
 
-			return new JsonResult { Data = new { success = apiResult.Success, error = apiResult.ErrorMessage } };
+			return new JsonResult { Data = new { success = result.Success, error = result.ErrorMessage, reload = false } };
 		}
 
 		public ActionResult CheckoutCompleted()
@@ -359,7 +373,7 @@ namespace SmartStore.PayPal.Controllers
 		public ActionResult CheckoutReturn(string systemName, string paymentId, string PayerID)
 		{
 			// Request.QueryString:
-			// paymentId: PAY-0TC88803RP094490KK4KM6AI, token: EC-5P379249AL999154U, PayerID: 5L9K773HHJLPN
+			// paymentId: PAY-0TC88803RP094490KK4KM6AI, token (not the access token): EC-5P379249AL999154U, PayerID: 5L9K773HHJLPN
 
 			var customer = Services.WorkContext.CurrentCustomer;
 			var store = Services.StoreContext.CurrentStore;

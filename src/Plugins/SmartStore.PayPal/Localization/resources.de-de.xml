@@ -37,6 +37,12 @@
   <LocaleResource Name="NoApprovalUrlReturned">
     <Value>Keine Weiterleitungs-URL von PayPal erhalten.</Value>
   </LocaleResource>
+  <LocaleResource Name="MissingAccessToken">
+    <Value>Fehlender API Access-Token. Methode {0} für Pfad {1}.</Value>
+  </LocaleResource>
+  <LocaleResource Name="SessionExpired">
+    <Value>Die PayPal Sitzung ist abgelaufen. Bitte versuchen Sie es erneut.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ClientId">
     <Value>Client-ID</Value>

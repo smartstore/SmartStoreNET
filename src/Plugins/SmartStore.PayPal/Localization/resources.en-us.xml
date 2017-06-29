@@ -40,6 +40,12 @@
   <LocaleResource Name="NoApprovalUrlReturned">
     <Value>No redirect URL received from PayPal.</Value>
   </LocaleResource>
+  <LocaleResource Name="MissingAccessToken">
+    <Value>Missing API access token. Method {0} for path {1}.</Value>
+  </LocaleResource>
+  <LocaleResource Name="SessionExpired">
+    <Value>The PayPal session expired. Please try again.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ClientId">
     <Value>Client ID</Value>

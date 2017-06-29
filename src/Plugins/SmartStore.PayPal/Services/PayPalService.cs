@@ -529,6 +529,11 @@ namespace SmartStore.PayPal.Services
 			else
 			{
 				request.Headers["Authorization"] = "Bearer " + accessToken.EmptyNull();
+
+				if (accessToken.IsEmpty())
+				{
+					Logger.Error(T("Plugins.SmartStore.PayPal.MissingAccessToken", method.NaIfEmpty(), path.NaIfEmpty()));
+				}
 			}
 
 			request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalPlus";
@@ -623,7 +628,10 @@ namespace SmartStore.PayPal.Services
 							if (data.HasValue())
 							{
 								sb.AppendLine();
-								sb.AppendLine(JObject.Parse(data).ToString(Formatting.Indented));
+								if (data.StartsWith("["))
+									sb.AppendLine(JArray.Parse(data).ToString(Formatting.Indented));
+								else
+									sb.AppendLine(JObject.Parse(data).ToString(Formatting.Indented));
 							}
 							sb.AppendLine();
 							webResponse.Headers.AllKeys.Each(x => sb.AppendLine($"{x}: {webResponse.Headers[x]}"));
@@ -637,7 +645,10 @@ namespace SmartStore.PayPal.Services
 								sb.AppendLine(rawResponse);
 							}
 						}
-						catch { }
+						catch (Exception exception)
+						{
+							exception.Dump();
+						}
 
 						Logger.Log(LogLevel.Error, new Exception(sb.ToString()), result.ErrorMessage, null);
 					}
@@ -664,13 +675,11 @@ namespace SmartStore.PayPal.Services
 			if (session.AccessToken.IsEmpty() || DateTime.UtcNow >= session.TokenExpiration)
 			{
 				var result = CallApi("POST", "/v1/oauth2/token", null, settings, "grant_type=client_credentials");
-
 				if (result.Success)
 				{
 					session.AccessToken = (string)result.Json.access_token;
 
 					var expireSeconds = ((string)result.Json.expires_in).ToInt(5 * 60);
-
 					session.TokenExpiration = DateTime.UtcNow.AddSeconds(expireSeconds);
 				}
 				else
@@ -1142,6 +1151,7 @@ namespace SmartStore.PayPal.Services
 			OrderGuid = Guid.NewGuid();
 		}
 
+		public bool SessionExpired { get; set; }
 		public string AccessToken { get; set; }
 		public DateTime TokenExpiration { get; set; }
 		public string PaymentId { get; set; }

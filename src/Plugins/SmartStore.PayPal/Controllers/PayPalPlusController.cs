@@ -328,6 +328,7 @@ namespace SmartStore.PayPal.Controllers
 
 			if (session.SessionExpired)
 			{
+				// Customer has been redirected because the session expired.
 				session.SessionExpired = false;
 				NotifyInfo(T("Plugins.SmartStore.PayPal.SessionExpired"));
 			}

@@ -524,10 +524,10 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult PopularProductTags()
 		{
-            //if (!_catalogSettings.ShowPopularProductTagsOnHomepage)
-            //    return new EmptyResult();
+            if (!_catalogSettings.ShowPopularProductTagsOnHomepage)
+                return new EmptyResult();
 
-			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_POPULAR_MODEL_KEY, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
+            var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_POPULAR_MODEL_KEY, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
 			var cacheModel = _services.Cache.Get(cacheKey, () =>
 			{
 				var model = new PopularProductTagsModel();

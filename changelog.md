@@ -9,6 +9,7 @@
 * Fixed "The view 'ProfileImportResult' or its master was not found"
 * Fixed #1187 Search: Do not hide multi-selectable filters of the same group if there are no hits
 * Fixed System.ArgumentNullException in ProductVariantQueryFactory
+* PayPal PLUS: Fixed HTTP 401 "Unauthorized" when calling PatchShipping
 
 ## SmartStore.NET 3.0.1
 ### Improvements

@@ -3,6 +3,8 @@
 ##Paypal 3.0.0.2
 ###New Features
 * PayPal Standard: New settings "UsePayPalAddress" and "IsShippingAddressRequired" to avoid payment rejection due to address validation.
+###Bugfixes
+* PayPal PLUS: Fixed HTTP 401 "Unauthorized" when calling PatchShipping.
 
 ##Paypal 2.6.0.7
 ###Bugfixes

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web;
+using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
@@ -86,6 +87,25 @@ namespace SmartStore.PayPal
 			var settings = Services.Settings.LoadSetting<TSetting>(processPaymentRequest.StoreId);
 			var session = HttpContext.GetPayPalSessionData();
 
+			if (session.AccessToken.IsEmpty() || session.PaymentId.IsEmpty())
+			{
+				session.SessionExpired = true;
+
+				// Do not place order because we cannot execute the payment.
+				result.AddError(T("Plugins.SmartStore.PayPal.SessionExpired"));
+
+				// Redirect to payment wall and create new payment (we need the payment id).
+				var response = HttpContext.Response;
+				var urlHelper = new UrlHelper(HttpContext.Request.RequestContext);
+				var isSecure = Services.WebHelper.IsCurrentConnectionSecured();
+
+				response.Status = "302 Found";
+				response.RedirectLocation = urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }, isSecure ? "https" : "http");
+				response.End();
+
+				return result;
+			}
+
 			processPaymentRequest.OrderGuid = session.OrderGuid;
 
 			var apiResult = PayPalService.ExecutePayment(settings, session);
@@ -161,7 +181,9 @@ namespace SmartStore.PayPal
 			}
 
 			if (!apiResult.Success)
+			{
 				result.Errors.Add(apiResult.ErrorMessage);
+			}
 
 			return result;
 		}

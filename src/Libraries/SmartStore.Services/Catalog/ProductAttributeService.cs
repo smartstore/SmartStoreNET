@@ -7,6 +7,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Caching;
@@ -442,9 +443,10 @@ namespace SmartStore.Services.Catalog
 				.Select(x => x.Name)
 				.ToList());
 
-			var pictures = _pictureService.GetPicturesByIds(attributeOptions.Where(x => x.PictureId != 0).Select(x => x.PictureId).Distinct().ToArray(), true);
-
+			Picture picture = null;
 			ProductVariantAttributeValue productVariantAttributeValue = null;
+			var pictureIds = attributeOptions.Where(x => x.PictureId != 0).Select(x => x.PictureId).Distinct().ToArray();
+			var pictures = _pictureService.GetPicturesByIds(pictureIds, true).ToDictionarySafe(x => x.Id);
 
 			using (_localizedEntityService.BeginScope())
 			{
@@ -457,11 +459,9 @@ namespace SmartStore.Services.Catalog
 					productVariantAttributeValue.PictureId = 0;
 					productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
 
-					if (option.PictureId != 0)
+					// Copy picture.
+					if (option.PictureId != 0 && pictures.TryGetValue(option.PictureId, out picture))
 					{
-						// Copy picture.
-						var picture = pictures.First(x => x.Id == option.PictureId);
-
 						var newPicture = _pictureService.InsertPicture(
 							picture.MediaStorage.Data,
 							picture.MimeType,

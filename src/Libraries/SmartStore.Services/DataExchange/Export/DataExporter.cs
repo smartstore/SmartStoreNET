@@ -555,13 +555,13 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private void SendCompletionEmail(DataExporterContext ctx, string zipPath)
 		{
-			var	emailAccount = _emailAccountService.Value.GetEmailAccountById(ctx.Request.Profile.EmailAccountId);
-
+			var emailAccount = _emailAccountService.Value.GetEmailAccountById(ctx.Request.Profile.EmailAccountId);
 			if (emailAccount == null)
-				emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
+			{
+				return;
+			}
 
 			var downloadUrl = "{0}Admin/Export/DownloadExportFile/{1}?name=".FormatInvariant(_services.WebHelper.GetStoreLocation(ctx.Store.SslEnabled), ctx.Request.Profile.Id);
-
 			var languageId = ctx.Projection.LanguageId ?? 0;
 			var smtpContext = new SmtpContext(emailAccount);
 			var message = new EmailMessage();
@@ -1338,11 +1338,7 @@ namespace SmartStore.Services.DataExchange.Export
 							}
 						}
 
-						if (ctx.Request.Profile.EmailAccountId != 0 && ctx.Request.Profile.CompletedEmailAddresses.HasValue())
-						{
-							SendCompletionEmail(ctx, zipPath);
-						}
-						else if (ctx.Request.Profile.IsSystemProfile && !ctx.Supports(ExportFeatures.CanOmitCompletionMail))
+						if (ctx.Request.Profile.EmailAccountId != 0 && !ctx.Supports(ExportFeatures.CanOmitCompletionMail))
 						{
 							SendCompletionEmail(ctx, zipPath);
 						}

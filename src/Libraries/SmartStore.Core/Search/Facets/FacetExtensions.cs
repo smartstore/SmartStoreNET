@@ -33,21 +33,45 @@ namespace SmartStore.Core.Search.Facets
 			{
 				case FacetSorting.ValueAsc:
 					if (selectedFirst)
-						return source.OrderByDescending(x => x.Value.IsSelected).ThenBy(x => x.Value.Label);
+					{
+						return source
+							.OrderByDescending(x => x.Value.IsSelected)
+							.ThenBy(x => x.Value.Label)
+							.ThenBy(x => x.Value.DisplayOrder);
+					}
 					else
-						return source.OrderBy(x => x.Value.Label);
+					{
+						return source
+							.OrderBy(x => x.Value.Label)
+							.ThenBy(x => x.Value.DisplayOrder);
+					}
 
 				case FacetSorting.DisplayOrder:
 					if (selectedFirst)
-						return source.OrderByDescending(x => x.Value.IsSelected).ThenBy(x => x.Value.DisplayOrder);
+					{
+						return source
+							.OrderByDescending(x => x.Value.IsSelected)
+							.ThenBy(x => x.Value.DisplayOrder);
+					}
 					else
-						return source.OrderBy(x => x.Value.DisplayOrder);						
+					{
+						return source.OrderBy(x => x.Value.DisplayOrder);
+					}
 
 				default:
 					if (selectedFirst)
-						return source.OrderByDescending(x => x.Value.IsSelected).ThenByDescending(x => x.HitCount);
+					{
+						return source
+							.OrderByDescending(x => x.Value.IsSelected)
+							.ThenByDescending(x => x.HitCount)
+							.ThenBy(x => x.Value.DisplayOrder);
+					}
 					else
-						return source.OrderByDescending(x => x.HitCount);
+					{
+						return source
+							.OrderByDescending(x => x.HitCount)
+							.ThenBy(x => x.Value.DisplayOrder);
+					}
 			}
 		}
 

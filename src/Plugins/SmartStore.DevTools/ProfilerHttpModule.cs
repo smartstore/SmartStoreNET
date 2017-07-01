@@ -17,14 +17,14 @@ namespace SmartStore.DevTools
 				return;
 			}
 
-			context.BeginRequest += OnBeginRequest;
+			context.AcquireRequestState += OnAcquireRequestState;
 			context.EndRequest += OnEndRequest;
 		}
 
-		private static void OnBeginRequest(object sender, EventArgs e)
+		private static void OnAcquireRequestState(object sender, EventArgs e)
 		{
 			var app = (HttpApplication)sender;
-			if (ShouldProfile(app))
+			if (!MiniProfilerStarted(app) && ShouldProfile(app))
 			{
 				MiniProfiler.Start();
 				if (app.Context != null && app.Context.Items != null)
@@ -37,15 +37,20 @@ namespace SmartStore.DevTools
 		private static void OnEndRequest(object sender, EventArgs e)
 		{
 			var app = (HttpApplication)sender;
-			if (app.Context != null && app.Context.Items != null && app.Context.Items.Contains(MP_KEY))
+			if (MiniProfilerStarted(app))
 			{
 				MiniProfiler.Stop();
 			}
 		}
 
+		private static bool MiniProfilerStarted(HttpApplication app)
+		{
+			return app?.Context?.Items != null && app.Context.Items.Contains(MP_KEY);
+		}
+
 		private static bool ShouldProfile(HttpApplication app)
 		{
-			if (app.Context == null || app.Context.Request == null)
+			if (app?.Context?.Request == null)
 				return false;
 
 			if (!DataSettings.DatabaseIsInstalled())
@@ -73,11 +78,11 @@ namespace SmartStore.DevTools
 				}
 				catch
 				{
-					return false;
+					return true;
 				}
 			}
 
-			return settings == null ? false : settings.EnableMiniProfilerInPublicStore;
+			return settings == null ? true : settings.EnableMiniProfilerInPublicStore;
 		}
 
 		public void Dispose()

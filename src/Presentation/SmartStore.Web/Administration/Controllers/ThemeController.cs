@@ -275,7 +275,7 @@ namespace SmartStore.Admin.Controllers
 			string error = string.Empty;
 
 			var virtualPath = "~/Themes/{0}/Content/theme.scss".FormatCurrent(manifest.ThemeName);
-			var resolver = this._themeFileResolver.Value;
+			var resolver = _themeFileResolver.Value;
 			var file = resolver.Resolve(virtualPath);
 			if (file != null)
 			{

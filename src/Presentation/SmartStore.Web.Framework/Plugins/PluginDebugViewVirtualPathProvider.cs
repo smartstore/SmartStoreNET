@@ -12,11 +12,14 @@ namespace SmartStore.Web.Framework.Plugins
 {
 	public class PluginDebugViewVirtualPathProvider : VirtualPathProvider
 	{
-		private readonly ConcurrentDictionary<string, string> _cachedDebugFilePaths = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		private readonly static ConcurrentDictionary<string, string> _cachedDebugFilePaths = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		private readonly DirectoryInfo _pluginsDebugDir;
+		private readonly VirtualPathProvider _previous;
 
-		public PluginDebugViewVirtualPathProvider()
+		public PluginDebugViewVirtualPathProvider(VirtualPathProvider previous)
 		{
+			_previous = previous;
+
 			var appRootPath = HostingEnvironment.MapPath("~/").EnsureEndsWith("\\");
 			var debugPath = Path.GetFullPath(Path.Combine(appRootPath, @"..\..\Plugins"));
 			if (Directory.Exists(debugPath))
@@ -29,7 +32,7 @@ namespace SmartStore.Web.Framework.Plugins
 		{
 			// Require files in production path to exist, do never fallback to dev path.
 			// Doing so could lead to deployment errors (e.g. forgetting to copy a view file to production folder)
-			return Previous.FileExists(virtualPath);
+			return _previous.FileExists(virtualPath);
 		}
 
 		public override VirtualFile GetFile(string virtualPath)
@@ -37,13 +40,13 @@ namespace SmartStore.Web.Framework.Plugins
 			string appRelativePath;
 			if (!IsPluginPath(virtualPath, out appRelativePath))
 			{
-				return Previous.GetFile(virtualPath);
+				return _previous.GetFile(virtualPath);
 			}
 
 			string debugPath = ResolveDebugFilePath(appRelativePath);
 			return debugPath != null
 				? new DebugPluginVirtualFile(virtualPath, debugPath)
-				: Previous.GetFile(virtualPath);
+				: _previous.GetFile(virtualPath);
 		}
 
 		public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
@@ -51,13 +54,13 @@ namespace SmartStore.Web.Framework.Plugins
 			string appRelativePath;
 			if (!IsPluginPath(virtualPath, out appRelativePath))
 			{
-				return Previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+				return _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
 			}
 
 			string debugPath = ResolveDebugFilePath(appRelativePath);
 			return debugPath != null 
 				? new CacheDependency(debugPath) 
-				: Previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+				: _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
 		}
 
 		public override string GetFileHash(string virtualPath, IEnumerable virtualPathDependencies)
@@ -65,13 +68,13 @@ namespace SmartStore.Web.Framework.Plugins
 			string appRelativePath;
 			if (!IsPluginPath(virtualPath, out appRelativePath))
 			{
-				return Previous.GetFileHash(virtualPath, virtualPathDependencies);
+				return _previous.GetFileHash(virtualPath, virtualPathDependencies);
 			}
 
 			string debugPath = ResolveDebugFilePath(appRelativePath);
 			return debugPath != null
 				? File.GetLastWriteTime(debugPath).ToString()
-				: Previous.GetFileHash(virtualPath, virtualPathDependencies);
+				: _previous.GetFileHash(virtualPath, virtualPathDependencies);
 		}
 
 		private string ResolveDebugFilePath(string appRelativePath)
@@ -86,9 +89,8 @@ namespace SmartStore.Web.Framework.Plugins
 			
 			var unrooted = appRelativePath.Substring(10); // strip "~/Plugins/"
 			string area = unrooted.Substring(0, unrooted.IndexOf('/'));
-
-			var pluginDir = _pluginsDebugDir.EnumerateDirectories("*{0}*".FormatInvariant(area), SearchOption.TopDirectoryOnly).FirstOrDefault();
-			if (pluginDir != null)
+			var pluginDir = new DirectoryInfo(Path.Combine(_pluginsDebugDir.FullName, area));
+			if (pluginDir != null && pluginDir.Exists)
 			{
 				// get "Views/Something/View.cshtml"
 				var viewPath = unrooted.Substring(area.Length + 1);

@@ -90,7 +90,12 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			var extension = Path.GetExtension(path).ToLowerInvariant();
 
-			if (extension == ".css")
+			if (extension == ".cshtml")
+			{
+				// Perf
+				return null;
+			}
+			else if (extension == ".css")
 			{
 				return new IsStyleSheetResult { Path = path, IsCss = true };
 			}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Web;
@@ -182,8 +183,8 @@ namespace SmartStore.Web.Framework.Theming
 			if (useCache)
 			{
 				// Only look at cached display modes that can handle the context.
-				IEnumerable<IDisplayMode> possibleDisplayModes = DisplayModeProvider.GetAvailableDisplayModesForContext(controllerContext.HttpContext, controllerContext.DisplayMode);
-				foreach (IDisplayMode displayMode in possibleDisplayModes)
+				var possibleDisplayModes = DisplayModeProvider.GetAvailableDisplayModesForContext(controllerContext.HttpContext, controllerContext.DisplayMode);
+				foreach (var displayMode in possibleDisplayModes)
 				{
 					string cachedLocation = ViewLocationCache.GetViewLocation(controllerContext.HttpContext, AppendDisplayModeToCacheKey(cacheKey, displayMode.DisplayModeId));
 
@@ -303,17 +304,15 @@ namespace SmartStore.Web.Framework.Theming
 		private string GetDisplayModeId(DisplayInfo displayInfo)
 		{
 			var localizedDisplayInfo = displayInfo as LocalizedDisplayInfo;
-			if (localizedDisplayInfo != null)
-			{
-				return localizedDisplayInfo.DisplayModeId;
-			}
 
-			return displayInfo.DisplayMode.DisplayModeId;
+			return localizedDisplayInfo != null 
+				? localizedDisplayInfo.DisplayModeId 
+				: displayInfo.DisplayMode.DisplayModeId;
 		}
 	
 		protected virtual string CreateCacheKey(string prefix, string name, string controllerName, string areaName, string theme/*, string lang*/)
 		{
-			return _cacheKeyEntry.FormatInvariant(
+			return string.Format(_cacheKeyEntry,
 				_cacheKeyType,
 				prefix,
 				name,
@@ -325,8 +324,10 @@ namespace SmartStore.Web.Framework.Theming
 		internal static string AppendDisplayModeToCacheKey(string cacheKey, string displayMode)
 		{
 			// key format is ":ViewCacheEntry:{cacheType}:{prefix}:{name}:{controllerName}:{areaName}:{theme}"
-			// so append "{displayMode}:" to the key
-			return cacheKey + displayMode + ":";
+			// so append ":{displayMode}" to the key
+			return string.IsNullOrWhiteSpace(displayMode) 
+				? cacheKey 
+				: cacheKey + ":" + displayMode;
 		}
 
 		protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats, ViewType viewType)
@@ -416,7 +417,7 @@ namespace SmartStore.Web.Framework.Theming
 
 		public override string Format(string viewName, string controllerName, string areaName, string theme)
 		{
-			return _virtualPathFormatString.FormatInvariant(
+			return string.Format(_virtualPathFormatString,
 				viewName,
 				controllerName,
 				areaName,
@@ -435,7 +436,7 @@ namespace SmartStore.Web.Framework.Theming
 
 		public virtual string Format(string viewName, string controllerName, string areaName, string theme)
 		{
-			return _virtualPathFormatString.FormatInvariant(
+			return string.Format(_virtualPathFormatString,
 				viewName,
 				controllerName,
 				theme);

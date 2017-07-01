@@ -40,6 +40,7 @@ namespace SmartStore.Web.Framework.Theming
 		public void InsertViewLocation(HttpContextBase httpContext, string key, string virtualPath)
 		{
 			_cache.InsertViewLocation(httpContext, key, virtualPath);
+			GetRequestCache(httpContext)[key] = virtualPath;
 		}
 	}
 }

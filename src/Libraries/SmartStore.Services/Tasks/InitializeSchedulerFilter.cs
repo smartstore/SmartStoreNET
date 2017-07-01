@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using System.Web.Mvc.Filters;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
@@ -8,13 +9,13 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tasks
 {
-	public class InitializeSchedulerFilter : IAuthorizationFilter
+	public class InitializeSchedulerFilter : IAuthenticationFilter
     {
         private readonly static object s_lock = new object();
 		private static int s_errCount;
         private static bool s_initializing = false;
         
-        public void OnAuthorization(AuthorizationContext filterContext)
+        public void OnAuthentication(AuthenticationContext filterContext)
         {
 			if (filterContext == null || filterContext.HttpContext == null)
 				return;
@@ -93,5 +94,9 @@ namespace SmartStore.Services.Tasks
                 }
             }
         }
-    }
+
+		public void OnAuthenticationChallenge(AuthenticationChallengeContext filterContext)
+		{
+		}
+	}
 }

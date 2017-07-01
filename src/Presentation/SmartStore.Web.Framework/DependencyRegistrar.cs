@@ -1155,7 +1155,7 @@ namespace SmartStore.Web.Framework
 
 					try
 					{
-						if (c.Resolve<IEngine>().IsFullyInitialized && c.TryResolve(out storeContext))
+						if (c.TryResolve(out storeContext))
 						{
 							currentStoreId = storeContext.CurrentStore.Id;
 							//uncomment the code below if you want load settings per store only when you have two stores installed.

@@ -237,15 +237,9 @@ namespace SmartStore.Admin.Controllers
 			scheduleTask.Enabled = model.Enabled;
 			scheduleTask.StopOnError = model.StopOnError;
 			scheduleTask.CronExpression = model.CronExpression;
-
-			if (model.Enabled)
-			{
-				scheduleTask.NextRunUtc = _scheduleTaskService.GetNextSchedule(scheduleTask);
-			}
-			else
-			{
-				scheduleTask.NextRunUtc = null;
-			}
+			scheduleTask.NextRunUtc = model.Enabled 
+				? _scheduleTaskService.GetNextSchedule(scheduleTask) 
+				: null;
 
 			_scheduleTaskService.UpdateTask(scheduleTask);
 

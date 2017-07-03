@@ -25,7 +25,7 @@ namespace SmartStore.Web.Framework.Theming
 
 		protected ThemeableVirtualPathProviderViewEngine()
 		{
-			this.ViewLocationCache = new TwoLevelViewLocationCache(base.ViewLocationCache);
+			this.ViewLocationCache = new TwoLevelViewLocationCache();
 
 			// prepare localized mobile & desktop display modes
 			DisplayModeProvider.Modes.Clear();
@@ -37,6 +37,40 @@ namespace SmartStore.Web.Framework.Theming
 
 			DisplayModeProvider.Modes.Add(mobileDisplayMode);
 			DisplayModeProvider.Modes.Add(desktopDisplayMode);
+		}
+
+		public static bool EnableLocalizedViews
+		{
+			get
+			{
+				if (!_enableLocalizedViews.HasValue)
+				{
+					_enableLocalizedViews = CommonHelper.GetAppSetting<bool>("sm:EnableLocalizedViews", false);
+				}
+
+				return _enableLocalizedViews.Value;
+			}
+			set
+			{
+				_enableLocalizedViews = value;
+			}
+		}
+
+		public static bool EnableVbViews
+		{
+			get
+			{
+				if (!_enableVbViews.HasValue)
+				{
+					_enableVbViews = CommonHelper.GetAppSetting<bool>("sm:EnableVbViews", false);
+				}
+
+				return _enableVbViews.Value;
+			}
+			set
+			{
+				_enableVbViews = value;
+			}
 		}
 
 		public override ViewEngineResult FindView(ControllerContext controllerContext, string viewName, string masterName, bool useCache)
@@ -53,8 +87,28 @@ namespace SmartStore.Web.Framework.Theming
 				var theme = GetCurrentThemeName(controllerContext);
 
 				string controllerName = controllerContext.RouteData.GetRequiredString("controller");
-				string viewPath = this.GetPath(controllerContext, ViewLocationFormats, AreaViewLocationFormats, "ViewLocationFormats", viewName, controllerName, theme, "View", useCache, out viewLocationsSearched);
-				string masterPath = this.GetPath(controllerContext, MasterLocationFormats, AreaMasterLocationFormats, "MasterLocationFormats", masterName, controllerName, theme, "Master", useCache, out masterLocationsSearched);
+				string viewPath = ResolveViewPath(
+					controllerContext, 
+					ViewLocationFormats, 
+					AreaViewLocationFormats, 
+					"ViewLocationFormats", 
+					viewName, 
+					controllerName, 
+					theme, 
+					"View", 
+					useCache, 
+					out viewLocationsSearched);
+				string masterPath = ResolveViewPath(
+					controllerContext, 
+					MasterLocationFormats, 
+					AreaMasterLocationFormats, 
+					"MasterLocationFormats", 
+					masterName, 
+					controllerName, 
+					theme, 
+					"Master", 
+					useCache, 
+					out masterLocationsSearched);
 
 				if (!string.IsNullOrEmpty(viewPath) && (!string.IsNullOrEmpty(masterPath) || string.IsNullOrEmpty(masterName)))
 				{
@@ -78,7 +132,17 @@ namespace SmartStore.Web.Framework.Theming
 				var theme = GetCurrentThemeName(controllerContext);
 
 				string controllerName = controllerContext.RouteData.GetRequiredString("controller");
-				string partialPath = this.GetPath(controllerContext, PartialViewLocationFormats, AreaPartialViewLocationFormats, "PartialViewLocationFormats", partialViewName, controllerName, theme, "Partial", useCache, out searched);
+				string partialPath = ResolveViewPath(
+					controllerContext, 
+					PartialViewLocationFormats, 
+					AreaPartialViewLocationFormats, 
+					"PartialViewLocationFormats", 
+					partialViewName, 
+					controllerName, 
+					theme, 
+					"Partial", 
+					useCache, 
+					out searched);
 
 				if (string.IsNullOrEmpty(partialPath))
 				{
@@ -89,41 +153,17 @@ namespace SmartStore.Web.Framework.Theming
 			}
 		}
 
-		public static bool EnableLocalizedViews
-		{
-			get
-			{
-				if (!_enableLocalizedViews.HasValue)
-				{
-					_enableLocalizedViews = CommonHelper.GetAppSetting<bool>("sm:EnableLocalizedViews", false);
-				}
-
-				return _enableLocalizedViews.Value;
-			}
-			set
-			{
-				_enableLocalizedViews = value;
-			}
-		}
-
-        public static bool EnableVbViews
-        {
-            get
-            {
-                if (!_enableVbViews.HasValue)
-                {
-                    _enableVbViews = CommonHelper.GetAppSetting<bool>("sm:EnableVbViews", false);
-                }
-
-                return _enableVbViews.Value;
-            }
-            set
-            {
-                _enableVbViews = value;
-            }
-        }
-
-        protected virtual string GetPath(ControllerContext controllerContext, string[] locations, string[] areaLocations, string locationsPropertyName, string name, string controllerName, string theme, string cacheKeyPrefix, bool useCache, out string[] searchedLocations)
+        protected virtual string ResolveViewPath(
+			ControllerContext controllerContext, 
+			string[] locations, 
+			string[] areaLocations, 
+			string locationsPropertyName, 
+			string name, 
+			string controllerName, 
+			string theme, 
+			string cacheKeyPrefix, 
+			bool useCache, 
+			out string[] searchedLocations)
 		{
 			searchedLocations = _emptyLocations;
 

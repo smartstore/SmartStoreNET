@@ -9,6 +9,7 @@ namespace SmartStore.Core.Search.Facets
 	{
 		HitsDesc,
 		ValueAsc,
+		LabelAsc,
 		DisplayOrder
 	}
 

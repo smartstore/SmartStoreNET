@@ -412,7 +412,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithManufacturerIds(null, ids.ToArray());
 			}
 
-			AddFacet(query, FacetGroupKind.Brand, true, FacetSorting.ValueAsc, descriptor =>
+			AddFacet(query, FacetGroupKind.Brand, true, FacetSorting.LabelAsc, descriptor =>
 			{
 				if (ids != null)
 				{
@@ -533,7 +533,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.AvailableOnly(true);
 			}
 
-			AddFacet(query, FacetGroupKind.Availability, true, FacetSorting.ValueAsc, descriptor =>
+			AddFacet(query, FacetGroupKind.Availability, true, FacetSorting.LabelAsc, descriptor =>
 			{
 				descriptor.MinHitCount = 0;
 
@@ -565,7 +565,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.CreatedBetween(fromUtc, null);
 			}
 
-			AddFacet(query, FacetGroupKind.NewArrivals, true, FacetSorting.ValueAsc, descriptor =>
+			AddFacet(query, FacetGroupKind.NewArrivals, true, FacetSorting.LabelAsc, descriptor =>
 			{
 				descriptor.AddValue(new FacetValue(fromUtc, null, IndexTypeCode.DateTime, true, false)
 				{

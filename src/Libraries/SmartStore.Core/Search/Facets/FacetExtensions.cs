@@ -33,6 +33,12 @@ namespace SmartStore.Core.Search.Facets
 			{
 				case FacetSorting.ValueAsc:
 					if (selectedFirst)
+						return source.OrderByDescending(x => x.Value.IsSelected).ThenBy(x => x.Value.Value);
+					else
+						return source.OrderBy(x => x.Value.Value);
+
+				case FacetSorting.LabelAsc:
+					if (selectedFirst)
 						return source.OrderByDescending(x => x.Value.IsSelected).ThenBy(x => x.Value.Label);
 					else
 						return source.OrderBy(x => x.Value.Label);

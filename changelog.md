@@ -1,6 +1,6 @@
 ﻿# Release Notes
 
-## SmartStore.NET 3.1
+## SmartStore.NET 3.0.2
 ### Improvements
 * PayPal Standard: New settings "UsePayPalAddress" and "IsShippingAddressRequired" to avoid payment rejection due to address validation.
 
@@ -11,6 +11,7 @@
 * Fixed #1187 Search: Do not hide multi-selectable filters of the same group if there are no hits
 * Fixed System.ArgumentNullException in ProductVariantQueryFactory
 * PayPal PLUS: Fixed HTTP 401 "Unauthorized" when calling PatchShipping
+* Fixed #1189 MegaSearch: Boosts are ignored in prefix and wildcard queries by default
 
 ## SmartStore.NET 3.0.1
 ### Improvements

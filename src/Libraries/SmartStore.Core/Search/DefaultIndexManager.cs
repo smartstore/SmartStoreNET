@@ -13,14 +13,14 @@ namespace SmartStore.Core.Search
 			_providers = providers;
 		}
 
-		public bool HasAnyProvider()
+		public bool HasAnyProvider(bool activeOnly = true)
 		{
-			return _providers.Any(x => x.Value.IsActive);
+			return _providers.Any(x => !activeOnly || x.Value.IsActive);
 		}
 
-		public IIndexProvider GetIndexProvider()
+		public IIndexProvider GetIndexProvider(bool activeOnly = true)
 		{
-			return _providers.FirstOrDefault(x => x.Value.IsActive)?.Value;
+			return _providers.FirstOrDefault(x => !activeOnly || x.Value.IsActive)?.Value;
 		}
 	}
 }

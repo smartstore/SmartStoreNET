@@ -454,15 +454,60 @@ namespace SmartStore.Web.Controllers
 			item.HideDeliveryTime = (product.ProductType == ProductType.GroupedProduct);
 			if (model.ShowDeliveryTimes && !item.HideDeliveryTime)
 			{
-				item.StockAvailablity = contextProduct.FormatStockMessage(_localizationService);
-				item.DisplayDeliveryTimeAccordingToStock = contextProduct.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
+				#region Delivery Time
 
-				var deliveryTime = _deliveryTimeService.GetDeliveryTime(contextProduct);
+				// We cannot include ManageInventoryMethod.ManageStockByAttributes because it's only functional with MergeWithCombination.
+				//item.StockAvailablity = contextProduct.FormatStockMessage(_localizationService);
+				//item.DisplayDeliveryTimeAccordingToStock = contextProduct.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
+
+				//var deliveryTime = _deliveryTimeService.GetDeliveryTime(contextProduct);
+				//if (deliveryTime != null)
+				//{
+				//	item.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+				//	item.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+				//}
+
+				var deliveryTimeId = product.DeliveryTimeId ?? 0;
+				if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock && product.StockQuantity <= 0 && _catalogSettings.DeliveryTimeIdForEmptyStock.HasValue)
+				{
+					deliveryTimeId = _catalogSettings.DeliveryTimeIdForEmptyStock.Value;
+				}
+
+				var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(deliveryTimeId);
 				if (deliveryTime != null)
 				{
 					item.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
 					item.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
 				}
+
+				if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
+				{
+					item.DisplayDeliveryTimeAccordingToStock = product.StockQuantity > 0 || (product.StockQuantity <= 0 && _catalogSettings.DeliveryTimeIdForEmptyStock.HasValue);
+				}
+				else
+				{
+					item.DisplayDeliveryTimeAccordingToStock = true;
+				}
+
+				if (product.DisplayStockAvailability && product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
+				{
+					if (product.StockQuantity > 0)
+					{
+						if (product.DisplayStockQuantity)
+							item.StockAvailablity = T("Products.Availability.InStockWithQuantity", product.StockQuantity);
+						else
+							item.StockAvailablity = T("Products.Availability.InStock");
+					}
+					else
+					{
+						if (product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0)
+							item.StockAvailablity = T("Products.Availability.OutOfStock");
+						else if (product.BackorderMode == BackorderMode.AllowQtyBelow0AndNotifyCustomer)
+							item.StockAvailablity = T("Products.Availability.Backordering");
+					}
+				}
+
+				#endregion
 			}
 			
 			item.LegalInfo = ctx.LegalInfo;

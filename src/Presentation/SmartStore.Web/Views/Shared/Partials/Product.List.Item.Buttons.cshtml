@@ -17,7 +17,7 @@
 	}
 	if (!Model.Price.CallForPrice)
 	{
-		var addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id, forceredirection = Model.Parent.ForceRedirectionAfterAddingToCart });
+		var addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id, forceredirection = Model.Parent.ForceRedirectionAfterAddingToCart, area = "" });
 		var title = (Model.Price.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
 
 		<a data-href='@addToCartUrl'
@@ -41,7 +41,7 @@
 	}
 	else
 	{
-		<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
+		<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id }, { "area", "" } })"
 			class="btn @(blockStyle ? "btn-secondary" : "btn-gray") add-to-cart-button @cssClasses"
 			data-toggle='@(!blockStyle ? "tooltip" : "")' data-placement="bottom"
 			rel="nofollow"
@@ -75,7 +75,7 @@
 
 	@if (!price.DisableWishlistButton && list.WishlistEnabled)
 	{
-		<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+		<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist , area = "" })'
 			href="#"
 			class="btn btn-secondary btn-lg art-btn col ajax-cart-link" 
 			title="@T("Categories.Wishlist")"
@@ -93,7 +93,7 @@
 
 	@if (list.CompareEnabled)
 	{
-		<a data-href="@Url.Action("AddProductToCompare", "Catalog", new RouteValueDictionary { { "id", Model.Id } })" 
+		<a data-href="@Url.Action("AddProductToCompare", "Catalog", new RouteValueDictionary { { "id", Model.Id }, { "area", "" } })" 
 			href="#"
 			class="btn btn-secondary btn-lg art-btn col ajax-cart-link" 
 			title="@T("Categories.Compare")"  

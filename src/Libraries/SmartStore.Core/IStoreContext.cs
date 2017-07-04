@@ -34,7 +34,8 @@ namespace SmartStore.Core
 		/// <summary>
 		/// Gets or sets the current store
 		/// </summary>
-		Store CurrentStore { get; }
+		/// <remarks>Setter is for virtualization and testing purposes</remarks>
+		Store CurrentStore { get; set; }
 
 		/// <summary>
 		/// IsSingleStoreMode ? 0 : CurrentStore.Id

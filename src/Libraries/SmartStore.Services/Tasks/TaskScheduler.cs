@@ -132,14 +132,14 @@ namespace SmartStore.Services.Tasks
 
         public void RunSingleTask(int scheduleTaskId, IDictionary<string, string> taskParameters = null)
         {
-			string query = "";
+			taskParameters = taskParameters ?? new Dictionary<string, string>();
 
-			if (taskParameters != null && taskParameters.Any())
-			{
-                var qs = new QueryString();
-				taskParameters.Each(x => qs.Add(x.Key, x.Value));
-				query = qs.ToString();
-			}
+			// User executes task in backend explicitly
+			taskParameters["Explicit"] = "true";
+
+            var qs = new QueryString();
+			taskParameters.Each(x => qs.Add(x.Key, x.Value));
+			var query = qs.ToString();
 
 			CallEndpoint(new Uri("{0}/Execute/{1}{2}".FormatInvariant(_baseUrl, scheduleTaskId, query)));
         }

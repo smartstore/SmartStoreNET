@@ -89,13 +89,20 @@ namespace SmartStore.Web.Framework.Plugins
 			
 			var unrooted = appRelativePath.Substring(10); // strip "~/Plugins/"
 			string area = unrooted.Substring(0, unrooted.IndexOf('/'));
-			var pluginDir = new DirectoryInfo(Path.Combine(_pluginsDebugDir.FullName, area));
-			if (pluginDir != null && pluginDir.Exists)
+
+			// get "Views/Something/View.cshtml"
+			var viewPath = unrooted.Substring(area.Length + 1);
+
+			var foldersToCheck = new[] { area, area + "-sym" };
+
+			foreach (var folder in foldersToCheck)
 			{
-				// get "Views/Something/View.cshtml"
-				var viewPath = unrooted.Substring(area.Length + 1);
-				var result = Path.Combine(pluginDir.FullName, viewPath).Replace("/", "\\");
-				return File.Exists(result) ? result : null;
+				var pluginDir = new DirectoryInfo(Path.Combine(_pluginsDebugDir.FullName, folder));
+				if (pluginDir != null && pluginDir.Exists)
+				{
+					var result = Path.Combine(pluginDir.FullName, viewPath).Replace("/", "\\");
+					return File.Exists(result) ? result : null;
+				}
 			}
 
 			return null;

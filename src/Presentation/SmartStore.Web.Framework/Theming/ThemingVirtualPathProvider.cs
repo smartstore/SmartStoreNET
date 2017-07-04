@@ -58,6 +58,7 @@ namespace SmartStore.Web.Framework.Theming
         
         public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
         {
+			//return _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
 			return new CacheDependency(MapDependencyPaths(virtualPathDependencies.Cast<string>()), utcStart);
 		}
 

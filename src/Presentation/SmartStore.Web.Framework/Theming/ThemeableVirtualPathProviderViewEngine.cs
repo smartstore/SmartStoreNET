@@ -18,6 +18,7 @@ namespace SmartStore.Web.Framework.Theming
 		internal Func<string, string> GetExtensionThunk = VirtualPathUtility.GetExtension;
 
 		private static readonly string[] _emptyLocations = new string[0];
+
 		private static bool? _enableLocalizedViews;
         private static bool? _enableVbViews;
         private readonly string _cacheKeyType = typeof(ThemeableRazorViewEngine).Name;
@@ -84,28 +85,31 @@ namespace SmartStore.Web.Framework.Theming
 				string[] viewLocationsSearched;
 				string[] masterLocationsSearched;
 
-				var theme = GetCurrentThemeName(controllerContext);
+				var themeName = GetCurrentThemeName(controllerContext);
+				var controllerName = controllerContext.RouteData.GetRequiredString("controller");
+				var areaName = controllerContext.RouteData.GetAreaName();
 
-				string controllerName = controllerContext.RouteData.GetRequiredString("controller");
-				string viewPath = ResolveViewPath(
+				var viewPath = ResolveViewPath(
 					controllerContext, 
+					areaName,
 					ViewLocationFormats, 
 					AreaViewLocationFormats, 
 					"ViewLocationFormats", 
 					viewName, 
 					controllerName, 
-					theme, 
+					themeName, 
 					"View", 
 					useCache, 
 					out viewLocationsSearched);
-				string masterPath = ResolveViewPath(
-					controllerContext, 
+				var masterPath = ResolveViewPath(
+					controllerContext,
+					areaName, 
 					MasterLocationFormats, 
-					AreaMasterLocationFormats, 
-					"MasterLocationFormats", 
+					AreaMasterLocationFormats,
+					"MasterLocationFormats",
 					masterName, 
 					controllerName, 
-					theme, 
+					themeName, 
 					"Master", 
 					useCache, 
 					out masterLocationsSearched);
@@ -127,26 +131,28 @@ namespace SmartStore.Web.Framework.Theming
 			var chronometer = EngineContext.Current.Resolve<IChronometer>();
 			using (chronometer.Step("Find partial view '{0}'".FormatInvariant(partialViewName)))
 			{
-				string[] searched;
+				string[] searchedLocations;
 
-				var theme = GetCurrentThemeName(controllerContext);
+				var themeName = GetCurrentThemeName(controllerContext);
+				var controllerName = controllerContext.RouteData.GetRequiredString("controller");
+				var areaName = controllerContext.RouteData.GetAreaName();
 
-				string controllerName = controllerContext.RouteData.GetRequiredString("controller");
 				string partialPath = ResolveViewPath(
 					controllerContext, 
+					areaName,
 					PartialViewLocationFormats, 
 					AreaPartialViewLocationFormats, 
 					"PartialViewLocationFormats", 
 					partialViewName, 
 					controllerName, 
-					theme, 
+					themeName, 
 					"Partial", 
 					useCache, 
-					out searched);
+					out searchedLocations);
 
 				if (string.IsNullOrEmpty(partialPath))
 				{
-					return new ViewEngineResult(searched);
+					return new ViewEngineResult(searchedLocations);
 				}
 
 				return new ViewEngineResult(CreatePartialView(controllerContext, partialPath), this);
@@ -154,7 +160,8 @@ namespace SmartStore.Web.Framework.Theming
 		}
 
         protected virtual string ResolveViewPath(
-			ControllerContext controllerContext, 
+			ControllerContext controllerContext,
+			string areaName, 
 			string[] locations, 
 			string[] areaLocations, 
 			string locationsPropertyName, 
@@ -172,7 +179,6 @@ namespace SmartStore.Web.Framework.Theming
 				return String.Empty;
 			}
 
-			string areaName = controllerContext.RouteData.GetAreaName();
 			bool usingAreas = !String.IsNullOrEmpty(areaName);
 
 			if (usingAreas)
@@ -185,16 +191,9 @@ namespace SmartStore.Web.Framework.Theming
 				if (extraAreaViewLocations != null && extraAreaViewLocations.Length > 0)
 				{
 					var newLocations = areaLocations.ToList();
-					var viewType = ViewType.View;
-
-					if (cacheKeyPrefix == "Partial")
-					{
-						viewType = ViewType.Partial;
-					}
-					else
-					{
-						viewType = ViewType.Layout;
-					}
+					var viewType = cacheKeyPrefix == "Partial" 
+						? ViewType.Partial
+						: ViewType.Layout;
 
 					if (isAdminArea)
 					{
@@ -210,7 +209,7 @@ namespace SmartStore.Web.Framework.Theming
 				}
 			}
 
-			List<ViewLocation> viewLocations = GetViewLocations(locations, (usingAreas) ? areaLocations : null);
+			var viewLocations = GetViewLocations(locations, (usingAreas) ? areaLocations : null);
 
 			if (viewLocations.Count == 0)
 			{
@@ -247,7 +246,7 @@ namespace SmartStore.Web.Framework.Theming
 					// An empty cachedLocation value indicates that we don't have a matching file on disk. Keep going down the list of possible display modes.
 				}
 
-				// GetPath is called again without using the cache.
+				// ResolveViewPath is called again without using the cache.
 				return null;
 			}
 			else
@@ -256,19 +255,6 @@ namespace SmartStore.Web.Framework.Theming
 					? GetPathFromSpecificName(controllerContext, name, cacheKey, ref searchedLocations)
 					: GetPathFromGeneralName(controllerContext, viewLocations, name, controllerName, areaName, theme, cacheKey, ref searchedLocations);
 			}
-		}
-
-		protected virtual bool FilePathIsSupported(string virtualPath)
-		{
-			if (this.FileExtensions == null)
-			{
-				// legacy behavior for custom ViewEngine that might not set the FileExtensions property
-				return true;
-			}
-
-			// get rid of the '.' because the FileExtensions property expects extensions withouth a dot.
-			string extension = GetExtensionThunk(virtualPath).TrimStart('.');
-			return FileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
 		}
 
 		protected virtual string GetPathFromSpecificName(ControllerContext controllerContext, string name, string cacheKey, ref string[] searchedLocations)
@@ -285,7 +271,15 @@ namespace SmartStore.Web.Framework.Theming
 			return result;
 		}
 
-		protected virtual string GetPathFromGeneralName(ControllerContext controllerContext, List<ViewLocation> locations, string name, string controllerName, string areaName, string theme, string cacheKey, ref string[] searchedLocations)
+		protected virtual string GetPathFromGeneralName(
+			ControllerContext controllerContext, 
+			List<ViewLocation> locations, 
+			string name, 
+			string controllerName, 
+			string areaName, 
+			string theme, 
+			string cacheKey, 
+			ref string[] searchedLocations)
 		{
 			string result = String.Empty;
 			searchedLocations = new string[locations.Count];
@@ -329,6 +323,7 @@ namespace SmartStore.Web.Framework.Theming
 							{
 								displayModeId = displayMode.DisplayModeId;
 							}
+
 							ViewLocationCache.InsertViewLocation(controllerContext.HttpContext, AppendDisplayModeToCacheKey(cacheKey, displayModeId), cacheValue);
 						}
 					}
@@ -339,6 +334,19 @@ namespace SmartStore.Web.Framework.Theming
 			}
 
 			return result;
+		}
+
+		protected virtual bool FilePathIsSupported(string virtualPath)
+		{
+			if (this.FileExtensions == null)
+			{
+				// legacy behavior for custom ViewEngine that might not set the FileExtensions property
+				return true;
+			}
+
+			// get rid of the '.' because the FileExtensions property expects extensions withouth a dot.
+			string extension = GetExtensionThunk(virtualPath).TrimStart('.');
+			return FileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
 		}
 
 		private string GetDisplayModeId(DisplayInfo displayInfo)
@@ -400,13 +408,15 @@ namespace SmartStore.Web.Framework.Theming
 
 		protected virtual List<ViewLocation> GetViewLocations(string[] viewLocationFormats, string[] areaViewLocationFormats)
 		{
-			List<ViewLocation> allLocations = new List<ViewLocation>();
+			List<ViewLocation> locations = new List<ViewLocation>(
+				(viewLocationFormats?.Length ?? 0) +
+				(areaViewLocationFormats?.Length ?? 0));
 
 			if (areaViewLocationFormats != null)
 			{
 				foreach (string areaViewLocationFormat in areaViewLocationFormats)
 				{
-					allLocations.Add(new AreaAwareViewLocation(areaViewLocationFormat));
+					locations.Add(new AreaAwareViewLocation(areaViewLocationFormat));
 				}
 			}
 
@@ -414,11 +424,11 @@ namespace SmartStore.Web.Framework.Theming
 			{
 				foreach (string viewLocationFormat in viewLocationFormats)
 				{
-					allLocations.Add(new ViewLocation(viewLocationFormat));
+					locations.Add(new ViewLocation(viewLocationFormat));
 				}
 			}
 
-			return allLocations;
+			return locations;
 		}
 
 		protected virtual bool IsSpecificPath(string name)

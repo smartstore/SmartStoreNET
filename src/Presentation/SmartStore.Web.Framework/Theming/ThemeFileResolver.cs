@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Hosting;
+using System.Collections.Generic;
+using System.Threading;
+using SmartStore.Utilities.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
@@ -17,18 +19,19 @@ namespace SmartStore.Web.Framework.Theming
 
 	public class ThemeFileResolver : DisposableObject, IThemeFileResolver
 	{
-		private readonly ConcurrentDictionary<FileKey, InheritedThemeFileResult> _files = new ConcurrentDictionary<FileKey, InheritedThemeFileResult>();
+		private readonly Dictionary<FileKey, InheritedThemeFileResult> _files = new Dictionary<FileKey, InheritedThemeFileResult>();
 		private readonly IThemeRegistry _themeRegistry;
+		private readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
 		public ThemeFileResolver(IThemeRegistry themeRegistry)
 		{
-			this._themeRegistry = themeRegistry;
+			_themeRegistry = themeRegistry;
 
 			// listen to file monitoring events
-			this._themeRegistry.ThemeFolderDeleted += OnThemeFolderDeleted;
-			this._themeRegistry.ThemeFolderRenamed += OnThemeFolderRenamed;
-			this._themeRegistry.BaseThemeChanged += OnBaseThemeChanged;
-			this._themeRegistry.ThemeFileChanged += OnThemeFileChanged;
+			_themeRegistry.ThemeFolderDeleted += OnThemeFolderDeleted;
+			_themeRegistry.ThemeFolderRenamed += OnThemeFolderRenamed;
+			_themeRegistry.BaseThemeChanged += OnBaseThemeChanged;
+			_themeRegistry.ThemeFileChanged += OnThemeFileChanged;
 		}
 
 		private void OnThemeFolderDeleted(object sender, ThemeFolderDeletedEventArgs e)
@@ -51,14 +54,16 @@ namespace SmartStore.Web.Framework.Theming
 
 		private void OnThemeRemoved(string themeName)
 		{
-			var keys = _files.Keys.Where(x => x.ThemeName.IsCaseInsensitiveEqual(themeName)).ToList();
-			foreach (var key in keys)
+			using (_rwLock.GetWriteLock())
 			{
-				if (key.ThemeName.IsCaseInsensitiveEqual(themeName) || _themeRegistry.IsChildThemeOf(key.ThemeName, themeName))
+				var keys = _files.Keys.Where(x => x.ThemeName.IsCaseInsensitiveEqual(themeName)).ToList();
+				foreach (var key in keys)
 				{
-					// remove all cached pathes for this theme (also in all derived themes)
-					InheritedThemeFileResult result;
-					_files.TryRemove(key, out result);
+					if (key.ThemeName.IsCaseInsensitiveEqual(themeName) || _themeRegistry.IsChildThemeOf(key.ThemeName, themeName))
+					{
+						// remove all cached pathes for this theme (also in all derived themes)
+						_files.Remove(key);
+					}
 				}
 			}
 		}
@@ -68,42 +73,45 @@ namespace SmartStore.Web.Framework.Theming
 			if (e.IsConfigurationFile)
 				return;
 
-			// get keys with same relative path
-			var keys = _files.Keys.Where(x => x.RelativePath.IsCaseInsensitiveEqual(e.RelativePath)).ToList();
-			foreach (var key in keys)
+			using (_rwLock.GetWriteLock())
 			{
-				if (key.ThemeName.IsCaseInsensitiveEqual(e.ThemeName) || _themeRegistry.IsChildThemeOf(key.ThemeName, e.ThemeName))
+				// get keys with same relative path
+				var keys = _files.Keys.Where(x => x.RelativePath.IsCaseInsensitiveEqual(e.RelativePath)).ToList();
+				foreach (var key in keys)
 				{
-					// remove all cached pathes for this file/theme combination (also in all derived themes)
-					InheritedThemeFileResult result;
-					if (_files.TryRemove(key, out result))
+					if (key.ThemeName.IsCaseInsensitiveEqual(e.ThemeName) || _themeRegistry.IsChildThemeOf(key.ThemeName, e.ThemeName))
 					{
-						if (e.ChangeType == ThemeFileChangeType.Created)
+						// remove all cached pathes for this file/theme combination (also in all derived themes)
+						InheritedThemeFileResult result;
+						if (_files.TryGetValue(key, out result))
 						{
-							// The file is new: no chance that our VPP dependencies
-							// could have been notified about this (only deletions/changes are monitored).
-							// Therefore we brutally set the result file's last write time
-							// to enforece VPP to invalidate cache.
-							try
+							_files.Remove(key);
+							if (e.ChangeType == ThemeFileChangeType.Created)
 							{
-								File.SetLastWriteTimeUtc(result.ResultPhysicalPath, DateTime.UtcNow);
+								// The file is new: no chance that our VPP dependencies
+								// could have been notified about this (only deletions/changes are monitored).
+								// Therefore we brutally set the result file's last write time
+								// to enforece VPP to invalidate cache.
+								try
+								{
+									File.SetLastWriteTimeUtc(result.ResultPhysicalPath, DateTime.UtcNow);
+								}
+								catch { }
 							}
-							catch { }
 						}
 					}
 				}
 			}
-
 		}
 
 		protected override void OnDispose(bool disposing)
 		{
 			if (disposing)
 			{
-				this._themeRegistry.ThemeFileChanged -= OnThemeFileChanged;
-				this._themeRegistry.ThemeFolderDeleted -= OnThemeFolderDeleted;
-				this._themeRegistry.BaseThemeChanged -= OnBaseThemeChanged;
-				this._themeRegistry.ThemeFolderRenamed -= OnThemeFolderRenamed;
+				_themeRegistry.ThemeFileChanged -= OnThemeFileChanged;
+				_themeRegistry.ThemeFolderDeleted -= OnThemeFolderDeleted;
+				_themeRegistry.BaseThemeChanged -= OnBaseThemeChanged;
+				_themeRegistry.ThemeFolderRenamed -= OnThemeFolderRenamed;
 			}
 		}
 
@@ -207,34 +215,39 @@ namespace SmartStore.Web.Framework.Theming
 			}
 
 			var fileKey = new FileKey(currentTheme.ThemeName, relativePath);
+			InheritedThemeFileResult result;
 
-			var result = _files.GetOrAdd(fileKey, (k) =>
-			{
-				// ALWAYS begin the search with the current working theme's location!
-				string resultVirtualPath;
-				string resultPhysicalPath;
-				string actualLocation = LocateFile(currentTheme.ThemeName, relativePath, out resultVirtualPath, out resultPhysicalPath);
-				
-				if (actualLocation != null)
+			using (_rwLock.GetUpgradeableReadLock())
+			{	
+				if (!_files.TryGetValue(fileKey, out result))
 				{
-					return new InheritedThemeFileResult
+					using (_rwLock.GetWriteLock())
 					{
-						RelativePath = relativePath,
-						OriginalVirtualPath = virtualPath,
-						ResultVirtualPath = resultVirtualPath,
-						ResultPhysicalPath = resultPhysicalPath,
-						OriginalThemeName = requestedThemeName,
-						ResultThemeName = actualLocation
-					};
-				}
+						// ALWAYS begin the search with the current working theme's location!
+						string resultVirtualPath;
+						string resultPhysicalPath;
+						string actualLocation = LocateFile(currentTheme.ThemeName, relativePath, out resultVirtualPath, out resultPhysicalPath);
 
-				return null;
-			});
+						if (actualLocation != null)
+						{
+							result = new InheritedThemeFileResult
+							{
+								RelativePath = relativePath,
+								OriginalVirtualPath = virtualPath,
+								ResultVirtualPath = resultVirtualPath,
+								ResultPhysicalPath = resultPhysicalPath,
+								OriginalThemeName = requestedThemeName,
+								ResultThemeName = actualLocation
+							};
+						}
+
+						_files[fileKey] = result;
+					}
+				}
+			}
 
 			if (result == null)
-			{
 				return nullOrFile();
-			}
 
 			return result;
 		}

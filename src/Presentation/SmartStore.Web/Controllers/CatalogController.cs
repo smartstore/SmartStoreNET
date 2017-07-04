@@ -669,6 +669,7 @@ namespace SmartStore.Web.Controllers
 
 			query.Sorting.Clear();
 			query = query
+				.BuildFacetMap(false)
 				.SortBy(ProductSortingEnum.CreatedOn)
 				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
 
@@ -705,6 +706,7 @@ namespace SmartStore.Web.Controllers
 
 			query.Sorting.Clear();
 			query = query
+				.BuildFacetMap(false)
 				.SortBy(ProductSortingEnum.CreatedOn)
 				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
 

@@ -12,6 +12,10 @@
 * Fixed System.ArgumentNullException in ProductVariantQueryFactory
 * PayPal PLUS: Fixed HTTP 401 "Unauthorized" when calling PatchShipping
 * Fixed #1189 MegaSearch: Boosts are ignored in prefix and wildcard queries by default
+* Fixed #1195 Exporter: don't send email if no email account has been selected
+* Product lists sometimes show the wrong delivery time
+* Fixed #1192 Lucene indexing performance decreases the longer it takes
+* Fixed #1198 MegaSearch: never sort numeric range by label, always by value
 
 ## SmartStore.NET 3.0.1
 ### Improvements

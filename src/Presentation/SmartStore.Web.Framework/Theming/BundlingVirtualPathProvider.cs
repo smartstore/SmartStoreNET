@@ -6,13 +6,11 @@ using System.Web.Hosting;
 
 namespace SmartStore.Web.Framework.Theming
 {
-    public class BundlingVirtualPathProvider : VirtualPathProvider
+    public sealed class BundlingVirtualPathProvider : ThemingVirtualPathProvider
     {
-		private readonly VirtualPathProvider _previous;
-
         public BundlingVirtualPathProvider(VirtualPathProvider previous)
+			: base(previous)
         {
-            _previous = previous;
         }
 
         public override bool FileExists(string virtualPath)
@@ -23,7 +21,7 @@ namespace SmartStore.Web.Framework.Theming
 				return true;
 			}
 
-			return _previous.FileExists(virtualPath);
+			return base.FileExists(virtualPath);
         }
          
         public override VirtualFile GetFile(string virtualPath)
@@ -43,7 +41,7 @@ namespace SmartStore.Web.Framework.Theming
 				}
 			}
 
-			return _previous.GetFile(virtualPath);
+			return base.GetFile(virtualPath);
         }
         
         public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
@@ -51,14 +49,14 @@ namespace SmartStore.Web.Framework.Theming
 			var styleResult = ThemeHelper.IsStyleSheet(virtualPath);
 			if (styleResult == null)
 			{
-				return _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+				return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
 			}
             else
             {
                 if (styleResult.IsCss)
                 {
 					// it's a static css file (no bundle, no sass/less)
-					return _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+					return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
                 }
                 
                 var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();
@@ -69,7 +67,7 @@ namespace SmartStore.Web.Framework.Theming
 				if (themeVarsFile.IsEmpty() && moduleImportsFile.IsEmpty())
                 {
                     // no themevars or moduleimports import... so no special considerations here
-					return _previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+					return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
                 }
 
 				// exclude the special imports from the file dependencies list,

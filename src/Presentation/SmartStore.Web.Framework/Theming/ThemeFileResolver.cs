@@ -155,55 +155,13 @@ namespace SmartStore.Web.Framework.Theming
 				return null;
 			};
 
-			ThemeManifest currentTheme;
-			var isAdmin = EngineContext.Current.Resolve<IWorkContext>().IsAdmin; // ThemeHelper.IsAdminArea()
-			if (isAdmin)
-			{
-				currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);
-			}
-			else
-			{
-				var styleResult = ThemeHelper.IsStyleSheet(relativePath);
-				var isPreprocessor = styleResult != null && styleResult.IsPreprocessor;
-				if (isPreprocessor)
-				{
-					// special consideration for SASS/LESS files: they can be validated
-					// in the backend. For validation, a "theme" query is appended 
-					// to the url. During validation we must work with the actual
-					// requested theme instead of dynamically resolving the working theme.
-					var httpContext = HttpContext.Current;
-					if (httpContext != null && httpContext.Request != null)
-					{
-						var qs = httpContext.Request.QueryString;
-						if (qs["theme"].HasValue())
-						{
-							EngineContext.Current.Resolve<IThemeContext>().SetRequestTheme(qs["theme"]);
-						}
-					}
-				}
+			ThemeManifest currentTheme = ResolveTheme(requestedThemeName, relativePath, query, out isExplicit);
 
-				if (isPreprocessor && query != null && query.StartsWith("explicit", StringComparison.OrdinalIgnoreCase))
-				{
-					// special case to support SASS/LESS @import declarations
-					// within inherited SASS/LESS files. Snenario: an inheritor wishes to
-					// include the same file from it's base theme (e.g. custom.scss) just to tweak it
-					// a bit for his child theme. Without the 'explicit' query the resolution starting point
-					// for custom.scss would be the CURRENT theme's folder, and NOT the requested one's,
-					// which inevitably would result in a cyclic dependency.
-					currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);
-					isExplicit = true;
-				}
-				else
-				{
-					currentTheme = ThemeHelper.ResolveCurrentTheme();
-				}
-
-				if (currentTheme.BaseTheme == null)
-				{
-					// dont't bother resolving files: the current theme is not inherited.
-					// Let the current VPP do the work.
-					return nullOrFile();
-				}
+			if (currentTheme?.BaseTheme == null)
+			{
+				// dont't bother resolving files: the current theme is not inherited.
+				// Let the current VPP do the work.
+				return nullOrFile();
 			}
 
 			if (!currentTheme.ThemeName.Equals(requestedThemeName, StringComparison.OrdinalIgnoreCase))
@@ -250,6 +208,57 @@ namespace SmartStore.Web.Framework.Theming
 				return nullOrFile();
 
 			return result;
+		}
+
+		private ThemeManifest ResolveTheme(string requestedThemeName, string relativePath, string query, out bool isExplicit)
+		{
+			isExplicit = false;
+			ThemeManifest currentTheme;
+
+			var isAdmin = EngineContext.Current.Resolve<IWorkContext>().IsAdmin; // ThemeHelper.IsAdminArea()
+			if (isAdmin)
+			{
+				currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);
+			}
+			else
+			{
+				var styleResult = ThemeHelper.IsStyleSheet(relativePath);
+				var isPreprocessor = styleResult != null && styleResult.IsPreprocessor;
+				if (isPreprocessor)
+				{
+					// special consideration for SASS/LESS files: they can be validated
+					// in the backend. For validation, a "theme" query is appended 
+					// to the url. During validation we must work with the actual
+					// requested theme instead of dynamically resolving the working theme.
+					var httpContext = HttpContext.Current;
+					if (httpContext != null && httpContext.Request != null)
+					{
+						var qs = httpContext.Request.QueryString;
+						if (qs["theme"].HasValue())
+						{
+							EngineContext.Current.Resolve<IThemeContext>().SetRequestTheme(qs["theme"]);
+						}
+					}
+				}
+
+				if (isPreprocessor && query != null && query.StartsWith("explicit", StringComparison.OrdinalIgnoreCase))
+				{
+					// special case to support SASS/LESS @import declarations
+					// within inherited SASS/LESS files. Snenario: an inheritor wishes to
+					// include the same file from it's base theme (e.g. custom.scss) just to tweak it
+					// a bit for his child theme. Without the 'explicit' query the resolution starting point
+					// for custom.scss would be the CURRENT theme's folder, and NOT the requested one's,
+					// which inevitably would result in a cyclic dependency.
+					currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);
+					isExplicit = true;
+				}
+				else
+				{
+					currentTheme = ThemeHelper.ResolveCurrentTheme();
+				}
+			}
+
+			return currentTheme;
 		}
 
 		private string TokenizePath(string virtualPath, out string themeName, out string relativePath, out string query)

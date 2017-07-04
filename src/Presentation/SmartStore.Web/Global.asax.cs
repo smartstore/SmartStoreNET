@@ -168,24 +168,14 @@ namespace SmartStore.Web
 
 		private void RegisterVirtualPathProviders()
 		{
-			var vppTheme = new ThemingVirtualPathProvider(HostingEnvironment.VirtualPathProvider);
+			var vppSystem = HostingEnvironment.VirtualPathProvider;
+			var vppTheme = new ThemingVirtualPathProvider(vppSystem);
 
 			// register virtual path provider for theming (file inheritance handling etc.)
-			HostingEnvironment.RegisterVirtualPathProvider(WrapVirtualPathProvider(vppTheme));
+			HostingEnvironment.RegisterVirtualPathProvider(vppTheme);
 
 			// register virtual path provider for bundling (Sass, Less & variables handling)
-			BundleTable.VirtualPathProvider = WrapVirtualPathProvider(new BundlingVirtualPathProvider(vppTheme));
-		}
-
-		private VirtualPathProvider WrapVirtualPathProvider(VirtualPathProvider vpp)
-		{
-			if (HttpContext.Current.IsDebuggingEnabled && CommonHelper.IsDevEnvironment)
-			{
-				return new PluginDebugViewVirtualPathProvider(vpp);
-			}
-
-			// don't wrap in production
-			return vpp;
+			BundleTable.VirtualPathProvider = new BundlingVirtualPathProvider(vppSystem);
 		}
 
 		public override string GetVaryByCustomString(HttpContext context, string custom)

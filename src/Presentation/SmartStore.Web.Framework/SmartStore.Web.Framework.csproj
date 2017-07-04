@@ -297,7 +297,7 @@
     <Compile Include="Bundling\IBundleProvider.cs" />
     <Compile Include="Bundling\IBundlePublisher.cs" />
     <Compile Include="Modelling\CommaSeparatedModelBinder.cs" />
-    <Compile Include="Plugins\PluginDebugViewVirtualPathProvider.cs" />
+    <Compile Include="Theming\SmartVirtualPathProvider.cs" />
     <Compile Include="Filters\PublicStoreAllowNavigationAttribute.cs" />
     <Compile Include="Routing\GuidConstraint.cs" />
     <Compile Include="Seo\GenericPathRoute.cs" />

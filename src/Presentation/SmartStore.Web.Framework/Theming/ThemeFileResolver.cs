@@ -120,7 +120,10 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			Guard.NotEmpty(virtualPath, nameof(virtualPath));
 
-			virtualPath = VirtualPathUtility.ToAppRelative(virtualPath);
+			if (virtualPath[0] != '~')
+			{
+				virtualPath = VirtualPathUtility.ToAppRelative(virtualPath);
+			}
 
 			if (!ThemeHelper.PathIsInheritableThemeFile(virtualPath))
 			{

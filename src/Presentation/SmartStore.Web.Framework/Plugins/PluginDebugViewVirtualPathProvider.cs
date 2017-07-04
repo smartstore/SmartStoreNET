@@ -7,14 +7,17 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
+using System.Threading;
+using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Web.Framework.Plugins
 {
 	public class PluginDebugViewVirtualPathProvider : VirtualPathProvider
 	{
-		private readonly static ConcurrentDictionary<string, string> _cachedDebugFilePaths = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		private readonly static Dictionary<string, string> _cachedDebugFilePaths = new Dictionary<string, string>();
 		private readonly DirectoryInfo _pluginsDebugDir;
 		private readonly VirtualPathProvider _previous;
+		private readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
 		public PluginDebugViewVirtualPathProvider(VirtualPathProvider previous)
 		{
@@ -79,7 +82,21 @@ namespace SmartStore.Web.Framework.Plugins
 
 		private string ResolveDebugFilePath(string appRelativePath)
 		{
-			return _cachedDebugFilePaths.GetOrAdd(appRelativePath, FindDebugFile);
+			// (perf) concurrency with ReaderWriterLockSlim seems way faster than ConcurrentDictionary
+			using (_rwLock.GetUpgradeableReadLock())
+			{
+				string debugPath;
+				if (!_cachedDebugFilePaths.TryGetValue(appRelativePath, out debugPath))
+				{
+					using (_rwLock.GetWriteLock())
+					{
+						debugPath = FindDebugFile(appRelativePath);
+						_cachedDebugFilePaths[appRelativePath] = debugPath;
+					}
+				}
+
+				return debugPath;
+			}
 		}
 
 		private string FindDebugFile(string appRelativePath)
@@ -110,7 +127,12 @@ namespace SmartStore.Web.Framework.Plugins
 
 		private static bool IsPluginPath(string virtualPath, out string appRelativePath)
 		{
-			appRelativePath = VirtualPathUtility.ToAppRelative(virtualPath);
+			appRelativePath = virtualPath;
+			if (virtualPath != null && virtualPath.Length > 0 && virtualPath[0] != '~')
+			{
+				appRelativePath = VirtualPathUtility.ToAppRelative(virtualPath);
+			}
+			
 			var result = appRelativePath.StartsWith("~/Plugins/", StringComparison.InvariantCultureIgnoreCase);
 			return result;
 		}

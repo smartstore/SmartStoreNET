@@ -65,7 +65,7 @@ namespace SmartStore.Web.Framework.Theming
 
 		internal static bool PathIsInheritableThemeFile(string virtualPath)
 		{
-			if (string.IsNullOrEmpty(virtualPath))
+			if (string.IsNullOrWhiteSpace(virtualPath))
 				return false;
 
 			if (virtualPath[0] != '~')

@@ -125,16 +125,13 @@ namespace SmartStore.Admin.Controllers
 					Url = manifest.Url,
                     Version = manifest.Version,
                     SupportsRtl = manifest.SupportRtl,
-                    PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}/{1}/preview.png".FormatInvariant(manifest.Location, manifest.ThemeName),
+                    PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}{1}/preview.png".FormatInvariant(manifest.Location.EnsureEndsWith("/"), manifest.ThemeName),
                     IsActive = themeSettings.DefaultTheme == manifest.ThemeName,
-					State = manifest.State
-                };
+					State = manifest.State,
+			};
 
-			if (HostingEnvironment.VirtualPathProvider.FileExists("{0}/{1}/Views/Shared/ConfigureTheme.cshtml".FormatInvariant(manifest.Location, manifest.ThemeName)))
-			{
-				model.IsConfigurable = true;
-			}
-            
+			model.IsConfigurable = HostingEnvironment.VirtualPathProvider.FileExists("{0}{1}/Views/Shared/ConfigureTheme.cshtml".FormatInvariant(manifest.Location.EnsureEndsWith("/"), manifest.ThemeName));
+
             return model;
         }
 

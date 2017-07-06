@@ -10,6 +10,7 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -84,30 +85,35 @@ namespace SmartStore.Web.Framework.Theming
 
 		protected override IAsset TranslateAsset(IAsset asset, ITransformer transformer, bool isDebugMode)
 		{
-			var processedAsset = TranslateAssetCore(asset, transformer, isDebugMode);
+			var validate = _context.Request.QueryString["validate"].HasValue();
 
-			if (transformer == null)
+			try
 			{
-				// BundleTransformer does NOT PostProcess when transformer instance is null,
-				// therefore we handle it ourselves, because we desperately need
-				// AutoPrefixer even in debug mode.
-				return PostProcessAsset(processedAsset, isDebugMode);
-			}
-			else
-			{
-				return processedAsset;
-			}
-		}	
+				var processedAsset = TranslateAssetCore(asset, transformer, isDebugMode);
 
-		private IAsset PostProcessAsset(IAsset asset, bool isDebugMode)
-		{
-			var transformer = BundleTransformerContext.Current.Styles.GetDefaultTransformInstance() as ITransformer;
-			if (transformer != null)
-			{
-				return this.PostProcessAsset(asset, transformer);
+				if (transformer == null)
+				{
+					// BundleTransformer does NOT PostProcess when transformer instance is null,
+					// therefore we handle it ourselves, because we desperately need
+					// AutoPrefixer even in debug mode.
+					return AssetTranslationUtil.PostProcessAsset(processedAsset, isDebugMode, true);
+				}
+				else
+				{
+					return processedAsset;
+				}
 			}
+			catch (Exception ex)
+			{
+				if (validate)
+				{
+					_context.Response.Write(ex.Message);
+					_context.Response.StatusCode = 500;
+					_context.Response.End();
+				}
 
-			return asset;
+				throw;
+			}
 		}
 
 		protected abstract IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode);

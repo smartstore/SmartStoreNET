@@ -84,6 +84,7 @@ using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
+using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
@@ -530,6 +531,16 @@ namespace SmartStore.Web.Framework
 			// Register MemoryCacheManager twice, this time explicitly named.
 			// We may need this later in decorator classes as a kind of fallback.
 			builder.RegisterType<MemoryCacheManager>().Named<ICacheManager>("memory").SingleInstance();
+
+			// Asset cache
+			if (CommonHelper.GetAppSetting<bool>("sm:EnableAssetCache"))
+			{
+				builder.RegisterType<DefaultAssetCache>().As<IAssetCache>().InstancePerRequest();
+			}
+			else
+			{
+				builder.Register<IAssetCache>(c => DefaultAssetCache.Null).SingleInstance();
+			}
 		}
 	}
 

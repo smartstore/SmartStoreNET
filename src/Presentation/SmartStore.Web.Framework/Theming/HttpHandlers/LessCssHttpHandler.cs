@@ -2,7 +2,7 @@
 using System.Web;
 using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Transformers;
-using BundleTransformer.Less.Translators;
+using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework.Theming
 {

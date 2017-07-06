@@ -9,6 +9,7 @@ using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
 using SmartStore.Utilities;
+using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -132,6 +133,27 @@ namespace SmartStore.Web.Framework.Theming
 		internal static int ResolveCurrentStoreId()
 		{
 			return EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+		}
+
+		internal static string TokenizePath(string virtualPath, out string themeName, out string relativePath, out string query)
+		{
+			themeName = null;
+			relativePath = null;
+			query = null;
+
+			var unrooted = virtualPath.Substring(ThemesBasePath.Length); // strip "~/Themes/"
+			themeName = unrooted.Substring(0, unrooted.IndexOf('/'));
+			relativePath = unrooted.Substring(themeName.Length + 1);
+
+			var idx = relativePath.IndexOf('?');
+			if (idx > 0)
+			{
+				query = relativePath.Substring(idx + 1);
+				relativePath = relativePath.Substring(0, idx);
+			}
+
+			// strip out query
+			return "{0}{1}/{2}".FormatCurrent(ThemesBasePath, themeName, relativePath);
 		}
 
 		internal class IsStyleSheetResult

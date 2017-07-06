@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Caching;
 using System.Web.Hosting;
 
-namespace SmartStore.Web.Framework.Theming
+namespace SmartStore.Web.Framework.Theming.Assets
 {
     public sealed class BundlingVirtualPathProvider : ThemingVirtualPathProvider
     {
@@ -64,7 +64,7 @@ namespace SmartStore.Web.Framework.Theming
                 // determine the virtual themevars.(scss|less) import reference
                 var themeVarsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
 				var moduleImportsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsModuleImports(x)).FirstOrDefault();
-				if (themeVarsFile.IsEmpty() && moduleImportsFile.IsEmpty())
+				if (themeVarsFile.IsEmpty() && moduleImportsFile.IsEmpty() && !styleResult.IsBundle)
                 {
                     // no themevars or moduleimports import... so no special considerations here
 					return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);

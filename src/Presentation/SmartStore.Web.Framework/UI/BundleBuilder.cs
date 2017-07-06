@@ -10,7 +10,7 @@ using BundleTransformer.Core.Bundles;
 using SmartStore.Core;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Services.Seo;
-using SmartStore.Utilities;
+using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework.UI
 {

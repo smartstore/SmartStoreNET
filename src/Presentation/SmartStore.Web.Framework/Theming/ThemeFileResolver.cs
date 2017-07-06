@@ -144,7 +144,7 @@ namespace SmartStore.Web.Framework.Theming
 			string relativePath;
 			string query;
 
-			virtualPath = TokenizePath(virtualPath, out requestedThemeName, out relativePath, out query);
+			virtualPath = ThemeHelper.TokenizePath(virtualPath, out requestedThemeName, out relativePath, out query);
 
 			Func<InheritedThemeFileResult> nullOrFile = () =>
 			{
@@ -259,27 +259,6 @@ namespace SmartStore.Web.Framework.Theming
 			}
 
 			return currentTheme;
-		}
-
-		private string TokenizePath(string virtualPath, out string themeName, out string relativePath, out string query)
-		{
-			themeName = null;
-			relativePath = null;
-			query = null;
-
-			var unrooted = virtualPath.Substring(ThemeHelper.ThemesBasePath.Length); // strip "~/Themes/"
-			themeName = unrooted.Substring(0, unrooted.IndexOf('/'));
-			relativePath = unrooted.Substring(themeName.Length + 1);
-
-			var idx = relativePath.IndexOf('?');
-			if (idx > 0)
-			{
-				query = relativePath.Substring(idx + 1);
-				relativePath = relativePath.Substring(0, idx);
-			}
-
-			// strip out query
-			return "{0}{1}/{2}".FormatCurrent(ThemeHelper.ThemesBasePath, themeName, relativePath);
 		}
 
 		/// <summary>

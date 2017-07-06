@@ -101,6 +101,16 @@
 				@Html.ValidationMessageFor(model => model.InstantSearchTermMinLength)
 			</td>
 		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultSortOrder)
+            </td>
+            <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => Model.DefaultSortOrder)
+                @Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes)
+                @Html.ValidationMessageFor(model => model.DefaultSortOrder)
+            </td>
+        </tr>
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">

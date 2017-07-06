@@ -31,6 +31,11 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+            builder.AddOrUpdate("Admin.Configuration.Settings.Search.DefaultSortOrderMode",
+                "Default product sort order",
+                "Standardsortierreihenfolge für Produkte",
+                "Specifies the default product sort order in search results.",
+                "Legt die Standardsortierreihenfolge für Produkte in den Suchergebnissen fest.");
         }
     }
 }

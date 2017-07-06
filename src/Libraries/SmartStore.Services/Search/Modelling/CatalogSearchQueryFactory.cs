@@ -148,7 +148,14 @@ namespace SmartStore.Services.Search.Modelling
 			var orderBy = GetValueFor<ProductSortingEnum?>("o");
 			if (orderBy == null || orderBy == ProductSortingEnum.Initial)
 			{
-				orderBy = _catalogSettings.DefaultSortOrder;
+                if(origin.Equals("Search/Search"))
+                {
+                    orderBy = _searchSettings.DefaultSortOrder;
+                }
+                else
+                {
+                    orderBy = _catalogSettings.DefaultSortOrder;
+                }
 			}
 
 			query.CustomData["CurrentSortOrder"] = orderBy.Value;

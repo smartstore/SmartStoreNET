@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Configuration;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Core.Search
 {
@@ -15,8 +16,9 @@ namespace SmartStore.Core.Search
 			InstantSearchTermMinLength = 2;
 			FilterMinHitCount = 1;
 			FilterMaxChoicesCount = 20;
+            DefaultSortOrder = ProductSortingEnum.Relevance;
 
-			BrandDisplayOrder = 1;
+            BrandDisplayOrder = 1;
 			PriceDisplayOrder = 2;
 			RatingDisplayOrder = 3;
 			DeliveryTimeDisplayOrder = 4;
@@ -64,11 +66,16 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		public int FilterMaxChoicesCount { get; set; }
 
-		// TBD: what about area specific searchin setting (product, blog, etc.)
+        /// <summary>
+        /// Gets or sets the default sort order in search results
+        /// </summary>
+        public ProductSortingEnum DefaultSortOrder { get; set; }
 
-		#region Common facet settings
+        // TBD: what about area specific searchin setting (product, blog, etc.)
 
-		public bool BrandDisabled { get; set; }
+        #region Common facet settings
+
+        public bool BrandDisabled { get; set; }
 		public bool PriceDisabled { get; set; }
 		public bool RatingDisabled { get; set; }
 		public bool DeliveryTimeDisabled { get; set; }

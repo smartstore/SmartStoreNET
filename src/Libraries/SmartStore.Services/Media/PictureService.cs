@@ -337,6 +337,11 @@ namespace SmartStore.Services.Media
 
 			var size = Size.Empty;
 
+			if (!input.CanSeek || input.Length == 0)
+			{
+				return size;
+			}
+
 			try
 			{
 				using (var reader = new BinaryReader(input, Encoding.UTF8, true))
@@ -348,11 +353,15 @@ namespace SmartStore.Services.Media
 			{
 				// something went wrong with fast image access,
 				// so get original size the classic way
-				input.Seek(0, SeekOrigin.Begin);
-				using (var b = new Bitmap(input))
+				try
 				{
-					size = new Size(b.Width, b.Height);
+					input.Seek(0, SeekOrigin.Begin);
+					using (var b = new Bitmap(input))
+					{
+						size = new Size(b.Width, b.Height);
+					}
 				}
+				catch { }
 			}
 			finally
 			{

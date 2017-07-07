@@ -16,6 +16,7 @@
 * Product lists sometimes show the wrong delivery time
 * Fixed #1192 Lucene indexing performance decreases the longer it takes
 * Fixed #1198 MegaSearch: never sort numeric range by label, always by value
+* Fixed filter for specification attributes were always sorted by hit count
 
 ## SmartStore.NET 3.0.1
 ### Improvements

@@ -575,6 +575,7 @@
     <Compile Include="Tax\TaxCategoryService.cs" />
     <Compile Include="Tax\TaxService.cs" />
     <Compile Include="Themes\IThemeVariablesService.cs" />
+    <Compile Include="Themes\ThemeValidationException.cs" />
     <Compile Include="Themes\ThemeVariablesService.cs" />
     <Compile Include="Topics\ITopicService.cs" />
     <Compile Include="Topics\TopicService.cs" />

@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
+using System.Web.Hosting;
 using System.Web.Optimization;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
@@ -17,9 +19,11 @@ namespace SmartStore.Web.Framework.Theming.Assets
 {
 	public class DefaultAssetCache : IAssetCache
 	{
-		public readonly static IAssetCache Null = new NullCache();
-		private readonly static object _lock = new object();
+		public static readonly IAssetCache Null = new NullCache();
+		private static readonly object _lock = new object();
 
+		private readonly bool _isEnabled;
+		private readonly ThemeSettings _themeSettings;
 		private readonly IApplicationEnvironment _env;
 		private readonly IThemeContext _themeContext;
 		private readonly IThemeRegistry _themeRegistry;
@@ -29,12 +33,16 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		private VirtualFolder _cacheFolder;
 
 		public DefaultAssetCache(
+			ThemeSettings themeSettings,
 			IApplicationEnvironment env,
 			IThemeFileResolver themeFileResolver,
 			IThemeContext themeContext,
 			IThemeRegistry themeRegistry,
 			ICommonServices services)
 		{
+			_themeSettings = themeSettings;
+			_isEnabled = _themeSettings.AssetCachingEnabled == 2 || (_themeSettings.AssetCachingEnabled == 0 && !HttpContext.Current.IsDebuggingEnabled);
+
 			_env = env;
 			_themeContext = themeContext;
 			_themeFileResolver = themeFileResolver;
@@ -64,6 +72,9 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 		public CachedAssetEntry GetAsset(string virtualPath)
 		{
+			if (!_isEnabled)
+				return null;
+
 			Guard.NotEmpty(virtualPath, nameof(virtualPath));
 
 			string themeName;
@@ -119,6 +130,9 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 		public CachedAssetEntry InsertAsset(string virtualPath, IEnumerable<string> virtualPathDependencies, string content)
 		{
+			if (!_isEnabled)
+				return null;
+
 			Guard.NotEmpty(virtualPath, nameof(virtualPath));
 			Guard.NotEmpty(content, nameof(content));
 
@@ -173,6 +187,37 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			return null;
 		}
 
+		public void Clear()
+		{
+			lock (_lock)
+			{
+				if (_env.TenantFolder.DirectoryExists("AssetCache"))
+				{
+					_env.TenantFolder.DeleteDirectory("AssetCache");
+				}
+			}
+		}
+
+		public bool InvalidateAsset(string virtualPath)
+		{
+			Guard.NotEmpty(virtualPath, nameof(virtualPath));
+
+			lock (_lock)
+			{
+				string themeName;
+				int storeId;
+				var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out themeName, out storeId);
+
+				if (CacheFolder.DirectoryExists(cacheDirectoryName))
+				{
+					InvalidateAssetInternal(cacheDirectoryName);
+					return true;
+				}
+
+				return false;
+			}
+		}
+
 		/// <summary>
 		/// Invalidates a cached assets when any themevar was changed or the theme was touched on file system
 		/// </summary>
@@ -201,6 +246,13 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 		private static void OnCacheItemRemoved(string key, object value, CacheItemRemovedReason reason)
 		{
+			if (HostingEnvironment.ShutdownReason > ApplicationShutdownReason.None)
+			{
+				// Don't evict cached files during app shutdown. Dependant cache keys change
+				// during a shutdown caused by HttpRuntime.Cache full eviction
+				return;
+			}
+
 			// Keep this low level
 			var path = value as string;
 			if (path.HasValue() && reason == CacheItemRemovedReason.DependencyChanged)
@@ -217,6 +269,11 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		{
 			var list = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+			if (deps != null)
+			{
+				deps = ThemeHelper.RemoveVirtualImports(deps);
+			}
+
 			foreach (var d in (deps ?? new string[0]).Concat(new[] { virtualPath }))
 			{
 				var result = _themeFileResolver.Resolve(d);
@@ -227,47 +284,16 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			var manifest = _themeRegistry.GetThemeManifest(themeName);
 			while (manifest != null)
 			{
-				list.Add(CacheFolder.Combine(manifest.Location, manifest.ThemeName, "theme.config"));
+				list.Add(VirtualPathUtility.ToAbsolute(CacheFolder.Combine(manifest.Location, manifest.ThemeName, "theme.config")));
 				manifest = manifest.BaseTheme;
 			}
 
 			return list;
 		}
 
-		public bool InvalidateAsset(string virtualPath)
-		{
-			Guard.NotEmpty(virtualPath, nameof(virtualPath));
-
-			lock (_lock)
-			{
-				string themeName;
-				int storeId;
-				var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out themeName, out storeId);
-
-				if (CacheFolder.DirectoryExists(cacheDirectoryName))
-				{
-					InvalidateAssetInternal(cacheDirectoryName);
-					return true;
-				}
-
-				return false;
-			}
-		}
-
 		private void InvalidateAssetInternal(string cacheDirectoryName)
 		{
 			CacheFolder.DeleteDirectory(cacheDirectoryName);
-		}
-
-		public void Clear()
-		{
-			lock (_lock)
-			{
-				if (_env.TenantFolder.DirectoryExists("AssetCache"))
-				{
-					_env.TenantFolder.DeleteDirectory("AssetCache");
-				}
-			}
 		}
 
 		/// <summary>

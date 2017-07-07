@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Themes;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Plugins;
 

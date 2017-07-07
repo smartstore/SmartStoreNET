@@ -275,11 +275,10 @@
     <Compile Include="Theming\Assets\CachedAsset.cs" />
     <Compile Include="Theming\Assets\DefaultAssetCache.cs" />
     <Compile Include="Theming\Assets\IAssetCache.cs" />
-    <Compile Include="Theming\HttpHandlers\CssHttpHandlerBase.cs" />
-    <Compile Include="Theming\HttpHandlers\SassCssHttpHandler.cs" />
+    <Compile Include="Theming\CssHttpHandler.cs" />
     <Compile Include="Theming\LocalizedDisplayMode.cs" />
     <Compile Include="Theming\Assets\ModuleImportsVirtualFile.cs" />
-    <Compile Include="Theming\ThemeFileResolver.cs" />
+    <Compile Include="Theming\DefaultThemeFileResolver.cs" />
     <Compile Include="Theming\InheritedVirtualThemeFile.cs" />
     <Compile Include="Theming\Assets\BundlingVirtualPathProvider.cs" />
     <Compile Include="Theming\Assets\AssetTranslator.cs" />
@@ -309,7 +308,6 @@
     <Compile Include="Seo\GenericPathRouteExtensions.cs" />
     <Compile Include="Settings\StoreDependingSettingData.cs" />
     <Compile Include="Settings\StoreDependingSettingHelper.cs" />
-    <Compile Include="Theming\HttpHandlers\LessCssHttpHandler.cs" />
     <Compile Include="Theming\Assets\SmartStyleBundle.cs" />
     <Compile Include="Theming\ThemeHelper.cs" />
     <Compile Include="Theming\ThemeVarsVirtualFile.cs" />
@@ -455,6 +453,7 @@
       <Name>SmartStore.Data</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

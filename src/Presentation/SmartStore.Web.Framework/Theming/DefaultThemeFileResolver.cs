@@ -12,18 +12,13 @@ using SmartStore.Core.Themes;
 
 namespace SmartStore.Web.Framework.Theming
 {
-	public interface IThemeFileResolver
-	{
-		InheritedThemeFileResult Resolve(string virtualPath);
-	}
-
-	public class ThemeFileResolver : DisposableObject, IThemeFileResolver
+	public class DefaultThemeFileResolver : DisposableObject, IThemeFileResolver
 	{
 		private readonly Dictionary<FileKey, InheritedThemeFileResult> _files = new Dictionary<FileKey, InheritedThemeFileResult>();
 		private readonly IThemeRegistry _themeRegistry;
 		private readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
-		public ThemeFileResolver(IThemeRegistry themeRegistry)
+		public DefaultThemeFileResolver(IThemeRegistry themeRegistry)
 		{
 			_themeRegistry = themeRegistry;
 
@@ -309,40 +304,4 @@ namespace SmartStore.Web.Framework.Theming
 		}
 
 	}
-
-	public class InheritedThemeFileResult
-	{
-		/// <summary>
-		/// The unrooted relative path of the file (without <c>~/Themes/ThemeName/</c>)
-		/// </summary>
-		public string RelativePath { get; set; }
-
-		/// <summary>
-		/// The original virtual path
-		/// </summary>
-		public string OriginalVirtualPath { get; set; }
-
-		/// <summary>
-		/// The result virtual path (the path in which the file is actually located)
-		/// </summary>
-		public string ResultVirtualPath { get; set; }
-
-		/// <summary>
-		/// The result physical path (the path in which the file is actually located)
-		/// </summary>
-		public string ResultPhysicalPath { get; set; }
-
-		/// <summary>
-		/// The name of the requesting theme
-		/// </summary>
-		public string OriginalThemeName { get; set; }
-
-		/// <summary>
-		/// The name of the resulting theme where the file is actually located
-		/// </summary>
-		public string ResultThemeName { get; set; }
-
-		internal bool IsExplicit { get; set; }
-	}
-
 }

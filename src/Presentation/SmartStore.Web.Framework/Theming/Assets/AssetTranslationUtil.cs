@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Linq;
-using System.Web;
 using BundleTransformer.Core;
 using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Transformers;
-using SmartStore.Core;
-using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Theming.Assets
 {
 	internal static class AssetTranslationUtil
 	{
-		internal static IAsset PostProcessAsset(IAsset asset, bool isDebugMode, bool canMinify)
+		internal static IAsset PostProcessAsset(IAsset asset, bool isDebugMode)
 		{
 			if (asset is CachedAsset)
 			{
@@ -28,10 +25,11 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					asset = processor.PostProcess(asset);
 				}
 
-				if (!isDebugMode && canMinify)
-				{
-					asset = transformer.Minifier.Minify(asset);
-				}
+				//if (!isDebugMode && canMinify)
+				//{
+				//	asset = transformer.Minifier.Minify(asset);
+				//	asset.Minified = true;
+				//}
 			}
 
 			return asset;

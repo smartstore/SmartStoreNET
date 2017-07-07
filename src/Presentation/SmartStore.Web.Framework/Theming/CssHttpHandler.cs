@@ -14,6 +14,22 @@ using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework.Theming
 {
+	public class SassCssHttpHandler : CssHttpHandlerBase
+	{
+		protected override IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode)
+		{
+			return InnerTranslateAsset<SassTranslator>("SassTranslator", asset, transformer, isDebugMode);
+		}
+	}
+
+	public class LessCssHttpHandler : CssHttpHandlerBase
+	{
+		protected override IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode)
+		{
+			return InnerTranslateAsset<LessTranslator>("LessTranslator", asset, transformer, isDebugMode);
+		}
+	}
+
 	public abstract class CssHttpHandlerBase : BundleTransformer.Core.HttpHandlers.StyleAssetHandlerBase
 	{
 		protected CssHttpHandlerBase()
@@ -85,7 +101,7 @@ namespace SmartStore.Web.Framework.Theming
 
 		protected override IAsset TranslateAsset(IAsset asset, ITransformer transformer, bool isDebugMode)
 		{
-			var validate = _context.Request.QueryString["validate"].HasValue();
+			bool validationMode = ThemeHelper.IsStyleValidationRequest();
 
 			try
 			{
@@ -96,7 +112,7 @@ namespace SmartStore.Web.Framework.Theming
 					// BundleTransformer does NOT PostProcess when transformer instance is null,
 					// therefore we handle it ourselves, because we desperately need
 					// AutoPrefixer even in debug mode.
-					return AssetTranslationUtil.PostProcessAsset(processedAsset, isDebugMode, true);
+					return AssetTranslationUtil.PostProcessAsset(processedAsset, isDebugMode);
 				}
 				else
 				{
@@ -105,7 +121,7 @@ namespace SmartStore.Web.Framework.Theming
 			}
 			catch (Exception ex)
 			{
-				if (validate)
+				if (validationMode)
 				{
 					_context.Response.Write(ex.Message);
 					_context.Response.StatusCode = 500;

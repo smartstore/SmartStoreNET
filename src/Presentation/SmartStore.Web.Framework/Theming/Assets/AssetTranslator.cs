@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Caching;
-using System.Web.Hosting;
-using BundleTransformer.Core;
 using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Constants;
-using BundleTransformer.Core.Transformers;
 using BundleTransformer.Core.Translators;
 using BundleTransformer.SassAndScss.Translators;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Framework.Theming.Assets
 {
@@ -42,9 +35,10 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 		public IList<IAsset> Translate(IList<IAsset> assets)
 		{
-			var assets2 = WalkAndFindCachedAssets(assets).ToList();
-			var result = _inner.Translate(assets2);
-			return result;
+			return _inner.Translate(assets);
+			//var assets2 = WalkAndFindCachedAssets(assets).ToList();
+			//var result = _inner.Translate(assets2);
+			//return result;
 		}
 
 		private IEnumerable<IAsset> WalkAndFindCachedAssets(IList<IAsset> assets)
@@ -55,7 +49,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				{
 					// canMinify = false, because the bundler is processing the request
 					// and internally handles minification later (after combining all bundle parts)
-					yield return TranslateInternal(asset, false);
+					yield return TranslateInternal(asset);
 				}
 				else
 				{
@@ -66,31 +60,39 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 		public IAsset Translate(IAsset asset)
 		{
-			// canMinify, because the HTTP handler is processing the request (no bundling)
-			return TranslateInternal(asset, true);
+			return _inner.Translate(asset);
+			//return TranslateInternal(asset);
 		}
 
-		private IAsset TranslateInternal(IAsset asset, bool canMinify)
+		private IAsset TranslateInternal(IAsset asset)
 		{
+			var chronometer = EngineContext.Current.Resolve<IChronometer>();
+
 			IAsset result;
 
-			if (!TryGetCachedAsset(asset, out result))
+			using (chronometer.Step("Translate asset {0}".FormatInvariant(asset.VirtualPath)))
 			{
-				lock (String.Intern("CachedAsset:" + asset.VirtualPath))
+				bool validationMode = ThemeHelper.IsStyleValidationRequest();
+
+				if (validationMode || !TryGetCachedAsset(asset, out result))
 				{
-					if (!TryGetCachedAsset(asset, out result))
+					lock (String.Intern("CachedAsset:" + asset.VirtualPath))
 					{
-						result = _inner.Translate(asset);
-
-						bool validate = HttpContext.Current?.Request?.QueryString["validate"] != null;
-
-						if (!validate)
+						if (validationMode || !TryGetCachedAsset(asset, out result))
 						{
-							result = AssetTranslationUtil.PostProcessAsset(result, this.IsDebugMode, canMinify);
-							AssetCache.InsertAsset(
-								result.VirtualPath,
-								result.VirtualPathDependencies,
-								result.Content);
+							using (chronometer.Step("Compile asset {0}".FormatInvariant(asset.VirtualPath)))
+							{
+								result = _inner.Translate(asset);
+								result = AssetTranslationUtil.PostProcessAsset(result, this.IsDebugMode);
+
+								if (!validationMode)
+								{
+									AssetCache.InsertAsset(
+										result.VirtualPath,
+										result.VirtualPathDependencies,
+										result.Content);
+								}
+							}
 						}
 					}
 				}
@@ -112,7 +114,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					Combined = true,
 					Content = entry.Content,
 					IsStylesheet = true,
-					Minified = true,
+					Minified = false,
 					OriginalAssets = new List<IAsset>(),
 					VirtualPath = asset.VirtualPath,
 					VirtualPathDependencies = entry.VirtualPathDependencies.ToList(),

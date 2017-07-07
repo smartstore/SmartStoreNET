@@ -533,14 +533,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<MemoryCacheManager>().Named<ICacheManager>("memory").SingleInstance();
 
 			// Asset cache
-			if (CommonHelper.GetAppSetting<bool>("sm:EnableAssetCache"))
-			{
-				builder.RegisterType<DefaultAssetCache>().As<IAssetCache>().InstancePerRequest();
-			}
-			else
-			{
-				builder.Register<IAssetCache>(c => DefaultAssetCache.Null).SingleInstance();
-			}
+			builder.RegisterType<DefaultAssetCache>().As<IAssetCache>().InstancePerRequest();
 		}
 	}
 
@@ -777,7 +770,7 @@ namespace SmartStore.Web.Framework
 		{
 			// register theming services
 			builder.Register(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), x.Resolve<IApplicationEnvironment>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
-			builder.RegisterType<ThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
+			builder.RegisterType<DefaultThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
 
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerRequest();
 			builder.RegisterType<ThemeVariablesService>().As<IThemeVariablesService>().InstancePerRequest();

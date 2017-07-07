@@ -33,6 +33,28 @@ namespace SmartStore.Web.Framework.Theming
 			s_extensionlessPathPattern = new Regex(@"~/(.+)/([^/.]*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 		}
 
+		internal static IEnumerable<string> RemoveVirtualImports(IEnumerable<string> virtualPathDependencies)
+		{
+			Guard.NotNull(virtualPathDependencies, nameof(virtualPathDependencies));
+
+			// determine the virtual themevars.(scss|less) import reference
+			var themeVarsFile = virtualPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
+			var moduleImportsFile = virtualPathDependencies.Where(x => ThemeHelper.PathIsModuleImports(x)).FirstOrDefault();
+
+			if (themeVarsFile == null && moduleImportsFile == null)
+			{
+				// no themevars or moduleimports import... so no special considerations here
+				return virtualPathDependencies;
+			}
+
+			// exclude the special imports from the file dependencies list,
+			// 'cause this one cannot be monitored by the physical file system
+			return virtualPathDependencies
+				.Except((new string[] { themeVarsFile, moduleImportsFile })
+				.Where(x => x.HasValue()))
+				.ToArray();
+		}
+
         internal static bool PathIsThemeVars(string virtualPath)
         {
 			string extension = null;
@@ -85,6 +107,11 @@ namespace SmartStore.Web.Framework.Theming
 			}
 
 			return false;
+		}
+
+		internal static bool IsStyleValidationRequest()
+		{
+			return HttpContext.Current?.Request?.QueryString["validate"] != null;
 		}
 
 		internal static IsStyleSheetResult IsStyleSheet(string path)

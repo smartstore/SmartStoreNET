@@ -47,47 +47,59 @@ namespace SmartStore.Web.Framework.Theming.Assets
         public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
         {
 			var styleResult = ThemeHelper.IsStyleSheet(virtualPath);
-			if (styleResult == null)
+
+			if (styleResult == null || styleResult.IsCss)
 			{
 				return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
 			}
-            else
-            {
-                if (styleResult.IsCss)
-                {
-					// it's a static css file (no bundle, no sass/less)
-					return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
-                }
-                
-                var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();
 
-                // determine the virtual themevars.(scss|less) import reference
-                var themeVarsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
-				var moduleImportsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsModuleImports(x)).FirstOrDefault();
-				if (themeVarsFile.IsEmpty() && moduleImportsFile.IsEmpty() && !styleResult.IsBundle)
-                {
-                    // no themevars or moduleimports import... so no special considerations here
-					return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
-                }
-
-				// exclude the special imports from the file dependencies list,
-				// 'cause this one cannot be monitored by the physical file system
-				var fileDependencies = arrPathDependencies
-					.Except((new string[] { themeVarsFile, moduleImportsFile })
-					.Where(x => x.HasValue()))
-					.ToArray();
-
-                if (arrPathDependencies.Any())
-                {
-                    int storeId = ThemeHelper.ResolveCurrentStoreId();
-                    var theme = ThemeHelper.ResolveCurrentTheme();
-                    // invalidate the cache when variables change
-                    string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(theme.ThemeName, storeId);
-					return new CacheDependency(ThemingVirtualPathProvider.MapDependencyPaths(fileDependencies), new string[] { cacheKey }, utcStart);
-                }
-
+			if (styleResult.IsThemeVars || styleResult.IsModuleImports)
+			{
 				return null;
+			}
+
+			// Is Sass Or Less
+
+            var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();
+
+            // determine the virtual themevars.(scss|less) import reference
+            var themeVarsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
+			var moduleImportsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsModuleImports(x)).FirstOrDefault();
+			if (themeVarsFile == null && moduleImportsFile == null)
+            {
+                // no themevars or moduleimports import... so no special considerations here
+				return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
             }
+
+			// exclude the special imports from the file dependencies list,
+			// 'cause this one cannot be monitored by the physical file system
+			var fileDependencies = arrPathDependencies
+				.Except((new string[] { themeVarsFile, moduleImportsFile })
+				.Where(x => x.HasValue()))
+				.ToArray();
+
+            if (fileDependencies.Any())
+            {
+				string cacheKey = null;
+
+				var isThemeableAsset = (!styleResult.IsBundle && ThemeHelper.PathIsInheritableThemeFile(virtualPath))
+					|| (styleResult.IsBundle && fileDependencies.Any(x => ThemeHelper.PathIsInheritableThemeFile(x)));
+
+				if (isThemeableAsset)
+				{
+					var theme = ThemeHelper.ResolveCurrentTheme();
+					int storeId = ThemeHelper.ResolveCurrentStoreId();
+					// invalidate the cache when variables change
+					cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(theme.ThemeName, storeId);
+				}
+
+				return new CacheDependency(
+					ThemingVirtualPathProvider.MapDependencyPaths(fileDependencies), 
+					cacheKey == null ? new string[0] : new string[] { cacheKey }, 
+					utcStart);
+            }
+
+			return null;
         }
     }
 }

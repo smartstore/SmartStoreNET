@@ -31,7 +31,7 @@ namespace SmartStore.Services.Search.Extensions
 			{ 50000000, 5000000 }
 		};
 
-		private static double GetNextPrice(double price)
+		public static double GetNextPrice(double price)
 		{
 			for (var i = 0; i <= _priceThresholds.GetUpperBound(0); ++i)
 			{
@@ -105,31 +105,6 @@ namespace SmartStore.Services.Search.Extensions
 			}
 
 			return result;
-		}
-
-		public static IEnumerable<FacetValue> GetPrices(double minPrice, double maxPrice)
-		{
-			// Validate
-			if (minPrice > maxPrice)
-			{
-				var tmp = minPrice;
-				minPrice = maxPrice;
-				maxPrice = tmp;
-			}
-
-			minPrice = Math.Max(minPrice, 0);
-			maxPrice = Math.Max(maxPrice, 0);
-
-			var count = 0;
-			for (double price = minPrice;
-				price <= maxPrice;
-				price = GetNextPrice(price))
-			{
-				yield return new FacetValue(null, price, IndexTypeCode.Double, false, true)
-				{
-					DisplayOrder = ++count
-				};
-			}
 		}
 
 		public static IEnumerable<FacetValue> GetRatings()

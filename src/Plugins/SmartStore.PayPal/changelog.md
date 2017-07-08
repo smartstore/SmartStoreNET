@@ -1,5 +1,8 @@
 ﻿#Release Notes
 
+##Paypal 3.0.0.3
+* PayPal PLUS: Fixed #1200 Invalid request if the order amount is zero. "Amount cannot be zero" still occurred.
+
 ##Paypal 3.0.0.2
 ###New Features
 * PayPal Standard: New settings "UsePayPalAddress" and "IsShippingAddressRequired" to avoid payment rejection due to address validation.

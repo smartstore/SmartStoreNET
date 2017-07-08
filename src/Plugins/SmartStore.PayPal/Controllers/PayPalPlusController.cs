@@ -302,6 +302,11 @@ namespace SmartStore.PayPal.Controllers
 				var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
 
 				result = PayPalService.CreatePayment(settings, session, cart, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
+				if (result == null)
+				{
+					return RedirectToAction("Confirm", "Checkout", new { area = "" });
+				}
+
 				if (result.Success && result.Json != null)
 				{
 					foreach (var link in result.Json.links)

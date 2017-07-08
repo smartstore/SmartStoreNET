@@ -16,7 +16,8 @@
 * Product lists sometimes show the wrong delivery time
 * Fixed #1192 Lucene indexing performance decreases the longer it takes
 * Fixed #1198 MegaSearch: never sort numeric range by label, always by value
-* Fixed filter for specification attributes were always sorted by hit count
+* Fixed filter for attributes were always sorted by hit count
+* Fixed #1200 PayPal PLUS: Invalid request if the order amount is zero
 
 ## SmartStore.NET 3.0.1
 ### Improvements

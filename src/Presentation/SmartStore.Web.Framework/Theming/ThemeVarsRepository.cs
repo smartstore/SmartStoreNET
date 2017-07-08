@@ -67,7 +67,7 @@ namespace SmartStore.Web.Framework.Theming
 
 			if (validationMode)
 			{
-				// Return uncached fresh data
+				// Return uncached fresh data (the variables is not nuked yet)
 				return GetRawVariablesCore(themeName, storeId);
 			}
 			else

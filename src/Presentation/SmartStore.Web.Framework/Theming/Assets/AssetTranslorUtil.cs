@@ -6,16 +6,10 @@ using BundleTransformer.Core.Transformers;
 
 namespace SmartStore.Web.Framework.Theming.Assets
 {
-	internal static class AssetTranslationUtil
+	internal static class AssetTranslorUtil
 	{
 		internal static IAsset PostProcessAsset(IAsset asset, bool isDebugMode)
 		{
-			if (asset is CachedAsset)
-			{
-				// Has been post-processed already previously
-				return asset;
-			}
-				
 			var transformer = BundleTransformerContext.Current.Styles.GetDefaultTransformInstance() as ITransformer;
 			if (transformer != null)
 			{
@@ -24,12 +18,6 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				{
 					asset = processor.PostProcess(asset);
 				}
-
-				//if (!isDebugMode && canMinify)
-				//{
-				//	asset = transformer.Minifier.Minify(asset);
-				//	asset.Minified = true;
-				//}
 			}
 
 			return asset;

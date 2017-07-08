@@ -15,6 +15,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		public string HashCode { get; set; }
 		public string ThemeName { get; set; }
 		public int StoreId { get; set; }
+		public string[] ProcessorCodes { get; set; }
 	}
 
 	/// <summary>
@@ -24,7 +25,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 	{
 		CachedAssetEntry GetAsset(string virtualPath);
 
-		CachedAssetEntry InsertAsset(string virtualPath, IEnumerable<string> virtualPathDependencies, string content);
+		CachedAssetEntry InsertAsset(string virtualPath, IEnumerable<string> virtualPathDependencies, string content, params string[] processorCodes);
 
 		bool InvalidateAsset(string virtualPath);
 

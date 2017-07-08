@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
+using System.Web.Optimization;
 using BundleTransformer.Core;
 using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Configuration;
@@ -36,14 +38,15 @@ namespace SmartStore.Web.Framework.Theming
             : this(HttpContext.Current.Cache,
 				BundleTransformerContext.Current.FileSystem.GetVirtualFileSystemWrapper(),
 				BundleTransformerContext.Current.Configuration.GetCoreSettings().AssetHandler)
-        { }
+        {
+		}
 
 		protected CssHttpHandlerBase(
             Cache cache,
             IVirtualFileSystemWrapper virtualFileSystemWrapper,
             AssetHandlerSettings assetHandlerConfig)
             : base(cache, virtualFileSystemWrapper, assetHandlerConfig)
-        {
+        {		
 		}
 
 		protected override bool IsStaticAsset
@@ -94,6 +97,11 @@ namespace SmartStore.Web.Framework.Theming
 				}
 
 				cacheKey += "_" + EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName + "_" + EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+
+				if (ThemeHelper.IsStyleValidationRequest())
+				{
+					cacheKey += "_Validation";
+				}
 			}
 
 			return cacheKey;
@@ -105,14 +113,14 @@ namespace SmartStore.Web.Framework.Theming
 
 			try
 			{
-				var processedAsset = TranslateAssetCore(asset, transformer, isDebugMode);
+				var processedAsset = TranslateAssetCore(asset, transformer, validationMode || isDebugMode);
 
-				if (transformer == null)
+				if (transformer == null && !validationMode)
 				{
 					// BundleTransformer does NOT PostProcess when transformer instance is null,
 					// therefore we handle it ourselves, because we desperately need
-					// AutoPrefixer even in debug mode.
-					return AssetTranslationUtil.PostProcessAsset(processedAsset, isDebugMode);
+					// UrlRewrite even in debug mode.
+					return AssetTranslorUtil.PostProcessAsset(processedAsset, isDebugMode);
 				}
 				else
 				{
@@ -127,7 +135,7 @@ namespace SmartStore.Web.Framework.Theming
 					_context.Response.StatusCode = 500;
 					_context.Response.End();
 				}
-
+				
 				throw;
 			}
 		}

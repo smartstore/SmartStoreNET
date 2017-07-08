@@ -12,8 +12,9 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		public bool IsScript { get; set; }
 		public bool IsStylesheet { get; set; }
 		public bool Minified { get; set; }
-		public IList<IAsset> OriginalAssets { get; set; }
 		public bool RelativePathsResolved { get; set; }
+		public bool Autoprefixed { get; set; }
+		public IList<IAsset> OriginalAssets { get; set; }
 		public string Url { get; set; }
 		public string VirtualPath { get; set; }
 		public IList<string> VirtualPathDependencies { get; set; }

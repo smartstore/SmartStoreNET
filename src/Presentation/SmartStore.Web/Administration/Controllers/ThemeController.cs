@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
+using System.Web.Optimization;
 using SmartStore.Admin.Models.Themes;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -148,7 +149,6 @@ namespace SmartStore.Admin.Controllers
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(model.StoreId);
 
             bool themeSwitched = themeSettings.DefaultTheme.IsCaseInsensitiveEqual(model.DefaultTheme);
-
             if (themeSwitched)
             {
                 _services.EventPublisher.Publish<ThemeSwitchedEvent>(new ThemeSwitchedEvent { 
@@ -157,10 +157,17 @@ namespace SmartStore.Admin.Controllers
                 });
             }
 
-            themeSettings = model.ToEntity(themeSettings);
+			var bundlingOnNow = themeSettings.BundleOptimizationEnabled == 2 || (themeSettings.BundleOptimizationEnabled == 0 && !HttpContext.IsDebuggingEnabled);
+			var bundlingOnFuture = model.BundleOptimizationEnabled == 2 || (model.BundleOptimizationEnabled == 0 && !HttpContext.IsDebuggingEnabled);
+			if (bundlingOnNow != bundlingOnFuture)
+			{
+				// Clear asset cache, otherwise we get problems with postprocessing, minification etc.
+				_assetCache.Clear();
+			}
+
+			themeSettings = model.ToEntity(themeSettings);
 			_settingService.SaveSetting(themeSettings, model.StoreId);
             
-            // activity log
 			_services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
 			NotifySuccess(T("Admin.Configuration.Updated"));

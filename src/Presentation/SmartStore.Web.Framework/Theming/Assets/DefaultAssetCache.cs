@@ -19,8 +19,13 @@ namespace SmartStore.Web.Framework.Theming.Assets
 {
 	public class DefaultAssetCache : IAssetCache
 	{
+		public const string MinificationCode = "min";
+		public const string AutoprefixCode = "autoprefix";
+		public const string UrlRewriteCode = "urlrewrite";
+
 		public static readonly IAssetCache Null = new NullCache();
 		private static readonly object _lock = new object();
+		const string CacheKeyPrefix = "sm:AssetCacheEntry:";
 
 		private readonly bool _isEnabled;
 		private readonly ThemeSettings _themeSettings;
@@ -92,7 +97,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				if (!TryValidate(virtualPath, deps, hash, out parsedDeps, out currentHash))
 				{
 					Logger.DebugFormat("Invalidating cached asset for '{0}' because it is not valid anymore.", virtualPath);
-					InvalidateAssetInternal(cacheDirectoryName);
+					InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
 					return null;
 				}
 
@@ -102,10 +107,12 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				{
 					lock (_lock)
 					{
-						InvalidateAssetInternal(cacheDirectoryName);
+						InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
 						return null;
 					}
-				}			
+				}
+
+				var codes = ParseFileContent(CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.pcodes")));
 
 				var entry = new CachedAssetEntry
 				{
@@ -115,7 +122,8 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					VirtualPathDependencies = parsedDeps,
 					PhysicalPath = CacheFolder.MapPath(cacheDirectoryName),
 					ThemeName = themeName,
-					StoreId = storeId
+					StoreId = storeId,
+					ProcessorCodes = codes.ToArray()
 				};
 
 				SetupEvictionObserver(entry);
@@ -128,7 +136,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			return null;
 		}
 
-		public CachedAssetEntry InsertAsset(string virtualPath, IEnumerable<string> virtualPathDependencies, string content)
+		public CachedAssetEntry InsertAsset(string virtualPath, IEnumerable<string> virtualPathDependencies, string content, params string[] processorCodes)
 		{
 			if (!_isEnabled)
 				return null;
@@ -148,15 +156,18 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				{
 					// Save main content file
 					// TODO: determine correct file extension
-					CacheFolder.CreateTextFile(CacheFolder.Combine(cacheDirectoryName, "asset.css"), content);
+					CreateFileFromEntries(cacheDirectoryName, "asset.css", new[] { content });
 
 					// Save dependencies file
 					var deps = ResolveVirtualPathDependencies(virtualPath, virtualPathDependencies, themeName);
-					CacheFolder.CreateTextFile(CacheFolder.Combine(cacheDirectoryName, "asset.dependencies"), CreateDependenciesFile(deps));
+					CreateFileFromEntries(cacheDirectoryName, "asset.dependencies", deps);
 
 					// Save hash file
 					var currentHash = BundleTable.VirtualPathProvider.GetFileHash(virtualPath, deps);
-					CacheFolder.CreateTextFile(CacheFolder.Combine(cacheDirectoryName, "asset.hash"), currentHash);
+					CreateFileFromEntries(cacheDirectoryName, "asset.hash", new[] { currentHash });
+
+					// Save codes file
+					CreateFileFromEntries(cacheDirectoryName, "asset.pcodes", processorCodes);
 
 					var entry = new CachedAssetEntry
 					{
@@ -166,7 +177,8 @@ namespace SmartStore.Web.Framework.Theming.Assets
 						VirtualPathDependencies = deps,
 						PhysicalPath = CacheFolder.MapPath(cacheDirectoryName),
 						ThemeName = themeName,
-						StoreId = storeId
+						StoreId = storeId,
+						ProcessorCodes = processorCodes
 					};
 
 					SetupEvictionObserver(entry);
@@ -177,10 +189,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				}
 				catch
 				{
-					if (CacheFolder.DirectoryExists(cacheDirectoryName))
-					{
-						InvalidateAssetInternal(cacheDirectoryName);
-					}
+					InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
 				}
 			}
 
@@ -193,7 +202,9 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			{
 				if (_env.TenantFolder.DirectoryExists("AssetCache"))
 				{
-					_env.TenantFolder.DeleteDirectory("AssetCache");
+					_env.TenantFolder.TryDeleteDirectory("AssetCache");
+					// Remove the eviction observer also
+					HttpRuntime.Cache.RemoveByPattern(CacheKeyPrefix);
 				}
 			}
 		}
@@ -210,8 +221,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 				if (CacheFolder.DirectoryExists(cacheDirectoryName))
 				{
-					InvalidateAssetInternal(cacheDirectoryName);
-					return true;
+					return InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
 				}
 
 				return false;
@@ -224,24 +234,24 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		/// <param name="entry"></param>
 		private static void SetupEvictionObserver(CachedAssetEntry entry)
 		{
-			if (entry.ThemeName.HasValue())
-			{
-				var cacheKey = "sm:AssetCacheEntry:{0}:{1}".FormatInvariant(entry.ThemeName, entry.StoreId);
+			if (entry.ThemeName == null)
+				return;
 
-				var cacheDependency = new CacheDependency(
-					new string[0], 
-					new[] { FrameworkCacheConsumer.BuildThemeVarsCacheKey(entry.ThemeName, entry.StoreId) }, 
-					DateTime.UtcNow);
+			var cacheKey = CacheKeyPrefix + "{0}:{1}".FormatInvariant(entry.ThemeName, entry.StoreId);
 
-				HttpRuntime.Cache.Insert(
-					cacheKey,
-					entry.PhysicalPath,
-					cacheDependency,
-					Cache.NoAbsoluteExpiration,
-					Cache.NoSlidingExpiration,
-					CacheItemPriority.Default,
-					OnCacheItemRemoved);
-			}
+			var cacheDependency = new CacheDependency(
+				new string[0], 
+				new[] { FrameworkCacheConsumer.BuildThemeVarsCacheKey(entry.ThemeName, entry.StoreId) }, 
+				DateTime.UtcNow);
+
+			HttpRuntime.Cache.Insert(
+				cacheKey,
+				entry.PhysicalPath,
+				cacheDependency,
+				Cache.NoAbsoluteExpiration,
+				Cache.NoSlidingExpiration,
+				CacheItemPriority.Default,
+				OnCacheItemRemoved);
 		}
 
 		private static void OnCacheItemRemoved(string key, object value, CacheItemRemovedReason reason)
@@ -249,7 +259,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			if (HostingEnvironment.ShutdownReason > ApplicationShutdownReason.None)
 			{
 				// Don't evict cached files during app shutdown. Dependant cache keys change
-				// during a shutdown caused by HttpRuntime.Cache full eviction
+				// during a shutdown caused by HttpRuntime.Cache full eviction.
 				return;
 			}
 
@@ -291,9 +301,22 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			return list;
 		}
 
-		private void InvalidateAssetInternal(string cacheDirectoryName)
+		private bool InvalidateAssetInternal(string cacheDirectoryName, string theme, int storeId)
 		{
-			CacheFolder.DeleteDirectory(cacheDirectoryName);
+			if (CacheFolder.TryDeleteDirectory(cacheDirectoryName))
+			{
+				if (theme.HasValue())
+				{
+					// Remove the eviction observer
+					var cacheKey = CacheKeyPrefix + "{0}:{1}".FormatInvariant(theme, storeId);
+					HttpRuntime.Cache.Remove(cacheKey);
+
+				}
+
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -316,7 +339,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					return false;
 				}
 
-				parsedDeps = ParseDependenciesFile(lastDeps);
+				parsedDeps = ParseFileContent(lastDeps);
 
 				// Check if dependency files hash matches the last saved hash
 				currentHash = BundleTable.VirtualPathProvider.GetFileHash(virtualPath, parsedDeps);
@@ -354,11 +377,12 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			return folderName.ToLowerInvariant();
 		}
 
-		private IEnumerable<string> ParseDependenciesFile(string deps)
+		private IEnumerable<string> ParseFileContent(string content)
 		{
 			var list = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			if (content.IsEmpty()) return list;
 
-			var sr = new StringReader(deps);
+			var sr = new StringReader(content);
 			while (true)
 			{
 				var f = sr.ReadLine();
@@ -375,20 +399,22 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			return list;
 		}
 
-		private string CreateDependenciesFile(IEnumerable<string> deps)
+		private void CreateFileFromEntries(string dirName, string fileName, IEnumerable<string> entries)
 		{
+			if (entries == null || !entries.Any())
+				return;
+
 			var sb = new StringBuilder();
-			foreach (var f in deps)
+			foreach (var f in entries)
 			{
-				//var f2 = f;
-				//if (f2[0] != '~')
-				//{
-				//	f2 = VirtualPathUtility.ToAppRelative(f);
-				//}
 				sb.AppendLine(f);
 			}
 
-			return sb.ToString();
+			var content = sb.ToString().TrimEnd();
+			if (content.HasValue())
+			{
+				CacheFolder.CreateTextFile(CacheFolder.Combine(dirName, fileName), content);
+			}
 		}
 
 		class NullCache : IAssetCache
@@ -402,7 +428,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				return null;
 			}
 
-			public CachedAssetEntry InsertAsset(string virtualPath, IEnumerable<string> virtualPathDependencies, string content)
+			public CachedAssetEntry InsertAsset(string virtualPath, IEnumerable<string> virtualPathDependencies, string content, params string[] processorCodes)
 			{
 				return null;
 			}

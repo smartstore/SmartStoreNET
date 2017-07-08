@@ -58,7 +58,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				return null;
 			}
 
-			// Is Sass Or Less
+			// Is Sass Or Less Or StyleBundle
 
             var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();
 
@@ -91,6 +91,13 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					int storeId = ThemeHelper.ResolveCurrentStoreId();
 					// invalidate the cache when variables change
 					cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(theme.ThemeName, storeId);
+
+					if ((styleResult.IsSass || styleResult.IsLess) && (ThemeHelper.IsStyleValidationRequest()))
+					{
+						// Special case: ensure that cached validation result gets nuked in a while,
+						// when ThemeVariableService publishes the entity changed messages.
+						return new CacheDependency(new string[0], new string[] { cacheKey }, utcStart);
+					}
 				}
 
 				return new CacheDependency(

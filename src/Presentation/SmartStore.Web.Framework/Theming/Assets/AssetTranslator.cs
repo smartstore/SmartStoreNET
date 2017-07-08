@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BundleTransformer.Core;
 using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Constants;
+using BundleTransformer.Core.Transformers;
 using BundleTransformer.Core.Translators;
 using BundleTransformer.SassAndScss.Translators;
 using SmartStore.Core.Infrastructure;
@@ -35,10 +37,9 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 		public IList<IAsset> Translate(IList<IAsset> assets)
 		{
-			return _inner.Translate(assets);
-			//var assets2 = WalkAndFindCachedAssets(assets).ToList();
-			//var result = _inner.Translate(assets2);
-			//return result;
+			var assets2 = WalkAndFindCachedAssets(assets).ToList();
+			var result = _inner.Translate(assets2);
+			return result;
 		}
 
 		private IEnumerable<IAsset> WalkAndFindCachedAssets(IList<IAsset> assets)
@@ -47,8 +48,6 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			{
 				if (ValidTypeCodes.Contains(asset.AssetTypeCode.ToLowerInvariant()))
 				{
-					// canMinify = false, because the bundler is processing the request
-					// and internally handles minification later (after combining all bundle parts)
 					yield return TranslateInternal(asset);
 				}
 				else
@@ -60,15 +59,13 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 		public IAsset Translate(IAsset asset)
 		{
-			return _inner.Translate(asset);
-			//return TranslateInternal(asset);
+			return TranslateInternal(asset);
 		}
 
 		private IAsset TranslateInternal(IAsset asset)
 		{
-			var chronometer = EngineContext.Current.Resolve<IChronometer>();
-
 			IAsset result;
+			var chronometer = EngineContext.Current.Resolve<IChronometer>();
 
 			using (chronometer.Step("Translate asset {0}".FormatInvariant(asset.VirtualPath)))
 			{
@@ -83,14 +80,34 @@ namespace SmartStore.Web.Framework.Theming.Assets
 							using (chronometer.Step("Compile asset {0}".FormatInvariant(asset.VirtualPath)))
 							{
 								result = _inner.Translate(asset);
-								result = AssetTranslationUtil.PostProcessAsset(result, this.IsDebugMode);
+
+								var cachedAsset = new CachedAsset
+								{
+									AssetTypeCode = AssetTypeCode.Css,
+									IsStylesheet = true,
+									Minified = result.Minified,
+									Combined = result.Combined,
+									Content = result.Content,
+									OriginalAssets = asset.OriginalAssets,
+									VirtualPath = asset.VirtualPath,
+									VirtualPathDependencies = result.VirtualPathDependencies,
+									Url = asset.Url
+								};
+
+								result = AssetTranslorUtil.PostProcessAsset(cachedAsset, this.IsDebugMode);
 
 								if (!validationMode)
 								{
+									var pCodes = new List<string>(3);
+									if (cachedAsset.Minified) pCodes.Add(DefaultAssetCache.MinificationCode);
+									if (cachedAsset.RelativePathsResolved) pCodes.Add(DefaultAssetCache.UrlRewriteCode);
+									if (cachedAsset.Autoprefixed) pCodes.Add(DefaultAssetCache.AutoprefixCode);
+
 									AssetCache.InsertAsset(
-										result.VirtualPath,
-										result.VirtualPathDependencies,
-										result.Content);
+										cachedAsset.VirtualPath,
+										cachedAsset.VirtualPathDependencies,
+										cachedAsset.Content,
+										pCodes.ToArray());
 								}
 							}
 						}
@@ -110,15 +127,16 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			{
 				cachedAsset = new CachedAsset
 				{
-					AssetTypeCode = AssetTypeCode.Unknown, // Unknown to prevent AutoPrefixer to run twice
+					AssetTypeCode = AssetTypeCode.Css,
 					Combined = true,
 					Content = entry.Content,
 					IsStylesheet = true,
-					Minified = false,
+					Minified = entry.ProcessorCodes.Contains(DefaultAssetCache.MinificationCode),
+					RelativePathsResolved = entry.ProcessorCodes.Contains(DefaultAssetCache.UrlRewriteCode),
+					Autoprefixed = entry.ProcessorCodes.Contains(DefaultAssetCache.AutoprefixCode),
 					OriginalAssets = new List<IAsset>(),
 					VirtualPath = asset.VirtualPath,
-					VirtualPathDependencies = entry.VirtualPathDependencies.ToList(),
-					RelativePathsResolved = true,
+					VirtualPathDependencies = entry.VirtualPathDependencies.ToList(),					
 					Url = asset.Url
 				};
 			}

@@ -136,12 +136,6 @@ namespace SmartStore.Services.Tasks
             }
             finally
             {
-				// remove from AsyncState
-				if (stateName.HasValue())
-				{
-					_asyncState.Remove<ScheduleTask>(stateName);
-				}
-
 				task.ProgressPercent = null;
 				task.ProgressMessage = null;
 
@@ -166,6 +160,12 @@ namespace SmartStore.Services.Tasks
 				if (task.Enabled)
 				{
 					task.NextRunUtc = _scheduledTaskService.GetNextSchedule(task);
+				}
+
+				// remove from AsyncState
+				if (stateName.HasValue())
+				{
+					_asyncState.Remove<ScheduleTask>(stateName);
 				}
 
 				_scheduledTaskService.UpdateTask(task);

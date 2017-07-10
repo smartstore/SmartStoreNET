@@ -12,6 +12,7 @@
 * Fixed System.ArgumentNullException in ProductVariantQueryFactory
 * PayPal PLUS: Fixed HTTP 401 "Unauthorized" when calling PatchShipping
 * Fixed #1189 MegaSearch: Boosts are ignored in prefix and wildcard queries by default
+* Fixed MegaSearch: Localized labels of filters never displayed
 * Fixed #1195 Exporter: don't send email if no email account has been selected
 * Product lists sometimes show the wrong delivery time
 * Fixed #1192 Lucene indexing performance decreases the longer it takes

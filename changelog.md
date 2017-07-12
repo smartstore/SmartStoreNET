@@ -1,6 +1,9 @@
 ﻿# Release Notes
 
 ## SmartStore.NET 3.0.2
+### Breaking changes
+* MegaSearch: The index must be re-created because of changes to the price filters.
+
 ### Improvements
 * PayPal Standard: New settings "UsePayPalAddress" and "IsShippingAddressRequired" to avoid payment rejection due to address validation.
 

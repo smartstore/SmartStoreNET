@@ -533,7 +533,14 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<MemoryCacheManager>().Named<ICacheManager>("memory").SingleInstance();
 
 			// Asset cache
-			builder.RegisterType<DefaultAssetCache>().As<IAssetCache>().InstancePerRequest();
+			if (DataSettings.DatabaseIsInstalled())
+			{
+				builder.RegisterType<DefaultAssetCache>().As<IAssetCache>().InstancePerRequest();
+			}
+			else
+			{
+				builder.Register<IAssetCache>(c => DefaultAssetCache.Null).SingleInstance();
+			}
 		}
 	}
 

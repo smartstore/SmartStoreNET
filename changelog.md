@@ -22,6 +22,7 @@
 * Fixed #1198 MegaSearch: never sort numeric range by label, always by value
 * Fixed filter for attributes were always sorted by hit count
 * Fixed #1200 PayPal PLUS: Invalid request if the order amount is zero
+* Fixed null reference exception when copying attribute option set with image(s) (file system storage only)
 
 ## SmartStore.NET 3.0.1
 ### Improvements

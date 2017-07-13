@@ -462,8 +462,10 @@ namespace SmartStore.Services.Catalog
 					// Copy picture.
 					if (option.PictureId != 0 && pictures.TryGetValue(option.PictureId, out picture))
 					{
+						var pictureBinary = _pictureService.LoadPictureBinary(picture);
+
 						var newPicture = _pictureService.InsertPicture(
-							picture.MediaStorage.Data,
+							pictureBinary,
 							picture.MimeType,
 							picture.SeoFilename,
 							picture.IsNew,

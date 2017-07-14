@@ -8,7 +8,6 @@ using System.Web.Caching;
 using System.Web.Hosting;
 using System.Web.Optimization;
 using SmartStore.Core;
-using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
@@ -229,7 +228,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		}
 
 		/// <summary>
-		/// Invalidates a cached assets when any themevar was changed or the theme was touched on file system
+		/// Invalidates a cached asset when any themevar was changed or the theme was touched on file system
 		/// </summary>
 		/// <param name="entry"></param>
 		private static void SetupEvictionObserver(CachedAssetEntry entry)

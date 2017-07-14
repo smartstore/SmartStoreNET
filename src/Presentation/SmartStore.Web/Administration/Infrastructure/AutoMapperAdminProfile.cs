@@ -708,6 +708,7 @@ namespace SmartStore.Admin.Infrastructure
 
 			CreateMap<ThemeSettings, ThemeListModel>()
 				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableAssetCachingValues, mo => mo.Ignore())
 				.ForMember(dest => dest.Themes, mo => mo.Ignore())
 				.ForMember(dest => dest.StoreId, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());

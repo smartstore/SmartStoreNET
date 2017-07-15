@@ -297,7 +297,11 @@ namespace SmartStore.Web.Framework
                 
                 // Fallback
 				customerLangId = _languageService.GetDefaultLanguageId(storeId);
-                SetCustomerLanguage(customerLangId, storeId);
+
+				if (this.CurrentCustomer != null)
+				{
+					SetCustomerLanguage(customerLangId, storeId);
+				}
 
                 _cachedLanguage = _languageService.GetLanguageById(customerLangId);
                 return _cachedLanguage;

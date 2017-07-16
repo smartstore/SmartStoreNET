@@ -524,10 +524,10 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult PopularProductTags()
 		{
-            //if (!_catalogSettings.ShowPopularProductTagsOnHomepage)
-            //    return new EmptyResult();
+            if (!_catalogSettings.ShowPopularProductTagsOnHomepage)
+                return new EmptyResult();
 
-			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_POPULAR_MODEL_KEY, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
+            var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_POPULAR_MODEL_KEY, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
 			var cacheModel = _services.Cache.Get(cacheKey, () =>
 			{
 				var model = new PopularProductTagsModel();
@@ -669,6 +669,7 @@ namespace SmartStore.Web.Controllers
 
 			query.Sorting.Clear();
 			query = query
+				.BuildFacetMap(false)
 				.SortBy(ProductSortingEnum.CreatedOn)
 				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
 
@@ -705,6 +706,7 @@ namespace SmartStore.Web.Controllers
 
 			query.Sorting.Clear();
 			query = query
+				.BuildFacetMap(false)
 				.SortBy(ProductSortingEnum.CreatedOn)
 				.Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
 
@@ -714,7 +716,7 @@ namespace SmartStore.Web.Controllers
 
 			foreach (var product in result.Hits)
 			{
-				string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
+				string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, protocol);
 				if (productUrl.HasValue())
 				{
 					var item = feed.CreateItem(

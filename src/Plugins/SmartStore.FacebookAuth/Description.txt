@@ -1,7 +1,7 @@
 ﻿FriendlyName: Facebook
 SystemName: SmartStore.FacebookAuth
 Group: Security
-Version: 3.0.0.1
+Version: 3.0.1
 MinAppVersion: 3.0.0
 DisplayOrder: 5
 FileName: SmartStore.FacebookAuth.dll

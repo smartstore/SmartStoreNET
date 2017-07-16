@@ -355,7 +355,7 @@ namespace SmartStore.Admin.Controllers
 
 					return Json(new
 					{
-						importResult = this.RenderPartialViewToString("ProfileImportResult", importResult)
+						importResult = this.RenderPartialViewToString("~/Administration/Views/Import/ProfileImportResult.cshtml", importResult)
 					},
 					JsonRequestBehavior.AllowGet);
 				}
@@ -665,8 +665,11 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
-			var taskParams = new Dictionary<string, string>();
-			taskParams.Add(TaskExecutor.CurrentCustomerIdParamName, Services.WorkContext.CurrentCustomer.Id.ToString());
+			var taskParams = new Dictionary<string, string>
+			{
+				{ TaskExecutor.CurrentCustomerIdParamName, Services.WorkContext.CurrentCustomer.Id.ToString() },
+				{ TaskExecutor.CurrentStoreIdParamName, Services.StoreContext.CurrentStore.Id.ToString() }
+			};
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 

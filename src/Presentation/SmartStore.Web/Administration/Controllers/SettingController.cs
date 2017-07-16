@@ -1588,8 +1588,10 @@ namespace SmartStore.Admin.Controllers
 			model.ShowProductImagesInInstantSearch = settings.ShowProductImagesInInstantSearch;
 			model.FilterMinHitCount = settings.FilterMinHitCount;
 			model.FilterMaxChoicesCount = settings.FilterMaxChoicesCount;
+            model.DefaultSortOrder = settings.DefaultSortOrder;
+            model.AvailableSortOrderModes = settings.DefaultSortOrder.ToSelectList();
 
-			if (megaSearchDescriptor == null)
+            if (megaSearchDescriptor == null)
 			{
 				model.SearchFieldsNote = T("Admin.Configuration.Settings.Search.SearchFieldsNote");
 
@@ -1713,6 +1715,7 @@ namespace SmartStore.Admin.Controllers
 			settings.ShowProductImagesInInstantSearch = model.ShowProductImagesInInstantSearch;
 			settings.FilterMinHitCount = model.FilterMinHitCount;
 			settings.FilterMaxChoicesCount = model.FilterMaxChoicesCount;
+            settings.DefaultSortOrder = model.DefaultSortOrder;
 
 			// Common facets
 			settings.BrandDisabled = model.BrandFacet.Disabled;

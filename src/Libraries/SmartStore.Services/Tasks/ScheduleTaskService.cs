@@ -9,6 +9,7 @@ using SmartStore.Utilities;
 using SmartStore.Services.Helpers;
 using System.Data.Entity.Core;
 using System.Data.SqlClient;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Tasks
 {
@@ -23,9 +24,11 @@ namespace SmartStore.Services.Tasks
 			_dtHelper = dtHelper;
 
 			T = NullLocalizer.Instance;
+			Logger = NullLogger.Instance;
         }
 
 		public Localizer T { get; set; }
+		public ILogger Logger { get; set; }
 
         public virtual void DeleteTask(ScheduleTask task)
         {
@@ -137,75 +140,71 @@ namespace SmartStore.Services.Tasks
 
         public virtual void InsertTask(ScheduleTask task)
         {
-            if (task == null)
-                throw new ArgumentNullException("task");
+			Guard.NotNull(task, nameof(task));
 
-            _taskRepository.Insert(task);
+			_taskRepository.Insert(task);
         }
 
         public virtual void UpdateTask(ScheduleTask task)
         {
-            if (task == null)
-                throw new ArgumentNullException("task");
+			Guard.NotNull(task, nameof(task));
 
-			bool saveFailed;
-			bool? autoCommit = null;
-
-			do
+			try
 			{
-				saveFailed = false;
-
-				// ALWAYS save immediately
-				try
+				using (var scope = new DbContextScope(_taskRepository.Context, autoCommit: true))
 				{
-					autoCommit = _taskRepository.AutoCommitEnabled;
-					_taskRepository.AutoCommitEnabled = true;
-					_taskRepository.Update(task);
-				}
-				catch (DbUpdateConcurrencyException ex)
-				{
-					saveFailed = true;
-					
-					var entry = ex.Entries.Single();
-					var current = (ScheduleTask)entry.CurrentValues.ToObject(); // from current scope
-
-					// When 'StopOnError' is true, the 'Enabled' property could have been set to true on exception.
-					var prop = entry.Property("Enabled");
-					var enabledModified = !prop.CurrentValue.Equals(prop.OriginalValue);
-
-					// Save current cron expression
-					var cronExpression = task.CronExpression;
-
-					// Fetch Name, CronExpression, Enabled & StopOnError from database
-					// (these were possibly edited thru the backend)
-					_taskRepository.Context.ReloadEntity(task);
-
-					// Do we have to reschedule the task?
-					var cronModified = cronExpression != task.CronExpression;
-
-					// Copy execution specific data from current to reloaded entity 
-					task.LastEndUtc = current.LastEndUtc;
-					task.LastError = current.LastError;
-					task.LastStartUtc = current.LastStartUtc;
-					task.LastSuccessUtc = current.LastSuccessUtc;
-					task.ProgressMessage = current.ProgressMessage;
-					task.ProgressPercent = current.ProgressPercent;
-					task.NextRunUtc = current.NextRunUtc;
-					if (enabledModified)
+					Retry.Run(() => _taskRepository.Update(task), 3, TimeSpan.FromMilliseconds(100), (attempt, exception) =>
 					{
-						task.Enabled = current.Enabled;
-					}
-					if (task.NextRunUtc.HasValue && cronModified)
-					{
-						// reschedule task
-						task.NextRunUtc = GetNextSchedule(task);
-					}
+						var ex = exception as DbUpdateConcurrencyException;
+						if (ex == null) return;
+
+						var entry = ex.Entries.Single();
+						var current = (ScheduleTask)entry.CurrentValues.ToObject(); // from current scope
+
+						// When 'StopOnError' is true, the 'Enabled' property could have been set to true on exception.
+						var prop = entry.Property("Enabled");
+						var enabledModified = !prop.CurrentValue.Equals(prop.OriginalValue);
+
+						// Save current cron expression
+						var cronExpression = task.CronExpression;
+
+						// Fetch Name, CronExpression, Enabled & StopOnError from database
+						// (these were possibly edited thru the backend)
+						_taskRepository.Context.ReloadEntity(task);
+
+						// Do we have to reschedule the task?
+						var cronModified = cronExpression != task.CronExpression;
+
+						// Copy execution specific data from current to reloaded entity 
+						task.LastEndUtc = current.LastEndUtc;
+						task.LastError = current.LastError;
+						task.LastStartUtc = current.LastStartUtc;
+						task.LastSuccessUtc = current.LastSuccessUtc;
+						task.ProgressMessage = current.ProgressMessage;
+						task.ProgressPercent = current.ProgressPercent;
+						task.NextRunUtc = current.NextRunUtc;
+						if (enabledModified)
+						{
+							task.Enabled = current.Enabled;
+						}
+						if (task.NextRunUtc.HasValue && cronModified)
+						{
+							// reschedule task
+							task.NextRunUtc = GetNextSchedule(task);
+						}
+
+						if (attempt == 3)
+						{
+							_taskRepository.Update(task);
+						}
+					});
 				}
-				finally
-				{
-					_taskRepository.AutoCommitEnabled = autoCommit;
-				}
-			} while (saveFailed);
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+				throw;
+			}
         }
 
 		public ScheduleTask GetOrAddTask<T>(Action<ScheduleTask> newAction) where T : ITask
@@ -252,7 +251,9 @@ namespace SmartStore.Services.Tasks
 						}
 						FixTypeName(task);
 					}
-					this.UpdateTask(task);
+
+					//this.UpdateTask(task);
+					//_taskRepository.Update(task);
 				}
 
 				scope.Commit();

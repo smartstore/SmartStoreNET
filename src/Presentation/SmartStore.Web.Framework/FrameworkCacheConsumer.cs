@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
 using SmartStore.Core.Themes;
+using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework
 {
@@ -27,8 +28,8 @@ namespace SmartStore.Web.Framework
         /// {0} : theme name
         /// {1} : store identifier
         /// </remarks>
-        public const string THEMEVARS_LESSCSS_KEY = "pres:themevars-lesscss-{0}-{1}";
-		public const string THEMEVARS_LESSCSS_THEME_KEY = "pres:themevars-lesscss-{0}";
+        public const string THEMEVARS_KEY = "pres:themevars-{0}-{1}";
+		public const string THEMEVARS_THEME_KEY = "pres:themevars-{0}";
 		
         
         /// <summary>
@@ -42,10 +43,12 @@ namespace SmartStore.Web.Framework
         public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "fw:customerroles:taxdisplaytypes";
 
         private readonly ICacheManager _cacheManager;
+		private readonly IAssetCache _assetCache;
 
-		public FrameworkCacheConsumer(ICacheManager cacheManager)
+		public FrameworkCacheConsumer(ICacheManager cacheManager, IAssetCache assetCache)
         {
 			_cacheManager = cacheManager;
+			_assetCache = assetCache;
         }
 
         public void HandleEvent(EntityInserted<ThemeVariable> eventMessage)
@@ -102,10 +105,10 @@ namespace SmartStore.Web.Framework
         {
 			if (storeId > 0)
 			{
-				return HttpRuntime.Cache.BuildScopedKey(THEMEVARS_LESSCSS_KEY.FormatInvariant(themeName, storeId));
+				return HttpRuntime.Cache.BuildScopedKey(THEMEVARS_KEY.FormatInvariant(themeName, storeId));
 			}
 
-			return HttpRuntime.Cache.BuildScopedKey(THEMEVARS_LESSCSS_THEME_KEY.FormatInvariant(themeName));
+			return HttpRuntime.Cache.BuildScopedKey(THEMEVARS_THEME_KEY.FormatInvariant(themeName));
         }
 
         #endregion

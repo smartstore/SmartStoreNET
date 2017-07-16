@@ -63,15 +63,29 @@ namespace SmartStore.Web.Framework.Theming
         internal virtual ExpandoObject GetRawVariables(string themeName, int storeId)
         {
 			// we need the Asp.Net cache here in order to define cacheKey dependencies
+			bool validationMode = ThemeHelper.IsStyleValidationRequest();
 
-			string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId);
-
-			return HttpRuntime.Cache.GetOrAdd(cacheKey, () => 
+			if (validationMode)
 			{
-				var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
-				return themeVarService.GetThemeVariables(themeName, storeId) ?? new ExpandoObject();
-			});
+				// Return uncached fresh data (the variables is not nuked yet)
+				return GetRawVariablesCore(themeName, storeId);
+			}
+			else
+			{
+				string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId);
+				return HttpRuntime.Cache.GetOrAdd(cacheKey, () =>
+				{
+					var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
+					return themeVarService.GetThemeVariables(themeName, storeId) ?? new ExpandoObject();
+				});
+			}
         }
+
+		private ExpandoObject GetRawVariablesCore(string themeName, int storeId)
+		{
+			var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
+			return themeVarService.GetThemeVariables(themeName, storeId) ?? new ExpandoObject();
+		}
 
 		private string Transform(IDictionary<string, string> parameters, bool toLess)
 		{

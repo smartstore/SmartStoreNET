@@ -111,7 +111,8 @@ namespace SmartStore.Web.Framework
 						// the store to be used can be overwritten on request basis (e.g. for theme preview, editing etc.)
 						_currentStore = _storeService.GetStoreById(storeOverride.Value);
 					}
-					else
+
+					if (_currentStore == null)
 					{
 						// ty to determine the current store by HTTP_HOST
 						var host = _webHelper.ServerVariables("HTTP_HOST");
@@ -120,20 +121,22 @@ namespace SmartStore.Web.Framework
 
 						if (store == null)
 						{
-							//load the first found store
+							// load the first found store
 							store = allStores.FirstOrDefault();
 						}
 
 						if (store == null)
-						{
 							throw new Exception("No store could be loaded");
-						}
 
 						_currentStore = store;
 					}
 				}
 
 				return _currentStore;
+			}
+			set
+			{
+				_currentStore = value;
 			}
 		}
 

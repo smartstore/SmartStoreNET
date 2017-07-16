@@ -39,7 +39,7 @@
 		<BuildPlatform Condition="$(BuildPlatform) == ''">x86</BuildPlatform>
 
 		<xVersion>$(BUILD_NUMBER)</xVersion>
-		<Version>3.0.0</Version>
+		<Version>3.0.1</Version>
 		<ZipDirectory>$(StageFolder)</ZipDirectory>
 		<ZipVersionFileSuffix Condition="$(Version) != ''">.$(Version)</ZipVersionFileSuffix>
 		<ZipVersionFileSuffix Condition="$(Version) == ''"></ZipVersionFileSuffix>

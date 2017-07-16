@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Web.Mvc;
 using SmartStore.Core.Data;
 using SmartStore.Services.Helpers;
@@ -8,12 +6,15 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Filters
 {
-	public class JsonNetAttribute : FilterAttribute, IResultFilter
+	public class JsonNetAttribute : FilterAttribute, IActionFilter
 	{
 		public Lazy<IDateTimeHelper> DateTimeHelper { get; set; }
 
-		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-		public virtual void OnResultExecuting(ResultExecutingContext filterContext)
+		public void OnActionExecuting(ActionExecutingContext filterContext)
+		{
+		}
+
+		public void OnActionExecuted(ActionExecutedContext filterContext)
 		{
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
@@ -40,10 +41,6 @@ namespace SmartStore.Web.Framework.Filters
 				MaxJsonLength = jsonResult.MaxJsonLength,
 				RecursionLimit = jsonResult.RecursionLimit
 			};
-		}
-
-		public virtual void OnResultExecuted(ResultExecutedContext filterContext)
-		{
 		}
 	}
 

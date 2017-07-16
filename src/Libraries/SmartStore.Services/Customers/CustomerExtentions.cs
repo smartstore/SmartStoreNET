@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml;
-using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Infrastructure;
@@ -13,7 +12,7 @@ using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Customers
 {
-    public static class CustomerExtentions
+	public static class CustomerExtentions
     {
         /// <summary>
         /// Gets a value indicating whether customer is in a certain customer role
@@ -281,22 +280,32 @@ namespace SmartStore.Services.Customers
 
 		public static int CountProductsInCart(this Customer customer, ShoppingCartType cartType, int? storeId = null)
 		{
-			int count = customer.ShoppingCartItems
-				.Filter(cartType, storeId)
-				.Where(x => x.ParentItemId == null)
-				.Sum(x => x.Quantity);
+			if (customer != null)
+			{
+				var count = customer.ShoppingCartItems
+					.Filter(cartType, storeId)
+					.Where(x => x.ParentItemId == null)
+					.Sum(x => x.Quantity);
 
-			return count;
+				return count;
+			}
+
+			return 0;
 		}
 
 		public static List<OrganizedShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null)
 		{
-			var items = customer.ShoppingCartItems
-				.Filter(cartType, storeId)
-				.OrderByDescending(x => x.Id)
-				.Organize();
+			if (customer != null)
+			{
+				var items = customer.ShoppingCartItems
+					.Filter(cartType, storeId)
+					.OrderByDescending(x => x.Id)
+					.Organize();
 
-			return items;
+				return items;
+			}
+
+			return new List<OrganizedShoppingCartItem>();
 		}
 
 		#endregion

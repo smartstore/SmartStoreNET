@@ -179,7 +179,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<string>("Sku", _sku);
+				return this.GetMergedDataValue<string>(nameof(Sku), _sku);
 			}
 			set
 			{
@@ -197,7 +197,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<string>("ManufacturerPartNumber", _manufacturerPartNumber);
+				return this.GetMergedDataValue<string>(nameof(ManufacturerPartNumber), _manufacturerPartNumber);
 			}
 			set
 			{
@@ -215,7 +215,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<string>("Gtin", _gtin);
+				return this.GetMergedDataValue<string>(nameof(Gtin), _gtin);
 			}
 			set
 			{
@@ -395,7 +395,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue("StockQuantity", _stockQuantity);
+				return this.GetMergedDataValue(nameof(StockQuantity), _stockQuantity);
 			}
 			set
 			{
@@ -442,7 +442,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
             {
-                return this.GetMergedDataValue<int>("BackorderModeId", _backorderModeId);
+                return this.GetMergedDataValue<int>(nameof(BackorderModeId), _backorderModeId);
             }
             set
             {
@@ -525,7 +525,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<decimal>("Price", _price);
+				return this.GetMergedDataValue<decimal>(nameof(Price), _price);
 			}
 			set
 			{
@@ -622,7 +622,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<decimal>("Length", _length);
+				return this.GetMergedDataValue<decimal>(nameof(Length), _length);
 			}
 			set
 			{
@@ -639,7 +639,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<decimal>("Width", _width);
+				return this.GetMergedDataValue<decimal>(nameof(Width), _width);
 			}
 			set
 			{
@@ -656,7 +656,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<decimal>("Height", _height);
+				return this.GetMergedDataValue<decimal>(nameof(Height), _height);
 			}
 			set
 			{
@@ -715,7 +715,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<int?>("DeliveryTimeId", _deliveryTimeId);
+				return this.GetMergedDataValue<int?>(nameof(DeliveryTimeId), _deliveryTimeId);
 			}
 			set
 			{
@@ -735,7 +735,7 @@ namespace SmartStore.Core.Domain.Catalog
             [DebuggerStepThrough]
             get
             {
-                return this.GetMergedDataValue<int?>("QuantityUnitId", _quantityUnitId);
+                return this.GetMergedDataValue<int?>(nameof(QuantityUnitId), _quantityUnitId);
             }
             set
             {
@@ -786,7 +786,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<decimal?>("BasePriceAmount", _basePriceAmount);
+				return this.GetMergedDataValue<decimal?>(nameof(BasePriceAmount), _basePriceAmount);
 			}
 			set
 			{
@@ -804,7 +804,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<int?>("BasePriceBaseAmount", _basePriceBaseAmount);
+				return this.GetMergedDataValue<int?>(nameof(BasePriceBaseAmount), _basePriceBaseAmount);
 			}
 			set
 			{

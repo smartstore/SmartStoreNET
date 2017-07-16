@@ -28,6 +28,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly ILocalizationService _localizationService;
         private readonly IWorkContext _workContext;
+		private readonly IStoreContext _storeContext;
 		private readonly IAsyncState _asyncState;
 
         public ScheduleTaskController(
@@ -37,15 +38,17 @@ namespace SmartStore.Admin.Controllers
             IDateTimeHelper dateTimeHelper,
 			ILocalizationService localizationService,
             IWorkContext workContext,
+			IStoreContext storeContext,
 			IAsyncState asyncState)
         {
-            this._scheduleTaskService = scheduleTaskService;
-			this._taskScheduler = taskScheduler;
-            this._permissionService = permissionService;
-            this._dateTimeHelper = dateTimeHelper;
-			this._localizationService = localizationService;
-            this._workContext = workContext;
-			this._asyncState = asyncState;
+            _scheduleTaskService = scheduleTaskService;
+			_taskScheduler = taskScheduler;
+            _permissionService = permissionService;
+            _dateTimeHelper = dateTimeHelper;
+			_localizationService = localizationService;
+            _workContext = workContext;
+			_storeContext = storeContext;
+			_asyncState = asyncState;
         }
 
 		private bool IsTaskVisible(ScheduleTask task)
@@ -146,10 +149,13 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
 				return AccessDeniedView();
 
-            var taskParams = new Dictionary<string, string>();
-            taskParams[TaskExecutor.CurrentCustomerIdParamName] = _workContext.CurrentCustomer.Id.ToString();
+			var taskParams = new Dictionary<string, string>
+			{
+				{ TaskExecutor.CurrentCustomerIdParamName, _workContext.CurrentCustomer.Id.ToString() },
+				{ TaskExecutor.CurrentStoreIdParamName,  _storeContext.CurrentStore.Id.ToString() }
+			};
 
-            _taskScheduler.RunSingleTask(id, taskParams);
+			_taskScheduler.RunSingleTask(id, taskParams);
 
 			// The most tasks are completed rather quickly. Wait a while...
 			var start = DateTime.UtcNow;
@@ -237,15 +243,9 @@ namespace SmartStore.Admin.Controllers
 			scheduleTask.Enabled = model.Enabled;
 			scheduleTask.StopOnError = model.StopOnError;
 			scheduleTask.CronExpression = model.CronExpression;
-
-			if (model.Enabled)
-			{
-				scheduleTask.NextRunUtc = _scheduleTaskService.GetNextSchedule(scheduleTask);
-			}
-			else
-			{
-				scheduleTask.NextRunUtc = null;
-			}
+			scheduleTask.NextRunUtc = model.Enabled 
+				? _scheduleTaskService.GetNextSchedule(scheduleTask) 
+				: null;
 
 			_scheduleTaskService.UpdateTask(scheduleTask);
 

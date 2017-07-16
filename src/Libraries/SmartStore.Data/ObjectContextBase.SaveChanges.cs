@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
 using System.Linq;
@@ -27,7 +28,53 @@ namespace SmartStore.Data
 
 		private IEnumerable<DbEntityEntry> GetChangedEntries()
 		{
-			return ChangeTracker.Entries().Where(x => x.State > System.Data.Entity.EntityState.Unchanged);
+			return ChangeTracker.Entries().Where(IsChangedEntry);
+		}
+
+		private bool IsChangedEntry(DbEntityEntry entry)
+		{
+			var state = entry.State;
+
+			if (state == EntityState.Added || state == EntityState.Deleted)
+			{
+				return true;
+			}
+			else if (state == EntityState.Modified)
+			{
+				var mergeable = entry.Entity as IMergedData;
+
+				if (mergeable?.MergedDataValues == null)
+				{
+					return true;
+				}
+				else
+				{
+					if (mergeable.MergedDataValues.Count == 0)
+						return true;
+
+					// At this point it's certain that 'MergeWithCombination()' has been called recently
+					// (to merge variant with product attributes), and at least one attribute has been 
+					// overwritten on variant level.
+
+					// This should return an empty dict if no other property has been changed.
+					// GetModifiedProperties() can handle/ignore merged properties very well.
+					var modProps = GetModifiedProperties(entry);
+
+					if (modProps.Count == 0)
+					{
+						try
+						{
+							// Set state to unchanged: no 'real' prop changed!
+							entry.State = EntityState.Unchanged;
+						}
+						catch { }
+					}
+
+					return modProps.Count > 0;
+				}
+			}
+
+			return false;
 		}
 
 		public IDbHookHandler DbHookHandler
@@ -102,7 +149,7 @@ namespace SmartStore.Data
 		/// <returns>The number of affected records</returns>
 		protected internal int SaveChangesCore()
 		{
-			var changedEntries = _currentSaveOperation?.ChangedEntries ?? GetChangedEntries();
+			var changedEntries = _currentSaveOperation?.ChangedEntries ?? GetChangedEntries().ToList();
 
 			using (new ActionDisposable(() => IgnoreMergedData(changedEntries, false)))
 			{
@@ -117,7 +164,7 @@ namespace SmartStore.Data
 		/// <returns>The number of affected records</returns>
 		protected internal Task<int> SaveChangesCoreAsync(CancellationToken cancellationToken)
 		{
-			var changedEntries = _currentSaveOperation?.ChangedEntries ?? GetChangedEntries();
+			var changedEntries = _currentSaveOperation?.ChangedEntries ?? GetChangedEntries().ToList();
 
 			using (new ActionDisposable(() => IgnoreMergedData(changedEntries, false)))
 			{

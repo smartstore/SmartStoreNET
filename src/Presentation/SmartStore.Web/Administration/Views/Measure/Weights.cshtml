@@ -19,7 +19,7 @@
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid(Model.Data)
+            @(Html.Telerik().Grid<MeasureWeightModel>(Model.Data)
                     .Name("measureweight-grid")
                     .DataKeys(x =>
                     {

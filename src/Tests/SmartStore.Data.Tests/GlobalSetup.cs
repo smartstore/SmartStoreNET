@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using SmartStore.Data.Migrations;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Data.Tests
 {
@@ -14,6 +11,7 @@ namespace SmartStore.Data.Tests
 		[SetUp]
 		public void SetUp()
 		{
+			DataSettings.SetTestMode(true);
 			var ctx = new SmartObjectContext(GetTestDbName());
 			Database.SetInitializer(new DropCreateDatabaseAlways<SmartObjectContext>());
 			ctx.Database.Initialize(true);

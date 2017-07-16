@@ -45,12 +45,24 @@ namespace SmartStore.Services.Catalog.Modelling
 
 						if (form != null)
 						{
-							form.AllKeys.Each(key => _queryItems.AddRange(key, form[key].SplitSafe(",")));
+							foreach (var key in form.AllKeys)
+							{
+								if (key.HasValue())
+								{
+									_queryItems.AddRange(key, form[key].SplitSafe(","));
+								}
+							}
 						}
 
 						if (query != null)
 						{
-							query.AllKeys.Each(key => _queryItems.AddRange(key, query[key].SplitSafe(",")));
+							foreach (var key in query.AllKeys)
+							{
+								if (key.HasValue())
+								{
+									_queryItems.AddRange(key, query[key].SplitSafe(","));
+								}
+							}
 						}
 					}
 				}

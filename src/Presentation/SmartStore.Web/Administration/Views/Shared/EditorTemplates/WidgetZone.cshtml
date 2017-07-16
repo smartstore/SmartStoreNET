@@ -15,7 +15,7 @@
 
 <script>
     $(function () {
-        var zoneChooser = $("#@id"),
+    	var zoneChooser = $("#@id"),
             zones;
 
         if (zoneChooser.data("available-zones")) {
@@ -163,9 +163,20 @@
                     ]
                 },
                 {
+                    text: "Footer", children: [
+                        'footer_top',
+                        'footer_bottom',
+                        'footer_col_1_after',
+                        'footer_col_1_before',
+                        'footer_col_2_after',
+                        'footer_col_2_before',
+                        'footer_col_3_after',
+                        'footer_col_3_before'
+                    ]
+                },
+                {
                     text: "@T("Common.Misc")", children: [
                         'compareproducts_row',
-                        'footer',
                         'contactus_top',
                         'contactus_bottom',
                         'searchbox',
@@ -258,8 +269,16 @@
         	});
         }
 
-        zoneChooser.select2({
-            tags: zones
+    	zoneChooser.select2({
+			multiple: true,
+			data: zones,
+			initSelection: function (el, fn) {
+				var data = [];
+				$(el.val().split(",")).each(function () {
+					data.push({ id: this, text: this });
+				});
+				fn(data);
+			}
         });
     });
 </script>

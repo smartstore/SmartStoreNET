@@ -13,7 +13,10 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public T Value
 		{
-			get { return _resolve(this); }
+			get
+			{
+				return _resolve(this);
+			}
 		}
 	}
 }

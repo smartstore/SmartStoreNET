@@ -43,13 +43,37 @@
     
     <div><hr /></div>
 
-	@Html.ControlGroupFor(model => model.FirstName, required: true, breakpoint: breakpoint)
+    @if (Model.SalutationEnabled || Model.TitleEnabled)
+    {
+        <div class="form-group row">
+            @if (Model.SalutationEnabled)
+            {
+                @Html.LabelFor(model => model.Salutation, new { @class = "col-{0}-3 col-form-label".FormatInvariant(breakpoint) })
+                <div class="col-@breakpoint-3">
+                    @Html.DropDownListFor(model => model.Salutation, Model.AvailableSalutations, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Salutation)
+                </div>
+            }
 
-	@Html.ControlGroupFor(model => model.LastName, required: true, breakpoint: breakpoint)
+            @if (Model.TitleEnabled)
+            {
+                @Html.LabelFor(model => model.Title, new { @class = "col-{0}-3 col-form-label {1}".FormatInvariant(breakpoint, Model.SalutationEnabled ? " text-right" : "") })
+                <div class="col-@breakpoint-3">
+                    @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Title)
+                </div>
+            }
+        </div>
+    }
+
+    @Html.ControlGroupFor(model => model.FirstName, required: true, breakpoint: breakpoint)
+
+
+    @Html.ControlGroupFor(model => model.LastName, required: true, breakpoint: breakpoint)
 
     @if (Model.StreetAddressEnabled)
     {
-		@Html.ControlGroupFor(model => model.Address1, required: Model.StreetAddressRequired, breakpoint: breakpoint)
+        @Html.ControlGroupFor(model => model.Address1, required: Model.StreetAddressRequired, breakpoint: breakpoint)
 	}
 
     @if (Model.StreetAddress2Enabled)

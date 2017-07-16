@@ -49,14 +49,13 @@ namespace SmartStore.Web.Framework.Modelling
 			var serializerSettings = _settings ?? new JsonSerializerSettings
 			{
 				MissingMemberHandling = MissingMemberHandling.Ignore,
+				TypeNameHandling = TypeNameHandling.Objects,
+				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+				NullValueHandling = NullValueHandling.Ignore,
 
 				// Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
 				// from deserialization errors that might occur from deeply nested objects.
-				MaxDepth = 32,
-
-				// Do not change this setting
-				// Setting this to None prevents Json.NET from loading malicious, unsafe, or security-sensitive types
-				TypeNameHandling = TypeNameHandling.None
+				MaxDepth = 32
 			};
 
 			if (_settings == null)

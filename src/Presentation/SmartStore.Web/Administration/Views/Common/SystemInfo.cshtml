@@ -132,6 +132,7 @@
         <td class="adminData">
             <a id="loadedAssembliesTag" href="javascript:toggleAndChangeText();">@T("Admin.Common.Show")</a>
             <div id="pnlLoadedAssemblies" style="display:none">
+				<p>Directory: @AppDomain.CurrentDomain.DynamicDirectory</p>
                 @foreach (var assembly in Model.LoadedAssemblies)
                 {
                     @assembly.FullName

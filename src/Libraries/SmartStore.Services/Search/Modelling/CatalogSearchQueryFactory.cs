@@ -148,7 +148,14 @@ namespace SmartStore.Services.Search.Modelling
 			var orderBy = GetValueFor<ProductSortingEnum?>("o");
 			if (orderBy == null || orderBy == ProductSortingEnum.Initial)
 			{
-				orderBy = _catalogSettings.DefaultSortOrder;
+                if(origin.Equals("Search/Search"))
+                {
+                    orderBy = _searchSettings.DefaultSortOrder;
+                }
+                else
+                {
+                    orderBy = _catalogSettings.DefaultSortOrder;
+                }
 			}
 
 			query.CustomData["CurrentSortOrder"] = orderBy.Value;
@@ -412,7 +419,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithManufacturerIds(null, ids.ToArray());
 			}
 
-			AddFacet(query, FacetGroupKind.Brand, true, FacetSorting.ValueAsc, descriptor =>
+			AddFacet(query, FacetGroupKind.Brand, true, FacetSorting.LabelAsc, descriptor =>
 			{
 				if (ids != null)
 				{
@@ -533,7 +540,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.AvailableOnly(true);
 			}
 
-			AddFacet(query, FacetGroupKind.Availability, true, FacetSorting.ValueAsc, descriptor =>
+			AddFacet(query, FacetGroupKind.Availability, true, FacetSorting.LabelAsc, descriptor =>
 			{
 				descriptor.MinHitCount = 0;
 
@@ -565,7 +572,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.CreatedBetween(fromUtc, null);
 			}
 
-			AddFacet(query, FacetGroupKind.NewArrivals, true, FacetSorting.ValueAsc, descriptor =>
+			AddFacet(query, FacetGroupKind.NewArrivals, true, FacetSorting.LabelAsc, descriptor =>
 			{
 				descriptor.AddValue(new FacetValue(fromUtc, null, IndexTypeCode.DateTime, true, false)
 				{
@@ -643,16 +650,24 @@ namespace SmartStore.Services.Search.Modelling
 
 						if (form != null)
 						{
-							form.AllKeys
-								.Where(x => !_tokens.Contains(x))
-								.Each(key => _aliases.AddRange(key, form[key].SplitSafe(",")));
+							foreach (var key in form.AllKeys)
+							{
+								if (key.HasValue() && !_tokens.Contains(key))
+								{
+									_aliases.AddRange(key, form[key].SplitSafe(","));
+								}
+							}
 						}
 
 						if (query != null)
 						{
-							query.AllKeys
-								.Where(x => !_tokens.Contains(x))
-								.Each(key => _aliases.AddRange(key, query[key].SplitSafe(",")));
+							foreach (var key in query.AllKeys)
+							{
+								if (key.HasValue() && !_tokens.Contains(key))
+								{
+									_aliases.AddRange(key, query[key].SplitSafe(","));
+								}
+							}
 						}
 					}
 				}

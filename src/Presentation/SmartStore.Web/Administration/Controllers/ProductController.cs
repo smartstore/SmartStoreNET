@@ -884,6 +884,94 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		private IQueryable<Product> ApplySorting(IQueryable<Product> query, GridCommand command)
+		{
+			if (command.SortDescriptors != null && command.SortDescriptors.Count > 0)
+			{
+				var sort = command.SortDescriptors.First();
+				if (sort.Member == "Name")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.Name);
+					else
+						query = query.OrderByDescending(x => x.Name);
+				}
+				else if (sort.Member == "Sku")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.Sku);
+					else
+						query = query.OrderByDescending(x => x.Sku);
+				}
+				else if (sort.Member == "Price")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.Price);
+					else
+						query = query.OrderByDescending(x => x.Price);
+				}
+				else if (sort.Member == "OldPrice")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.OldPrice);
+					else
+						query = query.OrderByDescending(x => x.OldPrice);
+				}
+				else if (sort.Member == "StockQuantity")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.StockQuantity);
+					else
+						query = query.OrderByDescending(x => x.StockQuantity);
+				}
+				else if (sort.Member == "CreatedOn")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.CreatedOnUtc);
+					else
+						query = query.OrderByDescending(x => x.CreatedOnUtc);
+				}
+				else if (sort.Member == "UpdatedOn")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.UpdatedOnUtc);
+					else
+						query = query.OrderByDescending(x => x.UpdatedOnUtc);
+				}
+				else if (sort.Member == "Published")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.Published);
+					else
+						query = query.OrderByDescending(x => x.Published);
+				}
+				else if (sort.Member == "LimitedToStores")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.LimitedToStores);
+					else
+						query = query.OrderByDescending(x => x.LimitedToStores);
+				}
+				else if (sort.Member == "ManageInventoryMethod")
+				{
+					if (sort.SortDirection == ListSortDirection.Ascending)
+						query = query.OrderBy(x => x.ManageInventoryMethodId);
+					else
+						query = query.OrderByDescending(x => x.ManageInventoryMethodId);
+				}
+				else
+				{
+					query = query.OrderBy(x => x.Name);
+				}
+			}
+			else
+			{
+				query = query.OrderBy(x => x.Name);
+			}
+
+			return query;
+		}
+
 		#endregion Utitilies
 
 		#region Methods
@@ -965,7 +1053,7 @@ namespace SmartStore.Admin.Controllers
 				if (_searchSettings.SearchFields.Contains("shortdescription"))
 					fields.Add("shortdescription");
 
-				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName)
+				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName, SearchMode.Contains)
 					.HasStoreId(model.SearchStoreId)
 					.WithLanguage(_workContext.WorkingLanguage);
 
@@ -989,62 +1077,7 @@ namespace SmartStore.Admin.Controllers
 					searchQuery = searchQuery.WithCategoryIds(null, model.SearchCategoryId);
 
 				var query = _catalogSearchService.PrepareQuery(searchQuery);
-
-				// order
-				if (command.SortDescriptors != null && command.SortDescriptors.Count > 0)
-				{
-					var sort = command.SortDescriptors.First();
-					if (sort.Member == "Name")
-					{
-						if (sort.SortDirection == ListSortDirection.Ascending)
-							query = query.OrderBy(x => x.Name);
-						else
-							query = query.OrderByDescending(x => x.Name);
-					}
-					else if (sort.Member == "Sku")
-					{
-						if (sort.SortDirection == ListSortDirection.Ascending)
-							query = query.OrderBy(x => x.Sku);
-						else
-							query = query.OrderByDescending(x => x.Sku);
-					}
-					else if (sort.Member == "Price")
-					{
-						if (sort.SortDirection == ListSortDirection.Ascending)
-							query = query.OrderBy(x => x.Price);
-						else
-							query = query.OrderByDescending(x => x.Price);
-					}
-					else if (sort.Member == "StockQuantity")
-					{
-						if (sort.SortDirection == ListSortDirection.Ascending)
-							query = query.OrderBy(x => x.StockQuantity);
-						else
-							query = query.OrderByDescending(x => x.StockQuantity);
-					}
-					else if (sort.Member == "CreatedOn")
-					{
-						if (sort.SortDirection == ListSortDirection.Ascending)
-							query = query.OrderBy(x => x.CreatedOnUtc);
-						else
-							query = query.OrderByDescending(x => x.CreatedOnUtc);
-					}
-					else if (sort.Member == "UpdatedOn")
-					{
-						if (sort.SortDirection == ListSortDirection.Ascending)
-							query = query.OrderBy(x => x.UpdatedOnUtc);
-						else
-							query = query.OrderByDescending(x => x.UpdatedOnUtc);
-					}
-					else
-					{
-						query = query.OrderBy(x => x.Name);
-					}
-				}
-				else
-				{
-					query = query.OrderBy(x => x.Name);
-				}
+				query = ApplySorting(query, command);
 
 				var products = new PagedList<Product>(query, command.Page - 1, command.PageSize);
 				var pictureMap = _pictureService.GetPicturesByProductIds(products.Select(x => x.Id).ToArray(), 1, true);
@@ -2722,8 +2755,9 @@ namespace SmartStore.Admin.Controllers
 				if (_searchSettings.SearchFields.Contains("shortdescription"))
 					fields.Add("shortdescription");
 
-				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName)
-					.HasStoreId(model.SearchStoreId);
+				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName, SearchMode.Contains)
+					.HasStoreId(model.SearchStoreId)
+					.WithLanguage(_workContext.WorkingLanguage);
 
 				if (model.SearchProductTypeId > 0)
 					searchQuery = searchQuery.IsProductType((ProductType)model.SearchProductTypeId);
@@ -2734,9 +2768,10 @@ namespace SmartStore.Admin.Controllers
 				if (model.SearchCategoryId != 0)
 					searchQuery = searchQuery.WithCategoryIds(null, model.SearchCategoryId);
 
-
 				var query = _catalogSearchService.PrepareQuery(searchQuery);
-				var products = new PagedList<Product>(query.OrderBy(x => x.Name), command.Page - 1, command.PageSize);
+				query = ApplySorting(query, command);
+
+				var products = new PagedList<Product>(query, command.Page - 1, command.PageSize);
 
 				gridModel.Data = products.Select(x =>
 				{

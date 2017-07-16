@@ -25,7 +25,8 @@ namespace SmartStore.Services.Hooks
 			typeof(ProductAttributeOption),
 			typeof(ProductAttributeOptionsSet),
 			typeof(ProductAttribute),
-			typeof(ProductVariantAttribute)
+			typeof(ProductVariantAttribute),
+			typeof(ProductVariantAttributeValue)
 		});
 
 		public PictureHook(
@@ -65,6 +66,14 @@ namespace SmartStore.Services.Hooks
 			{
 				var options = _productAttributeService.Value.GetProductVariantAttributeValues(entity.Id);
 				_toDelete.AddRange(options.Where(x => x.PictureId != 0).Select(x => x.PictureId));
+			}
+			else if (type == typeof(ProductVariantAttributeValue))
+			{
+				var pictureId = ((ProductVariantAttributeValue)entry.Entity).PictureId;
+				if (pictureId != 0)
+				{
+					_toDelete.Add(pictureId);
+				}
 			}
 		}
 

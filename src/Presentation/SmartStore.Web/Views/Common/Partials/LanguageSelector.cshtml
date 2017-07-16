@@ -22,6 +22,14 @@
                 
                 <a href="@href" title="@lang.NativeName" rel="nofollow" class="dropdown-item" 
                    data-selected="@(lang.Equals(activeLang) ? "true" : "false")" data-abbreviation="@lang.Name">
+
+                    @if(Model.UseImages)
+                    {
+                        <span class="mr-1 align-text-bottom">
+                            <img src = "@Url.Content("~/Content/images/flags/" + lang.FlagImageFileName)" />
+                        </span>
+                    }
+
                     @lang.Name
                     <span class="abbreviation">(@lang.SeoCode.ToUpper())</span>
                 </a>

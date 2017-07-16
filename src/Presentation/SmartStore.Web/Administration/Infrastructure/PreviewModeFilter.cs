@@ -13,15 +13,18 @@ namespace SmartStore.Admin.Infrastructure
 {	
 	public class PreviewModeFilter : IResultFilter
 	{
-		private readonly IThemeContext _themeContext;
+		private readonly Lazy<IThemeContext> _themeContext;
 		private readonly ICommonServices _services;
 		private readonly Lazy<IWidgetProvider> _widgetProvider;
 
-		public PreviewModeFilter(IThemeContext themeContext, ICommonServices services, Lazy<IWidgetProvider> widgetProvider)
+		public PreviewModeFilter(
+			Lazy<IThemeContext> themeContext, 
+			ICommonServices services, 
+			Lazy<IWidgetProvider> widgetProvider)
 		{
-			this._themeContext = themeContext;
-			this._services = services;
-			this._widgetProvider = widgetProvider;
+			_themeContext = themeContext;
+			_services = services;
+			_widgetProvider = widgetProvider;
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
@@ -32,7 +35,7 @@ namespace SmartStore.Admin.Infrastructure
 			if (!filterContext.Result.IsHtmlViewResult())
 				return;
 
-			var theme = _themeContext.GetPreviewTheme();
+			var theme = _themeContext.Value.GetPreviewTheme();
 			var storeId = _services.StoreContext.GetPreviewStore();
 
 			if (theme == null && storeId == null)

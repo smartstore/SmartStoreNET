@@ -1,17 +1,52 @@
 ﻿# Release Notes
 
+## SmartStore.NET 3.0.2
+### Breaking changes
+* MegaSearch: The index must be re-created because of changes to the price filters.
+
+### Improvements
+* PayPal Standard: New settings "UsePayPalAddress" and "IsShippingAddressRequired" to avoid payment rejection due to address validation.
+
+### Bugfixes
+* Fixed memory leak in MegaSearch plugin, which caused HTTP 503
+* RSS: Item URLs in feeds ignored SSL
+* Fixed "The view 'ProfileImportResult' or its master was not found"
+* Fixed #1187 Search: Do not hide multi-selectable filters of the same group if there are no hits
+* Fixed System.ArgumentNullException in ProductVariantQueryFactory
+* PayPal PLUS: Fixed HTTP 401 "Unauthorized" when calling PatchShipping
+* Fixed #1189 MegaSearch: Boosts are ignored in prefix and wildcard queries by default
+* Fixed MegaSearch: Localized labels of filters never displayed
+* Fixed #1195 Exporter: don't send email if no email account has been selected
+* Product lists sometimes show the wrong delivery time
+* Fixed #1192 Lucene indexing performance decreases the longer it takes
+* Fixed #1198 MegaSearch: never sort numeric range by label, always by value
+* Fixed filter for attributes were always sorted by hit count
+* Fixed #1200 PayPal PLUS: Invalid request if the order amount is zero
+* Fixed null reference exception when copying attribute option set with image(s) (file system storage only)
+
 ## SmartStore.NET 3.0.1
 ### Improvements
 * (Perf) Much faster application startup
+* Microsoft Visual C++ 2015 Redistributable no longer required to be installed
 * **BeezUP**:
 	* Exports up to 9 product images
 	* Export stock quantity when stock is managed by attributes
 	* Export parent child relation data when exporting attribute combinations as products
 	* Flatten and append attribute data when exporting attribute combinations as products
 * Instant search should search manufacturer/brand name
+* HTTP 301 redirects for legacy media URLs
 * (Dev) New 'ApplicationStarted' event
-* **GMC**: Added missing database indexes.
-* **Web API**: Added endpoints for blog post and blog comment
+* (Dev) Enabled C# 6 features in plugin views
+* (GMC) Added missing database indexes.
+* (WebApi) Added endpoints for blog post and blog comment
+* Added more sortable columns to backend product grids
+* #1160 Append suffix 'Picture (1...n)' to thumbnail's alt-attribute on product detail pages
+* (Perf) Faster catalog indexing thanks to new database indexes
+* (Perf) Faster dynamic view compilation thanks to *Roslyn* compiler
+* Added the widget zone 'productdetails_pictures_bottom'
+* Added config setting *sm:PdfEngineBaseUrl*. There are cases where the PDF converter exits with a network error, when it is unable to load automatically resolved URLs.
+* (Dev) Added *Retry* utility class
+* #1176 Admin > Product Search: It ain't possible to search for parts of a product name
 
 ### Bugfixes
 * #1145: Fixed HTTP 404 after switching language
@@ -20,17 +55,36 @@
 * Item row in list style product list should not wrap on small devices
 * Item row in list style product list squashed on Android system browser
 * Linq search: Filter for manufacturers and categories were not limited by store
-* **GMC**: Fixes duplicate occurrence of application path in absolute product URL
+* (GMC) Fixes duplicate occurrence of application path in absolute product URL
 * Products with stock managed by attributes sometimes not displayed in category lists
 * Fixed System.MissingMethodException for SmartStore.Core.Search.Facets.FacetGroup
 * Fixed uploaded image paths in HTML fields (Media/Uploaded > Media/<TenantName>/Uploaded)
-* **MegaSearch**: Product category order, product manufacturer order and product order were not recognized (sorting)
+* (MegaSearch) Product category order, product manufacturer order and product order were not recognized (sorting)
 * Standard search: Fixed sorting of recently added products
 * Alias for search filters couldn't be set if there's only one language
 * #1168 Cart: MinOrderAmount sometimes ignored
-* Moving products from wishlist to cart was out of function
+* Moving products from editable wishlist to cart was out of function
+* Fixed several issues with parallelly executed data export tasks
+* Fixed several issues with *PayPal* payment providers
 * Facebook login out of function due to Facebook API changes (always returns "Unknown error")
-
+* Fixed 'no picture available' watermark on some product pictures
+* #1153 Removing already applied gift card causes error
+* (Theming) *Drift* zoom uses static zoomFactor. Made it dynamic.
+* (Theming) IE11: simple menu dropdowns weren't positioned correctly
+* Removed "trust" element from web.config (causes problems on some shared hosting spaces)
+* Fixed ThumbZoomer unproportional rescale issue in product grid
+* #1134 JavaScript error (IE 11 in VS debug mode) after removing the last item in shopping cart
+* (Theming) Dozens of layout fs for ixemobile devices (especially iOS and Android native browser)
+* Better error logging for TaskScheduler
+* Fixed several queries which caused problems with SQL CE
+* Fixed missing CurrencyCode exception in product exports
+* #1179 Error while downloading a downloadable product
+* Mega Menu: If a dropdown contains two level hierarchy categories only, they are not wrapped to the next column
+* Hide sort dropdown when option is off
+* HTTP 301 redirects for legacy media URLs
+* Added missing resources of broken migration 'AddressEnhancement' again
+* Checkout: Title and salutation were missing when entering new addresses
+* #1163 ContentSlider: pictures won't be displayed when placed on top or bottom on IOS 
 
 ## SmartStore.NET 3.0
 

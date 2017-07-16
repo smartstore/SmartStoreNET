@@ -6,11 +6,11 @@ using System.Web.Routing;
 using System.Text.RegularExpressions;
 using SmartStore.Utilities;
 using SmartStore.Core;
-using SmartStore.Web.Framework.Plugins;
 using SmartStore.Core.IO;
 using System.IO;
 using System.Web.Hosting;
 using System.Reflection;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework
 {
@@ -62,7 +62,7 @@ namespace SmartStore.Web.Framework
 		/// <remarks>
 		/// For performance reasons SmartStore.NET is configured to serve static files (files with extensions other than those mapped to managed handlers)
 		/// through the native <c>StaticFileModule</c>. This method lets you define exceptions to this default rule: every path registered as routable gets
-		/// handled by the <see cref="UrlRoutingModule"/> and therefore enables dynamic processing of (physically non-existant) static files.
+		/// handled by the <see cref="UrlRoutingModule"/> and therefore enables dynamic processing of (physically non-existent) static files.
 		/// </remarks>
 		public static void RegisterRoutablePath(string path, string verb = ".*")
 		{

@@ -517,7 +517,7 @@ namespace SmartStore.Web.Controllers
 			int galleryStartIndex = -1;
 			string galleryHtml = null;
 			string dynamicThumbUrl = null;
-			bool isAssociated = itemType.IsCaseInsensitiveEqual("associateditem");
+			var isAssociated = itemType.IsCaseInsensitiveEqual("associateditem");
 			var pictureModel = new ProductDetailsPictureModel();
 			var m = new ProductDetailsModel();
 			var product = _productService.GetProductById(productId);
@@ -525,25 +525,19 @@ namespace SmartStore.Web.Controllers
 			IList<ProductBundleItemData> bundleItems = null;
 			ProductBundleItemData bundleItem = (bItem == null ? null : new ProductBundleItemData(bItem));
 
-			var warnings = new List<string>();
-			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(productId);
-
-			var attributeXml = query.CreateSelectedAttributesXml(productId, 0, attributes, _productAttributeParser,
-				_localizationService, _downloadService, _catalogSettings, this.Request, warnings);
-
-			var areAllAttributesForCombinationSelected = _shoppingCartService.AreAllAttributesForCombinationSelected(attributeXml, product);
-
-			// quantity required for tier prices
+			// Quantity required for tier prices.
 			string quantityKey = form.AllKeys.FirstOrDefault(k => k.EndsWith("EnteredQuantity"));
 			if (quantityKey.HasValue())
+			{
 				int.TryParse(form[quantityKey], out quantity);
+			}
 
 			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
 			{
 				bundleItems = _productService.GetBundleItems(product.Id);
 				if (query.Variants.Count > 0)
 				{
-					// may add elements to query object if they are preselected by bundle item filter
+					// May add elements to query object if they are preselected by bundle item filter.
 					foreach (var itemData in bundleItems)
 					{
 						_helper.PrepareProductDetailsPageModel(itemData.Item.Product, query, false, itemData, null);
@@ -551,28 +545,32 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			// get merged model data
+			// Get merged model data.
 			_helper.PrepareProductDetailModel(m, product, query, isAssociated, bundleItem, bundleItems, quantity);
 
-			if (bundleItem != null) // update bundle item thumbnail
+			if (bundleItem != null)
 			{
+				// Update bundle item thumbnail.
 				if (!bundleItem.Item.HideThumbnail)
 				{
 					var picture = m.GetAssignedPicture(_pictureService, null, bundleItem.Item.ProductId);
 					dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.BundledProductPictureSize, false);
 				}
 			}
-			else if (isAssociated) // update associated product thumbnail
+			else if (isAssociated)
 			{
+				// Update associated product thumbnail.
 				var picture = m.GetAssignedPicture(_pictureService, null, productId);
 				dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);
 			}
-			else if (product.ProductType != ProductType.BundledProduct)     // update image gallery
+			else if (product.ProductType != ProductType.BundledProduct)
 			{
+				// Update image gallery.
 				var pictures = _pictureService.GetPicturesByProductId(productId);
 
-				if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)  // all pictures rendered... only index is required
+				if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
 				{
+					// All pictures rendered... only index is required.
 					var picture = m.GetAssignedPicture(_pictureService, pictures);
 					galleryStartIndex = (picture == null ? 0 : pictures.IndexOf(picture));
 				}

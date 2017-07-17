@@ -51,9 +51,7 @@ namespace SmartStore.Web.Framework.Modelling
 				MissingMemberHandling = MissingMemberHandling.Ignore,
 				TypeNameHandling = TypeNameHandling.Objects,
 				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-
-				// We cannot ignore null. Client template of several Telerik grids would fail.
-				//NullValueHandling = NullValueHandling.Ignore,
+				NullValueHandling = NullValueHandling.Ignore,
 
 				// Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
 				// from deserialization errors that might occur from deeply nested objects.

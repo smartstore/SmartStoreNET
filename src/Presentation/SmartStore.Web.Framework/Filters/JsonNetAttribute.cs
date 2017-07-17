@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using SmartStore.Core.Data;
 using SmartStore.Services.Helpers;
 using SmartStore.Web.Framework.Modelling;
@@ -31,8 +32,19 @@ namespace SmartStore.Web.Framework.Filters
 				return;
 
 			var jsonResult = filterContext.Result as JsonResult;
+			var settings = new JsonSerializerSettings
+			{
+				MissingMemberHandling = MissingMemberHandling.Ignore,
+				TypeNameHandling = TypeNameHandling.Objects,
+				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
 
-			filterContext.Result = new JsonNetResult(DateTimeHelper.Value)
+				// We cannot ignore null. Client template of several Telerik grids would fail.
+				//NullValueHandling = NullValueHandling.Ignore,
+
+				MaxDepth = 32
+			};
+
+			filterContext.Result = new JsonNetResult(DateTimeHelper.Value, settings)
 			{
 				Data = jsonResult.Data,
 				ContentType = jsonResult.ContentType,

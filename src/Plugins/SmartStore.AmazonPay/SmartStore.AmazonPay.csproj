@@ -76,7 +76,7 @@
   <ItemGroup>
     <Reference Include="AmazonPay, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\AmazonPay.3.0.0\lib\AmazonPay.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
@@ -86,7 +86,7 @@
     </Reference>
     <Reference Include="Common.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Common.Logging.2.0.0\lib\2.0\Common.Logging.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -152,6 +152,7 @@
     <Compile Include="Controllers\AmazonPayControllerBase.cs" />
     <Compile Include="Controllers\AmazonPayShoppingCartController.cs" />
     <Compile Include="Events\MessageTokenEventConsumer.cs" />
+    <Compile Include="Services\AmazonPayServiceHelper.cs" />
     <Compile Include="Services\Internal\AmazonPayExtensions.cs" />
     <Compile Include="Filters\AmazonPayCheckoutFilter.cs" />
     <Compile Include="Models\AmazonPayViewModel.cs" />

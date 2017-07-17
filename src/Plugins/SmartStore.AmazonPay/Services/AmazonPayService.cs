@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml.Serialization;
+using AmazonPay.CommonRequests;
 using Autofac;
+using Newtonsoft.Json.Linq;
 using OffAmazonPaymentsService;
 using SmartStore.AmazonPay.Api;
 using SmartStore.AmazonPay.Models;
@@ -38,7 +40,7 @@ using SmartStore.Services.Tasks;
 
 namespace SmartStore.AmazonPay.Services
 {
-	public class AmazonPayService : IAmazonPayService
+	public partial class AmazonPayService : IAmazonPayService
 	{
 		private readonly IAmazonPayApi _api;
 		private readonly HttpContextBase _httpContext;
@@ -1312,18 +1314,39 @@ namespace SmartStore.AmazonPay.Services
 
 		public AuthorizeState Authorize(string returnUrl, bool? verifyResponse = null)
 		{
-			var email = _httpContext.Request.QueryString["email"];
-			var name = _httpContext.Request.QueryString["name"];
-			var customerId = _httpContext.Request.QueryString["customerId"];
+			string error = null;
+			string email = null;
+			string name = null;
+			string userId = null;
+			var accessToken = _httpContext.Request.QueryString["accessToken"];
 
-			if (email.IsEmpty() || name.IsEmpty() || customerId.IsEmpty())
+			if (accessToken.HasValue())
 			{
-				var msg = T("Plugins.Payments.AmazonPay.IncompleteProfileDetails") +
-					$" Email: {email.NaIfEmpty()}, name: {name.NaIfEmpty()}, customerId: {customerId.NaIfEmpty()}.";
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>();
+				var client = CreateClient(settings);
+				var jsonString = client.GetUserInfo(accessToken);
+				var json = JObject.Parse(jsonString);
 
+				email = json.GetValue("email").ToString();
+				name = json.GetValue("name").ToString();
+				userId = json.GetValue("user_id").ToString();
+
+				if (email.IsEmpty() || name.IsEmpty() || userId.IsEmpty())
+				{
+					error = T("Plugins.Payments.AmazonPay.IncompleteProfileDetails") +
+						$" Email: {email.NaIfEmpty()}, name: {name.NaIfEmpty()}, userId: {userId.NaIfEmpty()}.";
+				}
+			}
+			else
+			{
+				error = T("Plugins.Payments.AmazonPayMissingAccessToken");
+			}
+
+			if (error.HasValue())
+			{
 				var state = new AuthorizeState("", OpenAuthenticationStatus.Error);
-				state.AddError(msg);
-				Logger.Error(msg);
+				state.AddError(error);
+				Logger.Error(error);
 				return state;
 			}
 
@@ -1339,7 +1362,7 @@ namespace SmartStore.AmazonPay.Services
 			claims.Name.Last = lastName;
 
 			var parameters = new AmazonAuthenticationParameters();
-			parameters.ExternalIdentifier = customerId;
+			parameters.ExternalIdentifier = userId;
 			parameters.AddClaim(claims);
 
 			var result = _authorizer.Value.Authorize(parameters);

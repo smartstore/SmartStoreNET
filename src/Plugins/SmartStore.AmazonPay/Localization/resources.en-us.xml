@@ -79,6 +79,9 @@ Text suggestions:<ul>
   <LocaleResource Name="PasteAccessData.Hint">
     <Value>Paste here your access data (merchant_id, access_key, secret_key, client_id etc.)...</Value>
   </LocaleResource>
+  <LocaleResource Name="MissingAccessToken">
+    <Value>Missing access token!</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Access data;Data exchange;Layout;Miscellaneous</Value>

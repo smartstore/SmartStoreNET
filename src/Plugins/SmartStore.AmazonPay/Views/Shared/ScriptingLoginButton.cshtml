@@ -43,15 +43,8 @@
 						},
 						function (authorizeResponse) {
 							accessToken = authorizeResponse.access_token;
-
-							if (isAuthentication) {
-								amazon.Login.retrieveProfile(accessToken, function (response) {
-									handlerUrl += 'email=' + encodeURIComponent(response.profile.PrimaryEmail);
-									handlerUrl += '&name=' + encodeURIComponent(response.profile.Name);
-									handlerUrl += '&customerId=' + encodeURIComponent(response.profile.CustomerId);
-									window.location = handlerUrl;
-								});
-							}
+							handlerUrl += '&accessToken=' + encodeURIComponent(accessToken);
+							window.location = handlerUrl;
 						}
 					);
 				},

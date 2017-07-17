@@ -79,6 +79,9 @@ Textvorschläge:<ul>
   <LocaleResource Name="PasteAccessData.Hint">
     <Value>Fügen Sie hier Ihre Zugangsdaten ein (merchant_id, access_key, secret_key, client_id etc.)...</Value>
   </LocaleResource>
+  <LocaleResource Name="MissingAccessToken">
+    <Value>Der Access-Token fehlt!</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Zugangsdaten;Datenaustausch;Gestaltung;Sonstiges</Value>

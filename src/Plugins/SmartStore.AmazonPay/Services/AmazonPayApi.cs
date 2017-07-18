@@ -86,22 +86,6 @@ namespace SmartStore.AmazonPay.Api
 			return new AmazonPayApiClient(settings, appVersion);
 		}
 
-		public void GetConstraints(OrderReferenceDetails details, IList<string> warnings)
-		{
-			try
-			{
-				if (details != null && warnings != null && details.IsSetConstraints())
-				{
-					foreach (var constraint in details.Constraints.Constraint)
-					{
-						string warning = "{0} ({1})".FormatWith(constraint.Description, constraint.ConstraintID);
-						warnings.Add(warning);
-					}
-				}
-			}
-			catch (Exception) { }
-		}
-
 		public bool FindAndApplyAddress(OrderReferenceDetails details, Customer customer, bool isShippable, bool forceToTakeAmazonAddress)
 		{
 			// PlaceOrder requires billing address but we don't get one from Amazon here. so use shipping address instead until we get it from amazon.
@@ -288,16 +272,6 @@ namespace SmartStore.AmazonPay.Api
 			}
 
 			return null;
-		}
-
-		/// <summary>Confirm an order reference informs Amazon that the buyer has placed the order.</summary>
-		public void ConfirmOrderReference(AmazonPayApiClient client, string orderReferenceId)
-		{
-			var request = new ConfirmOrderReferenceRequest();
-			request.SellerId = client.Settings.SellerId;
-			request.AmazonOrderReferenceId = orderReferenceId;
-
-			var response = client.Service.ConfirmOrderReference(request);
 		}
 
 		public void CancelOrderReference(AmazonPayApiClient client, string orderReferenceId)

@@ -1,22 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
-using System.Collections.Generic;
-using OffAmazonPaymentsService;
 using SmartStore.AmazonPay.Models;
-using SmartStore.AmazonPay.Settings;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Services.Payments;
 using SmartStore.Services.Authentication.External;
+using SmartStore.Services.Payments;
 
 namespace SmartStore.AmazonPay.Services
 {
 	public partial interface IAmazonPayService : IExternalProviderAuthorizer
 	{
 		void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null);
-		void LogAmazonError(OffAmazonPaymentsServiceException exception, bool notify = false, IList<string> errors = null);
-
-		void AddOrderNote(AmazonPaySettings settings, Order order, AmazonPayOrderNote note, string anyString = null, bool isIpn = false);
 
 		void SetupConfiguration(ConfigurationModel model);
 

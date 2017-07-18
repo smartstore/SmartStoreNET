@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Xml.Serialization;
-using AmazonPay.CommonRequests;
+using AmazonPay.StandardPaymentRequests;
 using Autofac;
 using Newtonsoft.Json.Linq;
 using OffAmazonPaymentsService;
@@ -114,47 +112,6 @@ namespace SmartStore.AmazonPay.Services
 		public Localizer T { get; set; }
 		public ILogger Logger { get; set; }
 
-		private string GetPluginUrl(string action, bool useSsl = false)
-		{
-			string pluginUrl = "{0}Plugins/SmartStore.AmazonPay/AmazonPay/{1}".FormatWith(_services.WebHelper.GetStoreLocation(useSsl), action);
-			return pluginUrl;
-		}
-
-		private void SerializeOrderAttribute(AmazonPayOrderAttribute attribute, Order order)
-		{
-			if (attribute != null)
-			{
-				var sb = new StringBuilder();
-				using (var writer = new StringWriter(sb))
-				{
-					var serializer = new XmlSerializer(typeof(AmazonPayOrderAttribute));
-					serializer.Serialize(writer, attribute);
-
-					_genericAttributeService.SaveAttribute<string>(order, AmazonPayPlugin.SystemName + ".OrderAttribute", sb.ToString(), order.StoreId);
-				}
-			}
-		}
-		private AmazonPayOrderAttribute DeserializeOrderAttribute(Order order)
-		{
-			var serialized = order.GetAttribute<string>(AmazonPayPlugin.SystemName + ".OrderAttribute", _genericAttributeService, order.StoreId);
-
-			if (!serialized.HasValue())
-			{
-				var attribute = new AmazonPayOrderAttribute();
-				
-				// legacy < v.1.14
-				attribute.OrderReferenceId = order.GetAttribute<string>(AmazonPayPlugin.SystemName + ".OrderReferenceId", order.StoreId);
-
-				return attribute;
-			}
-
-			using (var reader = new StringReader(serialized))
-			{
-				var serializer = new XmlSerializer(typeof(AmazonPayOrderAttribute));
-				return (AmazonPayOrderAttribute)serializer.Deserialize(reader);
-			}
-		}
-
 		public void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null)
 		{
 			try
@@ -170,15 +127,20 @@ namespace SmartStore.AmazonPay.Services
 					Logger.Error(exception, shortMessage);
 
 					if (notify)
+					{
 						_services.Notifier.Error(new LocalizedString(shortMessage));
+					}
 				}
 			}
-			catch (Exception) { }
+			catch { }
 
 			if (errors != null && shortMessage.HasValue())
+			{
 				errors.Add(shortMessage);
+			}
 		}
-		public void LogAmazonError(OffAmazonPaymentsServiceException exception, bool notify = false, IList<string> errors = null)
+
+		private void LogAmazonError(OffAmazonPaymentsServiceException exception, bool notify = false, IList<string> errors = null)
 		{
 			try
 			{
@@ -189,72 +151,17 @@ namespace SmartStore.AmazonPay.Services
 					Logger.Error(exception, shortMessage);
 
 					if (notify)
+					{
 						_services.Notifier.Error(new LocalizedString(shortMessage));
+					}
 
 					if (errors != null)
+					{
 						errors.Add(shortMessage);
+					}
 				}
 			}
-			catch (Exception) { }
-		}
-
-		private bool IsActive(int storeId, bool logInactive = false)
-		{
-			var isActive = _paymentService.IsPaymentMethodActive(AmazonPayPlugin.SystemName, storeId);
-
-			if (!isActive && logInactive)
-			{
-				LogError(null, T("Plugins.Payments.AmazonPay.PaymentMethodNotActive", _services.StoreContext.CurrentStore.Name));
-			}
-
-			return isActive;
-		}
-
-		public void AddOrderNote(AmazonPaySettings settings, Order order, AmazonPayOrderNote note, string anyString = null, bool isIpn = false)
-		{
-			try
-			{
-				if (!settings.AddOrderNotes || order == null)
-					return;
-
-				var sb = new StringBuilder();
-
-				string[] orderNoteStrings = T("Plugins.Payments.AmazonPay.OrderNoteStrings").Text.SplitSafe(";");
-				string faviconUrl = "{0}Plugins/{1}/Content/images/favicon.png".FormatWith(_services.WebHelper.GetStoreLocation(false), AmazonPayPlugin.SystemName);
-
-				sb.AppendFormat("<img src=\"{0}\" style=\"float: left; width: 16px; height: 16px;\" />", faviconUrl);
-
-				if (anyString.HasValue())
-				{
-					anyString = orderNoteStrings.SafeGet((int)note).FormatWith(anyString);
-				}
-				else
-				{
-					anyString = orderNoteStrings.SafeGet((int)note);
-					anyString = anyString.Replace("{0}", "");
-				}
-
-				if (anyString.HasValue())
-				{
-					sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", anyString);
-				}
-
-				if (isIpn)
-					order.HasNewPaymentNotification = true;
-
-				order.OrderNotes.Add(new OrderNote
-				{
-					Note = sb.ToString(),
-					DisplayToCustomer = false,
-					CreatedOnUtc = DateTime.UtcNow
-				});
-
-				_orderService.UpdateOrder(order);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc);
-			}
+			catch { }
 		}
 
 		public void SetupConfiguration(ConfigurationModel model)
@@ -370,7 +277,7 @@ namespace SmartStore.AmazonPay.Services
 						return model;
 					}
 
-					if (cart.Count <= 0 || !IsActive(store.Id))
+					if (cart.Count <= 0 || !IsPaymentMethodActive(store.Id))
 					{
 						model.Result = AmazonPayResultType.Redirect;
 						return model;
@@ -412,7 +319,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else if (type == AmazonPayRequestType.ShoppingCart || type == AmazonPayRequestType.MiniShoppingCart)
 				{
-					if (cart.Count <= 0 || !IsActive(store.Id))
+					if (cart.Count <= 0 || !IsPaymentMethodActive(store.Id))
 					{
 						model.Result = AmazonPayResultType.None;
 						return model;
@@ -814,42 +721,6 @@ namespace SmartStore.AmazonPay.Services
 			});
 		}
 
-		private Order FindOrder(AmazonPayApiData data)
-		{
-			Order order = null;
-			string errorId = null;
-
-			if (data.MessageType.IsCaseInsensitiveEqual("AuthorizationNotification"))
-			{
-				if ((order = _orderService.GetOrderByPaymentAuthorization(AmazonPayPlugin.SystemName, data.AuthorizationId)) == null)
-					errorId = "AuthorizationId {0}".FormatWith(data.AuthorizationId);
-			}
-			else if (data.MessageType.IsCaseInsensitiveEqual("CaptureNotification"))
-			{
-				if ((order = _orderService.GetOrderByPaymentCapture(AmazonPayPlugin.SystemName, data.CaptureId)) == null)
-					order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
-
-				if (order == null)
-					errorId = "CaptureId {0}".FormatWith(data.CaptureId);
-			}
-			else if (data.MessageType.IsCaseInsensitiveEqual("RefundNotification"))
-			{
-				var attribute = _genericAttributeService.GetAttributes(AmazonPayPlugin.SystemName + ".RefundId", "Order")
-					.Where(x => x.Value == data.RefundId)
-					.FirstOrDefault();
-
-				if (attribute == null || (order = _orderService.GetOrderById(attribute.EntityId)) == null)
-					order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
-
-				if (order == null)
-					errorId = "RefundId {0}".FormatWith(data.RefundId);
-			}
-
-			if (errorId.HasValue())
-				Logger.Warn(T("Plugins.Payments.AmazonPay.OrderNotFound", errorId));
-
-			return order;
-		}
 		public void AddCustomerOrderNoteLoop(AmazonPayActionState state)
 		{
 			try
@@ -868,10 +739,12 @@ namespace SmartStore.AmazonPay.Services
 						if (state.Errors != null)
 						{
 							foreach (var error in state.Errors)
+							{
 								sb.AppendFormat("<p>{0}</p>", error);
+							}
 						}
 
-						var orderNote = new OrderNote()
+						var orderNote = new OrderNote
 						{
 							DisplayToCustomer = true,
 							Note = sb.ToString(),
@@ -896,7 +769,7 @@ namespace SmartStore.AmazonPay.Services
 
 		public PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest request)
 		{
-			// fulfill the Amazon checkout
+			// Fulfill the Amazon checkout.
 			var result = new PreProcessPaymentResult();
 
 			try
@@ -907,9 +780,10 @@ namespace SmartStore.AmazonPay.Services
 				var currency = store.PrimaryStoreCurrency;
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
-				var client = _api.CreateClient(settings);
+				var client = CreateClient(settings);
+				var oldClient = _api.CreateClient(settings);
 
-				if (!IsActive(store.Id, true))
+				if (!IsPaymentMethodActive(store.Id, true))
 				{
 					//_httpContext.ResetCheckoutState();
 
@@ -917,21 +791,49 @@ namespace SmartStore.AmazonPay.Services
 					return result;
 				}
 
-				var preConfirmDetails = _api.SetOrderReferenceDetails(client, state.OrderReferenceId, request.OrderTotal, currency.CurrencyCode, orderGuid, store.Name);
+				var setOrderRequest = new SetOrderReferenceDetailsRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonOrderReferenceId(state.OrderReferenceId)
+					.WithPlatformId(PlatformId)
+					.WithAmount(request.OrderTotal)
+					.WithCurrencyCode(ConvertCurrency(currency.CurrencyCode))
+					.WithSellerOrderId(orderGuid)
+					.WithStoreName(store.Name);
 
-				_api.GetConstraints(preConfirmDetails, result.Errors);
+				var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
+				if (setOrderResponse.GetHasConstraint())
+				{
+					var ids = setOrderResponse.GetConstraintIdList();
+					var descriptions = setOrderResponse.GetDescriptionList();
+
+					foreach (var id in ids)
+					{
+						var idx = ids.IndexOf(id);
+						if (idx < descriptions.Count)
+						{
+							result.Errors.Add($"{descriptions[idx]} ({id})");
+						}
+					}					
+				}
 
 				if (!result.Success)
+				{
 					return result;
+				}
 
-				_api.ConfirmOrderReference(client, state.OrderReferenceId);
+				// Inform Amazon that the buyer has placed the order.
+				var confirmRequest = new ConfirmOrderReferenceRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonOrderReferenceId(state.OrderReferenceId);
+
+				client.ConfirmOrderReference(confirmRequest);
 
 				// Address and payment cannot be changed if order is in open state, amazon widgets then might show an error.
 				//state.IsOrderConfirmed = true;
 
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 				var isShippable = cart.RequiresShipping();
-				var details = _api.GetOrderReferenceDetails(client, state.OrderReferenceId, state.AddressConsentToken);
+				var details = _api.GetOrderReferenceDetails(oldClient, state.OrderReferenceId, state.AddressConsentToken);
 
 				_api.FindAndApplyAddress(details, customer, isShippable, false);
 
@@ -1174,7 +1076,7 @@ namespace SmartStore.AmazonPay.Services
 				var data = _api.ParseNotification(request);
 				var order = FindOrder(data);
 
-				if (order == null || !IsActive(order.StoreId))
+				if (order == null || !IsPaymentMethodActive(order.StoreId))
 					return;
 
 				var client = _api.CreateClient(_services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId));

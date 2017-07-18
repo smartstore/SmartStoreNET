@@ -16,14 +16,13 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
-using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework
 {
-    /// <summary>
+	/// <summary>
 	/// Work context for web application
-    /// </summary>
-    public partial class WebWorkContext : IWorkContext
+	/// </summary>
+	public partial class WebWorkContext : IWorkContext
     {
         private readonly HttpContextBase _httpContext;
         private readonly ICustomerService _customerService;
@@ -39,7 +38,7 @@ namespace SmartStore.Web.Framework
 		private readonly Lazy<ITaxService> _taxService;
 		private readonly IUserAgent _userAgent;
 
-        private TaxDisplayType? _cachedTaxDisplayType;
+		private TaxDisplayType? _cachedTaxDisplayType;
         private Language _cachedLanguage;
         private Customer _cachedCustomer;
         private Currency _cachedCurrency;
@@ -123,7 +122,8 @@ namespace SmartStore.Web.Framework
 
 				_cachedCustomer = customer;
 
-				if (customer == null || customer.Deleted || !customer.Active)
+				// Do not end response for newly registered customers. Customer.Active can be False in that case.
+				if (customer == null || customer.Deleted)
 				{
 					// Yes, really! We can deactivate or delete guest accounts
 					_httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;

@@ -247,7 +247,8 @@
     }
 
     OffCanvas.prototype.autohide = function (e) {
-        if ($(e.target).closest(this.el).length === 0)
+        var target = $(e.target);
+        if (target.closest(this.el).length === 0 && !target.hasClass("select2-results__option"))
             this.hide();
     }
 

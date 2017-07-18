@@ -312,7 +312,9 @@ $ocm-selected-color:                    $brand-warning;
 }
 
 
-body > .select2-container {
+body > .select2-container,
+body > .select2-container .select2-dropdown {
     // one higher than .offcanvas-overlay
     z-index: $offcanvas-z-index + 1;
 }
+

@@ -281,7 +281,6 @@ var AjaxMenu = (function ($, window, document, undefined) {
                 return true;
 
             e.preventDefault();
-            $(this).parent().toggleClass("show");
             dropdown.toggleClass("show");
             return false;
         });

@@ -4,6 +4,9 @@
 ### Breaking changes
 * MegaSearch: The index must be re-created because of changes to the price filters.
 
+### New Features
+* New setting indicates whether to include or exclude not available products in search results by default.
+
 ### Improvements
 * PayPal Standard: New settings "UsePayPalAddress" and "IsShippingAddressRequired" to avoid payment rejection due to address validation.
 

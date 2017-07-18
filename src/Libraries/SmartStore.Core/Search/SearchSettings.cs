@@ -18,7 +18,7 @@ namespace SmartStore.Core.Search
 			FilterMaxChoicesCount = 20;
             DefaultSortOrder = ProductSortingEnum.Relevance;
 
-            BrandDisplayOrder = 1;
+			BrandDisplayOrder = 1;
 			PriceDisplayOrder = 2;
 			RatingDisplayOrder = 3;
 			DeliveryTimeDisplayOrder = 4;
@@ -71,11 +71,16 @@ namespace SmartStore.Core.Search
         /// </summary>
         public ProductSortingEnum DefaultSortOrder { get; set; }
 
-        // TBD: what about area specific searchin setting (product, blog, etc.)
+		// TBD: what about area specific searchin setting (product, blog, etc.)
 
-        #region Common facet settings
+		#region Common facet settings
 
-        public bool BrandDisabled { get; set; }
+		/// <summary>
+		/// Gets or sets the a value indicating whether to include or exclude not available products by default.
+		/// </summary>
+		public bool IncludeNotAvailable { get; set; }
+
+		public bool BrandDisabled { get; set; }
 		public bool PriceDisabled { get; set; }
 		public bool RatingDisabled { get; set; }
 		public bool DeliveryTimeDisabled { get; set; }

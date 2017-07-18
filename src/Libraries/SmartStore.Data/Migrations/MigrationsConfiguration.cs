@@ -48,6 +48,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Themes.ClearAssetCache",
 				"Clear asset cache",
 				"Asset Cache leeren");
+
+			builder.AddOrUpdate("Search.Facet.ExcludeOutOfStock", "Exclude Out of Stock", "Nicht verfügbare Artikel ausschließen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.IncludeNotAvailable",
+				"Include out of stock products",
+				"Nicht verfügbare Produkte einschließen",
+				"Specifies whether to include or exclude products that are out of stock by default.",
+				"Legt fest, ob nicht verfügbare Produkte in Suchergebnissen standardmäßig angezeigt werden sollen oder nicht.");
 		}
     }
 }

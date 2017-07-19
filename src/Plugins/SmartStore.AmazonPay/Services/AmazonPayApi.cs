@@ -121,73 +121,6 @@ namespace SmartStore.AmazonPay.Api
 
 			return true;
 		}
-
-		/// <summary>Asynchronous as long as we do not set TransactionTimeout to 0. So transaction is always in pending state after return.</summary>
-		public void Authorize(
-			AmazonPayApiClient client,
-			ProcessPaymentResult result,
-			List<string> errors,
-			string orderReferenceId,
-			decimal orderTotalAmount, 
-			string currencyCode, 
-			string orderGuid)
-		{
-			var request = new AuthorizeRequest();
-			request.SellerId = client.Settings.SellerId;
-			request.AmazonOrderReferenceId = orderReferenceId;
-			request.AuthorizationReferenceId = GetRandomId("Authorize");
-			request.CaptureNow = (client.Settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture);
-			//request.SellerAuthorizationNote = client.Settings.SellerNoteAuthorization.Truncate(256);
-
-			request.AuthorizationAmount = new Price()
-			{
-				Amount = orderTotalAmount.ToString("0.00", CultureInfo.InvariantCulture),
-				CurrencyCode = currencyCode ?? "EUR"
-			};
-
-			var response = client.Service.Authorize(request);
-
-			if (response != null && response.IsSetAuthorizeResult() && response.AuthorizeResult.IsSetAuthorizationDetails())
-			{
-				var details = response.AuthorizeResult.AuthorizationDetails;
-
-				result.AuthorizationTransactionId = details.AmazonAuthorizationId;
-				result.AuthorizationTransactionCode = details.AuthorizationReferenceId;
-
-				if (details.IsSetAuthorizationStatus())
-				{
-					var status = details.AuthorizationStatus;
-
-					if (status.IsSetState())
-					{
-						result.AuthorizationTransactionResult = status.State.ToString();
-					}
-
-					if (request.CaptureNow && details.IsSetIdList() && details.IdList.IsSetmember() && details.IdList.member.Count() > 0)
-					{
-						result.CaptureTransactionId = details.IdList.member[0];
-					}
-
-					if (status.IsSetReasonCode())
-					{
-						if (status.ReasonCode.IsCaseInsensitiveEqual("InvalidPaymentMethod") || status.ReasonCode.IsCaseInsensitiveEqual("AmazonRejected") ||
-							status.ReasonCode.IsCaseInsensitiveEqual("ProcessingFailure") || status.ReasonCode.IsCaseInsensitiveEqual("TransactionTimedOut") ||
-							status.ReasonCode.IsCaseInsensitiveEqual("TransactionTimeout"))
-						{
-							if (status.IsSetReasonDescription())
-								errors.Add("{0}: {1}".FormatWith(status.ReasonCode, status.ReasonDescription));
-							else
-								errors.Add(status.ReasonCode);							
-						}
-					}
-				}
-			}
-
-			// The response to the Authorize call includes the AuthorizationStatus response element, which will be always be
-			// set to Pending if you have selected the asynchronous mode of operation.
-
-			result.NewPaymentStatus = Core.Domain.Payments.PaymentStatus.Pending;
-		}
 	
 		public AuthorizationDetails GetAuthorizationDetails(AmazonPayApiClient client, string authorizationId, out AmazonPayApiData data)
 		{
@@ -260,42 +193,6 @@ namespace SmartStore.AmazonPay.Api
 			return details;
 		}
 
-		public void Capture(AmazonPayApiClient client, CapturePaymentRequest capture, CapturePaymentResult result)
-		{
-			result.NewPaymentStatus = capture.Order.PaymentStatus;
-
-			var request = new CaptureRequest();
-			var store = _services.StoreService.GetStoreById(capture.Order.StoreId);
-
-			request.SellerId = client.Settings.SellerId;
-			request.AmazonAuthorizationId = capture.Order.AuthorizationTransactionId;
-			request.CaptureReferenceId = GetRandomId("Capture");
-			//request.SellerCaptureNote = client.Settings.SellerNoteCapture.Truncate(255);
-
-			request.CaptureAmount = new Price
-			{
-				Amount = capture.Order.OrderTotal.ToString("0.00", CultureInfo.InvariantCulture),
-				CurrencyCode = store.PrimaryStoreCurrency.CurrencyCode
-			};
-
-			var response = client.Service.Capture(request);
-
-			if (response != null && response.IsSetCaptureResult() && response.CaptureResult.IsSetCaptureDetails())
-			{
-				var details = response.CaptureResult.CaptureDetails;
-
-				result.CaptureTransactionId = details.AmazonCaptureId;
-
-				if (details.IsSetCaptureStatus() && details.CaptureStatus.IsSetState())
-				{
-					result.CaptureTransactionResult = details.CaptureStatus.State.ToString().Grow(details.CaptureStatus.ReasonCode, " ");
-
-					if (details.CaptureStatus.State == PaymentStatus.COMPLETED)
-						result.NewPaymentStatus = Core.Domain.Payments.PaymentStatus.Paid;
-				}
-			}
-		}
-
 		public CaptureDetails GetCaptureDetails(AmazonPayApiClient client, string captureId, out AmazonPayApiData data)
 		{
 			data = new AmazonPayApiData();
@@ -355,44 +252,6 @@ namespace SmartStore.AmazonPay.Api
 				exc.Dump();
 			}
 			return details;
-		}
-
-		public string Refund(AmazonPayApiClient client, RefundPaymentRequest refund, RefundPaymentResult result)
-		{
-			result.NewPaymentStatus = refund.Order.PaymentStatus;
-
-			string amazonRefundId = null;
-			var store = _services.StoreService.GetStoreById(refund.Order.StoreId);
-
-			var request = new RefundRequest();
-			request.SellerId = client.Settings.SellerId;
-			request.AmazonCaptureId = refund.Order.CaptureTransactionId;
-			request.RefundReferenceId = GetRandomId("Refund");
-			//request.SellerRefundNote = client.Settings.SellerNoteRefund.Truncate(255);
-
-			request.RefundAmount = new Price
-			{
-				Amount = refund.AmountToRefund.ToString("0.00", CultureInfo.InvariantCulture),
-				CurrencyCode = store.PrimaryStoreCurrency.CurrencyCode
-			};
-
-			var response = client.Service.Refund(request);
-
-			if (response != null && response.IsSetRefundResult() && response.RefundResult.IsSetRefundDetails())
-			{
-				var details = response.RefundResult.RefundDetails;
-
-				amazonRefundId = details.AmazonRefundId;
-
-				if (details.IsSetRefundStatus() && details.RefundStatus.IsSetState())
-				{
-					if (refund.IsPartialRefund)
-						result.NewPaymentStatus = Core.Domain.Payments.PaymentStatus.PartiallyRefunded;
-					else
-						result.NewPaymentStatus = Core.Domain.Payments.PaymentStatus.Refunded;
-				}
-			}
-			return amazonRefundId;
 		}
 
 		public RefundDetails GetRefundDetails(AmazonPayApiClient client, string refundId, out AmazonPayApiData data)

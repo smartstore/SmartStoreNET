@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Common;
+using SmartStore.Utilities;
 
 namespace SmartStore.AmazonPay.Services
 {
@@ -203,6 +205,31 @@ namespace SmartStore.AmazonPay.Services
 			if (amazonAddress.StateProvinceId == 0)
 			{
 				amazonAddress.StateProvinceId = null;
+			}
+		}
+
+		private string GetRandomId(string prefix)
+		{
+			var str = prefix + CommonHelper.GenerateRandomDigitCode(20);
+			return str.Truncate(32);
+		}
+
+		private void LogError(IResponse response, IList<string> errors = null, bool isWarning = false)
+		{
+			var message = $"{response.GetErrorMessage().NaIfEmpty()} ({response.GetErrorCode().NaIfEmpty()})";
+
+			if (isWarning)
+			{
+				Logger.Warn(message);
+			}
+			else
+			{
+				Logger.Error(message);
+			}
+
+			if (errors != null)
+			{
+				errors.Add(message);
 			}
 		}
 

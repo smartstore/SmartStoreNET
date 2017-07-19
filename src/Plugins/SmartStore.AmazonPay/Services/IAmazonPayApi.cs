@@ -15,16 +15,9 @@ namespace SmartStore.AmazonPay.Api
 
 		bool FulfillBillingAddress(AmazonPaySettings settings, Order order, AuthorizationDetails details, out string formattedAddress);
 
-		void Authorize(AmazonPayApiClient client, ProcessPaymentResult result, List<string> errors, string orderReferenceId, decimal orderTotalAmount,
-			string currencyCode, string orderGuid);
-
 		AuthorizationDetails GetAuthorizationDetails(AmazonPayApiClient client, string authorizationId, out AmazonPayApiData data);
 
-		void Capture(AmazonPayApiClient client, CapturePaymentRequest capture, CapturePaymentResult result);
-
 		CaptureDetails GetCaptureDetails(AmazonPayApiClient client, string captureId, out AmazonPayApiData data);
-
-		string Refund(AmazonPayApiClient client, RefundPaymentRequest refund, RefundPaymentResult result);
 
 		RefundDetails GetRefundDetails(AmazonPayApiClient client, string refundId, out AmazonPayApiData data);
 

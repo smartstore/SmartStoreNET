@@ -421,19 +421,26 @@ namespace SmartStore.AmazonPay.Services
 							.WithaddressConsentToken(model.AddressConsentToken);
 
 						var getOrderResponse = client.GetOrderReferenceDetails(getOrderRequest);
-						if (FindAndApplyAddress(getOrderResponse, customer, model.IsShippable, true))
+						if (getOrderResponse.GetSuccess())
 						{
-							_customerService.UpdateCustomer(customer);
-							model.Result = AmazonPayResultType.None;
-							return model;
+							if (FindAndApplyAddress(getOrderResponse, customer, model.IsShippable, true))
+							{
+								_customerService.UpdateCustomer(customer);
+								model.Result = AmazonPayResultType.None;
+								return model;
+							}
+							else
+							{
+								tempData[AmazonPayPlugin.SystemName + "ShippingToCountryNotAllowed"] = true;
+								model.RedirectAction = "ShippingAddress";
+								model.RedirectController = "Checkout";
+								model.Result = AmazonPayResultType.Redirect;
+								return model;
+							}
 						}
 						else
 						{
-							tempData[AmazonPayPlugin.SystemName + "ShippingToCountryNotAllowed"] = true;
-							model.RedirectAction = "ShippingAddress";
-							model.RedirectController = "Checkout";
-							model.Result = AmazonPayResultType.Redirect;
-							return model;
+							LogError(getOrderResponse);
 						}
 					}
 				}
@@ -465,7 +472,7 @@ namespace SmartStore.AmazonPay.Services
 						out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
 					if (shoppingCartTotalBase.HasValue)
 					{
-						var client = CreateClient(settings);
+						var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
 						var setOrderRequest = new SetOrderReferenceDetailsRequest()
 							.WithMerchantId(settings.SellerId)
 							.WithAmazonOrderReferenceId(model.OrderReferenceId)
@@ -474,7 +481,11 @@ namespace SmartStore.AmazonPay.Services
 							.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
 							.WithStoreName(store.Name);
 
-						client.SetOrderReferenceDetails(setOrderRequest);
+						var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
+						if (!setOrderResponse.GetSuccess())
+						{
+							LogError(setOrderResponse);
+						}
 					}
 
 					// This is ugly...
@@ -548,7 +559,11 @@ namespace SmartStore.AmazonPay.Services
 					.WithMerchantId(settings.SellerId)
 					.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
 
-				client.CloseOrderReference(closeRequest);
+				var closeResponse = client.CloseOrderReference(closeRequest);
+				if (!closeResponse.GetSuccess())
+				{
+					LogError(closeResponse, null, true);
+				}
 			}
 			catch (Exception exception)
 			{
@@ -803,13 +818,7 @@ namespace SmartStore.AmazonPay.Services
 
 			try
 			{
-				var orderGuid = request.OrderGuid.ToString();
 				var store = _services.StoreService.GetStoreById(request.StoreId);
-				var customer = _customerService.GetCustomerById(request.CustomerId);
-				var currency = store.PrimaryStoreCurrency;
-				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
-				var state = _httpContext.GetAmazonPayState(_services.Localization);
-				var client = CreateClient(settings);
 
 				if (!IsPaymentMethodActive(store.Id, true))
 				{
@@ -819,29 +828,42 @@ namespace SmartStore.AmazonPay.Services
 					return result;
 				}
 
+				var orderGuid = request.OrderGuid.ToString();
+				var customer = _customerService.GetCustomerById(request.CustomerId);
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
+				var state = _httpContext.GetAmazonPayState(_services.Localization);
+				var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
+
 				var setOrderRequest = new SetOrderReferenceDetailsRequest()
 					.WithMerchantId(settings.SellerId)
 					.WithAmazonOrderReferenceId(state.OrderReferenceId)
 					.WithPlatformId(PlatformId)
 					.WithAmount(request.OrderTotal)
-					.WithCurrencyCode(ConvertCurrency(currency.CurrencyCode))
+					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
 					.WithSellerOrderId(orderGuid)
 					.WithStoreName(store.Name);
 
 				var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
-				if (setOrderResponse.GetHasConstraint())
+				if (setOrderResponse.GetSuccess())
 				{
-					var ids = setOrderResponse.GetConstraintIdList();
-					var descriptions = setOrderResponse.GetDescriptionList();
-
-					foreach (var id in ids)
+					if (setOrderResponse.GetHasConstraint())
 					{
-						var idx = ids.IndexOf(id);
-						if (idx < descriptions.Count)
+						var ids = setOrderResponse.GetConstraintIdList();
+						var descriptions = setOrderResponse.GetDescriptionList();
+
+						foreach (var id in ids)
 						{
-							result.Errors.Add($"{descriptions[idx]} ({id})");
+							var idx = ids.IndexOf(id);
+							if (idx < descriptions.Count)
+							{
+								result.Errors.Add($"{descriptions[idx]} ({id})");
+							}
 						}
-					}					
+					}
+				}
+				else
+				{
+					LogError(setOrderResponse, result.Errors);
 				}
 
 				if (!result.Success)
@@ -892,7 +914,7 @@ namespace SmartStore.AmazonPay.Services
 
 		public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request)
 		{
-			// initiate Amazon payment. We do not add errors to request.Errors cause of asynchronous processing.
+			// Initiate Amazon payment. We do not add errors to request.Errors cause of asynchronous processing.
 			var result = new ProcessPaymentResult();
 			var errors = new List<string>();
 			bool informCustomerAboutErrors = false;
@@ -900,33 +922,67 @@ namespace SmartStore.AmazonPay.Services
 
 			try
 			{
-				var orderGuid = request.OrderGuid.ToString();
 				var store = _services.StoreService.GetStoreById(request.StoreId);
-				var currency = store.PrimaryStoreCurrency;
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
-				var client = _api.CreateClient(settings);
+				var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
 
 				informCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				informCustomerAddErrors = settings.InformCustomerAddErrors;
 
-				_api.Authorize(client, result, errors, state.OrderReferenceId, request.OrderTotal, currency.CurrencyCode, orderGuid);
+				// Asynchronous as long as we do not set TransactionTimeout to 0. So transaction is always in pending state after return.
+				var authorizeRequest = new AuthorizeRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonOrderReferenceId(state.OrderReferenceId)
+					.WithAuthorizationReferenceId(GetRandomId("Authorize"))
+					.WithCaptureNow(settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
+					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+					.WithAmount(request.OrderTotal);
+
+				var authorizeResponse = client.Authorize(authorizeRequest);
+				if (authorizeResponse.GetSuccess())
+				{
+					result.AuthorizationTransactionId = authorizeResponse.GetAuthorizationId();
+					result.AuthorizationTransactionCode = authorizeResponse.GetAuthorizationReferenceId();
+					result.AuthorizationTransactionResult = authorizeResponse.GetAuthorizationState();
+
+					if (settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
+					{
+						var idList = authorizeResponse.GetCaptureIdList();
+						if (idList.Any())
+						{
+							result.CaptureTransactionId = idList.First();
+						}
+					}
+
+					var reason = authorizeResponse.GetReasonCode();
+					if (reason.IsCaseInsensitiveEqual("InvalidPaymentMethod") || reason.IsCaseInsensitiveEqual("AmazonRejected") ||
+						reason.IsCaseInsensitiveEqual("ProcessingFailure") || reason.IsCaseInsensitiveEqual("TransactionTimedOut") ||
+						reason.IsCaseInsensitiveEqual("TransactionTimeout"))
+					{
+						var reasonDescription = authorizeResponse.GetReasonDescription();
+						errors.Add(reasonDescription.HasValue() ? $"{reason}: {reasonDescription}" : reason);
+					}
+				}
+				else
+				{
+					LogError(authorizeResponse, errors);
+				}
+
+				// The response to the Authorize call includes the AuthorizationStatus response element, which will be always be
+				// set to Pending if you have selected the asynchronous mode of operation.
+				result.NewPaymentStatus = PaymentStatus.Pending;
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc, errors: errors);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc, errors: errors);
+				LogError(exception, errors: errors);
 			}
 
 			if (informCustomerAboutErrors && errors != null && errors.Count > 0)
 			{
-				// customer needs to be informed of an amazon error here. hooking OrderPlaced.CustomerNotification won't work
-				// cause of asynchronous processing. solution: we add a customer order note that is also send as an email.
-
-				var state = new AmazonPayActionState() { OrderGuid = request.OrderGuid };
+				// Customer needs to be informed of an amazon error here. hooking OrderPlaced.CustomerNotification won't work
+				// cause of asynchronous processing. Solution: we add a customer order note that is also send as an email.
+				var state = new AmazonPayActionState { OrderGuid = request.OrderGuid };
 
 				if (informCustomerAddErrors)
 				{
@@ -999,18 +1055,39 @@ namespace SmartStore.AmazonPay.Services
 			try
 			{
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
-				var client = _api.CreateClient(settings);
+				var store = _services.StoreService.GetStoreById(request.Order.StoreId);
+				var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
 
-				_api.Capture(client, request, result);
+				var captureRequest = new CaptureRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonAuthorizationId(request.Order.AuthorizationTransactionId)
+					.WithCaptureReferenceId(GetRandomId("Capture"))
+					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+					.WithAmount(request.Order.OrderTotal);
+
+				var captureResponse = client.Capture(captureRequest);
+				if (captureResponse.GetSuccess())
+				{
+					var state = captureResponse.GetCaptureState();
+
+					result.CaptureTransactionId = captureResponse.GetCaptureId();
+					result.CaptureTransactionResult = state.Grow(captureResponse.GetReasonCode(), " ");
+
+					if (state.IsCaseInsensitiveEqual("completed"))
+					{
+						result.NewPaymentStatus = PaymentStatus.Paid;
+					}
+				}
+				else
+				{
+					LogError(captureResponse, result.Errors);
+				}
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc, errors: result.Errors);
+				LogError(exception, errors: result.Errors);
 			}
-			catch (Exception exc)
-			{
-				LogError(exc, errors: result.Errors);
-			}
+
 			return result;
 		}
 
@@ -1024,29 +1101,40 @@ namespace SmartStore.AmazonPay.Services
 			try
 			{
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
-				var client = _api.CreateClient(settings);
+				var store = _services.StoreService.GetStoreById(request.Order.StoreId);
+				var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
 
-				var amazonRefundId = _api.Refund(client, request, result);
+				var refundRequest = new RefundRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonCaptureId(request.Order.CaptureTransactionId)
+					.WithRefundReferenceId(GetRandomId("Refund"))
+					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+					.WithAmount(request.AmountToRefund);
 
-				if (amazonRefundId.HasValue() && request.Order.Id != 0)
+				var refundResponse = client.Refund(refundRequest);
+				if (refundResponse.GetSuccess())
 				{
-					_genericAttributeService.InsertAttribute(new GenericAttribute
+					var refundId = refundResponse.GetRefundId();
+					if (refundId.HasValue() && request.Order.Id != 0)
 					{
-						EntityId = request.Order.Id,
-						KeyGroup = "Order",
-						Key = AmazonPayPlugin.SystemName + ".RefundId",
-						Value = amazonRefundId,
-						StoreId = request.Order.StoreId
-					});
+						_genericAttributeService.InsertAttribute(new GenericAttribute
+						{
+							EntityId = request.Order.Id,
+							KeyGroup = "Order",
+							Key = AmazonPayPlugin.SystemName + ".RefundId",
+							Value = refundId,
+							StoreId = request.Order.StoreId
+						});
+					}
+				}
+				else
+				{
+					LogError(refundResponse, result.Errors);
 				}
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc, errors: result.Errors);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc, errors: result.Errors);
+				LogError(exception, errors: result.Errors);
 			}
 
 			return result;
@@ -1087,13 +1175,18 @@ namespace SmartStore.AmazonPay.Services
 						.WithMerchantId(settings.SellerId)
 						.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
 
-					client.CancelOrderReference(cancelRequest);
+					var cancelResponse = client.CancelOrderReference(cancelRequest);
+					if (!cancelResponse.GetSuccess())
+					{
+						LogError(cancelResponse, result.Errors);
+					}
 				}
 			}
 			catch (Exception exception)
 			{
 				LogError(exception, errors: result.Errors);
 			}
+
 			return result;
 		}
 
@@ -1255,16 +1348,23 @@ namespace SmartStore.AmazonPay.Services
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>();
 				var client = CreateClient(settings);
 				var jsonString = client.GetUserInfo(accessToken);
-				var json = JObject.Parse(jsonString);
-
-				email = json.GetValue("email").ToString();
-				name = json.GetValue("name").ToString();
-				userId = json.GetValue("user_id").ToString();
-
-				if (email.IsEmpty() || name.IsEmpty() || userId.IsEmpty())
+				if (jsonString.HasValue())
 				{
-					error = T("Plugins.Payments.AmazonPay.IncompleteProfileDetails") +
-						$" Email: {email.NaIfEmpty()}, name: {name.NaIfEmpty()}, userId: {userId.NaIfEmpty()}.";
+					var json = JObject.Parse(jsonString);
+
+					email = json.GetValue("email").ToString();
+					name = json.GetValue("name").ToString();
+					userId = json.GetValue("user_id").ToString();
+
+					if (email.IsEmpty() || name.IsEmpty() || userId.IsEmpty())
+					{
+						error = T("Plugins.Payments.AmazonPay.IncompleteProfileDetails") +
+							$" Email: {email.NaIfEmpty()}, name: {name.NaIfEmpty()}, userId: {userId.NaIfEmpty()}.";
+					}
+				}
+				else
+				{
+					error = T("Plugins.Payments.AmazonPay.IncompleteProfileDetails") + " Email: , name: , userId: .";
 				}
 			}
 			else

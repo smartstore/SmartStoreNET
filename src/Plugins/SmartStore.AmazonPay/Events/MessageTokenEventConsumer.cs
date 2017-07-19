@@ -7,6 +7,7 @@ using SmartStore.Services;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Web.Framework;
+using System;
 
 namespace SmartStore.AmazonPay.Events
 {
@@ -36,9 +37,10 @@ namespace SmartStore.AmazonPay.Events
 			if (!_pluginFinder.IsPluginReady(_services.Settings, AmazonPayCore.SystemName, storeId))
 				return;
 
-			var order = _orderService.SearchOrders(storeId, _services.WorkContext.CurrentCustomer.Id, null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
+            var orderId = messageTokenEvent.Tokens.Where(x => x.Key.Equals("Order.ID")).FirstOrDefault();
+            var order = _orderService.GetOrderById(Convert.ToInt32(orderId.Value));
 
-			var isAmazonPayment = (order != null && order.PaymentMethodSystemName.IsCaseInsensitiveEqual(AmazonPayCore.SystemName));
+            var isAmazonPayment = (order != null && order.PaymentMethodSystemName.IsCaseInsensitiveEqual(AmazonPayCore.SystemName));
 			var tokenValue = (isAmazonPayment ? _services.Localization.GetResource("Plugins.Payments.AmazonPay.BillingAddressMessageNote") : "");
 
 			messageTokenEvent.Tokens.Add(new Token("SmartStore.AmazonPay.BillingAddressMessageNote", tokenValue));

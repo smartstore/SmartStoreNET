@@ -5,6 +5,7 @@ using SmartStore.Core.Search;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -50,6 +51,10 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterMaxChoicesCount")]
 		public int FilterMaxChoicesCount { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Search.DefaultSortOrderMode")]
+        public ProductSortingEnum DefaultSortOrder { get; set; }
+        public SelectList AvailableSortOrderModes { get; set; }
+
 		public CommonFacetSettingsModel CategoryFacet { get; set; }
 		public CommonFacetSettingsModel BrandFacet { get; set; }
 		public CommonFacetSettingsModel PriceFacet { get; set; }
@@ -73,6 +78,9 @@ namespace SmartStore.Admin.Models.Settings
 
 		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.IncludeNotAvailable")]
+		public bool IncludeNotAvailable { get; set; }
 
 		public IList<CommonFacetSettingsLocalizedModel> Locales { get; set; }
 	}

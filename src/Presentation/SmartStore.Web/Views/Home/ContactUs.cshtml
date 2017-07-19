@@ -31,7 +31,7 @@
             {
 				if (!ViewData.ModelState.IsValid)
 				{
-					@Html.ValidationSummary(true)
+					@Html.ValidationSummary(false)
 				}
 
 				<div class="form-group row">
@@ -57,9 +57,25 @@
 						@Html.ValidationMessageFor(model => model.Enquiry)
 					</div>
 				</div>
+
+                if (Model.DisplayPrivacyAgreement)
+                {
+                    @Html.HiddenFor(model => model.DisplayPrivacyAgreement)
+
+                    <div class="form-group row">
+                        @Html.LabelFor(model => model.PrivacyAgreement, new { @class = "col-sm-3 col-form-label required", @for = "PrivacyAgreement" })
+                        <div class="col-sm-9">
+                            <label class="mb-0 form-check-label">
+                                @Html.CheckBoxFor(model => model.PrivacyAgreement, new { @class = "form-check-input" })
+                                @Html.Raw(T("ContactUs.PrivacyAgreement.DetailText").Text.FormatWith(Url.RouteUrl("Topic", new { SystemName = "PrivacyInfo" })))
+                            </label>
+                            @Html.ValidationMessageFor(model => model.PrivacyAgreement)
+                        </div>
+                    </div>
+                }
                 
-				if (Model.DisplayCaptcha)
-				{
+                if (Model.DisplayCaptcha)
+                {
 					<div class="form-group row">
 						<div class="col-sm-offset-2 col-sm-10 captcha-box">
 							@Html.Raw(Html.GenerateCaptcha())

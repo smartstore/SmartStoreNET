@@ -26,7 +26,7 @@ namespace SmartStore.Core.Search.Facets
 		private FacetGroupKind? _kind;
 
 		public FacetGroup()
-			: this (string.Empty, string.Empty, false, 0, Enumerable.Empty<Facet>())
+			: this (string.Empty, string.Empty, false, false, 0, Enumerable.Empty<Facet>())
 		{
 		}
 
@@ -34,6 +34,7 @@ namespace SmartStore.Core.Search.Facets
 			string key,
 			string label,
 			bool isMultiSelect,
+			bool hasChildren,
 			int displayOrder,
 			IEnumerable<Facet> facets)
 		{
@@ -120,6 +121,12 @@ namespace SmartStore.Core.Search.Facets
 		}
 
 		public bool IsMultiSelect
+		{
+			get;
+			private set;
+		}
+
+		public bool HasChildren
 		{
 			get;
 			private set;

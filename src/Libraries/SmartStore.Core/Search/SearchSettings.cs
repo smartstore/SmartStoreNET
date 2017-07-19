@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Configuration;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Core.Search
 {
@@ -15,6 +16,7 @@ namespace SmartStore.Core.Search
 			InstantSearchTermMinLength = 2;
 			FilterMinHitCount = 1;
 			FilterMaxChoicesCount = 20;
+            DefaultSortOrder = ProductSortingEnum.Relevance;
 
 			BrandDisplayOrder = 1;
 			PriceDisplayOrder = 2;
@@ -64,9 +66,19 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		public int FilterMaxChoicesCount { get; set; }
 
+        /// <summary>
+        /// Gets or sets the default sort order in search results
+        /// </summary>
+        public ProductSortingEnum DefaultSortOrder { get; set; }
+
 		// TBD: what about area specific searchin setting (product, blog, etc.)
 
 		#region Common facet settings
+
+		/// <summary>
+		/// Gets or sets the a value indicating whether to include or exclude not available products by default.
+		/// </summary>
+		public bool IncludeNotAvailable { get; set; }
 
 		public bool BrandDisabled { get; set; }
 		public bool PriceDisabled { get; set; }

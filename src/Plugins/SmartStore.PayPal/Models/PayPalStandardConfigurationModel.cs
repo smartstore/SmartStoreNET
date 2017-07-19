@@ -37,6 +37,12 @@ namespace SmartStore.PayPal.Models
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.AdditionalFeePercentage")]
 		public bool AdditionalFeePercentage { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.IsShippingAddressRequired")]
+		public bool IsShippingAddressRequired { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.UsePayPalAddress")]
+		public bool UsePayPalAddress { get; set; }
+
 		[SmartResourceDisplayName("Plugins.Payments.PayPalStandard.Fields.PassProductNamesAndTotals")]
 		public bool PassProductNamesAndTotals { get; set; }
 
@@ -59,6 +65,8 @@ namespace SmartStore.PayPal.Models
 				PdtValidateOnlyWarn = settings.PdtValidateOnlyWarn;
                 AdditionalFee = settings.AdditionalFee;
                 AdditionalFeePercentage = settings.AdditionalFeePercentage;
+				IsShippingAddressRequired = settings.IsShippingAddressRequired;
+				UsePayPalAddress = settings.UsePayPalAddress;
                 PassProductNamesAndTotals = settings.PassProductNamesAndTotals;
                 EnableIpn = settings.EnableIpn;
                 IpnUrl = settings.IpnUrl;
@@ -74,6 +82,8 @@ namespace SmartStore.PayPal.Models
 				settings.PdtValidateOnlyWarn = PdtValidateOnlyWarn;
                 settings.AdditionalFee = AdditionalFee;
                 settings.AdditionalFeePercentage = AdditionalFeePercentage;
+				settings.IsShippingAddressRequired = IsShippingAddressRequired;
+				settings.UsePayPalAddress = UsePayPalAddress;
                 settings.PassProductNamesAndTotals = PassProductNamesAndTotals;
                 settings.EnableIpn = EnableIpn;
                 settings.IpnUrl = IpnUrl;

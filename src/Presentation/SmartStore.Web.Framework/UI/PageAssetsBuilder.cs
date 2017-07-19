@@ -43,20 +43,20 @@ namespace SmartStore.Web.Framework.UI
 			IStoreContext storeContext,
             IBundleBuilder bundleBuilder)
         {
-            this._httpContext = httpContext;
-            this._seoSettings = seoSettings;
-            this._themeSettings = themeSettings;
-            this._titleParts = new List<string>();
-            this._metaDescriptionParts = new List<string>();
-            this._metaKeywordParts = new List<string>();
-            this._scriptParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
-            this._cssParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
-            this._canonicalUrlParts = new List<string>();
-			this._customHeadParts = new List<string>();
-            this._bodyCssClasses = new List<string>();
-			this._linkParts = new List<RouteValueDictionary>();
-			this._storeContext = storeContext;
-            this._bundleBuilder = bundleBuilder;
+            _httpContext = httpContext;
+            _seoSettings = seoSettings;
+            _themeSettings = themeSettings;
+            _titleParts = new List<string>();
+            _metaDescriptionParts = new List<string>();
+            _metaKeywordParts = new List<string>();
+            _scriptParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
+            _cssParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
+            _canonicalUrlParts = new List<string>();
+			_customHeadParts = new List<string>();
+            _bodyCssClasses = new List<string>();
+			_linkParts = new List<RouteValueDictionary>();
+			_storeContext = storeContext;
+            _bundleBuilder = bundleBuilder;
         }
 
         private bool IsValidPart<T>(T part)

@@ -2,7 +2,7 @@
 Description: Contains default tax providers like FixedRate, ByRegion etc.
 Group: Tax
 SystemName: SmartStore.Tax
-Version: 3.0.1
+Version: 3.0.2
 MinAppVersion: 3.0.0
 DisplayOrder: 0
 FileName: SmartStore.Tax.dll

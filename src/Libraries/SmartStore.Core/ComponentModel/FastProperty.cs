@@ -146,7 +146,7 @@ namespace SmartStore.ComponentModel
 		/// <param name="instance">the instance to extract property accessors for.</param>
 		/// <returns>A cached array of all public property getters from the underlying type of target instance.
 		/// </returns>
-		public static IReadOnlyDictionary<string, FastProperty> GetProperties(object instance, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
+		public static IReadOnlyDictionary<string, FastProperty> GetProperties(object instance)
 		{
 			return GetProperties(instance.GetType());
 		}

@@ -276,8 +276,12 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
         // handle dropdown opening
         serviceTab.on("click", ".dropdown > .menubar-link", function (e) {
+            var dropdown = $(this).parent();
+            if (dropdown.find(".dropdown-menu").length == 0)
+                return true;
+
             e.preventDefault();
-            $(this).parent().toggleClass("show");
+            dropdown.toggleClass("show");
             return false;
         });
 

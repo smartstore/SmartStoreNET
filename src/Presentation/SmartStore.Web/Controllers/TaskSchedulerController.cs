@@ -6,6 +6,9 @@ using System.Web.SessionState;
 using SmartStore.Services.Tasks;
 using SmartStore.Services;
 using SmartStore.Collections;
+using SmartStore.Services.Customers;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Web.Controllers
 { 
@@ -15,18 +18,21 @@ namespace SmartStore.Web.Controllers
         private readonly ITaskScheduler _taskScheduler;
         private readonly IScheduleTaskService _scheduledTaskService;
         private readonly ITaskExecutor _taskExecutor;
-        private readonly ICommonServices _services;
+		private readonly ICustomerService _customerService;
+		private readonly ICommonServices _services;
 		//private readonly DateTime _sweepStart;
 
         public TaskSchedulerController(
 			ITaskScheduler taskScheduler,
             IScheduleTaskService scheduledTaskService,
             ITaskExecutor taskExecutor,
-            ICommonServices services)
+			ICustomerService customerService,
+			ICommonServices services)
         {
 			_taskScheduler = taskScheduler;
             _scheduledTaskService = scheduledTaskService;
             _taskExecutor = taskExecutor;
+			_customerService = customerService;
             _services = services;
 
 			//// Fuzzy: substract the possible max time passed since timer trigger in ITaskScheduler
@@ -41,7 +47,13 @@ namespace SmartStore.Web.Controllers
 
 			var pendingTasks = _scheduledTaskService.GetPendingTasks();
 			var count = 0;
-			
+			var taskParameters = QueryString.Current.ToDictionary();
+
+			if (pendingTasks.Count > 0)
+			{
+				Virtualize(taskParameters);
+			}
+
 			for (var i = 0; i < pendingTasks.Count; i++)
 			{
 				var task = pendingTasks[i];
@@ -57,7 +69,7 @@ namespace SmartStore.Web.Controllers
 
 				if (task.IsPending)
 				{
-					_taskExecutor.Execute(task);
+					_taskExecutor.Execute(task, taskParameters);
 					count++;
 				}
 			}
@@ -72,10 +84,12 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
 
             var task = _scheduledTaskService.GetTaskById(id);
-            if (task == null)
-                return HttpNotFound();
-	
-            _taskExecutor.Execute(task, QueryString.Current.ToDictionary());
+            if (task == null) return HttpNotFound();
+
+			var taskParameters = QueryString.Current.ToDictionary();
+			Virtualize(taskParameters);
+
+			_taskExecutor.Execute(task, taskParameters);
 
             return Content("Task '{0}' executed".FormatCurrent(task.Name));
         }
@@ -83,6 +97,37 @@ namespace SmartStore.Web.Controllers
 		public ContentResult Noop()
 		{
 			return Content("noop");
+		}
+
+		protected virtual void Virtualize(IDictionary<string, string> taskParameters)
+		{
+			// try virtualize current customer (which is necessary when user manually executes a task)
+			Customer customer = null;
+			if (taskParameters != null && taskParameters.ContainsKey(TaskExecutor.CurrentCustomerIdParamName))
+			{
+				customer = _customerService.GetCustomerById(taskParameters[TaskExecutor.CurrentCustomerIdParamName].ToInt());
+			}
+
+			if (customer == null)
+			{
+				// no virtualization: set background task system customer as current customer
+				customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.BackgroundTask);
+			}
+
+			// Set virtual customer
+			_services.WorkContext.CurrentCustomer = customer;
+
+			// try virtualize current store
+			Store store = null;
+			if (taskParameters != null && taskParameters.ContainsKey(TaskExecutor.CurrentStoreIdParamName))
+			{
+				store = _services.StoreService.GetStoreById(taskParameters[TaskExecutor.CurrentStoreIdParamName].ToInt());
+				if (store != null)
+				{
+					// Set virtual store
+					_services.StoreContext.CurrentStore = store;
+				}
+			}
 		}
 
 	}

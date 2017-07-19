@@ -290,23 +290,23 @@ namespace SmartStore.Core.Packaging
 			moveTenantFolder("_temp\\ShopConnector", null);
 
 			// Move all media files and folders to new subfolder "Default"
-			var mediaInfos = (new DirectoryInfo(CommonHelper.MapPath("~/Media"))).GetFileSystemInfos().Where(x => !x.Name.IsCaseInsensitiveEqual("Default"));
+			var mediaInfos = (new DirectoryInfo(CommonHelper.MapPath("~/Media"))).EnumerateFileSystemInfos().Where(x => !x.Name.IsCaseInsensitiveEqual("Default"));
 			var mediaFiles = mediaInfos.OfType<FileInfo>();
-			var mediaDirs = mediaInfos.OfType<DirectoryInfo>();
+			var mediaDirs = mediaInfos.OfType<DirectoryInfo>().ToArray();
 			var tenantMediaDir = new DirectoryInfo(CommonHelper.MapPath("~/Media/Default"));
 			if (!tenantMediaDir.Exists)
 			{
 				tenantMediaDir.Create();
 			}
 
-			foreach (var file in mediaFiles)
-			{
-				file.MoveTo(Path.Combine(tenantMediaDir.FullName, file.Name));
-			}
-
 			foreach (var dir in mediaDirs)
 			{
 				dir.MoveTo(Path.Combine(tenantMediaDir.FullName, dir.Name));
+			}
+
+			foreach (var file in mediaFiles)
+			{
+				file.MoveTo(Path.Combine(tenantMediaDir.FullName, file.Name));
 			}
 
 			return true;

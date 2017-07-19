@@ -193,10 +193,8 @@ namespace SmartStore.Core.Plugins
 		{
 			Debug.WriteLine("Trying to delete shadow copied file " + f.FullName);
 
-			//// This is a special case: people may have been usign the CodeGen folder before so we need to cleanup those
-			//// files too, even if we are no longer using it
-			//CleanupDeletePluginFiles(new FileInfo(Path.Combine(_shadowCopyDir.FullName, f.Name + ".delete")));
-			
+			// This is a special case: people may have been usign the CodeGen folder before so we need to cleanup those
+			// files too, even if we are no longer using it
 			if (CleanupDeletePluginFiles(new FileInfo(f.FullName + ".delete")))
 				return true;
 

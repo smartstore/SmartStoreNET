@@ -1,7 +1,8 @@
 ﻿@using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
-@using System.Linq;
-@model SmartStore.Tax.Models.ByRegionTaxRateListModel
+@using SmartStore.Tax.Models;
+
+@model ByRegionTaxRateListModel
 @{
 	Layout = "";
 }
@@ -9,7 +10,7 @@
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid(Model.TaxRates)
+            @(Html.Telerik().Grid<ByRegionTaxRateModel>(Model.TaxRates)
 				.Name("Grid")
 				.DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
 				.Columns(columns =>

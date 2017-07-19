@@ -4,6 +4,7 @@ using System.Web.Hosting;
 using System.Web.Mvc.Razor;
 using System.Web.WebPages.Razor;
 using SmartStore.Utilities;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.Plugins
 {

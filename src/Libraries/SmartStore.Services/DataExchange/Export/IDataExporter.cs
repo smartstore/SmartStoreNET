@@ -24,8 +24,13 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <param name="products">Products. <c>null</c> to lazy load data if required.</param>
 		/// <param name="customer">Customer, <c>null</c> to use current customer.</param>
 		/// <param name="storeId">Store identifier, <c>null</c> to use current store.</param>
+		/// <param name="maxPicturesPerProduct">Pictures per product, <c>null</c> to load all pictures per product.</param>
 		/// <returns>Product export context</returns>
-		ProductExportContext CreateProductExportContext(IEnumerable<Product> products = null, Customer customer = null, int? storeId = null);
+		ProductExportContext CreateProductExportContext(
+			IEnumerable<Product> products = null,
+			Customer customer = null,
+			int? storeId = null,
+			int? maxPicturesPerProduct = null);
 	}
 
 

@@ -31,6 +31,7 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-        }
+
+		}
     }
 }

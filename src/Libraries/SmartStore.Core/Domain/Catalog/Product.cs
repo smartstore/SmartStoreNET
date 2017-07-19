@@ -786,7 +786,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<decimal?>(nameof(BasePriceBaseAmount), _basePriceAmount);
+				return this.GetMergedDataValue<decimal?>(nameof(BasePriceAmount), _basePriceAmount);
 			}
 			set
 			{

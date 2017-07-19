@@ -84,6 +84,10 @@
       <HintPath>..\..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="BundleTransformer.Autoprefixer, Version=1.9.155.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BundleTransformer.Autoprefixer.1.9.155\lib\net40\BundleTransformer.Autoprefixer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="BundleTransformer.Core, Version=1.9.152.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\BundleTransformer.Core.1.9.152\lib\net40\BundleTransformer.Core.dll</HintPath>
       <Private>True</Private>
@@ -271,12 +275,18 @@
     <Compile Include="Plugins\ProviderManager.cs" />
     <Compile Include="Seo\CanonicalHostNameAttribute.cs" />
     <Compile Include="SmartUrlRoutingModule.cs" />
-    <Compile Include="Theming\HttpHandlers\CssHttpHandlerBase.cs" />
-    <Compile Include="Theming\HttpHandlers\SassCssHttpHandler.cs" />
+    <Compile Include="Theming\Assets\AssetTranslorUtil.cs" />
+    <Compile Include="Theming\Assets\AutoprefixPostProcessor.cs" />
+    <Compile Include="Theming\Assets\CachedAsset.cs" />
+    <Compile Include="Theming\Assets\DefaultAssetCache.cs" />
+    <Compile Include="Theming\Assets\IAssetCache.cs" />
+    <Compile Include="Theming\CssHttpHandler.cs" />
     <Compile Include="Theming\LocalizedDisplayMode.cs" />
-    <Compile Include="Theming\ModuleImportsVirtualFile.cs" />
-    <Compile Include="Theming\ThemeFileResolver.cs" />
+    <Compile Include="Theming\Assets\ModuleImportsVirtualFile.cs" />
+    <Compile Include="Theming\DefaultThemeFileResolver.cs" />
     <Compile Include="Theming\InheritedVirtualThemeFile.cs" />
+    <Compile Include="Theming\Assets\BundlingVirtualPathProvider.cs" />
+    <Compile Include="Theming\Assets\AssetTranslator.cs" />
     <Compile Include="Theming\TwoLevelViewLocationCache.cs" />
     <Compile Include="Theming\WebViewPage.cs" />
     <Compile Include="Theming\WebViewPageHelper.cs" />
@@ -296,15 +306,14 @@
     <Compile Include="Bundling\IBundleProvider.cs" />
     <Compile Include="Bundling\IBundlePublisher.cs" />
     <Compile Include="Modelling\CommaSeparatedModelBinder.cs" />
-    <Compile Include="Plugins\PluginDebugViewVirtualPathProvider.cs" />
+    <Compile Include="Theming\SmartVirtualPathProvider.cs" />
     <Compile Include="Filters\PublicStoreAllowNavigationAttribute.cs" />
     <Compile Include="Routing\GuidConstraint.cs" />
     <Compile Include="Seo\GenericPathRoute.cs" />
     <Compile Include="Seo\GenericPathRouteExtensions.cs" />
     <Compile Include="Settings\StoreDependingSettingData.cs" />
     <Compile Include="Settings\StoreDependingSettingHelper.cs" />
-    <Compile Include="Theming\HttpHandlers\LessCssHttpHandler.cs" />
-    <Compile Include="Theming\SmartStyleBundle.cs" />
+    <Compile Include="Theming\Assets\SmartStyleBundle.cs" />
     <Compile Include="Theming\ThemeHelper.cs" />
     <Compile Include="Theming\ThemeVarsVirtualFile.cs" />
     <Compile Include="Theming\ThemingVirtualPathProvider.cs" />

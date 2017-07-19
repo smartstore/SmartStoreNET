@@ -64,6 +64,9 @@
 					if (resp.success) {
 						PAYPAL.apps.PPP.doCheckout();
 					}
+					else if (resp.reload) {
+						window.location.reload(true);
+					}
 					else {
 						window.displayNotification(resp.error, 'error');
 					}

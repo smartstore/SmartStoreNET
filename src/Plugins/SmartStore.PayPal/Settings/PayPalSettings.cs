@@ -139,6 +139,7 @@ namespace SmartStore.PayPal.Settings
 		{
 			UseSandbox = true;
             EnableIpn = true;
+			IsShippingAddressRequired = true;
 		}
 
         public string BusinessEmail { get; set; }
@@ -148,7 +149,17 @@ namespace SmartStore.PayPal.Settings
 		public bool PdtValidateOnlyWarn { get; set; }
         public bool EnableIpn { get; set; }
         public string IpnUrl { get; set; }
-    }
+
+		/// <summary>
+		/// Specifies whether to use PayPal shipping address. <c>true</c> use PayPal address, <c>false</c> use checkout address.
+		/// </summary>
+		public bool UsePayPalAddress { get; set; }
+
+		/// <summary>
+		/// Specifies whether a shipping address is required.
+		/// </summary>
+		public bool IsShippingAddressRequired { get; set; }
+	}
 
 
 	/// <summary>

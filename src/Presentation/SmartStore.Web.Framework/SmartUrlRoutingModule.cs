@@ -6,11 +6,11 @@ using System.Web.Routing;
 using System.Text.RegularExpressions;
 using SmartStore.Utilities;
 using SmartStore.Core;
-using SmartStore.Web.Framework.Plugins;
 using SmartStore.Core.IO;
 using System.IO;
 using System.Web.Hosting;
 using System.Reflection;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework
 {

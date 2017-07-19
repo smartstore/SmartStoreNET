@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web.Hosting;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Web.Framework.Theming
+namespace SmartStore.Web.Framework.Theming.Assets
 {
 	public class ModuleImportsVirtualFile : VirtualFile
 	{

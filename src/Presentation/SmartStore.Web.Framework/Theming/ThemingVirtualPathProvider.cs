@@ -1,34 +1,35 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Themes;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Web.Framework.Theming
 {
-    public class ThemingVirtualPathProvider : VirtualPathProvider
+    public class ThemingVirtualPathProvider : SmartVirtualPathProvider
     {
 		private readonly VirtualPathProvider _previous;
+		private static readonly ContextState<Dictionary<string, InheritedThemeFileResult>> _requestState;
 
-        public ThemingVirtualPathProvider(VirtualPathProvider previous)
+		static ThemingVirtualPathProvider()
+		{
+			_requestState = new ContextState<Dictionary<string, InheritedThemeFileResult>>("ThemeFileResolver.RequestCache", () => new Dictionary<string, InheritedThemeFileResult>());
+		}
+
+		public ThemingVirtualPathProvider(VirtualPathProvider previous)
         {
             _previous = previous;
-        }
+		}
 
         public override bool FileExists(string virtualPath)
         {
-			var styleResult = ThemeHelper.IsStyleSheet(virtualPath);
-			if (styleResult != null && (styleResult.IsThemeVars || styleResult.IsModuleImports))
-			{
-				return true;
-			}
-
 			var result = GetResolveResult(virtualPath);
 			if (result != null)
 			{
@@ -47,19 +48,10 @@ namespace SmartStore.Web.Framework.Theming
          
         public override VirtualFile GetFile(string virtualPath)
         {
-			var styleResult = ThemeHelper.IsStyleSheet(virtualPath);
-			if (styleResult != null)
+			string debugPath = ResolveDebugFilePath(virtualPath);
+			if (debugPath != null)
 			{
-				if (styleResult.IsThemeVars)
-				{
-					var theme = ThemeHelper.ResolveCurrentTheme();
-					int storeId = ThemeHelper.ResolveCurrentStoreId();
-					return new ThemeVarsVirtualFile(virtualPath, styleResult.Extension, theme.ThemeName, storeId);
-				}
-				else if (styleResult.IsModuleImports)
-				{
-					return new ModuleImportsVirtualFile(virtualPath, ThemeHelper.IsAdminArea());
-				}
+				return new DebugPluginVirtualFile(virtualPath, debugPath);
 			}
 
 			var result = GetResolveResult(virtualPath);
@@ -75,59 +67,32 @@ namespace SmartStore.Web.Framework.Theming
 				}
 			}
 
-            return _previous.GetFile(virtualPath);
+			return _previous.GetFile(virtualPath);
         }
         
         public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
         {
-			var styleResult = ThemeHelper.IsStyleSheet(virtualPath);
-			if (styleResult == null)
+			string debugPath = ResolveDebugFilePath(virtualPath);
+			if (debugPath != null)
 			{
-				return GetCacheDependencyInternal(virtualPath, virtualPathDependencies, utcStart);
+				return new CacheDependency(debugPath);
 			}
-            else
-            {
-                if (styleResult.IsCss)
-                {
-					// it's a static css file (no bundle, no sass/less)
-					return GetCacheDependencyInternal(virtualPath, virtualPathDependencies, utcStart);
-                }
-                
-                var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();
 
-                // determine the virtual themevars.(scss|less) import reference
-                var themeVarsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
-				var moduleImportsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsModuleImports(x)).FirstOrDefault();
-				if (themeVarsFile.IsEmpty() && moduleImportsFile.IsEmpty())
-                {
-                    // no themevars or moduleimports import... so no special considerations here
-					return GetCacheDependencyInternal(virtualPath, virtualPathDependencies, utcStart);
-                }
-
-				// exclude the special imports from the file dependencies list,
-				// 'cause this one cannot be monitored by the physical file system
-				var fileDependencies = arrPathDependencies.Except((new string[] { themeVarsFile, moduleImportsFile }).Where(x => x.HasValue()));
-
-                if (arrPathDependencies.Any())
-                {
-                    int storeId = ThemeHelper.ResolveCurrentStoreId();
-                    var theme = ThemeHelper.ResolveCurrentTheme();
-                    // invalidate the cache when variables change
-                    string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(theme.ThemeName, storeId);
-					var cacheDependency = new CacheDependency(MapDependencyPaths(fileDependencies), new string[] { cacheKey }, utcStart);
-                    return cacheDependency;
-                }
-
-                return null;
-            }
-        }
-
-		private CacheDependency GetCacheDependencyInternal(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
-		{
 			return new CacheDependency(MapDependencyPaths(virtualPathDependencies.Cast<string>()), utcStart);
 		}
 
-		private string[] MapDependencyPaths(IEnumerable<string> virtualPathDependencies)
+		public override string GetFileHash(string virtualPath, IEnumerable virtualPathDependencies)
+		{
+			string debugPath = ResolveDebugFilePath(virtualPath);
+			if (debugPath != null)
+			{
+				return File.GetLastWriteTime(debugPath).ToString();
+			}
+
+			return _previous.GetFileHash(virtualPath, virtualPathDependencies);
+		}
+
+		internal static string[] MapDependencyPaths(IEnumerable<string> virtualPathDependencies)
 		{
 			var fileNames = new List<string>();
 
@@ -141,7 +106,7 @@ namespace SmartStore.Web.Framework.Theming
 				else
 				{
 					string mappedPath = null;
-					if (CommonHelper.IsDevEnvironment && HttpContext.Current.IsDebuggingEnabled)
+					if (_isDebug)
 					{
 						// We're in debug mode and in dev environment: try to map path with VPP
 						var file = HostingEnvironment.VirtualPathProvider.GetFile(dep) as DebugPluginVirtualFile;
@@ -158,9 +123,16 @@ namespace SmartStore.Web.Framework.Theming
 			return fileNames.ToArray();
 		}
 
-		private InheritedThemeFileResult GetResolveResult(string virtualPath)
+		private static InheritedThemeFileResult GetResolveResult(string virtualPath)
 		{
-			var result = EngineContext.Current.Resolve<IThemeFileResolver>().Resolve(virtualPath);
+			var d = _requestState.GetState();
+
+			InheritedThemeFileResult result;
+			if (!d.TryGetValue(virtualPath, out result))
+			{
+				result = d[virtualPath] = EngineContext.Current.Resolve<IThemeFileResolver>().Resolve(virtualPath);
+			}
+
 			return result;
 		}
 

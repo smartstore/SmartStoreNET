@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using SmartStore.Core.Logging;
-using SmartStore.Core.Localization;
-using SmartStore.DevTools.Services;
-using SmartStore.Core;
 using SmartStore.Services;
 using SmartStore.Services.Customers;
 using SmartStore.Web.Framework.UI;
@@ -21,24 +13,24 @@ namespace SmartStore.DevTools.Filters
 	{
 		private readonly ICommonServices _services;
 		private readonly Lazy<IWidgetProvider> _widgetProvider;
-		private readonly ProfilerSettings _profilerSettings;
-		private readonly IMobileDeviceHelper _mobileDeviceHelper;
+		private readonly Lazy<ProfilerSettings> _profilerSettings;
+		private readonly Lazy<IMobileDeviceHelper> _mobileDeviceHelper;
 
 		public ProfilerFilter(
 			ICommonServices services, 
-			Lazy<IWidgetProvider> widgetProvider, 
-			ProfilerSettings profilerSettings,
-			IMobileDeviceHelper mobileDeviceHelper)
+			Lazy<IWidgetProvider> widgetProvider,
+			Lazy<ProfilerSettings> profilerSettings,
+			Lazy<IMobileDeviceHelper> mobileDeviceHelper)
 		{
-			this._services = services;
-			this._widgetProvider = widgetProvider;
-			this._profilerSettings = profilerSettings;
-			this._mobileDeviceHelper = mobileDeviceHelper;
+			_services = services;
+			_widgetProvider = widgetProvider;
+			_profilerSettings = profilerSettings;
+			_mobileDeviceHelper = mobileDeviceHelper;
 		}
 
 		public void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
+			if (!_profilerSettings.Value.EnableMiniProfilerInPublicStore)
 				return;
 			
 			var tokens = filterContext.RouteData.DataTokens;
@@ -54,30 +46,24 @@ namespace SmartStore.DevTools.Filters
 
 		public void OnActionExecuted(ActionExecutedContext filterContext)
 		{
-			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
+			if (!_profilerSettings.Value.EnableMiniProfilerInPublicStore)
 				return;
 
 			if (!filterContext.Result.IsHtmlViewResult())
-			{
 				_services.Chronometer.StepStop("ActionFilter");
-			}
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
-			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
+			if (!_profilerSettings.Value.EnableMiniProfilerInPublicStore)
 				return;
 			
 			// should only run on a full view rendering result
 			if (!filterContext.Result.IsHtmlViewResult())
-			{
 				return;
-			}
 
 			if (!this.ShouldProfile(filterContext.HttpContext))
-			{
 				return;
-			}
 
 			var viewResult = filterContext.Result as ViewResultBase;
 
@@ -102,19 +88,15 @@ namespace SmartStore.DevTools.Filters
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)
 		{
-			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
+			if (!_profilerSettings.Value.EnableMiniProfilerInPublicStore)
 				return;
-			
+
 			// should only run on a full view rendering result
 			if (!filterContext.Result.IsHtmlViewResult())
-			{
 				return;
-			}
 
 			if (!this.ShouldProfile(filterContext.HttpContext))
-			{
 				return;
-			}
 
 			_services.Chronometer.StepStop("ResultFilter");
 			_services.Chronometer.StepStop("ActionFilter");
@@ -122,18 +104,13 @@ namespace SmartStore.DevTools.Filters
 
 		private bool ShouldProfile(HttpContextBase ctx)
 		{
-			if (_mobileDeviceHelper.IsMobileDevice())
-			{
+			if (_mobileDeviceHelper.Value.IsMobileDevice())
 				return false;
-			}
 
 			if (!_services.WorkContext.CurrentCustomer.IsAdmin())
-			{
 				return ctx.Request.IsLocal;
-			}
 
 			return true;
 		}
-
 	}
 }

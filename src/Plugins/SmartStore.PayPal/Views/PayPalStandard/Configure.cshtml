@@ -62,7 +62,8 @@
                 @Html.SmartLabelFor(model => model.PdtToken)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.PdtToken)
+				@Html.SettingOverrideCheckbox(model => model.PdtToken)
+				@Html.TextBoxFor(model => model.PdtToken, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.PdtToken)
             </td>
         </tr>
@@ -111,6 +112,24 @@
                 @Html.ValidationMessageFor(model => model.PassProductNamesAndTotals)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.IsShippingAddressRequired)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.IsShippingAddressRequired)
+				@Html.ValidationMessageFor(model => model.IsShippingAddressRequired)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.UsePayPalAddress)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.UsePayPalAddress)
+				@Html.ValidationMessageFor(model => model.UsePayPalAddress)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.EnableIpn)
@@ -134,7 +153,8 @@
                 @Html.SmartLabelFor(model => model.IpnUrl)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.IpnUrl)
+				@Html.SettingOverrideCheckbox(model => model.IpnUrl)
+				@Html.TextBoxFor(model => model.IpnUrl, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.IpnUrl)
             </td>
         </tr>

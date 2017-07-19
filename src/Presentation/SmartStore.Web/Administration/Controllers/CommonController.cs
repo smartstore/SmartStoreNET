@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,15 +13,11 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
-using SmartStore.Collections;
 using SmartStore.Core;
-using SmartStore.Core.Async;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
@@ -341,8 +338,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				var mbSize = _services.DbContext.SqlQuery<decimal>("Select Sum(size)/128.0 From sysfiles").FirstOrDefault();
 				model.DatabaseSize = Convert.ToInt64(mbSize * 1024 *1024);
-				
-				model.UsedMemorySize = System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64;
+
+				model.UsedMemorySize = GetPrivateBytes();
 			}
 			catch {	}
 
@@ -375,6 +372,18 @@ namespace SmartStore.Admin.Controllers
             }
             return View(model);
         }
+
+		private long GetPrivateBytes()
+		{
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+			GC.Collect();
+
+			var process = System.Diagnostics.Process.GetCurrentProcess();
+			process.Refresh();
+
+			return process.PrivateMemorySize64;
+		}
 
         public ActionResult Warnings()
         {
@@ -739,6 +748,8 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
 				GC.Collect();
 				await Task.Delay(500);
 				NotifySuccess(T("Admin.System.SystemInfo.GarbageCollectSuccessful"));

@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
+using System.Web.Optimization;
 using SmartStore.Admin.Models.Themes;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -25,14 +26,13 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Theming;
+using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Admin.Controllers
 {
 	[AdminAuthorize]
     public partial class ThemeController : AdminControllerBase
 	{
-		#region Fields
-
         private readonly ISettingService _settingService;
         private readonly IThemeRegistry _themeRegistry;
         private readonly IThemeVariablesService _themeVarService;
@@ -40,11 +40,8 @@ namespace SmartStore.Admin.Controllers
 		private readonly IPackageManager _packageManager;
 		private readonly ICommonServices _services;
 		private readonly IThemeContext _themeContext;
+		private readonly IAssetCache _assetCache;
 		private readonly Lazy<IThemeFileResolver> _themeFileResolver;
-
-	    #endregion
-
-		#region Constructors
 
         public ThemeController(
             ISettingService settingService, 
@@ -54,19 +51,19 @@ namespace SmartStore.Admin.Controllers
 			IPackageManager packageManager,
 			ICommonServices services,
 			IThemeContext themeContext,
+			IAssetCache assetCache,
 			Lazy<IThemeFileResolver> themeFileResolver)
 		{
-            this._settingService = settingService;
-            this._themeVarService = themeVarService;
-            this._themeRegistry = themeRegistry;
-			this._storeService = storeService;
-			this._packageManager = packageManager;
-			this._services = services;
-			this._themeContext = themeContext;
-			this._themeFileResolver = themeFileResolver;
+            _settingService = settingService;
+            _themeVarService = themeVarService;
+            _themeRegistry = themeRegistry;
+			_storeService = storeService;
+			_packageManager = packageManager;
+			_services = services;
+			_themeContext = themeContext;
+			_assetCache = assetCache;
+			_themeFileResolver = themeFileResolver;
 		}
-
-		#endregion 
 
         #region Methods
 
@@ -84,18 +81,26 @@ namespace SmartStore.Admin.Controllers
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(selectedStoreId);
             var model = themeSettings.ToModel();
 
-            var commonListItems = new List<SelectListItem> 
+            var bundlingOptions = new List<SelectListItem> 
             {
-                new SelectListItem { Value = "0", Text = T("Common.Auto") },
+                new SelectListItem { Value = "0", Text = "{0} ({1})".FormatCurrent(T("Common.Auto"), T("Common.Recommended")) },
                 new SelectListItem { Value = "1", Text = T("Common.No") },
                 new SelectListItem { Value = "2", Text = T("Common.Yes") }
             };
-
-            model.AvailableBundleOptimizationValues.AddRange(commonListItems);
+            model.AvailableBundleOptimizationValues.AddRange(bundlingOptions);
             model.AvailableBundleOptimizationValues.FirstOrDefault(x => int.Parse(x.Value) == model.BundleOptimizationEnabled).Selected = true;
 
-            // add theme configs
-            model.Themes.AddRange(GetThemes(themeSettings));
+			var assetCachingOptions = new List<SelectListItem>
+			{
+				new SelectListItem { Value = "0", Text = T("Common.Auto") },
+				new SelectListItem { Value = "1", Text = T("Common.No") },
+				new SelectListItem { Value = "2", Text = "{0} ({1})".FormatCurrent(T("Common.Yes"), T("Common.Recommended")) }
+			};
+			model.AvailableAssetCachingValues.AddRange(assetCachingOptions);
+			model.AvailableAssetCachingValues.FirstOrDefault(x => int.Parse(x.Value) == model.AssetCachingEnabled).Selected = true;
+
+			// add theme configs
+			model.Themes.AddRange(GetThemes(themeSettings));
 
 			model.StoreId = selectedStoreId;
 			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems();
@@ -125,16 +130,13 @@ namespace SmartStore.Admin.Controllers
 					Url = manifest.Url,
                     Version = manifest.Version,
                     SupportsRtl = manifest.SupportRtl,
-                    PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}/{1}/preview.png".FormatInvariant(manifest.Location, manifest.ThemeName),
+                    PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}{1}/preview.png".FormatInvariant(manifest.Location.EnsureEndsWith("/"), manifest.ThemeName),
                     IsActive = themeSettings.DefaultTheme == manifest.ThemeName,
-					State = manifest.State
-                };
+					State = manifest.State,
+			};
 
-			if (HostingEnvironment.VirtualPathProvider.FileExists("{0}/{1}/Views/Shared/ConfigureTheme.cshtml".FormatInvariant(manifest.Location, manifest.ThemeName)))
-			{
-				model.IsConfigurable = true;
-			}
-            
+			model.IsConfigurable = HostingEnvironment.VirtualPathProvider.FileExists("{0}{1}/Views/Shared/ConfigureTheme.cshtml".FormatInvariant(manifest.Location.EnsureEndsWith("/"), manifest.ThemeName));
+
             return model;
         }
 
@@ -147,7 +149,6 @@ namespace SmartStore.Admin.Controllers
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(model.StoreId);
 
             bool themeSwitched = themeSettings.DefaultTheme.IsCaseInsensitiveEqual(model.DefaultTheme);
-
             if (themeSwitched)
             {
                 _services.EventPublisher.Publish<ThemeSwitchedEvent>(new ThemeSwitchedEvent { 
@@ -156,10 +157,17 @@ namespace SmartStore.Admin.Controllers
                 });
             }
 
-            themeSettings = model.ToEntity(themeSettings);
+			var bundlingOnNow = themeSettings.BundleOptimizationEnabled == 2 || (themeSettings.BundleOptimizationEnabled == 0 && !HttpContext.IsDebuggingEnabled);
+			var bundlingOnFuture = model.BundleOptimizationEnabled == 2 || (model.BundleOptimizationEnabled == 0 && !HttpContext.IsDebuggingEnabled);
+			if (bundlingOnNow != bundlingOnFuture)
+			{
+				// Clear asset cache, otherwise we get problems with postprocessing, minification etc.
+				_assetCache.Clear();
+			}
+
+			themeSettings = model.ToEntity(themeSettings);
 			_settingService.SaveSetting(themeSettings, model.StoreId);
             
-            // activity log
 			_services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
 			NotifySuccess(T("Admin.Configuration.Updated"));
@@ -199,43 +207,33 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List", new { storeId = storeId });
             }		
 
-			// get current for later restore on parse error
-			var currentVars = _themeVarService.GetThemeVariables(theme, storeId);
-			
-            // save now
-			values = FixThemeVarValues(values);
-			_themeVarService.SaveThemeVariables(theme, storeId, values);
-
-			// check for parsing error
-			var manifest = _themeRegistry.GetThemeManifest(theme);
-			string error = ValidateSass(manifest, storeId);
-			if (error.HasValue())
+			try
 			{
-				// restore previous vars
-				try
-				{
-					_themeVarService.DeleteThemeVariables(theme, storeId);
-				}
-				finally
-				{
-					// we do it here to absolutely ensure that this gets called
-					_themeVarService.SaveThemeVariables(theme, storeId, currentVars);
-				}
+				values = FixThemeVarValues(values);
+				_themeVarService.SaveThemeVariables(theme, storeId, values);
 
-				TempData["SassParsingError"] = error.Trim().TrimStart('\r', '\n', '/', '*').TrimEnd('*', '/', '\r', '\n');
-				TempData["OverriddenThemeVars"] = values;
+				// activity log
+				_services.CustomerActivity.InsertActivity("EditThemeVars", T("ActivityLog.EditThemeVars"), theme);
+
+				NotifySuccess(T("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
+
+				return continueEditing ?
+					RedirectToAction("Configure", new { theme = theme, storeId = storeId }) :
+					RedirectToAction("List", new { storeId = storeId });
+			}
+			catch (ThemeValidationException ex)
+			{
+				TempData["SassParsingError"] = ex.Message.Trim().TrimStart('\r', '\n', '/', '*').TrimEnd('*', '/', '\r', '\n');
+				TempData["OverriddenThemeVars"] = ex.AttemptedVars;
 				NotifyError(T("Admin.Configuration.Themes.Notifications.ConfigureError"));
-				return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex);
 			}
 
-            // activity log
-			_services.CustomerActivity.InsertActivity("EditThemeVars", T("ActivityLog.EditThemeVars"), theme);
-
-			NotifySuccess(T("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
-
-			return continueEditing ?
-				RedirectToAction("Configure", new { theme = theme, storeId = storeId }) :
-				RedirectToAction("List", new { storeId = storeId });
+			// Fail
+			return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
         }
 
 		private IDictionary<string, object> FixThemeVarValues(IDictionary<string, object> values)
@@ -262,71 +260,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return fixedDict;
-		}
-
-		/// <summary>
-		/// Validates the result SASS file by calling it's url.
-		/// </summary>
-		/// <param name="theme">Theme name</param>
-		/// <param name="storeId">Stored Id</param>
-		/// <returns>The error message when a parsing error occured, <c>null</c> otherwise</returns>
-		private string ValidateSass(ThemeManifest manifest, int storeId)
-		{	
-			string error = string.Empty;
-
-			var virtualPath = "~/Themes/{0}/Content/theme.scss".FormatCurrent(manifest.ThemeName);
-			var resolver = this._themeFileResolver.Value;
-			var file = resolver.Resolve(virtualPath);
-			if (file != null)
-			{
-				virtualPath = file.ResultVirtualPath;
-			}
-
-			var url = "{0}?storeId={1}&theme={2}&validate=1".FormatInvariant(
-				WebHelper.GetAbsoluteUrl(virtualPath, this.Request),
-				storeId,
-				manifest.ThemeName);
-
-			var request = WebHelper.CreateHttpRequestForSafeLocalCall(new Uri(url));
-			WebResponse response = null;
-
-			try
-			{
-				response = request.GetResponse();
-			}
-			catch (WebException ex)
-			{
-				if (ex.Response is HttpWebResponse)
-				{
-					var webResponse = (HttpWebResponse)ex.Response;
-					var statusCode = webResponse.StatusCode;
-
-					if (statusCode == HttpStatusCode.InternalServerError)
-					{
-						// catch only 500, as this indicates a parsing error.
-						var stream = webResponse.GetResponseStream();
-
-						using (var streamReader = new StreamReader(stream))
-						{
-							// read the content (the error message has been put there)
-							error = streamReader.ReadToEnd();
-							streamReader.Close();
-							stream.Close();
-						}
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				error = ex.Message;
-			}
-			finally
-			{
-				if (response != null)
-					response.Close();
-			}
-
-			return error;
 		}
 
 		public ActionResult ReloadThemes(int? storeId)
@@ -440,6 +373,21 @@ namespace SmartStore.Admin.Controllers
             
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
         }
+
+		public ActionResult ClearAssetCache()
+		{
+			try
+			{
+				_assetCache.Clear();
+				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex);
+			}
+
+			return RedirectToReferrer();
+		}
 
 		#endregion
 

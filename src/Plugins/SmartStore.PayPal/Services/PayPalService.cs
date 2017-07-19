@@ -134,16 +134,21 @@ namespace SmartStore.PayPal.Services
 			decimal totalOrderItems = decimal.Zero;
 			var taxTotal = decimal.Zero;
 
+			var total = Math.Round(_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
+				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero, 2);
+
+			if (total == decimal.Zero)
+			{
+				return amount;
+			}
+
 			var shipping = Math.Round(_orderTotalCalculationService.GetShoppingCartShippingTotal(cart) ?? decimal.Zero, 2);
 
 			var additionalHandlingFee = _paymentService.GetAdditionalHandlingFee(cart, providerSystemName);
 			var paymentFeeBase = _taxService.GetPaymentMethodAdditionalFee(additionalHandlingFee, customer);
 			var paymentFee = Math.Round(_currencyService.ConvertFromPrimaryStoreCurrency(paymentFeeBase, currency), 2);
 
-			var total = Math.Round(_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
-				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero, 2);
-
-			// line items
+			// Line items.
 			foreach (var item in cart)
 			{
 				decimal unitPriceTaxRate = decimal.Zero;
@@ -198,7 +203,7 @@ namespace SmartStore.PayPal.Services
 
 				if (items != null && otherAmount != decimal.Zero)
 				{
-					// e.g. discount applied to cart total
+					// E.g. discount applied to cart total.
 					var line = new Dictionary<string, object>();
 					line.Add("quantity", "1");
 					line.Add("name", T("Plugins.SmartStore.PayPal.Other").Text.Truncate(127));
@@ -208,7 +213,7 @@ namespace SmartStore.PayPal.Services
 				}
 			}
 
-			// fill amount object
+			// Fill amount object.
 			amountDetails.Add("shipping", shipping.FormatInvariant());
 			amountDetails.Add("subtotal", totalOrderItems.FormatInvariant());
 
@@ -762,6 +767,10 @@ namespace SmartStore.PayPal.Services
 			data.Add("payer", payer);
 
 			var amount = CreateAmount(store, customer, cart, providerSystemName, items);
+			if (!amount.Any())
+			{
+				return null;
+			}
 
 			itemList.Add("items", items);
 

@@ -148,7 +148,14 @@ namespace SmartStore.Services.Search.Modelling
 			var orderBy = GetValueFor<ProductSortingEnum?>("o");
 			if (orderBy == null || orderBy == ProductSortingEnum.Initial)
 			{
-				orderBy = _catalogSettings.DefaultSortOrder;
+                if(origin.Equals("Search/Search"))
+                {
+                    orderBy = _searchSettings.DefaultSortOrder;
+                }
+                else
+                {
+                    orderBy = _catalogSettings.DefaultSortOrder;
+                }
 			}
 
 			query.CustomData["CurrentSortOrder"] = orderBy.Value;
@@ -525,24 +532,37 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected virtual void ConvertAvailability(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
-			bool includeNotAvailable;
-			GetValueFor(query, "a", FacetGroupKind.Availability, out includeNotAvailable);
+			bool availability;
+			GetValueFor(query, "a", FacetGroupKind.Availability, out availability);
 
-			if (!includeNotAvailable)
+			// Setting specifies the logical direction of the filter. That's smarter than just to specify a default value.
+			if (_searchSettings.IncludeNotAvailable)
 			{
-				query.AvailableOnly(true);
+				// False = show, True = hide unavailable products.
+				if (availability)
+				{
+					query.AvailableOnly(true);
+				}
+			}
+			else
+			{
+				// False = hide, True = show unavailable products.
+				if (!availability)
+				{
+					query.AvailableOnly(true);
+				}
 			}
 
 			AddFacet(query, FacetGroupKind.Availability, true, FacetSorting.LabelAsc, descriptor =>
 			{
 				descriptor.MinHitCount = 0;
 
-				var newValue = includeNotAvailable
+				var newValue = availability
 					? new FacetValue(true, IndexTypeCode.Boolean)
 					: new FacetValue(null, IndexTypeCode.Empty);
 
-				newValue.IsSelected = includeNotAvailable;
-				newValue.Label = _services.Localization.GetResource("Search.Facet.IncludeOutOfStock");
+				newValue.IsSelected = availability;
+				newValue.Label = _services.Localization.GetResource(_searchSettings.IncludeNotAvailable ? "Search.Facet.ExcludeOutOfStock" : "Search.Facet.IncludeOutOfStock");
 
 				descriptor.AddValue(newValue);
 			});

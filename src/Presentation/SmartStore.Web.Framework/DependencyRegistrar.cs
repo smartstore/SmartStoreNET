@@ -84,6 +84,7 @@ using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
+using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
@@ -138,8 +139,9 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<ApplicationEnvironment>().As<IApplicationEnvironment>().SingleInstance();
-			
+
 			// sources
+			builder.RegisterGeneric(typeof(WorkValues<>)).InstancePerRequest();
 			builder.RegisterSource(new SettingsSource());
 			builder.RegisterSource(new WorkSource());
 
@@ -529,6 +531,16 @@ namespace SmartStore.Web.Framework
 			// Register MemoryCacheManager twice, this time explicitly named.
 			// We may need this later in decorator classes as a kind of fallback.
 			builder.RegisterType<MemoryCacheManager>().Named<ICacheManager>("memory").SingleInstance();
+
+			// Asset cache
+			if (DataSettings.DatabaseIsInstalled())
+			{
+				builder.RegisterType<DefaultAssetCache>().As<IAssetCache>().InstancePerRequest();
+			}
+			else
+			{
+				builder.Register<IAssetCache>(c => DefaultAssetCache.Null).SingleInstance();
+			}
 		}
 	}
 
@@ -765,7 +777,7 @@ namespace SmartStore.Web.Framework
 		{
 			// register theming services
 			builder.Register(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), x.Resolve<IApplicationEnvironment>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
-			builder.RegisterType<ThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
+			builder.RegisterType<DefaultThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
 
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerRequest();
 			builder.RegisterType<ThemeVariablesService>().As<IThemeVariablesService>().InstancePerRequest();
@@ -1120,7 +1132,6 @@ namespace SmartStore.Web.Framework
 				return keyed => cc.ResolveKeyed<IEntityImporter>(keyed);
 			});
 		}
-
 	}
 
 	#endregion
@@ -1155,7 +1166,7 @@ namespace SmartStore.Web.Framework
 
 					try
 					{
-						if (c.Resolve<IEngine>().IsFullyInitialized && c.TryResolve(out storeContext))
+						if (c.TryResolve(out storeContext))
 						{
 							currentStoreId = storeContext.CurrentStore.Id;
 							//uncomment the code below if you want load settings per store only when you have two stores installed.
@@ -1226,15 +1237,43 @@ namespace SmartStore.Web.Framework
 					var accessor = c.Resolve<ILifetimeScopeAccessor>();
 					return new Work<T>(w => 
 					{
-						T value = accessor.GetLifetimeScope(null).Resolve<T>();
+						var scope = accessor.GetLifetimeScope(null);
+						if (scope == null)
+							return default(T);
+
+						var workValues = scope.Resolve<WorkValues<T>>();
+
+						T value;
+						if (!workValues.Values.TryGetValue(w, out value))
+						{
+							value = (T)workValues.ComponentContext.ResolveComponent(valueRegistration, p);
+							workValues.Values[w] = value;
+						}
+
 						return value;
+
+						////T value = default(T); // accessor.GetLifetimeScope(null).Resolve<T>();
+						//return accessor.GetLifetimeScope(null).Resolve<T>();
 					});
 				})
 				.As(providedService)
-				.Targeting(valueRegistration);
+				.Targeting(valueRegistration)
+				.SingleInstance();
 
 			return rb.CreateRegistration();
 		}
+	}
+
+	class WorkValues<T> where T : class
+	{
+		public WorkValues(IComponentContext componentContext)
+		{
+			ComponentContext = componentContext;
+			Values = new Dictionary<Work<T>, T>();
+		}
+
+		public IComponentContext ComponentContext { get; private set; }
+		public IDictionary<Work<T>, T> Values { get; private set; }
 	}
 
 	#endregion

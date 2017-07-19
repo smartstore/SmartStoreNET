@@ -6,7 +6,7 @@ using System.Web.Optimization;
 using BundleTransformer.Core;
 using BundleTransformer.Core.Builders;
 
-namespace SmartStore.Web.Framework.Theming
+namespace SmartStore.Web.Framework.Theming.Assets
 {
     internal class SmartStyleBundle : Bundle
     {

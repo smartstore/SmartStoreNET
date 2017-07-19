@@ -6557,6 +6557,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Search.CommonFacet.Alias.Hint">
 		<Value>SEO-konformer URL-Alias für Suchfilter (optional).</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Search.DefaultSortOrderMode">
+		<Value>Standardsortierreihenfolge für Produkte</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Search.DefaultSortOrderMode.Hint">
+		<Value>Legt die Standardsortierreihenfolge für Produkte in den Suchergebnissen fest.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Search.FilterMaxChoicesCount">
 		<Value>Maximale Anzahl an Filtern</Value>
 	</LocaleResource>
@@ -6568,6 +6574,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Search.FilterMinHitCount.Hint">
 		<Value>Legt die minimale Anzahl an Suchtreffern fest, ab dem ein Filter angezeigt wird.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Search.IncludeNotAvailable">
+		<Value>Nicht verfügbare Produkte einschließen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Search.IncludeNotAvailable.Hint">
+		<Value>Legt fest, ob nicht verfügbare Produkte in Suchergebnissen standardmäßig angezeigt werden sollen oder nicht.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Search.InstantSearchEnabled">
 		<Value>Instant-Suche aktivieren</Value>
@@ -7235,6 +7247,9 @@
 	<LocaleResource Name="Admin.Configuration.Themes.AvailableMobileThemes">
 		<Value>Verfügbare Mobile Themes</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.ClearAssetCache">
+		<Value>Asset Cache leeren</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Description">
 		<Value>Beschreibung</Value>
 	</LocaleResource>
@@ -7294,6 +7309,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Option.AllowCustomerToSelectTheme.Hint">
 		<Value>Kunden können eigenes Theme auswählen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Option.AssetCachingEnabled">
+		<Value>Asset Caching aktivieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Option.AssetCachingEnabled.Hint">
+		<Value>Legt fest, ob kompilierte JS- und CSS-Dateien wie bspw. 'Sass' im Dateisystem zwischengespeichert werden sollen, um den Programmstart zu beschleunigen. Wählen Sie 'Automatisch', wenn das Caching von der Debug-Einstellung in der web.config abhängig sein soll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Option.BundleOptimizationEnabled">
 		<Value>Asset Bundling aktivieren</Value>
@@ -13233,6 +13254,9 @@
 	<LocaleResource Name="Common.Question">
 		<Value>Frage</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Recommended">
+		<Value>Empfohlen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Refresh">
 		<Value>Aktualisieren</Value>
 	</LocaleResource>
@@ -16035,6 +16059,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Search.Facet.DeliveryTime">
 		<Value>Lieferzeit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Search.Facet.ExcludeOutOfStock">
+		<Value>Nicht verfügbare Artikel ausschließen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Search.Facet.FindPlaceholder">
 		<Value>{0} suchen...</Value>

@@ -102,16 +102,6 @@ namespace SmartStore.Collections
 
 	public class TreeNodeConverter : JsonConverter
 	{
-		public override bool CanRead
-		{
-			get { return true; }
-		}
-
-		public override bool CanWrite
-		{
-			get { return true; }
-		}
-
 		public override bool CanConvert(Type objectType)
 		{
 			var canConvert = objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(TreeNode<>);
@@ -144,6 +134,7 @@ namespace SmartStore.Collections
 				{
 					reader.Skip();
 				}
+
 				reader.Read();
 			}
 

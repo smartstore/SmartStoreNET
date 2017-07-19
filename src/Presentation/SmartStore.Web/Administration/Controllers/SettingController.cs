@@ -1588,8 +1588,10 @@ namespace SmartStore.Admin.Controllers
 			model.ShowProductImagesInInstantSearch = settings.ShowProductImagesInInstantSearch;
 			model.FilterMinHitCount = settings.FilterMinHitCount;
 			model.FilterMaxChoicesCount = settings.FilterMaxChoicesCount;
+            model.DefaultSortOrder = settings.DefaultSortOrder;
+            model.AvailableSortOrderModes = settings.DefaultSortOrder.ToSelectList();
 
-			if (megaSearchDescriptor == null)
+            if (megaSearchDescriptor == null)
 			{
 				model.SearchFieldsNote = T("Admin.Configuration.Settings.Search.SearchFieldsNote");
 
@@ -1629,6 +1631,7 @@ namespace SmartStore.Admin.Controllers
 			model.DeliveryTimeFacet.DisplayOrder = settings.DeliveryTimeDisplayOrder;
 			model.AvailabilityFacet.Disabled = settings.AvailabilityDisabled;
 			model.AvailabilityFacet.DisplayOrder = settings.AvailabilityDisplayOrder;
+			model.AvailabilityFacet.IncludeNotAvailable = settings.IncludeNotAvailable;
 			model.NewArrivalsFacet.Disabled = settings.NewArrivalsDisabled;
 			model.NewArrivalsFacet.DisplayOrder = settings.NewArrivalsDisplayOrder;
 
@@ -1713,6 +1716,7 @@ namespace SmartStore.Admin.Controllers
 			settings.ShowProductImagesInInstantSearch = model.ShowProductImagesInInstantSearch;
 			settings.FilterMinHitCount = model.FilterMinHitCount;
 			settings.FilterMaxChoicesCount = model.FilterMaxChoicesCount;
+            settings.DefaultSortOrder = model.DefaultSortOrder;
 
 			// Common facets
 			settings.BrandDisabled = model.BrandFacet.Disabled;
@@ -1725,6 +1729,7 @@ namespace SmartStore.Admin.Controllers
 			settings.DeliveryTimeDisplayOrder = model.DeliveryTimeFacet.DisplayOrder;
 			settings.AvailabilityDisabled = model.AvailabilityFacet.Disabled;
 			settings.AvailabilityDisplayOrder = model.AvailabilityFacet.DisplayOrder;
+			settings.IncludeNotAvailable = model.AvailabilityFacet.IncludeNotAvailable;
 			settings.NewArrivalsDisabled = model.NewArrivalsFacet.Disabled;
 			settings.NewArrivalsDisplayOrder = model.NewArrivalsFacet.DisplayOrder;
 

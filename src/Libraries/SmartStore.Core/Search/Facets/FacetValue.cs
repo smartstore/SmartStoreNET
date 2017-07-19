@@ -120,21 +120,25 @@ namespace SmartStore.Core.Search.Facets
 		public bool Equals(FacetValue other)
 		{
 			if (other == null || other.TypeCode != TypeCode || other.IsRange != IsRange)
+			{
 				return false;
+			}
 
 			if (other.IsRange)
 			{
 				if (other.IncludesLower != IncludesLower || other.IncludesUpper != IncludesUpper)
+				{
 					return false;
-
-				if (other.IncludesLower && other.IncludesUpper)
-				{
-					return (other.Value != null && other.Value.Equals(Value) &&
-						other.UpperValue != null && other.UpperValue.Equals(UpperValue));
 				}
-				else if (other.IncludesUpper)
+
+				if (other.Value == null && Value == null && other.UpperValue == null && UpperValue == null)
 				{
-					return other.UpperValue != null && other.UpperValue.Equals(UpperValue);
+					return true;
+				}
+
+				if (other.UpperValue != null && !other.UpperValue.Equals(UpperValue))
+				{
+					return false;
 				}
 			}
 

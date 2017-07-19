@@ -1,5 +1,41 @@
 # Release Notes
 
+## SmartStore.NET 3.0.2
+### Breaking changes
+* MegaSearch: The index must be re-created because of changes to the price filter.
+
+### New Features
+* New setting indicates whether to include or exclude unavailable products in search results by default.
+* (Dev) New Asset Cache 
+
+### Improvements
+* PayPal Standard: New settings "UsePayPalAddress" and "IsShippingAddressRequired" to avoid payment rejection due to address validation.
+* More widget zones for the footer
+* #1177 Implement new setting for product search sorting
+* More fault tolerant task scheduler
+
+### Bugfixes
+* Fixed memory leak in MegaSearch plugin, which caused HTTP 503
+* RSS: Item URLs in feeds have ignored SSL settings
+* Fixed "The view 'ProfileImportResult' or its master was not found"
+* #1187 Search: Do not hide multi-selectable filters of the same group if there are no hits
+* Fixed System.ArgumentNullException in ProductVariantQueryFactory
+* PayPal PLUS: Fixed HTTP 401 "Unauthorized" when calling PatchShipping
+* #1189 MegaSearch: Boosts are ignored in prefix and wildcard queries by default
+* MegaSearch: Localized labels of filters were never displayed
+* #1195 Exporter: don't send an email if no email account has been selected
+* Product lists sometimes show the wrong delivery time
+* #1192 Lucene indexing performance decreases the longer it takes
+* #1198 MegaSearch: never sort numeric range by label, always by value
+* Filter for attributes were always sorted by hit count
+* #1200 PayPal PLUS: Invalid request if the order amount is zero
+* Fixed null reference exception when copying attribute option set with image(s) (file system storage only)
+* Product price sometimes was wrong when entering a numeric value in an attribute text box
+* Added missing code for customer privacy agreement 
+* Clicking the login link wasn't working correctly in offcanvas my-account menu
+* #1158 Currency and language selectors weren't working in OffCanvas menu  
+* Fixed "Server cannot append header after HTTP headers have been sent"
+
 ## SmartStore.NET 3.0.1
 ### Improvements
 * (Perf) Much faster application startup

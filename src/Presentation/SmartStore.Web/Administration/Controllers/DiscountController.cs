@@ -165,7 +165,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var discounts = _discountService.GetAllDiscounts(null, null, true);
 
-				model.Data = discounts.Select(x => x.ToModel());
+				model.Data = discounts.Select(x => x.ToModel()).ToList();
 				model.Total = discounts.Count();
 			}
 			else
@@ -404,7 +404,7 @@ namespace SmartStore.Admin.Controllers
 					DiscountId = x.DiscountId,
 					OrderId = x.OrderId,
 					CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
-				});
+				}).ToList();
 
 				model.Total = discountHistories.TotalCount;
 			}

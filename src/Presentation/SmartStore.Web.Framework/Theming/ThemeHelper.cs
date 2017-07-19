@@ -9,6 +9,7 @@ using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
 using SmartStore.Utilities;
+using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -30,6 +31,28 @@ namespace SmartStore.Web.Framework.Theming
 			s_themeVarsPattern = new Regex(@"\.(db|app)/themevars(.scss|.less)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_moduleImportsPattern = new Regex(@"\.app/moduleimports.scss$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_extensionlessPathPattern = new Regex(@"~/(.+)/([^/.]*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+		}
+
+		internal static IEnumerable<string> RemoveVirtualImports(IEnumerable<string> virtualPathDependencies)
+		{
+			Guard.NotNull(virtualPathDependencies, nameof(virtualPathDependencies));
+
+			// determine the virtual themevars.(scss|less) import reference
+			var themeVarsFile = virtualPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
+			var moduleImportsFile = virtualPathDependencies.Where(x => ThemeHelper.PathIsModuleImports(x)).FirstOrDefault();
+
+			if (themeVarsFile == null && moduleImportsFile == null)
+			{
+				// no themevars or moduleimports import... so no special considerations here
+				return virtualPathDependencies;
+			}
+
+			// exclude the special imports from the file dependencies list,
+			// 'cause this one cannot be monitored by the physical file system
+			return virtualPathDependencies
+				.Except((new string[] { themeVarsFile, moduleImportsFile })
+				.Where(x => x.HasValue()))
+				.ToArray();
 		}
 
         internal static bool PathIsThemeVars(string virtualPath)
@@ -65,7 +88,7 @@ namespace SmartStore.Web.Framework.Theming
 
 		internal static bool PathIsInheritableThemeFile(string virtualPath)
 		{
-			if (string.IsNullOrEmpty(virtualPath))
+			if (string.IsNullOrWhiteSpace(virtualPath))
 				return false;
 
 			if (virtualPath[0] != '~')
@@ -86,11 +109,21 @@ namespace SmartStore.Web.Framework.Theming
 			return false;
 		}
 
+		internal static bool IsStyleValidationRequest()
+		{
+			return HttpContext.Current?.Request?.QueryString["validate"] != null;
+		}
+
 		internal static IsStyleSheetResult IsStyleSheet(string path)
 		{
 			var extension = Path.GetExtension(path).ToLowerInvariant();
 
-			if (extension == ".css")
+			if (extension == ".cshtml")
+			{
+				// Perf
+				return null;
+			}
+			else if (extension == ".css")
 			{
 				return new IsStyleSheetResult { Path = path, IsCss = true };
 			}
@@ -127,6 +160,27 @@ namespace SmartStore.Web.Framework.Theming
 		internal static int ResolveCurrentStoreId()
 		{
 			return EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+		}
+
+		internal static string TokenizePath(string virtualPath, out string themeName, out string relativePath, out string query)
+		{
+			themeName = null;
+			relativePath = null;
+			query = null;
+
+			var unrooted = virtualPath.Substring(ThemesBasePath.Length); // strip "~/Themes/"
+			themeName = unrooted.Substring(0, unrooted.IndexOf('/'));
+			relativePath = unrooted.Substring(themeName.Length + 1);
+
+			var idx = relativePath.IndexOf('?');
+			if (idx > 0)
+			{
+				query = relativePath.Substring(idx + 1);
+				relativePath = relativePath.Substring(0, idx);
+			}
+
+			// strip out query
+			return "{0}{1}/{2}".FormatCurrent(ThemesBasePath, themeName, relativePath);
 		}
 
 		internal class IsStyleSheetResult

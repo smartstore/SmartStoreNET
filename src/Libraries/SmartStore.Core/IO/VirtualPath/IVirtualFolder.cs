@@ -44,4 +44,20 @@ namespace SmartStore.Core.IO
 
 		DateTime GetFileLastWriteTimeUtc(string relativePath);
 	}
+
+	public static class IVirtualFolderExtensions
+	{
+		public static bool TryDeleteDirectory(this IVirtualFolder folder, string relativePath)
+		{
+			try
+			{
+				folder.DeleteDirectory(relativePath);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+	}
 }

@@ -458,7 +458,7 @@ namespace SmartStore.Core
 					// ASP.NET temp files, which boosts app startup performance dramatically.
 					// Unfortunately, MVC keeps a controller cache file in the temp files folder, which NEVER
 					// gets nuked, unless the 'compilation' element in web.config is changed.
-					// We MUST delete this file to ensure that it gets re-created with our new controller types in it.
+					// We MUST delete this file in order to ensure that it gets re-created with our new controller types in it.
 					DeleteMvcTypeCacheFiles();
 				}
 				else

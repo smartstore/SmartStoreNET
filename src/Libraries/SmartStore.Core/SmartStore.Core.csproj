@@ -455,6 +455,8 @@
     <Compile Include="Search\SearchSort.cs" />
     <Compile Include="Security\SmartStorePrincipal.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
+    <Compile Include="Themes\InheritedThemeFileResult.cs" />
+    <Compile Include="Themes\IThemeFileResolver.cs" />
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />
     <Compile Include="Utilities\ColorHelper.cs" />

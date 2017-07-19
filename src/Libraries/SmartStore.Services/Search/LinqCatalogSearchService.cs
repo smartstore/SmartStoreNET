@@ -579,6 +579,20 @@ namespace SmartStore.Services.Search
 				var facets = new List<Facet>();
 				var kind = FacetGroup.GetKindByKey(key);
 
+				switch (kind)
+				{
+					case FacetGroupKind.Category:
+					case FacetGroupKind.Brand:
+					case FacetGroupKind.DeliveryTime:
+					case FacetGroupKind.Rating:
+					case FacetGroupKind.Price:
+						if (totalHits == 0 && !descriptor.Values.Any(x => x.IsSelected))
+						{
+							continue;
+						}
+						break;
+				}
+
 				if (kind == FacetGroupKind.Category)
 				{
 					#region Category
@@ -597,16 +611,12 @@ namespace SmartStore.Services.Search
 
 					foreach (var category in categories)
 					{
-						var selected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(category.Id));
-						if (totalHits == 0 && !selected)
-							continue;
-
 						string label = null;
 						names.TryGetValue(category.Id, out label);
 
 						facets.Add(new Facet(new FacetValue(category.Id, IndexTypeCode.Int32)
 						{
-							IsSelected = selected,
+							IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(category.Id)),
 							Label = label.HasValue() ? label : category.Name,
 							DisplayOrder = category.DisplayOrder
 						}));
@@ -630,16 +640,12 @@ namespace SmartStore.Services.Search
 
 					foreach (var manu in manufacturers)
 					{
-						var selected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(manu.Id));
-						if (totalHits == 0 && !selected)
-							continue;
-
 						string label = null;
 						names.TryGetValue(manu.Id, out label);
 
 						facets.Add(new Facet(new FacetValue(manu.Id, IndexTypeCode.Int32)
 						{
-							IsSelected = selected,
+							IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(manu.Id)),
 							Label = label.HasValue() ? label : manu.Name,
 							DisplayOrder = manu.DisplayOrder
 						}));
@@ -652,10 +658,8 @@ namespace SmartStore.Services.Search
 					#region Delivery time
 
 					var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
-
 					var nameQuery = _localizedPropertyRepository.TableUntracked
 						.Where(x => x.LocaleKeyGroup == "DeliveryTime" && x.LocaleKey == "Name" && x.LanguageId == languageId);
-
 					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
 
 					foreach (var deliveryTime in deliveryTimes)
@@ -663,16 +667,12 @@ namespace SmartStore.Services.Search
 						if (descriptor.MaxChoicesCount > 0 && facets.Count >= descriptor.MaxChoicesCount)
 							break;
 
-						var selected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(deliveryTime.Id));
-						if (totalHits == 0 && !selected)
-							continue;
-
 						string label = null;
 						names.TryGetValue(deliveryTime.Id, out label);
 
 						facets.Add(new Facet(new FacetValue(deliveryTime.Id, IndexTypeCode.Int32)
 						{
-							IsSelected = selected,
+							IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(deliveryTime.Id)),
 							Label = label.HasValue() ? label : deliveryTime.Name,
 							DisplayOrder = deliveryTime.DisplayOrder
 						}));
@@ -704,9 +704,6 @@ namespace SmartStore.Services.Search
 							i = int.MaxValue - 1;
 
 						var selected = descriptor.Values.Any(x => x.IsSelected && x.Value == null && x.UpperValue != null && (double)x.UpperValue == price);
-						if (totalHits == 0 && !selected)
-							continue;
-
 						if (selected)
 							hasActivePredefinedFacet = true;
 
@@ -738,9 +735,6 @@ namespace SmartStore.Services.Search
 				}
 				else if (kind == FacetGroupKind.Rating)
 				{
-					if (totalHits == 0 && !descriptor.Values.Any(x => x.IsSelected))
-						continue;
-
 					foreach (var rating in FacetUtility.GetRatings())
 					{
 						var newFacet = new Facet(rating);
@@ -751,8 +745,13 @@ namespace SmartStore.Services.Search
 				else if (kind == FacetGroupKind.Availability || kind == FacetGroupKind.NewArrivals)
 				{
 					var value = descriptor.Values.FirstOrDefault();
-					if (value != null && !(totalHits == 0 && !value.IsSelected))
+					if (value != null)
 					{
+						if (kind == FacetGroupKind.NewArrivals && totalHits == 0 && !value.IsSelected)
+						{
+							continue;
+						}
+
 						var newValue = value.Clone();
 						newValue.Value = true;
 						newValue.TypeCode = IndexTypeCode.Boolean;
@@ -771,6 +770,7 @@ namespace SmartStore.Services.Search
 						key,
 						descriptor.Label,
 						descriptor.IsMultiSelect,
+						false,
 						descriptor.DisplayOrder,
 						facets.OrderBy(descriptor)));
 				}

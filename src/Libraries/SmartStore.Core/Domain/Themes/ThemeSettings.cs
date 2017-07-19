@@ -9,6 +9,7 @@ namespace SmartStore.Core.Domain.Themes
 		{
 			DefaultTheme = "Flex";
 			AllowCustomerToSelectTheme = true;
+			AssetCachingEnabled = 2;
 		}
 
         /// <summary>
@@ -16,16 +17,27 @@ namespace SmartStore.Core.Domain.Themes
         /// asset bundling is enabled
         /// </summary>
         /// <value>
-        /// 0: Auto (decide based on web.config debug)
+        /// 0: Auto (decide based on debug mode) > default
         /// 1: Disabled
         /// 2: Enabled
         /// </value>
         public int BundleOptimizationEnabled { get; set; }
 
-        /// <summary>
-        /// Gets or sets a default store theme for desktops
-        /// </summary>
-        public string DefaultTheme { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether
+		/// asset caching is enabled
+		/// </summary>
+		/// <value>
+		/// 0: Auto (decide based on debug mode)
+		/// 1: Disabled
+		/// 2: Enabled > default
+		/// </value>
+		public int AssetCachingEnabled { get; set; }
+
+		/// <summary>
+		/// Gets or sets a default store theme for desktops
+		/// </summary>
+		public string DefaultTheme { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether customers are allowed to select a theme

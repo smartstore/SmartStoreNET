@@ -2,6 +2,13 @@
 
 @using SmartStore.Web.Framework.UI;
 
+@{ 
+	if (Model.Widgets == null || Model.Widgets.Count == 0)
+	{
+		return;
+	}
+}
+
 @foreach (var widget in Model.Widgets) {
 	Html.RenderAction(widget.ActionName, widget.ControllerName, widget.RouteValues);
 }

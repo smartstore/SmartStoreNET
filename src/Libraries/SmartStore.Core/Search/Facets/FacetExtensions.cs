@@ -47,7 +47,7 @@ namespace SmartStore.Core.Search.Facets
 					if (selectedFirst)
 						return source.OrderByDescending(x => x.Value.IsSelected).ThenBy(x => x.Value.DisplayOrder);
 					else
-						return source.OrderBy(x => x.Value.DisplayOrder);						
+						return source.OrderBy(x => x.Value.DisplayOrder);
 
 				default:
 					if (selectedFirst)

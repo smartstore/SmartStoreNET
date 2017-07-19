@@ -1,17 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Theming
 {
 	public class TwoLevelViewLocationCache : IViewLocationCache
 	{
 		private static readonly object s_key = new object();
-		private readonly IViewLocationCache _cache;
+		private readonly IViewLocationCache _innerCache;
 
-		public TwoLevelViewLocationCache(IViewLocationCache cache)
+		public TwoLevelViewLocationCache()
 		{
-			_cache = cache;
+			var cacheDuringDebug = CommonHelper.GetAppSetting<bool>("sm:EnableViewLocationCacheDuringDebug");
+
+			if (!cacheDuringDebug && (HttpContext.Current == null || HttpContext.Current.IsDebuggingEnabled))
+			{
+				_innerCache = DefaultViewLocationCache.Null;
+			}
+			else
+			{
+				_innerCache = new DefaultViewLocationCache(TimeSpan.FromHours(2));
+			}
+
 		}
 
 		private static IDictionary<string, string> GetRequestCache(HttpContextBase httpContext)
@@ -31,7 +43,7 @@ namespace SmartStore.Web.Framework.Theming
 			string location;
 			if (!d.TryGetValue(key, out location))
 			{
-				location = _cache.GetViewLocation(httpContext, key);
+				location = _innerCache.GetViewLocation(httpContext, key);
 				d[key] = location;
 			}
 			return location;
@@ -39,7 +51,8 @@ namespace SmartStore.Web.Framework.Theming
 
 		public void InsertViewLocation(HttpContextBase httpContext, string key, string virtualPath)
 		{
-			_cache.InsertViewLocation(httpContext, key, virtualPath);
+			_innerCache.InsertViewLocation(httpContext, key, virtualPath);
+			GetRequestCache(httpContext)[key] = virtualPath;
 		}
 	}
 }

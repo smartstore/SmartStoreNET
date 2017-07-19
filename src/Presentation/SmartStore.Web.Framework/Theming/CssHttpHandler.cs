@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
+using System.Web.Optimization;
 using BundleTransformer.Core;
 using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Configuration;
@@ -10,23 +12,41 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework.Theming
 {
+	public class SassCssHttpHandler : CssHttpHandlerBase
+	{
+		protected override IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode)
+		{
+			return InnerTranslateAsset<SassTranslator>("SassTranslator", asset, transformer, isDebugMode);
+		}
+	}
+
+	public class LessCssHttpHandler : CssHttpHandlerBase
+	{
+		protected override IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode)
+		{
+			return InnerTranslateAsset<LessTranslator>("LessTranslator", asset, transformer, isDebugMode);
+		}
+	}
+
 	public abstract class CssHttpHandlerBase : BundleTransformer.Core.HttpHandlers.StyleAssetHandlerBase
 	{
 		protected CssHttpHandlerBase()
             : this(HttpContext.Current.Cache,
 				BundleTransformerContext.Current.FileSystem.GetVirtualFileSystemWrapper(),
 				BundleTransformerContext.Current.Configuration.GetCoreSettings().AssetHandler)
-        { }
+        {
+		}
 
 		protected CssHttpHandlerBase(
             Cache cache,
             IVirtualFileSystemWrapper virtualFileSystemWrapper,
             AssetHandlerSettings assetHandlerConfig)
             : base(cache, virtualFileSystemWrapper, assetHandlerConfig)
-        {
+        {		
 		}
 
 		protected override bool IsStaticAsset
@@ -77,6 +97,11 @@ namespace SmartStore.Web.Framework.Theming
 				}
 
 				cacheKey += "_" + EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName + "_" + EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+
+				if (ThemeHelper.IsStyleValidationRequest())
+				{
+					cacheKey += "_Validation";
+				}
 			}
 
 			return cacheKey;
@@ -84,30 +109,35 @@ namespace SmartStore.Web.Framework.Theming
 
 		protected override IAsset TranslateAsset(IAsset asset, ITransformer transformer, bool isDebugMode)
 		{
-			var processedAsset = TranslateAssetCore(asset, transformer, isDebugMode);
+			bool validationMode = ThemeHelper.IsStyleValidationRequest();
 
-			if (transformer == null)
+			try
 			{
-				// BundleTransformer does NOT PostProcess when transformer instance is null,
-				// therefore we handle it ourselves, because we desperately need
-				// AutoPrefixer even in debug mode.
-				return PostProcessAsset(processedAsset, isDebugMode);
-			}
-			else
-			{
-				return processedAsset;
-			}
-		}	
+				var processedAsset = TranslateAssetCore(asset, transformer, validationMode || isDebugMode);
 
-		private IAsset PostProcessAsset(IAsset asset, bool isDebugMode)
-		{
-			var transformer = BundleTransformerContext.Current.Styles.GetDefaultTransformInstance() as ITransformer;
-			if (transformer != null)
-			{
-				return this.PostProcessAsset(asset, transformer);
+				if (transformer == null && !validationMode)
+				{
+					// BundleTransformer does NOT PostProcess when transformer instance is null,
+					// therefore we handle it ourselves, because we desperately need
+					// UrlRewrite even in debug mode.
+					return AssetTranslorUtil.PostProcessAsset(processedAsset, isDebugMode);
+				}
+				else
+				{
+					return processedAsset;
+				}
 			}
-
-			return asset;
+			catch (Exception ex)
+			{
+				if (validationMode)
+				{
+					_context.Response.Write(ex.Message);
+					_context.Response.StatusCode = 500;
+					_context.Response.End();
+				}
+				
+				throw;
+			}
 		}
 
 		protected abstract IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode);

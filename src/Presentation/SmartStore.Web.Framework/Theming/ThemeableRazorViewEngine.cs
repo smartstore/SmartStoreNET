@@ -38,14 +38,9 @@ namespace SmartStore.Web.Framework.Theming
             MasterLocationFormats = ExpandLocationFormats(locationFormats, ViewType.Layout).ToArray();
 			PartialViewLocationFormats = ExpandLocationFormats(locationFormats, ViewType.Partial).ToArray();
 
-			if (EnableVbViews)
-            {
-                FileExtensions = new[] { "cshtml", "vbhtml" };
-            }
-            else
-            {
-                FileExtensions = new[] { "cshtml" };
-            }
+			FileExtensions = EnableVbViews
+				? new[] { "cshtml", "vbhtml" }
+				: new[] { "cshtml" };
 		}
 
 		protected override IView CreatePartialView(ControllerContext controllerContext, string partialPath)

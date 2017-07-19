@@ -5,7 +5,11 @@ using System.Text;
 using System.Xml.Serialization;
 using AmazonPay;
 using AmazonPay.CommonRequests;
+using AmazonPay.Responses;
 using SmartStore.AmazonPay.Settings;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Common;
@@ -145,6 +149,63 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
+		private void GetAddress(OrderReferenceDetailsResponse details, Address amazonAddress, out bool countryAllowsShipping, out bool countryAllowsBilling)
+		{
+			countryAllowsShipping = countryAllowsBilling = true;
+
+			amazonAddress.Email = details.GetEmail();
+			amazonAddress.ToFirstAndLastName(details.GetBuyerName());
+			amazonAddress.Address1 = details.GetAddressLine1().EmptyNull().Trim().Truncate(4000);
+			amazonAddress.Address2 = details.GetAddressLine2().EmptyNull().Trim().Truncate(4000);
+			amazonAddress.Address2 = amazonAddress.Address2.Grow(details.GetAddressLine3().EmptyNull().Trim(), ", ").Truncate(4000);
+			amazonAddress.City = details.GetCity().EmptyNull().Trim().Truncate(4000);
+			amazonAddress.ZipPostalCode = details.GetPostalCode().EmptyNull().Trim().Truncate(4000);
+			amazonAddress.PhoneNumber = details.GetPhone().EmptyNull().Trim().Truncate(4000);
+
+			var countryCode = details.GetCountryCode();
+			if (countryCode.HasValue())
+			{
+				var country = _countryService.GetCountryByTwoOrThreeLetterIsoCode(countryCode);
+				if (country != null)
+				{
+					amazonAddress.CountryId = country.Id;
+					countryAllowsShipping = country.AllowsShipping;
+					countryAllowsBilling = country.AllowsBilling;
+				}
+			}
+
+			var stateRegion = details.GetStateOrRegion();
+			if (stateRegion.HasValue())
+			{
+				var stateProvince = _stateProvinceService.GetStateProvinceByAbbreviation(stateRegion);
+				if (stateProvince != null)
+				{
+					amazonAddress.StateProvinceId = stateProvince.Id;
+				}
+			}
+
+			// Normalize.
+			if (amazonAddress.Address1.IsEmpty() && amazonAddress.Address2.HasValue())
+			{
+				amazonAddress.Address1 = amazonAddress.Address2;
+				amazonAddress.Address2 = null;
+			}
+			else if (amazonAddress.Address1.HasValue() && amazonAddress.Address1 == amazonAddress.Address2)
+			{
+				amazonAddress.Address2 = null;
+			}
+
+			if (amazonAddress.CountryId == 0)
+			{
+				amazonAddress.CountryId = null;
+			}
+
+			if (amazonAddress.StateProvinceId == 0)
+			{
+				amazonAddress.StateProvinceId = null;
+			}
+		}
+
 		#endregion
 
 		private Order FindOrder(AmazonPayApiData data)
@@ -184,6 +245,76 @@ namespace SmartStore.AmazonPay.Services
 			}
 
 			return order;
+		}
+
+		private bool FindAndApplyAddress(OrderReferenceDetailsResponse details, Customer customer, bool isShippable, bool forceToTakeAmazonAddress)
+		{
+			// PlaceOrder requires billing address but we don't get one from Amazon here. so use shipping address instead until we get it from amazon.
+			var countryAllowsShipping = true;
+			var countryAllowsBilling = true;
+
+			var amazonAddress = new Address();
+			amazonAddress.CreatedOnUtc = DateTime.UtcNow;
+
+			GetAddress(details, amazonAddress, out countryAllowsShipping, out countryAllowsBilling);
+
+			if (isShippable && !countryAllowsShipping)
+				return false;
+
+			if (amazonAddress.Email.IsEmpty())
+			{
+				amazonAddress.Email = customer.Email;
+			}
+
+			if (forceToTakeAmazonAddress)
+			{
+				// First time to get in touch with an amazon address.
+				var existingAddress = customer.Addresses.ToList().FindAddress(amazonAddress, true);
+				if (existingAddress == null)
+				{
+					customer.Addresses.Add(amazonAddress);
+					customer.BillingAddress = amazonAddress;
+				}
+				else
+				{
+					customer.BillingAddress = existingAddress;
+				}
+			}
+			else
+			{
+				if (customer.BillingAddress == null)
+				{
+					customer.Addresses.Add(amazonAddress);
+					customer.BillingAddress = amazonAddress;
+				}
+
+				GetAddress(details, customer.BillingAddress, out countryAllowsShipping, out countryAllowsBilling);
+
+				// But now we could have dublicates.
+				int newAddressId = customer.BillingAddress.Id;
+				var addresses = customer.Addresses.Where(x => x.Id != newAddressId).ToList();
+
+				var existingAddress = addresses.FindAddress(customer.BillingAddress, false);
+				if (existingAddress != null)
+				{
+					// Remove the new and take the old one.
+					customer.RemoveAddress(customer.BillingAddress);
+					customer.BillingAddress = existingAddress;
+
+					try
+					{
+						_addressService.DeleteAddress(newAddressId);
+					}
+					catch (Exception exception)
+					{
+						exception.Dump();
+					}
+				}
+			}
+
+			customer.ShippingAddress = (isShippable ? customer.BillingAddress : null);
+
+			return true;
 		}
 
 		/// <summary>

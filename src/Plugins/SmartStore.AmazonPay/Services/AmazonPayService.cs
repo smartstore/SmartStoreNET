@@ -19,6 +19,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -49,6 +50,9 @@ namespace SmartStore.AmazonPay.Services
 		private readonly ICurrencyService _currencyService;
 		private readonly CurrencySettings _currencySettings;
 		private readonly ICustomerService _customerService;
+		private readonly ICountryService _countryService;
+		private readonly IStateProvinceService _stateProvinceService;
+		private readonly IAddressService _addressService;
 		private readonly IPriceFormatter _priceFormatter;
 		private readonly OrderSettings _orderSettings;
 		private readonly RewardPointsSettings _rewardPointsSettings;
@@ -72,6 +76,9 @@ namespace SmartStore.AmazonPay.Services
 			ICurrencyService currencyService,
 			CurrencySettings currencySettings,
 			ICustomerService customerService,
+			ICountryService countryService,
+			IStateProvinceService stateProvinceService,
+			IAddressService addressService,
 			IPriceFormatter priceFormatter,
 			OrderSettings orderSettings,
 			RewardPointsSettings rewardPointsSettings,
@@ -93,6 +100,9 @@ namespace SmartStore.AmazonPay.Services
 			_currencyService = currencyService;
 			_currencySettings = currencySettings;
 			_customerService = customerService;
+			_countryService = countryService;
+			_stateProvinceService = stateProvinceService;
+			_addressService = addressService;
 			_priceFormatter = priceFormatter;
 			_orderSettings = orderSettings;
 			_rewardPointsSettings = rewardPointsSettings;
@@ -404,10 +414,14 @@ namespace SmartStore.AmazonPay.Services
 
 					if (model.IsShippable)
 					{
-						var client = _api.CreateClient(settings);
-						var details = _api.GetOrderReferenceDetails(client, model.OrderReferenceId, model.AddressConsentToken);
+						var client = CreateClient(settings);
+						var getOrderRequest = new GetOrderReferenceDetailsRequest()
+							.WithMerchantId(settings.SellerId)
+							.WithAmazonOrderReferenceId(model.OrderReferenceId)
+							.WithaddressConsentToken(model.AddressConsentToken);
 
-						if (_api.FindAndApplyAddress(details, customer, model.IsShippable, true))
+						var getOrderResponse = client.GetOrderReferenceDetails(getOrderRequest);
+						if (FindAndApplyAddress(getOrderResponse, customer, model.IsShippable, true))
 						{
 							_customerService.UpdateCustomer(customer);
 							model.Result = AmazonPayResultType.None;
@@ -439,12 +453,31 @@ namespace SmartStore.AmazonPay.Services
 						}
 					}
 
-					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, AmazonPayPlugin.SystemName, store.Id);
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, AmazonPayPlugin.SystemName, store.Id);
 
-					var client = _api.CreateClient(settings);
-					var unused = _api.SetOrderReferenceDetails(client, model.OrderReferenceId, store.PrimaryStoreCurrency.CurrencyCode, cart);
+					decimal orderTotalDiscountAmountBase = decimal.Zero;
+					Discount orderTotalAppliedDiscount = null;
+					List<AppliedGiftCard> appliedGiftCards = null;
+					int redeemedRewardPoints = 0;
+					decimal redeemedRewardPointsAmount = decimal.Zero;
 
-					// this is ugly...
+					decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart,
+						out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
+					if (shoppingCartTotalBase.HasValue)
+					{
+						var client = CreateClient(settings);
+						var setOrderRequest = new SetOrderReferenceDetailsRequest()
+							.WithMerchantId(settings.SellerId)
+							.WithAmazonOrderReferenceId(model.OrderReferenceId)
+							.WithPlatformId(PlatformId)
+							.WithAmount(shoppingCartTotalBase.Value)
+							.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+							.WithStoreName(store.Name);
+
+						client.SetOrderReferenceDetails(setOrderRequest);
+					}
+
+					// This is ugly...
 					var paymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
 					if (paymentRequest == null)
 					{
@@ -461,14 +494,11 @@ namespace SmartStore.AmazonPay.Services
 					}
 				}
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc, notify: true);
+				LogError(exception, notify: true);
 			}
-			catch (Exception exc)
-			{
-				LogError(exc, notify: true);
-			}
+
 			return model;
 		}
 
@@ -511,19 +541,18 @@ namespace SmartStore.AmazonPay.Services
 
 			try
 			{
-				var client = _api.CreateClient(settings);
-
 				var orderAttribute = DeserializeOrderAttribute(order);
+				var client = CreateClient(settings);
 
-				_api.CloseOrderReference(client, orderAttribute.OrderReferenceId);
+				var closeRequest = new CloseOrderReferenceRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
+
+				client.CloseOrderReference(closeRequest);
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc);
+				LogError(exception);
 			}
 		}
 
@@ -781,7 +810,6 @@ namespace SmartStore.AmazonPay.Services
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = CreateClient(settings);
-				var oldClient = _api.CreateClient(settings);
 
 				if (!IsPaymentMethodActive(store.Id, true))
 				{
@@ -833,29 +861,30 @@ namespace SmartStore.AmazonPay.Services
 
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 				var isShippable = cart.RequiresShipping();
-				var details = _api.GetOrderReferenceDetails(oldClient, state.OrderReferenceId, state.AddressConsentToken);
 
-				_api.FindAndApplyAddress(details, customer, isShippable, false);
+				var getOrderRequest = new GetOrderReferenceDetailsRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonOrderReferenceId(state.OrderReferenceId)
+					.WithaddressConsentToken(state.AddressConsentToken);
 
-				if (details.IsSetBuyer() && details.Buyer.IsSetEmail() && settings.CanSaveEmailAndPhone(customer.Email))
+				var getOrderResponse = client.GetOrderReferenceDetails(getOrderRequest);
+
+				FindAndApplyAddress(getOrderResponse, customer, isShippable, false);
+
+				if (settings.CanSaveEmailAndPhone(customer.Email))
 				{
-					customer.Email = details.Buyer.Email;
+					customer.Email = getOrderResponse.GetEmail();
 				}
-
 				_customerService.UpdateCustomer(customer);
 
-				if (details.IsSetBuyer() && details.Buyer.IsSetPhone() && settings.CanSaveEmailAndPhone(customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone, store.Id)))
+				if (settings.CanSaveEmailAndPhone(customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone, store.Id)))
 				{
-					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.Phone, details.Buyer.Phone);
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, getOrderResponse.GetPhone());
 				}
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc, errors: result.Errors);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc, errors: result.Errors);
+				LogError(exception, errors: result.Errors);
 			}
 
 			return result;
@@ -1051,20 +1080,19 @@ namespace SmartStore.AmazonPay.Services
 				if (request.Order.PaymentStatus == PaymentStatus.Pending || request.Order.PaymentStatus == PaymentStatus.Authorized)
 				{
 					var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
-					var client = _api.CreateClient(settings);
-
 					var orderAttribute = DeserializeOrderAttribute(request.Order);
+					var client = CreateClient(settings);
 
-					_api.CancelOrderReference(client, orderAttribute.OrderReferenceId);
+					var cancelRequest = new CancelOrderReferenceRequest()
+						.WithMerchantId(settings.SellerId)
+						.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
+
+					client.CancelOrderReference(cancelRequest);
 				}
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc, errors: result.Errors);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc, errors: result.Errors);
+				LogError(exception, errors: result.Errors);
 			}
 			return result;
 		}

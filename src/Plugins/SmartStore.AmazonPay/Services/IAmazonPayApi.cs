@@ -13,19 +13,7 @@ namespace SmartStore.AmazonPay.Api
 	{
 		AmazonPayApiClient CreateClient(AmazonPaySettings settings);
 
-		bool FindAndApplyAddress(OrderReferenceDetails details, Customer customer, bool isShippable, bool forceToTakeAmazonAddress);
 		bool FulfillBillingAddress(AmazonPaySettings settings, Order order, AuthorizationDetails details, out string formattedAddress);
-
-		OrderReferenceDetails GetOrderReferenceDetails(AmazonPayApiClient client, string orderReferenceId, string addressConsentToken = null);
-
-		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayApiClient client, string orderReferenceId, decimal? orderTotalAmount,
-			string currencyCode, string orderGuid = null, string storeName = null);
-
-		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayApiClient client, string orderReferenceId, string currencyCode, List<OrganizedShoppingCartItem> cart);
-
-		void CancelOrderReference(AmazonPayApiClient client, string orderReferenceId);
-
-		void CloseOrderReference(AmazonPayApiClient client, string orderReferenceId);
 
 		void Authorize(AmazonPayApiClient client, ProcessPaymentResult result, List<string> errors, string orderReferenceId, decimal orderTotalAmount,
 			string currencyCode, string orderGuid);

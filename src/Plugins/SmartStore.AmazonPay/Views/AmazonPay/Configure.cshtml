@@ -5,6 +5,12 @@
     Layout = "";
 }
 
+<div class="plugin-actions">
+	<button type="submit" name="save" class="btn btn-primary" value="save">
+		<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+	</button>
+</div>
+
 <div class="plugin-configuration">
 	<div>
 		<div class="alert alert-info">
@@ -21,32 +27,8 @@
 
 @{ Html.RenderAction("StoreScopeConfiguration", "Setting", new { area = "Admin" }); }
 
-<form id="register-now-form" method="POST" action="@Model.RegisterUrl" target="_blank">
-	<input type="hidden" name="spId" value="@Model.PlatformId" />
-	<input type="hidden" name="locale" value="@Model.LanguageLocale" />
-	@foreach (var item in Model.MerchantLoginDomains)
-	{
-		<input type="hidden" name="merchantLoginDomains[]" value="@item" />
-	}
-	<input type="hidden" name="spSoftwareVersion" value="@Model.SoftwareVersion" />
-	<input type="hidden" name="spAmazonPluginVersion" value="@Model.PluginVersion" />
-	<input type="hidden" name="ld" value="@Model.LeadCode" />
-	@foreach (var item in Model.MerchantLoginRedirectURLs)
-	{
-		<input type="hidden" name="merchantLoginRedirectURLs[]" value="@item" />
-	}
-	<input type="hidden" name="merchantStoreDescription" value="@Model.MerchantStoreDescription" />
-	<input type="hidden" name="source" value="SPPL" />
-</form>
-
 @using (Html.BeginForm())
 {
-	<div class="plugin-actions">
-		<button type="submit" name="save" class="btn btn-primary" value="save">
-			<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
-		</button>
-	</div>
-
 	<table id="AmazonPayConfigTable" class="adminContent">
 	<tr>
 		<td colspan="2">
@@ -433,6 +415,25 @@
 	</tr>
 	</table>
 }
+
+@* Must not be the first form. *@
+<form id="register-now-form" method="POST" action="@Model.RegisterUrl" target="_blank">
+	<input type="hidden" name="spId" value="@Model.PlatformId" />
+	<input type="hidden" name="locale" value="@Model.LanguageLocale" />
+	@foreach (var item in Model.MerchantLoginDomains)
+	{
+		<input type="hidden" name="merchantLoginDomains[]" value="@item" />
+	}
+	<input type="hidden" name="spSoftwareVersion" value="@Model.SoftwareVersion" />
+	<input type="hidden" name="spAmazonPluginVersion" value="@Model.PluginVersion" />
+	<input type="hidden" name="ld" value="@Model.LeadCode" />
+	@foreach (var item in Model.MerchantLoginRedirectURLs)
+	{
+		<input type="hidden" name="merchantLoginRedirectURLs[]" value="@item" />
+	}
+	<input type="hidden" name="merchantStoreDescription" value="@Model.MerchantStoreDescription" />
+	<input type="hidden" name="source" value="SPPL" />
+</form>
 
 <div id="register-now-dialog">
 	<div class="modal modal-large hide fade" tabindex="-1">

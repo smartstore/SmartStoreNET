@@ -85,6 +85,9 @@ Textvorschläge:<ul>
   <LocaleResource Name="TaskName">
     <Value>Amazon Datenabruf</Value>
   </LocaleResource>
+  <LocaleResource Name="SaveAccessDataSucceeded">
+    <Value>Die Zugangsdaten wurden erfolgreich gespeichert.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Zugangsdaten;Datenaustausch;Gestaltung;Sonstiges</Value>

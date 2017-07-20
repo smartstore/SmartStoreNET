@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using Newtonsoft.Json.Linq;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
 using SmartStore.Core.Domain.Customers;
@@ -73,7 +74,7 @@ namespace SmartStore.AmazonPay.Controllers
 			ModelState.Clear();
 
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
 
 			model.Copy(settings, false);
@@ -97,6 +98,35 @@ namespace SmartStore.AmazonPay.Controllers
 			NotifySuccess(Services.Localization.GetResource("Plugins.Payments.AmazonPay.ConfigSaveNote"));
 
 			return Configure();
+		}
+
+		[HttpPost, AdminAuthorize]
+		public ActionResult SaveAccessData(string accessData)
+		{
+			if (accessData.HasValue())
+			{
+				var json = JObject.Parse(accessData);
+				var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+				var settings = Services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
+
+				settings.SellerId = json.GetValue("merchant_id").ToString();
+				settings.AccessKey = json.GetValue("access_key").ToString();
+				settings.SecretKey = json.GetValue("secret_key").ToString();
+				settings.ClientId = json.GetValue("client_id").ToString();
+				//settings.ClientSecret = json.GetValue("client_secret").ToString();
+
+				using (Services.Settings.BeginScope())
+				{
+					Services.Settings.SaveSetting(settings, x => x.SellerId, storeScope, false);
+					Services.Settings.SaveSetting(settings, x => x.AccessKey, storeScope, false);
+					Services.Settings.SaveSetting(settings, x => x.SecretKey, storeScope, false);
+					Services.Settings.SaveSetting(settings, x => x.ClientId, storeScope, false);
+				}
+
+				NotifySuccess(T("Plugins.Payments.AmazonPay.SaveAccessDataSucceeded"));
+			}
+
+			return RedirectToAction("ConfigurePlugin", "Plugin", new { area = "admin", systemName = AmazonPayPlugin.SystemName });
 		}
 
 		[HttpPost]

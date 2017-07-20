@@ -85,6 +85,9 @@ Text suggestions:<ul>
   <LocaleResource Name="TaskName">
     <Value>Amazon data polling</Value>
   </LocaleResource>
+  <LocaleResource Name="SaveAccessDataSucceeded">
+    <Value>The access data has been saved successfully.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Access data;Data exchange;Layout;Miscellaneous</Value>

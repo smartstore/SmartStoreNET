@@ -156,7 +156,7 @@
     <Compile Include="Services\IAmazonPayService.cs" />
     <Compile Include="Services\AmazonPayService.cs" />
     <Compile Include="DependencyRegistrar.cs" />
-    <Compile Include="Settings\AmazonPaySettings.cs" />
+    <Compile Include="AmazonPaySettings.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

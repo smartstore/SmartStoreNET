@@ -14,7 +14,10 @@ namespace SmartStore.AmazonPay.Models
 			UsePopupWindow = true;
 		}
 
-		public string SystemName { get { return AmazonPayPlugin.SystemName; } }
+		public string SystemName
+		{
+			get { return AmazonPayPlugin.SystemName; }
+		}
 
 		public string SellerId { get; set; }
 		public string ClientId { get; set; }

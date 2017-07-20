@@ -8,7 +8,6 @@ using AmazonPay;
 using AmazonPay.CommonRequests;
 using AmazonPay.Responses;
 using SmartStore.AmazonPay.Services.Internal;
-using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
@@ -81,7 +80,7 @@ namespace SmartStore.AmazonPay.Services
 
 			if (!isActive && logInactive)
 			{
-				LogError(null, T("Plugins.Payments.AmazonPay.PaymentMethodNotActive", _services.StoreContext.CurrentStore.Name));
+				Logger.Error(null, T("Plugins.Payments.AmazonPay.PaymentMethodNotActive", _services.StoreContext.CurrentStore.Name));
 			}
 
 			return isActive;
@@ -128,9 +127,9 @@ namespace SmartStore.AmazonPay.Services
 
 				_orderService.UpdateOrder(order);
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				LogError(exc);
+				Logger.Error(exception);
 			}
 		}
 

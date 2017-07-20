@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
-using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -17,15 +17,18 @@ namespace SmartStore.AmazonPay.Controllers
 	public class AmazonPayController : PaymentControllerBase
 	{
 		private readonly IAmazonPayService _apiService;
+		private readonly Lazy<IScheduleTaskService> _scheduleTaskService;
 		private readonly Lazy<IOpenAuthenticationService> _openAuthenticationService;
 		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
 
 		public AmazonPayController(
 			IAmazonPayService apiService,
+			Lazy<IScheduleTaskService> scheduleTaskService,
 			Lazy<IOpenAuthenticationService> openAuthenticationService,
 			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings)
 		{
 			_apiService = apiService;
+			_scheduleTaskService = scheduleTaskService;
 			_openAuthenticationService = openAuthenticationService;
 			_externalAuthenticationSettings = externalAuthenticationSettings;
 		}
@@ -83,7 +86,13 @@ namespace SmartStore.AmazonPay.Controllers
 				Services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
 			}
 
-			_apiService.DataPollingTaskUpdate(settings.DataFetching == AmazonPayDataFetchingType.Polling, model.PollingTaskMinutes * 60);
+			var task = _scheduleTaskService.Value.GetTaskByType<DataPollingTask>();
+			if (task != null)
+			{
+				task.Enabled = settings.DataFetching == AmazonPayDataFetchingType.Polling;
+
+				_scheduleTaskService.Value.UpdateTask(task);
+			}
 
 			NotifySuccess(Services.Localization.GetResource("Plugins.Payments.AmazonPay.ConfigSaveNote"));
 

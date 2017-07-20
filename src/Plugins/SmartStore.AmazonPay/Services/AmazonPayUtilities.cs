@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using AmazonPay;
-using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.AmazonPay.Services
@@ -29,7 +28,7 @@ namespace SmartStore.AmazonPay.Services
 	}
 
 
-	public class PollingLoopData
+	internal class PollingLoopData
 	{
 		public PollingLoopData(int orderId)
 		{

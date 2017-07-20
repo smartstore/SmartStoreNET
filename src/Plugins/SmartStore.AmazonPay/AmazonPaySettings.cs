@@ -1,7 +1,7 @@
 ﻿using SmartStore.AmazonPay.Services;
 using SmartStore.Core.Configuration;
 
-namespace SmartStore.AmazonPay.Settings
+namespace SmartStore.AmazonPay
 {
 	public class AmazonPaySettings : ISettings
 	{
@@ -87,26 +87,6 @@ namespace SmartStore.AmazonPay.Settings
 		public string AuthButtonType { get; set; }
 		public string AuthButtonColor { get; set; }
 		public string AuthButtonSize { get; set; }
-
-		//public string GetButtonUrl(AmazonPayRequestType view)
-		//{
-		//	//bool isGerman = _services.WorkContext.WorkingLanguage.UniqueSeoCode.IsCaseInsensitiveEqual("DE");
-		//	string marketplace = Marketplace ?? "de";
-		//	if (marketplace.IsCaseInsensitiveEqual("uk"))
-		//		marketplace = "co.uk";
-
-		//	string buttonSize = (view == AmazonPayRequestType.MiniShoppingCart ? "large" : AmazonButtonSize);
-
-		//	string url = (UseSandbox ? AmazonPayCore.UrlButtonSandbox : AmazonPayCore.UrlButtonProduction);
-		//	url = url.FormatWith(marketplace);
-
-		//	return "{0}?sellerId={1}&size={2}&color={3}".FormatWith(
-		//		url,
-		//		HttpUtility.UrlEncode(SellerId),
-		//		HttpUtility.UrlEncode(buttonSize ?? "x-large"),
-		//		HttpUtility.UrlEncode(AmazonButtonColor ?? "orange")
-		//	);
-		//}
 
 		public bool CanSaveEmailAndPhone(string value)
 		{

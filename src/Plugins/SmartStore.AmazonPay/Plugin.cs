@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Web.Routing;
 using SmartStore.AmazonPay.Controllers;
 using SmartStore.AmazonPay.Services;
-using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Tasks;
 
 namespace SmartStore.AmazonPay
 {
@@ -18,18 +19,25 @@ namespace SmartStore.AmazonPay
 	public class AmazonPayPlugin : PaymentPluginBase, IExternalAuthenticationMethod, IConfigurable
 	{
 		private readonly IAmazonPayService _apiService;
-		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ICommonServices _services;
+		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+		private readonly IScheduleTaskService _scheduleTaskService;
 
 		public AmazonPayPlugin(
 			IAmazonPayService apiService,
+			ICommonServices services,
 			IOrderTotalCalculationService orderTotalCalculationService,
-			ICommonServices services)
+			IScheduleTaskService scheduleTaskService)
 		{
 			_apiService = apiService;
-			_orderTotalCalculationService = orderTotalCalculationService;
 			_services = services;
+			_orderTotalCalculationService = orderTotalCalculationService;
+			_scheduleTaskService = scheduleTaskService;
+
+			Logger = NullLogger.Instance;
 		}
+
+		public ILogger Logger { get; set; }
 
 		public static string SystemName
 		{
@@ -38,22 +46,24 @@ namespace SmartStore.AmazonPay
 
 		public override void Install()
 		{
-			_services.Settings.SaveSetting<AmazonPaySettings>(new AmazonPaySettings());
+			_services.Settings.SaveSetting(new AmazonPaySettings());
+			_services.Localization.ImportPluginResourcesFromXml(PluginDescriptor);
 
-			_services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
-
-			_apiService.DataPollingTaskInit();
+			// Polling task every 30 minutes.
+			_scheduleTaskService.GetOrAddTask<DataPollingTask>(x =>
+			{
+				x.Name = _services.Localization.GetResource("Plugins.Payments.AmazonPay.TaskName");
+				x.CronExpression = "*/30 * * * *";
+			});
 
 			base.Install();
 		}
 
 		public override void Uninstall()
 		{
-			_apiService.DataPollingTaskDelete();
-
+			_scheduleTaskService.TryDeleteTask<DataPollingTask>();
 			_services.Settings.DeleteSetting<AmazonPaySettings>();
-
-			_services.Localization.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
+			_services.Localization.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
 			base.Uninstall();
 		}
@@ -78,18 +88,19 @@ namespace SmartStore.AmazonPay
 		public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
 		{
 			var result = decimal.Zero;
+
 			try
 			{
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(_services.StoreContext.CurrentStore.Id);
 
 				result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart, settings.AdditionalFee, settings.AdditionalFeePercentage);
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				_apiService.LogError(exc);
+				Logger.Error(exception);
 			}
-			return result;
 
+			return result;
 		}
 
 		public override CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)

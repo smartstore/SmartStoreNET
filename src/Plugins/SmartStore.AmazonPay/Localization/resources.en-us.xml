@@ -82,6 +82,9 @@ Text suggestions:<ul>
   <LocaleResource Name="MissingAccessToken">
     <Value>Missing access token!</Value>
   </LocaleResource>
+  <LocaleResource Name="TaskName">
+    <Value>Amazon data polling</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Access data;Data exchange;Layout;Miscellaneous</Value>
@@ -320,12 +323,6 @@ Text suggestions:<ul>
   <LocaleResource Name="UsePopupDialog.Warning">
     <Value>Authentication through a pop-up dialog requires valid SSL certificate to be installed on this server. Pay attention that the SSL certificate must be issued by a trusted Certificate Authority, self-signed certificates are not permittted.</Value>
   </LocaleResource>
-	<LocaleResource Name="PollingTaskMinutes">
-		<Value>Frequency (in minutes)</Value>
-	</LocaleResource>
-	<LocaleResource Name="PollingTaskMinutes.Hint">
-		<Value>Specifies how often status of the different object shall be polled from Amazon Payments servers.</Value>
-	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximal order age (in days)</Value>
 	</LocaleResource>

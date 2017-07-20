@@ -13,13 +13,11 @@ using Autofac;
 using Newtonsoft.Json.Linq;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services.Internal;
-using SmartStore.AmazonPay.Settings;
 using SmartStore.Core;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -37,7 +35,6 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Tasks;
 
 namespace SmartStore.AmazonPay.Services
 {
@@ -49,7 +46,6 @@ namespace SmartStore.AmazonPay.Services
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ICurrencyService _currencyService;
-		private readonly CurrencySettings _currencySettings;
 		private readonly ICustomerService _customerService;
 		private readonly ICountryService _countryService;
 		private readonly IStateProvinceService _stateProvinceService;
@@ -61,7 +57,6 @@ namespace SmartStore.AmazonPay.Services
 		private readonly IOrderService _orderService;
 		private readonly IRepository<Order> _orderRepository;
 		private readonly IOrderProcessingService _orderProcessingService;
-		private readonly IScheduleTaskService _scheduleTaskService;
 		private readonly IWorkflowMessageService _workflowMessageService;
 		private readonly IPluginFinder _pluginFinder;
 
@@ -75,7 +70,6 @@ namespace SmartStore.AmazonPay.Services
 			IGenericAttributeService genericAttributeService,
 			IOrderTotalCalculationService orderTotalCalculationService,
 			ICurrencyService currencyService,
-			CurrencySettings currencySettings,
 			ICustomerService customerService,
 			ICountryService countryService,
 			IStateProvinceService stateProvinceService,
@@ -87,7 +81,6 @@ namespace SmartStore.AmazonPay.Services
 			IOrderService orderService,
 			IRepository<Order> orderRepository,
 			IOrderProcessingService orderProcessingService,
-			IScheduleTaskService scheduleTaskService,
 			IWorkflowMessageService workflowMessageService,
 			IPluginFinder pluginFinder,
 			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings,
@@ -99,7 +92,6 @@ namespace SmartStore.AmazonPay.Services
 			_genericAttributeService = genericAttributeService;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_currencyService = currencyService;
-			_currencySettings = currencySettings;
 			_customerService = customerService;
 			_countryService = countryService;
 			_stateProvinceService = stateProvinceService;
@@ -111,7 +103,6 @@ namespace SmartStore.AmazonPay.Services
 			_orderService = orderService;
 			_orderRepository = orderRepository;
 			_orderProcessingService = orderProcessingService;
-			_scheduleTaskService = scheduleTaskService;
 			_workflowMessageService = workflowMessageService;
 			_pluginFinder = pluginFinder;
 			_externalAuthenticationSettings = externalAuthenticationSettings;
@@ -124,34 +115,6 @@ namespace SmartStore.AmazonPay.Services
 		public Localizer T { get; set; }
 		public ILogger Logger { get; set; }
 
-		public void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null)
-		{
-			try
-			{
-				if (exception != null)
-				{
-					shortMessage = exception.Message;
-					exception.Dump();
-				}
-
-				if (shortMessage.HasValue())
-				{
-					Logger.Error(exception, shortMessage);
-
-					if (notify)
-					{
-						_services.Notifier.Error(new LocalizedString(shortMessage));
-					}
-				}
-			}
-			catch { }
-
-			if (errors != null && shortMessage.HasValue())
-			{
-				errors.Add(shortMessage);
-			}
-		}
-
 		public void SetupConfiguration(ConfigurationModel model)
 		{
 			var store = _services.StoreContext.CurrentStore;
@@ -159,7 +122,6 @@ namespace SmartStore.AmazonPay.Services
 			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(AmazonPayPlugin.SystemName);
 			var allStores = _services.StoreService.GetAllStores();
 
-			model.PollingTaskMinutes = 30;
 			model.IpnUrl = GetPluginUrl("IPNHandler", store.SslEnabled);
 			model.ConfigGroups = T("Plugins.Payments.AmazonPay.ConfigGroups").Text.SplitSafe(";");
 
@@ -260,7 +222,9 @@ namespace SmartStore.AmazonPay.Services
 					if (orderReferenceId.IsEmpty() || accessToken.IsEmpty())
 					{
 						var msg = orderReferenceId.IsEmpty() ? T("Plugins.Payments.AmazonPay.MissingOrderReferenceId") : T("Plugins.Payments.AmazonPay.MissingAddressConsentToken");
-						LogError(null, msg, null, true);
+						Logger.Error(null, msg);
+						_services.Notifier.Error(new LocalizedString(msg));
+
 						model.Result = AmazonPayResultType.Redirect;
 						return model;
 					}
@@ -485,19 +449,11 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				LogError(exception, notify: true);
+				Logger.Error(exception);
+				_services.Notifier.Error(new LocalizedString(exception.Message));
 			}
 
 			return model;
-		}
-
-		public void ApplyRewardPoints(bool useRewardPoints)
-		{
-			if (_rewardPointsSettings.Enabled)
-			{
-				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
-					SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, _services.StoreContext.CurrentStore.Id);
-			}
 		}
 
 		private void ProcessAuthorizationResult(AmazonPaySettings settings, Order order, AmazonPayData data)
@@ -678,7 +634,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				LogError(exception);
+				Logger.Error(exception);
 			}
 		}
 		private void EarlyPolling(int orderId, AmazonPaySettings settings)
@@ -773,7 +729,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				LogError(exception);
+				Logger.Error(exception);
 			}
 		}
 
@@ -872,7 +828,8 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				LogError(exception, errors: result.Errors);
+				Logger.Error(exception);
+				result.Errors.Add(exception.Message);
 			}
 
 			return result;
@@ -941,7 +898,8 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				LogError(exception, errors: errors);
+				Logger.Error(exception);
+				errors.Add(exception.Message);
 			}
 
 			if (informCustomerAboutErrors && errors != null && errors.Count > 0)
@@ -991,7 +949,7 @@ namespace SmartStore.AmazonPay.Services
 			//}
 			//catch (Exception exc)
 			//{
-			//	LogError(exc);
+			//	Logger.Error(exc);
 			//}
 
 			try
@@ -1005,9 +963,9 @@ namespace SmartStore.AmazonPay.Services
 
 				SerializeOrderAttribute(orderAttribute, request.Order);
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				LogError(exc);
+				Logger.Error(exception);
 			}
 		}
 
@@ -1051,7 +1009,8 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				LogError(exception, errors: result.Errors);
+				Logger.Error(exception);
+				result.Errors.Add(exception.Message);
 			}
 
 			return result;
@@ -1100,7 +1059,8 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				LogError(exception, errors: result.Errors);
+				Logger.Error(exception);
+				result.Errors.Add(exception.Message);
 			}
 
 			return result;
@@ -1150,7 +1110,8 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				LogError(exception, errors: result.Errors);
+				Logger.Error(exception);
+				result.Errors.Add(exception.Message);
 			}
 
 			return result;
@@ -1224,11 +1185,11 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				LogError(exception);
+				Logger.Error(exception);
 			}
 		}
 
-		public void DataPollingTaskProcess()
+		public void StartDataPolling()
 		{
 			try
 			{
@@ -1305,40 +1266,14 @@ namespace SmartStore.AmazonPay.Services
 					}
 					catch (Exception exception)
 					{
-						LogError(exception);
+						Logger.Error(exception);
 					}
 				}
 			}
 			catch (Exception exception)
 			{
-				LogError(exception);
+				Logger.Error(exception);
 			}
-		}
-
-		public void DataPollingTaskInit()
-		{
-			_scheduleTaskService.GetOrAddTask<DataPollingTask>(x => 
-			{
-				x.Name = "{0} data polling".FormatWith(AmazonPayPlugin.SystemName);
-				x.CronExpression = "*/30 * * * *"; // Every 30 minutes
-			});
-		}
-
-		public void DataPollingTaskUpdate(bool enabled, int seconds)
-		{
-			var task = _scheduleTaskService.GetTaskByType<DataPollingTask>();
-			if (task != null)
-			{
-				task.Enabled = enabled;
-				//task.Seconds = seconds;
-
-				_scheduleTaskService.UpdateTask(task);
-			}
-		}
-
-		public void DataPollingTaskDelete()
-		{
-			_scheduleTaskService.TryDeleteTask<DataPollingTask>();
 		}
 
 		#region IExternalProviderAuthorizer

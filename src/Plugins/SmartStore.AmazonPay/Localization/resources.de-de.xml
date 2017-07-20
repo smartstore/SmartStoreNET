@@ -82,6 +82,9 @@ Textvorschläge:<ul>
   <LocaleResource Name="MissingAccessToken">
     <Value>Der Access-Token fehlt!</Value>
   </LocaleResource>
+  <LocaleResource Name="TaskName">
+    <Value>Amazon Datenabruf</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Zugangsdaten;Datenaustausch;Gestaltung;Sonstiges</Value>
@@ -321,12 +324,6 @@ Textvorschläge:<ul>
   <LocaleResource Name="UsePopupDialog.Warning">
     <Value>Die Authentifizierung über ein Dialogfenster erfordert, dass ein gültiges SSL-Zertifikat auf diesem Server installiert ist. Achten Sie darauf, das das SSL-Zertifikat von einer vertrauenswürdigen Zertifizierungsstelle ausgegeben werden muss, selbstsignierte Zertifikate sind nicht zulässig.</Value>
   </LocaleResource>
-	<LocaleResource Name="PollingTaskMinutes">
-		<Value>Zeitspanne (in Minuten)</Value>
-	</LocaleResource>
-	<LocaleResource Name="PollingTaskMinutes.Hint">
-		<Value>Legt fest, wie oft Zahlungsdaten vom Amazon Payments Server abgerufen werden sollen.</Value>
-	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximales Auftragsalter (in Tagen)</Value>
 	</LocaleResource>

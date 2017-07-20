@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Services;
-using SmartStore.AmazonPay.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -38,9 +37,6 @@ namespace SmartStore.AmazonPay.Models
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.IpnUrl")]
 		public string IpnUrl { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PollingTaskMinutes")]
-		public int PollingTaskMinutes { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PollingMaxOrderCreationDays")]
 		public int PollingMaxOrderCreationDays { get; set; }

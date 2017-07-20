@@ -1,10 +1,9 @@
-﻿using SmartStore.Core.Infrastructure;
-using SmartStore.AmazonPay.Services;
+﻿using SmartStore.AmazonPay.Services;
 using SmartStore.Services.Tasks;
 
 namespace SmartStore.AmazonPay
 {
-    public class DataPollingTask : ITask
+	public class DataPollingTask : ITask
     {
 		private readonly IAmazonPayService _apiService;
 
@@ -15,7 +14,7 @@ namespace SmartStore.AmazonPay
 		
 		public void Execute(TaskExecutionContext ctx)
         {
-			_apiService.DataPollingTaskProcess();
+			_apiService.StartDataPolling();
         }
     }
 }

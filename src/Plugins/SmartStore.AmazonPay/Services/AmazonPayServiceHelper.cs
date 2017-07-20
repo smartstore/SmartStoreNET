@@ -7,10 +7,10 @@ using System.Xml.Serialization;
 using AmazonPay;
 using AmazonPay.CommonRequests;
 using AmazonPay.Responses;
+using SmartStore.AmazonPay.Services.Internal;
 using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Common;
@@ -32,8 +32,6 @@ namespace SmartStore.AmazonPay.Services
 		{
 			get { return "SPEXDEAPA-SmartStore.Net-CP-DP"; }
 		}
-
-		#region Utilities
 
 		private string GetPluginUrl(string action, bool useSsl = false)
 		{
@@ -208,6 +206,68 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
+		private AmazonPayData GetDetails(AuthorizeResponse response)
+		{
+			var data = new AmazonPayData();
+			data.MessageType = "GetAuthorizationDetails";
+			data.MessageId = response.GetRequestId();
+			data.AuthorizationId = response.GetAuthorizationId();
+			data.ReferenceId = response.GetAuthorizationReferenceId();
+
+			var ids = response.GetCaptureIdList();
+			if (ids.Any())
+			{
+				data.CaptureId = ids.First();
+			}
+
+			data.Fee = new AmazonPayPrice(response.GetAuthorizationFee(), response.GetAuthorizationFeeCurrencyCode());
+			data.AuthorizedAmount = new AmazonPayPrice(response.GetAuthorizationAmount(), response.GetAuthorizationAmountCurrencyCode());
+			data.CapturedAmount = new AmazonPayPrice(response.GetCapturedAmount(), response.GetCapturedAmountCurrencyCode());
+			data.CaptureNow = response.GetCaptureNow();
+			data.Creation = response.GetCreationTimestamp();
+			data.Expiration = response.GetExpirationTimestamp();
+			data.ReasonCode = response.GetReasonCode();
+			data.ReasonDescription = response.GetReasonDescription();
+			data.State = response.GetAuthorizationState();
+			data.StateLastUpdate = response.GetLastUpdateTimestamp();
+
+			return data;
+		}
+		private AmazonPayData GetDetails(CaptureResponse response)
+		{
+			var data = new AmazonPayData();
+			data.MessageType = "GetCaptureDetails";
+			data.MessageId = response.GetRequestId();
+			data.CaptureId = response.GetCaptureId();
+			data.ReferenceId = response.GetCaptureReferenceId();
+			data.Fee = new AmazonPayPrice(response.GetCaptureFee(), response.GetCaptureFeeCurrencyCode());
+			data.CapturedAmount = new AmazonPayPrice(response.GetCaptureAmount(), response.GetCaptureAmountCurrencyCode());
+			data.RefundedAmount = new AmazonPayPrice(response.refundedAmount, response.refundedAmountCurrencyCode);
+			data.Creation = response.GetCreationTimestamp();
+			data.ReasonCode = response.GetReasonCode();
+			data.ReasonDescription = response.GetReasonDescription();
+			data.State = response.GetCaptureState();
+			data.StateLastUpdate = response.GetLastUpdatedTimestamp();
+
+			return data;
+		}
+		private AmazonPayData GetDetails(RefundResponse response)
+		{
+			var data = new AmazonPayData();
+			data.MessageType = "GetRefundDetails";
+			data.MessageId = response.GetRequestId();
+			data.ReferenceId = response.GetRefundReferenceId();
+			data.Creation = response.GetCreationTimestamp();
+			data.Fee = new AmazonPayPrice(response.GetRefundFee(), response.GetRefundFeeCurrencyCode());
+			data.RefundedAmount = new AmazonPayPrice(response.GetRefundAmount(), response.GetRefundAmountCurrencyCode());
+			data.ReasonCode = response.GetReasonCode();
+			data.ReasonDescription = response.GetReasonDescription();
+			data.State = response.GetRefundState();
+			data.StateLastUpdate = response.GetLastUpdateTimestamp();
+
+			return data;
+		}
+
 		private string GetRandomId(string prefix)
 		{
 			var str = prefix + CommonHelper.GenerateRandomDigitCode(20);
@@ -233,9 +293,73 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
-		#endregion
+		private string ToInfoString(AmazonPayData data)
+		{
+			var sb = new StringBuilder();
 
-		private Order FindOrder(AmazonPayApiData data)
+			try
+			{
+				var strings = _services.Localization.GetResource("Plugins.Payments.AmazonPay.MessageStrings").SplitSafe(";");
+				var state = data.State.Grow(data.ReasonCode, " ");
+
+				if (data.ReasonDescription.HasValue())
+					state = $"{state} ({data.ReasonDescription})";
+
+				sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.MessageTyp)}: {data.MessageType.NaIfEmpty()}");
+				sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.State)}: {state}");
+
+				var stateDate = _dateTimeHelper.ConvertToUserTime(data.StateLastUpdate, DateTimeKind.Utc);
+				sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.StateUpdate)}: {stateDate.ToString()}");
+
+				sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.MessageId)}: {data.MessageId.NaIfEmpty()}");
+
+				if (data.AuthorizationId.HasValue())
+					sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.AuthorizationID)}: {data.AuthorizationId}");
+
+				if (data.CaptureId.HasValue())
+					sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.CaptureID)}: {data.CaptureId}");
+
+				if (data.RefundId.HasValue())
+					sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.RefundID)}: {data.RefundId}");
+
+				sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.ReferenceID)}: {data.ReferenceId.NaIfEmpty()}");
+
+				if (data.Fee != null && data.Fee.Amount != decimal.Zero)
+				{
+					var signed = data.MessageType.IsCaseInsensitiveEqual("RefundNotification") || data.MessageType.IsCaseInsensitiveEqual("GetRefundDetails") ? "-" : "";
+					sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.Fee)}: {signed}");
+				}
+
+				if (data.AuthorizedAmount != null && data.AuthorizedAmount.Amount != decimal.Zero)
+					sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.AuthorizedAmount)}: {data.AuthorizedAmount.ToString()}");
+
+				if (data.CapturedAmount != null && data.CapturedAmount.Amount != decimal.Zero)
+					sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.CapturedAmount)}: {data.CapturedAmount.ToString()}");
+
+				if (data.RefundedAmount != null && data.RefundedAmount.Amount != decimal.Zero)
+					sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.RefundedAmount)}: {data.RefundedAmount.ToString()}");
+
+				if (data.CaptureNow.HasValue)
+					sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.CaptureNow)}: {data.CaptureNow.Value.ToString()}");
+
+				var creationDate = _dateTimeHelper.ConvertToUserTime(data.Creation, DateTimeKind.Utc);
+				sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.Creation)}: {creationDate.ToString()}");
+
+				if (data.Expiration.HasValue)
+				{
+					var expirationDate = _dateTimeHelper.ConvertToUserTime(data.Expiration.Value, DateTimeKind.Utc);
+					sb.AppendLine($"{strings.SafeGet((int)AmazonPayMessage.Expiration)}: {expirationDate.ToString()}");
+				}
+			}
+			catch (Exception exception)
+			{
+				exception.Dump();
+			}
+
+			return sb.ToString();
+		}
+
+		private Order FindOrder(AmazonPayData data)
 		{
 			Order order = null;
 			string errorId = null;

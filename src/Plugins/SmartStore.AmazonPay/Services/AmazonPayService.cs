@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using AmazonPay;
 using AmazonPay.StandardPaymentRequests;
 using Autofac;
 using Newtonsoft.Json.Linq;
-using OffAmazonPaymentsService;
-using SmartStore.AmazonPay.Api;
 using SmartStore.AmazonPay.Models;
+using SmartStore.AmazonPay.Services.Internal;
 using SmartStore.AmazonPay.Settings;
 using SmartStore.Core;
 using SmartStore.Core.Async;
@@ -32,6 +33,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Helpers;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -41,7 +43,6 @@ namespace SmartStore.AmazonPay.Services
 {
 	public partial class AmazonPayService : IAmazonPayService
 	{
-		private readonly IAmazonPayApi _api;
 		private readonly HttpContextBase _httpContext;
 		private readonly ICommonServices _services;
 		private readonly IPaymentService _paymentService;
@@ -54,6 +55,7 @@ namespace SmartStore.AmazonPay.Services
 		private readonly IStateProvinceService _stateProvinceService;
 		private readonly IAddressService _addressService;
 		private readonly IPriceFormatter _priceFormatter;
+		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly OrderSettings _orderSettings;
 		private readonly RewardPointsSettings _rewardPointsSettings;
 		private readonly IOrderService _orderService;
@@ -67,7 +69,6 @@ namespace SmartStore.AmazonPay.Services
 		private readonly Lazy<IExternalAuthorizer> _authorizer;
 
 		public AmazonPayService(
-			IAmazonPayApi api,
 			HttpContextBase httpContext,
 			ICommonServices services,
 			IPaymentService paymentService,
@@ -80,6 +81,7 @@ namespace SmartStore.AmazonPay.Services
 			IStateProvinceService stateProvinceService,
 			IAddressService addressService,
 			IPriceFormatter priceFormatter,
+			IDateTimeHelper dateTimeHelper,
 			OrderSettings orderSettings,
 			RewardPointsSettings rewardPointsSettings,
 			IOrderService orderService,
@@ -91,7 +93,6 @@ namespace SmartStore.AmazonPay.Services
 			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings,
 			Lazy<IExternalAuthorizer> authorizer)
 		{
-			_api = api;
 			_httpContext = httpContext;
 			_services = services;
 			_paymentService = paymentService;
@@ -104,6 +105,7 @@ namespace SmartStore.AmazonPay.Services
 			_stateProvinceService = stateProvinceService;
 			_addressService = addressService;
 			_priceFormatter = priceFormatter;
+			_dateTimeHelper = dateTimeHelper;
 			_orderSettings = orderSettings;
 			_rewardPointsSettings = rewardPointsSettings;
 			_orderService = orderService;
@@ -150,30 +152,6 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
-		private void LogAmazonError(OffAmazonPaymentsServiceException exception, bool notify = false, IList<string> errors = null)
-		{
-			try
-			{
-				string shortMessage, fullMessage;
-
-				if (exception.GetErrorStrings(out shortMessage, out fullMessage))
-				{
-					Logger.Error(exception, shortMessage);
-
-					if (notify)
-					{
-						_services.Notifier.Error(new LocalizedString(shortMessage));
-					}
-
-					if (errors != null)
-					{
-						errors.Add(shortMessage);
-					}
-				}
-			}
-			catch { }
-		}
-
 		public void SetupConfiguration(ConfigurationModel model)
 		{
 			var store = _services.StoreContext.CurrentStore;
@@ -191,8 +169,8 @@ namespace SmartStore.AmazonPay.Services
 			{
 				model.PluginVersion = descriptor.Version.ToString();
 			}
-			model.LeadCode = AmazonPayApi.LeadCode;
-			model.PlatformId = AmazonPayApi.PlatformId;
+			model.LeadCode = LeadCode;
+			model.PlatformId = PlatformId;
 			model.LanguageLocale = language.UniqueSeoCode.ToAmazonLanguageCode('_');
 			model.MerchantLoginDomains = allStores.Select(x => x.SslEnabled ? x.SecureUrl.EmptyNull().TrimEnd('/') : x.Url.EmptyNull().TrimEnd('/')).ToArray();
 			model.MerchantLoginRedirectURLs = new string[0];
@@ -522,82 +500,20 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
-		private string GetAuthorizationState(AmazonPayApiClient client, string authorizationId)
+		private void ProcessAuthorizationResult(AmazonPaySettings settings, Order order, AmazonPayData data)
 		{
-			try
-			{
-				if (authorizationId.HasValue())
-				{
-					AmazonPayApiData data;
-
-					if (_api.GetAuthorizationDetails(client, authorizationId, out data) != null)
-						return data.State;
-				}
-			}
-			catch (OffAmazonPaymentsServiceException exc)
-			{
-				LogAmazonError(exc);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc);
-			}
-			return null;
-		}
-
-		private void CloseOrderReference(AmazonPaySettings settings, Order order)
-		{
-			// You can still perform captures against any open authorizations, but you cannot create any new authorizations on the
-			// Order Reference object. You can still execute refunds against the Order Reference object.
-
-			try
-			{
-				var orderAttribute = DeserializeOrderAttribute(order);
-				var client = CreateClient(settings);
-
-				var closeRequest = new CloseOrderReferenceRequest()
-					.WithMerchantId(settings.SellerId)
-					.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
-
-				var closeResponse = client.CloseOrderReference(closeRequest);
-				if (!closeResponse.GetSuccess())
-				{
-					LogError(closeResponse, null, true);
-				}
-			}
-			catch (Exception exception)
-			{
-				LogError(exception);
-			}
-		}
-
-		private void ProcessAuthorizationResult(AmazonPayApiClient client, Order order, AmazonPayApiData data, OffAmazonPaymentsService.Model.AuthorizationDetails details)
-		{
-			string formattedAddress;
 			var orderAttribute = DeserializeOrderAttribute(order);
-
 			if (!orderAttribute.IsBillingAddressApplied)
 			{
-				if (_api.FulfillBillingAddress(client.Settings, order, details, out formattedAddress))
-				{
-					AddOrderNote(client.Settings, order, AmazonPayOrderNote.BillingAddressApplied, formattedAddress);
-
-					orderAttribute.IsBillingAddressApplied = true;
-					SerializeOrderAttribute(orderAttribute, order);
-				}
-				else if (formattedAddress.HasValue())
-				{
-					AddOrderNote(client.Settings, order, AmazonPayOrderNote.BillingAddressCountryNotAllowed, formattedAddress);
-
-					orderAttribute.IsBillingAddressApplied = true;
-					SerializeOrderAttribute(orderAttribute, order);
-				}
+				// TODO: obsolete? No billing address in auth details response.
 			}
 
 			if (data.State.IsCaseInsensitiveEqual("Pending"))
+			{
 				return;
+			}
 
-			string newResult = data.State.Grow(data.ReasonCode, " ");
+			var newResult = data.State.Grow(data.ReasonCode, " ");
 
 			if (_orderProcessingService.CanMarkOrderAsAuthorized(order))
 			{
@@ -606,7 +522,8 @@ namespace SmartStore.AmazonPay.Services
 
 			if (data.State.IsCaseInsensitiveEqual("Closed") && data.ReasonCode.IsCaseInsensitiveEqual("OrderReferenceCanceled") && _orderProcessingService.CanVoidOffline(order))
 			{
-				_orderProcessingService.VoidOffline(order);		// cancelation at amazon seller central
+				// Cancelation at amazon seller central.
+				_orderProcessingService.VoidOffline(order);
 			}
 			else if (data.State.IsCaseInsensitiveEqual("Declined") && _orderProcessingService.CanVoidOffline(order))
 			{
@@ -618,31 +535,61 @@ namespace SmartStore.AmazonPay.Services
 				order.AuthorizationTransactionResult = newResult;
 
 				if (order.CaptureTransactionId.IsEmpty() && data.CaptureId.HasValue())
-					order.CaptureTransactionId = data.CaptureId;	// captured at amazon seller central
+				{
+					// Captured at amazon seller central.
+					order.CaptureTransactionId = data.CaptureId;
+				}
 
 				_orderService.UpdateOrder(order);
 
-				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
+				AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
 			}
 		}
-		private void ProcessCaptureResult(AmazonPayApiClient client, Order order, AmazonPayApiData data)
+
+		private void ProcessCaptureResult(Client client, AmazonPaySettings settings, Order order, AmazonPayData data)
 		{
 			if (data.State.IsCaseInsensitiveEqual("Pending"))
+			{
 				return;
+			}
 
-			string newResult = data.State.Grow(data.ReasonCode, " ");
+			var newResult = data.State.Grow(data.ReasonCode, " ");
 
 			if (data.State.IsCaseInsensitiveEqual("Completed") && _orderProcessingService.CanMarkOrderAsPaid(order))
 			{
 				_orderProcessingService.MarkOrderAsPaid(order);
 
-				CloseOrderReference(client.Settings, order);
+				// You can still perform captures against any open authorizations, but you cannot create any new authorizations on the
+				// Order Reference object. You can still execute refunds against the Order Reference object.
+				var orderAttribute = DeserializeOrderAttribute(order);
+
+				var closeRequest = new CloseOrderReferenceRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
+
+				var closeResponse = client.CloseOrderReference(closeRequest);
+				if (!closeResponse.GetSuccess())
+				{
+					LogError(closeResponse, null, true);
+				}
 			}
 			else if (data.State.IsCaseInsensitiveEqual("Declined") && _orderProcessingService.CanVoidOffline(order))
 			{
-				if (!GetAuthorizationState(client, order.AuthorizationTransactionId).IsCaseInsensitiveEqual("Open"))
+				var authDetailsRequest = new GetAuthorizationDetailsRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonAuthorizationId(order.AuthorizationTransactionId);
+
+				var authDetailsResponse = client.GetAuthorizationDetails(authDetailsRequest);
+				if (authDetailsResponse.GetSuccess())
 				{
-					_orderProcessingService.VoidOffline(order);
+					if (authDetailsResponse.GetAuthorizationState().IsCaseInsensitiveEqual("Open"))
+					{
+						_orderProcessingService.VoidOffline(order);
+					}
+				}
+				else
+				{
+					LogError(authDetailsResponse);
 				}
 			}
 
@@ -651,20 +598,24 @@ namespace SmartStore.AmazonPay.Services
 				order.CaptureTransactionResult = newResult;
 				_orderService.UpdateOrder(order);
 
-				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
+				AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
 			}
 		}
-		private void ProcessRefundResult(AmazonPayApiClient client, Order order, AmazonPayApiData data)
+
+		private void ProcessRefundResult(Client client, AmazonPaySettings settings, Order order, AmazonPayData data)
 		{
 			if (data.State.IsCaseInsensitiveEqual("Pending"))
-				return;
-
-			if (data.RefundedAmount != null && data.RefundedAmount.Amount != 0.0)	// totally refunded amount
 			{
-				// we could only process it once cause otherwise order.RefundedAmount would getting wrong.
+				return;
+			}
+
+			if (data.RefundedAmount != null && data.RefundedAmount.Amount != decimal.Zero)
+			{
+				// Totally refunded amount.
+				// We could only process it once cause otherwise order.RefundedAmount would getting wrong.
 				if (order.RefundedAmount == decimal.Zero)
 				{
-					decimal refundAmount = Convert.ToDecimal(data.RefundedAmount.Amount);
+					decimal refundAmount = data.RefundedAmount.Amount;
 					decimal receivable = order.OrderTotal - refundAmount;
 
 					if (receivable <= decimal.Zero)
@@ -673,8 +624,10 @@ namespace SmartStore.AmazonPay.Services
 						{
 							_orderProcessingService.RefundOffline(order);
 
-							if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
-								AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
+							if (settings.DataFetching == AmazonPayDataFetchingType.Polling)
+							{
+								AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
+							}
 						}
 					}
 					else
@@ -683,15 +636,19 @@ namespace SmartStore.AmazonPay.Services
 						{
 							_orderProcessingService.PartiallyRefundOffline(order, refundAmount);
 
-							if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
-								AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
+							if (settings.DataFetching == AmazonPayDataFetchingType.Polling)
+							{
+								AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
+							}
 						}
 					}
 				}
 			}
 
-			if (client.Settings.DataFetching == AmazonPayDataFetchingType.Ipn)
-				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
+			if (settings.DataFetching == AmazonPayDataFetchingType.Ipn)
+			{
+				AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
+			}
 		}
 
 		private void PollingLoop(PollingLoopData data, Func<bool> poll)
@@ -704,14 +661,14 @@ namespace SmartStore.AmazonPay.Services
 
 				for (int i = 0; i < 99 && (DateTime.Now.TimeOfDay.Milliseconds - startTime.Milliseconds) <= loopMillSec; ++i)
 				{
-					// inside the loop cause other instances are also updating the order
+					// Inside the loop cause other instances are also updating the order.
 					data.Order = _orderService.GetOrderById(data.OrderId);
 
 					if (data.Settings == null)
 						data.Settings = _services.Settings.LoadSetting<AmazonPaySettings>(data.Order.StoreId);
 
 					if (data.Client == null)
-						data.Client = _api.CreateClient(data.Settings);
+						data.Client = CreateClient(data.Settings);
 
 					if (!poll())
 						break;
@@ -719,20 +676,14 @@ namespace SmartStore.AmazonPay.Services
 					Thread.Sleep(sleepMillSec);
 				}
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc);
+				LogError(exception);
 			}
 		}
 		private void EarlyPolling(int orderId, AmazonPaySettings settings)
 		{
-			// the Authorization object moves to the Open state after remaining in the Pending state for 30 seconds.
-
-			AmazonPayApiData data;
+			// The Authorization object moves to the Open state after remaining in the Pending state for 30 seconds.
 			var d = new PollingLoopData(orderId);
 			d.Settings = settings;
 
@@ -741,13 +692,21 @@ namespace SmartStore.AmazonPay.Services
 				if (d.Order.AuthorizationTransactionId.IsEmpty())
 					return false;
 
-				var details = _api.GetAuthorizationDetails(d.Client, d.Order.AuthorizationTransactionId, out data);
+				var authDetailsRequest = new GetAuthorizationDetailsRequest()
+					.WithMerchantId(d.Settings.SellerId)
+					.WithAmazonAuthorizationId(d.Order.AuthorizationTransactionId);
 
-				if (!data.State.IsCaseInsensitiveEqual("pending"))
+				var authDetailsResponse = d.Client.GetAuthorizationDetails(authDetailsRequest);
+				if (!authDetailsResponse.GetSuccess())
+					return false;
+
+				var details = GetDetails(authDetailsResponse);
+				if (!details.State.IsCaseInsensitiveEqual("pending"))
 				{
-					ProcessAuthorizationResult(d.Client, d.Order, data, details);
+					ProcessAuthorizationResult(d.Settings, d.Order, details);
 					return false;
 				}
+
 				return true;
 			});
 
@@ -757,11 +716,18 @@ namespace SmartStore.AmazonPay.Services
 				if (d.Order.CaptureTransactionId.IsEmpty())
 					return false;
 
-				_api.GetCaptureDetails(d.Client, d.Order.CaptureTransactionId, out data);
+				var captureDetailsRequest = new GetCaptureDetailsRequest()
+					.WithMerchantId(d.Settings.SellerId)
+					.WithAmazonCaptureId(d.Order.CaptureTransactionId);
 
-				ProcessCaptureResult(d.Client, d.Order, data);
+				var captureDetailsResponse = d.Client.GetCaptureDetails(captureDetailsRequest);
+				if (!captureDetailsResponse.GetSuccess())
+					return false;
 
-				return data.State.IsCaseInsensitiveEqual("pending");
+				var details = GetDetails(captureDetailsResponse);
+				ProcessCaptureResult(d.Client, d.Settings, d.Order, details);
+
+				return details.State.IsCaseInsensitiveEqual("pending");
 			});
 		}
 
@@ -773,7 +739,7 @@ namespace SmartStore.AmazonPay.Services
 				var loopMillSec = 40000;
 				var startTime = DateTime.Now.TimeOfDay;
 
-				for (int i = 0; i < 99 && (DateTime.Now.TimeOfDay.Milliseconds - startTime.Milliseconds) <= loopMillSec; ++i)
+				for (var i = 0; i < 99 && (DateTime.Now.TimeOfDay.Milliseconds - startTime.Milliseconds) <= loopMillSec; ++i)
 				{
 					var order = _orderService.GetOrderByGuid(state.OrderGuid);
 					if (order != null)
@@ -805,9 +771,9 @@ namespace SmartStore.AmazonPay.Services
 					Thread.Sleep(sleepMillSec);
 				}
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				LogError(exc);
+				LogError(exception);
 			}
 		}
 
@@ -1194,40 +1160,71 @@ namespace SmartStore.AmazonPay.Services
 		{
 			try
 			{
-				var data = _api.ParseNotification(request);
+				//var data = _api.ParseNotification(request);
+				string json = null;
+				using (var reader = new StreamReader(request.InputStream))
+				{
+					json = reader.ReadToEnd();
+				}
+
+				AmazonPayData data = null;
+				var parser = new IpnHandler(request.Headers, json);
+				var type = parser.GetNotificationType();
+
+				if (type.IsCaseInsensitiveEqual("AuthorizationNotification"))
+				{
+					var response = parser.GetAuthorizeResponse();
+					data = GetDetails(response);
+				}
+				else if (type.IsCaseInsensitiveEqual("CaptureNotification"))
+				{
+					var response = parser.GetCaptureResponse();
+					data = GetDetails(response);
+				}
+				else if (type.IsCaseInsensitiveEqual("RefundNotification"))
+				{
+					var response = parser.GetRefundResponse();
+					data = GetDetails(response);
+				}
+
+				if (data == null)
+				{
+					return;
+				}
+
+				data.MessageType = type;
+				data.MessageId = parser.GetNotificationReferenceId();
+
 				var order = FindOrder(data);
-
 				if (order == null || !IsPaymentMethodActive(order.StoreId))
-					return;
-
-				var client = _api.CreateClient(_services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId));
-
-				if (client.Settings.DataFetching != AmazonPayDataFetchingType.Ipn)
-					return;
-
-				if (data.MessageType.IsCaseInsensitiveEqual("AuthorizationNotification"))
 				{
-					ProcessAuthorizationResult(client, order, data, null);
 					return;
 				}
-				else if (data.MessageType.IsCaseInsensitiveEqual("CaptureNotification"))
+
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId);
+				if (settings.DataFetching != AmazonPayDataFetchingType.Ipn)
 				{
-					ProcessCaptureResult(client, order, data);
 					return;
 				}
-				else if (data.MessageType.IsCaseInsensitiveEqual("RefundNotification"))
+
+				if (type.IsCaseInsensitiveEqual("AuthorizationNotification"))
 				{
-					ProcessRefundResult(client, order, data);
-					return;
+					ProcessAuthorizationResult(settings, order, data);
+				}
+				else if (type.IsCaseInsensitiveEqual("CaptureNotification"))
+				{
+					var client = CreateClient(settings);
+					ProcessCaptureResult(client, settings, order, data);
+				}
+				else if (type.IsCaseInsensitiveEqual("RefundNotification"))
+				{
+					var client = CreateClient(settings);
+					ProcessRefundResult(client, settings, order, data);
 				}
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc);
+				LogError(exception);
 			}
 		}
 
@@ -1235,10 +1232,8 @@ namespace SmartStore.AmazonPay.Services
 		{
 			try
 			{
-				// ignore cancelled and completed (paid and shipped) orders. ignore old orders too.
-
-				var data = new AmazonPayApiData();
-				int pollingMaxOrderCreationDays = _services.Settings.GetSettingByKey<int>("AmazonPaySettings.PollingMaxOrderCreationDays", 31);
+				// Ignore cancelled and completed (paid and shipped) orders. ignore old orders too.
+				var pollingMaxOrderCreationDays = _services.Settings.GetSettingByKey("AmazonPaySettings.PollingMaxOrderCreationDays", 31);
 				var isTooOld = DateTime.UtcNow.AddDays(-(pollingMaxOrderCreationDays));
 
 				var query =
@@ -1249,22 +1244,33 @@ namespace SmartStore.AmazonPay.Services
 					select x;
 
 				var orders = query.ToList();
-
 				//"- start polling {0} orders".FormatWith(orders.Count).Dump();
 
 				foreach (var order in orders)
 				{
 					try
 					{
-						var client = _api.CreateClient(_services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId));
-
-						if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
+						var settings = _services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId);
+						if (settings.DataFetching == AmazonPayDataFetchingType.Polling)
 						{
+							var client = CreateClient(settings);
+
 							if (order.AuthorizationTransactionId.HasValue())
 							{
-								var details = _api.GetAuthorizationDetails(client, order.AuthorizationTransactionId, out data);
+								var authDetailsRequest = new GetAuthorizationDetailsRequest()
+									.WithMerchantId(settings.SellerId)
+									.WithAmazonAuthorizationId(order.AuthorizationTransactionId);
 
-								ProcessAuthorizationResult(client, order, data, details);
+								var authDetailsResponse = client.GetAuthorizationDetails(authDetailsRequest);
+								if (authDetailsResponse.GetSuccess())
+								{
+									var details = GetDetails(authDetailsResponse);
+									ProcessAuthorizationResult(settings, order, details);
+								}
+								else
+								{
+									LogError(authDetailsResponse);
+								}
 							}
 
 							if (order.CaptureTransactionId.HasValue())
@@ -1272,38 +1278,40 @@ namespace SmartStore.AmazonPay.Services
 								if (_orderProcessingService.CanMarkOrderAsPaid(order) || _orderProcessingService.CanVoidOffline(order) || 
 									_orderProcessingService.CanRefundOffline(order) || _orderProcessingService.CanPartiallyRefundOffline(order, 0.01M))
 								{
-									var details = _api.GetCaptureDetails(client, order.CaptureTransactionId, out data);
+									var captureDetailsRequest = new GetCaptureDetailsRequest()
+										.WithMerchantId(settings.SellerId)
+										.WithAmazonCaptureId(order.CaptureTransactionId);
 
-									ProcessCaptureResult(client, order, data);
-
-									if (_orderProcessingService.CanRefundOffline(order) || _orderProcessingService.CanPartiallyRefundOffline(order, 0.01M))
+									var captureDetailsResponse = client.GetCaptureDetails(captureDetailsRequest);
+									if (captureDetailsResponse.GetSuccess())
 									{
-										// note status polling: we cannot use GetRefundDetails to reflect refund(s) made at Amazon seller central cause we 
-										// do not have any refund-id and there is no api endpoint that serves them. so we only can process CaptureDetails.RefundedAmount.
+										var details = GetDetails(captureDetailsResponse);
+										ProcessCaptureResult(client, settings, order, details);
 
-										ProcessRefundResult(client, order, data);
+										if (_orderProcessingService.CanRefundOffline(order) || _orderProcessingService.CanPartiallyRefundOffline(order, 0.01M))
+										{
+											// Note status polling: we cannot use GetRefundDetails to reflect refund(s) made at Amazon seller central cause we 
+											// do not have any refund-id and there is no api endpoint that provide them. So we only can process CaptureDetails.RefundedAmount.
+											ProcessRefundResult(client, settings, order, details);
+										}
+									}
+									else
+									{
+										LogError(captureDetailsResponse);
 									}
 								}
 							}
 						}
 					}
-					catch (OffAmazonPaymentsServiceException exc)
+					catch (Exception exception)
 					{
-						LogAmazonError(exc);
-					}
-					catch (Exception exc)
-					{
-						LogError(exc);
+						LogError(exception);
 					}
 				}
 			}
-			catch (OffAmazonPaymentsServiceException exc)
+			catch (Exception exception)
 			{
-				LogAmazonError(exc);
-			}
-			catch (Exception exc)
-			{
-				LogError(exc);
+				LogError(exception);
 			}
 		}
 

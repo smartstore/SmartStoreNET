@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AmazonPay;
 using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Orders;
 
@@ -38,6 +39,6 @@ namespace SmartStore.AmazonPay.Services
 		public int OrderId { get; private set; }
 		public Order Order { get; set; }
 		public AmazonPaySettings Settings { get; set; }
-		public AmazonPayApiClient Client { get; set; }
+		public Client Client { get; set; }
 	}
 }

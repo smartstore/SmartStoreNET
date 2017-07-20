@@ -157,13 +157,10 @@
     <Compile Include="Filters\AmazonPayCheckoutFilter.cs" />
     <Compile Include="Models\AmazonPayViewModel.cs" />
     <Compile Include="Services\AmazonAuthenticationParameters.cs" />
-    <Compile Include="Services\AmazonPayApiData.cs" />
-    <Compile Include="Services\AmazonPayApiPrice.cs" />
-    <Compile Include="Services\AmazonPayApi.cs" />
-    <Compile Include="Services\AmazonPayApiClient.cs" />
+    <Compile Include="Services\Internal\AmazonPayData.cs" />
+    <Compile Include="Services\Internal\AmazonPayPrice.cs" />
     <Compile Include="Services\AmazonPayUtilities.cs" />
     <Compile Include="Services\AmazonPayEnums.cs" />
-    <Compile Include="Services\IAmazonPayApi.cs" />
     <Compile Include="Services\IAmazonPayService.cs" />
     <Compile Include="Services\AmazonPayService.cs" />
     <Compile Include="DependencyRegistrar.cs" />

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace SmartStore.AmazonPay.Services
+namespace SmartStore.AmazonPay.Services.Internal
 {
-	public class AmazonPayApiData
+	internal class AmazonPayData
 	{
 		public string MessageType { get; set; }
 		public string MessageId { get; set; }
@@ -16,10 +16,10 @@ namespace SmartStore.AmazonPay.Services
 		public string State { get; set; }
 		public DateTime StateLastUpdate { get; set; }
 
-		public AmazonPayApiPrice Fee { get; set; }
-		public AmazonPayApiPrice AuthorizedAmount { get; set; }
-		public AmazonPayApiPrice CapturedAmount { get; set; }
-		public AmazonPayApiPrice RefundedAmount { get; set; }
+		public AmazonPayPrice Fee { get; set; }
+		public AmazonPayPrice AuthorizedAmount { get; set; }
+		public AmazonPayPrice CapturedAmount { get; set; }
+		public AmazonPayPrice RefundedAmount { get; set; }
 
 		public bool? CaptureNow { get; set; }
 		public DateTime Creation { get; set; }

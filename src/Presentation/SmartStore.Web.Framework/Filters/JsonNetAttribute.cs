@@ -23,11 +23,11 @@ namespace SmartStore.Web.Framework.Filters
 			if (filterContext == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
 				return;
 
-			// don't apply filter to child methods
+			// Don't apply filter to child methods.
 			if (filterContext.IsChildAction)
 				return;
 
-			// handle JsonResult only
+			// Hndle JsonResult only.
 			if (filterContext.Result.GetType() != typeof(JsonResult))
 				return;
 
@@ -37,6 +37,8 @@ namespace SmartStore.Web.Framework.Filters
 				MissingMemberHandling = MissingMemberHandling.Ignore,
 				TypeNameHandling = TypeNameHandling.Objects,
 				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+				DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
+				DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
 
 				// We cannot ignore null. Client template of several Telerik grids would fail.
 				//NullValueHandling = NullValueHandling.Ignore,

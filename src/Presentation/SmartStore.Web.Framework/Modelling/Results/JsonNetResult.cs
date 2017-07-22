@@ -52,6 +52,8 @@ namespace SmartStore.Web.Framework.Modelling
 				TypeNameHandling = TypeNameHandling.Objects,
 				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
 				NullValueHandling = NullValueHandling.Ignore,
+				DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
+				DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
 
 				// Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions
 				// from deserialization errors that might occur from deeply nested objects.
@@ -60,9 +62,6 @@ namespace SmartStore.Web.Framework.Modelling
 
 			if (_settings == null)
 			{
-				serializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
-				serializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-
 				var utcDateTimeConverter = new UTCDateTimeConverter(_dateTimeHelper, new JavaScriptDateTimeConverter());
 				serializerSettings.Converters.Add(utcDateTimeConverter);
 			}

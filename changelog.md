@@ -1,4 +1,7 @@
-# Release Notes
+﻿# Release Notes
+
+## SmartStore.NET 3.0.3
+* #1207 No low stock activity when bulk editing the product quantity
 
 ## SmartStore.NET 3.0.2
 ### Breaking changes

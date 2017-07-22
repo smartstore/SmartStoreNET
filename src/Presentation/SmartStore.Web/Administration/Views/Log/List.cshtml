@@ -91,11 +91,12 @@
 								.HtmlAttributes(new { style = "text-align:center" })
 								.HeaderHtmlAttributes(new { style = "text-align:center" });
 							columns.Bound(x => x.Logger)
-								.Width(100)
+								.Width(120)
 								.ClientTemplate("<span class='muted text-muted' title='<#= Logger #>'><#= LoggerShort #></span>");
 							columns.Bound(x => x.ShortMessage)
 								.ClientTemplate("<span class='label label-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
-							columns.Bound(x => x.UserName).Width(50);
+							columns.Bound(x => x.UserName)
+								.Width(120);
 							columns.Bound(x => x.CreatedOn)
 								.Width(160);
 						})
@@ -154,7 +155,7 @@
                         $('.checkboxGroups').attr('checked', false).change();
                         selectedIds = [];
                     },
-                    error:function (xhr, ajaxOptions, thrownError){
+                    error: function (xhr, ajaxOptions, thrownError){
                         alert(thrownError);
                     },
                     traditional: true
@@ -199,8 +200,6 @@
                 LogLevelId: $('#@Html.FieldIdFor(model => model.LogLevelId)').val()
             };
         	e.data = searchModel;
-
-        	console.log(searchModel);
         }
 
 

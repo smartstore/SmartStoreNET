@@ -420,6 +420,8 @@
 @* Must not be the first form. *@
 <form id="register-now-form" method="POST" action="@Model.RegisterUrl" target="_blank">
 	<input type="hidden" name="spId" value="@Model.PlatformId" />
+	<input type="hidden" name="publicKey" value="@Model.PublicKey" />
+	<input type="hidden" name="keyShareURL" value="@Model.KeyShareUrl" />
 	<input type="hidden" name="locale" value="@Model.LanguageLocale" />
 	@foreach (var item in Model.MerchantLoginDomains)
 	{

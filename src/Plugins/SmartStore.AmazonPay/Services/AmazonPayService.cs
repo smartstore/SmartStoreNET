@@ -133,6 +133,8 @@ namespace SmartStore.AmazonPay.Services
 			}
 			model.LeadCode = LeadCode;
 			model.PlatformId = PlatformId;
+			model.PublicKey = string.Empty;	// Not implemented.
+			model.KeyShareUrl = GetPluginUrl("ShareKey", store.SslEnabled);
 			model.LanguageLocale = language.UniqueSeoCode.ToAmazonLanguageCode('_');
 			model.MerchantLoginDomains = allStores.Select(x => x.SslEnabled ? x.SecureUrl.EmptyNull().TrimEnd('/') : x.Url.EmptyNull().TrimEnd('/')).ToArray();
 			model.MerchantLoginRedirectURLs = new string[0];
@@ -1273,6 +1275,39 @@ namespace SmartStore.AmazonPay.Services
 			catch (Exception exception)
 			{
 				Logger.Error(exception);
+			}
+		}
+
+		public void ShareKey(string payload, int storeId)
+		{
+			if (payload.IsEmpty())
+			{
+				throw new SmartException(T("Plugins.Payments.AmazonPay.MissingPayloadParameter"));
+			}
+
+			dynamic json = JObject.Parse(payload);
+			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(storeId);
+
+			var encryptedPayload = (string)json.encryptedPayload;
+			if (encryptedPayload.HasValue())
+			{
+				throw new SmartException(T("Plugins.Payments.AmazonPay.EncryptionNotSupported"));
+			}
+			else
+			{
+				settings.SellerId = (string)json.merchant_id;
+				settings.AccessKey = (string)json.access_key;
+				settings.SecretKey = (string)json.secret_key;
+				settings.ClientId = (string)json.client_id;
+				//settings.ClientSecret = (string)json.client_secret;
+			}
+
+			using (_services.Settings.BeginScope())
+			{
+				_services.Settings.SaveSetting(settings, x => x.SellerId, storeId, false);
+				_services.Settings.SaveSetting(settings, x => x.AccessKey, storeId, false);
+				_services.Settings.SaveSetting(settings, x => x.SecretKey, storeId, false);
+				_services.Settings.SaveSetting(settings, x => x.ClientId, storeId, false);
 			}
 		}
 

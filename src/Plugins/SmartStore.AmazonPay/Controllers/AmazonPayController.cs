@@ -103,30 +103,39 @@ namespace SmartStore.AmazonPay.Controllers
 		[HttpPost, AdminAuthorize]
 		public ActionResult SaveAccessData(string accessData)
 		{
-			if (accessData.HasValue())
+			try
 			{
-				var json = JObject.Parse(accessData);
 				var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-				var settings = Services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
-
-				settings.SellerId = json.GetValue("merchant_id").ToString();
-				settings.AccessKey = json.GetValue("access_key").ToString();
-				settings.SecretKey = json.GetValue("secret_key").ToString();
-				settings.ClientId = json.GetValue("client_id").ToString();
-				//settings.ClientSecret = json.GetValue("client_secret").ToString();
-
-				using (Services.Settings.BeginScope())
-				{
-					Services.Settings.SaveSetting(settings, x => x.SellerId, storeScope, false);
-					Services.Settings.SaveSetting(settings, x => x.AccessKey, storeScope, false);
-					Services.Settings.SaveSetting(settings, x => x.SecretKey, storeScope, false);
-					Services.Settings.SaveSetting(settings, x => x.ClientId, storeScope, false);
-				}
+				_apiService.ShareKey(accessData, storeScope);
 
 				NotifySuccess(T("Plugins.Payments.AmazonPay.SaveAccessDataSucceeded"));
 			}
+			catch (Exception exception)
+			{
+				NotifyError(exception.Message);
+			}
 
 			return RedirectToAction("ConfigurePlugin", "Plugin", new { area = "admin", systemName = AmazonPayPlugin.SystemName });
+		}
+
+		[ValidateInput(false)]
+		public ActionResult ShareKey(string payload)
+		{
+			Response.AddHeader("Access-Control-Allow-Origin", "https://payments.amazon.com");
+			Response.AddHeader("Access-Control-Allow-Methods", "GET, POST");
+			Response.AddHeader("Access-Control-Allow-Headers", "Content-Type");
+
+			try
+			{
+				_apiService.ShareKey(payload, 0);
+			}
+			catch (Exception exception)
+			{
+				Response.StatusCode = 400;
+				return Json(new { result = "error", message = exception.Message });
+			}
+
+			return Json(new { result = "success" });
 		}
 
 		[HttpPost]

@@ -33,5 +33,7 @@ namespace SmartStore.AmazonPay.Services
 		void ProcessIpn(HttpRequestBase request);
 
 		void StartDataPolling();
+
+		void ShareKey(string payload, int storeId);
 	}
 }

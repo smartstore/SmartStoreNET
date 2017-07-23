@@ -88,6 +88,12 @@ Textvorschläge:<ul>
   <LocaleResource Name="SaveAccessDataSucceeded">
     <Value>Die Zugangsdaten wurden erfolgreich gespeichert.</Value>
   </LocaleResource>
+  <LocaleResource Name="MissingPayloadParameter">
+    <Value>Der Payload Parameter fehlt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="EncryptionNotSupported">
+    <Value>Eine Verschlüsselung von Zugangsdaten wird nicnt unterstützt.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Zugangsdaten;Datenaustausch;Gestaltung;Sonstiges</Value>

@@ -106,6 +106,8 @@ namespace SmartStore.AmazonPay.Models
 		public string PluginVersion { get; set; }
 		public string LeadCode { get; set; }
 		public string PlatformId { get; set; }
+		public string PublicKey { get; set; }
+		public string KeyShareUrl { get; set; }
 		public string LanguageLocale { get; set; }
 		public string[] MerchantLoginDomains { get; set; }
 		public string[] MerchantLoginRedirectURLs { get; set; }

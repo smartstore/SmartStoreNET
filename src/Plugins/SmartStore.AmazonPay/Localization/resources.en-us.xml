@@ -88,6 +88,12 @@ Text suggestions:<ul>
   <LocaleResource Name="SaveAccessDataSucceeded">
     <Value>The access data has been saved successfully.</Value>
   </LocaleResource>
+  <LocaleResource Name="MissingPayloadParameter">
+    <Value>The payload parameter is missing.</Value>
+  </LocaleResource>
+  <LocaleResource Name="EncryptionNotSupported">
+    <Value>Encryption of access data is not supported.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Access data;Data exchange;Layout;Miscellaneous</Value>

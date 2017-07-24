@@ -1631,6 +1631,7 @@ namespace SmartStore.Admin.Controllers
 			model.DeliveryTimeFacet.DisplayOrder = settings.DeliveryTimeDisplayOrder;
 			model.AvailabilityFacet.Disabled = settings.AvailabilityDisabled;
 			model.AvailabilityFacet.DisplayOrder = settings.AvailabilityDisplayOrder;
+			model.AvailabilityFacet.IncludeNotAvailable = settings.IncludeNotAvailable;
 			model.NewArrivalsFacet.Disabled = settings.NewArrivalsDisabled;
 			model.NewArrivalsFacet.DisplayOrder = settings.NewArrivalsDisplayOrder;
 
@@ -1728,6 +1729,7 @@ namespace SmartStore.Admin.Controllers
 			settings.DeliveryTimeDisplayOrder = model.DeliveryTimeFacet.DisplayOrder;
 			settings.AvailabilityDisabled = model.AvailabilityFacet.Disabled;
 			settings.AvailabilityDisplayOrder = model.AvailabilityFacet.DisplayOrder;
+			settings.IncludeNotAvailable = model.AvailabilityFacet.IncludeNotAvailable;
 			settings.NewArrivalsDisabled = model.NewArrivalsFacet.Disabled;
 			settings.NewArrivalsDisplayOrder = model.NewArrivalsFacet.DisplayOrder;
 

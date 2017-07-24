@@ -24,6 +24,18 @@
 				@Html.ValidationMessageFor(model => model.DisplayOrder)
 			</td>
 		</tr>
+		@if (fieldPrefix == "AvailabilityFacet")
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.IncludeNotAvailable)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.IncludeNotAvailable)
+					@Html.ValidationMessageFor(model => model.IncludeNotAvailable)
+				</td>
+			</tr>
+		}
 	</table>
 }
 

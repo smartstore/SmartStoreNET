@@ -90,7 +90,7 @@
 
   <!-- HasOneProduct -->
   <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasOneProduct" AppendRootKey="false">
-    <Value>Kunde hat einen der folgenden Produkte in seinem Warenkorb</Value>
+    <Value>Kunde hat eins der folgenden Produkte in seinem Warenkorb</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.DiscountRules.HasOneProduct" AppendRootKey="false">
     <Children>

@@ -106,36 +106,28 @@ namespace SmartStore.Services.Catalog
 
         public virtual IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributeXml)
         {
+			var valueIds = new List<int>();
 			var attributeIds = DeserializeProductVariantAttributes(attributeXml);
-			var valueIds = new HashSet<int>(attributeIds.SelectMany(x => x.Value).Select(x => x.ToInt()));
+			var attributes = _productAttributeService.GetProductVariantAttributesByIds(attributeIds.Keys);
 
-			var values = _productAttributeService.GetProductVariantAttributeValuesByIds(valueIds.ToArray());
+			foreach (var pva in attributes)
+			{
+				if (!pva.ShouldHaveValues())
+					continue;
 
-			return values.Where(x => x.ProductVariantAttribute.ShouldHaveValues());
+				var pvaValuesStr = attributeIds[pva.Id];
 
-			//var allIds = new List<int>();
-			//var attrs = DeserializeProductVariantAttributes(attributeXml);
-			//var pvaCollection = _productAttributeService.GetProductVariantAttributesByIds(attrs.Keys);
+				var ids =
+					from id in pvaValuesStr
+					where id.HasValue()
+					select id.ToInt();
 
-			//foreach (var pva in pvaCollection)
-			//{
-			//	if (!pva.ShouldHaveValues())
-			//		continue;
+				valueIds.AddRange(ids);
+			}
 
-			//	var pvaValuesStr = attrs[pva.Id];
-
-			//	var ids =
-			//		from id in pvaValuesStr
-			//		where id.HasValue()
-			//		select id.ToInt();
-
-			//	allIds.AddRange(ids);
-			//}
-
-			//int[] allDistinctIds = allIds.Distinct().ToArray();
-
-			//var values = _productAttributeService.GetProductVariantAttributeValuesByIds(allDistinctIds);
-			//return values;
+			var distinctIds = valueIds.Distinct().ToArray();
+			var values = _productAttributeService.GetProductVariantAttributeValuesByIds(distinctIds);
+			return values;
 		}
 
 		public virtual IList<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes)

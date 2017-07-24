@@ -2823,6 +2823,8 @@ namespace SmartStore.Admin.Controllers
 						var product = _productService.GetProductById(pModel.Id);
 						if (product != null)
 						{
+							var prevStockQuantity = product.StockQuantity;
+
 							product.Sku = pModel.Sku;
 							product.Price = pModel.Price;
 							product.OldPrice = pModel.OldPrice;
@@ -2830,6 +2832,23 @@ namespace SmartStore.Admin.Controllers
 							product.Published = pModel.Published;
 
 							_productService.UpdateProduct(product);
+
+							// back in stock notifications
+							if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
+								product.BackorderMode == BackorderMode.NoBackorders &&
+								product.AllowBackInStockSubscriptions &&
+								product.StockQuantity > 0 &&
+								prevStockQuantity <= 0 &&
+								product.Published &&
+								!product.Deleted)
+							{
+								_backInStockSubscriptionService.SendNotificationsToSubscribers(product);
+							}
+
+							if (product.StockQuantity != prevStockQuantity && product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
+							{
+								_productService.AdjustInventory(product, true, 0, string.Empty);
+							}
 						}
 					}
 				}

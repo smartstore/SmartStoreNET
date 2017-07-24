@@ -47,25 +47,11 @@ namespace SmartStore.AmazonPay.Models
 		public string ButtonSize { get; set; }
 		public bool UsePopupWindow { get; set; }
 
-		public int AddressWidgetWidth { get; set; }
-		public int AddressWidgetHeight { get; set; }
-
-		public int PaymentWidgetWidth { get; set; }
-		public int PaymentWidgetHeight { get; set; }
-
 		public bool DisplayRewardPoints { get; set; }
 		public int RewardPointsBalance { get; set; }
 		public string RewardPointsAmount { get; set; }
 		public bool UseRewardPoints { get; set; }
 
 		public string ShippingMethod { get; set; }
-
-		public string WidgetId
-		{
-			get
-			{
-				return "AmazonPay" + Type.ToString();
-			}
-		}
     }
 }

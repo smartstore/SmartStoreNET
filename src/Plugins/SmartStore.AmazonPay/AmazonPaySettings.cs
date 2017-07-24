@@ -11,8 +11,6 @@ namespace SmartStore.AmazonPay
 			DataFetching = AmazonPayDataFetchingType.Ipn;
 			TransactionType = AmazonPayTransactionType.Authorize;
 			SaveEmailAndPhone = AmazonPaySaveDataType.OnlyIfEmpty;
-			AddressWidgetWidth = PaymentWidgetWidth = 400;
-			AddressWidgetHeight = PaymentWidgetHeight = 260;
 			AddOrderNotes = true;
 			UsePopupDialog = true;
 			InformCustomerAboutErrors = true;
@@ -43,12 +41,6 @@ namespace SmartStore.AmazonPay
 		public bool ShowButtonInMiniShoppingCart { get; set; }
 
 		public int PollingMaxOrderCreationDays { get; set; }
-
-		public int AddressWidgetWidth { get; set; }
-		public int AddressWidgetHeight { get; set; }
-
-		public int PaymentWidgetWidth { get; set; }
-		public int PaymentWidgetHeight { get; set; }
 
 		public decimal AdditionalFee { get; set; }
 		public bool AdditionalFeePercentage { get; set; }

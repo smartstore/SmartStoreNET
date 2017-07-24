@@ -5,7 +5,7 @@
 @if (Model.SellerId.HasValue())
 { 
     <div class="amazon-pay-button my-2 ml-3">
-		<div id="@Model.WidgetId"></div>
+		<div id="amazon-pay-login-button"></div>
     </div>
 
     Html.RenderPartial("ScriptingLoginButton", Model);

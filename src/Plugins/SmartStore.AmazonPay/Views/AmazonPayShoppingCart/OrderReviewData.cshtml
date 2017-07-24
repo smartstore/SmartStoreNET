@@ -1,4 +1,7 @@
 ﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+@{
+	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
+}
 
 <div class="card card-block order-review-data-box mb-3">
     <div class="row">
@@ -18,11 +21,11 @@
                                 <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingAddress", "Checkout", new { area = "" })'>@T("Common.Change")</a>
                             </div>
                         </div>
-                        <p id="@(Model.WidgetId)Address"></p>
+                        <p id="amazon-pay-read-address-book-widget"></p>
                     </div>
                 }
 
-                <div class="amazon-pay-wallet-widget col">
+                <div class="col">
                     <div class="row sm-gutters">
                         <div class="col">
                             <div class="heading">
@@ -33,7 +36,7 @@
                             <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("PaymentMethod", "Checkout", new { area = "" })'>@T("Common.Change")</a>
                         </div>
                     </div>
-                    <p id="@(Model.WidgetId)Wallet"></p>
+                    <p id="amazon-pay-read-wallet-widget"></p>
                 </div>
 
             </div>

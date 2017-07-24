@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -314,10 +315,6 @@ namespace SmartStore.AmazonPay.Services
 				model.IsShippable = cart.RequiresShipping();
 				model.IsRecurring = cart.IsRecurring();
 				model.WidgetUrl = settings.WidgetUrl;
-				model.AddressWidgetWidth = Math.Max(settings.AddressWidgetWidth, 200);
-				model.AddressWidgetHeight = Math.Max(settings.AddressWidgetHeight, 228);
-				model.PaymentWidgetWidth = Math.Max(settings.PaymentWidgetWidth, 200);
-				model.PaymentWidgetHeight = Math.Max(settings.PaymentWidgetHeight, 228);
 
 				if (type == AmazonPayRequestType.MiniShoppingCart && !settings.ShowButtonInMiniShoppingCart)
 				{

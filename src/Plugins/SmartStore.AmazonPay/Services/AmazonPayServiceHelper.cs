@@ -276,15 +276,8 @@ namespace SmartStore.AmazonPay.Services
 		private void LogError(IResponse response, IList<string> errors = null, bool isWarning = false)
 		{
 			var message = $"{response.GetErrorMessage().NaIfEmpty()} ({response.GetErrorCode().NaIfEmpty()})";
-
-			if (isWarning)
-			{
-				Logger.Warn(message);
-			}
-			else
-			{
-				Logger.Error(message);
-			}
+			
+			Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, new Exception(response.GetJson()), message, null);
 
 			if (errors != null)
 			{
@@ -498,6 +491,7 @@ namespace SmartStore.AmazonPay.Services
 			var config = new Configuration()
 				.WithAccessKey(settings.AccessKey)
 				.WithClientId(settings.ClientId)
+				.WithSecretKey(settings.SecretKey)
 				.WithSandbox(settings.UseSandbox)
 				.WithApplicationName("SmartStore.Net " + AmazonPayPlugin.SystemName)
 				.WithApplicationVersion(appVersion)

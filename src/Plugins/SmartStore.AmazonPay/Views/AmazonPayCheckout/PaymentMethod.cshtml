@@ -1,11 +1,10 @@
 ﻿@using SmartStore.Web.Models.Checkout;
-
 @model SmartStore.AmazonPay.Models.AmazonPayViewModel
-
 @{
-    Layout = "_Checkout";
+	Layout = "_Checkout";
 
-    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+	Html.AddTitleParts(T("PageTitle.Checkout").Text);
+	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
 }
 
 @section orderProgress{
@@ -35,7 +34,7 @@
             }
 
 			<div class="amazon-pay-widget clearfix">
-				<div id="@Model.WidgetId"></div>
+				<div id="amazon-pay-wallet-widget"></div>
 			</div>
 
             <div class="buttons mt-3">
@@ -73,8 +72,7 @@
 				scope: '',
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				design: {
-					designMode: 'responsive',
-					size: { width: '@(Model.PaymentWidgetWidth)px', height: '@(Model.PaymentWidgetHeight)px' }
+					designMode: 'responsive'
 				},
 				onPaymentSelect: function (orderReference) {
 					$('#AmazonPayNextCheckoutStep').fadeIn();
@@ -82,7 +80,7 @@
 				onError: function (e) {
 					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
 				}
-			}).bind('@Model.WidgetId');
+			}).bind('amazon-pay-wallet-widget');
 		}
 		catch (e) {
 			console.log(e);

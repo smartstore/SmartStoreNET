@@ -52,16 +52,6 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ShowButtonInMiniShoppingCart")]
 		public bool ShowButtonInMiniShoppingCart { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AddressWidgetWidth")]
-		public int AddressWidgetWidth { get; set; }
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AddressWidgetHeight")]
-		public int AddressWidgetHeight { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PaymentWidgetWidth")]
-		public int PaymentWidgetWidth { get; set; }
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PaymentWidgetHeight")]
-		public int PaymentWidgetHeight { get; set; }
-
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
 
@@ -132,10 +122,6 @@ namespace SmartStore.AmazonPay.Models
 				TransactionType = settings.TransactionType;
 				SaveEmailAndPhone = settings.SaveEmailAndPhone;
 				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
-				AddressWidgetWidth = settings.AddressWidgetWidth;
-				AddressWidgetHeight = settings.AddressWidgetHeight;
-				PaymentWidgetWidth = settings.PaymentWidgetWidth;
-				PaymentWidgetHeight = settings.PaymentWidgetHeight;
 				AdditionalFee = settings.AdditionalFee;
 				AdditionalFeePercentage = settings.AdditionalFeePercentage;
 				AddOrderNotes = settings.AddOrderNotes;
@@ -165,10 +151,6 @@ namespace SmartStore.AmazonPay.Models
 				settings.TransactionType = TransactionType;
 				settings.SaveEmailAndPhone = SaveEmailAndPhone;
 				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
-				settings.AddressWidgetWidth = AddressWidgetWidth;
-				settings.AddressWidgetHeight = AddressWidgetHeight;
-				settings.PaymentWidgetWidth = PaymentWidgetWidth;
-				settings.PaymentWidgetHeight = PaymentWidgetHeight;
 				settings.AdditionalFee = AdditionalFee;
 				settings.AdditionalFeePercentage = AdditionalFeePercentage;
 				settings.AddOrderNotes = AddOrderNotes;

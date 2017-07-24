@@ -1,0 +1,36 @@
+﻿
+#amazon-pay-address-book-widget {
+    min-width: 300px;
+    width: 100%;
+    max-width: 900px;
+    min-height: 228px;
+    height: 240px;
+    max-height: 400px;
+}
+
+#amazon-pay-wallet-widget {
+    min-width: 300px;
+    width: 100%;
+    max-width: 900px;
+    min-height: 228px;
+    height: 240px;
+    max-height: 400px;
+}
+
+#amazon-pay-read-address-book-widget {
+    min-width: 266px;
+    width: 100%;
+    max-width: 900px;
+    min-height: 145px;
+    height: 165px;
+    max-height: 180px;
+}
+
+#amazon-pay-read-wallet-widget {
+    min-width: 266px;
+    width: 100%;
+    max-width: 900px;
+    min-height: 145px;
+    height: 165px;
+    max-height: 180px;
+}

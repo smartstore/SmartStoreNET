@@ -5,6 +5,7 @@
 * Moved to new SDK AmazonPay.dll.
 * Implemented new Login and Pay with Amazon
 	* Perf: Widget script is now loaded asynchronously.
+	* Widget rendering in responsive design.
 	* Supports more languages and presentation settings.
 
 ##Pay with Amazon 2.2.0.3

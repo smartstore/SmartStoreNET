@@ -279,30 +279,6 @@ Textvorschläge:<ul>
 	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
 		<Value>Legt fest, ob der Amazon Pay Button auch im Miniwarenkorb angezeigt werden soll.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AddressWidgetWidth">
-		<Value>Breite des Adressen-Widgets</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetWidth.Hint">
-		<Value>In Pixel. Gültige Werte für einspaltige Widgets sind 200 bis 399 und für zweispaltige Widgets 400 bis 600.</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetHeight">
-		<Value>Höhe des Adressen-Widgets</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetHeight.Hint">
-		<Value>In Pixel. Gültige Werte sind 228 bis 400.</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetWidth">
-		<Value>Breite des Zahlungs-Widgets</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetWidth.Hint">
-		<Value>In Pixel. Gültige Werte für einspaltige Widgets sind 200 bis 399 und für zweispaltige Widgets 400 bis 600.</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetHeight">
-		<Value>Höhe des Zahlungs-Widgets</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetHeight.Hint">
-		<Value>In Pixel. Gültige Werte sind 228 bis 400.</Value>
-	</LocaleResource>
 	<LocaleResource Name="AdditionalFee">
 		<Value>Zusätzliche Gebühren</Value>
 	</LocaleResource>

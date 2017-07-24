@@ -1,4 +1,7 @@
 ﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+@{
+	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
+}
 
 <script type="text/javascript">
 	window.onAmazonLoginReady = function () {
@@ -18,13 +21,12 @@
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				displayMode: 'Read',
 				design: {
-					designMode: 'responsive',
-					size: { width: '400px', height: '185px' }
+					designMode: 'responsive'
 				},
 				onError: function (e) {
 					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
 				}
-			}).bind('@(Model.WidgetId)Address');
+			}).bind('amazon-pay-read-address-book-widget');
 		}
 		catch (e) {
 			console.log(e);
@@ -37,13 +39,12 @@
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				displayMode: 'Read',
 				design: {
-					designMode: 'responsive',
-					size: { width: '400px', height: '185px' }
+					designMode: 'responsive'
 				},
 				onError: function (e) {
 					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
 				}
-			}).bind('@(Model.WidgetId)Wallet');
+			}).bind('amazon-pay-read-wallet-widget');
 		}
 		catch (e) {
 			console.log(e);

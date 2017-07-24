@@ -278,30 +278,6 @@ Text suggestions:<ul>
 	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
 		<Value>Specifies to show the Amazon Pay button in the mini shopping cart too.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AddressWidgetWidth">
-		<Value>Width of address widget</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetWidth.Hint">
-		<Value>Valid values for one-column widgets are 200 to 399 pixel and for two-column widgets 400 to 600 pixel.</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetHeight">
-		<Value>Height of address widget</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetHeight.Hint">
-		<Value>Valid values are 228 to 400 pixel.</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetWidth">
-		<Value>Width of payment widget</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetWidth.Hint">
-		<Value>Valid values for one-column widgets are 200 to 399 pixel and for two-column widgets 400 to 600 pixel.</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetHeight">
-		<Value>Height of payment widget</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetHeight.Hint">
-		<Value>Valid values are 228 to 400 pixel.</Value>
-	</LocaleResource>
 	<LocaleResource Name="AdditionalFee">
 		<Value>Additional fee</Value>
 	</LocaleResource>

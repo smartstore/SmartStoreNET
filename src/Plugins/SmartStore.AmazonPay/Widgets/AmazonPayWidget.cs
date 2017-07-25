@@ -24,7 +24,6 @@ namespace SmartStore.AmazonPay.Widgets
 			{
 				"order_summary_content_before",
                 "offcanvas_cart_summary"
-				//"head_html_tag"
 			};
 		}
 
@@ -32,10 +31,6 @@ namespace SmartStore.AmazonPay.Widgets
 		{
 			var renderAmazonPayView = true;
 
-			//if (widgetZone.IsCaseInsensitiveEqual("head_html_tag"))
-			//{
-			//	actionName = "WidgetLibrary";
-			//}
 			if (widgetZone.IsCaseInsensitiveEqual("offcanvas_cart_summary"))
 			{
 				actionName = "MiniShoppingCart";

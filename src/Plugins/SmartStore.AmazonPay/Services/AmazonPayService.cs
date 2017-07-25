@@ -413,16 +413,20 @@ namespace SmartStore.AmazonPay.Services
 						out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
 					if (shoppingCartTotalBase.HasValue)
 					{
-						var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
-						var setOrderRequest = new SetOrderReferenceDetailsRequest()
-							.WithMerchantId(settings.SellerId)
-							.WithAmazonOrderReferenceId(model.OrderReferenceId)
-							.WithPlatformId(PlatformId)
-							.WithAmount(shoppingCartTotalBase.Value)
-							.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
-							.WithStoreName(store.Name);
+						var client = CreateClient(settings);
+						var setOrderResponse = WorkaroundSdkCurrencyFormattingBug(() =>
+						{
+							var setOrderRequest = new SetOrderReferenceDetailsRequest()
+								.WithMerchantId(settings.SellerId)
+								.WithAmazonOrderReferenceId(model.OrderReferenceId)
+								.WithPlatformId(PlatformId)
+								.WithAmount(shoppingCartTotalBase.Value)
+								.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+								.WithStoreName(store.Name);
 
-						var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
+							return client.SetOrderReferenceDetails(setOrderRequest);
+						});
+
 						if (!setOrderResponse.GetSuccess())
 						{
 							LogError(setOrderResponse);
@@ -744,7 +748,6 @@ namespace SmartStore.AmazonPay.Services
 				if (!IsPaymentMethodActive(store.Id, true))
 				{
 					//_httpContext.ResetCheckoutState();
-
 					result.AddError(T("Plugins.Payments.AmazonPay.PaymentMethodNotActive", store.Name));
 					return result;
 				}
@@ -753,18 +756,22 @@ namespace SmartStore.AmazonPay.Services
 				var customer = _customerService.GetCustomerById(request.CustomerId);
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
-				var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
+				var client = CreateClient(settings);
 
-				var setOrderRequest = new SetOrderReferenceDetailsRequest()
-					.WithMerchantId(settings.SellerId)
-					.WithAmazonOrderReferenceId(state.OrderReferenceId)
-					.WithPlatformId(PlatformId)
-					.WithAmount(request.OrderTotal)
-					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
-					.WithSellerOrderId(orderGuid)
-					.WithStoreName(store.Name);
+				var setOrderResponse = WorkaroundSdkCurrencyFormattingBug(() =>
+				{
+					var setOrderRequest = new SetOrderReferenceDetailsRequest()
+						.WithMerchantId(settings.SellerId)
+						.WithAmazonOrderReferenceId(state.OrderReferenceId)
+						.WithPlatformId(PlatformId)
+						.WithAmount(request.OrderTotal)
+						.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+						.WithSellerOrderId(orderGuid)
+						.WithStoreName(store.Name);
 
-				var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
+					return client.SetOrderReferenceDetails(setOrderRequest);
+				});
+
 				if (setOrderResponse.GetSuccess())
 				{
 					if (setOrderResponse.GetHasConstraint())
@@ -847,21 +854,25 @@ namespace SmartStore.AmazonPay.Services
 				var store = _services.StoreService.GetStoreById(request.StoreId);
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
-				var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
+				var client = CreateClient(settings);
 
 				informCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				informCustomerAddErrors = settings.InformCustomerAddErrors;
 
 				// Asynchronous as long as we do not set TransactionTimeout to 0. So transaction is always in pending state after return.
-				var authorizeRequest = new AuthorizeRequest()
-					.WithMerchantId(settings.SellerId)
-					.WithAmazonOrderReferenceId(state.OrderReferenceId)
-					.WithAuthorizationReferenceId(GetRandomId("Authorize"))
-					.WithCaptureNow(settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
-					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
-					.WithAmount(request.OrderTotal);
+				var authorizeResponse = WorkaroundSdkCurrencyFormattingBug(() =>
+				{
+					var authorizeRequest = new AuthorizeRequest()
+						.WithMerchantId(settings.SellerId)
+						.WithAmazonOrderReferenceId(state.OrderReferenceId)
+						.WithAuthorizationReferenceId(GetRandomId("Authorize"))
+						.WithCaptureNow(settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
+						.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+						.WithAmount(request.OrderTotal);
 
-				var authorizeResponse = client.Authorize(authorizeRequest);
+					return client.Authorize(authorizeRequest);
+				});
+
 				if (authorizeResponse.GetSuccess())
 				{
 					result.AuthorizationTransactionId = authorizeResponse.GetAuthorizationId();
@@ -979,16 +990,20 @@ namespace SmartStore.AmazonPay.Services
 			{
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
 				var store = _services.StoreService.GetStoreById(request.Order.StoreId);
-				var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
+				var client = CreateClient(settings);
 
-				var captureRequest = new CaptureRequest()
-					.WithMerchantId(settings.SellerId)
-					.WithAmazonAuthorizationId(request.Order.AuthorizationTransactionId)
-					.WithCaptureReferenceId(GetRandomId("Capture"))
-					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
-					.WithAmount(request.Order.OrderTotal);
+				var captureResponse = WorkaroundSdkCurrencyFormattingBug(() =>
+				{
+					var captureRequest = new CaptureRequest()
+						.WithMerchantId(settings.SellerId)
+						.WithAmazonAuthorizationId(request.Order.AuthorizationTransactionId)
+						.WithCaptureReferenceId(GetRandomId("Capture"))
+						.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+						.WithAmount(request.Order.OrderTotal);
 
-				var captureResponse = client.Capture(captureRequest);
+					return client.Capture(captureRequest);
+				});
+
 				if (captureResponse.GetSuccess())
 				{
 					var state = captureResponse.GetCaptureState();
@@ -1026,16 +1041,20 @@ namespace SmartStore.AmazonPay.Services
 			{
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
 				var store = _services.StoreService.GetStoreById(request.Order.StoreId);
-				var client = CreateClient(settings, store.PrimaryStoreCurrency.CurrencyCode);
+				var client = CreateClient(settings);
 
-				var refundRequest = new RefundRequest()
-					.WithMerchantId(settings.SellerId)
-					.WithAmazonCaptureId(request.Order.CaptureTransactionId)
-					.WithRefundReferenceId(GetRandomId("Refund"))
-					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
-					.WithAmount(request.AmountToRefund);
+				var refundResponse = WorkaroundSdkCurrencyFormattingBug(() =>
+				{
+					var refundRequest = new RefundRequest()
+						.WithMerchantId(settings.SellerId)
+						.WithAmazonCaptureId(request.Order.CaptureTransactionId)
+						.WithRefundReferenceId(GetRandomId("Refund"))
+						.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+						.WithAmount(request.AmountToRefund);
 
-				var refundResponse = client.Refund(refundRequest);
+					return client.Refund(refundRequest);
+				});
+
 				if (refundResponse.GetSuccess())
 				{
 					var refundId = refundResponse.GetRefundId();
@@ -1275,7 +1294,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
-		public void ShareKey(string payload, int storeId)
+		public void ShareKeys(string payload, int storeId)
 		{
 			if (payload.IsEmpty())
 			{

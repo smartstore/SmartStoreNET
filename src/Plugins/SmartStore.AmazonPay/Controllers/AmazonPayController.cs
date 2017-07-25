@@ -106,7 +106,7 @@ namespace SmartStore.AmazonPay.Controllers
 			try
 			{
 				var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-				_apiService.ShareKey(accessData, storeScope);
+				_apiService.ShareKeys(accessData, storeScope);
 
 				NotifySuccess(T("Plugins.Payments.AmazonPay.SaveAccessDataSucceeded"));
 			}
@@ -127,7 +127,7 @@ namespace SmartStore.AmazonPay.Controllers
 
 			try
 			{
-				_apiService.ShareKey(payload, 0);
+				_apiService.ShareKeys(payload, 0);
 			}
 			catch (Exception exception)
 			{

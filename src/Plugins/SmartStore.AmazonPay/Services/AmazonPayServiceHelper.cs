@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Xml.Serialization;
 using AmazonPay;
 using AmazonPay.CommonRequests;
@@ -276,7 +278,7 @@ namespace SmartStore.AmazonPay.Services
 		private void LogError(IResponse response, IList<string> errors = null, bool isWarning = false)
 		{
 			var message = $"{response.GetErrorMessage().NaIfEmpty()} ({response.GetErrorCode().NaIfEmpty()})";
-			
+
 			Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, new Exception(response.GetJson()), message, null);
 
 			if (errors != null)
@@ -466,7 +468,7 @@ namespace SmartStore.AmazonPay.Services
 		/// <param name="settings">AmazonPay settings</param>
 		/// <param name="currencyCode">Currency code of primary store currency</param>
 		/// <returns>AmazonPay client</returns>
-		private Client CreateClient(AmazonPaySettings settings, string currencyCode = null)
+		private Client CreateClient(AmazonPaySettings settings)
 		{
 			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(AmazonPayPlugin.SystemName);
 			var appVersion = descriptor != null ? descriptor.Version.ToString() : "1.0";
@@ -497,14 +499,34 @@ namespace SmartStore.AmazonPay.Services
 				.WithApplicationVersion(appVersion)
 				.WithRegion(region);
 
-			if (currencyCode.HasValue())
-			{
-				var currency = ConvertCurrency(currencyCode);
-				config = config.WithCurrencyCode(currency);
-			}
-
 			var client = new Client(config);
 			return client;
+		}
+
+		private T WorkaroundSdkCurrencyFormattingBug<T>(Func<T> request)
+		{
+			T result = default(T);
+			var oldCulture = Thread.CurrentThread.CurrentCulture;
+			var oldUICulture = Thread.CurrentThread.CurrentUICulture;
+
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
+			try
+			{
+				result = request();
+			}
+			catch (Exception exception)
+			{
+				Logger.Error(exception);
+			}
+			finally
+			{
+				Thread.CurrentThread.CurrentCulture = oldCulture;
+				Thread.CurrentThread.CurrentUICulture = oldUICulture;
+			}
+
+			return result;
 		}
 	}
 }

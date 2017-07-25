@@ -43,7 +43,7 @@
                     <span>@T("Common.Back")</span>
                 </a>
 
-                <button id="AmazonPayNextCheckoutStep" type="submit" class="btn btn-warning btn-lg payment-method-next-step-button hide">
+                <button id="AmazonPayNextCheckoutStep" type="submit" disabled="disabled" class="btn btn-warning btn-lg payment-method-next-step-button">
                     <span>@T("Checkout.NextButton")</span>
                     <i class="fa fa-angle-right"></i>
                 </button>
@@ -75,7 +75,7 @@
 					designMode: 'responsive'
 				},
 				onPaymentSelect: function (orderReference) {
-					$('#AmazonPayNextCheckoutStep').fadeIn();
+					$('#AmazonPayNextCheckoutStep').prop('disabled', false);
 				},
 				onError: function (e) {
 					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');

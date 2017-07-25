@@ -36,7 +36,8 @@
                 <span>@T("Common.Back")</span>
 			</a>
 
-			<a id="AmazonPayNextCheckoutStep" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })" disabled="disabled" class="btn btn-warning btn-lg new-address-next-step-button">
+			<a id="AmazonPayNextCheckoutStep" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })" aria-disabled="true"
+			   class="btn btn-warning btn-lg new-address-next-step-button disabled">
 				<span>@T("Checkout.NextButton")</span>
                 <i class="fa fa-angle-right"></i>
 			</a>
@@ -64,7 +65,7 @@
 				scope: 'payments:shipping_address payments:billing_address',
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				onAddressSelect: function (orderReference) {
-					$('#AmazonPayNextCheckoutStep').prop('disabled', false);
+					$('#AmazonPayNextCheckoutStep').removeClass('disabled');
 				},
 				design: {
 					designMode: 'responsive'

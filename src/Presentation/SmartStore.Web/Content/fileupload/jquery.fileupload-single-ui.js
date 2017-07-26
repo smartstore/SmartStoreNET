@@ -168,7 +168,6 @@
 			            extendedProgressNode.html(self._getProgressInfo(data));
 			        }
 
-			        console.log(progress);
 			        elProgress
 	                    .find('.progress')
 	                    .attr('aria-valuenow', progress)

@@ -529,7 +529,7 @@ namespace SmartStore.AmazonPay.Services
 				var closeResponse = client.CloseOrderReference(closeRequest);
 				if (!closeResponse.GetSuccess())
 				{
-					LogError(closeResponse, null, true);
+					LogError(closeResponse, true);
 				}
 			}
 			else if (data.State.IsCaseInsensitiveEqual("Declined") && _orderProcessingService.CanVoidOffline(order))
@@ -791,7 +791,8 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					LogError(setOrderResponse, result.Errors);
+					var message = LogError(setOrderResponse);
+					result.AddError(message);
 				}
 
 				if (!result.Success)
@@ -835,7 +836,7 @@ namespace SmartStore.AmazonPay.Services
 			catch (Exception exception)
 			{
 				Logger.Error(exception);
-				result.Errors.Add(exception.Message);
+				result.AddError(exception.Message);
 			}
 
 			return result;
@@ -845,9 +846,13 @@ namespace SmartStore.AmazonPay.Services
 		{
 			// Initiate Amazon payment. We do not add errors to request.Errors cause of asynchronous processing.
 			var result = new ProcessPaymentResult();
-			var errors = new List<string>();
-			bool informCustomerAboutErrors = false;
-			bool informCustomerAddErrors = false;
+			var orderNoteErrors = new List<string>();
+			var informCustomerAboutErrors = false;
+			var informCustomerAddErrors = false;
+			var isSynchronous = true;
+			string error = null;
+
+			result.NewPaymentStatus = PaymentStatus.Pending;
 
 			try
 			{
@@ -859,18 +864,42 @@ namespace SmartStore.AmazonPay.Services
 				informCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				informCustomerAddErrors = settings.InformCustomerAddErrors;
 
-				// Asynchronous as long as we do not set TransactionTimeout to 0. So transaction is always in pending state after return.
 				var authorizeResponse = WorkaroundSdkCurrencyFormattingBug(() =>
 				{
-					var authorizeRequest = new AuthorizeRequest()
+					// Omnichronous authorization: first try synchronously.
+					var synchronousRequest = new AuthorizeRequest()
 						.WithMerchantId(settings.SellerId)
 						.WithAmazonOrderReferenceId(state.OrderReferenceId)
 						.WithAuthorizationReferenceId(GetRandomId("Authorize"))
 						.WithCaptureNow(settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
 						.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
-						.WithAmount(request.OrderTotal);
+						.WithAmount(request.OrderTotal)
+						.WithTransactionTimeout(0);
 
-					return client.Authorize(authorizeRequest);
+					var synchronousResponse = client.Authorize(synchronousRequest);
+					var synchronousState = synchronousResponse.GetAuthorizationState();
+					var reasonCode = synchronousResponse.GetReasonCode();
+
+					if (synchronousState.IsCaseInsensitiveEqual("Declined") && reasonCode.IsCaseInsensitiveEqual("TransactionTimedOut"))
+					{
+						// Omnichronous authorization: second try asynchronously.
+						// Transaction is always in pending state after return.
+						isSynchronous = false;
+						var asynchronousRequest = new AuthorizeRequest()
+							.WithMerchantId(settings.SellerId)
+							.WithAmazonOrderReferenceId(state.OrderReferenceId)
+							.WithAuthorizationReferenceId(GetRandomId("Authorize"))
+							.WithCaptureNow(settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
+							.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+							.WithAmount(request.OrderTotal);
+
+						// TODO: Note payment not confirmed yet.
+
+						var asynchronousResponse = client.Authorize(asynchronousRequest);
+						return asynchronousResponse;
+					}
+
+					return synchronousResponse;
 				});
 
 				if (authorizeResponse.GetSuccess())
@@ -878,6 +907,11 @@ namespace SmartStore.AmazonPay.Services
 					result.AuthorizationTransactionId = authorizeResponse.GetAuthorizationId();
 					result.AuthorizationTransactionCode = authorizeResponse.GetAuthorizationReferenceId();
 					result.AuthorizationTransactionResult = authorizeResponse.GetAuthorizationState();
+
+					if (isSynchronous && result.AuthorizationTransactionResult.IsCaseInsensitiveEqual("Open"))
+					{
+						result.NewPaymentStatus = PaymentStatus.Authorized;
+					}
 
 					if (settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
 					{
@@ -893,35 +927,43 @@ namespace SmartStore.AmazonPay.Services
 						reason.IsCaseInsensitiveEqual("ProcessingFailure") || reason.IsCaseInsensitiveEqual("TransactionTimedOut") ||
 						reason.IsCaseInsensitiveEqual("TransactionTimeout"))
 					{
-						var reasonDescription = authorizeResponse.GetReasonDescription();
-						errors.Add(reasonDescription.HasValue() ? $"{reason}: {reasonDescription}" : reason);
+						error = authorizeResponse.GetReasonDescription();
+						error = error.HasValue() ? $"{reason}: {error}" : reason;
 					}
 				}
 				else
 				{
-					LogError(authorizeResponse, errors);
+					error = LogError(authorizeResponse);
 				}
-
-				// The response to the Authorize call includes the AuthorizationStatus response element, which will be always be
-				// set to Pending if you have selected the asynchronous mode of operation.
-				result.NewPaymentStatus = PaymentStatus.Pending;
 			}
 			catch (Exception exception)
 			{
 				Logger.Error(exception);
-				errors.Add(exception.Message);
+				error = exception.Message;
 			}
 
-			if (informCustomerAboutErrors && errors != null && errors.Count > 0)
+			if (error.HasValue())
 			{
-				// Customer needs to be informed of an amazon error here. hooking OrderPlaced.CustomerNotification won't work
-				// cause of asynchronous processing. Solution: we add a customer order note that is also send as an email.
+				if (isSynchronous)
+				{
+					result.AddError(error);
+				}
+				else
+				{
+					orderNoteErrors.Add(error);
+				}
+			}
+
+			// Customer needs to be informed of an amazon error here. Hooking OrderPlaced.CustomerNotification won't work
+			// cause of asynchronous processing. Solution: we add a customer order note that is also send as an email.
+			if (informCustomerAboutErrors && orderNoteErrors.Any())
+			{
 				var state = new AmazonPayActionState { OrderGuid = request.OrderGuid };
 
 				if (informCustomerAddErrors)
 				{
 					state.Errors = new List<string>();
-					state.Errors.AddRange(errors);
+					state.Errors.AddRange(orderNoteErrors);
 				}
 
 				AsyncRunner.Run((container, ct, o) =>
@@ -953,10 +995,6 @@ namespace SmartStore.AmazonPay.Services
 			//		settings, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
 			//	}
 			//}
-			//catch (OffAmazonPaymentsServiceException exc)
-			//{
-			//	LogAmazonError(exc);
-			//}
 			//catch (Exception exc)
 			//{
 			//	Logger.Error(exc);
@@ -966,7 +1004,7 @@ namespace SmartStore.AmazonPay.Services
 			{
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 
-				var orderAttribute = new AmazonPayOrderAttribute()
+				var orderAttribute = new AmazonPayOrderAttribute
 				{
 					OrderReferenceId = state.OrderReferenceId
 				};
@@ -1018,13 +1056,14 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					LogError(captureResponse, result.Errors);
+					var message = LogError(captureResponse);
+					result.AddError(message);
 				}
 			}
 			catch (Exception exception)
 			{
 				Logger.Error(exception);
-				result.Errors.Add(exception.Message);
+				result.AddError(exception.Message);
 			}
 
 			return result;
@@ -1072,13 +1111,14 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					LogError(refundResponse, result.Errors);
+					var message = LogError(refundResponse);
+					result.AddError(message);
 				}
 			}
 			catch (Exception exception)
 			{
 				Logger.Error(exception);
-				result.Errors.Add(exception.Message);
+				result.AddError(exception.Message);
 			}
 
 			return result;
@@ -1086,7 +1126,7 @@ namespace SmartStore.AmazonPay.Services
 
 		public VoidPaymentResult Void(VoidPaymentRequest request)
 		{
-			var result = new VoidPaymentResult()
+			var result = new VoidPaymentResult
 			{
 				NewPaymentStatus = request.Order.PaymentStatus
 			};
@@ -1122,14 +1162,15 @@ namespace SmartStore.AmazonPay.Services
 					var cancelResponse = client.CancelOrderReference(cancelRequest);
 					if (!cancelResponse.GetSuccess())
 					{
-						LogError(cancelResponse, result.Errors);
+						var message = LogError(cancelResponse);
+						result.AddError(message);
 					}
 				}
 			}
 			catch (Exception exception)
 			{
 				Logger.Error(exception);
-				result.Errors.Add(exception.Message);
+				result.AddError(exception.Message);
 			}
 
 			return result;

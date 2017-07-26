@@ -3,10 +3,11 @@
 ##Login and Pay with Amazon 3.0.1
 ###Improvements
 * Moved to new SDK AmazonPay.dll.
-* Implemented new Login and Pay with Amazon
+* Implemented new Login and Pay with Amazon features:
 	* Perf: Widget script is now loaded asynchronously.
 	* Widget rendering in responsive design.
 	* Supports more languages and presentation settings.
+	* Omnichronous authorization.
 
 ##Pay with Amazon 2.2.0.3
 ###Improvements

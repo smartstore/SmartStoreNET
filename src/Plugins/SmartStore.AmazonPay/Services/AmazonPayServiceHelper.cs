@@ -275,16 +275,13 @@ namespace SmartStore.AmazonPay.Services
 			return str.Truncate(32);
 		}
 
-		private void LogError(IResponse response, IList<string> errors = null, bool isWarning = false)
+		private string LogError(IResponse response, bool isWarning = false)
 		{
 			var message = $"{response.GetErrorMessage().NaIfEmpty()} ({response.GetErrorCode().NaIfEmpty()})";
 
 			Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, new Exception(response.GetJson()), message, null);
 
-			if (errors != null)
-			{
-				errors.Add(message);
-			}
+			return message;
 		}
 
 		private string ToInfoString(AmazonPayData data)

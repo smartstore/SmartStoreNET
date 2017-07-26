@@ -20,10 +20,11 @@ namespace SmartStore.AmazonPay.Widgets
 
 		public IList<string> GetWidgetZones()
 		{
-			return new List<string>()
+			return new List<string>
 			{
 				"order_summary_content_before",
-                "offcanvas_cart_summary"
+                "offcanvas_cart_summary",
+				"checkout_completed_top"
 			};
 		}
 
@@ -31,9 +32,15 @@ namespace SmartStore.AmazonPay.Widgets
 		{
 			var renderAmazonPayView = true;
 
-			if (widgetZone.IsCaseInsensitiveEqual("offcanvas_cart_summary"))
+			if (widgetZone.IsCaseInsensitiveEqual("checkout_completed_top"))
+			{
+				actionName = "CheckoutCompleted";
+				controllerName = "AmazonPayCheckout";
+			}
+			else if (widgetZone.IsCaseInsensitiveEqual("offcanvas_cart_summary"))
 			{
 				actionName = "MiniShoppingCart";
+				controllerName = "AmazonPayShoppingCart";
 
 				var viewModel = model as MiniShoppingCartModel;
 				if (viewModel != null)
@@ -42,6 +49,7 @@ namespace SmartStore.AmazonPay.Widgets
 			else
 			{
 				actionName = "OrderReviewData";
+				controllerName = "AmazonPayShoppingCart";
 
 				renderAmazonPayView = (_httpContext.HasAmazonPayState() && _httpContext.Request.RequestContext.RouteData.IsRouteEqual("Checkout", "Confirm"));
 
@@ -53,9 +61,7 @@ namespace SmartStore.AmazonPay.Widgets
 				}
 			}
 
-			controllerName = "AmazonPayShoppingCart";
-
-			routeValues = new RouteValueDictionary()
+			routeValues = new RouteValueDictionary
             {
                 { "Namespaces", "SmartStore.AmazonPay.Controllers" },
                 { "area", AmazonPayPlugin.SystemName },

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -854,6 +853,8 @@ namespace SmartStore.AmazonPay.Services
 
 			result.NewPaymentStatus = PaymentStatus.Pending;
 
+			_httpContext.Session.SafeRemove("AmazonPayCheckoutCompletedNote");
+
 			try
 			{
 				var store = _services.StoreService.GetStoreById(request.StoreId);
@@ -885,6 +886,7 @@ namespace SmartStore.AmazonPay.Services
 						// Omnichronous authorization: second try asynchronously.
 						// Transaction is always in pending state after return.
 						isSynchronous = false;
+
 						var asynchronousRequest = new AuthorizeRequest()
 							.WithMerchantId(settings.SellerId)
 							.WithAmazonOrderReferenceId(state.OrderReferenceId)
@@ -892,8 +894,6 @@ namespace SmartStore.AmazonPay.Services
 							.WithCaptureNow(settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
 							.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
 							.WithAmount(request.OrderTotal);
-
-						// TODO: Note payment not confirmed yet.
 
 						var asynchronousResponse = client.Authorize(asynchronousRequest);
 						return asynchronousResponse;
@@ -908,11 +908,6 @@ namespace SmartStore.AmazonPay.Services
 					result.AuthorizationTransactionCode = authorizeResponse.GetAuthorizationReferenceId();
 					result.AuthorizationTransactionResult = authorizeResponse.GetAuthorizationState();
 
-					if (isSynchronous && result.AuthorizationTransactionResult.IsCaseInsensitiveEqual("Open"))
-					{
-						result.NewPaymentStatus = PaymentStatus.Authorized;
-					}
-
 					if (settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
 					{
 						var idList = authorizeResponse.GetCaptureIdList();
@@ -920,6 +915,18 @@ namespace SmartStore.AmazonPay.Services
 						{
 							result.CaptureTransactionId = idList.First();
 						}
+					}
+
+					if (isSynchronous)
+					{
+						if (result.AuthorizationTransactionResult.IsCaseInsensitiveEqual("Open"))
+						{
+							result.NewPaymentStatus = PaymentStatus.Authorized;
+						}
+					}
+					else
+					{
+						_httpContext.Session["AmazonPayCheckoutCompletedNote"] = T("Plugins.Payments.AmazonPay.AsyncPaymentAuthrizationNote").Text;
 					}
 
 					var reason = authorizeResponse.GetReasonCode();

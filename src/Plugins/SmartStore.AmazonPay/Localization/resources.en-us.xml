@@ -94,6 +94,9 @@ Text suggestions:<ul>
   <LocaleResource Name="EncryptionNotSupported">
     <Value>Encryption of access data is not supported.</Value>
   </LocaleResource>
+  <LocaleResource Name="MissingBillingAddress">
+    <Value>Missing Amazon billing address of the customer.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Access data;Data exchange;Layout;Miscellaneous</Value>

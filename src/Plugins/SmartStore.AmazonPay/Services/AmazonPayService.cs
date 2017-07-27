@@ -133,7 +133,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 			model.LeadCode = LeadCode;
 			model.PlatformId = PlatformId;
-			model.PublicKey = string.Empty;	// Not implemented.
+			model.PublicKey = string.Empty; // Not implemented.
 			model.KeyShareUrl = GetPluginUrl("ShareKey", store.SslEnabled);
 			model.LanguageLocale = language.UniqueSeoCode.ToAmazonLanguageCode('_');
 			model.MerchantLoginDomains = allStores.Select(x => x.SslEnabled ? x.SecureUrl.EmptyNull().TrimEnd('/') : x.Url.EmptyNull().TrimEnd('/')).ToArray();
@@ -363,13 +363,28 @@ namespace SmartStore.AmazonPay.Services
 						var getOrderResponse = client.GetOrderReferenceDetails(getOrderRequest);
 						if (getOrderResponse.GetSuccess())
 						{
-							if (FindAndApplyAddress(getOrderResponse, customer, model.IsShippable, true))
-							{
-								_customerService.UpdateCustomer(customer);
-								model.Result = AmazonPayResultType.None;
-								return model;
-							}
-							else
+							// Billing address not available here. getOrderResponse.GetBillingAddressDetails() is null.
+							//if (FindAndApplyAddress(getOrderResponse, customer, model.IsShippable, true))
+							var countryAllowsShipping = true;
+							var countryAllowsBilling = true;
+
+							var address = CreateAddress(
+								getOrderResponse.GetEmail(),
+								getOrderResponse.GetBuyerShippingName(),
+								getOrderResponse.GetAddressLine1(),
+								getOrderResponse.GetAddressLine2(),
+								getOrderResponse.GetAddressLine3(),
+								getOrderResponse.GetCity(),
+								getOrderResponse.GetPostalCode(),
+								getOrderResponse.GetPhone(),
+								getOrderResponse.GetCountryCode(),
+								getOrderResponse.GetStateOrRegion(),
+								getOrderResponse.GetCounty(),
+								getOrderResponse.GetDistrict(),
+								out countryAllowsShipping,
+								out countryAllowsBilling);
+
+							if (model.IsShippable && !countryAllowsShipping)
 							{
 								tempData[AmazonPayPlugin.SystemName + "ShippingToCountryNotAllowed"] = true;
 								model.RedirectAction = "ShippingAddress";
@@ -377,6 +392,26 @@ namespace SmartStore.AmazonPay.Services
 								model.Result = AmazonPayResultType.Redirect;
 								return model;
 							}
+
+							if (address.Email.IsEmpty())
+							{
+								address.Email = customer.Email;
+							}
+
+							var existingAddress = customer.Addresses.ToList().FindAddress(address, true);
+							if (existingAddress == null)
+							{
+								customer.Addresses.Add(address);
+								customer.ShippingAddress = model.IsShippable ? address : null;
+							}
+							else
+							{
+								customer.ShippingAddress = model.IsShippable ? existingAddress : null;
+							}
+
+							_customerService.UpdateCustomer(customer);
+							model.Result = AmazonPayResultType.None;
+							return model;
 						}
 						else
 						{
@@ -735,6 +770,87 @@ namespace SmartStore.AmazonPay.Services
 			}
 		}
 
+		public void GetBillingAddress()
+		{
+			var store = _services.StoreContext.CurrentStore;
+			var customer = _services.WorkContext.CurrentCustomer;
+			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
+			var state = _httpContext.GetAmazonPayState(_services.Localization);
+			var client = CreateClient(settings);
+
+			var getOrderRequest = new GetOrderReferenceDetailsRequest()
+				.WithMerchantId(settings.SellerId)
+				.WithAmazonOrderReferenceId(state.OrderReferenceId)
+				.WithaddressConsentToken(state.AddressConsentToken);
+
+			var getOrderResponse = client.GetOrderReferenceDetails(getOrderRequest);
+			if (getOrderResponse.GetSuccess())
+			{
+				var details = getOrderResponse.GetBillingAddressDetails();
+				if (details != null)
+				{
+					var countryAllowsShipping = true;
+					var countryAllowsBilling = true;
+					var email = getOrderResponse.GetEmail();
+
+					var address = CreateAddress(
+						email,
+						details.GetName(),
+						details.GetAddressLine1(),
+						details.GetAddressLine2(),
+						details.GetAddressLine3(),
+						details.GetCity(),
+						details.GetPostalCode(),
+						details.GetPhone(),
+						details.GetCountryCode(),
+						details.GetStateOrRegion(),
+						details.GetCounty(),
+						details.GetDistrict(),
+						out countryAllowsShipping,
+						out countryAllowsBilling);
+
+					// We must ignore countryAllowsBilling because the customer cannot choose another billing address in Amazon checkout.
+					//if (!countryAllowsBilling)
+					//	return false;
+
+					var existingAddress = customer.Addresses.ToList().FindAddress(address, true);
+					if (existingAddress == null)
+					{
+						customer.Addresses.Add(address);
+						customer.BillingAddress = address;
+					}
+					else
+					{
+						customer.BillingAddress = existingAddress;
+					}
+
+					if (settings.CanSaveEmailAndPhone(customer.Email))
+					{
+						customer.Email = email;
+					}
+					_customerService.UpdateCustomer(customer);
+
+					if (settings.CanSaveEmailAndPhone(customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone, store.Id)))
+					{
+						var phone = details.GetPhone();
+						if (phone.IsEmpty())
+						{
+							phone = getOrderResponse.GetPhone();
+						}
+						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, phone);
+					}
+				}
+				else
+				{
+					Logger.Error(new Exception(getOrderResponse.GetJson()), T("Plugins.Payments.AmazonPay.MissingBillingAddress"));
+				}
+			}
+			else
+			{
+				LogError(getOrderResponse);
+			}
+		}
+
 		public PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest request)
 		{
 			// Fulfill the Amazon checkout.
@@ -809,28 +925,28 @@ namespace SmartStore.AmazonPay.Services
 				// Address and payment cannot be changed if order is in open state, amazon widgets then might show an error.
 				//state.IsOrderConfirmed = true;
 
-				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
-				var isShippable = cart.RequiresShipping();
+				//var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+				//var isShippable = cart.RequiresShipping();
 
-				var getOrderRequest = new GetOrderReferenceDetailsRequest()
-					.WithMerchantId(settings.SellerId)
-					.WithAmazonOrderReferenceId(state.OrderReferenceId)
-					.WithaddressConsentToken(state.AddressConsentToken);
+				//var getOrderRequest = new GetOrderReferenceDetailsRequest()
+				//	.WithMerchantId(settings.SellerId)
+				//	.WithAmazonOrderReferenceId(state.OrderReferenceId)
+				//	.WithaddressConsentToken(state.AddressConsentToken);
 
-				var getOrderResponse = client.GetOrderReferenceDetails(getOrderRequest);
+				//var getOrderResponse = client.GetOrderReferenceDetails(getOrderRequest);
 
-				FindAndApplyAddress(getOrderResponse, customer, isShippable, false);
+				//FindAndApplyAddress(getOrderResponse, customer, isShippable, false);
 
-				if (settings.CanSaveEmailAndPhone(customer.Email))
-				{
-					customer.Email = getOrderResponse.GetEmail();
-				}
-				_customerService.UpdateCustomer(customer);
+				//if (settings.CanSaveEmailAndPhone(customer.Email))
+				//{
+				//	customer.Email = getOrderResponse.GetEmail();
+				//}
+				//_customerService.UpdateCustomer(customer);
 
-				if (settings.CanSaveEmailAndPhone(customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone, store.Id)))
-				{
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, getOrderResponse.GetPhone());
-				}
+				//if (settings.CanSaveEmailAndPhone(customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone, store.Id)))
+				//{
+				//	_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, getOrderResponse.GetPhone());
+				//}
 			}
 			catch (Exception exception)
 			{

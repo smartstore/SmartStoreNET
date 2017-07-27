@@ -18,6 +18,8 @@ namespace SmartStore.AmazonPay.Services
 
 		void AddCustomerOrderNoteLoop(AmazonPayActionState state);
 
+		void GetBillingAddress();
+
 		PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest request);
 
 		ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request);

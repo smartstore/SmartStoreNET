@@ -53,6 +53,8 @@ namespace SmartStore.AmazonPay.Controllers
 					SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, UseRewardPoints ?? false, Services.StoreContext.CurrentStore.Id);
 			}
 
+			_apiService.GetBillingAddress();
+
 			return RedirectToAction("Confirm", "Checkout", new { area = "" });
 		}
 

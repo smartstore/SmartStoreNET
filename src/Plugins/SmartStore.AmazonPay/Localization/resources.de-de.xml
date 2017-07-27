@@ -94,6 +94,9 @@ Textvorschläge:<ul>
   <LocaleResource Name="EncryptionNotSupported">
     <Value>Eine Verschlüsselung von Zugangsdaten wird nicnt unterstützt.</Value>
   </LocaleResource>
+  <LocaleResource Name="MissingBillingAddress">
+    <Value>Die Amazon Rechnungsanschrift des Kunden fehlt.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
 		<Value>Zugangsdaten;Datenaustausch;Gestaltung;Sonstiges</Value>

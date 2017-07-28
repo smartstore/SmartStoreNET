@@ -592,7 +592,12 @@ namespace SmartStore.Admin.Models.Catalog
 			//"if we have one more editor with the same name on a page, it doesn't allow editing"
 			//in our case it's product.Price1
 			public decimal Price1 { get; set; }
-		}
+
+            public int CalculationMethodId { get; set; }
+            [SmartResourceDisplayName("Admin.Catalog.Products.TierPrices.Fields.CalculationMethod")]
+            [UIHint("TierPriceCalculationMethod")]
+            public string CalculationMethod { get; set; }
+        }
 
 		public class ProductVariantAttributeModel : EntityModelBase
 		{

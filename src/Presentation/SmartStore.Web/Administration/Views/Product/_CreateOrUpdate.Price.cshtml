@@ -249,6 +249,7 @@
 				function onTierPriceEdit(e) {
                     $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
                     $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
+                    $(e.form).find('#CalculationMethod').select2('val', e.dataItem['CalculationMethodId']);
                 }
             </script>
 			
@@ -270,13 +271,14 @@
             {
                 columns.Bound(x => x.Quantity)
                     .Centered()
-					.Width(120);
-				columns.Bound(x => x.Price1)
-					.Format("{0:0.00}")
-					.Width(120)
-					.RightAlign();
-				columns.Bound(x => x.Store);
-				columns.Bound(x => x.CustomerRole);
+                    .Width(120);
+                columns.Bound(x => x.Price1)
+                    .Format("{0:0.00}")
+                    .Width(120)
+                    .RightAlign();
+                columns.Bound(x => x.CalculationMethod);
+                columns.Bound(x => x.Store);
+                columns.Bound(x => x.CustomerRole);
                 columns.Command(commands =>
                 {
                     commands.Edit().Localize(T);
@@ -292,6 +294,7 @@
                 function onTierPriceEdit(e) {
                     $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
                     $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
+                    $(e.form).find('#CalculationMethod').select2('val', e.dataItem['CalculationMethodId']);
                 }
             </script>
         }

@@ -2894,15 +2894,17 @@ namespace SmartStore.Admin.Controllers
 					.ThenBy(x => x.CustomerRoleId)
 					.Select(x =>
 					{
-						var tierPriceModel = new ProductModel.TierPriceModel
-						{
-							Id = x.Id,
-							StoreId = x.StoreId,
-							ProductId = x.ProductId,
-							CustomerRoleId = x.CustomerRoleId ?? 0,
-							Quantity = x.Quantity,
-							Price1 = x.Price
-						};
+					    var tierPriceModel =  new ProductModel.TierPriceModel()
+					    {
+						    Id = x.Id,
+						    StoreId = x.StoreId,
+                            CustomerRoleId = x.CustomerRoleId ?? 0,
+						    ProductId = x.ProductId,
+						    Quantity = x.Quantity,
+                            CalculationMethodId = (int)x.CalculationMethod,
+                            CalculationMethod = x.CalculationMethod.ToString(),
+                            Price1 = x.Price
+					    };
 
 						if (x.CustomerRoleId.HasValue)
 						{
@@ -2923,13 +2925,13 @@ namespace SmartStore.Admin.Controllers
 						{
 							tierPriceModel.Store = allStoresString;
 						}
-
-						return tierPriceModel;
+                        
+                        return tierPriceModel;
 					})
 					.ToList();
 
 				model.Data = tierPricesModel;
-				model.Total = tierPricesModel.Count;
+				model.Total = tierPricesModel.Count();
 			}
 			else
 			{
@@ -2959,8 +2961,9 @@ namespace SmartStore.Admin.Controllers
 					// use CustomerRole property (not CustomerRoleId) because appropriate property is stored in it
 					CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null,
 					Quantity = model.Quantity,
-					Price = model.Price1
-				};
+					Price = model.Price1,
+                    CalculationMethod = model.CalculationMethod == null ? CalculationMethod.Fixed : (CalculationMethod)(Int32.Parse(model.CalculationMethod))
+                };
 
 				_productService.InsertTierPrice(tierPrice);
 
@@ -2984,7 +2987,7 @@ namespace SmartStore.Admin.Controllers
 				tierPrice.CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null;
 				tierPrice.Quantity = model.Quantity;
 				tierPrice.Price = model.Price1;
-
+                tierPrice.CalculationMethod = model.CalculationMethod == null ? CalculationMethod.Fixed : (CalculationMethod)(Int32.Parse(model.CalculationMethod));
 				_productService.UpdateTierPrice(tierPrice);
 			}
 
@@ -3010,11 +3013,23 @@ namespace SmartStore.Admin.Controllers
 			return TierPriceList(command, productId);
 		}
 
-		#endregion
+        public ActionResult AllCalculationMethods(string label, int selectedId)
+        {
+            var list = new List<object>
+            {
+                new  { id = ((int)CalculationMethod.Fixed).ToString(), text = T("Admin.Product.Price.Tierprices.Fixed"), selected = selectedId == (int)CalculationMethod.Fixed },
+                new  { id = ((int)CalculationMethod.Adjustment).ToString(), text = T("Admin.Product.Price.Tierprices.Adjustment"), selected = selectedId == (int)CalculationMethod.Adjustment },
+                new  { id = ((int)CalculationMethod.Percental).ToString(), text = T("Admin.Product.Price.Tierprices.Percental"), selected = selectedId == (int)CalculationMethod.Percental }
+            };
 
-		#region Product variant attributes
+            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
 
-		[HttpPost, GridAction(EnableCustomBinding = true)]
+        #endregion
+
+        #region Product variant attributes
+
+        [HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult ProductVariantAttributeList(GridCommand command, int productId)
 		{
 			var model = new GridModel<ProductModel.ProductVariantAttributeModel>();

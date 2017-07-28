@@ -164,7 +164,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 				if (attributeValues != null)
 				{
-					attributeValues.Each(x => attributesTotalPriceBase += _priceCalculationService.Value.GetProductVariantAttributeValuePriceAdjustment(x));
+					attributeValues.Each(x => attributesTotalPriceBase += _priceCalculationService.Value.GetProductVariantAttributeValuePriceAdjustment(x, product, ctx.ContextCustomer, priceCalculationContext));
 				}
 
 				price = _priceCalculationService.Value.GetFinalPrice(product, null, ctx.ContextCustomer, attributesTotalPriceBase, true, 1, null, priceCalculationContext);

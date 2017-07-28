@@ -170,7 +170,10 @@
 
         function hideThrobber() {
             var cnt = $("#cart-items");
-            _.delay(function () { cnt.data("throbber").hide(); }, 100);
+            _.delay(function () {
+            	if (cnt.data("throbber"))
+            		cnt.data("throbber").hide();
+            }, 100);
         }
 
     </script>

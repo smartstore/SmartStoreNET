@@ -1651,31 +1651,34 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult DeleteCartItem(int cartItemId, bool? wishlistItem)
         {
-            bool isWishlistItem = wishlistItem.GetValueOrDefault(false);
+            var isWishlistItem = wishlistItem.GetValueOrDefault(false);
 
-            if (!_permissionService.Authorize(isWishlistItem ? StandardPermissionProvider.EnableWishlist : StandardPermissionProvider.EnableShoppingCart))
-                return Json(new { success = false });
+			if (!_permissionService.Authorize(isWishlistItem ? StandardPermissionProvider.EnableWishlist : StandardPermissionProvider.EnableShoppingCart))
+			{
+				return Json(new { success = false, showCheckoutButtons = true });
+			}
 
-            //get shopping cart item
+            // Get shopping cart item.
 			var cartType = (isWishlistItem ? ShoppingCartType.Wishlist : ShoppingCartType.ShoppingCart);
             var item = _workContext.CurrentCustomer.ShoppingCartItems.FirstOrDefault(x => x.Id == cartItemId && x.ShoppingCartType == cartType);
 
             if (item == null)
             {
-				return Json(new { success = false, message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Failed") });
+				return Json(new { success = false, showCheckoutButtons = true, message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Failed") });
             }
             
-            //remove the cart item
+            // Remove the cart item.
             _shoppingCartService.DeleteShoppingCartItem(item, ensureOnlyActiveCheckoutAttributes: true);
 
-            // create updated cart model
+            // Create updated cart model.
             var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
             var wishlist = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
             var cartHtml = String.Empty;
             var totalsHtml = String.Empty;
             var cartItemCount = 0;
+			var showCheckoutButtons = true;
 
-            if (cartType == ShoppingCartType.Wishlist)
+			if (cartType == ShoppingCartType.Wishlist)
             {
                 var model = new WishlistModel();
                 PrepareWishlistModel(model, wishlist);
@@ -1689,17 +1692,19 @@ namespace SmartStore.Web.Controllers
                 cartHtml = this.RenderPartialViewToString("CartItems", model);
                 totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
                 cartItemCount = cart.Count;
-            }
+				showCheckoutButtons = model.IsValidMinOrderSubtotal;
+			}
             
-            //updated cart
+            // Updated cart.
             return Json(new
             {
                 cartItemCount = cartItemCount,
                 success = true,
                 message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Success"),
                 cartHtml = cartHtml,
-                totalsHtml = totalsHtml
-            });
+                totalsHtml = totalsHtml,
+				showCheckoutButtons = showCheckoutButtons
+			});
         }
        
         [ValidateInput(false)]

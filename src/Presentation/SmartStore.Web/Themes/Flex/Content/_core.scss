@@ -115,6 +115,12 @@
     }
 }
 
+// apply img-fluid to all images within html editor content 
+.html-editor-content img {
+    max-width: 100%;
+    height: auto;
+}
+
 
 //
 // Bootstrap overrides and tweaks

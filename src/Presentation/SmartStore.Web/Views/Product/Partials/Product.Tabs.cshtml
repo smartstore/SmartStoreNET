@@ -15,7 +15,7 @@
 		var summary = Model.FullDescription.RemoveHtml().Truncate(300, "...");
 		x.Add().Text(@T("Products.Details"))
 				.Summary(summary)
-				.Content(Html.Raw("<div itemprop='description' class='text-body'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+				.Content(Html.Raw("<div itemprop='description' class='text-body html-editor-content'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
 				.Selected(true);
 	}
 

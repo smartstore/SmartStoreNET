@@ -985,6 +985,7 @@ namespace SmartStore.AmazonPay.Services
 			{
 				var store = _services.StoreService.GetStoreById(request.StoreId);
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
+				var captureNow = settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture;
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = CreateClient(settings);
 
@@ -998,7 +999,7 @@ namespace SmartStore.AmazonPay.Services
 						.WithMerchantId(settings.SellerId)
 						.WithAmazonOrderReferenceId(state.OrderReferenceId)
 						.WithAuthorizationReferenceId(GetRandomId("Authorize"))
-						.WithCaptureNow(settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
+						.WithCaptureNow(captureNow)
 						.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
 						.WithAmount(request.OrderTotal)
 						.WithTransactionTimeout(0);
@@ -1017,7 +1018,7 @@ namespace SmartStore.AmazonPay.Services
 							.WithMerchantId(settings.SellerId)
 							.WithAmazonOrderReferenceId(state.OrderReferenceId)
 							.WithAuthorizationReferenceId(GetRandomId("Authorize"))
-							.WithCaptureNow(settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
+							.WithCaptureNow(captureNow)
 							.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
 							.WithAmount(request.OrderTotal);
 
@@ -1030,11 +1031,13 @@ namespace SmartStore.AmazonPay.Services
 
 				if (authorizeResponse.GetSuccess())
 				{
+					var reason = authorizeResponse.GetReasonCode();
+
 					result.AuthorizationTransactionId = authorizeResponse.GetAuthorizationId();
 					result.AuthorizationTransactionCode = authorizeResponse.GetAuthorizationReferenceId();
 					result.AuthorizationTransactionResult = authorizeResponse.GetAuthorizationState();
 
-					if (settings.TransactionType == AmazonPayTransactionType.AuthorizeAndCapture)
+					if (captureNow)
 					{
 						var idList = authorizeResponse.GetCaptureIdList();
 						if (idList.Any())
@@ -1049,13 +1052,19 @@ namespace SmartStore.AmazonPay.Services
 						{
 							result.NewPaymentStatus = PaymentStatus.Authorized;
 						}
+						else if (result.AuthorizationTransactionResult.IsCaseInsensitiveEqual("Closed"))
+						{
+							if (captureNow && reason.IsCaseInsensitiveEqual("MaxCapturesProcessed"))
+							{
+								result.NewPaymentStatus = PaymentStatus.Paid;
+							}
+						}
 					}
 					else
 					{
 						_httpContext.Session["AmazonPayCheckoutCompletedNote"] = T("Plugins.Payments.AmazonPay.AsyncPaymentAuthrizationNote").Text;
 					}
 
-					var reason = authorizeResponse.GetReasonCode();
 					if (reason.IsCaseInsensitiveEqual("InvalidPaymentMethod") || reason.IsCaseInsensitiveEqual("AmazonRejected") ||
 						reason.IsCaseInsensitiveEqual("ProcessingFailure") || reason.IsCaseInsensitiveEqual("TransactionTimedOut") ||
 						reason.IsCaseInsensitiveEqual("TransactionTimeout"))

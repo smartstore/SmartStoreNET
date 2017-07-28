@@ -491,45 +491,6 @@ namespace SmartStore.AmazonPay.Services
 			return sb.ToString();
 		}
 
-		private Order FindOrder(AmazonPayData data)
-		{
-			Order order = null;
-			string errorId = null;
-
-			if (data.MessageType.IsCaseInsensitiveEqual("AuthorizationNotification"))
-			{
-				if ((order = _orderService.GetOrderByPaymentAuthorization(AmazonPayPlugin.SystemName, data.AuthorizationId)) == null)
-					errorId = "AuthorizationId {0}".FormatWith(data.AuthorizationId);
-			}
-			else if (data.MessageType.IsCaseInsensitiveEqual("CaptureNotification"))
-			{
-				if ((order = _orderService.GetOrderByPaymentCapture(AmazonPayPlugin.SystemName, data.CaptureId)) == null)
-					order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
-
-				if (order == null)
-					errorId = "CaptureId {0}".FormatWith(data.CaptureId);
-			}
-			else if (data.MessageType.IsCaseInsensitiveEqual("RefundNotification"))
-			{
-				var attribute = _genericAttributeService.GetAttributes(AmazonPayPlugin.SystemName + ".RefundId", "Order")
-					.Where(x => x.Value == data.RefundId)
-					.FirstOrDefault();
-
-				if (attribute == null || (order = _orderService.GetOrderById(attribute.EntityId)) == null)
-					order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
-
-				if (order == null)
-					errorId = "RefundId {0}".FormatWith(data.RefundId);
-			}
-
-			if (errorId.HasValue())
-			{
-				Logger.Warn(T("Plugins.Payments.AmazonPay.OrderNotFound", errorId));
-			}
-
-			return order;
-		}
-
 		/// <summary>
 		/// Creates an API client.
 		/// </summary>

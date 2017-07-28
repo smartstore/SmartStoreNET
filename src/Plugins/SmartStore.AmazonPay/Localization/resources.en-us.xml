@@ -8,7 +8,7 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Register now at <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
+			<![CDATA[<p>Register now at <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a> or click <b>Register now</b> below.</p>
 <p>How to set up <b>Login and Pay with Amazon</b>:</p><ul>
 <li>Enter your Amazon credentials in the fields provided below.
 <ul>

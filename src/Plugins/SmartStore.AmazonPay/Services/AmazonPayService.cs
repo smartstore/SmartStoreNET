@@ -1313,16 +1313,17 @@ namespace SmartStore.AmazonPay.Services
 		{
 			try
 			{
-				//var data = _api.ParseNotification(request);
 				string json = null;
 				using (var reader = new StreamReader(request.InputStream))
 				{
 					json = reader.ReadToEnd();
 				}
 
-				AmazonPayData data = null;
 				var parser = new IpnHandler(request.Headers, json);
 				var type = parser.GetNotificationType();
+				AmazonPayData data = null;
+				Order order = null;
+				string errorId = null;
 
 				if (type.IsCaseInsensitiveEqual("AuthorizationNotification"))
 				{
@@ -1348,7 +1349,38 @@ namespace SmartStore.AmazonPay.Services
 				data.MessageType = type;
 				data.MessageId = parser.GetNotificationReferenceId();
 
-				var order = FindOrder(data);
+				// Find order.
+				if (data.MessageType.IsCaseInsensitiveEqual("AuthorizationNotification"))
+				{
+					if ((order = _orderService.GetOrderByPaymentAuthorization(AmazonPayPlugin.SystemName, data.AuthorizationId)) == null)
+						errorId = "AuthorizationId {0}".FormatWith(data.AuthorizationId);
+				}
+				else if (data.MessageType.IsCaseInsensitiveEqual("CaptureNotification"))
+				{
+					if ((order = _orderService.GetOrderByPaymentCapture(AmazonPayPlugin.SystemName, data.CaptureId)) == null)
+						order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
+
+					if (order == null)
+						errorId = "CaptureId {0}".FormatWith(data.CaptureId);
+				}
+				else if (data.MessageType.IsCaseInsensitiveEqual("RefundNotification"))
+				{
+					var attribute = _genericAttributeService.GetAttributes(AmazonPayPlugin.SystemName + ".RefundId", "Order")
+						.Where(x => x.Value == data.RefundId)
+						.FirstOrDefault();
+
+					if (attribute == null || (order = _orderService.GetOrderById(attribute.EntityId)) == null)
+						order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
+
+					if (order == null)
+						errorId = "RefundId {0}".FormatWith(data.RefundId);
+				}
+
+				if (errorId.HasValue())
+				{
+					Logger.Warn(T("Plugins.Payments.AmazonPay.OrderNotFound", errorId));
+				}
+
 				if (order == null || !IsPaymentMethodActive(order.StoreId))
 				{
 					return;

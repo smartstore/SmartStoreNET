@@ -35,12 +35,14 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Web;
 
 namespace SmartStore.AmazonPay.Services
 {
 	public partial class AmazonPayService : IAmazonPayService
 	{
 		private readonly HttpContextBase _httpContext;
+		private readonly IRepository<Order> _orderRepository;
 		private readonly ICommonServices _services;
 		private readonly IPaymentService _paymentService;
 		private readonly IGenericAttributeService _genericAttributeService;
@@ -50,21 +52,22 @@ namespace SmartStore.AmazonPay.Services
 		private readonly ICountryService _countryService;
 		private readonly IStateProvinceService _stateProvinceService;
 		private readonly IAddressService _addressService;
-		private readonly IPriceFormatter _priceFormatter;
-		private readonly IDateTimeHelper _dateTimeHelper;
-		private readonly OrderSettings _orderSettings;
-		private readonly RewardPointsSettings _rewardPointsSettings;
 		private readonly IOrderService _orderService;
-		private readonly IRepository<Order> _orderRepository;
 		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly IWorkflowMessageService _workflowMessageService;
-		private readonly IPluginFinder _pluginFinder;
 
-		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
+		private readonly IPriceFormatter _priceFormatter;
+		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly IPluginFinder _pluginFinder;
 		private readonly Lazy<IExternalAuthorizer> _authorizer;
+		private readonly AddressSettings _addressSettings;
+		private readonly OrderSettings _orderSettings;
+		private readonly RewardPointsSettings _rewardPointsSettings;
+		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
 
 		public AmazonPayService(
 			HttpContextBase httpContext,
+			IRepository<Order> orderRepository,
 			ICommonServices services,
 			IPaymentService paymentService,
 			IGenericAttributeService genericAttributeService,
@@ -74,19 +77,20 @@ namespace SmartStore.AmazonPay.Services
 			ICountryService countryService,
 			IStateProvinceService stateProvinceService,
 			IAddressService addressService,
-			IPriceFormatter priceFormatter,
-			IDateTimeHelper dateTimeHelper,
-			OrderSettings orderSettings,
-			RewardPointsSettings rewardPointsSettings,
 			IOrderService orderService,
-			IRepository<Order> orderRepository,
 			IOrderProcessingService orderProcessingService,
 			IWorkflowMessageService workflowMessageService,
+			IPriceFormatter priceFormatter,
+			IDateTimeHelper dateTimeHelper,
 			IPluginFinder pluginFinder,
-			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings,
-			Lazy<IExternalAuthorizer> authorizer)
+			Lazy<IExternalAuthorizer> authorizer,
+			AddressSettings addressSettings,
+			OrderSettings orderSettings,
+			RewardPointsSettings rewardPointsSettings,
+			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings)
 		{
 			_httpContext = httpContext;
+			_orderRepository = orderRepository;
 			_services = services;
 			_paymentService = paymentService;
 			_genericAttributeService = genericAttributeService;
@@ -96,17 +100,18 @@ namespace SmartStore.AmazonPay.Services
 			_countryService = countryService;
 			_stateProvinceService = stateProvinceService;
 			_addressService = addressService;
-			_priceFormatter = priceFormatter;
-			_dateTimeHelper = dateTimeHelper;
-			_orderSettings = orderSettings;
-			_rewardPointsSettings = rewardPointsSettings;
 			_orderService = orderService;
-			_orderRepository = orderRepository;
 			_orderProcessingService = orderProcessingService;
 			_workflowMessageService = workflowMessageService;
+
+			_priceFormatter = priceFormatter;
+			_dateTimeHelper = dateTimeHelper;
 			_pluginFinder = pluginFinder;
-			_externalAuthenticationSettings = externalAuthenticationSettings;
 			_authorizer = authorizer;
+			_addressSettings = addressSettings;
+			_orderSettings = orderSettings;
+			_rewardPointsSettings = rewardPointsSettings;
+			_externalAuthenticationSettings = externalAuthenticationSettings;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -481,6 +486,11 @@ namespace SmartStore.AmazonPay.Services
 						var shippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, store.Id);
 						if (shippingOption != null)
 							model.ShippingMethod = shippingOption.Name;
+					}
+
+					if (customer.BillingAddress != null)
+					{
+						model.BillingAddress.PrepareModel(customer.BillingAddress, false, _addressSettings);
 					}
 				}
 			}

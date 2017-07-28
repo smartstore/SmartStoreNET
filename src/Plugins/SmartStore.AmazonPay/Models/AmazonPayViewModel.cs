@@ -1,5 +1,6 @@
 ﻿using SmartStore.AmazonPay.Services;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Models.Common;
 
 namespace SmartStore.AmazonPay.Models
 {
@@ -12,6 +13,7 @@ namespace SmartStore.AmazonPay.Models
 			RedirectController = "ShoppingCart";
 			Result = AmazonPayResultType.PluginView;
 			UsePopupWindow = true;
+			BillingAddress = new AddressModel();
 		}
 
 		public string SystemName
@@ -53,5 +55,6 @@ namespace SmartStore.AmazonPay.Models
 		public bool UseRewardPoints { get; set; }
 
 		public string ShippingMethod { get; set; }
-    }
+		public AddressModel BillingAddress { get; set; }
+	}
 }

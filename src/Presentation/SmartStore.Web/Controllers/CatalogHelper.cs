@@ -490,7 +490,7 @@ namespace SmartStore.Web.Controllers
 					model.DefaultPictureModel.ThumbImageUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
 					model.DefaultPictureModel.ImageUrl = _pictureService.GetDefaultPictureUrl(defaultPictureSize);
 					model.DefaultPictureModel.FullSizeImageUrl = _pictureService.GetDefaultPictureUrl();
-				}
+                }
 			}
 			else
 			{
@@ -636,7 +636,8 @@ namespace SmartStore.Web.Controllers
 						if (displayPrices && !isBundlePricing)
 						{
 							decimal taxRate = decimal.Zero;
-							decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+							decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue, 
+                                product, _services.WorkContext.CurrentCustomer, null, selectedQuantity);
 							decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
 							decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, currency);
 
@@ -958,7 +959,8 @@ namespace SmartStore.Web.Controllers
 						decimal finalPriceWithoutDiscountBase = decimal.Zero;
 						decimal finalPriceWithDiscountBase = decimal.Zero;
 						decimal attributesTotalPriceBase = decimal.Zero;
-						decimal finalPriceWithoutDiscount = decimal.Zero;
+                        decimal attributesTotalPriceBaseOrig = decimal.Zero;
+                        decimal finalPriceWithoutDiscount = decimal.Zero;
 						decimal finalPriceWithDiscount = decimal.Zero;
 
 						decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
@@ -967,8 +969,12 @@ namespace SmartStore.Web.Controllers
 						{
 							if (selectedAttributeValues != null)
 							{
-								selectedAttributeValues.Each(x => attributesTotalPriceBase += _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(x));
-							}
+								selectedAttributeValues.Each(x => attributesTotalPriceBase += _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(x, 
+                                    product, _services.WorkContext.CurrentCustomer, null, selectedQuantity));
+
+                                selectedAttributeValues.Each(x => attributesTotalPriceBaseOrig += _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(x,
+                                    product, _services.WorkContext.CurrentCustomer, null, 1));
+                            }
 							else
 							{
 								attributesTotalPriceBase = preSelectedPriceAdjustmentBase;
@@ -981,8 +987,8 @@ namespace SmartStore.Web.Controllers
 						}
 
 						finalPriceWithoutDiscountBase = _priceCalculationService.GetFinalPrice(product, productBundleItems,
-							customer, attributesTotalPriceBase, false, selectedQuantity, productBundleItem);
-
+							customer, attributesTotalPriceBaseOrig, false, selectedQuantity, productBundleItem);
+                        
 						finalPriceWithDiscountBase = _priceCalculationService.GetFinalPrice(product, productBundleItems,
 							customer, attributesTotalPriceBase, true, selectedQuantity, productBundleItem);
 

@@ -39,6 +39,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IgnoreDiscounts")]
         public bool IgnoreDiscounts { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ApplyTierPricePercentageToAttributePriceAdjustments")]
+        public bool ApplyTierPricePercentageToAttributePriceAdjustments { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IgnoreFeaturedProducts")]
         public bool IgnoreFeaturedProducts { get; set; }
 

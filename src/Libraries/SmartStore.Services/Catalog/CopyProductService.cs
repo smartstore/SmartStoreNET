@@ -511,14 +511,16 @@ namespace SmartStore.Services.Catalog
 			// tier prices
 			foreach (var tierPrice in product.TierPrices)
 			{
-				_productService.InsertTierPrice(new TierPrice
-				{
-					ProductId = productCopy.Id,
-					StoreId = tierPrice.StoreId,
-					CustomerRoleId = tierPrice.CustomerRoleId,
-					Quantity = tierPrice.Quantity,
-					Price = tierPrice.Price
-				});
+				_productService.InsertTierPrice(
+					new TierPrice()
+					{
+						ProductId = productCopy.Id,
+						StoreId = tierPrice.StoreId,
+						CustomerRoleId = tierPrice.CustomerRoleId,
+						Quantity = tierPrice.Quantity,
+						Price = tierPrice.Price,
+                        CalculationMethod = tierPrice.CalculationMethod
+					});
 			}
 
 			// product <-> discounts mapping

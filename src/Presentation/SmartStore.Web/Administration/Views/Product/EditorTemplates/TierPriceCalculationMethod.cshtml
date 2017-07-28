@@ -1,0 +1,13 @@
+﻿
+<select name="CalculationMethod"
+	id="CalculationMethod"
+	class="autowidth"
+	data-placeholder='@T("Admin.Product.Price.Tierprices.Fixed")'
+	data-select-url='@Url.Action("AllCalculationMethods", "Product")'>
+</select>
+
+<script>
+    $(function () {
+        $('#CalculationMethod').selectWrapper();
+    });
+</script>

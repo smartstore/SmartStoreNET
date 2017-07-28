@@ -76,8 +76,8 @@ namespace SmartStore.Services.Catalog
 			bool includeDiscounts,
 			int quantity,
 			ProductBundleItemData bundleItem = null,
-			PriceCalculationContext context = null);
-
+			PriceCalculationContext context = null,
+            bool isTierPrice = false);
 		/// <summary>
 		/// Gets the final price including bundle per-item pricing
 		/// </summary>
@@ -237,6 +237,7 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="attributeValue">Product variant attribute value</param>
 		/// <returns>Price adjustment of a variant attribute value</returns>
-		decimal GetProductVariantAttributeValuePriceAdjustment(ProductVariantAttributeValue attributeValue);
+		decimal GetProductVariantAttributeValuePriceAdjustment(ProductVariantAttributeValue attributeValue, 
+            Product product, Customer customer, PriceCalculationContext context, int productQuantity = 1);
     }
 }

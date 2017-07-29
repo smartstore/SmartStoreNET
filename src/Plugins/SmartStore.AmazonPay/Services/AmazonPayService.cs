@@ -506,10 +506,6 @@ namespace SmartStore.AmazonPay.Services
 		private void ProcessAuthorizationResult(AmazonPaySettings settings, Order order, AmazonPayData data)
 		{
 			var orderAttribute = DeserializeOrderAttribute(order);
-			if (!orderAttribute.IsBillingAddressApplied)
-			{
-				// TODO: obsolete? No billing address in auth details response.
-			}
 
 			if (data.State.IsCaseInsensitiveEqual("Pending"))
 			{
@@ -545,7 +541,7 @@ namespace SmartStore.AmazonPay.Services
 
 				_orderService.UpdateOrder(order);
 
-				AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
+				AddOrderNote(settings, order, ToInfoString(data), true);
 			}
 		}
 
@@ -601,7 +597,7 @@ namespace SmartStore.AmazonPay.Services
 				order.CaptureTransactionResult = newResult;
 				_orderService.UpdateOrder(order);
 
-				AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
+				AddOrderNote(settings, order, ToInfoString(data), true);
 			}
 		}
 
@@ -629,7 +625,7 @@ namespace SmartStore.AmazonPay.Services
 
 							if (settings.DataFetching == AmazonPayDataFetchingType.Polling)
 							{
-								AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
+								AddOrderNote(settings, order, ToInfoString(data), true);
 							}
 						}
 					}
@@ -641,7 +637,7 @@ namespace SmartStore.AmazonPay.Services
 
 							if (settings.DataFetching == AmazonPayDataFetchingType.Polling)
 							{
-								AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
+								AddOrderNote(settings, order, ToInfoString(data), true);
 							}
 						}
 					}
@@ -650,7 +646,7 @@ namespace SmartStore.AmazonPay.Services
 
 			if (settings.DataFetching == AmazonPayDataFetchingType.Ipn)
 			{
-				AddOrderNote(settings, order, AmazonPayOrderNote.AmazonMessageProcessed, ToInfoString(data), true);
+				AddOrderNote(settings, order, ToInfoString(data), true);
 			}
 		}
 

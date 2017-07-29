@@ -97,14 +97,13 @@ Textvorschläge:<ul>
   <LocaleResource Name="MissingBillingAddress">
     <Value>Die Amazon Rechnungsanschrift des Kunden fehlt.</Value>
   </LocaleResource>
-
+  <LocaleResource Name="AmazonDataProcessed">
+		<Value>Daten von Amazon wurden verarbeitet</Value>
+	</LocaleResource>
   <LocaleResource Name="ConfigGroups">
-		<Value>Zugangsdaten;Datenaustausch;Gestaltung;Sonstiges</Value>
-	</LocaleResource>
-	<LocaleResource Name="OrderNoteStrings">
-		<Value><![CDATA[Die Funktion "{0}" der Amazon Payment API wurde aufgerufen.;Antwort;Die Rechnungsadresse wurde von Amazon übernommen.{0};Daten von Amazon wurden verarbeitet:<br />{0};Die Rechnungsadresse wurde nicht von Amazon übernommen, da sie entweder fehlt oder eine Rechnungslegung in dieses Land deaktiviert ist.{0}]]></Value>
-	</LocaleResource>
-	<LocaleResource Name="MessageStrings">
+    <Value>Zugangsdaten;Datenaustausch;Layout;Verschiedenes</Value>
+  </LocaleResource>
+  <LocaleResource Name="MessageStrings">
 		<Value>Mitteilungstyp;Mitteilungs ID;Autorisierungs ID;Buchungs ID;Rückerstatattungs ID;Referenz ID;Status;Statusaktualisierung;Gebühr;Autorisierungsbetrag;Buchungsbetrag;Erstattungsbetrag;Sofort buchen;Erstellt am;Verfällt am</Value>
 	</LocaleResource>
 

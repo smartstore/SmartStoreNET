@@ -97,16 +97,16 @@ Text suggestions:<ul>
   <LocaleResource Name="MissingBillingAddress">
     <Value>Missing Amazon billing address of the customer.</Value>
   </LocaleResource>
-
+  <LocaleResource Name="AmazonDataProcessed">
+    <Value>Data from Amazon has been processed</Value>
+  </LocaleResource>
   <LocaleResource Name="ConfigGroups">
-		<Value>Access data;Data exchange;Layout;Miscellaneous</Value>
-	</LocaleResource>
-	<LocaleResource Name="OrderNoteStrings">
-		<Value><![CDATA[The function "{0}" of the Amazon Payment API was called.;Response;The billing address from Amazon was applied.{0};Data from Amazon has been processed:<br />{0}The billing address from Amazon was not applied because it is missing or billing to that country is deactivated.{0};]]></Value>
-	</LocaleResource>
-	<LocaleResource Name="MessageStrings">
+    <Value>Access data;Data exchange;Layout;Miscellaneous</Value>
+  </LocaleResource>
+  <LocaleResource Name="MessageStrings">
 		<Value>Message type;Message ID;Authorization ID;Capture ID;Refund ID;Reference ID;State;State update;Fee;Authorized amount;Captured amount;Refunded amount;Capture now;Creation;Expiration</Value>
 	</LocaleResource>
+
 	<LocaleResource Name="UseSandbox">
 		<Value>Use Sandbox</Value>
 	</LocaleResource>

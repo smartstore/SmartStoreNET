@@ -86,7 +86,7 @@ namespace SmartStore.AmazonPay.Services
 			return isActive;
 		}
 
-		private void AddOrderNote(AmazonPaySettings settings, Order order, AmazonPayOrderNote note, string anyString = null, bool isIpn = false)
+		private void AddOrderNote(AmazonPaySettings settings, Order order, string anyString = null, bool isIpn = false)
 		{
 			try
 			{
@@ -94,29 +94,17 @@ namespace SmartStore.AmazonPay.Services
 					return;
 
 				var sb = new StringBuilder();
-
-				string[] orderNoteStrings = T("Plugins.Payments.AmazonPay.OrderNoteStrings").Text.SplitSafe(";");
-				string faviconUrl = "{0}Plugins/{1}/Content/images/favicon.png".FormatWith(_services.WebHelper.GetStoreLocation(false), AmazonPayPlugin.SystemName);
+				var faviconUrl = "{0}Plugins/{1}/Content/images/favicon.png".FormatInvariant(_services.WebHelper.GetStoreLocation(false), AmazonPayPlugin.SystemName);
 
 				sb.AppendFormat("<img src=\"{0}\" style=\"float: left; width: 16px; height: 16px;\" />", faviconUrl);
-
-				if (anyString.HasValue())
-				{
-					anyString = orderNoteStrings.SafeGet((int)note).FormatWith(anyString);
-				}
-				else
-				{
-					anyString = orderNoteStrings.SafeGet((int)note);
-					anyString = anyString.Replace("{0}", "");
-				}
-
-				if (anyString.HasValue())
-				{
-					sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", anyString);
-				}
+				sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", T("Plugins.Payments.AmazonPay.AmazonDataProcessed"));
+				sb.Append(":<br />");
+				sb.Append(anyString.NaIfEmpty());
 
 				if (isIpn)
+				{
 					order.HasNewPaymentNotification = true;
+				}
 
 				order.OrderNotes.Add(new OrderNote
 				{

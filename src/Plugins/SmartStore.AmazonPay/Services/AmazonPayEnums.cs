@@ -50,15 +50,6 @@
 		Unauthorized
 	}
 
-	public enum AmazonPayOrderNote
-	{
-		FunctionExecuted = 0,
-		Answer,
-		BillingAddressApplied,
-		AmazonMessageProcessed,
-		BillingAddressCountryNotAllowed
-	}
-
 	public enum AmazonPayMessage
 	{
 		MessageTyp = 0,

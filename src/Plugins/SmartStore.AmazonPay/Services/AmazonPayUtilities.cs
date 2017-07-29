@@ -24,7 +24,6 @@ namespace SmartStore.AmazonPay.Services
 	public class AmazonPayOrderAttribute
 	{
 		public string OrderReferenceId { get; set; }
-		public bool IsBillingAddressApplied { get; set; }
 	}
 
 

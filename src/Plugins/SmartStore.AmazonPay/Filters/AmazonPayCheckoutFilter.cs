@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
-using SmartStore.AmazonPay.Extensions;
 using SmartStore.AmazonPay.Services;
 
 namespace SmartStore.AmazonPay.Filters
@@ -37,10 +36,11 @@ namespace SmartStore.AmazonPay.Filters
 
 			if (actionName.IsCaseInsensitiveEqual("ShippingMethod"))
 			{
-				var model = _apiService.Value.ProcessPluginRequest(AmazonPayRequestType.ShippingMethod, filterContext.Controller.TempData);
+				var model = _apiService.Value.CreateViewModel(AmazonPayRequestType.ShippingMethod, filterContext.Controller.TempData);
 
-				if (model.Result == AmazonPayResultType.Redirect) // shipping to selected address not possible
+				if (model.Result == AmazonPayResultType.Redirect)
 				{
+					// Shipping to selected address not possible.
 					var urlHelper = new UrlHelper(filterContext.HttpContext.Request.RequestContext);
 					var url = urlHelper.Action("ShippingAddress", "Checkout", new { area = "" });
 

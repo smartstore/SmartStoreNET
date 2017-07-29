@@ -1,0 +1,12 @@
+﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+@{
+	Layout = "";
+}
+@if (Model.SellerId.HasValue())
+{
+	<div class="amazon-pay-button" style="display: flex; align-items: center; height: 100%;">
+		<div id="amazon-pay-auth-button"></div>
+	</div>
+
+	Html.RenderPartial("ScriptingLoginButton", Model);
+}

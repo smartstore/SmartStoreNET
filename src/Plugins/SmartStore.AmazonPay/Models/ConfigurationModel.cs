@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Services;
-using SmartStore.AmazonPay.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -23,14 +22,14 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.SecretKey")]
 		public string SecretKey { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ClientId")]
+		public string ClientId { get; set; }
+
+		//[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ClientSecret")]
+		//public string ClientSecret { get; set; }
+
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.Marketplace")]
 		public string Marketplace { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AmazonButtonColor")]
-		public string AmazonButtonColor { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AmazonButtonSize")]
-		public string AmazonButtonSize { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.DataFetching")]
 		public AmazonPayDataFetchingType DataFetching { get; set; }
@@ -38,9 +37,6 @@ namespace SmartStore.AmazonPay.Models
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.IpnUrl")]
 		public string IpnUrl { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PollingTaskMinutes")]
-		public int PollingTaskMinutes { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PollingMaxOrderCreationDays")]
 		public int PollingMaxOrderCreationDays { get; set; }
@@ -56,16 +52,6 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ShowButtonInMiniShoppingCart")]
 		public bool ShowButtonInMiniShoppingCart { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AddressWidgetWidth")]
-		public int AddressWidgetWidth { get; set; }
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AddressWidgetHeight")]
-		public int AddressWidgetHeight { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PaymentWidgetWidth")]
-		public int PaymentWidgetWidth { get; set; }
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PaymentWidgetHeight")]
-		public int PaymentWidgetHeight { get; set; }
-
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
 
@@ -75,11 +61,49 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AddOrderNotes")]
 		public bool AddOrderNotes { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.UsePopupDialog")]
+		public bool UsePopupDialog { get; set; }
+
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.InformCustomerAboutErrors")]
 		public bool InformCustomerAboutErrors { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.InformCustomerAddErrors")]
 		public bool InformCustomerAddErrors { get; set; }
+
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PayButtonType")]
+		public string PayButtonType { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PayButtonColor")]
+		public string PayButtonColor { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.PayButtonSize")]
+		public string PayButtonSize { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AuthButtonType")]
+		public string AuthButtonType { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AuthButtonColor")]
+		public string AuthButtonColor { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AuthButtonSize")]
+		public string AuthButtonSize { get; set; }
+
+		#region Registration data
+
+		public string RegisterUrl { get; set; }
+		public string SoftwareVersion { get; set; }
+		public string PluginVersion { get; set; }
+		public string LeadCode { get; set; }
+		public string PlatformId { get; set; }
+		public string PublicKey { get; set; }
+		public string KeyShareUrl { get; set; }
+		public string LanguageLocale { get; set; }
+		public string[] MerchantLoginDomains { get; set; }
+		public string[] MerchantLoginRedirectURLs { get; set; }
+		public string MerchantStoreDescription { get; set; }
+
+		#endregion
 
 		public void Copy(AmazonPaySettings settings, bool fromSettings)
 		{
@@ -89,23 +113,28 @@ namespace SmartStore.AmazonPay.Models
 				SellerId = settings.SellerId;
 				AccessKey = settings.AccessKey;
 				SecretKey = settings.SecretKey;
+				ClientId = settings.ClientId;
+				//ClientSecret = settings.ClientSecret;
 				Marketplace = settings.Marketplace;
+
 				DataFetching = settings.DataFetching;
 				PollingMaxOrderCreationDays = settings.PollingMaxOrderCreationDays;
 				TransactionType = settings.TransactionType;
 				SaveEmailAndPhone = settings.SaveEmailAndPhone;
 				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
-				AmazonButtonColor = settings.AmazonButtonColor;
-				AmazonButtonSize = settings.AmazonButtonSize;
-				AddressWidgetWidth = settings.AddressWidgetWidth;
-				AddressWidgetHeight = settings.AddressWidgetHeight;
-				PaymentWidgetWidth = settings.PaymentWidgetWidth;
-				PaymentWidgetHeight = settings.PaymentWidgetHeight;
 				AdditionalFee = settings.AdditionalFee;
 				AdditionalFeePercentage = settings.AdditionalFeePercentage;
 				AddOrderNotes = settings.AddOrderNotes;
+				UsePopupDialog = settings.UsePopupDialog;
 				InformCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				InformCustomerAddErrors = settings.InformCustomerAddErrors;
+
+				PayButtonType = settings.PayButtonType;
+				PayButtonColor = settings.PayButtonColor;
+				PayButtonSize = settings.PayButtonSize;
+				AuthButtonType = settings.AuthButtonType;
+				AuthButtonColor = settings.AuthButtonColor;
+				AuthButtonSize = settings.AuthButtonSize;
 			}
 			else
 			{
@@ -113,23 +142,28 @@ namespace SmartStore.AmazonPay.Models
 				settings.SellerId = SellerId;
 				settings.AccessKey = AccessKey;
 				settings.SecretKey = SecretKey;
+				settings.ClientId = ClientId;
+				//settings.ClientSecret = ClientSecret;
 				settings.Marketplace = Marketplace;
+
 				settings.DataFetching = DataFetching;
 				settings.PollingMaxOrderCreationDays = PollingMaxOrderCreationDays;
 				settings.TransactionType = TransactionType;
 				settings.SaveEmailAndPhone = SaveEmailAndPhone;
 				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
-				settings.AmazonButtonColor = AmazonButtonColor;
-				settings.AmazonButtonSize = AmazonButtonSize;
-				settings.AddressWidgetWidth = AddressWidgetWidth;
-				settings.AddressWidgetHeight = AddressWidgetHeight;
-				settings.PaymentWidgetWidth = PaymentWidgetWidth;
-				settings.PaymentWidgetHeight = PaymentWidgetHeight;
 				settings.AdditionalFee = AdditionalFee;
 				settings.AdditionalFeePercentage = AdditionalFeePercentage;
 				settings.AddOrderNotes = AddOrderNotes;
+				settings.UsePopupDialog = UsePopupDialog;
 				settings.InformCustomerAboutErrors = InformCustomerAboutErrors;
 				settings.InformCustomerAddErrors = InformCustomerAddErrors;
+
+				settings.PayButtonType = PayButtonType;
+				settings.PayButtonColor = PayButtonColor;
+				settings.PayButtonSize = PayButtonSize;
+				settings.AuthButtonType = AuthButtonType;
+				settings.AuthButtonColor = AuthButtonColor;
+				settings.AuthButtonSize = AuthButtonSize;
 			}
 		}
 	}

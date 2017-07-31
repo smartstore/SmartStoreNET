@@ -67,7 +67,7 @@
                         <div class="col-sm-9">
                             <label class="mb-0 form-check-label">
                                 @Html.CheckBoxFor(model => model.PrivacyAgreement, new { @class = "form-check-input" })
-                                @Html.Raw(T("ContactUs.PrivacyAgreement.DetailText").Text.FormatWith(Url.RouteUrl("Topic", new { SystemName = "PrivacyInfo" })))
+                                @Html.Raw(T("ContactUs.PrivacyAgreement.DetailText").Text.FormatWith(Url.RouteUrl("Topic", new { SystemName = "privacyinfo" })))
                             </label>
                             @Html.ValidationMessageFor(model => model.PrivacyAgreement)
                         </div>

@@ -5,6 +5,7 @@
 * #1207 No low stock activity when bulk editing the product quantity
 * #1208 Missing inventory tab when switching from bundle to simple product
 * Fixed name of deleted manufacturers displayed in product lists
+* Fixed non-system category export profile always exports categories of current store
 
 
 ## SmartStore.NET 3.0.2

@@ -327,7 +327,7 @@ namespace SmartStore.Services.Catalog
 			}
 			else
 			{
-				query = ApplyHiddenCategoriesFilter(query, applyNavigationFilters, _storeContext.CurrentStore.Id);
+				query = ApplyHiddenCategoriesFilter(query, applyNavigationFilters, storeId);
 			}
 
 			query = query.Where(c => !c.Deleted);

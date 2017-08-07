@@ -290,6 +290,8 @@ namespace SmartStore.Services.Catalog
             }
 
             // product pictures
+            var newPictureIds = new Dictionary<int, string>();
+
             if (copyImages)
             {
                 foreach (var productPicture in product.ProductPictures)
@@ -309,6 +311,8 @@ namespace SmartStore.Services.Catalog
                         PictureId = pictureCopy.Id,
                         DisplayOrder = productPicture.DisplayOrder
                     });
+
+                    newPictureIds.Add(productPicture.PictureId, pictureCopy.Id.ToString());
                 }
             }
 
@@ -482,7 +486,17 @@ namespace SmartStore.Services.Catalog
 						}
 					}
 				}
-				var combinationCopy = new ProductVariantAttributeCombination
+
+                var newAssignedPictureIds = new List<string>();
+
+                if(!String.IsNullOrEmpty(combination.AssignedPictureIds))
+                {
+                    combination.AssignedPictureIds.Split(',').Each(x => {
+                        newAssignedPictureIds.Add(newPictureIds[Convert.ToInt32(x)]);
+                    });
+                }
+                
+                var combinationCopy = new ProductVariantAttributeCombination
 				{
 					ProductId = productCopy.Id,
 					AttributesXml = newAttributesXml,
@@ -494,7 +508,7 @@ namespace SmartStore.Services.Catalog
 					Gtin = combination.Gtin,
 					ManufacturerPartNumber = combination.ManufacturerPartNumber,
 					Price = combination.Price,
-					AssignedPictureIds = copyImages ? combination.AssignedPictureIds : null,
+					AssignedPictureIds = copyImages ? String.Join(",", newAssignedPictureIds) : null,
 					Length = combination.Length,
 					Width = combination.Width,
 					Height = combination.Height,

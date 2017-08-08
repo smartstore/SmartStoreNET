@@ -412,7 +412,25 @@ namespace SmartStore.Services.Catalog
 
 				foreach (var productVariantAttributeValue in productVariantAttributeValues)
 				{
-					var pvavCopy = new ProductVariantAttributeValue
+
+                    var newPictureId = 0;
+
+                    if (copyImages)
+                    {
+                        var picture = _pictureService.GetPictureById(productVariantAttributeValue.PictureId);
+                        if (picture != null)
+                        {
+                            var pictureCopy = _pictureService.InsertPicture(
+                            _pictureService.LoadPictureBinary(picture),
+                            picture.MimeType,
+                            _pictureService.GetPictureSeName(newName),
+                            true, false, false);
+
+                            newPictureId = pictureCopy.Id;
+                        }
+                    }
+
+                    var pvavCopy = new ProductVariantAttributeValue
 					{
 						ProductVariantAttributeId = productVariantAttributeCopy.Id,
 						Name = productVariantAttributeValue.Name,
@@ -424,7 +442,8 @@ namespace SmartStore.Services.Catalog
 						ValueTypeId = productVariantAttributeValue.ValueTypeId,
 						LinkedProductId = productVariantAttributeValue.LinkedProductId,
 						Quantity = productVariantAttributeValue.Quantity,
-					};
+                        PictureId = newPictureId
+                    };
 
 					_productAttributeService.InsertProductVariantAttributeValue(pvavCopy);
 

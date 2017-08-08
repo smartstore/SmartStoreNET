@@ -990,9 +990,8 @@ namespace SmartStore.Web.Controllers
                 model.SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(cart);
 
                 //a customer should visit the shopping cart page before going to checkout if:
-                //1. "terms of services" are enabled (OBSOLETE now)
-                //2. we have at least one checkout attribute
-                //3. min order sub-total is OK
+                //1. we have at least one checkout attribute that is reqired
+                //2. min order sub-total is OK
                 var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
                 if (!cart.RequiresShipping())
                 {
@@ -1000,8 +999,8 @@ namespace SmartStore.Web.Controllers
                     checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
                 }
                 bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
-                model.DisplayCheckoutButton = checkoutAttributes.Count == 0 && minOrderSubtotalAmountOk;
-                
+                model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0 && minOrderSubtotalAmountOk;
+
                 //products. sort descending (recently added products)
                 foreach (var sci in cart.ToList())
                 {

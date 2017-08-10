@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.0.3
 ### Bugfixes
@@ -9,6 +9,7 @@
 * Fixed picture assignment for variant attribute combinations of product copies which weren't assigned correctly
 * #1218 CopyProductService does not copy picture of ProductVariantAttributeValue
 * Fixed hidden checkout button when there are two or more shopping cart items and one gets removed from basket during checkout
+* Fixed physical gift cards cannot be moved to cart
   
 ### Improvements
 * Apply img-fluid class to all images within html editor content

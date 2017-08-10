@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -9,6 +8,7 @@ using SmartStore.Collections;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Catalog
 {
@@ -29,11 +29,15 @@ namespace SmartStore.Services.Catalog
             _productAttributeService = productAttributeService;
 			_pvacRepository = pvacRepository;
 			_requestCache = requestCache;
-        }
+
+			Logger = NullLogger.Instance;
+		}
+
+		public ILogger Logger { get; set; }
 
 		#region Product attributes
 
-        private IEnumerable<int> ParseProductVariantAttributeIds(string attributesXml)
+		private IEnumerable<int> ParseProductVariantAttributeIds(string attributesXml)
         {
             var ids = new List<int>();
             if (String.IsNullOrEmpty(attributesXml))
@@ -89,9 +93,9 @@ namespace SmartStore.Services.Catalog
 					}
 				}
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				Debug.Write(exc.ToString());
+				Logger.Error(exception);
 			}
 
 			return attrs;
@@ -196,10 +200,10 @@ namespace SmartStore.Services.Catalog
                     }
                 }
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-                Debug.Write(exc.ToString());
-            }
+				Logger.Error(exception);
+			}
 
             return selectedProductVariantAttributeValues;
         }
@@ -320,19 +324,25 @@ namespace SmartStore.Services.Catalog
 
 		#region Gift card attributes
 
-		public string AddGiftCardAttribute(string attributesXml, string recipientName,
-            string recipientEmail, string senderName, string senderEmail, string giftCardMessage)
+		public string AddGiftCardAttribute(
+			string attributesXml,
+			string recipientName,
+            string recipientEmail,
+			string senderName,
+			string senderEmail,
+			string giftCardMessage)
         {
-            string result = string.Empty;
+            var result = string.Empty;
+
             try
             {
-                recipientName = recipientName.Trim();
-                recipientEmail = recipientEmail.Trim();
-                senderName = senderName.Trim();
-                senderEmail = senderEmail.Trim();
+                recipientName = recipientName.TrimSafe();
+                recipientEmail = recipientEmail.TrimSafe();
+                senderName = senderName.TrimSafe();
+                senderEmail = senderEmail.TrimSafe();
 
                 var xmlDoc = new XmlDocument();
-                if (String.IsNullOrEmpty(attributesXml))
+                if (string.IsNullOrEmpty(attributesXml))
                 {
                     var element1 = xmlDoc.CreateElement("Attributes");
                     xmlDoc.AppendChild(element1);
@@ -373,16 +383,21 @@ namespace SmartStore.Services.Catalog
 
                 result = xmlDoc.OuterXml;
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-                Debug.Write(exc.ToString());
+				Logger.Error(exception);
             }
+
             return result;
         }
 
-        public void GetGiftCardAttribute(string attributesXml, out string recipientName,
-            out string recipientEmail, out string senderName,
-            out string senderEmail, out string giftCardMessage)
+        public void GetGiftCardAttribute(
+			string attributesXml,
+			out string recipientName,
+            out string recipientEmail,
+			out string senderName,
+            out string senderEmail,
+			out string giftCardMessage)
         {
             recipientName = string.Empty;
             recipientEmail = string.Empty;
@@ -412,10 +427,10 @@ namespace SmartStore.Services.Catalog
                 if (messageElement != null)
                     giftCardMessage = messageElement.InnerText;
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-                Debug.Write(exc.ToString());
-            }
+				Logger.Error(exception);
+			}
         }
 
         #endregion

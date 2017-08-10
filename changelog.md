@@ -10,6 +10,7 @@
 * #1218 CopyProductService does not copy picture of ProductVariantAttributeValue
 * Fixed hidden checkout button when there are two or more shopping cart items and one gets removed from basket during checkout
 * Fixed physical gift cards cannot be moved to cart
+* Fixed tax rate wasn't properly formatted on product detail page
   
 ### Improvements
 * Apply img-fluid class to all images within html editor content

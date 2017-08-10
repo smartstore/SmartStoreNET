@@ -827,14 +827,18 @@ namespace SmartStore.Web.Controllers
 			var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id);
 			string taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
 
-			var defaultTaxRate = "";
-			var taxrate = Convert.ToString(_taxService.GetTaxRate(product, customer));
-			if (_taxSettings.DisplayTaxRates && !taxrate.Equals("0", StringComparison.InvariantCultureIgnoreCase))
+			var defaultTaxRate = string.Empty;
+			if (_taxSettings.DisplayTaxRates)
 			{
-				defaultTaxRate = "({0}%)".FormatWith(taxrate);
+				var taxRate = _taxService.GetTaxRate(product, customer);
+				if (taxRate != decimal.Zero)
+				{
+					var formattedTaxRate = _priceFormatter.FormatTaxRate(taxRate);
+					defaultTaxRate = $"({formattedTaxRate}%)";
+				}
 			}
 
-			var additionalShippingCosts = String.Empty;
+			var additionalShippingCosts = string.Empty;
 			var addShippingPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.AdditionalShippingCharge, currency);
 
 			if (addShippingPrice > 0)

@@ -77,6 +77,8 @@
 					}
 				}
 			});
+
+			ctx.find(".pd-tierprices").html(data.Partials["TierPrices"]);
 		     
 			if (data.DynamicThumblUrl && data.DynamicThumblUrl.length > 0) {
 		    	$(ctx).find('.pd-dyn-thumb').attr('src', data.DynamicThumblUrl);

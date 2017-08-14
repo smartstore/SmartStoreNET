@@ -58,6 +58,8 @@ namespace SmartStore.Web.Framework.UI.Choices
 		/// </summary>
 		public int? EndYear { get; set; }
 
+		public string UploadedFile { get; set; }
+
 		public virtual IList<ChoiceItemModel> Values { get; set; }
 
 		public abstract string BuildControlId();

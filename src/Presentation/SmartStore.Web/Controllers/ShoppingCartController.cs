@@ -729,9 +729,10 @@ namespace SmartStore.Web.Controllers
 				//remove attributes which require shippable products
 				checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
 			}
+
 			foreach (var attribute in checkoutAttributes)
 			{
-				var caModel = new ShoppingCartModel.CheckoutAttributeModel()
+				var caModel = new ShoppingCartModel.CheckoutAttributeModel
 				{
 					Id = attribute.Id,
 					Name = attribute.GetLocalized(x => x.Name),
@@ -742,11 +743,10 @@ namespace SmartStore.Web.Controllers
 
 				if (attribute.ShouldHaveValues())
 				{
-					//values
 					var caValues = _checkoutAttributeService.GetCheckoutAttributeValues(attribute.Id);
 					foreach (var caValue in caValues)
 					{
-						var pvaValueModel = new ShoppingCartModel.CheckoutAttributeValueModel()
+						var pvaValueModel = new ShoppingCartModel.CheckoutAttributeValueModel
 						{
 							Id = caValue.Id,
 							Name = caValue.GetLocalized(x => x.Name),
@@ -754,7 +754,7 @@ namespace SmartStore.Web.Controllers
 						};
 						caModel.Values.Add(pvaValueModel);
 
-						//display price if allowed
+						// Display price if allowed.
 						if (_permissionService.Authorize(StandardPermissionProvider.DisplayPrices))
 						{
 							decimal priceAdjustmentBase = _taxService.GetCheckoutAttributePrice(caValue);
@@ -767,62 +767,73 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 
-
-
-				//set already selected attributes
-				string selectedCheckoutAttributes = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+				// Set already selected attributes.
+				var selectedCheckoutAttributes = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 				switch (attribute.AttributeControlType)
 				{
 					case AttributeControlType.DropdownList:
 					case AttributeControlType.RadioList:
 					case AttributeControlType.Boxes:
 					case AttributeControlType.Checkboxes:
+						if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
 						{
-							if (!String.IsNullOrEmpty(selectedCheckoutAttributes))
+							// Clear default selection.
+							foreach (var item in caModel.Values)
 							{
-								//clear default selection
-								foreach (var item in caModel.Values)
-									item.IsPreSelected = false;
+								item.IsPreSelected = false;
+							}
 
-								//select new values
-								var selectedCaValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(selectedCheckoutAttributes);
-								foreach (var caValue in selectedCaValues)
-									foreach (var item in caModel.Values)
-										if (caValue.Id == item.Id)
-											item.IsPreSelected = true;
+							// Select new values.
+							var selectedCaValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(selectedCheckoutAttributes);
+							foreach (var caValue in selectedCaValues)
+							{
+								foreach (var item in caModel.Values)
+								{
+									if (caValue.Id == item.Id)
+										item.IsPreSelected = true;
+								}
 							}
 						}
 						break;
+
 					case AttributeControlType.TextBox:
 					case AttributeControlType.MultilineTextbox:
+						if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
 						{
-							if (!String.IsNullOrEmpty(selectedCheckoutAttributes))
-							{
-								var enteredText = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
-								if (enteredText.Count > 0)
-									caModel.TextValue = enteredText[0];
-							}
+							var enteredText = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
+							if (enteredText.Count > 0)
+								caModel.TextValue = enteredText[0];
 						}
 						break;
+
 					case AttributeControlType.Datepicker:
 						{
-							//keep in mind my that the code below works only in the current culture
+							// Keep in mind my that the code below works only in the current culture.
 							var selectedDateStr = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
 							if (selectedDateStr.Count > 0)
 							{
 								DateTime selectedDate;
-								if (DateTime.TryParseExact(selectedDateStr[0], "D", CultureInfo.CurrentCulture,
-													   DateTimeStyles.None, out selectedDate))
+								if (DateTime.TryParseExact(selectedDateStr[0], "D", CultureInfo.CurrentCulture,  DateTimeStyles.None, out selectedDate))
 								{
-									//successfully parsed
 									caModel.SelectedDay = selectedDate.Day;
 									caModel.SelectedMonth = selectedDate.Month;
 									caModel.SelectedYear = selectedDate.Year;
 								}
 							}
-
 						}
 						break;
+
+					case AttributeControlType.FileUpload:
+						if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
+						{
+							var values = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
+							if (values.Any())
+							{
+								caModel.UploadedFile = values.First();
+							}
+						}
+						break;
+
 					default:
 						break;
 				}
@@ -1097,20 +1108,21 @@ namespace SmartStore.Web.Controllers
             foreach (var attribute in checkoutAttributes)
             {
 				var selectedItems = query.CheckoutAttributes.Where(x => x.AttributeId == attribute.Id);
-				var firstItem = selectedItems.FirstOrDefault();
-				var firstItemValue = firstItem?.Value;
 
                 switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
                     case AttributeControlType.RadioList:
                     case AttributeControlType.Boxes:
-						if (firstItemValue.HasValue())
 						{
-							var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();
-							if (selectedAttributeId > 0)
+							var firstItemValue = selectedItems.FirstOrDefault()?.Value;
+							if (firstItemValue.HasValue())
 							{
-								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
+								var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();
+								if (selectedAttributeId > 0)
+								{
+									selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
+								}
 							}
 						}
 						break;
@@ -1128,25 +1140,33 @@ namespace SmartStore.Web.Controllers
 
                     case AttributeControlType.TextBox:    
                     case AttributeControlType.MultilineTextbox:
-						if (firstItemValue.HasValue())
 						{
-							selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, firstItemValue);
-                        }
+							var selectedValue = string.Join(",", selectedItems.Select(x => x.Value));
+							if (selectedValue.HasValue())
+							{
+								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedValue);
+							}
+						}
                         break;
 
                     case AttributeControlType.Datepicker:
-						var date = firstItem?.Date;
-						if (date.HasValue)
 						{
-							selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, date.Value.ToString("D"));
+							var firstItemDate = selectedItems.FirstOrDefault()?.Date;
+							if (firstItemDate.HasValue)
+							{
+								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, firstItemDate.Value.ToString("D"));
+							}
 						}
                         break;
 
                     case AttributeControlType.FileUpload:
-						if (firstItemValue.HasValue())
 						{
-                            selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, firstItemValue);
-                        }
+							var selectedValue = string.Join(",", selectedItems.Select(x => x.Value));
+							if (selectedValue.HasValue())
+							{
+								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedValue);
+							}
+						}
                         break;
                 }
             }

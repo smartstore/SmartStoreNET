@@ -2416,6 +2416,15 @@ namespace SmartStore.Web.Controllers
                         }
                     }
 
+                    if (_shoppingCartSettings.DisplayCartAfterAddingProduct)
+                    {
+                        //redirect to the shopping cart page
+                        return Json(new
+                        {
+                            redirect = Url.RouteUrl("ShoppingCart"),
+                        });
+                    }
+                    
                     return Json(new
                     {
                         success = true,

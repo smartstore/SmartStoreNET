@@ -27,7 +27,7 @@ namespace SmartStore.FacebookAuth.Core
         private readonly HttpContextBase _httpContext;
 		private readonly ICommonServices _services;
 
-		private FacebookClient _facebookApplication;
+		private FacebookOAuth2Client _facebookApplication;
 
 		#endregion
 
@@ -50,7 +50,7 @@ namespace SmartStore.FacebookAuth.Core
 
 		#region Utilities
 
-		private FacebookClient FacebookApplication
+		private FacebookOAuth2Client FacebookApplication
         {
 			get
 			{
@@ -58,7 +58,7 @@ namespace SmartStore.FacebookAuth.Core
 				{
 					var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(_services.StoreContext.CurrentStore.Id);
 
-					_facebookApplication = new FacebookClient(settings.ClientKeyIdentifier, settings.ClientSecret);
+					_facebookApplication = new FacebookOAuth2Client(settings.ClientKeyIdentifier, settings.ClientSecret);
 				}
 
 				return _facebookApplication;
@@ -93,9 +93,12 @@ namespace SmartStore.FacebookAuth.Core
 			}
 
 			var state = new AuthorizeState(returnUrl, OpenAuthenticationStatus.Error);
-			var error = authResult.Error != null ? authResult.Error.Message : "Unknown error";
-			state.AddError(error);
-            return state;
+
+			state.AddError(authResult.Error != null
+				? authResult.Error.Message
+				: _services.Localization.GetResource("Admin.Common.UnknownError"));
+
+			return state;
         }
 
 		private string GetEmailFromFacebook(string accessToken)

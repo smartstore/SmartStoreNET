@@ -43,7 +43,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the product
         /// </summary>
         [DataMember]
-        public CalculationMethod CalculationMethod { get; set; }
+        public TierPriceCalculationMethod CalculationMethod { get; set; }
 
         /// <summary>
         /// Gets or sets the product
@@ -56,7 +56,7 @@ namespace SmartStore.Core.Domain.Catalog
         public virtual CustomerRole CustomerRole { get; set; }
     }
 
-    public enum CalculationMethod
+    public enum TierPriceCalculationMethod
     {
         Fixed = 0,
         Percental = 5,

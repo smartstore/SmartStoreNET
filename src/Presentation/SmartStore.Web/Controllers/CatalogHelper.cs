@@ -410,7 +410,7 @@ namespace SmartStore.Web.Controllers
                         Quantity = tierPrice.Quantity,
                     };
 
-                    if (adjustment != 0 && tierPrice.CalculationMethod == CalculationMethod.Percental && _catalogSettings.ApplyTierPricePercentageToAttributePriceAdjustments)
+                    if (adjustment != 0 && tierPrice.CalculationMethod == TierPriceCalculationMethod.Percental && _catalogSettings.ApplyTierPricePercentageToAttributePriceAdjustments)
                     {
                         adjustment = adjustment - (adjustment / 100 * tierPrice.Price);
                     }

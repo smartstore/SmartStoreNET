@@ -215,11 +215,11 @@ namespace SmartStore.Services.Catalog
                     continue;
 
                 //save new price
-                if (tierPrice.CalculationMethod == CalculationMethod.Fixed)
+                if (tierPrice.CalculationMethod == TierPriceCalculationMethod.Fixed)
                 {
                     previousPrice = tierPrice.Price;
                 }
-                else if (tierPrice.CalculationMethod == CalculationMethod.Percental)
+                else if (tierPrice.CalculationMethod == TierPriceCalculationMethod.Percental)
                 {
                     previousPrice = product.Price - (product.Price / 100 * tierPrice.Price);
                 }
@@ -272,7 +272,7 @@ namespace SmartStore.Services.Catalog
                     continue;
 
                 //save new price
-                if (tierPrice.CalculationMethod == CalculationMethod.Percental && _catalogSettings.ApplyTierPricePercentageToAttributePriceAdjustments)
+                if (tierPrice.CalculationMethod == TierPriceCalculationMethod.Percental && _catalogSettings.ApplyTierPricePercentageToAttributePriceAdjustments)
                 {
                     previousPrice = adjustment - (adjustment / 100 * tierPrice.Price);
                 }

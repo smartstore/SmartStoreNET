@@ -39,8 +39,11 @@ namespace SmartStore.Web.Controllers
 		private ActionResult GetFileContentResultFor(Download download, Product product, byte[] data)
 		{
 			if (data == null || data.LongLength == 0)
-				return Content(T("Common.Download.NoDataAvailable"));
-
+            {
+                NotifyError(T("Common.Download.NoDataAvailable"));   
+                return new RedirectResult(Url.Action("Info", "Customer"));
+            }
+            
 			var fileName = (download.Filename.HasValue() ? download.Filename : download.Id.ToString());
 			var contentType = (download.ContentType.HasValue() ? download.ContentType : "application/octet-stream");
 
@@ -62,11 +65,17 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			if (!product.HasSampleDownload)
-				return Content(T("Common.Download.HasNoSample"));
-
+            {
+                NotifyError(T("Common.Download.HasNoSample"));
+                return RedirectToAction("ProductDetails", "Product", new { productId = productId });
+            }
+            
 			var download = _downloadService.GetDownloadById(product.SampleDownloadId.GetValueOrDefault());
             if (download == null)
-                return Content(T("Common.Download.SampleNotAvailable"));
+            {
+                NotifyError(T("Common.Download.SampleNotAvailable"));
+                return RedirectToAction("ProductDetails", "Product", new { productId = productId });
+            }
 
             if (download.UseDownloadUrl)
                 return new RedirectResult(download.DownloadUrl);
@@ -165,7 +174,11 @@ namespace SmartStore.Web.Controllers
             var product = orderItem.Product;
 
             if (!_downloadService.IsLicenseDownloadAllowed(orderItem))
-                return Content(T("Common.Download.NotAllowed"));
+            {
+                NotifyError(T("Common.Download.NotAllowed"));
+                return RedirectToAction("DownloadableProducts", "Customer");
+            }
+                
 
             if (_customerSettings.DownloadableProductsValidateUser)
             {
@@ -173,12 +186,19 @@ namespace SmartStore.Web.Controllers
                     return new HttpUnauthorizedResult();
 
                 if (order.CustomerId != _workContext.CurrentCustomer.Id)
-                    return Content(T("Account.CustomerOrders.NotYourOrder"));
+                {
+                    NotifyError(T("Account.CustomerOrders.NotYourOrder"));
+                    return RedirectToAction("DownloadableProducts", "Customer");
+                }
+                    
             }
 
             var download = _downloadService.GetDownloadById(orderItem.LicenseDownloadId.HasValue ? orderItem.LicenseDownloadId.Value : 0);
             if (download == null)
-                return Content(T("Common.Download.NotAvailable"));
+            {
+                NotifyError(T("Common.Download.NotAvailable"));
+                return RedirectToAction("DownloadableProducts", "Customer");
+            }
             
             if (download.UseDownloadUrl)
                 return new RedirectResult(download.DownloadUrl);
@@ -190,7 +210,10 @@ namespace SmartStore.Web.Controllers
         {
             var download = _downloadService.GetDownloadByGuid(downloadId);
             if (download == null)
-                return Content(T("Common.Download.NotAvailable"));
+            {
+                NotifyError(T("Common.Download.NotAvailable"));
+                return RedirectToAction("DownloadableProducts", "Customer");
+            }
 
             if (download.UseDownloadUrl)
                 return new RedirectResult(download.DownloadUrl);

@@ -74,8 +74,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AmazonPay, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AmazonPay.3.0.0\lib\AmazonPay.dll</HintPath>
+    <Reference Include="AmazonPay, Version=3.1.1.0, Culture=neutral, PublicKeyToken=29b2e72291465862, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AmazonPay.3.1.1\lib\net20\AmazonPay.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">

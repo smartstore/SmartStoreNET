@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Xml.Serialization;
 using AmazonPay;
 using AmazonPay.CommonRequests;
@@ -372,7 +370,6 @@ namespace SmartStore.AmazonPay.Services
 			data.ReferenceId = response.GetCaptureReferenceId();
 			data.Fee = new AmazonPayPrice(response.GetCaptureFee(), response.GetCaptureFeeCurrencyCode());
 			data.CapturedAmount = new AmazonPayPrice(response.GetCaptureAmount(), response.GetCaptureAmountCurrencyCode());
-			data.RefundedAmount = new AmazonPayPrice(response.refundedAmount, response.refundedAmountCurrencyCode);
 			data.Creation = response.GetCreationTimestamp();
 			data.ReasonCode = response.GetReasonCode();
 			data.ReasonDescription = response.GetReasonDescription();
@@ -520,30 +517,30 @@ namespace SmartStore.AmazonPay.Services
 			return client;
 		}
 
-		private T WorkaroundSdkCurrencyFormattingBug<T>(Func<T> request)
-		{
-			T result = default(T);
-			var oldCulture = Thread.CurrentThread.CurrentCulture;
-			var oldUICulture = Thread.CurrentThread.CurrentUICulture;
+		//private T WorkaroundSdkCurrencyFormattingBug<T>(Func<T> request)
+		//{
+		//	T result = default(T);
+		//	var oldCulture = Thread.CurrentThread.CurrentCulture;
+		//	var oldUICulture = Thread.CurrentThread.CurrentUICulture;
 
-			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-			Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+		//	Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+		//	Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-			try
-			{
-				result = request();
-			}
-			catch (Exception exception)
-			{
-				Logger.Error(exception);
-			}
-			finally
-			{
-				Thread.CurrentThread.CurrentCulture = oldCulture;
-				Thread.CurrentThread.CurrentUICulture = oldUICulture;
-			}
+		//	try
+		//	{
+		//		result = request();
+		//	}
+		//	catch (Exception exception)
+		//	{
+		//		Logger.Error(exception);
+		//	}
+		//	finally
+		//	{
+		//		Thread.CurrentThread.CurrentCulture = oldCulture;
+		//		Thread.CurrentThread.CurrentUICulture = oldUICulture;
+		//	}
 
-			return result;
-		}
+		//	return result;
+		//}
 	}
 }

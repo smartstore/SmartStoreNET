@@ -2279,8 +2279,8 @@ namespace SmartStore.Web.Controllers
         // Ajax
         public ActionResult ShoppingCartSummary(bool isWishlist = false)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-			{
+            if (!_permissionService.Authorize(isWishlist ? StandardPermissionProvider.EnableWishlist : StandardPermissionProvider.EnableShoppingCart))
+            {
 				return Json(new
 				{
 					success = false,

@@ -95,7 +95,7 @@
                     <div class="row sm-gutters flex-wrap align-items-center mt-2">
                         <div class="col col-alpha">
                             @Html.EditorFor(x => item, "QtyInput",
-                                new { htmlAttributes = new { data_update_url = Url.Action("UpdateCartItem", "ShoppingCart"), data_type = "wishlist", data_sci_id = item.Id }
+                                new { htmlAttributes = new { data_update_url = Url.Action("UpdateCartItem", "ShoppingCart", new { isWishlist = true }), data_type = "wishlist", data_sci_id = item.Id }
                             })
                         </div>
                         <div class="col">

@@ -2,7 +2,6 @@
 	Layout = "_Document";
 
 	Html.RenderWidget("body_start_html_tag_after");
-	Html.RenderPartial("_Notifications");
 
 	var hasLeftCol = IsSectionDefined("left");
 	var hasRightCol = IsSectionDefined("right");
@@ -35,23 +34,23 @@
 
     <div class="page-main canvas-slidable">
         @if (IsSectionDefined("header"))
-        {
+		{
             @RenderSection("header")
-        }
-        else
-        {
+		}
+		else
+		{
             <header id="header">
                 <div class="menubar-section d-none d-lg-block @(GetThemeVariable<bool>("inverse-menubar") ? "menubar-inverse" : "menubar-light")">
                     <div class="container menubar-container">
                         @{ 
-                            Html.RenderAction("Menu", "Common", new { area = "" });
+							Html.RenderAction("Menu", "Common", new { area = "" });
 						}
                     </div>
                 </div>
                 <div class="shopbar-section @(GetThemeVariable<bool>("inverse-shopbar") ? "shopbar-inverse" : "shopbar-light")"> 
                     <div class="container shopbar-container">
                         @{ 
-                            Html.RenderAction("ShopBar", "Common", new { area = "" });
+							Html.RenderAction("ShopBar", "Common", new { area = "" });
 						}
                     </div>
                 </div>
@@ -59,16 +58,16 @@
                     <nav class='navbar @(GetThemeVariable<bool>("inverse-navbar") ? "navbar-inverse" : "navbar-light")'>
                         <div class="container megamenu-container">
                             @{ 
-                                Html.RenderAction("CatalogMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
+								Html.RenderAction("CatalogMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
 							}
 						</div>
 					</nav>
 				</div>
 			</header>
-        }
+								}
 
         @{ 
-            Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
+			Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
 			Html.RenderWidget("content_before");
 		}
 
@@ -91,7 +90,7 @@
 								Html.RenderWidget("aside_left_after");
 							}
 						</aside>
-					}
+								}
 
 					<div id="content-center" class="col-lg-@mainColspan">
 						@{ 
@@ -110,7 +109,7 @@
 								Html.RenderWidget("aside_right_after");
 							}
 						</aside>
-					}
+								}
 
                     @{ Html.RenderWidget("content_after"); }
                 </div>
@@ -118,15 +117,15 @@
         </div>
 
         @if (IsSectionDefined("footer"))
-        {
+		{
             @RenderSection("footer")
-        }
-        else
-        {
+		}
+		else
+		{
             <footer id="footer" class="@(GetThemeVariable<bool>("inverse-footer") ? "footer-inverse" : "footer-light")">
                 @{ Html.RenderAction("Footer", "Common", new { area = "" }); }
 			</footer>
-        }
+					}
 
 		@{ Html.RenderZone("page-end"); }
     </div>
@@ -136,6 +135,7 @@
 	</a>
 </div>
 
+@{ Html.RenderPartial("_Notifications"); } 
 @{ Html.RenderWidget("body_end_html_tag_before"); }
 
 

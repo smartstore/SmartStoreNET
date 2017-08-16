@@ -4,6 +4,7 @@
 ### Bugfixes
 * #1207 No low stock activity when bulk editing the product quantity
 * #1208 Missing inventory tab when switching from bundle to simple product
+* #1210 Clear asset cache when a theme setting has changed
 * Fixed name of deleted manufacturers displayed in product lists
 * Fixed non-system category export profile always exports categories of current store
 * Fixed picture assignment for variant attribute combinations of product copies which weren't assigned correctly

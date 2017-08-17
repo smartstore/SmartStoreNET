@@ -2164,19 +2164,12 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult OffCanvasCart()
         {
-            var model = new OffCanvasCartModel();
-            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-            var whishlist = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
-
-            // counts
-            model.ShoppingCartItems = cart.GetTotalProducts();
-            model.WishlistItems = whishlist.GetTotalProducts();
-            model.CompareItems = _compareProductsService.GetComparedProducts().Count;
-
-            // settings
-            model.ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
-            model.WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
-            model.CompareProductsEnabled = _catalogSettings.CompareProductsEnabled;
+            var model = new OffCanvasCartModel
+			{
+				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
+				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
+				CompareProductsEnabled = _catalogSettings.CompareProductsEnabled
+			};
 
             return PartialView(model);
         }
@@ -2264,7 +2257,7 @@ namespace SmartStore.Web.Controllers
 					showCheckoutButtons = model.IsValidMinOrderSubtotal;
 				}
             }
-
+			
             return Json(new
             {
                 success = warnings.Count > 0 ? false : true,
@@ -2276,32 +2269,61 @@ namespace SmartStore.Web.Controllers
             });
         }
 
-        // Ajax
-        public ActionResult ShoppingCartSummary(bool isWishlist = false)
-        {
-            if (!_permissionService.Authorize(isWishlist ? StandardPermissionProvider.EnableWishlist : StandardPermissionProvider.EnableShoppingCart))
-            {
-				return Json(new
+		[HttpPost]
+		public ActionResult CartSummary(bool cart = false, bool wishlist = false, bool compare = false)
+		{
+			var cartEnabled = cart && _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
+			var wishlistEnabled = wishlist && _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+			var compareEnabled = compare && _catalogSettings.CompareProductsEnabled;
+
+			int cartItemsCount = 0;
+			int wishlistItemsCount = 0;
+			int compareItemsCount = 0;
+
+			decimal subtotal = 0;
+			string subtotalFormatted = string.Empty;
+
+			if (cartEnabled || wishlistEnabled)
+			{
+				var customer = _services.WorkContext.CurrentCustomer;
+
+				if (cartEnabled)
 				{
-					success = false,
-					message = _localizationService.GetResource("Common.NoProcessingSecurityIssue")
-				});
+					var cartItems = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
+					cartItemsCount = cartItems.GetTotalProducts();
+
+					subtotal = _shoppingCartService.GetCurrentCartSubTotal(cartItems);
+					if (subtotal != 0)
+					{
+						subtotalFormatted = _priceFormatter.FormatPrice(subtotal, true, false);
+					}
+				}
+
+				if (wishlistEnabled)
+				{
+					wishlistItemsCount = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
+				}
 			}
 
-            var cart = _workContext.CurrentCustomer.GetCartItems(isWishlist ? ShoppingCartType.Wishlist : ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			if (compareEnabled)
+			{
+				compareItemsCount = _compareProductsService.GetComparedProductsCount();
+			}
 
-            return Json(new
-			{ 
-                TotalProducts = cart.GetTotalProducts(),
-                SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(cart)
-            }, JsonRequestBehavior.AllowGet);
-        }
+			return Json(new
+			{
+				CartItemsCount = cartItemsCount,
+				CartSubTotal = subtotalFormatted,
+				WishlistItemsCount = wishlistItemsCount,
+				CompareItemsCount = compareItemsCount
+			});
+		}
 
-        #endregion
+		#endregion
 
-        #region Wishlist
+		#region Wishlist
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
         public ActionResult Wishlist(Guid? customerGuid)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))

@@ -67,7 +67,7 @@
         {
             <a id="topcartlink" class="dropdown-item" href="@Url.RouteUrl("ShoppingCart")">
                 <i class="fa fa-fw fa-shopping-bag"></i>
-				<span>@T("ShoppingCart")</span> <span class="cart-qty badge badge-success @(Model.ShoppingCartItems > 0 ? "label-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
+				<span>@T("ShoppingCart")</span> <span class="cart-qty badge badge-success @(Model.ShoppingCartItems > 0 ? "label-success" : "")" data-bind-to="CartItemsCount">@Model.ShoppingCartItems</span>
 			</a>
         }
         <div class="dropdown-divider"></div>

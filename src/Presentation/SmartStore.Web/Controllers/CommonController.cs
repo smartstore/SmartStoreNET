@@ -445,8 +445,6 @@ namespace SmartStore.Web.Controllers
 					return Content("");
 				}
 			}
-
-			var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
             
             var model = new ShopBarModel
             {
@@ -459,24 +457,10 @@ namespace SmartStore.Web.Controllers
                 CompareProductsEnabled = _catalogSettings.CompareProductsEnabled            
             };
 
-			if (model.ShoppingCartEnabled || model.WishlistEnabled)
-			{
-				if (model.ShoppingCartEnabled)
-					model.ShoppingCartItems = cart.GetTotalProducts();
-
-				if (model.WishlistEnabled)
-					model.WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
-			}
-
-			if (_catalogSettings.CompareProductsEnabled)
-            {
-                model.CompareItems = _compareProductsService.Value.GetComparedProductsCount();
-            }
-
-            return PartialView(model);
+			return PartialView(model);
         }
 
-        [ChildActionOnly]
+		[ChildActionOnly]
         public ActionResult Footer()
         {
 			var store = _services.StoreContext.CurrentStore;

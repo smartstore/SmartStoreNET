@@ -40,7 +40,6 @@ namespace SmartStore.Services.Catalog
         private readonly IRequestCache _requestCache;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IAclService _aclService;
-        private readonly Lazy<IEnumerable<ICategoryNavigationFilter>> _navigationFilters;
         private readonly ICustomerService _customerService;
         private readonly IStoreService _storeService;
 		private readonly ICatalogSearchService _catalogSearchService;
@@ -56,7 +55,6 @@ namespace SmartStore.Services.Catalog
             IEventPublisher eventPublisher,
 			IStoreMappingService storeMappingService,
 			IAclService aclService,
-            Lazy<IEnumerable<ICategoryNavigationFilter>> navigationFilters,
             ICustomerService customerService,
             IStoreService storeService,
 			ICatalogSearchService catalogSearchService)
@@ -72,7 +70,6 @@ namespace SmartStore.Services.Catalog
             _eventPublisher = eventPublisher;
 			_storeMappingService = storeMappingService;
 			_aclService = aclService;
-            _navigationFilters = navigationFilters;
             _customerService = customerService;
             _storeService = storeService;
 			_catalogSearchService = catalogSearchService;
@@ -335,8 +332,15 @@ namespace SmartStore.Services.Catalog
 			return query;
 		}
         
-        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null,
-			bool applyNavigationFilters = true, bool ignoreCategoriesWithoutExistingParent = true, int storeId = 0)
+        public virtual IPagedList<Category> GetAllCategories(
+			string categoryName = "", 
+			int pageIndex = 0, 
+			int pageSize = int.MaxValue, 
+			bool showHidden = false, 
+			string alias = null,
+			bool applyNavigationFilters = true, 
+			bool ignoreCategoriesWithoutExistingParent = true, 
+			int storeId = 0)
         {
 			var query = GetCategories(categoryName, showHidden, alias, applyNavigationFilters, storeId);
 
@@ -406,22 +410,11 @@ namespace SmartStore.Services.Catalog
 						select c;
 			}
 
-            // only distinct categories (group by ID)
+            // Only distinct categories (group by ID)
             query = from c in query
                     group c by c.Id into cGroup
                     orderby cGroup.Key
                     select cGroup.FirstOrDefault();
-
-            if (applyNavigationFilters)
-            {
-                var filters = _navigationFilters.Value;
-                if (filters.Any())
-                {
-                    filters.Each(x => {
-                        query = x.Apply(query);
-                    });
-                }
-            }
 
 			return query;
         }

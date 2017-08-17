@@ -23,18 +23,22 @@ namespace SmartStore.Web.Framework.Security
             // don't apply filter to child methods
             if (filterContext.IsChildAction)
                 return;
-            
-            // only redirect for GET requests, 
-            // otherwise the browser might not propagate the verb and request body correctly.
-            if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
+
+			// only redirect for GET requests, 
+			// otherwise the browser might not propagate the verb and request body correctly.
+			if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
 			if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-            var currentConnectionSecured = filterContext.HttpContext.Request.IsSecureConnection();
-
 			var securitySettings = SecuritySettings.Value;
+
+			if (!securitySettings.UseSslOnLocalhost && filterContext.HttpContext.Request.IsLocal)
+				return;
+
+            var currentConnectionSecured = filterContext.HttpContext.Request.IsSecureConnection();
+	
             if (securitySettings.ForceSslForAllPages)
             {
                 // all pages are forced to be SSL no matter of the specified value

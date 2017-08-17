@@ -11,16 +11,21 @@ namespace SmartStore.Core.Domain.Security
 			EncryptionKey = CommonHelper.GenerateRandomDigitCode(16);
 			AdminAreaAllowedIpAddresses = new List<string>();
 		}
-		
-		/// <summary>
-        /// Gets or sets a value indicating whether all pages will be forced to use SSL (no matter of a specified [HttpsRequirementAttribute] attribute)
-        /// </summary>
-        public bool ForceSslForAllPages { get; set; }
 
-        /// <summary>
-        /// Gets or sets an encryption key
-        /// </summary>
-        public string EncryptionKey { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether all pages will be forced to use SSL (no matter of a specified [RequireHttpsByConfigAttribute] attribute)
+		/// </summary>
+		public bool ForceSslForAllPages { get; set; }
+
+		/// <summary>
+		/// When <c>true</c>, bypasses any SSL redirection on localhost
+		/// </summary>
+		public bool UseSslOnLocalhost { get; set; }
+
+		/// <summary>
+		/// Gets or sets an encryption key
+		/// </summary>
+		public string EncryptionKey { get; set; }
 
         /// <summary>
         /// Gets or sets a list of adminn area allowed IP addresses

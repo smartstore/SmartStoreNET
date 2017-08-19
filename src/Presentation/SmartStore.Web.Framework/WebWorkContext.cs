@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -19,12 +18,11 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Web.Framework
 {
-	/// <summary>
-	/// Work context for web application
-	/// </summary>
 	public partial class WebWorkContext : IWorkContext
     {
-        private readonly HttpContextBase _httpContext;
+		private const string VisitorCookieName = "SMARTSTORE.VISITOR";
+
+		private readonly HttpContextBase _httpContext;
         private readonly ICustomerService _customerService;
 		private readonly IStoreContext _storeContext;
         private readonly IAuthenticationService _authenticationService;
@@ -118,22 +116,9 @@ namespace SmartStore.Web.Framework
 				if (customer == null || customer.Deleted || !customer.Active)
 				{
 					customer = GetGuestCustomer();
-
-					//if (customer == null || customer.Deleted || customer.IsRegistered())
-					//{
-					//	customer = _customerService.InsertGuestCustomer();
-					//}
 				}
-
+				
 				_cachedCustomer = customer;
-
-				// Do not end response for newly registered customers. Customer.Active can be False in that case.
-				if (customer == null || customer.Deleted)
-				{
-					// Yes, really! We can deactivate or delete guest accounts
-					_httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-					_httpContext.Response.End();
-				}
 
 				return _cachedCustomer;
             }
@@ -177,27 +162,58 @@ namespace SmartStore.Web.Framework
 		protected virtual Customer GetGuestCustomer()
 		{
 			Customer customer = null;
-			Guid customerGuid = Guid.Empty;
-
-			var anonymousId = _httpContext.Request.AnonymousID;
-
-			if (anonymousId.HasValue())
+			
+			var visitorCookie = _httpContext?.Request?.Cookies[VisitorCookieName];
+			if (visitorCookie == null)
 			{
-				Guid.TryParse(anonymousId, out customerGuid);
+				// No anonymous visitor cookie yet. Try to identify anyway (by IP and UserAgent)
+				customer = _customerService.FindGuestCustomerByClientIdent(maxAgeSeconds: 180);
+			}
+			else
+			{
+				if (visitorCookie.Value.HasValue())
+				{
+					// Cookie present. Try to load guest customer by it's value.
+					Guid customerGuid;
+					if (Guid.TryParse(visitorCookie.Value, out customerGuid))
+					{
+						customer = _customerService.GetCustomerByGuid(customerGuid);
+					}
+				}
 			}
 
-			if (customerGuid == Guid.Empty)
+			if (customer == null || customer.Deleted || !customer.Active || customer.IsRegistered())
 			{
-				return null;
+				// No record yet or account deleted/deactivated.
+				// Also dont' treat registered customers as guests.
+				// Create new record in these cases.
+				customer = _customerService.InsertGuestCustomer();
 			}
 
-			// Try to load an existing record...
-			customer = _customerService.GetCustomerByGuid(customerGuid);
-
-			if (customer == null)
+			// Set visitor cookie
+			if ( _httpContext?.Response != null)
 			{
-				// ...but no record yet. Create one.
-				customer = _customerService.InsertGuestCustomer(customerGuid);
+				visitorCookie = new HttpCookie(VisitorCookieName);
+				visitorCookie.HttpOnly = true;
+				visitorCookie.Value = customer.CustomerGuid.ToString();
+				if (customer.CustomerGuid == Guid.Empty)
+				{
+					visitorCookie.Expires = DateTime.Now.AddMonths(-1);
+				}
+				else
+				{
+					int cookieExpires = 24 * 365; // TODO make configurable
+					visitorCookie.Expires = DateTime.Now.AddHours(cookieExpires);
+				}
+
+				try
+				{
+					_httpContext.Response.Cookies.Remove(VisitorCookieName);
+				}
+				finally
+				{
+					_httpContext.Response.Cookies.Add(visitorCookie);
+				}			
 			}
 
 			return customer;

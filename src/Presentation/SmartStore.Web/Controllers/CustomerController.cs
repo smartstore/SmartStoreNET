@@ -586,8 +586,9 @@ namespace SmartStore.Web.Controllers
                 _authenticationService.SignOut();
                 
                 // Save a new record
-                _workContext.CurrentCustomer = _customerService.InsertGuestCustomer();
+                _workContext.CurrentCustomer = null;
             }
+
             var customer = _workContext.CurrentCustomer;
 
             // validate CAPTCHA
@@ -700,15 +701,15 @@ namespace SmartStore.Web.Controllers
                         }
                     }
 
-                    //login customer now
+                    // Login customer now
                     if (isApproved)
                         _authenticationService.SignIn(customer, true);
 
-                    //associated with external account (if possible)
+                    // Associated with external account (if possible)
                     TryAssociateAccountWithExternalAccount(customer);
                     
-                    //insert default address (if possible)
-                    var defaultAddress = new Address()
+                    // Insert default address (if possible)
+                    var defaultAddress = new Address
                     {
                         FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName),
                         LastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName),
@@ -726,21 +727,22 @@ namespace SmartStore.Web.Controllers
                         FaxNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax),
                         CreatedOnUtc = customer.CreatedOnUtc
                     };
+
                     if (this._addressService.IsAddressValid(defaultAddress))
                     {
-                        //some validation
+                        // Some validation
                         if (defaultAddress.CountryId == 0)
                             defaultAddress.CountryId = null;
                         if (defaultAddress.StateProvinceId == 0)
                             defaultAddress.StateProvinceId = null;
-                        //set default address
+                        // Set default address
                         customer.Addresses.Add(defaultAddress);
                         customer.BillingAddress = defaultAddress;
                         customer.ShippingAddress = defaultAddress;
                         _customerService.UpdateCustomer(customer);
                     }
 
-                    //notifications
+                    // Notifications
                     if (_customerSettings.NotifyNewCustomerRegistration)
                         _workflowMessageService.SendCustomerRegisteredNotificationMessage(customer, _localizationSettings.DefaultAdminLanguageId);
                     
@@ -927,21 +929,24 @@ namespace SmartStore.Web.Controllers
         public ActionResult AccountActivation(string token, string email)
         {
             var customer = _customerService.GetCustomerByEmail(email);
+
             if (customer == null)
 				return RedirectToHomePageWithError("Email");
 
             var cToken = customer.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken);
+
             if (String.IsNullOrEmpty(cToken))
 				return RedirectToHomePageWithError("Token");
 
             if (!cToken.Equals(token, StringComparison.InvariantCultureIgnoreCase))
 				return RedirectToHomePageWithError("Token");
 
-            //activate user account
+            // Activate user account
             customer.Active = true;
             _customerService.UpdateCustomer(customer);
             _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AccountActivationToken, "");
-            //send welcome message
+
+            // Send welcome message
             _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
             
             var model = new AccountActivationModel();

@@ -23,16 +23,14 @@ namespace SmartStore.Services.Customers
         /// <returns>Result</returns>
         public static bool IsInCustomerRole(this Customer customer, string customerRoleSystemName, bool onlyActiveCustomerRoles = true)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(customer, nameof(customer));
+			Guard.NotEmpty(customerRoleSystemName, nameof(customerRoleSystemName));
 
-            if (String.IsNullOrEmpty(customerRoleSystemName))
-                throw new ArgumentNullException("customerRoleSystemName");
-
-            var result = customer.CustomerRoles
+			var result = customer.CustomerRoles
                 .Where(cr => !onlyActiveCustomerRoles || cr.Active)
                 .Where(cr => cr.SystemName == customerRoleSystemName)
                 .FirstOrDefault() != null;
+
             return result;
         }
 
@@ -141,9 +139,9 @@ namespace SmartStore.Services.Customers
         
         public static string GetFullName(this Customer customer)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
-            var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
+			Guard.NotNull(customer, nameof(customer));
+
+			var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
             var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
 
             string fullName = "";

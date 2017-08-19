@@ -7,9 +7,6 @@ using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Authentication
 {
-    /// <summary>
-    /// Authentication service
-    /// </summary>
     public partial class FormsAuthenticationService : IAuthenticationService
     {
         private readonly HttpContextBase _httpContext;
@@ -19,12 +16,6 @@ namespace SmartStore.Services.Authentication
 
         private Customer _cachedCustomer;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="httpContext">HTTP context</param>
-        /// <param name="customerService">Customer service</param>
-        /// <param name="customerSettings">Customer settings</param>
         public FormsAuthenticationService(HttpContextBase httpContext, ICustomerService customerService, CustomerSettings customerSettings)
         {
             this._httpContext = httpContext;
@@ -77,7 +68,7 @@ namespace SmartStore.Services.Authentication
 			if (_cachedCustomer != null)
 				return _cachedCustomer;
 
-			if (_httpContext == null || _httpContext.Request == null || !_httpContext.Request.IsAuthenticated || _httpContext.User == null)
+			if (_httpContext?.Request == null || !_httpContext.Request.IsAuthenticated || _httpContext.User == null)
 				return null;
 
 			Customer customer = null;
@@ -95,21 +86,6 @@ namespace SmartStore.Services.Authentication
 
 			if (customer != null && customer.Active && !customer.Deleted && customer.IsRegistered())
 			{
-				if (customer.LastLoginDateUtc == null)
-				{
-					try
-					{
-						// This is most probably the very first "login" after registering. Delete the
-						// ASP.NET anonymous id cookie so that a new guest account can be created
-						// upon signing out.
-						System.Web.Security.AnonymousIdentificationModule.ClearAnonymousIdentifier();
-					}
-					finally
-					{
-						customer.LastLoginDateUtc = DateTime.UtcNow;
-						_customerService.UpdateCustomer(customer);
-					}
-				}
 				_cachedCustomer = customer;
 			}
 

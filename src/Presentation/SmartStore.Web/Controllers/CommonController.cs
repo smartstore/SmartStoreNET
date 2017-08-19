@@ -772,6 +772,7 @@ namespace SmartStore.Web.Controllers
 
             Response.ContentType = "text/plain";
             Response.Write(sb.ToString());
+
             return null;
         }
 

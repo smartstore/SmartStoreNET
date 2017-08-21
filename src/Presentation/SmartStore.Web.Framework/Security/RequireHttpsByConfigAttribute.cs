@@ -37,7 +37,9 @@ namespace SmartStore.Web.Framework.Security
 			if (!securitySettings.UseSslOnLocalhost && filterContext.HttpContext.Request.IsLocal)
 				return;
 
-            var currentConnectionSecured = filterContext.HttpContext.Request.IsSecureConnection();
+			var webHelper = WebHelper.Value;
+
+			var currentConnectionSecured = webHelper.IsCurrentConnectionSecured();
 	
             if (securitySettings.ForceSslForAllPages)
             {
@@ -58,7 +60,7 @@ namespace SmartStore.Web.Framework.Security
                             {
                                 // redirect to HTTPS version of page
                                 // string url = "https://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
-								var webHelper = WebHelper.Value;
+								
                                 string url = webHelper.GetThisPageUrl(true, true);
                                 filterContext.Result = new RedirectResult(url, true);
                             }
@@ -69,8 +71,6 @@ namespace SmartStore.Web.Framework.Security
                     {
                         if (currentConnectionSecured)
                         {
-                            var webHelper = WebHelper.Value;
-
                             // redirect to HTTP version of page
                             // string url = "http://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
                             string url = webHelper.GetThisPageUrl(true, false);

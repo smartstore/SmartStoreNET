@@ -279,7 +279,10 @@ namespace SmartStore.Services.Tasks
 					var next = CronExpression.GetNextSchedule(task.CronExpression, baseTime);
 					return _dtHelper.ConvertToUtcTime(next, _dtHelper.CurrentTimeZone);
 				}
-				catch { }
+				catch (Exception ex)
+				{
+					Logger.ErrorFormat(ex, "Could not calculate next schedule time for task '{0}'", task.Name);
+				}
 			}
 
 			return null;

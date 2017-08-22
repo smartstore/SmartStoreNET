@@ -230,7 +230,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			var reloadResult = RedirectToAction("Edit", new { id = model.Id, returnUrl = returnUrl });
-			var returnResult = RedirectToReferrer(returnUrl, () => RedirectToAction("List"));
+			var returnResult = returnUrl.HasValue() ? (ActionResult)Redirect(returnUrl) : (ActionResult)RedirectToAction("List");
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
 			if (scheduleTask == null)

@@ -73,14 +73,14 @@
                     if (Model.DisplayCaptcha)
                     {
                         <div class="captcha-box form-group row">
-							<div class="col-md-9 col-md-push-3">
+							<div class="col-md-9 push-md-3">
 								@Html.Raw(Html.GenerateCaptcha())
 							</div>
                         </div>
                     }
 
                     <div class="form-group row m-b-0">
-						<div class="col-md-9 col-md-push-3">
+						<div class="col-md-9 push-md-3">
 							<button type="submit" name="add-review" value="add-review" class="btn btn-primary write-product-review-button">
 								<span>@T("Reviews.SubmitButton")</span>
 							</button>

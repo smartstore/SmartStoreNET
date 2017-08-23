@@ -10,6 +10,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Shipping.Tracking;
+using SmartStore.Services.Tax;
 using SmartStore.ShippingByWeight.Data;
 using SmartStore.ShippingByWeight.Data.Migrations;
 using SmartStore.ShippingByWeight.Services;
@@ -29,6 +30,7 @@ namespace SmartStore.ShippingByWeight
         private readonly ILocalizationService _localizationService;
         private readonly IPriceFormatter _priceFormatter;
         private readonly ICommonServices _services;
+		private readonly ITaxService _taxService;
         
         #endregion
 
@@ -42,7 +44,8 @@ namespace SmartStore.ShippingByWeight
             ShippingByWeightObjectContext objectContext,
             ILocalizationService localizationService,
             IPriceFormatter priceFormatter,
-            ICommonServices services)
+            ICommonServices services,
+			ITaxService taxService)
         {
             this._shippingService = shippingService;
 			this._storeContext = storeContext;
@@ -53,6 +56,7 @@ namespace SmartStore.ShippingByWeight
             this._localizationService = localizationService;
             this._priceFormatter = priceFormatter;
             this._services = services;
+			_taxService = taxService;
 
 			T = NullLocalizer.Instance;
 		}
@@ -132,6 +136,7 @@ namespace SmartStore.ShippingByWeight
             }
 			
 			int storeId = request.StoreId > 0 ? request.StoreId : _storeContext.CurrentStore.Id;
+			var taxRate = decimal.Zero;
 			decimal subTotal = decimal.Zero;
             int countryId = 0;
             string zip = null;
@@ -144,12 +149,17 @@ namespace SmartStore.ShippingByWeight
             
             foreach (var shoppingCartItem in request.Items)
             {
-                if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)
-                    continue;
-                subTotal += _priceCalculationService.GetSubTotal(shoppingCartItem, true);
-            }
+				if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)
+				{
+					continue;
+				}
 
-            var weight = _shippingService.GetShoppingCartTotalWeight(request.Items, _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts);
+				var itemSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
+				var itemSubTotalInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, itemSubTotal, true, request.Customer, out taxRate);
+				subTotal += itemSubTotalInclTax;
+			}
+
+			var weight = _shippingService.GetShoppingCartTotalWeight(request.Items, _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts);
 
             var shippingMethods = _shippingService.GetAllShippingMethods(request);
             foreach (var shippingMethod in shippingMethods)

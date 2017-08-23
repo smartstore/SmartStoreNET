@@ -13,6 +13,7 @@
 * Fixed physical gift cards cannot be moved to cart
 * Fixed tax rate wasn't properly formatted on product detail page
 * #1228 Text entered in frontend for attributes or checkout attributes are truncated by comma
+* Fixed shipping computation method ignoring deactivated PricesIncludeTax setting
   
 ### Improvements
 * Apply img-fluid class to all images within html editor content

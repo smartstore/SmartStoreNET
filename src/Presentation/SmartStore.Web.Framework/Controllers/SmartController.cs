@@ -176,15 +176,6 @@ namespace SmartStore.Web.Framework.Controllers
 			return HttpNotFound();
 		}
 
-		protected virtual ActionResult RedirectToHomePageWithError(string reason, bool durable = true)
-		{
-			string message = T("Common.RequestProcessingFailed", this.RouteData.Values["controller"], this.RouteData.Values["action"], reason.NaIfEmpty());
-
-			Services.Notifier.Error(message, durable);
-
-			return RedirectToRoute("HomePage");
-		}
-
 		/// <summary>
 		/// On exception
 		/// </summary>

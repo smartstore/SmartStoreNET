@@ -10,6 +10,7 @@ using SmartStore.Services.Helpers;
 using System.Data.Entity.Core;
 using System.Data.SqlClient;
 using SmartStore.Core.Logging;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Tasks
 {
@@ -153,7 +154,7 @@ namespace SmartStore.Services.Tasks
 			{
 				using (var scope = new DbContextScope(_taskRepository.Context, autoCommit: true))
 				{
-					Retry.Run(() => _taskRepository.Update(task), 3, TimeSpan.FromMilliseconds(100), (attempt, exception) =>
+					Retry.Run(() => _taskRepository.Update(task), 3, TimeSpan.FromMilliseconds(50), (attempt, exception) =>
 					{
 						var ex = exception as DbUpdateConcurrencyException;
 						if (ex == null) return;
@@ -234,29 +235,31 @@ namespace SmartStore.Services.Tasks
 		{
 			Guard.NotNull(tasks, nameof(tasks));
 			
-			using (var scope = new DbContextScope(autoCommit: false))
+			foreach (var task in tasks)
 			{
-				var now = DateTime.UtcNow;
-				foreach (var task in tasks)
+				task.NextRunUtc = GetNextSchedule(task);
+				if (isAppStart)
 				{
-					task.NextRunUtc = GetNextSchedule(task);
-					if (isAppStart)
+					task.ProgressPercent = null;
+					task.ProgressMessage = null;
+					if (task.LastEndUtc.GetValueOrDefault() < task.LastStartUtc)
 					{
-						task.ProgressPercent = null;
-						task.ProgressMessage = null;
-						if (task.LastEndUtc.GetValueOrDefault() < task.LastStartUtc)
-						{
-							task.LastEndUtc = task.LastStartUtc;
-							task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
-						}
-						FixTypeName(task);
+						task.LastEndUtc = task.LastStartUtc;
+						task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
 					}
-
-					//this.UpdateTask(task);
-					//_taskRepository.Update(task);
+					FixTypeName(task);
 				}
-
-				scope.Commit();
+				else
+				{
+					UpdateTask(task);
+				}
+			}
+			
+			if (isAppStart)
+			{
+				// On app start this method's execution is thread-safe, making it sufficient
+				// to commit all changes in one go.
+				_taskRepository.Context.SaveChanges();
 			}
 		}
 
@@ -275,9 +278,12 @@ namespace SmartStore.Services.Tasks
 			{
 				try
 				{
-					var baseTime = _dtHelper.ConvertToUserTime(DateTime.UtcNow);
+					var localTimeZone = _dtHelper.DefaultStoreTimeZone;
+					var baseTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone);
 					var next = CronExpression.GetNextSchedule(task.CronExpression, baseTime);
-					return _dtHelper.ConvertToUtcTime(next, _dtHelper.CurrentTimeZone);
+					var utcTime = _dtHelper.ConvertToUtcTime(next, localTimeZone);
+
+					return utcTime;
 				}
 				catch (Exception ex)
 				{

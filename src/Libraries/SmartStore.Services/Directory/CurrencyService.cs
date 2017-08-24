@@ -87,7 +87,7 @@ namespace SmartStore.Services.Directory
 
 			var currencies = query.ToListCached();
 
-			//store mapping
+			// store mapping
 			if (storeId > 0)
 			{
 				currencies = currencies
@@ -104,7 +104,6 @@ namespace SmartStore.Services.Directory
 
             _currencyRepository.Insert(currency);
 
-            //event notification
             _eventPublisher.EntityInserted(currency);
         }
 
@@ -115,7 +114,6 @@ namespace SmartStore.Services.Directory
 
             _currencyRepository.Update(currency);
 
-            //event notification
             _eventPublisher.EntityUpdated(currency);
         }
 

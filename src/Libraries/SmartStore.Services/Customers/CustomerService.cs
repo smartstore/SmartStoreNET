@@ -372,13 +372,17 @@ namespace SmartStore.Services.Customers
             if (guestRole == null)
                 throw new SmartException("'Guests' role could not be loaded");
 
-            customer.CustomerRoles.Add(guestRole);
-            _customerRepository.Insert(customer);
-
-			var clientIdent = _services.WebHelper.GetClientIdent();
-			if (clientIdent.HasValue())
+			using (new DbContextScope(autoCommit: true))
 			{
-				_genericAttributeService.SaveAttribute(customer, "ClientIdent", clientIdent);
+				// Ensure that entities are saved to db in any case
+				customer.CustomerRoles.Add(guestRole);
+				_customerRepository.Insert(customer);
+
+				var clientIdent = _services.WebHelper.GetClientIdent();
+				if (clientIdent.HasValue())
+				{
+					_genericAttributeService.SaveAttribute(customer, "ClientIdent", clientIdent);
+				}
 			}
 
 			//Logger.DebugFormat("Guest account created for anonymous visitor. Id: {0}, ClientIdent: {1}", customer.CustomerGuid, clientIdent ?? "n/a");

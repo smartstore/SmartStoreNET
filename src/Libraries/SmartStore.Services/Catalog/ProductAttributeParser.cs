@@ -297,9 +297,7 @@ namespace SmartStore.Services.Catalog
             return true;
         }
 
-		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(
-			int productId, 
-			string attributesXml)
+		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml)
 		{
 			if (attributesXml.IsEmpty())
 				return null;

@@ -113,7 +113,7 @@ namespace SmartStore.Services.Orders
 				query = query.Where(x => x.StoreId == storeId.Value);
 			}
 
-			return query.Sum(x => x.Quantity);
+			return query.Sum(x => (int?)x.Quantity) ?? 0;
 		}
 
 		public virtual List<OrganizedShoppingCartItem> GetCartItems(Customer customer, ShoppingCartType cartType, int? storeId = null)
@@ -126,11 +126,59 @@ namespace SmartStore.Services.Orders
 			{
 				var items = customer.ShoppingCartItems
 					.Filter(cartType, storeId)
-					.OrderByDescending(x => x.Id)
-					.Organize();
-
-				return items;
+					.OrderByDescending(x => x.Id);
+				
+				return OrganizeCartItems(items);
 			});
+
+			return result;
+		}
+
+		protected List<OrganizedShoppingCartItem> OrganizeCartItems(IEnumerable<ShoppingCartItem> cart)
+		{
+			var result = new List<OrganizedShoppingCartItem>();
+			
+			if (cart == null || !cart.Any())
+				return result;
+
+			var parentItems = cart.Where(x => x.ParentItemId == null).ToArray();
+
+			foreach (var parent in parentItems)
+			{
+				var parentItem = new OrganizedShoppingCartItem(parent);
+
+				var children = cart.Where(x => x.ParentItemId != null
+					&& x.ParentItemId == parent.Id
+					&& x.Id != parent.Id
+					&& x.ShoppingCartTypeId == parent.ShoppingCartTypeId
+					&& x.Product.CanBeBundleItem())
+					.ToArray();
+
+				foreach (var child in children)
+				{
+					var childItem = new OrganizedShoppingCartItem(child);
+
+					if (child.AttributesXml.HasValue() && parent.Product != null && parent.Product.BundlePerItemPricing && child.AttributesXml != null && child.BundleItem != null)
+					{
+						child.Product.MergeWithCombination(child.AttributesXml, _productAttributeParser);
+
+						var attrValues = _productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml);
+
+						if (attrValues != null && attrValues.Any())
+						{
+							childItem.BundleItemData.AdditionalCharge = decimal.Zero;
+							foreach (var v in attrValues)
+							{
+								childItem.BundleItemData.AdditionalCharge += v.PriceAdjustment;
+							}
+						}
+					}
+
+					parentItem.ChildItems.Add(childItem);
+				}
+
+				result.Add(parentItem);
+			}
 
 			return result;
 		}
@@ -141,23 +189,22 @@ namespace SmartStore.Services.Orders
             bool ensureOnlyActiveCheckoutAttributes = false, 
 			bool deleteChildCartItems = true)
         {
-            if (shoppingCartItem == null)
-                throw new ArgumentNullException("shoppingCartItem");
+			Guard.NotNull(shoppingCartItem, nameof(shoppingCartItem));
 
             var customer = shoppingCartItem.Customer;
 			var storeId = shoppingCartItem.StoreId;
 			int cartItemId = shoppingCartItem.Id;
 
-            //reset checkout data
+            // reset checkout data
             if (resetCheckoutData)
             {
 				_customerService.ResetCheckoutData(shoppingCartItem.Customer, shoppingCartItem.StoreId);
             }
 
-            //delete item
+            // delete item
             _sciRepository.Delete(shoppingCartItem);
 
-            //validate checkout attributes
+            // validate checkout attributes
             if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
             {
 				var cart = GetCartItems(customer, ShoppingCartType.ShoppingCart, storeId);
@@ -167,7 +214,7 @@ namespace SmartStore.Services.Orders
 				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CheckoutAttributes, checkoutAttributesXml);
             }
 
-            //event notification
+            // event notification
             _eventPublisher.EntityDeleted(shoppingCartItem);
 
 			// delete child items
@@ -182,15 +229,19 @@ namespace SmartStore.Services.Orders
 					DeleteShoppingCartItem(cartItem, resetCheckoutData, ensureOnlyActiveCheckoutAttributes, false);
 				}
 			}
+
+			_requestCache.RemoveByPattern(CARTITEMS_PATTERN_KEY);
         }
 
-		public virtual void DeleteShoppingCartItem(int shoppingCartItemId, bool resetCheckoutData = true,
-			bool ensureOnlyActiveCheckoutAttributes = false, bool deleteChildCartItems = true)
+		public virtual void DeleteShoppingCartItem(
+			int shoppingCartItemId, 
+			bool resetCheckoutData = true,
+			bool ensureOnlyActiveCheckoutAttributes = false, 
+			bool deleteChildCartItems = true)
 		{
 			if (shoppingCartItemId != 0)
 			{
 				var shoppingCartItem = _sciRepository.GetById(shoppingCartItemId);
-
 				DeleteShoppingCartItem(shoppingCartItem, resetCheckoutData, ensureOnlyActiveCheckoutAttributes, deleteChildCartItems);
 			}
 		}
@@ -218,15 +269,15 @@ namespace SmartStore.Services.Orders
             return cartItems.Count;
         }
         
-        public virtual IList<string> GetRequiredProductWarnings(Customer customer,
-			ShoppingCartType shoppingCartType, Product product,
-			int storeId, bool automaticallyAddRequiredProductsIfEnabled)
+        public virtual IList<string> GetRequiredProductWarnings(
+			Customer customer,
+			ShoppingCartType shoppingCartType, 
+			Product product,
+			int storeId, 
+			bool automaticallyAddRequiredProductsIfEnabled)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
-
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(customer, nameof(customer));
+			Guard.NotNull(product, nameof(product));
 
             var cart = GetCartItems(customer, shoppingCartType, storeId);
             var warnings = new List<string>();
@@ -243,8 +294,9 @@ namespace SmartStore.Services.Orders
                 
                 foreach (var rp in requiredProducts)
                 {
-                    //ensure that product is in the cart
+                    // ensure that product is in the cart
                     bool alreadyInTheCart = false;
+
                     foreach (var sci in cart)
                     {
                         if (sci.Item.ProductId == rp.Id)
@@ -253,23 +305,24 @@ namespace SmartStore.Services.Orders
                             break;
                         }
                     }
-                    //not in the cart
+
+                    // not in the cart
                     if (!alreadyInTheCart)
                     {
                         if (product.AutomaticallyAddRequiredProducts)
                         {
-                            //add to cart (if possible)
+                            // add to cart (if possible)
                             if (automaticallyAddRequiredProductsIfEnabled)
                             {
-                                //pass 'false' for 'automaticallyAddRequiredProducsIfEnabled' to prevent circular references
+                                // pass 'false' for 'automaticallyAddRequiredProducsIfEnabled' to prevent circular references
 								var addToCartWarnings = AddToCart(customer, rp, shoppingCartType, storeId, "", decimal.Zero, 1, false, null);
 
                                 if (addToCartWarnings.Count > 0)
                                 {
-                                    //a product wasn't atomatically added for some reasons
+                                    // a product wasn't atomatically added for some reasons
 
-                                    //don't display specific errors from 'addToCartWarnings' variable
-                                    //display only generic error
+                                    // don't display specific errors from 'addToCartWarnings' variable
+                                    // display only generic error
 									warnings.Add(T("ShoppingCart.RequiredProductWarning", rp.GetLocalized(x => x.Name)));
                                 }
                             }
@@ -289,18 +342,20 @@ namespace SmartStore.Services.Orders
             return warnings;
         }
         
-        public virtual IList<string> GetStandardWarnings(Customer customer, ShoppingCartType shoppingCartType,
-            Product product, string selectedAttributes, decimal customerEnteredPrice, int quantity)
+        public virtual IList<string> GetStandardWarnings(
+			Customer customer, 
+			ShoppingCartType shoppingCartType,
+            Product product, 
+			string selectedAttributes, 
+			decimal customerEnteredPrice, 
+			int quantity)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(customer, nameof(customer));
+			Guard.NotNull(product, nameof(product));
 
-            if (product == null)
-                throw new ArgumentNullException("product");
+			var warnings = new List<string>();
 
-            var warnings = new List<string>();
-
-            //deleted?
+            // deleted?
             if (product.Deleted)
             {
                 warnings.Add(T("ShoppingCart.ProductDeleted"));
@@ -320,43 +375,43 @@ namespace SmartStore.Services.Orders
 					warnings.Add(T("ShoppingCart.Bundle.NoCustomerEnteredPrice"));
 			}
 
-            //published?
+            // published?
             if (!product.Published)
             {
                 warnings.Add(T("ShoppingCart.ProductUnpublished"));
             }
             
-            //ACL
+            // ACL
             if (!_aclService.Authorize(product, customer))
             {
                 warnings.Add(T("ShoppingCart.ProductUnpublished"));
             }
 
-			//Store mapping
+			// Store mapping
 			if (!_storeMappingService.Authorize(product, _storeContext.CurrentStore.Id))
 			{
 				warnings.Add(T("ShoppingCart.ProductUnpublished"));
 			}
 
-            //disabled "add to cart" button
+            // disabled "add to cart" button
             if (shoppingCartType == ShoppingCartType.ShoppingCart && product.DisableBuyButton)
             {
                 warnings.Add(T("ShoppingCart.BuyingDisabled"));
             }
 
-            //disabled "add to wishlist" button
+            // disabled "add to wishlist" button
             if (shoppingCartType == ShoppingCartType.Wishlist && product.DisableWishlistButton)
             {
                 warnings.Add(T("ShoppingCart.WishlistDisabled"));
             }
 
-            //call for price
+            // call for price
             if (shoppingCartType == ShoppingCartType.ShoppingCart && product.CallForPrice)
             {
                 warnings.Add(T("Products.CallForPrice"));
             }
 
-            //customer entered price
+            // customer entered price
             if (product.CustomerEntersPrice)
             {
                 if (customerEnteredPrice < product.MinimumCustomerEnteredPrice ||
@@ -372,7 +427,7 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-            //quantity validation
+            // quantity validation
             var hasQtyWarnings = false;
             if (quantity < product.OrderMinimumQuantity)
             {
@@ -440,7 +495,7 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-            //availability dates
+            // availability dates
             var availableStartDateError = false;
             if (product.AvailableStartDateTimeUtc.HasValue)
             {
@@ -452,6 +507,7 @@ namespace SmartStore.Services.Orders
                     availableStartDateError = true;
                 }
             }
+
             if (product.AvailableEndDateTimeUtc.HasValue && !availableStartDateError)
             {
                 DateTime now = DateTime.UtcNow;
@@ -461,6 +517,7 @@ namespace SmartStore.Services.Orders
                     warnings.Add(T("ShoppingCart.NotAvailable"));
                 }
             }
+
             return warnings;
         }
 
@@ -483,7 +540,7 @@ namespace SmartStore.Services.Orders
 			if (bundleItem != null && !bundleItem.BundleProduct.BundlePerItemPricing)
 				return warnings;	// customer cannot select anything... selectedAttribute is always empty
 
-            //selected attributes
+            // selected attributes
             var pva1Collection = _productAttributeParser.ParseProductVariantAttributes(selectedAttributes);
             foreach (var pva1 in pva1Collection)
             {
@@ -496,14 +553,14 @@ namespace SmartStore.Services.Orders
 				}
             }
 
-            //existing product attributes
+            // existing product attributes
             var pva2Collection = product.ProductVariantAttributes;
             foreach (var pva2 in pva2Collection)
             {
                 if (pva2.IsRequired)
                 {
                     bool found = false;
-                    //selected product attributes
+                    // selected product attributes
                     foreach (var pva1 in pva1Collection)
                     {
                         if (pva1.Id == pva2.Id)
@@ -556,8 +613,19 @@ namespace SmartStore.Services.Orders
 						var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
 						if (linkedProduct != null)
 						{
-							var linkageWarnings = GetShoppingCartItemWarnings(customer, shoppingCartType, linkedProduct, _storeContext.CurrentStore.Id,
-								"", decimal.Zero, quantity * pvaValue.Quantity, false, true, true, true, true);
+							var linkageWarnings = GetShoppingCartItemWarnings(
+								customer, 
+								shoppingCartType, 
+								linkedProduct, 
+								_storeContext.CurrentStore.Id,
+								"", 
+								decimal.Zero, 
+								quantity * pvaValue.Quantity, 
+								false, 
+								true, 
+								true, 
+								true, 
+								true);
 
 							foreach (var linkageWarning in linkageWarnings)
 							{
@@ -587,17 +655,17 @@ namespace SmartStore.Services.Orders
 			if (!hasAttributeCombinations)
 				return true;
 
-            //selected attributes
+            // selected attributes
             var pva1Collection = _productAttributeParser.ParseProductVariantAttributes(selectedAttributes);
 
-            //existing product attributes
+            // existing product attributes
             var pva2Collection = product.ProductVariantAttributes;
             foreach (var pva2 in pva2Collection)
             {
                 if (pva2.IsRequired)
                 {
                     bool found = false;
-                    //selected product attributes
+                    // selected product attributes
                     foreach (var pva1 in pva1Collection)
                     {
                         if (pva1.Id == pva2.Id)
@@ -628,15 +696,13 @@ namespace SmartStore.Services.Orders
             return true;
         }
 
-        public virtual IList<string> GetShoppingCartItemGiftCardWarnings(ShoppingCartType shoppingCartType,
-            Product product, string selectedAttributes)
+        public virtual IList<string> GetShoppingCartItemGiftCardWarnings(ShoppingCartType shoppingCartType, Product product, string selectedAttributes)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
-            var warnings = new List<string>();
+			var warnings = new List<string>();
 
-            //gift cards
+            // gift cards
             if (product.IsGiftCard)
             {
                 string giftCardRecipientName = string.Empty;
@@ -645,8 +711,13 @@ namespace SmartStore.Services.Orders
                 string giftCardSenderEmail = string.Empty;
                 string giftCardMessage = string.Empty;
 
-                _productAttributeParser.GetGiftCardAttribute(selectedAttributes,
-                    out giftCardRecipientName, out giftCardRecipientEmail, out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
+                _productAttributeParser.GetGiftCardAttribute(
+					selectedAttributes,
+                    out giftCardRecipientName, 
+					out giftCardRecipientEmail, 
+					out giftCardSenderName, 
+					out giftCardSenderEmail, 
+					out giftCardMessage);
 
 				if (String.IsNullOrEmpty(giftCardRecipientName))
 				{
@@ -655,7 +726,7 @@ namespace SmartStore.Services.Orders
 
                 if (product.GiftCardType == GiftCardType.Virtual)
                 {
-					//validate for virtual gift cards only
+					// validate for virtual gift cards only
 					if (String.IsNullOrEmpty(giftCardRecipientEmail) || !giftCardRecipientEmail.IsEmail())
 					{
 						warnings.Add(T("ShoppingCart.RecipientEmailError"));
@@ -669,7 +740,7 @@ namespace SmartStore.Services.Orders
 
                 if (product.GiftCardType == GiftCardType.Virtual)
                 {
-					//validate for virtual gift cards only
+					// validate for virtual gift cards only
 					if (String.IsNullOrEmpty(giftCardSenderEmail) || !giftCardSenderEmail.IsEmail())
 					{
 						warnings.Add(T("ShoppingCart.SenderEmailError"));
@@ -711,6 +782,7 @@ namespace SmartStore.Services.Orders
 
 			return warnings;
 		}
+
 		public virtual IList<string> GetBundleItemWarnings(IList<OrganizedShoppingCartItem> cartItems)
 		{
 			var warnings = new List<string>();
@@ -725,32 +797,40 @@ namespace SmartStore.Services.Orders
 			return warnings;
 		}
         
-        public virtual IList<string> GetShoppingCartItemWarnings(Customer customer, ShoppingCartType shoppingCartType,
-			Product product, int storeId, 
-			string selectedAttributes, decimal customerEnteredPrice,
-			int quantity, bool automaticallyAddRequiredProductsIfEnabled,
-            bool getStandardWarnings = true, bool getAttributesWarnings = true, 
-            bool getGiftCardWarnings = true, bool getRequiredProductWarnings = true,
-			bool getBundleWarnings = true, ProductBundleItem bundleItem = null, IList<OrganizedShoppingCartItem> childItems = null)
+        public virtual IList<string> GetShoppingCartItemWarnings(
+			Customer customer, 
+			ShoppingCartType shoppingCartType,
+			Product product, 
+			int storeId, 
+			string selectedAttributes, 
+			decimal customerEnteredPrice,
+			int quantity, 
+			bool automaticallyAddRequiredProductsIfEnabled,
+            bool getStandardWarnings = true, 
+			bool getAttributesWarnings = true, 
+            bool getGiftCardWarnings = true, 
+			bool getRequiredProductWarnings = true,
+			bool getBundleWarnings = true, 
+			ProductBundleItem bundleItem = null, 
+			IList<OrganizedShoppingCartItem> childItems = null)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
-            var warnings = new List<string>();
+			var warnings = new List<string>();
             
-            //standard properties
+            // standard properties
             if (getStandardWarnings)
                 warnings.AddRange(GetStandardWarnings(customer, shoppingCartType, product, selectedAttributes, customerEnteredPrice, quantity));
 
-            //selected attributes
+            // selected attributes
             if (getAttributesWarnings)
                 warnings.AddRange(GetShoppingCartItemAttributeWarnings(customer, shoppingCartType, product, selectedAttributes, quantity, bundleItem));
 
-            //gift cards
+            // gift cards
             if (getGiftCardWarnings)
                 warnings.AddRange(GetShoppingCartItemGiftCardWarnings(shoppingCartType, product, selectedAttributes));
 
-            //required products
+            // required products
             if (getRequiredProductWarnings)
 				warnings.AddRange(GetRequiredProductWarnings(customer, shoppingCartType, product, storeId, automaticallyAddRequiredProductsIfEnabled));
 
@@ -767,8 +847,7 @@ namespace SmartStore.Services.Orders
             return warnings;
         }
 
-		public virtual IList<string> GetShoppingCartWarnings(IList<OrganizedShoppingCartItem> shoppingCart, 
-            string checkoutAttributes, bool validateCheckoutAttributes)
+		public virtual IList<string> GetShoppingCartWarnings(IList<OrganizedShoppingCartItem> shoppingCart, string checkoutAttributes, bool validateCheckoutAttributes)
         {
             var warnings = new List<string>();
 
@@ -790,13 +869,13 @@ namespace SmartStore.Services.Orders
                     hasStandartProducts = true;
             }
 
-			//don't mix standard and recurring products
+			// don't mix standard and recurring products
 			if (hasStandartProducts && hasRecurringProducts)
 			{
 				warnings.Add(T("ShoppingCart.CannotMixStandardAndAutoshipProducts"));
 			}
 
-            //recurring cart validation
+            // recurring cart validation
             if (hasRecurringProducts)
             {
                 var cycleLength = 0;
@@ -811,17 +890,17 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-            //validate checkout attributes
+            // validate checkout attributes
             if (validateCheckoutAttributes)
             {
-                //selected attributes
+                // selected attributes
                 var ca1Collection = _checkoutAttributeParser.ParseCheckoutAttributes(checkoutAttributes);
 
-                //existing checkout attributes
+                // existing checkout attributes
                 var ca2Collection = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
                 if (!shoppingCart.RequiresShipping())
                 {
-                    //remove attributes which require shippable products
+                    // remove attributes which require shippable products
                     ca2Collection = ca2Collection.RemoveShippableAttributes();
                 }
 
@@ -830,7 +909,7 @@ namespace SmartStore.Services.Orders
                     if (ca2.IsRequired)
                     {
                         bool found = false;
-                        //selected checkout attributes
+                        // selected checkout attributes
                         foreach (var ca1 in ca1Collection)
                         {
                             if (ca1.Id == ca2.Id)
@@ -847,7 +926,7 @@ namespace SmartStore.Services.Orders
                             }
                         }
 
-                        //if not found
+                        // if not found
                         if (!found)
                         {
                             if (!string.IsNullOrEmpty(ca2.GetLocalized(a => a.TextPrompt)))
@@ -862,29 +941,27 @@ namespace SmartStore.Services.Orders
             return warnings;
         }
 
-		public virtual OrganizedShoppingCartItem FindShoppingCartItemInTheCart(IList<OrganizedShoppingCartItem> shoppingCart,
+		public virtual OrganizedShoppingCartItem FindShoppingCartItemInTheCart(
+			IList<OrganizedShoppingCartItem> shoppingCart,
             ShoppingCartType shoppingCartType,
             Product product,
             string selectedAttributes = "",
             decimal customerEnteredPrice = decimal.Zero)
         {
-            if (shoppingCart == null)
-                throw new ArgumentNullException("shoppingCart");
-
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(shoppingCart, nameof(shoppingCart));
+			Guard.NotNull(product, nameof(product));
 
 			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
-				return null;		// too complex
+				return null; // too complex
 
-            foreach (var sci in shoppingCart.Where(a => a.Item.ShoppingCartType == shoppingCartType && a.Item.ParentItemId == null))
+            foreach (var sci in shoppingCart.Where(a => a.Item.ShoppingCartType == shoppingCartType && a.Item.ParentItemId == null).ToArray())
             {
                 if (sci.Item.ProductId == product.Id && sci.Item.Product.ProductTypeId == product.ProductTypeId)
                 {
-                    //attributes
+                    // attributes
                     bool attributesEqual = _productAttributeParser.AreProductAttributesEqual(sci.Item.AttributesXml, selectedAttributes);
 
-                    //gift cards
+                    // gift cards
                     var giftCardInfoSame = true;
                     if (sci.Item.Product.IsGiftCard)
                     {
@@ -894,8 +971,13 @@ namespace SmartStore.Services.Orders
                         string giftCardSenderEmail1 = string.Empty;
                         string giftCardMessage1 = string.Empty;
 
-                        _productAttributeParser.GetGiftCardAttribute(selectedAttributes,
-                            out giftCardRecipientName1, out giftCardRecipientEmail1, out giftCardSenderName1, out giftCardSenderEmail1, out giftCardMessage1);
+                        _productAttributeParser.GetGiftCardAttribute(
+							selectedAttributes,
+                            out giftCardRecipientName1, 
+							out giftCardRecipientEmail1, 
+							out giftCardSenderName1, 
+							out giftCardSenderEmail1, 
+							out giftCardMessage1);
 
                         string giftCardRecipientName2 = string.Empty;
                         string giftCardRecipientEmail2 = string.Empty;
@@ -903,8 +985,13 @@ namespace SmartStore.Services.Orders
                         string giftCardSenderEmail2 = string.Empty;
                         string giftCardMessage2 = string.Empty;
 
-                        _productAttributeParser.GetGiftCardAttribute(sci.Item.AttributesXml,
-                            out giftCardRecipientName2, out giftCardRecipientEmail2, out giftCardSenderName2, out giftCardSenderEmail2, out giftCardMessage2);
+                        _productAttributeParser.GetGiftCardAttribute(
+							sci.Item.AttributesXml,
+                            out giftCardRecipientName2, 
+							out giftCardRecipientEmail2, 
+							out giftCardSenderName2, 
+							out giftCardSenderEmail2, 
+							out giftCardMessage2);
 
 
 						if (giftCardRecipientName1.ToLowerInvariant() != giftCardRecipientName2.ToLowerInvariant() ||
@@ -914,14 +1001,14 @@ namespace SmartStore.Services.Orders
 						}
                     }
 
-                    //price is the same (for products which require customers to enter a price)
+                    // price is the same (for products which require customers to enter a price)
                     var customerEnteredPricesEqual = true;
 					if (sci.Item.Product.CustomerEntersPrice)
 					{
 						customerEnteredPricesEqual = Math.Round(sci.Item.CustomerEnteredPrice, 2) == Math.Round(customerEnteredPrice, 2);
 					}
 
-					//found?
+					// found?
 					if (attributesEqual && giftCardInfoSame && customerEnteredPricesEqual)
 					{
 						return sci;
@@ -932,14 +1019,19 @@ namespace SmartStore.Services.Orders
             return null;
         }
 
-		public virtual List<string> AddToCart(Customer customer, Product product, ShoppingCartType cartType, int storeId, string selectedAttributes,
-			decimal customerEnteredPrice, int quantity, bool automaticallyAddRequiredProductsIfEnabled,	AddToCartContext ctx = null)
+		public virtual List<string> AddToCart(
+			Customer customer, 
+			Product product, 
+			ShoppingCartType cartType, 
+			int storeId, 
+			string selectedAttributes,
+			decimal customerEnteredPrice, 
+			int quantity, 
+			bool automaticallyAddRequiredProductsIfEnabled,	
+			AddToCartContext ctx = null)
 		{
-			if (customer == null)
-				throw new ArgumentNullException("customer");
-
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(customer, nameof(customer));
+			Guard.NotNull(product, nameof(product));
 
 			var warnings = new List<string>();
 			var bundleItem = (ctx == null ? null : ctx.BundleItem);
@@ -970,7 +1062,7 @@ namespace SmartStore.Services.Orders
 			//	return warnings;
 			//}
 
-			//reset checkout info
+			// reset checkout info
 			_customerService.ResetCheckoutData(customer, storeId);
 
 			var cart = GetCartItems(customer, cartType, storeId);
@@ -983,7 +1075,7 @@ namespace SmartStore.Services.Orders
 
 			if (existingCartItem != null)
 			{
-				//update existing shopping cart item
+				// update existing shopping cart item
 				int newQuantity = existingCartItem.Item.Quantity + quantity;
 
 				warnings.AddRange(
@@ -998,13 +1090,13 @@ namespace SmartStore.Services.Orders
 					existingCartItem.Item.UpdatedOnUtc = DateTime.UtcNow;
 					_customerService.UpdateCustomer(customer);
 
-					//event notification
+					// event notification
 					_eventPublisher.EntityUpdated(existingCartItem.Item);
 				}
 			}
 			else
 			{
-				//new shopping cart item
+				// new shopping cart item
 				warnings.AddRange(
 					GetShoppingCartItemWarnings(customer, cartType, product, storeId, selectedAttributes, customerEnteredPrice, quantity,
 						automaticallyAddRequiredProductsIfEnabled, bundleItem: bundleItem)
@@ -1012,7 +1104,7 @@ namespace SmartStore.Services.Orders
 
 				if (warnings.Count == 0)
 				{
-					//maximum items validation
+					// maximum items validation
 					if (cartType == ShoppingCartType.ShoppingCart && cart.Count >= _shoppingCartSettings.MaximumShoppingCartItems)
 					{
 						warnings.Add(T("ShoppingCart.MaximumShoppingCartItems"));
@@ -1061,6 +1153,8 @@ namespace SmartStore.Services.Orders
 					}
 				}
 			}
+
+			_requestCache.RemoveByPattern(CARTITEMS_PATTERN_KEY);
 
 			return warnings;
 		}
@@ -1158,59 +1252,57 @@ namespace SmartStore.Services.Orders
 
         public virtual IList<string> UpdateShoppingCartItem(Customer customer, int shoppingCartItemId, int newQuantity, bool resetCheckoutData)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(customer, nameof(customer));
 
-            var warnings = new List<string>();
+			var warnings = new List<string>();
 
 			var shoppingCartItem = customer.ShoppingCartItems.FirstOrDefault(sci => sci.Id == shoppingCartItemId && sci.ParentItemId == null);
             if (shoppingCartItem != null)
             {
                 if (resetCheckoutData)
                 {
-                    //reset checkout data
+                    // reset checkout data
 					_customerService.ResetCheckoutData(customer, shoppingCartItem.StoreId);
                 }
                 if (newQuantity > 0)
                 {
-                    //check warnings
+                    // check warnings
                     warnings.AddRange(GetShoppingCartItemWarnings(customer, shoppingCartItem.ShoppingCartType, shoppingCartItem.Product, shoppingCartItem.StoreId,
 						shoppingCartItem.AttributesXml, shoppingCartItem.CustomerEnteredPrice, newQuantity, false));
 
                     if (warnings.Count == 0)
                     {
-                        //if everything is OK, then update a shopping cart item
+                        // if everything is OK, then update a shopping cart item
                         shoppingCartItem.Quantity = newQuantity;
                         shoppingCartItem.UpdatedOnUtc = DateTime.UtcNow;
                         _customerService.UpdateCustomer(customer);
 
-                        //event notification
+                        // event notification
                         _eventPublisher.EntityUpdated(shoppingCartItem);
                     }
                 }
                 else
                 {
-                    //delete a shopping cart item
+                    // delete a shopping cart item
                     DeleteShoppingCartItem(shoppingCartItem, resetCheckoutData, true);
                 }
             }
 
-            return warnings;
+			_requestCache.RemoveByPattern(CARTITEMS_PATTERN_KEY);
+
+			return warnings;
         }
         
         public virtual void MigrateShoppingCart(Customer fromCustomer, Customer toCustomer)
         {
-            if (fromCustomer == null)
-                throw new ArgumentNullException("fromCustomer");
+			Guard.NotNull(fromCustomer, nameof(fromCustomer));
+			Guard.NotNull(toCustomer, nameof(toCustomer));
 
-            if (toCustomer == null)
-                throw new ArgumentNullException("toCustomer");
-
-            if (fromCustomer.Id == toCustomer.Id)
+			if (fromCustomer.Id == toCustomer.Id)
                 return;
 
 			int storeId = 0;
-			var cartItems = fromCustomer.ShoppingCartItems.ToList().Organize().ToList();
+			var cartItems = OrganizeCartItems(fromCustomer.ShoppingCartItems);
 
 			if (cartItems.Count <= 0)
 				return;
@@ -1233,11 +1325,8 @@ namespace SmartStore.Services.Orders
         
 		public virtual IList<string> Copy(OrganizedShoppingCartItem sci, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled)
 		{
-			if (customer == null)
-				throw new ArgumentNullException("customer");
-
-			if (sci == null)
-				throw new ArgumentNullException("item");
+			Guard.NotNull(customer, nameof(customer));
+			Guard.NotNull(sci, nameof(sci));
 
 			var addToCartContext = new AddToCartContext
 			{
@@ -1260,6 +1349,8 @@ namespace SmartStore.Services.Orders
 
 			AddToCartStoring(addToCartContext);
 
+			_requestCache.RemoveByPattern(CARTITEMS_PATTERN_KEY);
+
 			return addToCartContext.Warnings;
 		}
 
@@ -1272,6 +1363,7 @@ namespace SmartStore.Services.Orders
         public virtual decimal GetCurrentCartSubTotal(IList<OrganizedShoppingCartItem> cart)
         {
             decimal subtotal = 0;
+
             if (cart.Count > 0)
             {
                 decimal subtotalBase = decimal.Zero;

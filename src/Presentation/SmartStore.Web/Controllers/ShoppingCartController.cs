@@ -2291,6 +2291,7 @@ namespace SmartStore.Web.Controllers
 				{
 					var cartItems = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
 					cartItemsCount = cartItems.GetTotalProducts();
+					//cartItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
 
 					subtotal = _shoppingCartService.GetCurrentCartSubTotal(cartItems);
 					if (subtotal != 0)
@@ -2301,7 +2302,8 @@ namespace SmartStore.Web.Controllers
 
 				if (wishlistEnabled)
 				{
-					wishlistItemsCount = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
+					//wishlistItemsCount = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
+					wishlistItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
 				}
 			}
 

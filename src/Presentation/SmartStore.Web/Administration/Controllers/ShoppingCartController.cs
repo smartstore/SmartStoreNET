@@ -81,7 +81,7 @@ namespace SmartStore.Admin.Controllers
 						TotalItems = x.CountProductsInCart(ShoppingCartType.ShoppingCart)
 					};
 				});
-
+				
 				gridModel.Total = customers.TotalCount;
 			}
 			else

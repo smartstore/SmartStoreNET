@@ -163,26 +163,36 @@ namespace SmartStore.Services.Orders
 			if (cart == null || !cart.Any())
 				return result;
 
-			foreach (var parent in cart.Where(x => x.ParentItemId == null))
+			var parentItems = cart.Where(x => x.ParentItemId == null).ToArray();
+
+			foreach (var parent in parentItems)
 			{
 				var parentItem = new OrganizedShoppingCartItem(parent);
 
-				var childs = cart.Where(x => x.ParentItemId != null && x.ParentItemId == parent.Id && x.Id != parent.Id && 
-					x.ShoppingCartTypeId == parent.ShoppingCartTypeId && x.Product.CanBeBundleItem());
+				var children = cart.Where(x => x.ParentItemId != null 
+					&& x.ParentItemId == parent.Id 
+					&& x.Id != parent.Id 
+					&& x.ShoppingCartTypeId == parent.ShoppingCartTypeId 
+					&& x.Product.CanBeBundleItem())
+					.ToArray();
 
-				foreach (var child in childs)
+				foreach (var child in children)
 				{
 					var childItem = new OrganizedShoppingCartItem(child);
 
-					if (parent.Product != null && parent.Product.BundlePerItemPricing && child.AttributesXml != null && child.BundleItem != null)
+					if (child.AttributesXml.HasValue() && parent.Product != null && parent.Product.BundlePerItemPricing && child.AttributesXml != null && child.BundleItem != null)
 					{
 						child.Product.MergeWithCombination(child.AttributesXml);
 
-						var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml).ToList();
-						if (attributeValues != null)
+						var attrValues = productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml);
+
+						if (attrValues != null && attrValues.Any())
 						{
 							childItem.BundleItemData.AdditionalCharge = decimal.Zero;
-							attributeValues.Each(x => childItem.BundleItemData.AdditionalCharge += x.PriceAdjustment);
+							foreach (var v in attrValues)
+							{
+								childItem.BundleItemData.AdditionalCharge += v.PriceAdjustment;
+							}
 						}
 					}
 

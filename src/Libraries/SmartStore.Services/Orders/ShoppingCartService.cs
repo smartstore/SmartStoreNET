@@ -18,14 +18,18 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Catalog.Extensions;
+using SmartStore.Core.Caching;
 
 namespace SmartStore.Services.Orders
 {
 	public partial class ShoppingCartService : IShoppingCartService
     {
-        private readonly IRepository<ShoppingCartItem> _sciRepository;
+		// 0 = CustomerId, 1 = CartType, 2 = StoreId
+		const string CARTITEMS_KEY = "sm.cartitems-{0}-{1}-{2}";
+		const string CARTITEMS_PATTERN_KEY = "sm.cartitems-";
+
+		private readonly IRepository<ShoppingCartItem> _sciRepository;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly ICurrencyService _currencyService;
@@ -46,8 +50,9 @@ namespace SmartStore.Services.Orders
 		private readonly IDownloadService _downloadService;
 		private readonly CatalogSettings _catalogSettings;
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-        
-        public ShoppingCartService(
+		private readonly IRequestCache _requestCache;
+
+		public ShoppingCartService(
 			IRepository<ShoppingCartItem> sciRepository,
 			IWorkContext workContext, 
 			IStoreContext storeContext, 
@@ -67,37 +72,74 @@ namespace SmartStore.Services.Orders
 			IGenericAttributeService genericAttributeService,
 			IDownloadService downloadService,
 			CatalogSettings catalogSettings,
-            IOrderTotalCalculationService orderTotalCalculationService)
+            IOrderTotalCalculationService orderTotalCalculationService,
+			IRequestCache requestCache)
         {
-            this._sciRepository = sciRepository;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._currencyService = currencyService;
-            this._productService = productService;
-            this._localizationService = localizationService;
-            this._productAttributeParser = productAttributeParser;
-			this._productAttributeService = productAttributeService;
-            this._checkoutAttributeService = checkoutAttributeService;
-            this._checkoutAttributeParser = checkoutAttributeParser;
-            this._priceFormatter = priceFormatter;
-            this._customerService = customerService;
-            this._shoppingCartSettings = shoppingCartSettings;
-            this._eventPublisher = eventPublisher;
-            this._permissionService = permissionService;
-            this._aclService = aclService;
-			this._storeMappingService = storeMappingService;
-			this._genericAttributeService = genericAttributeService;
-			this._downloadService = downloadService;
-			this._catalogSettings = catalogSettings;
-            this._orderTotalCalculationService = orderTotalCalculationService;
+            _sciRepository = sciRepository;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _currencyService = currencyService;
+            _productService = productService;
+            _localizationService = localizationService;
+            _productAttributeParser = productAttributeParser;
+			_productAttributeService = productAttributeService;
+            _checkoutAttributeService = checkoutAttributeService;
+            _checkoutAttributeParser = checkoutAttributeParser;
+            _priceFormatter = priceFormatter;
+            _customerService = customerService;
+            _shoppingCartSettings = shoppingCartSettings;
+            _eventPublisher = eventPublisher;
+            _permissionService = permissionService;
+            _aclService = aclService;
+			_storeMappingService = storeMappingService;
+			_genericAttributeService = genericAttributeService;
+			_downloadService = downloadService;
+			_catalogSettings = catalogSettings;
+            _orderTotalCalculationService = orderTotalCalculationService;
+			_requestCache = requestCache;
             
             T = NullLocalizer.Instance;
 		}
 
 		public Localizer T { get; set; }
 
-		public virtual void DeleteShoppingCartItem(ShoppingCartItem shoppingCartItem, bool resetCheckoutData = true, 
-            bool ensureOnlyActiveCheckoutAttributes = false, bool deleteChildCartItems = true)
+		public virtual int CountItems(Customer customer, ShoppingCartType cartType, int? storeId = null)
+		{
+			Guard.NotNull(customer, nameof(customer));
+
+			var query = _sciRepository.Table.Where(x => x.ParentItemId == null && x.CustomerId == customer.Id && x.ShoppingCartTypeId == (int)cartType);
+			if (storeId.GetValueOrDefault() == 0)
+			{
+				query = query.Where(x => x.StoreId == storeId.Value);
+			}
+
+			return query.Sum(x => x.Quantity);
+		}
+
+		public virtual List<OrganizedShoppingCartItem> GetCartItems(Customer customer, ShoppingCartType cartType, int? storeId = null)
+		{
+			Guard.NotNull(customer, nameof(customer));
+
+			var cacheKey = CARTITEMS_KEY.FormatInvariant(customer.Id, (int)cartType, storeId.GetValueOrDefault());
+
+			var result = _requestCache.Get(cacheKey, () => 
+			{
+				var items = customer.ShoppingCartItems
+					.Filter(cartType, storeId)
+					.OrderByDescending(x => x.Id)
+					.Organize();
+
+				return items;
+			});
+
+			return result;
+		}
+
+		public virtual void DeleteShoppingCartItem(
+			ShoppingCartItem shoppingCartItem, 
+			bool resetCheckoutData = true, 
+            bool ensureOnlyActiveCheckoutAttributes = false, 
+			bool deleteChildCartItems = true)
         {
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
@@ -118,7 +160,7 @@ namespace SmartStore.Services.Orders
             //validate checkout attributes
             if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
             {
-				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
+				var cart = GetCartItems(customer, ShoppingCartType.ShoppingCart, storeId);
 
 				var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 				checkoutAttributesXml = _checkoutAttributeParser.EnsureOnlyActiveAttributes(checkoutAttributesXml, cart);
@@ -186,7 +228,7 @@ namespace SmartStore.Services.Orders
             if (product == null)
                 throw new ArgumentNullException("product");
 
-            var cart = customer.GetCartItems(shoppingCartType, storeId);
+            var cart = GetCartItems(customer, shoppingCartType, storeId);
             var warnings = new List<string>();
 
             if (product.RequireOtherProducts)
@@ -931,7 +973,7 @@ namespace SmartStore.Services.Orders
 			//reset checkout info
 			_customerService.ResetCheckoutData(customer, storeId);
 
-			var cart = customer.GetCartItems(cartType, storeId);
+			var cart = GetCartItems(customer, cartType, storeId);
 			OrganizedShoppingCartItem existingCartItem = null;
 
 			if (bundleItem == null)
@@ -1027,7 +1069,7 @@ namespace SmartStore.Services.Orders
 		{
 			var customer = ctx.Customer ?? _workContext.CurrentCustomer;
 			int storeId = ctx.StoreId ?? _storeContext.CurrentStore.Id;
-			var cart = customer.GetCartItems(ctx.CartType, storeId);
+			var cart = GetCartItems(customer, ctx.CartType, storeId);
 
 			_customerService.ResetCheckoutData(customer, storeId);
 
@@ -1223,7 +1265,7 @@ namespace SmartStore.Services.Orders
 
         public virtual decimal GetCurrentCartSubTotal()
         {
-            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var cart = GetCartItems(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
             return GetCurrentCartSubTotal(cart);
         }
         
@@ -1239,7 +1281,10 @@ namespace SmartStore.Services.Orders
                 decimal subTotalWithDiscountBase = decimal.Zero;
 
                 _orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-                    out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
+                    out orderSubTotalDiscountAmountBase, 
+					out orderSubTotalAppliedDiscount, 
+					out subTotalWithoutDiscountBase, 
+					out subTotalWithDiscountBase);
 
                 subtotalBase = subTotalWithoutDiscountBase;
                 subtotal = _currencyService.ConvertFromPrimaryStoreCurrency(subtotalBase, _workContext.WorkingCurrency);

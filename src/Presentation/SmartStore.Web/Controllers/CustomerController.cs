@@ -463,7 +463,7 @@ namespace SmartStore.Web.Controllers
         [CaptchaValidator]
         public ActionResult Login(LoginModel model, string returnUrl, bool captchaValid)
         {
-            //validate CAPTCHA
+            // validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage && !captchaValid)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
@@ -480,13 +480,13 @@ namespace SmartStore.Web.Controllers
                 {
                     var customer = _customerSettings.UsernamesEnabled ? _customerService.GetCustomerByUsername(model.Username) : _customerService.GetCustomerByEmail(model.Email);
 
-                    //migrate shopping cart
+                    // migrate shopping cart
                     _shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer);
 
-                    //sign in new customer
+                    // sign in new customer
                     _authenticationService.SignIn(customer, model.RememberMe);
 
-                    //activity log
+                    // activity log
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
 					// confusing when login page redirects to itself

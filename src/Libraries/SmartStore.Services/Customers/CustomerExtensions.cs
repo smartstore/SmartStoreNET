@@ -280,10 +280,8 @@ namespace SmartStore.Services.Customers
 		{
 			if (customer != null)
 			{
-				var count = customer.ShoppingCartItems
-					.Filter(cartType, storeId)
-					.Where(x => x.ParentItemId == null)
-					.Sum(x => x.Quantity);
+				var cartService = EngineContext.Current.Resolve<IShoppingCartService>();
+				var count = cartService.CountItems(customer, cartType, storeId);
 
 				return count;
 			}
@@ -295,10 +293,8 @@ namespace SmartStore.Services.Customers
 		{
 			if (customer != null)
 			{
-				var items = customer.ShoppingCartItems
-					.Filter(cartType, storeId)
-					.OrderByDescending(x => x.Id)
-					.Organize();
+				var cartService = EngineContext.Current.Resolve<IShoppingCartService>();
+				var items = cartService.GetCartItems(customer, cartType, storeId);
 
 				return items;
 			}

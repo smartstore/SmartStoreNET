@@ -14,8 +14,11 @@ namespace SmartStore.Services.Catalog
 {
 	public partial class ProductAttributeParser : IProductAttributeParser
     {
-		// 0 = ProductId, 1 = AttributeXml Hash
-		private const string ATTRIBUTECOMBINATION_BY_ID_HASH = "SmartStore.parsedattributecombination.id-{0}-{1}";
+		// 0 = ProductId, 1 = AttributeXml
+		private const string ATTRIBUTECOMBINATION_BY_IDXML_KEY = "SmartStore.parsedattributecombination.id-{0}-{1}";
+
+		// 0 = AttributeXml
+		private const string ATTRIBUTEVALUES_BY_XML_KEY = "SmartStore.parsedattributevalues-{0}";
 
 		private readonly IProductAttributeService _productAttributeService;
 		private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
@@ -110,28 +113,39 @@ namespace SmartStore.Services.Catalog
 
         public virtual IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributeXml)
         {
-			var valueIds = new List<int>();
-			var attributeIds = DeserializeProductVariantAttributes(attributeXml);
-			var attributes = _productAttributeService.GetProductVariantAttributesByIds(attributeIds.Keys);
+			if (attributeXml.IsEmpty())
+				return new List<ProductVariantAttributeValue>();
 
-			foreach (var pva in attributes)
+			var cacheKey = ATTRIBUTEVALUES_BY_XML_KEY.FormatInvariant(attributeXml);
+
+			var result = _requestCache.Get(cacheKey, () => 
 			{
-				if (!pva.ShouldHaveValues())
-					continue;
+				var valueIds = new List<int>();
+				var attributeIds = DeserializeProductVariantAttributes(attributeXml);
+				var attributes = _productAttributeService.GetProductVariantAttributesByIds(attributeIds.Keys);
 
-				var pvaValuesStr = attributeIds[pva.Id];
+				foreach (var pva in attributes)
+				{
+					if (!pva.ShouldHaveValues())
+						continue;
 
-				var ids =
-					from id in pvaValuesStr
-					where id.HasValue()
-					select id.ToInt();
+					var pvaValuesStr = attributeIds[pva.Id];
 
-				valueIds.AddRange(ids);
-			}
+					var ids =
+						from id in pvaValuesStr
+						where id.HasValue()
+						select id.ToInt();
 
-			var distinctIds = valueIds.Distinct().ToArray();
-			var values = _productAttributeService.GetProductVariantAttributeValuesByIds(distinctIds);
-			return values;
+					valueIds.AddRange(ids);
+				}
+
+				var distinctIds = valueIds.Distinct().ToArray();
+				var values = _productAttributeService.GetProductVariantAttributeValuesByIds(distinctIds);
+
+				return values;
+			});
+
+			return result;
 		}
 
 		public virtual IList<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes)
@@ -290,8 +304,7 @@ namespace SmartStore.Services.Catalog
 			if (attributesXml.IsEmpty())
 				return null;
 
-			var attributesHash = attributesXml.Hash(Encoding.UTF8);
-            var cacheKey = ATTRIBUTECOMBINATION_BY_ID_HASH.FormatInvariant(productId, attributesHash);
+            var cacheKey = ATTRIBUTECOMBINATION_BY_IDXML_KEY.FormatInvariant(productId, attributesXml);
 
 			var result = _requestCache.Get(cacheKey, () => 
 			{

@@ -41,7 +41,7 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Customer.UserAgreement.OrderItemNotFound",
                 "The corresponding order item could not be found.",
-                "Das entsprechende Auftragsposition konnte nicht gefunden werden.");
+                "Die entsprechende Auftragsposition konnte nicht gefunden werden.");
 
             builder.AddOrUpdate("Customer.UserAgreement.ProductNotFound",
                 "The corresponding product could not be found.",

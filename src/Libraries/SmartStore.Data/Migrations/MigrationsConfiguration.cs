@@ -46,6 +46,13 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Customer.UserAgreement.ProductNotFound",
                 "The corresponding product could not be found.",
                 "Das entsprechende Produkt konnte nicht gefunden werden.");
+
+            builder.AddOrUpdate("ShoppingCart.RewardPoints", "Reward points", "Bonuspunkte");
+
+            builder.AddOrUpdate("ShoppingCart.RewardPoints.Button", "Apply", "Anwenden");
+            
+
+
         }
     }
 }

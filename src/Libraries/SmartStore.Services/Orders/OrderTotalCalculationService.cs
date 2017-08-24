@@ -1236,10 +1236,37 @@ namespace SmartStore.Services.Orders
 
             #endregion
 
+            #region Reward points
+
+            if (_rewardPointsSettings.Enabled &&
+                !ignoreRewardPonts && customer != null &&
+                customer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, _genericAttributeService, _storeContext.CurrentStore.Id))
+            {
+                int rewardPointsBalance = customer.GetRewardPointsBalance();
+                decimal rewardPointsBalanceAmount = ConvertRewardPointsToAmount(rewardPointsBalance);
+
+                if (resultTemp > decimal.Zero)
+                {
+                    if (resultTemp > rewardPointsBalanceAmount)
+                    {
+                        redeemedRewardPoints = rewardPointsBalance;
+                        redeemedRewardPointsAmount = rewardPointsBalanceAmount;
+                    }
+                    else
+                    {
+                        redeemedRewardPointsAmount = resultTemp;
+                        redeemedRewardPoints = ConvertAmountToRewardPoints(redeemedRewardPointsAmount);
+                    }
+                }
+            }
+            #endregion
+
             if (resultTemp < decimal.Zero)
                 resultTemp = decimal.Zero;
             if (_shoppingCartSettings.RoundPricesDuringCalculation)
                 resultTemp = Math.Round(resultTemp, 2);
+
+
 
             decimal? orderTotal = null;
             if (!shoppingCartShipping.HasValue)
@@ -1253,31 +1280,6 @@ namespace SmartStore.Services.Orders
                 //return result if we have no errors
                 orderTotal = resultTemp;
             }
-
-            #region Reward points
-
-            if (_rewardPointsSettings.Enabled &&
-				!ignoreRewardPonts && customer != null &&
-				customer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, _genericAttributeService, _storeContext.CurrentStore.Id))
-            {
-                int rewardPointsBalance = customer.GetRewardPointsBalance();
-                decimal rewardPointsBalanceAmount = ConvertRewardPointsToAmount(rewardPointsBalance);
-
-                if (orderTotal.HasValue && orderTotal.Value > decimal.Zero)
-                {
-                    if (orderTotal.Value > rewardPointsBalanceAmount)
-                    {
-                        redeemedRewardPoints = rewardPointsBalance;
-                        redeemedRewardPointsAmount = rewardPointsBalanceAmount;
-                    }
-                    else
-                    {
-                        redeemedRewardPointsAmount = orderTotal.Value;
-                        redeemedRewardPoints = ConvertAmountToRewardPoints(redeemedRewardPointsAmount);
-                    }
-                }
-            }
-            #endregion
 
             if (orderTotal.HasValue)
             {

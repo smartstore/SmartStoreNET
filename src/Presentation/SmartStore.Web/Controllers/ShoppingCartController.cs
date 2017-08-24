@@ -104,12 +104,13 @@ namespace SmartStore.Web.Controllers
         private readonly ICompareProductsService _compareProductsService;
         private readonly CatalogHelper _helper;
 		private readonly ProductUrlHelper _productUrlHelper;
+        private readonly RewardPointsSettings _rewardPointsSettings;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public ShoppingCartController(ICommonServices services, IProductService productService,
+        public ShoppingCartController(ICommonServices services, IProductService productService,
 			IWorkContext workContext, IStoreContext storeContext,
             IShoppingCartService shoppingCartService, IPictureService pictureService,
             ILocalizationService localizationService, 
@@ -138,7 +139,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<ITopicService> topicService,
             IMeasureService measureService, MeasureSettings measureSettings,
             CatalogHelper helper, ICompareProductsService compareProductsService,
-			ProductUrlHelper productUrlHelper)
+			ProductUrlHelper productUrlHelper, RewardPointsSettings rewardPointsSettings)
         {
             this._services = services;
             this._productService = productService;
@@ -191,6 +192,7 @@ namespace SmartStore.Web.Controllers
             this._helper = helper;
             this._compareProductsService = compareProductsService;
 			this._productUrlHelper = productUrlHelper;
+            this._rewardPointsSettings = rewardPointsSettings;
         }
 
         #endregion
@@ -712,8 +714,23 @@ namespace SmartStore.Web.Controllers
 					model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
 			}
 
-			//cart warnings
-			var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
+            //reward points
+            if (_rewardPointsSettings.Enabled && !cart.IsRecurring() && !_workContext.CurrentCustomer.IsGuest())
+            {
+                int rewardPointsBalance = _workContext.CurrentCustomer.GetRewardPointsBalance();
+                decimal rewardPointsAmountBase = _orderTotalCalculationService.ConvertRewardPointsToAmount(rewardPointsBalance);
+                decimal rewardPointsAmount = _currencyService.ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, _workContext.WorkingCurrency);
+
+                if (rewardPointsAmount > decimal.Zero)
+                {
+                    model.RewardPoints.DisplayRewardPoints = true;
+                    model.RewardPoints.RewardPointsAmount = _priceFormatter.FormatPrice(rewardPointsAmount, true, false);
+                    model.RewardPoints.RewardPointsBalance = rewardPointsBalance;
+                }
+            }
+
+            //cart warnings
+            var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
 			foreach (var warning in cartWarnings)
 			{
 				model.Warnings.Add(warning);
@@ -1554,118 +1571,7 @@ namespace SmartStore.Web.Controllers
 
 			return PartialView(model);
         }
-
-        //update all shopping cart items on the page
-   //     [ValidateInput(false)]
-   //     [HttpPost, ActionName("Cart")]
-   //     [FormValueRequired("updatecart")]
-   //     public ActionResult UpdateCartAll(FormCollection form)
-   //     {
-   //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-   //             return RedirectToRoute("HomePage");
-
-			//var storeId = _storeContext.CurrentStore.Id;
-			//var customer = _workContext.CurrentCustomer;
-			//var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
-
-			//var allIdsToRemove = (form["removefromcart"] != null ? form["removefromcart"].ToIntArray() : new int[0]);
-
-   //         //current warnings <cart item identifier, warnings>
-   //         var innerWarnings = new Dictionary<int, IList<string>>();
-
-   //         foreach (var sci in cart)
-   //         {
-   //             var remove = allIdsToRemove.Contains(sci.Item.Id);
-			//	if (remove)
-			//	{
-			//		_shoppingCartService.DeleteShoppingCartItem(sci.Item, false, true);
-			//	}
-			//	else
-			//	{
-			//		foreach (var formKey in form.AllKeys)
-			//		{
-			//			if (formKey.Equals(string.Format("itemquantity{0}", sci.Item.Id), StringComparison.InvariantCultureIgnoreCase))
-			//			{
-			//				var newQuantity = sci.Item.Quantity;
-			//				if (int.TryParse(form[formKey], out newQuantity))
-			//				{
-			//					var currSciWarnings = _shoppingCartService.UpdateShoppingCartItem(customer, sci.Item.Id, newQuantity, false);
-			//					innerWarnings.Add(sci.Item.Id, currSciWarnings);
-			//				}
-			//				break;
-			//			}
-			//		}
-			//	}
-   //         }
-
-			//// reset once, not several times
-			//_customerService.ResetCheckoutData(customer, storeId);
-
-			////updated cart
-			//cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
-
-			//var model = new ShoppingCartModel();
-   //         PrepareShoppingCartModel(model, cart);
-
-   //         //update current warnings
-   //         foreach (var kvp in innerWarnings)
-   //         {
-   //             //kvp = <cart item identifier, warnings>
-   //             var sciId = kvp.Key;
-   //             var warnings = kvp.Value;
-   //             //find model
-   //             var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
-			//	if (sciModel != null)
-			//	{
-			//		foreach (var w in warnings)
-			//		{
-			//			if (!sciModel.Warnings.Contains(w))
-			//				sciModel.Warnings.Add(w);
-			//		}
-			//	}
-   //         }
-
-   //         return View(model);
-   //     }
-
-   //     //remove a certain shopping cart item on the page
-   //     [ValidateInput(false)]
-   //     [HttpPost, ActionName("Cart")]
-   //     [FormValueRequired(FormValueRequirement.StartsWith, "removefromcart-")]
-   //     public ActionResult RemoveCartItem(FormCollection form)
-   //     {
-   //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-   //             return RedirectToRoute("HomePage");
-
-   //         //get shopping cart item identifier
-   //         int sciId = 0;
-			//foreach (var formValue in form.AllKeys)
-			//{
-			//	if (formValue.StartsWith("removefromcart-", StringComparison.InvariantCultureIgnoreCase))
-			//		sciId = Convert.ToInt32(formValue.Substring("removefromcart-".Length));
-			//}
-
-   //         //get shopping cart item
-			//var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			//var sci = cart.FirstOrDefault(x => x.Item.Id == sciId);
-   //         if (sci == null)
-   //         {
-   //             return RedirectToRoute("ShoppingCart");
-   //         }
-
-   //         //remove the cart item
-   //         _shoppingCartService.DeleteShoppingCartItem(sci.Item, ensureOnlyActiveCheckoutAttributes: true);
-
-   //         //updated cart
-			//cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			//var model = new ShoppingCartModel();
-   //         PrepareShoppingCartModel(model, cart);
-
-   //         return View(model);
-   //     }
-
+        
         // Ajax deletion
         [HttpPost]
         public ActionResult DeleteCartItem(int cartItemId, bool? wishlistItem)
@@ -1738,14 +1644,15 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("startcheckout")]
-        public ActionResult StartCheckout(ProductVariantQuery query)
+        public ActionResult StartCheckout(ProductVariantQuery query, bool? useRewardPoints)
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
             
             ParseAndSaveCheckoutAttributes(cart, query);
 
             //validate attributes
-			string checkoutAttributes = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+			string checkoutAttributes = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			var checkoutAttributeWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributes, true);
             if (checkoutAttributeWarnings.Count > 0)
             {
@@ -1755,8 +1662,14 @@ namespace SmartStore.Web.Controllers
                 return View(model);
             }
 
+            // reward points
+            if (_rewardPointsSettings.Enabled)
+            {   
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, _storeContext.CurrentStore.Id);
+            }
+
             //everything is OK
-            if (_workContext.CurrentCustomer.IsGuest())
+            if (customer.IsGuest())
             {
                 if (_orderSettings.AnonymousCheckoutAllowed)
                 {
@@ -1855,6 +1768,25 @@ namespace SmartStore.Web.Controllers
 			{
 				model.GiftCardBox.Message = T("ShoppingCart.GiftCardCouponCode.DontWorkWithAutoshipProducts");
 			}
+
+            PrepareShoppingCartModel(model, cart);
+            return View(model);
+        }
+
+        [ValidateInput(false)]
+        [HttpPost, ActionName("Cart")]
+        [FormValueRequired("applyrewardpoints")]
+        public ActionResult ApplyRewardPoints(bool useRewardPoints, ProductVariantQuery query)
+        {
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+
+            ParseAndSaveCheckoutAttributes(cart, query);
+
+            var model = new ShoppingCartModel();
+            model.RewardPoints.UseRewardPoints = useRewardPoints;
+
+            _genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer, 
+                SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, _services.StoreContext.CurrentStore.Id);
 
             PrepareShoppingCartModel(model, cart);
             return View(model);

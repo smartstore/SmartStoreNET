@@ -34,8 +34,6 @@ namespace SmartStore.AmazonPay.Controllers
 		[HttpPost]
 		public ActionResult PaymentMethod(bool? UseRewardPoints)
 		{
-			_apiService.ApplyRewardPoints(UseRewardPoints ?? false);
-
 			return RedirectToAction("Confirm", "Checkout", new { area = "" });
 		}
 

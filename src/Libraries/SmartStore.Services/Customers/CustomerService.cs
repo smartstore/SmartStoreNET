@@ -457,7 +457,7 @@ namespace SmartStore.Services.Customers
 
 		public virtual void ResetCheckoutData(Customer customer, int storeId,
             bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
-            bool clearRewardPoints = true, bool clearShippingMethod = true,
+            bool clearRewardPoints = false, bool clearShippingMethod = true,
             bool clearPaymentMethod = true)
         {
             if (customer == null)

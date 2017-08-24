@@ -797,7 +797,7 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			//specification attributes
+			// specification attributes
 			var specificationAttributes = _specificationAttributeService.GetSpecificationAttributes().ToList();
 			for (int i = 0; i < specificationAttributes.Count; i++)
 			{
@@ -813,7 +813,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			//discounts
+			// discounts
 			var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
 			model.AvailableDiscounts = discounts.ToList();
 			if (product != null && !excludeProperties)

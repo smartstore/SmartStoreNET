@@ -2057,8 +2057,7 @@ namespace SmartStore.Web.Controllers
                     model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-redeemedRewardPointsAmountInCustomerCurrency, true, false);
                 }
             }
-
-
+            
             return PartialView(model);
         }
 

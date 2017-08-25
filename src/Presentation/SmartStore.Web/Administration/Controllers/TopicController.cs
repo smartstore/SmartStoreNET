@@ -293,6 +293,12 @@ namespace SmartStore.Admin.Controllers
             if (topic == null)
                 return RedirectToAction("List");
 
+            if (topic.IsSystemTopic)
+            {
+                NotifyError(_localizationService.GetResource("Admin.ContentManagement.Topics.CannotBeDeleted"));
+                return RedirectToAction("List");
+            }
+            
             _topicService.DeleteTopic(topic);
 
             NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Deleted"));

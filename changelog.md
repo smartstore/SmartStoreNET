@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.0.3
 ### Bugfixes
@@ -16,15 +16,23 @@
 * #1228 Text entered in frontend for attributes or checkout attributes are truncated by comma
 * Fixed shipping computation method ignoring deactivated PricesIncludeTax setting
 * **Debitoor**: Fixed missing tax rates on Debitoor invoice for net prices
+*  #1224: Notifier wasn't working in plugin controllers
+*  #1210: Clear asset cache when a theme setting has changed
+*  #1205: Server cannot append header after HTTP headers have been sent
+*  #1232: Scheduled tasks are being 'randomly' set inactive
   
 ### Improvements
 * Apply img-fluid class to all images within html editor content
 * System name in privacy info topic URL should be lowercase 
 * If no checkout attribute is required checking out will be possible
+* **OpenTrans**: optimizations for Lexware import
+* #496 show bonus points in ordersummary on first checkout page
+* Discounts of plugins weren't displayed in product lists 
 
 ### New Features
 * #1076 Add support for percental tier price adjustments
-
+* **Trusted Shops**: added review import
+* (Dev) SSL redirection on localhost will be bypassed 
 
 ## SmartStore.NET 3.0.2
 ### Breaking changes

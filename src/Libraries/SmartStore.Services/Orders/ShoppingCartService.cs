@@ -124,10 +124,18 @@ namespace SmartStore.Services.Orders
 
 			var result = _requestCache.Get(cacheKey, () => 
 			{
-				var items = customer.ShoppingCartItems
-					.Filter(cartType, storeId)
-					.OrderByDescending(x => x.Id);
-				
+				var query = _sciRepository.Context.QueryForCollection<Customer, ShoppingCartItem>(customer, x => x.ShoppingCartItems);
+				query = query
+					.Expand(x => x.Product.ProductVariantAttributes)
+					.Where(x => x.ShoppingCartTypeId == (int)cartType);
+
+				if (storeId.HasValue)
+				{
+					query = query.Where(x => x.StoreId == storeId.Value);
+				}
+
+				var items = query.OrderByDescending(x => x.Id).ToList();
+
 				return OrganizeCartItems(items);
 			});
 

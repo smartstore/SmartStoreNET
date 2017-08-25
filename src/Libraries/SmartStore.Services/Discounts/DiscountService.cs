@@ -242,8 +242,9 @@ namespace SmartStore.Services.Discounts
 			// Check coupon code
 			if (discount.RequiresCouponCode)
             {
-                if (String.IsNullOrEmpty(discount.CouponCode))
+                if (discount.CouponCode.IsEmpty())
                     return false;
+
                 if (!discount.CouponCode.Equals(couponCodeToValidate, StringComparison.InvariantCultureIgnoreCase))
                     return false;
             }
@@ -309,14 +310,16 @@ namespace SmartStore.Services.Discounts
             return duh;
         }
 
-        public virtual IPagedList<DiscountUsageHistory> GetAllDiscountUsageHistory(int? discountId,
-            int? customerId, int pageIndex, int pageSize)
+        public virtual IPagedList<DiscountUsageHistory> GetAllDiscountUsageHistory(int? discountId, int? customerId, int pageIndex, int pageSize)
         {
             var query = _discountUsageHistoryRepository.Table;
+
             if (discountId.HasValue && discountId.Value > 0)
                 query = query.Where(duh => duh.DiscountId == discountId.Value);
+
             if (customerId.HasValue && customerId.Value > 0)
                 query = query.Where(duh => duh.Order != null && duh.Order.CustomerId == customerId.Value);
+
             query = query.OrderByDescending(c => c.CreatedOnUtc);
             return new PagedList<DiscountUsageHistory>(query, pageIndex, pageSize);
         }

@@ -820,7 +820,7 @@ namespace SmartStore.Services.Catalog
 
             _crossSellProductRepository.Update(crossSellProduct);
 
-            //event notification
+            // event notification
             _services.EventPublisher.EntityUpdated(crossSellProduct);
         }
 

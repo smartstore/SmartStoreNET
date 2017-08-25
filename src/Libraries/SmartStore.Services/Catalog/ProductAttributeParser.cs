@@ -40,34 +40,6 @@ namespace SmartStore.Services.Catalog
 
 		#region Product attributes
 
-		private IEnumerable<int> ParseProductVariantAttributeIds(string attributesXml)
-        {
-            var ids = new List<int>();
-            if (String.IsNullOrEmpty(attributesXml))
-                yield break;
-
-            try
-            {
-                var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(attributesXml);
-
-                var nodeList = xmlDoc.SelectNodes(@"//Attributes/ProductVariantAttribute");
-                foreach (var node in nodeList.Cast<XmlElement>())
-                {
-                    string sid = node.GetAttribute("ID").Trim();
-                    if (sid.HasValue())
-                    {
-                        int id = 0;
-                        if (int.TryParse(sid, out id))
-                        {
-                            yield return id;
-                        }
-                    }
-                }
-            }
-            finally { }
-        }
-
 		public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml)
 		{
 			var attrs = new Multimap<int, string>();
@@ -106,9 +78,13 @@ namespace SmartStore.Services.Catalog
 
 		public virtual IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributesXml)
 		{
-			var ids = ParseProductVariantAttributeIds(attributesXml);
+			var attrMap = DeserializeProductVariantAttributes(attributesXml);
+			var attrs = _productAttributeService.GetProductVariantAttributesByIds(attrMap.Keys);
+			return attrs;
 
-			return _productAttributeService.GetProductVariantAttributesByIds(ids.ToList());
+			//var values = ParseProductVariantAttributeValues(attributesXml);
+			//var attrs = values.Select(x => x.ProductVariantAttribute).Distinct().ToList();
+			//return attrs;
 		}
 
         public virtual IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributeXml)
@@ -121,18 +97,12 @@ namespace SmartStore.Services.Catalog
 			var result = _requestCache.Get(cacheKey, () => 
 			{
 				var valueIds = new List<int>();
-				var attributeIds = DeserializeProductVariantAttributes(attributeXml);
-				var attributes = _productAttributeService.GetProductVariantAttributesByIds(attributeIds.Keys);
+				var attrMap = DeserializeProductVariantAttributes(attributeXml);
 
-				foreach (var pva in attributes)
+				foreach (var attr in attrMap)
 				{
-					if (!pva.ShouldHaveValues())
-						continue;
-
-					var pvaValuesStr = attributeIds[pva.Id];
-
 					var ids =
-						from id in pvaValuesStr
+						from id in attr.Value
 						where id.HasValue()
 						select id.ToInt();
 

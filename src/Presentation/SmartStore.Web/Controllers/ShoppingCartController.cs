@@ -726,6 +726,8 @@ namespace SmartStore.Web.Controllers
                     model.RewardPoints.DisplayRewardPoints = true;
                     model.RewardPoints.RewardPointsAmount = _priceFormatter.FormatPrice(rewardPointsAmount, true, false);
                     model.RewardPoints.RewardPointsBalance = rewardPointsBalance;
+                    model.RewardPoints.UseRewardPoints = _workContext.CurrentCustomer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout,
+                        _genericAttributeService, _storeContext.CurrentStore.Id);
                 }
             }
 

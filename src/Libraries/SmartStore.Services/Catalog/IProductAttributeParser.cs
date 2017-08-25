@@ -9,14 +9,20 @@ namespace SmartStore.Services.Catalog
 	/// </summary>
 	public partial interface IProductAttributeParser
     {
-        #region Product attributes
+		#region Product attributes
 
-        /// <summary>
-        /// Gets selected product variant attributes as a map of integer ids with their corresponding values.
-        /// </summary>
+		/// <summary>
+		/// Parses, prefetches & caches all passed attribute definitions for the current request
+		/// </summary>
+		/// <param name="attributesXml">All attribute definitions to prefetch</param>
+		void PrefetchProductVariantAttributes(IEnumerable<string> attributesXml);
+
+		/// <summary>
+		/// Gets selected product variant attributes as a map of integer ids with their corresponding values.
+		/// </summary>
 		/// <param name="attributesXml">XML formatted attributes</param>
-        /// <returns>The deserialized map</returns>
-        Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml);
+		/// <returns>The deserialized map</returns>
+		Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml);
 
 		/// <summary>
 		/// Gets selected product variant attributes
@@ -37,8 +43,8 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="attributeCombination">Map of combined attributes</param>
 		/// <param name="attributes">Product variant attributes</param>
-		/// <returns>List of product variant attribute values</returns>
-		IList<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes);
+		/// <returns>Collection of product variant attribute values</returns>
+		ICollection<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes);
 
 		/// <summary>
 		/// Gets selected product variant attribute value

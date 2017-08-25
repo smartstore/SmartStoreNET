@@ -29,7 +29,7 @@ namespace SmartStore.Services.Catalog
             // all other attribute control types support values
             return true;
         }
-
+		
 		public static string AddProductAttribute(this ProductVariantAttribute pva, string attributes, string value)
 		{
 			string result = string.Empty;

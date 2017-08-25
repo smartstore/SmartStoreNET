@@ -286,16 +286,11 @@ namespace SmartStore.Services.Customers
             var query = from c in _customerRepository.Table
                         where customerIds.Contains(c.Id)
                         select c;
+
             var customers = query.ToList();
-            //sort by passed identifiers
-            var sortedCustomers = new List<Customer>();
-            foreach (int id in customerIds)
-            {
-                var customer = customers.Find(x => x.Id == id);
-                if (customer != null)
-                    sortedCustomers.Add(customer);
-            }
-            return sortedCustomers;
+
+			// sort by passed identifier sequence
+			return customers.OrderBySequence(customerIds).ToList();
         }
 
 		public virtual IList<Customer> GetSystemAccountCustomers()

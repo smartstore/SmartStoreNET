@@ -121,7 +121,6 @@ namespace SmartStore.Services.Orders
 			Guard.NotNull(customer, nameof(customer));
 
 			var cacheKey = CARTITEMS_KEY.FormatInvariant(customer.Id, (int)cartType, storeId.GetValueOrDefault());
-
 			var result = _requestCache.Get(cacheKey, () => 
 			{
 				var query = _sciRepository.Context.QueryForCollection<Customer, ShoppingCartItem>(customer, x => x.ShoppingCartItems);
@@ -135,6 +134,9 @@ namespace SmartStore.Services.Orders
 				}
 
 				var items = query.OrderByDescending(x => x.Id).ToList();
+
+				// Perf: Prefetch (load) all attribute values in any of the attribute definitions across all cart items (including any bundle part)
+				_productAttributeParser.PrefetchProductVariantAttributes(items.Select(x => x.AttributesXml));
 
 				return OrganizeCartItems(items);
 			});

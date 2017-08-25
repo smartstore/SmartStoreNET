@@ -96,16 +96,10 @@ namespace SmartStore.Services.Orders
                         where orderIds.Contains(o.Id)
                         select o;
             var orders = query.ToList();
-            //sort by passed identifiers
-            var sortedOrders = new List<Order>();
-            foreach (int id in orderIds)
-            {
-                var order = orders.Find(x => x.Id == id);
-                if (order != null)
-                    sortedOrders.Add(order);
-            }
-            return sortedOrders;
-        }
+
+			// sort by passed identifier sequence
+			return orders.OrderBySequence(orderIds).ToList();
+		}
 
         public virtual Order GetOrderByNumber(string orderNumber)
         {

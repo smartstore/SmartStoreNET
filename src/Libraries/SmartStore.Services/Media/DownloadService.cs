@@ -70,11 +70,7 @@ namespace SmartStore.Services.Media
 			var downloads = query.ToList();
 
 			// sort by passed identifier sequence
-			var sortQuery = from i in downloadIds
-							join d in downloads on i equals d.Id
-							select d;
-
-			return sortQuery.ToList();
+			return downloads.OrderBySequence(downloadIds).ToList();
 		}
 
         public virtual Download GetDownloadByGuid(Guid downloadGuid)

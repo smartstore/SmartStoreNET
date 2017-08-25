@@ -15,10 +15,10 @@ namespace SmartStore.Services.Catalog
 	public partial class ProductAttributeParser : IProductAttributeParser
     {
 		// 0 = ProductId, 1 = AttributeXml
-		private const string ATTRIBUTECOMBINATION_BY_IDXML_KEY = "SmartStore.parsedattributecombination.id-{0}-{1}";
+		private const string ATTRIBUTECOMBINATION_BY_IDXML_KEY = "parsedattributecombination.id-{0}-{1}";
 
 		// 0 = AttributeXml
-		private const string ATTRIBUTEVALUES_BY_XML_KEY = "SmartStore.parsedattributevalues-{0}";
+		private const string ATTRIBUTEVALUES_BY_XML_KEY = "parsedattributevalues-{0}";
 
 		private readonly IProductAttributeService _productAttributeService;
 		private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
@@ -39,6 +39,109 @@ namespace SmartStore.Services.Catalog
 		public ILogger Logger { get; set; }
 
 		#region Product attributes
+
+		public virtual void PrefetchProductVariantAttributes(IEnumerable<string> attributesXml)
+		{
+			if (attributesXml == null || !attributesXml.Any())
+				return;
+
+			// Determine uncached attributes
+			var unfetched = attributesXml
+				.Where(xml => xml.HasValue())
+				.Distinct()
+				.Where(xml => !_requestCache.Contains(ATTRIBUTEVALUES_BY_XML_KEY.FormatInvariant(xml)))
+				.ToArray();
+
+			var infos = new List<AttributeMapInfo>(unfetched.Length);
+
+			foreach (var xml in unfetched)
+			{
+				var map = DeserializeProductVariantAttributes(xml);
+
+				// Get all value ids across all attributes
+				var valueIds = map.SelectMany(x => x.Value)
+					.Where(x => x.HasValue())
+					.Select(x => x.ToInt())
+					.Distinct()
+					.ToArray();
+
+				var info = new AttributeMapInfo
+				{
+					AttributesXml = xml,
+					DeserializedMap = map,
+					AllValueIds = valueIds
+				};
+
+				infos.Add(info);
+			}
+
+			// Get all value ids across all maps (each map has many attributes)
+			var allValueIds = infos.SelectMany(x => x.AllValueIds)
+				.Distinct()
+				.ToArray();
+
+			// Load ALL requested attribute values into a single dictionary in one go (key is Id)
+			var attributeValues = _productAttributeService.GetProductVariantAttributeValuesByIds(allValueIds).ToDictionarySafe(x => x.Id);
+
+			// Create a single cache entry for each passed xml
+			foreach (var info in infos)
+			{
+				var cachedValues = new List<ProductVariantAttributeValue>();
+				ProductVariantAttributeValue value;
+
+				// Ensure value id order in cached result list is correct
+				foreach (var id in info.AllValueIds)
+				{
+					if (attributeValues.TryGetValue(id, out value))
+					{
+						cachedValues.Add(value);
+					}
+				}
+
+				// Put it in cache
+				var cacheKey = ATTRIBUTEVALUES_BY_XML_KEY.FormatInvariant(info.AttributesXml);
+				_requestCache.Put(cacheKey, cachedValues);
+			}
+		}
+
+		public virtual IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributesXml)
+		{
+			var values = ParseProductVariantAttributeValues(attributesXml);
+			var attrMap = DeserializeProductVariantAttributes(attributesXml);
+			var attrs = _productAttributeService.GetProductVariantAttributesByIds(attrMap.Keys, values.Select(x => x.ProductVariantAttribute).Distinct().ToList());
+
+			return attrs;
+		}
+
+		public virtual IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributeXml)
+		{
+			if (attributeXml.IsEmpty())
+				return new List<ProductVariantAttributeValue>();
+
+			var cacheKey = ATTRIBUTEVALUES_BY_XML_KEY.FormatInvariant(attributeXml);
+
+			var result = _requestCache.Get(cacheKey, () =>
+			{
+				var allValueIds = new HashSet<int>();
+				var attrMap = DeserializeProductVariantAttributes(attributeXml);
+
+				foreach (var attr in attrMap)
+				{
+					var ids =
+						from id in attr.Value
+						where id.HasValue()
+						select id.ToInt();
+
+					allValueIds.UnionWith(ids);
+				}
+
+				var values = _productAttributeService.GetProductVariantAttributeValuesByIds(allValueIds.ToArray());
+
+				return values;
+			});
+
+			return result;
+		}
 
 		public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml)
 		{
@@ -76,74 +179,32 @@ namespace SmartStore.Services.Catalog
 			return attrs;
 		}
 
-		public virtual IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributesXml)
+		public virtual ICollection<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes)
 		{
-			var attrMap = DeserializeProductVariantAttributes(attributesXml);
-			var attrs = _productAttributeService.GetProductVariantAttributesByIds(attrMap.Keys);
-			return attrs;
-
-			//var values = ParseProductVariantAttributeValues(attributesXml);
-			//var attrs = values.Select(x => x.ProductVariantAttribute).Distinct().ToList();
-			//return attrs;
-		}
-
-        public virtual IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributeXml)
-        {
-			if (attributeXml.IsEmpty())
-				return new List<ProductVariantAttributeValue>();
-
-			var cacheKey = ATTRIBUTEVALUES_BY_XML_KEY.FormatInvariant(attributeXml);
-
-			var result = _requestCache.Get(cacheKey, () => 
-			{
-				var valueIds = new List<int>();
-				var attrMap = DeserializeProductVariantAttributes(attributeXml);
-
-				foreach (var attr in attrMap)
-				{
-					var ids =
-						from id in attr.Value
-						where id.HasValue()
-						select id.ToInt();
-
-					valueIds.AddRange(ids);
-				}
-
-				var distinctIds = valueIds.Distinct().ToArray();
-				var values = _productAttributeService.GetProductVariantAttributeValuesByIds(distinctIds);
-
-				return values;
-			});
-
-			return result;
-		}
-
-		public virtual IList<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes)
-		{
-			var result = new List<ProductVariantAttributeValue>();
+			var result = new HashSet<ProductVariantAttributeValue>();
 
 			if (attributeCombination == null || !attributeCombination.Any())
 				return result;
 
-			var allValueIds = new List<int>();
+			var allValueIds = new HashSet<int>();
 
-			foreach (var pva in attributes.Where(x => x.ShouldHaveValues()).OrderBy(x => x.DisplayOrder))
+			foreach (var pva in attributes.Where(x => x.ShouldHaveValues()).OrderBy(x => x.DisplayOrder).ToArray())
 			{
 				if (attributeCombination.ContainsKey(pva.Id))
 				{
 					var pvaValuesStr = attributeCombination[pva.Id];
 					var ids = pvaValuesStr.Where(x => x.HasValue()).Select(x => x.ToInt());
 
-					allValueIds.AddRange(ids);
+					allValueIds.UnionWith(ids);
 				}
 			}
 
-			foreach (int id in allValueIds.Distinct())
+			foreach (int id in allValueIds)
 			{
 				foreach (var attribute in attributes)
 				{
 					var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(x => x.Id == id);
-					if (attributeValue != null && !result.Any(x => x.Id == attributeValue.Id))
+					if (attributeValue != null)
 					{
 						result.Add(attributeValue);
 						break;
@@ -225,7 +286,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual bool AreProductAttributesEqual(string attributeXml1, string attributeXml2)
         {
-			if (attributeXml1.IsCaseInsensitiveEqual(attributeXml2))
+			if (attributeXml1 == attributeXml2)
 				return true;
 
 			var attributes1 = DeserializeProductVariantAttributes(attributeXml1);
@@ -272,7 +333,7 @@ namespace SmartStore.Services.Catalog
 			if (attributesXml.IsEmpty())
 				return null;
 
-            var cacheKey = ATTRIBUTECOMBINATION_BY_IDXML_KEY.FormatInvariant(productId, attributesXml);
+			var cacheKey = ATTRIBUTECOMBINATION_BY_IDXML_KEY.FormatInvariant(productId, attributesXml);
 
 			var result = _requestCache.Get(cacheKey, () => 
 			{
@@ -415,5 +476,12 @@ namespace SmartStore.Services.Catalog
         }
 
         #endregion
+
+		class AttributeMapInfo
+		{
+			public string AttributesXml { get; set; }
+			public Multimap<int, string> DeserializedMap { get; set; }
+			public int[] AllValueIds { get; set; }
+		}
     }
 }

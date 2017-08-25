@@ -351,11 +351,14 @@ namespace SmartStore.Services.Catalog
 							result.Add(pva);
 					}
 
-					var newLoadedMappings = GetSwitchedLoadedAttributeMappings(ids);
+					if (ids.Count > 0)
+					{
+						var newLoadedMappings = GetSwitchedLoadedAttributeMappings(ids);
+						result.AddRange(newLoadedMappings);
+					}
 
-					result.AddRange(newLoadedMappings);
-
-					return result;
+					// sort by passed identifier sequence
+					return result.OrderBySequence(productVariantAttributeIds).ToList();
 				}
 
 				return GetSwitchedLoadedAttributeMappings(productVariantAttributeIds.ToList());

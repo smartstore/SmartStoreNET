@@ -211,12 +211,8 @@ namespace SmartStore.Services.Catalog
 			var products = query.ToList();
 
 			// sort by passed identifier sequence
-			var sortQuery = from i in productIds
-							join p in products on i equals p.Id
-							select p;
-
-			return sortQuery.ToList();
-        }
+			return products.OrderBySequence(productIds).ToList();
+		}
 
 		private IQueryable<Product> ApplyLoadFlags(IQueryable<Product> query, ProductLoadFlags flags)
 		{

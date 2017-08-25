@@ -16,10 +16,9 @@
 * #1228 Text entered in frontend for attributes or checkout attributes are truncated by comma
 * Fixed shipping computation method ignoring deactivated PricesIncludeTax setting
 * **Debitoor**: Fixed missing tax rates on Debitoor invoice for net prices
-*  #1224: Notifier wasn't working in plugin controllers
-*  #1210: Clear asset cache when a theme setting has changed
-*  #1205: Server cannot append header after HTTP headers have been sent
-*  #1232: Scheduled tasks are being 'randomly' set inactive
+* #1224 Notifier wasn't working in plugin controllers
+* #1205 Server cannot append header after HTTP headers have been sent
+* #1154 Left offcanvas navigation does not open when in checkout progress 
   
 ### Improvements
 * Apply img-fluid class to all images within html editor content

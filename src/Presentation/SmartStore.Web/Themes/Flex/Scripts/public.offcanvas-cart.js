@@ -157,7 +157,9 @@ $(function () {
 
     shopBar.find(".shopbar-button").on("click", function (e) {
 
-        if (!shouldOpen) {
+        var isMenu = $(e.target).closest(".shopbar-button").data("target") == "#offcanvas-menu";
+
+        if (!shouldOpen && !isMenu) {
             // navigate to link (href target)
             e.stopPropagation();
             return;

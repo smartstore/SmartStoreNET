@@ -717,7 +717,14 @@ namespace SmartStore.Web.Controllers
 
 						priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 
-						if (displayFromMessage)
+                        // product was discounted by a discount plugin
+                        if (finalPriceBase != product.Price)
+                        {
+                            priceModel.HasDiscount = true;
+                            oldPrice = product.Price;
+                        }
+                        
+                        if (displayFromMessage)
 						{
 							priceModel.RegularPriceValue = null;
 							priceModel.RegularPrice = null;

@@ -3,6 +3,7 @@
 ## SmartStore.NET 3.0.3
 ### Bugfixes
 * #1232 Scheduled tasks are being 'randomly' set inactive
+* #1245 Existing product does not get updated during import under certain circumstances
 * #1207 No low stock activity when bulk editing the product quantity
 * #1208 Missing inventory tab when switching from bundle to simple product
 * #1210 Clear asset cache when a theme setting has changed

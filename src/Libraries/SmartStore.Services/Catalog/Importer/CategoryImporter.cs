@@ -77,7 +77,7 @@ namespace SmartStore.Services.Catalog.Importer
 					var batch = segmenter.GetCurrentBatch<Category>();
 
 					// Perf: detach all entities
-					_categoryRepository.Context.DetachAll(false);
+					_categoryRepository.Context.DetachAll(true);
 
 					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 

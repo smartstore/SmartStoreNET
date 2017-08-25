@@ -108,7 +108,7 @@ namespace SmartStore.Services.Customers.Importer
 				{
 					var batch = segmenter.GetCurrentBatch<Customer>();
 
-					_customerRepository.Context.DetachAll(false);
+					_customerRepository.Context.DetachAll(true);
 
 					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 

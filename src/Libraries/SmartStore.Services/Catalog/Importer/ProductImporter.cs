@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -9,6 +10,10 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
@@ -87,17 +92,24 @@ namespace SmartStore.Services.Catalog.Importer
 				{
 					var batch = segmenter.GetCurrentBatch<Product>();
 
-					// Perf: detach all entities
-					_productRepository.Context.DetachAll(false);
+					// Perf: detach entities
+					_productRepository.Context.DetachEntities(x =>
+					{
+						return x is Product || x is UrlRecord || x is StoreMapping || x is ProductVariantAttribute || x is LocalizedProperty ||
+							   x is ProductBundleItem || x is ProductCategory || x is ProductManufacturer || x is Category || x is Manufacturer ||
+							   x is ProductPicture || x is Picture || x is ProductTag || x is TierPrice;
+					});
+					//_productRepository.Context.DetachAll(true);
 
 					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 
 					// ===========================================================================
 					// 1.) Import products
 					// ===========================================================================
+					int savedProducts = 0;
 					try
 					{
-						ProcessProducts(context, batch, templateViewPaths, srcToDestId);
+						savedProducts = ProcessProducts(context, batch, templateViewPaths, srcToDestId);
 					}
 					catch (Exception exception)
 					{
@@ -109,8 +121,8 @@ namespace SmartStore.Services.Catalog.Importer
 					batch = batch.Where(x => x.Entity != null && !x.IsTransient).ToArray();
 
 					// update result object
-					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
-					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
+					context.Result.NewRecords += batch.Count(x => x.IsNew);
+					context.Result.ModifiedRecords += Math.Max(0, savedProducts - context.Result.NewRecords);
 
 					// ===========================================================================
 					// 2.) Import SEO Slugs
@@ -426,12 +438,13 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 				else
 				{
-					_productRepository.Update(product);
+					//_productRepository.Update(product); // unnecessary: we use DetectChanges()
 					lastUpdated = product;
 				}
 			}
 
 			// commit whole batch at once
+			DetectChanges();
 			var num = _productRepository.Context.SaveChanges();
 
 			// get new product ids
@@ -478,12 +491,13 @@ namespace SmartStore.Services.Catalog.Importer
 						if (product != null)
 						{
 							product.ParentGroupedProductId = srcToDestId[parentGroupedProductId].DestinationId;
-							_productRepository.Update(product);
+							//_productRepository.Update(product);  // unnecessary: we use DetectChanges()
 						}
 					}
 				}
 			}
 
+			DetectChanges();
 			var num = _productRepository.Context.SaveChanges();
 
 			return num;
@@ -703,6 +717,10 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
+		private void DetectChanges()
+		{
+			((DbContext)_productRepository.Context).ChangeTracker.DetectChanges();
+		}
 
 		private int? ZeroToNull(object value, CultureInfo culture)
 		{

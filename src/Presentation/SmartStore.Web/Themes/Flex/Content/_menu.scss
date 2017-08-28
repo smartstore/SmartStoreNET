@@ -266,7 +266,7 @@ $ocm-selected-color:                    $brand-warning;
     }
 
     .dropdown-menu {
-        position: relative;
+        position: static;
         float: initial;
         min-width: initial;
         padding: initial;

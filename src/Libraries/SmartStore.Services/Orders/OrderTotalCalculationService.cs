@@ -292,6 +292,7 @@ namespace SmartStore.Services.Orders
             out decimal subTotalWithoutDiscount, out decimal subTotalWithDiscount)
         {
             bool includingTax = false;
+
             switch (_workContext.TaxDisplayType)
             {
                 case TaxDisplayType.ExcludingTax:
@@ -301,9 +302,13 @@ namespace SmartStore.Services.Orders
                     includingTax = true;
                     break;
             }
-            GetShoppingCartSubTotal(cart, includingTax,
-                out discountAmount, out appliedDiscount,
-                out subTotalWithoutDiscount, out subTotalWithDiscount);
+
+            GetShoppingCartSubTotal(cart, 
+				includingTax,
+                out discountAmount, 
+				out appliedDiscount,
+                out subTotalWithoutDiscount, 
+				out subTotalWithDiscount);
         }
 
         /// <summary>
@@ -321,9 +326,14 @@ namespace SmartStore.Services.Orders
             out decimal subTotalWithoutDiscount, out decimal subTotalWithDiscount)
         {
             SortedDictionary<decimal, decimal> taxRates = null;
-            GetShoppingCartSubTotal(cart, includingTax,
-                out discountAmount, out appliedDiscount,
-                out subTotalWithoutDiscount, out subTotalWithDiscount, out taxRates);
+
+            GetShoppingCartSubTotal(cart, 
+				includingTax,
+                out discountAmount, 
+				out appliedDiscount,
+                out subTotalWithoutDiscount, 
+				out subTotalWithDiscount, 
+				out taxRates);
         }
 
         /// <summary>
@@ -338,8 +348,10 @@ namespace SmartStore.Services.Orders
         /// <param name="taxRates">Tax rates (of order sub total)</param>
         public virtual void GetShoppingCartSubTotal(IList<OrganizedShoppingCartItem> cart,
             bool includingTax,
-            out decimal discountAmount, out Discount appliedDiscount,
-            out decimal subTotalWithoutDiscount, out decimal subTotalWithDiscount,
+            out decimal discountAmount, 
+			out Discount appliedDiscount,
+            out decimal subTotalWithoutDiscount, 
+			out decimal subTotalWithDiscount,
             out SortedDictionary<decimal, decimal> taxRates)
         {
             discountAmount = decimal.Zero;
@@ -351,10 +363,10 @@ namespace SmartStore.Services.Orders
             if (cart.Count == 0)
                 return;
 
-            //get the customer 
+            // get the customer 
             Customer customer = cart.GetCustomer();
 
-            //sub totals
+            // sub totals
             decimal subTotalExclTaxWithoutDiscount = decimal.Zero;
             decimal subTotalInclTaxWithoutDiscount = decimal.Zero;
 
@@ -390,7 +402,7 @@ namespace SmartStore.Services.Orders
 				subTotalExclTaxWithoutDiscount += sciExclTax;
                 subTotalInclTaxWithoutDiscount += sciInclTax;
 
-                //tax rates
+                // tax rates
                 decimal sciTax = sciInclTax - sciExclTax;
                 if (taxRate > decimal.Zero && sciTax > decimal.Zero)
                 {
@@ -405,7 +417,7 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-            //checkout attributes
+            // checkout attributes
             if (customer != null)
             {
 				var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
@@ -1224,10 +1236,37 @@ namespace SmartStore.Services.Orders
 
             #endregion
 
+            #region Reward points
+
+            if (_rewardPointsSettings.Enabled &&
+                !ignoreRewardPonts && customer != null &&
+                customer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, _genericAttributeService, _storeContext.CurrentStore.Id))
+            {
+                int rewardPointsBalance = customer.GetRewardPointsBalance();
+                decimal rewardPointsBalanceAmount = ConvertRewardPointsToAmount(rewardPointsBalance);
+
+                if (resultTemp > decimal.Zero)
+                {
+                    if (resultTemp > rewardPointsBalanceAmount)
+                    {
+                        redeemedRewardPoints = rewardPointsBalance;
+                        redeemedRewardPointsAmount = rewardPointsBalanceAmount;
+                    }
+                    else
+                    {
+                        redeemedRewardPointsAmount = resultTemp;
+                        redeemedRewardPoints = ConvertAmountToRewardPoints(redeemedRewardPointsAmount);
+                    }
+                }
+            }
+            #endregion
+
             if (resultTemp < decimal.Zero)
                 resultTemp = decimal.Zero;
             if (_shoppingCartSettings.RoundPricesDuringCalculation)
                 resultTemp = Math.Round(resultTemp, 2);
+
+
 
             decimal? orderTotal = null;
             if (!shoppingCartShipping.HasValue)
@@ -1241,31 +1280,6 @@ namespace SmartStore.Services.Orders
                 //return result if we have no errors
                 orderTotal = resultTemp;
             }
-
-            #region Reward points
-
-            if (_rewardPointsSettings.Enabled &&
-				!ignoreRewardPonts && customer != null &&
-				customer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, _genericAttributeService, _storeContext.CurrentStore.Id))
-            {
-                int rewardPointsBalance = customer.GetRewardPointsBalance();
-                decimal rewardPointsBalanceAmount = ConvertRewardPointsToAmount(rewardPointsBalance);
-
-                if (orderTotal.HasValue && orderTotal.Value > decimal.Zero)
-                {
-                    if (orderTotal.Value > rewardPointsBalanceAmount)
-                    {
-                        redeemedRewardPoints = rewardPointsBalance;
-                        redeemedRewardPointsAmount = rewardPointsBalanceAmount;
-                    }
-                    else
-                    {
-                        redeemedRewardPointsAmount = orderTotal.Value;
-                        redeemedRewardPoints = ConvertAmountToRewardPoints(redeemedRewardPointsAmount);
-                    }
-                }
-            }
-            #endregion
 
             if (orderTotal.HasValue)
             {

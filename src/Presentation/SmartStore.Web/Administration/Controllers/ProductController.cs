@@ -797,7 +797,7 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			//specification attributes
+			// specification attributes
 			var specificationAttributes = _specificationAttributeService.GetSpecificationAttributes().ToList();
 			for (int i = 0; i < specificationAttributes.Count; i++)
 			{
@@ -813,7 +813,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			//discounts
+			// discounts
 			var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
 			model.AvailableDiscounts = discounts.ToList();
 			if (product != null && !excludeProperties)
@@ -2962,7 +2962,7 @@ namespace SmartStore.Admin.Controllers
 					CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null,
 					Quantity = model.Quantity,
 					Price = model.Price1,
-                    CalculationMethod = model.CalculationMethod == null ? CalculationMethod.Fixed : (CalculationMethod)(Int32.Parse(model.CalculationMethod))
+                    CalculationMethod = model.CalculationMethod == null ? TierPriceCalculationMethod.Fixed : (TierPriceCalculationMethod)(Int32.Parse(model.CalculationMethod))
                 };
 
 				_productService.InsertTierPrice(tierPrice);
@@ -2987,7 +2987,7 @@ namespace SmartStore.Admin.Controllers
 				tierPrice.CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null;
 				tierPrice.Quantity = model.Quantity;
 				tierPrice.Price = model.Price1;
-                tierPrice.CalculationMethod = model.CalculationMethod == null ? CalculationMethod.Fixed : (CalculationMethod)(Int32.Parse(model.CalculationMethod));
+                tierPrice.CalculationMethod = model.CalculationMethod == null ? TierPriceCalculationMethod.Fixed : (TierPriceCalculationMethod)(Int32.Parse(model.CalculationMethod));
 				_productService.UpdateTierPrice(tierPrice);
 			}
 
@@ -3017,9 +3017,9 @@ namespace SmartStore.Admin.Controllers
         {
             var list = new List<object>
             {
-                new  { id = ((int)CalculationMethod.Fixed).ToString(), text = T("Admin.Product.Price.Tierprices.Fixed"), selected = selectedId == (int)CalculationMethod.Fixed },
-                new  { id = ((int)CalculationMethod.Adjustment).ToString(), text = T("Admin.Product.Price.Tierprices.Adjustment"), selected = selectedId == (int)CalculationMethod.Adjustment },
-                new  { id = ((int)CalculationMethod.Percental).ToString(), text = T("Admin.Product.Price.Tierprices.Percental"), selected = selectedId == (int)CalculationMethod.Percental }
+                new  { id = ((int)TierPriceCalculationMethod.Fixed).ToString(), text = T("Admin.Product.Price.Tierprices.Fixed"), selected = selectedId == (int)TierPriceCalculationMethod.Fixed },
+                new  { id = ((int)TierPriceCalculationMethod.Adjustment).ToString(), text = T("Admin.Product.Price.Tierprices.Adjustment"), selected = selectedId == (int)TierPriceCalculationMethod.Adjustment },
+                new  { id = ((int)TierPriceCalculationMethod.Percental).ToString(), text = T("Admin.Product.Price.Tierprices.Percental"), selected = selectedId == (int)TierPriceCalculationMethod.Percental }
             };
 
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };

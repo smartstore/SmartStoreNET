@@ -820,10 +820,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private IQueryable<Manufacturer> GetManufacturerQuery(DataExporterContext ctx, int skip, int take)
 		{
-			var showHidden = !ctx.Filter.IsPublished.HasValue;
-			var storeId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
-
-			var query = _manufacturerService.Value.GetManufacturers(showHidden, storeId);
+			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : 0;
+			var query = _manufacturerService.Value.GetManufacturers(true, storeId);
 
 			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
@@ -850,10 +848,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private IQueryable<Category> GetCategoryQuery(DataExporterContext ctx, int skip, int take)
 		{
-			var showHidden = !ctx.Filter.IsPublished.HasValue;
-			var storeId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
-
-			var query = _categoryService.Value.GetCategories(null, showHidden, null, true, storeId);
+			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : 0;
+			var query = _categoryService.Value.GetCategories(null, true, null, true, storeId);
 
 			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));

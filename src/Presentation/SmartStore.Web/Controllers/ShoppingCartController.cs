@@ -104,12 +104,13 @@ namespace SmartStore.Web.Controllers
         private readonly ICompareProductsService _compareProductsService;
         private readonly CatalogHelper _helper;
 		private readonly ProductUrlHelper _productUrlHelper;
+        private readonly RewardPointsSettings _rewardPointsSettings;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public ShoppingCartController(ICommonServices services, IProductService productService,
+        public ShoppingCartController(ICommonServices services, IProductService productService,
 			IWorkContext workContext, IStoreContext storeContext,
             IShoppingCartService shoppingCartService, IPictureService pictureService,
             ILocalizationService localizationService, 
@@ -138,7 +139,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<ITopicService> topicService,
             IMeasureService measureService, MeasureSettings measureSettings,
             CatalogHelper helper, ICompareProductsService compareProductsService,
-			ProductUrlHelper productUrlHelper)
+			ProductUrlHelper productUrlHelper, RewardPointsSettings rewardPointsSettings)
         {
             this._services = services;
             this._productService = productService;
@@ -191,6 +192,7 @@ namespace SmartStore.Web.Controllers
             this._helper = helper;
             this._compareProductsService = compareProductsService;
 			this._productUrlHelper = productUrlHelper;
+            this._rewardPointsSettings = rewardPointsSettings;
         }
 
         #endregion
@@ -712,8 +714,25 @@ namespace SmartStore.Web.Controllers
 					model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
 			}
 
-			//cart warnings
-			var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
+            //reward points
+            if (_rewardPointsSettings.Enabled && !cart.IsRecurring() && !_workContext.CurrentCustomer.IsGuest())
+            {
+                int rewardPointsBalance = _workContext.CurrentCustomer.GetRewardPointsBalance();
+                decimal rewardPointsAmountBase = _orderTotalCalculationService.ConvertRewardPointsToAmount(rewardPointsBalance);
+                decimal rewardPointsAmount = _currencyService.ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, _workContext.WorkingCurrency);
+
+                if (rewardPointsAmount > decimal.Zero)
+                {
+                    model.RewardPoints.DisplayRewardPoints = true;
+                    model.RewardPoints.RewardPointsAmount = _priceFormatter.FormatPrice(rewardPointsAmount, true, false);
+                    model.RewardPoints.RewardPointsBalance = rewardPointsBalance;
+                    model.RewardPoints.UseRewardPoints = _workContext.CurrentCustomer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout,
+                        _genericAttributeService, _storeContext.CurrentStore.Id);
+                }
+            }
+
+            //cart warnings
+            var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
 			foreach (var warning in cartWarnings)
 			{
 				model.Warnings.Add(warning);
@@ -729,9 +748,10 @@ namespace SmartStore.Web.Controllers
 				//remove attributes which require shippable products
 				checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
 			}
+
 			foreach (var attribute in checkoutAttributes)
 			{
-				var caModel = new ShoppingCartModel.CheckoutAttributeModel()
+				var caModel = new ShoppingCartModel.CheckoutAttributeModel
 				{
 					Id = attribute.Id,
 					Name = attribute.GetLocalized(x => x.Name),
@@ -742,11 +762,10 @@ namespace SmartStore.Web.Controllers
 
 				if (attribute.ShouldHaveValues())
 				{
-					//values
 					var caValues = _checkoutAttributeService.GetCheckoutAttributeValues(attribute.Id);
 					foreach (var caValue in caValues)
 					{
-						var pvaValueModel = new ShoppingCartModel.CheckoutAttributeValueModel()
+						var pvaValueModel = new ShoppingCartModel.CheckoutAttributeValueModel
 						{
 							Id = caValue.Id,
 							Name = caValue.GetLocalized(x => x.Name),
@@ -754,7 +773,7 @@ namespace SmartStore.Web.Controllers
 						};
 						caModel.Values.Add(pvaValueModel);
 
-						//display price if allowed
+						// Display price if allowed.
 						if (_permissionService.Authorize(StandardPermissionProvider.DisplayPrices))
 						{
 							decimal priceAdjustmentBase = _taxService.GetCheckoutAttributePrice(caValue);
@@ -767,62 +786,73 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 
-
-
-				//set already selected attributes
-				string selectedCheckoutAttributes = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+				// Set already selected attributes.
+				var selectedCheckoutAttributes = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 				switch (attribute.AttributeControlType)
 				{
 					case AttributeControlType.DropdownList:
 					case AttributeControlType.RadioList:
 					case AttributeControlType.Boxes:
 					case AttributeControlType.Checkboxes:
+						if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
 						{
-							if (!String.IsNullOrEmpty(selectedCheckoutAttributes))
+							// Clear default selection.
+							foreach (var item in caModel.Values)
 							{
-								//clear default selection
-								foreach (var item in caModel.Values)
-									item.IsPreSelected = false;
+								item.IsPreSelected = false;
+							}
 
-								//select new values
-								var selectedCaValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(selectedCheckoutAttributes);
-								foreach (var caValue in selectedCaValues)
-									foreach (var item in caModel.Values)
-										if (caValue.Id == item.Id)
-											item.IsPreSelected = true;
+							// Select new values.
+							var selectedCaValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(selectedCheckoutAttributes);
+							foreach (var caValue in selectedCaValues)
+							{
+								foreach (var item in caModel.Values)
+								{
+									if (caValue.Id == item.Id)
+										item.IsPreSelected = true;
+								}
 							}
 						}
 						break;
+
 					case AttributeControlType.TextBox:
 					case AttributeControlType.MultilineTextbox:
+						if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
 						{
-							if (!String.IsNullOrEmpty(selectedCheckoutAttributes))
-							{
-								var enteredText = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
-								if (enteredText.Count > 0)
-									caModel.TextValue = enteredText[0];
-							}
+							var enteredText = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
+							if (enteredText.Count > 0)
+								caModel.TextValue = enteredText[0];
 						}
 						break;
+
 					case AttributeControlType.Datepicker:
 						{
-							//keep in mind my that the code below works only in the current culture
+							// Keep in mind my that the code below works only in the current culture.
 							var selectedDateStr = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
 							if (selectedDateStr.Count > 0)
 							{
 								DateTime selectedDate;
-								if (DateTime.TryParseExact(selectedDateStr[0], "D", CultureInfo.CurrentCulture,
-													   DateTimeStyles.None, out selectedDate))
+								if (DateTime.TryParseExact(selectedDateStr[0], "D", CultureInfo.CurrentCulture,  DateTimeStyles.None, out selectedDate))
 								{
-									//successfully parsed
 									caModel.SelectedDay = selectedDate.Day;
 									caModel.SelectedMonth = selectedDate.Month;
 									caModel.SelectedYear = selectedDate.Year;
 								}
 							}
-
 						}
 						break;
+
+					case AttributeControlType.FileUpload:
+						if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
+						{
+							var values = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
+							if (values.Any())
+							{
+								caModel.UploadedFile = values.First();
+							}
+						}
+						break;
+
 					default:
 						break;
 				}
@@ -990,9 +1020,8 @@ namespace SmartStore.Web.Controllers
                 model.SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(cart);
 
                 //a customer should visit the shopping cart page before going to checkout if:
-                //1. "terms of services" are enabled (OBSOLETE now)
-                //2. we have at least one checkout attribute
-                //3. min order sub-total is OK
+                //1. we have at least one checkout attribute that is reqired
+                //2. min order sub-total is OK
                 var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
                 if (!cart.RequiresShipping())
                 {
@@ -1000,8 +1029,8 @@ namespace SmartStore.Web.Controllers
                     checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
                 }
                 bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
-                model.DisplayCheckoutButton = checkoutAttributes.Count == 0 && minOrderSubtotalAmountOk;
-                
+                model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0 && minOrderSubtotalAmountOk;
+
                 //products. sort descending (recently added products)
                 foreach (var sci in cart.ToList())
                 {
@@ -1098,20 +1127,21 @@ namespace SmartStore.Web.Controllers
             foreach (var attribute in checkoutAttributes)
             {
 				var selectedItems = query.CheckoutAttributes.Where(x => x.AttributeId == attribute.Id);
-				var firstItem = selectedItems.FirstOrDefault();
-				var firstItemValue = firstItem?.Value;
 
                 switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
                     case AttributeControlType.RadioList:
                     case AttributeControlType.Boxes:
-						if (firstItemValue.HasValue())
 						{
-							var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();
-							if (selectedAttributeId > 0)
+							var firstItemValue = selectedItems.FirstOrDefault()?.Value;
+							if (firstItemValue.HasValue())
 							{
-								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
+								var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();
+								if (selectedAttributeId > 0)
+								{
+									selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
+								}
 							}
 						}
 						break;
@@ -1129,25 +1159,33 @@ namespace SmartStore.Web.Controllers
 
                     case AttributeControlType.TextBox:    
                     case AttributeControlType.MultilineTextbox:
-						if (firstItemValue.HasValue())
 						{
-							selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, firstItemValue);
-                        }
+							var selectedValue = string.Join(",", selectedItems.Select(x => x.Value));
+							if (selectedValue.HasValue())
+							{
+								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedValue);
+							}
+						}
                         break;
 
                     case AttributeControlType.Datepicker:
-						var date = firstItem?.Date;
-						if (date.HasValue)
 						{
-							selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, date.Value.ToString("D"));
+							var firstItemDate = selectedItems.FirstOrDefault()?.Date;
+							if (firstItemDate.HasValue)
+							{
+								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, firstItemDate.Value.ToString("D"));
+							}
 						}
                         break;
 
                     case AttributeControlType.FileUpload:
-						if (firstItemValue.HasValue())
 						{
-                            selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, firstItemValue);
-                        }
+							var selectedValue = string.Join(",", selectedItems.Select(x => x.Value));
+							if (selectedValue.HasValue())
+							{
+								selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedValue);
+							}
+						}
                         break;
                 }
             }
@@ -1535,118 +1573,7 @@ namespace SmartStore.Web.Controllers
 
 			return PartialView(model);
         }
-
-        //update all shopping cart items on the page
-   //     [ValidateInput(false)]
-   //     [HttpPost, ActionName("Cart")]
-   //     [FormValueRequired("updatecart")]
-   //     public ActionResult UpdateCartAll(FormCollection form)
-   //     {
-   //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-   //             return RedirectToRoute("HomePage");
-
-			//var storeId = _storeContext.CurrentStore.Id;
-			//var customer = _workContext.CurrentCustomer;
-			//var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
-
-			//var allIdsToRemove = (form["removefromcart"] != null ? form["removefromcart"].ToIntArray() : new int[0]);
-
-   //         //current warnings <cart item identifier, warnings>
-   //         var innerWarnings = new Dictionary<int, IList<string>>();
-
-   //         foreach (var sci in cart)
-   //         {
-   //             var remove = allIdsToRemove.Contains(sci.Item.Id);
-			//	if (remove)
-			//	{
-			//		_shoppingCartService.DeleteShoppingCartItem(sci.Item, false, true);
-			//	}
-			//	else
-			//	{
-			//		foreach (var formKey in form.AllKeys)
-			//		{
-			//			if (formKey.Equals(string.Format("itemquantity{0}", sci.Item.Id), StringComparison.InvariantCultureIgnoreCase))
-			//			{
-			//				var newQuantity = sci.Item.Quantity;
-			//				if (int.TryParse(form[formKey], out newQuantity))
-			//				{
-			//					var currSciWarnings = _shoppingCartService.UpdateShoppingCartItem(customer, sci.Item.Id, newQuantity, false);
-			//					innerWarnings.Add(sci.Item.Id, currSciWarnings);
-			//				}
-			//				break;
-			//			}
-			//		}
-			//	}
-   //         }
-
-			//// reset once, not several times
-			//_customerService.ResetCheckoutData(customer, storeId);
-
-			////updated cart
-			//cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
-
-			//var model = new ShoppingCartModel();
-   //         PrepareShoppingCartModel(model, cart);
-
-   //         //update current warnings
-   //         foreach (var kvp in innerWarnings)
-   //         {
-   //             //kvp = <cart item identifier, warnings>
-   //             var sciId = kvp.Key;
-   //             var warnings = kvp.Value;
-   //             //find model
-   //             var sciModel = model.Items.FirstOrDefault(x => x.Id == sciId);
-			//	if (sciModel != null)
-			//	{
-			//		foreach (var w in warnings)
-			//		{
-			//			if (!sciModel.Warnings.Contains(w))
-			//				sciModel.Warnings.Add(w);
-			//		}
-			//	}
-   //         }
-
-   //         return View(model);
-   //     }
-
-   //     //remove a certain shopping cart item on the page
-   //     [ValidateInput(false)]
-   //     [HttpPost, ActionName("Cart")]
-   //     [FormValueRequired(FormValueRequirement.StartsWith, "removefromcart-")]
-   //     public ActionResult RemoveCartItem(FormCollection form)
-   //     {
-   //         if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-   //             return RedirectToRoute("HomePage");
-
-   //         //get shopping cart item identifier
-   //         int sciId = 0;
-			//foreach (var formValue in form.AllKeys)
-			//{
-			//	if (formValue.StartsWith("removefromcart-", StringComparison.InvariantCultureIgnoreCase))
-			//		sciId = Convert.ToInt32(formValue.Substring("removefromcart-".Length));
-			//}
-
-   //         //get shopping cart item
-			//var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			//var sci = cart.FirstOrDefault(x => x.Item.Id == sciId);
-   //         if (sci == null)
-   //         {
-   //             return RedirectToRoute("ShoppingCart");
-   //         }
-
-   //         //remove the cart item
-   //         _shoppingCartService.DeleteShoppingCartItem(sci.Item, ensureOnlyActiveCheckoutAttributes: true);
-
-   //         //updated cart
-			//cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			//var model = new ShoppingCartModel();
-   //         PrepareShoppingCartModel(model, cart);
-
-   //         return View(model);
-   //     }
-
+        
         // Ajax deletion
         [HttpPost]
         public ActionResult DeleteCartItem(int cartItemId, bool? wishlistItem)
@@ -1719,14 +1646,15 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("startcheckout")]
-        public ActionResult StartCheckout(ProductVariantQuery query)
+        public ActionResult StartCheckout(ProductVariantQuery query, bool? useRewardPoints)
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
             
             ParseAndSaveCheckoutAttributes(cart, query);
 
             //validate attributes
-			string checkoutAttributes = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+			string checkoutAttributes = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			var checkoutAttributeWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributes, true);
             if (checkoutAttributeWarnings.Count > 0)
             {
@@ -1736,8 +1664,14 @@ namespace SmartStore.Web.Controllers
                 return View(model);
             }
 
+            // reward points
+            if (_rewardPointsSettings.Enabled)
+            {   
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, _storeContext.CurrentStore.Id);
+            }
+
             //everything is OK
-            if (_workContext.CurrentCustomer.IsGuest())
+            if (customer.IsGuest())
             {
                 if (_orderSettings.AnonymousCheckoutAllowed)
                 {
@@ -1836,6 +1770,25 @@ namespace SmartStore.Web.Controllers
 			{
 				model.GiftCardBox.Message = T("ShoppingCart.GiftCardCouponCode.DontWorkWithAutoshipProducts");
 			}
+
+            PrepareShoppingCartModel(model, cart);
+            return View(model);
+        }
+
+        [ValidateInput(false)]
+        [HttpPost, ActionName("Cart")]
+        [FormValueRequired("applyrewardpoints")]
+        public ActionResult ApplyRewardPoints(bool useRewardPoints, ProductVariantQuery query)
+        {
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+
+            ParseAndSaveCheckoutAttributes(cart, query);
+
+            var model = new ShoppingCartModel();
+            model.RewardPoints.UseRewardPoints = useRewardPoints;
+
+            _genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer, 
+                SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, _services.StoreContext.CurrentStore.Id);
 
             PrepareShoppingCartModel(model, cart);
             return View(model);
@@ -2104,8 +2057,7 @@ namespace SmartStore.Web.Controllers
                     model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-redeemedRewardPointsAmountInCustomerCurrency, true, false);
                 }
             }
-
-
+            
             return PartialView(model);
         }
 
@@ -2145,19 +2097,12 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult OffCanvasCart()
         {
-            var model = new OffCanvasCartModel();
-            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-            var whishlist = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
-
-            // counts
-            model.ShoppingCartItems = cart.GetTotalProducts();
-            model.WishlistItems = whishlist.GetTotalProducts();
-            model.CompareItems = _compareProductsService.GetComparedProducts().Count;
-
-            // settings
-            model.ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
-            model.WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
-            model.CompareProductsEnabled = _catalogSettings.CompareProductsEnabled;
+            var model = new OffCanvasCartModel
+			{
+				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
+				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
+				CompareProductsEnabled = _catalogSettings.CompareProductsEnabled
+			};
 
             return PartialView(model);
         }
@@ -2245,7 +2190,7 @@ namespace SmartStore.Web.Controllers
 					showCheckoutButtons = model.IsValidMinOrderSubtotal;
 				}
             }
-
+			
             return Json(new
             {
                 success = warnings.Count > 0 ? false : true,
@@ -2257,32 +2202,63 @@ namespace SmartStore.Web.Controllers
             });
         }
 
-        // Ajax
-        public ActionResult ShoppingCartSummary(bool isWishlist = false)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
+		[HttpPost]
+		public ActionResult CartSummary(bool cart = false, bool wishlist = false, bool compare = false)
+		{
+			var cartEnabled = cart && _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
+			var wishlistEnabled = wishlist && _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+			var compareEnabled = compare && _catalogSettings.CompareProductsEnabled;
+
+			int cartItemsCount = 0;
+			int wishlistItemsCount = 0;
+			int compareItemsCount = 0;
+
+			decimal subtotal = 0;
+			string subtotalFormatted = string.Empty;
+
+			if (cartEnabled || wishlistEnabled)
 			{
-				return Json(new
+				var customer = _services.WorkContext.CurrentCustomer;
+
+				if (cartEnabled)
 				{
-					success = false,
-					message = _localizationService.GetResource("Common.NoProcessingSecurityIssue")
-				});
+					var cartItems = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
+					cartItemsCount = cartItems.GetTotalProducts();
+					//cartItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
+
+					subtotal = _shoppingCartService.GetCurrentCartSubTotal(cartItems);
+					if (subtotal != 0)
+					{
+						subtotalFormatted = _priceFormatter.FormatPrice(subtotal, true, false);
+					}
+				}
+
+				if (wishlistEnabled)
+				{
+					//wishlistItemsCount = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
+					wishlistItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
+				}
 			}
 
-            var cart = _workContext.CurrentCustomer.GetCartItems(isWishlist ? ShoppingCartType.Wishlist : ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			if (compareEnabled)
+			{
+				compareItemsCount = _compareProductsService.GetComparedProductsCount();
+			}
 
-            return Json(new
-			{ 
-                TotalProducts = cart.GetTotalProducts(),
-                SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(cart)
-            }, JsonRequestBehavior.AllowGet);
-        }
+			return Json(new
+			{
+				CartItemsCount = cartItemsCount,
+				CartSubTotal = subtotalFormatted,
+				WishlistItemsCount = wishlistItemsCount,
+				CompareItemsCount = compareItemsCount
+			});
+		}
 
-        #endregion
+		#endregion
 
-        #region Wishlist
+		#region Wishlist
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
         public ActionResult Wishlist(Guid? customerGuid)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
@@ -2417,6 +2393,15 @@ namespace SmartStore.Web.Controllers
                         }
                     }
 
+                    if (_shoppingCartSettings.DisplayCartAfterAddingProduct)
+                    {
+                        //redirect to the shopping cart page
+                        return Json(new
+                        {
+                            redirect = Url.RouteUrl("ShoppingCart"),
+                        });
+                    }
+                    
                     return Json(new
                     {
                         success = true,

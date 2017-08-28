@@ -27,12 +27,12 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
         public override BundleResponse GenerateBundleResponse(BundleContext context)
         {
-            // This is overridden, because BudleTransformer adds LESS @imports
+            // This is overridden, because BudleTransformer adds LESS/SASS @imports
             // to the Bundle.Files collection. This is bad as we allow switching
             // Optimization mode per UI. Switching from true to false would also include
-            // ALL LESS imports in the generated output ('link' tags)
+            // ALL LESS/SASS imports in the generated output ('link' tags)
             
-            // get all ORIGINAL bundle parts (including LESS parents, no @imports)
+            // get all ORIGINAL bundle parts (including LESS/SASS parents, no @imports)
             var files = this.EnumerateFiles(context);
             
             // replace file pattern like {version} and let Bundler resolve min/debug extensions.
@@ -41,7 +41,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
             _originalBundleFilePathes = files.Select(x => x.IncludedVirtualPath.TrimStart('~')).ToArray();
 
             var response = base.GenerateBundleResponse(context);
-            // at this stage, BundleTransformer pushed ALL LESS @imports to Bundle.Files, which is bad...
+            // at this stage, BundleTransformer pushed ALL LESS/SASS @imports to Bundle.Files, which is bad...
 
             _transformedBundleFiles = response.Files;
 
@@ -60,8 +60,10 @@ namespace SmartStore.Web.Framework.Theming.Assets
             {
                 response.Files = _transformedBundleFiles;
             }
+
             // update cache WITH Sass/Less @imports, because they need to be monitored for cache invalidation
             base.UpdateCache(context, response);
+
             // now clean. @imports are not needed anymore
             CleanBundleFiles(response);
 
@@ -81,16 +83,15 @@ namespace SmartStore.Web.Framework.Theming.Assets
                              let virtualPath = file.IncludedVirtualPath
                              where _originalBundleFilePathes.Any(x => virtualPath.EndsWith(x, StringComparison.OrdinalIgnoreCase))
                              select file;
+
             response.Files = cleanFiles;
         }
 
         private static bool CacheIsEnabled(BundleContext context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException("context");
-            }
-            return (((context.HttpContext != null) && (context.HttpContext.Cache != null)) && !context.EnableInstrumentation);
+			Guard.NotNull(context, nameof(context));
+
+            return context.HttpContext?.Cache != null && !context.EnableInstrumentation;
 
         }
     }

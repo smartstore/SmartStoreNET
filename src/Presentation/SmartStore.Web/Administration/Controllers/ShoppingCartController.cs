@@ -71,7 +71,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var customers = _customerService.GetAllCustomers(null, null, null, null, null, null, null,
 					0, 0, null, null, null, true, ShoppingCartType.ShoppingCart, command.Page - 1, command.PageSize);
-
+				
 				gridModel.Data = customers.Select(x =>
 				{
 					return new ShoppingCartModel
@@ -81,7 +81,7 @@ namespace SmartStore.Admin.Controllers
 						TotalItems = x.CountProductsInCart(ShoppingCartType.ShoppingCart)
 					};
 				});
-
+				
 				gridModel.Total = customers.TotalCount;
 			}
 			else

@@ -9,13 +9,8 @@ using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Customers
 {
-	/// <summary>
-	/// Customer registration service
-	/// </summary>
 	public partial class CustomerRegistrationService : ICustomerRegistrationService
     {
-        #region Fields
-
         private readonly ICustomerService _customerService;
         private readonly IEncryptionService _encryptionService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
@@ -24,13 +19,6 @@ namespace SmartStore.Services.Customers
 		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
         public CustomerRegistrationService(ICustomerService customerService, 
             IEncryptionService encryptionService, 
             INewsLetterSubscriptionService newsLetterSubscriptionService,
@@ -48,21 +36,12 @@ namespace SmartStore.Services.Customers
 			T = NullLocalizer.Instance;
 		}
 
-		#endregion
-
 		public Localizer T { get; set; }
 
-		#region Methods
-
-		/// <summary>
-		/// Validate customer
-		/// </summary>
-		/// <param name="usernameOrEmail">Username or email</param>
-		/// <param name="password">Password</param>
-		/// <returns>Result</returns>
 		public virtual bool ValidateCustomer(string usernameOrEmail, string password)
         {
             Customer customer = null;
+
             if (_customerSettings.UsernamesEnabled)
                 customer = _customerService.GetCustomerByUsername(usernameOrEmail);
             else
@@ -106,11 +85,6 @@ namespace SmartStore.Services.Customers
             return isValid;
         }
 
-        /// <summary>
-        /// Register customer
-        /// </summary>
-        /// <param name="request">Request</param>
-        /// <returns>Result</returns>
         public virtual CustomerRegistrationResult RegisterCustomer(CustomerRegistrationRequest request)
         {
 			Guard.NotNull(request, nameof(request));
@@ -123,31 +97,37 @@ namespace SmartStore.Services.Customers
                 result.AddError(T("Account.Register.Errors.CannotRegisterSearchEngine"));
                 return result;
             }
+
             if (request.Customer.IsBackgroundTaskAccount())
             {
                 result.AddError(T("Account.Register.Errors.CannotRegisterTaskAccount"));
                 return result;
             }
+
             if (request.Customer.IsRegistered())
             {
                 result.AddError(T("Account.Register.Errors.AlreadyRegistered"));
                 return result;
             }
+
             if (String.IsNullOrEmpty(request.Email))
             {
                 result.AddError(T("Account.Register.Errors.EmailIsNotProvided"));
                 return result;
             }
+
 			if (!request.Email.IsEmail())
             {
                 result.AddError(T("Common.WrongEmail"));
                 return result;
             }
+
             if (String.IsNullOrWhiteSpace(request.Password))
             {
                 result.AddError(T("Account.Register.Errors.PasswordIsNotProvided"));
                 return result;
             }
+
             if (_customerSettings.UsernamesEnabled)
             {
                 if (String.IsNullOrEmpty(request.Username))
@@ -157,12 +137,13 @@ namespace SmartStore.Services.Customers
                 }
             }
 
-            //validate unique user
+            // Validate unique user
             if (_customerService.GetCustomerByEmail(request.Email) != null)
             {
                 result.AddError(T("Account.Register.Errors.EmailAlreadyExists"));
                 return result;
             }
+
             if (_customerSettings.UsernamesEnabled)
             {
                 if (_customerService.GetCustomerByUsername(request.Username) != null)
@@ -172,7 +153,7 @@ namespace SmartStore.Services.Customers
                 }
             }
 
-            //at this point request is valid
+            // At this point request is valid
             request.Customer.Username = request.Username;
             request.Customer.Email = request.Email;
             request.Customer.PasswordFormat = request.PasswordFormat;
@@ -200,7 +181,7 @@ namespace SmartStore.Services.Customers
 				request.Customer.CustomerRoles.Add(customerRole);
 			}
 
-			//add to 'Registered' role
+			// Add to 'Registered' role
 			var registeredRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
 			if (registeredRole == null)
 			{
@@ -209,14 +190,14 @@ namespace SmartStore.Services.Customers
 
             request.Customer.CustomerRoles.Add(registeredRole);
 
-            //remove from 'Guests' role
+            // Remove from 'Guests' role
             var guestRole = request.Customer.CustomerRoles.FirstOrDefault(cr => cr.SystemName == SystemCustomerRoleNames.Guests);
 			if (guestRole != null)
 			{
 				request.Customer.CustomerRoles.Remove(guestRole);
 			}
 
-			//Add reward points for customer registration (if enabled)
+			// Add reward points for customer registration (if enabled)
 			if (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForRegistration > 0)
 			{
 				request.Customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForRegistration, T("RewardPoints.Message.RegisteredAsCustomer"));
@@ -228,17 +209,11 @@ namespace SmartStore.Services.Customers
             return result;
         }
         
-        /// <summary>
-        /// Change password
-        /// </summary>
-        /// <param name="request">Request</param>
-        /// <returns>Result</returns>
         public virtual PasswordChangeResult ChangePassword(ChangePasswordRequest request)
         {
-            if (request == null)
-                throw new ArgumentNullException("request");
+			Guard.NotNull(request, nameof(request));
 
-            var result = new PasswordChangeResult();
+			var result = new PasswordChangeResult();
             if (String.IsNullOrWhiteSpace(request.Email))
             {
                 result.AddError(T("Account.ChangePassword.Errors.EmailIsNotProvided"));
@@ -319,15 +294,9 @@ namespace SmartStore.Services.Customers
             return result;
         }
 
-        /// <summary>
-        /// Sets a user email
-        /// </summary>
-        /// <param name="customer">Customer</param>
-        /// <param name="newEmail">New email</param>
         public virtual void SetEmail(Customer customer, string newEmail)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(customer, nameof(customer));
 
             newEmail = newEmail.Trim();
             string oldEmail = customer.Email;
@@ -357,17 +326,11 @@ namespace SmartStore.Services.Customers
             }
         }
 
-        /// <summary>
-        /// Sets a customer username
-        /// </summary>
-        /// <param name="customer">Customer</param>
-        /// <param name="newUsername">New Username</param>
         public virtual void SetUsername(Customer customer, string newUsername)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(customer, nameof(customer));
 
-            if (!_customerSettings.UsernamesEnabled)
+			if (!_customerSettings.UsernamesEnabled)
                 throw new SmartException("Usernames are disabled");
 
             if (!_customerSettings.AllowUsersToChangeUsernames)
@@ -385,7 +348,5 @@ namespace SmartStore.Services.Customers
             customer.Username = newUsername;
             _customerService.UpdateCustomer(customer);
         }
-
-        #endregion
     }
 }

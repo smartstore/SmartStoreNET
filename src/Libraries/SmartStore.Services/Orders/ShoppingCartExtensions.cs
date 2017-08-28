@@ -4,8 +4,6 @@ using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Orders
@@ -63,8 +61,11 @@ namespace SmartStore.Services.Orders
         /// <param name="cyclePeriod">Cycle period</param>
         /// <param name="totalCycles">Total cycles</param>
         /// <returns>Error (if exists); otherwise, empty string</returns>
-		public static string GetRecurringCycleInfo(this IList<OrganizedShoppingCartItem> shoppingCart, ILocalizationService localizationService,
-            out int cycleLength, out RecurringProductCyclePeriod cyclePeriod, out int totalCycles)
+		public static string GetRecurringCycleInfo(this IList<OrganizedShoppingCartItem> shoppingCart, 
+			ILocalizationService localizationService,
+            out int cycleLength, 
+			out RecurringProductCyclePeriod cyclePeriod, 
+			out int totalCycles)
         {
             string error = "";
 
@@ -87,7 +88,7 @@ namespace SmartStore.Services.Orders
 				string conflictError = localizationService.GetResource("ShoppingCart.ConflictingShipmentSchedules");
                 if (product.IsRecurring)
                 {
-                    //cycle length
+                    // cycle length
                     if (_cycleLength.HasValue && _cycleLength.Value != product.RecurringCycleLength)
                     {
                         error = conflictError;
@@ -98,7 +99,7 @@ namespace SmartStore.Services.Orders
                         _cycleLength = product.RecurringCycleLength;
                     }
 
-                    //cycle period
+                    // cycle period
                     if (_cyclePeriod.HasValue && _cyclePeriod.Value != product.RecurringCyclePeriod)
                     {
                         error = conflictError;
@@ -109,7 +110,7 @@ namespace SmartStore.Services.Orders
                         _cyclePeriod = product.RecurringCyclePeriod;
                     }
 
-                    //total cycles
+                    // total cycles
                     if (_totalCycles.HasValue && _totalCycles.Value != product.RecurringTotalCycles)
                     {
                         error = conflictError;
@@ -153,46 +154,6 @@ namespace SmartStore.Services.Orders
 				enumerable = enumerable.Where(x => x.StoreId == storeId.Value);
 
 			return enumerable;
-		}
-
-		public static List<OrganizedShoppingCartItem> Organize(this IEnumerable<ShoppingCartItem> cart)
-		{
-			var result = new List<OrganizedShoppingCartItem>();
-			var productAttributeParser = EngineContext.Current.Resolve<IProductAttributeParser>();
-
-			if (cart == null || !cart.Any())
-				return result;
-
-			foreach (var parent in cart.Where(x => x.ParentItemId == null))
-			{
-				var parentItem = new OrganizedShoppingCartItem(parent);
-
-				var childs = cart.Where(x => x.ParentItemId != null && x.ParentItemId == parent.Id && x.Id != parent.Id && 
-					x.ShoppingCartTypeId == parent.ShoppingCartTypeId && x.Product.CanBeBundleItem());
-
-				foreach (var child in childs)
-				{
-					var childItem = new OrganizedShoppingCartItem(child);
-
-					if (parent.Product != null && parent.Product.BundlePerItemPricing && child.AttributesXml != null && child.BundleItem != null)
-					{
-						child.Product.MergeWithCombination(child.AttributesXml);
-
-						var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml).ToList();
-						if (attributeValues != null)
-						{
-							childItem.BundleItemData.AdditionalCharge = decimal.Zero;
-							attributeValues.Each(x => childItem.BundleItemData.AdditionalCharge += x.PriceAdjustment);
-						}
-					}
-
-					parentItem.ChildItems.Add(childItem);
-				}
-
-				result.Add(parentItem);
-			}
-
-			return result;
 		}
     }
 }

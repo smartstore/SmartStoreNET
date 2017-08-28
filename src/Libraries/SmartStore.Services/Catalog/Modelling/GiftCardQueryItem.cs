@@ -7,7 +7,7 @@
 			Guard.NotEmpty(name, nameof(name));
 
 			Name = name.ToLower();
-			Value = value.EmptyNull();
+			Value = value ?? string.Empty;
 
 			if (Name.StartsWith("."))
 			{

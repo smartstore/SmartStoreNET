@@ -395,6 +395,41 @@ namespace SmartStore.Web.Controllers
 			return result;
 		}
 
+        public IList<ProductDetailsModel.TierPriceModel> CreateTierPriceModel (Product product, decimal adjustment = decimal.Zero)
+        {
+            var model = product.TierPrices
+                .OrderBy(x => x.Quantity)
+                .FilterByStore(_services.StoreContext.CurrentStore.Id)
+                .FilterForCustomer(_services.WorkContext.CurrentCustomer)
+                .ToList()
+                .RemoveDuplicatedQuantities()
+                .Select(tierPrice =>
+                {
+                    var m = new ProductDetailsModel.TierPriceModel
+                    {
+                        Quantity = tierPrice.Quantity,
+                    };
+
+                    if (adjustment != 0 && tierPrice.CalculationMethod == TierPriceCalculationMethod.Percental && _catalogSettings.ApplyTierPricePercentageToAttributePriceAdjustments)
+                    {
+                        adjustment = adjustment - (adjustment / 100 * tierPrice.Price);
+                    }
+                    else
+                    {
+                        adjustment = decimal.Zero;
+                    }
+
+                    decimal taxRate = decimal.Zero;
+                    decimal priceBase = _taxService.GetProductPrice(product, _priceCalculationService.GetFinalPrice(product, _services.WorkContext.CurrentCustomer, adjustment, _catalogSettings.DisplayTierPricesWithDiscounts, tierPrice.Quantity, null, null, true), out taxRate);
+                    decimal price = _currencyService.ConvertFromPrimaryStoreCurrency(priceBase, _services.WorkContext.WorkingCurrency);
+                    m.Price = _priceFormatter.FormatPrice(price, true, false);
+                    return m;
+                })
+                .ToList();
+
+            return model;
+        }
+
 		public void PrepareProductDetailsPictureModel(
 			ProductDetailsPictureModel model, 
 			IList<Picture> pictures, 
@@ -827,14 +862,18 @@ namespace SmartStore.Web.Controllers
 			var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id);
 			string taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
 
-			var defaultTaxRate = "";
-			var taxrate = Convert.ToString(_taxService.GetTaxRate(product, customer));
-			if (_taxSettings.DisplayTaxRates && !taxrate.Equals("0", StringComparison.InvariantCultureIgnoreCase))
+			var defaultTaxRate = string.Empty;
+			if (_taxSettings.DisplayTaxRates)
 			{
-				defaultTaxRate = "({0}%)".FormatWith(taxrate);
+				var taxRate = _taxService.GetTaxRate(product, customer);
+				if (taxRate != decimal.Zero)
+				{
+					var formattedTaxRate = _priceFormatter.FormatTaxRate(taxRate);
+					defaultTaxRate = $"({formattedTaxRate}%)";
+				}
 			}
 
-			var additionalShippingCosts = String.Empty;
+			var additionalShippingCosts = string.Empty;
 			var addShippingPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.AdditionalShippingCharge, currency);
 
 			if (addShippingPrice > 0)

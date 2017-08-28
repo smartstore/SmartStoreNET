@@ -62,14 +62,12 @@ namespace SmartStore.Admin.Controllers
 
         [NonAction]
         public string GetRequirementUrlInternal(IDiscountRequirementRule discountRequirementRule, Discount discount, int? discountRequirementId)
-        {   
-            if (discountRequirementRule == null)
-                throw new ArgumentNullException("discountRequirementRule");
-
-            if (discount == null)
-                throw new ArgumentNullException("discount");
+        {
+			Guard.NotNull(discountRequirementRule, nameof(discountRequirementRule));
+			Guard.NotNull(discount, nameof(discount));
 
             string url = string.Format("{0}{1}", _services.WebHelper.GetStoreLocation(), discountRequirementRule.GetConfigurationUrl(discount.Id, discountRequirementId));
+
             return url;
         }
         

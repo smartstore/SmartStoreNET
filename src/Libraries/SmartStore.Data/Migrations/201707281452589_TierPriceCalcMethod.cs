@@ -35,6 +35,8 @@ namespace SmartStore.Data.Migrations
                 "Prozentuale Erm‰ﬂigungen von Staffelpreisen auf Auf- & Abpreise von Attributen anwenden",
                 "Specifies whether to apply tierprice percentage to attribute price adjustments",
                 "Bestimmt ob prozentuale Erm‰ﬂigungen von Staffelpreisen auf Auf- & Abpreise von Attributen angewendet werden sollen");
+
+			builder.AddOrUpdate("Admin.Header.Account", "Account", "Account");
         }
     }
 }

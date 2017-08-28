@@ -162,7 +162,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					CreateFileFromEntries(cacheDirectoryName, "asset.dependencies", deps);
 
 					// Save hash file
-					var currentHash = BundleTable.VirtualPathProvider.GetFileHash(virtualPath, deps);
+					var currentHash = BundleTable.VirtualPathProvider.GetFileHash(virtualPath, ThemeHelper.RemoveVirtualImports(deps));
 					CreateFileFromEntries(cacheDirectoryName, "asset.hash", new[] { currentHash });
 
 					// Save codes file
@@ -278,11 +278,6 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		{
 			var list = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-			if (deps != null)
-			{
-				deps = ThemeHelper.RemoveVirtualImports(deps);
-			}
-
 			foreach (var d in (deps ?? new string[0]).Concat(new[] { virtualPath }))
 			{
 				var result = _themeFileResolver.Resolve(d);
@@ -341,7 +336,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				parsedDeps = ParseFileContent(lastDeps);
 
 				// Check if dependency files hash matches the last saved hash
-				currentHash = BundleTable.VirtualPathProvider.GetFileHash(virtualPath, parsedDeps);
+				currentHash = BundleTable.VirtualPathProvider.GetFileHash(virtualPath, ThemeHelper.RemoveVirtualImports(parsedDeps));
 
 				return lastHash == currentHash;
 			}

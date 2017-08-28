@@ -37,7 +37,7 @@
                     </label>
                 </div>
             </div>
-            <button type="submit" id="continue-downloading" class="btn btn-secondary" value="@T("Common.Continue")"
+            <button type="submit" id="continue-downloading" class="btn" value="@T("Common.Continue")"
                     onclick="setLocation('@Url.Action("GetDownload", "Download", new { id = Model.OrderItemGuid, agree = true })')">
                 <i class="fa fa-check"></i>
                 <span>@T("Common.Continue")</span>

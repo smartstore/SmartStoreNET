@@ -62,7 +62,6 @@ namespace SmartStore.AmazonPay.Services
 		private readonly Lazy<IExternalAuthorizer> _authorizer;
 		private readonly AddressSettings _addressSettings;
 		private readonly OrderSettings _orderSettings;
-		private readonly RewardPointsSettings _rewardPointsSettings;
 		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
 
 		public AmazonPayService(
@@ -86,7 +85,6 @@ namespace SmartStore.AmazonPay.Services
 			Lazy<IExternalAuthorizer> authorizer,
 			AddressSettings addressSettings,
 			OrderSettings orderSettings,
-			RewardPointsSettings rewardPointsSettings,
 			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings)
 		{
 			_httpContext = httpContext;
@@ -110,7 +108,6 @@ namespace SmartStore.AmazonPay.Services
 			_authorizer = authorizer;
 			_addressSettings = addressSettings;
 			_orderSettings = orderSettings;
-			_rewardPointsSettings = rewardPointsSettings;
 			_externalAuthenticationSettings = externalAuthenticationSettings;
 
 			T = NullLocalizer.Instance;
@@ -426,20 +423,6 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else if (type == AmazonPayRequestType.PaymentMethod)
 				{
-					if (_rewardPointsSettings.Enabled && !model.IsRecurring)
-					{
-						int rewardPointsBalance = customer.GetRewardPointsBalance();
-						decimal rewardPointsAmountBase = _orderTotalCalculationService.ConvertRewardPointsToAmount(rewardPointsBalance);
-						decimal rewardPointsAmount = _currencyService.ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, currency);
-
-						if (rewardPointsAmount > decimal.Zero)
-						{
-							model.DisplayRewardPoints = true;
-							model.RewardPointsAmount = _priceFormatter.FormatPrice(rewardPointsAmount, true, false);
-							model.RewardPointsBalance = rewardPointsBalance;
-						}
-					}
-
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, AmazonPayPlugin.SystemName, store.Id);
 
 					decimal orderTotalDiscountAmountBase = decimal.Zero;

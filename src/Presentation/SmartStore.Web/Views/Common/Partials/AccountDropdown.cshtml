@@ -60,14 +60,16 @@
         {
             <a class="dropdown-item" href="@Url.RouteUrl("Wishlist")">
                 <i class="fa fa-fw fa-heart"></i>
-				<span>@T("Wishlist")</span> <span class="wishlist-qty badge badge-success @(Model.WishlistItems > 0 ? "label-success" : "")">@Model.WishlistItems</span>
+				<span>@T("Wishlist")</span> 
+				<span class="wishlist-qty badge badge-success @(Model.WishlistItems > 0 ? "label-success" : "d-none")">@Model.WishlistItems</span>
 			</a> 
         }
         @if (Model.ShoppingCartEnabled)
         {
             <a id="topcartlink" class="dropdown-item" href="@Url.RouteUrl("ShoppingCart")">
                 <i class="fa fa-fw fa-shopping-bag"></i>
-				<span>@T("ShoppingCart")</span> <span class="cart-qty badge badge-success @(Model.ShoppingCartItems > 0 ? "label-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
+				<span>@T("ShoppingCart")</span> 
+				<span class="cart-qty badge badge-success @(Model.ShoppingCartItems > 0 ? "label-success" : "d-none")">@Model.ShoppingCartItems</span>
 			</a>
         }
         <div class="dropdown-divider"></div>

@@ -39,13 +39,13 @@ namespace SmartStore.DevTools.Controllers
 
             ModelState.Clear();
 
-            // load settings for a chosen store scope
+            // Load settings for a chosen store scope
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
             var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 
             storeDependingSettingHelper.UpdateSettings(model /*settings*/, form, storeScope, _services.Settings);
 
-            return Configure();
+			return Configure();
         }
 
         public ActionResult MiniProfiler()

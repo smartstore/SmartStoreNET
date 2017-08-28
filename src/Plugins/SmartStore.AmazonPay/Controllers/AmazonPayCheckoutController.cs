@@ -1,7 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Services;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Common;
 
 namespace SmartStore.AmazonPay.Controllers
@@ -11,18 +10,15 @@ namespace SmartStore.AmazonPay.Controllers
 		private readonly HttpContextBase _httpContext;
 		private readonly IAmazonPayService _apiService;
 		private readonly IGenericAttributeService _genericAttributeService;
-		private readonly RewardPointsSettings _rewardPointsSettings;
 
 		public AmazonPayCheckoutController(
 			HttpContextBase httpContext,
 			IAmazonPayService apiService,
-			IGenericAttributeService genericAttributeService,
-			RewardPointsSettings rewardPointsSettings)
+			IGenericAttributeService genericAttributeService)
 		{
 			_httpContext = httpContext;
 			_apiService = apiService;
 			_genericAttributeService = genericAttributeService;
-			_rewardPointsSettings = rewardPointsSettings;
 		}
 
 		public ActionResult BillingAddress()
@@ -45,14 +41,8 @@ namespace SmartStore.AmazonPay.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult PaymentMethod(bool? UseRewardPoints)
+		public ActionResult PaymentMethod(FormCollection form)
 		{
-			if (_rewardPointsSettings.Enabled)
-			{
-				_genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer,
-					SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, UseRewardPoints ?? false, Services.StoreContext.CurrentStore.Id);
-			}
-
 			_apiService.GetBillingAddress();
 
 			return RedirectToAction("Confirm", "Checkout", new { area = "" });

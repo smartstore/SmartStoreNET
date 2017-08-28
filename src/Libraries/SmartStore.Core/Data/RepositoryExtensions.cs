@@ -18,8 +18,8 @@ namespace SmartStore.Core.Data
         {
             foreach (var chunk in ids.Chunk())
             {
-                var query = rs.Table.Where(a => chunk.Contains(a.Id));
-                foreach (var item in query)
+                var items = rs.Table.Where(a => chunk.Contains(a.Id)).ToList();
+                foreach (var item in items)
                 {
                     yield return item;
                 }

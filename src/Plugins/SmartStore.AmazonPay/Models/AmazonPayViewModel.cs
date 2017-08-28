@@ -49,11 +49,6 @@ namespace SmartStore.AmazonPay.Models
 		public string ButtonSize { get; set; }
 		public bool UsePopupWindow { get; set; }
 
-		public bool DisplayRewardPoints { get; set; }
-		public int RewardPointsBalance { get; set; }
-		public string RewardPointsAmount { get; set; }
-		public bool UseRewardPoints { get; set; }
-
 		public string ShippingMethod { get; set; }
 		public AddressModel BillingAddress { get; set; }
 	}

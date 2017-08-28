@@ -211,12 +211,8 @@ namespace SmartStore.Services.Catalog
 			var products = query.ToList();
 
 			// sort by passed identifier sequence
-			var sortQuery = from i in productIds
-							join p in products on i equals p.Id
-							select p;
-
-			return sortQuery.ToList();
-        }
+			return products.OrderBySequence(productIds).ToList();
+		}
 
 		private IQueryable<Product> ApplyLoadFlags(IQueryable<Product> query, ProductLoadFlags flags)
 		{
@@ -771,16 +767,29 @@ namespace SmartStore.Services.Catalog
         {
             var query = from csp in _crossSellProductRepository.Table
                         join p in _productRepository.Table on csp.ProductId2 equals p.Id
-                        where csp.ProductId1 == productId1 &&
-                        !p.Deleted &&
-                        (showHidden || p.Published)
+                        where csp.ProductId1 == productId1 && !p.Deleted && (showHidden || p.Published)
                         orderby csp.Id
                         select csp;
+
             var crossSellProducts = query.ToList();
             return crossSellProducts;
         }
 
-        public virtual CrossSellProduct GetCrossSellProductById(int crossSellProductId)
+		public virtual IList<CrossSellProduct> GetCrossSellProductsByProductIds(IEnumerable<int> productIds, bool showHidden = false)
+		{
+			Guard.NotNull(productIds, nameof(productIds));
+
+			var query = from csp in _crossSellProductRepository.Table
+						join p in _productRepository.Table on csp.ProductId2 equals p.Id
+						where productIds.Contains(csp.ProductId1) && !p.Deleted && (showHidden || p.Published)
+						orderby csp.Id
+						select csp;
+
+			var crossSellProducts = query.ToList();
+			return crossSellProducts;
+		}
+
+		public virtual CrossSellProduct GetCrossSellProductById(int crossSellProductId)
         {
             if (crossSellProductId == 0)
                 return null;
@@ -807,52 +816,31 @@ namespace SmartStore.Services.Catalog
 
             _crossSellProductRepository.Update(crossSellProduct);
 
-            //event notification
+            // event notification
             _services.EventPublisher.EntityUpdated(crossSellProduct);
         }
 
 		public virtual IList<Product> GetCrosssellProductsByShoppingCart(IList<OrganizedShoppingCartItem> cart, int numberOfProducts)
-        {
-            var result = new List<Product>();
+		{
+			var result = new List<Product>();
 
-            if (numberOfProducts == 0)
-                return result;
+			if (numberOfProducts == 0)
+				return result;
 
-            if (cart == null || cart.Count == 0)
-                return result;
+			if (cart == null || cart.Count == 0)
+				return result;
 
-            var cartProductIds = new List<int>();
-            foreach (var sci in cart)
-            {
-                int prodId = sci.Item.ProductId;
-                if (!cartProductIds.Contains(prodId))
-                    cartProductIds.Add(prodId);
-            }
+			var cartProductIds = new HashSet<int>(cart.Select(x => x.Item.ProductId));
+			var csItems = GetCrossSellProductsByProductIds(cartProductIds);
+			var productIdsToLoad = new HashSet<int>(csItems.Select(x => x.ProductId2).Except(cartProductIds));
 
-            foreach (var sci in cart)
-            {
-                var crossSells = GetCrossSellProductsByProductId1(sci.Item.ProductId);
-                foreach (var crossSell in crossSells)
-                {
-                    //validate that this product is not added to result yet
-                    //validate that this product is not in the cart
-                    if (result.Find(p => p.Id == crossSell.ProductId2) == null &&
-                        !cartProductIds.Contains(crossSell.ProductId2))
-                    {
-                        var productToAdd = GetProductById(crossSell.ProductId2);
-                        //validate product
-                        if (productToAdd == null || productToAdd.Deleted || !productToAdd.Published)
-                            continue;
+			if (productIdsToLoad.Count > 0)
+			{
+				result.AddRange(GetProductsByIds(productIdsToLoad.Take(numberOfProducts).ToArray()));
+			}
 
-                        //add a product to result
-                        result.Add(productToAdd);
-                        if (result.Count >= numberOfProducts)
-                            return result;
-                    }
-                }
-            }
-            return result;
-        }
+			return result;
+		}
 
 		public virtual int EnsureMutuallyCrossSellProducts(int productId1)
 		{

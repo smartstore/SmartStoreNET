@@ -86,11 +86,13 @@
 					<div class="row">
 						<div class="col-md-6">
 							@if (Model.IsEditable)
-							{
-								Html.RenderWidget("order_summary_actions_before");
-								Html.RenderPartial("_DiscountBox", Model.DiscountBox);
-								Html.RenderPartial("_GiftCardBox", Model.GiftCardBox);
-								Html.RenderPartial("EstimateShipping", Model.EstimateShipping);
+                            {
+                                Html.RenderWidget("order_summary_actions_before");
+                                Html.RenderPartial("_DiscountBox", Model.DiscountBox);
+                                Html.RenderPartial("_GiftCardBox", Model.GiftCardBox);
+                                Html.RenderPartial("_RewardPointsBox", Model.RewardPoints);
+                                Html.RenderPartial("EstimateShipping", Model.EstimateShipping);
+                                
 								Html.RenderWidget("order_summary_actions_after");
 							}
 							else

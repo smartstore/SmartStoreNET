@@ -286,16 +286,11 @@ namespace SmartStore.Services.Customers
             var query = from c in _customerRepository.Table
                         where customerIds.Contains(c.Id)
                         select c;
+
             var customers = query.ToList();
-            //sort by passed identifiers
-            var sortedCustomers = new List<Customer>();
-            foreach (int id in customerIds)
-            {
-                var customer = customers.Find(x => x.Id == id);
-                if (customer != null)
-                    sortedCustomers.Add(customer);
-            }
-            return sortedCustomers;
+
+			// sort by passed identifier sequence
+			return customers.OrderBySequence(customerIds).ToList();
         }
 
 		public virtual IList<Customer> GetSystemAccountCustomers()
@@ -372,16 +367,20 @@ namespace SmartStore.Services.Customers
             if (guestRole == null)
                 throw new SmartException("'Guests' role could not be loaded");
 
-            customer.CustomerRoles.Add(guestRole);
-            _customerRepository.Insert(customer);
-
-			var clientIdent = _services.WebHelper.GetClientIdent();
-			if (clientIdent.HasValue())
+			using (new DbContextScope(autoCommit: true))
 			{
-				_genericAttributeService.SaveAttribute(customer, "ClientIdent", clientIdent);
+				// Ensure that entities are saved to db in any case
+				customer.CustomerRoles.Add(guestRole);
+				_customerRepository.Insert(customer);
+
+				var clientIdent = _services.WebHelper.GetClientIdent();
+				if (clientIdent.HasValue())
+				{
+					_genericAttributeService.SaveAttribute(customer, "ClientIdent", clientIdent);
+				}
 			}
 
-			Logger.DebugFormat("Guest account created for anonymous visitor. Id: {0}, ClientIdent: {1}", customer.CustomerGuid, clientIdent ?? "n/a");
+			//Logger.DebugFormat("Guest account created for anonymous visitor. Id: {0}, ClientIdent: {1}", customer.CustomerGuid, clientIdent ?? "n/a");
 
 			return customer;
         }
@@ -457,7 +456,7 @@ namespace SmartStore.Services.Customers
 
 		public virtual void ResetCheckoutData(Customer customer, int storeId,
             bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
-            bool clearRewardPoints = true, bool clearShippingMethod = true,
+            bool clearRewardPoints = false, bool clearShippingMethod = true,
             bool clearPaymentMethod = true)
         {
             if (customer == null)

@@ -152,7 +152,7 @@ namespace SmartStore.Services.DataExchange.Export
 			DataExporterContext ctx,
 			Product product,
 			ProductVariantAttributeCombination combination,
-			IList<ProductVariantAttributeValue> attributeValues)
+			ICollection<ProductVariantAttributeValue> attributeValues)
 		{
 			var price = product.Price;
 			var priceCalculationContext = ctx.ProductExportContext as PriceCalculationContext;

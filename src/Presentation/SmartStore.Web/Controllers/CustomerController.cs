@@ -463,7 +463,7 @@ namespace SmartStore.Web.Controllers
         [CaptchaValidator]
         public ActionResult Login(LoginModel model, string returnUrl, bool captchaValid)
         {
-            //validate CAPTCHA
+            // validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage && !captchaValid)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
@@ -480,13 +480,13 @@ namespace SmartStore.Web.Controllers
                 {
                     var customer = _customerSettings.UsernamesEnabled ? _customerService.GetCustomerByUsername(model.Username) : _customerService.GetCustomerByEmail(model.Email);
 
-                    //migrate shopping cart
+                    // migrate shopping cart
                     _shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer);
 
-                    //sign in new customer
+                    // sign in new customer
                     _authenticationService.SignIn(customer, model.RememberMe);
 
-                    //activity log
+                    // activity log
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
 					// confusing when login page redirects to itself
@@ -586,8 +586,9 @@ namespace SmartStore.Web.Controllers
                 _authenticationService.SignOut();
                 
                 // Save a new record
-                _workContext.CurrentCustomer = _customerService.InsertGuestCustomer();
+                _workContext.CurrentCustomer = null;
             }
+
             var customer = _workContext.CurrentCustomer;
 
             // validate CAPTCHA
@@ -700,15 +701,15 @@ namespace SmartStore.Web.Controllers
                         }
                     }
 
-                    //login customer now
+                    // Login customer now
                     if (isApproved)
                         _authenticationService.SignIn(customer, true);
 
-                    //associated with external account (if possible)
+                    // Associated with external account (if possible)
                     TryAssociateAccountWithExternalAccount(customer);
                     
-                    //insert default address (if possible)
-                    var defaultAddress = new Address()
+                    // Insert default address (if possible)
+                    var defaultAddress = new Address
                     {
                         FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName),
                         LastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName),
@@ -726,21 +727,22 @@ namespace SmartStore.Web.Controllers
                         FaxNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax),
                         CreatedOnUtc = customer.CreatedOnUtc
                     };
+
                     if (this._addressService.IsAddressValid(defaultAddress))
                     {
-                        //some validation
+                        // Some validation
                         if (defaultAddress.CountryId == 0)
                             defaultAddress.CountryId = null;
                         if (defaultAddress.StateProvinceId == 0)
                             defaultAddress.StateProvinceId = null;
-                        //set default address
+                        // Set default address
                         customer.Addresses.Add(defaultAddress);
                         customer.BillingAddress = defaultAddress;
                         customer.ShippingAddress = defaultAddress;
                         _customerService.UpdateCustomer(customer);
                     }
 
-                    //notifications
+                    // Notifications
                     if (_customerSettings.NotifyNewCustomerRegistration)
                         _workflowMessageService.SendCustomerRegisteredNotificationMessage(customer, _localizationSettings.DefaultAdminLanguageId);
                     
@@ -927,21 +929,27 @@ namespace SmartStore.Web.Controllers
         public ActionResult AccountActivation(string token, string email)
         {
             var customer = _customerService.GetCustomerByEmail(email);
+
             if (customer == null)
-				return RedirectToHomePageWithError("Email");
+            {
+                NotifyError(_services.Localization.GetResource("Account.PasswordRecoveryConfirm.InvalidEmail"));
+                return RedirectToRoute("HomePage");
+            }
+				
 
             var cToken = customer.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken);
-            if (String.IsNullOrEmpty(cToken))
-				return RedirectToHomePageWithError("Token");
-
-            if (!cToken.Equals(token, StringComparison.InvariantCultureIgnoreCase))
-				return RedirectToHomePageWithError("Token");
-
-            //activate user account
+            if (String.IsNullOrEmpty(cToken) || !cToken.Equals(token, StringComparison.InvariantCultureIgnoreCase))
+            {
+                NotifyError(_services.Localization.GetResource("Account.PasswordRecoveryConfirm.InvalidToken"));
+                return RedirectToRoute("HomePage");
+            }
+			
+            // Activate user account
             customer.Active = true;
             _customerService.UpdateCustomer(customer);
             _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AccountActivationToken, "");
-            //send welcome message
+
+            // Send welcome message
             _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
             
             var model = new AccountActivationModel();
@@ -1406,12 +1414,19 @@ namespace SmartStore.Web.Controllers
 
 			var orderItem = _orderService.GetOrderItemByGuid(id);
             if (orderItem == null)
-				return RedirectToHomePageWithError("Guid");
+            {
+                NotifyError(_services.Localization.GetResource("Customer.UserAgreement.OrderItemNotFound"));
+                return RedirectToRoute("HomePage");
+            }
+				
 
             var product = orderItem.Product;
             if (product == null || !product.HasUserAgreement)
-				return RedirectToHomePageWithError("Product");
-
+            {
+                NotifyError(_services.Localization.GetResource("Customer.UserAgreement.ProductNotFound"));
+                return RedirectToRoute("HomePage");
+            }
+			
             var model = new UserAgreementModel();
             model.UserAgreementText = product.UserAgreementText;
 			model.OrderItemGuid = id;
@@ -1649,15 +1664,11 @@ namespace SmartStore.Web.Controllers
         {
             var customer = _customerService.GetCustomerByEmail(email);
 			customer = Services.WorkContext.CurrentCustomer;
+
             if (customer == null )
-				return RedirectToHomePageWithError("Email");
-
-    //        var cPrt = customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken);
-    //        if (String.IsNullOrEmpty(cPrt))
-				//return RedirectToHomePageWithError("Token");
-
-    //        if (!cPrt.Equals(token, StringComparison.InvariantCultureIgnoreCase))
-				//return RedirectToHomePageWithError("Token");
+            {
+                NotifyError(_services.Localization.GetResource("Account.PasswordRecoveryConfirm.InvalidEmail"));
+            }
             
             var model = new PasswordRecoveryConfirmModel();
             return View(model);
@@ -1669,15 +1680,19 @@ namespace SmartStore.Web.Controllers
         {
             var customer = _customerService.GetCustomerByEmail(email);
             if (customer == null)
-				return RedirectToHomePageWithError("Email");
+            {
+                NotifyError(_services.Localization.GetResource("Account.PasswordRecoveryConfirm.InvalidEmail"));
+                return PasswordRecoveryConfirm(token, email);
+            }
+
 
             var cPrt = customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken);
-            if (String.IsNullOrEmpty(cPrt))
-				return RedirectToHomePageWithError("Token");
-
-            if (!cPrt.Equals(token, StringComparison.InvariantCultureIgnoreCase))
-				return RedirectToHomePageWithError("Token");
-            
+            if (String.IsNullOrEmpty(cPrt) || !cPrt.Equals(token, StringComparison.InvariantCultureIgnoreCase))
+            {
+                NotifyError(_services.Localization.GetResource("Account.PasswordRecoveryConfirm.InvalidToken"));
+                return PasswordRecoveryConfirm(token, email);
+            }
+			
             if (ModelState.IsValid)
             {
                 var response = _customerRegistrationService.ChangePassword(new ChangePasswordRequest(email,
@@ -1687,7 +1702,7 @@ namespace SmartStore.Web.Controllers
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.PasswordRecoveryToken, "");
 
                     model.SuccessfullyChanged = true;
-                    model.Result = _localizationService.GetResource("Account.PasswordRecovery.PasswordHasBeenChanged");
+                    model.Result = _services.Localization.GetResource("Account.PasswordRecovery.PasswordHasBeenChanged");
                 }
                 else
                 {

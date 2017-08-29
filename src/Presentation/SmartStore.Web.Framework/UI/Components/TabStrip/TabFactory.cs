@@ -25,5 +25,21 @@ namespace SmartStore.Web.Framework.UI
             _items.Add(item);
             return new TabBuilder(item, _htmlHelper);
         }
+
+        public virtual TabBuilder Insert(int index)
+        {
+            var item = new Tab();
+
+            if (_items.Count > index)
+            {
+                _items.Insert(index, item);
+            }
+            else
+            {
+                _items.Add(item);
+            }
+
+            return new TabBuilder(item, _htmlHelper);
+        }
     }
 }

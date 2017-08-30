@@ -65,7 +65,7 @@
             $('#group-shipping').show();
             $('#group-tax').show();
             $('#group-inventory').show();
-            $('a[href=#tab-inventory]').parent().removeClass("hide"); // specified in _CreateOrUpdate.cshtml
+            $('a[href="#tab-inventory"]').parent().removeClass("hide"); // specified in _CreateOrUpdate.cshtml
         }
         else if (selectedProductTypeId == '@((int)ProductType.GroupedProduct)') {
             $('#group-required-other-products').hide();
@@ -75,10 +75,10 @@
             $('#group-shipping').hide();
             $('#group-tax').hide();
             $('#group-inventory').hide();
-            $('a[href=#tab-inventory]').parent().addClass("hide"); // specified in _CreateOrUpdate.cshtml
+            $('a[href="#tab-inventory"]').parent().addClass("hide"); // specified in _CreateOrUpdate.cshtml
         }
         else if (selectedProductTypeId == '@((int)ProductType.BundledProduct)') {
-        	//$('a[href=#tab-inventory]').parent().addClass("hide"); // specified in _CreateOrUpdate.cshtml
+        	//$('a[href="#tab-inventory"]').parent().addClass("hide"); // specified in _CreateOrUpdate.cshtml
         }
     }
 

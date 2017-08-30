@@ -114,43 +114,43 @@
 
         $(window).trigger('resize');
 
-        $(window).load(function () {
+        $(window).on('load', function () {
 
-            // swap classes onload and domready
-            html.removeClass("loading").addClass("loaded");
+        	// swap classes onload and domready
+        	html.removeClass("loading").addClass("loaded");
 
-            // make #content fit into viewspace
-            var fitContentToWindow = function (initial) {
-                var content = $('#content');
+        	// make #content fit into viewspace
+        	var fitContentToWindow = function (initial) {
+        		var content = $('#content');
 
-                if (!content.length)
-                	return;
+        		if (!content.length)
+        			return;
 
-                var height = initialHeight = content.height(),
+        		var height = initialHeight = content.height(),
                              outerHeight,
                              winHeight = $(document).height(),
                              top,
                              offset;
 
-                if (initial === true) {
-                    top = content.offset().top;
-                    offset = content.outerHeight(false) - content.height();
-                    if ($('html').hasClass('wkit')) offset += 2; // dont know why!
-                    content.data("initial-height", initialHeight)
+        		if (initial === true) {
+        			top = content.offset().top;
+        			offset = content.outerHeight(false) - content.height();
+        			if ($('html').hasClass('wkit')) offset += 2; // dont know why!
+        			content.data("initial-height", initialHeight)
                                        .data("initial-top", top)
                                        .data("initial-offset", offset);
-                }
-                else {
-                    top = content.data("initial-top");
-                    offset = content.data("initial-offset");
-                    initialHeight = content.data("initial-height");
-                }
+        		}
+        		else {
+        			top = content.data("initial-top");
+        			offset = content.data("initial-offset");
+        			initialHeight = content.data("initial-height");
+        		}
 
-                content.css("min-height", Math.max(initialHeight, winHeight - offset - top) + "px");
+        		content.css("min-height", Math.max(initialHeight, winHeight - offset - top) + "px");
 
-            };
-            fitContentToWindow(true);
-            $(window).on("resize", fitContentToWindow);
+        	};
+        	fitContentToWindow(true);
+        	$(window).on("resize", fitContentToWindow);
 
         });
 

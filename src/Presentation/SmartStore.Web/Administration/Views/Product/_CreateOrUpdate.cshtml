@@ -18,7 +18,7 @@
 	}
 </script>
 
-@Html.SmartStore().TabStrip().Name("product-edit").OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Tabs).Position(TabsPosition.Left).Items(x =>
+@Html.SmartStore().TabStrip().Name("product-edit").ComponentVersion(BootstrapVersion.V4).OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Tabs).Position(TabsPosition.Left).Items(x =>
 {
 	x.Add().Text(T("Admin.Catalog.Products.Info").Text)
 		.Icon("fa fa-pencil fa-lg fa-fw")

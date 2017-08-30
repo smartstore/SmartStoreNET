@@ -21,15 +21,18 @@
 		"~/Content/jquery.pnotify.default.css",
 		"~/Content/jquery.pnotify.default.icons.css",
 		"~/Content/smartstore.entitypicker.css",
-		"~/Administration/Content/theme.less");
+		"~/Administration/Content/theme.less"
+		//"~/Administration/Content/theme.scss"
+		);
 
 	// add js assets (Head)
 	Html.AppendScriptParts(ResourceLocation.Head,
 		"~/Scripts/modernizr.js",
 		// Telerik doesn't like jQuery 1.9+, a shame!
-		"~/Administration/Scripts/jquery-1.8.3.js",
-		//"~/Scripts/jquery-2.1.1.js",
-		//"~/Scripts/jquery-migrate-1.2.1.js",
+		//"~/Administration/Scripts/jquery-1.8.3.js",
+		"~/Administration/Scripts/jquery-3.2.1.js",
+		"~/Administration/Scripts/jquery-migrate-3.2.1.js",
+		"~/Administration/Scripts/jquery-shims.js",
 		"~/Scripts/globalize/globalize.js",
 		"~/Scripts/smartstore.globalize.adapter.js");
 
@@ -64,6 +67,7 @@
 		"~/Scripts/smartstore.hacks.js",
 		"~/Scripts/smartstore.common.js",
 		// Bootstrap
+		//"~/Administration/Content/bs4/js/bootstrap.js",
 		bootstrapJsRoot + "bootstrap-transition.js",
 		bootstrapJsRoot + "bootstrap-alert.js",
 		bootstrapJsRoot + "bootstrap-button.js",

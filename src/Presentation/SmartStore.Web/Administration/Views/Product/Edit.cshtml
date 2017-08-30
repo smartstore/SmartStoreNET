@@ -144,7 +144,7 @@
         function bundlePerItemPricing(isActive) {
         	$('#TierPriceContainer').toggle(!isActive);
         	$('#group-prices').find('.base-price').toggle(!isActive);
-        	$('a[href=#tab-discounts]').parent().toggle(!isActive);
+        	$('a[href="#tab-discounts"]').parent().toggle(!isActive);
         }
 
 		// Bundle per item in shopping cart
@@ -155,7 +155,7 @@
 		bundlePerItemShoppingCart(@((Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemShoppingCart).ToString().ToLower()));
 
         function bundlePerItemShoppingCart(isActive) {
-        	$('a[href=#tab-inventory]').parent().toggle(!isActive);
+        	$('a[href="#tab-inventory"]').parent().toggle(!isActive);
         }
 
     });

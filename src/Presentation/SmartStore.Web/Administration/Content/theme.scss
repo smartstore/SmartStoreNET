@@ -1,0 +1,59 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+/* Theme: SmartStore.NET ADMIN 
+======================================== */
+
+//
+// Bootstrap 4
+// --------------------------------------------------
+
+@import "bs4/scss/bootstrap.scss"; 
+
+
+
+//
+// Adapt class-less form elements to bs4
+// --------------------------------------------------
+
+.adminContent {
+    //max-width: 1400px;
+    @include make-container();
+    font-size: 0.9em;
+}
+
+.adminContent,
+.adminContent tbody {
+    display: block;
+    border-collapse: initial;
+}
+
+.adminContent tr {
+    @include make-row();
+    margin-bottom: 1rem;
+}
+
+.adminContent td.adminTitle,
+.adminContent td.adminData {
+    @include make-col-ready();
+}
+
+.adminContent td.adminTitle {
+    @include make-col(3);
+    text-align: right;
+}
+
+.adminContent td.adminData {
+    @include make-col(9);
+}
+
+.adminContent {
+    input[type=text], 
+    input[type=password],
+    input[type=email],
+    input[type=number],
+    input[type=tel],
+    select,
+    textarea {
+        @extend .form-control;
+    }
+}

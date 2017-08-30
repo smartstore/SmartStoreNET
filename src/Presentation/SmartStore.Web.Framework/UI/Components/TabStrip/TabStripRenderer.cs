@@ -203,7 +203,7 @@ namespace SmartStore.Web.Framework.UI
 
 					if (tabToSelect.Ajax && tabToSelect.Content == null)
 					{
-						return ".nav a[data-ajax-url][href=#{0}]".FormatInvariant(rememberedTab.TabId);
+						return ".nav a[data-ajax-url][href='#{0}']".FormatInvariant(rememberedTab.TabId);
 					}
 				}
 			}

@@ -3,7 +3,6 @@ using FluentValidation;
 using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Services.Localization;
-using SmartStore.Utilities;
 
 namespace SmartStore.Admin.Validators.DataExchange
 {
@@ -30,10 +29,10 @@ namespace SmartStore.Admin.Validators.DataExchange
 				.When(x => x.DeploymentType == ExportDeploymentType.Ftp)
 				.WithMessage(localization.GetResource("Admin.Validation.UsernamePassword"));
 
-			RuleFor(x => x.Password)
-				.NotEmpty()
-				.When(x => x.DeploymentType == ExportDeploymentType.Ftp)
-				.WithMessage(localization.GetResource("Admin.Validation.UsernamePassword"));
+			//RuleFor(x => x.Password)
+			//	.NotEmpty()
+			//	.When(x => x.DeploymentType == ExportDeploymentType.Ftp)
+			//	.WithMessage(localization.GetResource("Admin.Validation.UsernamePassword"));
 
 			RuleFor(x => x.FileSystemPath)
 				.Must(x =>

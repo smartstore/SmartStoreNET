@@ -108,7 +108,7 @@ namespace SmartStore.Services.Orders
 			Guard.NotNull(customer, nameof(customer));
 
 			var query = _sciRepository.Table.Where(x => x.ParentItemId == null && x.CustomerId == customer.Id && x.ShoppingCartTypeId == (int)cartType);
-			if (storeId.GetValueOrDefault() == 0)
+			if (storeId.GetValueOrDefault() > 0)
 			{
 				query = query.Where(x => x.StoreId == storeId.Value);
 			}

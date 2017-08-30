@@ -226,6 +226,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowAnonymousUsersToEmailAFriend")]
         public bool AllowAnonymousUsersToEmailAFriend { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowDifferingEmailAddressForEmailAFriend")]
+        public bool AllowDifferingEmailAddressForEmailAFriend { get; set; }
+        
         #endregion 
 
         #region Product detail

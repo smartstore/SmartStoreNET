@@ -55,10 +55,10 @@
 
         function toggleEmailAFriend() {
             if ($('#@Html.FieldIdFor(model => model.EmailAFriendEnabled)').is(':checked')) {
-                $('#pnlAllowAnonymousUsersToEmailAFriend').show();
+                $('.pnlAllowAnonymousUsersToEmailAFriend').show();
             }
             else {
-                $('#pnlAllowAnonymousUsersToEmailAFriend').hide();
+                $('.pnlAllowAnonymousUsersToEmailAFriend').hide();
             }
         }
 
@@ -770,13 +770,22 @@
                 @Html.ValidationMessageFor(model => model.EmailAFriendEnabled)
             </td>
         </tr>
-        <tr id="pnlAllowAnonymousUsersToEmailAFriend">
+        <tr class="pnlAllowAnonymousUsersToEmailAFriend">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AllowAnonymousUsersToEmailAFriend)
             </td>
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.AllowAnonymousUsersToEmailAFriend)
                 @Html.ValidationMessageFor(model => model.AllowAnonymousUsersToEmailAFriend)
+            </td>
+        </tr>
+        <tr class="pnlAllowAnonymousUsersToEmailAFriend">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowDifferingEmailAddressForEmailAFriend)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowDifferingEmailAddressForEmailAFriend)
+                @Html.ValidationMessageFor(model => model.AllowDifferingEmailAddressForEmailAFriend)
             </td>
         </tr>
     </table>

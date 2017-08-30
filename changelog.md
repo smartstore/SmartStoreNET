@@ -19,7 +19,8 @@
 * **Debitoor**: Fixed missing tax rates on Debitoor invoice for net prices
 * #1224 Notifier wasn't working in plugin controllers
 * #1205 Server cannot append header after HTTP headers have been sent
-* #1154 Left offcanvas navigation does not open when in checkout progress 
+* #1154 Left offcanvas navigation does not open when in checkout progress
++ #1212 Export: FTP publishing should consider directory structure
   
 ### Improvements
 * Apply img-fluid class to all images within html editor content
@@ -32,7 +33,8 @@
 ### New Features
 * #1076 Add support for percental tier price adjustments
 * **Trusted Shops**: added review import
-* (Dev) SSL redirection on localhost will be bypassed 
+* (Dev) SSL redirection on localhost will be bypassed
+* #783 Added option for "Email a friend" which disables the form field "Your email address" so it can't be changed 
 
 ## SmartStore.NET 3.0.2
 ### Breaking changes

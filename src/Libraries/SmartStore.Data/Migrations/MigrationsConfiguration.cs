@@ -50,9 +50,16 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("ShoppingCart.RewardPoints", "Reward points", "Bonuspunkte");
 
             builder.AddOrUpdate("ShoppingCart.RewardPoints.Button", "Apply", "Anwenden");
-            
 
+			builder.AddOrUpdate("ShoppingCart.IsDisabled",
+				"The shopping cart is disabled.",
+				"Der Warenkorb ist deaktiviert.");
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.AllowDifferingEmailAddressForEmailAFriend",
+                "Allow differing email address for email e friend",
+                "Abweichende Emailadresse für Tell A Friend zulassen",
+                "Specifies whether customers are allowed to enter a email address different from the one they've registered their account with.", 
+                "Bestimmt ob Kunden gestattet ist eine Emailadresse anzugeben, welche von der abweicht mit der sie sich im Shop registriert haben.");
         }
-    }
+	}
 }

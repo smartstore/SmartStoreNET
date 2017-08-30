@@ -2,6 +2,7 @@
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 $megamenu-zindex-base:          ($zindex-dropdown - 20);
+$megamenu-bg:                   mix(rgb(red($megamenu-bg), green($megamenu-bg), blue($megamenu-bg)), #fff, alpha($megamenu-bg) * 100%);
 
 .megamenu-section .navbar {
     background: $megamenu-bg;

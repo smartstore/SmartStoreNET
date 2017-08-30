@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.0.3
 ### Bugfixes
@@ -33,7 +33,8 @@
 ### New Features
 * #1076 Add support for percental tier price adjustments
 * **Trusted Shops**: added review import
-* (Dev) SSL redirection on localhost will be bypassed 
+* (Dev) SSL redirection on localhost will be bypassed
+* #783 Added option for "Email a friend" which disables the form field "Your email address" so it can't be changed 
 
 ## SmartStore.NET 3.0.2
 ### Breaking changes

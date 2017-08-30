@@ -906,7 +906,8 @@ namespace SmartStore.Web.Controllers
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
 			model.YourEmailAddress = _services.WorkContext.CurrentCustomer.Email;
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
 			return View(model);
 		}
 
@@ -942,11 +943,6 @@ namespace SmartStore.Web.Controllers
 				model.ProductName = product.GetLocalized(x => x.Name);
 				model.ProductSeName = product.GetSeName();
 
-				//model.SuccessfullySent = true;
-				//model.Result = T("Products.EmailAFriend.SuccessfullySent");
-
-				//return View(model);
-
 				NotifySuccess(T("Products.EmailAFriend.SuccessfullySent"));
 
 				return RedirectToRoute("Product", new { SeName = model.ProductSeName });
@@ -956,7 +952,8 @@ namespace SmartStore.Web.Controllers
 			model.ProductId = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
 			return View(model);
 		}
 

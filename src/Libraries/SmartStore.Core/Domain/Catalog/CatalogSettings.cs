@@ -79,6 +79,7 @@ namespace SmartStore.Core.Domain.Catalog
 			GridStyleListColumnSpan = GridColumnSpan.Max4Cols;
 			ShowProductsFromSubcategories = true;
             ApplyTierPricePercentageToAttributePriceAdjustments = false;
+            AllowDifferingEmailAddressForEmailAFriend = false;
         }
 
         /// <summary>
@@ -230,6 +231,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether 'ask product question' feature is enabled
         /// </summary>
         public bool AskQuestionEnabled { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether customers are allowed to enter a differing email address 
+        /// </summary>
+        public bool AllowDifferingEmailAddressForEmailAFriend { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to allow anonymous users to email a friend.

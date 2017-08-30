@@ -50,9 +50,10 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("ShoppingCart.RewardPoints", "Reward points", "Bonuspunkte");
 
             builder.AddOrUpdate("ShoppingCart.RewardPoints.Button", "Apply", "Anwenden");
-            
 
-
-        }
-    }
+			builder.AddOrUpdate("ShoppingCart.IsDisabled",
+				"The shopping cart is disabled.",
+				"Der Warenkorb ist deaktiviert.");
+		}
+	}
 }

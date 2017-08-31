@@ -123,10 +123,9 @@ namespace SmartStore.Services.Orders
 			var cacheKey = CARTITEMS_KEY.FormatInvariant(customer.Id, (int)cartType, storeId.GetValueOrDefault());
 			var result = _requestCache.Get(cacheKey, () => 
 			{
-				var query = _sciRepository.Context.QueryForCollection<Customer, ShoppingCartItem>(customer, x => x.ShoppingCartItems);
-				query = query
+				var query = _sciRepository.Table 
 					.Expand(x => x.Product.ProductVariantAttributes)
-					.Where(x => x.ShoppingCartTypeId == (int)cartType);
+					.Where(x => x.CustomerId == customer.Id && x.ShoppingCartTypeId == (int)cartType);
 
 				if (storeId.HasValue)
 				{

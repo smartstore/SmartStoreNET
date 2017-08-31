@@ -20,6 +20,9 @@ namespace SmartStore.AmazonPay.Services
 	/// </summary>
 	public partial class AmazonPayService
 	{
+		/// <summary>
+		/// Also named "spId".
+		/// </summary>
 		public static string PlatformId
 		{
 			get { return "A3OJ83WFYM72IY"; }

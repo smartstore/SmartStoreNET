@@ -86,8 +86,7 @@
             @Html.SmartLabelFor(model => model.SecretKey)
         </td>
         <td class="adminData">
-			@Html.SettingOverrideCheckbox(model => model.SecretKey)
-			@Html.TextBoxFor(model => model.SecretKey, new { @class = "input-large" })
+			@Html.SettingEditorFor(model => model.SecretKey)
 			@Html.ValidationMessageFor(model => model.SecretKey)
         </td>
     </tr>
@@ -383,10 +382,14 @@
 
 @* Must not be the first form in this view. *@
 <form id="register-now-form" method="POST" action="@Model.RegisterUrl" target="_blank">
-	<input type="hidden" name="spId" value="SPEXDEAPA-SmartStore.Net-CP-DP" />
-	<input type="hidden" name="publicKey" value="@Model.PublicKey" />
+	<input type="hidden" name="spId" value="@Model.PlatformId" />
+
+	@*Not available for europe at the moment:*@
+	@*<input type="hidden" name="publicKey" value="@Model.PublicKey" />*@
+
 	<input type="hidden" name="keyShareURL" value="@Model.KeyShareUrl" />
 	<input type="hidden" name="locale" value="@Model.LanguageLocale" />
+	<input type="hidden" name="merchantCountry" value="@Model.MerchantCountry" />
 	@foreach (var item in Model.MerchantLoginDomains)
 	{
 		<input type="hidden" name="merchantLoginDomains[]" value="@item" />
@@ -394,11 +397,14 @@
 	<input type="hidden" name="spSoftwareVersion" value="@Model.SoftwareVersion" />
 	<input type="hidden" name="spAmazonPluginVersion" value="@Model.PluginVersion" />
 	<input type="hidden" name="ld" value="@Model.LeadCode" />
-	@foreach (var item in Model.MerchantLoginRedirectURLs)
+	@foreach (var item in Model.MerchantLoginRedirectUrls)
 	{
 		<input type="hidden" name="merchantLoginRedirectURLs[]" value="@item" />
 	}
+	<input type="hidden" name="merchantPrivacyNoticeURL" value="@Model.MerchantPrivacyNoticeUrl" />
 	<input type="hidden" name="merchantStoreDescription" value="@Model.MerchantStoreDescription" />
+	<input type="hidden" name="merchantSandboxIPNURL" value="@Model.MerchantSandboxIpnUrl" />
+	<input type="hidden" name="merchantProductionIPNURL" value="@Model.MerchantProductionIpnUrl" />
 	<input type="hidden" name="source" value="SPPL" />
 </form>
 

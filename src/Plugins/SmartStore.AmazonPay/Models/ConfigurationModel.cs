@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Services;
 using SmartStore.Web.Framework;
@@ -20,6 +21,7 @@ namespace SmartStore.AmazonPay.Models
 		public string AccessKey { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.SecretKey")]
+		[DataType(DataType.Password)]
 		public string SecretKey { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ClientId")]
@@ -100,8 +102,12 @@ namespace SmartStore.AmazonPay.Models
 		public string KeyShareUrl { get; set; }
 		public string LanguageLocale { get; set; }
 		public string[] MerchantLoginDomains { get; set; }
-		public string[] MerchantLoginRedirectURLs { get; set; }
+		public string[] MerchantLoginRedirectUrls { get; set; }
 		public string MerchantStoreDescription { get; set; }
+		public string MerchantPrivacyNoticeUrl { get; set; }
+		public string MerchantCountry { get; set; }
+		public string MerchantSandboxIpnUrl { get; set; }
+		public string MerchantProductionIpnUrl { get; set; }
 
 		#endregion
 

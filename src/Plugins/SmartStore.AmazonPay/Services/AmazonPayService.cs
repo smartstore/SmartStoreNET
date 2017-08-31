@@ -32,6 +32,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -62,6 +63,7 @@ namespace SmartStore.AmazonPay.Services
 		private readonly Lazy<IExternalAuthorizer> _authorizer;
 		private readonly AddressSettings _addressSettings;
 		private readonly OrderSettings _orderSettings;
+		private readonly CompanyInformationSettings _companyInformationSettings;
 		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
 
 		public AmazonPayService(
@@ -85,6 +87,7 @@ namespace SmartStore.AmazonPay.Services
 			Lazy<IExternalAuthorizer> authorizer,
 			AddressSettings addressSettings,
 			OrderSettings orderSettings,
+			CompanyInformationSettings companyInformationSettings,
 			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings)
 		{
 			_httpContext = httpContext;
@@ -108,6 +111,7 @@ namespace SmartStore.AmazonPay.Services
 			_authorizer = authorizer;
 			_addressSettings = addressSettings;
 			_orderSettings = orderSettings;
+			_companyInformationSettings = companyInformationSettings;
 			_externalAuthenticationSettings = externalAuthenticationSettings;
 
 			T = NullLocalizer.Instance;
@@ -123,8 +127,9 @@ namespace SmartStore.AmazonPay.Services
 			var language = _services.WorkContext.WorkingLanguage;
 			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(AmazonPayPlugin.SystemName);
 			var allStores = _services.StoreService.GetAllStores();
+			var urlHelper = new UrlHelper(_httpContext.Request.RequestContext);
 
-			model.IpnUrl = GetPluginUrl("IPNHandler", store.SslEnabled);
+			model.IpnUrl = GetPluginUrl("IPNHandler", true);
 			model.ConfigGroups = T("Plugins.Payments.AmazonPay.ConfigGroups").Text.SplitSafe(";");
 
 			model.RegisterUrl = "https://payments-eu.amazon.com/register";
@@ -135,12 +140,30 @@ namespace SmartStore.AmazonPay.Services
 			}
 			model.LeadCode = LeadCode;
 			model.PlatformId = PlatformId;
-			model.PublicKey = string.Empty; // Not implemented.
+			// Not implemented. Not available for europe at the moment.
+			model.PublicKey = string.Empty;
 			model.KeyShareUrl = GetPluginUrl("ShareKey", store.SslEnabled);
 			model.LanguageLocale = language.UniqueSeoCode.ToAmazonLanguageCode('_');
-			model.MerchantLoginDomains = allStores.Select(x => x.SslEnabled ? x.SecureUrl.EmptyNull().TrimEnd('/') : x.Url.EmptyNull().TrimEnd('/')).ToArray();
-			model.MerchantLoginRedirectURLs = new string[0];
+			// SSL mandatory. Including all domains and sub domains where the login button appears.
+			model.MerchantLoginDomains = allStores
+				.Where(x => x.SecureUrl.HasValue())
+				.Select(x => x.SecureUrl.EmptyNull().TrimEnd('/'))
+				.ToArray();
+			// Unknown here
+			model.MerchantLoginRedirectUrls = new string[0];
 			model.MerchantStoreDescription = store.Name.Truncate(2048);
+			model.MerchantPrivacyNoticeUrl = urlHelper.RouteUrl("Topic", new { SystemName = "privacyinfo" }, store.SslEnabled ? "https" : "http");
+			model.MerchantSandboxIpnUrl = model.IpnUrl;
+			model.MerchantProductionIpnUrl = model.IpnUrl;
+
+			if (_companyInformationSettings.CountryId != 0)
+			{
+				var merchantCountry = _countryService.GetCountryById(_companyInformationSettings.CountryId);
+				if (merchantCountry != null)
+				{
+					model.MerchantCountry = merchantCountry.GetLocalized(x => x.Name, language.Id, false, false);
+				}
+			}
 
 			model.DataFetchings = new List<SelectListItem>
 			{

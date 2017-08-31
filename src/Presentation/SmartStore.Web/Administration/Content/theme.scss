@@ -1,39 +1,174 @@
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../Content/bs4/scss/bootstrap.scss" />
 
 /* Theme: SmartStore.NET ADMIN 
 ======================================== */
+
+
+//
+// Custom variables (TODO: unify later)
+// --------------------------------------------------
+
+$font-weight-light:         300 !default;
+$font-weight-medium:        600 !default;
+$headings-lg-font-weight:   400 !default;
+
+//
+// BS4 Variables
+// --------------------------------------------------
+
+$enable-shadows:    true;
+
+$gray-100:  #f8f9fa;
+$gray-600:  #868e96;
+$gray-800:  #343a40;
+
+$blue:      #5677fc; // Blue 500
+$indigo:    #3F51B5; // Indigo 500
+$purple:    #9c27b0; // Purple 500
+$pink:      #e91e63; // Pink 500
+$red:       #e51c23; // Red 500
+$orange:    #f57c00; // Orange 700
+$yellow:    #fdd835; // Yellow 600
+$green:     #259b24; // Green 500
+$teal:      #009688; // Teal 500
+$cyan:      #00BCD4; // Cyan 500
+$bluegrey:  #78909c; // Bluegrey 500
+
+$theme-colors: (
+  primary: $indigo,
+  secondary: $gray-600,
+  success: $green,
+  info: $cyan,
+  warning: $orange,
+  danger: $red,
+  light: $gray-100,
+  dark: $gray-800
+);
+
+$spacer: 1rem;
+$spacers: (
+    0: 0,
+    1: ($spacer * .25),
+    2: ($spacer * .5),
+    3: $spacer,
+    4: ($spacer * 1.5),
+    5: ($spacer * 2.25),
+    6: ($spacer * 3)
+);
+
+$font-size-base: 0.875rem;
+$font-size-lg:   1rem;
+$font-size-sm:   0.8125rem;
+
+$body-color:    $gray-800;
+$link-color:    #0277bb;
+
+$btn-font-weight:               $font-weight-medium;
+$input-btn-padding-x:           1rem;
+$input-btn-padding-y:           0.625rem;
+$input-btn-padding-x-sm:        0.75rem;
+$input-btn-padding-y-sm:        0.5rem;
+$input-btn-padding-x-lg:        1.5rem;
+$input-btn-padding-y-lg:        0.875rem;
+$input-btn-line-height:         1.5;
+$input-box-shadow:              none;
+$input-box-shadow-focus:        none;
+$input-border-radius:           0;
+$input-border-radius-lg:        0;
+$input-border-radius-sm:        0;
+$input-transition:              none;
+
+$btn-box-shadow:                inset 0 1px 0 rgba(#fff, .15);
+$btn-focus-box-shadow:          0 0 0 2px rgba($indigo, .25); //0 0 0 2px rgba(theme-color("primary"), .25);
+$btn-active-box-shadow:         inset 0 3px 5px rgba(#000, .125);
+$btn-transition:                box-shadow .12s ease-in-out;
+$btn-border-radius:             .125rem;
+$btn-border-radius-lg:          .1875rem;
+$btn-border-radius-sm:          .125rem;
+
+
+//
+// Variables shims (TODO: remove later)
+// --------------------------------------------------
+
+$gray-lightest:     $gray-100;
+
+
+//
+// Mixins (TODO: unify later)
+// --------------------------------------------------
+
+@mixin fontawesome($content, $size: inherit) {
+    display: inline-block;
+    font: normal normal normal 16px/1 'FontAwesome';
+    font-size: $size;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    content: $content;
+}
+
 
 //
 // Bootstrap 4
 // --------------------------------------------------
 
-@import "bs4/scss/bootstrap.scss"; 
-
+@import "~/Content/bs4/scss/bootstrap.scss"; 
 
 
 //
-// Adapt class-less form elements to bs4
+// Global / Shared (unify later with Flex' resources)
+// --------------------------------------------------
+
+@import 'shared/_typo.scss';
+@import 'shared/_alert.scss';
+/*@import 'shared/_buttons.scss';*/ 
+/*@import 'shared/_card.scss';
+@import 'shared/_forms.scss';
+@import 'shared/_pagination.scss';
+@import 'shared/_nav.scss';
+@import "shared/_modal.scss"; 
+@import "shared/_throbber.scss";
+@import "shared/_spinner.scss";
+@import "shared/_sortable-grip.scss";*/
+
+
+//
+// Legacy (remove later)
+// --------------------------------------------------
+
+@import "_legacy.scss"; 
+
+
+//
+// Skinning
+// --------------------------------------------------
+
+@import "telerik/_telerik.scss"; 
+
+
+//
+// Apply grid layout to editor tables (.adminContent)
 // --------------------------------------------------
 
 .adminContent {
     //max-width: 1400px;
     @include make-container();
-    font-size: 0.9em;
 }
 
 .adminContent,
-.adminContent tbody {
+.adminContent > tbody {
     display: block;
     border-collapse: initial;
 }
 
-.adminContent tr {
+.adminContent > tbody > tr,
+.adminContent > tr {
     @include make-row();
-    margin-bottom: 1rem;
+    margin: 1rem 0;
 }
 
-.adminContent td.adminTitle,
-.adminContent td.adminData {
+.adminContent > tbody > tr > td,
+.adminContent > tr > td {
     @include make-col-ready();
 }
 
@@ -43,8 +178,27 @@
 }
 
 .adminContent td.adminData {
-    @include make-col(9);
+    @include make-col(6);
 }
+
+.adminContent > tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
+.adminContent > tr > td:only-child:not(.adminData):not(.adminTitle) {
+    @include make-col(12);
+}
+
+.ctl-label {
+    label {
+        font-weight: 600;
+    }
+    .hint {
+        opacity: 0;
+    }
+}
+
+
+//
+// Adapt class-less form elements to bs4
+// --------------------------------------------------
 
 .adminContent {
     input[type=text], 

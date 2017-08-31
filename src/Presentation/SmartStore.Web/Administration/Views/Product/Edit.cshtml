@@ -16,7 +16,7 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-			<button type="submit" name="preview" value="preview" onclick="javascript:openWindow('@Model.ProductUrl', 1000, 600, true); return false;" class="btn">
+			<button type="submit" name="preview" value="preview" onclick="javascript:openWindow('@Model.ProductUrl', 1000, 600, true); return false;" class="btn btn-secondary">
                 <i class="fa fa-eye"></i>
                 @T("Admin.Common.Preview")
             </button>
@@ -24,10 +24,10 @@
 				<i class="fa fa-check"></i>
 				@T("Admin.Common.Save")
 			</button>
-			<button type="submit" value="save-continue" class="btn entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
+			<button type="submit" value="save-continue" class="btn btn-secondary entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
 				@T("Admin.Common.SaveContinue")
 			</button>
-			<a href="#copyproduct-window" data-toggle="modal" class="btn">
+			<a href="#copyproduct-window" data-toggle="modal" class="btn btn-secondary">
 				<i class="fa fa-files-o"></i>&nbsp;@T("Admin.Catalog.Products.Copy")
 			</a>
 			<button type="submit" id="product-delete" class="btn btn-danger">

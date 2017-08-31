@@ -87,49 +87,56 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			
 			if (CacheFolder.DirectoryExists(cacheDirectoryName))
 			{
-				var deps = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.dependencies"));
-				var hash = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.hash"));
-
-				IEnumerable<string> parsedDeps;
-				string currentHash;
-
-				if (!TryValidate(virtualPath, deps, hash, out parsedDeps, out currentHash))
+				try
 				{
-					Logger.DebugFormat("Invalidating cached asset for '{0}' because it is not valid anymore.", virtualPath);
-					InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
-					return null;
-				}
+					var deps = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.dependencies"));
+					var hash = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.hash"));
 
-				// TODO: determine correct file extension
-				var content = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.css")); 
-				if (content == null)
-				{
-					lock (_lock)
+					IEnumerable<string> parsedDeps;
+					string currentHash;
+
+					if (!TryValidate(virtualPath, deps, hash, out parsedDeps, out currentHash))
 					{
+						Logger.DebugFormat("Invalidating cached asset for '{0}' because it is not valid anymore.", virtualPath);
 						InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
 						return null;
 					}
+
+					// TODO: determine correct file extension
+					var content = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.css"));
+					if (content == null)
+					{
+						lock (_lock)
+						{
+							InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
+							return null;
+						}
+					}
+
+					var codes = ParseFileContent(CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.pcodes")));
+
+					var entry = new CachedAssetEntry
+					{
+						Content = content,
+						HashCode = currentHash,
+						OriginalVirtualPath = virtualPath,
+						VirtualPathDependencies = parsedDeps,
+						PhysicalPath = CacheFolder.MapPath(cacheDirectoryName),
+						ThemeName = themeName,
+						StoreId = storeId,
+						ProcessorCodes = codes.ToArray()
+					};
+
+					SetupEvictionObserver(entry);
+
+					Logger.DebugFormat("Succesfully read asset '{0}' from cache.", virtualPath);
+
+					return entry;
 				}
-
-				var codes = ParseFileContent(CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.pcodes")));
-
-				var entry = new CachedAssetEntry
+				catch (Exception ex)
 				{
-					Content = content,
-					HashCode = currentHash,
-					OriginalVirtualPath = virtualPath,
-					VirtualPathDependencies = parsedDeps,
-					PhysicalPath = CacheFolder.MapPath(cacheDirectoryName),
-					ThemeName = themeName,
-					StoreId = storeId,
-					ProcessorCodes = codes.ToArray()
-				};
-
-				SetupEvictionObserver(entry);
-
-				Logger.DebugFormat("Succesfully read asset '{0}' from cache.", virtualPath);
-
-				return entry;
+					Logger.ErrorFormat(ex, "Error while resolving asset '{0}' from the asset cache.", virtualPath);
+				}
 			}
 
 			return null;
@@ -186,8 +193,9 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 					return entry;
 				}
-				catch
+				catch (Exception ex)
 				{
+					Logger.ErrorFormat(ex, "Error while inserting asset '{0}' to the asset cache.", virtualPath);
 					InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
 				}
 			}

@@ -1,4 +1,4 @@
-/// <reference path="../bs4/scss/bootstrap.scss" />
+/// <reference path="../theme.scss" />
 
 .alert {
     position: relative;
@@ -17,7 +17,7 @@
         z-index: 1;
     }
     &.alert-danger:before    { background-color: theme-color("danger"); }
-    &.alert-info:before      { background-color:theme-color("info"); }
+    &.alert-info:before      { background-color: theme-color("info"); }
     &.alert-success:before   { background-color: theme-color("success"); }
     &.alert-warning:before   { background-color: theme-color("warning"); }
 

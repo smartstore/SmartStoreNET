@@ -435,8 +435,6 @@
     <Compile Include="Validators\Catalog\ProductValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\bs4\js\bootstrap.js" />
-    <Content Include="Content\bs4\js\bootstrap.min.js" />
     <Content Include="Content\filemanager\css\images\animated-overlay.gif" />
     <Content Include="Content\filemanager\css\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\filemanager\css\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -767,43 +765,6 @@
     <Content Include="Content\filemanager\lang\ru.json" />
     <Content Include="Content\filemanager\lang\sk.json" />
     <Content Include="Content\filemanager\lang\tr.json" />
-    <Content Include="Content\bs4\scss\bootstrap-grid.scss" />
-    <Content Include="Content\bs4\scss\bootstrap-reboot.scss" />
-    <Content Include="Content\bs4\scss\bootstrap.scss" />
-    <Content Include="Content\bs4\scss\_alert.scss" />
-    <Content Include="Content\bs4\scss\_badge.scss" />
-    <Content Include="Content\bs4\scss\_breadcrumb.scss" />
-    <Content Include="Content\bs4\scss\_button-group.scss" />
-    <Content Include="Content\bs4\scss\_buttons.scss" />
-    <Content Include="Content\bs4\scss\_card.scss" />
-    <Content Include="Content\bs4\scss\_carousel.scss" />
-    <Content Include="Content\bs4\scss\_close.scss" />
-    <Content Include="Content\bs4\scss\_code.scss" />
-    <Content Include="Content\bs4\scss\_custom-forms.scss" />
-    <Content Include="Content\bs4\scss\_dropdown.scss" />
-    <Content Include="Content\bs4\scss\_forms.scss" />
-    <Content Include="Content\bs4\scss\_functions.scss" />
-    <Content Include="Content\bs4\scss\_grid.scss" />
-    <Content Include="Content\bs4\scss\_images.scss" />
-    <Content Include="Content\bs4\scss\_input-group.scss" />
-    <Content Include="Content\bs4\scss\_jumbotron.scss" />
-    <Content Include="Content\bs4\scss\_list-group.scss" />
-    <Content Include="Content\bs4\scss\_media.scss" />
-    <Content Include="Content\bs4\scss\_mixins.scss" />
-    <Content Include="Content\bs4\scss\_modal.scss" />
-    <Content Include="Content\bs4\scss\_nav.scss" />
-    <Content Include="Content\bs4\scss\_navbar.scss" />
-    <Content Include="Content\bs4\scss\_pagination.scss" />
-    <Content Include="Content\bs4\scss\_popover.scss" />
-    <Content Include="Content\bs4\scss\_print.scss" />
-    <Content Include="Content\bs4\scss\_progress.scss" />
-    <Content Include="Content\bs4\scss\_reboot.scss" />
-    <Content Include="Content\bs4\scss\_tables.scss" />
-    <Content Include="Content\bs4\scss\_tooltip.scss" />
-    <Content Include="Content\bs4\scss\_transitions.scss" />
-    <Content Include="Content\bs4\scss\_type.scss" />
-    <Content Include="Content\bs4\scss\_utilities.scss" />
-    <Content Include="Content\bs4\scss\_variables.scss" />
     <Content Include="Content\theme.scss" />
     <Content Include="Content\shared\_alert.scss" />
     <Content Include="Content\shared\_buttons.scss" />
@@ -1474,10 +1435,7 @@
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdateProductTag.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\bs4\scss\mixins\" />
-    <Folder Include="Content\bs4\scss\utilities\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Views\DeliveryTime\List.cshtml" />
   </ItemGroup>

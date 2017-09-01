@@ -257,7 +257,7 @@
 		}
 
 		// tab strip smart auto selection
-		$('.tabs-autoselect > ul.nav a[data-toggle=tab]').on('shown', function(e) {
+		$('.tabs-autoselect > ul.nav a[data-toggle=tab]').on('shown.bs.tab', function (e) {
 			var tab = $(e.target),
 				strip = tab.closest('.tabbable'),
 				href = strip.data("tabselector-href"),
@@ -303,7 +303,7 @@
 		});
 
 		// AJAX tabs
-		$('.nav a[data-ajax-url]').on('show', function (e) {
+		$('.nav a[data-ajax-url]').on('show.bs.tab', function (e) {
 			var newTab = $(e.target),
 				tabbable = newTab.closest('.tabbable'),
 				pane = tabbable.find(newTab.attr("href")),

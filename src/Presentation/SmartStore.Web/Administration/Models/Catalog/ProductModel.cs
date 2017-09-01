@@ -23,7 +23,6 @@ namespace SmartStore.Admin.Models.Catalog
             ProductPictureModels = new List<ProductPictureModel>();
             CopyProductModel = new CopyProductModel();
             AvailableProductTemplates = new List<SelectListItem>();
-            AvailableProductTags = new List<SelectListItem>();
 			AvailableTaxCategories = new List<SelectListItem>();
 			AvailableDeliveryTimes = new List<SelectListItem>();
             AvailableMeasureUnits = new List<SelectListItem>();
@@ -107,8 +106,8 @@ namespace SmartStore.Admin.Models.Catalog
         public bool AllowCustomerReviews { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductTags")]
-        public string ProductTags { get; set; }
-        public IList<SelectListItem> AvailableProductTags { get; set; }
+        public string[] ProductTags { get; set; }
+        public MultiSelectList AvailableProductTags { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
 		[AllowHtml]

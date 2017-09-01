@@ -1,4 +1,4 @@
-/// <reference path="../../Content/bs4/scss/bootstrap.scss" />
+/// <reference path="theme.scss" />
 
 
 /* Variabe shims
@@ -779,10 +779,6 @@ table.adminContent {
     vertical-align: middle;
     text-align: left;
 }
-td.adminTitle {
-    padding: 4px;
-    width: 300px;
-}
 .modal td.adminTitle {
     width: auto;
 }
@@ -836,38 +832,11 @@ td.adminTitle:hover a.hint {
 	opacity: 1;
 }
 
-.well td.adminTitle {
-    width: 280px;
-}
-.well.well-small td.adminTitle {
-    width: 290px;
-}
-
-td.adminData {
-    text-align: left;
-    vertical-align: middle;
-}
-td.adminData .text-box.single-line {
-    width: 300px;
-}
-td.adminData input[type=text].input-large,
-td.adminData textarea.input-large,
-td.adminData .control-large {
-	width: 500px;
-}
-td.adminData input[type=text].input-xlarge,
-td.adminData textarea.input-xlarge,
-td.adminData .control-xlarge {
-	width: 800px;
-}
-
 
 .t-grid .text-box.single-line {
     /* ... */
 }
-td.adminData textarea {
-    width: 300px;
-}
+
 td.adminData .t-combobox {
     width: 306px;
 }
@@ -924,10 +893,6 @@ td.adminSeparator hr {
 	}
 	select, input {
 		margin-bottom: 0;
-	}
-	.control-large {
-		width: 500px;
-		min-width: 500px;
 	}
 }
 

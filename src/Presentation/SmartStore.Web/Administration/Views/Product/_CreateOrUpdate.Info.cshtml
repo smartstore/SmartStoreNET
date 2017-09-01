@@ -2,15 +2,6 @@
 
 @using SmartStore.Core.Domain.Catalog;
 
-@{
-    var availableTags = Model.AvailableProductTags.Select(x => x.Value).ToArray();
-    for (int i = 0; i < availableTags.Length; i++)
-    {
-        availableTags[i] = availableTags[i].EncodeJsString();
-    }
-    ViewBag.SerializedTags = String.Join(",", availableTags);
-}
-
 <script type="text/javascript">
 
     $(document).ready(function () {
@@ -263,7 +254,7 @@
 				@Html.SmartLabelFor(model => model.Locales[item].Name)
 			</td>
 			<td class="adminData">
-				@Html.TextBoxFor(model => Model.Locales[item].Name, new { @class = "input-large" })
+				@Html.TextBoxFor(model => Model.Locales[item].Name)
 				@Html.ValidationMessageFor(model => model.Locales[item].Name)
 			</td>
 		</tr>
@@ -272,7 +263,7 @@
 				@Html.SmartLabelFor(model => model.Locales[item].ShortDescription)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(model => model.Locales[item].ShortDescription, new { @class = "input-large" })
+				@Html.TextAreaFor(model => model.Locales[item].ShortDescription)
 				@Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
 			</td>
 		</tr>
@@ -280,7 +271,7 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Locales[item].FullDescription)
 			</td>
-			<td class="adminData">
+			<td class="adminData wide">
 				@Html.EditorFor(model => model.Locales[item].FullDescription, Html.RichEditorFlavor())
 				@Html.ValidationMessageFor(model => model.Locales[item].FullDescription)
 			</td>
@@ -298,7 +289,7 @@
 				@Html.SmartLabelFor(model => model.Name)
 			</td>
 			<td class="adminData">
-				@Html.TextBoxFor(model => model.Name, new { @class = "input-large" })
+				@Html.TextBoxFor(model => model.Name)
 				@Html.ValidationMessageFor(model => model.Name)
 			</td>
 		</tr>
@@ -307,7 +298,7 @@
 				@Html.SmartLabelFor(model => model.ShortDescription)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(x => x.ShortDescription, new { @class = "input-large" })
+				@Html.TextAreaFor(x => x.ShortDescription)
 				@Html.ValidationMessageFor(model => model.ShortDescription)
 			</td>
 		</tr>
@@ -315,7 +306,7 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FullDescription)
 			</td>
-			<td class="adminData">
+			<td class="adminData wide">
 				@Html.EditorFor(x => x.FullDescription, Html.RichEditorFlavor())
 				@Html.ValidationMessageFor(model => model.FullDescription)
 			</td>
@@ -383,7 +374,7 @@
 				@Html.SmartLabelFor(model => model.ProductTags)
 			</td>
 			<td class="adminData">
-				@Html.HiddenFor(model => model.ProductTags, new { @class = "tag-chooser" })
+				@Html.ListBoxFor(model => model.ProductTags, Model.AvailableProductTags, new { multiple = "multiple", data_tags = "true" })
 				@Html.ValidationMessageFor(model => model.ProductTags)
 			</td>
 		</tr>
@@ -604,7 +595,7 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.UserAgreementText)
 			</td>
-			<td class="adminData">
+			<td class="adminData wide">
 				@Html.EditorFor(model => model.UserAgreementText, Html.RichEditorFlavor())
 				@Html.ValidationMessageFor(model => model.UserAgreementText)
 			</td>
@@ -796,11 +787,4 @@
 			</td>
 		</tr>
 	</table>
-
-	<script>
-		$(function () {
-			var tagChooser = $("#@Html.FieldIdFor(x => x.ProductTags)");
-			tagChooser.select2({ tags:[@(Html.Raw(ViewBag.SerializedTags))] });
-		});
-	</script>
 </div>

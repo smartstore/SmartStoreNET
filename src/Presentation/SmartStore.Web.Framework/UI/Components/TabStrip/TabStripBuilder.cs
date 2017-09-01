@@ -59,12 +59,6 @@ namespace SmartStore.Web.Framework.UI
             return this;
         }
 
-        public TabStripBuilder Stacked(bool value)
-        {
-            base.Component.Stacked = value;
-            return this;
-        }
-
         public TabStripBuilder Fade(bool value)
         {
             base.Component.Fade = value;

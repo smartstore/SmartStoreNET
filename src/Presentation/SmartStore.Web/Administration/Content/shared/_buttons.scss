@@ -32,14 +32,15 @@ $btn-size-sm:           $input-height-sm;
     cursor: pointer;
 }
 
-.btn-secondary {
+// TODO BS4
+/*.btn-secondary {
     &:hover,
     &:active,
     &.active,
     .show > &.dropdown-toggle {
         background-color: #f2f2f2;
     }
-}
+}*/
 
 .btn-secondary.hover        { @extend .btn-secondary:hover; }
 .btn-primary.hover          { @extend .btn-primary:hover; }
@@ -52,9 +53,8 @@ $btn-size-sm:           $input-height-sm;
 // btn-gray
 // --------------------------------------------------
 
-$btn-gray-bg:       $gray-100;
-
 // TODO BS4
+// $btn-gray-bg:       $gray-100;
 /*.btn-gray {
     @include button-variant($btn-secondary-color, $gray-lightest, $btn-secondary-border);
 }

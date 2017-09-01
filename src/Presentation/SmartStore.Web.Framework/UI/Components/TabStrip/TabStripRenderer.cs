@@ -28,6 +28,7 @@ namespace SmartStore.Web.Framework.UI
 
             var hasContent = tab.Items.Any(x => x.Content != null || x.Ajax);
 			var isTabbable = tab.Position != TabsPosition.Top;
+			var isStacked = tab.Position == TabsPosition.Left || tab.Position == TabsPosition.Right;
 			var urlHelper = new UrlHelper(this.ViewContext.RequestContext);
 
 			if (tab.Items.Count == 0)
@@ -44,6 +45,11 @@ namespace SmartStore.Web.Framework.UI
 			{
 				tab.HtmlAttributes.AppendCssClass("tabs-autoselect");
 				tab.HtmlAttributes.Add("data-tabselector-href", urlHelper.Action("SetSelectedTab", "Common", new { area = "admin" }));
+			}
+
+			if (isStacked)
+			{
+				tab.HtmlAttributes.AppendCssClass("row");
 			}
 
 			if (tab.OnAjaxBegin.HasValue())
@@ -79,6 +85,12 @@ namespace SmartStore.Web.Framework.UI
 				if (tab.Position == TabsPosition.Below && hasContent)
 					RenderTabContent(writer);
 
+				if (isStacked)
+				{
+					writer.AddAttribute("class", "col-auto nav-aside");
+					writer.RenderBeginTag("aside"); // opening left/right tabs col
+				}
+
 				// Tabs
 				var ulAttrs = new Dictionary<string, object>();
 				ulAttrs.AppendCssClass("nav");
@@ -96,9 +108,9 @@ namespace SmartStore.Web.Framework.UI
 					ulAttrs.AppendCssClass("nav-tabs nav-tabs-line");
 				}
 
-				if (tab.Stacked)
+				if (isStacked)
 				{
-					ulAttrs.AppendCssClass("nav-stacked flex-column");
+					ulAttrs.AppendCssClass("flex-column");
 				}
 				writer.AddAttributes(ulAttrs);
 
@@ -126,8 +138,27 @@ namespace SmartStore.Web.Framework.UI
 					writer.RenderEndTag(); // ul
 				}
 
+				if (isStacked)
+				{
+					writer.RenderEndTag(); // closing left/right tabs col
+				}
+				
+				// TODO: (mc) render right positioned tabs also
 				if (tab.Position != TabsPosition.Below && hasContent)
+				{
+					if (isStacked)
+					{
+						writer.AddAttribute("class", "col");
+						writer.RenderBeginTag("div"); // opening left/right content col
+					}
+
 					RenderTabContent(writer);
+
+					if (isStacked)
+					{
+						writer.RenderEndTag(); // closing left/right content col
+					}
+				}
 
 				if (selector != null)
 				{

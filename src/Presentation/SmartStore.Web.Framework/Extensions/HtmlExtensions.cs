@@ -54,9 +54,7 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(a.ToString());
         }
 
-        public static HelperResult LocalizedEditor<T, TLocalizedModelLocal>(this HtmlHelper<T> helper, string name,
-             Func<int, HelperResult> localizedTemplate,
-             Func<T, HelperResult> standardTemplate)
+        public static HelperResult LocalizedEditor<T, TLocalizedModelLocal>(this HtmlHelper<T> helper, string name, Func<int, HelperResult> localizedTemplate, Func<T, HelperResult> standardTemplate)
             where T : ILocalizedModel<TLocalizedModelLocal>
             where TLocalizedModelLocal : ILocalizedModelLocal
         {
@@ -64,7 +62,7 @@ namespace SmartStore.Web.Framework
             {
                 if (helper.ViewData.Model.Locales.Count > 1)
                 {
-                    writer.Write("<div class='well well-small'>");
+                    writer.Write("<div class='well well-small locale-editor'>");
                     var tabStrip = helper.SmartStore().TabStrip().Name(name).SmartTabSelection(false).Style(TabsStyle.Pills).Items(x =>
                     {
 						if (standardTemplate != null)

@@ -1,4 +1,4 @@
-/// <reference path="../../Content/bs4/scss/bootstrap.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
 
 /* Theme: SmartStore.NET ADMIN 
 ======================================== */
@@ -19,8 +19,14 @@ $headings-lg-font-weight:   400 !default;
 $enable-shadows:    true;
 
 $gray-100:  #f8f9fa;
+$gray-200:  #e9ecef;
+$gray-300:  #dee2e6;
+$gray-400:  #ced4da;
+$gray-500:  #adb5bd;
 $gray-600:  #868e96;
+$gray-700:  #495057;
 $gray-800:  #343a40;
+$gray-900:  #212529;
 
 $blue:      #5677fc; // Blue 500
 $indigo:    #3F51B5; // Indigo 500
@@ -59,6 +65,7 @@ $spacers: (
 $font-size-base: 0.875rem;
 $font-size-lg:   1rem;
 $font-size-sm:   0.8125rem;
+$font-size-xs:   0.75rem;
 
 $body-color:    $gray-800;
 $link-color:    #0277bb;
@@ -91,7 +98,11 @@ $btn-border-radius-sm:          .125rem;
 // Variables shims (TODO: remove later)
 // --------------------------------------------------
 
-$gray-lightest:     $gray-100;
+$gray-dark:     $gray-900;
+$gray:          $gray-700;
+$gray-light:    $gray-600;
+$gray-lighter:  $gray-200;
+$gray-lightest: $gray-100;
 
 
 //
@@ -112,7 +123,14 @@ $gray-lightest:     $gray-100;
 // Bootstrap 4
 // --------------------------------------------------
 
-@import "~/Content/bs4/scss/bootstrap.scss"; 
+@import "bs4/scss/bootstrap.scss"; 
+
+
+//
+// Vendors
+// --------------------------------------------------
+
+@import "vendors/select2/scss/core.scss";
 
 
 //
@@ -121,15 +139,15 @@ $gray-lightest:     $gray-100;
 
 @import 'shared/_typo.scss';
 @import 'shared/_alert.scss';
-/*@import 'shared/_buttons.scss';*/ 
-/*@import 'shared/_card.scss';
+@import 'shared/_buttons.scss';
+@import 'shared/_card.scss';
 @import 'shared/_forms.scss';
 @import 'shared/_pagination.scss';
 @import 'shared/_nav.scss';
 @import "shared/_modal.scss"; 
 @import "shared/_throbber.scss";
 @import "shared/_spinner.scss";
-@import "shared/_sortable-grip.scss";*/
+@import "shared/_sortable-grip.scss";
 
 
 //
@@ -143,7 +161,34 @@ $gray-lightest:     $gray-100;
 // Skinning
 // --------------------------------------------------
 
+@import "skinning/_select2.scss";
 @import "telerik/_telerik.scss"; 
+
+
+
+//
+// Legacy BS elements
+// --------------------------------------------------
+
+.well {
+    background-color: $gray-100;
+    padding: 1rem;
+}
+
+
+//
+// Locale Editor
+// --------------------------------------------------
+
+.well.locale-editor {
+    padding-left: 0;
+    padding-right: 0;
+
+    .nav {
+        //justify-content: center;
+        padding: 0 1rem;
+    }
+}
 
 
 //
@@ -164,7 +209,7 @@ $gray-lightest:     $gray-100;
 .adminContent > tbody > tr,
 .adminContent > tr {
     @include make-row();
-    margin: 1rem 0;
+    margin: 0.75rem 0;
 }
 
 .adminContent > tbody > tr > td,
@@ -179,6 +224,9 @@ $gray-lightest:     $gray-100;
 
 .adminContent td.adminData {
     @include make-col(6);
+    &.wide {
+        @include make-col(9);
+    }
 }
 
 .adminContent > tbody > tr > td:only-child:not(.adminData):not(.adminTitle),

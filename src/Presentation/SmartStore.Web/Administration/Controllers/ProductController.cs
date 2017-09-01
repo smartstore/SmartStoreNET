@@ -274,21 +274,23 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[NonAction]
-		protected void UpdateProductTags(Product product, string rawProductTags)
+		protected void UpdateProductTags(Product product, params string[] rawProductTags)
 		{
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
-			var productTags = new List<string>();
+			if (rawProductTags == null || rawProductTags.Length == 0)
+				return;
 
-			foreach (string str in rawProductTags.SplitSafe(","))
+			var productTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+			foreach (string str in rawProductTags)
 			{
 				string tag = str.TrimSafe();
 				if (tag.HasValue())
 					productTags.Add(tag);
 			}
 
-			var existingProductTags = product.ProductTags.ToList();
+			var existingProductTags = product.ProductTags;
 			var productTagsToRemove = new List<ProductTag>();
 
 			foreach (var existingProductTag in existingProductTags)
@@ -321,11 +323,8 @@ namespace SmartStore.Admin.Controllers
 
 				if (productTag2 == null)
 				{
-					//add new product tag
-					productTag = new ProductTag()
-					{
-						Name = productTagName
-					};
+					// Add new product tag
+					productTag = new ProductTag { Name = productTagName };
 					_productTagService.InsertProductTag(productTag);
 				}
 				else
@@ -653,8 +652,7 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		protected void PrepareProductModel(ProductModel model, Product product, bool setPredefinedValues, bool excludeProperties)
 		{
-			if (model == null)
-				throw new ArgumentNullException("model");
+			Guard.NotNull(model, nameof(model));
 
 			if (product != null)
 			{
@@ -697,7 +695,7 @@ namespace SmartStore.Admin.Controllers
 			model.NumberOfAvailableManufacturers = _manufacturerService.GetAllManufacturers("",	pageIndex: 0, pageSize: 1, showHidden: true).TotalCount;
 			model.NumberOfAvailableCategories = _categoryService.GetAllCategories(pageIndex: 0, pageSize: 1, showHidden: true).TotalCount;
 
-			//copy product
+			// copy product
 			if (product != null)
 			{
 				model.CopyProductModel.Id = product.Id;
@@ -706,7 +704,7 @@ namespace SmartStore.Admin.Controllers
 				model.CopyProductModel.CopyImages = true;
 			}
 
-			//templates
+			// templates
 			var templates = _productTemplateService.GetAllProductTemplates();
 			foreach (var template in templates)
 			{
@@ -717,20 +715,16 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			//product tags
-			var allTags = _productTagService.GetAllProductTagNames();
-			foreach (var tag in allTags)
-			{
-				model.AvailableProductTags.Add(new SelectListItem { Text = tag, Value = tag });
-			}
-
+			// Product tags
 			if (product != null)
 			{
-				//var tags = product.ProductTags;
-				model.ProductTags = string.Join(", ", product.ProductTags.Select(x => x.Name));
+				model.ProductTags = product.ProductTags.Select(x => x.Name).ToArray();
 			}
 
-			//tax categories
+			var allTags = _productTagService.GetAllProductTagNames();
+			model.AvailableProductTags = new MultiSelectList(allTags, model.ProductTags);
+
+			// tax categories
 			var taxCategories = _taxCategoryService.GetAllTaxCategories();
 			foreach (var tc in taxCategories)
 			{
@@ -1224,7 +1218,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form
 			PrepareProductModel(model, null, false, true);
             PrepareAclModel(model, null, true);
 			PrepareStoresMappingModel(model, null, true);
@@ -1307,7 +1301,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form
 			PrepareProductModel(model, product, false, true);
             PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPicturesByProductId(product.Id, 1)?.FirstOrDefault());
             PrepareAclModel(model, product, true);

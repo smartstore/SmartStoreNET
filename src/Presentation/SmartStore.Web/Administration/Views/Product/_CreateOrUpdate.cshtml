@@ -1,12 +1,12 @@
 ﻿@model ProductModel
 
 @using SmartStore.Core.Domain.Catalog;
-@using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
 
 @{
-    Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
-    Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+	// TODO: BS4
+	//Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
+	//Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
 }
 
 @Html.ValidationSummary(false)
@@ -18,7 +18,7 @@
 	}
 </script>
 
-@Html.SmartStore().TabStrip().Name("product-edit").ComponentVersion(BootstrapVersion.V4).OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Tabs).Position(TabsPosition.Left).Items(x =>
+@Html.SmartStore().TabStrip().Name("product-edit").OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
 {
 	x.Add().Text(T("Admin.Catalog.Products.Info").Text)
 		.Icon("fa fa-pencil fa-lg fa-fw")

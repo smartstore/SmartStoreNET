@@ -1,5 +1,4 @@
-/// <reference path="../_variables.scss" />
-/// <reference path="../bs4/scss/bootstrap.scss" />
+/// <reference path="../theme.scss" />
 
 
 // General
@@ -31,7 +30,6 @@
     }
 
     .nav-link {
-        //font-size: $font-size-lg;
         text-transform: uppercase;
         text-align: center;
         position: relative;
@@ -46,7 +44,7 @@
 
         &.active { 
             font-weight: $font-weight-medium;
-            color: $nav-tabs-active-link-color; 
+            color: $nav-tabs-link-active-color; 
         }
 
         &.disabled {
@@ -77,7 +75,47 @@
     .nav-item.open .nav-link:focus:before { 
         left: 0;
         right: 0;
-        background: $brand-warning;
+        background: theme-color("warning");
+    }
+}
+
+
+// Stacked Material tabs (strip on the sides)
+// TODO: implement right positioning
+// ==============================================================
+
+.tabs-left .nav-tabs-line {
+    border-bottom: none;
+    border-right: 1px solid $nav-tabs-border-color;
+
+    .nav-link:not(.disabled):before {
+        // disable selection animations
+        display: none;
+    }
+
+   .nav-item {
+        margin-bottom: 0;
+        margin-right: -1px;
+    }
+
+    .nav-link {
+        text-align: left;
+        border: 1px solid transparent;
+        border-left-width: 2px;
+        transition: none;
+    }
+
+    .nav-link:hover:not(.active) {
+        background-color: rgba(#000, 0.08);
+    }
+
+    .nav-link.active,
+    .nav-link.active:focus,
+    .nav-item.open .nav-link,
+    .nav-item.open .nav-link:focus { 
+        border-top-color: $nav-tabs-border-color;
+        border-bottom-color: $nav-tabs-border-color;
+        border-left-color: theme-color("warning");
     }
 }
 
@@ -102,7 +140,7 @@
             text-transform: none;
             font-weight: $font-weight-medium;
             text-align: left;
-            color: $list-group-link-color !important;
+            color: $list-group-action-color !important;
             background-color: $list-group-bg;
             border: $list-group-border-width solid $list-group-border-color;
             border-radius: 0;
@@ -118,7 +156,7 @@
             }
 
             &:hover {
-                color: $list-group-link-hover-color;
+                color: $list-group-action-hover-color;
                 background-color: $list-group-hover-bg;
             }
             &:active {
@@ -153,7 +191,11 @@
     }
 }
 
+
+// 
 // The moved tab content
+// ==============================================================
+
 .offcanvas-nav {
     .tab-content {
         display: flex;
@@ -171,6 +213,31 @@
         padding: 1.5rem;
         padding-top: 1rem;
     }
+}
+
+
+// 
+// Add icon support to nav tabs and pills (BS4)
+// ==============================================================
+
+.nav-link > img,
+.nav-link > .fa {
+	vertical-align: baseline;
+	margin-right: 4px;
+	color: lighten($body-color, 18%);
+}
+.nav-link:hover > .fa,
+.nav-link.active > .fa {
+    // TODO: get icon color with color-yic mixin once it supports props
+	color: $body-color;
+}
+
+.nav-link > .chevron {
+	margin-left: 3px;
+}
+
+.tabs-left .nav-link > .fa {
+    min-width: 1rem;
 }
 
 

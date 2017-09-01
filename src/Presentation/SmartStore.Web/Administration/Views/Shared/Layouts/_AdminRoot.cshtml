@@ -41,6 +41,8 @@
 
 	// add js assets (Foot)
 	var bootstrapJsRoot = "~/Content/bootstrap/js/";
+	var bootstrap4JsRoot = "~/Administration/Content/bs4/js/";
+	var volatileJsRoot = "~/Administration/Scripts/";
 	Html.AppendScriptParts(ResourceLocation.Foot,
 		// jQuery UI Core
 		"~/Scripts/jquery-ui/effect.js",
@@ -65,32 +67,33 @@
 		"~/Scripts/jquery.addeasing.js",
 		"~/Scripts/smartstore.eventbroker.js",
 		"~/Scripts/smartstore.hacks.js",
-		"~/Scripts/smartstore.common.js",
+		volatileJsRoot + "smartstore.common.js",
 		// Bootstrap
-		//"~/Administration/Content/bs4/js/bootstrap.js",
-		bootstrapJsRoot + "bootstrap-transition.js",
-		bootstrapJsRoot + "bootstrap-alert.js",
-		bootstrapJsRoot + "bootstrap-button.js",
-		bootstrapJsRoot + "bootstrap-collapse.js",
-		bootstrapJsRoot + "bootstrap-dropdown.js",
-		bootstrapJsRoot + "bootstrap-modal.js",
-		bootstrapJsRoot + "bootstrap-tooltip.js",
-		bootstrapJsRoot + "bootstrap-popover.js",
-		bootstrapJsRoot + "bootstrap-tab.js",
-		bootstrapJsRoot + "bootstrap-typeahead.js",
-		// Bootstrap custom
-		bootstrapJsRoot + "custom/bootstrap-datetimepicker.js",
+		"~/Administration/Scripts/popper.js",
+		bootstrap4JsRoot + "bootstrap.js",
+		bootstrap4JsRoot + "bootstrap-datetimepicker.js",
+		//bootstrapJsRoot + "bootstrap-transition.js",
+		//bootstrapJsRoot + "bootstrap-alert.js",
+		//bootstrapJsRoot + "bootstrap-button.js",
+		//bootstrapJsRoot + "bootstrap-collapse.js",
+		//bootstrapJsRoot + "bootstrap-dropdown.js",
+		//bootstrapJsRoot + "bootstrap-modal.js",
+		//bootstrapJsRoot + "bootstrap-tooltip.js",
+		//bootstrapJsRoot + "bootstrap-popover.js",
+		//bootstrapJsRoot + "bootstrap-tab.js",
+		//bootstrapJsRoot + "bootstrap-typeahead.js",
+		//// Bootstrap custom
+		//bootstrapJsRoot + "custom/bootstrap-datetimepicker.js",
 		// Shared UI
 		"~/Scripts/smartstore.placeholder.js",
-		"~/Scripts/select2.js",
-		"~/Scripts/smartstore.selectwrapper.js",
+		"~/Administration/Content/vendors/select2/js/select2.js",
+		volatileJsRoot + "smartstore.selectwrapper.js",
 		"~/Scripts/smartstore.throbber.js",
 		"~/Scripts/smartstore.navbar.js",
 		"~/Scripts/smartstore.thumbzoomer.js",
 		"~/Scripts/smartstore.column-equalizer.js",
 		"~/Scripts/smartstore.shrinkmenu.js",
 		"~/Scripts/smartstore.scrollbutton.js",
-		"~/Scripts/smartstore.tabselector.js",
 		"~/Scripts/jquery.pnotify.js",
 		"~/Scripts/jquery.scrollTo.js",
 		"~/Scripts/jquery.sortable.js",

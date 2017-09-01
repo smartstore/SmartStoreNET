@@ -8,7 +8,7 @@ fieldset.content-group {
 
     > legend {
         position: relative;
-        font-size: $font-size-h5;
+        font-size: $h5-font-size;
         font-weight: 400;
         color: $gray-light;
         text-transform: uppercase;
@@ -142,6 +142,7 @@ fieldset.content-group {
 }
 
 .validation-summary-valid {
+    display: none;
     @extend .alert-success; 
 }
 
@@ -151,7 +152,7 @@ fieldset.content-group {
 
 .field-validation-error {
     display: block;
-    color: $state-danger-text;
+    color: $form-feedback-invalid-color;
     margin-top: 0.25rem;
 }
 

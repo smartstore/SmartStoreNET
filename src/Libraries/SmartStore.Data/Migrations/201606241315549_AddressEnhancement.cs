@@ -4,7 +4,7 @@ namespace SmartStore.Data.Migrations
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
     
-    public partial class AddressEnhancement : DbMigration
+    public partial class AddressEnhancement : DbMigration, ILocaleResourcesProvider
     {
         public override void Up()
         {

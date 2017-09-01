@@ -6,7 +6,7 @@ namespace SmartStore.Data.Migrations
     using System.Linq;
     using System.Data.Entity.Migrations;
 
-    public partial class SystemTopics : DbMigration, IDataSeeder<SmartObjectContext>
+    public partial class SystemTopics : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {

@@ -140,7 +140,6 @@ namespace SmartStore.AmazonPay.Controllers
 
 		[HttpPost]
 		[ValidateInput(false)]
-		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
 		public ActionResult IPNHandler()
 		{
 			_apiService.ProcessIpn(Request);

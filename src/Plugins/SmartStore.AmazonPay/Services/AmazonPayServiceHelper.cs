@@ -91,7 +91,7 @@ namespace SmartStore.AmazonPay.Services
 		{
 			try
 			{
-				if (!settings.AddOrderNotes || order == null)
+				if (!settings.AddOrderNotes || order == null || anyString.IsEmpty())
 					return;
 
 				var sb = new StringBuilder();
@@ -100,7 +100,7 @@ namespace SmartStore.AmazonPay.Services
 				sb.AppendFormat("<img src=\"{0}\" style=\"float: left; width: 16px; height: 16px;\" />", faviconUrl);
 				sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", T("Plugins.Payments.AmazonPay.AmazonDataProcessed"));
 				sb.Append(":<br />");
-				sb.Append(anyString.NaIfEmpty());
+				sb.Append(anyString);
 
 				if (isIpn)
 				{

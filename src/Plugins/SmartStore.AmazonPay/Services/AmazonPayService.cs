@@ -1315,25 +1315,32 @@ namespace SmartStore.AmazonPay.Services
 				AmazonPayData data = null;
 				Order order = null;
 				string errorId = null;
+				var isAuthorize = false;
+				var isCapture = false;
+				var isRefund = false;
 
-				if (type.IsCaseInsensitiveEqual("AuthorizationNotification"))
+				if (type.IsCaseInsensitiveEqual("PaymentAuthorize"))
 				{
+					isAuthorize = true;
 					var response = parser.GetAuthorizeResponse();
 					data = GetDetails(response);
 				}
-				else if (type.IsCaseInsensitiveEqual("CaptureNotification"))
+				else if (type.IsCaseInsensitiveEqual("PaymentCapture"))
 				{
+					isCapture = true;
 					var response = parser.GetCaptureResponse();
 					data = GetDetails(response);
 				}
-				else if (type.IsCaseInsensitiveEqual("RefundNotification"))
+				else if (type.IsCaseInsensitiveEqual("PaymentRefund"))
 				{
+					isRefund = true;
 					var response = parser.GetRefundResponse();
 					data = GetDetails(response);
 				}
 
 				if (data == null)
 				{
+					Logger.Error($"No IPN details for notification type {type}");
 					return;
 				}
 
@@ -1341,20 +1348,20 @@ namespace SmartStore.AmazonPay.Services
 				data.MessageId = parser.GetNotificationReferenceId();
 
 				// Find order.
-				if (data.MessageType.IsCaseInsensitiveEqual("AuthorizationNotification"))
+				if (isAuthorize)
 				{
 					if ((order = _orderService.GetOrderByPaymentAuthorization(AmazonPayPlugin.SystemName, data.AuthorizationId)) == null)
-						errorId = "AuthorizationId {0}".FormatWith(data.AuthorizationId);
+						errorId = $"AuthorizationId {data.AuthorizationId}";
 				}
-				else if (data.MessageType.IsCaseInsensitiveEqual("CaptureNotification"))
+				else if (isCapture)
 				{
 					if ((order = _orderService.GetOrderByPaymentCapture(AmazonPayPlugin.SystemName, data.CaptureId)) == null)
 						order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
 
 					if (order == null)
-						errorId = "CaptureId {0}".FormatWith(data.CaptureId);
+						errorId = $"CaptureId {data.CaptureId}";
 				}
-				else if (data.MessageType.IsCaseInsensitiveEqual("RefundNotification"))
+				else if (isRefund)
 				{
 					var attribute = _genericAttributeService.GetAttributes(AmazonPayPlugin.SystemName + ".RefundId", "Order")
 						.Where(x => x.Value == data.RefundId)
@@ -1364,7 +1371,7 @@ namespace SmartStore.AmazonPay.Services
 						order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
 
 					if (order == null)
-						errorId = "RefundId {0}".FormatWith(data.RefundId);
+						errorId = $"RefundId {data.RefundId}";
 				}
 
 				if (errorId.HasValue())
@@ -1383,16 +1390,16 @@ namespace SmartStore.AmazonPay.Services
 					return;
 				}
 
-				if (type.IsCaseInsensitiveEqual("AuthorizationNotification"))
+				if (isAuthorize)
 				{
 					ProcessAuthorizationResult(settings, order, data);
 				}
-				else if (type.IsCaseInsensitiveEqual("CaptureNotification"))
+				else if (isCapture)
 				{
 					var client = CreateClient(settings);
 					ProcessCaptureResult(client, settings, order, data);
 				}
-				else if (type.IsCaseInsensitiveEqual("RefundNotification"))
+				else if (isRefund)
 				{
 					var client = CreateClient(settings);
 					ProcessRefundResult(client, settings, order, data);

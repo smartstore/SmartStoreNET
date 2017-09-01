@@ -4,7 +4,7 @@ namespace SmartStore.Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
 
-    public partial class TierPriceCalcMethod : DbMigration
+    public partial class TierPriceCalcMethod : DbMigration, ILocaleResourcesProvider
     {
         public override void Up()
         {

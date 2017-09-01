@@ -7,8 +7,9 @@ using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.AmazonPay.Widgets
 {
+	[DisplayOrder(-1)]
 	[SystemName("Widgets.AmazonPay")]
-	[FriendlyName("Login and Pay with Amazon")]
+	[FriendlyName("Amazon Pay")]
 	public class AmazonPayWidget : IWidget
 	{
 		private readonly HttpContextBase _httpContext;

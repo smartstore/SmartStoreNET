@@ -24,7 +24,7 @@ namespace SmartStore.PayPal
 {
 	[SystemName("Payments.PayPalStandard")]
     [FriendlyName("PayPal Standard")]
-    [DisplayOrder(2)]
+    [DisplayOrder(1)]
 	public partial class PayPalStandardProvider : PaymentPluginBase, IConfigurable
 	{
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;

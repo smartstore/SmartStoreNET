@@ -39,7 +39,7 @@
 				authorization: function() {
 					amazon.Login.authorize({
 							scope: scope,
-							popup: @(Model.UsePopupWindow.ToString().ToLower()),
+							popup: @(Model.UsePopupDialog.ToString().ToLower()),
 						},
 						function (authorizeResponse) {
 							accessToken = authorizeResponse.access_token;

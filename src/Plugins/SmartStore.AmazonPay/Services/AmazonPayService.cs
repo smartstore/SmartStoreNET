@@ -348,15 +348,18 @@ namespace SmartStore.AmazonPay.Services
 
 				if (type == AmazonPayRequestType.MiniShoppingCart || type == AmazonPayRequestType.ShoppingCart)
 				{
-					model.ButtonType = settings.PayButtonType;
+					// The setting for payment button type has been removed at Amazon Payment's request.
+					model.ButtonType = "PwA";
 					model.ButtonColor = settings.PayButtonColor;
 					model.ButtonSize = settings.PayButtonSize;
+					model.UsePopupDialog = settings.UsePopupDialog;
 				}
 				else if (type == AmazonPayRequestType.AuthenticationPublicInfo)
 				{
 					model.ButtonType = settings.AuthButtonType;
 					model.ButtonColor = settings.AuthButtonColor;
 					model.ButtonSize = settings.AuthButtonSize;
+					model.UsePopupDialog = settings.UsePopupDialog;
 				}
 				else if (type == AmazonPayRequestType.Address)
 				{

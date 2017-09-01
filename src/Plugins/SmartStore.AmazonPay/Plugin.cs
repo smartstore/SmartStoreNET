@@ -14,8 +14,9 @@ using SmartStore.Services.Tasks;
 
 namespace SmartStore.AmazonPay
 {
-	[DisplayOrder(1)]
 	[DependentWidgets("Widgets.AmazonPay")]
+	[FriendlyName("Amazon Pay")]
+	[DisplayOrder(-1)]
 	public class AmazonPayPlugin : PaymentPluginBase, IExternalAuthenticationMethod, IConfigurable
 	{
 		private readonly IAmazonPayService _apiService;

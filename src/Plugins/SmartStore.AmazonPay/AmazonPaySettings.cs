@@ -17,7 +17,6 @@ namespace SmartStore.AmazonPay
 			InformCustomerAddErrors = true;
 			PollingMaxOrderCreationDays = 31;
 
-			PayButtonType = "PwA";
 			PayButtonColor = "Gold";
 			PayButtonSize = "small";
 			AuthButtonType = "Login";
@@ -72,7 +71,6 @@ namespace SmartStore.AmazonPay
 			}
 		}
 
-		public string PayButtonType { get; set; }
 		public string PayButtonColor { get; set; }
 		public string PayButtonSize { get; set; }
 

@@ -229,21 +229,6 @@
 	</tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.PayButtonType)
-        </td>
-        <td class="adminData">
-			@Html.SettingOverrideCheckbox(model => model.PayButtonType)
-			@Html.DropDownListFor(model => model.PayButtonType, new List<SelectListItem>
-			{
-				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.PayButtonType.Pwa"), Value = "PwA" },
-				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.PayButtonType.Pay"), Value = "Pay" },
-				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.PayButtonType.A"), Value = "A" }
-			})
-            @Html.ValidationMessageFor(model => model.PayButtonType)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.PayButtonColor)
         </td>
         <td class="adminData">
@@ -345,13 +330,6 @@
             @Html.ValidationMessageFor(model => model.UsePopupDialog)
         </td>
     </tr>
-	<tr id="UsePopupDialogWarning" class="hide">
-		<td colspan="2">
-			<div class="alert alert-warning">
-				@T("Plugins.Payments.AmazonPay.UsePopupDialog.Warning")
-			</div>
-		</td>
-	</tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.AdditionalFee)
@@ -370,13 +348,6 @@
             @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
         </td>
     </tr>
-	<tr id="AdditionalFeeWarning">
-		<td colspan="2">
-			<div class="alert alert-warning">
-				@T("Plugins.Payments.AmazonPay.AdditionalFee.Warning")
-			</div>
-		</td>
-	</tr>
 	</table>
 }
 
@@ -458,11 +429,6 @@
 		// Show/hide inform customer add errors option
 		$('#@(Html.FieldIdFor(x => x.InformCustomerAboutErrors))').change(function () {
 			$('#InformCustomerAddErrorsContainer').toggle($(this).is(':checked'));
-		}).trigger('change');
-
-		// Show/hide pop-up dialog warning
-		$('#@(Html.FieldIdFor(x => x.UsePopupDialog))').change(function () {
-			$('#UsePopupDialogWarning').toggle($(this).is(':checked'));
 		}).trigger('change');
 
 		// Register now

@@ -1,9 +1,9 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
 	<LocaleResource Name="Plugins.FriendlyName.SmartStore.AmazonPay" AppendRootKey="false">
-		<Value>Login und Bezahlen mit Amazon</Value>
+		<Value>Amazon Pay</Value>
 	</LocaleResource>
   <LocaleResource Name="Plugins.FriendlyName.Widgets.AmazonPay" AppendRootKey="false">
-    <Value>Login und Bezahlen mit Amazon</Value>
+    <Value>Amazon Pay</Value>
   </LocaleResource>
 
 	<LocaleResource Name="AdminInstruction">
@@ -151,21 +151,6 @@ Textvorschläge:<ul>
 	<LocaleResource Name="ClientSecret.Hint">
 		<Value>Den Client-Secret finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
 	</LocaleResource>-->
-  <LocaleResource Name="PayButtonType">
-    <Value>Art des Zahlungs-Button</Value>
-  </LocaleResource>
-  <LocaleResource Name="PayButtonType.Hint">
-    <Value>Legt die bevorzugte Art des Zahlungs-Button (Pay-Button) fest.</Value>
-  </LocaleResource>
-  <LocaleResource Name="PayButtonType.Pwa">
-    <Value>Amazon Pay</Value>
-  </LocaleResource>
-  <LocaleResource Name="PayButtonType.Pay">
-    <Value>Pay</Value>
-  </LocaleResource>
-  <LocaleResource Name="PayButtonType.A">
-    <Value>Icon</Value>
-  </LocaleResource>
   <LocaleResource Name="PayButtonColor">
 		<Value>Farbe des Zahlungs-Button</Value>
 	</LocaleResource>
@@ -188,16 +173,16 @@ Textvorschläge:<ul>
 		<Value>Legt die Größe Zahlungs-Button (Pay-Button) fest.</Value>
 	</LocaleResource>
   <LocaleResource Name="ButtonSize.Small">
-    <Value>Klein (Höhe 32 Pixel)</Value>
+    <Value>Klein</Value>
   </LocaleResource>
 	<LocaleResource Name="ButtonSize.Medium">
-		<Value>Medium (Höhe 46 Pixel)</Value>
+		<Value>Medium</Value>
 	</LocaleResource>
 	<LocaleResource Name="ButtonSize.Large">
-		<Value>Groß (Höhe 64 Pixel)</Value>
+		<Value>Groß</Value>
 	</LocaleResource>
 	<LocaleResource Name="ButtonSize.Xlarge">
-		<Value>Extra-Groß (Höhe 92 Pixel)</Value>
+		<Value>Extra-Groß</Value>
 	</LocaleResource>
   <LocaleResource Name="AuthButtonType">
     <Value>Art des Anmelde-Button</Value>
@@ -230,7 +215,7 @@ Textvorschläge:<ul>
 		<Value>Legt die Methode fest, mit deren Hilfe der Zahlungsstatus aktualisiert werden soll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Warning">
-		<Value>IPN (Sofortbenachrichtigungen) erfordert, dass ein gültiges SSL-Zertifikat auf diesem Server installiert ist. Achten Sie darauf, das das SSL-Zertifikat von einer vertrauenswürdigen Zertifizierungsstelle ausgegeben werden muss, selbstsignierte Zertifikate sind nicht zulässig.</Value>
+		<Value>Die URL für IPN (Sofortbenachrichtigungen) muss in Amazon Seller Central separat für Sandbox und Live-Modus eingetragen werden. Für den Live-Modus ist ein gültiges, von einer vertrauenswürdigen Zertifizierungsstelle ausgegebenes SSL-Zertifikat erforderlich, selbstsignierte Zertifikate sind nicht zulässig. Für die Sandbox ist kein SSL-Zertifikat erforderlich. Die IPN-URL muss in diesem Fall mit http angegeben werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Ipn">
 		<Value>IPN (Instant Payment Notification)</Value>
@@ -283,9 +268,6 @@ Textvorschläge:<ul>
 	<LocaleResource Name="AdditionalFee.Hint">
 		<Value>Zusätzliche Gebühren, die dem Kunden für die Inanspruchnahme des Dienstes berechnet werden sollen.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AdditionalFee.Warning">
-		<Value>Bitte berechnen Sie zusätzliche Gebühren erst nach Rücksprache mit Amazon Payments. Hierfür ist eine ausdrückliche Genehmigung erforderlich.</Value>
-	</LocaleResource>
 	<LocaleResource Name="AdditionalFeePercentage">
 		<Value>Zusätzliche Gebühren (prozentual)</Value>
 	</LocaleResource>
@@ -303,9 +285,6 @@ Textvorschläge:<ul>
   </LocaleResource>
   <LocaleResource Name="UsePopupDialog.Hint">
     <Value>Legt fest, ob die Authentifizierung über ein Dialogfenster erfolgen soll. Ist diese Option deaktiviert, wird auf eine Amazon Seite zwecks Authentifizierung weitergeleitet.</Value>
-  </LocaleResource>
-  <LocaleResource Name="UsePopupDialog.Warning">
-    <Value>Die Authentifizierung über ein Dialogfenster erfordert, dass ein gültiges SSL-Zertifikat auf diesem Server installiert ist. Achten Sie darauf, das das SSL-Zertifikat von einer vertrauenswürdigen Zertifizierungsstelle ausgegeben werden muss, selbstsignierte Zertifikate sind nicht zulässig.</Value>
   </LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximales Auftragsalter (in Tagen)</Value>

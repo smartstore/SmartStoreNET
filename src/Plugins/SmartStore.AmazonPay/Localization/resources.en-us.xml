@@ -1,9 +1,9 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
 	<LocaleResource Name="Plugins.FriendlyName.SmartStore.AmazonPay" AppendRootKey="false">
-		<Value>Login and Pay with Amazon</Value>
+		<Value>Amazon Pay</Value>
 	</LocaleResource>
   <LocaleResource Name="Plugins.FriendlyName.Widgets.AmazonPay" AppendRootKey="false">
-    <Value>Login and Pay with Amazon</Value>
+    <Value>Amazon Pay</Value>
   </LocaleResource>
 
 	<LocaleResource Name="AdminInstruction">
@@ -137,7 +137,7 @@ Text suggestions:<ul>
     <Value>Your Secret Access Key</Value>
   </LocaleResource>
   <LocaleResource Name="SecretKey.Hint">
-    <Value>You can find the Sexret Access Key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+    <Value>You can find the Secret Access Key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
   </LocaleResource>
 	<LocaleResource Name="ClientKey">
 		<Value>Your Client ID</Value>
@@ -151,21 +151,6 @@ Text suggestions:<ul>
 	<LocaleResource Name="ClientSecret.Hint">
 		<Value>You can find the Cleint Secret at Amazon's Seller Central under Integration - MWS Access Key.</Value>
 	</LocaleResource>-->
-  <LocaleResource Name="PayButtonType">
-    <Value>Pay button type</Value>
-  </LocaleResource>
-  <LocaleResource Name="PayButtonType.Hint">
-    <Value>Specifies the prefered type of the Pay button.</Value>
-  </LocaleResource>
-  <LocaleResource Name="PayButtonType.Pwa">
-    <Value>Amazon Pay</Value>
-  </LocaleResource>
-  <LocaleResource Name="PayButtonType.Pay">
-    <Value>Pay</Value>
-  </LocaleResource>
-  <LocaleResource Name="PayButtonType.A">
-    <Value>Icon</Value>
-  </LocaleResource>
 	<LocaleResource Name="PayButtonColor">
 		<Value>Pay button color</Value>
 	</LocaleResource>
@@ -188,16 +173,16 @@ Text suggestions:<ul>
 		<Value>Specifies the size of the Pay button.</Value>
 	</LocaleResource>
   <LocaleResource Name="ButtonSize.Medium">
-    <Value>Small (height 32 pixel)</Value>
+    <Value>Small</Value>
   </LocaleResource>
 	<LocaleResource Name="ButtonSize.Medium">
-		<Value>Medium (height 46 pixel)</Value>
+		<Value>Medium</Value>
 	</LocaleResource>
 	<LocaleResource Name="ButtonSize.Large">
-		<Value>Large (height 64 pixel)</Value>
+		<Value>Large</Value>
 	</LocaleResource>
 	<LocaleResource Name="ButtonSize.Xlarge">
-		<Value>Extra large (height 92 pixel)</Value>
+		<Value>Extra large</Value>
 	</LocaleResource>
   <LocaleResource Name="AuthButtonType">
     <Value>Login button type</Value>
@@ -230,7 +215,7 @@ Text suggestions:<ul>
 		<Value>Specifies the method used to update the payment status.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Warning">
-		<Value>IPN (instant payment notification) requires valid SSL certificate to be installed on this server. Pay attention that the SSL certificate must be issued by a trusted Certificate Authority, self-signed certificates are not permittted.</Value>
+		<Value>The URL for IPN (Instant Payment Notification) must be entered separately for Sandbox and Live Mode in Amazon Seller Central. Live mode requires a valid SSL certificate issued by a trusted certificate authority, self-signed certificates are not permitted. The sandbox does not require an SSL certificate. In this case, the IPN URL must be specified with http.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Ipn">
 		<Value>IPN (Instant Payment Notification)</Value>
@@ -283,9 +268,6 @@ Text suggestions:<ul>
 	<LocaleResource Name="AdditionalFee.Hint">
 		<Value>Enter additional fee to charge your customers.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AdditionalFee.Warning">
-		<Value>This option requires a permission through Amazon Payments. Please do not calculate additional fees without contacting Amazon Payments first.</Value>
-	</LocaleResource>
 	<LocaleResource Name="AdditionalFeePercentage">
 		<Value>Additional fee percentage</Value>
 	</LocaleResource>
@@ -303,9 +285,6 @@ Text suggestions:<ul>
   </LocaleResource>
   <LocaleResource Name="UsePopupDialog.Hint">
     <Value>Specifies whether to authenticate through pop-up dialog. Otherwise the user will be redirected to an Amazon page.</Value>
-  </LocaleResource>
-  <LocaleResource Name="UsePopupDialog.Warning">
-    <Value>Authentication through a pop-up dialog requires valid SSL certificate to be installed on this server. Pay attention that the SSL certificate must be issued by a trusted Certificate Authority, self-signed certificates are not permittted.</Value>
   </LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximal order age (in days)</Value>

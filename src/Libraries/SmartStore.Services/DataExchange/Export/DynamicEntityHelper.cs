@@ -579,12 +579,9 @@ namespace SmartStore.Services.DataExchange.Export
 			product.MergeWithCombination(combination);
 
 			var languageId = (ctx.Projection.LanguageId ?? 0);
-			var pictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
 			var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
 			int[] pictureIds = (combination == null ? new int[0] : combination.GetAssignedPictureIds());
-
-			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture) && ctx.Projection.PictureSize > 0)
-				pictureSize = ctx.Projection.PictureSize;
+			var productDetailsPictureSize = ctx.Projection.PictureSize > 0 ? ctx.Projection.PictureSize : _mediaSettings.Value.ProductDetailsPictureSize;
 
 			var perfLoadId = (ctx.IsPreview ? 0 : product.Id);  // perf preview (it's a compromise)
 			IEnumerable<ProductPicture> productPictures = ctx.ProductExportContext.ProductPictures.GetOrLoad(perfLoadId);
@@ -681,7 +678,7 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					dynamic dyn = new DynamicEntity(x);
 
-					dyn.Picture = ToDynamic(ctx, x.Picture, _mediaSettings.Value.ProductThumbPictureSize, pictureSize);
+					dyn.Picture = ToDynamic(ctx, x.Picture, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize);
 
 					return dyn;
 				})
@@ -738,7 +735,7 @@ namespace SmartStore.Services.DataExchange.Export
 						var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
 						if (assignedPicture != null && assignedPicture.Picture != null)
 						{
-							assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.Value.ProductThumbPictureSize, pictureSize));
+							assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize));
 						}
 					}
 

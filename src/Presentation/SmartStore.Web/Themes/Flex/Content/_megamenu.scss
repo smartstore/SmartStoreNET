@@ -246,6 +246,7 @@ $mixed-megamenu-bg:             $megamenu-bg;
         .col-md-3 {
             overflow: hidden;
         }
+        .row > div:empty { height: 0; }
     }
 
     .mega-menu-dropdown-heading {

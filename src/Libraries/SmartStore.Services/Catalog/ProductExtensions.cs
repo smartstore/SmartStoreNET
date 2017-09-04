@@ -43,50 +43,48 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.NotNull(product, "product");
 
-			var values = product.MergedDataValues;
-
-			if (values != null)
-				values.Clear();
+			if (product.MergedDataValues != null)
+				product.MergedDataValues.Clear();
 
 			if (combination == null)
 				return;
 
-			if (values == null)
-				values = new Dictionary<string, object>();
+			if (product.MergedDataValues == null)
+				product.MergedDataValues = new Dictionary<string, object>();
 
             if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
             {
-                values.Add("StockQuantity", combination.StockQuantity);
-				values.Add("BackorderModeId", combination.AllowOutOfStockOrders ? (int)BackorderMode.AllowQtyBelow0 : (int)BackorderMode.NoBackorders);
+				product.MergedDataValues.Add("StockQuantity", combination.StockQuantity);
+				product.MergedDataValues.Add("BackorderModeId", combination.AllowOutOfStockOrders ? (int)BackorderMode.AllowQtyBelow0 : (int)BackorderMode.NoBackorders);
             }
 
 			if (combination.Sku.HasValue())
-				values.Add("Sku", combination.Sku);
+				product.MergedDataValues.Add("Sku", combination.Sku);
 			if (combination.Gtin.HasValue())
-				values.Add("Gtin", combination.Gtin);
+				product.MergedDataValues.Add("Gtin", combination.Gtin);
 			if (combination.ManufacturerPartNumber.HasValue())
-				values.Add("ManufacturerPartNumber", combination.ManufacturerPartNumber);
+				product.MergedDataValues.Add("ManufacturerPartNumber", combination.ManufacturerPartNumber);
 
 			if (combination.Price.HasValue)
-				values.Add("Price", combination.Price.Value);
+				product.MergedDataValues.Add("Price", combination.Price.Value);
 
 			if (combination.DeliveryTimeId.HasValue && combination.DeliveryTimeId.Value > 0)
-				values.Add("DeliveryTimeId", combination.DeliveryTimeId);
+				product.MergedDataValues.Add("DeliveryTimeId", combination.DeliveryTimeId);
 
 			if (combination.QuantityUnitId.HasValue && combination.QuantityUnitId.Value > 0)
-				values.Add("QuantityUnitId", combination.QuantityUnitId);
+				product.MergedDataValues.Add("QuantityUnitId", combination.QuantityUnitId);
 
 			if (combination.Length.HasValue)
-				values.Add("Length", combination.Length.Value);
+				product.MergedDataValues.Add("Length", combination.Length.Value);
 			if (combination.Width.HasValue)
-				values.Add("Width", combination.Width.Value);
+				product.MergedDataValues.Add("Width", combination.Width.Value);
 			if (combination.Height.HasValue)
-				values.Add("Height", combination.Height.Value);
+				product.MergedDataValues.Add("Height", combination.Height.Value);
 
 			if (combination.BasePriceAmount.HasValue)
-				values.Add("BasePriceAmount", combination.BasePriceAmount);
+				product.MergedDataValues.Add("BasePriceAmount", combination.BasePriceAmount);
 			if (combination.BasePriceBaseAmount.HasValue)
-				values.Add("BasePriceBaseAmount", combination.BasePriceBaseAmount);
+				product.MergedDataValues.Add("BasePriceBaseAmount", combination.BasePriceBaseAmount);
 		}
 
 		public static IList<int> GetAllCombinationPictureIds(this IEnumerable<ProductVariantAttributeCombination> combinations)

@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.0.3
 ### Bugfixes
@@ -20,7 +20,8 @@
 * #1224 Notifier wasn't working in plugin controllers
 * #1205 Server cannot append header after HTTP headers have been sent
 * #1154 Left offcanvas navigation does not open when in checkout progress
-+ #1212 Export: FTP publishing should consider directory structure
+* #1212 Export: FTP publishing should consider directory structure
+* #1253 Product PDF exporter only exports one picture and ignores the picture number profile setting
   
 ### Improvements
 * Apply img-fluid class to all images within html editor content

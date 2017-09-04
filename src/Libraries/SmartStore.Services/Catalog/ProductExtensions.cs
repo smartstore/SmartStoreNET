@@ -52,13 +52,13 @@ namespace SmartStore.Services.Catalog
 				return;
 
 			if (values == null)
-				values = new Dictionary<string, object>();
+				product.MergedDataValues = values = new Dictionary<string, object>();
 
-            if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
-            {
-                values.Add("StockQuantity", combination.StockQuantity);
+			if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
+			{
+				values.Add("StockQuantity", combination.StockQuantity);
 				values.Add("BackorderModeId", combination.AllowOutOfStockOrders ? (int)BackorderMode.AllowQtyBelow0 : (int)BackorderMode.NoBackorders);
-            }
+			}
 
 			if (combination.Sku.HasValue())
 				values.Add("Sku", combination.Sku);

@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Web;
+using NUnit.Framework;
+using Rhino.Mocks;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Discounts;
-using SmartStore.Tests;
-using NUnit.Framework;
-using Rhino.Mocks;
-using System.Collections.Generic;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Media;
-using System.Web;
 using SmartStore.Services.Tax;
+using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Catalog
 {
-    [TestFixture]
+	[TestFixture]
     public class PriceCalculationServiceTests : ServiceTest
     {
 		IStoreContext _storeContext;
@@ -278,7 +278,34 @@ namespace SmartStore.Services.Tests.Catalog
 			_priceCalcService.GetFinalPrice(product, customer, 0, true, 1).ShouldEqual(10.01M);
         }
 
-        [Test]
+		[Test]
+		public void Can_get_final_product_price_with_variant_combination_price()
+		{
+			var product = new Product
+			{
+				Id = 1,
+				Name = "Product name 1",
+				Price = 9.99M,
+				CustomerEntersPrice = false,
+				Published = true,
+			};
+
+			var combination = new ProductVariantAttributeCombination
+			{
+				Id = 1,
+				Price = 18.90M,
+				ProductId = 1
+			};
+
+			product.MergeWithCombination(combination);
+
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
+
+			_priceCalcService.GetFinalPrice(product, null, 0, true, 1).ShouldEqual(18.90M);
+		}
+
+		[Test]
         public void Can_get_product_discount()
         {
 			var product = new Product

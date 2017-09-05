@@ -4,7 +4,7 @@ namespace SmartStore.Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
 
-    public partial class TierPriceCalcMethod : DbMigration, ILocaleResourcesProvider
+    public partial class TierPriceCalcMethod : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
@@ -16,6 +16,11 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.TierPrice", "CalculationMethod");
         }
 
+		public bool RollbackOnFailure
+		{
+			get { return false; }
+		}
+        
         public void Seed(SmartObjectContext context)
         {
             context.MigrateLocaleResources(MigrateLocaleResources);

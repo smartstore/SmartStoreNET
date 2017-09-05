@@ -137,6 +137,7 @@ $gray-lightest: $gray-100;
 // Global / Shared (unify later with Flex' resources)
 // --------------------------------------------------
 
+@import 'shared/_mixins.scss';
 @import 'shared/_typo.scss';
 @import 'shared/_alert.scss';
 @import 'shared/_buttons.scss';
@@ -148,6 +149,7 @@ $gray-lightest: $gray-100;
 @import "shared/_throbber.scss";
 @import "shared/_spinner.scss";
 @import "shared/_sortable-grip.scss";
+@import "shared/_utils.scss";
 
 
 //
@@ -209,7 +211,7 @@ $gray-lightest: $gray-100;
 .adminContent > tbody > tr,
 .adminContent > tr {
     @include make-row();
-    margin: 0.75rem 0;
+    margin: 0.5rem 0;
 }
 
 .adminContent > tbody > tr > td,
@@ -220,6 +222,10 @@ $gray-lightest: $gray-100;
 .adminContent td.adminTitle {
     @include make-col(3);
     text-align: right;
+}
+
+.adminContent td.adminTitle {
+    @extend .col-form-label;
 }
 
 .adminContent td.adminData {
@@ -248,8 +254,13 @@ $gray-lightest: $gray-100;
 // Adapt class-less form elements to bs4
 // --------------------------------------------------
 
+.t-arrow-up, .t-arrow-down {
+    // TODO: temp only
+    display: none !important;
+}
+
 .adminContent {
-    input[type=text], 
+    input[type=text]:not(.form-control-plaintext), 
     input[type=password],
     input[type=email],
     input[type=number],
@@ -258,4 +269,10 @@ $gray-lightest: $gray-100;
     textarea {
         @extend .form-control;
     }
+}
+
+// Reset BS' check/radio positioning in adminData-columns
+.adminData > .form-check-input {
+    position: relative;
+    margin-left: 0;
 }

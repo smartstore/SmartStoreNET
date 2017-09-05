@@ -17,6 +17,14 @@
 				delay: { show: 400, hide: 0 }
 			});
 		},
+		// switch
+		function (ctx) {
+			ctx.find(".adminData > input[type=checkbox]").each(function (i, el) {
+				var wrap = $(el)
+					.wrap('<label class="switch"></label>')
+					.after('<span class="switch-toggle" data-on="' + window.Res['Common.On'] + '" data-off="' + window.Res['Common.Off'] + '"></span>');
+			});
+		},
 		// Telerik
 		function (ctx) {
 			Hacks.Telerik.handleButton(ctx.find(".t-button").filter(function (index) {
@@ -98,6 +106,7 @@
 
         // sticky section-header
         var navbar = $("#navbar");
+        navbar = $("#x-navbar");
         var navbarHeight = navbar.height() || 1;
         var sectionHeader = $('.section-header');
         var sectionHeaderHasButtons = undefined;

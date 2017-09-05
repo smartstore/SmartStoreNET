@@ -7,22 +7,20 @@
         @Html.Hidden("customerlanguage", Model.CurrentLanguage.Id)
     }
     
-    <div class="btn-group toppad pull-right">
-        <button class="btn dropdown-toggle navbar-tool" title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
+    <div class="btn-group toppad">
+        <button class="btn btn-primary dropdown-toggle navbar-tool" title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
 			<i class="fa fa-language"></i>
 			<span>@Model.CurrentLanguage.UniqueSeoCode.ToUpper()</span>
         </button>
-        <ul id="language-selector" class="dropdown-menu">
+        <div id="language-selector" class="dropdown-menu dropdown-menu-right">
             @foreach (var language in Model.AvailableLanguages)
             {
-                <li @Html.Css("disabled", language.Id == Model.CurrentLanguage.Id)>
-                    <a href="javascript:void(0)" data-lang-id='@language.Id'>
-                        <img src='@Url.Content("~/Content/Images/flags/" + @language.FlagImageFileName)' alt="@language.Name" />
-                        @language.Name
-                    </a>
-                </li>
+                <a href="javascript:void(0)" data-lang-id='@language.Id' class="dropdown-item@(language.Id == Model.CurrentLanguage.Id ? " disabled" : "")">
+                    <img src='@Url.Content("~/Content/Images/flags/" + @language.FlagImageFileName)' alt="@language.Name" />
+                    @language.Name
+                </a>
             }
-        </ul>
+        </div>
     </div>
     
     <script>

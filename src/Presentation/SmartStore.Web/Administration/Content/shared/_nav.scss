@@ -220,24 +220,26 @@
 // Add icon support to nav tabs and pills (BS4)
 // ==============================================================
 
-.nav-link > img,
-.nav-link > .fa {
-	vertical-align: baseline;
-	margin-right: 4px;
-	color: lighten($body-color, 18%);
-}
-.nav-link:hover > .fa,
-.nav-link.active > .fa {
-    // TODO: get icon color with color-yic mixin once it supports props
-	color: $body-color;
-}
+.nav {
+    .nav-link > img,
+    .nav-link > .fa {
+	    vertical-align: baseline;
+	    margin-right: 4px;
+        // TODO: get icon color with color-yic mixin once it supports props
+        // TODO: support dark backgrounds
+	    color: lighten($body-color, 18%);
+    }
+    .nav-link:hover > .fa,
+    .nav-link.active > .fa {
+        // TODO: get icon color with color-yic mixin once it supports props
+	    color: $body-color;
+    }
 
-.nav-link > .chevron {
-	margin-left: 3px;
+    .nav-link > .chevron {
+	    margin-left: 3px;
+    }
+
+    .tabs-left .nav-link > .fa {
+        min-width: 1rem;
+    }
 }
-
-.tabs-left .nav-link > .fa {
-    min-width: 1rem;
-}
-
-

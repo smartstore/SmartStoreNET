@@ -33,7 +33,7 @@
     }
 }
 
-<ul class="navbar-nav nav list-unstyled">
+<ul class="navbar-nav mr-auto">
 @{
     foreach (var node in Model.Children)
     {
@@ -59,8 +59,8 @@
 
         var itemUrl = GetNodeLink(node);
 
-        <li data-id="@item.Id" @Html.Attr("class", "dropdown", node.HasChildren)>
-			<a href="@itemUrl" data-target="#" @Html.Attr("class", "dropdown-toggle", node.HasChildren)>
+        <li data-id="@item.Id" class="nav-item@(node.HasChildren ? " dropdown" : "")">
+			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl" @Html.Attr("data-toggle", "dropdown", node.HasChildren)>
 				@if (item.Icon.HasValue())
 				{
 					<i class="fa fa-fw fa-@item.Icon"></i>
@@ -88,7 +88,7 @@
     var isFirst = true;
 	var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
     
-    <ul class='dropdown-menu'>
+    <div class='dropdown-menu'>
     @foreach (var node in nodes)
     {
         var item = node.Value;
@@ -104,11 +104,11 @@
         {
             if (!isFirst)
             {
-                <li class="divider"></li>
+                <div class="dropdown-divider"></div>
             }
             if (item.Text.HasValue() && item.Text != "[SKIP]")
             {
-                <li data-id="@item.Id" class="nav-header">@itemText</li>
+                <h6 data-id="@item.Id" class="dropdown-header">@itemText</h6>
             }
             isFirst = false;
             continue;
@@ -123,8 +123,8 @@
                 liClass += " dropdown-submenu";
             }
         }
-        <li data-id="@item.Id" class='@liClass'>
-            <a href="@GetNodeLink(node)">
+        @*<li data-id="@item.Id" class='@liClass'>*@
+            <a class="dropdown-item" href="@GetNodeLink(node)">
 				@if (hasIcons)
 				{
 					var iconClass = "fa fa-fw";
@@ -136,27 +136,25 @@
 				}
                 @itemText
             </a>
-            @if (node.HasChildren)
+            @*@if (node.HasChildren)
             {
                 @CreateDropdown(node.Children, false)
-            }
-        </li>
+            }*@
+        @*</li>*@
         
         isFirst = false;
     }
-    </ul>
+    </div>
 }
 
 <script type="text/javascript">
-
-    $(function () {
-        $('.navbar ul.navbar-nav > li.dropdown').navbar({
-    		menuAim: {
-    			rowSelector: "li.dropdown-submenu",
-    			submenuSelector: "*",
-    		}
-    	});
-    });
-
+    //$(function () {
+    //    $('.navbar ul.navbar-nav > li.dropdown').navbar({
+    //		menuAim: {
+    //			rowSelector: "li.dropdown-submenu",
+    //			submenuSelector: "*",
+    //		}
+    //	});
+    //});
 </script>
 

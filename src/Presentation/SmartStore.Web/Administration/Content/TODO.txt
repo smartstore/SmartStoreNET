@@ -1,11 +1,14 @@
 * Unify resource files between Flex and Admin (js, css etc.)
+* Merge Flex _core.scss with Admin shared/_utils.scss
 * .input-large is obsolete
 * .input-xlarge is obsolete
 * .control-large is obsolete
 * .control-xlarge is obsolete
 * Apply .wide to td.adminData with html editor or any other "wide" control
 * Find replacement for bootstrap-typeahead.js
+* bootstrapper-datetimepicker skinning is missing
 * Update bootstrap-editable.js
 * Update popper.js
 * Select2: multiple or taggable selects are not required to be hidden fields anymore > refactor.
 * Enclose all button labels in <span>, when an icon is available 
+* Readonly controls in .adminData: input[type=text][readonly].form-control-plaintext (formerly static labels)

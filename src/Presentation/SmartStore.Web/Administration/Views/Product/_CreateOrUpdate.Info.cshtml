@@ -192,7 +192,7 @@
 					@Html.SmartLabelFor(model => model.Id)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.Id)
+					@Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
 					@Html.ValidationMessageFor(model => model.Id)
 				</td>
 			</tr>
@@ -439,7 +439,7 @@
 					@Html.SmartLabelFor(model => model.CreatedOn)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.CreatedOn)
+					@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
 				</td>
 			</tr>
 		}
@@ -450,7 +450,7 @@
 					@Html.SmartLabelFor(model => model.UpdatedOn)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.UpdatedOn)
+					@Html.TextBoxFor(model => model.UpdatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
 				</td>
 			</tr>
 		}

@@ -383,11 +383,6 @@ td.adminData {
     }
 }
 
-td.adminData > input[type="radio"], 
-td.adminData > input[type="checkbox"] {
-	margin-top: -1px;
-}
-
 .admin-config-group {
 	.title,
 	.small-title,
@@ -643,33 +638,41 @@ label.forcheckbox {
     left: 0;
     top: 0;
     right: 0;
-    padding: 10px 30px;
-	transition: background-color 0.1s linear;
+    padding: 1rem 30px;
+	transition: background-color 0.1s ease-in-out, padding 0.1s ease-in-out;
+
+    @include make-row();
+    margin-left: -5px;
+    margin-right: -5px;
 	
+    .title, .options {
+        @include make-col-ready();
+        padding-left: 5px;
+        padding-right: 5px;
+    }
     
     .title {
-	    position: relative;
-	    float: left;
-		left: 5px;
 	    font-family: $headings-font-family;
 	    font-weight: $headings-font-weight;
 	    color: $headings-color;
-	    font-size: 20px;
-	    line-height: 32px;
-		height: 32px;
-		/*vertical-align: bottom;*/
+	    font-size: $h5-font-size;
+	    line-height: $input-height;
+		min-height: $input-height;
 	    vertical-align: middle;
 	    @include text-truncate();
-	    text-shadow: none;
+
+        // mimic .col
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
 	    
 		.fa {
 			font-size: 28px;
-			//font-size: 32px;
 			vertical-align: text-top;
 		}
 
 		img {
-		    max-height: 32px;
+		    max-height: $input-height;
 			max-width: 120px;
 			margin-right: 5px;
 		    vertical-align: top;
@@ -684,9 +687,11 @@ label.forcheckbox {
     } // .title
     
 	.options {
-		position: absolute;
-	    right: 30px;
-	    top: 10px;
+        // mimic .col-auto
+        flex: 0 0 auto;
+        width: auto;
+        max-width: none; // Reset earlier grid tiers
+
 	    &.btn-toolbar { margin: 0; }
 	}
     
@@ -695,20 +700,12 @@ label.forcheckbox {
 		z-index: 10;
 		left: 30px;
 		right: 30px;
-		top: 0;
+        margin-left: 0;
+        margin-right: 0;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
 		background: #f7f7f7;
-
-		text-shadow: none;
-		border-bottom: 1px solid #ccc;
-
-		.title { 
-			text-shadow: none; 
-			left: 5px;
-		}
-
-		.options {
-			right: 30px;
-		}
+		border-bottom: 1px solid rgba(0,0,0, 0.1);
     }
 }
 
@@ -787,13 +784,11 @@ td.adminData {
 }
 td.adminTitle > .ctl-label {
 	position: relative;
-    text-align: right;
-    vertical-align: middle;	
 
 	label {
 		display: inline-block;
 		padding-right: 20px;
-		margin-bottom: 0;
+		margin-bottom: 0 !important;
 	}
 
 	a.hint {

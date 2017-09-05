@@ -11,7 +11,7 @@ $s2bs-border-radius-base: $input-border-radius !default;
 $s2bs-border-radius-large: $input-border-radius-lg !default;
 $s2bs-border-radius-small: $input-border-radius-sm !default;
 $s2bs-btn-default-bg: theme-color("secondary") !default;
-$s2bs-btn-default-border: theme-color("secondary") !default;
+$s2bs-btn-default-border: $input-border-color !default;
 $s2bs-caret-width-base: 0.35rem !default;
 $s2bs-caret-width-large: 0.35rem !default;
 $s2bs-cursor-disabled: not-allowed !default;
@@ -48,8 +48,8 @@ $s2bs-input-height-small: $input-height-sm !default;
 // -------------------------
 
 $s2bs-dropdown-arrow-color: $input-color !default;
-$s2bs-dropdown-box-shadow: 0 6px 12px rgba(0,0,0,.175) !default;
-$s2bs-dropdown-box-shadow-above: 0px -6px 12px rgba(0,0,0,.175) !default;
+$s2bs-dropdown-box-shadow: 0 5px 10px rgba(0,0,0, .15) !default;
+$s2bs-dropdown-box-shadow-above: 0 -3px 6px rgba(0,0,0, .15) !default;
 $s2bs-clear-selection-color: $s2bs-input-color-placeholder !default;
 $s2bs-clear-selection-hover-color: $body-color !default;
 $s2bs-remove-choice-color: $input-placeholder-color !default;
@@ -484,7 +484,7 @@ $s2bs-form-control-transition: border-color ease-in-out .15s, box-shadow ease-in
       background: $s2bs-btn-default-bg;
       background: $gray-lightest;
       border: 1px solid $s2bs-btn-default-border;
-      border-radius: $s2bs-selection-choice-border-radius;
+      border-radius: 2px; // $s2bs-selection-choice-border-radius;
       cursor: default;
       float: left;
       margin: ($s2bs-padding-base-vertical) 0 0 $s2bs-padding-base-horizontal/2;

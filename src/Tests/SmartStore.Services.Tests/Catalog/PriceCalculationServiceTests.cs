@@ -102,25 +102,45 @@ namespace SmartStore.Services.Tests.Catalog
 			{
 				Price = 10,
 				Quantity = 2,
-				Product = product
+				Product = product,
+                CalculationMethod = TierPriceCalculationMethod.Fixed
 			});
 			product.TierPrices.Add(new TierPrice
 			{
 				Price = 8,
 				Quantity = 5,
-				Product = product
-			});
+				Product = product,
+                CalculationMethod = TierPriceCalculationMethod.Fixed
+            });
 
-			// set HasTierPrices property
-			product.HasTierPrices = true;
+            product.TierPrices.Add(new TierPrice
+            {
+                Price = 1,
+                Quantity = 10,
+                Product = product,
+                CalculationMethod = TierPriceCalculationMethod.Adjustment
+            });
+
+            product.TierPrices.Add(new TierPrice
+            {
+                Price = 50,
+                Quantity = 20,
+                Product = product,
+                CalculationMethod = TierPriceCalculationMethod.Percental
+            });
+
+            // set HasTierPrices property
+            product.HasTierPrices = true;
 
 			// customer
 			Customer customer = null;
 
-			_priceCalcService.GetFinalPrice(product, customer, 0, false, 1).ShouldEqual(12.34M);
-			_priceCalcService.GetFinalPrice(product, customer, 0, false, 2).ShouldEqual(10);
-			_priceCalcService.GetFinalPrice(product, customer, 0, false, 3).ShouldEqual(10);
-			_priceCalcService.GetFinalPrice(product, customer, 0, false, 5).ShouldEqual(8);
+			_priceCalcService.GetFinalPrice(product, customer, 0, false, 1, isTierPrice: true).ShouldEqual(12.34M);
+			_priceCalcService.GetFinalPrice(product, customer, 0, false, 2, isTierPrice: true).ShouldEqual(10);
+			_priceCalcService.GetFinalPrice(product, customer, 0, false, 3, isTierPrice: true).ShouldEqual(10);
+			_priceCalcService.GetFinalPrice(product, customer, 0, false, 5, isTierPrice: true).ShouldEqual(8);
+            _priceCalcService.GetFinalPrice(product, customer, 0, false, 10, isTierPrice: true).ShouldEqual(11.34M);
+            _priceCalcService.GetFinalPrice(product, customer, 0, false, 20, isTierPrice: true).ShouldEqual(6.17M);
         }
 
         [Test]
@@ -155,29 +175,33 @@ namespace SmartStore.Services.Tests.Catalog
 				Price = 10,
 				Quantity = 2,
 				Product = product,
-				CustomerRole = customerRole1
-			});
+				CustomerRole = customerRole1,
+                CalculationMethod = TierPriceCalculationMethod.Fixed
+            });
 			product.TierPrices.Add(new TierPrice()
 			{
 				Price = 9,
 				Quantity = 2,
 				Product = product,
-				CustomerRole = customerRole2
-			});
+				CustomerRole = customerRole2,
+                CalculationMethod = TierPriceCalculationMethod.Fixed
+            });
 			product.TierPrices.Add(new TierPrice()
 			{
 				Price = 8,
 				Quantity = 5,
 				Product = product,
-				CustomerRole = customerRole1
-			});
+				CustomerRole = customerRole1,
+                CalculationMethod = TierPriceCalculationMethod.Fixed
+            });
 			product.TierPrices.Add(new TierPrice()
 			{
 				Price = 5,
 				Quantity = 10,
 				Product = product,
-				CustomerRole = customerRole2
-			});
+				CustomerRole = customerRole2,
+                CalculationMethod = TierPriceCalculationMethod.Fixed
+            });
 			//set HasTierPrices property
 			product.HasTierPrices = true;
 
@@ -185,11 +209,11 @@ namespace SmartStore.Services.Tests.Catalog
 			Customer customer = new Customer();
 			customer.CustomerRoles.Add(customerRole1);
 
-			_priceCalcService.GetFinalPrice(product, customer, 0, false, 1).ShouldEqual(12.34M);
-			_priceCalcService.GetFinalPrice(product, customer, 0, false, 2).ShouldEqual(10);
-			_priceCalcService.GetFinalPrice(product, customer, 0, false, 3).ShouldEqual(10);
-			_priceCalcService.GetFinalPrice(product, customer, 0, false, 5).ShouldEqual(8);
-			_priceCalcService.GetFinalPrice(product, customer, 0, false, 10).ShouldEqual(8);
+			_priceCalcService.GetFinalPrice(product, customer, 0, false, 1, isTierPrice: true).ShouldEqual(12.34M);
+			_priceCalcService.GetFinalPrice(product, customer, 0, false, 2, isTierPrice: true).ShouldEqual(10);
+			_priceCalcService.GetFinalPrice(product, customer, 0, false, 3, isTierPrice: true).ShouldEqual(10);
+			_priceCalcService.GetFinalPrice(product, customer, 0, false, 5, isTierPrice: true).ShouldEqual(8);
+			_priceCalcService.GetFinalPrice(product, customer, 0, false, 10, isTierPrice: true).ShouldEqual(8);
         }
 
         [Test]

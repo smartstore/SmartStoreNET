@@ -106,7 +106,8 @@ namespace SmartStore.Services.Catalog
             }
 
             // check discounts assigned to categories
-            if (_discountService.GetAllDiscounts(DiscountType.AssignedToCategories).Any())
+            var discountsAssignedToCategories = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories);
+            if (discountsAssignedToCategories != null && discountsAssignedToCategories.Any())
             {
 				IEnumerable<ProductCategory> productCategories = null;
 				
@@ -137,8 +138,10 @@ namespace SmartStore.Services.Catalog
                 }
             }
 
-			// check discounts assigned to manufacturers
-			if (_discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers).Any())
+            // check discounts assigned to manufacturers
+            var discountsAssignedToManufacturers = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers);
+
+            if (discountsAssignedToManufacturers != null && discountsAssignedToManufacturers.Any())
 			{
 				IEnumerable<ProductManufacturer> productManufacturers = null;
 

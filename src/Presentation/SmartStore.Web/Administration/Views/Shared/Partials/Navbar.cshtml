@@ -16,13 +16,13 @@
     var checkUpdateResult = ViewBag.CheckUpdateResult as CheckUpdateResult;
 }
 
-<nav id="x-navbar" class="navbar navbar-dark bg-primary navbar-expand-sm" style="padding-bottom: 70px">
+<nav id="navbar" class="navbar navbar-dark bg-primary navbar-expand-sm" style="x-padding-bottom: 70px">
     
     <a class="navbar-brand" href="@Url.Action("Index", "Home", new { area = "Admin" })">
         <img src="~/Administration/Content/images/smnet.png" alt="smartstore.NET" />
     </a>
 
-	<div class="collapse navbar-collapse">
+	<div id="navbar-menu" class="collapse navbar-collapse mr-auto">
 		@{
 			Html.RenderWidget("admin_menu_before");
 			Html.RenderAction("Menu", "Common", new { area = "Admin" });
@@ -30,99 +30,101 @@
 		}
 	</div>
     
-    <div id="x-navbar-tools" class="ml-auto navbar-nav">
+	<div class="collapse navbar-collapse ml-auto">
+		<ul id="x-navbar-tool" class="navbar-nav ml-auto">
 
-		@if (currentCustomer != null && currentCustomer.IsRegistered())
-        {
-			<div class="btn-group">
-				<a id="current-user" class="btn btn-primary navbar-tool dropdown-toggle" data-toggle="dropdown" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
-					<em class="fa-stack fa-lg">
-						<i class="fa fa-circle fa-stack-2x"></i>
-						<i class="fa fa-user fa-stack-1x fa-inverse" style="color: #3b50ce"></i>
-					</em>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title='@T("Admin.Common.Actions")' data-toggle="dropdown">
+					<i class="icm icm-cog navbar-icon"></i>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
-					<a class="dropdown-item" href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
-						<i class="fa fa-fw fa-user"></i>
-						@T("Admin.Header.Account")
+					@foreach (var store in stores)
+					{
+						<a class="dropdown-item" href="@store.Url" title="@T("Admin.Header.PublicStore") - @store.Name">
+							<i class="fa fa-fw fa-globe"></i>
+							@store.Name.Truncate(32, "...")
+						</a>
+					}
+					<a class="dropdown-item" href='@Url.Action("Preview", "Theme")'>
+						<i class="fa fa-fw fa-eye"></i>
+						@T("Admin.Configuration.Themes.PreviewMode")
 					</a>
-					<a class="dropdown-item disabled" href="@Url.Action("Logout", "Customer", new { area = "" })">
-						<i class="fa fa-fw fa-sign-out"></i>
-						@T("Admin.Header.Logout")
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+						<i class="fa fa-fw fa-trash-o"></i>
+						@T("Admin.Header.ClearCache")
+					</a>
+					<a class="dropdown-item" href="@Url.Action("ClearDatabaseCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+						<i class="fa fa-fw"></i>
+						@T("Admin.Header.ClearDbCache")
+					</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+						<i class="fa fa-fw fa-power-off"></i>
+						@T("Admin.Header.RestartApplication")
 					</a>
 				</div>
-			</div>
-        }	
+			</li>
 
-		<div id="navtool-help" class="btn-group toppad">
-			<button class="btn btn-primary dropdown-toggle navbar-tool" title='@T("Admin.Help")' data-toggle="dropdown">
-				<i class="fa fa-fw fa-question-circle"></i>
-				@if (checkUpdateResult != null && checkUpdateResult.UpdateAvailable)
-                {
-					<span class="reddot" style="top: 5px; right: 7px"></span>
-                }
-			</button>
-			<div class="dropdown-menu dropdown-menu-right">
-				@if (checkUpdateResult != null && checkUpdateResult.UpdateAvailable)
-                {
-				<a class="dropdown-item" href='@Url.Action("CheckUpdate", new { area = "Admin" })'>
-					<i class="fa fa-fw fa-level-up"></i>
-					<strong>@T("Admin.CheckUpdate.UpdateAvailable")</strong>
-					<span class="reddot" style="margin-left: 6px"></span>
-				</a>
-                }
-				<a class="dropdown-item" href="@docsUrl" data-lang="@currentLanguageCode" target="help">
-					<i class="fa fa-fw fa-book"></i>
-					@T("Admin.Help.Documentation")
-				</a>
-				<a class="dropdown-item" href="@communityUrl" data-lang="@currentLanguageCode" target="help">
-					<i class="fa fa-fw fa-comment"></i>
-					@T("Admin.Help.Forums")
-				</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="@Url.Action("About", "Home", new { area = "Admin" })">
-					<i class="fa fa-fw fa-info-circle"></i>
-					@T("Admin.Common.About")
-				</a>
-			</div>
-		</div> 
+			@{ Html.RenderAction("LanguageSelector", "Common", new { area = "Admin" }); }
 
-		@{ Html.RenderAction("LanguageSelector", "Common", new { area = "Admin" }); }
-
-		<div class="btn-group toppad">
-			<button class="btn btn-primary dropdown-toggle navbar-tool" title='@T("Admin.Common.Actions")' data-toggle="dropdown">
-				<i class="fa fa-fw fa-gear"></i>
-			</button>
-			<div class="dropdown-menu dropdown-menu-right">
-				@foreach (var store in stores)
-				{
-					<a class="dropdown-item" href="@store.Url" title="@T("Admin.Header.PublicStore") - @store.Name">
-						<i class="fa fa-fw fa-globe"></i>
-						@store.Name.Truncate(32, "...")
+			<li id="navtool-help" class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title='@T("Admin.Help")' data-toggle="dropdown">
+					<i class="icm icm-bubble-question navbar-icon"></i>
+					@if (checkUpdateResult != null && checkUpdateResult.UpdateAvailable)
+					{
+						<span class="reddot" style="top: 5px; right: 7px"></span>
+					}
+				</a>
+				<div class="dropdown-menu dropdown-menu-right">
+					@if (checkUpdateResult != null && checkUpdateResult.UpdateAvailable)
+					{
+						<a class="dropdown-item" href='@Url.Action("CheckUpdate", new { area = "Admin" })'>
+							<i class="fa fa-fw fa-level-up"></i>
+							<strong>@T("Admin.CheckUpdate.UpdateAvailable")</strong>
+							<span class="reddot" style="margin-left: 6px"></span>
+						</a>
+					}
+					<a class="dropdown-item" href="@docsUrl" data-lang="@currentLanguageCode" target="help">
+						<i class="fa fa-fw fa-book"></i>
+						@T("Admin.Help.Documentation")
 					</a>
-				}
-				<a class="dropdown-item" href='@Url.Action("Preview", "Theme")'>
-					<i class="fa fa-fw fa-eye"></i>
-					@T("Admin.Configuration.Themes.PreviewMode")
-				</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-					<i class="fa fa-fw fa-trash-o"></i>
-					@T("Admin.Header.ClearCache")
-				</a>
-				<a class="dropdown-item" href="@Url.Action("ClearDatabaseCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-					<i class="fa fa-fw"></i>
-					@T("Admin.Header.ClearDbCache")
-				</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-					<i class="fa fa-fw fa-power-off"></i>
-					@T("Admin.Header.RestartApplication")
-				</a>
-			</div>
-		</div>
+					<a class="dropdown-item" href="@communityUrl" data-lang="@currentLanguageCode" target="help">
+						<i class="fa fa-fw fa-comment"></i>
+						@T("Admin.Help.Forums")
+					</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="@Url.Action("About", "Home", new { area = "Admin" })">
+						<i class="fa fa-fw fa-info-circle"></i>
+						@T("Admin.Common.About")
+					</a>
+				</div>
+			</li>
 
-    </div>
+			@if (currentCustomer != null && currentCustomer.IsRegistered())
+			{
+				<li class="nav-item dropdown">
+					<a id="current-user" class="nav-link dropdown-toggle navbar-tool" data-toggle="dropdown" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
+						<em class="fa-stack fa-lg">
+							<i class="fa fa-circle fa-stack-2x"></i>
+							<i class="fa fa-user fa-stack-1x fa-inverse" style="color: #3b50ce"></i>
+						</em>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right">
+						<a class="dropdown-item" href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
+							<i class="fa fa-fw fa-user"></i>
+							@T("Admin.Header.Account")
+						</a>
+						<a class="dropdown-item disabled" href="@Url.Action("Logout", "Customer", new { area = "" })">
+							<i class="fa fa-fw fa-sign-out"></i>
+							@T("Admin.Header.Logout")
+						</a>
+					</div>
+				</li>
+			}
+
+		</ul>
+	</div>
 
 </nav>
 

@@ -166,7 +166,7 @@ namespace SmartStore.Web.Framework.UI
 @"<script>
 	$(function() {{
 		_.delay(function() {{
-			$('{0}').trigger('show');
+			$(""{0}"").trigger(""show"");
 		}}, 100);
 	}})
 </script>".FormatInvariant(selector));
@@ -432,6 +432,7 @@ namespace SmartStore.Web.Framework.UI
 		{
 			// <div class="tab-pane fade in [active]" id="{id}">{content}</div>
 			item.ContentHtmlAttributes.AppendCssClass("tab-pane");
+			item.ContentHtmlAttributes.Add("role", "tabpanel");
 			if (base.Component.Fade)
 			{
 				item.ContentHtmlAttributes.AppendCssClass("fade");
@@ -464,8 +465,5 @@ namespace SmartStore.Web.Framework.UI
             }
             return "{0}-{1}".FormatInvariant(this.Component.Id, index);
         }
-
-
     }
-
 }

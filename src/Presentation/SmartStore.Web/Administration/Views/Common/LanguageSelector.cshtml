@@ -7,11 +7,11 @@
         @Html.Hidden("customerlanguage", Model.CurrentLanguage.Id)
     }
     
-    <div class="btn-group toppad">
-        <button class="btn btn-primary dropdown-toggle navbar-tool" title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
-			<i class="fa fa-language"></i>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
+			<i class="icm icm-earth navbar-icon"></i>
 			<span>@Model.CurrentLanguage.UniqueSeoCode.ToUpper()</span>
-        </button>
+        </a>
         <div id="language-selector" class="dropdown-menu dropdown-menu-right">
             @foreach (var language in Model.AvailableLanguages)
             {
@@ -21,7 +21,7 @@
                 </a>
             }
         </div>
-    </div>
+    </li>
     
     <script>
         $(document).ready(function () {

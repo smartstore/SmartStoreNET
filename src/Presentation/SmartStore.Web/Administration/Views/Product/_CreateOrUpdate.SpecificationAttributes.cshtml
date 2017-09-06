@@ -137,7 +137,8 @@
         <div>
             <script type="text/javascript">
                 $(function() {
-                    $.fn.editable.defaults.mode = 'inline';
+                	if ($.fn.editable)
+                		$.fn.editable.defaults.mode = 'inline';
                 });
 
                 function OnCommand(e) {
@@ -158,6 +159,8 @@
                 }
 
                 function initXEditable(link){
+                	if (!$.fn.editable)
+                		return;
 
                     link.editable({
                         type: 'select2',

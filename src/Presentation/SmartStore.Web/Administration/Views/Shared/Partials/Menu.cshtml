@@ -33,7 +33,7 @@
     }
 }
 
-<ul class="navbar-nav mr-auto">
+<ul class="navbar-nav">
 @{
     foreach (var node in Model.Children)
     {
@@ -63,7 +63,7 @@
 			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl" @Html.Attr("data-toggle", "dropdown", node.HasChildren)>
 				@if (item.Icon.HasValue())
 				{
-					<i class="fa fa-fw fa-@item.Icon"></i>
+					<i class="icm icm-@item.Icon navbar-icon"></i>
 				}
 				else
 				{

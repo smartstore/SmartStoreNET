@@ -11,11 +11,11 @@
 	}
 	if (activatable.IsActive)
 	{
-		<span class="label label-success">@T("Common.Active")</span>
+		<span class="badge badge-success">@T("Common.Active")</span>
 	}
 	else
 	{
-		<span class="label label">@T("Common.Inactive")</span>
+		<span class="badge badge-secondary">@T("Common.Inactive")</span>
 	}
 }
 
@@ -87,14 +87,14 @@
 								{
 									if (item.IsPaymentMethod)
 									{
-										<a class="btn btn-small" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
+										<a class="btn btn-secondary btn-sm" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
 											<i class="fa fa-pencil-square-o"></i>
 											@T("Admin.Common.Edit")
 										</a>
 									}
 									else
 									{
-										<a class="btn btn-small module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
+										<a class="btn btn-secondary btn-sm module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
 											<i class="fa fa-pencil-square-o"></i>
 											@T("Admin.Common.Edit")
 										</a>
@@ -102,7 +102,7 @@
 								}
 								@if (item.IsConfigurable)
 								{
-									<a class="btn btn-small module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
+									<a class="btn btn-secondary btn-sm module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
 										<i class="fa fa-cog"></i>
 										@T("Admin.Common.Configure")
 									</a>

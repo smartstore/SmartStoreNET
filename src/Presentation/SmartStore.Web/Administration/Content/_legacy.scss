@@ -32,25 +32,12 @@ a:hover {
 	text-shadow: none;
 }
 
-.dropdown-menu li > a > .fa {
+.dropdown-item > .fa {
 	color: #6d6d6d;
 }
 
-.dropdown-menu li > a:hover > .fa {
-	color: #444;
-}
-
-.dropdown-menu li > a:hover, 
-.dropdown-menu li > a:focus, 
-.dropdown-submenu:hover > a {
-	background-image: none;
-	filter: initial;
-	background-color: $dropdownLinkBackgroundHover;
-}
-
-.alert {
-    padding-top: 14px;
-    padding-bottom: 14px;
+.dropdown-item:hover > .fa {
+	color: inherit;
 }
 
 /* Page
@@ -99,8 +86,8 @@ body:not(.popup) #page {
 -------------------------------------------------------------- */
 
 header {
-	background-color: $navbarInverseBackground;
-	height: 70px;
+	background-color: theme-color("primary");
+	//height: 70px;
 	padding-bottom: 50px;
 }
 
@@ -108,6 +95,91 @@ header {
 	display: none;
 }
 
+
+/* Main Menu
+-------------------------------------------------------------- */
+
+#navbar {
+    padding: 0 30px;
+
+    .dropdown-toggle:after {
+        display: none;
+    }
+
+    .dropdown-menu {
+	    margin-top: -2px;
+    }
+
+    #navbar-menu .dropdown-menu {
+        @include bubble("top", "near", 8, #fff, $dropdown-border-color, 10px);
+    }
+
+    .dropdown-menu .fa {
+	    margin-right: 6px;
+	    font-size: 17px;
+	    vertical-align: bottom;
+    }
+
+    .dropdown-header {
+        font-size: $font-size-xs;
+        text-transform: uppercase;
+    }
+
+    .dropdown-submenu > a:after {
+	    margin-right: -20px;
+    }
+
+    .dropdown-submenu:hover > a:after {
+	    border-left-color: #ccc;
+    }
+
+    .nav-item {
+        .nav-link {
+	        max-width: 100px;
+	        padding: 14px 8px !important;
+	        text-align: center;
+            color: #fff;
+	        background: rgba(#fff, 0);
+	        opacity: 0.8;
+	        transition: opacity 0.1s linear, background-color 0.1s linear;
+        }
+
+        .nav-link:hover,
+        &.show .nav-link
+        {
+	        background: rgba(#fff, .15);
+	        opacity: 1;
+        }
+
+	    .navbar-icon {
+		    position: relative;
+		    text-align: center;
+		    vertical-align: middle;
+		    font-size: 20px;
+            height: 22px;
+		    line-height: 22px;
+		    color: #fff;
+	    }
+
+	    .navbar-label { 
+		    display: block;
+            @include text-truncate();
+		    text-align: center;	
+		    font-size: 11px;
+            padding: 0;
+            padding-top: 0.25rem;
+	    }
+    }
+
+    .reddot {
+	    position: absolute;
+	    width: 10px;
+	    height: 10px;
+	    border-radius: 50%;
+	    background-color: $red;
+	    color: #fff;
+    }
+}
 
 
 /* Navbar overrides
@@ -135,11 +207,6 @@ header {
 	@mixin active-tool() {
 		box-shadow: inset 0 2px 4px rgba(0,0,0, .15), 0 1px 2px rgba(0,0,0, .05);	
 	}
-	
-	position: absolute;
-	right: 30px;
-	top: 10px;
-	margin: 0;
 	
 	.btn,
 	.btn-group {
@@ -195,82 +262,7 @@ header {
 }
 
 
-/* Menu
--------------------------------------------------------------- */
 
-#navbar .dropdown-menu {
-	margin-top: -2px;
-	font-family: $font-family-base;
-}
-
-#navbar .dropdown-menu .fa {
-	margin-right: 6px;
-	font-size: 17px;
-	vertical-align: bottom;
-}
-
-#navbar .nav-header {
-	text-shadow: none;
-	padding-left: 20px;
-}
-
-#navbar .dropdown-submenu > a:after {
-	margin-right: -20px;
-}
-
-#navbar .dropdown-submenu:hover > a:after {
-	border-left-color: #ccc;
-}
-
-#navbar .navbar-nav > li > a {
-	//max-height: @navbarHeight - 12;
-	min-width: 40px;
-	max-width: 80px;
-	height: auto;
-	padding: 12px 6px !important;
-	text-align: center;
-	background: transparent;
-	background: rgba(255,255,255, 0);
-	opacity: 0.9;
-	transition: opacity 0.1s linear, background-color 0.1s linear;
-
-	.fa {
-		position: relative;
-		text-align: center;
-		vertical-align: middle;
-		width: 22px;
-		height: 22px;
-		font-size: 19px;
-		line-height: 22px;
-		color: #fff;
-		padding: 2px 0;
-	}
-
-	.navbar-label { 
-		display: block;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-		text-align: center;	
-		font-size: 11px;
-		line-height: 20px;
-		margin: 0;
-	}
-}
-
-#navbar .navbar-nav > li:hover > a {
-	background: rgba(255,255,255, .15);
-	opacity: 1;
-}
-
-.reddot {
-	position: absolute;
-	width: 10px;
-	height: 10px;
-	border-radius: 50%;
-	background-color: $red;
-	color: #fff;
-}
 
 /* SM additions
 -------------------------------------------------------------- */
@@ -361,6 +353,7 @@ header {
     height: auto;
     margin: 0 30px;
 	margin-top: -50px;
+    margin-top: -30px;
     background-color: #fff;
     padding: 15px 30px 60px 30px;
     box-shadow: 0 0 6px rgba(0,0,0, 0.2);

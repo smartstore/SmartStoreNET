@@ -93,6 +93,20 @@ $btn-border-radius:             .125rem;
 $btn-border-radius-lg:          .1875rem;
 $btn-border-radius-sm:          .125rem;
 
+$dropdown-box-shadow:           0 2px 6px rgba(#000, .15); 
+
+$dropdown-link-color:            $gray-800;
+$dropdown-link-hover-color:      darken($gray-800, 5%);
+$dropdown-link-hover-bg:         $gray-100;
+
+$dropdown-link-active-color:     $dropdown-link-hover-color;
+$dropdown-link-active-bg:        darken($dropdown-link-hover-bg, 5%);
+
+$dropdown-item-padding-y:        .3rem !default;
+$dropdown-item-padding-x:        1.5rem !default;
+
+$alert-padding-y:             1rem;
+
 
 //
 // Variables shims (TODO: remove later)

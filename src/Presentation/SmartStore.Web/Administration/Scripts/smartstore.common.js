@@ -257,7 +257,7 @@
 		}
 
 		// tab strip smart auto selection
-		$('.tabs-autoselect > ul.nav a[data-toggle=tab]').on('shown.bs.tab', function (e) {
+		$('.tabs-autoselect ul.nav a[data-toggle=tab]').on('shown.bs.tab', function (e) {
 			var tab = $(e.target),
 				strip = tab.closest('.tabbable'),
 				href = strip.data("tabselector-href"),

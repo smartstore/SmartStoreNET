@@ -120,8 +120,8 @@
 
             if (autoWidth) {
                 // move special "autowidth" class to plugin container,
-                // so we are able to omit min-width per css
-                sel.data("select2").container.addClass("autowidth");
+            	// so we are able to omit min-width per css
+                sel.data("select2").$container.addClass("autowidth");
             }
 
             function load() {

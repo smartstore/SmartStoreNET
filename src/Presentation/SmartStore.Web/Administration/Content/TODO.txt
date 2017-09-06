@@ -1,3 +1,4 @@
+* Update to latest Bootstrap
 * Unify resource files between Flex and Admin (js, css etc.)
 * Merge Flex _core.scss with Admin shared/_utils.scss
 * .input-large is obsolete

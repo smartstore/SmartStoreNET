@@ -3,7 +3,7 @@
 // Mixins
 // ========================================================================
 
-@mixin bubble($direction: "left", $alignment: "near", $size: 10, $backgroundColor: #fff, $borderColor: $card-border-color) {
+@mixin bubble($direction: "left", $alignment: "near", $size: 10, $backgroundColor: #fff, $borderColor: $card-border-color, $offset: 24px) {
     // defaults for direction = left
     $elemAlignment: "right";
     $firstBorder: "top";
@@ -35,12 +35,12 @@
         #{$direction}: -#{$size}px;
 
         @if $alignment == "near" {
-            #{$firstBorder}: 24px;
+            #{$firstBorder}: $offset;
         } @else if $alignment == "center" {
             #{$firstBorder}: 50%;
             margin-#{$firstBorder}: -#{$size + 1}px;
         } @else if $alignment == "far" {
-            #{$secondBorder}: 24px;
+            #{$secondBorder}: $offset;
         }
     }
 
@@ -51,12 +51,12 @@
         #{$direction}: -#{$size - 1}px;
 
         @if $alignment == "near" {
-            #{$firstBorder}: 25px;
+            #{$firstBorder}: $offset+1px;
         } @else if $alignment == "center" {
             #{$firstBorder}: 50%;
             margin-#{$firstBorder}: -#{$size}px;
         } @else if $alignment == "far" {
-            #{$secondBorder}: 25px;
+            #{$secondBorder}: $offset+1px;
         }
     }
 }

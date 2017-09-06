@@ -22,6 +22,7 @@
 * #1154 Left offcanvas navigation does not open when in checkout progress
 * #1212 Export: FTP publishing should consider directory structure
 * #1253 Product PDF exporter only exports one picture and ignores the picture number profile setting
+* Configuration of some plugins not saved in Firefox browser
   
 ### Improvements
 * Apply img-fluid class to all images within html editor content

@@ -598,16 +598,40 @@ namespace SmartStore.PayPal.Services
 								{
 									if (!result.Success)
 									{
+										// Parse error details.
+										string message = null;
 										var name = (string)result.Json.name;
-										var message = (string)result.Json.message;
 
 										if (name.IsEmpty())
+										{
 											name = (string)result.Json.error;
+										}
+
+										if (name.IsCaseInsensitiveEqual("VALIDATION_ERROR"))
+										{
+											result.IsValidationError = true;
+
+											JArray details = result.Json.details;
+											if (details != null)
+											{
+												foreach (dynamic detail in details)
+												{
+													message = message.Grow((string)detail.issue, ". ");
+												}
+											}
+										}
 
 										if (message.IsEmpty())
-											message = (string)result.Json.error_description;
+										{
+											message = (string)result.Json.message;
+										}
 
-										result.ErrorMessage = "{0} ({1}).".FormatInvariant(message.NaIfEmpty(), name.NaIfEmpty());
+										if (message.IsEmpty())
+										{
+											message = (string)result.Json.error_description;
+										}
+
+										result.ErrorMessage = "{0}: {1}.".FormatInvariant(name.NaIfEmpty(), message.NaIfEmpty());
 									}
 								}
 							}
@@ -621,6 +645,7 @@ namespace SmartStore.PayPal.Services
 
 					if (!result.Success)
 					{
+						// Log all headers and raw response.
 						if (result.ErrorMessage.IsEmpty())
 							result.ErrorMessage = webResponse.StatusDescription;
 
@@ -1149,6 +1174,7 @@ namespace SmartStore.PayPal.Services
 		public bool Success { get; set; }
 		public dynamic Json { get; set; }
 		public string ErrorMessage { get; set; }
+		public bool IsValidationError { get; set; }
 		public string Id { get; set; }
 	}
 

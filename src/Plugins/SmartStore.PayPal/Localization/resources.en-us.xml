@@ -46,6 +46,9 @@
   <LocaleResource Name="SessionExpired">
     <Value>The PayPal session expired. Please try again.</Value>
   </LocaleResource>
+  <LocaleResource Name="PayPalValidationFailure">
+    <Value>PayPal was unable to verify the transmitted data.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ClientId">
     <Value>Client ID</Value>

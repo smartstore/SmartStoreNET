@@ -398,6 +398,62 @@
 				}
 			});
 		})();
+		
+
+		(function () {
+			var currentDrop,
+				currentSubDrop,
+				closeTimeout,
+				closeTimeoutSub;
+
+			function closeDrop(drop, fn) {
+				drop.removeClass('show').find('> .dropdown-menu').removeClass('show');
+				if (_.isFunction(fn)) fn();
+			}
+
+			// drop dropdown menus on hover
+			$(document).on('mouseenter mouseleave', '.dropdown-hoverdrop', function (e) {
+				var li = $(this),
+					a = $('> .dropdown-toggle', this);
+
+				if (a.data("toggle") === 'dropdown')
+					return;
+
+				var afterClose = function () { currentDrop = null; };
+
+				if (e.type == 'mouseenter') {
+					if (currentDrop) {
+						clearTimeout(closeTimeout);
+						closeDrop(currentDrop, afterClose);
+					}
+					li.addClass('show').find('> .dropdown-menu').addClass('show');
+					currentDrop = li;
+				}
+				else {
+					li.removeClass('show');
+					closeTimeout = window.setTimeout(function () { closeDrop(li, afterClose); }, 250);
+				}
+			});
+
+			// handle nested dropdown menus
+			$(document).on('mouseenter mouseleave', '.dropdown-group', function (e) {
+				var li = $(this);
+
+				if (e.type == 'mouseenter') {
+					if (currentSubDrop) {
+						clearTimeout(closeTimeoutSub);
+						closeDrop(currentSubDrop);
+					}
+					li.addClass('show').find('> .dropdown-menu').addClass('show');
+					currentSubDrop = li;
+				}
+				else {
+					li.removeClass('show');
+					closeTimeoutSub = window.setTimeout(function () { closeDrop(li); }, 250);
+				}
+			});
+		})();
+
 
 		// html text collapser
 		if ($.fn.moreLess) {

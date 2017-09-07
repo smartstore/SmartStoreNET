@@ -10,7 +10,7 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
 			<i class="icm icm-earth navbar-icon"></i>
-			<span>@Model.CurrentLanguage.UniqueSeoCode.ToUpper()</span>
+			<span class="pl-2">@Model.CurrentLanguage.UniqueSeoCode.ToUpper()</span>
         </a>
         <div id="language-selector" class="dropdown-menu dropdown-menu-right">
             @foreach (var language in Model.AvailableLanguages)
@@ -25,8 +25,7 @@
     
     <script>
         $(document).ready(function () {
-
-            $("#language-selector > li:not(.disabled) > a").click(function () {
+            $("#language-selector > .dropdown-item:not(.disabled)").on('click', function () {
                 var el = $(this);
                 var langId = el.data("lang-id");
                 $("#customerlanguage").val(langId);

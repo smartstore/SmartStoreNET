@@ -16,7 +16,7 @@
     var checkUpdateResult = ViewBag.CheckUpdateResult as CheckUpdateResult;
 }
 
-<nav id="navbar" class="navbar navbar-dark bg-primary navbar-expand-sm" style="x-padding-bottom: 70px">
+<nav id="navbar" class="navbar navbar-dark bg-primary navbar-expand-sm">
     
     <a class="navbar-brand" href="@Url.Action("Index", "Home", new { area = "Admin" })">
         <img src="~/Administration/Content/images/smnet.png" alt="smartstore.NET" />
@@ -31,7 +31,7 @@
 	</div>
     
 	<div class="collapse navbar-collapse ml-auto">
-		<ul id="x-navbar-tool" class="navbar-nav ml-auto">
+		<ul class="navbar-nav ml-auto">
 
 			<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title='@T("Admin.Common.Actions")' data-toggle="dropdown">
@@ -103,19 +103,20 @@
 
 			@if (currentCustomer != null && currentCustomer.IsRegistered())
 			{
-				<li class="nav-item dropdown">
+				<li class="nav-item dropdown ml-3">
 					<a id="current-user" class="nav-link dropdown-toggle navbar-tool" data-toggle="dropdown" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
-						<em class="fa-stack fa-lg">
+						@*<em class="fa-stack fa-lg">
 							<i class="fa fa-circle fa-stack-2x"></i>
-							<i class="fa fa-user fa-stack-1x fa-inverse" style="color: #3b50ce"></i>
-						</em>
+							<i class="icm icm-user navbar-icon" style="color: #3b50ce"></i>
+						</em>*@
+						<i class="icm icm-user navbar-icon"></i>
 					</a>
 					<div class="dropdown-menu dropdown-menu-right">
 						<a class="dropdown-item" href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
 							<i class="fa fa-fw fa-user"></i>
 							@T("Admin.Header.Account")
 						</a>
-						<a class="dropdown-item disabled" href="@Url.Action("Logout", "Customer", new { area = "" })">
+						<a class="dropdown-item" href="@Url.Action("Logout", "Customer", new { area = "" })">
 							<i class="fa fa-fw fa-sign-out"></i>
 							@T("Admin.Header.Logout")
 						</a>

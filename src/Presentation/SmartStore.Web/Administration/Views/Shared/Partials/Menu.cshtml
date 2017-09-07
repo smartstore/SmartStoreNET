@@ -59,8 +59,8 @@
 
         var itemUrl = GetNodeLink(node);
 
-        <li data-id="@item.Id" class="nav-item@(node.HasChildren ? " dropdown" : "")">
-			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl" @Html.Attr("data-toggle", "dropdown", node.HasChildren)>
+        <li data-id="@item.Id" class="nav-item@(node.HasChildren ? " dropdown dropdown-hoverdrop" : "")">
+			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl">
 				@if (item.Icon.HasValue())
 				{
 					<i class="icm icm-@item.Icon navbar-icon"></i>
@@ -88,7 +88,7 @@
     var isFirst = true;
 	var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
     
-    <div class='dropdown-menu'>
+    <ul class='dropdown-menu'>
     @foreach (var node in nodes)
     {
         var item = node.Value;
@@ -104,26 +104,17 @@
         {
             if (!isFirst)
             {
-                <div class="dropdown-divider"></div>
+                <li class="dropdown-divider"></li>
             }
             if (item.Text.HasValue() && item.Text != "[SKIP]")
             {
-                <h6 data-id="@item.Id" class="dropdown-header">@itemText</h6>
+                <li data-id="@item.Id" class="dropdown-header h6">@itemText</li>
             }
             isFirst = false;
             continue;
         }
 
-        string liClass = null;
-        if (isRoot)
-        {
-			liClass = ""; //"drop-list-item";
-            if (node.HasChildren)
-            {
-                liClass += " dropdown-submenu";
-            }
-        }
-        @*<li data-id="@item.Id" class='@liClass'>*@
+        <li data-id="@item.Id" @Html.Attr("class", "dropdown-group", node.HasChildren)>
             <a class="dropdown-item" href="@GetNodeLink(node)">
 				@if (hasIcons)
 				{
@@ -136,15 +127,15 @@
 				}
                 @itemText
             </a>
-            @*@if (node.HasChildren)
+            @if (node.HasChildren)
             {
                 @CreateDropdown(node.Children, false)
-            }*@
-        @*</li>*@
+            }
+        </li>
         
         isFirst = false;
     }
-    </div>
+    </ul>
 }
 
 <script type="text/javascript">

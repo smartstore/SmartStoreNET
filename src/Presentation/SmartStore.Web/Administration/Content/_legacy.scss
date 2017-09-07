@@ -27,11 +27,6 @@ a:hover {
 	text-shadow: none;
 }
 
-.dropdown-menu li > a {
-	padding: 8px 30px 8px 20px;
-	text-shadow: none;
-}
-
 .dropdown-item > .fa {
 	color: #6d6d6d;
 }
@@ -110,7 +105,7 @@ header {
 	    margin-top: -2px;
     }
 
-    #navbar-menu .dropdown-menu {
+    #navbar-menu .nav-item > .dropdown-menu {
         @include bubble("top", "near", 8, #fff, $dropdown-border-color, 10px);
     }
 
@@ -123,14 +118,6 @@ header {
     .dropdown-header {
         font-size: $font-size-xs;
         text-transform: uppercase;
-    }
-
-    .dropdown-submenu > a:after {
-	    margin-right: -20px;
-    }
-
-    .dropdown-submenu:hover > a:after {
-	    border-left-color: #ccc;
     }
 
     .nav-item {
@@ -169,6 +156,14 @@ header {
             padding: 0;
             padding-top: 0.25rem;
 	    }
+
+        .navbar-tool {
+            padding-left: 0.625rem !important;
+            padding-right: 0.625rem !important;
+            height: 72px;
+            display: flex;
+            > * { align-self: center; }
+	    }
     }
 
     .reddot {
@@ -202,66 +197,6 @@ header {
 	margin: 0;
 	padding-left: 30px;
 }
-
-#navbar-tools {	
-	@mixin active-tool() {
-		box-shadow: inset 0 2px 4px rgba(0,0,0, .15), 0 1px 2px rgba(0,0,0, .05);	
-	}
-	
-	.btn,
-	.btn-group {
-		margin-top: 0;
-	}
-
-	.open .navbar-tool {
-		@include active-tool();
-	}
-	
-	.toppad {
-		margin-top: 8px;
-	}
-
-	.navbar-tool {
-		color: rgba(255,255,255, .87);
-		border: none;
-		background: transparent;
-		box-shadow: none;
-		padding: 8px 6px;
-		transition: color 0.1s linear;
-		
-		&:hover {
-			color: #fff;
-		}
-		
-		&:active {
-			@include active-tool();
-		}
-
-		> .fa {
-			font-size: 20px;
-		}
-
-		span {
-			display: inline-block;
-			margin-left: 3px;
-			vertical-align: top;
-		}
-	
-	}
-}
-
-#current-user {
-	margin-left: 20px;
-}
-
-#current-user span {
-    @include text-truncate();
-	max-width: 100px;
-	display: inline-block;
-	vertical-align: text-top;
-}
-
-
 
 
 /* SM additions
@@ -353,7 +288,6 @@ header {
     height: auto;
     margin: 0 30px;
 	margin-top: -50px;
-    margin-top: -30px;
     background-color: #fff;
     padding: 15px 30px 60px 30px;
     box-shadow: 0 0 6px rgba(0,0,0, 0.2);
@@ -631,17 +565,17 @@ label.forcheckbox {
     left: 0;
     top: 0;
     right: 0;
-    padding: 1rem 30px;
+    padding: 0.75rem 30px;
 	transition: background-color 0.1s ease-in-out, padding 0.1s ease-in-out;
 
     @include make-row();
-    margin-left: -5px;
-    margin-right: -5px;
+    margin-left: 0;
+    margin-right: 0;
 	
     .title, .options {
         @include make-col-ready();
-        padding-left: 5px;
-        padding-right: 5px;
+        /*padding-left: 0;
+        padding-right: 0;*/
     }
     
     .title {
@@ -653,6 +587,8 @@ label.forcheckbox {
 		min-height: $input-height;
 	    vertical-align: middle;
 	    @include text-truncate();
+        padding-left: 0;
+        padding-right: 5px;
 
         // mimic .col
         flex-basis: 0;
@@ -684,6 +620,8 @@ label.forcheckbox {
         flex: 0 0 auto;
         width: auto;
         max-width: none; // Reset earlier grid tiers
+        padding-left: 5px;
+        padding-right: 0;
 
 	    &.btn-toolbar { margin: 0; }
 	}
@@ -695,8 +633,6 @@ label.forcheckbox {
 		right: 30px;
         margin-left: 0;
         margin-right: 0;
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
 		background: #f7f7f7;
 		border-bottom: 1px solid rgba(0,0,0, 0.1);
     }

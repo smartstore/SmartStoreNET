@@ -102,8 +102,8 @@ $dropdown-link-hover-bg:         $gray-100;
 $dropdown-link-active-color:     $dropdown-link-hover-color;
 $dropdown-link-active-bg:        darken($dropdown-link-hover-bg, 5%);
 
-$dropdown-item-padding-y:        .3rem !default;
-$dropdown-item-padding-x:        1.5rem !default;
+$dropdown-item-padding-y:        0.5rem;
+$dropdown-item-padding-x:        1.5rem;
 
 $alert-padding-y:             1rem;
 
@@ -160,6 +160,7 @@ $gray-lightest: $gray-100;
 @import 'shared/_pagination.scss';
 @import 'shared/_nav.scss';
 @import "shared/_modal.scss"; 
+@import 'shared/_dropdown.scss';
 @import "shared/_throbber.scss";
 @import "shared/_spinner.scss";
 @import "shared/_sortable-grip.scss";

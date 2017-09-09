@@ -567,17 +567,18 @@ namespace SmartStore.Web.Framework
 			defaultColor = defaultColor.EmptyNull();
 			var isDefault = color.IsCaseInsensitiveEqual(defaultColor);
 
-            sb.Append("<div class='input-append input-group colorpicker-component sm-colorbox'>");
+            sb.Append("<div class='input-group colorpicker-component sm-colorbox'>");
 
             sb.AppendFormat(html.TextBox(name, isDefault ? "" : color, new { @class = "form-control", placeholder = defaultColor }).ToHtmlString());
-            sb.AppendFormat("<span class='input-group-addon add-on'><i class='thecolor' style='{0}'></i></span>", defaultColor.HasValue() ? "background-color: " + defaultColor : "");
+            sb.AppendFormat("<span class='input-group-addon'><i class='thecolor' style='{0}'></i></span>", defaultColor.HasValue() ? "background-color: " + defaultColor : "");
 
             sb.Append("</div>");
 
-            var bootstrapJsRoot = "~/Content/bootstrap/js/";
+			// TODO: (mc) Change location of scripts (make it common)
+			var scriptRoot = "~/Administration/Content/vendors/bootstrap-colorpicker/js/";
             html.AppendScriptParts(false,
-                bootstrapJsRoot + "custom/bootstrap-colorpicker.js",
-                bootstrapJsRoot + "custom/bootstrap-colorpicker-globalinit.js");
+                scriptRoot + "bootstrap-colorpicker.js",
+                scriptRoot + "bootstrap-colorpicker-globalinit.js");
 
             return MvcHtmlString.Create(sb.ToString());
         }

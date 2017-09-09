@@ -435,9 +435,10 @@
     <Compile Include="Validators\Catalog\ProductValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\bs4\js\bootstrap-colorpicker-globalinit.js" />
-    <Content Include="Content\bs4\js\bootstrap-colorpicker.js" />
-    <Content Include="Content\bs4\js\bootstrap-datetimepicker.js" />
+    <Content Include="Content\vendors\colorpicker\js\bootstrap-colorpicker-globalinit.js" />
+    <Content Include="Content\vendors\colorpicker\js\bootstrap-colorpicker.js" />
+    <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.min.js" />
+    <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.js" />
     <Content Include="Content\bs4\js\bootstrap.js" />
     <Content Include="Content\bs4\js\bootstrap.min.js" />
     <Content Include="Content\filemanager\css\images\animated-overlay.gif" />
@@ -750,6 +751,8 @@
     <Content Include="Content\telerik\slider-v.gif" />
     <Content Include="Content\telerik\sprite-vertical.png" />
     <Content Include="Content\telerik\sprite.png" />
+    <Content Include="Content\vendors\moment\moment.min.js" />
+    <Content Include="Content\vendors\moment\moment.js" />
     <Content Include="Content\vendors\select2\js\select2.js" />
     <Content Include="Content\vendors\select2\js\select2.min.js" />
     <Content Include="favicon.ico" />
@@ -875,6 +878,8 @@
     <Content Include="Content\vendors\select2\scss\_multiple.scss" />
     <Content Include="Content\vendors\select2\scss\_single.scss" />
     <Content Include="Content\vendors\select2\scss\core.scss" />
+    <Content Include="Content\vendors\colorpicker\scss\_colorpicker.scss" />
+    <Content Include="Content\vendors\datetimepicker\scss\_tempusdominus.scss" />
     <None Include="Scripts\jquery-1.8.3.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.3.js" />
     <Content Include="Scripts\jquery-1.8.3.min.js" />

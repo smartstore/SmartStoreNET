@@ -1,6 +1,7 @@
 * Update to latest Bootstrap
 * Unify resource files between Flex and Admin (js, css etc.)
 * Merge Flex _core.scss with Admin shared/_utils.scss
+* Remove globalize.js entirely and all moment.js locale files
 * .input-large is obsolete
 * .input-xlarge is obsolete
 * .control-large is obsolete

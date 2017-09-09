@@ -24,8 +24,8 @@
 		toggleBasePrice();
 
 		function getCurrentBasePrice() {
-			var basePriceAmount = Globalize.parseFloat(fieldBasePriceAmount.val());
-			var basePriceBaseAmount = Globalize.parseInt(fieldBasePriceBaseAmount.val());
+			var basePriceAmount = $.smartstore.globalization.parseFloat(fieldBasePriceAmount.val());
+			var basePriceBaseAmount = $.smartstore.globalization.parseInt(fieldBasePriceBaseAmount.val());
 			if (basePriceAmount > 0 && basePriceBaseAmount > 0) {
 				$.ajax({
 					cache:false,

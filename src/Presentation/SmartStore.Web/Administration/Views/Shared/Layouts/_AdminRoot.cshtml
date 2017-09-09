@@ -1,6 +1,7 @@
 ﻿@using SmartStore;
 @using SmartStore.Core;
 @using SmartStore.Web.Framework.UI;
+@using System.Web.Hosting;
 
 @{
 	var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
@@ -13,6 +14,9 @@
 	}
 	adminPageTitle += T("Admin.PageTitle").Text;
 
+	var volatileJsRoot = "~/Administration/Scripts/";
+	var vendorsRoot = "~/Administration/Content/vendors/";
+
 	// add css assets
 	var telerikCssRootPath = "~/Content/2012.2.607/";
 	Html.AppendCssFileParts(
@@ -23,27 +27,29 @@
 		"~/Content/jquery.pnotify.default.icons.css",
 		"~/Content/smartstore.entitypicker.css",
 		//"~/Administration/Content/theme.less"
-		"~/Administration/Content/theme.scss"
-		);
+		"~/Administration/Content/theme.scss");
 
 	// add js assets (Head)
 	Html.AppendScriptParts(ResourceLocation.Head,
 		"~/Scripts/modernizr.js",
 		// Telerik doesn't like jQuery 1.9+, a shame!
 		//"~/Administration/Scripts/jquery-1.8.3.js",
-		"~/Administration/Scripts/jquery-3.2.1.js",
-		"~/Administration/Scripts/jquery-migrate-3.2.1.js",
-		"~/Administration/Scripts/jquery-shims.js",
-		"~/Scripts/globalize/globalize.js",
-		"~/Scripts/smartstore.globalize.adapter.js");
-
-	Html.AddScriptParts(ResourceLocation.Head, true,
-		"~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
+		volatileJsRoot + "jquery-3.2.1.js",
+		volatileJsRoot + "jquery-migrate-3.2.1.js",
+		volatileJsRoot + "jquery-shims.js",
+		// SmartStore system
+		"~/Scripts/smartstore.system.js",
+		"~/Scripts/underscore.js",
+		"~/Scripts/underscore.string.js",
+		"~/Scripts/underscore.mixins.js",
+		"~/Scripts/smartstore.jquery.utils.js",
+		vendorsRoot + "moment/moment.js",
+		"~/Scripts/smartstore.globalization.js");
 
 	// add js assets (Foot)
 	var bootstrapJsRoot = "~/Content/bootstrap/js/";
 	var bootstrap4JsRoot = "~/Administration/Content/bs4/js/";
-	var volatileJsRoot = "~/Administration/Scripts/";
+
 	Html.AppendScriptParts(ResourceLocation.Foot,
 		// jQuery UI Core
 		"~/Scripts/jquery-ui/effect.js",
@@ -54,12 +60,7 @@
 		"~/Scripts/jquery.unobtrusive-ajax.js",
 		"~/Scripts/jquery.validate.js",
 		"~/Scripts/jquery.validate.unobtrusive.js",
-		// SmartStore system
-		"~/Scripts/smartstore.system.js",
-		"~/Scripts/underscore.js",
-		"~/Scripts/underscore.string.js",
-		"~/Scripts/underscore.mixins.js",
-		"~/Scripts/smartstore.jquery.utils.js",
+		// Common
 		"~/Scripts/jquery.ba-outside-events.js",
 		"~/Scripts/jquery.preload.js",
 		"~/Scripts/jquery.menu-aim.js",
@@ -70,24 +71,15 @@
 		"~/Scripts/smartstore.hacks.js",
 		volatileJsRoot + "smartstore.common.js",
 		// Bootstrap
-		"~/Administration/Scripts/popper.js",
+		volatileJsRoot + "popper.js",
 		bootstrap4JsRoot + "bootstrap.js",
-		bootstrap4JsRoot + "bootstrap-datetimepicker.js",
-		//bootstrapJsRoot + "bootstrap-transition.js",
-		//bootstrapJsRoot + "bootstrap-alert.js",
-		//bootstrapJsRoot + "bootstrap-button.js",
-		//bootstrapJsRoot + "bootstrap-collapse.js",
-		//bootstrapJsRoot + "bootstrap-dropdown.js",
-		//bootstrapJsRoot + "bootstrap-modal.js",
-		//bootstrapJsRoot + "bootstrap-tooltip.js",
-		//bootstrapJsRoot + "bootstrap-popover.js",
-		//bootstrapJsRoot + "bootstrap-tab.js",
 		//bootstrapJsRoot + "bootstrap-typeahead.js",
-		//// Bootstrap custom
-		//bootstrapJsRoot + "custom/bootstrap-datetimepicker.js",
+		// Vendors
+		vendorsRoot + "colorpicker/js/bootstrap-colorpicker.js",
+		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
+		vendorsRoot + "select2/js/select2.js",
 		// Shared UI
 		"~/Scripts/smartstore.placeholder.js",
-		"~/Administration/Content/vendors/select2/js/select2.js",
 		volatileJsRoot + "smartstore.selectwrapper.js",
 		"~/Scripts/smartstore.throbber.js",
 		//"~/Scripts/smartstore.navbar.js",
@@ -107,17 +99,10 @@
 <head>
     <title>@adminPageTitle</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge; chrome=1" />
 
-    <script>
-        window.Res = {
-        	"Common.Notification": "@T("Common.Notification").ToString().EncodeJsString()",
-        	"Common.Close": "@T("Common.Close").ToString()",
-        	"Common.On": "@T("Common.On").ToString()",
-        	"Common.Off": "@T("Common.Off").ToString()"
-        }
-    </script>
-    
+    @{ Html.RenderPartial("_ClientRes"); }
     @{ Html.RenderPartial("ConditionalComments"); }
     @Html.MetaAcceptLanguage()
 
@@ -126,6 +111,7 @@
 
     <link rel="shortcut icon" href="~/Administration/favicon.ico" />
 
+	@Html.CustomHead()
 </head>
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>   
 	@RenderBody()

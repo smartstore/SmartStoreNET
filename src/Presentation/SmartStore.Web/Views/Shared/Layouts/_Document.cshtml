@@ -1,6 +1,4 @@
 ﻿@using SmartStore.Core;
-@using SmartStore.Core.Infrastructure;
-@using SmartStore.Services.Localization;
 
 @{
 	var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
@@ -24,11 +22,7 @@
 	Html.AppendScriptParts(ResourceLocation.Head,
 		"~/Scripts/modernizr.js",
 		jsRoot + "jquery-3.2.1.js",
-		jsRoot + "jquery-migrate-3.0.0.js",
-		"~/Scripts/globalize/globalize.js");
-
-	Html.AddScriptParts(ResourceLocation.Head, true,
-		"~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
+		jsRoot + "jquery-migrate-3.0.0.js");
 
 	Html.AppendScriptParts(ResourceLocation.Foot,
 		// jQuery UI Core
@@ -44,6 +38,7 @@
 		"~/Scripts/underscore.js",
 		"~/Scripts/underscore.string.js",
 		"~/Scripts/underscore.mixins.js",
+		"~/Scripts/smartstore.globalization.js",
 		jsRoot + "smartstore.touchevents.js",
 		jsRoot + "smartstore.jquery.utils.js",
 		jsRoot + "jquery.ba-outside-events.js",

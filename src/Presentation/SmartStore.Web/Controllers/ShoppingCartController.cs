@@ -96,7 +96,8 @@ namespace SmartStore.Web.Controllers
         private readonly TaxSettings _taxSettings;
         private readonly CaptchaSettings _captchaSettings;
         private readonly AddressSettings _addressSettings;
-		private readonly PluginMediator _pluginMediator;
+        private readonly CustomerSettings _customerSettings;
+        private readonly PluginMediator _pluginMediator;
         private readonly IQuantityUnitService _quantityUnitService;
 		private readonly Lazy<ITopicService> _topicService;
         private readonly IMeasureService _measureService;
@@ -134,7 +135,8 @@ namespace SmartStore.Web.Controllers
             CatalogSettings catalogSettings, OrderSettings orderSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CaptchaSettings captchaSettings, AddressSettings addressSettings,
-			HttpContextBase httpContext, PluginMediator pluginMediator,
+            CustomerSettings customerSettings,
+            HttpContextBase httpContext, PluginMediator pluginMediator,
             IQuantityUnitService quantityUnitService,
 			Lazy<ITopicService> topicService,
             IMeasureService measureService, MeasureSettings measureSettings,
@@ -184,7 +186,8 @@ namespace SmartStore.Web.Controllers
             this._taxSettings = taxSettings;
             this._captchaSettings = captchaSettings;
             this._addressSettings = addressSettings;
-			this._pluginMediator = pluginMediator;
+            this._customerSettings = customerSettings;
+            this._pluginMediator = pluginMediator;
             this._quantityUnitService = quantityUnitService;
 			this._topicService = topicService;
             this._measureService = measureService;
@@ -1673,7 +1676,11 @@ namespace SmartStore.Web.Controllers
             //everything is OK
             if (customer.IsGuest())
             {
-                if (_orderSettings.AnonymousCheckoutAllowed)
+                if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
+                {
+                    return RedirectToAction("BillingAddress", "Checkout");
+                }
+                else if (_orderSettings.AnonymousCheckoutAllowed)
                 {
 					return RedirectToAction("Login", "Customer", new { checkoutAsGuest = true, returnUrl = Url.RouteUrl("ShoppingCart") });
                 }

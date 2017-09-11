@@ -8,29 +8,27 @@
 		}
 		catch (e) {
 			console.log(e);
-			alert(e);
+			displayNotification(e, 'error');
 		}
 	};
 
 	window.onAmazonPaymentsReady = function () {
+		var isAuthentication = @((Model.Type == AmazonPayRequestType.AuthenticationPublicInfo).ToString().ToLower());
+		var scope = 'profile';
+
 		try {
-			// We cannot provide a logout link.
-			//amazon.Login.logout();
+			if (!isAuthentication) {
+				scope += ' payments:widget payments:shipping_address payments:billing_address';
+				
+				amazon.Login.logout();
+			}
 		}
 		catch (e) {
 			console.log(e);
-			alert(e);
+			displayNotification(e, 'error');
 		}
 
 		try {
-			var isAuthentication = @((Model.Type == AmazonPayRequestType.AuthenticationPublicInfo).ToString().ToLower());
-			var handlerUrl = '@Html.Raw(string.Concat(Model.ButtonHandlerUrl, Model.ButtonHandlerUrl.Contains('?') ? "&" : "?"))';
-			var accessToken, scope = 'profile';
-
-			if (!isAuthentication) {
-				scope += ' payments:widget payments:shipping_address payments:billing_address';
-			}
-
 			OffAmazonPayments.Button(isAuthentication ? 'amazon-pay-auth-button' : 'amazon-pay-login-button', '@Html.Raw(Model.SellerId)', {
 				type: '@(Model.ButtonType ?? (Model.Type == AmazonPayRequestType.AuthenticationPublicInfo ? "Login" : "PwA"))',
 				color: '@(Model.ButtonColor ?? "Gold")',
@@ -38,40 +36,19 @@
 				language: '@(Model.LanguageCode ?? "de-DE")',
 				authorization: function() {
 					amazon.Login.authorize({
-							scope: scope,
-							popup: @(Model.UsePopupDialog.ToString().ToLower()),
+							scope: scope
 						},
-						function (authorizeResponse) {
-							accessToken = authorizeResponse.access_token;
-
-							if (isAuthentication) {
-								handlerUrl += 'accessToken=' + encodeURIComponent(accessToken);
-								window.location = handlerUrl;
-							}
-						}
+						'@Html.Raw(Model.ButtonHandlerUrl)'
 					);
 				},
-				onSignIn: function (orderReference) {
-					if (!isAuthentication) {
-						var referenceId = orderReference.getAmazonOrderReferenceId();
-						if (referenceId) {
-							handlerUrl += 'orderReferenceId=' + encodeURIComponent(referenceId);
-							handlerUrl += '&accessToken=' + encodeURIComponent(accessToken);
-							window.location = handlerUrl;
-						}
-						else {
-							displayNotification('@T("Plugins.Payments.AmazonPay.MissingOrderReferenceId")', 'error');
-						}
-					}
-				},
-				onError: function (error) {
-					alert(error.getErrorCode() + ': ' + error.getErrorMessage());
+				onError: function (e) {
+					displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');
 				}
 			});
 		}
 		catch (e) {
 			console.log(e);
-			alert(e);
+			displayNotification(e, 'error');
 		}
 	};
 </script>

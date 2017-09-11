@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using Newtonsoft.Json.Linq;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
 using SmartStore.Core.Domain.Customers;
@@ -155,7 +154,7 @@ namespace SmartStore.AmazonPay.Controllers
 			return View(model);
 		}
 
-		public ActionResult AuthenticationButtonHandler(string returnUrl)
+		public ActionResult AuthenticationButtonHandler()
 		{
 			var processor = _openAuthenticationService.Value.LoadExternalAuthenticationMethodBySystemName(AmazonPayPlugin.SystemName, Services.StoreContext.CurrentStore.Id);
 			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings.Value))
@@ -163,6 +162,7 @@ namespace SmartStore.AmazonPay.Controllers
 				throw new SmartException(T("Plugins.Payments.AmazonPay.AuthenticationNotActive"));
 			}
 
+			var returnUrl = Session["AmazonAuthReturnUrl"] as string;
 			var result = _apiService.Authorize(returnUrl);
 
 			switch (result.AuthenticationStatus)

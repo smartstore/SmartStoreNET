@@ -26,13 +26,16 @@ namespace SmartStore.AmazonPay.Filters
 			if (filterContext == null || filterContext.ActionDescriptor == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
 				return;
 
-			if (!filterContext.HttpContext.HasAmazonPayState())
-				return;
-
-			string actionName = filterContext.ActionDescriptor.ActionName;
+			var actionName = filterContext.ActionDescriptor.ActionName;
 
 			if (!IsInterceptableAction(actionName))
 				return;
+
+			if (actionName.IsCaseInsensitiveEqual("ShippingMethod") || actionName.IsCaseInsensitiveEqual("PaymentMethod"))
+			{
+				if (!filterContext.HttpContext.HasAmazonPayState())
+					return;
+			}
 
 			if (actionName.IsCaseInsensitiveEqual("ShippingMethod"))
 			{
@@ -54,10 +57,7 @@ namespace SmartStore.AmazonPay.Filters
 			if (filterContext == null || filterContext.ActionDescriptor == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
 				return;
 
-			if (!filterContext.HttpContext.HasAmazonPayState())
-				return;
-
-			string actionName = filterContext.ActionDescriptor.ActionName;
+			var actionName = filterContext.ActionDescriptor.ActionName;
 
 			if (!IsInterceptableAction(actionName))
 				return;

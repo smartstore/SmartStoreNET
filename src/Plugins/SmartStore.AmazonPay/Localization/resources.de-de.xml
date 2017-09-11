@@ -26,10 +26,10 @@ Textvorschläge:<ul>
     <Value>Bitte beachten Sie, dass es sich bei dieser Rechnungsadresse unter Umständen nicht um die für diese Bestellung gültige handelt!</Value>
   </LocaleResource>
 	<LocaleResource Name="MissingOrderReferenceId">
-		<Value>Es wurde keine Auftrags-Referenz-ID durch Amazon übermittelt!</Value>
+		<Value>Es wurde keine Auftrags-Referenz-ID durch Amazon übermittelt.</Value>
 	</LocaleResource>
   <LocaleResource Name="MissingAddressConsentToken">
-    <Value>Es wurde keine Adress-Token durch Amazon übermittelt!</Value>
+    <Value>Es wurde keine Access-Token durch Amazon übermittelt.</Value>
   </LocaleResource>
   <LocaleResource Name="IncompleteProfileDetails">
     <Value>Unvollständige Amazon Profildaten!</Value>
@@ -145,7 +145,19 @@ Textvorschläge:<ul>
 	<LocaleResource Name="ClientId.Hint">
 		<Value>Die Client-ID finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
 	</LocaleResource>
-	<!--<LocaleResource Name="ClientSecret">
+  <LocaleResource Name="MerchantLoginDomains">
+    <Value>Zulässige JavaScript-Ursprünge</Value>
+  </LocaleResource>
+  <LocaleResource Name="MerchantLoginDomains.Hint">
+    <Value>Bitte geben Sie diese Ursprünge bei Amazon Seller Central unter Login mit Amazon ein. Die Ursprünge müssen das HTTPS-Protokoll verwenden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="MerchantLoginRedirectUrls">
+    <Value>Zulässige Rückleitungs-URLs</Value>
+  </LocaleResource>
+  <LocaleResource Name="MerchantLoginRedirectUrls.Hint">
+    <Value>Bitte geben Sie diese URLs bei Amazon Seller Central unter Login mit Amazon ein. Das Protokoll der Rückleitungs-URL muss HTTPS sein.</Value>
+  </LocaleResource>
+  <!--<LocaleResource Name="ClientSecret">
 		<Value>Ihr Client-Secret</Value>
 	</LocaleResource>
 	<LocaleResource Name="ClientSecret.Hint">
@@ -280,12 +292,6 @@ Textvorschläge:<ul>
 	<LocaleResource Name="AddOrderNotes.Hint">
 		<Value>Legt fest, dass Auftragsnotizen hinsichtlich des Datenaustausches mit Amazon Payment angelegt werden sollen.</Value>
 	</LocaleResource>
-  <LocaleResource Name="UsePopupDialog">
-    <Value>Authentifizierung über Dialogfenster</Value>
-  </LocaleResource>
-  <LocaleResource Name="UsePopupDialog.Hint">
-    <Value>Legt fest, ob die Authentifizierung über ein Dialogfenster erfolgen soll. Ist diese Option deaktiviert, wird auf eine Amazon Seite zwecks Authentifizierung weitergeleitet.</Value>
-  </LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximales Auftragsalter (in Tagen)</Value>
 	</LocaleResource>

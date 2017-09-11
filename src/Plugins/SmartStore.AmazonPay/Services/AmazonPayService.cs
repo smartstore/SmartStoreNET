@@ -144,17 +144,48 @@ namespace SmartStore.AmazonPay.Services
 			model.PublicKey = string.Empty;
 			model.KeyShareUrl = GetPluginUrl("ShareKey", store.SslEnabled);
 			model.LanguageLocale = language.UniqueSeoCode.ToAmazonLanguageCode('_');
-			// SSL mandatory. Including all domains and sub domains where the login button appears.
-			model.MerchantLoginDomains = allStores
-				.Where(x => x.SecureUrl.HasValue())
-				.Select(x => x.SecureUrl.EmptyNull().TrimEnd('/'))
-				.ToArray();
-			// Unknown here
-			model.MerchantLoginRedirectUrls = new string[0];
 			model.MerchantStoreDescription = store.Name.Truncate(2048);
 			model.MerchantPrivacyNoticeUrl = urlHelper.RouteUrl("Topic", new { SystemName = "privacyinfo" }, store.SslEnabled ? "https" : "http");
 			model.MerchantSandboxIpnUrl = model.IpnUrl;
 			model.MerchantProductionIpnUrl = model.IpnUrl;
+
+			model.MerchantLoginDomains = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			model.MerchantLoginRedirectUrls = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			model.CurrentMerchantLoginDomains = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			model.CurrentMerchantLoginRedirectUrls = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+			foreach (var entity in allStores)
+			{
+				if (entity.SecureUrl.HasValue())
+				{
+					try
+					{
+						var uri = new Uri(entity.SecureUrl);
+						// Only protocol and domain name.
+						var loginDomain = uri.GetLeftPart(UriPartial.Scheme | UriPartial.Authority).EmptyNull().TrimEnd('/');
+						model.MerchantLoginDomains.Add(loginDomain);
+
+						if (entity.Id == store.Id)
+						{
+							model.CurrentMerchantLoginDomains.Add(loginDomain);
+						}
+					}
+					catch { }
+
+					var urlRoot = entity.SecureUrl.EnsureEndsWith("/");
+					var payHandlerUrl = urlRoot + "Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/PayButtonHandler";
+					var authHandlerUrl = urlRoot + "Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler";
+
+					model.MerchantLoginRedirectUrls.Add(payHandlerUrl);
+					model.MerchantLoginRedirectUrls.Add(authHandlerUrl);
+
+					if (entity.Id == store.Id)
+					{
+						model.CurrentMerchantLoginRedirectUrls.Add(payHandlerUrl);
+						model.CurrentMerchantLoginRedirectUrls.Add(authHandlerUrl);
+					}
+				}
+			}
 
 			if (_companyInformationSettings.CountryId != 0)
 			{
@@ -224,11 +255,7 @@ namespace SmartStore.AmazonPay.Services
 			};
 		}
 
-		public AmazonPayViewModel CreateViewModel(
-			AmazonPayRequestType type,
-			TempDataDictionary tempData,
-			string orderReferenceId = null,
-			string accessToken = null)
+		public AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData)
 		{
 			var model = new AmazonPayViewModel();
 			model.Type = type;
@@ -240,22 +267,13 @@ namespace SmartStore.AmazonPay.Services
 				var language = _services.WorkContext.WorkingLanguage;
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 				var storeLocation = _services.WebHelper.GetStoreLocation(store.SslEnabled);
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 
 				model.ButtonHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/PayButtonHandler";
 				model.LanguageCode = language.UniqueSeoCode.ToAmazonLanguageCode();
 
 				if (type == AmazonPayRequestType.PayButtonHandler)
 				{
-					if (orderReferenceId.IsEmpty() || accessToken.IsEmpty())
-					{
-						var msg = orderReferenceId.IsEmpty() ? T("Plugins.Payments.AmazonPay.MissingOrderReferenceId") : T("Plugins.Payments.AmazonPay.MissingAddressConsentToken");
-						Logger.Error(null, msg);
-						_services.Notifier.Error(new LocalizedString(msg));
-
-						model.Result = AmazonPayResultType.Redirect;
-						return model;
-					}
-
 					if (cart.Count <= 0 || !IsPaymentMethodActive(store.Id))
 					{
 						model.Result = AmazonPayResultType.Redirect;
@@ -268,9 +286,19 @@ namespace SmartStore.AmazonPay.Services
 						return model;
 					}
 
-					var checkoutState = _httpContext.GetCheckoutState();
-					var checkoutStateKey = AmazonPayPlugin.SystemName + ".CheckoutState";
+					var accessToken = _httpContext.Request.QueryString["access_token"];
+					if (accessToken.IsEmpty())
+					{
+						var msg = T("Plugins.Payments.AmazonPay.MissingAddressConsentToken");
+						Logger.Error(null, msg);
+						_services.Notifier.Error(new LocalizedString(msg));
 
+						model.Result = AmazonPayResultType.Redirect;
+						return model;
+					}
+
+					// Create session state object.
+					var checkoutState = _httpContext.GetCheckoutState();
 					if (checkoutState == null)
 					{
 						Logger.Warn("Checkout state is null in AmazonPayService.ValidateAndInitiateCheckout!");
@@ -278,23 +306,19 @@ namespace SmartStore.AmazonPay.Services
 						return model;
 					}
 
-					var state = new AmazonPayCheckoutState
-					{
-						OrderReferenceId = orderReferenceId,
-						AddressConsentToken = accessToken
-					};
-
-					if (checkoutState.CustomProperties.ContainsKey(checkoutStateKey))
-						checkoutState.CustomProperties[checkoutStateKey] = state;
-					else
-						checkoutState.CustomProperties.Add(checkoutStateKey, state);
-
-					//_httpContext.Session.SafeSet(checkoutStateKey, state);
+					checkoutState.CustomProperties[AmazonPayPlugin.SystemName + ".CheckoutState"] = new AmazonPayCheckoutState { AccessToken = accessToken };
 
 					model.RedirectAction = "Index";
 					model.RedirectController = "Checkout";
 					model.Result = AmazonPayResultType.Redirect;
 					return model;
+				}
+				else if (type == AmazonPayRequestType.AuthenticationPublicInfo)
+				{
+					model.ButtonHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler";
+
+					// Do not append returnUrl to button handler URL. Handler URLs must be whitelisted in Amazon Seller Central.
+					_httpContext.Session["AmazonAuthReturnUrl"] = _httpContext.Request.QueryString["returnUrl"];
 				}
 				else if (type == AmazonPayRequestType.ShoppingCart || type == AmazonPayRequestType.MiniShoppingCart)
 				{
@@ -304,16 +328,9 @@ namespace SmartStore.AmazonPay.Services
 						return model;
 					}
 				}
-				else if (type == AmazonPayRequestType.AuthenticationPublicInfo)
-				{
-					model.ButtonHandlerUrl = string.Concat(
-						storeLocation,
-						"Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler?returnUrl=",
-						_httpContext.Request.QueryString["returnUrl"]);
-				}
 				else
 				{
-					if (!_httpContext.HasAmazonPayState() || cart.Count <= 0)
+					if (cart.Count <= 0)
 					{
 						model.Result = AmazonPayResultType.Redirect;
 						return model;
@@ -327,12 +344,20 @@ namespace SmartStore.AmazonPay.Services
 
 					var state = _httpContext.GetAmazonPayState(_services.Localization);
 					model.OrderReferenceId = state.OrderReferenceId;
-					model.AddressConsentToken = state.AddressConsentToken;
+					model.AddressConsentToken = state.AccessToken;
 					//model.IsOrderConfirmed = state.IsOrderConfirmed;
+
+					if (type == AmazonPayRequestType.ShippingMethod || type == AmazonPayRequestType.PaymentMethod)
+					{
+						if (state.OrderReferenceId.IsEmpty() || state.AccessToken.IsEmpty())
+						{
+							model.Result = AmazonPayResultType.Redirect;
+							return model;
+						}
+					}
 				}
 
 				var currency = store.PrimaryStoreCurrency;
-				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 
 				model.SellerId = settings.SellerId;
 				model.ClientId = settings.ClientId;
@@ -352,14 +377,12 @@ namespace SmartStore.AmazonPay.Services
 					model.ButtonType = "PwA";
 					model.ButtonColor = settings.PayButtonColor;
 					model.ButtonSize = settings.PayButtonSize;
-					model.UsePopupDialog = settings.UsePopupDialog;
 				}
 				else if (type == AmazonPayRequestType.AuthenticationPublicInfo)
 				{
 					model.ButtonType = settings.AuthButtonType;
 					model.ButtonColor = settings.AuthButtonColor;
 					model.ButtonSize = settings.AuthButtonSize;
-					model.UsePopupDialog = settings.UsePopupDialog;
 				}
 				else if (type == AmazonPayRequestType.Address)
 				{
@@ -792,7 +815,7 @@ namespace SmartStore.AmazonPay.Services
 			var getOrderRequest = new GetOrderReferenceDetailsRequest()
 				.WithMerchantId(settings.SellerId)
 				.WithAmazonOrderReferenceId(state.OrderReferenceId)
-				.WithAccessToken(state.AddressConsentToken);
+				.WithAccessToken(state.AccessToken);
 
 			var getOrderResponse = client.GetOrderReferenceDetails(getOrderRequest);
 			if (getOrderResponse.GetSuccess())
@@ -1539,7 +1562,7 @@ namespace SmartStore.AmazonPay.Services
 			string email = null;
 			string name = null;
 			string userId = null;
-			var accessToken = _httpContext.Request.QueryString["accessToken"];
+			var accessToken = _httpContext.Request.QueryString["access_token"];
 
 			if (accessToken.HasValue())
 			{
@@ -1562,12 +1585,12 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					error = T("Plugins.Payments.AmazonPay.IncompleteProfileDetails") + " Email: , name: , userId: .";
+					error = T("Plugins.Payments.AmazonPay.IncompleteProfileDetails");
 				}
 			}
 			else
 			{
-				error = T("Plugins.Payments.AmazonPayMissingAccessToken");
+				error = T("Plugins.Payments.AmazonPay.MissingAccessToken");
 			}
 
 			if (error.HasValue())

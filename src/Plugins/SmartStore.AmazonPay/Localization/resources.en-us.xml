@@ -26,10 +26,10 @@ Text suggestions:<ul>
     <Value>Please note that this billing address is possibly not the valid billing address for this order!</Value>
   </LocaleResource>
 	<LocaleResource Name="MissingOrderReferenceId">
-		<Value>There was no order reference ID transmitted by Amazon!</Value>
+		<Value>There was no order reference ID transmitted by Amazon.</Value>
 	</LocaleResource>
   <LocaleResource Name="MissingAddressConsentToken">
-    <Value>There was no address token transmitted by Amazon!</Value>
+    <Value>There was no access token transmitted by Amazon.</Value>
   </LocaleResource>
   <LocaleResource Name="IncompleteProfileDetails">
     <Value>Incomplete Amazon profile data!</Value>
@@ -139,12 +139,24 @@ Text suggestions:<ul>
   <LocaleResource Name="SecretKey.Hint">
     <Value>You can find the Secret Access Key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
   </LocaleResource>
-	<LocaleResource Name="ClientKey">
+	<LocaleResource Name="ClientId">
 		<Value>Your Client ID</Value>
 	</LocaleResource>
-	<LocaleResource Name="ClientKey.Hint">
+	<LocaleResource Name="ClientId.Hint">
 		<Value>You can find the Client ID at Amazon's Seller Central under Integration - MWS Access Key.</Value>
 	</LocaleResource>
+  <LocaleResource Name="MerchantLoginDomains">
+    <Value>Allowed JavaScript origins</Value>
+  </LocaleResource>
+  <LocaleResource Name="MerchantLoginDomains.Hint">
+    <Value>Please enter these origins at Amazon Seller Central under Login with Amazon. The origins must use the HTTPS protocol.</Value>
+  </LocaleResource>
+  <LocaleResource Name="MerchantLoginRedirectUrls">
+    <Value>Allowed redirect URLs</Value>
+  </LocaleResource>
+  <LocaleResource Name="MerchantLoginRedirectUrls.Hint">
+    <Value>Please enter these URLs at Amazon Seller Central under Login with Amazon. The redirect URL protocol must be HTTPS.</Value>
+  </LocaleResource>
 	<!--<LocaleResource Name="ClientSecret">
 		<Value>Your Client Secret</Value>
 	</LocaleResource>
@@ -280,12 +292,6 @@ Text suggestions:<ul>
 	<LocaleResource Name="AddOrderNotes.Hint">
 		<Value>Specifies that order notes should be created in context of the data exchange with Amazon Payments.</Value>
 	</LocaleResource>
-  <LocaleResource Name="UsePopupDialog">
-    <Value>Authenticate through pop-up dialog</Value>
-  </LocaleResource>
-  <LocaleResource Name="UsePopupDialog.Hint">
-    <Value>Specifies whether to authenticate through pop-up dialog. Otherwise the user will be redirected to an Amazon page.</Value>
-  </LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximal order age (in days)</Value>
 	</LocaleResource>

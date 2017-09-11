@@ -63,9 +63,6 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.AddOrderNotes")]
 		public bool AddOrderNotes { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.UsePopupDialog")]
-		public bool UsePopupDialog { get; set; }
-
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.InformCustomerAboutErrors")]
 		public bool InformCustomerAboutErrors { get; set; }
 
@@ -98,8 +95,23 @@ namespace SmartStore.AmazonPay.Models
 		public string PublicKey { get; set; }
 		public string KeyShareUrl { get; set; }
 		public string LanguageLocale { get; set; }
-		public string[] MerchantLoginDomains { get; set; }
-		public string[] MerchantLoginRedirectUrls { get; set; }
+
+		/// <summary>
+		/// Including all domains and sub domains where the login button appears. SSL mandatory.
+		/// </summary>
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.MerchantLoginDomains")]
+		public HashSet<string> MerchantLoginDomains { get; set; }
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.MerchantLoginDomains")]
+		public HashSet<string> CurrentMerchantLoginDomains { get; set; }
+
+		/// <summary>
+		/// Used to populate Allowed Return URLs on the Login with Amazon application. SSL mandatory. Max 512 characters.
+		/// </summary>
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.MerchantLoginRedirectUrls")]
+		public HashSet<string> MerchantLoginRedirectUrls { get; set; }
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.MerchantLoginRedirectUrls")]
+		public HashSet<string> CurrentMerchantLoginRedirectUrls { get; set; }
+
 		public string MerchantStoreDescription { get; set; }
 		public string MerchantPrivacyNoticeUrl { get; set; }
 		public string MerchantCountry { get; set; }
@@ -128,7 +140,6 @@ namespace SmartStore.AmazonPay.Models
 				AdditionalFee = settings.AdditionalFee;
 				AdditionalFeePercentage = settings.AdditionalFeePercentage;
 				AddOrderNotes = settings.AddOrderNotes;
-				UsePopupDialog = settings.UsePopupDialog;
 				InformCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				InformCustomerAddErrors = settings.InformCustomerAddErrors;
 
@@ -156,7 +167,6 @@ namespace SmartStore.AmazonPay.Models
 				settings.AdditionalFee = AdditionalFee;
 				settings.AdditionalFeePercentage = AdditionalFeePercentage;
 				settings.AddOrderNotes = AddOrderNotes;
-				settings.UsePopupDialog = UsePopupDialog;
 				settings.InformCustomerAboutErrors = InformCustomerAboutErrors;
 				settings.InformCustomerAddErrors = InformCustomerAddErrors;
 

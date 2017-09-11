@@ -37,7 +37,7 @@ namespace SmartStore.AmazonPay
 			}
 		}
 
-		internal static void ToFirstAndLastName(this SmartStore.Core.Domain.Common.Address address, string name)
+		internal static void ToFirstAndLastName(this Address address, string name)
 		{
 			string firstName, lastName;
 			name.ToFirstAndLastName(out firstName, out lastName);
@@ -95,8 +95,9 @@ namespace SmartStore.AmazonPay
 			{
 				var state = checkoutState.CustomProperties[checkoutStateKey] as AmazonPayCheckoutState;
 
-				return (state != null && state.OrderReferenceId.HasValue());
+				return state != null && state.OrderReferenceId.HasValue() && state.AccessToken.HasValue();
 			}
+
 			return false;
 		}
 

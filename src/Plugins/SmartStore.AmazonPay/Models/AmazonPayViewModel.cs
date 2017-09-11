@@ -12,7 +12,6 @@ namespace SmartStore.AmazonPay.Models
 			RedirectAction = "Cart";
 			RedirectController = "ShoppingCart";
 			Result = AmazonPayResultType.PluginView;
-			UsePopupDialog = true;
 			BillingAddress = new AddressModel();
 		}
 
@@ -47,7 +46,6 @@ namespace SmartStore.AmazonPay.Models
 		public string ButtonType { get; set; }
 		public string ButtonColor { get; set; }
 		public string ButtonSize { get; set; }
-		public bool UsePopupDialog { get; set; }
 
 		public string ShippingMethod { get; set; }
 		public AddressModel BillingAddress { get; set; }

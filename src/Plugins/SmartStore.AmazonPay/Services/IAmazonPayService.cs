@@ -10,11 +10,7 @@ namespace SmartStore.AmazonPay.Services
 	{
 		void SetupConfiguration(ConfigurationModel model);
 
-		AmazonPayViewModel CreateViewModel(
-			AmazonPayRequestType type,
-			TempDataDictionary tempData,
-			string orderReferenceId = null,
-			string accessToken = null);
+		AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData);
 
 		void AddCustomerOrderNoteLoop(AmazonPayActionState state);
 

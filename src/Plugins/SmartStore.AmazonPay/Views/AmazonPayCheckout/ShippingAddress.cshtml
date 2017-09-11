@@ -1,4 +1,5 @@
 ﻿@using SmartStore.Web.Models.Checkout;
+@using SmartStore.AmazonPay;
 @model SmartStore.AmazonPay.Models.AmazonPayViewModel
 @{
 	Layout = "_Checkout";
@@ -54,7 +55,7 @@
 		}
 		catch (e) {
 			console.log(e);
-			alert(e);
+			displayNotification(e, 'error');
 		}
 	};
 
@@ -63,7 +64,27 @@
 			new OffAmazonPayments.Widgets.AddressBook({
 				sellerId: '@Model.SellerId',
 				scope: 'payments:shipping_address payments:billing_address',
-				amazonOrderReferenceId: '@Model.OrderReferenceId',
+				onOrderReferenceCreate: function (orderReference) {
+					var orderReferenceId = orderReference.getAmazonOrderReferenceId();
+					if (orderReferenceId !== '@Model.OrderReferenceId.EmptyNull()') {
+						$.ajax({
+							cache: false,
+							type: 'POST',
+							data: {	"orderReferenceId": orderReferenceId },
+							url: '@Url.Action("OrderReferenceCreated", "AmazonPayCheckout", new { area = AmazonPayPlugin.SystemName })',
+							success: function (response) {
+								if (!response.success) {
+									displayNotification(response.error, 'error');
+								}
+							},
+							error: function (objXml) {
+								if (objXml != null && objXml.responseText != null && objXml.responseText !== '') {
+									displayNotification(objXml.responseText, 'error');
+								}
+							}
+						});
+					}
+				},
 				onAddressSelect: function (orderReference) {
 					$('#AmazonPayNextCheckoutStep').removeClass('disabled');
 				},
@@ -71,13 +92,13 @@
 					designMode: 'responsive'
 				},
 				onError: function (e) {
-					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
+					displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');
 				}
 			}).bind('amazon-pay-address-book-widget');
 		}
 		catch (e) {
 			console.log(e);
-			alert(e);
+			displayNotification(e, 'error');
 		}
 	};
 </script>

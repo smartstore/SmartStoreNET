@@ -12,7 +12,6 @@ namespace SmartStore.AmazonPay
 			TransactionType = AmazonPayTransactionType.Authorize;
 			SaveEmailAndPhone = AmazonPaySaveDataType.OnlyIfEmpty;
 			AddOrderNotes = true;
-			UsePopupDialog = true;
 			InformCustomerAboutErrors = true;
 			InformCustomerAddErrors = true;
 			PollingMaxOrderCreationDays = 31;
@@ -45,7 +44,6 @@ namespace SmartStore.AmazonPay
 		public bool AdditionalFeePercentage { get; set; }
 
 		public bool AddOrderNotes { get; set; }
-		public bool UsePopupDialog { get; set; }
 
 		public bool InformCustomerAboutErrors { get; set; }
 		public bool InformCustomerAddErrors { get; set; }

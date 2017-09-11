@@ -49,7 +49,7 @@
 		}
 		catch (e) {
 			console.log(e);
-			alert(e);
+			displayNotification(e, 'error');
 		}
 	};
 
@@ -66,13 +66,13 @@
 					$('#AmazonPayNextCheckoutStep').prop('disabled', false);
 				},
 				onError: function (e) {
-					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
+					displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');
 				}
 			}).bind('amazon-pay-wallet-widget');
 		}
 		catch (e) {
 			console.log(e);
-			alert(e);
+			displayNotification(e, 'error');
 		}
 	};
 </script>

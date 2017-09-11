@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Services;
 using SmartStore.Services.Common;
@@ -19,6 +20,41 @@ namespace SmartStore.AmazonPay.Controllers
 			_httpContext = httpContext;
 			_apiService = apiService;
 			_genericAttributeService = genericAttributeService;
+		}
+
+		public ActionResult OrderReferenceCreated(string orderReferenceId/*, string accessToken*/)
+		{
+			var success = false;
+			var error = string.Empty;
+
+			try
+			{
+				var state = _httpContext.GetAmazonPayState(Services.Localization);
+				state.OrderReferenceId = orderReferenceId;
+
+				//if (accessToken.HasValue())
+				//{
+				//	state.AccessToken = accessToken;
+				//}
+
+				if (state.OrderReferenceId.IsEmpty())
+				{
+					success = false;
+					error = T("Plugins.Payments.AmazonPay.MissingOrderReferenceId");
+				}
+
+				if (state.AccessToken.IsEmpty())
+				{
+					success = false;
+					error = error.Grow(T("Plugins.Payments.AmazonPay.MissingAddressConsentToken"), " ");
+				}
+			}
+			catch (Exception exception)
+			{
+				error = exception.Message;
+			}
+
+			return new JsonResult { Data = new { success = success, error = error } };
 		}
 
 		public ActionResult BillingAddress()

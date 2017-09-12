@@ -56,7 +56,15 @@ namespace SmartStore.Web.Framework.Theming
 			}
 		}
 
-		protected bool HasMessages
+        protected bool IsStoreClosed
+        {
+            get
+            {
+                return _helper.IsStoreClosed;
+            }
+        }
+
+        protected bool HasMessages
 		{
 			get
 			{

@@ -434,17 +434,8 @@ namespace SmartStore.Web.Controllers
         public ActionResult ShopBar()
         {
 			var customer = _services.WorkContext.CurrentCustomer;
-
 			var isAdmin = customer.IsAdmin();
 			var isRegistered = isAdmin || customer.IsRegistered();
-
-			if (_storeInfoSettings.StoreClosed)
-			{
-				if (!isAdmin || !_storeInfoSettings.StoreClosedAllowForAdmins)
-				{
-					return Content("");
-				}
-			}
             
             var model = new ShopBarModel
             {

@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
@@ -242,6 +243,74 @@ namespace SmartStore.Web.Controllers
 					//out of stock
 					model.DisplayBackInStockSubscription = true;
 					model.BackInStockAlreadySubscribed = _backInStockSubscriptionService.FindSubscription(customer.Id, product.Id, store.Id) != null;
+				}
+
+				// Action items
+				{
+					if (model.HasSampleDownload)
+					{
+						model.ActionItems["sample"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "sample",
+							Title = T("Products.DownloadSample"),
+							CssClass = "action-download-sample",
+							IconCssClass = "fa fa-download",
+							Href = _urlHelper.Action("Sample", "Download", new { productId = model.Id }),
+							IsPrimary = true,
+							PrimaryActionColor = "danger"
+						};
+					}
+
+					if (!model.AddToCart.DisableWishlistButton)
+					{
+						model.ActionItems["wishlist"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "wishlist",
+							Title = T("Wishlist"), // TODO
+							Tooltip = T("ShoppingCart.AddToWishlist"),
+							CssClass = "ajax-cart-link action-add-to-wishlist",
+							IconCssClass = "icm icm-heart",
+							Href = _urlHelper.Action("AddProduct", "ShoppingCart", new { productId = model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })
+						};
+					}
+
+					if (model.CompareEnabled)
+					{
+						model.ActionItems["compare"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "compare",
+							Title = T("Common.Shopbar.Compare"), // TODO
+							Tooltip = T("Products.Compare.AddToCompareList"),
+							CssClass = "action-compare ajax-cart-link",
+							IconCssClass = "icm icm-repeat",
+							Href = _urlHelper.Action("AddProductToCompare", "Catalog", new { id = model.Id })
+						};
+					}
+
+					if (model.AskQuestionEnabled && !model.ProductPrice.CallForPrice)
+					{
+						model.ActionItems["ask"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "ask",
+							Title = "Fragen?", // TODO
+							Tooltip = T("Products.AskQuestion"),
+							CssClass = "action-ask-question",
+							IconCssClass = "icm icm-envelope",
+							Href = _urlHelper.Action("AskQuestion", new { id = model.Id })
+						};
+					}
+
+					if (model.TellAFriendEnabled)
+					{
+						model.ActionItems["tell"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "tell",
+							Title = T("Products.EmailAFriend"),
+							CssClass = "action-bullhorn",
+							IconCssClass = "icm icm-envelope",
+							Href = _urlHelper.Action("EmailAFriend", new { id = model.Id })
+						};
+					}
 				}
 
 				//template

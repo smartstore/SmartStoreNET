@@ -7,6 +7,7 @@ $pd-price-offer-color:          $brand-danger;
 $pd-line-height:                1.3;
 
 $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
+$pd-offer-spacing:              $grid-gutter-width-base / 2;
 
 //
 // Article Detail Styles
@@ -160,7 +161,7 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 
 .pd-offer {
     background: $pd-offer-bg;
-    padding: $grid-gutter-width-base / 2;
+    padding: $pd-offer-spacing;
     line-height: $pd-line-height;
     width: 100%;
 }
@@ -418,6 +419,69 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
         padding-right: 0.2rem;
         font-size: 0.85em;
         margin-left: 0.025rem;
+    }
+}
+
+
+// Secondary actions
+// =====================================================
+
+.pd-actions-container {
+    margin-top: $pd-offer-spacing;
+    padding-top: $pd-offer-spacing;
+    border-top: 1px solid rgba(#000, 0.15);
+}
+
+.pd-actions-primary:not(:empty) {
+    margin-bottom: $pd-offer-spacing;
+    > *:not(:last-child) { margin-bottom: $pd-offer-spacing / 2;  }
+}
+
+.pd-actions { 
+    overflow: hidden;
+    flex-wrap: nowrap;
+
+    .pd-action-item {
+        text-align: center;
+        border-right: 1px solid rgba(#000, 0.15);
+        &:last-child { border-color: transparent; }
+
+        &.col .pd-action-label {
+            // When more than 4 action items are available,
+            // .col is used instead of .col-(x). These need special care
+            // concerning responsiveness.
+            display: none !important;
+            @include media-breakpoint-only(sm) { display: block !important;  }
+            @include media-breakpoint-up(xl) { display: block !important;  }
+        }
+    }
+
+    .pd-action-link {
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        height: 100%;
+        &.pd-action-link-special { font-weight: 600 }
+
+        .pd-action-icon {
+            display: block;
+            height: 20px;
+            line-height: 20px;
+            vertical-align: middle;
+            color: $pd-offer-muted-color;
+        }
+
+        .pd-action-label {
+            padding-top: 0.3rem;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &:hover .pd-action-label { 
+            text-decoration: underline; 
+        }
     }
 }
 

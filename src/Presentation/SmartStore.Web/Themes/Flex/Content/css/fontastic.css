@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'fontastic';
   src:
-    url('fonts/fontastic.ttf?ks1nv') format('truetype'),
-    url('fonts/fontastic.woff?ks1nv') format('woff'),
-    url('fonts/fontastic.svg?ks1nv#fontastic') format('svg');
+    url('fonts/fontastic.ttf?e9blfi') format('truetype'),
+    url('fonts/fontastic.woff?e9blfi') format('woff'),
+    url('fonts/fontastic.svg?e9blfi#fontastic') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -215,6 +215,9 @@
 .icm-balance:before {
   content: "\e839";
 }
+.icm-truck:before {
+  content: "\e857";
+}
 .icm-cube:before {
   content: "\e874";
 }
@@ -265,9 +268,6 @@
 }
 .icm-sync:before {
   content: "\e8da";
-}
-.icm-sync2:before {
-  content: "\e8dd";
 }
 .icm-download2:before {
   content: "\e8f5";
@@ -440,4 +440,78 @@
 .icm-ellipsis:before {
   content: "\e9e9";
 }
-
+.icm-server:before {
+  content: "\e666";
+}
+.icm-trash2:before {
+  content: "\e681";
+}
+.icm-broom:before {
+  content: "\e683";
+}
+.icm-inbox2:before {
+  content: "\e69d";
+}
+.icm-box:before {
+  content: "\e69f";
+}
+.icm-eye:before {
+  content: "\e6a5";
+}
+.icm-eye-crossed:before {
+  content: "\e6a6";
+}
+.icm-floppy-disk:before {
+  content: "\e6ae";
+}
+.icm-printer:before {
+  content: "\e6b1";
+}
+.icm-file-empty:before {
+  content: "\e6b3";
+}
+.icm-document2:before {
+  content: "\e6d9";
+}
+.icm-medal-empty:before {
+  content: "\e6dd";
+}
+.icm-film-play:before {
+  content: "\e6f8";
+}
+.icm-picture:before {
+  content: "\e70e";
+}
+.icm-calendar-full:before {
+  content: "\e789";
+}
+.icm-heart-pulse:before {
+  content: "\e7e8";
+}
+.icm-pulse:before {
+  content: "\e7e9";
+}
+.icm-smile:before {
+  content: "\e88a";
+}
+.icm-sad:before {
+  content: "\e88d";
+}
+.icm-cli:before {
+  content: "\e909";
+}
+.icm-file-code:before {
+  content: "\e90c";
+}
+.icm-share:before {
+  content: "\e91f";
+}
+.icm-share2:before {
+  content: "\e920";
+}
+.icm-chevron-up:before {
+  content: "\e939";
+}
+.icm-chevron-down:before {
+  content: "\e93a";
+}

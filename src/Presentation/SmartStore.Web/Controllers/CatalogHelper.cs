@@ -266,7 +266,7 @@ namespace SmartStore.Web.Controllers
 						model.ActionItems["wishlist"] = new ProductDetailsModel.ActionItemModel
 						{
 							Key = "wishlist",
-							Title = T("Wishlist"), // TODO
+							Title = T("ShoppingCart.AddToWishlist.Short"),
 							Tooltip = T("ShoppingCart.AddToWishlist"),
 							CssClass = "ajax-cart-link action-add-to-wishlist",
 							IconCssClass = "icm icm-heart",
@@ -279,7 +279,7 @@ namespace SmartStore.Web.Controllers
 						model.ActionItems["compare"] = new ProductDetailsModel.ActionItemModel
 						{
 							Key = "compare",
-							Title = T("Common.Shopbar.Compare"), // TODO
+							Title = T("Common.Shopbar.Compare"),
 							Tooltip = T("Products.Compare.AddToCompareList"),
 							CssClass = "action-compare ajax-cart-link",
 							IconCssClass = "icm icm-repeat",
@@ -292,7 +292,7 @@ namespace SmartStore.Web.Controllers
 						model.ActionItems["ask"] = new ProductDetailsModel.ActionItemModel
 						{
 							Key = "ask",
-							Title = "Fragen?", // TODO
+							Title = T("Products.AskQuestion.Short"),
 							Tooltip = T("Products.AskQuestion"),
 							CssClass = "action-ask-question",
 							IconCssClass = "icm icm-envelope",
@@ -307,7 +307,7 @@ namespace SmartStore.Web.Controllers
 							Key = "tell",
 							Title = T("Products.EmailAFriend"),
 							CssClass = "action-bullhorn",
-							IconCssClass = "icm icm-envelope",
+							IconCssClass = "icm icm-bullhorn",
 							Href = _urlHelper.Action("EmailAFriend", new { id = model.Id })
 						};
 					}

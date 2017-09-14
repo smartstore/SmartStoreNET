@@ -60,6 +60,9 @@ namespace SmartStore.Data.Migrations
                 "Abweichende Emailadresse für Tell A Friend zulassen",
                 "Specifies whether customers are allowed to enter a email address different from the one they've registered their account with.", 
                 "Bestimmt ob Kunden gestattet ist eine Emailadresse anzugeben, welche von der abweicht mit der sie sich im Shop registriert haben.");
-        }
+
+			builder.AddOrUpdate("ShoppingCart.AddToWishlist.Short", "Add to List", "Merken");
+			builder.AddOrUpdate("Products.AskQuestion.Short", "Questions?", "Fragen?");
+		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿@model ProductModel
 @using Telerik.Web.Mvc.UI;
+@using SmartStore.Core.Domain.Catalog;
 @{
 	ViewBag.Title = T("Admin.Catalog.Products.EditProductDetails").Text;
 }
@@ -138,7 +139,7 @@
         	bundlePerItemPricing($(this).is(':checked'));
         });
 
-        bundlePerItemPricing(@(Model.BundlePerItemPricing.ToString().ToLower()));
+		bundlePerItemPricing(@((Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemPricing).ToString().ToLower()));
 
         function bundlePerItemPricing(isActive) {
         	$('#TierPriceContainer').toggle(!isActive);
@@ -151,7 +152,7 @@
         	bundlePerItemShoppingCart($(this).is(':checked'));
         });
 
-        bundlePerItemShoppingCart(@(Model.BundlePerItemShoppingCart.ToString().ToLower()));
+		bundlePerItemShoppingCart(@((Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemShoppingCart).ToString().ToLower()));
 
         function bundlePerItemShoppingCart(isActive) {
         	$('a[href=#tab-inventory]').parent().toggle(!isActive);

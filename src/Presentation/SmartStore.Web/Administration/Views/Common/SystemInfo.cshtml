@@ -1,8 +1,27 @@
 ﻿@model SystemInfoModel
+
 @{
-    //page title
     ViewBag.Title = T("Admin.System.SystemInfo").Text;
 }
+
+<style>
+	.table-servervars {
+		font-size: 90%; 
+		max-width: 100%
+	}
+
+	.table-servervars .sv-key {
+		font-weight: bold; 
+	}
+
+	.table-servervars .sv-value {
+		word-break: break-all;
+		word-wrap: break-word;
+		white-space: pre;
+		white-space: pre-wrap;
+	}
+</style>
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-info-circle"></i>
@@ -10,16 +29,20 @@
     </div>
 </div>
 
-<script type="text/javascript">
-    function toggleAndChangeText() {
-        $('#pnlLoadedAssemblies').toggle();
-        if ($('#pnlLoadedAssemblies').css('display') == 'none') {
-            $('#loadedAssembliesTag').html('@T("Admin.Common.Show")');
-        }
-        else {
-            $('#loadedAssembliesTag').html('@T("Admin.Common.Hide")');
-        }
-    }
+<script>
+	$(function () {
+		$('.toggle-panel').on('click', function (e) {
+			var btn = $(this);
+			var panel = btn.next();
+			panel.toggle();
+			if (panel.css('display') == 'none') {
+				btn.html('@T("Admin.Common.Show")');
+			}
+			else {
+				btn.html('@T("Admin.Common.Hide")');
+			}
+		});
+	});
 </script>
 
 <table class="adminContent">
@@ -130,8 +153,8 @@
             @Html.SmartLabelFor(model => model.LoadedAssemblies)
         </td>
         <td class="adminData">
-            <a id="loadedAssembliesTag" href="javascript:toggleAndChangeText();">@T("Admin.Common.Show")</a>
-            <div id="pnlLoadedAssemblies" style="display:none">
+            <a class="toggle-panel" href="javascript:void(0);">@T("Admin.Common.Show")</a>
+            <div style="display: none; margin-top: 10px">
 				<p>Directory: @AppDomain.CurrentDomain.DynamicDirectory</p>
                 @foreach (var assembly in Model.LoadedAssemblies)
                 {
@@ -146,4 +169,28 @@
             </div>
         </td>
     </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabel("", "HTTP Server Variables")
+		</td>
+		<td class="adminData">
+			<a class="toggle-panel" href="javascript:void(0);">@T("Admin.Common.Show")</a>
+			<div style="display: none; margin-top: 10px">
+				<table class="table table-striped table-servervars">
+					<tbody>
+						@foreach (var key in Request.ServerVariables.AllKeys)
+						{
+							if (key != "ALL_HTTP" && key != "ALL_RAW")
+							{
+								<tr>
+									<td class="sv-key">@(key):</td>
+									<td><div class="sv-value">@Request.ServerVariables[key]</div></td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+		</td>
+	</tr>
 </table>

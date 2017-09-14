@@ -434,19 +434,8 @@ namespace SmartStore.Web.Controllers
         public ActionResult ShopBar()
         {
 			var customer = _services.WorkContext.CurrentCustomer;
-
 			var isAdmin = customer.IsAdmin();
 			var isRegistered = isAdmin || customer.IsRegistered();
-
-			if (_storeInfoSettings.StoreClosed)
-			{
-				if (!isAdmin || !_storeInfoSettings.StoreClosedAllowForAdmins)
-				{
-					return Content("");
-				}
-			}
-
-			var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
             
             var model = new ShopBarModel
             {
@@ -459,24 +448,10 @@ namespace SmartStore.Web.Controllers
                 CompareProductsEnabled = _catalogSettings.CompareProductsEnabled            
             };
 
-			if (model.ShoppingCartEnabled || model.WishlistEnabled)
-			{
-				if (model.ShoppingCartEnabled)
-					model.ShoppingCartItems = cart.GetTotalProducts();
-
-				if (model.WishlistEnabled)
-					model.WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
-			}
-
-			if (_catalogSettings.CompareProductsEnabled)
-            {
-                model.CompareItems = _compareProductsService.Value.GetComparedProductsCount();
-            }
-
-            return PartialView(model);
+			return PartialView(model);
         }
 
-        [ChildActionOnly]
+		[ChildActionOnly]
         public ActionResult Footer()
         {
 			var store = _services.StoreContext.CurrentStore;
@@ -507,7 +482,8 @@ namespace SmartStore.Web.Controllers
                 RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,
                 RecentlyViewedProductsEnabled = _catalogSettings.RecentlyViewedProductsEnabled,
                 CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
-                ManufacturerEnabled = _manufacturerService.Value.GetAllManufacturers(String.Empty, 0, 0).TotalCount > 0
+                ManufacturerEnabled = _manufacturerService.Value.GetAllManufacturers(String.Empty, 0, 0).TotalCount > 0,
+                DisplayLoginLink = _customerSettings.UserRegistrationType == UserRegistrationType.Disabled
             };
 
 			model.TopicPageUrls = allTopics
@@ -544,7 +520,7 @@ namespace SmartStore.Web.Controllers
             model.PinterestLink = _socialSettings.Value.PinterestLink;
             model.YoutubeLink = _socialSettings.Value.YoutubeLink;
 
-			model.SmartStoreHint = "<a href='http://www.smartstore.com/net' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}"
+			model.SmartStoreHint = "<a href='http://www.smartstore.com/' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}"
 				.FormatCurrent(hint, DateTime.Now.Year);
 
             return PartialView(model);
@@ -566,11 +542,10 @@ namespace SmartStore.Web.Controllers
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
                 IsAuthenticated = customer.IsRegistered(),
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-				HasContactUsPage = (_topicService.GetTopicBySystemName("ContactUs", store.Id) != null)
-			};
-
-			model.DisplayLoginLink = _storeInfoSettings.StoreClosed && !model.DisplayAdminLink;
-
+				HasContactUsPage = _topicService.GetTopicBySystemName("ContactUs", store.Id) != null,
+                DisplayLoginLink = _customerSettings.UserRegistrationType != UserRegistrationType.Disabled
+            };
+            
             return PartialView(model);
         }
 
@@ -788,6 +763,7 @@ namespace SmartStore.Web.Controllers
 
             Response.ContentType = "text/plain";
             Response.Write(sb.ToString());
+
             return null;
         }
 
@@ -838,9 +814,9 @@ namespace SmartStore.Web.Controllers
                 IsAuthenticated = customer.IsRegistered(),
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
 				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart),
-				ShoppingCartItems = customer.CountProductsInCart(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id),
+				//ShoppingCartItems = customer.CountProductsInCart(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id),
 				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
-				WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id),
+				//WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,
                 AlertMessage = alertMessage

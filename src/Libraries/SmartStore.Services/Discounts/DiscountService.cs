@@ -12,7 +12,6 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Orders;
 using SmartStore.Collections;
 
 namespace SmartStore.Services.Discounts
@@ -44,16 +43,16 @@ namespace SmartStore.Services.Discounts
 			ISettingService settingService,
 			IProviderManager providerManager)
         {
-            this._requestCache = requestCache;
-            this._discountRepository = discountRepository;
-            this._discountRequirementRepository = discountRequirementRepository;
-            this._discountUsageHistoryRepository = discountUsageHistoryRepository;
-			this._storeContext = storeContext;
-			this._genericAttributeService = genericAttributeService;
-            this._pluginFinder = pluginFinder;
-            this._eventPublisher = eventPublisher;
-			this._settingService = settingService;
-			this._providerManager = providerManager;
+            _requestCache = requestCache;
+            _discountRepository = discountRepository;
+            _discountRequirementRepository = discountRequirementRepository;
+            _discountUsageHistoryRepository = discountUsageHistoryRepository;
+			_storeContext = storeContext;
+			_genericAttributeService = genericAttributeService;
+            _pluginFinder = pluginFinder;
+            _eventPublisher = eventPublisher;
+			_settingService = settingService;
+			_providerManager = providerManager;
         }
 
         /// <summary>
@@ -64,8 +63,7 @@ namespace SmartStore.Services.Discounts
         /// <returns>Value indicating whether discount can be used</returns>
         protected virtual bool CheckDiscountLimitations(Discount discount, Customer customer)
         {
-            if (discount == null)
-                throw new ArgumentNullException("discount");
+			Guard.NotNull(discount, nameof(discount));
 
             switch (discount.DiscountLimitation)
             {
@@ -127,7 +125,7 @@ namespace SmartStore.Services.Discounts
 
             // we load all discounts, and filter them by passed "discountType" parameter later
             // we do it because we know that this method is invoked several times per HTTP request with distinct "discountType" parameter
-            // that's why let's access the database only once
+            // that's why we access the database only once
             string key = string.Format(DISCOUNTS_ALL_KEY, showHidden, couponCode);
             var result = _requestCache.Get(key, () =>
             {
@@ -159,7 +157,7 @@ namespace SmartStore.Services.Discounts
 				return map;
             });
 
-            if (discountTypeId.HasValue && discountTypeId.Value > 0)
+            if (discountTypeId > 0)
             {
 				return result[discountTypeId.Value];
             }
@@ -169,14 +167,13 @@ namespace SmartStore.Services.Discounts
 
         public virtual void InsertDiscount(Discount discount)
         {
-            if (discount == null)
-                throw new ArgumentNullException("discount");
+			Guard.NotNull(discount, nameof(discount));
 
             _discountRepository.Insert(discount);
 
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
-            //event notification
+            // event notification
             _eventPublisher.EntityInserted(discount);
         }
 
@@ -245,13 +242,14 @@ namespace SmartStore.Services.Discounts
 			// Check coupon code
 			if (discount.RequiresCouponCode)
             {
-                if (String.IsNullOrEmpty(discount.CouponCode))
+                if (discount.CouponCode.IsEmpty())
                     return false;
+
                 if (!discount.CouponCode.Equals(couponCodeToValidate, StringComparison.InvariantCultureIgnoreCase))
                     return false;
             }
 
-            //check date range
+            // Check date range
             var now = DateTime.UtcNow;
 			var store = _storeContext.CurrentStore;
 
@@ -261,6 +259,7 @@ namespace SmartStore.Services.Discounts
                 if (startDate.CompareTo(now) > 0)
                     return false;
             }
+
             if (discount.EndDateUtc.HasValue)
             {
                 var endDate = DateTime.SpecifyKind(discount.EndDateUtc.Value, DateTimeKind.Utc);
@@ -274,11 +273,8 @@ namespace SmartStore.Services.Discounts
 			// better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
 			if (discount.DiscountType == DiscountType.AssignedToOrderTotal || discount.DiscountType == DiscountType.AssignedToOrderSubTotal)
 			{
-				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id)
-					.Select(x => x.Item)
-					.ToList();
-
-				if (cart.Any(x => x.Product.IsGiftCard))
+				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+				if (cart.Any(x => x.Item?.Product != null && x.Item.Product.IsGiftCard))
 					return false;
 			}
 
@@ -289,8 +285,8 @@ namespace SmartStore.Services.Discounts
 				var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, store.Id);
                 if (requirementRule == null)
                     continue;
-
-                var request = new CheckDiscountRequirementRequest
+				
+				var request = new CheckDiscountRequirementRequest
                 {
                     DiscountRequirement = req,
                     Customer = customer,
@@ -314,14 +310,16 @@ namespace SmartStore.Services.Discounts
             return duh;
         }
 
-        public virtual IPagedList<DiscountUsageHistory> GetAllDiscountUsageHistory(int? discountId,
-            int? customerId, int pageIndex, int pageSize)
+        public virtual IPagedList<DiscountUsageHistory> GetAllDiscountUsageHistory(int? discountId, int? customerId, int pageIndex, int pageSize)
         {
             var query = _discountUsageHistoryRepository.Table;
+
             if (discountId.HasValue && discountId.Value > 0)
                 query = query.Where(duh => duh.DiscountId == discountId.Value);
+
             if (customerId.HasValue && customerId.Value > 0)
                 query = query.Where(duh => duh.Order != null && duh.Order.CustomerId == customerId.Value);
+
             query = query.OrderByDescending(c => c.CreatedOnUtc);
             return new PagedList<DiscountUsageHistory>(query, pageIndex, pageSize);
         }

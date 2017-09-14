@@ -222,12 +222,20 @@ namespace SmartStore.Services.Catalog
         /// <returns>Cross-sell product collection</returns>
         IList<CrossSellProduct> GetCrossSellProductsByProductId1(int productId1, bool showHidden = false);
 
-        /// <summary>
-        /// Gets a cross-sell product
-        /// </summary>
-        /// <param name="crossSellProductId">Cross-sell product identifier</param>
-        /// <returns>Cross-sell product</returns>
-        CrossSellProduct GetCrossSellProductById(int crossSellProductId);
+		/// <summary>
+		/// Gets a cross-sell product collection by many product identifiers
+		/// </summary>
+		/// <param name="productIds">A sequence of alpha product identifiers</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Cross-sell product collection</returns>
+		IList<CrossSellProduct> GetCrossSellProductsByProductIds(IEnumerable<int> productIds, bool showHidden = false);
+
+		/// <summary>
+		/// Gets a cross-sell product
+		/// </summary>
+		/// <param name="crossSellProductId">Cross-sell product identifier</param>
+		/// <returns>Cross-sell product</returns>
+		CrossSellProduct GetCrossSellProductById(int crossSellProductId);
 
         /// <summary>
         /// Inserts a cross-sell product

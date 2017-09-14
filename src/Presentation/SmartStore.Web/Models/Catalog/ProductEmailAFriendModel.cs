@@ -27,8 +27,7 @@ namespace SmartStore.Web.Models.Catalog
         [SmartResourceDisplayName("Products.EmailAFriend.PersonalMessage")]
         public string PersonalMessage { get; set; }
 
-        public bool SuccessfullySent { get; set; }
-        public string Result { get; set; }
+        public bool AllowChangedCustomerEmail { get; set; }
 
         public bool DisplayCaptcha { get; set; }
     }

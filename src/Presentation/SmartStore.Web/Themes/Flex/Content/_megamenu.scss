@@ -2,9 +2,25 @@
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 $megamenu-zindex-base:          ($zindex-dropdown - 20);
+$color-layers:                  $megamenu-bg $header-bg $site-bg $body-bg;
+$mixed-megamenu-bg:             $megamenu-bg;
+
+@each $color in $color-layers {
+    $i: index($color-layers, $color);
+
+    $next-color: $color;
+
+    @if length($color-layers) < $i  {
+        $next-color: nth($color-layers, $i + 1);    
+    }    
+    
+    @if (alpha($next-color) < 1 and $next-color != transparent)  {
+        $mixed-megamenu-bg: mix(rgba($color, 1), rgba($next-color, 1), alpha($color) * 100%);
+    }
+}
 
 .megamenu-section .navbar {
-    background: $megamenu-bg;
+    background: $mixed-megamenu-bg;
     padding: 0; 
 }
 
@@ -160,10 +176,10 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
     display: block;
 }
 .megamenu .megamenu-nav--prev .megamenu-nav-btn {
-    background-image: linear-gradient(to left, rgba($megamenu-bg, 0), $megamenu-bg 40%, $megamenu-bg 100%);
+    background-image: linear-gradient(to left, rgba($mixed-megamenu-bg, 0), $mixed-megamenu-bg 40%, $mixed-megamenu-bg 100%);
 }
 .megamenu .megamenu-nav--next .megamenu-nav-btn {
-    background-image: linear-gradient(to right, rgba($megamenu-bg, 0), $megamenu-bg 40%, $megamenu-bg 100%);
+    background-image: linear-gradient(to right, rgba($mixed-megamenu-bg, 0), $mixed-megamenu-bg 40%, $mixed-megamenu-bg 100%);
 }
 
 .touchevents .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i,
@@ -230,6 +246,7 @@ $megamenu-zindex-base:          ($zindex-dropdown - 20);
         .col-md-3 {
             overflow: hidden;
         }
+        .row > div:empty { height: 0; }
     }
 
     .mega-menu-dropdown-heading {

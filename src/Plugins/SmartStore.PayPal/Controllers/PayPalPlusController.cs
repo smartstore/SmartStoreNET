@@ -359,8 +359,14 @@ namespace SmartStore.PayPal.Controllers
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
 			var result = PayPalService.PatchShipping(settings, session, cart, PayPalPlusProvider.SystemName);
+			var errorMessage = result.ErrorMessage;
 
-			return new JsonResult { Data = new { success = result.Success, error = result.ErrorMessage, reload = false } };
+			if (!result.Success && result.IsValidationError)
+			{
+				errorMessage = string.Concat(T("Plugins.SmartStore.PayPal.PayPalValidationFailure"), "\r\n", errorMessage);
+			}
+
+			return new JsonResult { Data = new { success = result.Success, error = errorMessage, reload = false } };
 		}
 
 		public ActionResult CheckoutCompleted()

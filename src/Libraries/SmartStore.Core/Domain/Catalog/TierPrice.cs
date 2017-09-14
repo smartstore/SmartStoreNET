@@ -42,11 +42,24 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets the product
         /// </summary>
-		public virtual Product Product { get; set; }
+        [DataMember]
+        public TierPriceCalculationMethod CalculationMethod { get; set; }
+
+        /// <summary>
+        /// Gets or sets the product
+        /// </summary>
+        public virtual Product Product { get; set; }
 
         /// <summary>
         /// Gets or sets the customer role
         /// </summary>
         public virtual CustomerRole CustomerRole { get; set; }
+    }
+
+    public enum TierPriceCalculationMethod
+    {
+        Fixed = 0,
+        Percental = 5,
+        Adjustment = 10
     }
 }

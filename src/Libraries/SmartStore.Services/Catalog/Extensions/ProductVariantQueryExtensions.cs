@@ -24,7 +24,7 @@ namespace SmartStore.Services.Catalog.Extensions
 			HttpRequestBase request,
 			List<string> warnings)
 		{
-			var result = "";
+			var result = string.Empty;
 
 			foreach (var pva in variantAttributes)
 			{
@@ -34,20 +34,20 @@ namespace SmartStore.Services.Catalog.Extensions
 					x.AttributeId == pva.ProductAttributeId &&
 					x.VariantAttributeId == pva.Id);
 
-				var firstItem = selectedItems.FirstOrDefault();
-				var firstItemValue = firstItem?.Value;
-
 				switch (pva.AttributeControlType)
 				{
 					case AttributeControlType.DropdownList:
 					case AttributeControlType.RadioList:
 					case AttributeControlType.Boxes:
-						if (firstItemValue.HasValue())
 						{
-							var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();
-							if (selectedAttributeId > 0)
+							var firstItemValue = selectedItems.FirstOrDefault()?.Value;
+							if (firstItemValue.HasValue())
 							{
-								result = productAttributeParser.AddProductAttribute(result, pva, selectedAttributeId.ToString());
+								var selectedAttributeId = firstItemValue.SplitSafe(",").SafeGet(0).ToInt();
+								if (selectedAttributeId > 0)
+								{
+									result = productAttributeParser.AddProductAttribute(result, pva, selectedAttributeId.ToString());
+								}
 							}
 						}
 						break;
@@ -65,23 +65,29 @@ namespace SmartStore.Services.Catalog.Extensions
 
 					case AttributeControlType.TextBox:
 					case AttributeControlType.MultilineTextbox:
-						if (firstItemValue.HasValue())
 						{
-							result = productAttributeParser.AddProductAttribute(result, pva, firstItemValue);
+							var selectedValue = string.Join(",", selectedItems.Select(x => x.Value));
+							if (selectedValue.HasValue())
+							{
+								result = productAttributeParser.AddProductAttribute(result, pva, selectedValue);
+							}
 						}
 						break;
 
 					case AttributeControlType.Datepicker:
-						var date = firstItem?.Date;
-						if (date.HasValue)
 						{
-							result = productAttributeParser.AddProductAttribute(result, pva, date.Value.ToString("D"));
+							var firstItemDate = selectedItems.FirstOrDefault()?.Date;
+							if (firstItemDate.HasValue)
+							{
+								result = productAttributeParser.AddProductAttribute(result, pva, firstItemDate.Value.ToString("D"));
+							}
 						}
 						break;
 
 					case AttributeControlType.FileUpload:
 						if (request == null)
 						{
+							var firstItemValue = selectedItems.FirstOrDefault()?.Value;
 							Guid downloadGuid;
 							Guid.TryParse(firstItemValue, out downloadGuid);
 							var download = downloadService.GetDownloadByGuid(downloadGuid);

@@ -78,7 +78,9 @@ namespace SmartStore.Core.Domain.Catalog
 			IncludeShortDescriptionInCompareProducts = true;
 			GridStyleListColumnSpan = GridColumnSpan.Max4Cols;
 			ShowProductsFromSubcategories = true;
-		}
+            ApplyTierPricePercentageToAttributePriceAdjustments = false;
+            AllowDifferingEmailAddressForEmailAFriend = false;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether to display product SKU
@@ -229,6 +231,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether 'ask product question' feature is enabled
         /// </summary>
         public bool AskQuestionEnabled { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether customers are allowed to enter a differing email address 
+        /// </summary>
+        public bool AllowDifferingEmailAddressForEmailAFriend { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to allow anonymous users to email a friend.
@@ -476,5 +483,10 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets how many columns per row should be displayed at most in grid style lists on largest screen resolution.
 		/// </summary>
 		public GridColumnSpan GridStyleListColumnSpan { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether percental values of tierprices should be applied to price adjustments of attributes
+        /// </summary>
+        public bool ApplyTierPricePercentageToAttributePriceAdjustments { get; set; }
     }
 }

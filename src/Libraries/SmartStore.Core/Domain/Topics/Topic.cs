@@ -17,6 +17,11 @@ namespace SmartStore.Core.Domain.Topics
         public string SystemName { get; set; }
 
         /// <summary>
+        /// Gets or sets the value indicating whether this topic is deleteable by a user
+        /// </summary>
+        public bool IsSystemTopic { get; set; }
+
+        /// <summary>
         /// Gets or sets the value indicating whether this topic should be included in sitemap
         /// </summary>
         public bool IncludeInSitemap { get; set; }

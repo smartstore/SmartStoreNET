@@ -174,7 +174,7 @@ namespace SmartStore.Core
             if (!_isCurrentConnectionSecured.HasValue)
             {
                 _isCurrentConnectionSecured = false;
-                if (_httpContext != null && _httpContext.Request != null)
+                if (_httpContext?.Request != null)
                 {
                     _isCurrentConnectionSecured = _httpContext.Request.IsSecureConnection();
                 }
@@ -340,7 +340,7 @@ namespace SmartStore.Core
                 result = result.Substring(0, result.Length - 1);
             }
 
-            if (_httpContext != null && _httpContext.Request != null)
+            if ( _httpContext?.Request != null)
             {
                 var appPath = _httpContext.Request.ApplicationPath;
                 if (!appPathPossiblyAppended && !result.EndsWith(appPath, StringComparison.OrdinalIgnoreCase))

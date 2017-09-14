@@ -55,9 +55,7 @@ namespace SmartStore.Web.Controllers
         private readonly IWebHelper _webHelper;
         private readonly HttpContextBase _httpContext;
 		private readonly ISettingService _settingService;
-
         private readonly OrderSettings _orderSettings;
-        private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly PaymentSettings _paymentSettings;
         private readonly AddressSettings _addressSettings;
         private readonly ShippingSettings _shippingSettings;
@@ -79,11 +77,10 @@ namespace SmartStore.Web.Controllers
 			IOrderTotalCalculationService orderTotalCalculationService,
             IOrderService orderService, IWebHelper webHelper,
             HttpContextBase httpContext, IMobileDeviceHelper mobileDeviceHelper,
-            OrderSettings orderSettings, RewardPointsSettings rewardPointsSettings,
+            OrderSettings orderSettings, 
             PaymentSettings paymentSettings, AddressSettings addressSettings,
             ShoppingCartSettings shoppingCartSettings, ShippingSettings shippingSettings,
-			ISettingService settingService,
-			PluginMediator pluginMediator)
+			ISettingService settingService, PluginMediator pluginMediator)
         {
             this._workContext = workContext;
 			this._storeContext = storeContext;
@@ -104,9 +101,7 @@ namespace SmartStore.Web.Controllers
             this._webHelper = webHelper;
             this._httpContext = httpContext;
 			this._settingService = settingService;
-
             this._orderSettings = orderSettings;
-            this._rewardPointsSettings = rewardPointsSettings;
             this._paymentSettings = paymentSettings;
             this._addressSettings = addressSettings;
             this._shippingSettings = shippingSettings;
@@ -262,21 +257,6 @@ namespace SmartStore.Web.Controllers
 		protected CheckoutPaymentMethodModel PreparePaymentMethodModel(IList<OrganizedShoppingCartItem> cart)
         {
             var model = new CheckoutPaymentMethodModel();
-
-            //reward points
-            if (_rewardPointsSettings.Enabled && !cart.IsRecurring())
-            {
-                int rewardPointsBalance = _workContext.CurrentCustomer.GetRewardPointsBalance();
-                decimal rewardPointsAmountBase = _orderTotalCalculationService.ConvertRewardPointsToAmount(rewardPointsBalance);
-                decimal rewardPointsAmount = _currencyService.ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, _workContext.WorkingCurrency);
-
-                if (rewardPointsAmount > decimal.Zero)
-                {
-                    model.DisplayRewardPoints = true;
-                    model.RewardPointsAmount = _priceFormatter.FormatPrice(rewardPointsAmount, true, false);
-                    model.RewardPointsBalance = rewardPointsBalance;
-                }
-            }
 
             // was shipping skipped 
             var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
@@ -716,7 +696,7 @@ namespace SmartStore.Web.Controllers
 			var model = PreparePaymentMethodModel(cart);
 			bool onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
 
-			if (!isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod && !model.DisplayRewardPoints))
+			if (!isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod))
             {
                 // If there's nothing to pay for OR if we have only one passive payment method and reward points are disabled
 				// or the current customer doesn't have any reward points so customer doesn't have to choose a payment method.
@@ -758,12 +738,6 @@ namespace SmartStore.Web.Controllers
 
             if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
-
-            // reward points
-			if (_rewardPointsSettings.Enabled)
-			{
-				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints, storeId);
-			}
 
             // payment method 
             if (String.IsNullOrEmpty(paymentmethod))

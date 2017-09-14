@@ -6,7 +6,7 @@ namespace SmartStore.Services.Catalog.Modelling
 	{
 		public ProductVariantQueryItem(string value)
 		{
-			Value = value.EmptyNull();
+			Value = value ?? string.Empty;
 		}
 
 		public static string CreateKey(int productId, int bundleItemId, int attributeId, int variantAttributeId)

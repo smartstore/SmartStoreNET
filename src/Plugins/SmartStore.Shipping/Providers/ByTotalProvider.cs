@@ -10,6 +10,7 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Shipping.Tracking;
+using SmartStore.Services.Tax;
 using SmartStore.Shipping.Services;
 
 namespace SmartStore.Shipping
@@ -27,6 +28,7 @@ namespace SmartStore.Shipping
         private readonly ILogger _logger;
         private readonly ISettingService _settingService;
         private readonly ILocalizationService _localizationService;
+		private readonly ITaxService _taxService;
 
         /// <summary>
         /// Ctor
@@ -45,7 +47,8 @@ namespace SmartStore.Shipping
             IPriceCalculationService priceCalculationService,
             ILogger logger,
             ISettingService settingService,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+			ITaxService taxService)
         {
             this._shippingService = shippingService;
 			this._storeContext = storeContext;
@@ -55,6 +58,7 @@ namespace SmartStore.Shipping
             this._logger = logger;
             this._settingService = settingService;
             this._localizationService = localizationService;
+			_taxService = taxService;
 
 			T = NullLocalizer.Instance;
 		}
@@ -168,6 +172,7 @@ namespace SmartStore.Shipping
             int countryId = 0;
             int stateProvinceId = 0;
             string zip = null;
+			var taxRate = decimal.Zero;
             decimal subTotal = decimal.Zero;
 			int storeId = _storeContext.CurrentStore.Id;
 
@@ -184,10 +189,13 @@ namespace SmartStore.Shipping
                 {
                     continue;
                 }
-                subTotal += _priceCalculationService.GetSubTotal(shoppingCartItem, true);
-            }
 
-            decimal sqThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
+				var itemSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
+				var itemSubTotalInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, itemSubTotal, true, getShippingOptionRequest.Customer, out taxRate);
+				subTotal += itemSubTotalInclTax;
+			}
+
+			decimal sqThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
             decimal sqSurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
 
             var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest);
@@ -198,7 +206,7 @@ namespace SmartStore.Shipping
                 {
                     if (rate > 0 && sqThreshold > 0 && subTotal <= sqThreshold)
                     {
-                        // add small quantity surcharge (Mindermengenzuschalg)
+                        // Add small quantity surcharge (Mindermengenzuschlag)
                         rate += sqSurcharge;
                     }
                     

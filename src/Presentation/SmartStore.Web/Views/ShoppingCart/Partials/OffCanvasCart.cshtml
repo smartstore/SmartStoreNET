@@ -13,7 +13,7 @@
             <li class="nav-item col">
                 <a id="cart-tab" class="nav-link" data-toggle="tab" href="#occ-cart" role="tab" data-url="@Url.Action("OffCanvasShoppingCart", "ShoppingCart")">
                     <span class="title">@T("PageTitle.ShoppingCart")</span>
-                    <span class="badge badge-pill label-cart-amount badge-@labelStyle" data-bind-to="TotalProducts" style="@(Model.ShoppingCartItems > 0 ? "" : "display:none")">@Model.ShoppingCartItems</span>
+                    <span class="badge badge-pill label-cart-amount badge-@labelStyle" data-bind-to="CartItemsCount" style="@(Model.CartItemsCount > 0 ? "" : "display:none")">@Model.CartItemsCount</span>
                 </a>
             </li>
         }
@@ -23,7 +23,7 @@
             <li class="nav-item col">
                 <a id="wishlist-tab" class="nav-link" data-toggle="tab" href="#occ-wishlist" role="tab" data-url="@Url.Action("OffCanvasWishlist", "ShoppingCart")">
                     <span class="title">@T("Wishlist")</span>
-                    <span class="badge badge-pill label-cart-amount badge-@labelStyle" data-bind-to="TotalProducts" style="@(Model.WishlistItems > 0 ? "" : "display:none")">@Model.WishlistItems</span>
+                    <span class="badge badge-pill label-cart-amount badge-@labelStyle" data-bind-to="WishlistItemsCount" style="@(Model.WishlistItemsCount > 0 ? "" : "display:none")">@Model.WishlistItemsCount</span>
                 </a>
             </li>
         }
@@ -33,7 +33,7 @@
             <li class="nav-item col">
                 <a id="compare-tab" class="nav-link" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "Catalog")">
                     <span class="title">@T("Common.Shopbar.Compare")</span>
-                    <span class="badge badge-pill label-cart-amount badge-@labelStyle" data-bind-to="TotalProducts" style="@(Model.CompareItems > 0 ? "" : "display:none")">@Model.CompareItems</span>
+                    <span class="badge badge-pill label-cart-amount badge-@labelStyle" data-bind-to="CompareItemsCount" style="@(Model.CompareItemsCount > 0 ? "" : "display:none")">@Model.CompareItemsCount</span>
                 </a>
             </li>
         }

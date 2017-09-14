@@ -60,7 +60,6 @@
 
     @{ Html.RenderWidget("admin_content_before"); }
     <div id="content">
-        @{ Html.RenderPartial("_Notifications"); }
         <div class="cph">
             @RenderBody()
         </div>
@@ -70,7 +69,7 @@
 			<div class="bar"></div>
 		</div>
     </div>
+	@{ Html.RenderPartial("_Notifications"); }
     @{ Html.RenderWidget("admin_content_after"); }
-
 </div>
 

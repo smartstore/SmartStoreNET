@@ -2,10 +2,7 @@
 @model SmartStore.Web.Framework.Plugins.ProviderModel
 
 @{
-    Layout = "_AdminPopupLayout";
-}
-
-@{    
+    Layout = "_AdminPopupLayout";   
     ViewBag.Title = T("Common.Edit") + ": " + Model.FriendlyName.Truncate(30, "...");
 }
 
@@ -13,7 +10,12 @@
 {
     <div class="section-header">
         <div class="title">
-			<img src="@Url.Content(Model.IconUrl)" class="img-responsive" style="max-height: 32px; margin-right: 3px" alt="@Model.FriendlyName" />
+
+            @if (Model.IconUrl.HasValue())
+            {
+                <img src="@Url.Content(Model.IconUrl)" class="img-responsive" style="max-height: 32px; margin-right: 3px" alt="@Model.FriendlyName" />
+            }
+			
 			@ViewBag.Title
         </div>
         <div class="options">

@@ -1,6 +1,5 @@
 ﻿@model MenuModel
 @using SmartStore.Web.Models.Common;
-
 @{
     string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
 }
@@ -37,14 +36,6 @@
             </div>
         </div>
 
-        @if (!Model.DisplayAdminLink && Model.DisplayLoginLink)
-        {
-            <a class="menubar-link" href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" rel="nofollow">
-                <i class="fa fa-user menubar-icon"></i>
-				<span>@T("Account.Login")</span>
-            </a>
-        }
-
         @if (Model.IsCustomerImpersonated)
         {
             <a class="menubar-link" href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">
@@ -76,31 +67,34 @@
         @{ Html.RenderWidget("header_menu_special_after"); }
     </nav>
 
-    <nav id="menubar-my-account" class="menubar-group">
-        <div class="dropdown">
-            <a class="menubar-link" @(Model.IsAuthenticated ? "data-toggle=dropdown" : "") aria-haspopup="true" aria-expanded="false" href="@accountUrl" rel="nofollow">
-                <i class="fa fa-@(Model.IsAuthenticated ? "user" : "user-o") menubar-icon"></i>
+    @if (Model.DisplayLoginLink)
+    {
+        <nav id="menubar-my-account" class="menubar-group">
+            <div class="dropdown">
+                <a class="menubar-link" @(Model.IsAuthenticated ? "data-toggle=dropdown" : "") aria-haspopup="true" aria-expanded="false" href="@accountUrl" rel="nofollow">
+                    <i class="fa fa-@(Model.IsAuthenticated ? "user" : "user-o") menubar-icon"></i>
+
+                    @if (Model.IsAuthenticated)
+                    {
+					    <span title="@Model.CustomerEmailUsername">@Model.CustomerEmailUsername.Truncate(25, "...")</span>
+                        <i class="fa fa-angle-down menubar-caret"></i>
+                    }
+                    else
+                    {
+                        <span>@T("Account.Login")</span>
+                    }
+                </a>
 
                 @if (Model.IsAuthenticated)
-                {
-					<span title="@Model.CustomerEmailUsername">@Model.CustomerEmailUsername.Truncate(25, "...")</span>
-                    <i class="fa fa-angle-down menubar-caret"></i>
+			    {
+				    Html.RenderAction("AccountDropdown", "Common");
                 }
-                else
-                {
-                    <span>@T("Account.Login")</span>
-                }
-            </a>
+            </div>
 
-            @if (Model.IsAuthenticated)
-			{
-				Html.RenderAction("AccountDropdown", "Common");
-            }
-        </div>
+            @{ Html.RenderWidget("header_menu_after"); }
 
-        @{ Html.RenderWidget("header_menu_after"); }
-
-    </nav>
+        </nav>
+    }
 
     @if (Model.DisplayAdminLink)
     {

@@ -11,6 +11,9 @@ var AjaxCart = (function ($, window, document, undefined) {
 			//e.stopPropagation();
 			return AjaxCart.executeRequest(this);
 		});
+
+		// Load summaries after page init
+		ShopBar.loadSummaries(false /* animate */);
 	});
 
 	function createMessageObj(el) {
@@ -154,7 +157,9 @@ $(function () {
 
     shopBar.find(".shopbar-button").on("click", function (e) {
 
-        if (!shouldOpen) {
+        var isMenu = $(e.target).closest(".shopbar-button").data("target") == "#offcanvas-menu";
+
+        if (!shouldOpen && !isMenu) {
             // navigate to link (href target)
             e.stopPropagation();
             return;
@@ -207,7 +212,8 @@ $(function () {
 
 var ShopBar = (function($) {
 
-    var offcanvasCart = $("#offcanvas-cart");
+	var offcanvasCart = $("#offcanvas-cart");
+	var shopBarTools = $(".shopbar-tools");
 
     var tools = {
         "cart": $(".nav-tabs #cart-tab", offcanvasCart),
@@ -321,26 +327,40 @@ var ShopBar = (function($) {
         	buttons[tab].find(".shopbar-button").trigger('click');
         },
 
+        loadSummaries: function (animate, fn /* successCallBack */) {
+        	if (shopBarTools.data("summary-href")) {
+        		$.ajax({
+        			cache: false,
+        			type: "POST",
+        			url: shopBarTools.data("summary-href"),
+        			success: function (data) {
+        				shopBarTools.bindData(data, { animate: animate });
+        				offcanvasCart.bindData(data, { animate: animate });
+
+        				if (_.isFunction(fn))
+        					fn.call(this, data);
+        			},
+        			complete: function (jqXHR, textStatus) { }
+        		});
+        	}
+        },
+
         loadSummary: function (type, animate, fn /* successCallBack */) {
             var tool = _.isString(type) ? buttons[type] : type;
             if (!tool) return;
 
             var button = tool.find(".shopbar-button");
             if (button.data("summary-href")) {
-
                 $.ajax({
                     cache: false,
                     type: "POST",
                     url: button.data("summary-href"),
                     success: function (data) {
-
                     	tools[type].bindData(data, { animate: animate });
-
                     	button.bindData(data, { animate: animate });
 
-                        if (_.isFunction(fn)) {
-                            fn.call(this, data);
-                        }
+                    	if (_.isFunction(fn))
+                    		fn.call(this, data);
                     },
                     complete: function (jqXHR, textStatus) { }
                 });

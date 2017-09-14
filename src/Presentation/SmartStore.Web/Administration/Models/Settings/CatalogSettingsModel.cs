@@ -39,6 +39,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IgnoreDiscounts")]
         public bool IgnoreDiscounts { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ApplyTierPricePercentageToAttributePriceAdjustments")]
+        public bool ApplyTierPricePercentageToAttributePriceAdjustments { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IgnoreFeaturedProducts")]
         public bool IgnoreFeaturedProducts { get; set; }
 
@@ -223,6 +226,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowAnonymousUsersToEmailAFriend")]
         public bool AllowAnonymousUsersToEmailAFriend { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowDifferingEmailAddressForEmailAFriend")]
+        public bool AllowDifferingEmailAddressForEmailAFriend { get; set; }
+        
         #endregion 
 
         #region Product detail

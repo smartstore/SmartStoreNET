@@ -17,10 +17,7 @@ namespace SmartStore.Services.Tasks
         
         public void OnAuthentication(AuthenticationContext filterContext)
         {
-			if (filterContext == null || filterContext.HttpContext == null)
-				return;
-
-			var request = filterContext.HttpContext.Request;
+			var request = filterContext?.HttpContext?.Request;
 			if (request == null)
 				return;
 

@@ -408,7 +408,7 @@
 		(function () {
 			$('#scroll-top').click(function (e) {
 				e.preventDefault();
-				$(window).scrollTo(0, 600);
+				$(document).scrollTo(0, 600);
 				return false;
 			});
 

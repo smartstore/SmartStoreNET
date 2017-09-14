@@ -6,7 +6,7 @@ namespace SmartStore.Services.Catalog.Modelling
 	{
 		public CheckoutAttributeQueryItem(int attributeId, string value)
 		{
-			Value = value.EmptyNull();
+			Value = value ?? string.Empty;
 			AttributeId = attributeId;
 		}
 

@@ -12,10 +12,6 @@ namespace SmartStore.Web.Models.Checkout
 
         public List<PaymentMethodModel> PaymentMethods { get; set; }
 
-        public bool DisplayRewardPoints { get; set; }
-        public int RewardPointsBalance { get; set; }
-        public string RewardPointsAmount { get; set; }
-        public bool UseRewardPoints { get; set; }
         public bool SkippedSelectShipping { get; set; }
 
         #region Nested classes

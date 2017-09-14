@@ -20,19 +20,19 @@
 
                     @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
                     {
-                        <div class="cart-item-desc text-smaller">
+                        <div class="cart-item-desc fs-sm">
                             @Html.Raw(item.ShortDesc.Truncate(250, "..."))
                         </div>
                     }
 
                     @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
                     {
-                        <div class="cart-item-base-price text-muted text-smaller">
+                        <div class="cart-item-base-price text-muted fs-sm">
                             @item.BasePrice
                         </div>
                     }
 
-                    <div class="cart-item-attrs text-smaller my-2">
+                    <div class="cart-item-attrs fs-sm my-2">
                         @if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
                         {
                             <div class="row cart-item-attr deliverytime-group">
@@ -65,7 +65,7 @@
 
                     @if (!String.IsNullOrEmpty(item.AttributeInfo))
                     {
-                        <div class="attributes text-muted text-smaller mb-2">
+                        <div class="attributes text-muted fs-sm mb-2">
                             @Html.Raw(item.AttributeInfo)
                         </div>
                     }
@@ -162,7 +162,7 @@
             <span class="price">@item.SubTotal</span>
             @if (!String.IsNullOrEmpty(item.Discount))
             {
-                <div class="discount text-smaller text-muted pt-1">
+                <div class="discount fs-sm text-muted pt-1">
 					<div>@T("ShoppingCart.ItemYouSave"):</div>
 					<div>@item.Discount</div>
                 </div>

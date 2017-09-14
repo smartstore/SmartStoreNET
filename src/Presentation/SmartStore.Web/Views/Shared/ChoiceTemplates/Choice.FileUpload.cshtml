@@ -60,23 +60,26 @@
             dataType: 'json',
             acceptFileTypes: new RegExp('@(allowedFileExtensions)', 'i'),
             done: function (e, data) {
-                var result = data.result;
-                elHidden.val(result.downloadGuid);
+            	var result = data.result;
 
-                var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + result.downloadGuid;
-                var fileName = data.files[0].name;
-                var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
+            	if (result.downloadGuid) {
+            		elHidden.val(result.downloadGuid);
 
-                elFile.html(fileLink).removeClass("d-none");
+            		var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + result.downloadGuid;
+            		var fileName = data.files[0].name;
+            		var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
 
-                if (result.message) {
-                    displayNotification(result.message, "success");
-                }
-                elRemove.show();
+            		elFile.html(fileLink).removeClass("d-none");
+            		elRemove.show();
+            	}
+
+            	if (result.message) {
+            		displayNotification(result.message, "success");
+            	}
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 if (errorThrown === 'abort') {
-                    displayNotification('File Upload has been canceled', "error");
+                    displayNotification('File Upload has been canceled', 'error');
                 }
             }
         });

@@ -213,6 +213,24 @@ namespace SmartStore
 			return source.Distinct(GenericEqualityComparer<TSource>.CompareMember(keySelector));
 		}
 
+		/// <summary>
+		/// Orders a collection of entities by a specific ID sequence
+		/// </summary>
+		/// <typeparam name="TEntity">Entity type</typeparam>
+		/// <param name="source">The entity collection to sort</param>
+		/// <param name="ids">The IDs to order by</param>
+		/// <returns>The sorted entity collection</returns>
+		public static IEnumerable<TEntity> OrderBySequence<TEntity>(this IEnumerable<TEntity> source, IEnumerable<int> ids) where TEntity : BaseEntity
+		{
+			Guard.NotNull(source, nameof(source));
+			Guard.NotNull(ids, nameof(ids));
+
+			var sorted = from id in ids
+						 join entity in source on id equals entity.Id
+						 select entity;
+
+			return sorted;
+		}
 
 		#endregion
 

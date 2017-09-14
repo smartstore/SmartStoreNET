@@ -23,16 +23,14 @@ namespace SmartStore.Services.Customers
         /// <returns>Result</returns>
         public static bool IsInCustomerRole(this Customer customer, string customerRoleSystemName, bool onlyActiveCustomerRoles = true)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(customer, nameof(customer));
+			Guard.NotEmpty(customerRoleSystemName, nameof(customerRoleSystemName));
 
-            if (String.IsNullOrEmpty(customerRoleSystemName))
-                throw new ArgumentNullException("customerRoleSystemName");
-
-            var result = customer.CustomerRoles
+			var result = customer.CustomerRoles
                 .Where(cr => !onlyActiveCustomerRoles || cr.Active)
                 .Where(cr => cr.SystemName == customerRoleSystemName)
                 .FirstOrDefault() != null;
+
             return result;
         }
 
@@ -141,9 +139,9 @@ namespace SmartStore.Services.Customers
         
         public static string GetFullName(this Customer customer)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
-            var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
+			Guard.NotNull(customer, nameof(customer));
+
+			var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
             var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
 
             string fullName = "";
@@ -282,10 +280,8 @@ namespace SmartStore.Services.Customers
 		{
 			if (customer != null)
 			{
-				var count = customer.ShoppingCartItems
-					.Filter(cartType, storeId)
-					.Where(x => x.ParentItemId == null)
-					.Sum(x => x.Quantity);
+				var cartService = EngineContext.Current.Resolve<IShoppingCartService>();
+				var count = cartService.CountItems(customer, cartType, storeId);
 
 				return count;
 			}
@@ -297,10 +293,8 @@ namespace SmartStore.Services.Customers
 		{
 			if (customer != null)
 			{
-				var items = customer.ShoppingCartItems
-					.Filter(cartType, storeId)
-					.OrderByDescending(x => x.Id)
-					.Organize();
+				var cartService = EngineContext.Current.Resolve<IShoppingCartService>();
+				var items = cartService.GetCartItems(customer, cartType, storeId);
 
 				return items;
 			}

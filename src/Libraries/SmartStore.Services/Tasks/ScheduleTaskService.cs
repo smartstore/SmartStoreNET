@@ -285,10 +285,10 @@ namespace SmartStore.Services.Tasks
 
 					return utcTime;
 				}
-                catch (Exception ex)
-                {
-                    Logger.ErrorFormat(ex, "Could not calculate next schedule time for task '{0}'", task.Name);
-                }
+				catch (Exception ex)
+				{
+					Logger.ErrorFormat(ex, "Could not calculate next schedule time for task '{0}'", task.Name);
+				}
 			}
 
 			return null;

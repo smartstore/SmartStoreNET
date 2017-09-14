@@ -102,9 +102,11 @@
 		</div>
 
 		<!-- Tier prices -->
-		if (!isBundleItem)
-		{
-			Html.RenderAction("ProductTierPrices", new { productId = Model.Id });
+        if (!isBundleItem)
+        {
+            <div class="pd-tierprices">
+                @{ Html.RenderAction("ProductTierPrices", new { productId = Model.Id }); }
+            </div>
 		}
 
 		<!-- Pangv & legal info -->

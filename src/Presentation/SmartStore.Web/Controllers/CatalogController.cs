@@ -895,15 +895,6 @@ namespace SmartStore.Web.Controllers
             });
         }
 
-		public ActionResult CompareSummary()
-		{
-			return Json(new
-			{
-                TotalProducts = _compareProductsService.GetComparedProducts().Count
-			},
-			JsonRequestBehavior.AllowGet);
-		}
-
         #endregion
 
         #region OffCanvasMenu 

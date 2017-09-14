@@ -1,13 +1,16 @@
 ﻿@model ShopBarModel
-
 @using SmartStore.Web.Models.Common;
-
 @{ 
-	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
-	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
+    if (IsStoreClosed)
+    {
+        return;
+    }
+
+    string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+    var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
 }
 
-<div class="shopbar-col shopbar-tools">
+<div class="shopbar-col shopbar-tools" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { cart = Model.ShoppingCartEnabled, wishlist = Model.WishlistEnabled, compare = Model.CompareProductsEnabled })">
 
 	<!-- Hamburger Menu -->
 	<div class="shopbar-tool d-lg-none" id="shopbar-menu">
@@ -38,11 +41,11 @@
 	@if (Model.CompareProductsEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-compare" data-target="#compare-tab">
-			<a href="@Url.Action("CompareProducts", "Catalog")"  class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
+			<a href="@Url.Action("CompareProducts", "Catalog")"  class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { compare = true })"
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-repeat"></i>
-					<span class='badge badge-pill label-cart-amount badge-@labelStyle ' style="@(Model.CompareItems == 0 ? "display:none" : "")" data-bind-to="CompareSummary">@Model.CompareItems</span>
+					<span class='badge badge-pill label-cart-amount badge-@labelStyle' style="@(Model.CompareItemsCount == 0 ? "display:none" : "")" data-bind-to="CompareItemsCount">@Model.CompareItemsCount</span>
 				</span>
 				<span class="shopbar-button-label">
 					<span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
@@ -58,11 +61,11 @@
 	@if (Model.WishlistEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-wishlist" data-target="#wishlist-tab">
-			<a href="@Url.RouteUrl("Wishlist")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
+			<a href="@Url.RouteUrl("Wishlist")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { wishlist = true })"
 				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-heart"></i>
-					<span class='badge badge-pill label-cart-amount badge-@labelStyle' style="@(Model.WishlistItems == 0 ? "display:none" : "")" data-bind-to="TotalProducts">@Model.WishlistItems</span>
+					<span class='badge badge-pill label-cart-amount badge-@labelStyle' style="@(Model.WishlistItemsCount == 0 ? "display:none" : "")" data-bind-to="WishlistItemsCount">@Model.WishlistItemsCount</span>
 				</span>
 				<span class="shopbar-button-label">
 					<span>@T("Common.Shopbar.WishlistPartOne")</span><br />
@@ -78,12 +81,12 @@
 	@if (Model.ShoppingCartEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-cart" data-target="#cart-tab">
-			<a href="@Url.RouteUrl("ShoppingCart")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
+			<a href="@Url.RouteUrl("ShoppingCart")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { cart = true })"
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-bag"></i>
-					<span class='badge badge-pill label-cart-amount badge-@(labelStyle)' style="@(Model.ShoppingCartItems == 0 ? "display:none" : "")" data-bind-to="TotalProducts">
-						@Model.ShoppingCartItems
+					<span class='badge badge-pill label-cart-amount badge-@(labelStyle)' style="@(Model.CartItemsCount == 0 ? "display:none" : "")" data-bind-to="CartItemsCount">
+						@Model.CartItemsCount
 					</span>
 				</span>
 				<span class="shopbar-button-label">

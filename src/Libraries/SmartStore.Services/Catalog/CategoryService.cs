@@ -40,7 +40,6 @@ namespace SmartStore.Services.Catalog
         private readonly IRequestCache _requestCache;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IAclService _aclService;
-        private readonly Lazy<IEnumerable<ICategoryNavigationFilter>> _navigationFilters;
         private readonly ICustomerService _customerService;
         private readonly IStoreService _storeService;
 		private readonly ICatalogSearchService _catalogSearchService;
@@ -56,7 +55,6 @@ namespace SmartStore.Services.Catalog
             IEventPublisher eventPublisher,
 			IStoreMappingService storeMappingService,
 			IAclService aclService,
-            Lazy<IEnumerable<ICategoryNavigationFilter>> navigationFilters,
             ICustomerService customerService,
             IStoreService storeService,
 			ICatalogSearchService catalogSearchService)
@@ -72,7 +70,6 @@ namespace SmartStore.Services.Catalog
             _eventPublisher = eventPublisher;
 			_storeMappingService = storeMappingService;
 			_aclService = aclService;
-            _navigationFilters = navigationFilters;
             _customerService = customerService;
             _storeService = storeService;
 			_catalogSearchService = catalogSearchService;
@@ -87,10 +84,15 @@ namespace SmartStore.Services.Catalog
 			foreach (var category in categories)
 			{				
 				if (delete)
+				{
 					category.Deleted = true;
+					_eventPublisher.EntityDeleted(category);
+				}
 				else
+				{
 					category.ParentCategoryId = 0;
-
+				}
+					
 				UpdateCategory(category);
 
 				var childCategories = GetAllCategoriesByParentCategoryId(category.Id, true);
@@ -280,11 +282,12 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void DeleteCategory(Category category, bool deleteChilds = false)
         {
-            if (category == null)
-                throw new ArgumentNullException("category");
+			Guard.NotNull(category, nameof(category));
 
-            category.Deleted = true;
+			category.Deleted = true;
             UpdateCategory(category);
+
+			_eventPublisher.EntityDeleted(category);
 
 			var childCategories = GetAllCategoriesByParentCategoryId(category.Id, true);
 			DeleteAllCategories(childCategories, deleteChilds);
@@ -327,7 +330,7 @@ namespace SmartStore.Services.Catalog
 			}
 			else
 			{
-				query = ApplyHiddenCategoriesFilter(query, applyNavigationFilters, _storeContext.CurrentStore.Id);
+				query = ApplyHiddenCategoriesFilter(query, applyNavigationFilters, storeId);
 			}
 
 			query = query.Where(c => !c.Deleted);
@@ -335,8 +338,15 @@ namespace SmartStore.Services.Catalog
 			return query;
 		}
         
-        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null,
-			bool applyNavigationFilters = true, bool ignoreCategoriesWithoutExistingParent = true, int storeId = 0)
+        public virtual IPagedList<Category> GetAllCategories(
+			string categoryName = "", 
+			int pageIndex = 0, 
+			int pageSize = int.MaxValue, 
+			bool showHidden = false, 
+			string alias = null,
+			bool applyNavigationFilters = true, 
+			bool ignoreCategoriesWithoutExistingParent = true, 
+			int storeId = 0)
         {
 			var query = GetCategories(categoryName, showHidden, alias, applyNavigationFilters, storeId);
 
@@ -406,22 +416,11 @@ namespace SmartStore.Services.Catalog
 						select c;
 			}
 
-            // only distinct categories (group by ID)
+            // Only distinct categories (group by ID)
             query = from c in query
                     group c by c.Id into cGroup
                     orderby cGroup.Key
                     select cGroup.FirstOrDefault();
-
-            if (applyNavigationFilters)
-            {
-                var filters = _navigationFilters.Value;
-                if (filters.Any())
-                {
-                    filters.Each(x => {
-                        query = x.Apply(query);
-                    });
-                }
-            }
 
 			return query;
         }
@@ -449,23 +448,19 @@ namespace SmartStore.Services.Catalog
 
         public virtual void InsertCategory(Category category)
         {
-            if (category == null)
-                throw new ArgumentNullException("category");
+			Guard.NotNull(category, nameof(category));
 
-            _categoryRepository.Insert(category);
+			_categoryRepository.Insert(category);
 
-            //cache
             _requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
             _requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
 
-            //event notification
             _eventPublisher.EntityInserted(category);
         }
 
         public virtual void UpdateCategory(Category category)
         {
-            if (category == null)
-                throw new ArgumentNullException("category");
+			Guard.NotNull(category, nameof(category));
 
             //validate category hierarchy
             var parentCategory = GetCategoryById(category.ParentCategoryId);
@@ -481,29 +476,25 @@ namespace SmartStore.Services.Catalog
 
             _categoryRepository.Update(category);
 
-            //cache
             _requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
             _requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
 
-            //event notification
             _eventPublisher.EntityUpdated(category);
         }
         
         public virtual void UpdateHasDiscountsApplied(Category category)
         {
-            if (category == null)
-                throw new ArgumentNullException("category");
+			Guard.NotNull(category, nameof(category));
 
-            category.HasDiscountsApplied = category.AppliedDiscounts.Count > 0;
+			category.HasDiscountsApplied = category.AppliedDiscounts.Count > 0;
             UpdateCategory(category);
         }
 
         public virtual void DeleteProductCategory(ProductCategory productCategory)
         {
-            if (productCategory == null)
-                throw new ArgumentNullException("productCategory");
+			Guard.NotNull(productCategory, nameof(productCategory));
 
-            _productCategoryRepository.Delete(productCategory);
+			_productCategoryRepository.Delete(productCategory);
 
             //cache
             _requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);

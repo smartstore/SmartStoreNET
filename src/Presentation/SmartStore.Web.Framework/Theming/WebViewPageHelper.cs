@@ -9,6 +9,7 @@ using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Core.Domain;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -25,8 +26,9 @@ namespace SmartStore.Web.Framework.Theming
 
 		private bool? _isHomePage;
 		private bool? _isMobileDevice;
+        private bool? _isStoreClosed;
 
-		public WebViewPageHelper()
+        public WebViewPageHelper()
 		{
 			T = NullLocalizer.Instance;
 		}
@@ -36,8 +38,9 @@ namespace SmartStore.Web.Framework.Theming
 		public IThemeRegistry ThemeRegistry { get; set; }
 		public IThemeContext ThemeContext { get; set; }
 		public IMobileDeviceHelper MobileDeviceHelper { get; set; }
+        public StoreInformationSettings StoreInfoSettings { get; set; }
 
-		public void Initialize(ViewContext viewContext)
+        public void Initialize(ViewContext viewContext)
 		{
 			if (!_initialized)
 			{
@@ -139,7 +142,20 @@ namespace SmartStore.Web.Framework.Theming
 			}
 		}
 
-		public IEnumerable<LocalizedString> ResolveNotifications(NotifyType? type)
+        public bool IsStoreClosed
+        {
+            get
+            {
+                if (!_isStoreClosed.HasValue)
+                {
+                    _isStoreClosed = StoreInfoSettings.StoreClosed;
+                }
+
+                return _isStoreClosed.Value;
+            }
+        }
+
+        public IEnumerable<LocalizedString> ResolveNotifications(NotifyType? type)
 		{
 			IEnumerable<NotifyEntry> result = Enumerable.Empty<NotifyEntry>();
 
@@ -188,7 +204,7 @@ namespace SmartStore.Web.Framework.Theming
 					var storeContext = Services?.StoreContext;
 					var themeManifest = ThemeContext?.CurrentTheme;
 
-					if (storeContext == null || themeManifest == null)
+                    if (storeContext == null || themeManifest == null)
 					{
 						_themeVars = new ExpandoObject();
 					}

@@ -818,6 +818,7 @@
     <Content Include="Views\Import\ProfileImportResult.cshtml" />
     <Content Include="Views\Setting\DataExchange.cshtml" />
     <Content Include="Views\Export\_ProfileList.cshtml" />
+    <Content Include="Views\Product\EditorTemplates\TierPriceCalculationMethod.cshtml" />
     <Content Include="Views\Setting\Search.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\TokenSelector.cshtml" />
     <Content Include="Views\ProductAttribute\OptionCreatePopup.cshtml" />

@@ -356,7 +356,7 @@ namespace SmartStore.Services.Seo
 
 		protected virtual IEnumerable<XmlSitemapNode> GetCategoryNodes(int parentCategoryId, string protocol)
 		{
-			var categories = _categoryService.GetAllCategories(showHidden: false);
+			var categories = _categoryService.GetAllCategories(showHidden: false, storeId: _services.StoreContext.CurrentStore.Id);
 
 			_services.DbContext.DetachAll();
 

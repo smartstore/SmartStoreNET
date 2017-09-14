@@ -62,23 +62,18 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
             var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();
 
-            // determine the virtual themevars.(scss|less) import reference
-            var themeVarsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
-			var moduleImportsFile = arrPathDependencies.Where(x => ThemeHelper.PathIsModuleImports(x)).FirstOrDefault();
-			if (themeVarsFile == null && moduleImportsFile == null)
-            {
-                // no themevars or moduleimports import... so no special considerations here
-				return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
-            }
 
-			// exclude the special imports from the file dependencies list,
+			// Exclude the special imports from the file dependencies list,
 			// 'cause this one cannot be monitored by the physical file system
-			var fileDependencies = arrPathDependencies
-				.Except((new string[] { themeVarsFile, moduleImportsFile })
-				.Where(x => x.HasValue()))
-				.ToArray();
+			var fileDependencies = ThemeHelper.RemoveVirtualImports(arrPathDependencies);
 
-            if (fileDependencies.Any())
+			if (fileDependencies == arrPathDependencies)
+			{
+				// No themevars or moduleimports import... so no special considerations here
+				return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+			}
+
+			if (fileDependencies.Any())
             {
 				string cacheKey = null;
 

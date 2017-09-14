@@ -16,6 +16,8 @@ namespace SmartStore.Services.Helpers
         private readonly ISettingService _settingService;
         private readonly DateTimeSettings _dateTimeSettings;
 
+		private TimeZoneInfo _cachedUserTimeZone;
+
         public DateTimeHelper(IWorkContext workContext,
 			IGenericAttributeService genericAttributeService,
             ISettingService settingService, 
@@ -86,8 +88,11 @@ namespace SmartStore.Services.Helpers
 
         public virtual TimeZoneInfo GetCustomerTimeZone(Customer customer)
         {
-            // registered user
-            TimeZoneInfo timeZoneInfo = null;
+			if (_cachedUserTimeZone != null)
+				return _cachedUserTimeZone;
+
+			// registered user
+			TimeZoneInfo timeZone = null;
             if (_dateTimeSettings.AllowCustomersToSetTimeZone)
             {
                 string timeZoneId = string.Empty;
@@ -96,20 +101,22 @@ namespace SmartStore.Services.Helpers
 
                 try
                 {
-                    if (!String.IsNullOrEmpty(timeZoneId))
-                        timeZoneInfo = FindTimeZoneById(timeZoneId);
+					if (timeZoneId.HasValue())
+						timeZone = FindTimeZoneById(timeZoneId);
                 }
-                catch (Exception exc)
+                catch (Exception ex)
                 {
-                    Debug.Write(exc.ToString());
+                    Debug.Write(ex.ToString());
                 }
             }
 
             // default timezone
-            if (timeZoneInfo == null)
-                timeZoneInfo = this.DefaultStoreTimeZone;
+            if (timeZone == null)
+                timeZone = this.DefaultStoreTimeZone;
 
-            return timeZoneInfo;
+			_cachedUserTimeZone = timeZone;
+
+			return timeZone;
         }
 
         public virtual TimeZoneInfo DefaultStoreTimeZone
@@ -142,7 +149,9 @@ namespace SmartStore.Services.Helpers
 
                 _dateTimeSettings.DefaultStoreTimeZoneId = defaultTimeZoneId;
                 _settingService.SaveSetting(_dateTimeSettings);
-            }
+				_cachedUserTimeZone = null;
+
+			}
         }
 
         public virtual TimeZoneInfo CurrentTimeZone
@@ -163,7 +172,8 @@ namespace SmartStore.Services.Helpers
                 }
 
 				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.TimeZoneId, timeZoneId);
-            }
+				_cachedUserTimeZone = null;
+			}
         }
     }
 }

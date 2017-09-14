@@ -1368,7 +1368,7 @@ namespace SmartStore.Services.Orders
 						//reset checkout data
                         if (!processPaymentRequest.IsRecurringPayment && !processPaymentRequest.IsMultiOrder)
 						{
-							_customerService.ResetCheckoutData(customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true);
+							_customerService.ResetCheckoutData(customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true, clearRewardPoints: true);
 						}
 
 						// check for generic attributes to be inserted automatically

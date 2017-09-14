@@ -1,5 +1,6 @@
 ﻿using SmartStore.Core.Domain.Catalog;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace SmartStore.Core.Tests.Domain
 {
@@ -74,6 +75,24 @@ namespace SmartStore.Core.Tests.Domain
 
             Assert.IsTrue(p1 != p3);
         }
-    }
+
+		[Test]
+		public void Equality_works_with_HashSets()
+		{
+
+			var p1 = new Product { Id = 1 };
+			var p2 = new Product { Id = 1 };
+
+			var hset = new HashSet<Product>();
+			hset.UnionWith(new[] { p1, p2 });
+
+			Assert.AreEqual(hset.Count, 1);
+
+			var p3 = new Product { Id = 2 };
+			hset.Add(p3);
+
+			Assert.AreEqual(hset.Count, 2);
+		}
+	}
 
 }

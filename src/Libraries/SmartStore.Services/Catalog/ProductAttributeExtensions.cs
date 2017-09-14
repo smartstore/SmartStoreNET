@@ -26,10 +26,10 @@ namespace SmartStore.Services.Catalog
                 productVariantAttribute.AttributeControlType == AttributeControlType.FileUpload)
                 return false;
 
-            //other attribute controle types support values
+            // all other attribute control types support values
             return true;
         }
-
+		
 		public static string AddProductAttribute(this ProductVariantAttribute pva, string attributes, string value)
 		{
 			string result = string.Empty;

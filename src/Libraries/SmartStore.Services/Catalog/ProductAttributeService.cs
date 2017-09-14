@@ -74,7 +74,7 @@ namespace SmartStore.Services.Catalog
 			{
 				if (productVariantAttributeIds.Count == 1)
 				{
-					var pva = GetProductVariantAttributeById(productVariantAttributeIds.ElementAt(0));
+					var pva = GetProductVariantAttributeById(productVariantAttributeIds.First());
 					if (pva != null)
 					{
 						return new List<ProductVariantAttribute> { pva };
@@ -88,7 +88,7 @@ namespace SmartStore.Services.Catalog
 						.ToList();
 				}
 			}
-
+			
 			return new List<ProductVariantAttribute>();
 		}
 
@@ -351,11 +351,14 @@ namespace SmartStore.Services.Catalog
 							result.Add(pva);
 					}
 
-					var newLoadedMappings = GetSwitchedLoadedAttributeMappings(ids);
+					if (ids.Count > 0)
+					{
+						var newLoadedMappings = GetSwitchedLoadedAttributeMappings(ids);
+						result.AddRange(newLoadedMappings);
+					}
 
-					result.AddRange(newLoadedMappings);
-
-					return result;
+					// sort by passed identifier sequence
+					return result.OrderBySequence(productVariantAttributeIds).ToList();
 				}
 
 				return GetSwitchedLoadedAttributeMappings(productVariantAttributeIds.ToList());
@@ -371,20 +374,27 @@ namespace SmartStore.Services.Catalog
                 return Enumerable.Empty<ProductVariantAttributeValue>();
             }
 
+			Array.Sort(productVariantAttributeValueIds);
+
 			var key = PRODUCTVARIANTATTRIBUTEVALUES_BY_IDS_KEY.FormatInvariant(string.Join("-", productVariantAttributeValueIds));
 			return _requestCache.Get(key, () =>
 			{
-				var query = _productVariantAttributeValueRepository.Table
-					.Expand(x => x.ProductVariantAttribute)
-					.Expand("ProductVariantAttribute.ProductAttribute")
-					.Where(x => productVariantAttributeValueIds.Contains(x.Id))
-					.OrderBy(x => x.ProductVariantAttribute.DisplayOrder)
-					.ThenBy(x => x.DisplayOrder);
+				var validTypeIds = new[]
+				{
+					(int)AttributeControlType.DropdownList,
+					(int)AttributeControlType.RadioList,
+					(int)AttributeControlType.Checkboxes,
+					(int)AttributeControlType.Boxes
+				};
+
+				var query = from x in _productVariantAttributeValueRepository.Table.Expand(y => y.ProductVariantAttribute.ProductAttribute)
+						  let attr = x.ProductVariantAttribute
+						  where productVariantAttributeValueIds.Contains(x.Id) && validTypeIds.Contains(attr.AttributeControlTypeId)
+						  orderby x.ProductVariantAttribute.DisplayOrder, x.DisplayOrder
+						  select x;
 
 				return query.ToList();
 			});
-
-			//return _productVariantAttributeValueRepository.GetMany(productVariantAttributeValueIds);
 		}
 
         public virtual void InsertProductVariantAttribute(ProductVariantAttribute productVariantAttribute)

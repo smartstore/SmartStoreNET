@@ -62,8 +62,8 @@
 .menubar-link,
 .nav-link,
 .dropdown-item {
-    .fa + span, .fa + em { padding-left: 0.4em; }
-    span + .fa, em + .fa { margin-left: 0.4em; }
+    .fa + span, .fa + em, .icm + span, .icm + em { padding-left: 0.4em; }
+    span + .fa, em + .fa, span + .icm, em + .icm { margin-left: 0.4em; }
 }
 
 
@@ -113,6 +113,12 @@
         bottom: 0;
         margin: auto;
     }
+}
+
+// apply img-fluid to all images within html editor content 
+.html-editor-content img {
+    max-width: 100%;
+    height: auto;
 }
 
 

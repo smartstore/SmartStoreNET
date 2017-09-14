@@ -137,7 +137,7 @@ namespace SmartStore.Web.Infrastructure
 
 			Category prevCat = null;
 
-			var categories = _categoryService.GetAllCategories();
+			var categories = _categoryService.GetAllCategories(storeId: Services.StoreContext.CurrentStore.Id);
 
 			foreach (var category in categories)
 			{

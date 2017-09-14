@@ -23,18 +23,6 @@
 
 		@using (Html.BeginForm("PaymentMethod", "AmazonPayCheckout", new { area = Model.SystemName }, FormMethod.Post))
         {
-            if (Model.DisplayRewardPoints)
-            {
-				<div class="reward-points alert alert-info">
-					<div class="checkbox">
-                        <label class="form-check-label mb-0">
-                            @Html.EditorFor(model => model.UseRewardPoints)
-                            @Html.Raw(string.Format(T("Checkout.UseRewardPoints").Text, "<strong>" + Model.RewardPointsBalance + "</strong>", "<strong>" + Model.RewardPointsAmount + "</strong>"))
-                        </label>
-					</div>
-				</div>
-            }
-
 			<div class="amazon-pay-widget clearfix">
 				<div id="@Model.GetWidgetId"></div>
 			</div>

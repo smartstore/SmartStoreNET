@@ -164,7 +164,7 @@ namespace SmartStore.Services.Customers
         /// <param name="clearPaymentMethod">A value indicating whether to clear selected payment method</param>
 		void ResetCheckoutData(Customer customer, int storeId,
             bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
-            bool clearRewardPoints = true, bool clearShippingMethod = true,
+            bool clearRewardPoints = false, bool clearShippingMethod = true,
             bool clearPaymentMethod = true);
 
         /// <summary>

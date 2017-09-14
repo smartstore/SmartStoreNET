@@ -311,28 +311,10 @@ namespace SmartStore.Web.Controllers
 				// No tier prices
 				return Content(""); 
 			}
-				
-			var model = product.TierPrices
-				.OrderBy(x => x.Quantity)
-				.FilterByStore(_services.StoreContext.CurrentStore.Id)
-				.FilterForCustomer(_services.WorkContext.CurrentCustomer)
-				.ToList()
-				.RemoveDuplicatedQuantities()
-				.Select(tierPrice =>
-				{
-					var m = new ProductDetailsModel.TierPriceModel
-					{
-						Quantity = tierPrice.Quantity,
-					};
-					decimal taxRate = decimal.Zero;
-					decimal priceBase = _taxService.GetProductPrice(product, _priceCalculationService.GetFinalPrice(product, _services.WorkContext.CurrentCustomer, decimal.Zero, _catalogSettings.DisplayTierPricesWithDiscounts, tierPrice.Quantity), out taxRate);
-					decimal price = _currencyService.ConvertFromPrimaryStoreCurrency(priceBase, _services.WorkContext.WorkingCurrency);
-					m.Price = _priceFormatter.FormatPrice(price, true, false);
-					return m;
-				})
-				.ToList();
 
-			return PartialView("Product.TierPrices", model);
+            var model = _helper.CreateTierPriceModel(product);
+            
+            return PartialView("Product.TierPrices", model);
 		}
 
 		[ChildActionOnly]
@@ -604,12 +586,13 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-				partials = new
+                partials = new
 				{
 					Attrs = this.RenderPartialViewToString("Product.Attrs", m),
 					Price = this.RenderPartialViewToString("Product.Offer.Price", m),
 					Stock = this.RenderPartialViewToString("Product.StockInfo", m),
-					BundlePrice = product.ProductType == ProductType.BundledProduct ? this.RenderPartialViewToString("Product.Bundle.Price", m) : (string)null
+                    TierPrices = this.RenderPartialViewToString("Product.TierPrices", _helper.CreateTierPriceModel(product, m.ProductPrice.PriceValue - product.Price)),
+                    BundlePrice = product.ProductType == ProductType.BundledProduct ? this.RenderPartialViewToString("Product.Bundle.Price", m) : (string)null
 				};
 			}
 
@@ -923,7 +906,8 @@ namespace SmartStore.Web.Controllers
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
 			model.YourEmailAddress = _services.WorkContext.CurrentCustomer.Email;
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
 			return View(model);
 		}
 
@@ -959,11 +943,6 @@ namespace SmartStore.Web.Controllers
 				model.ProductName = product.GetLocalized(x => x.Name);
 				model.ProductSeName = product.GetSeName();
 
-				//model.SuccessfullySent = true;
-				//model.Result = T("Products.EmailAFriend.SuccessfullySent");
-
-				//return View(model);
-
 				NotifySuccess(T("Products.EmailAFriend.SuccessfullySent"));
 
 				return RedirectToRoute("Product", new { SeName = model.ProductSeName });
@@ -973,7 +952,8 @@ namespace SmartStore.Web.Controllers
 			model.ProductId = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
 			return View(model);
 		}
 

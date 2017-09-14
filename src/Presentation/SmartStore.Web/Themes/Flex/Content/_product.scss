@@ -438,8 +438,12 @@ $pd-offer-spacing:              $grid-gutter-width-base / 2;
 }
 
 .pd-actions {
-    overflow-x: auto;
+    overflow-x: hidden;
     flex-wrap: nowrap;
+
+    &.pd-actions-xl {
+        overflow-x: auto;
+    }
 
     .pd-action-item {
         text-align: center;

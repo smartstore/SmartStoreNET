@@ -261,7 +261,7 @@ namespace SmartStore.Web.Controllers
 						};
 					}
 
-					if (!model.AddToCart.DisableWishlistButton)
+					if (!model.AddToCart.DisableWishlistButton && model.ProductType != ProductType.GroupedProduct)
 					{
 						model.ActionItems["wishlist"] = new ProductDetailsModel.ActionItemModel
 						{

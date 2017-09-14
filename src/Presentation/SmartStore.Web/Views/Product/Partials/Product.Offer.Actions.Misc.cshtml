@@ -11,6 +11,10 @@
 
 	var primaryActions = Model.ActionItems.Values.Where(x => x.IsPrimary).OrderBy(x => x.Priority).ToList();
 	var actions = Model.ActionItems.Values.Where(x => !x.IsPrimary).OrderBy(x => x.Priority).ToList();
+
+	//actions.Add(actions.First());
+	//actions.Add(actions.First());
+	//actions.Add(actions.First());
 }
 
 <div class="pd-actions-container">
@@ -29,14 +33,13 @@
 
 	@if (actions.Count > 0)
 	{
-		<div class="row sm-gutters pd-actions">
-			@{
-				var colClass = "col";
-				if (actions.Count < 5 || actions.Count == 6)
-				{
-					colClass += "-" + 12 / actions.Count;
-				}
-			}
+		var colClass = "col";
+		if (actions.Count < 5 || actions.Count == 6)
+		{
+			colClass += "-" + 12 / actions.Count;
+		}
+
+		<div class="row sm-gutters pd-actions@(actions.Count > 6 ? " pd-actions-xl": "")">
 			@foreach (var action in actions)
 			{
 				var key = action.Key;
@@ -73,3 +76,5 @@
 		</div>
 	}
 </div>
+
+@{ Html.RenderWidget("productdetail_action_links_after"); }

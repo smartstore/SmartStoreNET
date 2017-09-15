@@ -1,4 +1,15 @@
-﻿# Release Notes
+# Release Notes
+
+## SmartStore.NET 3.1.0
+### Bugfixes
+...
+
+### Improvements
+...
+
+### New Features
+* #431 Added option to randomize the display order for slides on each request 
+
 
 ## SmartStore.NET 3.0.3
 ### Bugfixes

@@ -655,7 +655,7 @@ namespace SmartStore.Admin.Models.Catalog
 			public int ProductId { get; set; }
 			public int ProductVariantAttributeId { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias")]
+			[AllowHtml, SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias")]
 			public string Alias { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name")]

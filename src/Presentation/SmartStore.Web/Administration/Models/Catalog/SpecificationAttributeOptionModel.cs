@@ -22,7 +22,7 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias")]
+		[AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias")]
 		public string Alias { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.DisplayOrder")]
@@ -45,7 +45,7 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias")]
+		[AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias")]
 		public string Alias { get; set; }
 	}
 }

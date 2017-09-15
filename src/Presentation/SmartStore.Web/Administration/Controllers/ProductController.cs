@@ -3261,7 +3261,7 @@ namespace SmartStore.Admin.Controllers
 						Id = x.Id,
 						ProductVariantAttributeId = x.ProductVariantAttributeId,
 						Name = x.Name,
-						NameString = x.Color.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.Color),
+						NameString = Server.HtmlEncode(x.Color.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.Color)),
 						Alias = x.Alias,
 						Color = x.Color,
                         PictureId = x.PictureId,

@@ -17,8 +17,8 @@ namespace SmartStore.Admin.Models.Catalog
             Locales = new List<ProductAttributeLocalizedModel>();
         }
 
-        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
-        public string Alias { get; set; }
+        [AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
+		public string Alias { get; set; }
         
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Name")]
         [AllowHtml]
@@ -48,7 +48,7 @@ namespace SmartStore.Admin.Models.Catalog
     {
         public int LanguageId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
+		[AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
 		public string Alias { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Name")]

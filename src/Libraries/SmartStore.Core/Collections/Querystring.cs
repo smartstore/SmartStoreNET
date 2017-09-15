@@ -81,7 +81,7 @@ namespace SmartStore.Collections
         {
             if (HttpContext.Current != null)
             {
-                return FillFromString(HttpContext.Current.Request.QueryString.ToString(), true);
+                return FillFromString(HttpContext.Current.Request.Unvalidated.QueryString.ToString(), true);
             }
             base.Clear();
             return this;

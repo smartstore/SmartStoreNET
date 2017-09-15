@@ -4,20 +4,20 @@
 @using SmartStore.Core.Domain.Catalog;
 
 @{
-	var isBundleItem = Model.IsBundlePart;
+    var isBundleItem = Model.IsBundlePart;
 
-	var displayStock = Model.StockAvailability.HasValue();
-	// Never show delivery time when product is out of stock AND stock is displayed
-	var displayDeliveryTime = !isBundleItem && (Model.DisplayDeliveryTime && Model.IsShipEnabled) && (!displayStock || (displayStock && Model.IsAvailable));
+    var displayStock = Model.StockAvailability.HasValue();
+    // Never show delivery time when product is out of stock AND stock is displayed
+    var displayDeliveryTime = !isBundleItem && (Model.DisplayDeliveryTime && Model.IsShipEnabled) && (!displayStock || (displayStock && Model.IsAvailable));
 
-	var showAttrs = displayDeliveryTime || displayStock || Model.DisplayBackInStockSubscription;
-	if (!showAttrs)
-	{
-		return;
-	}
+    var showAttrs = displayDeliveryTime || displayStock || Model.DisplayBackInStockSubscription;
+    if (!showAttrs)
+    {
+        return;
+    }
 
-	var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailability;
-	var statusColor = Model.DisplayDeliveryTimeAccordingToStock && !displayStock ? Model.DeliveryTimeHexValue : "";
+    var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailability;
+    var statusColor = Model.DisplayDeliveryTimeAccordingToStock && !displayStock ? Model.DeliveryTimeHexValue : "";
 }
 
 <div class="pd-stock-info@(isBundleItem ? "" : " pd-group")">
@@ -36,10 +36,7 @@
 		<div class="deliverytime-group">
 			<span>@T("Products.DeliveryTime")</span>
 			<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color: " + statusColor, statusColor.HasValue())>
-				@if (!displayStock)
-				{
-					<i class="fa fa-circle delivery-time-status"></i>
-				}
+				<i class="fa fa-circle delivery-time-status" style="color: @Model.DeliveryTimeHexValue"></i>
 				@statusLabel
 			</span>
 		</div>

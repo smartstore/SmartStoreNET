@@ -85,31 +85,31 @@
 		}
 
 		if (success) {
-			ctl.addClass('form-control-success').removeClass('form-control-danger');
+			ctl.addClass('is-valid').removeClass('is-invalid');
 		}
 		else {
-			ctl.removeClass('form-control-success').addClass('form-control-danger');
+			ctl.removeClass('is-valid').addClass('is-invalid');
 		}
 	}
 
 	$.validator.setDefaults({
 		onfocusout: function (el, e) {
-			if ($(el).closest(".form-group").is(".has-danger, .has-success")) {
+			if ($(el).closest(".form-group, .adminData").is(".has-danger, .has-success")) {
 				$(el).valid();
 			}
 		},
 		onkeyup: function (el, e) {
-			if ($(el).closest(".form-group").is(".has-danger, .has-success")) {
+			if ($(el).closest(".form-group, .adminData").is(".has-danger, .has-success")) {
 				$(el).valid();
 			}
 		},
 		onclick: false,
 		highlight: function (el, errorClass, validClass) {
-			$(el).closest('.form-group').addClass('has-danger').removeClass('has-success');
+			$(el).closest('.form-group, .adminData').addClass('has-danger').removeClass('has-success');
 			setControlFeedback($(el), false);
 		},
 		unhighlight: function (el, errorClass, validClass) {
-			var formGroup = $(el).closest(".form-group");
+			var formGroup = $(el).closest(".form-group, .adminData");
 			if (formGroup.is(".has-danger")) {
 				formGroup.removeClass('has-danger').addClass('has-success');
 				setControlFeedback($(el), true);

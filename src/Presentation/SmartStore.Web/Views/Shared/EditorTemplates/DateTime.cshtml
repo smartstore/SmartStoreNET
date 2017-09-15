@@ -50,6 +50,7 @@
 
 <script>
 	$(function () {
+		console.log("DateTimePicker Render: ", $.smartstore.globalization.culture);
 		$("#@(id)-parent").datetimepicker({ locale: 'glob', format: '@(format)', keepOpen: false, collapse: true });
     });
 </script>

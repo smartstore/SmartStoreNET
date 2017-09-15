@@ -153,6 +153,7 @@ fieldset.content-group {
 .field-validation-error {
     display: block;
     color: $form-feedback-invalid-color;
+    font-size: $font-size-sm;
     margin-top: 0.25rem;
 }
 

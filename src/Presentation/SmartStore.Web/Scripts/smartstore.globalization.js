@@ -100,6 +100,10 @@
 				t: "h:mm tt",
 				// long time pattern
 				T: "h:mm:ss tt",
+				// general date time pattern (short time)
+				g: "M/d/yyyy h:mm tt",
+				// general date time pattern (long time)
+				G: "M/d/yyyy h:mm:ss tt",
 				// long date, short time pattern
 				f: "dddd, MMMM dd, yyyy h:mm tt",
 				// long date, long time pattern
@@ -285,6 +289,54 @@
 		return ret;
 	}
 
+	g.convertDatePatternToMomentFormat = function (pattern) {
+		// Converts .NET date format string to moment.js format
+		var result = '',
+			token = '';
+
+		function convertToken(t) {
+			switch (t) {
+				case 'd': return 'D';
+				case 'dd': return 'DD';
+				case 'ddd': return 'dd';
+				case 'yy': return 'YY';
+				case 'yyy': case 'yyyy': case 'yyyyy': return 'YYYY';
+				case 'zz': return 'ZZ';
+				case 'zzz': return 'Z';
+				case 'tt': return 'A';
+				case 'ff': case 'FF': return 'SS';
+				case 'fff': case 'FFF': return 'SSS';
+				case 'ffff': case 'FFFF': return 'SSSS';
+				case 'fffff': case 'FFFFF': return 'SSSSS';
+				case 'ffffff': case 'FFFFFF': return 'SSSSSS';
+				case 'fffffff': case 'FFFFFFF': return 'SSSSSSS';
+				default:
+					return t;
+			}
+		}
+
+		for (var i = 0; i < pattern.length; i++) {
+			switch (pattern[i]) {
+				case 'd': case 'y': case 'z': case 't': case 'f':
+					token += pattern[i];
+					continue;
+				default:
+					if (token.length > 0) {
+						result += convertToken(token);
+						token = '';
+					}
+
+					result += pattern[i];
+			}
+		}
+
+		if (token.length > 0) {
+			result += convertToken(token);
+		}
+
+		return result;
+	}
+
 	// formatNumber
 	var formatNumber;
 	(function () {
@@ -445,134 +497,4 @@
 
 	_.provide('$.smartstore.globalization');
 	$.smartstore.globalization = g;
-})( jQuery );
-
-
-
-// Adapters
-(function ($) {
-	function convertToMomentFormat(fmt) {
-		// Converts .NET date format string to moment.js format
-		var result = '',
-			token = '';
-
-		function convertToken(t) {
-			switch (t) {
-				case 'd': return 'D';
-				case 'dd': return 'DD';
-				case 'ddd': return 'dd';
-				case 'yy': return 'YY';
-				case 'yyy': case 'yyyy': case 'yyyyy': return 'YYYY';
-				case 'zz': return 'ZZ';
-				case 'zzz': return 'Z';
-				case 'tt': return 'A';
-				case 'ff': case 'FF': return 'SS';
-				case 'fff': case 'FFF': return 'SSS';
-				case 'ffff': case 'FFFF': return 'SSSS';
-				case 'fffff': case 'FFFFF': return 'SSSSS';
-				case 'ffffff': case 'FFFFFF': return 'SSSSSS';
-				case 'fffffff': case 'FFFFFFF': return 'SSSSSSS';
-				default:
-					return t;
-			}
-		}
-
-		for (var i = 0; i < fmt.length; i++) {
-			switch (fmt[i]) {
-				case 'd': case 'y': case 'z': case 't': case 'f':
-					token += fmt[i];
-					continue;
-				default:
-					if (token.length > 0) {
-						result += convertToken(token);
-						token = '';
-					}
-
-					result += fmt[i];
-			}
-		}
-
-		if (token.length > 0) {
-			result += convertToken(token);
-		}
-
-		return result;
-	}
-
-	// Adapt to moment.js
-	if (typeof moment !== undefined) {
-		var dtf = $.smartstore.globalization.culture.dateTimeFormat;
-		moment.defineLocale('glob', {
-			months: dtf.months.names,
-			monthsShort: dtf.months.namesAbbr,
-			weekdays: dtf.days.names,
-			weekdaysShort: dtf.days.namesShort,
-			weekdaysMin: dtf.days.namesAbbr,
-			longDateFormat: {
-				LT: convertToMomentFormat(dtf.patterns['t']),
-				LTS: convertToMomentFormat(dtf.patterns['T']),
-				L: convertToMomentFormat(dtf.patterns['d']),
-				LL: convertToMomentFormat(dtf.patterns['D']),
-				LLL: convertToMomentFormat(dtf.patterns['f']),
-				LLLL: convertToMomentFormat(dtf.patterns['F'])
-			},
-			week: {
-				dow: dtf.firstDay, // Monday is the first day of the week.
-				doy: 4  // The week that contains Jan 4th is the first week of the year.
-			},
-			// TODO: (mc) localize!
-			calendar: {
-				sameDay: '[Today at] LT',
-				nextDay: '[Tomorrow at] LT',
-				nextWeek: 'dddd [at] LT',
-				lastDay: '[Yesterday at] LT',
-				lastWeek: '[Last] dddd [at] LT',
-				sameElse: 'L'
-			},
-			// TODO: (mc) localize!
-			relativeTime: {
-				future: 'in %s',
-				past: '%s ago',
-				s: 'a few seconds',
-				m: 'a minute',
-				mm: '%d minutes',
-				h: 'an hour',
-				hh: '%d hours',
-				d: 'a day',
-				dd: '%d days',
-				M: 'a month',
-				MM: '%d months',
-				y: 'a year',
-				yy: '%d years'
-			},
-			// TODO: (mc) localize!
-			dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
-			ordinal: function (number) {
-				var b = number % 10,
-					output = (~~(number % 100 / 10) === 1) ? 'th' :
-					(b === 1) ? 'st' :
-					(b === 2) ? 'nd' :
-					(b === 3) ? 'rd' : 'th';
-				return number + output;
-			}
-		});
-	}
-
-	// Adapt to jQuery validate
-	$(function () {
-		if (typeof $.validator !== undefined) {
-			jQuery.extend($.validator.methods, {
-				number: function (value, element) {
-					return this.optional(element) || !isNaN($.smartstore.globalization.parseFloat(value));
-				},
-				date: function (value, element) {
-					return this.optional(element) || moment(value, $(element).data('format') || 'L LT', true).isValid();
-				},
-				range: function (value, element, param) {
-					var val = $.smartstore.globalization.parseFloat(value);
-					return this.optional(element) || (val >= param[0] && val <= param[1]);
-				}
-			});
-		}
-	});
 })( jQuery );

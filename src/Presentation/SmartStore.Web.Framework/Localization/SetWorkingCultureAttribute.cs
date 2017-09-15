@@ -66,9 +66,9 @@ namespace SmartStore.Web.Framework.Localization
 			
 			var sb = new StringBuilder();
 			sb.Append("<script>");
-			sb.Append("if ($.smartstore && $.smartstore.globalization) { $.smartstore.globalization.culture = ");
+			sb.Append("jQuery(function () { if ($.smartstore.globalization) { $.smartstore.globalization.culture = ");
 			sb.Append(json);
-			sb.Append("; };");
+			sb.Append("; }; });");
 			sb.Append("</script>");
 
 			var script = sb.ToString();
@@ -145,6 +145,8 @@ namespace SmartStore.Web.Framework.Localization
 						{ "D", df.LongDatePattern },
 						{ "t", df.ShortTimePattern },
 						{ "T", df.LongTimePattern },
+						{ "g", df.ShortDatePattern + " " + df.ShortTimePattern },
+						{ "G", df.ShortDatePattern + " " + df.LongTimePattern },
 						{ "f", df.FullDateTimePattern }, // TODO: (mc) find it actually
 						{ "F", df.FullDateTimePattern },
 						{ "M", df.MonthDayPattern },

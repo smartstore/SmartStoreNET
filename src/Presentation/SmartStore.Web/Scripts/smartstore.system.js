@@ -79,10 +79,10 @@
 				return defVal;	
 			}
 			return x;
-		}
-				
-				
+		}				
 	});
 	
+	// provide main app namespace
+	_.provide("$.smartstore");
 
-})(jQuery);
+})( jQuery );

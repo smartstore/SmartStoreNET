@@ -99,7 +99,7 @@ $s2bs-form-control-transition: border-color ease-in-out .15s, box-shadow ease-in
     border-color: $color;
   }
 
-  .select2-container--focus .select2-selection,
+  /*.select2-container--focus .select2-selection,
   .select2-container--open .select2-selection {
     box-shadow: $shadow;
     border-color: darken($color, 10%);
@@ -111,7 +111,7 @@ $s2bs-form-control-transition: border-color ease-in-out .15s, box-shadow ease-in
     &.select2-drop.select2-drop-above {
       border-top-color: darken($color, 10%);
     }
-  }
+  }*/
 }
 
 // dropdown arrow when dropdown is open
@@ -705,16 +705,18 @@ $s2bs-form-control-transition: border-color ease-in-out .15s, box-shadow ease-in
  * @see http://getbootstrap.com/css/#forms-control-validation
  */
 
-.has-warning {
-  @include validation-state-focus(theme-color-level("warning", 6));
+/*.has-warning {
+  @include validation-state-focus(theme-color-level("warning", 1));
+}*/
+
+.has-error,
+select.is-invalid + .select2 {
+  @include validation-state-focus($form-feedback-invalid-color);
 }
 
-.has-error {
-  @include validation-state-focus(theme-color-level("danger", 6));
-}
-
-.has-success {
-  @include validation-state-focus(theme-color-level("success", 6));
+.has-success,
+select.is-valid + .select2 {
+  @include validation-state-focus($form-feedback-valid-color);
 }
 
 /**

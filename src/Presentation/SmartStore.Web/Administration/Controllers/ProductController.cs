@@ -2894,7 +2894,7 @@ namespace SmartStore.Admin.Controllers
 					.ThenBy(x => x.CustomerRoleId)
 					.Select(x =>
 					{
-					    var tierPriceModel =  new ProductModel.TierPriceModel()
+					    var tierPriceModel =  new ProductModel.TierPriceModel
 					    {
 						    Id = x.Id,
 						    StoreId = x.StoreId,
@@ -2902,9 +2902,24 @@ namespace SmartStore.Admin.Controllers
 						    ProductId = x.ProductId,
 						    Quantity = x.Quantity,
                             CalculationMethodId = (int)x.CalculationMethod,
-                            CalculationMethod = x.CalculationMethod.ToString(),
                             Price1 = x.Price
 					    };
+
+						switch (x.CalculationMethod)
+						{
+							case TierPriceCalculationMethod.Fixed:
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Fixed");
+								break;
+							case TierPriceCalculationMethod.Adjustment:
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Adjustment");
+								break;
+							case TierPriceCalculationMethod.Percental:
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Percental");
+								break;
+							default:
+								tierPriceModel.CalculationMethod = x.CalculationMethod.ToString();
+								break;
+						}
 
 						if (x.CustomerRoleId.HasValue)
 						{
@@ -3017,12 +3032,31 @@ namespace SmartStore.Admin.Controllers
         {
             var list = new List<object>
             {
-                new  { id = ((int)TierPriceCalculationMethod.Fixed).ToString(), text = T("Admin.Product.Price.Tierprices.Fixed"), selected = selectedId == (int)TierPriceCalculationMethod.Fixed },
-                new  { id = ((int)TierPriceCalculationMethod.Adjustment).ToString(), text = T("Admin.Product.Price.Tierprices.Adjustment"), selected = selectedId == (int)TierPriceCalculationMethod.Adjustment },
-                new  { id = ((int)TierPriceCalculationMethod.Percental).ToString(), text = T("Admin.Product.Price.Tierprices.Percental"), selected = selectedId == (int)TierPriceCalculationMethod.Percental }
+                new
+				{
+					id = ((int)TierPriceCalculationMethod.Fixed).ToString(),
+					text = T("Admin.Product.Price.Tierprices.Fixed").Text,
+					selected = selectedId == (int)TierPriceCalculationMethod.Fixed
+				},
+                new
+				{
+					id = ((int)TierPriceCalculationMethod.Adjustment).ToString(),
+					text = T("Admin.Product.Price.Tierprices.Adjustment").Text,
+					selected = selectedId == (int)TierPriceCalculationMethod.Adjustment
+				},
+                new
+				{
+					id = ((int)TierPriceCalculationMethod.Percental).ToString(),
+					text = T("Admin.Product.Price.Tierprices.Percental").Text,
+					selected = selectedId == (int)TierPriceCalculationMethod.Percental
+				}
             };
 
-            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult
+			{
+				Data = list,
+				JsonRequestBehavior = JsonRequestBehavior.AllowGet
+			};
         }
 
         #endregion

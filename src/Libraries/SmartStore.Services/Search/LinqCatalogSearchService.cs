@@ -795,6 +795,12 @@ namespace SmartStore.Services.Search
 
 				totalHits = query.Count();
 
+				// Fix paging boundaries
+				if (searchQuery.Skip > 0 && searchQuery.Skip >= totalHits)
+				{
+					searchQuery.Slice((totalHits / searchQuery.Take) * searchQuery.Take, searchQuery.Take);
+				}
+
 				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
 				{
 					query = query

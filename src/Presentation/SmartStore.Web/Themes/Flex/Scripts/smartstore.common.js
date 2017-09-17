@@ -53,11 +53,12 @@
 
 	window.modifyUrl = function (url, qsName, qsValue) {
 		var search = null;
-
+		
 		if (!url) {
 			url = window.location.protocol + "//" +
 				window.location.host +
 				window.location.pathname;
+			search = window.location.search;
 		}
 		else {
 			// strip query from url
@@ -69,7 +70,7 @@
 		}
 
 		var qs = getQueryStrings(search);
-
+		
 		// Add new params to the querystring dictionary
 		qs[qsName] = qsValue;
 
@@ -78,9 +79,11 @@
 		// http://stackoverflow.com/questions/2907482
 		// Gets Querystring from window.location and converts all keys to lowercase
 		function getQueryStrings(search) {
-			var assoc = { };
+			var assoc = {};
+			if (!search) return assoc;
+
 			var decode = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); };
-			var queryString = (search || location.search).substring(1);
+			var queryString = search.substring(1);
 			var keyValues = queryString.split('&');
 
 			for (var i in keyValues) {
@@ -408,7 +411,7 @@
 		(function () {
 			$('#scroll-top').click(function (e) {
 				e.preventDefault();
-				$(window).scrollTo(0, 600);
+				$(document).scrollTo(0, 600);
 				return false;
 			});
 

@@ -81,7 +81,7 @@ namespace SmartStore.Core.Caching
 
 			foreach (string key in keysToRemove)
 			{
-				items.Remove(key);
+				items.Remove(BuildKey(key));
 			}
 		}
 

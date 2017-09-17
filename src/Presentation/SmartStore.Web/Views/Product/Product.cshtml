@@ -83,47 +83,8 @@
 						}
 
 						@if (Model.ProductType == ProductType.GroupedProduct)
-                        {
-                            var showActionLinks = Model.AskQuestionEnabled || Model.TellAFriendEnabled || Model.CompareEnabled;
-                            if (showActionLinks)
-                            {
-								<ul class="pd-action-links pd-group list-unstyled">
-									@if (Model.AskQuestionEnabled)
-                                    {
-										<li>
-											<a class="pretty-link action-ask-question" href="@Url.Action("AskQuestion", new { id = Model.Id })" rel="nofollow">
-												<i class="fa fa-fw fa-envelope"></i>
-												<span>@T("Products.AskQuestion")</span>
-											</a>
-										</li>
-                                    }
-									@if (Model.TellAFriendEnabled)
-                                    {
-										<li>
-											<a class="pretty-link action-tell" href="@Url.Action("EmailAFriend", new { id = Model.Id })" rel="nofollow">
-												<i class="fa fa-fw fa-bullhorn"></i>
-												<span>@T("Products.EmailAFriend")</span>
-											</a>
-										</li>
-                                    }
-									@if (Model.CompareEnabled)
-                                    {
-										<li>
-											<a data-href="@Url.Action("AddProductToCompare", "Catalog", new { id = Model.Id })" 
-											   href="#" 
-											   class="pretty-link action-compare ajax-cart-link" 
-											   rel="nofollow"
-											   data-type="compare"
-											   data-action="add">
-												<i class="fa fa-fw fa-retweet"></i>
-												<span>@T("Products.Compare.AddToCompareList")</span>
-											</a>
-										</li>
-                                    }
-
-                                    @{ Html.RenderWidget("productdetail_action_links_after"); }
-								</ul>
-							}
+						{
+							Html.RenderPartial("Product.Offer.Actions.Misc", Model);
 						}
 
 						<!-- social share -->

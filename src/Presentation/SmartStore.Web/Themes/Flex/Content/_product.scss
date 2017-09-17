@@ -410,7 +410,6 @@ $pd-offer-spacing:              $grid-gutter-width-base / 2;
 
 .delivery-time {
     display: inline-block;
-    color: $brand-danger;
     vertical-align: middle;
     max-width: 100%;
     @include text-truncate();
@@ -437,19 +436,24 @@ $pd-offer-spacing:              $grid-gutter-width-base / 2;
     > *:not(:last-child) { margin-bottom: $pd-offer-spacing / 2;  }
 }
 
-.pd-actions { 
-    overflow: hidden;
+.pd-actions {
+    overflow-x: hidden;
     flex-wrap: nowrap;
+
+    &.pd-actions-xl {
+        overflow-x: auto;
+    }
 
     .pd-action-item {
         text-align: center;
         border-right: 1px solid rgba(#000, 0.15);
+        padding-top: 6px; // for the transform
         &:last-child { border-color: transparent; }
 
-        &.col .pd-action-label {
-            // When more than 4 action items are available,
-            // .col is used instead of .col-(x). These need special care
-            // concerning responsiveness.
+        // When more than 4 action items are available,
+        // .col is used instead of .col-(x). These need special care
+        // concerning responsiveness.
+        &.col .pd-action-label, &.col-2 .pd-action-label {
             display: none !important;
             @include media-breakpoint-only(sm) { display: block !important;  }
             @include media-breakpoint-up(xl) { display: block !important;  }
@@ -462,7 +466,6 @@ $pd-offer-spacing:              $grid-gutter-width-base / 2;
         text-decoration: none;
         color: inherit;
         height: 100%;
-        &.pd-action-link-special { font-weight: 600 }
 
         .pd-action-icon {
             display: block;
@@ -470,17 +473,20 @@ $pd-offer-spacing:              $grid-gutter-width-base / 2;
             line-height: 20px;
             vertical-align: middle;
             color: $pd-offer-muted-color;
+            transition: all 0.125s ease-out;
+            transform-origin: bottom;
         }
 
         .pd-action-label {
-            padding-top: 0.3rem;
+            padding-top: 0.375rem;
             display: block;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        &:hover .pd-action-label { 
-            text-decoration: underline; 
+        &:hover .pd-action-icon { 
+            color: inherit;
+            transform: scale(1.14);
         }
     }
 }

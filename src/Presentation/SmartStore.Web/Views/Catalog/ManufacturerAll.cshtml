@@ -23,7 +23,7 @@
 
         @{ Html.RenderWidget("manufacturers_all_top"); }
 
-        @if (true /* catalogSettings.SortManufacturersAlphabetically*/)
+        @if (catalogSettings.SortManufacturersAlphabetically)
         {
             <div class="manufacturer-nav">
                 <ul class="navbar justify-content-start list-unstyled">

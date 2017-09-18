@@ -154,7 +154,7 @@ namespace SmartStore.Admin.Controllers
 			var store = _services.StoreContext.CurrentStore;
 			var language = _services.WorkContext.WorkingLanguage;
 
-			var allCurrencies = _currencyService.GetAllCurrencies(true)
+			var allCurrencies = _currencyService.GetAllCurrencies (true)
 				.ToDictionarySafe(x => x.CurrencyCode.EmptyNull().ToUpper(), x => x);
 
 			var models = allCurrencies.Select(x => x.Value.ToModel()).ToList();
@@ -174,13 +174,15 @@ namespace SmartStore.Admin.Controllers
                         throw new SmartException(T("Admin.System.Warnings.ExchangeCurrency.NotSet"));
 
 					var rates = _currencyService.GetCurrencyLiveRates(primaryExchangeCurrency.CurrencyCode);
+                
 
-					// get localized name of currencies
-					var currencyNames = allCurrencies.ToDictionarySafe(
+                        // get localized name of currencies
+                        var currencyNames = allCurrencies.ToDictionarySafe(
 						x => x.Key,
 						x => x.Value.GetLocalized(y => y.Name, language.Id, true, false)
 					);
 
+                    
 					// fallback to english name where no localized currency name exists
 					foreach (var info in CultureInfo.GetCultures(CultureTypes.AllCultures).Where(x => !x.IsNeutralCulture))
 					{
@@ -193,17 +195,32 @@ namespace SmartStore.Admin.Controllers
 						}
 						catch { }
 					}
+                    
+                    // provide rate with currency name and whether it is available in store
+                    rates.Each(x =>
+                    {
+                        var currency = _currencyService.GetCurrencyByCode(x.CurrencyCode);
+                        x.IsStoreCurrency = allCurrencies.ContainsKey(x.CurrencyCode);
 
-					// provide rate with currency name and whether it is available in store
-					rates.Each(x =>
-					{
-						x.IsStoreCurrency = allCurrencies.ContainsKey(x.CurrencyCode);
+                        
+                         
+                        if (x.IsStoreCurrency) // only currency code found will be updated.
+                        {
+                            if (x.Name.IsEmpty() && currencyNames.ContainsKey(x.CurrencyCode))
+                                x.Name = currencyNames[x.CurrencyCode];
 
-						if (x.Name.IsEmpty() && currencyNames.ContainsKey(x.CurrencyCode))
-							x.Name = currencyNames[x.CurrencyCode];
-					});
-
-					ViewBag.Rates = rates;
+                            currency.Rate = x.Rate;
+                            _currencyService.UpdateCurrency(currency);
+                        }
+                        if(primaryExchangeCurrency.Rate != 1) //will update primaryexchangecurrency if setting primaryexchange rate failed to udpate.
+                        {
+                            primaryExchangeCurrency.Rate = 1;
+                            _currencyService.UpdateCurrency(primaryExchangeCurrency);
+                        }
+                       
+                    });
+                    
+                    ViewBag.Rates = rates;
                 }
                 catch (Exception exception)
                 {
@@ -224,10 +241,12 @@ namespace SmartStore.Admin.Controllers
                 });
             }
 
+           
             return View(new GridModel<CurrencyModel>
 			{
 				Data = models,
 				Total = models.Count()
+               
 			});
         }
 

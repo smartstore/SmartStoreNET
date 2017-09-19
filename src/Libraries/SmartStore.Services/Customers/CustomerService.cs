@@ -378,11 +378,8 @@ namespace SmartStore.Services.Customers
 				{
 					_genericAttributeService.SaveAttribute(customer, "ClientIdent", clientIdent);
 				}
-			}
-
-			//Logger.DebugFormat("Guest account created for anonymous visitor. Id: {0}, ClientIdent: {1}", customer.CustomerGuid, clientIdent ?? "n/a");
-
-                Logger.DebugFormat("Guest account created for anonymous visitor. Id: {0}, ClientIdent: {1}", customer.CustomerGuid, clientIdent ?? "n/a");
+			
+                //Logger.DebugFormat("Guest account created for anonymous visitor. Id: {0}, ClientIdent: {1}", customer.CustomerGuid, clientIdent ?? "n/a");
             }
             
 			return customer;

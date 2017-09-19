@@ -1,11 +1,11 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Bugfixes
 ...
 
 ### Improvements
-...
+* #1141 Clearer backend order list. Added more infos like payment method.
 
 ### New Features
 * #431 Added option to randomize the display order for slides on each request 

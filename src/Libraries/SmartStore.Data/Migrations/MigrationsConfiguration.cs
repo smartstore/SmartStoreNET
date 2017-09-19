@@ -31,6 +31,8 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+			builder.AddOrUpdate("Common.Via", "via", "via");
+			builder.AddOrUpdate("Admin.Orders.Shipment", "Shipment", "Lieferung");
 		}
 	}
 }

@@ -14,10 +14,10 @@
 
 	Html.AddScriptParts("~/Themes/Flex/Scripts/public.product.js");
 
+	var canonicalUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
 	if (Model.CanonicalUrlsEnabled)
 	{
-		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-		Html.AddCanonicalUrlParts(productUrl);
+		Html.AddCanonicalUrlParts(canonicalUrl);
 	}
 
 	string updateUrl = Url.Action("UpdateProductDetails", "Product", new
@@ -26,6 +26,27 @@
 		bundleItemId = Model.BundleItem.Id,
 		itemType = (string)null // TODO: (mc) WTF!?
 	});
+
+	var shortDescription = Model.ShortDescription.NullEmpty() ?? Model.MetaDescription;
+
+	// FB OpenGraph og:*
+	Html.AddCustomHeadParts("<meta property='og:site_name' content='{0}' />".FormatInvariant(CommonServices.StoreContext.CurrentStore.Name));
+	Html.AddCustomHeadParts("<meta property='og:type' content='{0}' />".FormatInvariant(Model.ProductType == ProductType.SimpleProduct ? "product" : "product.group"));
+	Html.AddCustomHeadParts("<meta property='og:url' content='{0}' />".FormatInvariant(canonicalUrl));
+	Html.AddCustomHeadParts("<meta property='og:site' content='{0}' />".FormatInvariant(Url.RouteUrl("HomePage", null, this.Request.Url.Scheme)));
+	Html.AddCustomHeadParts("<meta property='og:title' content='{0}' />".FormatInvariant(Model.Name));
+	if (shortDescription.HasValue())
+	{
+		Html.AddCustomHeadParts("<meta property='og:description' content='{0}' />".FormatInvariant(shortDescription));
+	}
+
+	// Twitter card
+	Html.AddCustomHeadParts("<meta property='twitter:card' content='product' />");
+	Html.AddCustomHeadParts("<meta property='twitter:title' content='{0}' />".FormatInvariant(Model.Name));
+	if (shortDescription.HasValue())
+	{
+		Html.AddCustomHeadParts("<meta property='twitter:description' content='{0}' />".FormatInvariant(shortDescription));
+	}
 
 	/* TODO: (mc)
 	 * - Badges

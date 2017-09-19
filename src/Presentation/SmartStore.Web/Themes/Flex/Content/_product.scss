@@ -410,7 +410,6 @@ $pd-offer-spacing:              $grid-gutter-width-base / 2;
 
 .delivery-time {
     display: inline-block;
-    color: $brand-danger;
     vertical-align: middle;
     max-width: 100%;
     @include text-truncate();

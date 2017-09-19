@@ -893,7 +893,6 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 	outline: 0;
 	border: 0;
 	color: #4c4c4c;
-	/*text-shadow: 0 1px 0 #fff;*/
 	font-weight: bold;
 	font-size: 11px;
 }
@@ -952,4 +951,7 @@ legend.cke_voice_label {
 }
 
 
-
+.cke_chrome {
+	/* Chrome 60+ overflow auto scrollbar fix */
+	position: relative;
+}

@@ -140,7 +140,6 @@ namespace SmartStore.Core
         {
             return Enumerable.Empty<int>().GetEnumerator();
         }
-
     }
 
     public class PagedList : PagedListBase

@@ -556,7 +556,9 @@ namespace SmartStore.Services.Catalog.Importer
 
 							if (pictureBinary != null && pictureBinary.Length > 0)
 							{
-								var currentProductPictures = _productPictureRepository.TableUntracked.Expand(x => x.Picture)
+								var currentProductPictures = _productPictureRepository.TableUntracked
+									.Expand(x => x.Picture)
+									.Expand(x => x.Picture.MediaStorage)
 									.Where(x => x.ProductId == row.Entity.Id)
 									.ToList();
 

@@ -516,7 +516,6 @@ namespace SmartStore.Services.Customers.Importer
 				if (urlOrPath.IsEmpty())
 					continue;
 
-				Picture picture = null;
 				var equalPictureId = 0;
 				var currentPictures = new List<Picture>();
 				var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
@@ -537,10 +536,14 @@ namespace SmartStore.Services.Customers.Importer
 
 					if (pictureBinary != null && pictureBinary.Length > 0)
 					{
-						var currentPictureId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
-						if (currentPictureId != 0 && (picture = _pictureRepository.GetById(currentPictureId)) != null)
+						var pictureId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
+						if (pictureId != 0)
 						{
-							currentPictures.Add(picture);
+							var picture = _pictureRepository.TableUntracked.Expand(x => x.MediaStorage).FirstOrDefault(x => x.Id == pictureId);
+							if (picture != null)
+							{
+								currentPictures.Add(picture);
+							}
 						}
 
 						var size = Size.Empty;
@@ -549,7 +552,8 @@ namespace SmartStore.Services.Customers.Importer
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
-							if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false)) != null)
+							var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false);
+							if (picture != null)
 							{
 								SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
 							}

@@ -172,6 +172,7 @@
 							@*TODO: number of products, product summary?*@
 							columns.Bound(x => x.OrderNumber)
 								.Width(250)
+								.Title(T("Admin.Order"))
 								.ClientTemplate("<span class='label label-smnet <#= OrderStatusLabelClass #>'><#= OrderStatus #></span>" + @Html.LabeledOrderNumber());
 							columns.Bound(x => x.CustomerName)
 								.Title(T("Admin.Orders.Fields.Customer"))

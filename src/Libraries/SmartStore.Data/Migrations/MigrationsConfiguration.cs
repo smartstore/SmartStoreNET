@@ -33,6 +33,7 @@ namespace SmartStore.Data.Migrations
 		{
 			builder.AddOrUpdate("Common.Via", "via", "via");
 			builder.AddOrUpdate("Admin.Orders.Shipment", "Shipment", "Lieferung");
+			builder.AddOrUpdate("Admin.Order", "Order", "Auftrag");
 		}
 	}
 }

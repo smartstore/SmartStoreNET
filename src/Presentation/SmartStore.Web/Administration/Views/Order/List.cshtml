@@ -3,6 +3,7 @@
 @{
 	var hideProfitReport = false;
 	var allString = T("Admin.Common.All").Text;
+	var viaString = T("Common.Via").Text;
 
 	ViewBag.Title = T("Admin.Orders").Text;
 }
@@ -155,6 +156,7 @@
             <td>
                 @(Html.Telerik().Grid<OrderModel>()
 						.Name("orders-grid")
+						.TableHtmlAttributes(new { @class = "multiline-grid" })
 						.ClientEvents(events => events
 							.OnDataBinding("onDataBinding")
 							.OnDataBound("onDataBound")
@@ -167,20 +169,32 @@
 								.Width(50)
 								.HtmlAttributes(new { style = "text-align:center" })
 								.HeaderHtmlAttributes(new { style = "text-align:center" });
-
+							@*TODO: number of products, product summary?*@
 							columns.Bound(x => x.OrderNumber)
-								.ClientTemplate(@Html.LabeledOrderNumber());
-							columns.Bound(x => x.OrderStatus);
-							columns.Bound(x => x.PaymentStatus);
-							columns.Bound(x => x.ShippingStatus);
-							columns.Bound(x => x.CustomerName);
-							columns.Bound(x => x.CustomerEmail);
-							columns.Bound(x => x.StoreName)
-								.Hidden(Model.AvailableStores.Count <= 1);
-							columns.Bound(x => x.CreatedOn);
+								.Width(250)
+								.ClientTemplate("<span class='label label-smnet <#= OrderStatusLabelClass #>'><#= OrderStatus #></span>" + @Html.LabeledOrderNumber());
+							columns.Bound(x => x.CustomerName)
+								.Title(T("Admin.Orders.Fields.Customer"))
+								.ClientTemplate(
+									"<div><#= CustomerName #></div>" +
+									"<div><#= CustomerEmail #></div>");
+							columns.Bound(x => x.ShippingStatus)
+								.Title(T("Admin.Orders.Shipment"))
+								.ClientTemplate(
+									"<div><span class='label label-smnet <#= ShippingStatusLabelClass #>'><#= ShippingStatus #></span><span><#= ShippingAddressString #></span></div>" +
+									"<# if(IsShippable){ #><div class='muted'>" + viaString + " <#= ShippingMethod #></div><# } #>");
+							columns.Bound(x => x.CreatedOn)
+								.Width(200)
+								.Title(T("Order.OrderDate"))
+								.ClientTemplate(
+									"<div><#= CreatedOnString #></div>" +
+									"<div class='muted'>" + viaString + " <#= StoreName #></div>");
 							columns.Bound(x => x.OrderTotal)
-								.Width(180)
+								.Width(200)
 								.RightAlign()
+								.ClientTemplate(
+									"<div><span class='label label-smnet <#= PaymentStatusLabelClass #>'><#= PaymentStatus #></span><span><big><#= OrderTotal #></big></span></div>" +
+									"<# if(HasPaymentMethod){ #><div class='muted'>" + viaString + " <#= PaymentMethod #></div><# } #>")
 								.FooterTemplate(
 									string.Format("<div><b>{0}:</b></div>" +
 									(hideProfitReport ? "{1}" : "<div>{1}: <span id=\"aggregator-profit-block\" class=\"pull-right\"></span></div>") +

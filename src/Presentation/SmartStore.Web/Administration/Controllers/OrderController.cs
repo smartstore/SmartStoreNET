@@ -16,6 +16,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
@@ -206,6 +207,7 @@ namespace SmartStore.Admin.Controllers
 
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
+			model.StatusOrder = order.OrderStatus;
             model.OrderNumber = order.GetOrderNumber();
             model.OrderGuid = order.OrderGuid;
 			model.StoreName = (store != null ? store.Name : "".NaIfEmpty());
@@ -383,6 +385,7 @@ namespace SmartStore.Admin.Controllers
             model.SubscriptionTransactionId = order.SubscriptionTransactionId;
 			model.AuthorizationTransactionResult = order.AuthorizationTransactionResult;
 			model.CaptureTransactionResult = order.CaptureTransactionResult;
+			model.StatusPayment = order.PaymentStatus;
             model.PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext);
 
             //payment method buttons
@@ -436,7 +439,9 @@ namespace SmartStore.Admin.Controllers
             model.BillingAddress.FaxEnabled = _addressSettings.FaxEnabled;
             model.BillingAddress.FaxRequired = _addressSettings.FaxRequired;
 
-            model.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext); ;
+            model.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext);
+			model.StatusShipping = order.ShippingStatus;
+
             if (order.ShippingStatus != ShippingStatus.ShippingNotRequired)
             {
                 model.IsShippable = true;
@@ -843,6 +848,8 @@ namespace SmartStore.Admin.Controllers
 				var orderStatusIds = model.OrderStatusIds.ToIntArray();
 				var paymentStatusIds = model.PaymentStatusIds.ToIntArray();
 				var shippingStatusIds = model.ShippingStatusIds.ToIntArray();
+				var paymentMethods = new Dictionary<string, Provider<IPaymentMethod>>(StringComparer.OrdinalIgnoreCase);
+				Provider<IPaymentMethod> paymentMethod = null;
 
 				var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
 					model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
@@ -850,26 +857,66 @@ namespace SmartStore.Admin.Controllers
 				gridModel.Data = orders.Select(x =>
 				{
 					var store = _storeService.GetStoreById(x.StoreId);
-					return new OrderModel
+
+					var orderModel = new OrderModel
 					{
 						Id = x.Id,
 						OrderNumber = x.GetOrderNumber(),
-						StoreName = (store != null ? store.Name : "".NaIfEmpty()),
+						StoreName = store != null ? store.Name : "".NaIfEmpty(),
 						OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
 						OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
+						StatusOrder = x.OrderStatus,
 						PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
+						StatusPayment = x.PaymentStatus,
+						IsShippable = x.ShippingStatus != ShippingStatus.ShippingNotRequired,
 						ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
+						StatusShipping = x.ShippingStatus,
+						ShippingMethod = x.ShippingMethod.NullEmpty() ?? "".NaIfEmpty(),
 						CustomerName = x.BillingAddress.GetFullName(),
 						CustomerEmail = x.BillingAddress.Email,
 						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
 						HasNewPaymentNotification = x.HasNewPaymentNotification
 					};
+
+					orderModel.CreatedOnString = orderModel.CreatedOn.ToString("g");
+
+					if (x.PaymentMethodSystemName.HasValue())
+					{
+						if (!paymentMethods.TryGetValue(x.PaymentMethodSystemName, out paymentMethod))
+						{
+							paymentMethod = _paymentService.LoadPaymentMethodBySystemName(x.PaymentMethodSystemName);
+							paymentMethods[x.PaymentMethodSystemName] = paymentMethod;
+						}
+						if (paymentMethod != null)
+						{
+							orderModel.PaymentMethod = _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata);
+						}
+					}
+
+					if (orderModel.PaymentMethod.IsEmpty())
+					{
+						orderModel.PaymentMethod = x.PaymentMethodSystemName;
+					}
+
+					orderModel.HasPaymentMethod = orderModel.PaymentMethod.HasValue();
+
+					if (x.ShippingAddress != null && orderModel.IsShippable)
+					{
+						orderModel.ShippingAddressString = string.Concat(
+							x.ShippingAddress.Address1,
+							", ",
+							x.ShippingAddress.ZipPostalCode,
+							" ",
+							x.ShippingAddress.City);
+					}
+
+					return orderModel;
 				});
 
 				gridModel.Total = orders.TotalCount;
 
-				//summary report
-				//implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx
+				// Summary report.
+				// Implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx.
 				var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatusIds,
 					paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
 

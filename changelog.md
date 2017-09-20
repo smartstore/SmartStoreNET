@@ -8,7 +8,8 @@
 * #1141 Clearer backend order list. Added more infos like payment method.
 
 ### New Features
-* #431 Added option to randomize the display order for slides on each request 
+* #431 Added option to randomize the display order for slides on each request
+* #1258 Add option to filter shipping and payment methods by a specific customer role
 
 
 ## SmartStore.NET 3.0.3

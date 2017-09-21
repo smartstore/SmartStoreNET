@@ -2906,6 +2906,22 @@ namespace SmartStore.Admin.Controllers
                             Price1 = x.Price
 					    };
 
+						switch (x.CalculationMethod)
+						{
+							case TierPriceCalculationMethod.Fixed:
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Fixed").Text;
+								break;
+							case TierPriceCalculationMethod.Adjustment:
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Adjustment").Text;
+								break;
+							case TierPriceCalculationMethod.Percental:
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Percental").Text;
+								break;
+							default:
+								tierPriceModel.CalculationMethod = x.CalculationMethod.ToString();
+								break;
+						}
+
 						if (x.CustomerRoleId.HasValue)
 						{
 							var role = allCustomerRoles.FirstOrDefault(r => r.Id == x.CustomerRoleId.Value);

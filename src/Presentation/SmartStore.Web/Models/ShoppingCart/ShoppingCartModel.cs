@@ -219,11 +219,13 @@ namespace SmartStore.Web.Models.ShoppingCart
             public bool IsShippable { get; set; }
             public AddressModel ShippingAddress { get; set; }
             public string ShippingMethod { get; set; }
+            public bool DisplayShippingMethodChangeOption { get; set; }
 
             public string PaymentMethod { get; set; }
 			public string PaymentSummary { get; set; }
+            public bool DisplayPaymentMethodChangeOption { get; set; }
 
-			public bool IsPaymentSelectionSkipped { get; set; }
+            public bool IsPaymentSelectionSkipped { get; set; }
         }
 		#endregion
     }

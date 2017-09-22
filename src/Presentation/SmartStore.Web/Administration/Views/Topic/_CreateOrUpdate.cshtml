@@ -80,7 +80,7 @@
                 @Html.SmartLabelFor(model => model.SystemName)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SystemName)
+                @Html.TextBoxFor(model => model.SystemName, Model.IsSystemTopic ? new { disabled = "disabled" } : null )
                 @Html.ValidationMessageFor(model => model.SystemName)
             </td>
         </tr>

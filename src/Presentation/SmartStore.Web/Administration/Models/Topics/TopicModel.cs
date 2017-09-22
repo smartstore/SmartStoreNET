@@ -96,6 +96,8 @@ namespace SmartStore.Admin.Models.Topics
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.TitleTag")]
         public string TitleTag { get; set; }
 
+        public bool IsSystemTopic { get; set; }
+
         public IList<SelectListItem> AvailableTitleTags { get; private set; }
 
         public IList<TopicLocalizedModel> Locales { get; set; }

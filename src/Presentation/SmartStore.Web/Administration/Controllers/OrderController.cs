@@ -902,12 +902,14 @@ namespace SmartStore.Admin.Controllers
 
 					if (x.ShippingAddress != null && orderModel.IsShippable)
 					{
-						orderModel.ShippingAddressString = string.Concat(
-							x.ShippingAddress.Address1,
-							", ",
-							x.ShippingAddress.ZipPostalCode,
-							" ",
-							x.ShippingAddress.City);
+						orderModel.ShippingAddressString = string.Concat(x.ShippingAddress.Address1, 
+							", ", x.ShippingAddress.ZipPostalCode,
+							 " ", x.ShippingAddress.City);
+
+						if (x.ShippingAddress.CountryId > 0)
+						{
+							orderModel.ShippingAddressString += ", " + x.ShippingAddress.Country.TwoLetterIsoCode;
+						}
 					}
 
 					return orderModel;

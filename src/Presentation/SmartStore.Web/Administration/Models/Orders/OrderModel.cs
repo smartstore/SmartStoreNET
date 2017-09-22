@@ -131,13 +131,13 @@ namespace SmartStore.Admin.Models.Orders
 				switch (StatusOrder)
 				{
 					case Core.Domain.Orders.OrderStatus.Pending:
-						return "label-default";
+						return "fw-600";
 					case Core.Domain.Orders.OrderStatus.Processing:
-						return "label-info";
+						return "";
 					case Core.Domain.Orders.OrderStatus.Complete:
-						return "label-success";
+						return "text-success";
 					case Core.Domain.Orders.OrderStatus.Cancelled:
-						return "label-danger";
+						return "muted";
 					default:
 						return "";
 				}
@@ -163,16 +163,17 @@ namespace SmartStore.Admin.Models.Orders
 				switch (StatusPayment)
 				{
 					case Core.Domain.Payments.PaymentStatus.Pending:
-						return "label-default";
+						return "fa fa-fw fa-circle text-error";
 					case Core.Domain.Payments.PaymentStatus.Authorized:
-						return "label-info";
+						return "fa fa-fw fa-circle text-warning";
 					case Core.Domain.Payments.PaymentStatus.Paid:
-						return "label-success";
+						return "fa fa-fw fa-check text-success";
 					case Core.Domain.Payments.PaymentStatus.PartiallyRefunded:
+						return "fa fa-fw fa-exchange text-warning";
 					case Core.Domain.Payments.PaymentStatus.Refunded:
-						return "label-warning";
+						return "fa fa-fw fa-exchange text-success";
 					case Core.Domain.Payments.PaymentStatus.Voided:
-						return "label-danger";
+						return "fa fa-fw fa-ban muted";
 					default:
 						return "";
 				}
@@ -273,14 +274,15 @@ namespace SmartStore.Admin.Models.Orders
 				switch (StatusShipping)
 				{
 					case Core.Domain.Shipping.ShippingStatus.ShippingNotRequired:
-						return "label-warning";
+						return "fa fa-fw fa-download muted";
 					case Core.Domain.Shipping.ShippingStatus.NotYetShipped:
-						return "label-default";
+						return "fa fa-fw fa-circle text-error";
 					case Core.Domain.Shipping.ShippingStatus.PartiallyShipped:
+						return "fa fa-fw fa-truck fa-flip-horizontal text-warning";
 					case Core.Domain.Shipping.ShippingStatus.Shipped:
-						return "label-info";
+						return "fa fa-fw fa-truck fa-flip-horizontal text-success";
 					case Core.Domain.Shipping.ShippingStatus.Delivered:
-						return "label-success";
+						return "fa fa-fw fa-check text-success";
 					default:
 						return "";
 				}

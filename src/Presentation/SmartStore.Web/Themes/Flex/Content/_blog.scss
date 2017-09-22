@@ -64,5 +64,9 @@
 
 .block-popular-blogtags {
     overflow: hidden;
+
+    .list-inline-item {
+        line-height: 1.2;
+    }
 }
 

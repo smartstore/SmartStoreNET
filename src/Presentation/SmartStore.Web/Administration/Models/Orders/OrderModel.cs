@@ -36,9 +36,10 @@ namespace SmartStore.Admin.Models.Orders
 		//store
 		[SmartResourceDisplayName("Admin.Orders.Fields.Store")]
 		public string StoreName { get; set; }
+		public string FromStore { get; set; }
 
-        //customer info
-        [SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
+		//customer info
+		[SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
         public int CustomerId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Orders.List.CustomerName")]
@@ -152,6 +153,7 @@ namespace SmartStore.Admin.Models.Orders
 		public bool HasPaymentMethod { get; set; }
 		[SmartResourceDisplayName("Admin.Orders.Fields.PaymentMethod")]
         public string PaymentMethod { get; set; }
+		public string WithPaymentMethod { get; set; }
 		public string PaymentMethodSystemName { get; set; }
 
 		public bool HasNewPaymentNotification { get; set; }
@@ -264,7 +266,8 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.Orders.Fields.ShippingMethod")]
         public string ShippingMethod { get; set; }
-        public string ShippingAddressGoogleMapsUrl { get; set; }
+		public string ViaShippingMethod { get; set; }
+		public string ShippingAddressGoogleMapsUrl { get; set; }
         public bool CanAddNewShipments { get; set; }
 
 		public string ShippingStatusLabelClass

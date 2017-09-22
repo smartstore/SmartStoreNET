@@ -3,7 +3,6 @@
 @{
 	var hideProfitReport = false;
 	var allString = T("Admin.Common.All").Text;
-	var viaString = T("Common.Via").Text;
 
 	ViewBag.Title = T("Admin.Orders").Text;
 }
@@ -185,7 +184,7 @@
 								.ClientTemplate(
 									"<div><i class='<#= ShippingStatusLabelClass #>' title='<#= ShippingStatus #>'></i> " +
 									"<# if(IsShippable){ #><span><#= ShippingAddressString #></span><# } #>" +
-									"<# if(IsShippable){ #><div class='muted'>" + viaString + " <#= ShippingMethod #></div><# } #>" +
+									"<# if(IsShippable){ #><div class='muted'><#= ViaShippingMethod #></div><# } #>" +
 									"<# if(!IsShippable){ #><span class='muted'><#= ShippingStatus #></span><# } #>" +
 									"</div>");
 							columns.Bound(x => x.CreatedOn)
@@ -193,7 +192,7 @@
 								.Title(T("Order.OrderDate"))
 								.ClientTemplate(
 									"<div><#= CreatedOnString #></div>" +
-									"<div class='muted'>" + viaString + " <#= StoreName #></div>");
+									"<div class='muted'><#= FromStore #></div>");
 							columns.Bound(x => x.OrderStatus)
 								.Width(100)
 								.Title(T("Admin.Orders.Fields.OrderStatus"))
@@ -203,7 +202,7 @@
 								.RightAlign()
 								.ClientTemplate(
 									"<div><big style='font-weight:600'><#= OrderTotal #></big> <i class='<#= PaymentStatusLabelClass #>' title='<#= PaymentStatus #>'></i></div>" +
-									"<# if(HasPaymentMethod){ #><div class='muted'>" + viaString + " <#= PaymentMethod #></div><# } #>")
+									"<# if(HasPaymentMethod){ #><div class='muted'><#= WithPaymentMethod #></div><# } #>")
 								.FooterTemplate(
 									string.Format("<div><b>{0}:</b></div>" +
 									(hideProfitReport ? "{1}" : "<div>{1}: <span id=\"aggregator-profit-block\" class=\"pull-right\"></span></div>") +

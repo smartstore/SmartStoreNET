@@ -229,18 +229,24 @@ namespace SmartStore.Web.Controllers
             return View("List", model);
         }
 
-        public ActionResult BlogByTag(BlogPagingFilteringModel command)
+        public ActionResult BlogByTag(string tag, BlogPagingFilteringModel command)
         {
-            if (!_blogSettings.Enabled)
+			// INFO: param 'tag' redunadant, because OutputCache does not include
+			// complex type params in cache key computing
+
+			if (!_blogSettings.Enabled)
 				return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);
             return View("List", model);
         }
 
-        public ActionResult BlogByMonth(BlogPagingFilteringModel command)
+        public ActionResult BlogByMonth(string month, BlogPagingFilteringModel command)
         {
-            if (!_blogSettings.Enabled)
+			// INFO: param 'month' redunadant, because OutputCache does not include
+			// complex type params in cache key computing
+
+			if (!_blogSettings.Enabled)
 				return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);

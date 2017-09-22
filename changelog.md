@@ -3,6 +3,7 @@
 ## SmartStore.NET 3.1.0
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
+* OutputCache computes ambigous cache keys for blog pages
 
 ### Improvements
 * #1141 Clearer backend order list. Added more infos like payment method.

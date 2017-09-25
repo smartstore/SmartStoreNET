@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore;
 using SmartStore.Collections;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Catalog.Modelling;
@@ -17,6 +21,7 @@ namespace SmartStore.Services.Catalog.Extensions
 		private readonly HttpRequestBase _httpRequest;
 		private readonly ICommonServices _services;
 		private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IProductAttributeService _productAttributeService;
 		private readonly Lazy<ILanguageService> _languageService;
 		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
 		private readonly Lazy<LocalizationSettings> _localizationSettings;
@@ -27,6 +32,7 @@ namespace SmartStore.Services.Catalog.Extensions
 			HttpRequestBase httpRequest,
 			ICommonServices services,
 			IProductAttributeParser productAttributeParser,
+			IProductAttributeService productAttributeService,
 			Lazy<ILanguageService> languageService,
 			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
 			Lazy<LocalizationSettings> localizationSettings)
@@ -34,6 +40,7 @@ namespace SmartStore.Services.Catalog.Extensions
 			_httpRequest = httpRequest;
 			_services = services;
 			_productAttributeParser = productAttributeParser;
+			_productAttributeService = productAttributeService;
 			_languageService = languageService;
 			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
 			_localizationSettings = localizationSettings;
@@ -92,7 +99,6 @@ namespace SmartStore.Services.Catalog.Extensions
 
 				if (item.Date.HasValue)
 				{
-					// TODO: Code never reached because of ParseProductVariantAttributeValues
 					qs.Add(name + "-date", string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
 				}
 				else
@@ -125,21 +131,61 @@ namespace SmartStore.Services.Catalog.Extensions
 			Guard.NotNull(query, nameof(query));
 			Guard.NotZero(productId, nameof(productId));
 
-			if (attributesXml.HasValue() && productId != 0)
-			{
-				var attributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributesXml).ToList();
+			if (attributesXml.IsEmpty() || productId == 0)
+				return;
 
-				foreach (var value in attributeValues)
+			ProductVariantAttributeValue attributeValue = null;
+			var attributeMap = _productAttributeParser.DeserializeProductVariantAttributes(attributesXml);
+			var attributes = _productAttributeService.GetProductVariantAttributesByIds(attributeMap.Keys);
+			var attributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributesXml).ToDictionarySafe(x => x.Id);
+
+			foreach (var attribute in attributes)
+			{
+				var values = attributeMap[attribute.Id];
+
+				foreach (var value in values)
 				{
-					query.AddVariant(new ProductVariantQueryItem(value.Id.ToString())
+					DateTime? date = null;
+					string newValue = null;
+					string valueAlias = null;
+
+					switch (attribute.AttributeControlType)
 					{
-						ProductId = productId,
-						BundleItemId = bundleItemId,
-						AttributeId = value.ProductVariantAttribute.ProductAttributeId,
-						VariantAttributeId = value.ProductVariantAttributeId,
-						Alias = value.ProductVariantAttribute.ProductAttribute.Alias,
-						ValueAlias = value.Alias
-					});
+						case AttributeControlType.Datepicker:
+							date = value.ToDateTime(new string[] { "D" }, CultureInfo.CurrentCulture, DateTimeStyles.None, null);
+							if (date != null)
+							{
+								newValue = string.Join("-", date.Value.Year, date.Value.Month, date.Value.Day);
+							}
+							break;
+						case AttributeControlType.TextBox:
+						case AttributeControlType.MultilineTextbox:
+							// TODO
+							break;
+						case AttributeControlType.FileUpload:
+							break;
+						default:
+							newValue = value;
+							if (attributeValues.TryGetValue(value.ToInt(), out attributeValue))
+							{
+								valueAlias = attributeValue.Alias;
+							}
+							break;
+					}
+
+					if (newValue.HasValue())
+					{
+						query.AddVariant(new ProductVariantQueryItem(newValue)
+						{
+							ProductId = productId,
+							BundleItemId = bundleItemId,
+							AttributeId = attribute.ProductAttributeId,
+							VariantAttributeId = attribute.Id,
+							Alias = attribute.ProductAttribute.Alias,
+							ValueAlias = valueAlias,
+							Date = date
+						});
+					}
 				}
 			}
 		}

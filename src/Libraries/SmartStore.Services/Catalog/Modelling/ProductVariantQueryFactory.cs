@@ -11,7 +11,7 @@ namespace SmartStore.Services.Catalog.Modelling
 	public class ProductVariantQueryFactory : IProductVariantQueryFactory
 	{
 		internal static readonly Regex IsVariantKey = new Regex(@"pvari[0-9]+-[0-9]+-[0-9]+-[0-9]+", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		internal static readonly Regex IsVariantAliasKey = new Regex(@"\w+-[0-9]+-[0-9]+-[0-9]+$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		internal static readonly Regex IsVariantAliasKey = new Regex(@"\w+-[0-9]+-[0-9]+-[0-9]+", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		internal static readonly Regex IsGiftCardKey = new Regex(@"giftcard[0-9]+-[0-9]+-\.\w+$", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		internal static readonly Regex IsCheckoutAttributeKey = new Regex(@"cattr[0-9]+", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -131,13 +131,20 @@ namespace SmartStore.Services.Catalog.Modelling
 
 		protected virtual bool ConvertVariantAlias(ProductVariantQuery query, string key, ICollection<string> values, int languageId)
 		{
-			if (values.Count == 0)
+			if (values.Count == 0 || key.EndsWith("-day") || key.EndsWith("-month"))
 				return false;
 
+			var isDate = key.EndsWith("-date") || key.EndsWith("-year");
 			var ids = key.SplitSafe("-");
 			var len = ids.Length;
 			if (len < 4)
 				return false;
+
+			if (isDate)
+			{
+				ids = ids.Take(len - 1).ToArray();
+				len = ids.Length;
+			}
 
 			var alias = string.Join("-", ids.Take(len - 3));
 
@@ -158,11 +165,20 @@ namespace SmartStore.Services.Catalog.Modelling
 				//var optionId = _catalogSearchQueryAliasMapper.GetVariantOptionIdByAlias(value, attributeId, languageId);
 				var optionId = 0;
 				string valueAlias = null;
-				var valueIds = value.SplitSafe("-");
-				if (valueIds.Length >= 2)
+				DateTime? date = null;
+
+				if (isDate)
 				{
-					optionId = valueIds.SafeGet(valueIds.Length - 1).ToInt();
-					valueAlias = string.Join("-", valueIds.Take(valueIds.Length - 1));
+					date = ConvertToDate(key, value);
+				}
+				else
+				{
+					var valueIds = value.SplitSafe("-");
+					if (valueIds.Length >= 2)
+					{
+						optionId = valueIds.SafeGet(valueIds.Length - 1).ToInt();
+						valueAlias = string.Join("-", valueIds.Take(valueIds.Length - 1));
+					}
 				}
 
 				var variant = new ProductVariantQueryItem(optionId == 0 ? value : optionId.ToString());
@@ -171,6 +187,7 @@ namespace SmartStore.Services.Catalog.Modelling
 				variant.AttributeId = attributeId;
 				variant.VariantAttributeId = variantAttributeId;
 				variant.Alias = alias;
+				variant.Date = date;
 
 				if (optionId != 0)
 				{

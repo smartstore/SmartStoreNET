@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Bugfixes
@@ -9,7 +9,8 @@
 ### Improvements
 * #1141 Clearer backend order list. Added more infos like payment method.
 * #1248 New payment integration guidelines for Sofort\Klarna
-
+* TwitterAuth: better error handling and enhanced admin instruction
+* 
 ### New Features
 * #431 Added option to randomize the display order for slides on each request
 * #1258 Add option to filter shipping and payment methods by a specific customer role

@@ -845,6 +845,9 @@ namespace SmartStore.Admin.Controllers
 				DateTime? startDateValue = (model.StartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
 				DateTime? endDateValue = (model.EndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
+				var viaShippingMethodString = T("Admin.Order.ViaShippingMethod").Text;
+				var withPaymentMethodString = T("Admin.Order.WithPaymentMethod").Text;
+				var fromStoreString = T("Admin.Order.FromStore").Text;
 				var orderStatusIds = model.OrderStatusIds.ToIntArray();
 				var paymentStatusIds = model.PaymentStatusIds.ToIntArray();
 				var shippingStatusIds = model.ShippingStatusIds.ToIntArray();
@@ -902,13 +905,19 @@ namespace SmartStore.Admin.Controllers
 
 					if (x.ShippingAddress != null && orderModel.IsShippable)
 					{
-						orderModel.ShippingAddressString = string.Concat(
-							x.ShippingAddress.Address1,
-							", ",
-							x.ShippingAddress.ZipPostalCode,
-							" ",
-							x.ShippingAddress.City);
+						orderModel.ShippingAddressString = string.Concat(x.ShippingAddress.Address1, 
+							", ", x.ShippingAddress.ZipPostalCode,
+							 " ", x.ShippingAddress.City);
+
+						if (x.ShippingAddress.CountryId > 0)
+						{
+							orderModel.ShippingAddressString += ", " + x.ShippingAddress.Country.TwoLetterIsoCode;
+						}
 					}
+
+					orderModel.ViaShippingMethod = viaShippingMethodString.FormatInvariant(orderModel.ShippingMethod);
+					orderModel.WithPaymentMethod = withPaymentMethodString.FormatInvariant(orderModel.PaymentMethod);
+					orderModel.FromStore = fromStoreString.FormatInvariant(orderModel.StoreName);
 
 					return orderModel;
 				});

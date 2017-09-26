@@ -664,51 +664,59 @@ namespace SmartStore.Web.Controllers
 						AllowedFileExtensions = _catalogSettings.FileUploadAllowedExtensions
 					};
 
-					if (attribute.AttributeControlType == AttributeControlType.Datepicker)
+					if (hasSelectedAttributes)
 					{
-						// TODO: obsolete?
-						if (pvaModel.Alias.HasValue() && RegularExpressions.IsYearRange.IsMatch(pvaModel.Alias))
-						{
-							var match = RegularExpressions.IsYearRange.Match(pvaModel.Alias);
-							pvaModel.BeginYear = match.Groups[1].Value.ToInt();
-							pvaModel.EndYear = match.Groups[2].Value.ToInt();
-						}
+						var selectedVariant = query.Variants.FirstOrDefault(x =>
+							x.ProductId == product.Id &&
+							x.BundleItemId == bundleItemId &&
+							x.AttributeId == attribute.ProductAttributeId &&
+							x.VariantAttributeId == attribute.Id);
 
-						if (hasSelectedAttributes)
+						if (selectedVariant != null)
 						{
-							var selectedVariant = query.Variants.FirstOrDefault(x =>
-								x.ProductId == product.Id &&
-								x.BundleItemId == bundleItemId &&
-								x.AttributeId == attribute.ProductAttributeId &&
-								x.VariantAttributeId == attribute.Id);
-
-							if (selectedVariant != null && selectedVariant.Date.HasValue)
+							switch (attribute.AttributeControlType)
 							{
-								pvaModel.SelectedDay = selectedVariant.Date.Value.Day;
-								pvaModel.SelectedMonth = selectedVariant.Date.Value.Month;
-								pvaModel.SelectedYear = selectedVariant.Date.Value.Year;
+								case AttributeControlType.Datepicker:
+									if (selectedVariant.Date.HasValue)
+									{
+										pvaModel.SelectedDay = selectedVariant.Date.Value.Day;
+										pvaModel.SelectedMonth = selectedVariant.Date.Value.Month;
+										pvaModel.SelectedYear = selectedVariant.Date.Value.Year;
+									}
+									break;
+								case AttributeControlType.FileUpload:
+									pvaModel.UploadedFileGuid = selectedVariant.Value;
+
+									Guid guid;
+									if (selectedVariant.Value.HasValue() && Guid.TryParse(selectedVariant.Value, out guid))
+									{										
+										var download = _downloadService.GetDownloadByGuid(guid);
+										if (download != null)
+										{
+											pvaModel.UploadedFileName = string.Concat(download.Filename ?? download.DownloadGuid.ToString(), download.Extension);
+										}
+									}
+									break;
+								case AttributeControlType.TextBox:
+								case AttributeControlType.MultilineTextbox:
+									pvaModel.TextValue = selectedVariant.Value;
+									break;
 							}
 						}
 					}
-					else if (attribute.AttributeControlType == AttributeControlType.TextBox || attribute.AttributeControlType == AttributeControlType.MultilineTextbox)
-					{
-						if (hasSelectedAttributes)
-						{
-							var selectedVariant = query.Variants.FirstOrDefault(x =>
-								x.ProductId == product.Id &&
-								x.BundleItemId == bundleItemId &&
-								x.AttributeId == attribute.ProductAttributeId &&
-								x.VariantAttributeId == attribute.Id);
 
-							if (selectedVariant != null)
-							{
-								pvaModel.TextValue = selectedVariant.Value;
-							}
-						}
+					// TODO: obsolete? Alias field is not used for custom values anymore, only for URL as URL variant alias.
+					if (attribute.AttributeControlType == AttributeControlType.Datepicker && pvaModel.Alias.HasValue() && RegularExpressions.IsYearRange.IsMatch(pvaModel.Alias))
+					{
+						var match = RegularExpressions.IsYearRange.Match(pvaModel.Alias);
+						pvaModel.BeginYear = match.Groups[1].Value.ToInt();
+						pvaModel.EndYear = match.Groups[2].Value.ToInt();
 					}
 
 					var preSelectedValueId = 0;
-					var pvaValues = (attribute.ShouldHaveValues() ? _productAttributeService.GetProductVariantAttributeValues(attribute.Id) : new List<ProductVariantAttributeValue>());
+					var pvaValues = attribute.ShouldHaveValues() 
+						? _productAttributeService.GetProductVariantAttributeValues(attribute.Id)
+						: new List<ProductVariantAttributeValue>();
 
 					foreach (var pvaValue in pvaValues)
 					{

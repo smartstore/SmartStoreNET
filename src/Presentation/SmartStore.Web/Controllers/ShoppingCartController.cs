@@ -851,7 +851,17 @@ namespace SmartStore.Web.Controllers
 							var values = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
 							if (values.Any())
 							{
-								caModel.UploadedFile = values.First();
+								caModel.UploadedFileGuid = values.First();
+
+								Guid guid;
+								if (caModel.UploadedFileGuid.HasValue() && Guid.TryParse(caModel.UploadedFileGuid, out guid))
+								{
+									var download = _downloadService.GetDownloadByGuid(guid);
+									if (download != null)
+									{
+										caModel.UploadedFileName = string.Concat(download.Filename ?? download.DownloadGuid.ToString(), download.Extension);
+									}
+								}
 							}
 						}
 						break;
@@ -918,7 +928,9 @@ namespace SmartStore.Web.Controllers
 
 			if (prepareAndDisplayOrderReviewData)
 			{
-				model.OrderReviewData.Display = true;
+                var checkoutState = _httpContext.GetCheckoutState();
+
+                model.OrderReviewData.Display = true;
 
 				//billing info
 				var billingAddress = _workContext.CurrentCustomer.BillingAddress;
@@ -938,14 +950,20 @@ namespace SmartStore.Web.Controllers
 					var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _storeContext.CurrentStore.Id);
 					if (shippingOption != null)
 						model.OrderReviewData.ShippingMethod = shippingOption.Name;
+                    
+                    if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActiveShippingMethod"))
+                        model.OrderReviewData.DisplayShippingMethodChangeOption = !(bool)checkoutState.CustomProperties.Get("HasOnlyOneActiveShippingMethod");
+                    
 				}
 
 				//payment info
 				var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
 
-				var checkoutState = _httpContext.GetCheckoutState();
-				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
+                if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActivePaymentMethod"))
+                    model.OrderReviewData.DisplayPaymentMethodChangeOption = !(bool)checkoutState.CustomProperties.Get("HasOnlyOneActivePaymentMethod");
+
+                var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
 
 				model.OrderReviewData.PaymentMethod = paymentMethod != null ? _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata) : "";
 				model.OrderReviewData.PaymentSummary = checkoutState.PaymentSummary;

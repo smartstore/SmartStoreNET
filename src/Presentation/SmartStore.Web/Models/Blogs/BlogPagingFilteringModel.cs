@@ -20,6 +20,7 @@ namespace SmartStore.Web.Models.Blogs
             }
             return result;
         }
+
         public virtual DateTime? GetFromMonth()
         {
             var filterByMonth = GetParsedMonth();
@@ -27,6 +28,7 @@ namespace SmartStore.Web.Models.Blogs
                 return filterByMonth.Value;
             return null;
         }
+
         public virtual DateTime? GetToMonth()
         {
             var filterByMonth = GetParsedMonth();

@@ -1,14 +1,20 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Bugfixes
-...
+* #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
+* OutputCache computes ambigous cache keys for blog pages
+* #1142 Customer import creates role multiple times
 
 ### Improvements
 * #1141 Clearer backend order list. Added more infos like payment method.
-
+* #1248 New payment integration guidelines for Sofort\Klarna
+* TwitterAuth: better error handling and enhanced admin instruction
+* 
 ### New Features
-* #431 Added option to randomize the display order for slides on each request 
+* #431 Added option to randomize the display order for slides on each request
+* #1258 Add option to filter shipping and payment methods by a specific customer role
+* #1247 Allow to import non system customer roles in customer import
 
 
 ## SmartStore.NET 3.0.3

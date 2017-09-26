@@ -2902,13 +2902,13 @@ namespace SmartStore.Admin.Controllers
 						switch (x.CalculationMethod)
 						{
 							case TierPriceCalculationMethod.Fixed:
-								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Fixed");
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Fixed").Text;
 								break;
 							case TierPriceCalculationMethod.Adjustment:
-								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Adjustment");
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Adjustment").Text;
 								break;
 							case TierPriceCalculationMethod.Percental:
-								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Percental");
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Percental").Text;
 								break;
 							default:
 								tierPriceModel.CalculationMethod = x.CalculationMethod.ToString();

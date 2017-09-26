@@ -10,6 +10,7 @@ using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Core.Domain;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -148,7 +149,7 @@ namespace SmartStore.Web.Framework.Theming
             {
                 if (!_isStoreClosed.HasValue)
                 {
-                    _isStoreClosed = StoreInfoSettings.StoreClosed;
+                    _isStoreClosed = Services.WorkContext.CurrentCustomer.IsAdmin() && StoreInfoSettings.StoreClosedAllowForAdmins ?  false : StoreInfoSettings.StoreClosed;
                 }
 
                 return _isStoreClosed.Value;

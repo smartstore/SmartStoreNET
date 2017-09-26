@@ -674,8 +674,8 @@ namespace SmartStore.Web.Controllers
 			model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
 			model.DisplayBasePrice = _shoppingCartSettings.ShowBasePrice;
 			model.DisplayWeight = _shoppingCartSettings.ShowWeight;
-
-			model.IsEditable = isEditable;
+            model.DisplayMoveToWishlistButton = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist);
+            model.IsEditable = isEditable;
 			model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
 			model.ShowSku = _catalogSettings.ShowProductSku;
@@ -1030,7 +1030,8 @@ namespace SmartStore.Web.Controllers
                 ThumbSize = _mediaSettings.MiniCartThumbPictureSize,
                 CurrentCustomerIsGuest = _workContext.CurrentCustomer.IsGuest(),
                 AnonymousCheckoutAllowed = _orderSettings.AnonymousCheckoutAllowed,
-            };
+                DisplayMoveToWishlistButton = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist)
+        };
 
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 

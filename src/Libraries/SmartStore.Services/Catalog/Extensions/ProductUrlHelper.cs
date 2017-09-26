@@ -163,6 +163,7 @@ namespace SmartStore.Services.Catalog.Extensions
 							// TODO
 							break;
 						case AttributeControlType.FileUpload:
+							newValue = value;
 							break;
 						default:
 							newValue = value;

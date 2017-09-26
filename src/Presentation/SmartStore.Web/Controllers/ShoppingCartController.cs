@@ -851,7 +851,17 @@ namespace SmartStore.Web.Controllers
 							var values = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
 							if (values.Any())
 							{
-								caModel.UploadedFile = values.First();
+								caModel.UploadedFileGuid = values.First();
+
+								Guid guid;
+								if (caModel.UploadedFileGuid.HasValue() && Guid.TryParse(caModel.UploadedFileGuid, out guid))
+								{
+									var download = _downloadService.GetDownloadByGuid(guid);
+									if (download != null)
+									{
+										caModel.UploadedFileName = string.Concat(download.Filename ?? download.DownloadGuid.ToString(), download.Extension);
+									}
+								}
 							}
 						}
 						break;

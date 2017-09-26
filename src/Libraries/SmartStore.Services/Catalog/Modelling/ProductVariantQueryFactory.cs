@@ -135,12 +135,13 @@ namespace SmartStore.Services.Catalog.Modelling
 				return false;
 
 			var isDate = key.EndsWith("-date") || key.EndsWith("-year");
+			var isFile = key.EndsWith("-file");
 			var ids = key.SplitSafe("-");
 			var len = ids.Length;
 			if (len < 4)
 				return false;
 
-			if (isDate)
+			if (isDate || isFile)
 			{
 				ids = ids.Take(len - 1).ToArray();
 				len = ids.Length;

@@ -71,7 +71,9 @@ namespace SmartStore.Services.Hooks
 							result = prop.OriginalValue != null;
 							break;
 						default:
-							result = prop.CurrentValue != null && !prop.CurrentValue.Equals(prop.OriginalValue);
+							result =
+								(prop.CurrentValue != null && !prop.CurrentValue.Equals(prop.OriginalValue)) ||
+								(prop.OriginalValue != null && !prop.OriginalValue.Equals(prop.CurrentValue));
 							break;
 					}
 				}

@@ -21,6 +21,8 @@ namespace SmartStore.Services.Catalog.Modelling
 		public int AttributeId { get; set; }
 		public int VariantAttributeId { get; set; }
 		public DateTime? Date { get; set; }
+		public bool IsFile { get; set; }
+		public bool IsText { get; set; }
 
 		public string Alias { get; set; }
 		public string ValueAlias { get; set; }

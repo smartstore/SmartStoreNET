@@ -101,6 +101,14 @@ namespace SmartStore.Services.Catalog.Extensions
 				{
 					qs.Add(name + "-date", string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
 				}
+				else if (item.IsFile)
+				{
+					qs.Add(name + "-file", item.Value);
+				}
+				else if (item.IsText)
+				{
+					qs.Add(name + "-text", item.Value);
+				}
 				else
 				{
 					if (item.ValueAlias.IsEmpty())
@@ -145,9 +153,9 @@ namespace SmartStore.Services.Catalog.Extensions
 
 				foreach (var value in values)
 				{
-					DateTime? date = null;
 					string newValue = null;
 					string valueAlias = null;
+					DateTime? date = null;
 
 					switch (attribute.AttributeControlType)
 					{
@@ -158,11 +166,9 @@ namespace SmartStore.Services.Catalog.Extensions
 								newValue = string.Join("-", date.Value.Year, date.Value.Month, date.Value.Day);
 							}
 							break;
+						case AttributeControlType.FileUpload:
 						case AttributeControlType.TextBox:
 						case AttributeControlType.MultilineTextbox:
-							// TODO
-							break;
-						case AttributeControlType.FileUpload:
 							newValue = value;
 							break;
 						default:
@@ -184,7 +190,9 @@ namespace SmartStore.Services.Catalog.Extensions
 							VariantAttributeId = attribute.Id,
 							Alias = attribute.ProductAttribute.Alias,
 							ValueAlias = valueAlias,
-							Date = date
+							Date = date,
+							IsFile = attribute.AttributeControlType == AttributeControlType.FileUpload,
+							IsText = attribute.AttributeControlType == AttributeControlType.TextBox || attribute.AttributeControlType == AttributeControlType.MultilineTextbox
 						});
 					}
 				}

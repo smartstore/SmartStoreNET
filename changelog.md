@@ -1,10 +1,11 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
 * OutputCache computes ambigous cache keys for blog pages
 * #1142 Customer import creates role multiple times
+* #1244 Variant query model binder cannot handle types text and datepicker
 
 ### Improvements
 * #1141 Clearer backend order list. Added more infos like payment method.

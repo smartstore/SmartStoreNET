@@ -124,11 +124,16 @@ namespace SmartStore.Services.Catalog
 			{
 				var allValueIds = new HashSet<int>();
 				var attrMap = DeserializeProductVariantAttributes(attributeXml);
+				var attributes = _productAttributeService.GetProductVariantAttributesByIds(attrMap.Keys);
 
-				foreach (var attr in attrMap)
+				foreach (var attribute in attributes)
 				{
+					// Only types that have attribute values! Otherwise entered text is misinterpreted as an attribute value id.
+					if (!attribute.ShouldHaveValues())
+						continue;
+
 					var ids =
-						from id in attr.Value
+						from id in attrMap[attribute.Id]
 						where id.HasValue()
 						select id.ToInt();
 

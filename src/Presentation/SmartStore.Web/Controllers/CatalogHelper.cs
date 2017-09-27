@@ -731,6 +731,7 @@ namespace SmartStore.Web.Controllers
 						var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
 
 						var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel();
+						pvaValueModel.PriceAdjustment = string.Empty;
 						pvaValueModel.Id = pvaValue.Id;
 						pvaValueModel.Name = pvaValue.GetLocalized(x => x.Name);
 						pvaValueModel.Alias = pvaValue.Alias;
@@ -753,10 +754,13 @@ namespace SmartStore.Web.Controllers
 							decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
 							decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, currency);
 
-							if (priceAdjustmentBase > decimal.Zero)
-								pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
-							else if (priceAdjustmentBase < decimal.Zero)
-								pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
+							if (_catalogSettings.ShowVariantCombinationPriceAdjustment)
+							{
+								if (priceAdjustmentBase > decimal.Zero)
+									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
+								else if (priceAdjustmentBase < decimal.Zero)
+									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
+							}
 
 							if (pvaValueModel.IsPreSelected)
 							{
@@ -770,11 +774,6 @@ namespace SmartStore.Web.Controllers
 							}
 
 							pvaValueModel.PriceAdjustmentValue = priceAdjustment;
-						}
-
-						if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
-						{
-							pvaValueModel.PriceAdjustment = "";
 						}
 
 						if (_catalogSettings.ShowLinkedAttributeValueImage && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)

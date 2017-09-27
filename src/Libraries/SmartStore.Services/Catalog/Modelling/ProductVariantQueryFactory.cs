@@ -243,22 +243,37 @@ namespace SmartStore.Services.Catalog.Modelling
 			}
 		}
 
-		protected virtual void ConvertCheckoutAttribute(ProductVariantQuery query, string key, string value)
+		protected virtual void ConvertCheckoutAttribute(ProductVariantQuery query, string key, ICollection<string> values)
 		{
-			if (key.EndsWith("-day") || key.EndsWith("-month"))
+			var ids = key.Replace("cattr", "").SplitSafe("-");
+			if (ids.Length <= 0)
 				return;
 
-			var ids = key.Replace("cattr", "").SplitSafe("-");
-			if (ids.Length > 0)
-			{
-				var attribute = new CheckoutAttributeQueryItem(ids[0].ToInt(), value);
+			var attributeId = ids[0].ToInt();
+			var isDate = key.EndsWith("-date") || key.EndsWith("-year");
+			var isFile = key.EndsWith("-file");
+			var isText = key.EndsWith("-text");
 
-				if (key.EndsWith("-date") || key.EndsWith("-year"))
+			if (isDate || isFile || isText)
+			{
+				var value = isText ? string.Join(",", values) : values.First();
+				var attribute = new CheckoutAttributeQueryItem(attributeId, value);
+				attribute.IsFile = isFile;
+				attribute.IsText = isText;
+
+				if (isDate)
 				{
 					attribute.Date = ConvertToDate(key, value);
 				}
 
 				query.AddCheckoutAttribute(attribute);
+			}
+			else
+			{
+				foreach (var value in values)
+				{
+					query.AddCheckoutAttribute(new CheckoutAttributeQueryItem(attributeId, value));
+				}
 			}
 		}
 
@@ -295,7 +310,7 @@ namespace SmartStore.Services.Catalog.Modelling
 				}
 				else if (IsCheckoutAttributeKey.IsMatch(item.Key))
 				{
-					item.Value.Each(value => ConvertCheckoutAttribute(query, item.Key, value));
+					ConvertCheckoutAttribute(query, item.Key, item.Value);
 				}
 				else if (IsVariantAliasKey.IsMatch(item.Key))
 				{

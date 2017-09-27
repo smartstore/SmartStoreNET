@@ -56,20 +56,29 @@ namespace SmartStore.Services.Catalog
 
 			foreach (var xml in unfetched)
 			{
+				var valueIds = new HashSet<int>();
 				var map = DeserializeProductVariantAttributes(xml);
+				var attributes = _productAttributeService.GetProductVariantAttributesByIds(map.Keys);
 
-				// Get all value ids across all attributes
-				var valueIds = map.SelectMany(x => x.Value)
-					.Where(x => x.HasValue())
-					.Select(x => x.ToInt())
-					.Distinct()
-					.ToArray();
+				foreach (var attribute in attributes)
+				{
+					// Only types that have attribute values! Otherwise entered text is misinterpreted as an attribute value id.
+					if (!attribute.ShouldHaveValues())
+						continue;
+
+					var ids =
+						from id in map[attribute.Id]
+						where id.HasValue()
+						select id.ToInt();
+
+					valueIds.UnionWith(ids);
+				}
 
 				var info = new AttributeMapInfo
 				{
 					AttributesXml = xml,
 					DeserializedMap = map,
-					AllValueIds = valueIds
+					AllValueIds = valueIds.ToArray()
 				};
 
 				infos.Add(info);

@@ -1566,12 +1566,18 @@ namespace SmartStore.Web.Controllers
 
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult Cart()
+        public ActionResult Cart(ProductVariantQuery query)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
                 return RedirectToRoute("HomePage");
 
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+
+			// Allow to fill checkout attributes with values from query string.
+			if (query.CheckoutAttributes.Any())
+			{
+				ParseAndSaveCheckoutAttributes(cart, query);
+			}
 
 			var model = new ShoppingCartModel();
 			PrepareShoppingCartModel(model, cart);

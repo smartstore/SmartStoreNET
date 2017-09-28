@@ -12,7 +12,8 @@
 * #1141 Clearer backend order list. Added more infos like payment method.
 * #1248 New payment integration guidelines for Sofort\Klarna
 * TwitterAuth: better error handling and enhanced admin instruction
-* 
+* #1181 Debitoor: Add option to display shipping address on invoices
+
 ### New Features
 * #431 Added option to randomize the display order for slides on each request
 * #1258 Add option to filter shipping and payment methods by a specific customer role

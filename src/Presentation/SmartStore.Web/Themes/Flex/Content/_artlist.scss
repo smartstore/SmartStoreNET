@@ -574,6 +574,9 @@ $art-border-color:              #ddd;
         &.artlist-6-cols {
             @include make-art-col(3);
         }
+        &.artlist-8-cols {
+            @include make-art-col(4);
+        }
     }
 
     @include media-breakpoint-up(md) {
@@ -582,6 +585,9 @@ $art-border-color:              #ddd;
         }
         &.artlist-6-cols {
             @include make-art-col(4);
+        }
+        &.artlist-8-cols {
+            @include make-art-col(5);
         }
     }
 
@@ -594,6 +600,9 @@ $art-border-color:              #ddd;
         &.artlist-6-cols {
             @include make-art-col(4);
         }
+        &.artlist-8-cols {
+            @include make-art-col(6);
+        }
     }
 
     @include media-breakpoint-up(xl) {
@@ -605,6 +614,9 @@ $art-border-color:              #ddd;
         }
         &.artlist-6-cols {
             @include make-art-col(6);
+        }
+        &.artlist-8-cols {
+            @include make-art-col(8);
         }
     }
 

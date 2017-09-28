@@ -122,15 +122,18 @@
 							   data-action="remove">
 								<i class="fa fa-2x">×</i>
 							</a>
-							<a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
-							   href="#"
-							   rel="nofollow"
-							   data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart, isCartPage = true })"
-							   data-name="@item.ProductName"
-							   data-type="wishlist"
-							   data-action="addfromcart">
-							    <i class="fa fa-heart-o"></i>
-							</a>
+                            @if (Model.DisplayMoveToWishlistButton)
+                            {
+                                <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
+                                   href="#"
+                                   rel="nofollow"
+                                   data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart, isCartPage = true })"
+                                   data-name="@item.ProductName"
+                                   data-type="wishlist"
+                                   data-action="addfromcart">
+                                    <i class="fa fa-heart-o"></i>
+                                </a>
+                            }
 						</div>
 					</div>
 				}

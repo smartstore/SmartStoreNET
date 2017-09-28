@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using SmartStore;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
@@ -67,15 +64,13 @@ namespace SmartStore.Services.Catalog.Extensions
 			// Checkout Attributes
 			foreach (var item in query.CheckoutAttributes)
 			{
-				var name = item.ToString();
-
 				if (item.Date.HasValue)
 				{
-					qs.Add(name + "-date", string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
+					qs.Add(item.ToString(), string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
 				}
 				else
 				{
-					qs.Add(name, item.Value);
+					qs.Add(item.ToString(), item.Value);
 				}
 			}
 
@@ -93,13 +88,13 @@ namespace SmartStore.Services.Catalog.Extensions
 					item.Alias = _catalogSearchQueryAliasMapper.Value.GetVariantAliasById(item.AttributeId, _languageId);
 				}
 
-				var name = item.Alias.HasValue()
-					? $"{item.Alias}-{item.ProductId}-{item.BundleItemId}-{item.VariantAttributeId}"
-					: item.ToString();
-
 				if (item.Date.HasValue)
 				{
-					qs.Add(name + "-date", string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
+					qs.Add(item.ToString(), string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
+				}
+				else if (item.IsFile || item.IsText)
+				{
+					qs.Add(item.ToString(), item.Value);
 				}
 				else
 				{
@@ -112,7 +107,7 @@ namespace SmartStore.Services.Catalog.Extensions
 						? $"{item.ValueAlias}-{item.Value}"
 						: item.Value;
 
-					qs.Add(name, value);
+					qs.Add(item.ToString(), value);
 				}
 			}
 
@@ -134,59 +129,41 @@ namespace SmartStore.Services.Catalog.Extensions
 			if (attributesXml.IsEmpty() || productId == 0)
 				return;
 
-			ProductVariantAttributeValue attributeValue = null;
 			var attributeMap = _productAttributeParser.DeserializeProductVariantAttributes(attributesXml);
 			var attributes = _productAttributeService.GetProductVariantAttributesByIds(attributeMap.Keys);
-			var attributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributesXml).ToDictionarySafe(x => x.Id);
 
 			foreach (var attribute in attributes)
 			{
-				var values = attributeMap[attribute.Id];
-
-				foreach (var value in values)
+				foreach (var originalValue in attributeMap[attribute.Id])
 				{
+					var value = originalValue;
 					DateTime? date = null;
-					string newValue = null;
-					string valueAlias = null;
 
-					switch (attribute.AttributeControlType)
+					if (attribute.AttributeControlType == AttributeControlType.Datepicker)
 					{
-						case AttributeControlType.Datepicker:
-							date = value.ToDateTime(new string[] { "D" }, CultureInfo.CurrentCulture, DateTimeStyles.None, null);
-							if (date != null)
-							{
-								newValue = string.Join("-", date.Value.Year, date.Value.Month, date.Value.Day);
-							}
-							break;
-						case AttributeControlType.TextBox:
-						case AttributeControlType.MultilineTextbox:
-							// TODO
-							break;
-						case AttributeControlType.FileUpload:
-							newValue = value;
-							break;
-						default:
-							newValue = value;
-							if (attributeValues.TryGetValue(value.ToInt(), out attributeValue))
-							{
-								valueAlias = attributeValue.Alias;
-							}
-							break;
+						date = originalValue.ToDateTime(new string[] { "D" }, CultureInfo.CurrentCulture, DateTimeStyles.None, null);
+						if (date == null)
+							continue;
+
+						value = string.Join("-", date.Value.Year, date.Value.Month, date.Value.Day);
 					}
 
-					if (newValue.HasValue())
+					var queryItem = new ProductVariantQueryItem(value);
+					queryItem.ProductId = productId;
+					queryItem.BundleItemId = bundleItemId;
+					queryItem.AttributeId = attribute.ProductAttributeId;
+					queryItem.VariantAttributeId = attribute.Id;
+					queryItem.Alias = _catalogSearchQueryAliasMapper.Value.GetVariantAliasById(attribute.ProductAttributeId, _languageId);
+					queryItem.Date = date;
+					queryItem.IsFile = attribute.AttributeControlType == AttributeControlType.FileUpload;
+					queryItem.IsText = attribute.AttributeControlType == AttributeControlType.TextBox || attribute.AttributeControlType == AttributeControlType.MultilineTextbox;
+
+					if (attribute.ShouldHaveValues())
 					{
-						query.AddVariant(new ProductVariantQueryItem(newValue)
-						{
-							ProductId = productId,
-							BundleItemId = bundleItemId,
-							AttributeId = attribute.ProductAttributeId,
-							VariantAttributeId = attribute.Id,
-							Alias = attribute.ProductAttribute.Alias,
-							ValueAlias = valueAlias,
-							Date = date
-						});
+						queryItem.ValueAlias = _catalogSearchQueryAliasMapper.Value.GetVariantOptionAliasById(value.ToInt(), _languageId);
 					}
+
+					query.AddVariant(queryItem);
 				}
 			}
 		}

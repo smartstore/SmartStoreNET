@@ -79,7 +79,7 @@
 
         elRemove.click(function (e) {
             elFile.html("").addClass("d-none");
-            elHidden.val(0);
+            elHidden.val('');
             $(this).hide();
             e.preventDefault();
         });
@@ -87,7 +87,7 @@
         setUploadedFile('@Model.UploadedFileGuid', '@Model.UploadedFileName');
 
         function setUploadedFile(downloadGuid, fileName) {
-        	if (!_.isEmpty(downloadGuid)) {
+        	if (!_.isEmpty(downloadGuid) && downloadGuid !== '0') {
         		elHidden.val(downloadGuid);
 
         		var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + downloadGuid;

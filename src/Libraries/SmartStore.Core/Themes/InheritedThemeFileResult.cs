@@ -35,5 +35,10 @@ namespace SmartStore.Core.Themes
 		public string ResultThemeName { get; set; }
 
 		public bool IsExplicit { get; set; }
+
+		/// <summary>
+		/// The query string, e.g. '?explicit'
+		/// </summary>
+		public string Query { get; set; }
 	}
 }

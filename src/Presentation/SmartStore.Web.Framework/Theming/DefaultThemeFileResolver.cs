@@ -145,7 +145,7 @@ namespace SmartStore.Web.Framework.Theming
 			{
 				if (isExplicit)
 				{
-					return new InheritedThemeFileResult { IsExplicit = true, OriginalVirtualPath = virtualPath };
+					return new InheritedThemeFileResult { IsExplicit = true, OriginalVirtualPath = virtualPath, Query = query };
 				}
 				return null;
 			};
@@ -190,7 +190,8 @@ namespace SmartStore.Web.Framework.Theming
 								ResultVirtualPath = resultVirtualPath,
 								ResultPhysicalPath = resultPhysicalPath,
 								OriginalThemeName = requestedThemeName,
-								ResultThemeName = actualLocation
+								ResultThemeName = actualLocation,
+								Query = query
 							};
 						}
 

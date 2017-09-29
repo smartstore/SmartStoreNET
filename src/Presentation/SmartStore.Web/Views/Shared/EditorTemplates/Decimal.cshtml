@@ -24,10 +24,10 @@
 }
 
 @(Html.Telerik().NumericTextBox<decimal>()
-        .Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
-        .EmptyMessage(T("Common.EnterValue"))
-        .Value(Value)
-        .HtmlAttributes(new { @class = additionalClass })
-        .DecimalDigits(4)   //always display 4 digits
+		.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
+		.EmptyMessage(T("Common.EnterValue"))
+		.Value(Value)
+		.HtmlAttributes(new { @class = additionalClass })
+		.DecimalDigits(4)   //always display 4 digits
 )
 

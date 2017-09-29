@@ -271,17 +271,13 @@ $gray-lightest: $gray-100;
 // Adapt class-less form elements to bs4
 // --------------------------------------------------
 
-.t-arrow-up, .t-arrow-down {
-    // TODO: temp only
-    display: none !important;
-}
-
 .adminContent {
     input[type=text]:not(.form-control-plaintext), 
     input[type=password],
     input[type=email],
     input[type=number],
     input[type=tel],
+    .t-numerictextbox > .t-input,
     select,
     textarea {
         @extend .form-control;

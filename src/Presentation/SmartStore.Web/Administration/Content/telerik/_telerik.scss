@@ -1,4 +1,4 @@
-/// <reference path="../../Content/bs4/scss/bootstrap.scss" />
+/// <reference path="../theme.scss" />
 
 /* SmartStore theme for Telerik MVC Extensions */
 
@@ -222,33 +222,87 @@ a.t-button.t-state-disabled:hover,
 -------------------------------------------------------------- */
 
 .t-numerictextbox {
-	overflow: hidden;
+    display: block;
+    overflow: hidden;
 	position: relative;
+    box-sizing: border-box;
+    width: 100%;
+
+    &:after {
+        // mimic input group addon
+        position: absolute;
+        z-index: 2;
+        content: ' ';
+        display: block;
+        background: $input-group-addon-bg;
+        top: 1px;
+        right: 1px;
+        bottom: 1px;
+        left: auto;
+        width: $input-height-inner;
+    }
 
     .t-input {
-        width: 301px;
-	    padding: 6px 8px 6px 3px;
+        position: relative;
+        z-index: 1;
+	    padding-right: 50px; // TODO
     }
-    &.small .t-input {
-	    width: 80px;
-    }
+
     .t-formatted-value {
 	    position: absolute;
-        padding: 6px 0;
-	    left: 8px;
-	    right: 16px;
 	    overflow: hidden;
+        z-index: 2;
+        padding: $input-btn-padding-y $input-btn-padding-x;
+        font-size: $font-size-base; // Match inputs
+        font-weight: $font-weight-normal;
+        line-height: $input-btn-line-height;
+        color: $input-color;
     }
-    .t-arrow-up {
-        margin-top: 4px;
-        margin-left: -19px;
-    }
-    .t-arrow-down {
-        margin-bottom: 4px;
-    }
+
     .t-icon {
-        opacity: 0.25;
-        &:hover { opacity: 1; }
+        /*opacity: 0.25;
+        &:hover { opacity: 1; }*/
+
+        position: absolute;
+        display: block;
+        background-clip: content-box;
+        box-sizing: content-box;
+        z-index: 3;
+        width: 16px;
+        height: 16px;
+        //margin: 0;
+        //padding: 0;
+        top: 0;
+        right: 0;
+        padding: calc((#{$input-height-inner / 2} - 16px) / 2) calc((#{$input-height-inner} - 16px) / 2);
+        //width: calc(#{$input-height-inner} - 16px);
+        //height: 50%;
+        vertical-align: middle;
+        text-align: center;
+        //font-size: $font-size-base;
+        //line-height: $line-height-base;
+        //background-image: none;
+
+        &:hover {
+            background-color: rgba(#000, 0.075);
+        }
+
+        /*&:after {
+            @include fontawesome("\f0d8"); // caret-up
+            color: #333;
+        }
+        &.t-arrow-down:after {
+            content: "\f0d7"; // caret-down
+        }*/       
+        &.t-arrow-up {
+            /*margin-top: 4px;
+            margin-left: -19px;*/
+        }
+        &.t-arrow-down {
+            top: auto;
+            bottom: 0;
+            /*margin-bottom: 4px;*/
+        }
     }
 }
 

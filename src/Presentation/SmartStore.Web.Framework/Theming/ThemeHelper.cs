@@ -26,7 +26,7 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			ThemesBasePath = CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 
-			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|scss|less|js|cshtml|svg|json)$".FormatInvariant(ThemesBasePath);
+			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|scss|less|js|cshtml|svg|json)(\?explicit)*$".FormatInvariant(ThemesBasePath);
 			s_inheritableThemeFilePattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_themeVarsPattern = new Regex(@"\.(db|app)/themevars(.scss|.less)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_moduleImportsPattern = new Regex(@"\.app/moduleimports.scss$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -147,6 +147,15 @@ namespace SmartStore.Web.Framework.Theming
 						return new IsStyleSheetResult { Path = path, IsBundle = true };
 					}
 				}
+			}
+			else if (extension.EndsWith("?explicit"))
+			{
+				// Handle virtual Sass imports with '?explicit' query
+				// TBD: (mc) other query params could exist
+
+				// Process again, this time without query
+				var pathWithoutQuery = path.Substring(0, path.IndexOf('?'));
+				return IsStyleSheet(pathWithoutQuery);
 			}
 
 			return null;

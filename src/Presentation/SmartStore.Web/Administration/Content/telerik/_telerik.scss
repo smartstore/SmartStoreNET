@@ -239,7 +239,7 @@ a.t-button.t-state-disabled:hover,
         right: 1px;
         bottom: 1px;
         left: auto;
-        width: $input-height-inner;
+        width: calc(#{$input-height} + 3px);
     }
 
     .t-input {
@@ -260,48 +260,54 @@ a.t-button.t-state-disabled:hover,
     }
 
     .t-icon {
-        /*opacity: 0.25;
-        &:hover { opacity: 1; }*/
-
         position: absolute;
         display: block;
         background-clip: content-box;
         box-sizing: content-box;
         z-index: 3;
-        width: 16px;
-        height: 16px;
-        //margin: 0;
-        //padding: 0;
+        margin: 0;
+        padding: 0;
         top: 0;
         right: 0;
-        padding: calc((#{$input-height-inner / 2} - 16px) / 2) calc((#{$input-height-inner} - 16px) / 2);
-        //width: calc(#{$input-height-inner} - 16px);
-        //height: 50%;
+        width: calc(#{$input-height} + 3px);
+        height: 50%;
         vertical-align: middle;
         text-align: center;
-        //font-size: $font-size-base;
-        //line-height: $line-height-base;
-        //background-image: none;
+        font-size: $font-size-base;
+        line-height: $line-height-base;
+        background-image: none;
+        text-indent: 0;
+        color: transparent;
 
         &:hover {
-            background-color: rgba(#000, 0.075);
+            background-color: rgba(#000, 0.05);
+            &:before { color: $body-color; }
         }
 
-        /*&:after {
-            @include fontawesome("\f0d8"); // caret-up
-            color: #333;
+        &:active {
+            background-color: rgba(#000, 0.08);
         }
-        &.t-arrow-down:after {
-            content: "\f0d7"; // caret-down
-        }*/       
+
+        &:before {
+            position: absolute;
+            display: inline-block;
+            text-indent: 0;
+            @include fontawesome("\f077", 10px); // chevron-up
+            text-align: center;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: $gray-700;
+        }
+        &.t-arrow-down:before {
+            content: "\f078"; // chevron-down
+        }       
         &.t-arrow-up {
-            /*margin-top: 4px;
-            margin-left: -19px;*/
+            //border-bottom: 1px solid rgba(#000, 0.1);
         }
         &.t-arrow-down {
             top: auto;
             bottom: 0;
-            /*margin-bottom: 4px;*/
         }
     }
 }

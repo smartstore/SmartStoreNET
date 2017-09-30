@@ -42,10 +42,10 @@
 }
 
 <div class="input-group date datetimepicker-group" id="@id-parent" data-date="@value" data-target-input="nearest">
+    @Html.TextBox("", value, new { @class = "form-control datetimepicker-input", data_target = "#" + id + "-parent", data_format = format })
 	<span class="input-group-addon" data-target="#@(id)-parent" data-toggle="datetimepicker">
 		<i class="fa fa-calendar"></i>
 	</span>
-    @Html.TextBox("", value, new { @class = "form-control datetimepicker-input", data_target = "#" + id + "-parent", data_format = format })
 </div>
 
 <script>

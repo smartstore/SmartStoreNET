@@ -37,6 +37,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Order.ViaShippingMethod", "via {0}", "via {0}");
 			builder.AddOrUpdate("Admin.Order.WithPaymentMethod", "with {0}", "per {0}");
 			builder.AddOrUpdate("Admin.Order.FromStore", "from {0}", "von {0}");
-		}
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.MaxItemsToDisplayInCatalogMenu",
+                "Max items to display in catalog menu",
+                "Maximale Anzahl von Elementen in der Katalognavigation",
+                "Defines the maximum number of top level items to display in main catalog menu.",
+                "Legt die maximale Anzahl von Menu-Einträgen der obersten Hierarchie fest, die in der Katalognavigation angezeigt werden.");
+
+            builder.AddOrUpdate("CatalogMenu.MoreLink", "More", "Mehr");
+        }
 	}
 }

@@ -245,6 +245,68 @@ namespace SmartStore.Web.Controllers
 					model.BackInStockAlreadySubscribed = _backInStockSubscriptionService.FindSubscription(customer.Id, product.Id, store.Id) != null;
 				}
 
+				// template
+				var templateCacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_TEMPLATE_MODEL_KEY, product.ProductTemplateId);
+				model.ProductTemplateViewPath = _services.Cache.Get(templateCacheKey, () =>
+				{
+					var template = _productTemplateService.GetProductTemplateById(product.ProductTemplateId);
+					if (template == null)
+						template = _productTemplateService.GetAllProductTemplates().FirstOrDefault();
+					return template.ViewPath;
+				});
+
+				IList<ProductBundleItemData> bundleItems = null;
+				ProductVariantAttributeCombination combination = null;
+
+				if (product.ProductType == ProductType.GroupedProduct && !isAssociatedProduct)
+				{
+					// associated products
+					var searchQuery = new CatalogSearchQuery()
+						.VisibleOnly(customer)
+						.HasStoreId(store.Id)
+						.HasParentGroupedProduct(product.Id);
+
+					var associatedProducts = _catalogSearchService.Search(searchQuery).Hits;
+
+					foreach (var associatedProduct in associatedProducts)
+					{
+						var assciatedProductModel = PrepareProductDetailsPageModel(associatedProduct, query, true, null, null);
+						model.AssociatedProducts.Add(assciatedProductModel);
+					}
+				}
+				else if (product.ProductType == ProductType.BundledProduct && productBundleItem == null)
+				{
+					// bundled items
+					bundleItems = _productService.GetBundleItems(product.Id);
+
+					foreach (var itemData in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
+					{
+						var item = itemData.Item;
+						var bundledProductModel = PrepareProductDetailsPageModel(item.Product, query, false, itemData, null);
+
+						bundledProductModel.ShowLegalInfo = false;
+						bundledProductModel.DisplayDeliveryTime = false;
+
+						bundledProductModel.BundleItem.Id = item.Id;
+						bundledProductModel.BundleItem.Quantity = item.Quantity;
+						bundledProductModel.BundleItem.HideThumbnail = item.HideThumbnail;
+						bundledProductModel.BundleItem.Visible = item.Visible;
+						bundledProductModel.BundleItem.IsBundleItemPricing = item.BundleProduct.BundlePerItemPricing;
+
+						var bundleItemName = item.GetLocalized(x => x.Name);
+						if (bundleItemName.HasValue())
+							bundledProductModel.Name = bundleItemName;
+
+						var bundleItemShortDescription = item.GetLocalized(x => x.ShortDescription);
+						if (bundleItemShortDescription.HasValue())
+							bundledProductModel.ShortDescription = bundleItemShortDescription;
+
+						model.BundledItems.Add(bundledProductModel);
+					}
+				}
+
+				model = PrepareProductDetailModel(model, product, query, isAssociatedProduct, productBundleItem, bundleItems);
+
 				// Action items
 				{
 					if (model.HasSampleDownload)
@@ -312,68 +374,6 @@ namespace SmartStore.Web.Controllers
 						};
 					}
 				}
-
-				//template
-				var templateCacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_TEMPLATE_MODEL_KEY, product.ProductTemplateId);
-				model.ProductTemplateViewPath = _services.Cache.Get(templateCacheKey, () =>
-				{
-					var template = _productTemplateService.GetProductTemplateById(product.ProductTemplateId);
-					if (template == null)
-						template = _productTemplateService.GetAllProductTemplates().FirstOrDefault();
-					return template.ViewPath;
-				});
-
-				IList<ProductBundleItemData> bundleItems = null;
-				ProductVariantAttributeCombination combination = null;
-
-				if (product.ProductType == ProductType.GroupedProduct && !isAssociatedProduct)
-				{
-					// associated products
-					var searchQuery = new CatalogSearchQuery()
-						.VisibleOnly(customer)
-						.HasStoreId(store.Id)
-						.HasParentGroupedProduct(product.Id);
-
-					var associatedProducts = _catalogSearchService.Search(searchQuery).Hits;
-
-					foreach (var associatedProduct in associatedProducts)
-					{
-						var assciatedProductModel = PrepareProductDetailsPageModel(associatedProduct, query, true, null, null);
-						model.AssociatedProducts.Add(assciatedProductModel);
-					}
-				}
-				else if (product.ProductType == ProductType.BundledProduct && productBundleItem == null)
-				{
-					// bundled items
-					bundleItems = _productService.GetBundleItems(product.Id);
-
-					foreach (var itemData in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
-					{
-						var item = itemData.Item;
-						var bundledProductModel = PrepareProductDetailsPageModel(item.Product, query, false, itemData, null);
-
-						bundledProductModel.ShowLegalInfo = false;
-						bundledProductModel.DisplayDeliveryTime = false;
-
-						bundledProductModel.BundleItem.Id = item.Id;
-						bundledProductModel.BundleItem.Quantity = item.Quantity;
-						bundledProductModel.BundleItem.HideThumbnail = item.HideThumbnail;
-						bundledProductModel.BundleItem.Visible = item.Visible;
-						bundledProductModel.BundleItem.IsBundleItemPricing = item.BundleProduct.BundlePerItemPricing;
-
-						var bundleItemName = item.GetLocalized(x => x.Name);
-						if (bundleItemName.HasValue())
-							bundledProductModel.Name = bundleItemName;
-
-						var bundleItemShortDescription = item.GetLocalized(x => x.ShortDescription);
-						if (bundleItemShortDescription.HasValue())
-							bundledProductModel.ShortDescription = bundleItemShortDescription;
-
-						model.BundledItems.Add(bundledProductModel);
-					}
-				}
-
-				model = PrepareProductDetailModel(model, product, query, isAssociatedProduct, productBundleItem, bundleItems);
 
 				IList<int> combinationPictureIds = null;
 

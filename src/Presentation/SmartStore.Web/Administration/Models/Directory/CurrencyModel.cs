@@ -4,13 +4,14 @@ using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Directory;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Directory
 {
-    [Validator(typeof(CurrencyValidator))]
+	[Validator(typeof(CurrencyValidator))]
     public class CurrencyModel : EntityModelBase, ILocalizedModel<CurrencyLocalizedModel>
     {
         public CurrencyModel()
@@ -66,9 +67,14 @@ namespace SmartStore.Admin.Models.Directory
 		public string DomainEndings { get; set; }
 		public IList<SelectListItem> AvailableDomainEndings { get; set; }
 
-        public IList<CurrencyLocalizedModel> Locales { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundingMethod")]
+		public CurrencyRoundingMethod? RoundingMethod { get; set; }
+		public IList<SelectListItem> AvailableRoundingMethods { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundingMethod")]
+		public string RoundingMethodString { get; set; }
 
-		//Store mapping
+		public IList<CurrencyLocalizedModel> Locales { get; set; }
+
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
 

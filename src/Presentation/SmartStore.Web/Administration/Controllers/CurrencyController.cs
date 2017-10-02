@@ -12,6 +12,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
@@ -20,7 +21,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class CurrencyController :  AdminControllerBase
     {
         #region Fields
@@ -81,6 +82,7 @@ namespace SmartStore.Admin.Controllers
 			var allStores = _services.StoreService.GetAllStores();
 
 			model.AvailableStores = allStores.Select(s => s.ToModel()).ToList();
+			model.AvailableRoundingMethods = CurrencyRoundingMethod.Up005.ToSelectList(false).ToList();
 
 			if (currency != null)
 			{
@@ -107,6 +109,22 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.SelectedStoreIds = (currency == null ? new int[0] : _storeMappingService.GetStoresIdsWithAccess(currency));
 			}
+		}
+
+		private CurrencyModel CreateCurrencyListModel(Currency currency)
+		{
+			var store = _services.StoreContext.CurrentStore;
+			var model = currency.ToModel();
+
+			model.IsPrimaryStoreCurrency = store.PrimaryStoreCurrencyId == model.Id;
+			model.IsPrimaryExchangeRateCurrency = store.PrimaryExchangeRateCurrencyId == model.Id;
+
+			if (model.RoundingMethod.HasValue)
+			{
+				model.RoundingMethodString = model.RoundingMethod.Value.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+			}
+
+			return model;
 		}
 
 		private bool IsAttachedToStore(Currency currency, IList<Store> stores, bool force)
@@ -151,19 +169,11 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
-			var store = _services.StoreContext.CurrentStore;
 			var language = _services.WorkContext.WorkingLanguage;
-
 			var allCurrencies = _currencyService.GetAllCurrencies(true)
 				.ToDictionarySafe(x => x.CurrencyCode.EmptyNull().ToUpper(), x => x);
 
-			var models = allCurrencies.Select(x => x.Value.ToModel()).ToList();
-
-			foreach (var model in models)
-			{
-				model.IsPrimaryStoreCurrency = (store.PrimaryStoreCurrencyId == model.Id);
-				model.IsPrimaryExchangeRateCurrency = (store.PrimaryExchangeRateCurrencyId == model.Id);
-			}
+			var models = allCurrencies.Select(x => CreateCurrencyListModel(x.Value)).ToList();
 
 			if (liveRates)
             {
@@ -270,7 +280,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var currencies = _currencyService.GetAllCurrencies(true);
 
-				model.Data = currencies.Select(x => x.ToModel());
+				model.Data = currencies.Select(x => CreateCurrencyListModel(x));
 				model.Total = currencies.Count();
 			}
 			else

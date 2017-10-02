@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -9,7 +5,6 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -30,6 +25,10 @@ using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace SmartStore.Services.Orders
 {
@@ -205,9 +204,14 @@ namespace SmartStore.Services.Orders
 
 		#region Utilities
 
-		private decimal Round(decimal value)
+		private decimal Round(decimal value, Currency currency)
 		{
-			return (_shoppingCartSettings.RoundPricesDuringCalculation ? Math.Round(value, 2) : value);
+			if (_shoppingCartSettings.RoundPricesDuringCalculation && currency != null)
+			{
+				return value.Round(currency);
+			}
+
+			return value;
 		}
 
 		private void ProcessErrors(Order order, IList<string> errors, string messageKey)
@@ -1780,21 +1784,23 @@ namespace SmartStore.Services.Orders
 
 			if (context.UpdateTotals && oi.Order.OrderStatusId <= (int)OrderStatus.Pending)
 			{
-				decimal priceInclTax = Round(context.QuantityNew * oi.UnitPriceInclTax);
-				decimal priceExclTax = Round(context.QuantityNew * oi.UnitPriceExclTax);
+				var currency = _currencyService.GetCurrencyByCode(oi.Order.CustomerCurrencyCode);
+
+				decimal priceInclTax = Round(context.QuantityNew * oi.UnitPriceInclTax, currency);
+				decimal priceExclTax = Round(context.QuantityNew * oi.UnitPriceExclTax, currency);
 
 				decimal deltaPriceInclTax = priceInclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceInclTax);
 				decimal deltaPriceExclTax = priceExclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceExclTax);
 
 				oi.Quantity = context.QuantityNew;
-				oi.PriceInclTax = Round(priceInclTax);
-				oi.PriceExclTax = Round(priceExclTax);
+				oi.PriceInclTax = Round(priceInclTax, currency);
+				oi.PriceExclTax = Round(priceExclTax, currency);
 
 				decimal subtotalInclTax = oi.Order.OrderSubtotalInclTax + deltaPriceInclTax;
 				decimal subtotalExclTax = oi.Order.OrderSubtotalExclTax + deltaPriceExclTax;
 
-				oi.Order.OrderSubtotalInclTax = Round(subtotalInclTax);
-				oi.Order.OrderSubtotalExclTax = Round(subtotalExclTax);
+				oi.Order.OrderSubtotalInclTax = Round(subtotalInclTax, currency);
+				oi.Order.OrderSubtotalExclTax = Round(subtotalExclTax, currency);
 
 				decimal discountInclTax = oi.DiscountAmountInclTax * context.QuantityChangeFactor;
 				decimal discountExclTax = oi.DiscountAmountExclTax * context.QuantityChangeFactor;
@@ -1802,14 +1808,14 @@ namespace SmartStore.Services.Orders
 				decimal deltaDiscountInclTax = discountInclTax - oi.DiscountAmountInclTax;
 				decimal deltaDiscountExclTax = discountExclTax - oi.DiscountAmountExclTax;
 
-				oi.DiscountAmountInclTax = Round(discountInclTax);
-				oi.DiscountAmountExclTax = Round(discountExclTax);
+				oi.DiscountAmountInclTax = Round(discountInclTax, currency);
+				oi.DiscountAmountExclTax = Round(discountExclTax, currency);
 
 				decimal total = Math.Max(oi.Order.OrderTotal + deltaPriceInclTax, 0);
 				decimal tax = Math.Max(oi.Order.OrderTax + (deltaPriceInclTax - deltaPriceExclTax), 0);
 
-				oi.Order.OrderTotal = Round(total);
-				oi.Order.OrderTax = Round(tax);
+				oi.Order.OrderTotal = Round(total, currency);
+				oi.Order.OrderTax = Round(tax, currency);
 
 				_orderService.UpdateOrder(oi.Order);
 			}

@@ -364,10 +364,11 @@ namespace SmartStore.Services.Orders
                 return;
 
             // get the customer 
-            Customer customer = cart.GetCustomer();
+            var customer = cart.GetCustomer();
+			var currency = _workContext.WorkingCurrency;
 
-            // sub totals
-            decimal subTotalExclTaxWithoutDiscount = decimal.Zero;
+			// sub totals
+			decimal subTotalExclTaxWithoutDiscount = decimal.Zero;
             decimal subTotalInclTaxWithoutDiscount = decimal.Zero;
 
             foreach (var shoppingCartItem in cart)
@@ -388,9 +389,9 @@ namespace SmartStore.Services.Orders
 
 					// Adaption to eliminate rounding issues
 					sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
-					sciExclTax = Math.Round(sciExclTax, 2) * qty;
+					sciExclTax = sciExclTax.Round(currency) * qty;
 					sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
-					sciInclTax = Math.Round(sciInclTax, 2) * qty;
+					sciInclTax = sciInclTax.Round(currency) * qty;
 				}
 				else
 				{
@@ -450,17 +451,24 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-            //subtotal without discount
-            if (includingTax)
-                subTotalWithoutDiscount = subTotalInclTaxWithoutDiscount;
-            else
-                subTotalWithoutDiscount = subTotalExclTaxWithoutDiscount;
+			//subtotal without discount
+			if (includingTax)
+			{
+				subTotalWithoutDiscount = subTotalInclTaxWithoutDiscount;
+			}
+			else
+			{
+				subTotalWithoutDiscount = subTotalExclTaxWithoutDiscount;
+			}
 
-            if (subTotalWithoutDiscount < decimal.Zero)
-                subTotalWithoutDiscount = decimal.Zero;
-
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                subTotalWithoutDiscount = Math.Round(subTotalWithoutDiscount, 2);
+			if (subTotalWithoutDiscount < decimal.Zero)
+			{
+				subTotalWithoutDiscount = decimal.Zero;
+			}
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				subTotalWithoutDiscount = subTotalWithoutDiscount.Round(currency);
+			}
 
             /*We calculate discount amount on order subtotal excl tax (discount first)*/
             //calculate discount amount ('Applied to order subtotal' discount)
@@ -489,8 +497,10 @@ namespace SmartStore.Services.Orders
                         decimal discountTax = taxRates[taxRate] * (discountAmountExclTax / subTotalExclTaxWithoutDiscount);
                         discountAmountInclTax += discountTax;
                         taxValue = taxRates[taxRate] - discountTax;
-                        if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                            taxValue = Math.Round(taxValue, 2);
+						if (_shoppingCartSettings.RoundPricesDuringCalculation)
+						{
+							taxValue = taxValue.Round(currency);
+						}
                         taxRates[taxRate] = taxValue;
                     }
 
@@ -499,8 +509,10 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                discountAmountInclTax = Math.Round(discountAmountInclTax, 2);
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				discountAmountInclTax = discountAmountInclTax.Round(currency);
+			}
 
             if (includingTax)
             {
@@ -513,12 +525,15 @@ namespace SmartStore.Services.Orders
                 discountAmount = discountAmountExclTax;
             }
 
-            //round
-            if (subTotalWithDiscount < decimal.Zero)
-                subTotalWithDiscount = decimal.Zero;
-
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                subTotalWithDiscount = Math.Round(subTotalWithDiscount, 2);
+			//round
+			if (subTotalWithDiscount < decimal.Zero)
+			{
+				subTotalWithDiscount = decimal.Zero;
+			}
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				subTotalWithDiscount = subTotalWithDiscount.Round(currency);
+			}
         }
 
         /// <summary>
@@ -702,11 +717,14 @@ namespace SmartStore.Services.Orders
             decimal discountAmount = GetShippingDiscount(customer, adjustedRate, out appliedDiscount);
             adjustedRate = adjustedRate - discountAmount;
 
-            if (adjustedRate < decimal.Zero)
-                adjustedRate = decimal.Zero;
-
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                adjustedRate = Math.Round(adjustedRate, 2);
+			if (adjustedRate < decimal.Zero)
+			{
+				adjustedRate = decimal.Zero;
+			}
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				adjustedRate = adjustedRate.Round(_workContext.WorkingCurrency);
+			}
 
             return adjustedRate;
         }
@@ -768,7 +786,7 @@ namespace SmartStore.Services.Orders
 			decimal? shippingTotalTaxed = null;
 			var taxCategoryId = 0;
 			var customer = cart.GetCustomer();
-			var storeId = _storeContext.CurrentStore.Id;
+			var currency = _workContext.WorkingCurrency;
 
 			var shippingTotal = GetAdjustedShippingTotal(cart, out appliedDiscount);
 
@@ -776,10 +794,13 @@ namespace SmartStore.Services.Orders
 				return null;
 
 			if (shippingTotal.Value < decimal.Zero)
+			{
 				shippingTotal = decimal.Zero;
-
+			}
 			if (_shoppingCartSettings.RoundPricesDuringCalculation)
-				shippingTotal = Math.Round(shippingTotal.Value, 2);
+			{
+				shippingTotal = shippingTotal.Value.Round(currency);
+			}
 
 			PrepareAuxiliaryServicesTaxingInfos(cart);
 
@@ -822,12 +843,16 @@ namespace SmartStore.Services.Orders
 
 			// fallback to setting
 			if (taxCategoryId == 0)
+			{
 				taxCategoryId = _taxSettings.ShippingTaxClassId;
+			}
 
 			shippingTotalTaxed = _taxService.GetShippingPrice(shippingTotal.Value, includingTax, customer, taxCategoryId, out taxRate);
 
 			if (_shoppingCartSettings.RoundPricesDuringCalculation)
-				shippingTotalTaxed = Math.Round(shippingTotalTaxed.Value, 2);
+			{
+				shippingTotalTaxed = shippingTotalTaxed.Value.Round(currency);
+			}
 
 			return shippingTotalTaxed;
         }
@@ -866,11 +891,14 @@ namespace SmartStore.Services.Orders
                 shippingDiscountAmount = appliedDiscount.GetDiscountAmount(shippingTotal);
             }
 
-            if (shippingDiscountAmount < decimal.Zero)
-                shippingDiscountAmount = decimal.Zero;
-
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                shippingDiscountAmount = Math.Round(shippingDiscountAmount, 2);
+			if (shippingDiscountAmount < decimal.Zero)
+			{
+				shippingDiscountAmount = decimal.Zero;
+			}
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				shippingDiscountAmount = shippingDiscountAmount.Round(_workContext.WorkingCurrency);
+			}
 
             return shippingDiscountAmount;
         }
@@ -912,6 +940,7 @@ namespace SmartStore.Services.Orders
 			var shippingTax = decimal.Zero;
 			var paymentFeeTax = decimal.Zero;
 			var customer = cart.GetCustomer();
+			var currency = _workContext.WorkingCurrency;
 
 			//// (VATFIX)
 			if (_taxService.IsVatExempt(null, customer))
@@ -961,10 +990,14 @@ namespace SmartStore.Services.Orders
 				if (shippingTotal.HasValue)
 				{
 					if (shippingTotal.Value < decimal.Zero)
+					{
 						shippingTotal = decimal.Zero;
+					}
 
 					if (_shoppingCartSettings.RoundPricesDuringCalculation)
-						shippingTotal = Math.Round(shippingTotal.Value, 2);
+					{
+						shippingTotal = shippingTotal.Value.Round(currency);
+					}
 
 					PrepareAuxiliaryServicesTaxingInfos(cart);
 
@@ -994,12 +1027,16 @@ namespace SmartStore.Services.Orders
 
 					// fallback to setting
 					if (taxCategoryId == 0)
+					{
 						taxCategoryId = _taxSettings.ShippingTaxClassId;
+					}
 
 					shippingTax = GetShippingTaxAmount(shippingTotal.Value, customer, taxCategoryId, taxRates);
 
 					if (_shoppingCartSettings.RoundPricesDuringCalculation)
-						shippingTax = Math.Round(shippingTax, 2);
+					{
+						shippingTax = shippingTax.Round(currency);
+					}
 				}
 			}
 
@@ -1018,7 +1055,9 @@ namespace SmartStore.Services.Orders
 					var paymentFee = provider.Value.GetAdditionalHandlingFee(cart);
 
 					if (_shoppingCartSettings.RoundPricesDuringCalculation)
-						paymentFee = Math.Round(paymentFee, 2);
+					{
+						paymentFee = paymentFee.Round(currency);
+					}
 
 					PrepareAuxiliaryServicesTaxingInfos(cart);
 
@@ -1067,9 +1106,11 @@ namespace SmartStore.Services.Orders
             if (taxTotal < decimal.Zero)
                 taxTotal = decimal.Zero;
 
-            // round tax
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                taxTotal = Math.Round(taxTotal, 2);
+			// round tax
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				taxTotal = taxTotal.Round(currency);
+			}
 
             return taxTotal;
         }
@@ -1121,10 +1162,13 @@ namespace SmartStore.Services.Orders
             redeemedRewardPointsAmount = decimal.Zero;
 
             var customer = cart.GetCustomer();
-            string paymentMethodSystemName = "";
+			var store = _storeContext.CurrentStore;
+			var currency = _workContext.WorkingCurrency;
+
+			string paymentMethodSystemName = "";
             if (customer != null)
 			{
-				paymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
+				paymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
 			}
 
             //subtotal without tax
@@ -1144,14 +1188,14 @@ namespace SmartStore.Services.Orders
 
             //payment method additional fee without tax
             decimal paymentMethodAdditionalFeeWithoutTax = decimal.Zero;
-            if (usePaymentMethodAdditionalFee && !String.IsNullOrEmpty(paymentMethodSystemName))
+            if (usePaymentMethodAdditionalFee && !string.IsNullOrEmpty(paymentMethodSystemName))
             {
 				var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
 				var paymentMethodAdditionalFee = (provider != null ? provider.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
 
 				if (_shoppingCartSettings.RoundPricesDuringCalculation)
 				{
-					paymentMethodAdditionalFee = Math.Round(paymentMethodAdditionalFee, 2);
+					paymentMethodAdditionalFee = paymentMethodAdditionalFee.Round(currency);
 				}
 
 				paymentMethodAdditionalFeeWithoutTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer);
@@ -1178,10 +1222,12 @@ namespace SmartStore.Services.Orders
             //else
             //{
                 resultTemp += shoppingCartTax;
-            //}
+			//}
 
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                resultTemp = Math.Round(resultTemp, 2);
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				resultTemp = resultTemp.Round(currency);
+			}
 
             #region Order total discount
 
@@ -1194,10 +1240,14 @@ namespace SmartStore.Services.Orders
             //reduce subtotal
             resultTemp -= discountAmount;
 
-            if (resultTemp < decimal.Zero)
-                resultTemp = decimal.Zero;
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                resultTemp = Math.Round(resultTemp, 2);
+			if (resultTemp < decimal.Zero)
+			{
+				resultTemp = decimal.Zero;
+			}
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				resultTemp = resultTemp.Round(currency);
+			}
 
             #endregion
 
@@ -1208,7 +1258,7 @@ namespace SmartStore.Services.Orders
             if (!cart.IsRecurring())
             {
                 //we don't apply gift cards for recurring products
-                var giftCards = _giftCardService.GetActiveGiftCardsAppliedByCustomer(customer, _storeContext.CurrentStore.Id);
+                var giftCards = _giftCardService.GetActiveGiftCardsAppliedByCustomer(customer, store.Id);
 				if (giftCards != null)
 				{
 					foreach (var gc in giftCards)
@@ -1240,7 +1290,7 @@ namespace SmartStore.Services.Orders
 
             if (_rewardPointsSettings.Enabled &&
                 !ignoreRewardPonts && customer != null &&
-                customer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, _genericAttributeService, _storeContext.CurrentStore.Id))
+                customer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, _genericAttributeService, store.Id))
             {
                 int rewardPointsBalance = customer.GetRewardPointsBalance();
                 decimal rewardPointsBalanceAmount = ConvertRewardPointsToAmount(rewardPointsBalance);
@@ -1259,14 +1309,16 @@ namespace SmartStore.Services.Orders
                     }
                 }
             }
-            #endregion
+			#endregion
 
-            if (resultTemp < decimal.Zero)
-                resultTemp = decimal.Zero;
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                resultTemp = Math.Round(resultTemp, 2);
-
-
+			if (resultTemp < decimal.Zero)
+			{
+				resultTemp = decimal.Zero;
+			}
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				resultTemp = resultTemp.Round(currency);
+			}
 
             decimal? orderTotal = null;
             if (!shoppingCartShipping.HasValue)
@@ -1284,8 +1336,12 @@ namespace SmartStore.Services.Orders
             if (orderTotal.HasValue)
             {
                 orderTotal = orderTotal.Value - redeemedRewardPointsAmount;
-                if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                    orderTotal = Math.Round(orderTotal.Value, 2);
+
+				if (_shoppingCartSettings.RoundPricesDuringCalculation)
+				{
+					orderTotal = orderTotal.Value.Round(currency);
+				}
+
                 return orderTotal;
             }
 			return null;
@@ -1326,8 +1382,10 @@ namespace SmartStore.Services.Orders
             if (discountAmount < decimal.Zero)
                 discountAmount = decimal.Zero;
 
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                discountAmount = Math.Round(discountAmount, 2);
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				discountAmount = discountAmount.Round(_workContext.WorkingCurrency.RoundingMethod);
+			}
 
             return discountAmount;
         }
@@ -1348,8 +1406,11 @@ namespace SmartStore.Services.Orders
                 return decimal.Zero;
 
             result = rewardPoints * _rewardPointsSettings.ExchangeRate;
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                result = Math.Round(result, 2);
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				result = result.Round(_workContext.WorkingCurrency.RoundingMethod);
+			}
+
             return result;
         }
 

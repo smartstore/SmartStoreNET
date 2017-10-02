@@ -60,24 +60,25 @@
                 .BindTo(Model.Data)
                 .Columns(columns =>
                 {
-					columns.Bound(x => x.Name)
-						.Template(x => Html.LabeledCurrencyName(x.Id, x.Name, x.IsPrimaryStoreCurrency, x.IsPrimaryExchangeRateCurrency));
+                    columns.Bound(x => x.Name)
+                        .Template(x => Html.LabeledCurrencyName(x.Id, x.Name, x.IsPrimaryStoreCurrency, x.IsPrimaryExchangeRateCurrency));
                     columns.Bound(x => x.CurrencyCode)
                         .Centered()
-						.Width(160);
-					columns.Bound(x => x.Published)
-						.Template(item => Html.SymbolForBool(item.Published))
-						.Centered()
-						.Width(160);
+                        .Width(160);
+                    columns.Bound(x => x.Published)
+                        .Template(item => Html.SymbolForBool(item.Published))
+                        .Centered()
+                        .Width(160);
                     columns.Bound(x => x.Rate)
-						.RightAlign()
-						.Format("{0:0.00000}")
-						.Width(160);
-					columns.Bound(x => x.LimitedToStores)
-						.Template(item => Html.SymbolForBool(item.LimitedToStores))
-						.Centered()
-						.Width(160);
-					columns.Bound(x => x.DomainEndings);
+                        .RightAlign()
+                        .Format("{0:0.00000}")
+                        .Width(160);
+                    columns.Bound(x => x.RoundingMethodString);
+                    columns.Bound(x => x.LimitedToStores)
+                        .Template(item => Html.SymbolForBool(item.LimitedToStores))
+                        .Centered()
+                        .Width(180);
+                    columns.Bound(x => x.DomainEndings);
                 })
 			)
         </td>

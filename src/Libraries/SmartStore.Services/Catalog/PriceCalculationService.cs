@@ -915,7 +915,6 @@ namespace SmartStore.Services.Catalog
 					product.MergeWithCombination(shoppingCartItem.Item.AttributesXml, _productAttributeParser);
 
 					var attributesTotalPrice = decimal.Zero;
-
 					var pvaValuesEnum = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
 
 					if (pvaValuesEnum != null)
@@ -924,7 +923,7 @@ namespace SmartStore.Services.Catalog
 
 						foreach (var pvaValue in pvaValues)
 						{
-							attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, _services.WorkContext.CurrentCustomer, null, shoppingCartItem.Item.Quantity);
+							attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, customer, null, shoppingCartItem.Item.Quantity);
 						}
 					}
 
@@ -932,8 +931,10 @@ namespace SmartStore.Services.Catalog
                 }
             }
 
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                finalPrice = Math.Round(finalPrice, 2);
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				finalPrice = finalPrice.Round(_services.WorkContext.WorkingCurrency);
+			}
 
             return finalPrice;
         }
@@ -959,26 +960,32 @@ namespace SmartStore.Services.Catalog
         /// <returns>Discount amount</returns>
 		public virtual decimal GetDiscountAmount(OrganizedShoppingCartItem shoppingCartItem, out Discount appliedDiscount)
         {
-            var customer = shoppingCartItem.Item.Customer;
-            appliedDiscount = null;
-			decimal totalDiscountAmount = decimal.Zero;
+			appliedDiscount = null;
+
+			var customer = shoppingCartItem.Item.Customer;
+			var totalDiscountAmount = decimal.Zero;
 			var product = shoppingCartItem.Item.Product;
+			var quantity = shoppingCartItem.Item.Quantity;
+
 			if (product != null)
             {
-                decimal attributesTotalPrice = decimal.Zero;
-
+                var attributesTotalPrice = decimal.Zero;
                 var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml).ToList();
+
                 foreach (var pvaValue in pvaValues)
                 {
-                    attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, _services.WorkContext.CurrentCustomer, null, shoppingCartItem.Item.Quantity);
+                    attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, customer, null, quantity);
                 }
 
-				decimal productDiscountAmount = GetDiscountAmount(product, customer, attributesTotalPrice, shoppingCartItem.Item.Quantity, out appliedDiscount);
-				totalDiscountAmount = productDiscountAmount * shoppingCartItem.Item.Quantity;
+				var productDiscountAmount = GetDiscountAmount(product, customer, attributesTotalPrice, quantity, out appliedDiscount);
+				totalDiscountAmount = productDiscountAmount * quantity;
             }
-            
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-				totalDiscountAmount = Math.Round(totalDiscountAmount, 2);
+
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				totalDiscountAmount = totalDiscountAmount.Round(_services.WorkContext.WorkingCurrency);
+			}
+
 			return totalDiscountAmount;
         }
 

@@ -76,5 +76,10 @@ namespace SmartStore.Core.Domain.Directory
 		/// </summary>
 		[DataMember]
 		public string DomainEndings { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets the rounding method
+		/// </summary>
+		public CurrencyRoundingMethod RoundingMethod { get; set; }
+	}
 }

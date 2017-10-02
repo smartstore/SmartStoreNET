@@ -1,8 +1,7 @@
-﻿@model CurrencyModel
-
+﻿@using SmartStore.Core.Domain.Directory;
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
-
+@model CurrencyModel
 @{
     var availableDomainEndings = Model.AvailableDomainEndings.Select(x => x.Value).ToArray();
     for (int i = 0; i < availableDomainEndings.Length; i++)
@@ -112,6 +111,28 @@
             @Html.ValidationMessageFor(model => model.DomainEndings)
         </td>
     </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.RoundingMethod)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.RoundingMethod, Model.AvailableRoundingMethods)
+			@Html.ValidationMessageFor(model => model.RoundingMethod)
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
+            &nbsp;
+        </td>
+        <td class="adminData text-warning">
+            @foreach (CurrencyRoundingMethod method in Enum.GetValues(typeof(CurrencyRoundingMethod)))
+            {
+                <div id="RoundingMethodNote@((int)method)" class="rounding-method-note hide">
+                    @Html.Raw(T("Admin.Configuration.Currencies.Fields.RoundingMethod." + method.ToString() + ".Hint"))
+                </div>
+            }
+        </td>
+    </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Published)
@@ -188,6 +209,10 @@
             $("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
             toggleStoreMapping();
 
+            $('#@Html.FieldIdFor(model => model.RoundingMethod)').change(function () {
+                $('div.rounding-method-note').hide();
+                $('#RoundingMethodNote' + $(this).val()).show();
+            }).trigger('change');
         });
 
 

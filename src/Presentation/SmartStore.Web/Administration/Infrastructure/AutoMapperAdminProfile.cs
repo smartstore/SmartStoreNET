@@ -352,7 +352,9 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableDomainEndings, mo => mo.Ignore());
+				.ForMember(dest => dest.AvailableDomainEndings, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableRoundingMethods, mo => mo.Ignore())
+				.ForMember(dest => dest.RoundingMethodString, mo => mo.Ignore());
 			CreateMap<CurrencyModel, Currency>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore());

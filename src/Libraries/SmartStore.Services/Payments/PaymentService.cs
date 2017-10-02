@@ -366,7 +366,7 @@ namespace SmartStore.Services.Payments
 
 			if (_shoppingCartSettings.RoundPricesDuringCalculation)
 			{
-				paymentMethodAdditionalFee = Math.Round(paymentMethodAdditionalFee, 2);
+				paymentMethodAdditionalFee = paymentMethodAdditionalFee.Round(_services.WorkContext.WorkingCurrency);
 			}
 
 			return paymentMethodAdditionalFee;

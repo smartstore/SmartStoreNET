@@ -237,6 +237,7 @@ namespace SmartStore.Services.Tax
 				if (_cartSettings.RoundPricesDuringCalculation)
 				{
 					// Gross > Net RoundFix
+					// TODO: New currency rounding!
 					result = price - Math.Round((price) / (100 + percent) * percent, 2);
 				}
 				else

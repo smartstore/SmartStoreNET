@@ -100,6 +100,7 @@ namespace SmartStore.Services.Tests.Orders
         public new void SetUp()
         {
             _workContext = null;
+			_services = MockRepository.GenerateMock<ICommonServices>();
 
 			_store = new Store() { Id = 1 };
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
@@ -142,7 +143,8 @@ namespace SmartStore.Services.Tests.Orders
 				_shoppingCartSettings,
 				_settingService,
 				this.ProviderManager,
-				_typeFinder);
+				_typeFinder,
+				_services);
 
             _shipmentService = MockRepository.GenerateMock<IShipmentService>();
             
@@ -160,7 +162,6 @@ namespace SmartStore.Services.Tests.Orders
             _addressService = MockRepository.GenerateMock<IAddressService>();
             _addressService.Expect(x => x.GetAddressById(_taxSettings.DefaultTaxAddressId)).Return(new Address() { Id = _taxSettings.DefaultTaxAddressId });
 			_downloadService = MockRepository.GenerateMock<IDownloadService>();
-			_services = MockRepository.GenerateMock<ICommonServices>();
 			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
 

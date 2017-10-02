@@ -250,7 +250,8 @@ namespace SmartStore.Web.Controllers
 		{
 			var item = sci.Item;
 			var product = sci.Item.Product;
-			
+			var currency = _workContext.WorkingCurrency;
+
 			product.MergeWithCombination(item.AttributesXml);
 
 			var model = new ShoppingCartModel.ShoppingCartItemModel
@@ -268,7 +269,7 @@ namespace SmartStore.Web.Controllers
                 IsShipEnabled = product.IsShipEnabled,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-				BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, _workContext.WorkingCurrency),
+				BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, currency),
 				Weight = product.Weight,
 				IsDownload = product.IsDownload,
 				HasUserAgreement = product.HasUserAgreement,
@@ -302,7 +303,7 @@ namespace SmartStore.Web.Controllers
 				{
 					decimal taxRate = decimal.Zero;
 					decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
-					decimal bundleItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
+					decimal bundleItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(bundleItemSubTotalWithDiscountBase, currency);
 
 					model.BundleItem.PriceWithDiscount = _priceFormatter.FormatPrice(bundleItemSubTotalWithDiscount);
 				}
@@ -364,46 +365,49 @@ namespace SmartStore.Web.Controllers
 			{
 				decimal taxRate = decimal.Zero;
 				decimal shoppingCartUnitPriceWithDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate);
-				decimal shoppingCartUnitPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartUnitPriceWithDiscountBase, _workContext.WorkingCurrency);
+				decimal shoppingCartUnitPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartUnitPriceWithDiscountBase, currency);
 
 				model.UnitPrice = _priceFormatter.FormatPrice(shoppingCartUnitPriceWithDiscount);
 			}
 
-			//subtotal, discount
+			// Subtotal, discount
 			if (product.CallForPrice)
 			{
 				model.SubTotal = _localizationService.GetResource("Products.CallForPrice");
 			}
 			else
 			{
-				//sub total
-				decimal taxRate, shoppingCartItemSubTotalWithDiscountBase, shoppingCartItemSubTotalWithDiscount, shoppingCartItemSubTotalWithoutDiscountBase = decimal.Zero;
+				//sSub total
+				decimal taxRate, itemSubTotalWithDiscountBase, itemSubTotalWithDiscount, itemSubTotalWithoutDiscountBase = decimal.Zero;
 
 				if (_shoppingCartSettings.RoundPricesDuringCalculation)
 				{
 					// Gross > Net RoundFix
-					shoppingCartItemSubTotalWithDiscountBase = Math.Round(_taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate), 2) * sci.Item.Quantity;
-					shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
-					model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
-					// display an applied discount amount
-					shoppingCartItemSubTotalWithoutDiscountBase = Math.Round(_taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, false), out taxRate), 2) * sci.Item.Quantity;
+					var priceWithDiscount = _taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate);
+					itemSubTotalWithDiscountBase = priceWithDiscount.Round(currency) * sci.Item.Quantity;
 
+					itemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(itemSubTotalWithDiscountBase, currency);
+					model.SubTotal = _priceFormatter.FormatPrice(itemSubTotalWithDiscount);
+
+					var priceWithoutDiscount = _taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, false), out taxRate);
+					itemSubTotalWithoutDiscountBase = priceWithoutDiscount.Round(currency) * sci.Item.Quantity;
 				}
 				else
 				{
-					shoppingCartItemSubTotalWithDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
-					shoppingCartItemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemSubTotalWithDiscountBase, _workContext.WorkingCurrency);
-					model.SubTotal = _priceFormatter.FormatPrice(shoppingCartItemSubTotalWithDiscount);
-					// display an applied discount amount
-					shoppingCartItemSubTotalWithoutDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, false), out taxRate);
+					itemSubTotalWithDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, true), out taxRate);
+
+					itemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(itemSubTotalWithDiscountBase, currency);
+					model.SubTotal = _priceFormatter.FormatPrice(itemSubTotalWithDiscount);
+
+					itemSubTotalWithoutDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetSubTotal(sci, false), out taxRate);
 				}
 
-				decimal shoppingCartItemDiscountBase = shoppingCartItemSubTotalWithoutDiscountBase - shoppingCartItemSubTotalWithDiscountBase;
+				decimal itemDiscountBase = itemSubTotalWithoutDiscountBase - itemSubTotalWithDiscountBase;
 
-				if (shoppingCartItemDiscountBase > decimal.Zero)
+				if (itemDiscountBase > decimal.Zero)
 				{
-					decimal shoppingCartItemDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemDiscountBase, _workContext.WorkingCurrency);
-					model.Discount = _priceFormatter.FormatPrice(shoppingCartItemDiscount);
+					decimal itemDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(itemDiscountBase, currency);
+					model.Discount = _priceFormatter.FormatPrice(itemDiscount);
 				}
 
                 model.BasePrice = product.GetBasePriceInfo(
@@ -412,7 +416,7 @@ namespace SmartStore.Web.Controllers
                     _currencyService,
                     _taxService,
                     _priceCalculationService,
-                    _workContext.WorkingCurrency,
+                    currency,
                     (product.Price - _priceCalculationService.GetUnitPrice(sci, true)) * (-1)
                 );
 			}

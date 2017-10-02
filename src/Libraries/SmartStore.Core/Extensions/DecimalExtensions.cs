@@ -103,76 +103,77 @@ namespace SmartStore
 		public static decimal Round(this decimal value, CurrencyRoundingMethod method)
         {
             var result = Math.Round(value, 2);
-            var frac = (result - Math.Truncate(result)) * 10;
+			// TODO: where must be rounded and where not?
+			//var frac = (result - Math.Truncate(result)) * 10;
 
-            if (frac == decimal.Zero)
-                return result;
+			//if (frac == decimal.Zero)
+			//    return result;
 
-            switch (method)
-            {
-                case CurrencyRoundingMethod.Down005:
-                case CurrencyRoundingMethod.Up005:
-                    frac = (frac - Math.Truncate(frac)) * 10;
+			//switch (method)
+			//{
+			//    case CurrencyRoundingMethod.Down005:
+			//    case CurrencyRoundingMethod.Up005:
+			//        frac = (frac - Math.Truncate(frac)) * 10;
 
-                    if (method == CurrencyRoundingMethod.Down005)
-                    {
-                        frac = frac < 5 ? -1 * frac : 5 - frac;
-                    }
-                    else
-                    {
-                        frac = (frac < 5 ? 5 : 10) - frac;
-                    }
+			//        if (method == CurrencyRoundingMethod.Down005)
+			//        {
+			//            frac = frac < 5 ? -1 * frac : 5 - frac;
+			//        }
+			//        else
+			//        {
+			//            frac = (frac < 5 ? 5 : 10) - frac;
+			//        }
 
-                    result += frac / 100;
-                    break;
+			//        result += frac / 100;
+			//        break;
 
-                case CurrencyRoundingMethod.Down01:
-                case CurrencyRoundingMethod.Up01:
-                    frac = (frac - Math.Truncate(frac)) * 10;
+			//    case CurrencyRoundingMethod.Down01:
+			//    case CurrencyRoundingMethod.Up01:
+			//        frac = (frac - Math.Truncate(frac)) * 10;
 
-                    if (method == CurrencyRoundingMethod.Down01 && frac == 5)
-                    {
-                        frac = -5;
-                    }
-                    else
-                    {
-                        frac = frac < 5 ? -1 * frac : 10 - frac;
-                    }
+			//        if (method == CurrencyRoundingMethod.Down01 && frac == 5)
+			//        {
+			//            frac = -5;
+			//        }
+			//        else
+			//        {
+			//            frac = frac < 5 ? -1 * frac : 10 - frac;
+			//        }
 
-                    result += frac / 100;
-                    break;
+			//        result += frac / 100;
+			//        break;
 
-                case CurrencyRoundingMethod.Interval05:
-                    frac *= 10;
+			//    case CurrencyRoundingMethod.Interval05:
+			//        frac *= 10;
 
-                    if (frac < 25)
-                    {
-                        frac *= -1;
-                    }
-                    else
-                    {
-                        frac = (frac < 50 || frac < 75 ? 50 : 100) - frac;
-                    }
+			//        if (frac < 25)
+			//        {
+			//            frac *= -1;
+			//        }
+			//        else
+			//        {
+			//            frac = (frac < 50 || frac < 75 ? 50 : 100) - frac;
+			//        }
 
-                    result += frac / 100;
-                    break;
+			//        result += frac / 100;
+			//        break;
 
-                case CurrencyRoundingMethod.Interval1:
-                case CurrencyRoundingMethod.Up1:
-                    frac *= 10;
+			//    case CurrencyRoundingMethod.Interval1:
+			//    case CurrencyRoundingMethod.Up1:
+			//        frac *= 10;
 
-                    if (method == CurrencyRoundingMethod.Up1 && frac > 0)
-                    {
-                        result = Math.Truncate(result) + 1;
-                    }
-                    else
-                    {
-                        result = frac < 50 ? Math.Truncate(result) : Math.Truncate(result) + 1;
-                    }
-                    break;
-            }
+			//        if (method == CurrencyRoundingMethod.Up1 && frac > 0)
+			//        {
+			//            result = Math.Truncate(result) + 1;
+			//        }
+			//        else
+			//        {
+			//            result = frac < 50 ? Math.Truncate(result) : Math.Truncate(result) + 1;
+			//        }
+			//        break;
+			//}
 
-            return result;
+			return result;
         }
     }
 }

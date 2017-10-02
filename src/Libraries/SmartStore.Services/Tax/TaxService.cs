@@ -235,15 +235,16 @@ namespace SmartStore.Services.Tax
             }
             else
 			{
+				var decreaseValue = (price) / (100 + percent) * percent;
+
 				if (_cartSettings.RoundPricesDuringCalculation)
 				{
 					// Gross > Net RoundFix
-					result = (price) / (100 + percent) * percent;
-					result = price - result.Round(currency);
+					result = price - decreaseValue.Round(currency);
 				}
 				else
 				{
-					result = price - (price) / (100 + percent) * percent;
+					result = price - decreaseValue;
 				}
 			}
             return result;

@@ -11,6 +11,8 @@ using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Media;
 using SmartStore.Services.Tax;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Tax;
 
 namespace SmartStore.Services.Catalog
 {
@@ -31,8 +33,9 @@ namespace SmartStore.Services.Catalog
 		private readonly ICommonServices _services;
 		private readonly HttpRequestBase _httpRequestBase;
 		private readonly ITaxService _taxService;
+		private readonly TaxSettings _taxSettings;
 
-        public PriceCalculationService(
+		public PriceCalculationService(
             IDiscountService discountService,
 			ICategoryService categoryService,
 			IManufacturerService manufacturerService,
@@ -44,20 +47,22 @@ namespace SmartStore.Services.Catalog
 			IDownloadService downloadService,
 			ICommonServices services,
 			HttpRequestBase httpRequestBase,
-			ITaxService taxService)
+			ITaxService taxService,
+			TaxSettings taxSettings)
         {
-            this._discountService = discountService;
-            this._categoryService = categoryService;
-			this._manufacturerService = manufacturerService;
-            this._productAttributeParser = productAttributeParser;
-			this._productService = productService;
-            this._shoppingCartSettings = shoppingCartSettings;
-            this._catalogSettings = catalogSettings;
-			this._productAttributeService = productAttributeService;
-			this._downloadService = downloadService;
-			this._services = services;
-			this._httpRequestBase = httpRequestBase;
-			this._taxService = taxService;
+            _discountService = discountService;
+            _categoryService = categoryService;
+			_manufacturerService = manufacturerService;
+            _productAttributeParser = productAttributeParser;
+			_productService = productService;
+            _shoppingCartSettings = shoppingCartSettings;
+            _catalogSettings = catalogSettings;
+			_productAttributeService = productAttributeService;
+			_downloadService = downloadService;
+			_services = services;
+			_httpRequestBase = httpRequestBase;
+			_taxService = taxService;
+			_taxSettings = taxSettings;
         }
         
         #region Utilities
@@ -289,6 +294,7 @@ namespace SmartStore.Services.Catalog
         protected virtual decimal GetPreselectedPrice(
             Product product,
             Customer customer,
+			Currency currency,
             PriceCalculationContext context,
             ProductBundleItemData bundleItem,
             IEnumerable<ProductBundleItemData> bundleItems)
@@ -325,8 +331,10 @@ namespace SmartStore.Services.Catalog
 
 					if (!isBundlePricing && pvaValue.IsPreSelected)
 					{
-						decimal attributeValuePriceAdjustment = GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, _services.WorkContext.CurrentCustomer, context, 1);
-						decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
+						var includingTax = _services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+						var attributeValuePriceAdjustment = GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, customer, context, 1);
+						var priceAdjustmentBase = _taxService.GetProductPrice(product, product.TaxCategoryId, attributeValuePriceAdjustment,
+							includingTax, customer, currency, _taxSettings.PricesIncludeTax, out taxRate);
 
 						preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
 					}
@@ -391,7 +399,7 @@ namespace SmartStore.Services.Catalog
 			{
 				if (selectedAttributeValues.Count > 0)
 				{
-					selectedAttributeValues.Each(x => attributesTotalPriceBase += GetProductVariantAttributeValuePriceAdjustment(x, product, _services.WorkContext.CurrentCustomer, context, 1));
+					selectedAttributeValues.Each(x => attributesTotalPriceBase += GetProductVariantAttributeValuePriceAdjustment(x, product, customer, context, 1));
 				}
 				else
 				{
@@ -518,8 +526,7 @@ namespace SmartStore.Services.Catalog
             int quantity,
 			ProductBundleItemData bundleItem = null,
 			PriceCalculationContext context = null,
-			bool isTierPrice = false
-		)
+			bool isTierPrice = false)
 		{
             //initial price
 			decimal result = product.Price;
@@ -694,7 +701,7 @@ namespace SmartStore.Services.Catalog
 			return lowestPrice;
 		}
 
-		public virtual decimal GetPreselectedPrice(Product product, Customer customer, PriceCalculationContext context)
+		public virtual decimal GetPreselectedPrice(Product product, Customer customer, Currency currency, PriceCalculationContext context)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -716,14 +723,14 @@ namespace SmartStore.Services.Catalog
 				foreach (var bundleItem in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
 				{
 					// fetch bundleItems.AdditionalCharge for all bundle items
-					var unused = GetPreselectedPrice(bundleItem.Item.Product, customer, context, bundleItem, bundleItems);
+					var unused = GetPreselectedPrice(bundleItem.Item.Product, customer, currency, context, bundleItem, bundleItems);
 				}
 
-				result = GetPreselectedPrice(product, customer, context, null, bundleItems);
+				result = GetPreselectedPrice(product, customer, currency, context, null, bundleItems);
 			}
 			else
 			{
-				result = GetPreselectedPrice(product, customer, context, null, null);
+				result = GetPreselectedPrice(product, customer, currency, context, null, null);
 			}
 
 			return result;

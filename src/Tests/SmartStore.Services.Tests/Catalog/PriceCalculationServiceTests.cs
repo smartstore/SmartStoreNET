@@ -14,6 +14,7 @@ using SmartStore.Services.Discounts;
 using SmartStore.Services.Media;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
+using SmartStore.Core.Domain.Tax;
 
 namespace SmartStore.Services.Tests.Catalog
 {
@@ -34,7 +35,7 @@ namespace SmartStore.Services.Tests.Catalog
 		ITaxService _taxService;
         ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;
-
+		TaxSettings _taxSettings;
 		Store _store;
 
         [SetUp]
@@ -61,9 +62,10 @@ namespace SmartStore.Services.Tests.Catalog
 
 			_shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
+			_taxSettings = new TaxSettings();
 
 			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _manufacturerService, _productAttributeParser, _productService,
-				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService);
+				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService, _taxSettings);
         }
 
         [Test]

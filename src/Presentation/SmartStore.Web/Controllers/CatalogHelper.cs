@@ -926,7 +926,7 @@ namespace SmartStore.Web.Controllers
 			model.HasSampleDownload = product.IsDownload && product.HasSampleDownload;
 			model.IsCurrentCustomerRegistered = customer.IsRegistered();
 			model.IsBasePriceEnabled = product.BasePriceEnabled && !(isBundle && product.BundlePerItemPricing);
-            model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, currency);
+            model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, customer, currency);
 			model.ShowLegalInfo = !model.IsBundlePart && _taxSettings.ShowLegalHintsInProductDetails;
 			model.BundleTitleText = product.GetLocalized(x => x.BundleTitleText);
 			model.BundlePerItemPricing = product.BundlePerItemPricing;
@@ -1110,7 +1110,7 @@ namespace SmartStore.Web.Controllers
 						finalPriceWithoutDiscountBase = _taxService.GetProductPrice(product, finalPriceWithoutDiscountBase, out taxRate);
 						finalPriceWithDiscountBase = _taxService.GetProductPrice(product, finalPriceWithDiscountBase, out taxRate);
 
-						oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _services.WorkContext.WorkingCurrency);
+						oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, currency);
 
 						finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscountBase, currency);
 						finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscountBase, currency);
@@ -1139,6 +1139,7 @@ namespace SmartStore.Web.Controllers
                             _currencyService, 
                             _taxService, 
                             _priceCalculationService,
+							customer,
                             currency, 
                             attributesTotalPriceBase);
 
@@ -1160,6 +1161,7 @@ namespace SmartStore.Web.Controllers
                                 _currencyService,
                                 _taxService, 
                                 _priceCalculationService,
+								customer,
                                 currency, 
                                 (product.Price - finalPriceWithDiscount) * (-1));
 						}

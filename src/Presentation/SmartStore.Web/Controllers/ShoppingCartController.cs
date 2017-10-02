@@ -251,6 +251,7 @@ namespace SmartStore.Web.Controllers
 			var item = sci.Item;
 			var product = sci.Item.Product;
 			var currency = _workContext.WorkingCurrency;
+			var customer = _workContext.CurrentCustomer;
 
 			product.MergeWithCombination(item.AttributesXml);
 
@@ -269,7 +270,6 @@ namespace SmartStore.Web.Controllers
                 IsShipEnabled = product.IsShipEnabled,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-				BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, currency),
 				Weight = product.Weight,
 				IsDownload = product.IsDownload,
 				HasUserAgreement = product.HasUserAgreement,
@@ -277,14 +277,15 @@ namespace SmartStore.Web.Controllers
 				CreatedOnUtc = item.UpdatedOnUtc
 			};
 
-            model.ProductUrl = _productUrlHelper.GetProductUrl(model.ProductSeName, sci);
+			model.BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, customer, currency);
+			model.ProductUrl = _productUrlHelper.GetProductUrl(model.ProductSeName, sci);
 
 			if (item.BundleItem != null)
 			{
 				model.BundlePerItemPricing = item.BundleItem.BundleProduct.BundlePerItemPricing;
 				model.BundlePerItemShoppingCart = item.BundleItem.BundleProduct.BundlePerItemShoppingCart;
 
-				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml, _workContext.CurrentCustomer,
+				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml, customer,
 					renderPrices: false, renderGiftCardAttributes: true, allowHyperlinks: true);
 
 				string bundleItemName = item.BundleItem.GetLocalized(x => x.Name);
@@ -416,6 +417,7 @@ namespace SmartStore.Web.Controllers
                     _currencyService,
                     _taxService,
                     _priceCalculationService,
+					customer,
                     currency,
                     (product.Price - _priceCalculationService.GetUnitPrice(sci, true)) * (-1)
                 );
@@ -434,7 +436,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			// item warnings
-			var itemWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer, item.ShoppingCartType, product, item.StoreId,
+			var itemWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer, item.ShoppingCartType, product, item.StoreId,
 				item.AttributesXml, item.CustomerEnteredPrice, item.Quantity, false, bundleItem: item.BundleItem, childItems: sci.ChildItems);
 
 			foreach (var warning in itemWarnings)

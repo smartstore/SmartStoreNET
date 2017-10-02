@@ -14,6 +14,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Tests.Tax
 {
@@ -126,13 +127,14 @@ namespace SmartStore.Services.Tests.Tax
         public void Can_get_productPrice_priceIncludesTax_includingTax()
         {
             var customer = new Customer();
+			var currency = new Currency();
             var product = new Product();
 
             decimal taxRate;
-            _taxService.GetProductPrice(product, 0, 1000M, true, customer, true, out taxRate).ShouldEqual(1000);
-            _taxService.GetProductPrice(product, 0, 1000M, true, customer, false, out taxRate).ShouldEqual(1100);
-            _taxService.GetProductPrice(product, 0, 1000M, false, customer, true, out taxRate).ShouldEqual(909.0909090909090909090909091M);
-            _taxService.GetProductPrice(product, 0, 1000M, false, customer, false, out taxRate).ShouldEqual(1000);
+            _taxService.GetProductPrice(product, 0, 1000M, true, customer, currency, true, out taxRate).ShouldEqual(1000);
+            _taxService.GetProductPrice(product, 0, 1000M, true, customer, currency, false, out taxRate).ShouldEqual(1100);
+            _taxService.GetProductPrice(product, 0, 1000M, false, customer, currency, true, out taxRate).ShouldEqual(909.0909090909090909090909091M);
+            _taxService.GetProductPrice(product, 0, 1000M, false, customer, currency, false, out taxRate).ShouldEqual(1000);
         }
 
         [Test]

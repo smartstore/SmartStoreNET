@@ -3648,54 +3648,34 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				// TODO: Replace ProductModel.ProductVariantAttributeCombinationModel by AddProductVariantAttributeCombinationModel
-				// when there's no grid-inline-editing anymore.
-
+				var customer = _workContext.CurrentCustomer;
 				var product = _productService.GetProductById(productId);
-
 				var allCombinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id, command.Page - 1, command.PageSize);
-
-				var productUrlTitle = _localizationService.GetResource("Common.OpenInShop");
+				var productUrlTitle = T("Common.OpenInShop");
 				var productSeName = product.GetSeName();
+
+				_productAttributeParser.PrefetchProductVariantAttributes(allCombinations.Select(x => x.AttributesXml));
 
 				var productVariantAttributesModel = allCombinations.Select(x =>
 				{
 					var pvacModel = x.ToModel();
-					PrepareProductAttributeCombinationModel(pvacModel, x, product, true);
-
-					pvacModel.ProductUrl = _productUrlHelper.GetProductUrl(product.Id, productSeName, x.AttributesXml);
+					pvacModel.ProductId = product.Id;
 					pvacModel.ProductUrlTitle = productUrlTitle;
+					pvacModel.ProductUrl = _productUrlHelper.GetProductUrl(product.Id, productSeName, x.AttributesXml);					
+					pvacModel.AttributesXml = _productAttributeFormatter.FormatAttributes(product, x.AttributesXml, customer, "<br />", true, true, true, false);
 
-					try
-					{
-						var firstAttribute = _productAttributeParser.DeserializeProductVariantAttributes(x.AttributesXml).FirstOrDefault();
+					// Not really necessary here:
+					//var warnings = _shoppingCartService.GetShoppingCartItemAttributeWarnings(
+					//		customer,
+					//		ShoppingCartType.ShoppingCart,
+					//		x.Product,
+					//		x.AttributesXml,
+					//		combination: x);
 
-						var attribute = x.Product.ProductVariantAttributes.FirstOrDefault(y => y.Id == firstAttribute.Key);
-						var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(y => y.Id == firstAttribute.Value.First().ToInt());
-
-						pvacModel.DisplayOrder = attributeValue.DisplayOrder;
-					}
-					catch (Exception exc)
-					{
-						exc.Dump();
-					}
-
-					//if (x.IsDefaultCombination)
-					//	pvacModel.AttributesXml = "<b>{0}</b>".FormatWith(pvacModel.AttributesXml);
-
-					//warnings
-					var warnings = _shoppingCartService.GetShoppingCartItemAttributeWarnings(
-							_workContext.CurrentCustomer,
-							ShoppingCartType.ShoppingCart,
-							x.Product,
-							x.AttributesXml,
-							combination: x);
-
-					pvacModel.Warnings.AddRange(warnings);
+					//pvacModel.Warnings.AddRange(warnings);
 
 					return pvacModel;
 				})
-				.OrderBy(x => x.DisplayOrder)
 				.ToList();
 
 				model.Data = productVariantAttributesModel;

@@ -8,7 +8,7 @@
 
 	// FB OpenGraph og:image & Twitter meta
 	var oImg = Model.PictureModels?.FirstOrDefault();
-	if (oImg != null)
+	if (oImg != null && oImg.FullSizeImageUrl.HasValue())
 	{
 		var url = WebHelper.GetAbsoluteUrl(oImg.FullSizeImageUrl, this.Request);
 		Html.AddCustomHeadParts("<meta property='twitter:image' content='{0}' />".FormatInvariant(url));

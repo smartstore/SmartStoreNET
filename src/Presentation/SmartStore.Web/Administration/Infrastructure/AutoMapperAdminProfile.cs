@@ -379,7 +379,6 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.ProductUrl, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductUrlTitle, mo => mo.Ignore())
 				.ForMember(dest => dest.Warnings, mo => mo.Ignore())
-				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
 				.AfterMap((src, dest) => dest.AssignedPictureIds = src.GetAssignedPictureIds());
 			CreateMap<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>()
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())

@@ -726,26 +726,34 @@ namespace SmartStore.Services.DataExchange.Export
 				.Select(x => ToDynamic(ctx, x))
 				.ToList();
 
-			dynObject.ProductAttributeCombinations = (combinations ?? Enumerable.Empty<ProductVariantAttributeCombination>())
-				.Select(x =>
-				{
-					dynamic dyn = ToDynamic(ctx, x);
-					var assignedPictures = new List<dynamic>();
-
-					foreach (int pictureId in x.GetAssignedPictureIds().Take(numberOfPictures))
+			// Do not export combinations if a combination is exported as a product.
+			if (combinations != null && combination == null)
+			{
+				dynObject.ProductAttributeCombinations = combinations
+					.Select(x =>
 					{
-						var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
-						if (assignedPicture != null && assignedPicture.Picture != null)
+						dynamic dyn = ToDynamic(ctx, x);
+						var assignedPictures = new List<dynamic>();
+
+						foreach (int pictureId in x.GetAssignedPictureIds().Take(numberOfPictures))
 						{
-							assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize));
+							var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
+							if (assignedPicture != null && assignedPicture.Picture != null)
+							{
+								assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize));
+							}
 						}
-					}
 
-					dyn.Pictures = assignedPictures;
+						dyn.Pictures = assignedPictures;
 
-					return dyn;
-				})
-				.ToList();
+						return dyn;
+					})
+					.ToList();
+			}
+			else
+			{
+				dynObject.ProductAttributeCombinations = Enumerable.Empty<ProductVariantAttributeCombination>();
+			}
 
 			if (product.HasTierPrices)
 			{

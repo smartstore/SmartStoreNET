@@ -2045,6 +2045,7 @@
     <Content Include="Themes\Flex\Content\_choice.scss" />
     <Content Include="Themes\Flex\Content\_layout.scss" />
     <Content Include="Views\ShoppingCart\Partials\_RewardPointsBox.cshtml" />
+    <Content Include="Themes\Flex\Content\_print.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

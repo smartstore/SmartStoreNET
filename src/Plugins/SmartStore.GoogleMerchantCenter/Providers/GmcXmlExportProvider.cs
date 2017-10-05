@@ -248,7 +248,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							string condition = "new";
 							string availability = "in stock";
 
-							var combinationValues = product._AttributeCombinationValues as IList<ProductVariantAttributeValue>;
+							var combinationValues = product._AttributeCombinationValues as ICollection<ProductVariantAttributeValue>;
 							var mappedValues = (combinationValues != null ? combinationValues.GetMappedValuesFromAlias("gmc", languageId) : null);								
 
 							var specialPrice = product._FutureSpecialPrice as decimal?;

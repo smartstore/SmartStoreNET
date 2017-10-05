@@ -98,7 +98,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="fieldPrefix">Field prefix</param>
 		/// <param name="languageId">Language identifier</param>
 		/// <returns>Localized value names mapped by field names</returns>
-		public static Dictionary<string, string> GetMappedValuesFromAlias(this IList<ProductVariantAttributeValue> attributeValues, string fieldPrefix, int languageId)
+		public static Dictionary<string, string> GetMappedValuesFromAlias(this ICollection<ProductVariantAttributeValue> attributeValues, string fieldPrefix, int languageId)
 		{
 			Guard.NotNull(attributeValues, nameof(attributeValues));
 			Guard.NotEmpty(fieldPrefix, nameof(fieldPrefix));
@@ -108,7 +108,7 @@ namespace SmartStore.Services.Catalog
 			if (!fieldPrefix.EndsWith(":"))
 				fieldPrefix = fieldPrefix + ":";
 
-			// TODO: do not use value alias, create a new attribute export field
+			// TODO: do not use value alias, create a new attribute export field. Refers to issue #998.
 
 			//foreach (var value in attributeValues.Where(x => x.Alias.HasValue()))
 			//{

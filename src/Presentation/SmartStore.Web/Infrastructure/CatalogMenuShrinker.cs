@@ -10,12 +10,12 @@ using System.Web;
 
 namespace SmartStore.Web.Infrastructure
 {
-    public class SiteMapBuiltEventConsumer : IConsumer<SiteMapBuiltEvent>
+    public class CatalogMenuShrinker : IConsumer<SiteMapBuiltEvent>
     {
         private readonly ICommonServices _services;
         private readonly CatalogSettings _catalogSettings;
 
-        public SiteMapBuiltEventConsumer(ICommonServices services, CatalogSettings catalogSettings)
+        public CatalogMenuShrinker(ICommonServices services, CatalogSettings catalogSettings)
         {
             _services = services;
             _catalogSettings = catalogSettings;
@@ -31,8 +31,7 @@ namespace SmartStore.Web.Infrastructure
                 newNavMmenuItem.Value.Text = _services.Localization.GetResource("CatalogMenu.MoreLink");
                 newNavMmenuItem.Value.Id = "MoreItem";
                 newNavMmenuItem.Value.EntityId = -1;
-                newNavMmenuItem.Value.ActionName = "Index";
-                newNavMmenuItem.Value.ControllerName = "Home";
+				newNavMmenuItem.Value.Url = "#";
 
                 cutOffItems = navigationModel.Root.Children
                     // TODO: next statement would be much better code but can't be used because Id ist null for nearly all treenodes

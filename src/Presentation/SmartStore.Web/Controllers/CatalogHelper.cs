@@ -1455,7 +1455,8 @@ namespace SmartStore.Web.Controllers
                         Name = manufacturer.GetLocalized(x => x.Name),
                         SeName = manufacturer.GetSeName(),
                         PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
-                        DisplayOrder = manufacturer.DisplayOrder
+                        DisplayOrder = manufacturer.DisplayOrder,
+                        HasPicture = manufacturer.PictureId != null
                     };
                     model.Manufacturers.Add(modelMan);
                 }

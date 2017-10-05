@@ -40,9 +40,9 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.MaxItemsToDisplayInCatalogMenu",
                 "Max items to display in catalog menu",
-                "Maximale Anzahl von Elementen in der Katalognavigation",
+                "Maximale Anzahl von Elementen im Katalogmenü",
                 "Defines the maximum number of top level items to be displayed in the main catalog menu. All menu items which are exceeding this limit will be placed in a new dropdown menu item.",
-                "Legt die maximale Anzahl von Menu-Einträgen der obersten Hierarchie fest, die in der Katalognavigation angezeigt werden. Alle weiteren Menu-Einträge werden innerhalb eines neuen Dropdownmenus ausgegeben.");
+                "Legt die maximale Anzahl von Menu-Einträgen der obersten Hierarchie fest, die im Katalogmenü angezeigt werden. Alle weiteren Menu-Einträge werden innerhalb eines neuen Dropdownmenus ausgegeben.");
 
             builder.AddOrUpdate("CatalogMenu.MoreLink", "More", "Mehr");
 

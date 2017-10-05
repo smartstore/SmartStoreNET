@@ -27,6 +27,8 @@ namespace SmartStore.Web.Models.Catalog
 
         public string PictureUrl { get; set; }
 
+        public bool HasPicture { get; set; }
+
         public int DisplayOrder { get; set; }
     }
 }

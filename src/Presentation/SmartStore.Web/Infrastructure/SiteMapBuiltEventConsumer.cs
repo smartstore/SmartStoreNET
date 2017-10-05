@@ -23,7 +23,7 @@ namespace SmartStore.Web.Infrastructure
 
         public void HandleEvent(SiteMapBuiltEvent eventMessage)
         {
-            if (eventMessage.Name.Equals("catalog") && _catalogSettings.MaxItemsToDisplayInCatalogMenu != 0)
+            if (eventMessage.Name.Equals("catalog") && _catalogSettings.MaxItemsToDisplayInCatalogMenu != null)
             {
                 var navigationModel = eventMessage.Root;
                 var cutOffItems = new List<TreeNode<MenuItem>>();
@@ -38,7 +38,7 @@ namespace SmartStore.Web.Infrastructure
                     // TODO: next statement would be much better code but can't be used because Id ist null for nearly all treenodes
                     //.Where(x => !x.Value.Id.Equals("manufacturer"))
                     .Where(x => x.Value.Id == null)
-                    .Skip(_catalogSettings.MaxItemsToDisplayInCatalogMenu)
+                    .Skip((int)_catalogSettings.MaxItemsToDisplayInCatalogMenu)
                     .ToList();
 
                 newNavMmenuItem.AppendRange(cutOffItems);

@@ -80,7 +80,6 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowProductsFromSubcategories = true;
             ApplyTierPricePercentageToAttributePriceAdjustments = false;
             AllowDifferingEmailAddressForEmailAFriend = false;
-            MaxItemsToDisplayInCatalogMenu = 0;
         }
 
         /// <summary>
@@ -141,7 +140,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
 		/// Gets or sets a value indicating how many menu items will be displayed
 		/// </summary>
-        public int MaxItemsToDisplayInCatalogMenu { get; set; }
+        public int? MaxItemsToDisplayInCatalogMenu { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether product sorting is enabled

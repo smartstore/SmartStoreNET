@@ -23,27 +23,27 @@ namespace SmartStore.Web.Infrastructure
 
         public void HandleEvent(SiteMapBuiltEvent eventMessage)
         {
-            if (eventMessage.Name.Equals("catalog") && _catalogSettings.MaxItemsToDisplayInCatalogMenu != null)
-            {
-                var navigationModel = eventMessage.Root;
-                var cutOffItems = new List<TreeNode<MenuItem>>();
-                var newNavMmenuItem = new TreeNode<MenuItem>(new MenuItem());
-                newNavMmenuItem.Value.Text = _services.Localization.GetResource("CatalogMenu.MoreLink");
-                newNavMmenuItem.Value.Id = "MoreItem";
-                newNavMmenuItem.Value.EntityId = -1;
-				newNavMmenuItem.Value.Url = "#";
+			if (eventMessage.Name != "catalog" || _catalogSettings.MaxItemsToDisplayInCatalogMenu < 1)
+				return;
 
-                cutOffItems = navigationModel.Root.Children
-                    // TODO: next statement would be much better code but can't be used because Id ist null for nearly all treenodes
-                    //.Where(x => !x.Value.Id.Equals("manufacturer"))
-                    .Where(x => x.Value.Id == null)
-                    .Skip((int)_catalogSettings.MaxItemsToDisplayInCatalogMenu)
-                    .ToList();
+            var root = eventMessage.Root;
+            var newNavMmenuItem = new TreeNode<MenuItem>(new MenuItem
+			{
+				Id = "MoreItem",
+				EntityId = -1,
+				Text = _services.Localization.GetResource("CatalogMenu.MoreLink"),
+				Url = "#"
+			});
 
-                newNavMmenuItem.AppendRange(cutOffItems);
+			var cutOffItems = root.Children
+				// TODO: next statement would be much better code but can't be used because Id ist null for nearly all treenodes
+				//.Where(x => !x.Value.Id.Equals("manufacturer"))
+				.Where(x => x.Value.Id == null)
+				.Skip(_catalogSettings.MaxItemsToDisplayInCatalogMenu.Value);
 
-                navigationModel.Root.Append(newNavMmenuItem);
-            }
+            newNavMmenuItem.AppendRange(cutOffItems);
+
+            root.Append(newNavMmenuItem);
         }
     }
 }

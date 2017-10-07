@@ -23,7 +23,7 @@ namespace SmartStore.Web.Infrastructure
 
         public void HandleEvent(SiteMapBuiltEvent eventMessage)
         {
-			if (eventMessage.Name != "catalog" || _catalogSettings.MaxItemsToDisplayInCatalogMenu < 1)
+			if (eventMessage.Name != "catalog" || _catalogSettings.MaxItemsToDisplayInCatalogMenu.GetValueOrDefault() < 1)
 				return;
 
             var root = eventMessage.Root;

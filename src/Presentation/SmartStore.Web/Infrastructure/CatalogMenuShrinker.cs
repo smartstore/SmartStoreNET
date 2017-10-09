@@ -39,7 +39,8 @@ namespace SmartStore.Web.Infrastructure
 				// TODO: next statement would be much better code but can't be used because Id ist null for nearly all treenodes
 				//.Where(x => !x.Value.Id.Equals("manufacturer"))
 				.Where(x => x.Value.Id == null)
-				.Skip(_catalogSettings.MaxItemsToDisplayInCatalogMenu.Value);
+				.Skip(_catalogSettings.MaxItemsToDisplayInCatalogMenu.Value)
+                .ToList();
 
             newNavMmenuItem.AppendRange(cutOffItems);
 

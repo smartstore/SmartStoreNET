@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201709300842479_CurrencyRounding"; }
+            get { return "201710071822097_CurrencyRounding"; }
         }
         
         string IMigrationMetadata.Source

@@ -364,10 +364,7 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
 			var paymentMethodAdditionalFee = (paymentMethod != null ? paymentMethod.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
 
-			if (_shoppingCartSettings.RoundPricesDuringCalculation)
-			{
-				paymentMethodAdditionalFee = paymentMethodAdditionalFee.Round(_services.WorkContext.WorkingCurrency);
-			}
+            paymentMethodAdditionalFee = paymentMethodAdditionalFee.RoundDuringCalculation(_services.WorkContext.WorkingCurrency);
 
 			return paymentMethodAdditionalFee;
         }

@@ -342,7 +342,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 							if (config.SpecialPrice && specialPrice.HasValue)
 							{
-								WriteString(writer, "sale_price", string.Concat(specialPrice.Value.FormatInvariant(currency), " ", currency.CurrencyCode));
+								WriteString(writer, "sale_price", string.Concat(specialPrice.Value.FormatInvariant(), " ", currency.CurrencyCode));
 
 								if (entity.SpecialPriceStartDateTimeUtc.HasValue && entity.SpecialPriceEndDateTimeUtc.HasValue)
 								{
@@ -355,7 +355,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								price = (product._RegularPrice as decimal?) ?? price;
 							}
 
-							WriteString(writer, "price", string.Concat(price.FormatInvariant(currency), " ", currency.CurrencyCode));
+							WriteString(writer, "price", string.Concat(price.FormatInvariant(), " ", currency.CurrencyCode));
 
 							WriteString(writer, "gtin", gtin);
 							WriteString(writer, "brand", brand);

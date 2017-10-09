@@ -8,6 +8,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
@@ -15,7 +16,6 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -30,7 +30,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
 {
-	[TestFixture]
+    [TestFixture]
     public class OrderTotalCalculationServiceTests : ServiceTest
     {
         IWorkContext _workContext;
@@ -63,18 +63,24 @@ namespace SmartStore.Services.Tests.Orders
 		HttpRequestBase _httpRequestBase;
 		IGeoCountryLookup _geoCountryLookup;
 		Store _store;
-		ITypeFinder _typeFinder;
+        Currency _currency;
+        ITypeFinder _typeFinder;
 
         [SetUp]
         public new void SetUp()
         {
-			_workContext = MockRepository.GenerateMock<IWorkContext>();
-			_services = MockRepository.GenerateMock<ICommonServices>();
-
 			_store = new Store { Id = 1 };
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 			_storeContext.Expect(x => x.CurrentStore).Return(_store);
-			
+
+            _currency = new Currency { Id = 1 };
+            _workContext = MockRepository.GenerateMock<IWorkContext>();
+            _workContext.Expect(x => x.WorkingCurrency).Return(_currency);
+
+            _services = MockRepository.GenerateMock<ICommonServices>();
+            _services.Expect(x => x.StoreContext).Return(_storeContext);
+            _services.Expect(x => x.WorkContext).Return(_workContext);
+
             var pluginFinder = new PluginFinder();
 
 			_shoppingCartSettings = new ShoppingCartSettings();

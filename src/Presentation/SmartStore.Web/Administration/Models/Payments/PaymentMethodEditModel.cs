@@ -31,7 +31,10 @@ namespace SmartStore.Admin.Models.Payments
 		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.FullDescription")]
 		[AllowHtml]
 		public string FullDescription { get; set; }
-	}
+
+        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.RoundOrderTotal")]
+        public bool RoundOrderTotal { get; set; }
+    }
 
 
 	public class PaymentMethodLocalizedModel : ILocalizedModelLocal

@@ -103,6 +103,18 @@
 		</tr>
 	</table>
 	))
+
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotal)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundOrderTotal)
+                @Html.ValidationMessageFor(model => model.RoundOrderTotal)
+            </td>
+        </tr>
+    </table>
 }
 
 @helper TabRestrictions()

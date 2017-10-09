@@ -217,7 +217,7 @@
     <Compile Include="Domain\DataExchange\DataExchangeSettings.cs" />
     <Compile Include="Domain\DataExchange\ExportDeployment.cs" />
     <Compile Include="Domain\DataExchange\ExportProjection.cs" />
-    <Compile Include="Domain\Directory\CurrencyRoundingMethod.cs" />
+    <Compile Include="Domain\Directory\CurrencyRoundingRule.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />
     <Compile Include="Domain\DataExchange\ExportEnums.cs" />
     <Compile Include="Domain\DataExchange\ExportFilter.cs" />

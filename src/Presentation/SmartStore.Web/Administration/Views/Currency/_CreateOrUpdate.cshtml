@@ -4,14 +4,18 @@
 @model CurrencyModel
 @{
     var availableDomainEndings = Model.AvailableDomainEndings.Select(x => x.Value).ToArray();
-    for (int i = 0; i < availableDomainEndings.Length; i++)
+    for (var i = 0; i < availableDomainEndings.Length; i++)
     {
         availableDomainEndings[i] = availableDomainEndings[i].EncodeJsString();
     }
-    ViewBag.SerializedDomainEndings = String.Join(",", availableDomainEndings);
+    ViewBag.SerializedDomainEndings = string.Join(",", availableDomainEndings);
 }
 
-@Html.ValidationSummary(true)
+@if (!ViewData.ModelState.IsValid)
+{
+    @Html.ValidationSummary(false)
+}
+
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("currency-edit").Items(x =>
 {
@@ -29,6 +33,14 @@
 
             var domainEndings = $("#@Html.FieldIdFor(x => x.DomainEndings)");
             domainEndings.select2({ tags: [@(Html.Raw(ViewBag.SerializedDomainEndings))] });
+
+            $('#@(Html.FieldIdFor(x => x.RoundDuringCalculation))').change(function () {
+                $('tr.round-during-calculation').toggle($(this).is(':checked'));
+            }).trigger('change');
+
+            $('#@(Html.FieldIdFor(x => x.RoundOrderTotal))').change(function () {
+                $('tr.round-order-total').toggle($(this).is(':checked'));
+            }).trigger('change');
 
         });
     </script>
@@ -111,28 +123,6 @@
             @Html.ValidationMessageFor(model => model.DomainEndings)
         </td>
     </tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.RoundingMethod)
-		</td>
-		<td class="adminData">
-			@Html.DropDownListFor(model => model.RoundingMethod, Model.AvailableRoundingMethods)
-			@Html.ValidationMessageFor(model => model.RoundingMethod)
-		</td>
-	</tr>
-    <tr>
-        <td class="adminTitle">
-            &nbsp;
-        </td>
-        <td class="adminData text-warning">
-            @foreach (CurrencyRoundingMethod method in Enum.GetValues(typeof(CurrencyRoundingMethod)))
-            {
-                <div id="RoundingMethodNote@((int)method)" class="rounding-method-note hide">
-                    @Html.Raw(T("Admin.Configuration.Currencies.Fields.RoundingMethod." + method.ToString() + ".Hint"))
-                </div>
-            }
-        </td>
-    </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Published)
@@ -199,6 +189,93 @@
 		</td>
 	</tr>
 </table>
+
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Common.Round")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundDuringCalculation)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundDuringCalculation)
+                @Html.ValidationMessageFor(model => model.RoundDuringCalculation)
+            </td>
+        </tr>
+        <tr class="round-during-calculation">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundDuringCalculationDecimals)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundDuringCalculationDecimals, new { Small = true })
+                @Html.ValidationMessageFor(model => model.RoundDuringCalculationDecimals)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotal)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundOrderTotal)
+                @Html.ValidationMessageFor(model => model.RoundOrderTotal)
+            </td>
+        </tr>
+        <tr class="round-order-total">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotalToValue)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.RoundOrderTotalToValue, new List<SelectListItem>
+                {
+                    new SelectListItem { Text = 0.05.ToString("F"), Value = 0.05.ToString("F") },
+                    new SelectListItem { Text = 0.10.ToString("F"), Value = 0.10.ToString("F") },
+                    new SelectListItem { Text = 0.50.ToString("F"), Value = 0.50.ToString("F") },
+                    new SelectListItem { Text = 1.00.ToString("F"), Value = 1.00.ToString("F") }
+                }, new { @class = "autowidth", @style = "width: 150px" })
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalToValue)
+            </td>
+        </tr>
+        <tr class="round-order-total">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotalRule)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.RoundOrderTotalRule, Model.RoundOrderTotalRule.ToSelectList())
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalRule)
+            </td>
+        </tr>
+        <tr class="round-order-total">
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
+                
+                @if (Model.RoundOrderTotalPaymentMethods.Any())
+                {
+                    <div class="alert alert-info">
+                        <div>@T("Admin.Configuration.Currencies.PaymentMethodsEnabledRoundingList"):</div>
+                        @foreach (var paymentMethod in Model.RoundOrderTotalPaymentMethods)
+                        {
+                            <div>
+                                <a href="@Url.Action("Edit", "Payment", new { systemName = paymentMethod.Key })">@paymentMethod.Value</a>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        @Html.Raw(T("Admin.Configuration.Currencies.NoPaymentMethodsEnabledRounding").Text.FormatInvariant(Url.Action("Providers", "Payment")))
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
 }
 
 @helper TabStores()
@@ -209,10 +286,6 @@
             $("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
             toggleStoreMapping();
 
-            $('#@Html.FieldIdFor(model => model.RoundingMethod)').change(function () {
-                $('div.rounding-method-note').hide();
-                $('#RoundingMethodNote' + $(this).val()).show();
-            }).trigger('change');
         });
 
 

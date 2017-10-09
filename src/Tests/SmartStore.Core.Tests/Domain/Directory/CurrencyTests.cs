@@ -1,35 +1,50 @@
-﻿using NUnit.Framework;
-using SmartStore.Core.Domain.Directory;
+﻿using System;
+using NUnit.Framework;
 using SmartStore.Tests;
 
 namespace SmartStore.Core.Tests.Domain.Directory
 {
-	[TestFixture]
-    public class CurrencyTests
-    {
-		//[TestCase(CurrencyRoundingMethod.Default, 9.4548, 9.45)]
-		//[TestCase(CurrencyRoundingMethod.Default, 9.4568, 9.46)]
-		//[TestCase(CurrencyRoundingMethod.Down005, 9.4368, 9.40)]
-		//[TestCase(CurrencyRoundingMethod.Down005, 9.4468, 9.45)]
-		//[TestCase(CurrencyRoundingMethod.Down005, 9.4668, 9.45)]
-		//[TestCase(CurrencyRoundingMethod.Up005, 9.0011, 9.00)]
-		//[TestCase(CurrencyRoundingMethod.Up005, 9.4468, 9.50)]
-		//[TestCase(CurrencyRoundingMethod.Up005, 9.4668, 9.50)]
-		//[TestCase(CurrencyRoundingMethod.Down01, 9.4568, 9.50)]
-		//[TestCase(CurrencyRoundingMethod.Down01, 9.5568, 9.60)]
-		//[TestCase(CurrencyRoundingMethod.Up01, 9.0011, 9.00)]
-		//[TestCase(CurrencyRoundingMethod.Up01, 9.5568, 9.60)]
-		//[TestCase(CurrencyRoundingMethod.Interval05, 9.2011, 9.00)]
-		//[TestCase(CurrencyRoundingMethod.Interval05, 9.4468, 9.50)]
-		//[TestCase(CurrencyRoundingMethod.Interval05, 9.7368, 9.50)]
-		//[TestCase(CurrencyRoundingMethod.Interval05, 9.9968, 10.00)]
-		//[TestCase(CurrencyRoundingMethod.Interval1, 9.4668, 9.00)]
-		//[TestCase(CurrencyRoundingMethod.Interval1, 9.5568, 10.00)]
-		//[TestCase(CurrencyRoundingMethod.Up1, 9.0011, 9.00)]
-		//[TestCase(CurrencyRoundingMethod.Up1, 9.0068, 10.00)]
-		public void Currency_can_round(CurrencyRoundingMethod method, decimal value, decimal result)
-        {
-            value.Round(method).ShouldEqual(result);
+    [TestFixture]
+	public class CurrencyTests
+	{
+		[TestCase(0.05, 9.225, 9.25)]
+		[TestCase(0.05, 9.43, 9.45)]
+		[TestCase(0.05, 9.46, 9.45)]
+		[TestCase(0.05, 9.48, 9.50)]
+		[TestCase(0.1, 9.47, 9.50)]
+		[TestCase(0.1, 9.44, 9.40)]
+		[TestCase(0.5, 9.24, 9.00)]
+		[TestCase(0.5, 9.25, 9.50)]
+		[TestCase(0.5, 9.76, 10.00)]
+		[TestCase(1.0, 9.49, 9.00)]
+		[TestCase(1.0, 9.50, 10.00)]
+		[TestCase(1.0, 9.77, 10.00)]
+		public void Currency_round_to_nearest(decimal denomination, decimal value, decimal result)
+		{
+			value.RoundToNearest(denomination, MidpointRounding.AwayFromZero).ShouldEqual(result);
 		}
-	}
+
+		[TestCase(0.05, 9.225, 9.20, MidpointRounding.ToEven)]
+		[TestCase(0.1, 9.45, 9.40, MidpointRounding.ToEven)]
+		[TestCase(0.5, 9.25, 9.00, MidpointRounding.ToEven)]
+		public void Currency_round_to_nearest(decimal denomination, decimal value, decimal result, MidpointRounding midpoint)
+		{
+			value.RoundToNearest(denomination, midpoint).ShouldEqual(result);
+        }
+
+        [TestCase(0.05, 9.225, 9.20, false)]
+        [TestCase(0.05, 9.225, 9.25, true)]
+        [TestCase(0.05, 9.24, 9.20, false)]
+        [TestCase(0.05, 9.26, 9.30, true)]
+        [TestCase(0.1, 9.47, 9.40, false)]
+        [TestCase(0.1, 9.47, 9.50, true)]
+        [TestCase(0.5, 9.24, 9.00, false)]
+        [TestCase(0.5, 9.24, 9.50, true)]
+        [TestCase(1.0, 9.77, 9.00, false)]
+        [TestCase(1.0, 9.77, 10.00, true)]
+        public void Currency_round_to_nearest(decimal denomination, decimal value, decimal result, bool roundUp)
+        {
+            value.RoundToNearest(denomination, roundUp).ShouldEqual(result);
+        }
+    }
 }

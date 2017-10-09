@@ -80,7 +80,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.Id = paymentMethod.Id;
 				model.FullDescription = paymentMethod.FullDescription;
-			}
+                model.RoundOrderTotal = paymentMethod.RoundOrderTotal;
+            }
 		}
 
 		#endregion
@@ -186,6 +187,7 @@ namespace SmartStore.Admin.Controllers
 				paymentMethod = new PaymentMethod { PaymentMethodSystemName = systemName };
 
 			paymentMethod.FullDescription = model.FullDescription;
+            paymentMethod.RoundOrderTotal = model.RoundOrderTotal;
 
 			if (paymentMethod.Id == 0)
 				_paymentService.InsertPaymentMethod(paymentMethod);

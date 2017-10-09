@@ -938,11 +938,7 @@ namespace SmartStore.Services.Catalog
                 }
             }
 
-			if (_shoppingCartSettings.RoundPricesDuringCalculation)
-			{
-				finalPrice = finalPrice.Round(_services.WorkContext.WorkingCurrency);
-			}
-
+            finalPrice = finalPrice.RoundDuringCalculation(_services.WorkContext.WorkingCurrency);
             return finalPrice;
         }
         
@@ -988,11 +984,7 @@ namespace SmartStore.Services.Catalog
 				totalDiscountAmount = productDiscountAmount * quantity;
             }
 
-			if (_shoppingCartSettings.RoundPricesDuringCalculation)
-			{
-				totalDiscountAmount = totalDiscountAmount.Round(_services.WorkContext.WorkingCurrency);
-			}
-
+            totalDiscountAmount = totalDiscountAmount.RoundDuringCalculation(_services.WorkContext.WorkingCurrency);
 			return totalDiscountAmount;
         }
 

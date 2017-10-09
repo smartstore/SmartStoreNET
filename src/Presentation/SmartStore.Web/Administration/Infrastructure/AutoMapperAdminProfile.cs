@@ -342,20 +342,19 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
 				.ForMember(dest => dest.IsSystemAccount, mo => mo.Ignore())
 				.ForMember(dest => dest.SystemAccountName, mo => mo.Ignore());
-			//currencies
-			CreateMap<Currency, CurrencyModel>()
-				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-				.ForMember(dest => dest.IsPrimaryExchangeRateCurrency, mo => mo.Ignore())
-				.ForMember(dest => dest.IsPrimaryStoreCurrency, mo => mo.Ignore())
-				.ForMember(dest => dest.PrimaryStoreCurrencyStores, mo => mo.Ignore())
-				.ForMember(dest => dest.PrimaryExchangeRateCurrencyStores, mo => mo.Ignore())
-				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableDomainEndings, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableRoundingMethods, mo => mo.Ignore())
-				.ForMember(dest => dest.RoundingMethodString, mo => mo.Ignore());
-			CreateMap<CurrencyModel, Currency>()
+            //currencies
+            CreateMap<Currency, CurrencyModel>()
+                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+                .ForMember(dest => dest.IsPrimaryExchangeRateCurrency, mo => mo.Ignore())
+                .ForMember(dest => dest.IsPrimaryStoreCurrency, mo => mo.Ignore())
+                .ForMember(dest => dest.PrimaryStoreCurrencyStores, mo => mo.Ignore())
+                .ForMember(dest => dest.PrimaryExchangeRateCurrencyStores, mo => mo.Ignore())
+                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableDomainEndings, mo => mo.Ignore())
+                .ForMember(dest => dest.RoundOrderTotalPaymentMethods, mo => mo.Ignore());
+            CreateMap<CurrencyModel, Currency>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore());
 

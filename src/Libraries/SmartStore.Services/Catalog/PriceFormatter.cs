@@ -167,8 +167,7 @@ namespace SmartStore.Services.Catalog
         public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
         {
 			// Round before rendering (also take "BitCoin" into account, where more than 2 decimal places are relevant)
-			//price = targetCurrency.CurrencyCode.IsCaseInsensitiveEqual("btc") ? Math.Round(price, 6) : Math.Round(price, 2);
-			price = price.Round(targetCurrency);
+			price = targetCurrency.CurrencyCode.IsCaseInsensitiveEqual("btc") ? Math.Round(price, 6) : Math.Round(price, 2);
             
             var currencyString = GetCurrencyString(price, showCurrency, targetCurrency);
 			if (showTax)

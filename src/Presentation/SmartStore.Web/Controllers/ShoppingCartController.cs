@@ -378,20 +378,20 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-				//sSub total
+				// Sub total
 				decimal taxRate, itemSubTotalWithDiscountBase, itemSubTotalWithDiscount, itemSubTotalWithoutDiscountBase = decimal.Zero;
 
-				if (_shoppingCartSettings.RoundPricesDuringCalculation)
+                if (currency.RoundDuringCalculation)
 				{
 					// Gross > Net RoundFix
 					var priceWithDiscount = _taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate);
-					itemSubTotalWithDiscountBase = priceWithDiscount.Round(currency) * sci.Item.Quantity;
+					itemSubTotalWithDiscountBase = priceWithDiscount.RoundDuringCalculation(currency) * sci.Item.Quantity;
 
 					itemSubTotalWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(itemSubTotalWithDiscountBase, currency);
 					model.SubTotal = _priceFormatter.FormatPrice(itemSubTotalWithDiscount);
 
 					var priceWithoutDiscount = _taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, false), out taxRate);
-					itemSubTotalWithoutDiscountBase = priceWithoutDiscount.Round(currency) * sci.Item.Quantity;
+					itemSubTotalWithoutDiscountBase = priceWithoutDiscount.RoundDuringCalculation(currency) * sci.Item.Quantity;
 				}
 				else
 				{

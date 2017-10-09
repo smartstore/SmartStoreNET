@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Bugfixes
@@ -13,6 +13,7 @@
 * #1248 New payment integration guidelines for Sofort\Klarna
 * TwitterAuth: better error handling and enhanced admin instruction
 * #1181 Debitoor: Add option to display shipping address on invoices
+* Moved RoundPricesDuringCalculation setting to currency entity
 
 ### New Features
 * #431 Added option to randomize the display order for slides on each request

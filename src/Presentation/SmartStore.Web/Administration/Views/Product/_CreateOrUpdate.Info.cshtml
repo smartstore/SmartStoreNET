@@ -7,26 +7,27 @@
     $(document).ready(function () {
 
         $("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
-        $("#@Html.FieldIdFor(model => model.RequireOtherProducts)").click(toggleRequireOtherProducts);
+        //$("#@Html.FieldIdFor(model => model.RequireOtherProducts)").click(toggleRequireOtherProducts);
         $("#@Html.FieldIdFor(model => model.IsGiftCard)").click(toggleGiftCard);
-        $("#@Html.FieldIdFor(model => model.IsDownload)").click(toggleDownloadableProduct);
-        $("#@Html.FieldIdFor(model => model.UnlimitedDownloads)").click(toggleDownloadableProduct);
-        $("#@Html.FieldIdFor(model => model.HasSampleDownload)").click(toggleDownloadableProduct);
-        $("#@Html.FieldIdFor(model => model.HasUserAgreement)").click(toggleDownloadableProduct);
+        //$("#@Html.FieldIdFor(model => model.IsDownload)").click(toggleDownloadableProduct);
+        //$("#@Html.FieldIdFor(model => model.UnlimitedDownloads)").click(toggleDownloadableProduct);
+        //$("#@Html.FieldIdFor(model => model.HasSampleDownload)").click(toggleDownloadableProduct);
+        //$("#@Html.FieldIdFor(model => model.HasUserAgreement)").click(toggleDownloadableProduct);
         $("#@Html.FieldIdFor(model => model.IsRecurring)").click(toggleRecurring);
         $("#@Html.FieldIdFor(model => model.IsShipEnabled)").click(toggleShipping);
         $("#@Html.FieldIdFor(model => model.IsTaxExempt)").click(toggleTax);
 
     	toggleProductType();
-        toggleRequireOtherProducts();
+        //toggleRequireOtherProducts();
         toggleGiftCard();
-        toggleDownloadableProduct();
+        //toggleDownloadableProduct();
         toggleRecurring();
         toggleShipping();
         toggleTax();
         
     	// toggle homepage display order
     	$('#ShowOnHomePage').change(function () {
+    		return;
     		$('#pnlHomePageDisplayOrder').toggle($(this).is(':checked'));
     	}).trigger('change');
 
@@ -73,112 +74,114 @@
         }
     }
 
-    function toggleRequireOtherProducts() {
+	function toggleRequireOtherProducts() {
+		//return;
         if ($('#@Html.FieldIdFor(model => model.RequireOtherProducts)').is(':checked')) {
-            $('#pnlRequiredProductIds').show();
-            $('#pnlAutomaticallyAddRequiredProducts').show();
+            $('#pnlRequiredProductIds').show(200);
+            $('#pnlAutomaticallyAddRequiredProducts').show(200);
         }
         else {
             $('#pnlRequiredProductIds').hide();
-            $('#pnlAutomaticallyAddRequiredProducts').hide();
+            $('#pnlAutomaticallyAddRequiredProducts').hide(200);
         }
     }
 
     function toggleGiftCard() {
         if ($('#@Html.FieldIdFor(model => model.IsGiftCard)').is(':checked')) {
-            $('#pnlGiftCardType').show();
+            $('#pnlGiftCardType').show(200);
         }
         else {
-            $('#pnlGiftCardType').hide();
+            $('#pnlGiftCardType').hide(200);
         }
     }
 
-    function toggleDownloadableProduct() {
+	function toggleDownloadableProduct() {
+		//return;
         if ($('#@Html.FieldIdFor(model => model.IsDownload)').is(':checked')) {
 
-            $('#pnlDownloadFile').show();
-            $('#pnlUnlimitedDownloads').show();
+            $('#pnlDownloadFile').show(200);
+            $('#pnlUnlimitedDownloads').show(200);
             if ($('#@Html.FieldIdFor(model => model.UnlimitedDownloads)').is(':checked')) {
-                $('#pnlMaxNumberOfDownloads').hide();
+                $('#pnlMaxNumberOfDownloads').hide(200);
             }
             else {
-                $('#pnlMaxNumberOfDownloads').show();
+                $('#pnlMaxNumberOfDownloads').show(200);
             }
-            $('#pnlDownloadExpirationDays').show();
-            $('#pnlDownloadActivationType').show();
+            $('#pnlDownloadExpirationDays').show(200);
+            $('#pnlDownloadActivationType').show(200);
 
-            $('#pnlHasUserAgreement').show();
+            $('#pnlHasUserAgreement').show(200);
             if ($('#@Html.FieldIdFor(model => model.HasUserAgreement)').is(':checked')) {
-                $('#pnlUserAgreementText').show();
+                $('#pnlUserAgreementText').show(200);
             }
             else {
-                $('#pnlUserAgreementText').hide();
+                $('#pnlUserAgreementText').hide(200);
             }
 
-            $('#pnlHasSampleDownload').show();
+            $('#pnlHasSampleDownload').show(200);
 
             if ($('#@Html.FieldIdFor(model => model.HasSampleDownload)').is(':checked')) {
-                $('#pnlSampleDownloadFile').show();
+                $('#pnlSampleDownloadFile').show(200);
             }
             else {
-                $('#pnlSampleDownloadFile').hide();
+                $('#pnlSampleDownloadFile').hide(200);
             }
         }
         else {
-            $('#pnlDownloadFile').hide();
-            $('#pnlUnlimitedDownloads').hide();
-            $('#pnlMaxNumberOfDownloads').hide();
-            $('#pnlDownloadExpirationDays').hide();
-            $('#pnlDownloadActivationType').hide();
-            $('#pnlHasUserAgreement').hide();
-            $('#pnlUserAgreementText').hide();
-            $('#pnlHasSampleDownload').hide();
-            $('#pnlSampleDownloadFile').hide();
+            $('#pnlDownloadFile').hide(200);
+            $('#pnlUnlimitedDownloads').hide(200);
+            $('#pnlMaxNumberOfDownloads').hide(200);
+            $('#pnlDownloadExpirationDays').hide(200);
+            $('#pnlDownloadActivationType').hide(200);
+            $('#pnlHasUserAgreement').hide(200);
+            $('#pnlUserAgreementText').hide(200);
+            $('#pnlHasSampleDownload').hide(200);
+            $('#pnlSampleDownloadFile').hide(200);
         }
     }
 
     function toggleShipping() {
         if ($('#@Html.FieldIdFor(model => model.IsShipEnabled)').is(':checked')) {
-            $('#pnlDeliveryTime').show();
-            $('#pnlFreeShipping').show();
-            $('#pnlAdditionalShippingCharge').show();
-            $('#pnlWeight').show();
-            $('#pnlLength').show();
-            $('#pnlWidth').show();
-            $('#pnlHeight').show();
+        	$('#pnlDeliveryTime').show(200);
+        	$('#pnlFreeShipping').show(200);
+        	$('#pnlAdditionalShippingCharge').show(200);
+        	$('#pnlWeight').show(200);
+        	$('#pnlLength').show(200);
+        	$('#pnlWidth').show(200);
+        	$('#pnlHeight').show(200);
         }
         else {
-            $('#pnlDeliveryTime').hide();
-            $('#pnlFreeShipping').hide();
-            $('#pnlAdditionalShippingCharge').hide();
-            $('#pnlWeight').hide();
-            $('#pnlLength').hide();
-            $('#pnlWidth').hide();
-            $('#pnlHeight').hide();
+        	$('#pnlDeliveryTime').hide(200);
+        	$('#pnlFreeShipping').hide(200);
+        	$('#pnlAdditionalShippingCharge').hide(200);
+        	$('#pnlWeight').hide(200);
+        	$('#pnlLength').hide(200);
+        	$('#pnlWidth').hide(200);
+        	$('#pnlHeight').hide(200);
         }
     }
 
     function toggleRecurring() {
         if ($('#@Html.FieldIdFor(model => model.IsRecurring)').is(':checked')) {
-            $('#pnlCycleLength').show();
-            $('#pnlCyclePeriod').show();
-            $('#pnlTotalCycles').show();
+        	$('#pnlCycleLength').show(200);
+        	$('#pnlCyclePeriod').show(200);
+        	$('#pnlTotalCycles').show(200);
         }
         else {
-            $('#pnlCycleLength').hide();
-            $('#pnlCyclePeriod').hide();
-            $('#pnlTotalCycles').hide();
+        	$('#pnlCycleLength').hide(200);
+        	$('#pnlCyclePeriod').hide(200);
+        	$('#pnlTotalCycles').hide(200);
         }
     }
 
     function toggleTax() {
         if ($('#@Html.FieldIdFor(model => model.IsTaxExempt)').is(':checked')) {
-        	$('#pnlTaxCategory').hide();
-        	$('#pnlIsEsd').hide();
+        	$('#pnlTaxCategory').hide(200);
+        	$('#pnlIsEsd').hide(200);
         }
         else {
-        	$('#pnlTaxCategory').show();
-        	$('#pnlIsEsd').show();
+        	$('#pnlTaxCategory').show(200);
+        	$('#pnlIsEsd').show(200);
         }
     }
 </script>
@@ -410,7 +413,7 @@
 				@Html.SmartLabelFor(model => model.ShowOnHomePage)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.ShowOnHomePage)
+				@Html.CheckBoxFor(model => model.ShowOnHomePage, new { data_toggler_for = "#pnlHomePageDisplayOrder" })
 				@Html.ValidationMessageFor(model => model.ShowOnHomePage)
 			</td>
 		</tr>
@@ -467,33 +470,38 @@
 				@Html.SmartLabelFor(model => model.RequireOtherProducts)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.RequireOtherProducts)
+				@Html.CheckBoxFor(model => model.RequireOtherProducts, new { data_toggler_for = "#pnlRequiredProductIds, #pnlAutomaticallyAddRequiredProducts" })
 				@Html.ValidationMessageFor(model => model.RequireOtherProducts)
 			</td>
 		</tr>
-		<tr id="pnlRequiredProductIds">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.RequiredProductIds)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.RequiredProductIds)
-
-				<button type="button" class="btn" id="SearchRequiredProductsButton" data-loading-text="@(T("Common.Loading"))&hellip;">
-					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
-				</button>
-
-				@Html.ValidationMessageFor(model => model.RequiredProductIds)
-			</td>
-		</tr>
-		<tr id="pnlAutomaticallyAddRequiredProducts">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AutomaticallyAddRequiredProducts)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.AutomaticallyAddRequiredProducts)
-				@Html.ValidationMessageFor(model => model.AutomaticallyAddRequiredProducts)
-			</td>
-		</tr>
+		<tbody>
+			<tr id="pnlRequiredProductIds">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.RequiredProductIds)
+				</td>
+				<td class="adminData">
+					<div class="input-group">
+						@Html.EditorFor(model => model.RequiredProductIds)
+						<span class="input-group-btn">
+							<button type="button" class="btn btn-secondary" id="SearchRequiredProductsButton" data-loading-text="@(T("Common.Loading"))&hellip;">
+								<i class="fa fa-search"></i>
+								<span>@T("Admin.Common.Search")</span>
+							</button>
+						</span>
+					</div>
+					@Html.ValidationMessageFor(model => model.RequiredProductIds)
+				</td>
+			</tr>
+			<tr id="pnlAutomaticallyAddRequiredProducts">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AutomaticallyAddRequiredProducts)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.AutomaticallyAddRequiredProducts)
+					@Html.ValidationMessageFor(model => model.AutomaticallyAddRequiredProducts)
+				</td>
+			</tr>
+		</tbody>
 	</table>
 
 	<table class="adminContent" id="group-giftcard">
@@ -533,7 +541,7 @@
 				@Html.SmartLabelFor(model => model.IsDownload)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.IsDownload)
+				@Html.CheckBoxFor(model => model.IsDownload, new { data_toggler_for = "#DownloadId, #UnlimitedDownloads, #DownloadExpirationDays, #DownloadActivationTypeId, #HasUserAgreement, #HasSampleDownload" })
 				@Html.ValidationMessageFor(model => model.IsDownload)
 			</td>
 		</tr>
@@ -551,7 +559,7 @@
 				@Html.SmartLabelFor(model => model.UnlimitedDownloads)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.UnlimitedDownloads)
+				@Html.CheckBoxFor(model => model.UnlimitedDownloads, new { data_toggler_for = "#MaxNumberOfDownloads", data_toggler_reverse = true })
 				@Html.ValidationMessageFor(model => model.UnlimitedDownloads)
 			</td>
 		</tr>
@@ -569,7 +577,7 @@
 				@Html.SmartLabelFor(model => model.DownloadExpirationDays)
 			</td>
 			<td class="adminData">
-				@Html.TextBoxFor(model => model.DownloadExpirationDays)
+				@Html.EditorFor(model => model.DownloadExpirationDays)
 				@Html.ValidationMessageFor(model => model.DownloadExpirationDays)
 			</td>
 		</tr>
@@ -587,7 +595,7 @@
 				@Html.SmartLabelFor(model => model.HasUserAgreement)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.HasUserAgreement)
+				@Html.CheckBoxFor(model => model.HasUserAgreement, new { data_toggler_for = "#UserAgreementText" })
 				@Html.ValidationMessageFor(model => model.HasUserAgreement)
 			</td>
 		</tr>
@@ -605,7 +613,7 @@
 				@Html.SmartLabelFor(model => model.HasSampleDownload)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.HasSampleDownload)
+				@Html.CheckBoxFor(model => model.HasSampleDownload, new { data_toggler_for = "#SampleDownloadId" })
 				@Html.ValidationMessageFor(model => model.HasSampleDownload)
 			</td>
 		</tr>
@@ -702,7 +710,7 @@
 				@Html.SmartLabelFor(model => model.AdditionalShippingCharge)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.AdditionalShippingCharge) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+				@Html.EditorFor(model => model.AdditionalShippingCharge, new { postfix = Model.PrimaryStoreCurrencyCode })
 				@Html.ValidationMessageFor(model => model.AdditionalShippingCharge)
 			</td>
 		</tr>
@@ -720,7 +728,7 @@
 				@Html.SmartLabelFor(model => model.Weight)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Weight) <span class="muted">@Model.BaseWeightIn</span>
+				@Html.EditorFor(model => model.Weight, new { postfix = Model.BaseWeightIn })
 				@Html.ValidationMessageFor(model => model.Weight)
 			</td>
 		</tr>
@@ -729,7 +737,7 @@
 				@Html.SmartLabelFor(model => model.Length)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Length) <span class="muted">@Model.BaseDimensionIn</span>
+				@Html.EditorFor(model => model.Length, new { postfix = Model.BaseDimensionIn })
 				@Html.ValidationMessageFor(model => model.Length)
 			</td>
 		</tr>
@@ -738,7 +746,7 @@
 				@Html.SmartLabelFor(model => model.Width)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Width) <span class="muted">@Model.BaseDimensionIn</span>
+				@Html.EditorFor(model => model.Width, new { postfix = Model.BaseDimensionIn })
 				@Html.ValidationMessageFor(model => model.Width)
 			</td>
 		</tr>
@@ -747,7 +755,7 @@
 				@Html.SmartLabelFor(model => model.Height)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.Height) <span class="muted">@Model.BaseDimensionIn</span>
+				@Html.EditorFor(model => model.Height, new { postfix = Model.BaseDimensionIn })
 				@Html.ValidationMessageFor(model => model.Height)
 			</td>
 		</tr>

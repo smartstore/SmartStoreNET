@@ -82,7 +82,7 @@
                 @Html.SmartLabelFor(model => model.Price)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Price) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+                @Html.EditorFor(model => model.Price, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.Price)
             </td>
         </tr>
@@ -91,7 +91,7 @@
                 @Html.SmartLabelFor(model => model.OldPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.OldPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+                @Html.EditorFor(model => model.OldPrice, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.OldPrice)
             </td>
         </tr>
@@ -100,7 +100,7 @@
                 @Html.SmartLabelFor(model => model.ProductCost)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ProductCost) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+                @Html.EditorFor(model => model.ProductCost, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.ProductCost)
             </td>
         </tr>
@@ -109,7 +109,7 @@
                 @Html.SmartLabelFor(model => model.SpecialPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SpecialPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+                @Html.EditorFor(model => model.SpecialPrice, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.SpecialPrice)
             </td>
         </tr>
@@ -181,7 +181,7 @@
                 @Html.SmartLabelFor(model => model.MinimumCustomerEnteredPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.MinimumCustomerEnteredPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+                @Html.EditorFor(model => model.MinimumCustomerEnteredPrice, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.MinimumCustomerEnteredPrice)
             </td>
         </tr>
@@ -190,7 +190,7 @@
                 @Html.SmartLabelFor(model => model.MaximumCustomerEnteredPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.MaximumCustomerEnteredPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+                @Html.EditorFor(model => model.MaximumCustomerEnteredPrice, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.MaximumCustomerEnteredPrice)
             </td>
         </tr>

@@ -14,3 +14,5 @@
 * Select2: multiple or taggable selects are not required to be hidden fields anymore > refactor.
 * Enclose all button labels in <span>, when an icon is available 
 * Readonly controls in .adminData: input[type=text][readonly].form-control-plaintext (formerly static labels)
+* Pass "postfix" additional viewdata to relevant numerictextbox instances
+* Refactor control toggling: 'data-toggler-for' instead of redundant toggle[...]() calls in every view

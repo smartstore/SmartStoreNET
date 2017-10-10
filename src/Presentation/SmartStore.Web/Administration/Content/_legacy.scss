@@ -404,12 +404,13 @@ td.adminData {
 }
 
 
-/* HTML editor (tiny mce)
+/* HTML editor (CKEditor)
 -------------------------------------------------------------- */
 
-.mce_pdw_toggle.mceButtonActive img {
-    transform: rotate(180deg);
-}	
+.cke_chrome.cke_focus {
+    border-color: $input-focus-border-color;
+    box-shadow: none;
+}
 
 
 body {

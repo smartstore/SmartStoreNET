@@ -235,6 +235,7 @@ a.t-button.t-state-disabled:hover,
         content: ' ';
         display: block;
         background: $input-group-addon-bg;
+        border-left: 1px solid rgba(#000, 0.08);
         top: 1px;
         right: 1px;
         bottom: 1px;
@@ -257,6 +258,10 @@ a.t-button.t-state-disabled:hover,
         font-weight: $font-weight-normal;
         line-height: $input-btn-line-height;
         color: $input-color;
+
+        &.t-state-empty {
+            color: $gray-500 !important;
+        }
     }
 
     .t-icon {
@@ -309,6 +314,25 @@ a.t-button.t-state-disabled:hover,
             top: auto;
             bottom: 0;
         }
+    }
+}
+
+.numerictextbox-group {
+    display: block;
+    position: relative;
+
+    .numerictextbox-postfix {
+        display: block;
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        color: $gray-500;
+        right: $input-height;
+        padding: $input-btn-padding-y $input-btn-padding-x;
+        font-size: $font-size-base; // Match inputs
+        line-height: $input-btn-line-height;
+        cursor: default;
+        user-select: none;
     }
 }
 

@@ -66,6 +66,46 @@
 
         html.removeClass("not-ready").addClass("ready");
 
+    	// Handle panel toggling
+        (function () {
+        	function togglePanel(el /* the toggler */, animate, show, arr) {
+        		var ctl = $(el),
+					reverse = ctl.data('toggler-reverse');
+
+        		if (show === undefined) {
+        			show = ctl.is(':checked');
+        			if (reverse) show = !show;
+        		}
+
+        		$(ctl.data('toggler-for')).each(function (i, cel) {
+        			var pnl = $(cel).closest('tr');
+        			if (show)
+        				pnl.show(animate ? 200 : 0);
+        			else
+        				pnl.hide(animate ? 200 : 0);
+
+        			if ($.isArray(arr))
+        				arr.push(el);
+
+        			if ($(cel).data('toggler-for')) {
+        				// Handle dependant children
+        				togglePanel(cel, animate, show, arr);
+        			}
+        		});
+        	}
+
+        	var toggled = [];
+        	$('input[type=checkbox][data-toggler-for]').each(function (i, el) {
+        		if (!_.contains(toggled, el)) {
+        			togglePanel(el, false, undefined, toggled);
+        		}
+        	});
+
+        	$(document).on('change', 'input[type=checkbox][data-toggler-for]', function (e) {
+        		togglePanel(e.target, true);
+        	});
+        })();
+
 		applyCommonPlugins($("body"));
 
         $("#page").tooltip({

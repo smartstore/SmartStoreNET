@@ -605,7 +605,7 @@ namespace SmartStore.Web.Controllers
 
 						if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 						{
-							displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, ctx.Customer, ctx.BatchContext);
+							displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, ctx.Customer, ctx.Currency, ctx.BatchContext);
 						}
 						else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 						{
@@ -697,7 +697,7 @@ namespace SmartStore.Web.Controllers
 
 						if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 						{
-							displayPrice = _priceCalculationService.GetPreselectedPrice(product, ctx.Customer, ctx.BatchContext);
+							displayPrice = _priceCalculationService.GetPreselectedPrice(product, ctx.Customer, ctx.Currency, ctx.BatchContext);
 						}
 						else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 						{

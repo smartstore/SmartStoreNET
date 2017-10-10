@@ -1,7 +1,7 @@
 using System;
+using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
-using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Directory
 {
@@ -11,6 +11,11 @@ namespace SmartStore.Core.Domain.Directory
 	[DataContract]
 	public partial class Currency : BaseEntity, IAuditable, ILocalizedEntity, IStoreMappingSupported
     {
+        public Currency()
+        {
+            RoundNumDecimals = 2;
+        }
+
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -76,5 +81,39 @@ namespace SmartStore.Core.Domain.Directory
 		/// </summary>
 		[DataMember]
 		public string DomainEndings { get; set; }
-    }
+
+        #region Rounding
+
+        /// <summary>
+        /// Gets or sets a value indicating whether rounding of order items is enabled
+        /// </summary>
+        [DataMember]
+        public bool RoundOrderItemsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of decimal places to round to
+        /// </summary>
+        [DataMember]
+        public int RoundNumDecimals { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to round the order total
+        /// </summary>
+        [DataMember]
+        public bool RoundOrderTotalEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the smallest denomination. The order total is rounded to the nearest multiple of it.
+        /// </summary>
+        [DataMember]
+        public decimal RoundOrderTotalDenominator { get; set; }
+
+        /// <summary>
+        /// Gets or sets the order total rounding rule.
+        /// </summary>
+        [DataMember]
+        public CurrencyRoundingRule RoundOrderTotalRule { get; set; }
+
+        #endregion Rounding
+	}
 }

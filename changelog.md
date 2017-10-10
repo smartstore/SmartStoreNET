@@ -13,11 +13,14 @@
 * #1248 New payment integration guidelines for Sofort\Klarna
 * TwitterAuth: better error handling and enhanced admin instruction
 * #1181 Debitoor: Add option to display shipping address on invoices
+* Moved RoundPricesDuringCalculation setting to currency entity
 
 ### New Features
 * #431 Added option to randomize the display order for slides on each request
 * #1258 Add option to filter shipping and payment methods by a specific customer role
 * #1247 Allow to import non system customer roles in customer import
+* #1117 Added an option to display a dropdown menu for manufacturers 
+* #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
 
 
 ## SmartStore.NET 3.0.3

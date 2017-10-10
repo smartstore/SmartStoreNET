@@ -138,6 +138,11 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool ShowLinkedAttributeValueImage { get; set; }
 
         /// <summary>
+		/// Gets or sets a value indicating how many menu items will be displayed
+		/// </summary>
+        public int? MaxItemsToDisplayInCatalogMenu { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether product sorting is enabled
         /// </summary>
         public bool AllowProductSorting { get; set; }

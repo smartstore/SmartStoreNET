@@ -25,7 +25,8 @@ namespace SmartStore.Services.Tests.Shipping
         IProductAttributeParser _productAttributeParser;
 		IProductService _productService;
         ICheckoutAttributeParser _checkoutAttributeParser;
-        ShippingSettings _shippingSettings;
+		ICommonServices _services;
+		ShippingSettings _shippingSettings;
         IEventPublisher _eventPublisher;
 		IGenericAttributeService _genericAttributeService;
         IShippingService _shippingService;
@@ -44,8 +45,9 @@ namespace SmartStore.Services.Tests.Shipping
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
 			_productService = MockRepository.GenerateMock<IProductService>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
+			_services = MockRepository.GenerateMock<ICommonServices>();
 
-            _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
+			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
@@ -64,7 +66,8 @@ namespace SmartStore.Services.Tests.Shipping
                 _shoppingCartSettings,
 				_settingService, 
 				this.ProviderManager,
-				_typeFinder);
+				_typeFinder,
+				_services);
         }
 
         [Test]

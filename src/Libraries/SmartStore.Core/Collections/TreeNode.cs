@@ -48,7 +48,21 @@ namespace SmartStore.Collections
 				value = ((ICloneable<TValue>)value).Clone();
 			}
 
-			return new TreeNode<TValue>(value);
+			var clonedNode = new TreeNode<TValue>(value);
+
+			// Assign or clone Metadata
+			if (_metadata != null && _metadata.Count > 0)
+			{
+				foreach (var kvp in _metadata)
+				{
+					var metadataValue = kvp.Value is ICloneable 
+						? ((ICloneable)kvp.Value).Clone() 
+						: kvp.Value;
+					clonedNode.SetMetadata(kvp.Key, metadataValue);
+				}
+			}
+
+			return clonedNode;
 		}
 
 		public TreeNode<TValue> Append(TValue value)

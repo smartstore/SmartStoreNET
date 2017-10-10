@@ -250,16 +250,9 @@ namespace SmartStore.AmazonPay.Api
 
 		public OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, string currencyCode, List<OrganizedShoppingCartItem> cart)
 		{
-			decimal orderTotalDiscountAmountBase = decimal.Zero;
-			Discount orderTotalAppliedDiscount = null;
-			List<AppliedGiftCard> appliedGiftCards = null;
-			int redeemedRewardPoints = 0;
-			decimal redeemedRewardPointsAmount = decimal.Zero;
+            decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart);
 
-			decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart,
-				out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
-
-			if (shoppingCartTotalBase.HasValue)
+            if (shoppingCartTotalBase.HasValue)
 			{
 				return SetOrderReferenceDetails(client, orderReferenceId, shoppingCartTotalBase, currencyCode);
 			}

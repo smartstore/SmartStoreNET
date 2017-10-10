@@ -617,12 +617,13 @@ namespace SmartStore.Admin.Controllers
 
 			var customer = _workContext.CurrentCustomer;	// TODO: we need a customer representing entity instance for backend work
 			var order = _orderService.GetOrderById(orderId);
+			var currency = _currencyService.GetCurrencyByCode(order.CustomerCurrencyCode);
 
-			decimal taxRate = decimal.Zero;
-			decimal unitPriceTaxRate = decimal.Zero;
-			decimal unitPrice = _priceCalculationService.GetFinalPrice(product, null, customer, decimal.Zero, false, 1);
-			decimal unitPriceInclTax = _taxService.GetProductPrice(product, unitPrice, true, customer, out unitPriceTaxRate);
-			decimal unitPriceExclTax = _taxService.GetProductPrice(product, unitPrice, false, customer, out taxRate);
+			var taxRate = decimal.Zero;
+			var unitPriceTaxRate = decimal.Zero;
+			var unitPrice = _priceCalculationService.GetFinalPrice(product, null, customer, decimal.Zero, false, 1);
+			var unitPriceInclTax = _taxService.GetProductPrice(product, product.TaxCategoryId, unitPrice, true, customer, currency, _taxSettings.PricesIncludeTax, out unitPriceTaxRate);
+			var unitPriceExclTax = _taxService.GetProductPrice(product, product.TaxCategoryId, unitPrice, false, customer, currency, _taxSettings.PricesIncludeTax, out taxRate);
 
             var model = new OrderModel.AddOrderProductModel.ProductDetailsModel()
             {
@@ -1828,9 +1829,11 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(orderId);
             var product = _productService.GetProductById(productId);
+			var currency = _currencyService.GetCurrencyByCode(order.CustomerCurrencyCode);
+			var includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
 
-            //basic properties
-            var unitPriceInclTax = decimal.Zero;
+			//basic properties
+			var unitPriceInclTax = decimal.Zero;
             decimal.TryParse(form["UnitPriceInclTax"], out unitPriceInclTax);
             var unitPriceExclTax = decimal.Zero;
             decimal.TryParse(form["UnitPriceExclTax"], out unitPriceExclTax);
@@ -1914,8 +1917,9 @@ namespace SmartStore.Admin.Controllers
 					foreach (var bundleItem in bundleItems)
 					{
 						decimal taxRate;
-						decimal finalPrice = _priceCalculationService.GetFinalPrice(bundleItem.Item.Product, bundleItems, order.Customer, decimal.Zero, true, bundleItem.Item.Quantity);
-						decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(bundleItem.Item.Product, finalPrice, out taxRate);
+						var finalPrice = _priceCalculationService.GetFinalPrice(bundleItem.Item.Product, bundleItems, order.Customer, decimal.Zero, true, bundleItem.Item.Quantity);
+						var bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(bundleItem.Item.Product, bundleItem.Item.Product.TaxCategoryId, finalPrice,
+							includingTax, order.Customer, currency, _taxSettings.PricesIncludeTax, out taxRate);
 
 						bundleItem.ToOrderData(listBundleData, bundleItemSubTotalWithDiscountBase);
 					}

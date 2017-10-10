@@ -281,6 +281,7 @@
     <Compile Include="Messages\QueuingEmailEvent.cs" />
     <Compile Include="Messages\QueuingEmailEventConsumer.cs" />
     <Compile Include="Orders\AddToCartContext.cs" />
+    <Compile Include="Orders\ShoppingCartTotal.cs" />
     <Compile Include="Payments\IPaymentMethodFilter.cs" />
     <Compile Include="Pdf\Content\PdfHtmlContent.cs" />
     <Compile Include="Pdf\Content\IPdfContent.cs" />

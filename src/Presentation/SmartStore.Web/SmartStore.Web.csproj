@@ -320,6 +320,7 @@
     <Compile Include="Infrastructure\Routes\1_StoreRoutes.cs" />
     <Compile Include="Infrastructure\Routes\MapLegacyRoutesAttribute.cs" />
     <Compile Include="Infrastructure\DefaultFacetTemplateSelector.cs" />
+    <Compile Include="Infrastructure\CatalogMenuShrinker.cs" />
     <Compile Include="Models\Blogs\BlogPostListModel.cs" />
     <Compile Include="Models\Blogs\BlogPagingFilteringModel.cs" />
     <Compile Include="Models\Blogs\BlogPostTagModel.cs" />
@@ -1949,6 +1950,7 @@
     <Content Include="Themes\Flex\Content\_choice.scss" />
     <Content Include="Themes\Flex\Content\_layout.scss" />
     <Content Include="Views\ShoppingCart\Partials\_RewardPointsBox.cshtml" />
+    <Content Include="Themes\Flex\Content\_print.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

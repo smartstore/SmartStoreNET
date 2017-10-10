@@ -6,9 +6,11 @@ using Rhino.Mocks;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Media;
@@ -17,10 +19,11 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Catalog
 {
-	[TestFixture]
+    [TestFixture]
     public class PriceCalculationServiceTests : ServiceTest
     {
 		IStoreContext _storeContext;
+        IWorkContext _workContext;
         IDiscountService _discountService;
         ICategoryService _categoryService;
 		IManufacturerService _manufacturerService;
@@ -34,15 +37,24 @@ namespace SmartStore.Services.Tests.Catalog
 		ITaxService _taxService;
         ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;
-
+		TaxSettings _taxSettings;
 		Store _store;
+        Currency _currency;
 
         [SetUp]
         public new void SetUp()
         {
-			_store = new Store() { Id = 1 };
+			_store = new Store { Id = 1 };
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 			_storeContext.Expect(x => x.CurrentStore).Return(_store);
+
+            _currency = new Currency { Id = 1 };
+            _workContext = MockRepository.GenerateMock<IWorkContext>();
+            _workContext.Expect(x => x.WorkingCurrency).Return(_currency);
+
+            _services = MockRepository.GenerateMock<ICommonServices>();
+            _services.Expect(x => x.StoreContext).Return(_storeContext);
+            _services.Expect(x => x.WorkContext).Return(_workContext);
 
             _discountService = MockRepository.GenerateMock<IDiscountService>();
 
@@ -54,16 +66,15 @@ namespace SmartStore.Services.Tests.Catalog
 			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
 
 			_downloadService = MockRepository.GenerateMock<IDownloadService>();
-			_services = MockRepository.GenerateMock<ICommonServices>();
-			_services.Expect(x => x.StoreContext).Return(_storeContext);
 			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_taxService = MockRepository.GenerateMock<ITaxService>();
 
 			_shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
+			_taxSettings = new TaxSettings();
 
 			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _manufacturerService, _productAttributeParser, _productService,
-				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService);
+				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService, _taxSettings);
         }
 
         [Test]

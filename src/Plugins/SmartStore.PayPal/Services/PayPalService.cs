@@ -125,17 +125,11 @@ namespace SmartStore.PayPal.Services
 			var currency = _services.WorkContext.WorkingCurrency;
 			var currencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 			var includingTax = (_services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id) == TaxDisplayType.IncludingTax);
-
-			Discount orderAppliedDiscount;
-			List<AppliedGiftCard> appliedGiftCards;
-			int redeemedRewardPoints = 0;
-			decimal redeemedRewardPointsAmount;
-			decimal orderDiscountInclTax;
-			decimal totalOrderItems = decimal.Zero;
+			var totalOrderItems = decimal.Zero;
 			var taxTotal = decimal.Zero;
 
-			var total = Math.Round(_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
-				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero, 2);
+            decimal? cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
+            var total = Math.Round(cartTotal ?? decimal.Zero, 2);
 
 			if (total == decimal.Zero)
 			{

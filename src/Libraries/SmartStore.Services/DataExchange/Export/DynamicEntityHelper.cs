@@ -137,7 +137,8 @@ namespace SmartStore.Services.DataExchange.Export
 				if (ctx.Projection.ConvertNetToGrossPrices)
 				{
 					decimal taxRate;
-					price = _taxService.Value.GetProductPrice(product, price.Value, true, ctx.ContextCustomer, out taxRate);
+					price = _taxService.Value.GetProductPrice(product, product.TaxCategoryId, price.Value, true, ctx.ContextCustomer, ctx.ContextCurrency,
+						_taxSettings.Value.PricesIncludeTax, out taxRate);
 				}
 
 				if (price != decimal.Zero)
@@ -145,6 +146,7 @@ namespace SmartStore.Services.DataExchange.Export
 					price = _currencyService.Value.ConvertFromPrimaryStoreCurrency(price.Value, ctx.ContextCurrency, ctx.Store);
 				}
 			}
+
 			return price;
 		}
 
@@ -179,7 +181,7 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PreSelectedPrice)
 				{
-					price = _priceCalculationService.Value.GetPreselectedPrice(product, ctx.ContextCustomer, priceCalculationContext);
+					price = _priceCalculationService.Value.GetPreselectedPrice(product, ctx.ContextCustomer, ctx.ContextCurrency, priceCalculationContext);
 				}
 				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 				{
@@ -624,7 +626,7 @@ namespace SmartStore.Services.DataExchange.Export
 			dynObject.Price = CalculatePrice(ctx, product, combination, variantAttributeValues);
 
 			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
-				_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
+				_priceCalculationService.Value, ctx.ContextCustomer, ctx.ContextCurrency, decimal.Zero, true);
 
 			if (ctx.ProductTemplates.ContainsKey(product.ProductTemplateId))
 				dynObject._ProductTemplateViewPath = ctx.ProductTemplates[product.ProductTemplateId];
@@ -724,26 +726,34 @@ namespace SmartStore.Services.DataExchange.Export
 				.Select(x => ToDynamic(ctx, x))
 				.ToList();
 
-			dynObject.ProductAttributeCombinations = (combinations ?? Enumerable.Empty<ProductVariantAttributeCombination>())
-				.Select(x =>
-				{
-					dynamic dyn = ToDynamic(ctx, x);
-					var assignedPictures = new List<dynamic>();
-
-					foreach (int pictureId in x.GetAssignedPictureIds().Take(numberOfPictures))
+			// Do not export combinations if a combination is exported as a product.
+			if (combinations != null && combination == null)
+			{
+				dynObject.ProductAttributeCombinations = combinations
+					.Select(x =>
 					{
-						var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
-						if (assignedPicture != null && assignedPicture.Picture != null)
+						dynamic dyn = ToDynamic(ctx, x);
+						var assignedPictures = new List<dynamic>();
+
+						foreach (int pictureId in x.GetAssignedPictureIds().Take(numberOfPictures))
 						{
-							assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize));
+							var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
+							if (assignedPicture != null && assignedPicture.Picture != null)
+							{
+								assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.Value.ProductThumbPictureSize, productDetailsPictureSize));
+							}
 						}
-					}
 
-					dyn.Pictures = assignedPictures;
+						dyn.Pictures = assignedPictures;
 
-					return dyn;
-				})
-				.ToList();
+						return dyn;
+					})
+					.ToList();
+			}
+			else
+			{
+				dynObject.ProductAttributeCombinations = Enumerable.Empty<ProductVariantAttributeCombination>();
+			}
 
 			if (product.HasTierPrices)
 			{
@@ -875,7 +885,8 @@ namespace SmartStore.Services.DataExchange.Export
 					if (ctx.Projection.ConvertNetToGrossPrices)
 					{
 						decimal taxRate;
-						dynObject._OldPrice = _taxService.Value.GetProductPrice(product, product.OldPrice, true, ctx.ContextCustomer, out taxRate);
+						dynObject._OldPrice = _taxService.Value.GetProductPrice(product, product.TaxCategoryId, product.OldPrice, true, ctx.ContextCustomer,
+							ctx.ContextCurrency, _taxSettings.Value.PricesIncludeTax, out taxRate);
 					}
 					else
 					{
@@ -1161,7 +1172,7 @@ namespace SmartStore.Services.DataExchange.Export
 						dyn.Product._ProductTemplateViewPath = "";
 
 					dyn.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
-						_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
+						_priceCalculationService.Value, ctx.ContextCustomer, ctx.ContextCurrency, decimal.Zero, true);
 
 					ToDeliveryTime(ctx, dyn.Product, e.Product.DeliveryTimeId);
 					ToQuantityUnit(ctx, dyn.Product, e.Product.QuantityUnitId);

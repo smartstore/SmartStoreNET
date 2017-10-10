@@ -163,7 +163,7 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			++RecordsFailed;
 
-			Log.ErrorFormat(exception, "Error while processing record with id {0}", entityId);
+			Log.ErrorFormat("Error while processing record with id {0}. {1}".FormatInvariant(entityId, exception.ToString()));
 
 			if (IsMaxFailures)
 				_result.LastError = exception.ToString();

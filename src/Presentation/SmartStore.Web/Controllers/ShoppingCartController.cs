@@ -1914,14 +1914,16 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult OrderTotals(bool isEditable)
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			var model = new OrderTotalsModel();
+            var customer = _workContext.CurrentCustomer;
+            var currency = _workContext.WorkingCurrency;
+            var store = _storeContext.CurrentStore;
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+            
+            var model = new OrderTotalsModel();
             model.IsEditable = isEditable;
 
             if (cart.Count > 0)
             {             
-                //weight
                 model.Weight = decimal.Zero;
 
                 foreach (var sci in cart) 
@@ -1935,7 +1937,7 @@ namespace SmartStore.Web.Controllers
                     model.WeightMeasureUnitName = measure.Name;
                 }
 
-                //subtotal
+                // Subtotal
                 decimal subtotalBase = decimal.Zero;
                 decimal orderSubTotalDiscountAmountBase = decimal.Zero;
                 Discount orderSubTotalAppliedDiscount = null;
@@ -1948,16 +1950,18 @@ namespace SmartStore.Web.Controllers
 
 				subtotalBase = subTotalWithoutDiscountBase;
 
-				decimal subtotal = _currencyService.ConvertFromPrimaryStoreCurrency(subtotalBase, _workContext.WorkingCurrency);
+				decimal subtotal = _currencyService.ConvertFromPrimaryStoreCurrency(subtotalBase, currency);
 				model.SubTotal = _priceFormatter.FormatPrice(subtotal);
 
 				if (orderSubTotalDiscountAmountBase > decimal.Zero)
 				{
-					decimal orderSubTotalDiscountAmount = _currencyService.ConvertFromPrimaryStoreCurrency(orderSubTotalDiscountAmountBase, _workContext.WorkingCurrency);
+					decimal orderSubTotalDiscountAmount = _currencyService.ConvertFromPrimaryStoreCurrency(orderSubTotalDiscountAmountBase, currency);
 
 					model.SubTotalDiscount = _priceFormatter.FormatPrice(-orderSubTotalDiscountAmount);
-					model.AllowRemovingSubTotalDiscount = orderSubTotalAppliedDiscount != null && orderSubTotalAppliedDiscount.RequiresCouponCode &&
-						!String.IsNullOrEmpty(orderSubTotalAppliedDiscount.CouponCode) && model.IsEditable;
+					model.AllowRemovingSubTotalDiscount = orderSubTotalAppliedDiscount != null 
+                        && orderSubTotalAppliedDiscount.RequiresCouponCode 
+                        && !string.IsNullOrEmpty(orderSubTotalAppliedDiscount.CouponCode) 
+                        && model.IsEditable;
 				}
                 
 
@@ -1968,24 +1972,24 @@ namespace SmartStore.Web.Controllers
                     decimal? shoppingCartShippingBase = _orderTotalCalculationService.GetShoppingCartShippingTotal(cart);
                     if (shoppingCartShippingBase.HasValue)
                     {
-                        decimal shoppingCartShipping = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartShippingBase.Value, _workContext.WorkingCurrency);
+                        decimal shoppingCartShipping = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartShippingBase.Value, currency);
                         model.Shipping = _priceFormatter.FormatShippingPrice(shoppingCartShipping, true);
 
                         //selected shipping method
-						var shippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _storeContext.CurrentStore.Id);
+						var shippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, store.Id);
                         if (shippingOption != null)
                             model.SelectedShippingMethod = shippingOption.Name;
                     }
                 }
 
                 //payment method fee
-				string paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
+				string paymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, store.Id);
                 decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, paymentMethodSystemName);
-                decimal paymentMethodAdditionalFeeWithTaxBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
+                decimal paymentMethodAdditionalFeeWithTaxBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, customer);
 
                 if (paymentMethodAdditionalFeeWithTaxBase != decimal.Zero)
                 {
-                    decimal paymentMethodAdditionalFeeWithTax = _currencyService.ConvertFromPrimaryStoreCurrency(paymentMethodAdditionalFeeWithTaxBase, _workContext.WorkingCurrency);
+                    decimal paymentMethodAdditionalFeeWithTax = _currencyService.ConvertFromPrimaryStoreCurrency(paymentMethodAdditionalFeeWithTaxBase, currency);
                     model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeWithTax, true);
                 }
 
@@ -2001,7 +2005,7 @@ namespace SmartStore.Web.Controllers
                 {
                     SortedDictionary<decimal, decimal> taxRates = null;
                     decimal shoppingCartTaxBase = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
-                    decimal shoppingCartTax = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTaxBase, _workContext.WorkingCurrency);
+                    decimal shoppingCartTax = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTaxBase, currency);
 
                         if (shoppingCartTaxBase == 0 && _taxSettings.HideZeroTax)
                         {
@@ -2018,15 +2022,16 @@ namespace SmartStore.Web.Controllers
                             {
 								var rate = _priceFormatter.FormatTaxRate(tr.Key);
 								var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_workContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
-								model.TaxRates.Add(new OrderTotalsModel.TaxRate()
-                                    {
-										Rate = rate,
-                                        Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, _workContext.WorkingCurrency), true, false),
-										Label = _localizationService.GetResource(labelKey).FormatCurrent(rate)
-                                    });
+								model.TaxRates.Add(new OrderTotalsModel.TaxRate
+                                {
+									Rate = rate,
+                                    Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, currency), true, false),
+									Label = _localizationService.GetResource(labelKey).FormatCurrent(rate)
+                                });
                             }
                         }
                 }
+
                 model.DisplayTaxRates = displayTaxRates;
                 model.DisplayTax = displayTax;
 
@@ -2036,62 +2041,59 @@ namespace SmartStore.Web.Controllers
 				var minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
 				if (!minOrderSubtotalAmountOk)
 				{
-					var minOrderSubtotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderSubtotalAmount, _workContext.WorkingCurrency);
-					model.MinOrderSubtotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderSubtotalAmount"), _priceFormatter.FormatPrice(minOrderSubtotalAmount, true, false));
+					var minOrderSubtotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderSubtotalAmount, currency);
+					model.MinOrderSubtotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderSubtotalAmount"), 
+                        _priceFormatter.FormatPrice(minOrderSubtotalAmount, true, false));
 				}
 
-				//total
-				decimal orderTotalDiscountAmountBase = decimal.Zero;
-                Discount orderTotalAppliedDiscount = null;
-                List<AppliedGiftCard> appliedGiftCards = null;
-                int redeemedRewardPoints = 0;
-                decimal redeemedRewardPointsAmount = decimal.Zero;
-
-                decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart,
-                    out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount,
-                    out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
+				// Cart total
+                var cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
+                var shoppingCartTotalBase = cartTotal.TotalAmount;
 
                 if (shoppingCartTotalBase.HasValue)
                 {
-                    decimal shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTotalBase.Value, _workContext.WorkingCurrency);
+                    decimal shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTotalBase.Value, currency);
                     model.OrderTotal = _priceFormatter.FormatPrice(shoppingCartTotal, true, false);
                 }
 
-                //discount
-                if (orderTotalDiscountAmountBase > decimal.Zero)
+                // Discount
+                if (cartTotal.DiscountAmount > decimal.Zero)
                 {
-                    decimal orderTotalDiscountAmount = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotalDiscountAmountBase, _workContext.WorkingCurrency);
+                    decimal orderTotalDiscountAmount = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.DiscountAmount, currency);
                     model.OrderTotalDiscount = _priceFormatter.FormatPrice(-orderTotalDiscountAmount, true, false);
-                    model.AllowRemovingOrderTotalDiscount = orderTotalAppliedDiscount != null && orderTotalAppliedDiscount.RequiresCouponCode &&
-                        !String.IsNullOrEmpty(orderTotalAppliedDiscount.CouponCode) && model.IsEditable;
+                    model.AllowRemovingOrderTotalDiscount = cartTotal.AppliedDiscount != null 
+                        && cartTotal.AppliedDiscount.RequiresCouponCode
+                        && !string.IsNullOrEmpty(cartTotal.AppliedDiscount.CouponCode) 
+                        && model.IsEditable;
                 }
 
-                //gift cards
-                if (appliedGiftCards != null && appliedGiftCards.Count > 0)
+                // Gift cards
+                if (cartTotal.AppliedGiftCards != null && cartTotal.AppliedGiftCards.Count > 0)
                 {
-                    foreach (var appliedGiftCard in appliedGiftCards)
+                    foreach (var appliedGiftCard in cartTotal.AppliedGiftCards)
                     {
-                        var gcModel = new OrderTotalsModel.GiftCard()
-                            {
-                                Id = appliedGiftCard.GiftCard.Id,
-                                CouponCode =  appliedGiftCard.GiftCard.GiftCardCouponCode,
-                            };
-                        decimal amountCanBeUsed = _currencyService.ConvertFromPrimaryStoreCurrency(appliedGiftCard.AmountCanBeUsed, _workContext.WorkingCurrency);
+                        var gcModel = new OrderTotalsModel.GiftCard
+                        {
+                            Id = appliedGiftCard.GiftCard.Id,
+                            CouponCode =  appliedGiftCard.GiftCard.GiftCardCouponCode,
+                        };
+
+                        decimal amountCanBeUsed = _currencyService.ConvertFromPrimaryStoreCurrency(appliedGiftCard.AmountCanBeUsed, currency);
                         gcModel.Amount = _priceFormatter.FormatPrice(-amountCanBeUsed, true, false);
 
                         decimal remainingAmountBase = appliedGiftCard.GiftCard.GetGiftCardRemainingAmount() - appliedGiftCard.AmountCanBeUsed;
-                        decimal remainingAmount = _currencyService.ConvertFromPrimaryStoreCurrency(remainingAmountBase, _workContext.WorkingCurrency);
+                        decimal remainingAmount = _currencyService.ConvertFromPrimaryStoreCurrency(remainingAmountBase, currency);
                         gcModel.Remaining = _priceFormatter.FormatPrice(remainingAmount, true, false);
                         
                         model.GiftCards.Add(gcModel);
                     }
                 }
 
-                //reward points
-                if (redeemedRewardPointsAmount > decimal.Zero)
+                // Reward points
+                if (cartTotal.RedeemedRewardPointsAmount > decimal.Zero)
                 {
-                    decimal redeemedRewardPointsAmountInCustomerCurrency = _currencyService.ConvertFromPrimaryStoreCurrency(redeemedRewardPointsAmount, _workContext.WorkingCurrency);
-                    model.RedeemedRewardPoints = redeemedRewardPoints;
+                    decimal redeemedRewardPointsAmountInCustomerCurrency = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.RedeemedRewardPointsAmount, currency);
+                    model.RedeemedRewardPoints = cartTotal.RedeemedRewardPoints;
                     model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-redeemedRewardPointsAmountInCustomerCurrency, true, false);
                 }
             }

@@ -1315,13 +1315,12 @@ namespace SmartStore.Services.Tests.Orders
         [Test]
         public void Can_get_shopping_cart_total_discount()
         {
-			//customer
 			var customer = new Customer
 			{
 				Id = 10,
 			};
 
-			//shopping cart
+			// Shopping cart
 			var product1 = new Product
 			{
 				Id = 1,
@@ -1359,7 +1358,7 @@ namespace SmartStore.Services.Tests.Orders
 			cart.ForEach(sci => sci.Item.Customer = customer);
 			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
-			//discounts
+			// Discounts
 			var discount1 = new Discount
 			{
 				Id = 1,
@@ -1389,25 +1388,25 @@ namespace SmartStore.Services.Tests.Orders
 
 			//_paymentService.Expect(ps => ps.GetAdditionalHandlingFee(cart, "test1")).Return(20);
 
-
-			decimal discountAmount;
-			Discount appliedDiscount;
-			List<AppliedGiftCard> appliedGiftCards;
-			int redeemedRewardPoints;
-			decimal redeemedRewardPointsAmount;
-
-			//shipping is taxable, payment fee is taxable
+			// Shipping is taxable, payment fee is taxable
 			_taxSettings.ShippingIsTaxable = true;
 			_taxSettings.PaymentMethodAdditionalFeeIsTaxable = true;
 
-			//56 - items, 10 - shipping (fixed), 20 - payment fee, 8.6 - tax, [-3] - discount = 91.6
-			//56 - items, 10 - shipping (fixed), 6.6 - tax, [-3] - discount = 69.6
-			_orderTotalCalcService.GetShoppingCartTotal(cart, out discountAmount, out appliedDiscount,	out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount)
-				.ShouldEqual(69.6M);
+            // 56 - items, 10 - shipping (fixed), 20 - payment fee, 8.6 - tax, [-3] - discount = 91.6
+            // 56 - items, 10 - shipping (fixed), 6.6 - tax, [-3] - discount = 69.6
+            var cartTotal = _orderTotalCalcService.GetShoppingCartTotal(cart);
+            cartTotal.TotalAmount.ShouldEqual(69.6M);
+            cartTotal.DiscountAmount.ShouldEqual(3);
+            cartTotal.AppliedDiscount.ShouldNotBeNull();
+            cartTotal.AppliedDiscount.Name.ShouldEqual("Discount 1");
 
-			discountAmount.ShouldEqual(3);
-			appliedDiscount.ShouldNotBeNull();
-			appliedDiscount.Name.ShouldEqual("Discount 1");
+            // Test implicit operators
+            decimal? totalAmount = null;
+            totalAmount = _orderTotalCalcService.GetShoppingCartTotal(cart);
+            totalAmount.ShouldEqual(69.6M);
+
+            ShoppingCartTotal cartTotalObject = 123.45M;
+            cartTotalObject.TotalAmount.ShouldEqual(123.45M);
         }
 
         [Test]

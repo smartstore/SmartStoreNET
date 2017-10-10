@@ -1082,90 +1082,52 @@ namespace SmartStore.Services.Orders
 
 
 
-        /// <summary>
-        /// Gets shopping cart total
-        /// </summary>
-        /// <param name="cart">Cart</param>
-        /// <param name="ignoreRewardPonts">A value indicating whether we should ignore reward points (if enabled and a customer is going to use them)</param>
-        /// <param name="usePaymentMethodAdditionalFee">A value indicating whether we should use payment method additional fee when calculating order total</param>
-        /// <returns>Shopping cart total;Null if shopping cart total couldn't be calculated now</returns>
-		public virtual decimal? GetShoppingCartTotal(IList<OrganizedShoppingCartItem> cart,
-            bool ignoreRewardPonts = false, bool usePaymentMethodAdditionalFee = true)
+        public virtual ShoppingCartTotal GetShoppingCartTotal(
+            IList<OrganizedShoppingCartItem> cart,
+            bool ignoreRewardPonts = false,
+            bool usePaymentMethodAdditionalFee = true)
         {
-            decimal discountAmount = decimal.Zero;
-            Discount appliedDiscount = null;
-
-            int redeemedRewardPoints = 0;
-            decimal redeemedRewardPointsAmount = decimal.Zero;
-            List<AppliedGiftCard> appliedGiftCards = null;
-
-            return GetShoppingCartTotal(cart, out discountAmount, out appliedDiscount,
-                out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount, ignoreRewardPonts, usePaymentMethodAdditionalFee);
-        }
-
-        /// <summary>
-        /// Gets shopping cart total
-        /// </summary>
-        /// <param name="cart">Cart</param>
-        /// <param name="appliedGiftCards">Applied gift cards</param>
-        /// <param name="discountAmount">Applied discount amount</param>
-        /// <param name="appliedDiscount">Applied discount</param>
-        /// <param name="redeemedRewardPoints">Reward points to redeem</param>
-        /// <param name="redeemedRewardPointsAmount">Reward points amount in primary store currency to redeem</param>
-        /// <param name="ignoreRewardPonts">A value indicating whether we should ignore reward points (if enabled and a customer is going to use them)</param>
-        /// <param name="usePaymentMethodAdditionalFee">A value indicating whether we should use payment method additional fee when calculating order total</param>
-        /// <returns>Shopping cart total;Null if shopping cart total couldn't be calculated now</returns>
-		public virtual decimal? GetShoppingCartTotal(IList<OrganizedShoppingCartItem> cart,
-            out decimal discountAmount, out Discount appliedDiscount,
-            out List<AppliedGiftCard> appliedGiftCards,
-            out int redeemedRewardPoints, out decimal redeemedRewardPointsAmount,
-            bool ignoreRewardPonts = false, bool usePaymentMethodAdditionalFee = true)
-        {
-            redeemedRewardPoints = 0;
-            redeemedRewardPointsAmount = decimal.Zero;
-
             var customer = cart.GetCustomer();
-			var store = _storeContext.CurrentStore;
-			var currency = _workContext.WorkingCurrency;
+            var store = _storeContext.CurrentStore;
+            var currency = _workContext.WorkingCurrency;
+            var paymentMethodSystemName = "";
 
-			string paymentMethodSystemName = "";
             if (customer != null)
-			{
-				paymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
-			}
+            {
+                paymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
+            }
 
-            //subtotal without tax
-            decimal subtotalBase = decimal.Zero;
-            decimal orderSubTotalDiscountAmount = decimal.Zero;
+            // Subtotal without tax
+            var subtotalBase = decimal.Zero;
+            var orderSubTotalDiscountAmount = decimal.Zero;
             Discount orderSubTotalAppliedDiscount = null;
-            decimal subTotalWithoutDiscountBase = decimal.Zero;
-            decimal subTotalWithDiscountBase = decimal.Zero;
+            var subTotalWithoutDiscountBase = decimal.Zero;
+            var subTotalWithDiscountBase = decimal.Zero;
 
             GetShoppingCartSubTotal(cart, false, out orderSubTotalDiscountAmount, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
 
-            //subtotal with discount
+            // Subtotal with discount
             subtotalBase = subTotalWithDiscountBase;
 
-            //shipping without tax
+            // Shipping without tax
             decimal? shoppingCartShipping = GetShoppingCartShippingTotal(cart, false);
 
-            //payment method additional fee without tax
-            decimal paymentMethodAdditionalFeeWithoutTax = decimal.Zero;
+            // Payment method additional fee without tax
+            var paymentMethodAdditionalFeeWithoutTax = decimal.Zero;
             if (usePaymentMethodAdditionalFee && !string.IsNullOrEmpty(paymentMethodSystemName))
             {
-				var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
-				var paymentMethodAdditionalFee = (provider != null ? provider.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
+                var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
+                var paymentMethodAdditionalFee = (provider != null ? provider.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
 
                 paymentMethodAdditionalFee = paymentMethodAdditionalFee.RoundIfEnabledFor(currency);
-
-				paymentMethodAdditionalFeeWithoutTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer);
+                paymentMethodAdditionalFeeWithoutTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer);
             }
 
-            //tax
-            decimal shoppingCartTax = GetTaxTotal(cart, usePaymentMethodAdditionalFee);
+            // Tax
+            var shoppingCartTax = GetTaxTotal(cart, usePaymentMethodAdditionalFee);
 
-            //order total
-            decimal resultTemp = decimal.Zero;
+            // Order total
+            var resultTemp = decimal.Zero;
             resultTemp += subtotalBase;
             if (shoppingCartShipping.HasValue)
             {
@@ -1178,19 +1140,20 @@ namespace SmartStore.Services.Orders
 
             #region Order total discount
 
-            discountAmount = GetOrderTotalDiscount(customer, resultTemp, out appliedDiscount);
+            Discount appliedDiscount = null;
+            var discountAmount = GetOrderTotalDiscount(customer, resultTemp, out appliedDiscount);
 
-            //sub totals with discount        
+            // Sub totals with discount        
             if (resultTemp < discountAmount)
                 discountAmount = resultTemp;
 
-            //reduce subtotal
+            // Reduce subtotal
             resultTemp -= discountAmount;
 
-			if (resultTemp < decimal.Zero)
-			{
-				resultTemp = decimal.Zero;
-			}
+            if (resultTemp < decimal.Zero)
+            {
+                resultTemp = decimal.Zero;
+            }
 
             resultTemp = resultTemp.RoundIfEnabledFor(currency);
 
@@ -1198,47 +1161,47 @@ namespace SmartStore.Services.Orders
 
             #region Applied gift cards
 
-            //let's apply gift cards now (gift cards that can be used)
-            appliedGiftCards = new List<AppliedGiftCard>();
+            // Let's apply gift cards now (gift cards that can be used)
+            var appliedGiftCards = new List<AppliedGiftCard>();
             if (!cart.IsRecurring())
             {
-                //we don't apply gift cards for recurring products
+                // We don't apply gift cards for recurring products
                 var giftCards = _giftCardService.GetActiveGiftCardsAppliedByCustomer(customer, store.Id);
-				if (giftCards != null)
-				{
-					foreach (var gc in giftCards)
-					{
-						if (resultTemp > decimal.Zero)
-						{
-							decimal remainingAmount = gc.GetGiftCardRemainingAmount();
-							decimal amountCanBeUsed = decimal.Zero;
-							if (resultTemp > remainingAmount)
-								amountCanBeUsed = remainingAmount;
-							else
-								amountCanBeUsed = resultTemp;
+                if (giftCards != null)
+                {
+                    foreach (var gc in giftCards)
+                    {
+                        if (resultTemp > decimal.Zero)
+                        {
+                            var remainingAmount = gc.GetGiftCardRemainingAmount();
+                            var amountCanBeUsed = resultTemp > remainingAmount ? remainingAmount : resultTemp;
 
-							//reduce subtotal
-							resultTemp -= amountCanBeUsed;
+                            // Reduce subtotal
+                            resultTemp -= amountCanBeUsed;
 
-							var appliedGiftCard = new AppliedGiftCard();
-							appliedGiftCard.GiftCard = gc;
-							appliedGiftCard.AmountCanBeUsed = amountCanBeUsed;
-							appliedGiftCards.Add(appliedGiftCard);
-						}
-					}
-				}
+                            appliedGiftCards.Add(new AppliedGiftCard
+                            {
+                                GiftCard = gc,
+                                AmountCanBeUsed = amountCanBeUsed
+                            });
+                        }
+                    }
+                }
             }
 
             #endregion
 
             #region Reward points
 
+            var redeemedRewardPoints = 0;
+            var redeemedRewardPointsAmount = decimal.Zero;
+
             if (_rewardPointsSettings.Enabled &&
                 !ignoreRewardPonts && customer != null &&
                 customer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, _genericAttributeService, store.Id))
             {
-                int rewardPointsBalance = customer.GetRewardPointsBalance();
-                decimal rewardPointsBalanceAmount = ConvertRewardPointsToAmount(rewardPointsBalance);
+                var rewardPointsBalance = customer.GetRewardPointsBalance();
+                var rewardPointsBalanceAmount = ConvertRewardPointsToAmount(rewardPointsBalance);
 
                 if (resultTemp > decimal.Zero)
                 {
@@ -1254,37 +1217,36 @@ namespace SmartStore.Services.Orders
                     }
                 }
             }
-			#endregion
 
-			if (resultTemp < decimal.Zero)
-			{
-				resultTemp = decimal.Zero;
-			}
+            #endregion
+
+            if (resultTemp < decimal.Zero)
+            {
+                resultTemp = decimal.Zero;
+            }
 
             resultTemp = resultTemp.RoundIfEnabledFor(currency);
 
-            decimal? orderTotal = null;
-            if (!shoppingCartShipping.HasValue)
-            {
-                //return null if we have errors
-                orderTotal = null;
-                return orderTotal;
-            }
-            else
-            {
-                //return result if we have no errors
-                orderTotal = resultTemp;
-            }
-
+            // Return null if we have errors
+            var orderTotal = shoppingCartShipping.HasValue ? resultTemp : (decimal?)null;
             if (orderTotal.HasValue)
             {
                 orderTotal = orderTotal.Value - redeemedRewardPointsAmount;
                 orderTotal = orderTotal.Value.RoundIfEnabledFor(currency);
-
-                return orderTotal;
             }
-			return null;
+
+            // TODO: Rounding
+
+            var result = new ShoppingCartTotal(orderTotal);
+            result.DiscountAmount = discountAmount;
+            result.AppliedDiscount = appliedDiscount;
+            result.AppliedGiftCards = appliedGiftCards;
+            result.RedeemedRewardPoints = redeemedRewardPoints;
+            result.RedeemedRewardPointsAmount = redeemedRewardPointsAmount;
+
+            return result;
         }
+
 
         /// <summary>
         /// Gets an order discount (applied to order total)

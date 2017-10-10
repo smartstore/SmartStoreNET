@@ -749,38 +749,34 @@ namespace SmartStore.Services.Orders
                 else
                 {
                     orderTaxTotal = initialOrder.OrderTax;
-                    //VAT number
+                    // VAT number
                     vatNumber = initialOrder.VatNumber;
                 }
 				processPaymentRequest.OrderTax = orderTaxTotal;
 
-                //order total (and applied discounts, gift cards, reward points)
-                decimal? orderTotal = null;
-                decimal orderDiscountAmount = decimal.Zero;
-                List<AppliedGiftCard> appliedGiftCards = null;
-                int redeemedRewardPoints = 0;
-                decimal redeemedRewardPointsAmount = decimal.Zero;
+                // Order total (and applied discounts, gift cards, reward points)
+                ShoppingCartTotal cartTotal = null;
+
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-                    Discount orderAppliedDiscount = null;
-                    orderTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart,
-                        out orderDiscountAmount, out orderAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
+                    cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
 
-                    if (!orderTotal.HasValue)
+                    if (!cartTotal.TotalAmount.HasValue)
                         throw new SmartException(T("Order.CannotCalculateOrderTotal"));
 
-					//discount history
-					if (orderAppliedDiscount != null && !appliedDiscounts.Any(x => x.Id == orderAppliedDiscount.Id))
+					// Discount history
+					if (cartTotal.AppliedDiscount != null && !appliedDiscounts.Any(x => x.Id == cartTotal.AppliedDiscount.Id))
 					{
-						appliedDiscounts.Add(orderAppliedDiscount);
+						appliedDiscounts.Add(cartTotal.AppliedDiscount);
 					}
                 }
                 else
                 {
-                    orderDiscountAmount = initialOrder.OrderDiscount;
-                    orderTotal = initialOrder.OrderTotal;
+                    cartTotal = new ShoppingCartTotal(initialOrder.OrderTotal);
+                    cartTotal.DiscountAmount = initialOrder.OrderDiscount;
                 }
-                processPaymentRequest.OrderTotal = orderTotal.Value;
+
+                processPaymentRequest.OrderTotal = cartTotal.TotalAmount.Value;
 
                 #endregion
 
@@ -849,7 +845,7 @@ namespace SmartStore.Services.Orders
 
 				// skip payment workflow if order total equals zero
                 var skipPaymentWorkflow = false;
-				if (orderTotal.Value == decimal.Zero)
+				if (cartTotal.TotalAmount.Value == decimal.Zero)
 				{
 					skipPaymentWorkflow = true;
 				}
@@ -1010,9 +1006,9 @@ namespace SmartStore.Services.Orders
 							PaymentMethodAdditionalFeeTaxRate = paymentAdditionalFeeTaxRate,
                             TaxRates = taxRates,
                             OrderTax = orderTaxTotal,
-                            OrderTotal = orderTotal.Value,
+                            OrderTotal = cartTotal.TotalAmount.Value,
                             RefundedAmount = decimal.Zero,
-                            OrderDiscount = orderDiscountAmount,
+                            OrderDiscount = cartTotal.DiscountAmount,
                             CheckoutAttributeDescription = checkoutAttributeDescription,
                             CheckoutAttributesXml = checkoutAttributesXml,
                             CustomerCurrencyCode = customerCurrencyCode,
@@ -1065,12 +1061,12 @@ namespace SmartStore.Services.Orders
 
                         if (!processPaymentRequest.IsRecurringPayment)
                         {
-                            //move shopping cart items to order products
+                            // Move shopping cart items to order products
                             foreach (var sc in cart)
                             {
 								sc.Item.Product.MergeWithCombination(sc.Item.AttributesXml);
 
-                                //prices
+                                // Prices
                                 decimal taxRate = decimal.Zero;
 								decimal unitPriceTaxRate = decimal.Zero;
                                 decimal scUnitPrice = _priceCalculationService.GetUnitPrice(sc, true);
@@ -1080,7 +1076,7 @@ namespace SmartStore.Services.Orders
                                 decimal scSubTotalInclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, true, customer, out taxRate);
                                 decimal scSubTotalExclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, false, customer, out taxRate);
 
-                                //discounts
+                                // Discounts
                                 Discount scDiscount = null;
                                 decimal discountAmount = _priceCalculationService.GetDiscountAmount(sc, out scDiscount);
                                 decimal discountAmountInclTax = _taxService.GetProductPrice(sc.Item.Product, discountAmount, true, customer, out taxRate);
@@ -1091,12 +1087,12 @@ namespace SmartStore.Services.Orders
 									appliedDiscounts.Add(scDiscount);
 								}
 
-                                //attributes
+                                // Attributes
                                 var attributeDescription = _productAttributeFormatter.FormatAttributes(sc.Item.Product, sc.Item.AttributesXml, customer);
 
                                 var itemWeight = _shippingService.GetShoppingCartItemWeight(sc);
 
-                                //save order item
+                                // Dave order item
                                 var orderItem = new OrderItem
                                 {
                                     OrderItemGuid = Guid.NewGuid(),
@@ -1139,7 +1135,7 @@ namespace SmartStore.Services.Orders
                                 order.OrderItems.Add(orderItem);
                                 _orderService.UpdateOrder(order);
 
-                                //gift cards
+                                // Gift cards
                                 if (sc.Item.Product.IsGiftCard)
                                 {
                                     string giftCardRecipientName, giftCardRecipientEmail, giftCardSenderName, giftCardSenderEmail, giftCardMessage;
@@ -1171,7 +1167,7 @@ namespace SmartStore.Services.Orders
 								_productService.AdjustInventory(sc, true);
                             }
 
-							//clear shopping cart
+							// Clear shopping cart
 							if (!processPaymentRequest.IsMultiOrder)
 							{
 								cart.ToList().ForEach(sci => _shoppingCartService.DeleteShoppingCartItem(sci.Item, false));
@@ -1179,11 +1175,11 @@ namespace SmartStore.Services.Orders
                         }
                         else
                         {
-                            //recurring payment
+                            // Recurring payment
                             var initialOrderItems = initialOrder.OrderItems;
                             foreach (var orderItem in initialOrderItems)
                             {
-                                //save item
+                                // Save item
                                 var newOrderItem = new OrderItem
                                 {
                                     OrderItemGuid = Guid.NewGuid(),
@@ -1209,7 +1205,7 @@ namespace SmartStore.Services.Orders
                                 order.OrderItems.Add(newOrderItem);
                                 _orderService.UpdateOrder(order);
 
-                                //gift cards
+                                // Gift cards
                                 if (orderItem.Product.IsGiftCard)
                                 {
                                     string giftCardRecipientName, giftCardRecipientEmail, giftCardSenderName, giftCardSenderEmail, giftCardMessage;
@@ -1242,7 +1238,7 @@ namespace SmartStore.Services.Orders
                             }
                         }
 
-                        //discount usage history
+                        // Discount usage history
 						if (!processPaymentRequest.IsRecurringPayment)
 						{
 							foreach (var discount in appliedDiscounts)
@@ -1257,10 +1253,10 @@ namespace SmartStore.Services.Orders
 							}
 						}
 
-                        //gift card usage history
-						if (!processPaymentRequest.IsRecurringPayment && appliedGiftCards != null)
+                        // Gift card usage history
+						if (!processPaymentRequest.IsRecurringPayment && cartTotal.AppliedGiftCards != null)
 						{
-							foreach (var agc in appliedGiftCards)
+							foreach (var agc in cartTotal.AppliedGiftCards)
 							{
 								var amountUsed = agc.AmountCanBeUsed;
 								var gcuh = new GiftCardUsageHistory
@@ -1275,21 +1271,21 @@ namespace SmartStore.Services.Orders
 							}
 						}
 
-                        //reward points history
-                        if (redeemedRewardPointsAmount > decimal.Zero)
+                        // Reward points history
+                        if (cartTotal.RedeemedRewardPointsAmount > decimal.Zero)
                         {
-                            customer.AddRewardPointsHistoryEntry(-redeemedRewardPoints,
+                            customer.AddRewardPointsHistoryEntry(-cartTotal.RedeemedRewardPoints,
 								_localizationService.GetResource("RewardPoints.Message.RedeemedForOrder", order.CustomerLanguageId).FormatInvariant(order.GetOrderNumber()),
                                 order,
-								redeemedRewardPointsAmount);
+                                cartTotal.RedeemedRewardPointsAmount);
 
                             _customerService.UpdateCustomer(customer);
                         }
 
-                        //recurring orders
+                        // Recurring orders
                         if (!processPaymentRequest.IsRecurringPayment && isRecurringShoppingCart)
                         {
-                            //create recurring payment (the first payment)
+                            // Create recurring payment (the first payment)
                             var rp = new RecurringPayment
                             {
                                 CycleLength = processPaymentRequest.RecurringCycleLength,

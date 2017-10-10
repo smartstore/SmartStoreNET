@@ -62,7 +62,7 @@ namespace SmartStore.PayPal.Filters
 			}
 
 			// Skip payment if the cart total is zero. PayPal would return an error "Amount cannot be zero".
-			var cartTotal = _orderTotalCalculationService.Value.GetShoppingCartTotal(cart, true);
+			decimal? cartTotal = _orderTotalCalculationService.Value.GetShoppingCartTotal(cart, true);
 			if (cartTotal.HasValue && cartTotal.Value == decimal.Zero)
 			{
 				var urlHelper = new UrlHelper(filterContext.HttpContext.Request.RequestContext);

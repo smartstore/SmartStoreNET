@@ -202,8 +202,13 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
 			_writer.Write("UpdatedOnUtc", entity.UpdatedOnUtc.ToString(_culture));
 			_writer.Write("DomainEndings", entity.DomainEndings);
+            _writer.Write("RoundOrderItemsEnabled", entity.RoundOrderItemsEnabled.ToString());
+            _writer.Write("RoundNumDecimals", entity.RoundNumDecimals.ToString());
+            _writer.Write("RoundOrderTotalEnabled", entity.RoundOrderTotalEnabled.ToString());
+            _writer.Write("RoundOrderTotalDenominator", entity.RoundOrderTotalDenominator.ToString(_culture));
+            _writer.Write("RoundOrderTotalRule", ((int)entity.RoundOrderTotalRule).ToString());
 
-			WriteLocalized(currency);
+            WriteLocalized(currency);
 
 			if (node.HasValue())
 			{

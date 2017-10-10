@@ -75,18 +75,18 @@ namespace SmartStore
         }
 
         /// <summary>
-        /// Rounds a value if rounding during calculation is enabled for the currency
+        /// Rounds a value if rounding is enabled for the currency
         /// </summary>
         /// <param name="value">Value to round</param>
         /// <param name="currency">Currency</param>
         /// <returns>Rounded value</returns>
-        public static decimal RoundDuringCalculation(this decimal value, Currency currency)
+        public static decimal RoundIfEnabledFor(this decimal value, Currency currency)
         {
             Guard.NotNull(currency, nameof(currency));
 
-            if (currency.RoundDuringCalculation)
+            if (currency.RoundOrderItemsEnabled)
             {
-                return Math.Round(value, currency.RoundDuringCalculationDecimals);
+                return Math.Round(value, currency.RoundNumDecimals);
             }
 
             return value;

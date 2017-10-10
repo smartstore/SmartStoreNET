@@ -80,7 +80,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.Id = paymentMethod.Id;
 				model.FullDescription = paymentMethod.FullDescription;
-                model.RoundOrderTotal = paymentMethod.RoundOrderTotal;
+                model.RoundOrderTotalEnabled = paymentMethod.RoundOrderTotalEnabled;
             }
 		}
 
@@ -187,7 +187,7 @@ namespace SmartStore.Admin.Controllers
 				paymentMethod = new PaymentMethod { PaymentMethodSystemName = systemName };
 
 			paymentMethod.FullDescription = model.FullDescription;
-            paymentMethod.RoundOrderTotal = model.RoundOrderTotal;
+            paymentMethod.RoundOrderTotalEnabled = model.RoundOrderTotalEnabled;
 
 			if (paymentMethod.Id == 0)
 				_paymentService.InsertPaymentMethod(paymentMethod);

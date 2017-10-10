@@ -34,11 +34,11 @@
             var domainEndings = $("#@Html.FieldIdFor(x => x.DomainEndings)");
             domainEndings.select2({ tags: [@(Html.Raw(ViewBag.SerializedDomainEndings))] });
 
-            $('#@(Html.FieldIdFor(x => x.RoundDuringCalculation))').change(function () {
-                $('tr.round-during-calculation').toggle($(this).is(':checked'));
+            $('#@(Html.FieldIdFor(x => x.RoundOrderItemsEnabled))').change(function () {
+                $('tr.round-order-items').toggle($(this).is(':checked'));
             }).trigger('change');
 
-            $('#@(Html.FieldIdFor(x => x.RoundOrderTotal))').change(function () {
+            $('#@(Html.FieldIdFor(x => x.RoundOrderTotalEnabled))').change(function () {
                 $('tr.round-order-total').toggle($(this).is(':checked'));
             }).trigger('change');
 
@@ -200,44 +200,44 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RoundDuringCalculation)
+                @Html.SmartLabelFor(model => model.RoundOrderItemsEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.RoundDuringCalculation)
-                @Html.ValidationMessageFor(model => model.RoundDuringCalculation)
+                @Html.EditorFor(model => model.RoundOrderItemsEnabled)
+                @Html.ValidationMessageFor(model => model.RoundOrderItemsEnabled)
             </td>
         </tr>
-        <tr class="round-during-calculation">
+        <tr class="round-order-items">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RoundDuringCalculationDecimals)
+                @Html.SmartLabelFor(model => model.RoundNumDecimals)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.RoundDuringCalculationDecimals, new { Small = true })
-                @Html.ValidationMessageFor(model => model.RoundDuringCalculationDecimals)
+                @Html.EditorFor(model => model.RoundNumDecimals, new { Small = true })
+                @Html.ValidationMessageFor(model => model.RoundNumDecimals)
             </td>
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RoundOrderTotal)
+                @Html.SmartLabelFor(model => model.RoundOrderTotalEnabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.RoundOrderTotal)
-                @Html.ValidationMessageFor(model => model.RoundOrderTotal)
+                @Html.EditorFor(model => model.RoundOrderTotalEnabled)
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalEnabled)
             </td>
         </tr>
         <tr class="round-order-total">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RoundOrderTotalToValue)
+                @Html.SmartLabelFor(model => model.RoundOrderTotalDenominator)
             </td>
             <td class="adminData">
-                @Html.DropDownListFor(model => model.RoundOrderTotalToValue, new List<SelectListItem>
+                @Html.DropDownListFor(model => model.RoundOrderTotalDenominator, new List<SelectListItem>
                 {
                     new SelectListItem { Text = 0.05.ToString("F"), Value = 0.05.ToString("F") },
                     new SelectListItem { Text = 0.10.ToString("F"), Value = 0.10.ToString("F") },
                     new SelectListItem { Text = 0.50.ToString("F"), Value = 0.50.ToString("F") },
                     new SelectListItem { Text = 1.00.ToString("F"), Value = 1.00.ToString("F") }
                 }, new { @class = "autowidth", @style = "width: 150px" })
-                @Html.ValidationMessageFor(model => model.RoundOrderTotalToValue)
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalDenominator)
             </td>
         </tr>
         <tr class="round-order-total">

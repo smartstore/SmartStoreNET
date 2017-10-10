@@ -32,8 +32,8 @@ namespace SmartStore.Admin.Models.Payments
 		[AllowHtml]
 		public string FullDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.RoundOrderTotal")]
-        public bool RoundOrderTotal { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.RoundOrderTotalEnabled")]
+        public bool RoundOrderTotalEnabled { get; set; }
     }
 
 

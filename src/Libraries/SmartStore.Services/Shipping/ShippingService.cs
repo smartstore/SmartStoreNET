@@ -365,7 +365,7 @@ namespace SmartStore.Services.Shipping
                 {
                     //system name
                     so2.ShippingRateComputationMethodSystemName = srcm.Metadata.SystemName;
-                    so2.Rate = so2.Rate.RoundDuringCalculation(_services.WorkContext.WorkingCurrency);
+                    so2.Rate = so2.Rate.RoundIfEnabledFor(_services.WorkContext.WorkingCurrency);
 
                     result.ShippingOptions.Add(so2);
                 }

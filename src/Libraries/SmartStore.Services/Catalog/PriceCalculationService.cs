@@ -938,7 +938,7 @@ namespace SmartStore.Services.Catalog
                 }
             }
 
-            finalPrice = finalPrice.RoundDuringCalculation(_services.WorkContext.WorkingCurrency);
+            finalPrice = finalPrice.RoundIfEnabledFor(_services.WorkContext.WorkingCurrency);
             return finalPrice;
         }
         
@@ -984,7 +984,7 @@ namespace SmartStore.Services.Catalog
 				totalDiscountAmount = productDiscountAmount * quantity;
             }
 
-            totalDiscountAmount = totalDiscountAmount.RoundDuringCalculation(_services.WorkContext.WorkingCurrency);
+            totalDiscountAmount = totalDiscountAmount.RoundIfEnabledFor(_services.WorkContext.WorkingCurrency);
 			return totalDiscountAmount;
         }
 

@@ -240,7 +240,7 @@ namespace SmartStore.Services.Tax
 			}
 
             // Gross > Net RoundFix
-            result = result.RoundDuringCalculation(currency);
+            result = result.RoundIfEnabledFor(currency);
             return result;
         }
 

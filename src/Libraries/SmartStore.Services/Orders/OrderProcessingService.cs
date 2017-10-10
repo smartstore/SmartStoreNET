@@ -1773,21 +1773,21 @@ namespace SmartStore.Services.Orders
 			{
 				var currency = _currencyService.GetCurrencyByCode(oi.Order.CustomerCurrencyCode);
 
-				decimal priceInclTax = (context.QuantityNew * oi.UnitPriceInclTax).RoundDuringCalculation(currency);
-				decimal priceExclTax = (context.QuantityNew * oi.UnitPriceExclTax).RoundDuringCalculation(currency);
+				decimal priceInclTax = (context.QuantityNew * oi.UnitPriceInclTax).RoundIfEnabledFor(currency);
+				decimal priceExclTax = (context.QuantityNew * oi.UnitPriceExclTax).RoundIfEnabledFor(currency);
 
 				decimal deltaPriceInclTax = priceInclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceInclTax);
 				decimal deltaPriceExclTax = priceExclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceExclTax);
 
 				oi.Quantity = context.QuantityNew;
-				oi.PriceInclTax = priceInclTax.RoundDuringCalculation(currency);
-				oi.PriceExclTax = priceExclTax.RoundDuringCalculation(currency);
+				oi.PriceInclTax = priceInclTax.RoundIfEnabledFor(currency);
+				oi.PriceExclTax = priceExclTax.RoundIfEnabledFor(currency);
 
 				decimal subtotalInclTax = oi.Order.OrderSubtotalInclTax + deltaPriceInclTax;
 				decimal subtotalExclTax = oi.Order.OrderSubtotalExclTax + deltaPriceExclTax;
 
-				oi.Order.OrderSubtotalInclTax = subtotalInclTax.RoundDuringCalculation(currency);
-				oi.Order.OrderSubtotalExclTax = subtotalExclTax.RoundDuringCalculation(currency);
+				oi.Order.OrderSubtotalInclTax = subtotalInclTax.RoundIfEnabledFor(currency);
+				oi.Order.OrderSubtotalExclTax = subtotalExclTax.RoundIfEnabledFor(currency);
 
 				decimal discountInclTax = oi.DiscountAmountInclTax * context.QuantityChangeFactor;
 				decimal discountExclTax = oi.DiscountAmountExclTax * context.QuantityChangeFactor;
@@ -1795,14 +1795,14 @@ namespace SmartStore.Services.Orders
 				decimal deltaDiscountInclTax = discountInclTax - oi.DiscountAmountInclTax;
 				decimal deltaDiscountExclTax = discountExclTax - oi.DiscountAmountExclTax;
 
-				oi.DiscountAmountInclTax = discountInclTax.RoundDuringCalculation(currency);
-				oi.DiscountAmountExclTax = discountExclTax.RoundDuringCalculation(currency);
+				oi.DiscountAmountInclTax = discountInclTax.RoundIfEnabledFor(currency);
+				oi.DiscountAmountExclTax = discountExclTax.RoundIfEnabledFor(currency);
 
 				decimal total = Math.Max(oi.Order.OrderTotal + deltaPriceInclTax, 0);
 				decimal tax = Math.Max(oi.Order.OrderTax + (deltaPriceInclTax - deltaPriceExclTax), 0);
 
-				oi.Order.OrderTotal = total.RoundDuringCalculation(currency);
-				oi.Order.OrderTax = tax.RoundDuringCalculation(currency);
+				oi.Order.OrderTotal = total.RoundIfEnabledFor(currency);
+				oi.Order.OrderTax = tax.RoundIfEnabledFor(currency);
 
 				_orderService.UpdateOrder(oi.Order);
 			}

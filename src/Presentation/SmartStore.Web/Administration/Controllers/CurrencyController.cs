@@ -90,7 +90,7 @@ namespace SmartStore.Admin.Controllers
 
             model.AvailableStores = allStores.Select(s => s.ToModel()).ToList();
 
-            foreach (var paymentMethod in paymentMethods.Where(x => x.RoundOrderTotal))
+            foreach (var paymentMethod in paymentMethods.Where(x => x.RoundOrderTotalEnabled))
             {
                 string friendlyName = null;
                 Provider<IPaymentMethod> provider;

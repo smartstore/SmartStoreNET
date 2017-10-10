@@ -41,10 +41,10 @@ namespace SmartStore.Admin.Validators.Directory
                 })
                 .WithMessage(localizationService.GetResource("Admin.Configuration.Currencies.Fields.DisplayLocale.Validation"));
 
-            RuleFor(x => x.RoundDuringCalculationDecimals)
+            RuleFor(x => x.RoundNumDecimals)
                 .InclusiveBetween(0, 8)
-                .When(x => x.RoundDuringCalculation)
-                .WithMessage(localizationService.GetResource("Admin.Configuration.Currencies.Fields.RoundDuringCalculationDecimals.Validation"));
+                .When(x => x.RoundOrderItemsEnabled)
+                .WithMessage(localizationService.GetResource("Admin.Configuration.Currencies.Fields.RoundOrderItemsEnabled.Validation"));
         }
     }
 }

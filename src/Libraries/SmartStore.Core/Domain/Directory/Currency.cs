@@ -13,7 +13,7 @@ namespace SmartStore.Core.Domain.Directory
     {
         public Currency()
         {
-            RoundDuringCalculationDecimals = 2;
+            RoundNumDecimals = 2;
         }
 
         /// <summary>
@@ -85,28 +85,28 @@ namespace SmartStore.Core.Domain.Directory
         #region Rounding
 
         /// <summary>
-        /// Gets or sets a value indicating whether to round prices during calculation
+        /// Gets or sets a value indicating whether rounding of order items is enabled
         /// </summary>
         [DataMember]
-        public bool RoundDuringCalculation { get; set; }
+        public bool RoundOrderItemsEnabled { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of decimal places to round to during price calculation
+        /// Gets or sets the number of decimal places to round to
         /// </summary>
         [DataMember]
-        public int RoundDuringCalculationDecimals { get; set; }
+        public int RoundNumDecimals { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to round the order total
         /// </summary>
         [DataMember]
-        public bool RoundOrderTotal { get; set; }
+        public bool RoundOrderTotalEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the smallest denomination. The order total is rounded to the nearest multiple of it.
         /// </summary>
         [DataMember]
-        public decimal RoundOrderTotalToValue { get; set; }
+        public decimal RoundOrderTotalDenominator { get; set; }
 
         /// <summary>
         /// Gets or sets the order total rounding rule.

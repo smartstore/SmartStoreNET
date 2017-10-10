@@ -18,7 +18,7 @@ namespace SmartStore.Admin.Models.Directory
         {
             Locales = new List<CurrencyLocalizedModel>();
             RoundOrderTotalPaymentMethods = new Dictionary<string, string>();
-            RoundDuringCalculationDecimals = 2;
+            RoundNumDecimals = 2;
 
             AvailableDomainEndings = new List<SelectListItem>
 			{
@@ -80,17 +80,17 @@ namespace SmartStore.Admin.Models.Directory
 
         #region Rounding
 
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundDuringCalculation")]
-        public bool RoundDuringCalculation { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderItemsEnabled")]
+        public bool RoundOrderItemsEnabled { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundDuringCalculationDecimals")]
-        public int RoundDuringCalculationDecimals { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundNumDecimals")]
+        public int RoundNumDecimals { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderTotal")]
-        public bool RoundOrderTotal { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderTotalEnabled")]
+        public bool RoundOrderTotalEnabled { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderTotalToValue")]
-        public decimal RoundOrderTotalToValue { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderTotalDenominator")]
+        public decimal RoundOrderTotalDenominator { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderTotalRule")]
         public CurrencyRoundingRule RoundOrderTotalRule { get; set; }

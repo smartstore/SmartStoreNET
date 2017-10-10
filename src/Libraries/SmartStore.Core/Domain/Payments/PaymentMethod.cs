@@ -26,6 +26,6 @@ namespace SmartStore.Core.Domain.Payments
         /// </summary>
         /// <see cref="https://en.wikipedia.org/wiki/Cash_rounding"/>
         [DataMember]
-        public bool RoundOrderTotal { get; set; }
+        public bool RoundOrderTotalEnabled { get; set; }
     }
 }

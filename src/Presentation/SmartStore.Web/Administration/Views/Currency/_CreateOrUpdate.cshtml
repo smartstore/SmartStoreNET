@@ -258,12 +258,12 @@
                 @if (Model.RoundOrderTotalPaymentMethods.Any())
                 {
                     <div class="alert alert-info">
-                        <div>@T("Admin.Configuration.Currencies.PaymentMethodsEnabledRoundingList"):</div>
+                        <span>@T("Admin.Configuration.Currencies.PaymentMethodsEnabledRoundingList"):</span>
                         @foreach (var paymentMethod in Model.RoundOrderTotalPaymentMethods)
                         {
-                            <div>
+                            <span style="padding-right: 5px">
                                 <a href="@Url.Action("Edit", "Payment", new { systemName = paymentMethod.Key })">@paymentMethod.Value</a>
-                            </div>
+                            </span>
                         }
                     </div>
                 }

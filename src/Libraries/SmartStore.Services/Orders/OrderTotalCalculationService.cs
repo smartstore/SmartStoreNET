@@ -5,6 +5,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
@@ -20,10 +21,10 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Services.Orders
 {
-	/// <summary>
-	/// Order service
-	/// </summary>
-	public partial class OrderTotalCalculationService : IOrderTotalCalculationService
+    /// <summary>
+    /// Order service
+    /// </summary>
+    public partial class OrderTotalCalculationService : IOrderTotalCalculationService
     {
 		private const string CART_TAXING_INFO_KEY = "CartTaxingInfos";
 
@@ -39,6 +40,7 @@ namespace SmartStore.Services.Orders
         private readonly IDiscountService _discountService;
         private readonly IGiftCardService _giftCardService;
         private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IPaymentService _paymentService;
 		private readonly IProductAttributeParser _productAttributeParser;
         private readonly TaxSettings _taxSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
@@ -68,7 +70,8 @@ namespace SmartStore.Services.Orders
         /// <param name="shippingSettings">Shipping settings</param>
         /// <param name="shoppingCartSettings">Shopping cart settings</param>
         /// <param name="catalogSettings">Catalog settings</param>
-        public OrderTotalCalculationService(IWorkContext workContext,
+        public OrderTotalCalculationService(
+            IWorkContext workContext,
 			IStoreContext storeContext,
             IPriceCalculationService priceCalculationService,
             ITaxService taxService,
@@ -78,29 +81,31 @@ namespace SmartStore.Services.Orders
             IDiscountService discountService,
             IGiftCardService giftCardService,
             IGenericAttributeService genericAttributeService,
-			IProductAttributeParser productAttributeParser,
+            IPaymentService paymentService,
+            IProductAttributeParser productAttributeParser,
             TaxSettings taxSettings,
             RewardPointsSettings rewardPointsSettings,
             ShippingSettings shippingSettings,
             ShoppingCartSettings shoppingCartSettings,
             CatalogSettings catalogSettings)
         {
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._priceCalculationService = priceCalculationService;
-            this._taxService = taxService;
-            this._shippingService = shippingService;
-			this._providerManager = providerManager;
-            this._checkoutAttributeParser = checkoutAttributeParser;
-            this._discountService = discountService;
-            this._giftCardService = giftCardService;
-            this._genericAttributeService = genericAttributeService;
-			this._productAttributeParser = productAttributeParser;
-            this._taxSettings = taxSettings;
-            this._rewardPointsSettings = rewardPointsSettings;
-            this._shippingSettings = shippingSettings;
-            this._shoppingCartSettings = shoppingCartSettings;
-            this._catalogSettings = catalogSettings;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _priceCalculationService = priceCalculationService;
+            _taxService = taxService;
+            _shippingService = shippingService;
+			_providerManager = providerManager;
+            _checkoutAttributeParser = checkoutAttributeParser;
+            _discountService = discountService;
+            _giftCardService = giftCardService;
+            _genericAttributeService = genericAttributeService;
+            _paymentService = paymentService;
+			_productAttributeParser = productAttributeParser;
+            _taxSettings = taxSettings;
+            _rewardPointsSettings = rewardPointsSettings;
+            _shippingSettings = shippingSettings;
+            _shoppingCartSettings = shoppingCartSettings;
+            _catalogSettings = catalogSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -1228,21 +1233,51 @@ namespace SmartStore.Services.Orders
             resultTemp = resultTemp.RoundIfEnabledFor(currency);
 
             // Return null if we have errors
+            var roundingAmount = decimal.Zero;
             var orderTotal = shoppingCartShipping.HasValue ? resultTemp : (decimal?)null;
+
             if (orderTotal.HasValue)
             {
                 orderTotal = orderTotal.Value - redeemedRewardPointsAmount;
                 orderTotal = orderTotal.Value.RoundIfEnabledFor(currency);
+
+                // Order total rounding
+                if (currency.RoundOrderTotalEnabled && paymentMethodSystemName.HasValue())
+                {
+                    var paymentMethod = _paymentService.GetPaymentMethodBySystemName(paymentMethodSystemName);
+                    if (paymentMethod != null && paymentMethod.RoundOrderTotalEnabled)
+                    {
+                        var oldOrderTotal = orderTotal.Value;
+                        switch (currency.RoundOrderTotalRule)
+                        {
+                            case CurrencyRoundingRule.RoundMidpointDown:
+                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, MidpointRounding.ToEven);
+                                break;
+                            case CurrencyRoundingRule.RoundMidpointUp:
+                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, MidpointRounding.AwayFromZero);
+                                break;
+                            case CurrencyRoundingRule.AlwaysRoundDown:
+                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, false);
+                                break;
+                            case CurrencyRoundingRule.AlwaysRoundUp:
+                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, true);
+                                break;
+                        }
+
+                        roundingAmount = orderTotal.Value - oldOrderTotal;
+                    }
+                }
             }
 
-            // TODO: Rounding
-
-            var result = new ShoppingCartTotal(orderTotal);
-            result.DiscountAmount = discountAmount;
-            result.AppliedDiscount = appliedDiscount;
-            result.AppliedGiftCards = appliedGiftCards;
-            result.RedeemedRewardPoints = redeemedRewardPoints;
-            result.RedeemedRewardPointsAmount = redeemedRewardPointsAmount;
+            var result = new ShoppingCartTotal(orderTotal)
+            {
+                RoundingAmount = roundingAmount,
+                DiscountAmount = discountAmount,
+                AppliedDiscount = appliedDiscount,
+                AppliedGiftCards = appliedGiftCards,
+                RedeemedRewardPoints = redeemedRewardPoints,
+                RedeemedRewardPointsAmount = redeemedRewardPointsAmount,
+            };
 
             return result;
         }

@@ -411,6 +411,17 @@
                 </td>
             </tr>
         }
+        @if (Model.OrderTotalRounding.HasValue())
+        {
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.OrderTotalRounding)
+                </td>
+                <td class="adminData">
+                    @Model.OrderTotalRounding
+                </td>
+            </tr>
+        }
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.OrderTotal)
@@ -501,6 +512,14 @@
 						</td>
 						<td class="adminData">
 							@Html.EditorFor(model => model.OrderTotalDiscountValue)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.OrderTotalRoundingValue)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.OrderTotalRoundingValue)
 						</td>
 					</tr>
 					<tr>

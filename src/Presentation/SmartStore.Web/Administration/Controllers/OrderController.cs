@@ -290,6 +290,12 @@ namespace SmartStore.Admin.Controllers
                 model.OrderTotalDiscount = _priceFormatter.FormatPrice(-order.OrderDiscount, true, false);
             model.OrderTotalDiscountValue = order.OrderDiscount;
 
+            if (order.OrderTotalRounding != decimal.Zero)
+            {
+                model.OrderTotalRounding = _priceFormatter.FormatPrice(order.OrderTotalRounding, true, false);
+            }
+            model.OrderTotalRoundingValue = order.OrderTotalRounding;
+
             //gift cards
             foreach (var gcuh in order.GiftCardUsageHistory)
             {
@@ -1444,6 +1450,7 @@ namespace SmartStore.Admin.Controllers
             order.TaxRates = model.TaxRatesValue;
             order.OrderTax = model.TaxValue;
             order.OrderDiscount = model.OrderTotalDiscountValue;
+            order.OrderTotalRounding = model.OrderTotalRoundingValue;
             order.OrderTotal = model.OrderTotalValue;
             _orderService.UpdateOrder(order);
 

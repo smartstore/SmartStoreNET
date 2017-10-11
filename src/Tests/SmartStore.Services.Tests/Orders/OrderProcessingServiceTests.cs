@@ -174,7 +174,7 @@ namespace SmartStore.Services.Tests.Orders
 
             _orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _providerManager,
-                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _productAttributeParser,
+                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _paymentService, _productAttributeParser,
                 _taxSettings, _rewardPointsSettings, _shippingSettings, _shoppingCartSettings, _catalogSettings);
 
             _orderService = MockRepository.GenerateMock<IOrderService>();

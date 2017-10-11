@@ -7,10 +7,11 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
+            AddColumn("dbo.Order", "OrderTotalRounding", c => c.Decimal(nullable: false, precision: 18, scale: 4));
             AddColumn("dbo.Currency", "RoundOrderItemsEnabled", c => c.Boolean(nullable: false));
             AddColumn("dbo.Currency", "RoundNumDecimals", c => c.Int(nullable: false, defaultValue: 2));
             AddColumn("dbo.Currency", "RoundOrderTotalEnabled", c => c.Boolean(nullable: false));
-            AddColumn("dbo.Currency", "RoundOrderTotalDenominator", c => c.Decimal(nullable: false, precision: 18, scale: 2));
+            AddColumn("dbo.Currency", "RoundOrderTotalDenominator", c => c.Decimal(nullable: false, precision: 18, scale: 4));
             AddColumn("dbo.Currency", "RoundOrderTotalRule", c => c.Int(nullable: false));
             AddColumn("dbo.PaymentMethod", "RoundOrderTotalEnabled", c => c.Boolean(nullable: false));
         }
@@ -23,6 +24,7 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.Currency", "RoundOrderTotalEnabled");
             DropColumn("dbo.Currency", "RoundNumDecimals");
             DropColumn("dbo.Currency", "RoundOrderItemsEnabled");
+            DropColumn("dbo.Order", "OrderTotalRounding");
         }
 
         public bool RollbackOnFailure
@@ -106,6 +108,12 @@ namespace SmartStore.Data.Migrations
             builder.Delete(
                 "Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation",
                 "Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation.Hint");
+
+            builder.AddOrUpdate("Admin.Orders.Fields.OrderTotalRounding",
+                "Rounding",
+                "Rundung",
+                "The amount by which the order total was rounded up or down.",
+                "Der Betrag, um den der Auftragswert auf- bzw. abgerundet wurde.");
         }
     }
 }

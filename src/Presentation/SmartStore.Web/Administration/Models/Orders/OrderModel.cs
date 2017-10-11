@@ -85,6 +85,8 @@ namespace SmartStore.Admin.Models.Orders
         public int RedeemedRewardPoints { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.RedeemedRewardPoints")]
         public string RedeemedRewardPointsAmount { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
+        public string OrderTotalRounding { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotal")]
         public string OrderTotal { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.RefundedAmount")]
@@ -113,6 +115,8 @@ namespace SmartStore.Admin.Models.Orders
         public string TaxRatesValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderTotalDiscount")]
         public decimal OrderTotalDiscountValue { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
+        public decimal OrderTotalRoundingValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderTotal")]
         public decimal OrderTotalValue { get; set; }
 

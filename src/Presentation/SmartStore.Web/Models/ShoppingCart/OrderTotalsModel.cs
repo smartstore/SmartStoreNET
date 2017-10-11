@@ -10,6 +10,7 @@ namespace SmartStore.Web.Models.ShoppingCart
             TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
         }
+
         public bool IsEditable { get; set; }
 
         public string SubTotal { get; set; }
@@ -35,6 +36,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         public bool AllowRemovingOrderTotalDiscount { get; set; }
         public int RedeemedRewardPoints { get; set; }
         public string RedeemedRewardPointsAmount { get; set; }
+        public string OrderTotalRounding { get; set; }
         public string OrderTotal { get; set; }
         public decimal Weight { get; set; }
         public string WeightMeasureUnitName { get; set; }
@@ -44,7 +46,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
 		#region Nested classes
 
-		public partial class TaxRate: ModelBase
+		public partial class TaxRate : ModelBase
         {
             public string Rate { get; set; }
             public string Value { get; set; }
@@ -57,6 +59,7 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string Amount { get; set; }
             public string Remaining { get; set; }
         }
+
         #endregion
     }
 }

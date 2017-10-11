@@ -1250,9 +1250,6 @@ namespace SmartStore.Services.Orders
                         var oldOrderTotal = orderTotal.Value;
                         switch (currency.RoundOrderTotalRule)
                         {
-                            case CurrencyRoundingRule.RoundMidpointDown:
-                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, MidpointRounding.ToEven);
-                                break;
                             case CurrencyRoundingRule.RoundMidpointUp:
                                 orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, MidpointRounding.AwayFromZero);
                                 break;
@@ -1261,6 +1258,10 @@ namespace SmartStore.Services.Orders
                                 break;
                             case CurrencyRoundingRule.AlwaysRoundUp:
                                 orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, true);
+                                break;
+                            case CurrencyRoundingRule.RoundMidpointDown:
+                            default:
+                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, MidpointRounding.ToEven);
                                 break;
                         }
 

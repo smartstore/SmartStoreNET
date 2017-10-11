@@ -1264,7 +1264,7 @@ namespace SmartStore.Services.Orders
                                 break;
                         }
 
-                        roundingAmount = orderTotal.Value - oldOrderTotal;
+                        roundingAmount = orderTotal.Value - Math.Round(oldOrderTotal, 2);
                     }
                 }
             }

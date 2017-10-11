@@ -4,6 +4,12 @@
 (function ($, window, document, undefined) {
     
 	var _commonPluginFactories = [
+		// panel toggling
+		function (ctx) {
+			ctx.find('input[type=checkbox][data-toggler-for]').each(function (i, el) {
+				Admin.togglePanel(el, false);
+			});
+		},
 		// select2
 		function (ctx) {
 			ctx.find(".adminData select:not(.noskin), .adminData input:hidden[data-select]").selectWrapper();
@@ -66,47 +72,12 @@
 
         html.removeClass("not-ready").addClass("ready");
 
+        applyCommonPlugins($("body"));
+
     	// Handle panel toggling
-        (function () {
-        	function togglePanel(el /* the toggler */, animate, show, arr) {
-        		var ctl = $(el),
-					reverse = ctl.data('toggler-reverse');
-
-        		if (show === undefined) {
-        			show = ctl.is(':checked');
-        			if (reverse) show = !show;
-        		}
-
-        		$(ctl.data('toggler-for')).each(function (i, cel) {
-        			var pnl = $(cel).closest('tr');
-        			if (show)
-        				pnl.show(animate ? 200 : 0);
-        			else
-        				pnl.hide(animate ? 200 : 0);
-
-        			if ($.isArray(arr))
-        				arr.push(el);
-
-        			if ($(cel).data('toggler-for')) {
-        				// Handle dependant children
-        				togglePanel(cel, animate, show, arr);
-        			}
-        		});
-        	}
-
-        	var toggled = [];
-        	$('input[type=checkbox][data-toggler-for]').each(function (i, el) {
-        		if (!_.contains(toggled, el)) {
-        			togglePanel(el, false, undefined, toggled);
-        		}
-        	});
-
-        	$(document).on('change', 'input[type=checkbox][data-toggler-for]', function (e) {
-        		togglePanel(e.target, true);
-        	});
-        })();
-
-		applyCommonPlugins($("body"));
+        $(document).on('change', 'input[type=checkbox][data-toggler-for]', function (e) {
+        	Admin.togglePanel(e.target, true);
+        });
 
         $("#page").tooltip({
             selector: "a[rel=tooltip], .tooltip-toggle"

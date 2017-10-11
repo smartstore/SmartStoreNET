@@ -3,49 +3,26 @@
 @using SmartStore.Core.Domain.Catalog;
 
 <script type="text/javascript">
+	$(function () {
+		$("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
 
-    $(document).ready(function () {
+		toggleProductType();
 
-        $("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
-        //$("#@Html.FieldIdFor(model => model.RequireOtherProducts)").click(toggleRequireOtherProducts);
-        $("#@Html.FieldIdFor(model => model.IsGiftCard)").click(toggleGiftCard);
-        //$("#@Html.FieldIdFor(model => model.IsDownload)").click(toggleDownloadableProduct);
-        //$("#@Html.FieldIdFor(model => model.UnlimitedDownloads)").click(toggleDownloadableProduct);
-        //$("#@Html.FieldIdFor(model => model.HasSampleDownload)").click(toggleDownloadableProduct);
-        //$("#@Html.FieldIdFor(model => model.HasUserAgreement)").click(toggleDownloadableProduct);
-        $("#@Html.FieldIdFor(model => model.IsRecurring)").click(toggleRecurring);
-        $("#@Html.FieldIdFor(model => model.IsShipEnabled)").click(toggleShipping);
-        $("#@Html.FieldIdFor(model => model.IsTaxExempt)").click(toggleTax);
-
-    	toggleProductType();
-        //toggleRequireOtherProducts();
-        toggleGiftCard();
-        //toggleDownloadableProduct();
-        toggleRecurring();
-        toggleShipping();
-        toggleTax();
-        
-    	// toggle homepage display order
-    	$('#ShowOnHomePage').change(function () {
-    		return;
-    		$('#pnlHomePageDisplayOrder').toggle($(this).is(':checked'));
-    	}).trigger('change');
-
-    	// add required products
-    	$(document).on('click', '#SearchRequiredProductsButton', function () {
-    		$('#@(Html.FieldIdFor(x => x.RequiredProductIds))').entityPicker('loadDialog', {
-    			url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
-    			caption: '@T("Admin.Catalog.Products.Fields.RequireOtherProducts")',
-    			returnValueDelimiter: ',',
-    			onLoadDialogBefore: function () {
-    				$('#SearchRequiredProductsButton').button('loading').prop('disabled', true);
-    			},
-    			onLoadDialogComplete: function () {
-    				$('#SearchRequiredProductsButton').prop('disabled', false).button('reset');
-    			}
-    		});
-    	});
-    });
+		// add required products
+		$(document).on('click', '#SearchRequiredProductsButton', function () {
+			$('#@(Html.FieldIdFor(x => x.RequiredProductIds))').entityPicker('loadDialog', {
+				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				caption: '@T("Admin.Catalog.Products.Fields.RequireOtherProducts")',
+				returnValueDelimiter: ',',
+				onLoadDialogBefore: function () {
+					$('#SearchRequiredProductsButton').button('loading').prop('disabled', true);
+				},
+				onLoadDialogComplete: function () {
+					$('#SearchRequiredProductsButton').prop('disabled', false).button('reset');
+				}
+			});
+		});
+	});
 
     function toggleProductType() {
         var selectedProductTypeId = $("#@Html.FieldIdFor(model => model.ProductTypeId)").val();
@@ -71,117 +48,6 @@
         }
         else if (selectedProductTypeId == '@((int)ProductType.BundledProduct)') {
         	//$('a[href="#tab-inventory"]').parent().addClass("hide"); // specified in _CreateOrUpdate.cshtml
-        }
-    }
-
-	function toggleRequireOtherProducts() {
-		//return;
-        if ($('#@Html.FieldIdFor(model => model.RequireOtherProducts)').is(':checked')) {
-            $('#pnlRequiredProductIds').show(200);
-            $('#pnlAutomaticallyAddRequiredProducts').show(200);
-        }
-        else {
-            $('#pnlRequiredProductIds').hide();
-            $('#pnlAutomaticallyAddRequiredProducts').hide(200);
-        }
-    }
-
-    function toggleGiftCard() {
-        if ($('#@Html.FieldIdFor(model => model.IsGiftCard)').is(':checked')) {
-            $('#pnlGiftCardType').show(200);
-        }
-        else {
-            $('#pnlGiftCardType').hide(200);
-        }
-    }
-
-	function toggleDownloadableProduct() {
-		//return;
-        if ($('#@Html.FieldIdFor(model => model.IsDownload)').is(':checked')) {
-
-            $('#pnlDownloadFile').show(200);
-            $('#pnlUnlimitedDownloads').show(200);
-            if ($('#@Html.FieldIdFor(model => model.UnlimitedDownloads)').is(':checked')) {
-                $('#pnlMaxNumberOfDownloads').hide(200);
-            }
-            else {
-                $('#pnlMaxNumberOfDownloads').show(200);
-            }
-            $('#pnlDownloadExpirationDays').show(200);
-            $('#pnlDownloadActivationType').show(200);
-
-            $('#pnlHasUserAgreement').show(200);
-            if ($('#@Html.FieldIdFor(model => model.HasUserAgreement)').is(':checked')) {
-                $('#pnlUserAgreementText').show(200);
-            }
-            else {
-                $('#pnlUserAgreementText').hide(200);
-            }
-
-            $('#pnlHasSampleDownload').show(200);
-
-            if ($('#@Html.FieldIdFor(model => model.HasSampleDownload)').is(':checked')) {
-                $('#pnlSampleDownloadFile').show(200);
-            }
-            else {
-                $('#pnlSampleDownloadFile').hide(200);
-            }
-        }
-        else {
-            $('#pnlDownloadFile').hide(200);
-            $('#pnlUnlimitedDownloads').hide(200);
-            $('#pnlMaxNumberOfDownloads').hide(200);
-            $('#pnlDownloadExpirationDays').hide(200);
-            $('#pnlDownloadActivationType').hide(200);
-            $('#pnlHasUserAgreement').hide(200);
-            $('#pnlUserAgreementText').hide(200);
-            $('#pnlHasSampleDownload').hide(200);
-            $('#pnlSampleDownloadFile').hide(200);
-        }
-    }
-
-    function toggleShipping() {
-        if ($('#@Html.FieldIdFor(model => model.IsShipEnabled)').is(':checked')) {
-        	$('#pnlDeliveryTime').show(200);
-        	$('#pnlFreeShipping').show(200);
-        	$('#pnlAdditionalShippingCharge').show(200);
-        	$('#pnlWeight').show(200);
-        	$('#pnlLength').show(200);
-        	$('#pnlWidth').show(200);
-        	$('#pnlHeight').show(200);
-        }
-        else {
-        	$('#pnlDeliveryTime').hide(200);
-        	$('#pnlFreeShipping').hide(200);
-        	$('#pnlAdditionalShippingCharge').hide(200);
-        	$('#pnlWeight').hide(200);
-        	$('#pnlLength').hide(200);
-        	$('#pnlWidth').hide(200);
-        	$('#pnlHeight').hide(200);
-        }
-    }
-
-    function toggleRecurring() {
-        if ($('#@Html.FieldIdFor(model => model.IsRecurring)').is(':checked')) {
-        	$('#pnlCycleLength').show(200);
-        	$('#pnlCyclePeriod').show(200);
-        	$('#pnlTotalCycles').show(200);
-        }
-        else {
-        	$('#pnlCycleLength').hide(200);
-        	$('#pnlCyclePeriod').hide(200);
-        	$('#pnlTotalCycles').hide(200);
-        }
-    }
-
-    function toggleTax() {
-        if ($('#@Html.FieldIdFor(model => model.IsTaxExempt)').is(':checked')) {
-        	$('#pnlTaxCategory').hide(200);
-        	$('#pnlIsEsd').hide(200);
-        }
-        else {
-        	$('#pnlTaxCategory').show(200);
-        	$('#pnlIsEsd').show(200);
         }
     }
 </script>
@@ -470,12 +336,12 @@
 				@Html.SmartLabelFor(model => model.RequireOtherProducts)
 			</td>
 			<td class="adminData">
-				@Html.CheckBoxFor(model => model.RequireOtherProducts, new { data_toggler_for = "#pnlRequiredProductIds, #pnlAutomaticallyAddRequiredProducts" })
+				@Html.CheckBoxFor(model => model.RequireOtherProducts, new { data_toggler_for = "#pnlRequireOtherProducts" })
 				@Html.ValidationMessageFor(model => model.RequireOtherProducts)
 			</td>
 		</tr>
-		<tbody>
-			<tr id="pnlRequiredProductIds">
+		<tbody id="pnlRequireOtherProducts">
+			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.RequiredProductIds)
 				</td>
@@ -492,7 +358,7 @@
 					@Html.ValidationMessageFor(model => model.RequiredProductIds)
 				</td>
 			</tr>
-			<tr id="pnlAutomaticallyAddRequiredProducts">
+			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.AutomaticallyAddRequiredProducts)
 				</td>
@@ -515,7 +381,7 @@
 				@Html.SmartLabelFor(model => model.IsGiftCard)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.IsGiftCard)
+				@Html.CheckBoxFor(model => model.IsGiftCard, new { data_toggler_for = "#pnlGiftCardType" })
 				@Html.ValidationMessageFor(model => model.IsGiftCard)
 			</td>
 		</tr>
@@ -541,91 +407,93 @@
 				@Html.SmartLabelFor(model => model.IsDownload)
 			</td>
 			<td class="adminData">
-				@Html.CheckBoxFor(model => model.IsDownload, new { data_toggler_for = "#DownloadId, #UnlimitedDownloads, #DownloadExpirationDays, #DownloadActivationTypeId, #HasUserAgreement, #HasSampleDownload" })
+				@Html.CheckBoxFor(model => model.IsDownload, new { data_toggler_for = "#pnlIsDownload" })
 				@Html.ValidationMessageFor(model => model.IsDownload)
 			</td>
 		</tr>
-		<tr id="pnlDownloadFile">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DownloadId)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.DownloadId)
-				@Html.ValidationMessageFor(model => model.DownloadId)
-			</td>
-		</tr>
-		<tr id="pnlUnlimitedDownloads">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.UnlimitedDownloads)
-			</td>
-			<td class="adminData">
-				@Html.CheckBoxFor(model => model.UnlimitedDownloads, new { data_toggler_for = "#MaxNumberOfDownloads", data_toggler_reverse = true })
-				@Html.ValidationMessageFor(model => model.UnlimitedDownloads)
-			</td>
-		</tr>
-		<tr id="pnlMaxNumberOfDownloads">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.MaxNumberOfDownloads)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.MaxNumberOfDownloads)
-				@Html.ValidationMessageFor(model => model.MaxNumberOfDownloads)
-			</td>
-		</tr>
-		<tr id="pnlDownloadExpirationDays">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DownloadExpirationDays)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.DownloadExpirationDays)
-				@Html.ValidationMessageFor(model => model.DownloadExpirationDays)
-			</td>
-		</tr>
-		<tr id="pnlDownloadActivationType">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DownloadActivationTypeId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.DownloadActivationTypeId, ((DownloadActivationType)Model.DownloadActivationTypeId).ToSelectList())
-				@Html.ValidationMessageFor(model => model.DownloadActivationTypeId)
-			</td>
-		</tr>
-		<tr id="pnlHasUserAgreement">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.HasUserAgreement)
-			</td>
-			<td class="adminData">
-				@Html.CheckBoxFor(model => model.HasUserAgreement, new { data_toggler_for = "#UserAgreementText" })
-				@Html.ValidationMessageFor(model => model.HasUserAgreement)
-			</td>
-		</tr>
-		<tr id="pnlUserAgreementText">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.UserAgreementText)
-			</td>
-			<td class="adminData wide">
-				@Html.EditorFor(model => model.UserAgreementText, Html.RichEditorFlavor())
-				@Html.ValidationMessageFor(model => model.UserAgreementText)
-			</td>
-		</tr>
-		<tr id="pnlHasSampleDownload">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.HasSampleDownload)
-			</td>
-			<td class="adminData">
-				@Html.CheckBoxFor(model => model.HasSampleDownload, new { data_toggler_for = "#SampleDownloadId" })
-				@Html.ValidationMessageFor(model => model.HasSampleDownload)
-			</td>
-		</tr>
-		<tr id="pnlSampleDownloadFile">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SampleDownloadId)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SampleDownloadId)
-				@Html.ValidationMessageFor(model => model.SampleDownloadId)
-			</td>
-		</tr>
+		<tbody id="pnlIsDownload">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DownloadId)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.DownloadId)
+					@Html.ValidationMessageFor(model => model.DownloadId)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.UnlimitedDownloads)
+				</td>
+				<td class="adminData">
+					@Html.CheckBoxFor(model => model.UnlimitedDownloads, new { data_toggler_for = "#pnlMaxNumberOfDownloads", data_toggler_reverse = true })
+					@Html.ValidationMessageFor(model => model.UnlimitedDownloads)
+				</td>
+			</tr>
+			<tr id="pnlMaxNumberOfDownloads">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.MaxNumberOfDownloads)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.MaxNumberOfDownloads)
+					@Html.ValidationMessageFor(model => model.MaxNumberOfDownloads)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DownloadExpirationDays)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.DownloadExpirationDays)
+					@Html.ValidationMessageFor(model => model.DownloadExpirationDays)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DownloadActivationTypeId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.DownloadActivationTypeId, ((DownloadActivationType)Model.DownloadActivationTypeId).ToSelectList())
+					@Html.ValidationMessageFor(model => model.DownloadActivationTypeId)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.HasUserAgreement)
+				</td>
+				<td class="adminData">
+					@Html.CheckBoxFor(model => model.HasUserAgreement, new { data_toggler_for = "#pnlUserAgreementText" })
+					@Html.ValidationMessageFor(model => model.HasUserAgreement)
+				</td>
+			</tr>
+			<tr id="pnlUserAgreementText">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.UserAgreementText)
+				</td>
+				<td class="adminData wide">
+					@Html.EditorFor(model => model.UserAgreementText, Html.RichEditorFlavor())
+					@Html.ValidationMessageFor(model => model.UserAgreementText)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.HasSampleDownload)
+				</td>
+				<td class="adminData">
+					@Html.CheckBoxFor(model => model.HasSampleDownload, new {  data_toggler_for = "#pnlSampleDownloadFile" })
+					@Html.ValidationMessageFor(model => model.HasSampleDownload)
+				</td>
+			</tr>
+			<tr id="pnlSampleDownloadFile">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SampleDownloadId)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SampleDownloadId)
+					@Html.ValidationMessageFor(model => model.SampleDownloadId)
+				</td>
+			</tr>
+		</tbody>
 	</table>
 
 	<table class="adminContent" id="group-recurring">
@@ -639,37 +507,39 @@
 				@Html.SmartLabelFor(model => model.IsRecurring)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.IsRecurring)
+				@Html.CheckBoxFor(model => model.IsRecurring, new { data_toggler_for = "#pnlIsRecurring" })
 				@Html.ValidationMessageFor(model => model.IsRecurring)
 			</td>
 		</tr>
-		<tr id="pnlCycleLength">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.RecurringCycleLength)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.RecurringCycleLength)
-				@Html.ValidationMessageFor(model => model.RecurringCycleLength)
-			</td>
-		</tr>
-		<tr id="pnlCyclePeriod">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.RecurringCyclePeriodId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.RecurringCyclePeriodId, ((RecurringProductCyclePeriod)Model.RecurringCyclePeriodId).ToSelectList())
-				@Html.ValidationMessageFor(model => model.RecurringCyclePeriodId)
-			</td>
-		</tr>
-		<tr id="pnlTotalCycles">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.RecurringTotalCycles)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.RecurringTotalCycles)
-				@Html.ValidationMessageFor(model => model.RecurringTotalCycles)
-			</td>
-		</tr>
+		<tbody id="pnlIsRecurring">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.RecurringCycleLength)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.RecurringCycleLength)
+					@Html.ValidationMessageFor(model => model.RecurringCycleLength)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.RecurringCyclePeriodId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.RecurringCyclePeriodId, ((RecurringProductCyclePeriod)Model.RecurringCyclePeriodId).ToSelectList())
+					@Html.ValidationMessageFor(model => model.RecurringCyclePeriodId)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.RecurringTotalCycles)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.RecurringTotalCycles)
+					@Html.ValidationMessageFor(model => model.RecurringTotalCycles)
+				</td>
+			</tr>
+		</tbody>
 	</table>
 
 	<table class="adminContent" id="group-shipping">
@@ -683,82 +553,84 @@
 				@Html.SmartLabelFor(model => model.IsShipEnabled)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.IsShipEnabled)
+				@Html.CheckBoxFor(model => model.IsShipEnabled, new { data_toggler_for = "#pnlIsShipEnabled" })
 				@Html.ValidationMessageFor(model => model.IsShipEnabled)
 			</td>
 		</tr>
-		<tr id="pnlDeliveryTime">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DeliveryTimeId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.DeliveryTimeId, Model.AvailableDeliveryTimes, T("Common.Unspecified"))
-				@Html.ValidationMessageFor(model => model.DeliveryTimeId)
-			</td>
-		</tr>
-		<tr id="pnlFreeShipping">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.IsFreeShipping)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.IsFreeShipping)
-				@Html.ValidationMessageFor(model => model.IsFreeShipping)
-			</td>
-		</tr>
-		<tr id="pnlAdditionalShippingCharge">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AdditionalShippingCharge)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.AdditionalShippingCharge, new { postfix = Model.PrimaryStoreCurrencyCode })
-				@Html.ValidationMessageFor(model => model.AdditionalShippingCharge)
-			</td>
-		</tr>
-        <tr id="pnlQuantityUnit">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.QuantityUnitId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.QuantityUnitId, Model.AvailableQuantityUnits, T("Common.Unspecified"))
-                @Html.ValidationMessageFor(model => model.QuantityUnitId)
-            </td>
-        </tr>
-		<tr id="pnlWeight">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Weight)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.Weight, new { postfix = Model.BaseWeightIn })
-				@Html.ValidationMessageFor(model => model.Weight)
-			</td>
-		</tr>
-		<tr id="pnlLength">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Length)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.Length, new { postfix = Model.BaseDimensionIn })
-				@Html.ValidationMessageFor(model => model.Length)
-			</td>
-		</tr>
-		<tr id="pnlWidth">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Width)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.Width, new { postfix = Model.BaseDimensionIn })
-				@Html.ValidationMessageFor(model => model.Width)
-			</td>
-		</tr>
-		<tr id="pnlHeight">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Height)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.Height, new { postfix = Model.BaseDimensionIn })
-				@Html.ValidationMessageFor(model => model.Height)
-			</td>
-		</tr>
+		<tbody id="pnlIsShipEnabled">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DeliveryTimeId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.DeliveryTimeId, Model.AvailableDeliveryTimes, T("Common.Unspecified"))
+					@Html.ValidationMessageFor(model => model.DeliveryTimeId)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.IsFreeShipping)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.IsFreeShipping)
+					@Html.ValidationMessageFor(model => model.IsFreeShipping)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AdditionalShippingCharge)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.AdditionalShippingCharge, new { postfix = Model.PrimaryStoreCurrencyCode })
+					@Html.ValidationMessageFor(model => model.AdditionalShippingCharge)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.QuantityUnitId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.QuantityUnitId, Model.AvailableQuantityUnits, T("Common.Unspecified"))
+					@Html.ValidationMessageFor(model => model.QuantityUnitId)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Weight)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Weight, new { postfix = Model.BaseWeightIn })
+					@Html.ValidationMessageFor(model => model.Weight)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Length)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Length, new { postfix = Model.BaseDimensionIn })
+					@Html.ValidationMessageFor(model => model.Length)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Width)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Width, new { postfix = Model.BaseDimensionIn })
+					@Html.ValidationMessageFor(model => model.Width)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Height)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Height, new { postfix = Model.BaseDimensionIn })
+					@Html.ValidationMessageFor(model => model.Height)
+				</td>
+			</tr>
+		</tbody>
 	</table>
 
 	<table class="adminContent" id="group-tax">
@@ -772,27 +644,29 @@
 				@Html.SmartLabelFor(model => model.IsTaxExempt)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.IsTaxExempt)
+				@Html.CheckBoxFor(model => model.IsTaxExempt, new { data_toggler_for = "#pnlIsTaxExempt" })
 				@Html.ValidationMessageFor(model => model.IsTaxExempt)
 			</td>
 		</tr>
-		<tr id="pnlTaxCategory">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.TaxCategoryId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.TaxCategoryId, Model.AvailableTaxCategories, new { placeholder = T("Common.PleaseSelect").Text })
-				@Html.ValidationMessageFor(model => model.TaxCategoryId)
-			</td>
-		</tr>
-		<tr id="pnlIsEsd">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.IsEsd)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.IsEsd)
-				@Html.ValidationMessageFor(model => model.IsEsd)
-			</td>
-		</tr>
+		<tbody id="pnlIsTaxExempt">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.TaxCategoryId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.TaxCategoryId, Model.AvailableTaxCategories, new { placeholder = T("Common.PleaseSelect").Text })
+					@Html.ValidationMessageFor(model => model.TaxCategoryId)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.IsEsd)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.IsEsd)
+					@Html.ValidationMessageFor(model => model.IsEsd)
+				</td>
+			</tr>
+		</tbody>
 	</table>
 </div>

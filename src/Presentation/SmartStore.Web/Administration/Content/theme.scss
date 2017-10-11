@@ -223,7 +223,8 @@ $gray-lightest: $gray-100;
 
 .adminContent,
 .adminContent > tbody {
-    display: block;
+    display: flex;
+    flex-flow: column;
     border-collapse: initial;
 }
 
@@ -244,7 +245,15 @@ $gray-lightest: $gray-100;
 }
 
 .adminContent td.adminTitle {
-    @extend .col-form-label;
+    margin-bottom: 0;
+    padding-top: $input-btn-padding-y;
+    padding-bottom: $input-btn-padding-y;
+}
+
+.adminContent td.adminData > .switch {
+    margin-bottom: 0;
+    padding-top: calc(#{$input-btn-padding-y} - 3px);
+    padding-bottom: calc(#{$input-btn-padding-y} + 2px);
 }
 
 .adminContent td.adminData {
@@ -267,6 +276,23 @@ $gray-lightest: $gray-100;
         opacity: 0;
     }
 }
+
+
+//
+// Collapsible .adminContent element (groups)
+// --------------------------------------------------
+
+/*.adminContent {
+    > tbody.collapsible,
+    > tr.collapsible,
+    > tbody > tr.collapsible {
+        display: none;
+
+        &.expanded {
+            display: flex !important;
+        }
+    }
+}*/
 
 
 //

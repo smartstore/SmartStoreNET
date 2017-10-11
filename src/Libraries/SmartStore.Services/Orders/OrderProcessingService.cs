@@ -1006,6 +1006,7 @@ namespace SmartStore.Services.Orders
 							PaymentMethodAdditionalFeeTaxRate = paymentAdditionalFeeTaxRate,
                             TaxRates = taxRates,
                             OrderTax = orderTaxTotal,
+                            OrderTotalRounding = cartTotal.RoundingAmount,
                             OrderTotal = cartTotal.TotalAmount.Value,
                             RefundedAmount = decimal.Zero,
                             OrderDiscount = cartTotal.DiscountAmount,

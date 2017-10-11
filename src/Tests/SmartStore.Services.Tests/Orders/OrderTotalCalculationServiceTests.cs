@@ -24,6 +24,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
@@ -42,6 +43,7 @@ namespace SmartStore.Services.Tests.Orders
         IDiscountService _discountService;
         IGiftCardService _giftCardService;
         IGenericAttributeService _genericAttributeService;
+        IPaymentService _paymentService;
         TaxSettings _taxSettings;
         RewardPointsSettings _rewardPointsSettings;
         ICategoryService _categoryService;
@@ -94,6 +96,7 @@ namespace SmartStore.Services.Tests.Orders
 			_productService = MockRepository.GenerateMock<IProductService>();
 			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
+            _paymentService = MockRepository.GenerateMock<IPaymentService>();
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
@@ -147,7 +150,7 @@ namespace SmartStore.Services.Tests.Orders
 
 			_orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _providerManager,
-                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _productAttributeParser,
+                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _paymentService, _productAttributeParser,
                 _taxSettings, _rewardPointsSettings, _shippingSettings, _shoppingCartSettings, _catalogSettings);
         }
 
@@ -1313,7 +1316,7 @@ namespace SmartStore.Services.Tests.Orders
 		//}
 
         [Test]
-        public void Can_get_shopping_cart_total_discount()
+        public void Can_get_shopping_cart_total()
         {
 			var customer = new Customer
 			{

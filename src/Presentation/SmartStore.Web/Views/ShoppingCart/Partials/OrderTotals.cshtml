@@ -159,6 +159,15 @@
 			<td class="cart-summary-value">@Model.RedeemedRewardPointsAmount</td>
 		</tr>
 	}
+    @if (Model.OrderTotalRounding.HasValue())
+    {
+        <tr class="cart-summary-totalrounding cart-summary-pos">
+            <td class="cart-summary-label">@T("ShoppingCart.Totals.Rounding"):</td>
+            <td class="cart-summary-value">
+                <span>@Model.OrderTotalRounding</span>
+            </td>
+        </tr>
+    }
 	<tr class="cart-summary-total">
 		<td class="cart-summary-label">@T("ShoppingCart.Totals.OrderTotal"):</td>
 		<td class="cart-summary-value">

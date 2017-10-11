@@ -2048,12 +2048,16 @@ namespace SmartStore.Web.Controllers
 
 				// Cart total
                 var cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
-                var shoppingCartTotalBase = cartTotal.TotalAmount;
-
-                if (shoppingCartTotalBase.HasValue)
+                if (cartTotal.TotalAmount.HasValue)
                 {
-                    decimal shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTotalBase.Value, currency);
+                    var shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.TotalAmount.Value, currency);
                     model.OrderTotal = _priceFormatter.FormatPrice(shoppingCartTotal, true, false);
+
+                    if (cartTotal.RoundingAmount != decimal.Zero)
+                    {
+                        var totalRoundingAmount = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.RoundingAmount, currency);
+                        model.OrderTotalRounding = _priceFormatter.FormatPrice(totalRoundingAmount, true, false);
+                    }
                 }
 
                 // Discount

@@ -411,7 +411,7 @@ namespace SmartStore.PayPal
             var order = postProcessPaymentRequest.Order;
             var lst = new List<PayPalLineItem>();
 
-			// order items... checkout attributes are included in order total
+			// Order items... checkout attributes are included in order total
 			foreach (var orderItem in order.OrderItems)
             {
                 var item = new PayPalLineItem
@@ -426,7 +426,20 @@ namespace SmartStore.PayPal
                 cartTotal += orderItem.PriceExclTax;
             }
 
-            // shipping
+            // Rounding
+            if (order.OrderTotalRounding != decimal.Zero)
+            {
+                var item = new PayPalLineItem
+                {
+                    Type = PayPalItemType.Rounding,
+                    Name = T("ShoppingCart.Totals.Rounding").Text,
+                    Quantity = 1,
+                    Amount = order.OrderTotalRounding
+                };
+                lst.Add(item);
+            }
+
+            // Shipping
             if (order.OrderShippingExclTax > decimal.Zero)
             {
                 var item = new PayPalLineItem
@@ -441,7 +454,7 @@ namespace SmartStore.PayPal
                 cartTotal += order.OrderShippingExclTax;
             }
 
-            // payment fee
+            // Payment fee
             if (order.PaymentMethodAdditionalFeeExclTax > decimal.Zero)
             {
                 var item = new PayPalLineItem
@@ -456,7 +469,7 @@ namespace SmartStore.PayPal
                 cartTotal += order.PaymentMethodAdditionalFeeExclTax;
             }
 
-            // tax
+            // Tax
             if (order.OrderTax > decimal.Zero)
             {
                 var item = new PayPalLineItem
@@ -610,6 +623,7 @@ namespace SmartStore.PayPal
 		CartItem = 0,
 		Shipping,
 		PaymentFee,
-		Tax
+		Tax,
+        Rounding
 	}
 }

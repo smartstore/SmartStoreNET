@@ -235,7 +235,7 @@ namespace SmartStore.Services.Messages
 
 			var msg = new EmailMessage(
 				new EmailAddress(qe.To, qe.ToName),
-				qe.Subject,
+				qe.Subject.Replace("\r\n", string.Empty),
 				qe.Body,
 				new EmailAddress(qe.From, qe.FromName));
 

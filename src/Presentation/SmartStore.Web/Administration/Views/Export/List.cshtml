@@ -213,7 +213,7 @@
 				tr.find('.btn-log').addClass('hide');
 				tr.find('.next-run-info').addClass('hide');
 				
-				$('body').animate({ scrollTop: tr.offset().top }, 'slow');
+				$('body, html').animate({ scrollTop: tr.offset().top }, 'slow');
 			},
 			onTaskCompleted: function (taskId, el) {
 				var tr = el.closest('tr'),

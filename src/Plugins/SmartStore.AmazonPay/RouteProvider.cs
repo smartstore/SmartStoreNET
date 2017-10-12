@@ -14,7 +14,7 @@ namespace SmartStore.AmazonPay
 					new { controller = "AmazonPay" },
 					new[] { "SmartStore.AmazonPay.Controllers" }
 			)
-			.DataTokens["area"] = AmazonPayCore.SystemName;
+			.DataTokens["area"] = AmazonPayPlugin.SystemName;
 
 			// for backward compatibility (IPN!)
 			routes.MapRoute("SmartStore.AmazonPay.Legacy",
@@ -22,7 +22,7 @@ namespace SmartStore.AmazonPay
 					new { controller = "AmazonPay" },
 					new[] { "SmartStore.AmazonPay.Controllers" }
 			)
-			.DataTokens["area"] = AmazonPayCore.SystemName;
+			.DataTokens["area"] = AmazonPayPlugin.SystemName;
 		}
 
 		public int Priority { get { return 0; } }

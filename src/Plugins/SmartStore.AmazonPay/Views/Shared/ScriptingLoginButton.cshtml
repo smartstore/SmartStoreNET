@@ -1,0 +1,56 @@
+﻿@using SmartStore.AmazonPay.Services;
+@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+
+<script type="text/javascript">
+	window.onAmazonLoginReady = function() {
+		try {
+			amazon.Login.setClientId('@Html.Raw(Model.ClientId)');
+		}
+		catch (e) {
+			console.log(e);
+			displayNotification(e, 'error');
+		}
+	};
+
+	window.onAmazonPaymentsReady = function () {
+		var isAuthentication = @((Model.Type == AmazonPayRequestType.AuthenticationPublicInfo).ToString().ToLower());
+		var scope = 'profile';
+
+		try {
+			if (!isAuthentication) {
+				scope += ' payments:widget payments:shipping_address payments:billing_address';
+				
+				amazon.Login.logout();
+			}
+		}
+		catch (e) {
+			console.log(e);
+			displayNotification(e, 'error');
+		}
+
+		try {
+			OffAmazonPayments.Button(isAuthentication ? 'amazon-pay-auth-button' : 'amazon-pay-login-button', '@Html.Raw(Model.SellerId)', {
+				type: '@(Model.ButtonType ?? (Model.Type == AmazonPayRequestType.AuthenticationPublicInfo ? "Login" : "PwA"))',
+				color: '@(Model.ButtonColor ?? "Gold")',
+				size:  '@(Model.ButtonSize ?? "small")',
+				language: '@(Model.LanguageCode ?? "de-DE")',
+				authorization: function() {
+					amazon.Login.authorize({
+							scope: scope
+						},
+						'@Html.Raw(Model.ButtonHandlerUrl)'
+					);
+				},
+				onError: function (e) {
+					displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');
+				}
+			});
+		}
+		catch (e) {
+			console.log(e);
+			displayNotification(e, 'error');
+		}
+	};
+</script>
+
+<script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

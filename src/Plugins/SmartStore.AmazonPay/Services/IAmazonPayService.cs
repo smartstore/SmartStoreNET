@@ -1,29 +1,20 @@
-﻿using System;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
-using System.Collections.Generic;
-using OffAmazonPaymentsService;
 using SmartStore.AmazonPay.Models;
-using SmartStore.AmazonPay.Settings;
-using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.AmazonPay.Services
 {
-	public partial interface IAmazonPayService
+	public partial interface IAmazonPayService : IExternalProviderAuthorizer
 	{
-		void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null);
-		void LogAmazonError(OffAmazonPaymentsServiceException exception, bool notify = false, IList<string> errors = null);
-
-		void AddOrderNote(AmazonPaySettings settings, Order order, AmazonPayOrderNote note, string anyString = null, bool isIpn = false);
-
 		void SetupConfiguration(ConfigurationModel model);
 
-		string GetWidgetUrl();
+		AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData);
 
-		AmazonPayViewModel ProcessPluginRequest(AmazonPayRequestType type, TempDataDictionary tempData, string orderReferenceId = null);
-        
 		void AddCustomerOrderNoteLoop(AmazonPayActionState state);
+
+		void GetBillingAddress();
 
 		PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest request);
 
@@ -39,12 +30,8 @@ namespace SmartStore.AmazonPay.Services
 
 		void ProcessIpn(HttpRequestBase request);
 
-		void DataPollingTaskProcess();
+		void StartDataPolling();
 
-		void DataPollingTaskInit();
-
-		void DataPollingTaskUpdate(bool enabled, int seconds);
-
-		void DataPollingTaskDelete();
+		void ShareKeys(string payload, int storeId);
 	}
 }

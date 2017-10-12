@@ -1,23 +1,22 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
 	<LocaleResource Name="Plugins.FriendlyName.SmartStore.AmazonPay" AppendRootKey="false">
-		<Value>Bezahlen mit Amazon</Value>
+		<Value>Amazon Pay</Value>
 	</LocaleResource>
   <LocaleResource Name="Plugins.FriendlyName.Widgets.AmazonPay" AppendRootKey="false">
-    <Value>Bezahlen mit Amazon</Value>
+    <Value>Amazon Pay</Value>
   </LocaleResource>
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Registrieren Sie sich zunächst bei <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
-<p>So richten Sie "Bezahlen mit Amazon" ein:</p><ul>
-<li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein. Sie finden diese Daten in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto.</li>
-<li>Ihre Händlernummer finden Sie dort rechts oben unter <b>Einstellungen > Integrationseinstellungen</b>.</li>
-<li>Die beiden Zugangsschlüssel finden Sie dort links oben unter <b>Integration > MWS Access Key</b>. In <a href="http://download.smartstore.com/pub/docs/14_Amazon_Payments_Getting_AWS_Keys_DE.pdf">diesem Dokument</a> finden Sie Bilder, wie Sie diese erstellen.</li>
+			<![CDATA[<p>Klicken Sie unten auf <b>Jetzt registrieren</b>, um sich bei Amazon Payments zu registrieren.</p>
+<p>So richten Sie <b>Login und Bezahlen mit Amazon</b> ein:</p><ul>
+<li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein.
+Die Zugangsdaten finden Sie in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto oben links unter <b>Integration > MWS Access Key</b>.</li>
 <li>Falls Sie Sofortbenachrichtigungen (IPN) erhalten möchten (SSL zwingend erforderlich!), so tragen Sie die unten aufgeführte IPN URL unter <b>Einstellungen > Integrationseinstellungen > Sofortbenachrichtigungs-Einstellungen > Händler-URL</b> ein.</li>
 </ul>
-<p>Bitte fügen Sie Informationen zu "Bezahlen mit Amazon" auf Ihrer Seite der Zahlungsarten ein (siehe <b>CMS > Seiten</b>). Bildmaterial finden Sie <a href="https://payments.amazon.de/resources#marks">hier</a>.
+<p>Bitte fügen Sie Informationen zu <b>Login und Bezahlen mit Amazon</b> auf Ihrer Seite der Zahlungsarten ein (siehe <b>CMS > Seiten</b>). Bildmaterial finden Sie <a href="https://payments.amazon.de/resources#marks">hier</a>.
 Textvorschläge:<ul>
-<li>Option 1: Bezahlen mit Amazon: Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
+<li>Option 1: Amazon Pay: Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
 <li>Option 2: Sie sind Amazon-Kunde? Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
 <li>Option 3: Sie sind Amazon-Kunde? Zahlen Sie jetzt mit den Daten aus Ihrem Amazon-Konto.</li>
 </ul></p>]]>
@@ -27,16 +26,22 @@ Textvorschläge:<ul>
     <Value>Bitte beachten Sie, dass es sich bei dieser Rechnungsadresse unter Umständen nicht um die für diese Bestellung gültige handelt!</Value>
   </LocaleResource>
 	<LocaleResource Name="MissingOrderReferenceId">
-		<Value>Es wurde keine Auftrags-Referenz-ID durch Amazon übermittelt!</Value>
+		<Value>Es wurde keine Auftrags-Referenz-ID durch Amazon übermittelt.</Value>
 	</LocaleResource>
+  <LocaleResource Name="MissingAddressConsentToken">
+    <Value>Es wurde keine Access-Token durch Amazon übermittelt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IncompleteProfileDetails">
+    <Value>Unvollständige Amazon Profildaten!</Value>
+  </LocaleResource>
 	<LocaleResource Name="PaymentMethodNotActive">
-		<Value>Die Zahlungsart "Bezahlen mit Amazon" ist für Shop "{0}" nicht verfügbar.</Value>
+		<Value>Die Zahlungsart "Login und Bezahlen mit Amazon" ist für Shop "{0}" nicht verfügbar.</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingCheckoutSessionState">
-		<Value>Fehlender Checkout-Sitzungsstatus für "Bezahlen mit Amazon". Ihre Zahlung kann leider nicht bearbeitet werden. Bitte gehen Sie zurück in den Warenkorb und Durchlaufen Sie den Checkout erneut.</Value>
+		<Value>Fehlender Checkout-Sitzungsstatus für "Login und Bezahlen mit Amazon". Ihre Zahlung kann leider nicht bearbeitet werden. Bitte gehen Sie zurück in den Warenkorb und Durchlaufen Sie den Checkout erneut.</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderNotFound">
-		<Value>Ein Auftrag mit der Zahlungsart "Bezahlen mit Amazon" und der Kennung {0} wurde nicht gefunden.</Value>
+		<Value>Ein Auftrag mit der Zahlungsart "Login und Bezahlen mit Amazon" und der Kennung '{0}' wurde nicht gefunden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>
@@ -52,15 +57,52 @@ Textvorschläge:<ul>
 	<LocaleResource Name="ConfigSaveNote">
 		<Value>Die Einstellungen wurden erfolgreich gespeichert. Starten Sie die Anwendung bitte neu, falls "Aktualisierung des Zahlungsstatus" geändert wurde.</Value>
 	</LocaleResource>
-	<LocaleResource Name="ConfigGroups">
-		<Value>Zugangsdaten;Datenaustausch;Gestaltung;Sonstiges</Value>
+  <LocaleResource Name="AuthenticationNotActive">
+    <Value>Amazon Authentifizierung ist nicht aktiv!</Value>
+  </LocaleResource>
+  <LocaleResource Name="AsyncPaymentAuthrizationNote">
+    <Value>Ihre Zahlung mit Amazon Pay ist derzeit noch in Prüfung. Bitte beachten Sie, dass wir uns mit Ihnen in Kürze per Email in Verbindung setzen werden, falls noch Unklarheiten bestehen sollten.</Value>
+  </LocaleResource>
+  <LocaleResource Name="RegisterNow">
+    <Value>Jetzt registrieren</Value>
+  </LocaleResource>
+  <LocaleResource Name="SaveAccessData">
+    <Value>Zugangsdaten speichern</Value>
+  </LocaleResource>
+  <LocaleResource Name="PasteAccessData">
+    <Value>Zugangsdaten einfügen</Value>
+  </LocaleResource>
+  <LocaleResource Name="PasteAccessData.Hint">
+    <Value>Fügen Sie hier Ihre Zugangsdaten ein (merchant_id, access_key, secret_key, client_id etc.)...</Value>
+  </LocaleResource>
+  <LocaleResource Name="MissingAccessToken">
+    <Value>Der Access-Token fehlt!</Value>
+  </LocaleResource>
+  <LocaleResource Name="TaskName">
+    <Value>Amazon Datenabruf</Value>
+  </LocaleResource>
+  <LocaleResource Name="SaveAccessDataSucceeded">
+    <Value>Die Zugangsdaten wurden erfolgreich gespeichert.</Value>
+  </LocaleResource>
+  <LocaleResource Name="MissingPayloadParameter">
+    <Value>Der Payload Parameter fehlt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="EncryptionNotSupported">
+    <Value>Eine Verschlüsselung von Zugangsdaten wird nicnt unterstützt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="MissingBillingAddress">
+    <Value>Die Amazon Rechnungsanschrift des Kunden fehlt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AmazonDataProcessed">
+		<Value>Daten von Amazon wurden verarbeitet</Value>
 	</LocaleResource>
-	<LocaleResource Name="OrderNoteStrings">
-		<Value><![CDATA[Die Funktion "{0}" der Amazon Payment API wurde aufgerufen.;Antwort;Die Rechnungsadresse wurde von Amazon übernommen.{0};Daten von Amazon wurden verarbeitet:<br />{0};Die Rechnungsadresse wurde nicht von Amazon übernommen, da sie entweder fehlt oder eine Rechnungslegung in dieses Land deaktiviert ist.{0}]]></Value>
-	</LocaleResource>
-	<LocaleResource Name="MessageStrings">
+  <LocaleResource Name="ConfigGroups">
+    <Value>Zugangsdaten;Datenaustausch;Layout;Verschiedenes</Value>
+  </LocaleResource>
+  <LocaleResource Name="MessageStrings">
 		<Value>Mitteilungstyp;Mitteilungs ID;Autorisierungs ID;Buchungs ID;Rückerstatattungs ID;Referenz ID;Status;Statusaktualisierung;Gebühr;Autorisierungsbetrag;Buchungsbetrag;Erstattungsbetrag;Sofort buchen;Erstellt am;Verfällt am</Value>
 	</LocaleResource>
+
 	<LocaleResource Name="UseSandbox">
 		<Value>Sandbox benutzen</Value>
 	</LocaleResource>
@@ -85,53 +127,107 @@ Textvorschläge:<ul>
 	<LocaleResource Name="Marketplace.Uk">
 		<Value>Großbritannien</Value>
 	</LocaleResource>
-	<LocaleResource Name="AccessKey">
-		<Value>Ihr Zugangsschlüssel</Value>
+  <LocaleResource Name="AccessKey">
+    <Value>Ihre Access Key ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="AccessKey.Hint">
+    <Value>Die Access Key ID finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
+  </LocaleResource>
+  <LocaleResource Name="SecretKey">
+    <Value>Ihr Secret Access Key</Value>
+  </LocaleResource>
+  <LocaleResource Name="SecretKey.Hint">
+    <Value>Den Secret Access Key finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
+  </LocaleResource>
+	<LocaleResource Name="ClientId">
+		<Value>Ihre Client-ID</Value>
 	</LocaleResource>
-	<LocaleResource Name="AccessKey.Hint">
-		<Value>Den Zugangsschlüssel finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
+	<LocaleResource Name="ClientId.Hint">
+		<Value>Die Client-ID finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
 	</LocaleResource>
-	<LocaleResource Name="SecretKey">
-		<Value>Ihr geheimer Schlüssel</Value>
+  <LocaleResource Name="MerchantLoginDomains">
+    <Value>Zulässige JavaScript-Ursprünge</Value>
+  </LocaleResource>
+  <LocaleResource Name="MerchantLoginDomains.Hint">
+    <Value>Bitte geben Sie diese Ursprünge bei Amazon Seller Central unter Login mit Amazon ein. Die Ursprünge müssen das HTTPS-Protokoll verwenden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="MerchantLoginRedirectUrls">
+    <Value>Zulässige Rückleitungs-URLs</Value>
+  </LocaleResource>
+  <LocaleResource Name="MerchantLoginRedirectUrls.Hint">
+    <Value>Bitte geben Sie diese URLs bei Amazon Seller Central unter Login mit Amazon ein. Das Protokoll der Rückleitungs-URL muss HTTPS sein.</Value>
+  </LocaleResource>
+  <!--<LocaleResource Name="ClientSecret">
+		<Value>Ihr Client-Secret</Value>
 	</LocaleResource>
-	<LocaleResource Name="SecretKey.Hint">
-		<Value>Den geheimen Schlüssel finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
+	<LocaleResource Name="ClientSecret.Hint">
+		<Value>Den Client-Secret finden Sie bei Amazon's Seller Central unter Integration - MWS Access Key.</Value>
+	</LocaleResource>-->
+  <LocaleResource Name="PayButtonColor">
+		<Value>Farbe des Zahlungs-Button</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor">
-		<Value>Farbe des Amazon-Login-Button</Value>
+	<LocaleResource Name="PayButtonColor.Hint">
+		<Value>Legt die bevorzugte Farbe des Zahlungs-Button (Pay-Button) fest.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor.Hint">
-		<Value>Die bevorzugte Farbe des Amazon-Login-Button im Warenkorb.</Value>
-	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor.Orange">
+	<LocaleResource Name="ButtonColor.Gold">
 		<Value>Orange</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonColor.Tan">
+	<LocaleResource Name="ButtonColor.LightGray">
 		<Value>Hellgrau</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize">
-		<Value>Größe des Amazon-Login-Buttons</Value>
+  <LocaleResource Name="ButtonColor.DarkGray">
+    <Value>Dunkelgrau</Value>
+  </LocaleResource>
+	<LocaleResource Name="PayButtonSize">
+		<Value>Größe des Zahlungs-Button</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Hint">
-		<Value>Die Größe "Bezahlen mit Amazon" Buttons auf der Warenkorbseite.</Value>
+	<LocaleResource Name="PayButtonSize.Hint">
+		<Value>Legt die Größe Zahlungs-Button (Pay-Button) fest.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Medium">
-		<Value>Medium (126 x 24 Pixel)</Value>
+  <LocaleResource Name="ButtonSize.Small">
+    <Value>Klein</Value>
+  </LocaleResource>
+	<LocaleResource Name="ButtonSize.Medium">
+		<Value>Medium</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Large">
-		<Value>Groß (151 x 27 Pixel)</Value>
+	<LocaleResource Name="ButtonSize.Large">
+		<Value>Groß</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonButtonSize.Xlarge">
-		<Value>Extra-Groß (173 x 27 Pixel)</Value>
+	<LocaleResource Name="ButtonSize.Xlarge">
+		<Value>Extra-Groß</Value>
 	</LocaleResource>
+  <LocaleResource Name="AuthButtonType">
+    <Value>Art des Anmelde-Button</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonType.Hint">
+    <Value>Legt die bevorzugte Art des Anmelde-Button (Loogin-Button) fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonType.Login">
+    <Value>Login</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonType.LwA">
+    <Value>Login mit Amazon</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonColor">
+    <Value>Farbe des Anmelde-Button</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonColor.Hint">
+    <Value>Legt die bevorzugte Farbe des Anmelde-Button (Login-Button) fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonSize">
+    <Value>Größe des Anmelde-Button</Value>
+  </LocaleResource>
+  <LocaleResource Name="AuthButtonSize.Hint">
+    <Value>Legt die Größe Anmelde-Button (Login-Button) fest.</Value>
+  </LocaleResource>
 	<LocaleResource Name="DataFetching">
 		<Value>Aktualisierung des Zahlungsstatus</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Hint">
-		<Value>Legt die Methode fest mit deren Hilfe der Zahlungsstatus aktualisiert werden soll.</Value>
+		<Value>Legt die Methode fest, mit deren Hilfe der Zahlungsstatus aktualisiert werden soll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Warning">
-		<Value>IPN (Sofortbenachrichtigungen) erfordert, dass ein gültiges SSL-Zertifikat auf diesem Server installiert ist. Achten Sie darauf, das das SSL-Zertifikat von einer vertrauenswürdigen Zertifizierungsstelle ausgegeben werden muss, selbstsignierte Zertifikate sind nicht zulässig.</Value>
+		<Value>Die URL für IPN (Sofortbenachrichtigungen) muss in Amazon Seller Central separat für Sandbox und Live-Modus eingetragen werden. Für den Live-Modus ist ein gültiges, von einer vertrauenswürdigen Zertifizierungsstelle ausgegebenes SSL-Zertifikat erforderlich, selbstsignierte Zertifikate sind nicht zulässig. Für die Sandbox ist kein SSL-Zertifikat erforderlich. Die IPN-URL muss in diesem Fall mit http angegeben werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Ipn">
 		<Value>IPN (Instant Payment Notification)</Value>
@@ -176,40 +272,13 @@ Textvorschläge:<ul>
 		<Value>Button im Miniwarenkorb anzeigen</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
-		<Value>Legt fest, ob der "Bezahlen mit Amazon" Button auch im Miniwarenkorb angezeigt werden soll.</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetWidth">
-		<Value>Breite des Adressen-Widgets</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetWidth.Hint">
-		<Value>In Pixel. Gültige Werte für einspaltige Widgets sind 200 bis 399 und für zweispaltige Widgets 400 bis 600.</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetHeight">
-		<Value>Höhe des Adressen-Widgets</Value>
-	</LocaleResource>
-	<LocaleResource Name="AddressWidgetHeight.Hint">
-		<Value>In Pixel. Gültige Werte sind 228 bis 400.</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetWidth">
-		<Value>Breite des Zahlungs-Widgets</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetWidth.Hint">
-		<Value>In Pixel. Gültige Werte für einspaltige Widgets sind 200 bis 399 und für zweispaltige Widgets 400 bis 600.</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetHeight">
-		<Value>Höhe des Zahlungs-Widgets</Value>
-	</LocaleResource>
-	<LocaleResource Name="PaymentWidgetHeight.Hint">
-		<Value>In Pixel. Gültige Werte sind 228 bis 400.</Value>
+		<Value>Legt fest, ob der Amazon Pay Button auch im Miniwarenkorb angezeigt werden soll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AdditionalFee">
 		<Value>Zusätzliche Gebühren</Value>
 	</LocaleResource>
 	<LocaleResource Name="AdditionalFee.Hint">
 		<Value>Zusätzliche Gebühren, die dem Kunden für die Inanspruchnahme des Dienstes berechnet werden sollen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="AdditionalFee.Warning">
-		<Value>Bitte berechnen Sie zusätzliche Gebühren erst nach Rücksprache mit Amazon Payments. Hierfür ist eine ausdrückliche Genehmigung erforderlich.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AdditionalFeePercentage">
 		<Value>Zusätzliche Gebühren (prozentual)</Value>
@@ -222,12 +291,6 @@ Textvorschläge:<ul>
 	</LocaleResource>
 	<LocaleResource Name="AddOrderNotes.Hint">
 		<Value>Legt fest, dass Auftragsnotizen hinsichtlich des Datenaustausches mit Amazon Payment angelegt werden sollen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="PollingTaskMinutes">
-		<Value>Zeitspanne (in Minuten)</Value>
-	</LocaleResource>
-	<LocaleResource Name="PollingTaskMinutes.Hint">
-		<Value>Legt fest, wie oft Zahlungsdaten vom Amazon Payments Server abgerufen werden sollen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximales Auftragsalter (in Tagen)</Value>

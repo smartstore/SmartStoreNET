@@ -74,24 +74,29 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AmazonPay, Version=3.1.1.0, Culture=neutral, PublicKeyToken=29b2e72291465862, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AmazonPay.3.1.1\lib\net20\AmazonPay.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.2.0.0\lib\2.0\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="OffAmazonPaymentsNotifications, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\OffAmazonPaymentsNotifications.dll</HintPath>
-    </Reference>
-    <Reference Include="OffAmazonPaymentsService, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\OffAmazonPaymentsService.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web" />
@@ -135,22 +140,27 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Content Include="Content\SmartStore.AmazonPay.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Controllers\AmazonPayCheckoutController.cs" />
     <Compile Include="Controllers\AmazonPayController.cs" />
     <Compile Include="Controllers\AmazonPayControllerBase.cs" />
     <Compile Include="Controllers\AmazonPayShoppingCartController.cs" />
     <Compile Include="Events\MessageTokenEventConsumer.cs" />
-    <Compile Include="Extensions\AmazonPayApiExtensions.cs" />
-    <Compile Include="Extensions\MiscExtensions.cs" />
+    <Compile Include="Services\AmazonPayServiceHelper.cs" />
+    <Compile Include="Services\Internal\AmazonPayExtensions.cs" />
     <Compile Include="Filters\AmazonPayCheckoutFilter.cs" />
     <Compile Include="Models\AmazonPayViewModel.cs" />
-    <Compile Include="Services\AmazonPayApi.cs" />
-    <Compile Include="Services\AmazonPayCore.cs" />
-    <Compile Include="Services\IAmazonPayApi.cs" />
+    <Compile Include="Services\AmazonAuthenticationParameters.cs" />
+    <Compile Include="Services\Internal\AmazonPayData.cs" />
+    <Compile Include="Services\Internal\AmazonPayPrice.cs" />
+    <Compile Include="Services\AmazonPayUtilities.cs" />
+    <Compile Include="Services\AmazonPayEnums.cs" />
     <Compile Include="Services\IAmazonPayService.cs" />
     <Compile Include="Services\AmazonPayService.cs" />
     <Compile Include="DependencyRegistrar.cs" />
-    <Compile Include="Settings\AmazonPaySettings.cs" />
+    <Compile Include="AmazonPaySettings.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -159,11 +169,12 @@
     <Compile Include="Widgets\AmazonPayWidget.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\branding.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\images\favicon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="lib\OffAmazonPaymentsNotifications.dll" />
-    <Content Include="lib\OffAmazonPaymentsService.dll" />
     <Content Include="Views\AmazonPay\Configure.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -192,27 +203,21 @@
     <Content Include="Views\AmazonPayShoppingCart\MiniShoppingCart.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\AmazonPayShoppingCart\ScriptingLoginButton.cshtml">
+    <Content Include="Views\Shared\ScriptingLoginButton.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\AmazonPayShoppingCart\ScriptingReadWidgets.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\AmazonPay\AuthenticationPublicInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\images\logo.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\smartstore.amazonpay.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Description.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\branding.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Localization\resources.de-de.xml">
@@ -221,9 +226,6 @@
     </Content>
     <Content Include="Localization\resources.en-us.xml">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\smartstore.amazonpay.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -274,7 +276,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /s /y "$(ProjectDir)lib\*.*" "$(TargetDir)*.*"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

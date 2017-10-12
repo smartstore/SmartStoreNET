@@ -1,23 +1,36 @@
 ﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+@{
+	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
+}
 
 <script type="text/javascript">
-	$(document).ready(function () {
+	window.onAmazonLoginReady = function () {
+		try {
+			amazon.Login.setClientId('@Html.Raw(Model.ClientId)');
+		}
+		catch (e) {
+			console.log(e);
+			displayNotification(e, 'error');
+		}
+	};
 
+	window.onAmazonPaymentsReady = function () {
 		try {
 			new OffAmazonPayments.Widgets.AddressBook({
 				sellerId: '@Model.SellerId',
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				displayMode: 'Read',
 				design: {
-					size: { width: '400px', height: '185px' }
+					designMode: 'responsive'
 				},
 				onError: function (e) {
-					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
+					displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');
 				}
-			}).bind('@(Model.GetWidgetId)Address');
+			}).bind('amazon-pay-read-address-book-widget');
 		}
 		catch (e) {
-			if (e.description) alert(e.description);
+			console.log(e);
+			displayNotification(e, 'error');
 		}
 
 		try {
@@ -26,16 +39,17 @@
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				displayMode: 'Read',
 				design: {
-					size: { width: '400px', height: '185px' }
+					designMode: 'responsive'
 				},
 				onError: function (e) {
-					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
+					displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');
 				}
-			}).bind('@(Model.GetWidgetId)Wallet');
+			}).bind('amazon-pay-read-wallet-widget');
 		}
 		catch (e) {
-			if (e.description) alert(e.description);
+			console.log(e);
+			displayNotification(e, 'error');
 		}
-
-	});
+	};
 </script>
+<script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

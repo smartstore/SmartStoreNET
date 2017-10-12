@@ -41,7 +41,7 @@ Textvorschläge:<ul>
 		<Value>Fehlender Checkout-Sitzungsstatus für "Login und Bezahlen mit Amazon". Ihre Zahlung kann leider nicht bearbeitet werden. Bitte gehen Sie zurück in den Warenkorb und Durchlaufen Sie den Checkout erneut.</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderNotFound">
-		<Value>Ein Auftrag mit der Zahlungsart "Login und Bezahlen mit Amazon" und der Kennung {0} wurde nicht gefunden.</Value>
+		<Value>Ein Auftrag mit der Zahlungsart "Login und Bezahlen mit Amazon" und der Kennung '{0}' wurde nicht gefunden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>

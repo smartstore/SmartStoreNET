@@ -41,7 +41,7 @@ Text suggestions:<ul>
 		<Value>Missing checkout session state for "Login and Pay with Amazon". Your payment cannot be processed. Please go to your shopping cart and checkout again.</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderNotFound">
-		<Value>Cannot find an order with the payment method "Login and Pay with Amazon" and the identification {0}.</Value>
+		<Value>Cannot find an order with the payment method "Login and Pay with Amazon" and the identification '{0}'.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>

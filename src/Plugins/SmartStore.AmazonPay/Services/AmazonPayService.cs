@@ -1367,7 +1367,7 @@ namespace SmartStore.AmazonPay.Services
 				if (isAuthorize)
 				{
 					if ((order = _orderService.GetOrderByPaymentAuthorization(AmazonPayPlugin.SystemName, data.AuthorizationId)) == null)
-						errorId = $"AuthorizationId {data.AuthorizationId}";
+						errorId = $"AuthorizationId {data.AuthorizationId.NaIfEmpty()}";
 				}
 				else if (isCapture)
 				{
@@ -1375,7 +1375,7 @@ namespace SmartStore.AmazonPay.Services
 						order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
 
 					if (order == null)
-						errorId = $"CaptureId {data.CaptureId}";
+						errorId = $"CaptureId {data.CaptureId.NaIfEmpty()}";
 				}
 				else if (isRefund)
 				{
@@ -1387,7 +1387,7 @@ namespace SmartStore.AmazonPay.Services
 						order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
 
 					if (order == null)
-						errorId = $"RefundId {data.RefundId}";
+						errorId = $"RefundId {data.RefundId.NaIfEmpty()}";
 				}
 
 				if (errorId.HasValue())

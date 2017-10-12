@@ -1,17 +1,17 @@
 ﻿#Release Notes
 
-##Login and Pay with Amazon 3.0.1
+##Login and Pay with Amazon 3.0.3.1
 ### New Features
-* Customer can register in the shop through "Login with Amazon" button.
+* Customer can register in frontend via "Login with Amazon" button
 ###Improvements
 * Moved to new SDK AmazonPay.dll.
 * Implemented new Login and Pay with Amazon features:
-	* Perf: Widget script is now loaded asynchronously.
-	* Widget rendering in responsive design.
-	* Display billing address on checkout confirm page.
-	* Supports more languages and presentation settings.
-	* Omnichronous authorization.
-	* Amazon merchant registration through button on configuration page.
+	* Perf: Widget script is now loaded asynchronously
+	* Widget rendering in responsive design
+	* Display billing address on checkout confirm page
+	* Supports more languages and presentation settings
+	* Omnichronous authorization
+	* Amazon merchant registration through button on configuration page
 
 ##Pay with Amazon 2.2.0.3
 ###Improvements

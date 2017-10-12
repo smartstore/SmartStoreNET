@@ -1,6 +1,9 @@
 ﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
+### Breaking changes
+* AmazonPay: The plugin has been changed to new "Login with Amazon" services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
+
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
 * OutputCache computes ambigous cache keys for blog pages
@@ -14,6 +17,7 @@
 * TwitterAuth: better error handling and enhanced admin instruction
 * #1181 Debitoor: Add option to display shipping address on invoices
 * Moved RoundPricesDuringCalculation setting to currency entity
+* #1100 Use new "Login with Amazon" services to initialize an Amazon payment
 
 ### New Features
 * #431 Added option to randomize the display order for slides on each request
@@ -21,6 +25,8 @@
 * #1247 Allow to import non system customer roles in customer import
 * #1117 Added an option to display a dropdown menu for manufacturers 
 * #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
+* #1100 Customer can register in frontend via "Login with Amazon" button
+* #1240 Implement rounding of order total ("cash rounding")
 
 
 ## SmartStore.NET 3.0.3

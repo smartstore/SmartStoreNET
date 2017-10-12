@@ -307,6 +307,12 @@ namespace SmartStore.Web.Controllers
 				model.OrderTotalDiscount = _priceFormatter.FormatPrice(-orderDiscountInCustomerCurrency, true, order.CustomerCurrencyCode, false, language);
 			}
 
+            if (order.OrderTotalRounding != decimal.Zero)
+            {
+                var orderTotalRoundinginCustomerCurrency = _currencyService.ConvertCurrency(order.OrderTotalRounding, order.CurrencyRate);
+                model.OrderTotalRounding = _priceFormatter.FormatPrice(orderTotalRoundinginCustomerCurrency, true, order.CustomerCurrencyCode, false, language);
+            }
+
             //gift cards
             foreach (var gcuh in order.GiftCardUsageHistory)
             {

@@ -16,6 +16,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
@@ -206,6 +207,7 @@ namespace SmartStore.Admin.Controllers
 
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
+			model.StatusOrder = order.OrderStatus;
             model.OrderNumber = order.GetOrderNumber();
             model.OrderGuid = order.OrderGuid;
 			model.StoreName = (store != null ? store.Name : "".NaIfEmpty());
@@ -287,6 +289,12 @@ namespace SmartStore.Admin.Controllers
             if (order.OrderDiscount > 0)
                 model.OrderTotalDiscount = _priceFormatter.FormatPrice(-order.OrderDiscount, true, false);
             model.OrderTotalDiscountValue = order.OrderDiscount;
+
+            if (order.OrderTotalRounding != decimal.Zero)
+            {
+                model.OrderTotalRounding = _priceFormatter.FormatPrice(order.OrderTotalRounding, true, false);
+            }
+            model.OrderTotalRoundingValue = order.OrderTotalRounding;
 
             //gift cards
             foreach (var gcuh in order.GiftCardUsageHistory)
@@ -383,6 +391,7 @@ namespace SmartStore.Admin.Controllers
             model.SubscriptionTransactionId = order.SubscriptionTransactionId;
 			model.AuthorizationTransactionResult = order.AuthorizationTransactionResult;
 			model.CaptureTransactionResult = order.CaptureTransactionResult;
+			model.StatusPayment = order.PaymentStatus;
             model.PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext);
 
             //payment method buttons
@@ -436,7 +445,9 @@ namespace SmartStore.Admin.Controllers
             model.BillingAddress.FaxEnabled = _addressSettings.FaxEnabled;
             model.BillingAddress.FaxRequired = _addressSettings.FaxRequired;
 
-            model.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext); ;
+            model.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext);
+			model.StatusShipping = order.ShippingStatus;
+
             if (order.ShippingStatus != ShippingStatus.ShippingNotRequired)
             {
                 model.IsShippable = true;
@@ -612,12 +623,13 @@ namespace SmartStore.Admin.Controllers
 
 			var customer = _workContext.CurrentCustomer;	// TODO: we need a customer representing entity instance for backend work
 			var order = _orderService.GetOrderById(orderId);
+			var currency = _currencyService.GetCurrencyByCode(order.CustomerCurrencyCode);
 
-			decimal taxRate = decimal.Zero;
-			decimal unitPriceTaxRate = decimal.Zero;
-			decimal unitPrice = _priceCalculationService.GetFinalPrice(product, null, customer, decimal.Zero, false, 1);
-			decimal unitPriceInclTax = _taxService.GetProductPrice(product, unitPrice, true, customer, out unitPriceTaxRate);
-			decimal unitPriceExclTax = _taxService.GetProductPrice(product, unitPrice, false, customer, out taxRate);
+			var taxRate = decimal.Zero;
+			var unitPriceTaxRate = decimal.Zero;
+			var unitPrice = _priceCalculationService.GetFinalPrice(product, null, customer, decimal.Zero, false, 1);
+			var unitPriceInclTax = _taxService.GetProductPrice(product, product.TaxCategoryId, unitPrice, true, customer, currency, _taxSettings.PricesIncludeTax, out unitPriceTaxRate);
+			var unitPriceExclTax = _taxService.GetProductPrice(product, product.TaxCategoryId, unitPrice, false, customer, currency, _taxSettings.PricesIncludeTax, out taxRate);
 
             var model = new OrderModel.AddOrderProductModel.ProductDetailsModel()
             {
@@ -840,9 +852,14 @@ namespace SmartStore.Admin.Controllers
 				DateTime? startDateValue = (model.StartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
 				DateTime? endDateValue = (model.EndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
+				var viaShippingMethodString = T("Admin.Order.ViaShippingMethod").Text;
+				var withPaymentMethodString = T("Admin.Order.WithPaymentMethod").Text;
+				var fromStoreString = T("Admin.Order.FromStore").Text;
 				var orderStatusIds = model.OrderStatusIds.ToIntArray();
 				var paymentStatusIds = model.PaymentStatusIds.ToIntArray();
 				var shippingStatusIds = model.ShippingStatusIds.ToIntArray();
+				var paymentMethods = new Dictionary<string, Provider<IPaymentMethod>>(StringComparer.OrdinalIgnoreCase);
+				Provider<IPaymentMethod> paymentMethod = null;
 
 				var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
 					model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
@@ -850,26 +867,72 @@ namespace SmartStore.Admin.Controllers
 				gridModel.Data = orders.Select(x =>
 				{
 					var store = _storeService.GetStoreById(x.StoreId);
-					return new OrderModel
+
+					var orderModel = new OrderModel
 					{
 						Id = x.Id,
 						OrderNumber = x.GetOrderNumber(),
-						StoreName = (store != null ? store.Name : "".NaIfEmpty()),
+						StoreName = store != null ? store.Name : "".NaIfEmpty(),
 						OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
 						OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
+						StatusOrder = x.OrderStatus,
 						PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
+						StatusPayment = x.PaymentStatus,
+						IsShippable = x.ShippingStatus != ShippingStatus.ShippingNotRequired,
 						ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
+						StatusShipping = x.ShippingStatus,
+						ShippingMethod = x.ShippingMethod.NullEmpty() ?? "".NaIfEmpty(),
 						CustomerName = x.BillingAddress.GetFullName(),
 						CustomerEmail = x.BillingAddress.Email,
 						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
 						HasNewPaymentNotification = x.HasNewPaymentNotification
 					};
+
+					orderModel.CreatedOnString = orderModel.CreatedOn.ToString("g");
+
+					if (x.PaymentMethodSystemName.HasValue())
+					{
+						if (!paymentMethods.TryGetValue(x.PaymentMethodSystemName, out paymentMethod))
+						{
+							paymentMethod = _paymentService.LoadPaymentMethodBySystemName(x.PaymentMethodSystemName);
+							paymentMethods[x.PaymentMethodSystemName] = paymentMethod;
+						}
+						if (paymentMethod != null)
+						{
+							orderModel.PaymentMethod = _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata);
+						}
+					}
+
+					if (orderModel.PaymentMethod.IsEmpty())
+					{
+						orderModel.PaymentMethod = x.PaymentMethodSystemName;
+					}
+
+					orderModel.HasPaymentMethod = orderModel.PaymentMethod.HasValue();
+
+					if (x.ShippingAddress != null && orderModel.IsShippable)
+					{
+						orderModel.ShippingAddressString = string.Concat(x.ShippingAddress.Address1, 
+							", ", x.ShippingAddress.ZipPostalCode,
+							 " ", x.ShippingAddress.City);
+
+						if (x.ShippingAddress.CountryId > 0)
+						{
+							orderModel.ShippingAddressString += ", " + x.ShippingAddress.Country.TwoLetterIsoCode;
+						}
+					}
+
+					orderModel.ViaShippingMethod = viaShippingMethodString.FormatInvariant(orderModel.ShippingMethod);
+					orderModel.WithPaymentMethod = withPaymentMethodString.FormatInvariant(orderModel.PaymentMethod);
+					orderModel.FromStore = fromStoreString.FormatInvariant(orderModel.StoreName);
+
+					return orderModel;
 				});
 
 				gridModel.Total = orders.TotalCount;
 
-				//summary report
-				//implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx
+				// Summary report.
+				// Implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx.
 				var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatusIds,
 					paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
 
@@ -1387,6 +1450,7 @@ namespace SmartStore.Admin.Controllers
             order.TaxRates = model.TaxRatesValue;
             order.OrderTax = model.TaxValue;
             order.OrderDiscount = model.OrderTotalDiscountValue;
+            order.OrderTotalRounding = model.OrderTotalRoundingValue;
             order.OrderTotal = model.OrderTotalValue;
             _orderService.UpdateOrder(order);
 
@@ -1772,9 +1836,11 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(orderId);
             var product = _productService.GetProductById(productId);
+			var currency = _currencyService.GetCurrencyByCode(order.CustomerCurrencyCode);
+			var includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
 
-            //basic properties
-            var unitPriceInclTax = decimal.Zero;
+			//basic properties
+			var unitPriceInclTax = decimal.Zero;
             decimal.TryParse(form["UnitPriceInclTax"], out unitPriceInclTax);
             var unitPriceExclTax = decimal.Zero;
             decimal.TryParse(form["UnitPriceExclTax"], out unitPriceExclTax);
@@ -1858,8 +1924,9 @@ namespace SmartStore.Admin.Controllers
 					foreach (var bundleItem in bundleItems)
 					{
 						decimal taxRate;
-						decimal finalPrice = _priceCalculationService.GetFinalPrice(bundleItem.Item.Product, bundleItems, order.Customer, decimal.Zero, true, bundleItem.Item.Quantity);
-						decimal bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(bundleItem.Item.Product, finalPrice, out taxRate);
+						var finalPrice = _priceCalculationService.GetFinalPrice(bundleItem.Item.Product, bundleItems, order.Customer, decimal.Zero, true, bundleItem.Item.Quantity);
+						var bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(bundleItem.Item.Product, bundleItem.Item.Product.TaxCategoryId, finalPrice,
+							includingTax, order.Customer, currency, _taxSettings.PricesIncludeTax, out taxRate);
 
 						bundleItem.ToOrderData(listBundleData, bundleItemSubTotalWithDiscountBase);
 					}

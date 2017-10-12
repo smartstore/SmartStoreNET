@@ -1,0 +1,32 @@
+//
+// Print optimization
+// --------------------------------------------------
+
+@media print {
+    .menubar-section,
+    .megamenu-section,
+    .shopbar-col:not(.shop-logo),
+    #content-left,
+    #content-right,
+    .cart-row-actions,
+    footer
+    {
+        display: none !important;
+    }
+
+    h1::first-letter,
+    h2::first-letter,
+    h3::first-letter,
+    h4::first-letter,
+    h5::first-letter,
+    h6::first-letter {
+        // Fixes Chrome issue: https://github.com/twbs/bootstrap/issues/21771
+        // TODO: (mc) fixed in Bootstrap Beta. Remove later!
+        margin-top: 0;
+    }
+
+    .more-less {
+        max-height: none !important;
+        .btn-text-expander { display: none !important; }
+    }
+}

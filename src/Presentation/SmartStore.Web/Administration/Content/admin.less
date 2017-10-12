@@ -47,6 +47,14 @@ a:hover {
     padding-bottom: 14px;
 }
 
+.fw-600 {
+	font-weight: 600;
+}
+
+.fw-bold {
+	font-weight: bold;
+}
+
 /* Page
 -------------------------------------------------------------- */
 
@@ -597,6 +605,12 @@ body .t-content.t-state-active {
 .dialog-content-container {
 	margin: 6px 0 2px 0;
 	padding: 5px;
+}
+
+table .multiline-grid {
+	td {
+		vertical-align: top !important;
+	}
 }
 
 
@@ -1792,4 +1806,13 @@ table.payment-method-features td {
 -------------------------------------------------------------- */
 .bootstrap-datetimepicker-widget th.switch {
   display: table-cell;
+}
+
+
+/* CKEditor skinning
+-------------------------------------------------------------- */
+
+.cke_chrome.cke_focus {
+	border-color: @blue;
+	box-shadow: none;
 }

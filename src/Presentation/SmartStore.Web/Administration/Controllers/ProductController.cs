@@ -1053,7 +1053,7 @@ namespace SmartStore.Admin.Controllers
 				if (_searchSettings.SearchFields.Contains("shortdescription"))
 					fields.Add("shortdescription");
 
-				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName, SearchMode.Contains)
+				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName)
 					.HasStoreId(model.SearchStoreId)
 					.WithLanguage(_workContext.WorkingLanguage);
 
@@ -2755,7 +2755,7 @@ namespace SmartStore.Admin.Controllers
 				if (_searchSettings.SearchFields.Contains("shortdescription"))
 					fields.Add("shortdescription");
 
-				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName, SearchMode.Contains)
+				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName)
 					.HasStoreId(model.SearchStoreId)
 					.WithLanguage(_workContext.WorkingLanguage);
 
@@ -2894,7 +2894,7 @@ namespace SmartStore.Admin.Controllers
 					.ThenBy(x => x.CustomerRoleId)
 					.Select(x =>
 					{
-					    var tierPriceModel =  new ProductModel.TierPriceModel()
+					    var tierPriceModel =  new ProductModel.TierPriceModel
 					    {
 						    Id = x.Id,
 						    StoreId = x.StoreId,
@@ -2902,9 +2902,24 @@ namespace SmartStore.Admin.Controllers
 						    ProductId = x.ProductId,
 						    Quantity = x.Quantity,
                             CalculationMethodId = (int)x.CalculationMethod,
-                            CalculationMethod = x.CalculationMethod.ToString(),
                             Price1 = x.Price
 					    };
+
+						switch (x.CalculationMethod)
+						{
+							case TierPriceCalculationMethod.Fixed:
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Fixed").Text;
+								break;
+							case TierPriceCalculationMethod.Adjustment:
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Adjustment").Text;
+								break;
+							case TierPriceCalculationMethod.Percental:
+								tierPriceModel.CalculationMethod = T("Admin.Product.Price.Tierprices.Percental").Text;
+								break;
+							default:
+								tierPriceModel.CalculationMethod = x.CalculationMethod.ToString();
+								break;
+						}
 
 						if (x.CustomerRoleId.HasValue)
 						{
@@ -3017,12 +3032,31 @@ namespace SmartStore.Admin.Controllers
         {
             var list = new List<object>
             {
-                new  { id = ((int)TierPriceCalculationMethod.Fixed).ToString(), text = T("Admin.Product.Price.Tierprices.Fixed"), selected = selectedId == (int)TierPriceCalculationMethod.Fixed },
-                new  { id = ((int)TierPriceCalculationMethod.Adjustment).ToString(), text = T("Admin.Product.Price.Tierprices.Adjustment"), selected = selectedId == (int)TierPriceCalculationMethod.Adjustment },
-                new  { id = ((int)TierPriceCalculationMethod.Percental).ToString(), text = T("Admin.Product.Price.Tierprices.Percental"), selected = selectedId == (int)TierPriceCalculationMethod.Percental }
+                new
+				{
+					id = ((int)TierPriceCalculationMethod.Fixed).ToString(),
+					text = T("Admin.Product.Price.Tierprices.Fixed").Text,
+					selected = selectedId == (int)TierPriceCalculationMethod.Fixed
+				},
+                new
+				{
+					id = ((int)TierPriceCalculationMethod.Adjustment).ToString(),
+					text = T("Admin.Product.Price.Tierprices.Adjustment").Text,
+					selected = selectedId == (int)TierPriceCalculationMethod.Adjustment
+				},
+                new
+				{
+					id = ((int)TierPriceCalculationMethod.Percental).ToString(),
+					text = T("Admin.Product.Price.Tierprices.Percental").Text,
+					selected = selectedId == (int)TierPriceCalculationMethod.Percental
+				}
             };
 
-            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult
+			{
+				Data = list,
+				JsonRequestBehavior = JsonRequestBehavior.AllowGet
+			};
         }
 
         #endregion
@@ -3267,7 +3301,7 @@ namespace SmartStore.Admin.Controllers
 						Id = x.Id,
 						ProductVariantAttributeId = x.ProductVariantAttributeId,
 						Name = x.Name,
-						NameString = x.Color.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.Color),
+						NameString = Server.HtmlEncode(x.Color.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.Color)),
 						Alias = x.Alias,
 						Color = x.Color,
                         PictureId = x.PictureId,
@@ -3614,54 +3648,34 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				// TODO: Replace ProductModel.ProductVariantAttributeCombinationModel by AddProductVariantAttributeCombinationModel
-				// when there's no grid-inline-editing anymore.
-
+				var customer = _workContext.CurrentCustomer;
 				var product = _productService.GetProductById(productId);
-
 				var allCombinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id, command.Page - 1, command.PageSize);
-
-				var productUrlTitle = _localizationService.GetResource("Common.OpenInShop");
+				var productUrlTitle = T("Common.OpenInShop");
 				var productSeName = product.GetSeName();
+
+				_productAttributeParser.PrefetchProductVariantAttributes(allCombinations.Select(x => x.AttributesXml));
 
 				var productVariantAttributesModel = allCombinations.Select(x =>
 				{
 					var pvacModel = x.ToModel();
-					PrepareProductAttributeCombinationModel(pvacModel, x, product, true);
-
-					pvacModel.ProductUrl = _productUrlHelper.GetProductUrl(product.Id, productSeName, x.AttributesXml);
+					pvacModel.ProductId = product.Id;
 					pvacModel.ProductUrlTitle = productUrlTitle;
+					pvacModel.ProductUrl = _productUrlHelper.GetProductUrl(product.Id, productSeName, x.AttributesXml);					
+					pvacModel.AttributesXml = _productAttributeFormatter.FormatAttributes(product, x.AttributesXml, customer, "<br />", true, true, true, false);
 
-					try
-					{
-						var firstAttribute = _productAttributeParser.DeserializeProductVariantAttributes(x.AttributesXml).FirstOrDefault();
+					// Not really necessary here:
+					//var warnings = _shoppingCartService.GetShoppingCartItemAttributeWarnings(
+					//		customer,
+					//		ShoppingCartType.ShoppingCart,
+					//		x.Product,
+					//		x.AttributesXml,
+					//		combination: x);
 
-						var attribute = x.Product.ProductVariantAttributes.FirstOrDefault(y => y.Id == firstAttribute.Key);
-						var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(y => y.Id == firstAttribute.Value.First().ToInt());
-
-						pvacModel.DisplayOrder = attributeValue.DisplayOrder;
-					}
-					catch (Exception exc)
-					{
-						exc.Dump();
-					}
-
-					//if (x.IsDefaultCombination)
-					//	pvacModel.AttributesXml = "<b>{0}</b>".FormatWith(pvacModel.AttributesXml);
-
-					//warnings
-					var warnings = _shoppingCartService.GetShoppingCartItemAttributeWarnings(
-							_workContext.CurrentCustomer,
-							ShoppingCartType.ShoppingCart,
-							x.Product,
-							x.AttributesXml,
-							combination: x);
-
-					pvacModel.Warnings.AddRange(warnings);
+					//pvacModel.Warnings.AddRange(warnings);
 
 					return pvacModel;
 				})
-				.OrderBy(x => x.DisplayOrder)
 				.ToList();
 
 				model.Data = productVariantAttributesModel;

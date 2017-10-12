@@ -44,11 +44,11 @@
 
 	$('.artlist-actions').on('change', '.artlist-action-select', function (e) {
 		var select = $(this),
-			qName = select.data('qname'),
+			qname = select.data('qname'),
 			url = select.data('url'),
 			val = select.val();
 
-		var url = window.modifyUrl(url, qName, val);
+		var url = window.modifyUrl(url, qname, val);
 
 		window.setLocation(url);
 	});

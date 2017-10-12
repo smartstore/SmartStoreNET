@@ -631,7 +631,7 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected bool GetValueFor<T>(string key, out T value)
 		{
-			var strValue = _httpContext.Request?.Form?[key] ?? _httpContext.Request?.QueryString?[key];
+			var strValue = _httpContext.Request?.Unvalidated.Form?[key] ?? _httpContext.Request?.Unvalidated.QueryString?[key];
 
 			if (strValue != null)
 			{

@@ -27,12 +27,12 @@
 
                     @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
                     {
-                        <div class="cart-item-desc text-smaller text-muted">
+                        <div class="cart-item-desc fs-sm text-muted">
                             @Html.Raw(item.ShortDesc.Truncate(180, "..."))
                         </div>
                     }
 
-                    <div class="cart-item-attributes text-smaller my-2">
+                    <div class="cart-item-attributes fs-sm my-2">
                         <div class="text-nowrap row cart-item-attr d-none d-md-flex d-lg-none">
                             <span class="col-3">@T("Order.Product(s).Price"):</span>
                             <span class="col-9">@item.UnitPrice</span>
@@ -49,7 +49,7 @@
 
                     @if (!String.IsNullOrEmpty(item.AttributeInfo))
                     {
-                        <div class="attributes text-muted text-smaller mb-2">
+                        <div class="attributes text-muted fs-sm mb-2">
                             @Html.Raw(item.AttributeInfo)
                         </div>
                     }
@@ -76,7 +76,7 @@
                             </a>
                             @if (Model.DisplayAddToCart)
                             {
-                                <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
+                                <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.AddToCart")"
                                    href="#"
                                    rel="nofollow"
                                    data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.Wishlist, isCartPage = true })"
@@ -161,7 +161,7 @@
                                 </div>
                                 @if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
                                 {
-                                    <div class="bundle-item-description cart-item-desc text-smaller text-muted">
+                                    <div class="bundle-item-description cart-item-desc fs-sm text-muted">
                                         @Html.Raw(item.ShortDesc.Truncate(210, "..."))
                                     </div>
                                 }

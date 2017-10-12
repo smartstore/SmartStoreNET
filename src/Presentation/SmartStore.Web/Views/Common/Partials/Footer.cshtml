@@ -152,6 +152,11 @@
 								<li><a class="footer-link" href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
 							}
 
+                            @if (Model.DisplayLoginLink)
+                            {
+                                <li><a class="footer-link" href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })">@T("Account.Login")</a></li>
+                            }
+
                             @{ Html.RenderWidget("footer_col_3_after"); }
 
 						</ul>

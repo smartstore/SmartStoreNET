@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Tax
 {
@@ -222,7 +223,7 @@ namespace SmartStore.Services.Tax
         /// <param name="percent">Percent</param>
         /// <param name="increase">Increase</param>
         /// <returns>New price</returns>
-        protected decimal CalculatePrice(decimal price, decimal percent, bool increase)
+        protected decimal CalculatePrice(decimal price, decimal percent, bool increase, Currency currency)
         {
             decimal result = decimal.Zero;
             if (percent == decimal.Zero)
@@ -234,16 +235,12 @@ namespace SmartStore.Services.Tax
             }
             else
 			{
-				if (_cartSettings.RoundPricesDuringCalculation)
-				{
-					// Gross > Net RoundFix
-					result = price - Math.Round((price) / (100 + percent) * percent, 2);
-				}
-				else
-				{
-					result = price - (price) / (100 + percent) * percent;
-				}
+				var decreaseValue = (price) / (100 + percent) * percent;
+                result = price - decreaseValue;
 			}
+
+            // Gross > Net RoundFix
+            result = result.RoundIfEnabledFor(currency);
             return result;
         }
 
@@ -379,11 +376,9 @@ namespace SmartStore.Services.Tax
         /// <param name="price">Price</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        public virtual decimal GetProductPrice(Product product, decimal price,
-            out decimal taxRate)
+        public virtual decimal GetProductPrice(Product product, decimal price, out decimal taxRate)
         {
-            var customer = _workContext.CurrentCustomer;
-            return GetProductPrice(product, price, customer, out taxRate);
+            return GetProductPrice(product, price, _workContext.CurrentCustomer, out taxRate);
         }
 
         /// <summary>
@@ -394,49 +389,58 @@ namespace SmartStore.Services.Tax
         /// <param name="customer">Customer</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        public virtual decimal GetProductPrice(Product product, decimal price,
-            Customer customer, out decimal taxRate)
+        public virtual decimal GetProductPrice(Product product, decimal price, Customer customer, out decimal taxRate)
         {
-            bool includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+            var includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+
             return GetProductPrice(product, price, includingTax, customer, out taxRate);
         }
 
-        /// <summary>
-        /// Gets price
-        /// </summary>
-		/// <param name="product">Product</param>
-        /// <param name="price">Price</param>
-        /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
-        /// <param name="customer">Customer</param>
-        /// <param name="taxRate">Tax rate</param>
-        /// <returns>Price</returns>
-        public virtual decimal GetProductPrice(Product product, decimal price,
-            bool includingTax, Customer customer, out decimal taxRate)
-        {
-            bool priceIncludesTax = _taxSettings.PricesIncludeTax;
-            int taxCategoryId = product.TaxCategoryId; // 0; // (VATFIX)
-            return GetProductPrice(product, taxCategoryId, price, includingTax,
-                customer, priceIncludesTax, out taxRate);
-        }
+		public virtual decimal GetProductPrice(Product product, decimal price, Customer customer, Currency currency, out decimal taxRate)
+		{
+			var includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+			var priceIncludesTax = _taxSettings.PricesIncludeTax;
+			var taxCategoryId = product.TaxCategoryId; // 0; // (VATFIX)
 
-        /// <summary>
-        /// Gets price
-        /// </summary>
+			return GetProductPrice(product, taxCategoryId, price, includingTax, customer, currency, priceIncludesTax, out taxRate);
+		}
+
+		/// <summary>
+		/// Gets price
+		/// </summary>
 		/// <param name="product">Product</param>
-        /// <param name="taxCategoryId">Tax category identifier</param>
-        /// <param name="price">Price</param>
-        /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
-        /// <param name="customer">Customer</param>
-        /// <param name="priceIncludesTax">A value indicating whether price already includes tax</param>
-        /// <param name="taxRate">Tax rate</param>
-        /// <returns>Price</returns>
-        public virtual decimal GetProductPrice(
+		/// <param name="price">Price</param>
+		/// <param name="includingTax">A value indicating whether calculated price should include tax</param>
+		/// <param name="customer">Customer</param>
+		/// <param name="taxRate">Tax rate</param>
+		/// <returns>Price</returns>
+		public virtual decimal GetProductPrice(Product product, decimal price, bool includingTax, Customer customer, out decimal taxRate)
+        {
+            var priceIncludesTax = _taxSettings.PricesIncludeTax;
+            var taxCategoryId = product.TaxCategoryId; // 0; // (VATFIX)
+
+            return GetProductPrice(product, taxCategoryId, price, includingTax, customer, _workContext.WorkingCurrency, priceIncludesTax, out taxRate);
+		}
+
+		/// <summary>
+		/// Gets price
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="taxCategoryId">Tax category identifier</param>
+		/// <param name="price">Price</param>
+		/// <param name="includingTax">A value indicating whether calculated price should include tax</param>
+		/// <param name="customer">Customer</param>
+		/// <param name="priceIncludesTax">A value indicating whether price already includes tax</param>
+		/// <param name="taxRate">Tax rate</param>
+		/// <returns>Price</returns>
+		public virtual decimal GetProductPrice(
 			Product product, 
 			int taxCategoryId,
             decimal price, 
 			bool includingTax, 
 			Customer customer,
-            bool priceIncludesTax, 
+			Currency currency,
+			bool priceIncludesTax, 
 			out decimal taxRate)
         {
 			// don't calculate if price is 0
@@ -453,7 +457,7 @@ namespace SmartStore.Services.Tax
             {
                 if (!includingTax)
                 {
-                    price = CalculatePrice(price, taxRate, false);
+                    price = CalculatePrice(price, taxRate, false, currency);
                 }
             }
             // Admin: NET prices
@@ -461,7 +465,7 @@ namespace SmartStore.Services.Tax
             {
                 if (includingTax)
                 {
-                    price = CalculatePrice(price, taxRate, true);
+                    price = CalculatePrice(price, taxRate, true, currency);
                 }
             }
 
@@ -505,6 +509,7 @@ namespace SmartStore.Services.Tax
 				price,
 				includingTax,
 				customer,
+				_workContext.WorkingCurrency,
 				_taxSettings.ShippingPriceIncludesTax,
 				out taxRate);
 
@@ -543,6 +548,7 @@ namespace SmartStore.Services.Tax
 				price,
 				includingTax,
 				customer,
+				_workContext.WorkingCurrency,
 				_taxSettings.PaymentMethodAdditionalFeeIncludesTax,
 				out taxRate);
 
@@ -604,17 +610,16 @@ namespace SmartStore.Services.Tax
 
             taxRate = decimal.Zero;
 
-            bool priceIncludesTax = _taxSettings.PricesIncludeTax;
+            var priceIncludesTax = _taxSettings.PricesIncludeTax;
+			var taxClassId = cav.CheckoutAttribute.TaxCategoryId;
+			var price = cav.PriceAdjustment;
 
-            decimal price = cav.PriceAdjustment;
             if (cav.CheckoutAttribute.IsTaxExempt)
             {
                 return price;
             }
 
-            int taxClassId = cav.CheckoutAttribute.TaxCategoryId;
-            return GetProductPrice(null, taxClassId, price, includingTax, customer,
-                priceIncludesTax, out taxRate);
+            return GetProductPrice(null, taxClassId, price, includingTax, customer, _workContext.WorkingCurrency, priceIncludesTax, out taxRate);
         }
 
 

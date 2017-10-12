@@ -474,14 +474,7 @@ namespace SmartStore.AmazonPay.Services
 				{
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, AmazonPayPlugin.SystemName, store.Id);
 
-					decimal orderTotalDiscountAmountBase = decimal.Zero;
-					Discount orderTotalAppliedDiscount = null;
-					List<AppliedGiftCard> appliedGiftCards = null;
-					int redeemedRewardPoints = 0;
-					decimal redeemedRewardPointsAmount = decimal.Zero;
-
-					decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart,
-						out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
+					decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart);
 					if (shoppingCartTotalBase.HasValue)
 					{
 						var client = CreateClient(settings);

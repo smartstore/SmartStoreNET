@@ -80,7 +80,10 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturersInOffCanvas")]
         public bool ShowManufacturersInOffCanvas { get; set; }
-        
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.MaxItemsToDisplayInCatalogMenu")]
+        public int MaxItemsToDisplayInCatalogMenu { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ManufacturerItemsToDisplayOnHomepage")]
         public int ManufacturerItemsToDisplayOnHomepage { get; set; }
 

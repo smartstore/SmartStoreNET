@@ -304,8 +304,7 @@ namespace SmartStore.Web.Controllers
 			{
 				throw new ArgumentException(T("Products.NotFound", productId));
 			}
-				
-
+			
 			if (!product.HasTierPrices)
 			{
 				// No tier prices

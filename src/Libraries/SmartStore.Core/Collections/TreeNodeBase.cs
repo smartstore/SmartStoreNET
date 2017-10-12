@@ -14,7 +14,7 @@ namespace SmartStore.Collections
 		private int? _depth = null;
 		private int _index = -1;
 
-		private IDictionary<string, object> _metadata;
+		protected IDictionary<string, object> _metadata;
 		private readonly static ContextState<Dictionary<string, object>> _contextState = new ContextState<Dictionary<string, object>>("TreeNodeBase.ThreadMetadata");
 
 		public TreeNodeBase()

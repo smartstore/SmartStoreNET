@@ -65,7 +65,7 @@ namespace SmartStore.Web.Controllers
 			return PartialView(model);
 		}
 
-		[HttpPost]
+		[HttpPost, ValidateInput(false)]
 		public ActionResult InstantSearch(CatalogSearchQuery query)
 		{		
 			if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)

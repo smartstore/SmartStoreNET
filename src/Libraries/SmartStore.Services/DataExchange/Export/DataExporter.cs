@@ -40,6 +40,7 @@ using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
+using SmartStore.Core.Domain.Tax;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -91,6 +92,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<CustomerSettings> _customerSettings;
 		private readonly Lazy<CatalogSettings> _catalogSettings;
 		private readonly Lazy<LocalizationSettings> _localizationSettings;
+		private readonly Lazy<TaxSettings> _taxSettings;
 
 		public DataExporter(
 			ICommonServices services,
@@ -132,7 +134,8 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<ContactDataSettings> contactDataSettings,
 			Lazy<CustomerSettings> customerSettings,
 			Lazy<CatalogSettings> catalogSettings,
-			Lazy<LocalizationSettings> localizationSettings)
+			Lazy<LocalizationSettings> localizationSettings,
+			Lazy<TaxSettings> taxSettings)
 		{
 			_services = services;
 			_dbContext = dbContext;
@@ -176,6 +179,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_customerSettings = customerSettings;
 			_catalogSettings = catalogSettings;
 			_localizationSettings = localizationSettings;
+			_taxSettings = taxSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -310,7 +314,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private IExportDataSegmenterProvider CreateSegmenter(DataExporterContext ctx, int pageIndex = 0)
 		{
 			var offset = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * PageSize);
-			var limit = (ctx.IsPreview ? PageSize : Math.Max(ctx.Request.Profile.Limit, 0));
+			var limit = Math.Max(ctx.Request.Profile.Limit, 0);
 			var recordsPerSegment = (ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0));
 			var totalCount = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
 			

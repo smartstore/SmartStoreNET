@@ -489,6 +489,12 @@
 	<LocaleResource Name="Account.PasswordRecovery.Tooltip">
 		<Value>Bitte geben Sie Ihre E-Mail-Adresse ein. Sie erhalten eine E-Mail, um das Passwort zurückzusetzen.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Account.PasswordRecoveryConfirm.InvalidEmail">
+		<Value>Diese Emailadresse konnte keinen Kundenkonto zugeordnet werden. Bitte rufen Sie den an Sie versendeten Link erneut auf.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Account.PasswordRecoveryConfirm.InvalidToken">
+		<Value>Das verwendete Token scheint nicht korrekt zu sein. Bitte rufen Sie den Link erneut auf.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Account.Preferences">
 		<Value>Sonstiges</Value>
 	</LocaleResource>
@@ -3067,6 +3073,9 @@
 	<LocaleResource Name="Admin.Catalog.Products.TierPrices">
 		<Value>Staffelpreise</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.TierPrices.Fields.CalculationMethod">
+		<Value>Berechnungsmethode</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.TierPrices.Fields.CustomerRole">
 		<Value>Kundengruppe</Value>
 	</LocaleResource>
@@ -3074,7 +3083,7 @@
 		<Value>Alle Kundengruppen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.TierPrices.Fields.Price">
-		<Value>Preis</Value>
+		<Value>Wert</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.TierPrices.Fields.Quantity">
 		<Value>Menge</Value>
@@ -4588,6 +4597,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowAnonymousUsersToReviewProduct.Hint">
 		<Value>Legt fest, ob Gäste Produktbewertungen verfassen dürfen.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowDifferingEmailAddressForEmailAFriend">
+		<Value>Abweichende Emailadresse für Tell A Friend zulassen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowDifferingEmailAddressForEmailAFriend.Hint">
+		<Value>Bestimmt ob Kunden gestattet ist eine Emailadresse anzugeben, welche von der abweicht mit der sie sich im Shop registriert haben.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowProductSorting">
 		<Value>Produktsortierung zulassen</Value>
 	</LocaleResource>
@@ -4599,6 +4614,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowProductViewModeChanging.Hint">
 		<Value>Legt fest, ob der Ansichtsmodus verändert werden kann.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ApplyTierPricePercentageToAttributePriceAdjustments">
+		<Value>Prozentuale Ermäßigungen von Staffelpreisen auf Auf- &amp; Abpreise von Attributen anwenden</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ApplyTierPricePercentageToAttributePriceAdjustments.Hint">
+		<Value>Bestimmt ob prozentuale Ermäßigungen von Staffelpreisen auf Auf- &amp; Abpreise von Attributen angewendet werden sollen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AskQuestionEnabled">
 		<Value>'Produktanfragen' ermöglichen</Value>
@@ -7964,6 +7985,9 @@
 	<LocaleResource Name="Admin.ContentManagement.Topics.BackToList">
 		<Value>Zurück zur Übersicht</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Topics.CannotBeDeleted">
+		<Value>Diese Seite wird von Ihrem Shop benötigt und kann daher nicht gelöscht werden.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Deleted">
 		<Value>Die Seite wurde gelöscht</Value>
 	</LocaleResource>
@@ -9662,6 +9686,9 @@
 	<LocaleResource Name="Admin.GiftCards.Updated">
 		<Value>Der Geschenkgutschein wurde erfolgreich bearbeitet.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Header.Account">
+		<Value>Account</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Header.ClearCache">
 		<Value>Cache löschen</Value>
 	</LocaleResource>
@@ -10834,6 +10861,15 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.Manage">
 		<Value>Plugins verwalten</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Product.Price.Tierprices.Adjustment">
+		<Value>Auf-/Abpreis</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Product.Price.Tierprices.Fixed">
+		<Value>Fester Wert</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Product.Price.Tierprices.Percental">
+		<Value>Prozentual</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Products.BasePrice.Hint">
 		<Value>Bitte beachten Sie, dass der tatsächliche Grundpreis von verschiedenen Faktoren abhängig ist und erst im Shop zuverlässig berechnet werden kann.</Value>
@@ -13461,6 +13497,12 @@
 	<LocaleResource Name="Customer.Guest">
 		<Value>Gast</Value>
 	</LocaleResource>
+	<LocaleResource Name="Customer.UserAgreement.OrderItemNotFound">
+		<Value>Die entsprechende Auftragsposition konnte nicht gefunden werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Customer.UserAgreement.ProductNotFound">
+		<Value>Das entsprechende Produkt konnte nicht gefunden werden.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Disclaimer">
 		<Value>Rechtshinweise</Value>
 	</LocaleResource>
@@ -15484,6 +15526,9 @@
 	<LocaleResource Name="Products.AskQuestion.Sent">
 		<Value>Vielen Dank. Ihre Anfage wurde erfolgreich gesendet.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Products.AskQuestion.Short">
+		<Value>Fragen?</Value>
+	</LocaleResource>
 	<LocaleResource Name="Products.AskQuestion.Title">
 		<Value>Frage zum Artikel</Value>
 	</LocaleResource>
@@ -16207,6 +16252,9 @@
 	<LocaleResource Name="ShoppingCart.AddToWishlist">
 		<Value>Auf die Wunschliste</Value>
 	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.AddToWishlist.Short">
+		<Value>Merken</Value>
+	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.AllowedQuantities">
 		<Value>Erlaubte Mengen für dieses Produkt: {0}</Value>
 	</LocaleResource>
@@ -16461,6 +16509,12 @@
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.RequiredProductWarning">
 		<Value>Dieses Produkt erfordert, dass das folgende Produkt auch bestellt wird: {0}.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.RewardPoints">
+		<Value>Bonuspunkte</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.RewardPoints.Button">
+		<Value>Anwenden</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.SelectAttribute">
 		<Value>Bitte '{0}' auswählen.</Value>

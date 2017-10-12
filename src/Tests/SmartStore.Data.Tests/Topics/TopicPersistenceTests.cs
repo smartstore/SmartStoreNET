@@ -13,6 +13,7 @@ namespace SmartStore.Data.Tests.Topics
             var topic = new Topic
             {
                 SystemName = "SystemName 1",
+                IsSystemTopic = false,
                 IncludeInSitemap = true,
                 IsPasswordProtected = true,
                 Password = "password",

@@ -67,7 +67,7 @@ namespace SmartStore.Web.Framework.UI
 
 			string link = "<a href=\"{0}<#= Id #>\"><#= OrderNumber #></a>".FormatInvariant(url);
 
-			string label = "<span class='label label-smnet label-info' title='{0}'>{1}</span>".FormatInvariant(
+			string label = "<span class='label label-smnet label-warning' title='{0}'>{1}</span>".FormatInvariant(
 				localize.GetResource("Admin.Orders.Payments.NewIpn.Hint"),
 				localize.GetResource("Admin.Orders.Payments.NewIpn"));
 

@@ -25,12 +25,12 @@ namespace SmartStore.Core.Search
 		{
 		}
 
-		public SearchQuery(string field, string term, SearchMode mode = SearchMode.StartsWith, bool escape = false, bool isFuzzySearch = false)
+		public SearchQuery(string field, string term, SearchMode mode = SearchMode.Contains, bool escape = false, bool isFuzzySearch = false)
 			: base(field.HasValue() ? new[] { field } : null, term, mode, escape, isFuzzySearch)
 		{
 		}
 
-		public SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.StartsWith, bool escape = false, bool isFuzzySearch = false)
+		public SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.Contains, bool escape = false, bool isFuzzySearch = false)
 			: base(fields, term, mode, escape, isFuzzySearch)
 		{
 		}
@@ -41,7 +41,7 @@ namespace SmartStore.Core.Search
 		private readonly Dictionary<string, FacetDescriptor> _facetDescriptors;
 		private Dictionary<string, object> _customData;
 
-		protected SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.StartsWith, bool escape = false, bool isFuzzySearch = false)
+		protected SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.Contains, bool escape = false, bool isFuzzySearch = false)
 		{
 			Fields = fields;
 			Term = term;

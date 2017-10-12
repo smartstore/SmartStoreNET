@@ -63,14 +63,7 @@
             	var result = data.result;
 
             	if (result.downloadGuid) {
-            		elHidden.val(result.downloadGuid);
-
-            		var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + result.downloadGuid;
-            		var fileName = data.files[0].name;
-            		var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
-
-            		elFile.html(fileLink).removeClass("d-none");
-            		elRemove.show();
+            		setUploadedFile(result.downloadGuid, data.files[0].name);
             	}
 
             	if (result.message) {
@@ -86,9 +79,23 @@
 
         elRemove.click(function (e) {
             elFile.html("").addClass("d-none");
-            elHidden.val(0);
+            elHidden.val('');
             $(this).hide();
             e.preventDefault();
         });
+
+        setUploadedFile('@Model.UploadedFileGuid', '@Model.UploadedFileName');
+
+        function setUploadedFile(downloadGuid, fileName) {
+        	if (!_.isEmpty(downloadGuid) && downloadGuid !== '0') {
+        		elHidden.val(downloadGuid);
+
+        		var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + downloadGuid;
+        		var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
+
+        		elFile.html(fileLink).removeClass("d-none");
+        		elRemove.show();
+        	}
+        }
     });
 </script>

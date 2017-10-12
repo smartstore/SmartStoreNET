@@ -50,6 +50,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.UI.Captcha;
 using Telerik.Web.Mvc;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -80,8 +81,9 @@ namespace SmartStore.Admin.Controllers
 		private readonly IPluginFinder _pluginFinder;
 		private readonly IMediaMover _mediaMover;
 		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
+        private readonly Lazy<ISiteMapService> _siteMapService;
 
-		private StoreDependingSettingHelper _storeDependingSettings;
+        private StoreDependingSettingHelper _storeDependingSettings;
 		private IDisposable _settingsWriteBatch;
 
 		#endregion
@@ -110,7 +112,8 @@ namespace SmartStore.Admin.Controllers
 			PluginMediator pluginMediator,
 			IPluginFinder pluginFinder,
 			IMediaMover mediaMover,
-			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper)
+			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
+            Lazy<ISiteMapService> siteMapService)
         {
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
@@ -134,6 +137,7 @@ namespace SmartStore.Admin.Controllers
 			_pluginFinder = pluginFinder;
 			_mediaMover = mediaMover;
 			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
+            _siteMapService = siteMapService;
         }
 
 		#endregion
@@ -645,7 +649,16 @@ namespace SmartStore.Admin.Controllers
             // Load settings for a chosen store scope
             var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			var catalogSettings = _services.Settings.LoadSetting<CatalogSettings>(storeScope);
-			catalogSettings = model.ToEntity(catalogSettings);
+
+            // if the setting MaxItemsToDisplayInCatalogMenu has changed we need to clear the sitemap cache 
+            if (catalogSettings.MaxItemsToDisplayInCatalogMenu != model.MaxItemsToDisplayInCatalogMenu)
+            {
+                // clear cached navigation model
+                var siteMap = _siteMapService.Value.GetSiteMap("catalog");
+                siteMap.ClearCache();
+            }
+
+            catalogSettings = model.ToEntity(catalogSettings);
 
 			StoreDependingSettings.UpdateSettings(catalogSettings, form, storeScope, _services.Settings);
 

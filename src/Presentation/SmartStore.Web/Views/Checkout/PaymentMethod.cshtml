@@ -60,7 +60,7 @@
 									 data-system-name="@paymentMethod.PaymentMethodSystemName">
 									@if (paymentMethod.Selected && !ViewData.ModelState.IsValid)
 									{
-										<div id="payment-info-validation-summary alert alert-danger">
+										<div id="payment-info-validation-summary">
 											@Html.ValidationSummary(false)
 										</div>
 									}

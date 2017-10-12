@@ -513,6 +513,18 @@
     <Compile Include="Migrations\201708251628482_SystemTopics.Designer.cs">
       <DependentUpon>201708251628482_SystemTopics.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709141000226_V303Resources.cs" />
+    <Compile Include="Migrations\201709141000226_V303Resources.Designer.cs">
+      <DependentUpon>201709141000226_V303Resources.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201709251538312_UpdateTrustedShopsTask.cs" />
+    <Compile Include="Migrations\201709251538312_UpdateTrustedShopsTask.Designer.cs">
+      <DependentUpon>201709251538312_UpdateTrustedShopsTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201710102038287_CurrencyRounding.cs" />
+    <Compile Include="Migrations\201710102038287_CurrencyRounding.Designer.cs">
+      <DependentUpon>201710102038287_CurrencyRounding.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -933,6 +945,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708251628482_SystemTopics.resx">
       <DependentUpon>201708251628482_SystemTopics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709141000226_V303Resources.resx">
+      <DependentUpon>201709141000226_V303Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709251538312_UpdateTrustedShopsTask.resx">
+      <DependentUpon>201709251538312_UpdateTrustedShopsTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710102038287_CurrencyRounding.resx">
+      <DependentUpon>201710102038287_CurrencyRounding.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

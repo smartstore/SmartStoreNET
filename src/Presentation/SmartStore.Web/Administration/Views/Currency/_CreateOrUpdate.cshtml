@@ -1,18 +1,21 @@
-﻿@model CurrencyModel
-
+﻿@using SmartStore.Core.Domain.Directory;
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
-
+@model CurrencyModel
 @{
     var availableDomainEndings = Model.AvailableDomainEndings.Select(x => x.Value).ToArray();
-    for (int i = 0; i < availableDomainEndings.Length; i++)
+    for (var i = 0; i < availableDomainEndings.Length; i++)
     {
         availableDomainEndings[i] = availableDomainEndings[i].EncodeJsString();
     }
-    ViewBag.SerializedDomainEndings = String.Join(",", availableDomainEndings);
+    ViewBag.SerializedDomainEndings = string.Join(",", availableDomainEndings);
 }
 
-@Html.ValidationSummary(true)
+@if (!ViewData.ModelState.IsValid)
+{
+    @Html.ValidationSummary(false)
+}
+
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("currency-edit").Items(x =>
 {
@@ -30,6 +33,14 @@
 
             var domainEndings = $("#@Html.FieldIdFor(x => x.DomainEndings)");
             domainEndings.select2({ tags: [@(Html.Raw(ViewBag.SerializedDomainEndings))] });
+
+            $('#@(Html.FieldIdFor(x => x.RoundOrderItemsEnabled))').change(function () {
+                $('tr.round-order-items').toggle($(this).is(':checked'));
+            }).trigger('change');
+
+            $('#@(Html.FieldIdFor(x => x.RoundOrderTotalEnabled))').change(function () {
+                $('tr.round-order-total').toggle($(this).is(':checked'));
+            }).trigger('change');
 
         });
     </script>
@@ -178,6 +189,93 @@
 		</td>
 	</tr>
 </table>
+
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Common.Round")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderItemsEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundOrderItemsEnabled)
+                @Html.ValidationMessageFor(model => model.RoundOrderItemsEnabled)
+            </td>
+        </tr>
+        <tr class="round-order-items">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundNumDecimals)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundNumDecimals, new { Small = true })
+                @Html.ValidationMessageFor(model => model.RoundNumDecimals)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotalEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundOrderTotalEnabled)
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalEnabled)
+            </td>
+        </tr>
+        <tr class="round-order-total">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotalDenominator)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.RoundOrderTotalDenominator, new List<SelectListItem>
+                {
+                    new SelectListItem { Text = 0.05.ToString("F"), Value = 0.05.ToString("F") },
+                    new SelectListItem { Text = 0.10.ToString("F"), Value = 0.10.ToString("F") },
+                    new SelectListItem { Text = 0.50.ToString("F"), Value = 0.50.ToString("F") },
+                    new SelectListItem { Text = 1.00.ToString("F"), Value = 1.00.ToString("F") }
+                }, new { @class = "autowidth", @style = "width: 150px" })
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalDenominator)
+            </td>
+        </tr>
+        <tr class="round-order-total">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotalRule)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.RoundOrderTotalRule, Model.RoundOrderTotalRule.ToSelectList())
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalRule)
+            </td>
+        </tr>
+        <tr class="round-order-total">
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
+                
+                @if (Model.RoundOrderTotalPaymentMethods.Any())
+                {
+                    <div class="alert alert-info">
+                        <span>@T("Admin.Configuration.Currencies.PaymentMethodsEnabledRoundingList"):</span>
+                        @foreach (var paymentMethod in Model.RoundOrderTotalPaymentMethods)
+                        {
+                            <span style="padding-right: 5px">
+                                <a href="@Url.Action("Edit", "Payment", new { systemName = paymentMethod.Key })">@paymentMethod.Value</a>
+                            </span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        @Html.Raw(T("Admin.Configuration.Currencies.NoPaymentMethodsEnabledRounding").Text.FormatInvariant(Url.Action("Providers", "Payment")))
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
 }
 
 @helper TabStores()

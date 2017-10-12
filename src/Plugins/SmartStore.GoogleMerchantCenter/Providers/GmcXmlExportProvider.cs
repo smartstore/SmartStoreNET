@@ -192,7 +192,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 		protected override void Export(ExportExecuteContext context)
 		{
-			dynamic currency = context.Currency;
+			Currency currency = context.Currency.Entity;
 			var languageId = (int)context.Language.Id;
 			var measureWeightSystemKey = "";
 			var dateFormat = "yyyy-MM-ddTHH:mmZ";
@@ -248,7 +248,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							string condition = "new";
 							string availability = "in stock";
 
-							var combinationValues = product._AttributeCombinationValues as IList<ProductVariantAttributeValue>;
+							var combinationValues = product._AttributeCombinationValues as ICollection<ProductVariantAttributeValue>;
 							var mappedValues = (combinationValues != null ? combinationValues.GetMappedValuesFromAlias("gmc", languageId) : null);								
 
 							var specialPrice = product._FutureSpecialPrice as decimal?;
@@ -342,7 +342,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 							if (config.SpecialPrice && specialPrice.HasValue)
 							{
-								WriteString(writer, "sale_price", specialPrice.Value.FormatInvariant() + " " + (string)currency.CurrencyCode);
+								WriteString(writer, "sale_price", string.Concat(specialPrice.Value.FormatInvariant(), " ", currency.CurrencyCode));
 
 								if (entity.SpecialPriceStartDateTimeUtc.HasValue && entity.SpecialPriceEndDateTimeUtc.HasValue)
 								{
@@ -355,7 +355,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								price = (product._RegularPrice as decimal?) ?? price;
 							}
 
-							WriteString(writer, "price", price.FormatInvariant() + " " + (string)currency.CurrencyCode);
+							WriteString(writer, "price", string.Concat(price.FormatInvariant(), " ", currency.CurrencyCode));
 
 							WriteString(writer, "gtin", gtin);
 							WriteString(writer, "brand", brand);

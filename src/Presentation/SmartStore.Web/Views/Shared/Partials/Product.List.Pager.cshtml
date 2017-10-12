@@ -92,17 +92,17 @@
 				}
 				@if (start > 3)
 				{
-					<option value="1" @Html.Attr("selected", "selected", 1 == pageable.PageNumber)>Seite 1 von @pageCount</option>
+					<option value="1" @Html.Attr("selected", "selected", 1 == pageable.PageNumber)>@T("Pager.PageXOfY", 1, pageCount)</option>
 					<option disabled="disabled">...</option>
 				}
 				@for (var i = start; i <= end; i++)
 				{
-					<option value="@i" @Html.Attr("selected", "selected", i == pageable.PageNumber)>Seite @i von @pageCount</option>
+					<option value="@i" @Html.Attr("selected", "selected", i == pageable.PageNumber)>@T("Pager.PageXOfY", i, pageCount)</option>
 				}
 				@if (end < (pageCount - 3))
 				{
 					<option disabled="disabled">...</option>
-					<option value="@pageCount" @Html.Attr("selected", "selected", pageCount == pageable.PageNumber)>Seite @pageCount von @pageCount</option>
+					<option value="@pageCount" @Html.Attr("selected", "selected", pageCount == pageable.PageNumber)>@T("Pager.PageXOfY", pageCount, pageCount)</option>
 				}
 			</select>
 		</div>

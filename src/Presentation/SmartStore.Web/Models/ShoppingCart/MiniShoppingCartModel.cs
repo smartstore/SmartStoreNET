@@ -23,6 +23,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         public bool AnonymousCheckoutAllowed { get; set; }
         public bool ShowProductImages { get; set; }
         public int ThumbSize { get; set; }
+        public bool DisplayMoveToWishlistButton { get; set; }
 
         #region Nested Classes
 

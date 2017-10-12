@@ -19,6 +19,7 @@ namespace SmartStore.Web.Models.Common
         public bool RecentlyViewedProductsEnabled { get; set; }
         public bool CompareProductsEnabled { get; set; }
         public bool ManufacturerEnabled { get; set; }
+        public bool DisplayLoginLink { get; set; }
 
         public bool ShowSocialLinks { get; set; }
         public string FacebookLink { get; set; }

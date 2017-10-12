@@ -9,6 +9,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
+using SmartStore.Services;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -56,7 +57,15 @@ namespace SmartStore.Web.Framework.Theming
 			}
 		}
 
-		protected bool HasMessages
+        protected bool IsStoreClosed
+        {
+            get
+            {
+                return _helper.IsStoreClosed;
+            }
+        }
+
+        protected bool HasMessages
 		{
 			get
 			{
@@ -80,7 +89,15 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
-        public IWorkContext WorkContext
+		public ICommonServices CommonServices
+		{
+			get
+			{
+				return _helper.Services;
+			}
+		}
+
+		public IWorkContext WorkContext
         {
             get
             {

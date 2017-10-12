@@ -48,7 +48,21 @@ namespace SmartStore.Collections
 				value = ((ICloneable<TValue>)value).Clone();
 			}
 
-			return new TreeNode<TValue>(value);
+			var clonedNode = new TreeNode<TValue>(value);
+
+			// Assign or clone Metadata
+			if (_metadata != null && _metadata.Count > 0)
+			{
+				foreach (var kvp in _metadata)
+				{
+					var metadataValue = kvp.Value is ICloneable 
+						? ((ICloneable)kvp.Value).Clone() 
+						: kvp.Value;
+					clonedNode.SetMetadata(kvp.Key, metadataValue);
+				}
+			}
+
+			return clonedNode;
 		}
 
 		public TreeNode<TValue> Append(TValue value)
@@ -115,6 +129,7 @@ namespace SmartStore.Collections
 
 			object objValue = null;
 			object objChildren = null;
+			Dictionary<string, object> metadata = null;
 
 			reader.Read();
 			while (reader.TokenType == JsonToken.PropertyName)
@@ -124,6 +139,11 @@ namespace SmartStore.Collections
 				{
 					reader.Read();
 					objValue = serializer.Deserialize(reader, valueType);
+				}
+				else if (string.Equals(a, "Metadata", StringComparison.OrdinalIgnoreCase))
+				{
+					reader.Read();
+					metadata = serializer.Deserialize<Dictionary<string, object>>(reader);
 				}
 				else if (string.Equals(a, "Children", StringComparison.OrdinalIgnoreCase))
 				{
@@ -139,6 +159,13 @@ namespace SmartStore.Collections
 			}
 
 			var treeNode = Activator.CreateInstance(objectType, new object[] { objValue, objChildren });
+
+			// Set Metadata
+			if (metadata != null && metadata.Count > 0)
+			{
+				var metadataProp = FastProperty.GetProperty(objectType, "Metadata", PropertyCachingStrategy.Cached);
+				metadataProp.SetValue(treeNode, metadata);
+			}
 			
 			return treeNode;
 		}
@@ -147,11 +174,15 @@ namespace SmartStore.Collections
 		{
 			var valueProp = FastProperty.GetProperty(value.GetType(), "Value", PropertyCachingStrategy.Cached);
 			var childrenProp = FastProperty.GetProperty(value.GetType(), "Children", PropertyCachingStrategy.Cached);
+			var metadataProp = FastProperty.GetProperty(value.GetType(), "Metadata", PropertyCachingStrategy.Cached);
 
 			writer.WriteStartObject();
 			{
 				writer.WritePropertyName("Value");
 				serializer.Serialize(writer, valueProp.GetValue(value));
+
+				writer.WritePropertyName("Metadata");
+				serializer.Serialize(writer, metadataProp.GetValue(value));
 
 				writer.WritePropertyName("Children");
 				serializer.Serialize(writer, childrenProp.GetValue(value));

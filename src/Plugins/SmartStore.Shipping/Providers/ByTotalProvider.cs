@@ -126,7 +126,7 @@ namespace SmartStore.Shipping
             {
                 shippingTotal = Math.Round((decimal)((((float)subtotal) * ((float)shippingByTotalRecord.ShippingChargePercentage)) / 100f), 2);
                 shippingTotal += baseCharge;
-                if (maxCharge.HasValue && maxCharge > baseCharge)
+                if (maxCharge.HasValue && shippingTotal > maxCharge)
                 {
                     // shipping charge should not exceed MaxCharge
                     shippingTotal = Math.Min(shippingTotal.Value, maxCharge.Value);

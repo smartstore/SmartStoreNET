@@ -42,7 +42,7 @@ namespace SmartStore.Clickatell.Controllers
 			return View(model);
         }
 
-        [HttpPost, FormValueRequired("save")]
+        [HttpPost]
         public ActionResult Configure(SmsClickatellModel model, FormCollection form)
         {
 			if (ModelState.IsValid)

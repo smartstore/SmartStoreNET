@@ -22,6 +22,7 @@ namespace SmartStore.Data.Mapping.Orders
 			this.Property(o => o.PaymentMethodAdditionalFeeTaxRate).HasPrecision(18, 4);
             this.Property(o => o.OrderTax).HasPrecision(18, 4);
             this.Property(o => o.OrderDiscount).HasPrecision(18, 4);
+            this.Property(o => o.OrderTotalRounding).HasPrecision(18, 4);
             this.Property(o => o.OrderTotal).HasPrecision(18, 4);
             this.Property(o => o.RefundedAmount).HasPrecision(18, 4);
             this.Property(o => o.OrderNumber).IsOptional();

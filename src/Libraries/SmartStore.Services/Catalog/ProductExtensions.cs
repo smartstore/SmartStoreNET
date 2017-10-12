@@ -11,6 +11,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Catalog
 {
@@ -52,13 +53,13 @@ namespace SmartStore.Services.Catalog
 				return;
 
 			if (values == null)
-				values = new Dictionary<string, object>();
+				product.MergedDataValues = values = new Dictionary<string, object>();
 
-            if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
-            {
-                values.Add("StockQuantity", combination.StockQuantity);
+			if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
+			{
+				values.Add("StockQuantity", combination.StockQuantity);
 				values.Add("BackorderModeId", combination.AllowOutOfStockOrders ? (int)BackorderMode.AllowQtyBelow0 : (int)BackorderMode.NoBackorders);
-            }
+			}
 
 			if (combination.Sku.HasValue())
 				values.Add("Sku", combination.Sku);
@@ -314,6 +315,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="currencyService">Currency service</param>
 		/// <param name="taxService">Tax service</param>
 		/// <param name="priceCalculationService">Price calculation service</param>
+		/// <param name="customer">Customer</param>
 		/// <param name="currency">Target currency</param>
 		/// <param name="priceAdjustment">Price adjustment</param>
 		/// <param name="languageInsensitive">Whether the result string should be language insensitive</param>
@@ -324,6 +326,7 @@ namespace SmartStore.Services.Catalog
             ICurrencyService currencyService,
 			ITaxService taxService,
 			IPriceCalculationService priceCalculationService,
+			Customer customer,
             Currency currency,
 			decimal priceAdjustment = decimal.Zero,
 			bool languageInsensitive = false)
@@ -332,15 +335,14 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(currencyService, nameof(currencyService));
 			Guard.NotNull(taxService, nameof(taxService));
 			Guard.NotNull(priceCalculationService, nameof(priceCalculationService));
+			Guard.NotNull(customer, nameof(customer));
 			Guard.NotNull(currency, nameof(currency));
 
-            if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
+            if (product.BasePriceHasValue && product.BasePriceAmount != decimal.Zero)
             {
-                var workContext = EngineContext.Current.Resolve<IWorkContext>();
-
                 var taxrate = decimal.Zero;
-                var currentPrice = priceCalculationService.GetFinalPrice(product, workContext.CurrentCustomer, true);
-                var price = taxService.GetProductPrice(product, decimal.Add(currentPrice, priceAdjustment), out taxrate);
+                var currentPrice = priceCalculationService.GetFinalPrice(product, customer, true);
+                var price = taxService.GetProductPrice(product, decimal.Add(currentPrice, priceAdjustment), customer, currency, out taxrate);
                 
                 price = currencyService.ConvertFromPrimaryStoreCurrency(price, currency);
 
@@ -372,7 +374,7 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(priceFormatter, nameof(priceFormatter));
 			Guard.NotNull(currency, nameof(currency));
 
-			if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
+			if (product.BasePriceHasValue && product.BasePriceAmount != decimal.Zero)
 			{
 				var value = Convert.ToDecimal((productPrice / product.BasePriceAmount) * product.BasePriceBaseAmount);
 				var valueFormatted = priceFormatter.FormatPrice(value, true, currency);

@@ -25,6 +25,7 @@ namespace SmartStore.Web.Models.Catalog
 			AssociatedProducts = new List<ProductDetailsModel>();
 			BundledItems = new List<ProductDetailsModel>();
 			BundleItem = new ProductBundleItemModel();
+			ActionItems = new Dictionary<string, ActionItemModel>();
 			IsAvailable = true;
         }
 
@@ -116,7 +117,7 @@ namespace SmartStore.Web.Models.Catalog
         public IList<ManufacturerOverviewModel> Manufacturers { get; set; }
         public int ReviewCount { get; set; }
 
-		//a list of associated products. For example, "Grouped" products could have several child "simple" products
+		// A list of associated products. For example, "Grouped" products could have several child "simple" products
 		public IList<ProductDetailsModel> AssociatedProducts { get; set; }
 		public bool IsAssociatedProduct { get; set; }
 
@@ -129,7 +130,22 @@ namespace SmartStore.Web.Models.Catalog
 		public bool AskQuestionEnabled { get; set; }
 		public string ProductShareCode { get; set; }
 
+		public IDictionary<string, ActionItemModel> ActionItems { get; set; }
+
 		#region Nested Classes
+
+		public partial class ActionItemModel : ModelBase
+		{
+			public string Key { get; set; }
+			public string Title { get; set; }
+			public string Tooltip { get; set; }
+			public string Href { get; set; }
+			public string CssClass { get; set; }
+			public string IconCssClass { get; set; }
+			public bool IsPrimary { get; set; }
+			public string PrimaryActionColor { get; set; }
+			public int Priority { get; set; }
+		}
 
 		public partial class AddToCartModel : ModelBase, IQuantityInput
 		{

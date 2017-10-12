@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Linq;
+using System.Globalization;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Collections;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Catalog.Modelling;
@@ -17,6 +18,7 @@ namespace SmartStore.Services.Catalog.Extensions
 		private readonly HttpRequestBase _httpRequest;
 		private readonly ICommonServices _services;
 		private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IProductAttributeService _productAttributeService;
 		private readonly Lazy<ILanguageService> _languageService;
 		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
 		private readonly Lazy<LocalizationSettings> _localizationSettings;
@@ -27,6 +29,7 @@ namespace SmartStore.Services.Catalog.Extensions
 			HttpRequestBase httpRequest,
 			ICommonServices services,
 			IProductAttributeParser productAttributeParser,
+			IProductAttributeService productAttributeService,
 			Lazy<ILanguageService> languageService,
 			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
 			Lazy<LocalizationSettings> localizationSettings)
@@ -34,6 +37,7 @@ namespace SmartStore.Services.Catalog.Extensions
 			_httpRequest = httpRequest;
 			_services = services;
 			_productAttributeParser = productAttributeParser;
+			_productAttributeService = productAttributeService;
 			_languageService = languageService;
 			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
 			_localizationSettings = localizationSettings;
@@ -60,15 +64,13 @@ namespace SmartStore.Services.Catalog.Extensions
 			// Checkout Attributes
 			foreach (var item in query.CheckoutAttributes)
 			{
-				var name = item.ToString();
-
 				if (item.Date.HasValue)
 				{
-					qs.Add(name + "-date", string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
+					qs.Add(item.ToString(), string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
 				}
 				else
 				{
-					qs.Add(name, item.Value);
+					qs.Add(item.ToString(), item.Value);
 				}
 			}
 
@@ -86,14 +88,13 @@ namespace SmartStore.Services.Catalog.Extensions
 					item.Alias = _catalogSearchQueryAliasMapper.Value.GetVariantAliasById(item.AttributeId, _languageId);
 				}
 
-				var name = item.Alias.HasValue()
-					? $"{item.Alias}-{item.ProductId}-{item.BundleItemId}-{item.VariantAttributeId}"
-					: item.ToString();
-
 				if (item.Date.HasValue)
 				{
-					// TODO: Code never reached because of ParseProductVariantAttributeValues
-					qs.Add(name + "-date", string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
+					qs.Add(item.ToString(), string.Join("-", item.Date.Value.Year, item.Date.Value.Month, item.Date.Value.Day));
+				}
+				else if (item.IsFile || item.IsText)
+				{
+					qs.Add(item.ToString(), item.Value);
 				}
 				else
 				{
@@ -106,7 +107,7 @@ namespace SmartStore.Services.Catalog.Extensions
 						? $"{item.ValueAlias}-{item.Value}"
 						: item.Value;
 
-					qs.Add(name, value);
+					qs.Add(item.ToString(), value);
 				}
 			}
 
@@ -125,21 +126,44 @@ namespace SmartStore.Services.Catalog.Extensions
 			Guard.NotNull(query, nameof(query));
 			Guard.NotZero(productId, nameof(productId));
 
-			if (attributesXml.HasValue() && productId != 0)
-			{
-				var attributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributesXml).ToList();
+			if (attributesXml.IsEmpty() || productId == 0)
+				return;
 
-				foreach (var value in attributeValues)
+			var attributeMap = _productAttributeParser.DeserializeProductVariantAttributes(attributesXml);
+			var attributes = _productAttributeService.GetProductVariantAttributesByIds(attributeMap.Keys);
+
+			foreach (var attribute in attributes)
+			{
+				foreach (var originalValue in attributeMap[attribute.Id])
 				{
-					query.AddVariant(new ProductVariantQueryItem(value.Id.ToString())
+					var value = originalValue;
+					DateTime? date = null;
+
+					if (attribute.AttributeControlType == AttributeControlType.Datepicker)
 					{
-						ProductId = productId,
-						BundleItemId = bundleItemId,
-						AttributeId = value.ProductVariantAttribute.ProductAttributeId,
-						VariantAttributeId = value.ProductVariantAttributeId,
-						Alias = value.ProductVariantAttribute.ProductAttribute.Alias,
-						ValueAlias = value.Alias
-					});
+						date = originalValue.ToDateTime(new string[] { "D" }, CultureInfo.CurrentCulture, DateTimeStyles.None, null);
+						if (date == null)
+							continue;
+
+						value = string.Join("-", date.Value.Year, date.Value.Month, date.Value.Day);
+					}
+
+					var queryItem = new ProductVariantQueryItem(value);
+					queryItem.ProductId = productId;
+					queryItem.BundleItemId = bundleItemId;
+					queryItem.AttributeId = attribute.ProductAttributeId;
+					queryItem.VariantAttributeId = attribute.Id;
+					queryItem.Alias = _catalogSearchQueryAliasMapper.Value.GetVariantAliasById(attribute.ProductAttributeId, _languageId);
+					queryItem.Date = date;
+					queryItem.IsFile = attribute.AttributeControlType == AttributeControlType.FileUpload;
+					queryItem.IsText = attribute.AttributeControlType == AttributeControlType.TextBox || attribute.AttributeControlType == AttributeControlType.MultilineTextbox;
+
+					if (attribute.ShouldHaveValues())
+					{
+						queryItem.ValueAlias = _catalogSearchQueryAliasMapper.Value.GetVariantOptionAliasById(value.ToInt(), _languageId);
+					}
+
+					query.AddVariant(queryItem);
 				}
 			}
 		}

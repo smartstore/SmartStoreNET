@@ -4,138 +4,77 @@
 @using SmartStore.Core.Domain.Orders;
 
 @{
-	var miscActions = new Dictionary<string, RouteValueDictionary>();
-
-	if (Model.HasSampleDownload)
-	{
-		miscActions["sample"] = new RouteValueDictionary(new
-		{
-			title = T("Products.DownloadSample").Text,
-			icon = "fa fa-download",
-			@class = "action-download-sample",
-			href = Url.Action("Sample", "Download", new { productId = Model.Id })
-		});
-	}
-
-	if (!Model.AddToCart.DisableWishlistButton)
-	{
-		miscActions["wishlist"] = new RouteValueDictionary(new
-		{
-			title = T("ShoppingCart.AddToWishlist").Text,
-			icon = "fa fa-heart-o",
-			@class = "ajax-cart-link action-add-to-wishlist",
-			href = Url.Action("AddProduct", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })
-		});
-	}
-
-	if (Model.AskQuestionEnabled && !Model.ProductPrice.CallForPrice)
-	{
-		miscActions["ask"] = new RouteValueDictionary(new
-		{
-			title = T("Products.AskQuestion").Text,
-			icon = "fa fa-envelope",
-			@class = "action-ask-question",
-			href = Url.Action("AskQuestion", new { id = Model.Id })
-		});
-	}
-
-	if (Model.TellAFriendEnabled)
-	{
-		miscActions["tell"] = new RouteValueDictionary(new
-		{
-			title = T("Products.EmailAFriend").Text,
-			icon = "fa fa-bullhorn",
-			@class = "action-tell",
-			href = Url.Action("EmailAFriend", new { id = Model.Id })
-		});
-	}
-
-	if (Model.CompareEnabled)
-	{
-		miscActions["compare"] = new RouteValueDictionary(new
-		{
-			title = T("Products.Compare.AddToCompareList").Text,
-			icon = "fa fa-retweet",
-			@class = "action-compare ajax-cart-link",
-			href = Url.Action("AddProductToCompare", "Catalog", new { id = Model.Id })
-		});
-	}
-
-	if (miscActions.Count == 0)
+	if (Model.ActionItems.Count == 0)
 	{
 		return;
 	}
+
+	var primaryActions = Model.ActionItems.Values.Where(x => x.IsPrimary).OrderBy(x => x.Priority).ToList();
+	var actions = Model.ActionItems.Values.Where(x => !x.IsPrimary).OrderBy(x => x.Priority).ToList();
+
+	//actions.Add(actions.First());
+	//actions.Add(actions.First());
+	//actions.Add(actions.First());
 }
 
-<div class="col flex-grow-0">
-	@if (miscActions.Count == 1)
+<div class="pd-actions-container">
+	@if (primaryActions.Count > 0)
 	{
-		@RenderActionLink(miscActions.First().Key, miscActions.First().Value, false)
+		<div class="pd-actions-primary">
+			@foreach (var action in primaryActions)
+			{
+				<a href="@action.Href" class="btn btn-@action.PrimaryActionColor btn-block @action.CssClass">
+					<i class="@action.IconCssClass"></i>
+					<span>@action.Title</span>
+				</a>
+			}
+		</div>
 	}
-	else
+
+	@if (actions.Count > 0)
 	{
-		<div class="btn-group">
-			<button type="button" class="btn btn-warning btn-lg btn-icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<i class="@miscActions.First().Value["icon"]"></i>
-			</button>
-			<div class="dropdown-menu dropdown-menu-right">
-				@foreach (var kvp in miscActions)
-				{
-					var action = kvp.Value;
-					@RenderActionLink(kvp.Key, action, true)
-					if (kvp.Key == "wishlist")
+		var colClass = "col";
+		if (actions.Count < 5 || actions.Count == 6)
+		{
+			colClass += "-" + 12 / actions.Count;
+		}
+
+		<div class="row sm-gutters pd-actions@(actions.Count > 6 ? " pd-actions-xl": "")">
+			@foreach (var action in actions)
+			{
+				var key = action.Key;
+				var isSpecial = key == "wishlist" || key == "compare";
+				<div class="@colClass pd-action-item" @Html.Attr("style", "width: 20%; min-width: 20%", actions.Count == 5)>
+					@if (isSpecial)
 					{
-						<div class="dropdown-divider"></div>
+						<a data-href='@action.Href' @Html.Attr("data-form-selector", "#pd-form", key == "wishlist")
+						   title="@action.Tooltip"
+						   href="#"
+						   class="pd-action-link@(isSpecial ? " pd-action-link-special" : "") @action.CssClass"
+						   rel="nofollow"
+						   data-type="@key"
+						   data-action="add">
+							<i class="pd-action-icon @action.IconCssClass"></i>
+							@if (actions.Count < 7)
+							{
+								<span class="pd-action-label@(actions.Count > 4 ? " fs-sm" : "")">@action.Title</span>
+							}
+						</a>
 					}
-				}
-			</div>
+					else
+					{
+						<a class="pd-action-link@(isSpecial ? " pd-action-link-special" : "") @(action.CssClass)" href="@action.Href" rel="nofollow" title="@action.Tooltip">
+							<i class="pd-action-icon @action.IconCssClass"></i>
+							@if (actions.Count < 7)
+							{
+								<span class="pd-action-label@(actions.Count > 4 ? " fs-sm" : "")">@action.Title</span>
+							}
+						</a>
+					}
+				</div>
+			}
 		</div>
 	}
 </div>
 
-@helper RenderActionLink(string key, RouteValueDictionary action, bool isDropdownItem) {{
-	var isSpecial = key == "wishlist" || key == "compare";
-	if (isDropdownItem)
-	{
-		if (isSpecial)
-		{
-			<a data-href='@action["href"]' @Html.Attr("data-form-selector", "#pd-form", key == "wishlist")
-				href="#"
-				class="dropdown-item @action["class"]"
-				rel="nofollow"
-				data-type="@key"
-				data-action="add">
-				<i class="@action["icon"]"></i>
-				<span>@action["title"]</span>
-			</a>
-		}
-		else
-		{
-			<a class="dropdown-item @(action["class"])" href="@action["href"]" rel="nofollow">
-				<i class="@action["icon"]"></i>
-				<span>@action["title"]</span>
-			</a>
-		}
-	}
-	else
-	{
-		if (isSpecial)
-		{
-			<a data-href="@action["href"]" @Html.Attr("data-form-selector", "#pd-form", key == "wishlist")
-			   href="#" 
-			   class="btn btn-warning btn-lg btn-icon @(action["class"])" 
-			   rel="nofollow"
-			   data-type="@key"
-			   data-action="add" 
-			   title="@action["title"]">
-				<i class="@action["icon"]"></i>
-			</a>
-		}
-		else
-		{
-			<a href="@action["href"]" class="btn btn-warning btn-lg btn-icon @(action["class"])" rel="nofollow" title="@action["title"]">
-				<i class="@action["icon"]"></i>
-			</a>
-		}
-	}
-}}
+@{ Html.RenderWidget("productdetail_action_links_after"); }

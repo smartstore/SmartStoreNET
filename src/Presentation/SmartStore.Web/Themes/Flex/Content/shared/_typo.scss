@@ -19,12 +19,10 @@
 .fs-display-3   { font-size: $display3-size !important; }
 .fs-display-4   { font-size: $display4-size !important; }
 
-.fs-small       { font-size: 0.85rem !important; }
-
-.text-smaller,
-.text-smaller a {
-    font-size: $font-size-sm;
-}
+.fs-sm, 
+.fs-sm a        { font-size: $font-size-sm !important; }
+.fs-xs,
+.fs-xs a        { font-size: $font-size-xs !important; }
 
 
 // Font weight Helpers

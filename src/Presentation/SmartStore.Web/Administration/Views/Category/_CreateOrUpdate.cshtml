@@ -29,135 +29,132 @@
 				</td>
 			</tr>
 		</table>
-
-		<p></p>
 	}
 
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-info-localized",
-				@<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => Model.Locales[item].Name)
-                            @Html.ValidationMessageFor(model => model.Locales[item].Name)
-                        </td>
-                    </tr>
-				 	<tr>
-				 		<td class="adminTitle">
-				 			@Html.SmartLabelFor(model => model.Locales[item].FullName)
-				 		</td>
-				 		<td class="adminData">
-				 			@Html.EditorFor(model => Model.Locales[item].FullName)
-				 			@Html.ValidationMessageFor(model => model.Locales[item].FullName)
-						</td>
-					</tr>
-                    <tr class="description-container">
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].Description)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
-                            @Html.ValidationMessageFor(model => model.Locales[item].Description)
-                        </td>
-                    </tr>
-                    <tr class="description-container hide">
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].BottomDescription)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.Locales[item].BottomDescription, Html.RichEditorFlavor())
-                            @Html.ValidationMessageFor(model => model.Locales[item].BottomDescription)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-							&nbsp;
-                        </td>
-                        <td class="adminData">
-							<button type="button" class="btn description-toggle-button">
-								<i class="fa fa-exchange"></i>&nbsp;@T("Admin.Catalog.Categories.DescriptionToggle")
-							</button>
-                        </td>
-                    </tr>
-                     <tr>
-                         <td class="adminTitle">
-                             @Html.SmartLabelFor(model => model.Locales[item].BadgeText)
-                         </td>
-                         <td class="adminData">
-                             @Html.EditorFor(model => Model.Locales[item].BadgeText)
-                             @Html.ValidationMessageFor(model => model.Locales[item].BadgeText)
-                         </td>
-                     </tr>
-                    <tr>
-                        <td colspan="2">
-                            @Html.HiddenFor(model => model.Locales[item].LanguageId)
-                        </td>
-                    </tr>
-                </table>
-				,
-				@<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.Name)
-                            @Html.ValidationMessageFor(model => model.Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.FullName)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.FullName)
-                            @Html.ValidationMessageFor(model => model.FullName)
-                        </td>
-                    </tr>
-                    <tr class="description-container">
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Description)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
-                            @Html.ValidationMessageFor(model => model.Description)
-                        </td>
-                    </tr>
-                    <tr class="description-container hide">
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.BottomDescription)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(x => x.BottomDescription, Html.RichEditorFlavor())
-                            @Html.ValidationMessageFor(model => model.BottomDescription)
-                        </td>
-                    </tr>
-					<tr>
-						<td class="adminTitle">
-							&nbsp;
-						</td>
-						<td class="adminData">
-							<button type="button" class="btn description-toggle-button">
-								<i class="fa fa-exchange"></i>&nbsp;@T("Admin.Catalog.Categories.DescriptionToggle")
-							</button>
-						</td>
-					</tr>
-                     <tr>
-                         <td class="adminTitle">
-                             @Html.SmartLabelFor(model => model.BadgeText)
-                         </td>
-                         <td class="adminData">
-                             @Html.EditorFor(model => model.BadgeText)
-                             @Html.ValidationMessageFor(model => model.BadgeText)
-                         </td>
-                     </tr>
-                </table>
+		@<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].Name)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => Model.Locales[item].Name)
+                    @Html.ValidationMessageFor(model => model.Locales[item].Name)
+                </td>
+            </tr>
+			<tr>
+				<td class="adminTitle">
+				 	@Html.SmartLabelFor(model => model.Locales[item].FullName)
+				</td>
+				<td class="adminData">
+				 	@Html.EditorFor(model => Model.Locales[item].FullName)
+				 	@Html.ValidationMessageFor(model => model.Locales[item].FullName)
+				</td>
+			</tr>
+            <tr class="description-container">
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].Description)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
+                    @Html.ValidationMessageFor(model => model.Locales[item].Description)
+                </td>
+            </tr>
+            <tr class="description-container hide">
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].BottomDescription)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.Locales[item].BottomDescription, Html.RichEditorFlavor())
+                    @Html.ValidationMessageFor(model => model.Locales[item].BottomDescription)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+					&nbsp;
+                </td>
+                <td class="adminData">
+					<button type="button" class="btn description-toggle-button">
+						<i class="fa fa-exchange"></i>&nbsp;@T("Admin.Catalog.Categories.DescriptionToggle")
+					</button>
+                </td>
+            </tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].BadgeText)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => Model.Locales[item].BadgeText)
+                        @Html.ValidationMessageFor(model => model.Locales[item].BadgeText)
+                    </td>
+                </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.HiddenFor(model => model.Locales[item].LanguageId)
+                </td>
+            </tr>
+        </table>
+		,
+		@<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Name)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.Name)
+                    @Html.ValidationMessageFor(model => model.Name)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.FullName)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.FullName)
+                    @Html.ValidationMessageFor(model => model.FullName)
+                </td>
+            </tr>
+            <tr class="description-container">
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Description)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
+                    @Html.ValidationMessageFor(model => model.Description)
+                </td>
+            </tr>
+            <tr class="description-container hide">
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.BottomDescription)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.BottomDescription, Html.RichEditorFlavor())
+                    @Html.ValidationMessageFor(model => model.BottomDescription)
+                </td>
+            </tr>
+			<tr>
+				<td class="adminTitle">
+					&nbsp;
+				</td>
+				<td class="adminData">
+					<button type="button" class="btn description-toggle-button">
+						<i class="fa fa-exchange"></i>&nbsp;@T("Admin.Catalog.Categories.DescriptionToggle")
+					</button>
+				</td>
+			</tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.BadgeText)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.BadgeText)
+                        @Html.ValidationMessageFor(model => model.BadgeText)
+                    </td>
+                </tr>
+        </table>
 	))
 
     <table class="adminContent">
-
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BadgeStyle)
@@ -165,33 +162,6 @@
             <td class="adminData">
                 @Html.DropDownListFor(model => model.BadgeStyle, Model.AvailableBadgeStyles)
                 @Html.ValidationMessageFor(model => model.BadgeStyle)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Alias)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Alias)
-                @Html.ValidationMessageFor(model => model.Alias)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CategoryTemplateId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.CategoryTemplateId, Model.AvailableCategoryTemplates)
-                @Html.ValidationMessageFor(model => model.CategoryTemplateId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DefaultViewMode)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes)
-                @Html.ValidationMessageFor(model => model.DefaultViewMode)
             </td>
         </tr>
         <tr>
@@ -209,14 +179,14 @@
             </td>
             <td class="adminData">
                 @(Html.HiddenFor(x => x.ParentCategoryId, new
-				{
-					style = "min-width: 700px",
-					placeholder = "[" + T("Common.Unspecified") + "]",
-					data_select = true,
-					data_select_lazy = true,
-					data_select_init_text = Model.ParentCategoryBreadcrumb,
-					data_select_url = Url.Action("Allcategories", "Category")
-				}))
+            {
+                style = "min-width: 700px",
+                placeholder = "[" + T("Common.Unspecified") + "]",
+                data_select = true,
+                data_select_lazy = true,
+                data_select_init_text = Model.ParentCategoryBreadcrumb,
+                data_select_url = Url.Action("Allcategories", "Category")
+            }))
                 @Html.ValidationMessageFor(model => model.ParentCategoryId)
             </td>
         </tr>
@@ -247,6 +217,62 @@
                 @Html.ValidationMessageFor(model => model.DisplayOrder)
             </td>
         </tr>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultViewMode)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes)
+                @Html.ValidationMessageFor(model => model.DefaultViewMode)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowCustomersToSelectPageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.AllowCustomersToSelectPageSize)
+                @Html.ValidationMessageFor(model => model.AllowCustomersToSelectPageSize)
+            </td>
+        </tr>
+        <tr id="pnlPageSize">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PageSize)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.PageSize)
+                @Html.ValidationMessageFor(model => model.PageSize)
+            </td>
+        </tr>
+        <tr id="pnlPageSizeOptions">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PageSizeOptions)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.PageSizeOptions)
+                @Html.ValidationMessageFor(model => model.PageSizeOptions)
+            </td>
+        </tr>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Alias)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Alias)
+                @Html.ValidationMessageFor(model => model.Alias)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CategoryTemplateId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.CategoryTemplateId, Model.AvailableCategoryTemplates)
+                @Html.ValidationMessageFor(model => model.CategoryTemplateId)
+            </td>
+        </tr>
 		@if(Model.CreatedOn.HasValue)
 		{
 			<tr>
@@ -275,121 +301,93 @@
 @helper TabSeo()
 {
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-seo-localized",
-			   @<table class="adminContent">
-                   <tr>
-                       <td class="adminTitle">
-                           @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
-                       </td>
-                       <td class="adminData">
-                           @Html.TextBoxFor(model => model.Locales[item].MetaKeywords, new { @class = "input-large" })
-                           @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
-                       </td>
-                   </tr>
-                   <tr>
-                       <td class="adminTitle">
-                           @Html.SmartLabelFor(model => model.Locales[item].MetaDescription)
-                       </td>
-                       <td class="adminData">
-                           @Html.TextAreaFor(model => model.Locales[item].MetaDescription, new { @class = "input-large" })
-                           @Html.ValidationMessageFor(model => model.Locales[item].MetaDescription)
-                       </td>
-                   </tr>
-                   <tr>
-                       <td class="adminTitle">
-                           @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
-                       </td>
-                       <td class="adminData">
-                           @Html.TextAreaFor(model => model.Locales[item].MetaTitle, new { @class = "input-large" })
-                           @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
-                       </td>
-                   </tr>
-                   <tr>
-                       <td class="adminTitle">
-                           @Html.SmartLabelFor(model => model.Locales[item].SeName)
-                       </td>
-                       <td class="adminData">
-                           @Html.TextAreaFor(model => model.Locales[item].SeName, new { @class = "input-large" })
-                           @Html.ValidationMessageFor(model => model.Locales[item].SeName)
-                       </td>
-                   </tr>
-                   <tr>
-                       <td colspan="2">
-                           @Html.HiddenFor(model => model.Locales[item].LanguageId)
-                       </td>
-                   </tr>
-               </table>
-			   ,
-			   @<table class="adminContent">
-                   <tr>
-                       <td class="adminTitle">
-                           @Html.SmartLabelFor(model => model.MetaKeywords)
-                       </td>
-                       <td class="adminData">
-                           @Html.TextBoxFor(x => x.MetaKeywords, new { @class = "input-large" })
-                           @Html.ValidationMessageFor(model => model.MetaKeywords)
-                       </td>
-                   </tr>
-                   <tr>
-                       <td class="adminTitle">
-                           @Html.SmartLabelFor(model => model.MetaDescription)
-                       </td>
-                       <td class="adminData">
-                           @Html.TextAreaFor(x => x.MetaDescription, new { @class = "input-large" })
-                           @Html.ValidationMessageFor(model => model.MetaDescription)
-                       </td>
-                   </tr>
-                   <tr>
-                       <td class="adminTitle">
-                           @Html.SmartLabelFor(model => model.MetaTitle)
-                       </td>
-                       <td class="adminData">
-                           @Html.TextAreaFor(x => x.MetaTitle, new { @class = "input-large" })
-                           @Html.ValidationMessageFor(model => model.MetaTitle)
-                       </td>
-                   </tr>
-                   <tr>
-                       <td class="adminTitle">
-                           @Html.SmartLabelFor(model => model.SeName)
-                       </td>
-                       <td class="adminData">
-							@Html.TextAreaFor(x => x.SeName, new { @class = "input-large" })
-							@if (Model.Id != 0)
-							{
-								@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Category", entityId = @Model.Id })
-							}
-							@Html.ValidationMessageFor(model => model.SeName)
-                       </td>
-                   </tr>
-               </table>)) 
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowCustomersToSelectPageSize)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.AllowCustomersToSelectPageSize)
-                @Html.ValidationMessageFor(model => model.AllowCustomersToSelectPageSize)
-            </td>
-        </tr>
-        <tr id="pnlPageSize">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PageSize)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.PageSize)
-                @Html.ValidationMessageFor(model => model.PageSize)
-            </td>
-        </tr>
-        <tr id="pnlPageSizeOptions">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PageSizeOptions)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.PageSizeOptions)
-                @Html.ValidationMessageFor(model => model.PageSizeOptions)
-            </td>
-        </tr>
-    </table>
+		@<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
+                </td>
+                <td class="adminData">
+                    @Html.TextBoxFor(model => model.Locales[item].MetaKeywords, new { @class = "input-large" })
+                    @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].MetaDescription)
+                </td>
+                <td class="adminData">
+                    @Html.TextAreaFor(model => model.Locales[item].MetaDescription, new { @class = "input-large" })
+                    @Html.ValidationMessageFor(model => model.Locales[item].MetaDescription)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
+                </td>
+                <td class="adminData">
+                    @Html.TextAreaFor(model => model.Locales[item].MetaTitle, new { @class = "input-large" })
+                    @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].SeName)
+                </td>
+                <td class="adminData">
+                    @Html.TextAreaFor(model => model.Locales[item].SeName, new { @class = "input-large" })
+                    @Html.ValidationMessageFor(model => model.Locales[item].SeName)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.HiddenFor(model => model.Locales[item].LanguageId)
+                </td>
+            </tr>
+        </table>
+		,
+		@<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.MetaKeywords)
+                </td>
+                <td class="adminData">
+                    @Html.TextBoxFor(x => x.MetaKeywords, new { @class = "input-large" })
+                    @Html.ValidationMessageFor(model => model.MetaKeywords)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.MetaDescription)
+                </td>
+                <td class="adminData">
+                    @Html.TextAreaFor(x => x.MetaDescription, new { @class = "input-large" })
+                    @Html.ValidationMessageFor(model => model.MetaDescription)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.MetaTitle)
+                </td>
+                <td class="adminData">
+                    @Html.TextAreaFor(x => x.MetaTitle, new { @class = "input-large" })
+                    @Html.ValidationMessageFor(model => model.MetaTitle)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SeName)
+                </td>
+                <td class="adminData">
+					@Html.TextAreaFor(x => x.SeName, new { @class = "input-large" })
+					@if (Model.Id != 0)
+					{
+						@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Category", entityId = @Model.Id })
+					}
+					@Html.ValidationMessageFor(model => model.SeName)
+                </td>
+            </tr>
+        </table>
+    ))
 }
 
 @helper TabProducts()
@@ -587,13 +585,9 @@
 <script type="text/javascript">
 	$(document).ready(function () {
 
-		// toggle page size
-		$("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(function () {
-			var customerSelectPageSize = $('#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)').is(':checked');
-			$('#pnlPageSize').toggle(!customerSelectPageSize);
-			$('#pnlPageSizeOptions').toggle(customerSelectPageSize);
-		}).trigger('change');
-
+	    $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
+	    togglePageSize();
+	
 		// toggle acl customer roles
 		$("#@Html.FieldIdFor(model => model.SubjectToAcl)").change(function() {
 			$('.pnl-acl').toggle($('#@Html.FieldIdFor(model => model.SubjectToAcl)').is(':checked'));
@@ -635,4 +629,17 @@
 		});
 
 	});
+
+    function togglePageSize() {
+
+        var isEnabled = $('#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)').val();
+
+        if (isEnabled != "false") {
+            $('#pnlPageSize').hide();
+            $('#pnlPageSizeOptions').show();
+        } else {
+            $('#pnlPageSize').show();
+            $('#pnlPageSizeOptions').hide();
+        }
+    }
 </script>

@@ -116,15 +116,18 @@
 						</div>
 
 						<div class="ml-auto text-nowrap">
-                            <a class="btn btn-secondary btn-sm btn-icon ajax-cart-link" title="@T("ShoppingCart.MoveToWishlist")"
-                                href="#"
-                                rel="nofollow"
-                                data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart })"
-                                data-name="@item.ProductName"
-                                data-type="cart"
-                                data-action="addfromcart">
-                                <i class="fa fa-heart-o"></i>
-                            </a>   
+                            @if (Model.DisplayMoveToWishlistButton)
+                            {
+                                <a class="btn btn-secondary btn-sm btn-icon ajax-cart-link" title="@T("ShoppingCart.MoveToWishlist")"
+                                   href="#"
+                                   rel="nofollow"
+                                   data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart })"
+                                   data-name="@item.ProductName"
+                                   data-type="cart"
+                                   data-action="addfromcart">
+                                    <i class="fa fa-heart-o"></i>
+                                </a>
+                            }
 							<a class="btn btn-secondary btn-to-danger btn-sm btn-icon remove ajax-cart-link" title="@T("Common.Remove")"
 							   href="#"
 							   rel="nofollow"

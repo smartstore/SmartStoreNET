@@ -23,7 +23,6 @@ namespace SmartStore.Core.Domain.Orders
 			EmailWishlistEnabled = true;
 			MiniShoppingCartEnabled = true;
 			ShowProductImagesInMiniShoppingCart = true;
-			//RoundPricesDuringCalculation = false;
             ShowBasePrice = true;
             ShowDeliveryTimes = true;
             ShowShortDesc = true;
@@ -142,12 +141,6 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets a value indicating whether to show product images in the mini-shopping cart block
         /// </summary>
         public bool ShowProductImagesInMiniShoppingCart { get; set; }
-        
-        //Round is already an issue. 
-        /// <summary>
-        /// Gets or sets a value indicating whether to round calculated prices and total during calculation
-        /// </summary>
-        public bool RoundPricesDuringCalculation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show a legal hint in the order summary

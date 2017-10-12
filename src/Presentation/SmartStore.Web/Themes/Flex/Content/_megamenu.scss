@@ -237,7 +237,7 @@ $mixed-megamenu-bg:             $megamenu-bg;
         top: -3px;
         background-repeat: no-repeat;
         background-position: bottom right;
-        padding: 1.5rem;
+        padding: 0;
      
         label { 
             vertical-align: top;
@@ -246,6 +246,11 @@ $mixed-megamenu-bg:             $megamenu-bg;
         .col-md-3 {
             overflow: hidden;
         }
+        .row > div:empty { height: 0; }
+    }
+
+    .mega-menu-dropdown-row {
+        padding: 1.5rem;
     }
 
     .mega-menu-dropdown-heading {
@@ -309,7 +314,7 @@ $mixed-megamenu-bg:             $megamenu-bg;
     }
 }
 
-/* Product rotator */
+// product rotator 
 .megamenu-container .rotator-container {
     border: 1px solid rgba(0, 0, 0, 0.1);
     background: $megamenu-rotator-bg;
@@ -326,6 +331,27 @@ $mixed-megamenu-bg:             $megamenu-bg;
             background-color: transparent;
         }
     }
+}
+
+// brand menu 
+#dropdown-menu--10 .dropdown-menu .mega-menu-dropdown-heading {
+    line-height: 1.125rem;
+}
+.brand-menu-footer {
+    background: $gray-lightest;
+    border-top: 1px solid $gray-lighter;
+    border-radius: 0 0 $border-radius $border-radius;
+}
+.brand-menu-footer-thumb-col {
+    width: 80px;
+    max-width: 80px;
+    min-width: 80px;
+    margin: 1rem 0;
+    filter: grayscale(100%);
+    &:hover { filter: initial; }
+}
+.brand-menu-footer-thumb {
+    margin: auto; 
 }
 
 @include media-breakpoint-down(md) {
@@ -363,3 +389,4 @@ $mixed-megamenu-bg:             $megamenu-bg;
 .boxed .megamenu-dropdown-container.simple .dropdown-menu {
     margin-left: 20px;
 }
+

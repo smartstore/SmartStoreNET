@@ -1,14 +1,14 @@
-﻿using System.Text;
-using System.Web;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using System.Web;
 
 namespace SmartStore.Collections
 {
-    /// <summary>
-    /// http://weblogs.asp.net/bradvincent/archive/2008/10/27/helper-class-querystring-builder-chainable.aspx
-    /// </summary>
-    public class QueryString : NameValueCollection
+	/// <summary>
+	/// http://weblogs.asp.net/bradvincent/archive/2008/10/27/helper-class-querystring-builder-chainable.aspx
+	/// </summary>
+	public class QueryString : NameValueCollection
     {
         public QueryString()
         {
@@ -29,12 +29,17 @@ namespace SmartStore.Collections
             get { return new QueryString().FromCurrent(); }
         }
 
-        /// <summary>
-        /// Extracts a querystring from a full URL
-        /// </summary>
-        /// <param name="s">the string to extract the querystring from</param>
-        /// <returns>a string representing only the querystring</returns>
-        [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
+		public static QueryString CurrentUnvalidated
+		{
+			get { return new QueryString().FromCurrent(true); }
+		}
+
+		/// <summary>
+		/// Extracts a querystring from a full URL
+		/// </summary>
+		/// <param name="s">the string to extract the querystring from</param>
+		/// <returns>a string representing only the querystring</returns>
+		[SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
         public static string ExtractQuerystring(string s)
         {
             if (!string.IsNullOrEmpty(s))
@@ -76,12 +81,20 @@ namespace SmartStore.Collections
         /// <summary>
         /// returns a QueryString object based on the current querystring of the request
         /// </summary>
+		/// <param name="unvalidated"><c>true</c> to get values from the unvalidated query string.</param>
         /// <returns>the QueryString object </returns>
-        public QueryString FromCurrent()
+        public QueryString FromCurrent(bool unvalidated = false)
         {
             if (HttpContext.Current != null)
             {
-                return FillFromString(HttpContext.Current.Request.QueryString.ToString(), true);
+				if (unvalidated)
+				{
+					return FillFromString(HttpContext.Current.Request.Unvalidated.QueryString.ToString(), true);
+				}
+				else
+				{
+					return FillFromString(HttpContext.Current.Request.QueryString.ToString(), true);
+				}
             }
             base.Clear();
             return this;

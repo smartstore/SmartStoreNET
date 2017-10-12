@@ -43,6 +43,9 @@
   <LocaleResource Name="SessionExpired">
     <Value>Die PayPal Sitzung ist abgelaufen. Bitte versuchen Sie es erneut.</Value>
   </LocaleResource>
+  <LocaleResource Name="PayPalValidationFailure">
+    <Value>PayPal konnte die übermittelten Daten nicht verifizieren.</Value>
+  </LocaleResource>
 
   <LocaleResource Name="ClientId">
     <Value>Client-ID</Value>

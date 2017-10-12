@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog.Modelling;
@@ -17,7 +16,6 @@ namespace SmartStore.Admin.Models.Catalog
             AssignablePictures = new List<PictureSelectItemModel>();
 			AvailableDeliveryTimes = new List<SelectListItem>();
             Warnings = new List<string>();
-			DisplayOrder = 0;
         }
         
         [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.StockQuantity")]
@@ -75,8 +73,6 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Common.Product")]
 		public string ProductUrl { get; set; }
 		public string ProductUrlTitle { get; set; }
-
-		public long DisplayOrder { get; set; }
 
         [AllowHtml]
         public IList<string> Warnings { get; set; }

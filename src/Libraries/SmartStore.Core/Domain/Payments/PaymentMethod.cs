@@ -20,5 +20,12 @@ namespace SmartStore.Core.Domain.Payments
 		/// </summary>
 		[DataMember]
 		public string FullDescription { get; set; }
-	}
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to round the order total. Also known as "Cash rounding".
+        /// </summary>
+        /// <see cref="https://en.wikipedia.org/wiki/Cash_rounding"/>
+        [DataMember]
+        public bool RoundOrderTotalEnabled { get; set; }
+    }
 }

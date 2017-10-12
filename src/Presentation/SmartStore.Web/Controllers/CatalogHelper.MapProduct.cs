@@ -605,7 +605,7 @@ namespace SmartStore.Web.Controllers
 
 						if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 						{
-							displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, ctx.Customer, ctx.BatchContext);
+							displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, ctx.Customer, ctx.Currency, ctx.BatchContext);
 						}
 						else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 						{
@@ -697,7 +697,7 @@ namespace SmartStore.Web.Controllers
 
 						if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 						{
-							displayPrice = _priceCalculationService.GetPreselectedPrice(product, ctx.Customer, ctx.BatchContext);
+							displayPrice = _priceCalculationService.GetPreselectedPrice(product, ctx.Customer, ctx.Currency, ctx.BatchContext);
 						}
 						else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 						{
@@ -718,10 +718,12 @@ namespace SmartStore.Web.Controllers
 						priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 
                         // product was discounted by a discount plugin
-                        if (finalPriceBase != product.Price)
+                        var hasDiscount = _priceCalculationService.GetDiscountAmount(product, _services.WorkContext.CurrentCustomer) > 0;
+                        if (hasDiscount)
                         {
                             priceModel.HasDiscount = true;
-                            oldPrice = product.Price;
+                            oldPrice = _priceCalculationService.GetFinalPrice(product, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
+                            oldPrice = _taxService.GetProductPrice(product, oldPrice, out taxRate);
                         }
                         
                         if (displayFromMessage)

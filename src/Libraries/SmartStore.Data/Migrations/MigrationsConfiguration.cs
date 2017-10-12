@@ -31,35 +31,25 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-            builder.AddOrUpdate("Account.PasswordRecoveryConfirm.InvalidEmail",
-                "No customer account matches this email address. Please click the link in your email anew.",
-                "Diese Emailadresse konnte keinen Kundenkonto zugeordnet werden. Bitte rufen Sie den an Sie versendeten Link erneut auf.");
+			builder.AddOrUpdate("Admin.Orders.Shipment", "Shipment", "Lieferung");
+			builder.AddOrUpdate("Admin.Order", "Order", "Auftrag");
 
-            builder.AddOrUpdate("Account.PasswordRecoveryConfirm.InvalidToken",
-                "The used token is incorrect. Please click the link in your email anew.",
-                "Das verwendete Token scheint nicht korrekt zu sein. Bitte rufen Sie den Link erneut auf.");
+			builder.AddOrUpdate("Admin.Order.ViaShippingMethod", "via {0}", "via {0}");
+			builder.AddOrUpdate("Admin.Order.WithPaymentMethod", "with {0}", "per {0}");
+			builder.AddOrUpdate("Admin.Order.FromStore", "from {0}", "von {0}");
 
-            builder.AddOrUpdate("Customer.UserAgreement.OrderItemNotFound",
-                "The corresponding order item could not be found.",
-                "Die entsprechende Auftragsposition konnte nicht gefunden werden.");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.MaxItemsToDisplayInCatalogMenu",
+                "Max items to display in catalog menu",
+                "Maximale Anzahl von Elementen im Katalogmenü",
+                "Defines the maximum number of top level items to be displayed in the main catalog menu. All menu items which are exceeding this limit will be placed in a new dropdown menu item.",
+                "Legt die maximale Anzahl von Menu-Einträgen der obersten Hierarchie fest, die im Katalogmenü angezeigt werden. Alle weiteren Menu-Einträge werden innerhalb eines neuen Dropdownmenus ausgegeben.");
 
-            builder.AddOrUpdate("Customer.UserAgreement.ProductNotFound",
-                "The corresponding product could not be found.",
-                "Das entsprechende Produkt konnte nicht gefunden werden.");
+            builder.AddOrUpdate("CatalogMenu.MoreLink", "More", "Mehr");
 
-            builder.AddOrUpdate("ShoppingCart.RewardPoints", "Reward points", "Bonuspunkte");
-
-            builder.AddOrUpdate("ShoppingCart.RewardPoints.Button", "Apply", "Anwenden");
-
-			builder.AddOrUpdate("ShoppingCart.IsDisabled",
-				"The shopping cart is disabled.",
-				"Der Warenkorb ist deaktiviert.");
-
-            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.AllowDifferingEmailAddressForEmailAFriend",
-                "Allow differing email address for email e friend",
-                "Abweichende Emailadresse für Tell A Friend zulassen",
-                "Specifies whether customers are allowed to enter a email address different from the one they've registered their account with.", 
-                "Bestimmt ob Kunden gestattet ist eine Emailadresse anzugeben, welche von der abweicht mit der sie sich im Shop registriert haben.");
+            builder.AddOrUpdate("Admin.CatalogSettings.Homepage", "Homepage", "Homepage");
+            builder.AddOrUpdate("Admin.CatalogSettings.ProductDisplay", "Product display", "Produktdarstellung");
+            builder.AddOrUpdate("Admin.CatalogSettings.Prices", "Prices", "Preise");
+            builder.AddOrUpdate("Admin.CatalogSettings.CompareProducts", "Compare products", "Produktvergleich");
         }
 	}
 }

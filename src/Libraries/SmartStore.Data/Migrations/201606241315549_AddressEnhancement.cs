@@ -4,7 +4,7 @@ namespace SmartStore.Data.Migrations
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
     
-    public partial class AddressEnhancement : DbMigration, ILocaleResourcesProvider
+    public partial class AddressEnhancement : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
@@ -18,6 +18,11 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.Address", "Salutation");
         }
 
+        public bool RollbackOnFailure
+        {
+            get { return false; }
+        }
+        
         public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);

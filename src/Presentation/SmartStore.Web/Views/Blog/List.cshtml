@@ -37,20 +37,20 @@
             <div class="heading">
                 <h1 class="heading-title">
                     @if (String.IsNullOrEmpty(Model.PagingFilteringContext.Tag))
-                    {
-                        if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
-                        {
-                            string.Format(T("Blog.FilteredByMonth").Text, Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToString("MMMM"));
-                        }
-                        else
-                        {
+					{
+						if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
+						{
+							@T("Blog.FilteredByMonth", Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToString("MMMM"))
+						}
+						else
+						{
                             @T("Blog")
-                        }
-                    }
-                    else
-                    {
-                        string.Format(T("Blog.TaggedWith").Text, Model.PagingFilteringContext.Tag);
-                    }
+						}
+					}
+					else
+					{
+						@T("Blog.TaggedWith", Model.PagingFilteringContext.Tag)
+					}
                 </h1>
             </div>
         </div>

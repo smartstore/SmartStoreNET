@@ -60,9 +60,13 @@
 										<h5 class="heading-title font-weight-medium">@T("Order.ShippingMethod")</h5>
 									</div>
 								</div>
-								<div class="col col-auto">
-									<a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
-								</div>
+
+                                @if (Model.DisplayShippingMethodChangeOption)
+                                {
+                                    <div class="col col-auto">
+                                        <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
+                                    </div>
+                                }
 							</div>
 							<p>@Model.ShippingMethod</p>
 						}
@@ -74,7 +78,7 @@
 										<h5 class="heading-title font-weight-medium">@T("Order.PaymentMethod")</h5>
 									</div>
 								</div>
-								@if (!Model.IsPaymentSelectionSkipped)
+								@if (!Model.IsPaymentSelectionSkipped && Model.DisplayPaymentMethodChangeOption)
 								{
 									<div class="col col-auto">
 										<a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("PaymentMethod", "Checkout")'>@T("Common.Change")</a>

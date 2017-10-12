@@ -6,7 +6,7 @@
         // init Globalize
         if (Globalize) {
             // Ask ASP.NET what culture we prefer, because we stuck it in a meta tag
-            var data = $("meta[name='accept-language']").attr("content")
+        	var data = $("meta[name='accept-language']").attr("content");
             // Tell jQuery to figure it out also on the client side.
             Globalize.culture(data || "en-US");
             if ($.fn.datetimepicker) {

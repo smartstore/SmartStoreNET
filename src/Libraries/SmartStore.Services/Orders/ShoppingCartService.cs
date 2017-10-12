@@ -213,8 +213,11 @@ namespace SmartStore.Services.Orders
             // delete item
             _sciRepository.Delete(shoppingCartItem);
 
-            // validate checkout attributes
-            if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
+			// cache busting
+			_requestCache.RemoveByPattern(CARTITEMS_PATTERN_KEY);
+
+			// validate checkout attributes
+			if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
             {
 				var cart = GetCartItems(customer, ShoppingCartType.ShoppingCart, storeId);
 
@@ -238,8 +241,6 @@ namespace SmartStore.Services.Orders
 					DeleteShoppingCartItem(cartItem, resetCheckoutData, ensureOnlyActiveCheckoutAttributes, false);
 				}
 			}
-
-			_requestCache.RemoveByPattern(CARTITEMS_PATTERN_KEY);
         }
 
 		public virtual void DeleteShoppingCartItem(

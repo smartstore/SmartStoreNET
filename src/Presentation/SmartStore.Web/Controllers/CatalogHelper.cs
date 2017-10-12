@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
@@ -244,7 +245,7 @@ namespace SmartStore.Web.Controllers
 					model.BackInStockAlreadySubscribed = _backInStockSubscriptionService.FindSubscription(customer.Id, product.Id, store.Id) != null;
 				}
 
-				//template
+				// template
 				var templateCacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_TEMPLATE_MODEL_KEY, product.ProductTemplateId);
 				model.ProductTemplateViewPath = _services.Cache.Get(templateCacheKey, () =>
 				{
@@ -305,6 +306,74 @@ namespace SmartStore.Web.Controllers
 				}
 
 				model = PrepareProductDetailModel(model, product, query, isAssociatedProduct, productBundleItem, bundleItems);
+
+				// Action items
+				{
+					if (model.HasSampleDownload)
+					{
+						model.ActionItems["sample"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "sample",
+							Title = T("Products.DownloadSample"),
+							CssClass = "action-download-sample",
+							IconCssClass = "fa fa-download",
+							Href = _urlHelper.Action("Sample", "Download", new { productId = model.Id }),
+							IsPrimary = true,
+							PrimaryActionColor = "danger"
+						};
+					}
+
+					if (!model.AddToCart.DisableWishlistButton && model.ProductType != ProductType.GroupedProduct)
+					{
+						model.ActionItems["wishlist"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "wishlist",
+							Title = T("ShoppingCart.AddToWishlist.Short"),
+							Tooltip = T("ShoppingCart.AddToWishlist"),
+							CssClass = "ajax-cart-link action-add-to-wishlist",
+							IconCssClass = "icm icm-heart",
+							Href = _urlHelper.Action("AddProduct", "ShoppingCart", new { productId = model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })
+						};
+					}
+
+					if (model.CompareEnabled)
+					{
+						model.ActionItems["compare"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "compare",
+							Title = T("Common.Shopbar.Compare"),
+							Tooltip = T("Products.Compare.AddToCompareList"),
+							CssClass = "action-compare ajax-cart-link",
+							IconCssClass = "icm icm-repeat",
+							Href = _urlHelper.Action("AddProductToCompare", "Catalog", new { id = model.Id })
+						};
+					}
+
+					if (model.AskQuestionEnabled && !model.ProductPrice.CallForPrice)
+					{
+						model.ActionItems["ask"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "ask",
+							Title = T("Products.AskQuestion.Short"),
+							Tooltip = T("Products.AskQuestion"),
+							CssClass = "action-ask-question",
+							IconCssClass = "icm icm-envelope",
+							Href = _urlHelper.Action("AskQuestion", new { id = model.Id })
+						};
+					}
+
+					if (model.TellAFriendEnabled)
+					{
+						model.ActionItems["tell"] = new ProductDetailsModel.ActionItemModel
+						{
+							Key = "tell",
+							Title = T("Products.EmailAFriend"),
+							CssClass = "action-bullhorn",
+							IconCssClass = "icm icm-bullhorn",
+							Href = _urlHelper.Action("EmailAFriend", new { id = model.Id })
+						};
+					}
+				}
 
 				IList<int> combinationPictureIds = null;
 
@@ -595,51 +664,59 @@ namespace SmartStore.Web.Controllers
 						AllowedFileExtensions = _catalogSettings.FileUploadAllowedExtensions
 					};
 
-					if (attribute.AttributeControlType == AttributeControlType.Datepicker)
+					if (hasSelectedAttributes)
 					{
-						// TODO: obsolete?
-						if (pvaModel.Alias.HasValue() && RegularExpressions.IsYearRange.IsMatch(pvaModel.Alias))
-						{
-							var match = RegularExpressions.IsYearRange.Match(pvaModel.Alias);
-							pvaModel.BeginYear = match.Groups[1].Value.ToInt();
-							pvaModel.EndYear = match.Groups[2].Value.ToInt();
-						}
+						var selectedVariant = query.Variants.FirstOrDefault(x =>
+							x.ProductId == product.Id &&
+							x.BundleItemId == bundleItemId &&
+							x.AttributeId == attribute.ProductAttributeId &&
+							x.VariantAttributeId == attribute.Id);
 
-						if (hasSelectedAttributes)
+						if (selectedVariant != null)
 						{
-							var selectedVariant = query.Variants.FirstOrDefault(x =>
-								x.ProductId == product.Id &&
-								x.BundleItemId == bundleItemId &&
-								x.AttributeId == attribute.ProductAttributeId &&
-								x.VariantAttributeId == attribute.Id);
-
-							if (selectedVariant != null && selectedVariant.Date.HasValue)
+							switch (attribute.AttributeControlType)
 							{
-								pvaModel.SelectedDay = selectedVariant.Date.Value.Day;
-								pvaModel.SelectedMonth = selectedVariant.Date.Value.Month;
-								pvaModel.SelectedYear = selectedVariant.Date.Value.Year;
+								case AttributeControlType.Datepicker:
+									if (selectedVariant.Date.HasValue)
+									{
+										pvaModel.SelectedDay = selectedVariant.Date.Value.Day;
+										pvaModel.SelectedMonth = selectedVariant.Date.Value.Month;
+										pvaModel.SelectedYear = selectedVariant.Date.Value.Year;
+									}
+									break;
+								case AttributeControlType.FileUpload:
+									pvaModel.UploadedFileGuid = selectedVariant.Value;
+
+									Guid guid;
+									if (selectedVariant.Value.HasValue() && Guid.TryParse(selectedVariant.Value, out guid))
+									{										
+										var download = _downloadService.GetDownloadByGuid(guid);
+										if (download != null)
+										{
+											pvaModel.UploadedFileName = string.Concat(download.Filename ?? download.DownloadGuid.ToString(), download.Extension);
+										}
+									}
+									break;
+								case AttributeControlType.TextBox:
+								case AttributeControlType.MultilineTextbox:
+									pvaModel.TextValue = selectedVariant.Value;
+									break;
 							}
 						}
 					}
-					else if (attribute.AttributeControlType == AttributeControlType.TextBox || attribute.AttributeControlType == AttributeControlType.MultilineTextbox)
-					{
-						if (hasSelectedAttributes)
-						{
-							var selectedVariant = query.Variants.FirstOrDefault(x =>
-								x.ProductId == product.Id &&
-								x.BundleItemId == bundleItemId &&
-								x.AttributeId == attribute.ProductAttributeId &&
-								x.VariantAttributeId == attribute.Id);
 
-							if (selectedVariant != null)
-							{
-								pvaModel.TextValue = selectedVariant.Value;
-							}
-						}
+					// TODO: obsolete? Alias field is not used for custom values anymore, only for URL as URL variant alias.
+					if (attribute.AttributeControlType == AttributeControlType.Datepicker && pvaModel.Alias.HasValue() && RegularExpressions.IsYearRange.IsMatch(pvaModel.Alias))
+					{
+						var match = RegularExpressions.IsYearRange.Match(pvaModel.Alias);
+						pvaModel.BeginYear = match.Groups[1].Value.ToInt();
+						pvaModel.EndYear = match.Groups[2].Value.ToInt();
 					}
 
 					var preSelectedValueId = 0;
-					var pvaValues = (attribute.ShouldHaveValues() ? _productAttributeService.GetProductVariantAttributeValues(attribute.Id) : new List<ProductVariantAttributeValue>());
+					var pvaValues = attribute.ShouldHaveValues() 
+						? _productAttributeService.GetProductVariantAttributeValues(attribute.Id)
+						: new List<ProductVariantAttributeValue>();
 
 					foreach (var pvaValue in pvaValues)
 					{
@@ -654,6 +731,7 @@ namespace SmartStore.Web.Controllers
 						var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
 
 						var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel();
+						pvaValueModel.PriceAdjustment = string.Empty;
 						pvaValueModel.Id = pvaValue.Id;
 						pvaValueModel.Name = pvaValue.GetLocalized(x => x.Name);
 						pvaValueModel.Alias = pvaValue.Alias;
@@ -676,10 +754,13 @@ namespace SmartStore.Web.Controllers
 							decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
 							decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, currency);
 
-							if (priceAdjustmentBase > decimal.Zero)
-								pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
-							else if (priceAdjustmentBase < decimal.Zero)
-								pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
+							if (_catalogSettings.ShowVariantCombinationPriceAdjustment)
+							{
+								if (priceAdjustmentBase > decimal.Zero)
+									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
+								else if (priceAdjustmentBase < decimal.Zero)
+									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
+							}
 
 							if (pvaValueModel.IsPreSelected)
 							{
@@ -693,11 +774,6 @@ namespace SmartStore.Web.Controllers
 							}
 
 							pvaValueModel.PriceAdjustmentValue = priceAdjustment;
-						}
-
-						if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
-						{
-							pvaValueModel.PriceAdjustment = "";
 						}
 
 						if (_catalogSettings.ShowLinkedAttributeValueImage && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
@@ -850,7 +926,7 @@ namespace SmartStore.Web.Controllers
 			model.HasSampleDownload = product.IsDownload && product.HasSampleDownload;
 			model.IsCurrentCustomerRegistered = customer.IsRegistered();
 			model.IsBasePriceEnabled = product.BasePriceEnabled && !(isBundle && product.BundlePerItemPricing);
-            model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, currency);
+            model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, customer, currency);
 			model.ShowLegalInfo = !model.IsBundlePart && _taxSettings.ShowLegalHintsInProductDetails;
 			model.BundleTitleText = product.GetLocalized(x => x.BundleTitleText);
 			model.BundlePerItemPricing = product.BundlePerItemPricing;
@@ -1034,7 +1110,7 @@ namespace SmartStore.Web.Controllers
 						finalPriceWithoutDiscountBase = _taxService.GetProductPrice(product, finalPriceWithoutDiscountBase, out taxRate);
 						finalPriceWithDiscountBase = _taxService.GetProductPrice(product, finalPriceWithDiscountBase, out taxRate);
 
-						oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _services.WorkContext.WorkingCurrency);
+						oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, currency);
 
 						finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscountBase, currency);
 						finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscountBase, currency);
@@ -1063,6 +1139,7 @@ namespace SmartStore.Web.Controllers
                             _currencyService, 
                             _taxService, 
                             _priceCalculationService,
+							customer,
                             currency, 
                             attributesTotalPriceBase);
 
@@ -1084,6 +1161,7 @@ namespace SmartStore.Web.Controllers
                                 _currencyService,
                                 _taxService, 
                                 _priceCalculationService,
+								customer,
                                 currency, 
                                 (product.Price - finalPriceWithDiscount) * (-1));
 						}
@@ -1376,7 +1454,9 @@ namespace SmartStore.Web.Controllers
                         Id = manufacturer.Id,
                         Name = manufacturer.GetLocalized(x => x.Name),
                         SeName = manufacturer.GetSeName(),
-                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures)
+                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
+                        DisplayOrder = manufacturer.DisplayOrder,
+                        HasPicture = manufacturer.PictureId != null
                     };
                     model.Manufacturers.Add(modelMan);
                 }

@@ -1,10 +1,13 @@
 ﻿@model ShopBarModel
-
 @using SmartStore.Web.Models.Common;
-
 @{ 
-	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
-	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
+    if (IsStoreClosed)
+    {
+        return;
+    }
+
+    string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+    var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
 }
 
 <div class="shopbar-col shopbar-tools" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { cart = Model.ShoppingCartEnabled, wishlist = Model.WishlistEnabled, compare = Model.CompareProductsEnabled })">

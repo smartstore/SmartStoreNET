@@ -506,12 +506,17 @@ namespace SmartStore.Services.Catalog
 					}
 				}
 
-                var newAssignedPictureIds = new List<string>();
+                var newAssignedPictureIds = new HashSet<string>();
 
                 if(!String.IsNullOrEmpty(combination.AssignedPictureIds))
                 {
-                    combination.AssignedPictureIds.Split(',').Each(x => {
-                        newAssignedPictureIds.Add(newPictureIds[Convert.ToInt32(x)]);
+                    combination.AssignedPictureIds.Split(',').Each(x => 
+                    {
+                        string newId;
+                        if (newPictureIds.TryGetValue(x.Convert<int>(), out newId))
+                        {
+                            newAssignedPictureIds.Add(newId);
+                        }
                     });
                 }
                 

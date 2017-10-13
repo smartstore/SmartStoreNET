@@ -618,7 +618,8 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("CustomerRoleId", entityTierPrice.CustomerRoleId.HasValue ? entityTierPrice.CustomerRoleId.Value.ToString() : "");
 					_writer.Write("Quantity", entityTierPrice.Quantity.ToString());
 					_writer.Write("Price", entityTierPrice.Price.ToString(_culture));
-					_writer.WriteEndElement();	// TierPrice
+                    _writer.Write("CalculationMethod", ((int)entityTierPrice.CalculationMethod).ToString());
+                    _writer.WriteEndElement();	// TierPrice
 				}
 				_writer.WriteEndElement();	// TierPrices
 			}

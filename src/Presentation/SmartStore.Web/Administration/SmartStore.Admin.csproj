@@ -872,6 +872,7 @@
     <Content Include="Content\shared\_utils.scss" />
     <Content Include="Content\shared\_mixins.scss" />
     <Content Include="Content\shared\_dropdown.scss" />
+    <Content Include="Content\shared\_entity-picker.scss" />
     <None Include="Content\telerik\_telerik.scss" />
     <Content Include="Content\_legacy.scss" />
     <Content Include="Content\vendors\select2\scss\_dropdown.scss" />

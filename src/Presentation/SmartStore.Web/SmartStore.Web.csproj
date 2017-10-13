@@ -970,7 +970,6 @@
     <Content Include="Content\samples\wayfarer_havana.png" />
     <Content Include="Content\samples\wayfarer_havana_black.png" />
     <Content Include="Content\samples\wayfarer_rayban-black.png" />
-    <Content Include="Content\smartstore.entitypicker.css" />
     <Content Include="Content\x-editable\bootstrap-editable.css" />
     <Content Include="Content\x-editable\img\clear.png" />
     <Content Include="Content\x-editable\img\loading.gif" />
@@ -1048,7 +1047,7 @@
     <Content Include="Themes\Flex\Scripts\public.product.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.touchevents.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.responsiveNav.js" />
-    <Content Include="Scripts\smartstore.entityPicker.js" />
+    <Content Include="Scripts\smartstore.entitypicker.js" />
     <Content Include="Scripts\smartstore.instantsearch.js" />
     <Content Include="Scripts\smartstore.common.js" />
     <Content Include="Scripts\smartstore.globalize.adapter.js" />

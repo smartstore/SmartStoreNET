@@ -112,7 +112,7 @@
 
 		function showAndFocusDialog() {
 			dialog = $('#entity-picker-' + opt.entity + '-dialog');
-			dialog.find('.caption').html(opt.caption || '&nbsp;');
+			dialog.find('.modal-title').html(opt.caption || '&nbsp;');
 			dialog.data('entitypicker', opt);
 			dialog.modal('show');
 
@@ -172,7 +172,7 @@
 
 		// toggle filters
 		dialog.find('button[name=FilterEntities]').click(function () {
-			dialog.find('.entity-picker-filter').slideToggle();
+			dialog.find('.entity-picker-filter').slideToggle(200);
 		});
 
 		// hit enter or key up starts searching
@@ -204,7 +204,7 @@
 		});
 
 		// filter change starts searching
-		dialog.find('.entity-picker-filter .item').change(function () {
+		dialog.find('.entity-picker-filter .form-control').on('change', function () {
 			fillList(this, { append: false });
 		});
 
@@ -216,10 +216,10 @@
 		});
 
 		// item select and item hover
-		dialog.find('.entity-picker-list').on('click', '.item', function (e) {
+		dialog.find('.entity-picker-list').on('click', '.entity-picker-item', function (e) {
 			var item = $(this);
 
-			if (item.hasClass('disable'))
+			if (item.hasClass('disabled'))
 				return false;
 
 			var dialog = item.closest('.entity-picker'),
@@ -227,7 +227,7 @@
 				data = dialog.data('entitypicker');
 
 			if (data.maxReturnValues === 1) {
-				list.find('.item').removeClass('selected');
+				list.find('.entity-picker-item').removeClass('selected');
 				item.addClass('selected');
 			}
 			else if (item.hasClass('selected')) {
@@ -240,14 +240,14 @@
 			dialog.find('.modal-footer .btn-primary').prop('disabled', list.find('.selected').length <= 0);
 		}).on({
 			mouseenter: function () {
-				if ($(this).hasClass('disable'))
+				if ($(this).hasClass('disabled'))
 					showStatus($(this).closest('.entity-picker'), 'not-selectable');
 			},
 			mouseleave: function () {
-				if ($(this).hasClass('disable'))
+				if ($(this).hasClass('disabled'))
 					showStatus($(this).closest('.entity-picker'));
 			}
-		}, '.item');
+		}, '.entity-picker-item');
 
 		// return value(s)
 		dialog.find('.modal-footer .btn-primary').click(function () {
@@ -328,12 +328,12 @@
 				list.stop().append(response);
 
 				if (_.isFalse(opt.append)) {
-					dialog.find('.entity-picker-filter').slideUp();
+					//dialog.find('.entity-picker-filter').slideUp(200);
 					showStatus(dialog);
 				}
 
 				if (list.thumbZoomer && _.isTrue(data.thumbZoomer)) {
-					list.find('.thumb img:not(.zoomable-thumb)').addClass('zoomable-thumb');
+					list.find('.entity-picker-thumb > img:not(.zoomable-thumb)').addClass('zoomable-thumb');
 					list.thumbZoomer();
 				}
 

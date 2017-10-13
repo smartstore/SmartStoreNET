@@ -28,12 +28,12 @@
 }
 
 .modal-header {
-    background-color: $gray-lightest;
-    border-bottom: none;
+    //background-color: $gray-lightest;
+    //border-bottom: none;
 }
 
 .modal-title {
-    font-weight: $font-weight-medium;
+    font-weight: $font-weight-normal; // $font-weight-medium;
 }
 
 .modal-flex {
@@ -74,6 +74,8 @@
         display: flex;
         flex-basis: 0;
         flex-grow: 1;
+        flex-direction: column;
+        overflow: auto;
         max-width: 100%;
         min-height: 1px;
     }

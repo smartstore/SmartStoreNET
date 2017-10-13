@@ -1041,25 +1041,19 @@ namespace SmartStore.Web.Controllers
 									item.LabelClassName = "badge-info";
 								}
 
-								var productPicture = pictures.FirstOrDefault(y => y.Key == x.Id);
-								if (productPicture.Value != null)
+								var productPicture = pictures[x.Id]?.FirstOrDefault();
+
+								try
 								{
-									var picture = productPicture.Value.FirstOrDefault();
-									if (picture != null)
-									{
-										try
-										{
-											item.ImageUrl = _pictureService.Value.GetPictureUrl(
-												picture.Picture,
-												_mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
-												!_catalogSettings.HideProductDefaultPictures,
-												storeLocation);
-										}
-										catch (Exception exception)
-										{
-											exception.Dump();
-										}
-									}
+									item.ImageUrl = _pictureService.Value.GetPictureUrl(
+										productPicture?.Picture,
+										_mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
+										!_catalogSettings.HideProductDefaultPictures,
+										storeLocation);
+								}
+								catch (Exception ex)
+								{
+									ex.Dump();
 								}
 
 								return item;

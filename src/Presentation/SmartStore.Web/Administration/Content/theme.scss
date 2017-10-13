@@ -168,6 +168,7 @@ $gray-lightest: $gray-100;
 @import "shared/_throbber.scss";
 @import "shared/_spinner.scss";
 @import "shared/_sortable-grip.scss";
+@import "shared/_entity-picker.scss";
 @import "shared/_utils.scss";
 
 
@@ -219,53 +220,52 @@ $gray-lightest: $gray-100;
 .adminContent {
     //max-width: 1400px;
     @include make-container();
-}
 
-.adminContent,
-.adminContent > tbody {
-    display: flex;
-    flex-flow: column;
+    display: block;
     border-collapse: initial;
-}
 
-.adminContent > tbody > tr,
-.adminContent > tr {
-    @include make-row();
-    margin: 0.5rem 0;
-}
-
-.adminContent > tbody > tr > td,
-.adminContent > tr > td {
-    @include make-col-ready();
-}
-
-.adminContent td.adminTitle {
-    @include make-col(3);
-    text-align: right;
-}
-
-.adminContent td.adminTitle {
-    margin-bottom: 0;
-    padding-top: $input-btn-padding-y;
-    padding-bottom: $input-btn-padding-y;
-}
-
-.adminContent td.adminData > .switch {
-    margin-bottom: 0;
-    padding-top: calc(#{$input-btn-padding-y} - 3px);
-    padding-bottom: calc(#{$input-btn-padding-y} + 2px);
-}
-
-.adminContent td.adminData {
-    @include make-col(6);
-    &.wide {
-        @include make-col(9);
+    > tbody {
+        display: flex;
+        flex-flow: column;
+        border-collapse: initial;
     }
-}
 
-.adminContent > tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
-.adminContent > tr > td:only-child:not(.adminData):not(.adminTitle) {
-    @include make-col(12);
+    > tbody > tr,
+    > tr {
+        @include make-row();
+        margin: 0.5rem 0;
+    }
+
+    > tbody > tr > td,
+    > tr > td {
+        @include make-col-ready();
+    }
+
+    td.adminTitle {
+        @include make-col(3);
+        text-align: right;
+        margin-bottom: 0;
+        padding-top: $input-btn-padding-y;
+        padding-bottom: $input-btn-padding-y;
+    }
+
+    td.adminData {
+        @include make-col(6);
+        &.wide {
+            @include make-col(9);
+        }
+
+        > .switch {
+            margin-bottom: 0;
+            padding-top: calc(#{$input-btn-padding-y} - 3px);
+            padding-bottom: calc(#{$input-btn-padding-y} + 2px);
+        }
+    }
+
+    > tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
+    > tr > td:only-child:not(.adminData):not(.adminTitle) {
+        @include make-col(12);
+    }
 }
 
 .ctl-label {

@@ -1,0 +1,77 @@
+/// <reference path="../theme.scss" />
+
+// Entity Picker
+// ------------------------------
+
+.entity-picker-item {
+    &:not(.disabled):hover {
+	    cursor: pointer;
+    }
+    &:hover,
+    &.selected {
+	    background-color: $gray-100;
+
+        .entity-picker-thumb {
+            background: #fff;
+            box-shadow: 1px 1px 2px rgba(0,0,0, 0.1);
+        }
+    }
+
+    &.selected {
+        outline: 2px solid $component-active-bg;
+    }
+
+    &.disabled {
+	    opacity: 0.4;
+    }
+
+    .title {
+        font-weight: 400;
+        max-height: 36px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .highlight {
+        font-weight: 700;
+    }
+
+    .summary {
+        color: #aaa;
+	    font-size: 12px;
+	    height: 18px;
+	    line-height: 18px;
+	    vertical-align: middle;
+	    overflow: hidden;
+    }
+
+    .published {
+        margin-left: 1px;
+        margin-right: 6px;
+        font-size: 15px;
+        line-height: 18px;
+        vertical-align: sub;
+    }
+    .published.fa-globe {
+        color: inherit;
+    }
+    .published.fa-eye-slash {
+        color: $gray-500;
+    }
+
+    .thumb,
+    .data {
+        position: relative;
+        box-sizing: border-box;
+        display: block;
+    }
+    .entity-picker-thumb {
+        width: 44px;
+        max-width: 44px;
+    }
+}
+
+.entity-picker-searchterm {
+    width: 250px !important;
+}
+

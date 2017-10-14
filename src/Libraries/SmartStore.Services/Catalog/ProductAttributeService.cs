@@ -406,7 +406,6 @@ namespace SmartStore.Services.Catalog
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
-			//event notification
 			_eventPublisher.EntityInserted(productVariantAttribute);
         }
 

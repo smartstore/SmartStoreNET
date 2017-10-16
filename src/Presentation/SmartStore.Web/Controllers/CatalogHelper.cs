@@ -474,22 +474,23 @@ namespace SmartStore.Web.Controllers
                 .RemoveDuplicatedQuantities()
                 .Select(tierPrice =>
                 {
+                    var currentAdjustment = adjustment;
                     var m = new ProductDetailsModel.TierPriceModel
                     {
                         Quantity = tierPrice.Quantity,
                     };
 
-                    if (adjustment != 0 && tierPrice.CalculationMethod == TierPriceCalculationMethod.Percental && _catalogSettings.ApplyTierPricePercentageToAttributePriceAdjustments)
+                    if (currentAdjustment != 0 && tierPrice.CalculationMethod == TierPriceCalculationMethod.Percental && _catalogSettings.ApplyTierPricePercentageToAttributePriceAdjustments)
                     {
-                        adjustment = adjustment - (adjustment / 100 * tierPrice.Price);
+                        currentAdjustment = currentAdjustment - (currentAdjustment / 100 * tierPrice.Price);
                     }
                     else
                     {
-                        adjustment = decimal.Zero;
+                        currentAdjustment = decimal.Zero;
                     }
 
                     decimal taxRate = decimal.Zero;
-                    decimal priceBase = _taxService.GetProductPrice(product, _priceCalculationService.GetFinalPrice(product, _services.WorkContext.CurrentCustomer, adjustment, _catalogSettings.DisplayTierPricesWithDiscounts, tierPrice.Quantity, null, null, true), out taxRate);
+                    decimal priceBase = _taxService.GetProductPrice(product, _priceCalculationService.GetFinalPrice(product, _services.WorkContext.CurrentCustomer, currentAdjustment, _catalogSettings.DisplayTierPricesWithDiscounts, tierPrice.Quantity, null, null, true), out taxRate);
                     decimal price = _currencyService.ConvertFromPrimaryStoreCurrency(priceBase, _services.WorkContext.WorkingCurrency);
                     m.Price = _priceFormatter.FormatPrice(price, true, false);
                     return m;

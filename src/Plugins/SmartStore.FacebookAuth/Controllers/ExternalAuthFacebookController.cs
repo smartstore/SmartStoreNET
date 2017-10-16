@@ -87,7 +87,13 @@ namespace SmartStore.FacebookAuth.Controllers
         [ChildActionOnly]
         public ActionResult PublicInfo()
         {
-            return View();
+            int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+            var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(storeScope);
+
+            if(settings.ClientKeyIdentifier.HasValue() && settings.ClientSecret.HasValue())
+                return View();
+            else
+                return new EmptyResult();
         }
 
 		public ActionResult Login(string returnUrl)

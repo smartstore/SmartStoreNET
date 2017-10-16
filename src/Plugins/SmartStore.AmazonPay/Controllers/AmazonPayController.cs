@@ -151,7 +151,12 @@ namespace SmartStore.AmazonPay.Controllers
 		public ActionResult AuthenticationPublicInfo()
 		{
 			var model = _apiService.CreateViewModel(AmazonPayRequestType.AuthenticationPublicInfo, TempData);
-			return View(model);
+            if (model != null)
+            {
+                return View(model);
+            }
+
+            return new EmptyResult();
 		}
 
 		public ActionResult AuthenticationButtonHandler()

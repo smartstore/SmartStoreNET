@@ -315,6 +315,11 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else if (type == AmazonPayRequestType.AuthenticationPublicInfo)
 				{
+                    if (settings.SellerId.IsEmpty() || settings.AccessKey.IsEmpty() || settings.SecretKey.IsEmpty())
+                    {
+                        return null;
+                    }
+
 					model.ButtonHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler";
 
 					// Do not append returnUrl to button handler URL. Handler URLs must be whitelisted in Amazon Seller Central.

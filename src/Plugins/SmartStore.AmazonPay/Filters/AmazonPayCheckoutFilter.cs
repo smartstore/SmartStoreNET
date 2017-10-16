@@ -59,13 +59,16 @@ namespace SmartStore.AmazonPay.Filters
 
 			var actionName = filterContext.ActionDescriptor.ActionName;
 
-			if (!IsInterceptableAction(actionName))
+            if (actionName.IsCaseInsensitiveEqual("ShippingMethod"))
+                return;
+
+            if (!IsInterceptableAction(actionName))
 				return;
 
-			if (actionName.IsCaseInsensitiveEqual("ShippingMethod"))
-				return;
+            if (!filterContext.HttpContext.HasAmazonPayState())
+                return;
 
-			var routeValues = new RouteValueDictionary(new { action = actionName, controller = "AmazonPayCheckout" });
+            var routeValues = new RouteValueDictionary(new { action = actionName, controller = "AmazonPayCheckout" });
 
 			filterContext.Result = new RedirectToRouteResult("SmartStore.AmazonPay", routeValues);
 		}

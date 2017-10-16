@@ -95,7 +95,7 @@ namespace SmartStore.AmazonPay
 			{
 				var state = checkoutState.CustomProperties[checkoutStateKey] as AmazonPayCheckoutState;
 
-				return state != null && state.OrderReferenceId.HasValue() && state.AccessToken.HasValue();
+				return state != null && state.AccessToken.HasValue();
 			}
 
 			return false;

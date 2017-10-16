@@ -27,6 +27,7 @@
 * #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
 * #1100 Customer can register in frontend via "Login with Amazon" button
 * #1240 Implement rounding of order total ("cash rounding")
+* #1292 Web API: Add a method to get an order in PDF format
 
 
 ## SmartStore.NET 3.0.3

@@ -228,12 +228,13 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 			if (result == HmacResult.Success)
 			{
-				// inform core about the authentication. note you cannot use IWorkContext.set_CurrentCustomer here.
+				// Inform core about the authentication. Note, you cannot use IWorkContext.set_CurrentCustomer here.
 				HttpContext.Current.User = new SmartStorePrincipal(customer, HmacAuthentication.Scheme1);
 
 				var response = HttpContext.Current.Response;
 
-				response.AddHeader(WebApiGlobal.Header.Version, controllingData.Version);
+                response.AddHeader(WebApiGlobal.Header.AppVersion, SmartStoreVersion.CurrentFullVersion);
+                response.AddHeader(WebApiGlobal.Header.Version, controllingData.Version);
 				response.AddHeader(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
 				response.AddHeader(WebApiGlobal.Header.Date, utcNow.ToString("o"));
 				response.AddHeader(WebApiGlobal.Header.CustomerId, customer.Id.ToString());
@@ -247,11 +248,12 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				var headers = actionContext.Response.Headers;
 				var authorization = actionContext.Request.Headers.Authorization;
 
-				// see RFC-2616
+				// See RFC-2616
 				var scheme = _hmac.GetWwwAuthenticateScheme(authorization != null ? authorization.Scheme : null);
 				headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(scheme));
 
-				headers.Add(WebApiGlobal.Header.Version, controllingData.Version);
+                headers.Add(WebApiGlobal.Header.AppVersion, SmartStoreVersion.CurrentFullVersion);
+                headers.Add(WebApiGlobal.Header.Version, controllingData.Version);
 				headers.Add(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
 				headers.Add(WebApiGlobal.Header.Date, utcNow.ToString("o"));
 				headers.Add(WebApiGlobal.Header.HmacResultId, ((int)result).ToString());

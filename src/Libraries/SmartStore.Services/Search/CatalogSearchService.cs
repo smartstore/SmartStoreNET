@@ -188,7 +188,7 @@ namespace SmartStore.Services.Search
 
 		protected virtual void ApplyFacetLabels(IDictionary<string, FacetGroup> facets)
 		{
-			if (facets == null | facets.Count == 0)
+			if (facets == null || facets.Count == 0)
 			{
 				return;
 			}

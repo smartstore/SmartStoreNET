@@ -152,10 +152,9 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void DeleteProduct(Product product)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
-            product.Deleted = true;
+			product.Deleted = true;
 			product.DeliveryTimeId = null;
 			product.QuantityUnitId = null;
 			product.CountryOfOriginId = null;
@@ -286,20 +285,16 @@ namespace SmartStore.Services.Catalog
 
         public virtual void InsertProduct(Product product)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
-            //insert
-            _productRepository.Insert(product);
-            
-            //event notification
+			_productRepository.Insert(product);
+
             _services.EventPublisher.EntityInserted(product);
         }
 
 		public virtual void UpdateProduct(Product product, bool publishEvent = true)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			bool modified = false;
 			if (publishEvent)
@@ -319,10 +314,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void UpdateProductReviewTotals(Product product)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
-            int approvedRatingSum = 0;
+			int approvedRatingSum = 0;
             int notApprovedRatingSum = 0; 
             int approvedTotalReviews = 0;
             int notApprovedTotalReviews = 0;
@@ -466,8 +460,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual AdjustInventoryResult AdjustInventory(OrderItem orderItem, bool decrease, int quantity)
 		{
-			if (orderItem == null)
-				throw new ArgumentNullException("orderItem");
+			Guard.NotNull(orderItem, nameof(orderItem));
 
 			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.Product.BundlePerItemShoppingCart)
 			{
@@ -496,8 +489,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual AdjustInventoryResult AdjustInventory(Product product, bool decrease, int quantity, string attributesXml)
         {
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			var result = new AdjustInventoryResult();
 
@@ -581,8 +573,7 @@ namespace SmartStore.Services.Catalog
         
 		public virtual void UpdateHasTierPricesProperty(Product product)
         {
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			var prevValue = product.HasTierPrices;
 			product.HasTierPrices = product.TierPrices.Count > 0;
@@ -592,8 +583,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void UpdateLowestAttributeCombinationPriceProperty(Product product)
 		{
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			var prevValue = product.LowestAttributeCombinationPrice;
 
@@ -684,10 +674,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void DeleteRelatedProduct(RelatedProduct relatedProduct)
         {
-            if (relatedProduct == null)
-                throw new ArgumentNullException("relatedProduct");
+			Guard.NotNull(relatedProduct, nameof(relatedProduct));
 
-            _relatedProductRepository.Delete(relatedProduct);
+			_relatedProductRepository.Delete(relatedProduct);
 
             //event notification
             _services.EventPublisher.EntityDeleted(relatedProduct);
@@ -716,10 +705,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void InsertRelatedProduct(RelatedProduct relatedProduct)
         {
-            if (relatedProduct == null)
-                throw new ArgumentNullException("relatedProduct");
+			Guard.NotNull(relatedProduct, nameof(relatedProduct));
 
-            _relatedProductRepository.Insert(relatedProduct);
+			_relatedProductRepository.Insert(relatedProduct);
 
             //event notification
             _services.EventPublisher.EntityInserted(relatedProduct);
@@ -727,10 +715,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void UpdateRelatedProduct(RelatedProduct relatedProduct)
         {
-            if (relatedProduct == null)
-                throw new ArgumentNullException("relatedProduct");
+			Guard.NotNull(relatedProduct, nameof(relatedProduct));
 
-            _relatedProductRepository.Update(relatedProduct);
+			_relatedProductRepository.Update(relatedProduct);
 
             //event notification
             _services.EventPublisher.EntityUpdated(relatedProduct);
@@ -754,10 +741,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void DeleteCrossSellProduct(CrossSellProduct crossSellProduct)
         {
-            if (crossSellProduct == null)
-                throw new ArgumentNullException("crossSellProduct");
+			Guard.NotNull(crossSellProduct, nameof(crossSellProduct));
 
-            _crossSellProductRepository.Delete(crossSellProduct);
+			_crossSellProductRepository.Delete(crossSellProduct);
 
             //event notification
             _services.EventPublisher.EntityDeleted(crossSellProduct);
@@ -800,10 +786,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void InsertCrossSellProduct(CrossSellProduct crossSellProduct)
         {
-            if (crossSellProduct == null)
-                throw new ArgumentNullException("crossSellProduct");
+			Guard.NotNull(crossSellProduct, nameof(crossSellProduct));
 
-            _crossSellProductRepository.Insert(crossSellProduct);
+			_crossSellProductRepository.Insert(crossSellProduct);
 
             //event notification
             _services.EventPublisher.EntityInserted(crossSellProduct);
@@ -811,10 +796,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void UpdateCrossSellProduct(CrossSellProduct crossSellProduct)
         {
-            if (crossSellProduct == null)
-                throw new ArgumentNullException("crossSellProduct");
+			Guard.NotNull(crossSellProduct, nameof(crossSellProduct));
 
-            _crossSellProductRepository.Update(crossSellProduct);
+			_crossSellProductRepository.Update(crossSellProduct);
 
             // event notification
             _services.EventPublisher.EntityUpdated(crossSellProduct);
@@ -860,10 +844,9 @@ namespace SmartStore.Services.Catalog
         
         public virtual void DeleteTierPrice(TierPrice tierPrice)
         {
-            if (tierPrice == null)
-                throw new ArgumentNullException("tierPrice");
+			Guard.NotNull(tierPrice, nameof(tierPrice));
 
-            _tierPriceRepository.Delete(tierPrice);
+			_tierPriceRepository.Delete(tierPrice);
 
             //event notification
             _services.EventPublisher.EntityDeleted(tierPrice);
@@ -905,10 +888,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void InsertTierPrice(TierPrice tierPrice)
         {
-            if (tierPrice == null)
-                throw new ArgumentNullException("tierPrice");
+			Guard.NotNull(tierPrice, nameof(tierPrice));
 
-            _tierPriceRepository.Insert(tierPrice);
+			_tierPriceRepository.Insert(tierPrice);
 
             //event notification
             _services.EventPublisher.EntityInserted(tierPrice);
@@ -916,10 +898,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void UpdateTierPrice(TierPrice tierPrice)
         {
-            if (tierPrice == null)
-                throw new ArgumentNullException("tierPrice");
+			Guard.NotNull(tierPrice, nameof(tierPrice));
 
-            _tierPriceRepository.Update(tierPrice);
+			_tierPriceRepository.Update(tierPrice);
 
             //event notification
             _services.EventPublisher.EntityUpdated(tierPrice);
@@ -931,10 +912,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void DeleteProductPicture(ProductPicture productPicture)
         {
-            if (productPicture == null)
-                throw new ArgumentNullException("productPicture");
+			Guard.NotNull(productPicture, nameof(productPicture));
 
-            UnassignDeletedPictureFromVariantCombinations(productPicture);
+			UnassignDeletedPictureFromVariantCombinations(productPicture);
 
             _productPictureRepository.Delete(productPicture);
 
@@ -1020,10 +1000,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual void InsertProductPicture(ProductPicture productPicture)
         {
-            if (productPicture == null)
-                throw new ArgumentNullException("productPicture");
+			Guard.NotNull(productPicture, nameof(productPicture));
 
-            _productPictureRepository.Insert(productPicture);
+			_productPictureRepository.Insert(productPicture);
 
             //event notification
             _services.EventPublisher.EntityInserted(productPicture);
@@ -1035,10 +1014,9 @@ namespace SmartStore.Services.Catalog
         /// <param name="productPicture">Product picture</param>
         public virtual void UpdateProductPicture(ProductPicture productPicture)
         {
-            if (productPicture == null)
-                throw new ArgumentNullException("productPicture");
+			Guard.NotNull(productPicture, nameof(productPicture));
 
-            _productPictureRepository.Update(productPicture);
+			_productPictureRepository.Update(productPicture);
 
             //event notification
             _services.EventPublisher.EntityUpdated(productPicture);
@@ -1050,8 +1028,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void InsertBundleItem(ProductBundleItem bundleItem)
 		{
-			if (bundleItem == null)
-				throw new ArgumentNullException("bundleItem");
+			Guard.NotNull(bundleItem, nameof(bundleItem));
 
 			if (bundleItem.BundleProductId == 0)
 				throw new SmartException("BundleProductId of a bundle item cannot be 0.");
@@ -1070,8 +1047,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void UpdateBundleItem(ProductBundleItem bundleItem)
 		{
-			if (bundleItem == null)
-				throw new ArgumentNullException("bundleItem");
+			Guard.NotNull(bundleItem, nameof(bundleItem));
 
 			_productBundleItemRepository.Update(bundleItem);
 
@@ -1081,8 +1057,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void DeleteBundleItem(ProductBundleItem bundleItem)
 		{
-			if (bundleItem == null)
-				throw new ArgumentNullException("bundleItem");
+			Guard.NotNull(bundleItem, nameof(bundleItem));
 
 			// remove bundles from shopping carts (otherwise bundle item cannot be deleted)
 			var parentCartItemIds = _shoppingCartItemRepository.TableUntracked

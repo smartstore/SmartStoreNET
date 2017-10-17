@@ -15,8 +15,9 @@ namespace SmartStore.Web.Infrastructure
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
 			builder.RegisterType<CatalogHelper>().InstancePerRequest();
+            builder.RegisterType<OrderHelper>().InstancePerRequest();
 
-			builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().InstancePerRequest();
+            builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().InstancePerRequest();
 			builder.RegisterType<DefaultFacetTemplateSelector>().As<IFacetTemplateSelector>().SingleInstance();
 
 			// Installation localization service

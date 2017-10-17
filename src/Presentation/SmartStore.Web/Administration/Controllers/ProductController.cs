@@ -1457,9 +1457,10 @@ namespace SmartStore.Admin.Controllers
 
                 return RedirectToAction("Edit", new { id = newProduct.Id });
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-				NotifyError(exc.ToAllMessages());
+				Logger.Error(ex);
+				NotifyError(ex.ToAllMessages());
                 return RedirectToAction("Edit", new { id = copyModel.Id });
             }
         }

@@ -968,7 +968,7 @@ namespace SmartStore.Web.Controllers
 							fields.Add("sku");
 						if (_searchSettings.Value.SearchFields.Contains("shortdescription"))
 							fields.Add("shortdescription");
-
+						
 						var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchTerm)
 							.HasStoreId(model.StoreId);
 

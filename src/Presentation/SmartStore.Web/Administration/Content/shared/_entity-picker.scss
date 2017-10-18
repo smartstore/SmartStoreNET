@@ -3,6 +3,18 @@
 // Entity Picker
 // ------------------------------
 
+.entity-picker {
+    .modal-header {
+        background-color: $gray-100;
+    }
+}
+
+.entity-picker-filter {
+    .col-form-label {
+        padding-bottom: 0.2rem;
+    }
+}
+
 .entity-picker-item {
     &:not(.disabled):hover {
 	    cursor: pointer;

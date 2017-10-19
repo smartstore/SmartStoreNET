@@ -1,5 +1,6 @@
 ﻿@model EntityPickerModel
-@using SmartStore.Web.Models.Common;
+
+@using SmartStore.Web.Models.Entity;
 
 <div id="entity-picker-@(Model.Entity)-dialog" class="entity-picker modal modal-xlarge modal-flex hide fade" tabindex="-1">
 	<div class="modal-header">
@@ -7,7 +8,7 @@
 		<h4 class="caption">&nbsp;</h4>
 	</div>
 	<div class="modal-body">
-		<form method="POST" class="modal-flex-fill-area" action="@Url.Action("EntityPicker", "Common", new { area = "" })">
+		<form method="POST" class="modal-flex-fill-area" action="@Url.Action("Picker", "Entity", new { area = "" })">
 			<input type="hidden" name="Entity" value="@Model.Entity" />
 			<input type="hidden" name="HighligtSearchTerm" value="@Model.HighligtSearchTerm.ToString()" />
 			<input type="hidden" name="ReturnField" value="@Model.ReturnField" />

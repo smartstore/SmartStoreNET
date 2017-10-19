@@ -1,5 +1,7 @@
-﻿@using SmartStore.Web.Models.Common;
-@model EntityPickerModel
+﻿@model EntityPickerModel
+
+@using SmartStore.Web.Models.Entity;
+
 @helper HighlightSearchTermInTitle(EntityPickerModel.SearchResultModel item)
 {
 	if (Model.HighligtSearchTerm && Model.SearchTerm.HasValue() && item.Title.HasValue())

@@ -1852,8 +1852,6 @@
     <Content Include="Views\Checkout\ShippingMethod.cshtml" />
     <Content Include="Views\Common\Partials\AccountDropdown.cshtml" />
     <Content Include="Views\Common\Partials\CurrencySelector.cshtml" />
-    <Content Include="Views\Entity\Partials\Picker.cshtml" />
-    <Content Include="Views\Entity\Partials\Picker.List.cshtml" />
     <Content Include="Views\Common\Partials\Favicon.cshtml" />
     <Content Include="Views\Common\Partials\Footer.cshtml" />
     <Content Include="Views\Common\Partials\JavaScriptDisabledWarning.cshtml" />
@@ -2048,6 +2046,8 @@
     <Content Include="Themes\Flex\Content\_layout.scss" />
     <Content Include="Views\ShoppingCart\Partials\_RewardPointsBox.cshtml" />
     <Content Include="Themes\Flex\Content\_print.scss" />
+    <Content Include="Views\Entity\Partials\Picker.cshtml" />
+    <Content Include="Views\Entity\Partials\Picker.List.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

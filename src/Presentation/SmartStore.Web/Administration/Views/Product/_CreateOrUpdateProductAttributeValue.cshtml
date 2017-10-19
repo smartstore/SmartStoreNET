@@ -37,7 +37,7 @@
 		// add product linkage
 		$(document).on('click', '#AddProductLinkageButton', function () {
 			$('#@(Html.FieldIdFor(x => x.LinkedProductId))').entityPicker('loadDialog', {
-				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				url: '@Url.Action("Picker", "Entity", new { area = "" })',
 				caption: '@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew")',
 				maxReturnValues: 1,
 				appendValue: false,

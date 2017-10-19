@@ -890,5 +890,5 @@ namespace SmartStore.Web.Controllers
 		}
 
 		#endregion
-			}
+	}
 }

@@ -42,7 +42,7 @@
     	// add required products
     	$(document).on('click', '#SearchRequiredProductsButton', function () {
     		$('#@(Html.FieldIdFor(x => x.RequiredProductIds))').entityPicker('loadDialog', {
-    			url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+    			url: '@Url.Action("Picker", "Entity", new { area = "" })',
     			caption: '@T("Admin.Catalog.Products.Fields.RequireOtherProducts")',
     			returnValueDelimiter: ',',
     			onLoadDialogBefore: function () {

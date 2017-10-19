@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
@@ -22,7 +21,6 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
-using SmartStore.Core.Search;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -33,13 +31,10 @@ using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
@@ -62,7 +57,6 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
 		private readonly Lazy<ICompareProductsService> _compareProductsService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
-		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
 
 		private readonly StoreInformationSettings _storeInfoSettings;
 		private readonly CustomerSettings _customerSettings;
@@ -78,14 +72,12 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<SecuritySettings> _securitySettings;
 		private readonly Lazy<SocialSettings> _socialSettings;
 		private readonly Lazy<MediaSettings> _mediaSettings;
-		private readonly Lazy<SearchSettings> _searchSettings;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		
         private readonly IPriceFormatter _priceFormatter;
 		private readonly IPageAssetsBuilder _pageAssetsBuilder;
 		private readonly Lazy<IPictureService> _pictureService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
-		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
         private readonly Lazy<IShoppingCartService> _shoppingCartService;
 
@@ -103,7 +95,6 @@ namespace SmartStore.Web.Controllers
 			Lazy<IMobileDeviceHelper> mobileDeviceHelper,
 			Lazy<ICompareProductsService> compareProductsService,
 			Lazy<IUrlRecordService> urlRecordService,
-			Lazy<ICatalogSearchService> catalogSearchService,
 			StoreInformationSettings storeInfoSettings,
             CustomerSettings customerSettings, 
             TaxSettings taxSettings, 
@@ -118,14 +109,12 @@ namespace SmartStore.Web.Controllers
 			Lazy<SecuritySettings> securitySettings,
 			Lazy<SocialSettings> socialSettings,
 			Lazy<MediaSettings> mediaSettings,
-			Lazy<SearchSettings> searchSettings,
 			IOrderTotalCalculationService orderTotalCalculationService, 
 			IPriceFormatter priceFormatter,
             ThemeSettings themeSettings, 
 			IPageAssetsBuilder pageAssetsBuilder,
 			Lazy<IPictureService> pictureService,
 			Lazy<IManufacturerService> manufacturerService,
-			Lazy<ICategoryService> categoryService,
 			Lazy<IProductService> productService,
             Lazy<IShoppingCartService> shoppingCartService,
 			IBreadcrumb breadcrumb)
@@ -140,7 +129,6 @@ namespace SmartStore.Web.Controllers
             _genericAttributeService = genericAttributeService;
 			_compareProductsService = compareProductsService;
 			_urlRecordService = urlRecordService;
-			_catalogSearchService = catalogSearchService;
 
 			_storeInfoSettings = storeInfoSettings;
 			_customerSettings = customerSettings;
@@ -155,7 +143,6 @@ namespace SmartStore.Web.Controllers
 			_securitySettings = securitySettings;
 			_socialSettings = socialSettings;
 			_mediaSettings = mediaSettings;
-			_searchSettings = searchSettings;
 
             _orderTotalCalculationService = orderTotalCalculationService;
             _priceFormatter = priceFormatter;
@@ -164,7 +151,6 @@ namespace SmartStore.Web.Controllers
 			_pageAssetsBuilder = pageAssetsBuilder;
 			_pictureService = pictureService;
 			_manufacturerService = manufacturerService;
-			_categoryService = categoryService;
 			_productService = productService;
             _shoppingCartService = shoppingCartService;
 
@@ -904,180 +890,5 @@ namespace SmartStore.Web.Controllers
 		}
 
 		#endregion
-
-		#region Entity Picker
-
-		public ActionResult EntityPicker(EntityPickerModel model)
-		{
-            model.PageSize = 48; // _commonSettings.EntityPickerPageSize;
-			model.AllString = T("Admin.Common.All");
-
-			if (model.Entity.IsCaseInsensitiveEqual("product"))
-			{
-				var allCategories = _categoryService.Value.GetAllCategories(showHidden: true);
-				var mappedCategories = allCategories.ToDictionary(x => x.Id);
-
-				model.AvailableCategories = allCategories
-					.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService.Value, mappedCategories), Value = x.Id.ToString() })
-					.ToList();
-
-				model.AvailableManufacturers = _manufacturerService.Value.GetAllManufacturers(true)
-					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-					.ToList();
-
-				model.AvailableStores = _services.StoreService.GetAllStores()
-					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-					.ToList();
-
-				model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
 			}
-
-			return PartialView(model);
-		}
-
-		[HttpPost]
-		public ActionResult EntityPicker(EntityPickerModel model, FormCollection form)
-		{
-            model.PageSize = 48; // _commonSettings.EntityPickerPageSize;
-			model.PublishedString = T("Common.Published");
-			model.UnpublishedString = T("Common.Unpublished");
-
-			try
-			{
-				var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
-				var disableIds = model.DisableIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
-
-				using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
-				{
-					if (model.Entity.IsCaseInsensitiveEqual("product"))
-					{
-						#region Product
-
-						model.SearchTerm = model.ProductName.TrimSafe();
-
-						var hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
-						var storeLocation = _services.WebHelper.GetStoreLocation(false);
-						var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
-						var disableIfGroupedProduct = disableIf.Contains("groupedproduct");
-						var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;
-						var labelTextBundled = T("Admin.Catalog.Products.ProductType.BundledProduct.Label").Text;
-						var sku = T("Products.Sku").Text;
-
-						var fields = new List<string> { "name" };
-						if (_searchSettings.Value.SearchFields.Contains("sku"))
-							fields.Add("sku");
-						if (_searchSettings.Value.SearchFields.Contains("shortdescription"))
-							fields.Add("shortdescription");
-
-						var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchTerm)
-							.HasStoreId(model.StoreId);
-
-						if (!hasPermission)
-							searchQuery = searchQuery.VisibleOnly(_services.WorkContext.CurrentCustomer);
-
-						if (model.ProductTypeId > 0)
-							searchQuery = searchQuery.IsProductType((ProductType)model.ProductTypeId);
-
-						if (model.ManufacturerId != 0)
-							searchQuery = searchQuery.WithManufacturerIds(null, model.ManufacturerId);
-
-						if (model.CategoryId != 0)
-							searchQuery = searchQuery.WithCategoryIds(null, model.CategoryId);
-
-						var query = _catalogSearchService.Value.PrepareQuery(searchQuery);
-
-						var products = query
-							.Select(x => new
-							{
-								x.Id,
-								x.Sku,
-								x.Name,
-								x.Published,
-								x.ProductTypeId
-							})
-							.OrderBy(x => x.Name)
-							.Skip(model.PageIndex * model.PageSize)
-							.Take(model.PageSize)
-							.ToList();
-
-						var productIds = products.Select(x => x.Id).ToArray();
-						var pictures = _productService.Value.GetProductPicturesByProductIds(productIds, true);
-
-						model.SearchResult = products
-							.Select(x =>
-							{
-								var item = new EntityPickerModel.SearchResultModel
-								{
-									Id = x.Id,
-									ReturnValue = (model.ReturnField.IsCaseInsensitiveEqual("sku") ? x.Sku : x.Id.ToString()),
-									Title = x.Name,
-									Summary = x.Sku,
-									SummaryTitle = "{0}: {1}".FormatInvariant(sku, x.Sku.NaIfEmpty()),
-									Published = (hasPermission ? x.Published : (bool?)null)
-								};
-
-								if (disableIfNotSimpleProduct)
-								{
-									item.Disable = (x.ProductTypeId != (int)ProductType.SimpleProduct);
-								}
-								else if (disableIfGroupedProduct)
-								{
-									item.Disable = (x.ProductTypeId == (int)ProductType.GroupedProduct);
-								}
-
-								if (!item.Disable && disableIds.Contains(x.Id))
-								{
-									item.Disable = true;
-								}
-
-								if (x.ProductTypeId == (int)ProductType.GroupedProduct)
-								{
-									item.LabelText = labelTextGrouped;
-									item.LabelClassName = "badge-success";
-								}
-								else if (x.ProductTypeId == (int)ProductType.BundledProduct)
-								{
-									item.LabelText = labelTextBundled;
-									item.LabelClassName = "badge-info";
-								}
-
-								var productPicture = pictures.FirstOrDefault(y => y.Key == x.Id);
-								if (productPicture.Value != null)
-								{
-									var picture = productPicture.Value.FirstOrDefault();
-									if (picture != null)
-									{
-										try
-										{
-											item.ImageUrl = _pictureService.Value.GetPictureUrl(
-												picture.Picture,
-												_mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
-												!_catalogSettings.HideProductDefaultPictures,
-												storeLocation);
-										}
-										catch (Exception exception)
-										{
-											exception.Dump();
-										}
-									}
-								}
-
-								return item;
-							})
-							.ToList();
-
-						#endregion
-					}
-				}
-			}
-			catch (Exception exception)
-			{
-				NotifyError(exception.ToAllMessages());
-			}
-
-			return PartialView("EntityPickerList", model);
-		}
-
-		#endregion
-	}
 }

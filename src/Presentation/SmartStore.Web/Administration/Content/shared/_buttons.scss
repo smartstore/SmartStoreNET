@@ -50,6 +50,18 @@ $btn-size-sm:           $input-height-sm;
 .btn-success.hover          { @extend .btn-success:hover; }
 
 
+// btn-secondary
+// looks really shitty in BS4 Beta, make it white again.
+// -----------------------------------------------------
+
+.btn-secondary {
+    /*color: $gray-800;
+    background-color: #fff;
+    border-color: #ddd;*/
+    @include button-variant(#fff, #ddd);
+}
+
+
 // btn-gray
 // --------------------------------------------------
 

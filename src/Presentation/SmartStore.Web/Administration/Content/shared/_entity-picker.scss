@@ -3,19 +3,19 @@
 // Entity Picker
 // ------------------------------
 
-.entity-picker {
+.entpicker {
     .modal-header {
         background-color: $gray-100;
     }
 }
 
-.entity-picker-filter {
+.entpicker-filter {
     .col-form-label {
         padding-bottom: 0.2rem;
     }
 }
 
-.entity-picker-item {
+.entpicker-item {
     &:not(.disabled):hover {
 	    cursor: pointer;
     }
@@ -23,14 +23,15 @@
     &.selected {
 	    background-color: $gray-100;
 
-        .entity-picker-thumb {
+        .entpicker-thumb {
             background: #fff;
             box-shadow: 1px 1px 2px rgba(0,0,0, 0.1);
         }
     }
 
     &.selected {
-        outline: 2px solid $component-active-bg;
+        background-color: lighten($blue, 30%);
+        outline: 1px solid lighten($blue, 25%);
     }
 
     &.disabled {
@@ -77,13 +78,13 @@
         box-sizing: border-box;
         display: block;
     }
-    .entity-picker-thumb {
+    .entpicker-thumb {
         width: 44px;
         max-width: 44px;
     }
 }
 
-.entity-picker-searchterm {
+.entpicker-searchterm {
     width: 250px !important;
 }
 

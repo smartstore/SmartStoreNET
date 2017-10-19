@@ -2,7 +2,7 @@
 
 @using SmartStore.Core.Domain.Catalog;
 
-<script type="text/javascript">
+<script>
 	$(function () {
 		$("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
 
@@ -11,7 +11,7 @@
 		// add required products
 		$(document).on('click', '#SearchRequiredProductsButton', function () {
 			$('#@(Html.FieldIdFor(x => x.RequiredProductIds))').entityPicker('loadDialog', {
-    			url: '@Url.Action("Picker", "Entity", new { area = "" })',
+				url: '@Url.Action("Picker", "Entity", new { area = "" })',
 				caption: '@T("Admin.Catalog.Products.Fields.RequireOtherProducts")',
 				returnValueDelimiter: ',',
 				onLoadDialogBefore: function () {

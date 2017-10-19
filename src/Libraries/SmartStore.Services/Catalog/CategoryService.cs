@@ -5,6 +5,7 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
@@ -15,6 +16,8 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Seo;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Catalog
 {
@@ -23,7 +26,11 @@ namespace SmartStore.Services.Catalog
 	/// </summary>
 	public partial class CategoryService : ICategoryService
     {
-        private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "SmartStore.category.byparent-{0}-{1}-{2}-{3}";
+		// {0} = StoreId
+		internal const string CATEGORY_TREE_KEY = "category.tree-{0}";
+		internal const string CATEGORY_TREE_PATTERN_KEY = "category.tree-";
+
+		private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "SmartStore.category.byparent-{0}-{1}-{2}-{3}";
 		private const string PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY = "SmartStore.productcategory.allbycategoryid-{0}-{1}-{2}-{3}-{4}-{5}";
 		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "SmartStore.productcategory.allbyproductid-{0}-{1}-{2}-{3}";
         private const string CATEGORIES_PATTERN_KEY = "SmartStore.category.";
@@ -38,6 +45,7 @@ namespace SmartStore.Services.Catalog
 		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
         private readonly IRequestCache _requestCache;
+		private readonly ICacheManager _cache;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IAclService _aclService;
         private readonly ICustomerService _customerService;
@@ -45,7 +53,8 @@ namespace SmartStore.Services.Catalog
 		private readonly ICatalogSearchService _catalogSearchService;
 
 		public CategoryService(IRequestCache requestCache,
-            IRepository<Category> categoryRepository,
+			ICacheManager cache,
+			IRepository<Category> categoryRepository,
             IRepository<ProductCategory> productCategoryRepository,
             IRepository<Product> productRepository,
             IRepository<AclRecord> aclRepository,
@@ -60,6 +69,7 @@ namespace SmartStore.Services.Catalog
 			ICatalogSearchService catalogSearchService)
         {
             _requestCache = requestCache;
+			_cache = cache;
             _categoryRepository = categoryRepository;
             _productCategoryRepository = productCategoryRepository;
             _productRepository = productRepository;
@@ -338,6 +348,71 @@ namespace SmartStore.Services.Catalog
 			return query;
 		}
         
+		public TreeNode<CategoryNode> GetCategoryTree(int parentCategoryId, int storeId = 0)
+		{
+			var root = _cache.Get(CATEGORY_TREE_KEY.FormatInvariant(storeId), () => 
+			{
+				var curParent = new TreeNode<CategoryNode>(new CategoryNode());
+
+				Category prevCat = null;
+
+				var categories = GetAllCategories(showHidden: true, storeId: storeId);
+
+				foreach (var category in categories)
+				{
+					var info = new CategoryNode
+					{
+						Id = category.Id,
+						SeName = category.GetSeName(),
+						Published = category.Published
+					};
+
+					// Determine parent
+					if (prevCat != null)
+					{
+						if (category.ParentCategoryId != curParent.Value.Id)
+						{
+							if (category.ParentCategoryId == prevCat.Id)
+							{
+								// level +1
+								curParent = curParent.LastChild;
+							}
+							else
+							{
+								// level -x
+								while (!curParent.IsRoot)
+								{
+									if (curParent.Value.Id == category.ParentCategoryId)
+									{
+										break;
+									}
+									curParent = curParent.Parent;
+								}
+							}
+						}
+					}
+
+					// add to parent
+					curParent.Append(info);
+
+					prevCat = category;
+				}
+
+				return curParent.Root;
+			});
+
+			if (parentCategoryId > 0)
+			{
+				root = root.SelectNode(x => x.Value.Id == parentCategoryId);
+				if (root == null)
+				{
+					throw new ArgumentException("Category with Id '{0}' does not exist".FormatInvariant(parentCategoryId), nameof(parentCategoryId));
+				}
+			}
+
+			return root;
+		}
+
         public virtual IPagedList<Category> GetAllCategories(
 			string categoryName = "", 
 			int pageIndex = 0, 
@@ -763,4 +838,105 @@ namespace SmartStore.Services.Catalog
 			return string.Empty;
 		}
     }
+
+	[Serializable]
+	public class CategoryNode
+	{
+		public int Id { get; set; }
+		public string SeName { get; set; }
+		public bool Published { get; set; }
+	}
+
+	public class CategoryTreeCacheInvalidationHook : IDbSaveHook
+	{
+		private readonly ICommonServices _services;
+		private bool _invalidated;
+		private static readonly HashSet<string> _cacheAffectingCategoryProps = new HashSet<string>
+		{
+			"Deleted",
+			"Published",
+			"ParentCategoryId",
+			"DisplayOrder",
+			"SubjectToAcl",
+			"LimitedToStores"
+		};
+
+		public CategoryTreeCacheInvalidationHook(ICommonServices services)
+		{
+			_services = services;
+		}
+
+		public void OnBeforeSave(HookedEntity entry)
+		{
+			var entity = entry.Entity;
+
+			if (entity is Category && entry.InitialState == EntityState.Modified)
+			{
+				var modProps = _services.DbContext.GetModifiedProperties(entity);
+
+				if (modProps.Keys.Any(x => _cacheAffectingCategoryProps.Contains(x)))
+				{
+					Invalidate();
+				}
+			}
+		}
+
+		public void OnAfterSave(HookedEntity entry)
+		{
+			if (_invalidated)
+			{
+				// Don't bother processing.
+				return;
+			}
+
+			// INFO: Acl & StoreMapping affect element counts
+
+			var entity = entry.Entity;
+
+			if (entity is Category)
+			{
+				Invalidate();
+			}
+			//else if (entity is CustomerRole)
+			//{
+			//	Invalidate(entry.InitialState == EntityState.Modified || entry.InitialState == EntityState.Deleted);
+			//}
+			//else if (entity is AclRecord)
+			//{
+			//	var acl = entity as AclRecord;
+			//	if (!acl.IsIdle)
+			//	{
+			//		if (acl.EntityName == "Category")
+			//		{
+			//			Invalidate();
+			//		}
+			//	}
+			//}
+			else if (entity is StoreMapping)
+			{
+				var stm = entity as StoreMapping;
+				if (stm.EntityName == "Category")
+				{
+					Invalidate();
+				}
+			}
+		}
+
+		private void Invalidate(bool condition = true)
+		{
+			if (condition && !_invalidated)
+			{
+				_services.Cache.RemoveByPattern(CategoryService.CATEGORY_TREE_PATTERN_KEY);
+				_invalidated = true;
+			}
+		}
+
+		public void OnBeforeSaveCompleted()
+		{
+		}
+
+		public void OnAfterSaveCompleted()
+		{
+		}
+	}
 }

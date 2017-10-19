@@ -273,6 +273,7 @@
     <Compile Include="Controllers\CatalogHelper.cs" />
     <Compile Include="Controllers\CatalogHelper.MapProduct.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
+    <Compile Include="Controllers\EntityController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -369,7 +370,7 @@
     <Compile Include="Models\Checkout\CheckoutConfirmModel.cs" />
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
-    <Compile Include="Models\Common\EntityPickerModel.cs" />
+    <Compile Include="Models\Entity\EntityPickerModel.cs" />
     <Compile Include="Models\Common\CommentModel.cs" />
     <Compile Include="Models\Search\ISearchResultModel.cs" />
     <Compile Include="Models\Search\SearchResultModel.cs" />
@@ -1755,8 +1756,8 @@
     <Content Include="Views\Checkout\ShippingMethod.cshtml" />
     <Content Include="Views\Common\Partials\AccountDropdown.cshtml" />
     <Content Include="Views\Common\Partials\CurrencySelector.cshtml" />
-    <Content Include="Views\Common\Partials\EntityPicker.cshtml" />
-    <Content Include="Views\Common\Partials\EntityPickerList.cshtml" />
+    <Content Include="Views\Entity\Partials\Picker.cshtml" />
+    <Content Include="Views\Entity\Partials\Picker.List.cshtml" />
     <Content Include="Views\Common\Partials\Favicon.cshtml" />
     <Content Include="Views\Common\Partials\Footer.cshtml" />
     <Content Include="Views\Common\Partials\JavaScriptDisabledWarning.cshtml" />

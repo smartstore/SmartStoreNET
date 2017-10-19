@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
-namespace SmartStore.Web.Models.Common
+namespace SmartStore.Web.Models.Entity
 {
 	public class EntityPickerModel : ModelBase
 	{

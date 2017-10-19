@@ -1,14 +1,14 @@
 ﻿@model EntityPickerModel
 
-@using SmartStore.Web.Models.Common;
+@using SmartStore.Web.Models.Entity;
 
 @{ 
 	var isProductPicker = Model.Entity.IsCaseInsensitiveEqual("product");
 }
 
-<div id="entity-picker-@(Model.Entity)-dialog" class="modal modal-flex fade entity-picker" role="dialog" aria-hidden="true" tabindex="-1">
+<div id="entpicker-@(Model.Entity)-dialog" class="modal modal-flex fade entpicker" role="dialog" aria-hidden="true" tabindex="-1">
 	<div class="modal-dialog" role="document">
-		<form class="modal-content" method="POST" action="@Url.Action("EntityPicker", "Common", new { area = "" })">
+		<form class="modal-content" method="POST" action="@Url.Action("Picker", "Entity", new { area = "" })">
 			<div class="modal-header flex-wrap">
 				<h3 class="modal-title">&nbsp;</h3>
 
@@ -26,7 +26,7 @@
 				}
 			</div>
 			<div class="modal-body">
-				<div class="entity-picker-list row px-2">
+				<div class="entpicker-list row px-2">
 					@* Items per AJAX *@
 				</div>
 			</div>
@@ -47,7 +47,7 @@
 
 <script>
 	$(function () {
-		$('#entity-picker-@(Model.Entity)-dialog').entityPicker('initDialog');
+		$('#entpicker-@(Model.Entity)-dialog').entityPicker('initDialog');
 	});
 </script>
 
@@ -56,7 +56,7 @@
 	<div class="control-group mr-2">
 		<div class="form-inline">
 			<div class="input-group">
-				@Html.TextBoxFor(model => model.ProductName, new { @class = "form-control entity-picker-searchterm", placeholder = Html.NameFor(m => m.ProductName) })
+				@Html.TextBoxFor(model => model.ProductName, new { @class = "form-control entpicker-searchterm", placeholder = Html.NameFor(m => m.ProductName) })
 				<span class="input-group-btn">
 					<button type="button" class="btn btn-warning" name="SearchEntities" data-loading-text="@(T("Common.Loading"))&hellip;" title="@T("Admin.Common.Search")">
 						<i class="fa fa-search"></i>
@@ -69,7 +69,7 @@
 		</div>
 	</div>
 
-	<div class="entity-picker-filter form-row xs-gutters w-100 pt-2" style="display: none">
+	<div class="entpicker-filter form-row xs-gutters w-100 pt-2" style="display: none">
 		<div class="form-group col mb-0">
 			@Html.LabelFor(model => model.CategoryId, new { @class = "col-form-label text-truncate", @for = "CategoryId" })
 			@Html.DropDownListFor(model => model.CategoryId, Model.AvailableCategories, Model.AllString, new { @class = "form-control form-control-sm" })

@@ -148,7 +148,7 @@
 		// add related products
 		$(document).on('click', '#AddRelatedProductButton', function () {
 			$({}).entityPicker('loadDialog', {
-				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				url: '@Url.Action("Picker", "Entity", new { area = "" })',
 				caption: '@T("Admin.Catalog.Products.RelatedProducts.AddNew")',
 				onLoadDialogBefore: function () {
 					$('#AddRelatedProductButton').button('loading').prop('disabled', true);
@@ -173,7 +173,7 @@
 		// add cross sell products
 		$(document).on('click', '#AddCrossSellProductButton', function () {
 			$({}).entityPicker('loadDialog', {
-				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				url: '@Url.Action("Picker", "Entity", new { area = "" })',
 				caption: '@T("Admin.Catalog.Products.CrossSells.AddNew")',
 				onLoadDialogBefore: function () {
 					$('#AddCrossSellProductButton').button('loading').prop('disabled', true);

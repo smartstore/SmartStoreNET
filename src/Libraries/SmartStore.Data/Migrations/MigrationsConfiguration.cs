@@ -31,6 +31,7 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+
 			builder.AddOrUpdate("Admin.Orders.Shipment", "Shipment", "Lieferung");
 			builder.AddOrUpdate("Admin.Order", "Order", "Auftrag");
 
@@ -50,6 +51,10 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.CatalogSettings.ProductDisplay", "Product display", "Produktdarstellung");
             builder.AddOrUpdate("Admin.CatalogSettings.Prices", "Prices", "Preise");
             builder.AddOrUpdate("Admin.CatalogSettings.CompareProducts", "Compare products", "Produktvergleich");
+
+            builder.AddOrUpdate("Footer.Service.Mobile", "Service", "Service, Versand & Zahlung");
+            builder.AddOrUpdate("Footer.Company.Mobile", "Company", "Firma, Impressum & Datenschutz");
+
         }
 	}
 }

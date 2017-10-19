@@ -78,6 +78,10 @@
         border-top-color: lighten($footer-bg, 10%);
         border-bottom-color: lighten($footer-bg, 10%);
     }
+
+    .footer-main .footer-title {
+        margin-bottom: 0;
+    }
 }
 
 .footer-light {

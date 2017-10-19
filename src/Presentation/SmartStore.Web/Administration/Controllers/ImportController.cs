@@ -737,7 +737,7 @@ namespace SmartStore.Admin.Controllers
 						}
 						catch (IOException)
 						{
-							NotifyWarning(T("Admin.Common.FileInUse"));
+                            message = T("Admin.Common.FileInUse");
 						}
 					}
 				}

@@ -408,7 +408,7 @@
 		// add new product
 		$(document).on('click', '#AddNewProductButton', function () {
 			$({}).entityPicker('loadDialog', {
-				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				url: '@Url.Action("Picker", "Entity", new { area = "" })',
 				caption: '@T("Admin.Catalog.Manufacturers.Products.AddNew")',
 				onLoadDialogBefore: function () {
 					$('#AddNewProductButton').button('loading').prop('disabled', true);

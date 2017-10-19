@@ -357,10 +357,10 @@ namespace SmartStore.Services.Catalog
 
             var unsortedCategories = query.ToList();
 
-            // sort categories
+            // Sort categories
             var sortedCategories = unsortedCategories.SortCategoriesForTree(ignoreCategoriesWithoutExistingParent: ignoreCategoriesWithoutExistingParent);
 
-            // paging
+            // Paging
             return new PagedList<Category>(sortedCategories, pageIndex, pageSize);
         }
 

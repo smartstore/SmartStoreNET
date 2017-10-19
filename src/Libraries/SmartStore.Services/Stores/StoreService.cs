@@ -18,8 +18,8 @@ namespace SmartStore.Services.Stores
 			IRepository<Store> storeRepository,
 			IEventPublisher eventPublisher)
 		{
-			this._storeRepository = storeRepository;
-			this._eventPublisher = eventPublisher;
+			_storeRepository = storeRepository;
+			_eventPublisher = eventPublisher;
 		}
 
 		public virtual void DeleteStore(Store store)
@@ -33,7 +33,6 @@ namespace SmartStore.Services.Stores
 
 			_storeRepository.Delete(store);
 
-			//event notification
 			_eventPublisher.EntityDeleted(store);
 		}
 
@@ -64,7 +63,6 @@ namespace SmartStore.Services.Stores
 
 			_storeRepository.Insert(store);
 
-			//event notification
 			_eventPublisher.EntityInserted(store);
 		}
 
@@ -75,7 +73,6 @@ namespace SmartStore.Services.Stores
 
 			_storeRepository.Update(store);
 
-			//event notification
 			_eventPublisher.EntityUpdated(store);
 		}
 

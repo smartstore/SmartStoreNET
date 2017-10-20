@@ -1043,7 +1043,7 @@ namespace SmartStore.Admin.Controllers
 
 						if (allCategories == null)
 						{
-							allCategories = _categoryService.GetAllCategories(showHidden: true, applyNavigationFilters: false)
+							allCategories = _categoryService.GetAllCategories(showHidden: true)
 								.ToDictionary(x => x.Id);
 						}
 

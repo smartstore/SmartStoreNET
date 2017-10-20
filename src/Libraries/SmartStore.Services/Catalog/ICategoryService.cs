@@ -12,7 +12,6 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial interface ICategoryService
     {
-
         /// <summary>
         /// Assign acl to sub-categories and products
         /// </summary>
@@ -50,14 +49,12 @@ namespace SmartStore.Services.Catalog
 		/// <param name="categoryName">Category name filter</param>
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="alias">Alias filter</param>
-		/// <param name="applyNavigationFilters">(Obsolete) Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
 		/// <param name="storeId">Store identifier; 0 to load all records</param>
 		/// <returns>Category query</returns>
 		IQueryable<Category> BuildCategoriesQuery(
 			string categoryName = "",
 			bool showHidden = false,
 			string alias = null,
-			bool applyNavigationFilters = true,
 			int storeId = 0);
 
 		/// <summary>
@@ -78,7 +75,6 @@ namespace SmartStore.Services.Catalog
 			int pageSize = int.MaxValue, 
 			bool showHidden = false, 
 			string alias = null,
-			bool applyNavigationFilters = true, 
 			bool ignoreCategoriesWithoutExistingParent = true, 
 			int storeId = 0);
 
@@ -135,8 +131,11 @@ namespace SmartStore.Services.Catalog
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Product a category mapping collection</returns>
-        IPagedList<ProductCategory> GetProductCategoriesByCategoryId(int categoryId,
-            int pageIndex, int pageSize, bool showHidden = false);
+        IPagedList<ProductCategory> GetProductCategoriesByCategoryId(
+			int categoryId,
+            int pageIndex, 
+			int pageSize, 
+			bool showHidden = false);
 
         /// <summary>
         /// Gets a product category mapping collection
@@ -198,7 +197,12 @@ namespace SmartStore.Services.Catalog
 		/// <param name="categoryLookup">A delegate for fast (cached) category lookup</param>
 		/// <param name="prodCategory">First product category of product</param>
 		/// <returns>Category breadcrumb for product</returns>
-		string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup,
+		string GetCategoryPath(
+			Product product, 
+			int? languageId, 
+			Func<int, string> pathLookup,
+			Action<int, string> addPathToCache, 
+			Func<int, Category> categoryLookup,
 			ProductCategory prodCategory = null);
     }
 

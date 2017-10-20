@@ -295,7 +295,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, true, false, model.SearchStoreId);
+				var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, false, model.SearchStoreId);
 				var mappedCategories = categories.ToDictionary(x => x.Id);
 
 				gridModel.Data = categories.Select(x =>

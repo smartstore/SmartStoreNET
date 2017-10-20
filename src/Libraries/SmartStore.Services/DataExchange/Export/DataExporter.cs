@@ -853,7 +853,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private IQueryable<Category> GetCategoryQuery(DataExporterContext ctx, int skip, int take)
 		{
 			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : 0;
-			var query = _categoryService.Value.BuildCategoriesQuery(null, true, null, true, storeId);
+			var query = _categoryService.Value.BuildCategoriesQuery(null, true, null, storeId);
 
 			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
@@ -1284,7 +1284,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product)
 						{
-							var allCategories = _categoryService.Value.GetAllCategories(showHidden: true, applyNavigationFilters: false);
+							var allCategories = _categoryService.Value.GetAllCategories(showHidden: true);
 							ctx.Categories = allCategories.ToDictionary(x => x.Id);
 						}
 

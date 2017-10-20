@@ -24,14 +24,14 @@ namespace SmartStore.Services.Catalog
 	public partial class CategoryService : ICategoryService
 	{
 		// {0} = StoreId, {1} = CustomerRoleIds
-		internal const string CATEGORY_TREE_KEY = "category.tree-{0}";
-		internal const string CATEGORY_TREE_PATTERN_KEY = "category.tree-";
+		internal const string CATEGORY_TREE_KEY = "category:tree-{0}-{1}";
+		internal const string CATEGORY_TREE_PATTERN_KEY = "category:tree-";
 
-		private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "SmartStore.category.byparent-{0}-{1}-{2}-{3}";
-		private const string PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY = "SmartStore.productcategory.allbycategoryid-{0}-{1}-{2}-{3}-{4}-{5}";
-		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "SmartStore.productcategory.allbyproductid-{0}-{1}-{2}-{3}";
-		private const string CATEGORIES_PATTERN_KEY = "SmartStore.category.";
-		private const string PRODUCTCATEGORIES_PATTERN_KEY = "SmartStore.productcategory.";
+		private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "category.byparent-{0}-{1}-{2}-{3}";
+		private const string PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY = "productcategory.allbycategoryid-{0}-{1}-{2}-{3}-{4}-{5}";
+		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "productcategory.allbyproductid-{0}-{1}-{2}-{3}";
+		private const string CATEGORIES_PATTERN_KEY = "category.";
+		private const string PRODUCTCATEGORIES_PATTERN_KEY = "productcategory.";
 
 		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<ProductCategory> _productCategoryRepository;
@@ -304,7 +304,6 @@ namespace SmartStore.Services.Catalog
 			string categoryName = "",
 			bool showHidden = false,
 			string alias = null,
-			bool applyNavigationFilters = true,
 			int storeId = 0)
 		{
 			var query = _categoryRepository.Table;
@@ -337,77 +336,12 @@ namespace SmartStore.Services.Catalog
 			}
 			else
 			{
-				query = ApplyHiddenCategoriesFilter(query, applyNavigationFilters, storeId);
+				query = ApplyHiddenCategoriesFilter(query, storeId);
 			}
 
 			query = query.Where(c => !c.Deleted);
 
 			return query;
-		}
-
-		public TreeNode<CategoryNode> GetCategoryTree(int parentCategoryId, int storeId = 0)
-		{
-			var root = _cache.Get(CATEGORY_TREE_KEY.FormatInvariant(storeId), () =>
-			{
-				var curParent = new TreeNode<CategoryNode>(new CategoryNode());
-
-				Category prevCat = null;
-
-				var categories = GetAllCategories(showHidden: true, storeId: storeId);
-
-				foreach (var category in categories)
-				{
-					var info = new CategoryNode
-					{
-						Id = category.Id,
-						Name = category.Name,
-						Published = category.Published
-					};
-
-					// Determine parent
-					if (prevCat != null)
-					{
-						if (category.ParentCategoryId != curParent.Value.Id)
-						{
-							if (category.ParentCategoryId == prevCat.Id)
-							{
-								// level +1
-								curParent = curParent.LastChild;
-							}
-							else
-							{
-								// level -x
-								while (!curParent.IsRoot)
-								{
-									if (curParent.Value.Id == category.ParentCategoryId)
-									{
-										break;
-									}
-									curParent = curParent.Parent;
-								}
-							}
-						}
-					}
-
-					// add to parent
-					curParent.Append(info);
-
-					prevCat = category;
-				}
-
-				return curParent.Root;
-			});
-
-			if (parentCategoryId > 0)
-			{
-				root = root.SelectNode(x => x.Value.Id == parentCategoryId);
-				if (root == null)
-				{
-					throw new ArgumentException("Category with Id '{0}' does not exist".FormatInvariant(parentCategoryId), nameof(parentCategoryId));
-				}
-			}
-
-			return root;
 		}
 
 		public virtual IPagedList<Category> GetAllCategories(
@@ -416,11 +350,10 @@ namespace SmartStore.Services.Catalog
 			int pageSize = int.MaxValue,
 			bool showHidden = false,
 			string alias = null,
-			bool applyNavigationFilters = true,
 			bool ignoreCategoriesWithoutExistingParent = true,
 			int storeId = 0)
 		{
-			var query = BuildCategoriesQuery(categoryName, showHidden, alias, applyNavigationFilters, storeId);
+			var query = BuildCategoriesQuery(categoryName, showHidden, alias, storeId);
 
 			query = query
 				.OrderBy(x => x.ParentCategoryId)
@@ -453,7 +386,7 @@ namespace SmartStore.Services.Catalog
 
 				if (!showHidden)
 				{
-					query = ApplyHiddenCategoriesFilter(query, false, storeId);
+					query = ApplyHiddenCategoriesFilter(query, storeId);
 					query = query.OrderBy(c => c.DisplayOrder);
 				}
 
@@ -462,7 +395,7 @@ namespace SmartStore.Services.Catalog
 			});
 		}
 
-		protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, bool applyNavigationFilters, int storeId = 0)
+		protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, int storeId = 0)
 		{
 			// ACL (access control list)
 			if (!QuerySettings.IgnoreAcl)
@@ -690,7 +623,7 @@ namespace SmartStore.Services.Catalog
 		{
 			bool group = false;
 
-			//ACL (access control list)
+			// ACL (access control list)
 			if (!QuerySettings.IgnoreAcl)
 			{
 				group = true;
@@ -705,7 +638,7 @@ namespace SmartStore.Services.Catalog
 						select pc;
 			}
 
-			//Store mapping
+			// Store mapping
 			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
 			{
 				group = true;
@@ -720,7 +653,7 @@ namespace SmartStore.Services.Catalog
 
 			if (group)
 			{
-				//only distinct categories (group by ID)
+				// Only distinct categories (group by ID)
 				query = from pc in query
 						group pc by pc.Id into pcGroup
 						orderby pcGroup.Key
@@ -833,6 +766,71 @@ namespace SmartStore.Services.Catalog
 			}
 
 			return string.Empty;
+		}
+
+		public TreeNode<CategoryNode> GetCategoryTree(int parentCategoryId = 0, bool includeHidden = false, int storeId = 0)
+		{
+			var root = _cache.Get(CATEGORY_TREE_KEY.FormatInvariant(storeId), () =>
+			{
+				var curParent = new TreeNode<CategoryNode>(new CategoryNode());
+
+				Category prevCat = null;
+
+				var categories = GetAllCategories(showHidden: true, storeId: storeId);
+
+				foreach (var category in categories)
+				{
+					var info = new CategoryNode
+					{
+						Id = category.Id,
+						Name = category.Name,
+						Published = category.Published
+					};
+
+					// Determine parent
+					if (prevCat != null)
+					{
+						if (category.ParentCategoryId != curParent.Value.Id)
+						{
+							if (category.ParentCategoryId == prevCat.Id)
+							{
+								// level +1
+								curParent = curParent.LastChild;
+							}
+							else
+							{
+								// level -x
+								while (!curParent.IsRoot)
+								{
+									if (curParent.Value.Id == category.ParentCategoryId)
+									{
+										break;
+									}
+									curParent = curParent.Parent;
+								}
+							}
+						}
+					}
+
+					// add to parent
+					curParent.Append(info);
+
+					prevCat = category;
+				}
+
+				return curParent.Root;
+			});
+
+			if (parentCategoryId > 0)
+			{
+				root = root.SelectNode(x => x.Value.Id == parentCategoryId);
+				if (root == null)
+				{
+					throw new ArgumentException("Category with Id '{0}' does not exist".FormatInvariant(parentCategoryId), nameof(parentCategoryId));
+				}
+			}
+
+			return root;
 		}
 	}
 

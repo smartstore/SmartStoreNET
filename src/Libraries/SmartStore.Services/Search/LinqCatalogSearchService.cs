@@ -597,7 +597,7 @@ namespace SmartStore.Services.Search
 				{
 					#region Category
 
-					var categoryQuery = _categoryService.BuildCategoriesQuery(null, false, null, true, storeId);
+					var categoryQuery = _categoryService.BuildCategoriesQuery(null, false, null, storeId);
 					categoryQuery = categoryQuery.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
 					if (descriptor.MaxChoicesCount > 0)
 					{

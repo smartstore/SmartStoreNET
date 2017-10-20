@@ -300,7 +300,7 @@ namespace SmartStore.Services.Catalog
 			DeleteAllCategories(childCategories, deleteChilds);
 		}
 
-		public virtual IQueryable<Category> GetCategories(
+		public virtual IQueryable<Category> BuildCategoriesQuery(
 			string categoryName = "",
 			bool showHidden = false,
 			string alias = null,
@@ -420,7 +420,7 @@ namespace SmartStore.Services.Catalog
 			bool ignoreCategoriesWithoutExistingParent = true,
 			int storeId = 0)
 		{
-			var query = GetCategories(categoryName, showHidden, alias, applyNavigationFilters, storeId);
+			var query = BuildCategoriesQuery(categoryName, showHidden, alias, applyNavigationFilters, storeId);
 
 			query = query
 				.OrderBy(x => x.ParentCategoryId)

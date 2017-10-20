@@ -853,7 +853,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private IQueryable<Category> GetCategoryQuery(DataExporterContext ctx, int skip, int take)
 		{
 			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : 0;
-			var query = _categoryService.Value.GetCategories(null, true, null, true, storeId);
+			var query = _categoryService.Value.BuildCategoriesQuery(null, true, null, true, storeId);
 
 			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));

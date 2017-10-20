@@ -45,15 +45,15 @@ namespace SmartStore.Services.Catalog
 		void DeleteCategory(Category category, bool deleteChilds = false);
 
 		/// <summary>
-		/// Gets categories
+		/// Builds LINQ query for categories
 		/// </summary>
-		/// <param name="categoryName">Category name</param>
+		/// <param name="categoryName">Category name filter</param>
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <param name="alias">Alias to be filtered</param>
+		/// <param name="alias">Alias filter</param>
 		/// <param name="applyNavigationFilters">(Obsolete) Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
 		/// <param name="storeId">Store identifier; 0 to load all records</param>
 		/// <returns>Category query</returns>
-		IQueryable<Category> GetCategories(
+		IQueryable<Category> BuildCategoriesQuery(
 			string categoryName = "",
 			bool showHidden = false,
 			string alias = null,
@@ -63,11 +63,11 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Gets all categories
 		/// </summary>
-		/// <param name="categoryName">Category name</param>
+		/// <param name="categoryName">Category name filter</param>
 		/// <param name="pageIndex">Page index</param>
 		/// <param name="pageSize">Page size</param>
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <param name="alias">Alias to be filtered</param>
+		/// <param name="alias">Alias filter</param>
 		/// <param name="applyNavigationFilters">(Obsolete) Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
 		/// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
 		/// <param name="storeId">Store identifier; 0 to load all records</param>

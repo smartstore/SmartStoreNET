@@ -33,7 +33,7 @@ namespace SmartStore.Services.Catalog
 
             if (!ignoreCategoriesWithoutExistingParent && result.Count != source.Count)
             {
-                // find categories without parent in provided category source and insert them into result
+                // Find categories without parent in provided category source and insert them into result
                 foreach (var cat in source)
                     if (result.Where(x => x.Id == cat.Id).FirstOrDefault() == null)
                         result.Add(cat);

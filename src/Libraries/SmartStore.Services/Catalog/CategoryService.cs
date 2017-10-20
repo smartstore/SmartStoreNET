@@ -17,14 +17,13 @@ using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Seo;
-using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Catalog
 {
 	public partial class CategoryService : ICategoryService
 	{
-		// {0} = StoreId, {1} = CustomerRoleIds
-		internal const string CATEGORY_TREE_KEY = "category:tree-{0}-{1}";
+		// {0} = IncludeHidden, {1} = StoreId, {2} = CustomerRoleIds
+		internal const string CATEGORY_TREE_KEY = "category:tree-{0}-{1}-{2}";
 		internal const string CATEGORY_TREE_PATTERN_KEY = "category:tree-";
 
 		private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "category.byparent-{0}-{1}-{2}-{3}";
@@ -768,9 +767,21 @@ namespace SmartStore.Services.Catalog
 			return string.Empty;
 		}
 
-		public TreeNode<CategoryNode> GetCategoryTree(int parentCategoryId = 0, bool includeHidden = false, int storeId = 0)
+		/// <summary>
+		/// TBD
+		/// </summary>
+		/// <param name="rootCategoryId">Specifies which node to return as root</param>
+		/// <param name="includeHidden"><c>false</c> excludes unpublished and ACL-inaccessible categories</param>
+		/// <param name="storeId">&gt; 0 = apply store mapping, 0 to bypass store mapping</param>
+		/// <returns></returns>
+		public TreeNode<CategoryNode> GetCategoryTree(int rootCategoryId = 0, bool includeHidden = false, int storeId = 0)
 		{
-			var root = _cache.Get(CATEGORY_TREE_KEY.FormatInvariant(storeId), () =>
+			var storeToken = QuerySettings.IgnoreMultiStore ? "0" : storeId.ToString();
+			var rolesToken = QuerySettings.IgnoreAcl || includeHidden ? "0" : _workContext.CurrentCustomer.GetRolesIdent();
+
+			var cacheKey = CATEGORY_TREE_KEY.FormatInvariant(includeHidden, storeToken, rolesToken);
+
+			var root = _cache.Get(cacheKey, () =>
 			{
 				var curParent = new TreeNode<CategoryNode>(new CategoryNode());
 
@@ -821,12 +832,12 @@ namespace SmartStore.Services.Catalog
 				return curParent.Root;
 			});
 
-			if (parentCategoryId > 0)
+			if (rootCategoryId > 0)
 			{
-				root = root.SelectNode(x => x.Value.Id == parentCategoryId);
+				root = root.SelectNode(x => x.Value.Id == rootCategoryId);
 				if (root == null)
 				{
-					throw new ArgumentException("Category with Id '{0}' does not exist".FormatInvariant(parentCategoryId), nameof(parentCategoryId));
+					throw new ArgumentException("Category with Id '{0}' does not exist".FormatInvariant(rootCategoryId), nameof(rootCategoryId));
 				}
 			}
 

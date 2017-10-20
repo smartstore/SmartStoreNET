@@ -5,7 +5,6 @@ using System.Text;
 
 namespace SmartStore.Utilities
 {
-
 	public static class SeoHelper
 	{
 		private static readonly string _okChars = "abcdefghijklmnopqrstuvwxyz1234567890 _-/";
@@ -1101,5 +1100,4 @@ namespace SmartStore.Utilities
 			return returnChar;
 		}
 	}
-
 }

@@ -30,6 +30,7 @@ namespace SmartStore.Services.Catalog
                 result.Add(cat);
                 result.AddRange(SortCategoriesForTree(source, cat.Id, true));
             }
+
             if (!ignoreCategoriesWithoutExistingParent && result.Count != source.Count)
             {
                 // find categories without parent in provided category source and insert them into result
@@ -37,6 +38,7 @@ namespace SmartStore.Services.Catalog
                     if (result.Where(x => x.Id == cat.Id).FirstOrDefault() == null)
                         result.Add(cat);
             }
+
             return result;
         }
 
@@ -54,6 +56,7 @@ namespace SmartStore.Services.Catalog
 				if (productCategory.ProductId == productId && productCategory.CategoryId == categoryId)
 					return productCategory;
 			}
+
             return null;
         }
 
@@ -66,6 +69,7 @@ namespace SmartStore.Services.Catalog
 				else
 					return category.Name;
 			}
+
 			return null;
 		}
 
@@ -94,6 +98,7 @@ namespace SmartStore.Services.Catalog
                     category = mappedCategories.ContainsKey(parentId) ? mappedCategories[parentId] : categoryService.GetCategoryById(parentId);
                 }
             }
+
             return result;
         }
 

@@ -108,7 +108,7 @@ namespace SmartStore.Services.Localization
                 }
             }
 
-            //set default value if required
+            // Set default value if required
             if (String.IsNullOrEmpty(resultStr) && returnDefaultValue)
             {
 				//var localizer = (Func<T, TPropType>)_compiledExpressions.GetOrAdd(keySelector, exp => exp.Compile()); // --> MEM LEAK
@@ -134,6 +134,7 @@ namespace SmartStore.Services.Localization
 
             return GetLocalizedEnum<T>(enumValue, localizationService, workContext.WorkingLanguage.Id);
         }
+
         /// <summary>
         /// Get localized value of enum
         /// </summary>
@@ -157,7 +158,7 @@ namespace SmartStore.Services.Localization
 
             string result = localizationService.GetResource(resourceName, languageId, false, "", true);
 
-            //set default value if required
+            // Set default value if required
             if (String.IsNullOrEmpty(result))
                 result = Inflector.Titleize(enumValue.ToString());
 

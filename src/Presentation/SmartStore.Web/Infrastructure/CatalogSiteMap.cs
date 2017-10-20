@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;

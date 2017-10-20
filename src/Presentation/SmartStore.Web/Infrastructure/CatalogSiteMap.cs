@@ -126,67 +126,109 @@ namespace SmartStore.Web.Infrastructure
 
 		protected override TreeNode<MenuItem> Build()
 		{
-			var curParent = new TreeNode<MenuItem>(new MenuItem
+			var categoryTree = _categoryService.GetCategoryTree(0, false, Services.StoreContext.CurrentStore.Id);
+			return ConvertNode(categoryTree.Root).Root;
+		}
+
+		private TreeNode<MenuItem> ConvertNode(TreeNode<ICategoryNode> node)
+		{
+			var cat = node.Value;
+
+			var menuItem = new MenuItem
 			{
-				EntityId = 0,
-				Text = "Home",
-				RouteName = "HomePage"
-			});
+				EntityId = cat.Id,
+				Text = cat.Id > 0 ? cat.GetLocalized(x => x.Name) : cat.Name,
+				BadgeText = cat.Id > 0 ? cat.GetLocalized(x => x.BadgeText) : null,
+				BadgeStyle = (BadgeStyle)cat.BadgeStyle,
+				RouteName = cat.Id > 0 ? "Category" : "HomePage"
+			};
 
-			Category prevCat = null;
-
-			var categories = _categoryService.GetAllCategories(storeId: Services.StoreContext.CurrentStore.Id);
-
-			foreach (var category in categories)
+			if (cat.Id > 0)
 			{
-				var menuItem = new MenuItem
-				{
-					EntityId = category.Id,
-					Text = category.GetLocalized(x => x.Name),
-					BadgeText = category.GetLocalized(x => x.BadgeText),
-					BadgeStyle = (BadgeStyle)category.BadgeStyle,
-					RouteName = "Category"
-				};
-				menuItem.RouteValues.Add("SeName", category.GetSeName());
+				menuItem.RouteValues.Add("SeName", cat.GetSeName());
 
-				if (category.ParentCategoryId == 0 && category.Published && category.PictureId != null)
+				if (cat.ParentCategoryId == 0 && cat.Published && cat.PictureId != null)
 				{
-					menuItem.ImageUrl = _pictureService.GetPictureUrl(category.PictureId.Value);
+					menuItem.ImageUrl = _pictureService.GetPictureUrl(cat.PictureId.Value);
 				}
-
-				// Determine parent
-				if (prevCat != null)
-				{
-					if (category.ParentCategoryId != curParent.Value.EntityId)
-					{
-						if (category.ParentCategoryId == prevCat.Id)
-						{
-							// level +1
-							curParent = curParent.LastChild;
-						}
-						else
-						{
-							// level -x
-							while (!curParent.IsRoot)
-							{
-								if (curParent.Value.EntityId == category.ParentCategoryId)
-								{
-									break;
-								}
-								curParent = curParent.Parent;
-							}
-						}
-					}
-				}
-
-				// add to parent
-				curParent.Append(menuItem);
-
-				prevCat = category;
 			}
 
-			return curParent.Root;
+			var convertedNode = new TreeNode<MenuItem>(menuItem);
+			
+			if (node.HasChildren)
+			{
+				foreach (var childNode in node.Children)
+				{
+					convertedNode.Append(ConvertNode(childNode));
+				}
+			}			
+
+			return convertedNode;
 		}
+
+		//protected override TreeNode<MenuItem> Build()
+		//{
+		//	var curParent = new TreeNode<MenuItem>(new MenuItem
+		//	{
+		//		EntityId = 0,
+		//		Text = "Home",
+		//		RouteName = "HomePage"
+		//	});
+
+		//	Category prevCat = null;
+
+		//	var categories = _categoryService.GetAllCategories(storeId: Services.StoreContext.CurrentStore.Id);
+
+		//	foreach (var category in categories)
+		//	{
+		//		var menuItem = new MenuItem
+		//		{
+		//			EntityId = category.Id,
+		//			Text = category.GetLocalized(x => x.Name),
+		//			BadgeText = category.GetLocalized(x => x.BadgeText),
+		//			BadgeStyle = (BadgeStyle)category.BadgeStyle,
+		//			RouteName = "Category"
+		//		};
+		//		menuItem.RouteValues.Add("SeName", category.GetSeName());
+
+		//		if (category.ParentCategoryId == 0 && category.Published && category.PictureId != null)
+		//		{
+		//			menuItem.ImageUrl = _pictureService.GetPictureUrl(category.PictureId.Value);
+		//		}
+
+		//		// Determine parent
+		//		if (prevCat != null)
+		//		{
+		//			if (category.ParentCategoryId != curParent.Value.EntityId)
+		//			{
+		//				if (category.ParentCategoryId == prevCat.Id)
+		//				{
+		//					// level +1
+		//					curParent = curParent.LastChild;
+		//				}
+		//				else
+		//				{
+		//					// level -x
+		//					while (!curParent.IsRoot)
+		//					{
+		//						if (curParent.Value.EntityId == category.ParentCategoryId)
+		//						{
+		//							break;
+		//						}
+		//						curParent = curParent.Parent;
+		//					}
+		//				}
+		//			}
+		//		}
+
+		//		// add to parent
+		//		curParent.Append(menuItem);
+
+		//		prevCat = category;
+		//	}
+
+		//	return curParent.Root;
+		//}
 	}
 
 	public class CatalogSiteMapCacheInvalidationHook : IDbSaveHook

@@ -6,6 +6,5 @@ namespace SmartStore.Core.Domain.Seo
     /// </summary>
     public interface ISlugSupported
     {
-
-    }
+	}
 }

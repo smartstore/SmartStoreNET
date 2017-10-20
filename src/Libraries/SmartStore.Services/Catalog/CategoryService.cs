@@ -362,7 +362,7 @@ namespace SmartStore.Services.Catalog
 			var unsortedCategories = query.ToList();
 
 			// Sort categories
-			var sortedCategories = unsortedCategories.SortCategoriesForTree(ignoreCategoriesWithoutExistingParent: ignoreCategoriesWithoutExistingParent);
+			var sortedCategories = unsortedCategories.SortCategoryNodesForTree(ignoreCategoriesWithoutExistingParent: ignoreCategoriesWithoutExistingParent);
 
 			// Paging
 			return new PagedList<Category>(sortedCategories, pageIndex, pageSize);
@@ -677,11 +677,9 @@ namespace SmartStore.Services.Catalog
 
 			_productCategoryRepository.Insert(productCategory);
 
-			//cache
 			_requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
 
-			//event notification
 			_eventPublisher.EntityInserted(productCategory);
 		}
 
@@ -692,11 +690,9 @@ namespace SmartStore.Services.Catalog
 
 			_productCategoryRepository.Update(productCategory);
 
-			//cache
 			_requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
 
-			//event notification
 			_eventPublisher.EntityUpdated(productCategory);
 		}
 
@@ -767,43 +763,61 @@ namespace SmartStore.Services.Catalog
 			return string.Empty;
 		}
 
-		/// <summary>
-		/// TBD
-		/// </summary>
-		/// <param name="rootCategoryId">Specifies which node to return as root</param>
-		/// <param name="includeHidden"><c>false</c> excludes unpublished and ACL-inaccessible categories</param>
-		/// <param name="storeId">&gt; 0 = apply store mapping, 0 to bypass store mapping</param>
-		/// <returns></returns>
-		public TreeNode<CategoryNode> GetCategoryTree(int rootCategoryId = 0, bool includeHidden = false, int storeId = 0)
+		public TreeNode<ICategoryNode> GetCategoryTree(int rootCategoryId = 0, bool includeHidden = false, int storeId = 0)
 		{
 			var storeToken = QuerySettings.IgnoreMultiStore ? "0" : storeId.ToString();
 			var rolesToken = QuerySettings.IgnoreAcl || includeHidden ? "0" : _workContext.CurrentCustomer.GetRolesIdent();
-
-			var cacheKey = CATEGORY_TREE_KEY.FormatInvariant(includeHidden, storeToken, rolesToken);
+			var cacheKey = CATEGORY_TREE_KEY.FormatInvariant(includeHidden.ToString().ToLower(), storeToken, rolesToken);
 
 			var root = _cache.Get(cacheKey, () =>
 			{
-				var curParent = new TreeNode<CategoryNode>(new CategoryNode());
+				// (Perf) don't fetch every field from db
+				var query = from x in BuildCategoriesQuery(showHidden: includeHidden, storeId: storeId)
+							orderby x.ParentCategoryId, x.DisplayOrder, x.Name
+							select new
+							{
+								x.Id,
+								x.ParentCategoryId,
+								x.Name,
+								x.Alias,
+								x.PictureId,
+								x.Published,
+								x.DisplayOrder,
+								x.UpdatedOnUtc,
+								x.BadgeText,
+								x.BadgeStyle,
+								x.LimitedToStores,
+								x.SubjectToAcl
+							};
 
-				Category prevCat = null;
-
-				var categories = GetAllCategories(showHidden: true, storeId: storeId);
-
-				foreach (var category in categories)
+				var unsortedNodes = query.ToList().Select(x => new CategoryNode
 				{
-					var info = new CategoryNode
-					{
-						Id = category.Id,
-						Name = category.Name,
-						Published = category.Published
-					};
+					Id = x.Id,
+					ParentCategoryId = x.ParentCategoryId,
+					Name = x.Name,
+					Alias = x.Alias,
+					PictureId = x.PictureId,
+					Published = x.Published,
+					DisplayOrder = x.DisplayOrder,
+					UpdatedOnUtc = x.UpdatedOnUtc,
+					BadgeText = x.BadgeText,
+					BadgeStyle = x.BadgeStyle,
+					LimitedToStores = x.LimitedToStores,
+					SubjectToAcl = x.SubjectToAcl
+				});
 
+				var nodes = unsortedNodes.SortCategoryNodesForTree(0, true);
+				var curParent = new TreeNode<ICategoryNode>(new CategoryNode { Name = "Home" });
+				CategoryNode prevNode = null;
+
+				foreach (var node in nodes)
+				{
 					// Determine parent
-					if (prevCat != null)
+					if (prevNode != null)
 					{
-						if (category.ParentCategoryId != curParent.Value.Id)
+						if (node.ParentCategoryId != curParent.Value.Id)
 						{
-							if (category.ParentCategoryId == prevCat.Id)
+							if (node.ParentCategoryId == prevNode.Id)
 							{
 								// level +1
 								curParent = curParent.LastChild;
@@ -813,7 +827,7 @@ namespace SmartStore.Services.Catalog
 								// level -x
 								while (!curParent.IsRoot)
 								{
-									if (curParent.Value.Id == category.ParentCategoryId)
+									if (curParent.Value.Id == node.ParentCategoryId)
 									{
 										break;
 									}
@@ -824,9 +838,9 @@ namespace SmartStore.Services.Catalog
 					}
 
 					// add to parent
-					curParent.Append(info);
+					curParent.Append(node);
 
-					prevCat = category;
+					prevNode = node;
 				}
 
 				return curParent.Root;
@@ -843,14 +857,6 @@ namespace SmartStore.Services.Catalog
 
 			return root;
 		}
-	}
-
-	[Serializable]
-	public class CategoryNode
-	{
-		public int Id { get; set; }
-		public string Name { get; set; }
-		public bool Published { get; set; }
 	}
 
 	public class CategoryTreeCacheInvalidationHook : IDbSaveHook

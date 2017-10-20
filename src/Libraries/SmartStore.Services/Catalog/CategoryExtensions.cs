@@ -17,26 +17,31 @@ namespace SmartStore.Services.Catalog
         /// <param name="parentId">Parent category identifier</param>
         /// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
         /// <returns>Sorted categories</returns>
-        public static IList<Category> SortCategoriesForTree(this IList<Category> source, int parentId = 0, bool ignoreCategoriesWithoutExistingParent = false)
+        public static IList<T> SortCategoryNodesForTree<T>(this IEnumerable<T> source, int parentId = 0, bool ignoreCategoriesWithoutExistingParent = false)
+			where T : ICategoryNode
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+			Guard.NotNull(source, nameof(source));
 
-            var result = new List<Category>();
+            var result = new List<T>();
+			var sourceCount = source.Count();
 
-            var categories = source.ToList().FindAll(c => c.ParentCategoryId == parentId);
-            foreach (var cat in categories)
+            var childNodes = source.Where(c => c.ParentCategoryId == parentId).ToArray();
+            foreach (var node in childNodes)
             {
-                result.Add(cat);
-                result.AddRange(SortCategoriesForTree(source, cat.Id, true));
+                result.Add(node);
+                result.AddRange(SortCategoryNodesForTree(source, node.Id, true));
             }
 
-            if (!ignoreCategoriesWithoutExistingParent && result.Count != source.Count)
+            if (!ignoreCategoriesWithoutExistingParent && result.Count != sourceCount)
             {
                 // Find categories without parent in provided category source and insert them into result
                 foreach (var cat in source)
-                    if (result.Where(x => x.Id == cat.Id).FirstOrDefault() == null)
-                        result.Add(cat);
+				{
+					if (result.Where(x => x.Id == cat.Id).FirstOrDefault() == null)
+					{
+						result.Add(cat);
+					}	
+				}
             }
 
             return result;

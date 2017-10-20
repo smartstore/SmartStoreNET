@@ -204,7 +204,22 @@ namespace SmartStore.Services.Catalog
 			Action<int, string> addPathToCache, 
 			Func<int, Category> categoryLookup,
 			ProductCategory prodCategory = null);
-    }
+
+		/// <summary>
+		/// Gets the tree representation of categories
+		/// </summary>
+		/// <param name="rootCategoryId">Specifies which node to return as root</param>
+		/// <param name="includeHidden"><c>false</c> excludes unpublished and ACL-inaccessible categories</param>
+		/// <param name="storeId">&gt; 0 = apply store mapping, 0 to bypass store mapping</param>
+		/// <returns>The category tree representation</returns>
+		/// <remarks>
+		/// This method puts the tree result into application cache, so subsequent calls are very fast.
+		/// Localization is up to the caller because the nodes only contain unlocalized data.
+		/// Subscribe to the <c>CategoryTreeChanged</c> event if you need to evict cache entries which depend
+		/// on this method's result.
+		/// </remarks>
+		TreeNode<ICategoryNode> GetCategoryTree(int rootCategoryId = 0, bool includeHidden = false, int storeId = 0);
+	}
 
 	public static class ICategoryServiceExtensions
 	{

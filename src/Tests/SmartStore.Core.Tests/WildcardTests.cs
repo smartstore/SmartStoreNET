@@ -10,8 +10,7 @@ namespace SmartStore.Core.Tests
 {
     [TestFixture]
     public class WildcardTests
-    {
-		
+    {	
 		[Test]
         public void Can_match_number_range()
         {
@@ -56,5 +55,33 @@ namespace SmartStore.Core.Tests
 			Assert.IsFalse(w1.IsMatch("Hell word"));
 		}
 
-    }
+		[Test]
+		public void Can_match_glob()
+		{
+			var w1 = new Wildcard("h[ae]llo", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+			Console.WriteLine(w1.Pattern);
+			Assert.IsTrue(w1.IsMatch("hello"));
+			Assert.IsTrue(w1.IsMatch("hallo"));
+			Assert.IsTrue(!w1.IsMatch("hillo"));
+
+			w1 = new Wildcard("h[^e]llo", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+			Console.WriteLine(w1.Pattern);
+			Assert.IsTrue(w1.IsMatch("hallo"));
+			Assert.IsTrue(w1.IsMatch("hbllo"));
+			Assert.IsTrue(!w1.IsMatch("hello"));
+
+			w1 = new Wildcard("h[a-d]llo", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+			Console.WriteLine(w1.Pattern);
+			Assert.IsTrue(w1.IsMatch("hallo"));
+			Assert.IsTrue(w1.IsMatch("hcllo"));
+			Assert.IsTrue(w1.IsMatch("hdllo"));
+			Assert.IsTrue(!w1.IsMatch("hgllo"));
+
+			w1 = new Wildcard("entry-[^0]*", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+			Console.WriteLine(w1.Pattern);
+			Assert.IsTrue(w1.IsMatch("entry-22"));
+			Assert.IsTrue(w1.IsMatch("entry-9"));
+			Assert.IsTrue(!w1.IsMatch("entry-0"));
+		}
+	}
 }

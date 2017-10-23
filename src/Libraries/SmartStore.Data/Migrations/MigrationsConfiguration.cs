@@ -55,6 +55,9 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Footer.Service.Mobile", "Service", "Service, Versand & Zahlung");
             builder.AddOrUpdate("Footer.Company.Mobile", "Company", "Firma, Impressum & Datenschutz");
 
+            builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetSorting.LabelAsc",
+                "Displayed Name: A to Z",
+                "Angezeigter Name: A bis Z");
         }
-	}
+    }
 }

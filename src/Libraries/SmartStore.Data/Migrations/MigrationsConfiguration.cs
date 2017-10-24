@@ -58,6 +58,12 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetSorting.LabelAsc",
                 "Displayed Name: A to Z",
                 "Angezeigter Name: A bis Z");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Copy.NumberOfCopies",
+                "Number of copies",
+                "Anzahl an Kopien",
+                "Defines the number of copies to be created.",
+                "Legt die Anzahl der anzulegenden Kopien fest.");
         }
     }
 }

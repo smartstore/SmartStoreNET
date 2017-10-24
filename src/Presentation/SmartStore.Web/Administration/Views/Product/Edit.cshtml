@@ -48,38 +48,47 @@
 		.Name("copyproduct-window")
 		.Title(T("Admin.Catalog.Products.Copy").Text)
 		.Content(@<text>
-    @using (Html.BeginForm("CopyProduct", "Product", FormMethod.Post, new { style = "margin:0;" })) {
+    @using (Html.BeginForm("CopyProduct", "Product", FormMethod.Post, new { style = "margin:0;" }))
+    {
         @Html.HiddenFor(model => Model.CopyProductModel.Id)
 
 		<div class="dialog-content-container">
 			<table class="adminContent">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CopyProductModel.Name)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => Model.CopyProductModel.Name)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CopyProductModel.Published)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => Model.CopyProductModel.Published)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CopyProductModel.CopyImages)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => Model.CopyProductModel.CopyImages)
-				</td>
-			</tr>
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.CopyProductModel.NumberOfCopies)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => Model.CopyProductModel.NumberOfCopies, new { small = true })
+                    </td>
+                </tr>
+			    <tr>
+				    <td class="adminTitle">
+					    @Html.SmartLabelFor(model => model.CopyProductModel.Name)
+				    </td>
+				    <td class="adminData">
+					    @Html.EditorFor(model => Model.CopyProductModel.Name)
+				    </td>
+			    </tr>
+			    <tr>
+				    <td class="adminTitle">
+					    @Html.SmartLabelFor(model => model.CopyProductModel.Published)
+				    </td>
+				    <td class="adminData">
+					    @Html.EditorFor(model => Model.CopyProductModel.Published)
+				    </td>
+			    </tr>
+			    <tr>
+				    <td class="adminTitle">
+					    @Html.SmartLabelFor(model => model.CopyProductModel.CopyImages)
+				    </td>
+				    <td class="adminData">
+					    @Html.EditorFor(model => Model.CopyProductModel.CopyImages)
+				    </td>
+			    </tr>
 			</table>
 		</div>
-	}
+    }
     </text>)
     .FooterContent(@<text>
         <button id="copyproduct" type="button" class="btn btn-primary">

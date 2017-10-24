@@ -18,6 +18,7 @@
 * #1181 Debitoor: Add option to display shipping address on invoices
 * Moved RoundPricesDuringCalculation setting to currency entity
 * #1100 Use new "Login with Amazon" services to initialize an Amazon payment
+* #1285 Copy product: Add option to add more than one copy
 
 ### New Features
 * #431 Added option to randomize the display order for slides on each request

@@ -382,6 +382,7 @@
     <Compile Include="Validators\Catalog\ProductTagValidator.cs" />
     <Compile Include="Validators\Catalog\ManufacturerValidator.cs" />
     <Compile Include="Validators\Catalog\ProductAttributeOptionModelValidator.cs" />
+    <Compile Include="Validators\Catalog\CopyProductValidator.cs" />
     <Compile Include="Validators\Common\AddressValidator.cs" />
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />

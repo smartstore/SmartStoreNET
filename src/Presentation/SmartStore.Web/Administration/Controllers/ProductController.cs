@@ -1454,19 +1454,29 @@ namespace SmartStore.Admin.Controllers
             var copyModel = model.CopyProductModel;
             try
             {
-				var product = _productService.GetProductById(copyModel.Id);
-                var newProduct = _copyProductService.CopyProduct(product, copyModel.Name, copyModel.Published, copyModel.CopyImages);
+                Product newProduct = null;
+                var product = _productService.GetProductById(copyModel.Id);
 
-                NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+                for (var i = 1; i <= copyModel.NumberOfCopies; ++i)
+                {
+                    var newName = copyModel.NumberOfCopies > 1 ? $"{copyModel.Name} {i}" : copyModel.Name;
+                    newProduct = _copyProductService.CopyProduct(product, newName, copyModel.Published, copyModel.CopyImages);
+                }
 
-                return RedirectToAction("Edit", new { id = newProduct.Id });
+                if (newProduct != null)
+                {
+                    NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+
+                    return RedirectToAction("Edit", new { id = newProduct.Id });
+                }
             }
             catch (Exception ex)
             {
 				Logger.Error(ex);
 				NotifyError(ex.ToAllMessages());
-                return RedirectToAction("Edit", new { id = copyModel.Id });
             }
+
+            return RedirectToAction("Edit", new { id = copyModel.Id });
         }
 
         #endregion

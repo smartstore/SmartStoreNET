@@ -62,12 +62,18 @@ namespace SmartStore.Collections
 				}
 			}
 
+			if (_id != null)
+			{
+				clonedNode._id = _id;
+			}
+
 			return clonedNode;
 		}
 
-		public TreeNode<TValue> Append(TValue value)
+		public TreeNode<TValue> Append(TValue value, object id = null)
 		{
 			var node = new TreeNode<TValue>(value);
+			node._id = id;
 			this.Append(node);
 			return node;
 		}
@@ -77,9 +83,17 @@ namespace SmartStore.Collections
 			values.Each(x => Append(x));
 		}
 
-		public TreeNode<TValue> Prepend(TValue value)
+		public void AppendRange(IEnumerable<TValue> values, Func<TValue, object> idSelector)
+		{
+			Guard.NotNull(idSelector, nameof(idSelector));
+
+			values.Each(x => Append(x, idSelector(x)));
+		}
+
+		public TreeNode<TValue> Prepend(TValue value, object id = null)
 		{
 			var node = new TreeNode<TValue>(value);
+			node._id = id;
 			this.Prepend(node);
 			return node;
 		}
@@ -129,6 +143,7 @@ namespace SmartStore.Collections
 
 			object objValue = null;
 			object objChildren = null;
+			string id = null;
 			Dictionary<string, object> metadata = null;
 
 			reader.Read();
@@ -150,6 +165,11 @@ namespace SmartStore.Collections
 					reader.Read();
 					objChildren = serializer.Deserialize(reader, sequenceType);
 				}
+				if (string.Equals(a, "Id", StringComparison.OrdinalIgnoreCase))
+				{
+					reader.Read();
+					id = serializer.Deserialize<string>(reader);
+				}
 				else
 				{
 					reader.Skip();
@@ -165,6 +185,12 @@ namespace SmartStore.Collections
 			{
 				var metadataProp = FastProperty.GetProperty(objectType, "Metadata", PropertyCachingStrategy.Cached);
 				metadataProp.SetValue(treeNode, metadata);
+
+				if (id.HasValue())
+				{
+					var idProp = FastProperty.GetProperty(objectType, "Id", PropertyCachingStrategy.Cached);
+					idProp.SetValue(treeNode, id);
+				}
 			}
 			
 			return treeNode;
@@ -172,12 +198,16 @@ namespace SmartStore.Collections
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
+			var idProp = FastProperty.GetProperty(value.GetType(), "Id", PropertyCachingStrategy.Cached);
 			var valueProp = FastProperty.GetProperty(value.GetType(), "Value", PropertyCachingStrategy.Cached);
 			var childrenProp = FastProperty.GetProperty(value.GetType(), "Children", PropertyCachingStrategy.Cached);
 			var metadataProp = FastProperty.GetProperty(value.GetType(), "Metadata", PropertyCachingStrategy.Cached);
 
 			writer.WriteStartObject();
 			{
+				writer.WritePropertyName("Id");
+				serializer.Serialize(writer, idProp.GetValue(value));
+
 				writer.WritePropertyName("Value");
 				serializer.Serialize(writer, valueProp.GetValue(value));
 

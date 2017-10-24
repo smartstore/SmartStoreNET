@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Collections;
@@ -292,16 +293,17 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List(GridCommand command, CategoryListModel model)
         {
 			var gridModel = new GridModel<CategoryModel>();
-
+			
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
 				var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, false, model.SearchStoreId);
-				var mappedCategories = categories.ToDictionary(x => x.Id);
-
 				gridModel.Data = categories.Select(x =>
 				{
 					var categoryModel = x.ToModel();
-					categoryModel.Breadcrumb = x.GetCategoryBreadCrumb(_categoryService, mappedCategories);
+					categoryModel.Breadcrumb = x.GetCategoryPath(
+						_categoryService, 
+						languageId: _workContext.WorkingLanguage.Id, 
+						withAlias: true);
 					return categoryModel;
 				});
 
@@ -320,22 +322,24 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        //ajax
+        // Ajax
         public ActionResult AllCategories(string label, int selectedId)
         {
-            var categories = _categoryService.GetAllCategories(showHidden: true);
-            var mappedCategories = categories.ToDictionary(x => x.Id);
+			var categoryTree = _categoryService.GetCategoryTree(includeHidden: true);
+			var categories = categoryTree.Flatten(false);
 
-            if (label.HasValue())
+			if (label.HasValue())
             {
-                categories.Insert(0, new Category { Name = label, Id = 0 });
-            }
+				categories = (new[] { new Category { Name = label, Id = 0 } }).Concat(categories);
 
-            var query = 
+			}
+
+			var query = 
 				from c in categories
-				select new { 
+				select new
+				{ 
 					id = c.Id.ToString(),
-					text = c.GetCategoryBreadCrumb(_categoryService, mappedCategories), 
+					text = c.GetCategoryPath(_categoryService, withAlias: true), 
 					selected = c.Id == selectedId
 				};
 
@@ -359,13 +363,13 @@ namespace SmartStore.Admin.Controllers
 			for (int i = mru.Count - 1; i >= 0; --i)
 			{
 				string id = mru[i];
-				var item = categories.FirstOrDefault(x => x.Id.ToString() == id);
+				var item = categoryTree.SelectNodeById(id);
 				if (item != null)
 				{
 					data.Insert(0, new
 					{
 						id = id,
-						text = item.GetCategoryBreadCrumb(_categoryService, mappedCategories),
+						text = _categoryService.GetCategoryPath(item),
 						selected = false
 					});
 				}
@@ -390,7 +394,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
         }
 
-        //ajax
+        // Ajax
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TreeLoadChildren(TreeViewItem node, CategoryTreeModel model)
         {
@@ -573,9 +577,9 @@ namespace SmartStore.Admin.Controllers
             //parent categories
             if (model.ParentCategoryId.HasValue)
             {
-                var parentCategory = _categoryService.GetCategoryById(model.ParentCategoryId.Value);
-                if (parentCategory != null && !parentCategory.Deleted)
-                    model.ParentCategoryBreadcrumb = parentCategory.GetCategoryBreadCrumb(_categoryService);
+                var parentCategory = _categoryService.GetCategoryTree(model.ParentCategoryId.Value, true);
+                if (parentCategory != null)
+                    model.ParentCategoryBreadcrumb = _categoryService.GetCategoryPath(parentCategory);
                 else
                     model.ParentCategoryId = 0;
             }
@@ -602,10 +606,10 @@ namespace SmartStore.Admin.Controllers
 			//parent categories
 			if (model.ParentCategoryId.HasValue)
             {
-                var parentCategory = _categoryService.GetCategoryById(model.ParentCategoryId.Value);
+                var parentCategory = _categoryService.GetCategoryTree(model.ParentCategoryId.Value, true);
 
-                if (parentCategory != null && !parentCategory.Deleted)
-                    model.ParentCategoryBreadcrumb = parentCategory.GetCategoryBreadCrumb(_categoryService);
+                if (parentCategory != null)
+                    model.ParentCategoryBreadcrumb = _categoryService.GetCategoryPath(parentCategory);
                 else
                     model.ParentCategoryId = 0;
             }
@@ -705,9 +709,9 @@ namespace SmartStore.Admin.Controllers
             //parent categories
             if (model.ParentCategoryId.HasValue)
             {
-                var parentCategory = _categoryService.GetCategoryById(model.ParentCategoryId.Value);
-                if (parentCategory != null && !parentCategory.Deleted)
-                    model.ParentCategoryBreadcrumb = parentCategory.GetCategoryBreadCrumb(_categoryService);
+                var parentCategory = _categoryService.GetCategoryTree(model.ParentCategoryId.Value, true);
+                if (parentCategory != null)
+                    model.ParentCategoryBreadcrumb = _categoryService.GetCategoryPath(parentCategory);
                 else
                     model.ParentCategoryId = 0;
             }

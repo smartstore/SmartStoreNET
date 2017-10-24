@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
-using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
@@ -16,13 +16,12 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
-using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Catalog
 {
 	public partial class CategoryService : ICategoryService
 	{
-		// {0} = IncludeHidden, {1} = StoreId, {2} = CustomerRoleIds
+		// {0} = IncludeHidden, {1} = CustomerRoleIds, {2} = StoreId
 		internal const string CATEGORY_TREE_KEY = "category:tree-{0}-{1}-{2}";
 		internal const string CATEGORY_TREE_PATTERN_KEY = "category:tree-";
 
@@ -696,78 +695,87 @@ namespace SmartStore.Services.Catalog
 			_eventPublisher.EntityUpdated(productCategory);
 		}
 
-		public virtual ICollection<Category> GetCategoryTrail(Category category)
+		public virtual IEnumerable<ICategoryNode> GetCategoryTrail(ICategoryNode node)
 		{
-			Guard.NotNull(category, nameof(category));
+			Guard.NotNull(node, nameof(node));
 
-			var trail = new List<Category>(10);
+			var treeNode = GetCategoryTree(node.Id, true);
 
-			do
+			if (treeNode == null)
 			{
-				trail.Add(category);
-				category = GetCategoryById(category.ParentCategoryId);
+				return Enumerable.Empty<ICategoryNode>();
 			}
-			while (category != null && !category.Deleted && category.Published);
 
-			trail.Reverse();
-			return trail;
+			return treeNode.Trail
+				.Where(x => !x.IsRoot)
+				//.TakeWhile(x => x.Value.Published) // TBD: (mc) do we need this?
+				.Select(x => x.Value);
 		}
 
 		public virtual string GetCategoryPath(
-			Product product,
-			int? languageId,
-			Func<int, string> pathLookup,
-			Action<int, string> addPathToCache,
-			Func<int, Category> categoryLookup,
-			ProductCategory prodCategory = null)
+			TreeNode<ICategoryNode> treeNode, 
+			int? languageId = null,
+			bool withAlias = false, 
+			string separator = " » ")
 		{
-			if (product == null)
-				return string.Empty;
+			Guard.NotNull(treeNode, nameof(treeNode));
 
-			pathLookup = pathLookup ?? ((i) => { return string.Empty; });
-			categoryLookup = categoryLookup ?? ((i) => { return GetCategoryById(i); });
-			addPathToCache = addPathToCache ?? ((i, val) => { });
+			var lookupKey = "Path.{0}.{1}.{2}".FormatInvariant(separator, languageId ?? 0, withAlias);
+			var cachedPath = treeNode.GetMetadata<string>(lookupKey, false);
 
-			var alreadyProcessedCategoryIds = new List<int>();
-			var path = new List<string>();
-
-			var productCategory = prodCategory ?? GetProductCategoriesByProductId(product.Id).FirstOrDefault();
-
-			if (productCategory != null && productCategory.Category != null)
+			if (cachedPath != null)
 			{
-				string cached = pathLookup(productCategory.CategoryId);
-				if (cached.HasValue())
-				{
-					return cached;
-				}
-
-				var category = productCategory.Category;
-
-				path.Add(languageId.HasValue ? category.GetLocalized(x => x.Name, languageId.Value) : category.Name);
-				alreadyProcessedCategoryIds.Add(category.Id);
-
-				category = categoryLookup(category.ParentCategoryId);
-				while (category != null && !category.Deleted && category.Published && !alreadyProcessedCategoryIds.Contains(category.Id))
-				{
-					path.Add(languageId.HasValue ? category.GetLocalized(x => x.Name, languageId.Value) : category.Name);
-					alreadyProcessedCategoryIds.Add(category.Id);
-					category = categoryLookup(category.ParentCategoryId);
-				}
-
-				path.Reverse();
-				string result = String.Join(" > ", path);
-				addPathToCache(productCategory.CategoryId, result);
-				return result;
+				return cachedPath;
 			}
 
-			return string.Empty;
+			var trail = treeNode.Trail;
+			var sb = new StringBuilder(string.Empty, (trail.Count()) * 16);
+
+			foreach (var node in trail)
+			{
+				//if (!node.Value.Published)
+				//{
+				//	// If any parent is unpublished,
+				//	// this category is not visible: so, no path.
+				//	sb.Clear();
+				//	break;
+				//}
+
+				if (!node.IsRoot)
+				{
+					var cat = node.Value;
+
+					var name = languageId.HasValue
+						? cat.GetLocalized(n => n.Name, languageId.Value)
+						: cat.Name;
+
+					sb.Append(name);
+
+					if (withAlias && cat.Alias.HasValue())
+					{
+						sb.Append(" (");
+						sb.Append(cat.Alias);
+						sb.Append(")");
+					}
+
+					if (node != treeNode)
+					{
+						// Is not self (trail end)
+						sb.Append(separator);
+					}
+				}
+			}
+
+			var path = sb.ToString();
+			treeNode.SetThreadMetadata(lookupKey, path);
+			return path;
 		}
 
 		public TreeNode<ICategoryNode> GetCategoryTree(int rootCategoryId = 0, bool includeHidden = false, int storeId = 0)
 		{
 			var storeToken = QuerySettings.IgnoreMultiStore ? "0" : storeId.ToString();
 			var rolesToken = QuerySettings.IgnoreAcl || includeHidden ? "0" : _workContext.CurrentCustomer.GetRolesIdent();
-			var cacheKey = CATEGORY_TREE_KEY.FormatInvariant(includeHidden.ToString().ToLower(), storeToken, rolesToken);
+			var cacheKey = CATEGORY_TREE_KEY.FormatInvariant(includeHidden.ToString().ToLower(), rolesToken, storeToken);
 
 			var root = _cache.Get(cacheKey, () =>
 			{
@@ -838,7 +846,7 @@ namespace SmartStore.Services.Catalog
 					}
 
 					// add to parent
-					curParent.Append(node);
+					curParent.Append(node, node.Id);
 
 					prevNode = node;
 				}
@@ -848,107 +856,10 @@ namespace SmartStore.Services.Catalog
 
 			if (rootCategoryId > 0)
 			{
-				root = root.SelectNode(x => x.Value.Id == rootCategoryId);
-				if (root == null)
-				{
-					throw new ArgumentException("Category with Id '{0}' does not exist".FormatInvariant(rootCategoryId), nameof(rootCategoryId));
-				}
+				root = root.SelectNodeById(rootCategoryId);
 			}
 
 			return root;
-		}
-	}
-
-	public class CategoryTreeCacheInvalidationHook : IDbSaveHook
-	{
-		private readonly ICommonServices _services;
-		private bool _invalidated;
-		private static readonly HashSet<string> _cacheAffectingCategoryProps = new HashSet<string>
-		{
-			"Deleted",
-			"Published",
-			"ParentCategoryId",
-			"DisplayOrder",
-			"SubjectToAcl",
-			"LimitedToStores"
-		};
-
-		public CategoryTreeCacheInvalidationHook(ICommonServices services)
-		{
-			_services = services;
-		}
-
-		public void OnBeforeSave(HookedEntity entry)
-		{
-			var entity = entry.Entity;
-
-			if (entity is Category && entry.InitialState == EntityState.Modified)
-			{
-				var modProps = _services.DbContext.GetModifiedProperties(entity);
-
-				if (modProps.Keys.Any(x => _cacheAffectingCategoryProps.Contains(x)))
-				{
-					Invalidate();
-				}
-			}
-		}
-
-		public void OnAfterSave(HookedEntity entry)
-		{
-			if (_invalidated)
-			{
-				// Don't bother processing.
-				return;
-			}
-
-			// INFO: Acl & StoreMapping affect element counts
-
-			var entity = entry.Entity;
-
-			if (entity is Category)
-			{
-				Invalidate();
-			}
-			//else if (entity is CustomerRole)
-			//{
-			//	Invalidate(entry.InitialState == EntityState.Modified || entry.InitialState == EntityState.Deleted);
-			//}
-			//else if (entity is AclRecord)
-			//{
-			//	var acl = entity as AclRecord;
-			//	if (!acl.IsIdle)
-			//	{
-			//		if (acl.EntityName == "Category")
-			//		{
-			//			Invalidate();
-			//		}
-			//	}
-			//}
-			else if (entity is StoreMapping)
-			{
-				var stm = entity as StoreMapping;
-				if (stm.EntityName == "Category")
-				{
-					Invalidate();
-				}
-			}
-		}
-
-		private void Invalidate(bool condition = true)
-		{
-			if (condition && !_invalidated)
-			{
-				_services.Cache.RemoveByPattern(CategoryService.CATEGORY_TREE_PATTERN_KEY);
-				_invalidated = true;
-			}
-		}
-
-		public void OnBeforeSaveCompleted()
-		{
-		}
-
-		public void OnAfterSaveCompleted()
-		{
 		}
 	}
 }

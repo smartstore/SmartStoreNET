@@ -1018,11 +1018,9 @@ namespace SmartStore.Admin.Controllers
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-            var allCategories = _categoryService.GetAllCategories(showHidden: true);
-            var mappedCategories = allCategories.ToDictionary(x => x.Id);
-            foreach (var c in allCategories)
+            foreach (var c in _categoryService.GetCategoryTree(includeHidden: true).FlattenNodes(false))
             {
-                model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+                model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameIndented(), Value = c.Id.ToString() });
             }
 
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
@@ -1486,10 +1484,11 @@ namespace SmartStore.Admin.Controllers
 				var productCategoriesModel = productCategories
 					.Select(x =>
 					{
-						return new ProductModel.ProductCategoryModel()
+						var node = _categoryService.GetCategoryTree(x.CategoryId);
+						return new ProductModel.ProductCategoryModel
 						{
 							Id = x.Id,
-							Category = _categoryService.GetCategoryById(x.CategoryId).GetCategoryBreadCrumb(_categoryService),
+							Category = node != null ? _categoryService.GetCategoryPath(node) : string.Empty,
 							ProductId = x.ProductId,
 							CategoryId = x.CategoryId,
 							IsFeaturedProduct = x.IsFeaturedProduct,
@@ -2721,11 +2720,9 @@ namespace SmartStore.Admin.Controllers
 			var model = new BulkEditListModel();
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-			var allCategories = _categoryService.GetAllCategories(showHidden: true);
-			var mappedCategories = allCategories.ToDictionary(x => x.Id);
-			foreach (var c in allCategories)
+			foreach (var c in _categoryService.GetCategoryTree(includeHidden: true).FlattenNodes(false))
 			{
-				model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+				model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameIndented(), Value = c.Id.ToString() });
 			}
 
 			foreach (var m in _manufacturerService.GetAllManufacturers(true))

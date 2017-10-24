@@ -4,6 +4,7 @@ using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Services.Catalog
 {
@@ -183,27 +184,24 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Gets the category trail
 		/// </summary>
-		/// <param name="category">Category</param>
+		/// <param name="node">The category node</param>
 		/// <returns>Trail</returns>
-		ICollection<Category> GetCategoryTrail(Category category);
+		IEnumerable<ICategoryNode> GetCategoryTrail(ICategoryNode node);
+
 
 		/// <summary>
-		/// Builds a category breadcrumb (path) for a particular product
+		/// Builds a category breadcrumb (path) for a particular category node
 		/// </summary>
-		/// <param name="product">The product</param>
-		/// <param name="languageId">The id of language</param>
-		/// <param name="pathLookup">A delegate for fast (cached) path lookup</param>
-		/// <param name="addPathToCache">A callback that saves the resolved path to a cache (when <c>pathLookup</c> returned null)</param>
-		/// <param name="categoryLookup">A delegate for fast (cached) category lookup</param>
-		/// <param name="prodCategory">First product category of product</param>
-		/// <returns>Category breadcrumb for product</returns>
+		/// <param name="treeNode">The category node</param>
+		/// <param name="languageId">The id of language. Pass <c>null</c> to skip localization.</param>
+		/// <param name="withAlias"><c>true</c> appends the category alias - if specified - to the name</param>
+		/// <param name="separator">The separator string</param>
+		/// <returns>Category breadcrumb path</returns>
 		string GetCategoryPath(
-			Product product, 
-			int? languageId, 
-			Func<int, string> pathLookup,
-			Action<int, string> addPathToCache, 
-			Func<int, Category> categoryLookup,
-			ProductCategory prodCategory = null);
+			TreeNode<ICategoryNode> treeNode,
+			int? languageId = null,
+			bool withAlias = false,
+			string separator = " >> ");
 
 		/// <summary>
 		/// Gets the tree representation of categories
@@ -218,7 +216,10 @@ namespace SmartStore.Services.Catalog
 		/// Subscribe to the <c>CategoryTreeChanged</c> event if you need to evict cache entries which depend
 		/// on this method's result.
 		/// </remarks>
-		TreeNode<ICategoryNode> GetCategoryTree(int rootCategoryId = 0, bool includeHidden = false, int storeId = 0);
+		TreeNode<ICategoryNode> GetCategoryTree(
+			int rootCategoryId = 0, 
+			bool includeHidden = false, 
+			int storeId = 0);
 	}
 
 	public static class ICategoryServiceExtensions
@@ -227,10 +228,31 @@ namespace SmartStore.Services.Catalog
 		/// Builds a category breadcrumb for a particular product
 		/// </summary>
 		/// <param name="product">The product</param>
+		/// <param name="languageId">The id of language. Pass <c>null</c> to skip localization.</param>
+		/// <param name="storeId">The id of store. Pass <c>null</c> to skip store filtering.</param>
+		/// <param name="separator">The separator string</param>
 		/// <returns>Category breadcrumb for product</returns>
-		public static string GetCategoryBreadCrumb(this ICategoryService categoryService, Product product)
+		public static string GetCategoryPath(this ICategoryService categoryService, 
+			Product product, 
+			int? languageId = null,
+			int? storeId = null,
+			string separator = " >> ")
 		{
-			return categoryService.GetCategoryPath(product, null, null, null, null);
+			Guard.NotNull(product, nameof(product));
+
+			string result = string.Empty;
+
+			var pc = categoryService.GetProductCategoriesByProductId(product.Id).FirstOrDefault();
+			if (pc != null)
+			{
+				var node = categoryService.GetCategoryTree(pc.CategoryId, false, storeId ?? 0);
+				if (node != null)
+				{
+					result = categoryService.GetCategoryPath(node, languageId, false, separator);
+				}
+			}
+
+			return result;
 		}
 	}
 }

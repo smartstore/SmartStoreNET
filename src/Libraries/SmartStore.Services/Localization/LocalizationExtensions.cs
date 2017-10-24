@@ -13,7 +13,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Localization
 {
-	public static class LocalizationExtentions
+	public static class LocalizationExtensions
     {
 		/// <summary>
         /// Get localized property of an entity
@@ -110,6 +110,25 @@ namespace SmartStore.Services.Localization
 				node.Id,
 				keySelector,
 				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id);
+		}
+
+		/// <summary>
+		/// Get localized property of an <see cref="ICategoryNode"/> instance
+		/// </summary>
+		/// <param name="node">Node</param>
+		/// <param name="keySelector">Key selector</param>
+		/// /// <param name="languageId">Language identifier</param>
+		/// <returns>Localized property</returns>
+		public static string GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector, int languageId)
+		{
+			Guard.NotNull(node, nameof(node));
+
+			return GetLocalized(
+				node,
+				"Category",
+				node.Id,
+				keySelector,
+				languageId);
 		}
 
 		internal static TPropType GetLocalized<T, TPropType>(T entity,

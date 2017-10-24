@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Catalog
 {
@@ -65,76 +68,61 @@ namespace SmartStore.Services.Catalog
             return null;
         }
 
-		public static string GetCategoryNameWithAlias(this Category category)
+		public static string GetCategoryNameIndented(this TreeNode<ICategoryNode> treeNode, 
+			string indentWith = "--", 
+			int? languageId = null,
+			bool withAlias = true)
 		{
-			if (category != null)
+			Guard.NotNull(treeNode, nameof(treeNode));
+
+			var sb = new StringBuilder();
+			var indentSize = treeNode.Depth - 1;
+			for (int i = 0; i < indentSize; i++)
 			{
-				if (category.Alias.HasValue())
-					return "{0} ({1})".FormatWith(category.Name, category.Alias);
-				else
-					return category.Name;
+				sb.Append(indentWith);
 			}
 
-			return null;
+			var cat = treeNode.Value;
+
+			var name = languageId.HasValue
+				? cat.GetLocalized(n => n.Name, languageId.Value)
+				: cat.Name;
+
+			sb.Append(name);
+
+			if (withAlias && cat.Alias.HasValue())
+			{
+				sb.Append(" (");
+				sb.Append(cat.Alias);
+				sb.Append(")");
+			}
+
+			return sb.ToString();
 		}
 
-        public static string GetCategoryNameWithPrefix(this Category category, ICategoryService categoryService, IDictionary<int, Category> mappedCategories = null)
-        {
-            string result = string.Empty;
+		/// <summary>
+		/// Builds a category breadcrumb (path) for a particular category node
+		/// </summary>
+		/// <param name="categoryNode">The category node</param>
+		/// <param name="languageId">The id of language. Pass <c>null</c> to skip localization.</param>
+		/// <param name="withAlias"><c>true</c> appends the category alias - if specified - to the name</param>
+		/// <param name="separator">The separator string</param>
+		/// <returns>Category breadcrumb path</returns>
+		public static string GetCategoryPath(this ICategoryNode categoryNode, 
+			ICategoryService categoryService, 
+			int? languageId = null, 
+			bool withAlias = false,
+			string separator = " » ")
+		{
+			Guard.NotNull(categoryNode, nameof(categoryNode));
 
-            while (category != null)
-            {
-                if (String.IsNullOrEmpty(result))
-                {
-                    result = category.GetCategoryNameWithAlias();
-                }
-                else
-                {
-                    result = "--" + result;
-                }
+			var treeNode = categoryService.GetCategoryTree(categoryNode.Id, true);
+			if (treeNode != null)
+			{
+				return categoryService.GetCategoryPath(treeNode, languageId, withAlias, separator);
+			}
 
-                int parentId = category.ParentCategoryId;
-                if (mappedCategories == null)
-                {
-                    category = categoryService.GetCategoryById(parentId);
-                }
-                else
-                {
-                    category = mappedCategories.ContainsKey(parentId) ? mappedCategories[parentId] : categoryService.GetCategoryById(parentId);
-                }
-            }
-
-            return result;
-        }
-
-        public static string GetCategoryBreadCrumb(this Category category, ICategoryService categoryService, IDictionary<int, Category> mappedCategories = null)
-        {
-            string result = string.Empty;
-
-            while (category != null && !category.Deleted)
-            {
-                if (String.IsNullOrEmpty(result))
-                {
-                    result = category.GetCategoryNameWithAlias();
-                }
-                else
-                {
-                    result = category.GetCategoryNameWithAlias() + " >> " + result;
-                }
-
-                int parentId = category.ParentCategoryId;
-                if (mappedCategories == null)
-                {
-                    category = categoryService.GetCategoryById(parentId);
-                }
-                else
-                {
-                    category = mappedCategories.ContainsKey(parentId) ? mappedCategories[parentId] : categoryService.GetCategoryById(parentId);
-                }
-            }
-
-            return result;
-        }
-
-    }
+			return string.Empty;
+		}
+	}
 }

@@ -7,6 +7,8 @@ using System.Threading;
 using SmartStore.Core.Async;
 using System.Collections;
 using System.Collections.Generic;
+using SmartStore.Utilities;
+using System.Text.RegularExpressions;
 
 namespace SmartStore.Core.Caching
 {
@@ -132,7 +134,8 @@ namespace SmartStore.Core.Caching
 				return keys.ToArray();
 			}
 
-			return keys.Where(x => x.StartsWith(pattern, StringComparison.OrdinalIgnoreCase)).ToArray();
+			var wildcard = new Wildcard(pattern, RegexOptions.IgnoreCase);
+			return keys.Where(x => wildcard.IsMatch(x)).ToArray();
 		}
 
 		public void RemoveByPattern(string pattern)

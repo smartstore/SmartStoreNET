@@ -1282,12 +1282,6 @@ namespace SmartStore.Services.DataExchange.Export
 						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
 						ctx.CategoryTemplates = _categoryTemplateService.Value.GetAllCategoryTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
 
-						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product)
-						{
-							var allCategories = _categoryService.Value.GetAllCategories(showHidden: true);
-							ctx.Categories = allCategories.ToDictionary(x => x.Id);
-						}
-
 						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product ||
 							ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
 						{
@@ -1376,8 +1370,6 @@ namespace SmartStore.Services.DataExchange.Export
 						ctx.Languages.Clear();
 						ctx.QuantityUnits.Clear();
 						ctx.DeliveryTimes.Clear();
-						ctx.CategoryPathes.Clear();
-						ctx.Categories.Clear();
 						ctx.Stores.Clear();
 
 						ctx.Request.CustomData.Clear();

@@ -173,6 +173,7 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Catalog\CategoryTreeChangeHandler.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelper.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelperExtensions.cs" />
     <Compile Include="Catalog\Importer\CategoryImporter.cs" />
@@ -411,7 +412,7 @@
     <Compile Include="Customers\ICustomerService.cs" />
     <Compile Include="Directory\IMeasureService.cs" />
     <Compile Include="Directory\IStateProvinceService.cs" />
-    <Compile Include="Localization\LocalizationExtentions.cs" />
+    <Compile Include="Localization\LocalizationExtensions.cs" />
     <Compile Include="Directory\MeasureService.cs" />
     <Compile Include="Logging\CustomerActivityService.cs" />
     <Compile Include="Media\IDownloadService.cs" />

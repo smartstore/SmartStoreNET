@@ -127,7 +127,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {3} : items to display
 		/// </remarks>
 		public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "pres:manufacturer:navigation-{0}-{1}-{2}-{3}";
-        public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "pres:manufacturer:navigation";
+        public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "pres:manufacturer:navigation*";
 
 		/// <summary>
 		/// Indicates whether a manufacturer has featured products
@@ -138,7 +138,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {2} : current store ID
 		/// </remarks>
 		public const string MANUFACTURER_HAS_FEATURED_PRODUCTS_KEY = "pres:manufacturer:hasfeaturedproducts-{0}-{1}-{2}";
-		public const string MANUFACTURER_HAS_FEATURED_PRODUCTS_PATTERN_KEY = "pres:manufacturer:hasfeaturedproducts";
+		public const string MANUFACTURER_HAS_FEATURED_PRODUCTS_PATTERN_KEY = "pres:manufacturer:hasfeaturedproducts*";
 
 		/// <summary>
 		/// Indicates whether a category has featured products
@@ -149,7 +149,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {2} : current store ID
 		/// </remarks>
 		public const string CATEGORY_HAS_FEATURED_PRODUCTS_KEY = "pres:category:hasfeaturedproducts-{0}-{1}-{2}";
-		public const string CATEGORY_HAS_FEATURED_PRODUCTS_PATTERN_KEY = "pres:category:hasfeaturedproducts";
+		public const string CATEGORY_HAS_FEATURED_PRODUCTS_PATTERN_KEY = "pres:category:hasfeaturedproducts*";
 
         /// <summary>
         /// Key for ProductTagModel caching
@@ -160,7 +160,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {2} : current store ID
         /// </remarks>
         public const string PRODUCTTAG_BY_PRODUCT_MODEL_KEY = "pres:producttag:byproduct-{0}-{1}-{2}";
-        public const string PRODUCTTAG_BY_PRODUCT_PATTERN_KEY = "pres:producttag:byproduct";
+        public const string PRODUCTTAG_BY_PRODUCT_PATTERN_KEY = "pres:producttag:byproduct*";
 
         /// <summary>
         /// Key for PopularProductTagsModel caching
@@ -170,7 +170,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {1} : current store ID
         /// </remarks>
         public const string PRODUCTTAG_POPULAR_MODEL_KEY = "pres:producttag:popular-{0}-{1}";
-        public const string PRODUCTTAG_POPULAR_PATTERN_KEY = "pres:producttag:popular";
+        public const string PRODUCTTAG_POPULAR_PATTERN_KEY = "pres:producttag:popular*";
 
 		/// <summary>
 		/// Key for ProductManufacturers model caching
@@ -182,7 +182,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {3} : current store ID
 		/// </remarks>
 		public const string PRODUCT_MANUFACTURERS_MODEL_KEY = "pres:product:manufacturers-{0}-{1}-{2}-{3}";
-        public const string PRODUCT_MANUFACTURERS_PATTERN_KEY = "pres:product:manufacturers";
+        public const string PRODUCT_MANUFACTURERS_PATTERN_KEY = "pres:product:manufacturers*";
 
         /// <summary>
         /// Key for ProductSpecificationModel caching
@@ -192,7 +192,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {1} : language id
         /// </remarks>
         public const string PRODUCT_SPECS_MODEL_KEY = "pres:product:specs-{0}-{1}";
-        public const string PRODUCT_SPECS_PATTERN_KEY = "pres:product:specs";
+        public const string PRODUCT_SPECS_PATTERN_KEY = "pres:product:specs*";
 
         /// <summary>
         /// Key for TopicModel caching
@@ -203,7 +203,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {2} : store id
         /// </remarks>
         public const string TOPIC_MODEL_KEY = "pres:topic:details-{0}-{1}-{2}";
-        public const string TOPIC_PATTERN_KEY = "pres:topic:details";
+        public const string TOPIC_PATTERN_KEY = "pres:topic:details*";
 
         /// <summary>
         /// Key for TopicWidget caching
@@ -212,7 +212,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : store id
         /// {1} : language id
         /// </remarks>
-        public const string TOPIC_WIDGET_PATTERN_KEY = "pres:topic:widget";
+        public const string TOPIC_WIDGET_PATTERN_KEY = "pres:topic:widget*";
         public const string TOPIC_WIDGET_ALL_MODEL_KEY = "pres:topic:widget-all-{0}-{1}";
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : category template id
         /// </remarks>
         public const string CATEGORY_TEMPLATE_MODEL_KEY = "pres:categorytemplate-{0}";
-        public const string CATEGORY_TEMPLATE_PATTERN_KEY = "pres:categorytemplate";
+        public const string CATEGORY_TEMPLATE_PATTERN_KEY = "pres:categorytemplate*";
 
         /// <summary>
         /// Key for ManufacturerTemplate caching
@@ -231,7 +231,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : manufacturer template id
         /// </remarks>
         public const string MANUFACTURER_TEMPLATE_MODEL_KEY = "pres:manufacturertemplate-{0}";
-        public const string MANUFACTURER_TEMPLATE_PATTERN_KEY = "pres:manufacturertemplate";
+        public const string MANUFACTURER_TEMPLATE_PATTERN_KEY = "pres:manufacturertemplate*";
 
         /// <summary>
         /// Key for ProductTemplate caching
@@ -240,7 +240,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {0} : product template id
         /// </remarks>
         public const string PRODUCT_TEMPLATE_MODEL_KEY = "pres:producttemplate-{0}";
-        public const string PRODUCT_TEMPLATE_PATTERN_KEY = "pres:producttemplate";
+        public const string PRODUCT_TEMPLATE_PATTERN_KEY = "pres:producttemplate*";
 
         /// <summary>
         /// Key for bestsellers identifiers displayed on the home page
@@ -249,7 +249,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {0} : current store id
 		/// </remarks>
         public const string HOMEPAGE_BESTSELLERS_IDS_KEY = "pres:bestsellers:homepage-{0}";
-        public const string HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY = "pres:bestsellers:homepage";
+        public const string HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY = "pres:bestsellers:homepage*";
 
         /// <summary>
         /// Key for "also purchased" product identifiers displayed on the product details page
@@ -259,7 +259,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {1} : current store id
         /// </remarks>
         public const string PRODUCTS_ALSO_PURCHASED_IDS_KEY = "pres:alsopuchased-{0}-{1}";
-        public const string PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY = "pres:alsopuchased";
+        public const string PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY = "pres:alsopuchased*";
 
         /// <summary>
         /// Key for default product picture caching
@@ -272,7 +272,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {4} : current store ID
         /// </remarks>
         public const string PRODUCT_DEFAULTPICTURE_MODEL_KEY = "pres:product:picture-{0}-{1}-{2}-{3}-{4}";
-        public const string PRODUCT_DEFAULTPICTURE_PATTERN_KEY = "pres:product:picture";
+        public const string PRODUCT_DEFAULTPICTURE_PATTERN_KEY = "pres:product:picture*";
 
         /// <summary>
         /// Key for category picture caching
@@ -285,7 +285,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {4} : current store ID
         /// </remarks>
         public const string CATEGORY_PICTURE_MODEL_KEY = "pres:category:picture-{0}-{1}-{2}-{3}-{4}";
-        public const string CATEGORY_PICTURE_PATTERN_KEY = "pres:category:picture";
+        public const string CATEGORY_PICTURE_PATTERN_KEY = "pres:category:picture*";
 
         /// <summary>
         /// Key for manufacturer picture caching
@@ -298,7 +298,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {5} : current store ID
         /// </remarks>
         public const string MANUFACTURER_PICTURE_MODEL_KEY = "pres:manufacturer:picture-{0}-{1}-{2}-{3}-{4}";
-        public const string MANUFACTURER_PICTURE_PATTERN_KEY = "pres:manufacturer:picture";
+        public const string MANUFACTURER_PICTURE_PATTERN_KEY = "pres:manufacturer:picture*";
 
         /// <summary>
         /// Key for cart picture caching
@@ -312,7 +312,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {6} : current store ID
         /// </remarks>
         public const string CART_PICTURE_MODEL_KEY = "pres:cart:picture-{0}-{1}-{2}-{3}-{4}-{5}";
-        public const string CART_PICTURE_PATTERN_KEY = "pres:cart:picture";
+        public const string CART_PICTURE_PATTERN_KEY = "pres:cart:picture*";
 
         /// <summary>
         /// Key for home page polls
@@ -331,7 +331,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {2} : current store ID
         /// </remarks>
         public const string POLL_BY_SYSTEMNAME_MODEL_KEY = "pres:poll:systemname-{0}-{1}-{2}";
-        public const string POLLS_PATTERN_KEY = "pres:poll:";
+        public const string POLLS_PATTERN_KEY = "pres:poll:*";
 
         /// <summary>
         /// Key for blog tag list model
@@ -349,7 +349,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {1} : current store ID
         /// </remarks>
         public const string BLOG_MONTHS_MODEL_KEY = "pres:blog:months-{0}-{1}";
-        public const string BLOG_PATTERN_KEY = "pres:blog:";
+        public const string BLOG_PATTERN_KEY = "pres:blog:*";
 
         /// <summary>
         /// Key for home page news
@@ -359,7 +359,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {1} : store ID
         /// </remarks>
         public const string HOMEPAGE_NEWSMODEL_KEY = "pres:news:homepage-{0}-{1}";
-        public const string NEWS_PATTERN_KEY = "pres:news:";
+        public const string NEWS_PATTERN_KEY = "pres:news:*";
         
         /// <summary>
         /// Key for states by country id
@@ -370,7 +370,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// {2} : language ID
         /// </remarks>
         public const string STATEPROVINCES_BY_COUNTRY_MODEL_KEY = "pres:stateprovinces:bycountry-{0}-{1}-{2}";
-        public const string STATEPROVINCES_PATTERN_KEY = "pres:stateprovinces:";
+        public const string STATEPROVINCES_PATTERN_KEY = "pres:stateprovinces:*";
 
         /// <summary>
         /// Key for available languages
@@ -379,7 +379,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {0} : current store ID
 		/// </remarks>
         public const string AVAILABLE_LANGUAGES_MODEL_KEY = "pres:languages:all-{0}";
-        public const string AVAILABLE_LANGUAGES_PATTERN_KEY = "pres:languages:";
+        public const string AVAILABLE_LANGUAGES_PATTERN_KEY = "pres:languages:*";
 
         /// <summary>
         /// Key for available currencies
@@ -389,7 +389,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {1} : current store ID
         /// </remarks>
         public const string AVAILABLE_CURRENCIES_MODEL_KEY = "pres:currencies:all-{0}-{1}";
-        public const string AVAILABLE_CURRENCIES_PATTERN_KEY = "pres:currencies:";
+        public const string AVAILABLE_CURRENCIES_PATTERN_KEY = "pres:currencies:*";
 
 		/// <summary>
 		/// Key for store header data
@@ -398,7 +398,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {0} : current store ID
 		/// </remarks>
         public const string SHOPHEADER_MODEL_KEY = "pres:shopheader-{0}";
-		public const string SHOPHEADER_MODEL_PATTERN_KEY = "pres:shopheader";
+		public const string SHOPHEADER_MODEL_PATTERN_KEY = "pres:shopheader*";
 
         private readonly ICacheManager _cacheManager;
         

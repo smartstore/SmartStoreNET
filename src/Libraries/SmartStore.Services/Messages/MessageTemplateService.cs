@@ -15,7 +15,7 @@ namespace SmartStore.Services.Messages
     {
         private const string MESSAGETEMPLATES_ALL_KEY = "SmartStore.messagetemplate.all-{0}";
         private const string MESSAGETEMPLATES_BY_NAME_KEY = "SmartStore.messagetemplate.name-{0}-{1}";
-        private const string MESSAGETEMPLATES_PATTERN_KEY = "SmartStore.messagetemplate.";
+        private const string MESSAGETEMPLATES_PATTERN_KEY = "SmartStore.messagetemplate.*";
 
         private readonly IRepository<MessageTemplate> _messageTemplateRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;

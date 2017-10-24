@@ -20,11 +20,11 @@ namespace SmartStore.Services.Catalog
     {
 		// 0 = ProductId, 1 = PageIndex, 2 = PageSize
 		private const string PRODUCTVARIANTATTRIBUTES_COMBINATIONS_BY_ID_KEY = "SmartStore.productvariantattribute.combinations.id-{0}-{1}-{2}";
-		private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.";
+		private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.*";
 
 		// 0 = Attribute value ids, e.g. 16-254-1245
 		private const string PRODUCTVARIANTATTRIBUTEVALUES_BY_IDS_KEY = "SmartStore.productvariantattributevalues.ids-{0}";
-		private const string PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.productvariantattributevalues";
+		private const string PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.productvariantattributevalues*";
 
 		private readonly IRepository<ProductAttribute> _productAttributeRepository;
 		private readonly IRepository<ProductAttributeOption> _productAttributeOptionRepository;

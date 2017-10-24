@@ -20,7 +20,7 @@ namespace SmartStore.Services.Localization
 		/// </summary>
 		const string LOCALIZEDPROPERTY_SEGMENT_KEY = "localizedproperty:{0}-lang-{1}";
 		const string LOCALIZEDPROPERTY_SEGMENT_PATTERN = "localizedproperty:{0}";
-		const string LOCALIZEDPROPERTY_ALLSEGMENTS_PATTERN = "localizedproperty:";
+		const string LOCALIZEDPROPERTY_ALLSEGMENTS_PATTERN = "localizedproperty:*";
 
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
         private readonly ICacheManager _cacheManager;

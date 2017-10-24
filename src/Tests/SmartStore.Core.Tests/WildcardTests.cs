@@ -14,7 +14,7 @@ namespace SmartStore.Core.Tests
 		[Test]
         public void Can_match_number_range()
         {
-			var w1 = new Wildcard("999-2450");
+			var w1 = new Wildcard("999-2450", true);
 			Console.WriteLine(w1.Pattern);
 			Assert.IsTrue(w1.IsMatch("999"));
 			Assert.IsTrue(w1.IsMatch("1500"));
@@ -22,21 +22,21 @@ namespace SmartStore.Core.Tests
 			Assert.IsFalse(w1.IsMatch("500"));
 			Assert.IsFalse(w1.IsMatch("2800"));
 
-			w1 = new Wildcard("50000-59999");
+			w1 = new Wildcard("50000-59999", true);
 			Console.WriteLine(w1.Pattern);
 			Assert.IsTrue(w1.IsMatch("59192"));
 			Assert.IsTrue(w1.IsMatch("55000"));
 			Assert.IsFalse(w1.IsMatch("500"));
 			Assert.IsFalse(w1.IsMatch("80000"));
 
-			w1 = new Wildcard("3266-3267");
+			w1 = new Wildcard("3266-3267", true);
 			Console.WriteLine(w1.Pattern);
 			Assert.IsTrue(w1.IsMatch("3266"));
 			Assert.IsTrue(w1.IsMatch("3267"));
 			Assert.IsFalse(w1.IsMatch("500"));
 			Assert.IsFalse(w1.IsMatch("4000"));
 
-            w1 = new Wildcard("0001000-0005000");
+            w1 = new Wildcard("0001000-0005000", true);
             Console.WriteLine(w1.Pattern);
             Assert.IsTrue(w1.IsMatch("0001000"));
             Assert.IsTrue(w1.IsMatch("0002008"));

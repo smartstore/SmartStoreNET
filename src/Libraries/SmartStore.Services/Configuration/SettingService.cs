@@ -18,7 +18,7 @@ namespace SmartStore.Services.Configuration
 {
     public partial class SettingService : ScopedServiceBase, ISettingService
     {
-        private const string SETTINGS_ALL_KEY = "setting:all";
+        private const string SETTINGS_ALL_KEY = "setting:all*";
 
         private readonly IRepository<Setting> _settingRepository;
         private readonly IEventPublisher _eventPublisher;

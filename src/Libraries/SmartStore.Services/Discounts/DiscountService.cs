@@ -19,7 +19,7 @@ namespace SmartStore.Services.Discounts
     public partial class DiscountService : IDiscountService
     {
         private const string DISCOUNTS_ALL_KEY = "SmartStore.discount.all-{0}-{1}";
-        private const string DISCOUNTS_PATTERN_KEY = "SmartStore.discount.";
+        private const string DISCOUNTS_PATTERN_KEY = "SmartStore.discount.*";
 
         private readonly IRepository<Discount> _discountRepository;
         private readonly IRepository<DiscountRequirement> _discountRequirementRepository;

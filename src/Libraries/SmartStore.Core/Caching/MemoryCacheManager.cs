@@ -123,7 +123,7 @@ namespace SmartStore.Core.Caching
 			_cache.Remove(key);
         }
 
-		public string[] Keys(string pattern)
+		public IEnumerable<string> Keys(string pattern)
 		{
 			Guard.NotEmpty(pattern, nameof(pattern));
 
@@ -135,12 +135,13 @@ namespace SmartStore.Core.Caching
 			}
 
 			var wildcard = new Wildcard(pattern, RegexOptions.IgnoreCase);
-			return keys.Where(x => wildcard.IsMatch(x)).ToArray();
+			return keys.Where(x => wildcard.IsMatch(x));
 		}
 
-		public void RemoveByPattern(string pattern)
+		public int RemoveByPattern(string pattern)
         {
             var keysToRemove = Keys(pattern);
+			int count = 0;
 
 			lock (_cache)
 			{
@@ -148,9 +149,12 @@ namespace SmartStore.Core.Caching
 				foreach (string key in keysToRemove)
 				{
 					_cache.Remove(key);
+					count++;
 				}
 			}
-        }
+
+			return count;
+		}
 
         public void Clear()
         {

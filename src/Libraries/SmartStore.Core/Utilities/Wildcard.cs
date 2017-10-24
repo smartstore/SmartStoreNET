@@ -21,12 +21,16 @@ namespace SmartStore.Utilities
 
 		private readonly string _pattern;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Wildcard"/> class.
-        /// </summary>
-        /// <param name="pattern">The wildcard pattern.</param>
-        public Wildcard(string pattern) 
-			: this(pattern, RegexOptions.None)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Wildcard"/> class.
+		/// </summary>
+		/// <param name="pattern">The wildcard pattern.</param>
+		/// <param name="parseNumberRanges">
+		/// Specifies whether number ranges (e.g. 1234-5678) should
+		/// be converted to a regular expression pattern.
+		/// </param>
+		public Wildcard(string pattern, bool parseNumberRanges = false) 
+			: this(pattern, RegexOptions.None, parseNumberRanges)
         {
         }
 
@@ -34,9 +38,13 @@ namespace SmartStore.Utilities
         /// Initializes a new instance of the <see cref="Wildcard"/> class.
         /// </summary>
         /// <param name="pattern">The wildcard pattern.</param>
+		/// <param name="parseNumberRanges">
+		/// Specifies whether number ranges (e.g. 1234-5678) should
+		/// be converted to a regular expression pattern.
+		/// </param>
         /// <param name="options">The regular expression options.</param>
-        public Wildcard(string pattern, RegexOptions options) 
-			: this(WildcardToRegex(pattern), options, Timeout.InfiniteTimeSpan)
+        public Wildcard(string pattern, RegexOptions options, bool parseNumberRanges = false) 
+			: this(WildcardToRegex(pattern, parseNumberRanges), options, Timeout.InfiniteTimeSpan)
         {
 			
         }
@@ -61,7 +69,7 @@ namespace SmartStore.Utilities
         /// </summary>
         /// <param name="pattern">The wildcard pattern.</param>
         /// <returns>A converted regular expression term.</returns>
-        private static string WildcardToRegex(string pattern)
+        private static string WildcardToRegex(string pattern, bool parseNumberRanges)
         {
             m_isForward = true;
 
@@ -70,18 +78,21 @@ namespace SmartStore.Utilities
 			// Escape all chars except []^ 
 			pattern = ToGlobPattern(pattern);
 
-			//convert the number ranges into regular expression
-			var re = new Regex("[0-9]+-[0-9]+");
-            MatchCollection collection = re.Matches(pattern);
-            foreach (Match match in collection)
-            {
-                string[] split = match.Value.Split(new char[] { '-' });
-                int leadingZeroesCount = split[0].TakeWhile(x => x == '0').Count();
-                int min = Int32.Parse(split[0]);
-                int max = Int32.Parse(split[1]);
+			// convert the number ranges into regular expression
+			if (parseNumberRanges)
+			{
+				var re = new Regex("[0-9]+-[0-9]+");
+				MatchCollection collection = re.Matches(pattern);
+				foreach (Match match in collection)
+				{
+					string[] split = match.Value.Split(new char[] { '-' });
+					int leadingZeroesCount = split[0].TakeWhile(x => x == '0').Count();
+					int min = Int32.Parse(split[0]);
+					int max = Int32.Parse(split[1]);
 
-                pattern = pattern.Replace(match.Value, ConvertNumberRange(min, max, leadingZeroesCount));
-            }
+					pattern = pattern.Replace(match.Value, ConvertNumberRange(min, max, leadingZeroesCount));
+				}
+			}
 
             return pattern;
         }

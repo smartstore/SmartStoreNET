@@ -26,7 +26,7 @@ namespace SmartStore.Services.Localization
 		/// 0 = segment (first 3 chars of key), 1 = language id
 		/// </summary>
 		const string LOCALESTRINGRESOURCES_SEGMENT_KEY = "localization:{0}-lang-{1}";
-		const string LOCALESTRINGRESOURCES_SEGMENT_PATTERN = "localization:{0}";
+		const string LOCALESTRINGRESOURCES_SEGMENT_PATTERN = "localization:{0}*";
 
         private readonly IRepository<LocaleStringResource> _lsrRepository;
         private readonly IWorkContext _workContext;

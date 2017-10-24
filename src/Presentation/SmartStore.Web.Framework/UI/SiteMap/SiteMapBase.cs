@@ -16,7 +16,7 @@ namespace SmartStore.Web.Framework.UI
 		/// {1} : sitemap specific key suffix
 		/// </remarks>
 		const string SITEMAP_KEY = "pres:sitemap:{0}-{1}";
-		const string SITEMAP_PATTERN_KEY = "pres:sitemap:{0}";
+		const string SITEMAP_PATTERN_KEY = "pres:sitemap:{0}*";
 
 		public abstract string Name { get; }
 

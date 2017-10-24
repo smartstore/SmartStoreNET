@@ -210,7 +210,7 @@ namespace SmartStore.ShippingByWeight.Services
             {
                 foreach (var entry in patterns)
                 {
-                    var wildcard = new Wildcard(entry);
+                    var wildcard = new Wildcard(entry, true);
                     if (wildcard.IsMatch(zip))
                         return true;
                 }

@@ -69,17 +69,34 @@ namespace SmartStore.Core.Caching
         void Remove(string key);
 
 		/// <summary>
-		/// Scans for all all keys in the underlying cache
+		/// Scans for all keys matching the input pattern 
 		/// </summary>
 		/// <param name="pattern">A key pattern. Can be <c>null</c>.</param>
-		/// <returns>The sequence of matching keys</returns>
-		string[] Keys(string pattern);
+		/// <returns>An array of matching key names</returns>
+		/// <remarks>
+		/// Supported glob-style patterns:
+		/// - h?llo matches hello, hallo and hxllo
+		/// - h*llo matches hllo and heeeello
+		/// - h[ae]llo matches hello and hallo, but not hillo
+		/// - h[^e]llo matches hallo, hbllo, ... but not hello
+		/// - h[a-b]llo matches hallo and hbllo
+		/// </remarks>
+		IEnumerable<string> Keys(string pattern);
 
 		/// <summary>
-		/// Removes items by pattern
+		/// Removes all entries with keys matching the input pattern
 		/// </summary>
-		/// <param name="pattern">pattern</param>
-		void RemoveByPattern(string pattern);
+		/// <param name="pattern">Glob pattern</param>
+		/// <returns>Count of removed cache items</returns>
+		/// <remarks>
+		/// Supported glob-style patterns:
+		/// - h?llo matches hello, hallo and hxllo
+		/// - h*llo matches hllo and heeeello
+		/// - h[ae]llo matches hello and hallo, but not hillo
+		/// - h[^e]llo matches hallo, hbllo, ... but not hello
+		/// - h[a-b]llo matches hallo and hbllo
+		/// </remarks>
+		int RemoveByPattern(string pattern);
 
         /// <summary>
         /// Clear all cache data

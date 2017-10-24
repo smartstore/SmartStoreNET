@@ -29,7 +29,7 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Key pattern to clear cache
 		/// </summary>
-		private const string PRODUCTTAG_PATTERN_KEY = "producttag:";
+		private const string PRODUCTTAG_PATTERN_KEY = "producttag:*";
 
 		#endregion
 

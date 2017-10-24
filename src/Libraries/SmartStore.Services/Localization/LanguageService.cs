@@ -16,7 +16,7 @@ namespace SmartStore.Services.Localization
     public partial class LanguageService : ILanguageService
     {
         private const string LANGUAGES_COUNT = "SmartStore.language.count-{0}";
-        private const string LANGUAGES_PATTERN_KEY = "SmartStore.language.";
+        private const string LANGUAGES_PATTERN_KEY = "SmartStore.language.*";
 
         private readonly IRepository<Language> _languageRepository;
 		private readonly IStoreMappingService _storeMappingService;

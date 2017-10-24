@@ -23,13 +23,13 @@ namespace SmartStore.Services.Catalog
 	{
 		// {0} = IncludeHidden, {1} = CustomerRoleIds, {2} = StoreId
 		internal const string CATEGORY_TREE_KEY = "category:tree-{0}-{1}-{2}";
-		internal const string CATEGORY_TREE_PATTERN_KEY = "category:tree-";
+		internal const string CATEGORY_TREE_PATTERN_KEY = "category:tree-*";
 
 		private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "category.byparent-{0}-{1}-{2}-{3}";
 		private const string PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY = "productcategory.allbycategoryid-{0}-{1}-{2}-{3}-{4}-{5}";
 		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "productcategory.allbyproductid-{0}-{1}-{2}-{3}";
-		private const string CATEGORIES_PATTERN_KEY = "category.";
-		private const string PRODUCTCATEGORIES_PATTERN_KEY = "productcategory.";
+		private const string CATEGORIES_PATTERN_KEY = "category.*";
+		private const string PRODUCTCATEGORIES_PATTERN_KEY = "productcategory.*";
 
 		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<ProductCategory> _productCategoryRepository;

@@ -151,7 +151,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			var suppressKey = "SuppressUpdateMessage.{0}.{1}".FormatInvariant(myVersion, newVersion);
 			_genericAttributeService.SaveAttribute<bool?>(_services.WorkContext.CurrentCustomer, suppressKey, true);
-			_services.Cache.RemoveByPattern("Common.CheckUpdateResult");
+			_services.Cache.RemoveByPattern("Common.CheckUpdateResult*");
 		}
 
 		[NonAction]
@@ -159,7 +159,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			var curVersion = SmartStoreVersion.CurrentFullVersion;
 			var lang = _services.WorkContext.WorkingLanguage.UniqueSeoCode;
-			var cacheKeyPattern = "admin:common:checkupdateresult";
+			var cacheKeyPattern = "admin:common:checkupdateresult*";
 			var cacheKey = "{0}-{1}".FormatInvariant(cacheKeyPattern, lang);
 
 			if (enforce)

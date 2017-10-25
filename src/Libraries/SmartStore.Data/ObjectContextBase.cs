@@ -322,9 +322,10 @@ namespace SmartStore.Data
 
 			// INFO: "CurrentValue" cannot be used for entities in the Deleted state.
 			// INFO: "OriginalValues" cannot be used for entities in the Added state.
-			return detectChangesEnabled 
-				? propIsModified
-				: !AreEqual(prop.CurrentValue, prop.OriginalValue);
+			return !AreEqual(prop.CurrentValue, prop.OriginalValue);
+			//return detectChangesEnabled 
+			//	? propIsModified
+			//	: !AreEqual(prop.CurrentValue, prop.OriginalValue);
 		}
 
 		private static bool AreEqual(object cur, object orig)

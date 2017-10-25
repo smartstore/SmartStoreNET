@@ -1,36 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
+using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Catalog
 {
 	public enum CategoryTreeChangeReason
 	{
-		Category,
-		Hierarchy,
+		ElementCounts,
+		Data,
 		Localization,
 		StoreMapping,
 		Acl,
-		ElementCounts
+		Hierarchy
 	}
 
 	public class CategoryTreeChangedEvent
 	{
-		public CategoryTreeChangedEvent(CategoryTreeChangeReason reason, params string[] affectedFields)
+		public CategoryTreeChangedEvent(CategoryTreeChangeReason reason)
 		{
 			Reason = reason;
-			AffectedFields = affectedFields;
 		}
 
 		public CategoryTreeChangeReason Reason { get; private set; }
-		public string[] AffectedFields { get; private set; }
 	}
 
 	public class CategoryTreeChangeHook : IDbSaveHook
@@ -38,18 +39,33 @@ namespace SmartStore.Services.Catalog
 		private readonly ICommonServices _services;
 		private readonly ICategoryService _categoryService;
 
-		private readonly bool[] _handledReasons = new bool[(int)CategoryTreeChangeReason.ElementCounts - 1];
-		//private bool _invalidated;
+		private readonly bool[] _handledReasons = new bool[(int)CategoryTreeChangeReason.Hierarchy + 1];
+		private bool _invalidated;
 
-		private static readonly HashSet<string> _hierarchyAffectingCategoryProps = new HashSet<string>
+		private static readonly HashSet<string> _countAffectingProductProps = new HashSet<string>();
+
+		static CategoryTreeChangeHook()
 		{
-			"Deleted",
-			"Published",
-			"ParentCategoryId",
-			"DisplayOrder",
-			"SubjectToAcl",
-			"LimitedToStores"
-		};
+			AddPropsToSet(_countAffectingProductProps,
+				x => x.AvailableEndDateTimeUtc,
+				x => x.AvailableStartDateTimeUtc,
+				x => x.Deleted,
+				x => x.LowStockActivityId,
+				x => x.LimitedToStores,
+				x => x.ManageInventoryMethodId,
+				x => x.MinStockQuantity,
+				x => x.Published,
+				x => x.SubjectToAcl,
+				x => x.VisibleIndividually);
+		}
+
+		static void AddPropsToSet(HashSet<string> props, params Expression<Func<Product, object>>[] lambdas)
+		{
+			foreach (var lambda in lambdas)
+			{
+				props.Add(lambda.ExtractPropertyInfo().Name);
+			}
+		}
 
 		public CategoryTreeChangeHook(ICommonServices services, ICategoryService categoryService)
 		{
@@ -59,58 +75,145 @@ namespace SmartStore.Services.Catalog
 
 		public void OnBeforeSave(HookedEntity entry)
 		{
+			if (_invalidated)
+				return;
+
+			if (entry.InitialState != EntityState.Modified)
+				return;
+
+			var cache = _services.Cache;
 			var entity = entry.Entity;
+			var modProps = _services.DbContext.GetModifiedProperties(entity);
 
-			if (entity is Category && entry.InitialState == EntityState.Modified)
+			if (entity is Product)
 			{
-				var modProps = _services.DbContext.GetModifiedProperties(entity);
-
-				if (modProps.Keys.Any(x => _hierarchyAffectingCategoryProps.Contains(x)))
+				if (modProps.Keys.Any(x => _countAffectingProductProps.Contains(x)))
 				{
-					Invalidate();
+					// No eviction, just notification
+					PublishEvent(CategoryTreeChangeReason.ElementCounts);
+				}
+			}
+			else if (entity is ProductCategory)
+			{
+				if (modProps.ContainsKey("CategoryId"))
+				{
+					// No eviction, just notification
+					PublishEvent(CategoryTreeChangeReason.ElementCounts);
+				}
+			}
+			else if (entity is Category)
+			{
+				var category = entity as Category;
+
+				var h = new string[] { "ParentCategoryId", "Published", "Deleted", "DisplayOrder" };
+				var a = new string[] { "LimitedToStores", "SubjectToAcl" };
+				var d = new string[] { "Name", "Alias", "PictureId", "BadgeText", "BadgeStyle" };
+
+				if (modProps.Keys.Any(x => h.Contains(x)))
+				{
+					// Hierarchy affecting properties has changed. Nuke every tree.
+					cache.RemoveByPattern(CategoryService.CATEGORY_TREE_PATTERN_KEY);
+					PublishEvent(CategoryTreeChangeReason.Hierarchy);
+					_invalidated = true;
+				}
+				else if (modProps.Keys.Any(x => a.Contains(x)))
+				{
+					if (modProps.ContainsKey("LimitedToStores"))
+					{
+						// Don't nuke store agnostic trees
+						cache.RemoveByPattern(BuildCacheKeyPattern("*", "*", "[^0]*"));
+						PublishEvent(CategoryTreeChangeReason.StoreMapping);
+					}
+					if (modProps.ContainsKey("SubjectToAcl"))
+					{
+						// Don't nuke ACL agnostic trees
+						cache.RemoveByPattern(BuildCacheKeyPattern("*", "[^0]*", "*"));
+						PublishEvent(CategoryTreeChangeReason.Acl);
+					}
+				}
+				else if (modProps.Keys.Any(x => d.Contains(x)))
+				{
+					// Only data has changed. Don't nuke trees, update corresponding cache entries instead.
+					var keys = cache.Keys(CategoryService.CATEGORY_TREE_PATTERN_KEY);
+					foreach (var key in keys)
+					{
+						var tree = cache.Get<TreeNode<ICategoryNode>>(key);
+						if (tree != null)
+						{
+							var node = tree.SelectNodeById(entity.Id);
+							if (node != null)
+							{
+								var value = node.Value as CategoryNode;
+								if (value == null)
+								{
+									// Cannot update. Nuke tree.
+									cache.Remove(key);
+								}
+								else
+								{
+									value.Name = category.Name;
+									value.Alias = category.Alias;
+									value.PictureId = category.PictureId;
+									value.BadgeText = category.BadgeText;
+									value.BadgeStyle = category.BadgeStyle;
+
+									// Persist to cache store
+									cache.Put(key, tree, CategoryService.CategoryTreeCacheDuration);
+								}
+							}
+						}
+					}
+
+					// Publish event only once
+					PublishEvent(CategoryTreeChangeReason.Data);
 				}
 			}
 		}
 
 		public void OnAfterSave(HookedEntity entry)
 		{
-			//if (_invalidated)
-			//{
-			//	// Don't bother processing.
-			//	return;
-			//}
+			if (_invalidated)
+				return;
 
 			// INFO: Acl & StoreMapping affect element counts
 
+			var cache = _services.Cache;
+			var isNewOrDeleted = entry.InitialState == EntityState.Added || entry.InitialState == EntityState.Deleted;
 			var entity = entry.Entity;
 
-			if (entity is Category)
+			if (entity is Product)
 			{
-				Invalidate();
-			}
-			//else if (entity is CustomerRole)
-			//{
-			//	Invalidate(entry.InitialState == EntityState.Modified || entry.InitialState == EntityState.Deleted);
-			//}
-			//else if (entity is AclRecord)
-			//{
-			//	var acl = entity as AclRecord;
-			//	if (!acl.IsIdle)
-			//	{
-			//		if (acl.EntityName == "Category")
-			//		{
-			//			Invalidate();
-			//		}
-			//	}
-			//}
-			else if (entity is StoreMapping)
-			{
-				var stm = entity as StoreMapping;
-				if (stm.EntityName == "Category")
+				// INFO: 'Modified' case already handled in 'OnBeforeSave()'
+				if (entry.InitialState == EntityState.Deleted || (entry.InitialState == EntityState.Added && ((Product)entity).Published))
 				{
-					Invalidate("*", "*", "[^0]*");
-					PublishEvent(CategoryTreeChangeReason.StoreMapping);
+					// No eviction, just notification, but for PUBLISHED products only
+					PublishEvent(CategoryTreeChangeReason.ElementCounts);
 				}
+			}
+			else if (entity is ProductCategory && isNewOrDeleted)
+			{
+				// INFO: 'Modified' case already handled in 'OnBeforeSave()'
+				// New or deleted product category mappings affect counts
+				PublishEvent(CategoryTreeChangeReason.ElementCounts);
+			}
+			else if (entity is Category && isNewOrDeleted)
+			{
+				// INFO: 'Modified' case already handled in 'OnBeforeSave()'
+				// Hierarchy affecting change, nuke all.
+				cache.RemoveByPattern(CategoryService.CATEGORY_TREE_PATTERN_KEY);
+				_invalidated = true;
+			}
+			else if (entity is Setting)
+			{
+				var name = (entity as Setting).Name.ToLowerInvariant();
+				if (name == "catalogsettings.showcategoryproductnumber" || name == "catalogsettings.showcategoryproductnumberincludingsubcategories")
+				{
+					PublishEvent(CategoryTreeChangeReason.ElementCounts);
+				}
+			}
+			else if (entity is Language && entry.InitialState == EntityState.Deleted)
+			{
+				PublishEvent(CategoryTreeChangeReason.Localization);
 			}
 			else if (entity is LocalizedProperty)
 			{
@@ -121,21 +224,57 @@ namespace SmartStore.Services.Catalog
 					PublishEvent(CategoryTreeChangeReason.Localization);
 				}
 			}
+			else if (entity is StoreMapping)
+			{
+				var stm = entity as StoreMapping;
+				if (stm.EntityName == "Product")
+				{
+					PublishEvent(CategoryTreeChangeReason.ElementCounts);
+				}
+				else if (stm.EntityName == "Category")
+				{
+					// Don't nuke store agnostic trees
+					cache.RemoveByPattern(BuildCacheKeyPattern("*", "*", "[^0]*"));
+					PublishEvent(CategoryTreeChangeReason.StoreMapping);
+				}
+			}
+			else if (entity is AclRecord)
+			{
+				var acl = entity as AclRecord;
+				if (!acl.IsIdle)
+				{
+					if (acl.EntityName == "Product")
+					{
+						PublishEvent(CategoryTreeChangeReason.ElementCounts);
+					}
+					else if (acl.EntityName == "Category")
+					{
+						// Don't nuke ACL agnostic trees
+						cache.RemoveByPattern(BuildCacheKeyPattern("*", "[^0]*", "*"));
+						PublishEvent(CategoryTreeChangeReason.Acl);
+					}
+				}
+			}
 		}
 
-		private void PublishEvent(CategoryTreeChangeReason reason, params string[] affectedFields)
+		private void PublishEvent(CategoryTreeChangeReason reason)
 		{
 			if (_handledReasons[(int)reason] == false)
 			{
-				_services.EventPublisher.Publish(new CategoryTreeChangedEvent(reason, affectedFields));
+				_services.EventPublisher.Publish(new CategoryTreeChangedEvent(reason));
 				_handledReasons[(int)reason] = true;
 			}	
 		}
 
-		private void Invalidate(params string[] tokens)
+		//private void Invalidate(params string[] tokens)
+		//{
+		//	_services.Cache.RemoveByPattern(CategoryService.CATEGORY_TREE_KEY.FormatInvariant(tokens));
+		//	//_invalidated = true;
+		//}
+
+		private string BuildCacheKeyPattern(string includeHiddenToken = "*", string rolesToken = "*", string storeToken = "*")
 		{
-			_services.Cache.RemoveByPattern(CategoryService.CATEGORY_TREE_KEY.FormatInvariant(tokens));
-			//_invalidated = true;
+			return CategoryService.CATEGORY_TREE_KEY.FormatInvariant(includeHiddenToken, rolesToken, storeToken);
 		}
 
 		public void OnBeforeSaveCompleted()

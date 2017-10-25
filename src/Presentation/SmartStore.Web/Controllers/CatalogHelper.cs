@@ -1262,7 +1262,7 @@ namespace SmartStore.Web.Controllers
 		public IEnumerable<int> GetChildCategoryIds(int parentCategoryId, bool deep = true)
 		{
 			var root = GetCategoryMenu();
-			var node = root.SelectNode(x => x.Value.EntityId == parentCategoryId);
+			var node = root.SelectNodeById(parentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == parentCategoryId);
 			if (node != null)
 			{
 				var children = deep ? node.Flatten(false) : node.Children.Select(x => x.Value);
@@ -1285,7 +1285,7 @@ namespace SmartStore.Web.Controllers
 
 				if (currentCategoryId > 0)
 				{
-					node = root.SelectNode(x => x.Value.EntityId == currentCategoryId);
+					node = root.SelectNodeById(currentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == currentCategoryId);
 				}
 
 				if (node == null && currentProductId > 0)
@@ -1294,7 +1294,7 @@ namespace SmartStore.Web.Controllers
 					if (productCategories.Count > 0)
 					{
 						currentCategoryId = productCategories[0].Category.Id;
-						node = root.SelectNode(x => x.Value.EntityId == currentCategoryId);
+						node = root.SelectNodeById(currentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == currentCategoryId);
 					}
 				}
 

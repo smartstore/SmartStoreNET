@@ -21,6 +21,8 @@ namespace SmartStore.Services.Catalog
 {
 	public partial class CategoryService : ICategoryService
 	{
+		internal static TimeSpan CategoryTreeCacheDuration = TimeSpan.FromHours(6);
+
 		// {0} = IncludeHidden, {1} = CustomerRoleIds, {2} = StoreId
 		internal const string CATEGORY_TREE_KEY = "category:tree-{0}-{1}-{2}";
 		internal const string CATEGORY_TREE_PATTERN_KEY = "category:tree-*";
@@ -852,7 +854,7 @@ namespace SmartStore.Services.Catalog
 				}
 
 				return curParent.Root;
-			});
+			}, CategoryTreeCacheDuration);
 
 			if (rootCategoryId > 0)
 			{

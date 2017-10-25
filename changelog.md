@@ -1,8 +1,9 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
 * AmazonPay: The plugin has been changed to new "Login with Amazon" services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
+* (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
@@ -49,7 +50,9 @@
 * Fixed shipping computation method ignoring deactivated PricesIncludeTax setting
 * **Debitoor**: Fixed missing tax rates on Debitoor invoice for net prices
 * #1224 Notifier wasn't working in plugin controllers
-* #1205 Server cannot append header after HTTP headers have been sent
+* #1205 Server cannot append header after 
+* 
+*  headers have been sent
 * #1154 Left offcanvas navigation does not open when in checkout progress
 * #1212 Export: FTP publishing should consider directory structure
 * #1253 Product PDF exporter only exports one picture and ignores the picture number profile setting

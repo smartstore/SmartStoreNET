@@ -232,7 +232,7 @@ namespace SmartStore.Collections
 
 			_parent = newParent;
 
-			// Set id in new id node map
+			// Set id in new id-node map
 			if (_id != null)
 			{
 				var map = GetIdNodeMap();

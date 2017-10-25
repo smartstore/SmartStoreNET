@@ -201,7 +201,7 @@ namespace SmartStore.Services.Catalog
 			TreeNode<ICategoryNode> treeNode,
 			int? languageId = null,
 			bool withAlias = false,
-			string separator = " >> ");
+			string separator = " » ");
 
 		/// <summary>
 		/// Gets the tree representation of categories

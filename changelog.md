@@ -1,9 +1,12 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
 * AmazonPay: The plugin has been changed to new "Login with Amazon" services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
 * (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
+
+### Highlights
+* Multi-configurable rounding of order total ("cash rounding"). Can be adjusted and activated separately for each currency and payment method.
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
@@ -28,8 +31,8 @@
 * #1117 Added an option to display a dropdown menu for manufacturers 
 * #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
 * #1100 Customer can register in frontend via "Login with Amazon" button
-* #1240 Implement rounding of order total ("cash rounding")
 * #1292 Web API: Add a method to get an order in PDF format
+* Added options to include option names of specification and product attributes in the search index
 
 
 ## SmartStore.NET 3.0.3

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Events;
@@ -121,7 +122,20 @@ namespace SmartStore.Services.Catalog
 			return specificationAttributeOptions;
 		}
 
-		public virtual void DeleteSpecificationAttributeOption(SpecificationAttributeOption specificationAttributeOption)
+        public virtual Multimap<int, SpecificationAttributeOption> GetSpecificationAttributeOptionsBySpecificationAttributeIds(int[] specificationAttributeIds)
+        {
+            Guard.NotNull(specificationAttributeIds, nameof(specificationAttributeIds));
+
+            var options = _specificationAttributeOptionRepository.TableUntracked
+                .Where(x => specificationAttributeIds.Contains(x.SpecificationAttributeId))
+                .OrderBy(x => x.DisplayOrder)
+                .ToList();
+
+            var map = options.ToMultimap(x => x.SpecificationAttributeId, x => x);
+            return map;
+        }
+
+        public virtual void DeleteSpecificationAttributeOption(SpecificationAttributeOption specificationAttributeOption)
 		{
 			if (specificationAttributeOption == null)
 				throw new ArgumentNullException("specificationAttributeOption");
@@ -223,7 +237,24 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-		public virtual ProductSpecificationAttribute GetProductSpecificationAttributeById(int productSpecificationAttributeId)
+        public virtual Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds)
+        {
+            Guard.NotNull(productIds, nameof(productIds));
+
+            var query = _productSpecificationAttributeRepository.TableUntracked
+                .Expand(x => x.SpecificationAttributeOption)
+                .Expand(x => x.SpecificationAttributeOption.SpecificationAttribute)
+                .Where(x => productIds.Contains(x.ProductId));
+
+            var map = query
+                .OrderBy(x => x.DisplayOrder)
+                .ToList()
+                .ToMultimap(x => x.ProductId, x => x);
+
+            return map;
+        }
+
+        public virtual ProductSpecificationAttribute GetProductSpecificationAttributeById(int productSpecificationAttributeId)
 		{
 			if (productSpecificationAttributeId == 0)
 				return null;

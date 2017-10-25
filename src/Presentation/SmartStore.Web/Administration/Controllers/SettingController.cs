@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Settings;
 using SmartStore.Admin.Validators.Settings;
@@ -38,7 +37,6 @@ using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Security;
-using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
@@ -48,13 +46,13 @@ using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Captcha;
 using Telerik.Web.Mvc;
-using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class SettingController : AdminControllerBase
 	{
 		#region Fields
@@ -1590,8 +1588,9 @@ namespace SmartStore.Admin.Controllers
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
 			var megaSearchDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearch");
+            var megaSearchPlusDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearchPlus");
 
-			var model = new SearchSettingsModel();
+            var model = new SearchSettingsModel();
 			model.IsMegaSearchInstalled = megaSearchDescriptor != null;
 			model.SearchMode = settings.SearchMode;
 			model.SearchFields = settings.SearchFields;
@@ -1628,7 +1627,13 @@ namespace SmartStore.Admin.Controllers
 					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.Sku"), Value = "sku" },
 					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.GTIN"), Value = "gtin" },
 					new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ManufacturerPartNumber"), Value = "mpn" }
-				};
+                };
+
+                if (megaSearchPlusDescriptor != null)
+                {
+                    model.AvailableSearchFields.Add(new SelectListItem { Text = T("Search.Fields.SpecificationAttributeOptionName"), Value = "attrname" });
+                    model.AvailableSearchFields.Add(new SelectListItem { Text = T("Search.Fields.ProductAttributeOptionName"), Value = "variantname" });
+                }
 
 				model.AvailableSearchModes = settings.SearchMode.ToSelectList().ToList();
 			}

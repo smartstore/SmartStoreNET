@@ -125,6 +125,15 @@
 				@Html.ValidationMessageFor(model => model.FacetSorting)
 			</td>
 		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IndexOptionNames)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IndexOptionNames)
+                @Html.ValidationMessageFor(model => model.IndexOptionNames)
+            </td>
+        </tr>
     </table>
 
 	<script type="text/javascript">

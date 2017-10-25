@@ -2473,46 +2473,49 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var productrSpecs = _specificationAttributeService.GetProductSpecificationAttributesByProductId(productId);
+                var productSpecAttributes = _specificationAttributeService.GetProductSpecificationAttributesByProductId(productId);
+                var specAttributeIds = productSpecAttributes.Select(x => x.SpecificationAttributeOption.SpecificationAttributeId).ToArray();
+                var specOptions = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttributeIds(specAttributeIds);
 
-				var productrSpecsModel = productrSpecs
-					.Select(x =>
-					{
-						var psaModel = new ProductSpecificationAttributeModel
-						{
-							Id = x.Id,
-							SpecificationAttributeName = x.SpecificationAttributeOption.SpecificationAttribute.Name,
-							SpecificationAttributeOptionName = x.SpecificationAttributeOption.Name,
-							SpecificationAttributeOptionAttributeId = x.SpecificationAttributeOption.SpecificationAttributeId,
-							SpecificationAttributeOptionId = x.SpecificationAttributeOptionId,
-							AllowFiltering = x.AllowFiltering,
-							ShowOnProductPage = x.ShowOnProductPage,
-							DisplayOrder = x.DisplayOrder
-						};
-						return psaModel;
-					})
-					.ToList();
+                var productSpecModel = productSpecAttributes
+                    .Select(x =>
+                    {
+                        var attributeId = x.SpecificationAttributeOption.SpecificationAttributeId;
+                        var psaModel = new ProductSpecificationAttributeModel
+                        {
+                            Id = x.Id,
+                            SpecificationAttributeName = x.SpecificationAttributeOption.SpecificationAttribute.Name,
+                            SpecificationAttributeOptionName = x.SpecificationAttributeOption.Name,
+                            SpecificationAttributeId = attributeId,
+                            SpecificationAttributeOptionId = x.SpecificationAttributeOptionId,
+                            AllowFiltering = x.AllowFiltering,
+                            ShowOnProductPage = x.ShowOnProductPage,
+                            DisplayOrder = x.DisplayOrder
+                        };
 
-				foreach (var attr in productrSpecsModel)
-				{
-					var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(attr.SpecificationAttributeOptionAttributeId);
+                        if (specOptions.ContainsKey(attributeId))
+                        {
+                            psaModel.SpecificationAttributeOptions = specOptions[attributeId]
+                                .Select(y => new ProductSpecificationAttributeModel.SpecificationAttributeOption
+                                {
+                                    id = y.Id,
+                                    name = y.Name,
+                                    text = y.Name
+                                })
+                                .ToList();
 
-					foreach (var option in options)
-					{
-						attr.SpecificationAttributeOptions.Add(new ProductSpecificationAttributeModel.SpecificationAttributeOption
-						{
-							id = option.Id,
-							name = option.Name,
-							text = option.Name
-						});
-					}
+                            psaModel.SpecificationAttributeOptionsJsonString = HttpUtility.HtmlEncode(JsonConvert.SerializeObject(psaModel.SpecificationAttributeOptions));
+                        }
 
-					attr.SpecificationAttributeOptionsJsonString = HttpUtility.HtmlEncode(JsonConvert.SerializeObject(attr.SpecificationAttributeOptions));
-				}
+                        return psaModel;
+                    })
+                    .OrderBy(x => x.DisplayOrder)
+                    .ThenBy(x => x.SpecificationAttributeId)
+                    .ToList();
 
-				model.Data = productrSpecsModel;
-				model.Total = productrSpecsModel.Count;
-			}
+                model.Data = productSpecModel;
+                model.Total = productSpecModel.Count;
+            }
 			else
 			{
 				model.Data = Enumerable.Empty<ProductSpecificationAttributeModel>();

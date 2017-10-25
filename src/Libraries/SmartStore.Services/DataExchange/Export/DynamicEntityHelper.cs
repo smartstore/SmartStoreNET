@@ -412,7 +412,13 @@ namespace SmartStore.Services.DataExchange.Export
 				return null;
 
 			dynamic result = new DynamicEntity(picture);
-			var relativeUrl = _pictureService.Value.GetPictureUrl(picture, 0, false);
+            var relativeUrl = string.Empty;
+
+            try
+            {
+                relativeUrl = _pictureService.Value.GetPictureUrl(picture, 0, false);
+            }
+            catch { }
 
 			result._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
 			result._RelativeUrl = relativeUrl;

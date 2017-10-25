@@ -213,7 +213,7 @@
 						.Width(200)
 						.ReadOnly();
 					columns.Bound(x => x.SpecificationAttributeOptionName)
-						.ClientTemplate("<a href='#' data-options='<#= SpecificationAttributeOptionsJsonString #>' data-pk='<#= SpecificationAttributeOptionAttributeId #>' data-value='<#= SpecificationAttributeOptionId #>' id='<#= Id #>' class='editable editable-click spec-attr-opt'><#= SpecificationAttributeOptionName #></a>")
+						.ClientTemplate("<a href='#' data-options='<#= SpecificationAttributeOptionsJsonString #>' data-pk='<#= SpecificationAttributeId #>' data-value='<#= SpecificationAttributeOptionId #>' id='<#= Id #>' class='editable editable-click spec-attr-opt'><#= SpecificationAttributeOptionName #></a>")
 						.ReadOnly()
 						.Width(300);
 					columns.Bound(x => x.AllowFiltering)

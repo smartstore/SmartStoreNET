@@ -19,6 +19,7 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Email;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
@@ -40,11 +41,10 @@ using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
-using SmartStore.Core.Domain.Tax;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-	public partial class DataExporter : IDataExporter
+    public partial class DataExporter : IDataExporter
 	{
 		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
@@ -65,7 +65,8 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductAttributeParser> _productAttributeParser;
 		private readonly Lazy<IProductAttributeService> _productAttributeService;
-		private readonly Lazy<IProductTemplateService> _productTemplateService;
+        private readonly Lazy<ISpecificationAttributeService> _specificationAttributeService;
+        private readonly Lazy<IProductTemplateService> _productTemplateService;
 		private readonly Lazy<ICategoryTemplateService> _categoryTemplateService;
 		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IOrderService> _orderService;
@@ -110,7 +111,8 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<ICategoryService> categoryService,
 			Lazy<IProductAttributeParser> productAttributeParser,
 			Lazy<IProductAttributeService> productAttributeService,
-			Lazy<IProductTemplateService> productTemplateService,
+            Lazy<ISpecificationAttributeService> specificationAttributeService,
+            Lazy<IProductTemplateService> productTemplateService,
 			Lazy<ICategoryTemplateService> categoryTemplateService,
 			Lazy<IProductService> productService,
 			Lazy<IOrderService> orderService,
@@ -152,6 +154,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_categoryService = categoryService;
 			_productAttributeParser = productAttributeParser;
 			_productAttributeService = productAttributeService;
+            _specificationAttributeService = specificationAttributeService;
 			_productTemplateService = productTemplateService;
 			_categoryTemplateService = categoryTemplateService;
 			_productService = productService;
@@ -646,7 +649,7 @@ namespace SmartStore.Services.DataExchange.Export
 			var context = new ProductExportContext(products,
 				x => _productAttributeService.Value.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
-				x => _productService.Value.GetProductSpecificationAttributesByProductIds(x),
+				x => _specificationAttributeService.Value.GetProductSpecificationAttributesByProductIds(x),
 				x => _productService.Value.GetTierPricesByProductIds(x, customer, storeId.GetValueOrDefault()),
 				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, true),
 				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),

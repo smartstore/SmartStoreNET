@@ -14,6 +14,7 @@
 * #1142 Customer import creates role multiple times
 * #1244 Variant query model binder cannot handle types text and datepicker
 * #1273 Attribute formatter should consider setting CatalogSettings.ShowVariantCombinationPriceAdjustment
+* Product entity picker should use the wildcard search to find products
 
 ### Improvements
 * #1141 Clearer backend order list. Added more infos like payment method.

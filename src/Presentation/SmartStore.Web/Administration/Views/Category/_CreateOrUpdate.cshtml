@@ -223,7 +223,7 @@
                 @Html.SmartLabelFor(model => model.DefaultViewMode)
             </td>
             <td class="adminData">
-                @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes)
+                @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes, T("Common.Unspecified"))
                 @Html.ValidationMessageFor(model => model.DefaultViewMode)
             </td>
         </tr>

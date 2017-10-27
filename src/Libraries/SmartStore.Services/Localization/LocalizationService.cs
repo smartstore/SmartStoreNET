@@ -161,21 +161,18 @@ namespace SmartStore.Services.Localization
         {
 			Guard.NotNull(resource, nameof(resource));
 
-			var modProps = _lsrRepository.GetModifiedProperties(resource);
-
-            _lsrRepository.Update(resource);
-
             // cache
             object origKey = null;
-            if (modProps.TryGetValue("ResourceName", out origKey))
-            {
+			if (_dbContext.TryGetModifiedProperty(resource, "ResourceName", out origKey))
+			{
 				ClearCachedResourceSegment((string)origKey, resource.LanguageId);
 			}
 			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
 
+			_lsrRepository.Update(resource);
 
-            // event notification
-            _eventPublisher.EntityUpdated(resource);
+			// event notification
+			_eventPublisher.EntityUpdated(resource);
         }
 
 		protected virtual IDictionary<string, string> GetCachedResourceSegment(string forKey, int languageId)

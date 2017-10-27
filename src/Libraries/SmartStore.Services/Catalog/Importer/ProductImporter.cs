@@ -444,7 +444,6 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 
 			// commit whole batch at once
-			DetectChanges();
 			var num = _productRepository.Context.SaveChanges();
 
 			// get new product ids
@@ -497,7 +496,6 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 			}
 
-			DetectChanges();
 			var num = _productRepository.Context.SaveChanges();
 
 			return num;
@@ -717,11 +715,6 @@ namespace SmartStore.Services.Catalog.Importer
 				_services.EventPublisher.EntityInserted(lastInserted);
 
 			return num;
-		}
-
-		private void DetectChanges()
-		{
-			((DbContext)_productRepository.Context).ChangeTracker.DetectChanges();
 		}
 
 		private int? ZeroToNull(object value, CultureInfo culture)

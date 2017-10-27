@@ -270,7 +270,7 @@ namespace SmartStore.Admin.Controllers
 			p.CountryOfOriginId = m.CountryOfOriginId == 0 ? (int?)null : m.CountryOfOriginId;
 
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
-			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();			
+			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();		
 		}
 
 		[NonAction]
@@ -560,11 +560,9 @@ namespace SmartStore.Admin.Controllers
 			var p = product;
 			var m = model;
 
-			var modifiedProperties = editMode ? _dbContext.GetModifiedProperties(p): new Dictionary<string, object>();
-
-			var nameChanged = modifiedProperties.ContainsKey("Name");
+			var nameChanged = editMode ? _dbContext.IsPropertyModified(p, x => x.Name) : false;
 			var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
-
+			
 			// Handle Download transiency
 			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.DownloadId);
 			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);

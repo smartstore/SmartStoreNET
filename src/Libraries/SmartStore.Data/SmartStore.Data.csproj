@@ -130,6 +130,7 @@
     <Compile Include="Caching\DbCacheExtensions.cs" />
     <Compile Include="Caching\QueryRegistrar.cs" />
     <Compile Include="Caching\SingletonQueries.cs" />
+    <Compile Include="Extensions\DbEntityEntryExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionMap.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionsSetMap.cs" />

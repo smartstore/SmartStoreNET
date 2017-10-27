@@ -236,7 +236,7 @@ namespace SmartStore.Services.Catalog
 			Product product, 
 			int? languageId = null,
 			int? storeId = null,
-			string separator = " >> ")
+			string separator = " » ")
 		{
 			Guard.NotNull(product, nameof(product));
 

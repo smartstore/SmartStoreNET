@@ -42,9 +42,8 @@ namespace SmartStore.Web.Infrastructure
 				.Skip(_catalogSettings.MaxItemsToDisplayInCatalogMenu.Value)
                 .ToList();
 
-            newNavMmenuItem.AppendRange(cutOffItems);
-
             root.Append(newNavMmenuItem);
-        }
+			newNavMmenuItem.AppendRange(cutOffItems);
+		}
     }
 }

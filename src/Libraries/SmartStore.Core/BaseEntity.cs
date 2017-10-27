@@ -34,7 +34,7 @@ namespace SmartStore.Core
         }
 
 		/// <summary>
-		/// Transient objects are not associated with an item already in storage.  For instance,
+		/// Transient objects are not associated with an item already in storage. For instance,
 		/// a Product entity is transient if its Id is 0.
 		/// </summary>
 		public virtual bool IsTransientRecord()

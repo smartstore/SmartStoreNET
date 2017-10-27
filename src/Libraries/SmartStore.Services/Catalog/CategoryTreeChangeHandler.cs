@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Data;
 
 namespace SmartStore.Services.Catalog
 {
@@ -43,6 +44,13 @@ namespace SmartStore.Services.Catalog
 		private bool _invalidated;
 
 		private static readonly HashSet<string> _countAffectingProductProps = new HashSet<string>();
+
+		// Hierarchy affecting category prop names
+		private static readonly string[] _h = new string[] { "ParentCategoryId", "Published", "Deleted", "DisplayOrder" };
+		// Visibility affecting category prop names
+		private static readonly string[] _a = new string[] { "LimitedToStores", "SubjectToAcl" };
+		// Data affecting category prop names
+		private static readonly string[] _d = new string[] { "Name", "Alias", "PictureId", "BadgeText", "BadgeStyle" };
 
 		static CategoryTreeChangeHook()
 		{
@@ -83,10 +91,10 @@ namespace SmartStore.Services.Catalog
 
 			var cache = _services.Cache;
 			var entity = entry.Entity;
-			var modProps = _services.DbContext.GetModifiedProperties(entity);
-
+			
 			if (entity is Product)
 			{
+				var modProps = _services.DbContext.GetModifiedProperties(entity);
 				if (modProps.Keys.Any(x => _countAffectingProductProps.Contains(x)))
 				{
 					// No eviction, just notification
@@ -95,6 +103,7 @@ namespace SmartStore.Services.Catalog
 			}
 			else if (entity is ProductCategory)
 			{
+				var modProps = _services.DbContext.GetModifiedProperties(entity);
 				if (modProps.ContainsKey("CategoryId"))
 				{
 					// No eviction, just notification
@@ -105,18 +114,16 @@ namespace SmartStore.Services.Catalog
 			{
 				var category = entity as Category;
 
-				var h = new string[] { "ParentCategoryId", "Published", "Deleted", "DisplayOrder" };
-				var a = new string[] { "LimitedToStores", "SubjectToAcl" };
-				var d = new string[] { "Name", "Alias", "PictureId", "BadgeText", "BadgeStyle" };
+				var modProps = _services.DbContext.GetModifiedProperties(entity);
 
-				if (modProps.Keys.Any(x => h.Contains(x)))
+				if (modProps.Keys.Any(x => _h.Contains(x)))
 				{
 					// Hierarchy affecting properties has changed. Nuke every tree.
 					cache.RemoveByPattern(CategoryService.CATEGORY_TREE_PATTERN_KEY);
 					PublishEvent(CategoryTreeChangeReason.Hierarchy);
 					_invalidated = true;
 				}
-				else if (modProps.Keys.Any(x => a.Contains(x)))
+				else if (modProps.Keys.Any(x => _a.Contains(x)))
 				{
 					if (modProps.ContainsKey("LimitedToStores"))
 					{
@@ -131,10 +138,10 @@ namespace SmartStore.Services.Catalog
 						PublishEvent(CategoryTreeChangeReason.Acl);
 					}
 				}
-				else if (modProps.Keys.Any(x => d.Contains(x)))
+				else if (modProps.Keys.Any(x => _d.Contains(x)))
 				{
 					// Only data has changed. Don't nuke trees, update corresponding cache entries instead.
-					var keys = cache.Keys(CategoryService.CATEGORY_TREE_PATTERN_KEY);
+					var keys = cache.Keys(CategoryService.CATEGORY_TREE_PATTERN_KEY).ToArray();
 					foreach (var key in keys)
 					{
 						var tree = cache.Get<TreeNode<ICategoryNode>>(key);

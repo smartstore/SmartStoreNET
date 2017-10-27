@@ -296,7 +296,7 @@ namespace SmartStore.Services.Catalog
 			bool modified = false;
 			if (publishEvent)
 			{
-				modified = _productRepository.IsModified(product);
+				modified = _dbContext.IsModified(product);
 			}
 
             // update

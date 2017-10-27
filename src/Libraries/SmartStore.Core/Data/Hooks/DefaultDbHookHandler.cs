@@ -72,16 +72,18 @@ namespace SmartStore.Core.Data.Hooks
 			return _importantSaveHookTypes.Any();
 		}
 
-		public void TriggerLoadHooks(BaseEntity entity, bool importantHooksOnly)
+		public IEnumerable<IDbLoadHook> TriggerLoadHooks(BaseEntity entity, bool importantHooksOnly)
 		{
+			var processedHooks = new HashSet<IDbLoadHook>();
+
 			if (!_loadHooks.Any() || (importantHooksOnly && !this.HasImportantLoadHooks()))
 			{
-				return;
+				return processedHooks;
 			}
 
 			if (entity == null || !IsHookableEntity(entity))
 			{
-				return;
+				return processedHooks;
 			}				
 
 			var loadHooks = GetLoadHookInstancesFor(entity, importantHooksOnly);
@@ -91,17 +93,20 @@ namespace SmartStore.Core.Data.Hooks
 				try
 				{
 					hook.OnLoaded(entity);
+					processedHooks.Add(hook);
 				}
 				catch (Exception ex)
 				{
 					Logger.ErrorFormat(ex, "LoadHook exception ({0})", hook.GetType().FullName);
 				}
 			}
+
+			return processedHooks;
 		}
 
-		public bool TriggerPreSaveHooks(IEnumerable<HookedEntity> entries, bool importantHooksOnly)
+		public IEnumerable<IDbSaveHook> TriggerPreSaveHooks(IEnumerable<HookedEntity> entries, bool importantHooksOnly, out bool anyStateChanged)
 		{
-			bool anyStateChanged = false;
+			anyStateChanged = false;
 
 			if (entries != null)
 			{
@@ -109,10 +114,10 @@ namespace SmartStore.Core.Data.Hooks
 				entries = entries.Where(IsHookableEntry);
 			}
 
-			if (entries == null || !entries.Any() || !_saveHooks.Any() || (importantHooksOnly && !this.HasImportantSaveHooks()))
-				return false;
-
 			var processedHooks = new HashSet<IDbSaveHook>();
+
+			if (entries == null || !entries.Any() || !_saveHooks.Any() || (importantHooksOnly && !this.HasImportantSaveHooks()))
+				return processedHooks;
 
 			foreach (var entry in entries)
 			{
@@ -149,10 +154,10 @@ namespace SmartStore.Core.Data.Hooks
 
 			processedHooks.Each(x => x.OnBeforeSaveCompleted());
 
-			return anyStateChanged;
+			return processedHooks;
 		}
 
-		public void TriggerPostSaveHooks(IEnumerable<HookedEntity> entries, bool importantHooksOnly)
+		public IEnumerable<IDbSaveHook> TriggerPostSaveHooks(IEnumerable<HookedEntity> entries, bool importantHooksOnly)
 		{
 			if (entries != null)
 			{
@@ -160,10 +165,10 @@ namespace SmartStore.Core.Data.Hooks
 				entries = entries.Where(IsHookableEntry);
 			}
 
-			if (entries == null || !entries.Any() || !_saveHooks.Any() || (importantHooksOnly && !this.HasImportantSaveHooks()))
-				return;
-
 			var processedHooks = new HashSet<IDbSaveHook>();
+
+			if (entries == null || !entries.Any() || !_saveHooks.Any() || (importantHooksOnly && !this.HasImportantSaveHooks()))
+				return processedHooks;
 
 			foreach (var entry in entries)
 			{
@@ -192,6 +197,8 @@ namespace SmartStore.Core.Data.Hooks
 			}
 
 			processedHooks.Each(x => x.OnAfterSaveCompleted());
+
+			return processedHooks;
 		}
 
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]

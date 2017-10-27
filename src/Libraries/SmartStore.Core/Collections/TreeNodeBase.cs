@@ -617,9 +617,9 @@ namespace SmartStore.Collections
 					if (node._id != null)
 					{
 						var map = node.GetIdNodeMap();
-						if (map != null && map.ContainsKey(_id))
+						if (map != null && map.ContainsKey(node._id))
 						{
-							map.Remove(_id);
+							map.Remove(node._id);
 						}
 					}
 

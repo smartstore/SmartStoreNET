@@ -1,9 +1,10 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
 * AmazonPay: The plugin has been changed to new "Login with Amazon" services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
 * (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
+* (Dev) Hook framework now passes `IHookedEntity` interface instead of `HookedEntity` class
 
 ### Highlights
 * Multi-configurable rounding of order total ("cash rounding"). Can be adjusted and activated separately for each currency and payment method.
@@ -15,6 +16,7 @@
 * #1244 Variant query model binder cannot handle types text and datepicker
 * #1273 Attribute formatter should consider setting CatalogSettings.ShowVariantCombinationPriceAdjustment
 * Product entity picker should use the wildcard search to find products
+* Hook framework should run hooks with `ImportantAttribute` when hooking was disabled per scope
 
 ### Improvements
 * #1141 Clearer backend order list. Added more infos like payment method.
@@ -24,6 +26,7 @@
 * Moved RoundPricesDuringCalculation setting to currency entity
 * #1100 Use new "Login with Amazon" services to initialize an Amazon payment
 * #1285 Copy product: Add option to add more than one copy
+* (Perf) Many improvements in hooking framework
 
 ### New Features
 * #431 Added option to randomize the display order for slides on each request

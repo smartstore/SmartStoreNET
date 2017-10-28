@@ -52,6 +52,18 @@ namespace SmartStore.Services.Catalog
 		// Data affecting category prop names
 		private static readonly string[] _d = new string[] { "Name", "Alias", "PictureId", "BadgeText", "BadgeStyle" };
 
+		private static readonly HashSet<Type> _candidateTypes = new HashSet<Type>
+		{
+			typeof(Product),
+			typeof(Category),
+			typeof(ProductCategory),
+			typeof(Setting),
+			typeof(Language),
+			typeof(LocalizedProperty),
+			typeof(StoreMapping),
+			typeof(AclRecord)
+		};
+
 		static CategoryTreeChangeHook()
 		{
 			AddPropsToSet(_countAffectingProductProps,
@@ -81,13 +93,13 @@ namespace SmartStore.Services.Catalog
 			_categoryService = categoryService;
 		}
 
-		public void OnBeforeSave(HookedEntity entry)
+		public void OnBeforeSave(IHookedEntity entry)
 		{
 			if (_invalidated)
 				return;
 
 			if (entry.InitialState != EntityState.Modified)
-				return;
+				throw new NotSupportedException();
 
 			var cache = _services.Cache;
 			var entity = entry.Entity;
@@ -175,12 +187,19 @@ namespace SmartStore.Services.Catalog
 					PublishEvent(CategoryTreeChangeReason.Data);
 				}
 			}
+			else
+			{
+				throw new NotSupportedException();
+			}
 		}
 
-		public void OnAfterSave(HookedEntity entry)
+		public void OnAfterSave(IHookedEntity entry)
 		{
 			if (_invalidated)
 				return;
+
+			if (!_candidateTypes.Contains(entry.EntityType))
+				throw new NotSupportedException();
 
 			// INFO: Acl & StoreMapping affect element counts
 
@@ -272,12 +291,6 @@ namespace SmartStore.Services.Catalog
 				_handledReasons[(int)reason] = true;
 			}	
 		}
-
-		//private void Invalidate(params string[] tokens)
-		//{
-		//	_services.Cache.RemoveByPattern(CategoryService.CATEGORY_TREE_KEY.FormatInvariant(tokens));
-		//	//_invalidated = true;
-		//}
 
 		private string BuildCacheKeyPattern(string includeHiddenToken = "*", string rolesToken = "*", string storeToken = "*")
 		{

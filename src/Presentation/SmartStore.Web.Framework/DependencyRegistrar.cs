@@ -393,7 +393,7 @@ namespace SmartStore.Web.Framework
 							m.For(em => em.HookedType, hookedType);
 							m.For(em => em.ImplType, hook);
 							m.For(em => em.IsLoadHook, typeof(IDbLoadHook).IsAssignableFrom(hook));
-							m.For(em => em.Important, hookedType.HasAttribute<ImportantAttribute>(false));
+							m.For(em => em.Important, hook.HasAttribute<ImportantAttribute>(false));
 						});
 				}
 

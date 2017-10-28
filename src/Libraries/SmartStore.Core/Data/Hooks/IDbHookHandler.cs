@@ -24,7 +24,7 @@ namespace SmartStore.Core.Data.Hooks
 		/// <param name="importantHooksOnly">Whether to trigger only hooks marked with the <see cref="ImportantAttribute"/> attribute</param>
 		/// <param name="anyStateChanged"><c>true</c> if the state of any entry changed</param>
 		/// <returns>The list of actually processed hook instances</returns>
-		IEnumerable<IDbSaveHook> TriggerPreSaveHooks(IEnumerable<HookedEntity> entries, bool importantHooksOnly, out bool anyStateChanged);
+		IEnumerable<IDbSaveHook> TriggerPreSaveHooks(IEnumerable<IHookedEntity> entries, bool importantHooksOnly, out bool anyStateChanged);
 
 		/// <summary>
 		/// Triggers all post action hooks
@@ -32,7 +32,7 @@ namespace SmartStore.Core.Data.Hooks
 		/// <param name="entries">Entries</param>
 		/// <param name="importantHooksOnly">Whether to trigger only hooks marked with the <see cref="ImportantAttribute"/> attribute</param>
 		/// <returns>The list of actually processed hook instances</returns>
-		IEnumerable<IDbSaveHook> TriggerPostSaveHooks(IEnumerable<HookedEntity> entries, bool importantHooksOnly);
+		IEnumerable<IDbSaveHook> TriggerPostSaveHooks(IEnumerable<IHookedEntity> entries, bool importantHooksOnly);
 	}
 
 	public sealed class NullDbHookHandler : IDbHookHandler
@@ -59,13 +59,13 @@ namespace SmartStore.Core.Data.Hooks
 			return Enumerable.Empty<IDbLoadHook>();
 		}
 
-		public IEnumerable<IDbSaveHook> TriggerPreSaveHooks(IEnumerable<HookedEntity> entries, bool importantHooksOnly, out bool anyStateChanged)
+		public IEnumerable<IDbSaveHook> TriggerPreSaveHooks(IEnumerable<IHookedEntity> entries, bool importantHooksOnly, out bool anyStateChanged)
 		{
 			anyStateChanged = false;
 			return Enumerable.Empty<IDbSaveHook>();
 		}
 
-		public IEnumerable<IDbSaveHook> TriggerPostSaveHooks(IEnumerable<HookedEntity> entries, bool importantHooksOnly)
+		public IEnumerable<IDbSaveHook> TriggerPostSaveHooks(IEnumerable<IHookedEntity> entries, bool importantHooksOnly)
 		{
 			return Enumerable.Empty<IDbSaveHook>();
 		}

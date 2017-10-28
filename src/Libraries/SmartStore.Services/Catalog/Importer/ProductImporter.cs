@@ -82,7 +82,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			var templateViewPaths = _productTemplateService.GetAllProductTemplates().ToDictionarySafe(x => x.ViewPath, x => x.Id);
 
-			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+			using (var scope = new DbContextScope(ctx: _productRepository.Context, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.DataSegmenter;
 

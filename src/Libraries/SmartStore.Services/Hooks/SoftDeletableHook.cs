@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Data;
 
 namespace SmartStore.Services.Hooks
 {
@@ -18,7 +19,7 @@ namespace SmartStore.Services.Hooks
 			_ctx = ctx;
 		}
 
-		protected override void OnUpdating(ISoftDeletable entity, HookedEntity entry)
+		protected override void OnUpdating(ISoftDeletable entity, IHookedEntity entry)
 		{
 			var baseEntity = entry.Entity;
 
@@ -27,7 +28,7 @@ namespace SmartStore.Services.Hooks
 			if (!deletedModified)
 				return;
 
-			var entityType = baseEntity.GetUnproxiedType();
+			var entityType = entry.EntityType;
 
 			// mark orphaned ACL records as idle
 			var aclSupported = baseEntity as IAclSupported;

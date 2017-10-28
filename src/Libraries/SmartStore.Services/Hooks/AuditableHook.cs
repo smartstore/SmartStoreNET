@@ -7,7 +7,7 @@ namespace SmartStore.Services.Hooks
 	[Important]
 	public class AuditableHook : DbSaveHook<IAuditable>
 	{
-		protected override void OnInserting(IAuditable entity, HookedEntity entry)
+		protected override void OnInserting(IAuditable entity, IHookedEntity entry)
 		{
 			var now = DateTime.UtcNow;
 
@@ -18,7 +18,7 @@ namespace SmartStore.Services.Hooks
 				entity.UpdatedOnUtc = now;
 		}
 
-		protected override void OnUpdating(IAuditable entity, HookedEntity entry)
+		protected override void OnUpdating(IAuditable entity, IHookedEntity entry)
 		{
 			entity.UpdatedOnUtc = DateTime.UtcNow;
 		}

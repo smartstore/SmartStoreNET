@@ -202,7 +202,7 @@ namespace SmartStore.Data
 					_changedEntries = _ctx.GetChangedEntries().ToList();
 
 					// pre
-					HookedEntity[] changedHookEntries;
+					IHookedEntity[] changedHookEntries;
 					PreExecute(out changedHookEntries);
 
 					// save
@@ -242,7 +242,7 @@ namespace SmartStore.Data
 				_changedEntries = _ctx.GetChangedEntries().ToList();
 
 				// pre
-				HookedEntity[] changedHookEntries;
+				IHookedEntity[] changedHookEntries;
 				PreExecute(out changedHookEntries);
 
 				// save
@@ -263,7 +263,7 @@ namespace SmartStore.Data
 				return result;
 			}
 
-			private IEnumerable<IDbSaveHook> PreExecute(out HookedEntity[] changedHookEntries)
+			private IEnumerable<IDbSaveHook> PreExecute(out IHookedEntity[] changedHookEntries)
 			{
 				bool enableHooks = false;
 				bool importantHooksOnly = false;
@@ -314,7 +314,7 @@ namespace SmartStore.Data
 				return processedHooks ?? Enumerable.Empty<IDbSaveHook>();
 			}
 
-			private IEnumerable<IDbSaveHook> PostExecute(HookedEntity[] changedHookEntries)
+			private IEnumerable<IDbSaveHook> PostExecute(IHookedEntity[] changedHookEntries)
 			{
 				if (changedHookEntries == null || changedHookEntries.Length == 0)
 					return Enumerable.Empty<IDbSaveHook>();

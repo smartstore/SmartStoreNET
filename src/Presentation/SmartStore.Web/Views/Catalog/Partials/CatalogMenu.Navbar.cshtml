@@ -5,10 +5,9 @@
     {
         return;
     }
-
-    Html.AppendScriptParts(true, Url.Content("~/Themes/Flex/Scripts/smartstore.megamenu.js"));
+    
     var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null ? Model.SelectedNode.Parent.Value.EntityId : Model.SelectedNode.Value.EntityId;
-    var rederMoreItem = false;
+    var renderMoreItem = false;
 }
 
 @functions {
@@ -57,14 +56,14 @@
     @foreach(var node in Model.Root.Children)
     {
         var item = node.Value;
-        
+
         if (!item.Visible || node.GetMetadata<bool>("spare", false))
         {
             if (node.GetMetadata<bool>("spare", false))
             {
-                rederMoreItem = true;
+                renderMoreItem = true;
             }
-            
+
             continue;
         }
 
@@ -94,7 +93,7 @@
         </li>
     }
 
-    @if (rederMoreItem)
+    @if (renderMoreItem)
     {
         <li class="nav-item dropdown" id="main-nav-item--1" data-id="-1">
             <a href="#" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu--1">

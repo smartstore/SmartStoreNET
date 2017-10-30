@@ -7,7 +7,6 @@
     var cutOffItems = Model.Root.Children
         .Where(x => x.Value.Id == null && x.GetMetadata<bool>("spare", false))
         .ToList();
-
 }
 
 <div class="megamenu simple">
@@ -22,9 +21,12 @@
         </div>
     }
 
-    <div id="dropdown-menu--1" data-id="-1">
-        @CreateDrilldownMenu(cutOffItems, true)
-    </div>
+    @if (cutOffItems.Count > 0)
+    {
+        <div id="dropdown-menu--1" data-id="-1">
+            @CreateDrilldownMenu(cutOffItems, true)
+        </div>
+    }
 </div>
 
 @helper CreateDrilldownMenu(IEnumerable<TreeNode<MenuItem>> nodes, bool isRoot)

@@ -50,7 +50,8 @@ namespace SmartStore.Data.Setup
 
 				foreach (var lang in langMap)
 				{
-					foreach (var entry in entries.Where(x => x.Lang == null || langMap[x.Lang.ToLower()].Id == lang.Value.Id))
+					var validEntries = entries.Where(x => x.Lang == null || langMap[x.Lang.ToLower()].Id == lang.Value.Id);
+					foreach (var entry in validEntries)
 					{
 						bool isLocal;
 						var db = GetResource(entry.Key, lang.Value.Id, toAdd, out isLocal);
@@ -97,9 +98,6 @@ namespace SmartStore.Data.Setup
 
 				// remove deleted resources
 				_resources.RemoveRange(toDelete);
-
-				// update modified resources
-				toUpdate.Each(x => _ctx.Entry(x).State = System.Data.Entity.EntityState.Modified);
 
 				// save now
 				int affectedRows = _ctx.SaveChanges();

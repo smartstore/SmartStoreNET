@@ -265,6 +265,8 @@
     <Compile Include="Models\Directory\CountryListModel.cs" />
     <Compile Include="Models\Directory\QuantityUnitModel.cs" />
     <Compile Include="Models\DataExchange\ExportProfileModel.cs" />
+    <Compile Include="Models\Localization\AvailableLanguageModel.cs" />
+    <Compile Include="Models\Localization\CheckAvailableResourcesResult.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
@@ -827,6 +829,8 @@
     <Content Include="Views\ProductAttribute\_CreateOrUpdateOption.cshtml" />
     <Content Include="Views\Setting\Partials\CommonFacet.cshtml" />
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
+    <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
+    <Content Include="Views\Language\Partials\AvailablePluginResources.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

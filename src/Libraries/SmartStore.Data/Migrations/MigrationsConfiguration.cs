@@ -64,6 +64,50 @@ namespace SmartStore.Data.Migrations
                 "Anzahl an Kopien",
                 "Defines the number of copies to be created.",
                 "Legt die Anzahl der anzulegenden Kopien fest.");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.OfType",
+                "of type \"{0}\"",
+                "vom Typ \"{0}\"");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.CheckAvailableLanguagesFailed",
+                "An error occurred while checking for other available languages.",
+                "Bei der Suche nach weiteren verfügbaren Sprachen trat ein Fehler auf.");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.NoAvailableLanguagesFound",
+                "There were no other available languages found for version {0}.",
+                "Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden.");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.InstalledLanguages",
+                "Installed Languages",
+                "Installierte Sprachen");
+            builder.AddOrUpdate("Admin.Configuration.Languages.AvailableLanguages",
+                "Available Languages",
+                "Verfügbare Sprachen");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.AvailableLanguages.Note",
+                "Click <b>Download</b> to install a new language including all localized resources.",
+                "Klicken Sie auf <b>Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren.");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.TranslatedPercentage",
+                "Total translated",
+                "Insgesamt übersetzt");
+            builder.AddOrUpdate("Admin.Configuration.Languages.NumberOfTranslatedResources",
+                "{0} of {1}",
+                "{0} von {1}");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.ContainsPluginResources",
+                "Contains plugin resources",
+                "Enthält Plugin-Ressourcen");
+            builder.AddOrUpdate("Admin.Configuration.Languages.ContainsResourcesOfPlugins",
+                "Contains resources of the following installed plugins",
+                "Enthält Ressourcen zu den folgenden, installierten Plugins");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.DownloadingResources",
+                "Loading ressources",
+                "Lade Ressourcen");
+            builder.AddOrUpdate("Admin.Configuration.Languages.ImportResources",
+                "Import resources",
+                "Importiere Ressourcen");
         }
     }
 }

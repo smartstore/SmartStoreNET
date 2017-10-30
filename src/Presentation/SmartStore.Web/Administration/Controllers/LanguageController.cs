@@ -3,28 +3,42 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Xml;
+using Autofac;
+using Newtonsoft.Json;
 using SmartStore.Admin.Models.Localization;
-using SmartStore.Core.Data;
+using SmartStore.Core;
+using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class LanguageController : AdminControllerBase
     {
         #region Fields
@@ -33,26 +47,36 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreMappingService _storeMappingService;
         private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IPluginFinder _pluginFinder;
-		private readonly ICountryService _countryService;
+        private readonly PluginMediator _pluginMediator;
+        private readonly ICountryService _countryService;
 		private readonly ICommonServices _services;
+        private readonly IDateTimeHelper _dateTimeHelper;
+        private readonly IAsyncState _asyncState;
 
         #endregion
 
         #region Constructors
 
-        public LanguageController(ILanguageService languageService,
+        public LanguageController(
+            ILanguageService languageService,
 			IStoreMappingService storeMappingService,
             AdminAreaSettings adminAreaSettings,
 			IPluginFinder pluginFinder,
-			ICountryService countryService,
-			ICommonServices services)
+            PluginMediator pluginMediator,
+            ICountryService countryService,
+			ICommonServices services,
+            IDateTimeHelper dateTimeHelper,
+            IAsyncState asyncState)
         {
-            this._languageService = languageService;
-			this._storeMappingService = storeMappingService;
-            this._adminAreaSettings = adminAreaSettings;
-			this._pluginFinder = pluginFinder;
-			this._countryService = countryService;
-			this._services = services;
+            _languageService = languageService;
+			_storeMappingService = storeMappingService;
+            _adminAreaSettings = adminAreaSettings;
+			_pluginFinder = pluginFinder;
+            _pluginMediator = pluginMediator;
+			_countryService = countryService;
+			_services = services;
+            _dateTimeHelper = dateTimeHelper;
+            _asyncState = asyncState;
         }
 
 		#endregion
@@ -124,6 +148,92 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
+        private List<CheckAvailableResourcesResult> CheckAvailableResources(bool enforce = false)
+        {
+            var cacheKey = "admin:language:checkavailablelanguagesresult";
+            var currentVersion = SmartStoreVersion.CurrentFullVersion;
+            string jsonString = null;
+
+            if (!enforce)
+            {
+                jsonString = Session[cacheKey] as string;
+            }
+
+            if (jsonString == null)
+            {
+                try
+                {
+                    using (var client = new HttpClient())
+                    {
+                        client.Timeout = TimeSpan.FromMilliseconds(10000);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        client.DefaultRequestHeaders.UserAgent.ParseAdd($"SmartStore.NET {currentVersion}");
+                        client.DefaultRequestHeaders.Add("Authorization-Key", Services.StoreContext.CurrentStore.Url.EmptyNull().TrimEnd('/'));
+
+                        var url = CommonHelper.GetAppSetting<string>("sm:TranslateCheckUrl").FormatInvariant(currentVersion);
+                        var response = client.GetAsync(url).Result;
+
+                        if (response.StatusCode == HttpStatusCode.OK)
+                        {
+                            jsonString = response.Content.ReadAsStringAsync().Result;
+                            Session[cacheKey] = jsonString;
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    NotifyError(T("Admin.Configuration.Languages.CheckAvailableLanguagesFailed"));
+                    Logger.ErrorsAll(exception);
+                }
+            }
+
+            if (jsonString.HasValue())
+            {
+                return JsonConvert.DeserializeObject<List<CheckAvailableResourcesResult>>(jsonString);
+            }
+
+            return null;
+        }
+
+        private string GetCultureDisplayName(string culture)
+        {
+            if (culture.HasValue())
+            {
+                try
+                {
+                    return (new CultureInfo(culture)).DisplayName;
+                }
+                catch { }
+            }
+
+            return null;
+        }
+
+        private string GetFlagFileName(string isoCode)
+        {
+            isoCode = isoCode.EmptyNull().ToLower();
+
+            if (isoCode.HasValue())
+            {
+                switch (isoCode)
+                {
+                    case "en":
+                        isoCode = "us";
+                        break;
+                }
+
+                var fileName = isoCode + ".png";
+
+                if (System.IO.File.Exists(CommonHelper.MapPath("~/Content/images/flags/" + fileName)))
+                {
+                    return fileName;
+                }
+            }
+
+            return null;
+        }
+
         #endregion
 
         #region Languages
@@ -139,39 +249,72 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var languages = _languageService.GetAllLanguages(true);
+            var model = languages.Select(x => x.ToModel()).ToList();
 
-            var gridModel = new GridModel<LanguageModel>
-            {
-                Data = languages.Select(x => x.ToModel()),
-                Total = languages.Count()
-            };
-
-            return View(gridModel);
+            return View(model);
         }
 
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult List(GridCommand command)
+        public ActionResult AvailableLanguages(bool enforce = false)
         {
-			var model = new GridModel<LanguageModel>();
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
+                return Content(T("Admin.AccessDenied.Description"));
 
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
-			{
-				var languages = _languageService.GetAllLanguages(true);
+            var languages = _languageService.GetAllLanguages(true);
+            var languageDic = languages.ToDictionarySafe(x => x.LanguageCulture, StringComparer.OrdinalIgnoreCase);
 
-				model.Data = languages.Select(x => x.ToModel());
-				model.Total = languages.Count();
-			}
-			else
-			{
-				model.Data = Enumerable.Empty<LanguageModel>();
+            var allPlugins = _pluginFinder.GetPluginDescriptors(true);
+            var allPluginsDic = allPlugins.ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
 
-				NotifyAccessDenied();
-			}
+            var downloadState = _asyncState.Get<LanguageDownloadState>();
 
-            return new JsonResult
+            var model = new List<AvailableLanguageModel>();
+            var checkAvailableResourcesResult = CheckAvailableResources(enforce);
+
+            foreach (var checkResult in checkAvailableResourcesResult)
             {
-                Data = model
-            };
+                var culture = checkResult.Language.Culture;
+                if (culture.IsEmpty())
+                    continue;
+
+                Language language = null;
+                PluginDescriptor pluginDescriptor = null;
+
+                languageDic.TryGetValue(culture, out language);
+
+                var availableLanguage = new AvailableLanguageModel();
+                availableLanguage.Id = checkResult.Id;
+                availableLanguage.IsInstalled = language != null;
+                availableLanguage.Name = GetCultureDisplayName(culture) ?? checkResult.Language.Name;
+                availableLanguage.LanguageCulture = culture;
+                availableLanguage.UniqueSeoCode = checkResult.Language.TwoLetterIsoCode;
+                availableLanguage.Rtl = checkResult.Language.Rtl;
+                availableLanguage.Type = checkResult.Type;
+                availableLanguage.NumberOfResources = checkResult.Aggregation.NumberOfResources;
+                availableLanguage.NumberOfTranslatedResources = checkResult.Aggregation.NumberOfTouched;
+                availableLanguage.TranslatedPercentage = checkResult.Aggregation.TouchedPercentage;
+                availableLanguage.IsDownloadRunning = downloadState != null && downloadState.Id == checkResult.Id;
+                availableLanguage.UpdatedOn = _dateTimeHelper.ConvertToUserTime(checkResult.UpdatedOn, DateTimeKind.Utc);
+                availableLanguage.UpdatedOnString = availableLanguage.UpdatedOn.RelativeFormat(false, "f");
+                availableLanguage.FlagImageFileName = GetFlagFileName(checkResult.Language.TwoLetterIsoCode);
+
+                // Installed plugin infos
+                foreach (var systemName in checkResult.PluginSystemNames)
+                {
+                    if (allPluginsDic.TryGetValue(systemName, out pluginDescriptor))
+                    {
+                        availableLanguage.Plugins.Add(new AvailableLanguageModel.PluginModel
+                        {
+                            SystemName = systemName,
+                            FriendlyName = pluginDescriptor.GetLocalizedValue(_services.Localization, "FriendlyName"),
+                            IconUrl = _pluginMediator.GetIconUrl(pluginDescriptor)
+                        });
+                    }
+                }
+
+                model.Add(availableLanguage);
+            }
+
+            return PartialView(model);
         }
 
         public ActionResult Create()
@@ -531,5 +674,138 @@ namespace SmartStore.Admin.Controllers
         }
 
         #endregion
+
+        #region Download
+
+        private void DownloadCore(ILifetimeScope scope, CancellationToken ct, LanguageDownloadContext context)
+        {
+            var asyncState = scope.Resolve<IAsyncState>();
+            var services = scope.Resolve<ICommonServices>();
+            var languageService = scope.Resolve<ILanguageService>();
+            var logger = scope.Resolve<ILogger>();
+            var tempFilePath = Path.Combine(FileSystemHelper.TempDirTenant(), Guid.NewGuid().ToString() + ".xml");
+
+            try
+            {
+                var currentVersion = SmartStoreVersion.CurrentFullVersion;
+                var availableResources = context.CheckAvailableResources.First(x => x.Id == context.SetId);
+
+                // 1. Download resources
+                var state = asyncState.Get<LanguageDownloadState>() ?? new LanguageDownloadState
+                {
+                    Id = context.SetId,
+                    ProgressMessage = T("Admin.Configuration.Languages.DownloadingResources")
+                };
+                asyncState.Set(state);
+
+                var url = CommonHelper.GetAppSetting<string>("sm:TranslateDownloadUrl").FormatInvariant(context.SetId);
+                var buffer = new byte[32768];
+                var len = 0;
+
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Text.Xml));
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd($"SmartStore.NET {currentVersion}");
+                    client.DefaultRequestHeaders.Add("Authorization-Key", services.StoreContext.CurrentStore.Url.EmptyNull().TrimEnd('/'));
+
+                    using (var sourceStream = client.GetStreamAsync(url).Result)
+                    using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+                    {
+                        while ((len = sourceStream.Read(buffer, 0, 32768)) > 0)
+                        {
+                            fileStream.Write(buffer, 0, len);
+                        }
+                    }
+                }
+
+                state.ProgressMessage = T("Admin.Configuration.Languages.ImportResources");
+                asyncState.Set(state);
+
+                // 2. Create language entity (if required)
+                var allLanguages = languageService.GetAllLanguages();
+                var lastLanguage = allLanguages.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
+
+                var language = languageService.GetLanguageByCulture(availableResources.Language.Culture);
+                if (language == null)
+                {
+                    language = new Language();
+                    language.LanguageCulture = availableResources.Language.Culture;
+                    language.UniqueSeoCode = availableResources.Language.TwoLetterIsoCode;
+                    language.Name = GetCultureDisplayName(availableResources.Language.Culture) ?? availableResources.Name;
+                    language.FlagImageFileName = GetFlagFileName(availableResources.Language.TwoLetterIsoCode);
+                    language.Rtl = availableResources.Language.Rtl;
+                    language.Published = false;
+                    language.DisplayOrder = lastLanguage != null ? lastLanguage.DisplayOrder + 1 : 0;
+
+                    languageService.InsertLanguage(language);
+                }
+
+                // 3. Import resources
+                var xmlDoc = new XmlDocument();
+                xmlDoc.Load(tempFilePath);
+
+                services.Localization.ImportResourcesFromXml(language, xmlDoc);
+            }
+            catch (Exception exception)
+            {
+                logger.ErrorsAll(exception);
+            }
+            finally
+            {
+                if (asyncState.Exists<LanguageDownloadState>())
+                {
+                    asyncState.Remove<LanguageDownloadState>();
+                }
+
+                FileSystemHelper.Delete(tempFilePath);
+            }
+        }
+
+        public ActionResult Download(int setId)
+        {
+            if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
+            {
+                var ctx = new LanguageDownloadContext(setId);
+                ctx.CheckAvailableResources = CheckAvailableResources();
+
+                AsyncRunner.Run(
+                    (container, ct, obj) => DownloadCore(container, ct, obj as LanguageDownloadContext),
+                    ctx, 
+                    CancellationToken.None,
+                    TaskCreationOptions.LongRunning,
+                    TaskScheduler.Default);
+            }
+
+            return RedirectToAction("List");
+        }
+
+        [HttpPost]
+        public JsonResult DownloadProgress()
+        {
+            try
+            {
+                var state = _asyncState.Get<LanguageDownloadState>();
+                if (state != null)
+                {
+                    var progressInfo = new
+                    {
+                        id = state.Id,
+                        percent = state.ProgressPercent,
+                        message = state.ProgressMessage
+                    };
+
+                    return Json(new object[] { progressInfo });
+                }
+            }
+            catch (Exception exception)
+            {
+                exception.Dump();
+            }
+
+            return Json(null);
+        }
+
+        #endregion Download
     }
 }

@@ -1,36 +1,38 @@
 ﻿@model Telerik.Web.Mvc.GridModel<LanguageResourceModel>
 @using Telerik.Web.Mvc.UI;
-@using System.Linq;
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    //page title
     ViewBag.Title = T("Admin.Configuration.Languages.Localization").Text;
 }
 <div class="section-header">
     <div class="title">
-        @T("Admin.Configuration.Languages.Localization")
+        <i class="fa fa-language"></i>
+        @T("Admin.Configuration.Languages.Localization") - @Html.ActionLink("(" + T("Admin.Configuration.Languages.BackToList") + ")", "List")
     </div>
 </div>
+
 @if (ViewBag.AllLanguages != null)
 {
-    <table class="adminContent" style="margin-bottom: 10px;">
-        <tr>
-            <td class="adminTitle">
-                @T("Admin.Configuration.Languages.Select")
-            </td>
-            <td class="adminData">
+    <p>
+        <table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabel("localeresource-language", T("Admin.Configuration.Languages.Select"))
+                </td>
+                <td class="adminData">
+                    @Html.DropDownList("localeresource-language", (IEnumerable<SelectListItem>)ViewBag.AllLanguages, new { onchange = "onLocaleResourceLanguageSelected(this.value);" })
 
-	            @Html.DropDownList("localeresource-language", (IEnumerable<SelectListItem>)ViewBag.AllLanguages, new { onchange = "onLocaleResourceLanguageSelected(this.value);" })
-
-                <script type="text/javascript">
-                    function onLocaleResourceLanguageSelected(languageid) {
-	                    window.location = '@(Url.Action("Resources") + "?languageId=")' + languageid;
-	                }
-                </script>
-            </td>
-        </tr>
-    </table>
+                    <script type="text/javascript">
+                        function onLocaleResourceLanguageSelected(languageid) {
+                            window.location = '@(Url.Action("Resources") + "?languageId=")' + languageid;
+                        }
+                    </script>
+                </td>
+            </tr>
+        </table>
+    </p>
 }
+
 <table class="adminContent">
     <tr>
         <td>

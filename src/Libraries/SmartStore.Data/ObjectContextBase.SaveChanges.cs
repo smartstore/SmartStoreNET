@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
@@ -20,6 +21,8 @@ namespace SmartStore.Data
 	{
 		private IDbHookHandler _dbHookHandler;
 		private SaveChangesOperation _currentSaveOperation;
+
+		private readonly static ConcurrentDictionary<Type, bool> _hookableEntities = new ConcurrentDictionary<Type, bool>();
 
 		private enum SaveStage
 		{
@@ -144,10 +147,38 @@ namespace SmartStore.Data
 			get { return _currentSaveOperation != null; }
 		}
 
+		private bool IsHookableEntry(IHookedEntity entry)
+		{
+			var entity = entry.Entity;
+			if (entity == null)
+			{
+				return false;
+			}
+
+			return IsHookableEntityType(entry.EntityType);
+		}
+
+		private bool IsHookableEntityType(Type entityType)
+		{
+			var isHookable = _hookableEntities.GetOrAdd(entityType, t =>
+			{
+				var attr = t.GetAttribute<HookableAttribute>(true);
+				if (attr != null)
+				{
+					return attr.IsHookable;
+				}
+
+				// Entities are hookable by default
+				return true;
+			});
+
+			return isHookable;
+		}
+
 		class SaveChangesOperation : IDisposable
 		{
 			private SaveStage _stage;
-			private IList<DbEntityEntry> _changedEntries;
+			private IEnumerable<DbEntityEntry> _changedEntries;
 			private ObjectContextBase _ctx;
 			private IDbHookHandler _hookHandler;
 
@@ -195,14 +226,14 @@ namespace SmartStore.Data
 
 					// We must detect changes earlier in the process
 					// before hooks are executed. Therefore we suppressed the
-					// implicit DetectChanges() calls by EF and call it here explicitly.
+					// implicit DetectChanges() call by EF and call it here explicitly.
 					_ctx.ChangeTracker.DetectChanges();
 
 					// Now get changed entries
-					_changedEntries = _ctx.GetChangedEntries().ToList();
+					_changedEntries = _ctx.GetChangedEntries();
 
 					// pre
-					IHookedEntity[] changedHookEntries;
+					IEnumerable<IHookedEntity> changedHookEntries;
 					PreExecute(out changedHookEntries);
 
 					// save
@@ -239,10 +270,10 @@ namespace SmartStore.Data
 				_ctx.ChangeTracker.DetectChanges();
 
 				// Now get changed entries
-				_changedEntries = _ctx.GetChangedEntries().ToList();
+				_changedEntries = _ctx.GetChangedEntries();
 
 				// pre
-				IHookedEntity[] changedHookEntries;
+				IEnumerable<IHookedEntity> changedHookEntries;
 				PreExecute(out changedHookEntries);
 
 				// save
@@ -263,7 +294,7 @@ namespace SmartStore.Data
 				return result;
 			}
 
-			private IEnumerable<IDbSaveHook> PreExecute(out IHookedEntity[] changedHookEntries)
+			private IEnumerable<IDbSaveHook> PreExecute(out IEnumerable<IHookedEntity> changedHookEntries)
 			{
 				bool enableHooks = false;
 				bool importantHooksOnly = false;
@@ -288,6 +319,7 @@ namespace SmartStore.Data
 				{
 					changedHookEntries = _changedEntries
 						.Select(x => new HookedEntity(x))
+						.Where(x => _ctx.IsHookableEntityType(x.EntityType))
 						.ToArray();
 
 					// Regardless of validation (possible fixing validation errors too)
@@ -306,17 +338,15 @@ namespace SmartStore.Data
 				{
 					// because the state of at least one entity has been changed during pre hooking
 					// we have to further reduce the set of hookable entities (for the POST hooks)
-					changedHookEntries = changedHookEntries
-						.Where(x => x.InitialState > SmartStore.Core.Data.EntityState.Unchanged)
-						.ToArray();
+					changedHookEntries = changedHookEntries.Where(x => x.InitialState > SmartStore.Core.Data.EntityState.Unchanged);
 				}
 
 				return processedHooks ?? Enumerable.Empty<IDbSaveHook>();
 			}
 
-			private IEnumerable<IDbSaveHook> PostExecute(IHookedEntity[] changedHookEntries)
+			private IEnumerable<IDbSaveHook> PostExecute(IEnumerable<IHookedEntity> changedHookEntries)
 			{
-				if (changedHookEntries == null || changedHookEntries.Length == 0)
+				if (changedHookEntries == null || !changedHookEntries.Any())
 					return Enumerable.Empty<IDbSaveHook>();
 
 				// the existence of hook entries actually implies that hooking is enabled.

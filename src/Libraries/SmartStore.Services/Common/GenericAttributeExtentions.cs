@@ -39,7 +39,7 @@ namespace SmartStore.Services.Common
             if (genericAttributeService == null)
                 genericAttributeService = EngineContext.Current.Resolve<IGenericAttributeService>();
 
-            string keyGroup = entity.GetUnproxiedEntityType().Name;
+            string keyGroup = entity.GetUnproxiedType().Name;
 
             return genericAttributeService.GetAttribute<TPropType>(keyGroup, entity.Id, key, storeId);
 

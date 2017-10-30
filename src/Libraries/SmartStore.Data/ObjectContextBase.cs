@@ -55,7 +55,10 @@ namespace SmartStore.Data
 			var hookHandler = this.DbHookHandler;
 			var importantHooksOnly = !this.HooksEnabled && hookHandler.HasImportantLoadHooks();
 
-			hookHandler.TriggerLoadHooks(entity, importantHooksOnly);
+			if (IsHookableEntityType(entity.GetUnproxiedType()))
+			{
+				hookHandler.TriggerLoadHooks(entity, importantHooksOnly);
+			}	
 		}
 
 		public bool HooksEnabled

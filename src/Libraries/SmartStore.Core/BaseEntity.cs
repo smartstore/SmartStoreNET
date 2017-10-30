@@ -30,6 +30,7 @@ namespace SmartStore.Core
 				// it's a proxied type
 				t = t.BaseType;
 			}
+
 			return t;
         }
 

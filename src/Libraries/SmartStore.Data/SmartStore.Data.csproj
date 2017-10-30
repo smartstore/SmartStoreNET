@@ -537,7 +537,6 @@
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
-    <Compile Include="Extensions\BaseEntityExtensions.cs" />
     <Compile Include="Extensions\DataReaderExtensions.cs" />
     <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />

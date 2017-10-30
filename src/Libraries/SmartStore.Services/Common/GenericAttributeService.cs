@@ -131,7 +131,7 @@ namespace SmartStore.Services.Common
         {
 			Guard.NotNull(entity, nameof(entity));
 
-			SaveAttribute(entity.Id, key, entity.GetUnproxiedEntityType().Name, value, storeId);
+			SaveAttribute(entity.Id, key, entity.GetUnproxiedType().Name, value, storeId);
         }
 
 		public virtual void SaveAttribute<TPropType>(int entityId, string key, string keyGroup, TPropType value, int storeId = 0)

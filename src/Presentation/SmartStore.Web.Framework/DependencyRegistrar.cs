@@ -619,7 +619,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WorkflowMessageService>().As<IWorkflowMessageService>().InstancePerRequest();
 			builder.RegisterType<MessageTokenProvider>().As<IMessageTokenProvider>().InstancePerRequest();
 			builder.RegisterType<Tokenizer>().As<ITokenizer>().InstancePerRequest();
-			builder.RegisterType<DefaultEmailSender>().As<IEmailSender>().SingleInstance(); // xxx (http)
+			builder.RegisterType<DefaultEmailSender>().As<IEmailSender>().InstancePerRequest();
 			builder.RegisterType<LocalAsyncState>().As<IAsyncState>().SingleInstance();
 		}
 	}

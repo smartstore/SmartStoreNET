@@ -232,7 +232,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 			adminUser.PasswordFormat = PasswordFormat.Hashed;
 			adminUser.Password = encryptionService.CreatePasswordHash(defaultUserPassword, saltKey, new CustomerSettings().HashedPasswordFormat);
 
-			//SetModified(adminUser);
 			_ctx.SaveChanges();
         }
 
@@ -642,13 +641,6 @@ namespace SmartStore.Web.Infrastructure.Installation
         #endregion
 
 		#region Utils
-
-		//private void SetModified<TEntity>(TEntity entity) 
-		//	where TEntity : BaseEntity
-		//{
-		//	_ctx.Set<TEntity>().Attach(entity);
-		//	_ctx.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-		//}
 
 		private string ValidateSeName<TEntity>(TEntity entity, string name)
 			where TEntity : BaseEntity, ISlugSupported

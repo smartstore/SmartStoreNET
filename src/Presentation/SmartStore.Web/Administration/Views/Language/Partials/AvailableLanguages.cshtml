@@ -27,7 +27,7 @@
                         <div>
                             @if (language.FlagImageFileName.HasValue())
                             {
-                                <img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon" />
+                                <img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon" style="margin: 0 4px 2px 0; vertical-align: middle;" />
                             }
                             @language.Name
                         </div>
@@ -72,7 +72,7 @@
                     <td>
                         @language.UpdatedOnString
                     </td>
-                    <td>
+                    <td style="width: 200px;">
                         @if (!language.IsInstalled)
                         {
                             <a href="@Url.Action("Download", new { setId = language.Id })" 

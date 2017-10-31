@@ -148,7 +148,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-        private List<CheckAvailableResourcesResult> CheckAvailableResources(bool enforce = false)
+        private async Task<List<CheckAvailableResourcesResult>> CheckAvailableResources(bool enforce = false)
         {
             var cacheKey = "admin:language:checkavailablelanguagesresult";
             var currentVersion = SmartStoreVersion.CurrentFullVersion;
@@ -172,11 +172,11 @@ namespace SmartStore.Admin.Controllers
                         client.DefaultRequestHeaders.Add("Authorization-Key", Services.StoreContext.CurrentStore.Url.EmptyNull().TrimEnd('/'));
 
                         var url = CommonHelper.GetAppSetting<string>("sm:TranslateCheckUrl").FormatInvariant(currentVersion);
-                        var response = client.GetAsync(url).Result;
+                        var response = await client.GetAsync(url);
 
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
-                            jsonString = response.Content.ReadAsStringAsync().Result;
+                            jsonString = await response.Content.ReadAsStringAsync();
                             Session[cacheKey] = jsonString;
                         }
                     }
@@ -254,7 +254,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        public ActionResult AvailableLanguages(bool enforce = false)
+        public async Task<ActionResult> AvailableLanguages(bool enforce = false)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
                 return Content(T("Admin.AccessDenied.Description"));
@@ -268,7 +268,7 @@ namespace SmartStore.Admin.Controllers
             var downloadState = _asyncState.Get<LanguageDownloadState>();
 
             var model = new List<AvailableLanguageModel>();
-            var checkAvailableResourcesResult = CheckAvailableResources(enforce);
+            var checkAvailableResourcesResult = await CheckAvailableResources(enforce);
 
             foreach (var checkResult in checkAvailableResourcesResult)
             {
@@ -762,19 +762,19 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        public ActionResult Download(int setId)
+        public async Task<ActionResult> Download(int setId)
         {
             if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
             {
                 var ctx = new LanguageDownloadContext(setId);
-                ctx.CheckAvailableResources = CheckAvailableResources();
+                ctx.CheckAvailableResources = await CheckAvailableResources();
 
-                AsyncRunner.Run(
+                var task = AsyncRunner.Run(
                     (container, ct, obj) => DownloadCore(container, ct, obj as LanguageDownloadContext),
-                    ctx, 
+                    ctx,
                     CancellationToken.None,
                     TaskCreationOptions.LongRunning,
-                    TaskScheduler.Default);
+                    TaskScheduler.Default).ConfigureAwait(false);
             }
 
             return RedirectToAction("List");

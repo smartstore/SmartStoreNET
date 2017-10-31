@@ -37,7 +37,7 @@
                     <td>
                         @if (language.FlagImageFileName.HasValue())
                         {
-                            <img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon" />
+                            <img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon" style="margin: 0 4px 2px 0; vertical-align: middle;" />
                         }
                         <a href="@Url.Action("Edit", new { id = language.Id })">@language.Name</a>
                     </td>
@@ -56,7 +56,7 @@
                     <td class="ac">
                         @language.DisplayOrder
                     </td>
-                    <td>
+                    <td style="width: 200px;">
                         <a href="@Url.Action("Edit", new { id = language.Id })" class="btn btn-block btn-success">
                             <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;@T("Admin.Common.Edit")
                         </a>

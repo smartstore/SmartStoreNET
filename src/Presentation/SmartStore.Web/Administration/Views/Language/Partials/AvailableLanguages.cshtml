@@ -13,8 +13,8 @@
 				<th>@T("Admin.Configuration.Languages.Fields.Name")</th>
 				<th class="ac">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
                 <th class="ac">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
-                <th class="ac">@T("Admin.Configuration.Languages.TranslatedPercentage")</th>
                 <th class="ac">@T("Admin.Configuration.Languages.ContainsPluginResources")</th>
+                <th class="ac">@T("Common.Translated")</th>
                 <th>@T("Admin.Common.Updated")</th>
 				<th>@T("Admin.Common.Actions")</th>
 			</tr>
@@ -43,20 +43,6 @@
                         @language.UniqueSeoCode
                     </td>
                     <td class="ac">
-                        @if (language.NumberOfResources == 0)
-                        {
-                            <span class="muted">0 %</span>
-                        }
-                        else
-                        {
-                            <div>@language.TranslatedPercentage.ToString("N2") %</div>
-                            if (language.TranslatedPercentage < 100.0f)
-                            {
-                                <div class="muted">@T("Admin.Configuration.Languages.NumberOfTranslatedResources", language.NumberOfTranslatedResources.ToString("N0"), language.NumberOfResources.ToString("N0"))</div>
-                            }
-                        }
-                    </td>
-                    <td class="ac">
                         @if (language.Plugins.Any())
                         {
                             <a href="javascript:void(0)" class="show-plugin-details">@T("Common.Yes")</a>
@@ -67,6 +53,24 @@
                         else
                         {
                             <span class="muted">@T("Common.No")</span>
+                        }
+                    </td>
+                    <td class="ac">
+                        @if (language.NumberOfResources == 0)
+                        {
+                            <div class="muted">0 %</div>
+                        }
+                        else
+                        {
+                            string title = language.TranslatedPercentage < 100.0M
+                                ? T("Admin.Configuration.Languages.NumberOfTranslatedResources", language.NumberOfTranslatedResources.ToString("N0"), language.NumberOfResources.ToString("N0")).Text
+                                : string.Empty;
+
+                            <div @Html.Attr("title", title, title.HasValue())>@language.TranslatedPercentage.ToString("G29")%</div>
+                        }
+                        @if (language.TranslatedPercentageAtLastImport.HasValue)
+                        {
+                            <div>@T("Admin.Configuration.Languages.TranslatedPercentageAtLastImport", language.TranslatedPercentageAtLastImport.Value.ToString("G29"))</div>
                         }
                     </td>
                     <td>

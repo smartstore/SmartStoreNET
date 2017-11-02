@@ -88,9 +88,16 @@ namespace SmartStore.Data.Migrations
                 "Click <b>Download</b> to install a new language including all localized resources.",
                 "Klicken Sie auf <b>Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren.");
 
+            builder.AddOrUpdate("Common.Translated",
+                "Translated",
+                "Übersetzt");
             builder.AddOrUpdate("Admin.Configuration.Languages.TranslatedPercentage",
-                "Total translated",
-                "Insgesamt übersetzt");
+                "{0}% translated",
+                "{0}% übersetzt");
+            builder.AddOrUpdate("Admin.Configuration.Languages.TranslatedPercentageAtLastImport",
+                "{0}% at the last import",
+                "{0}% beim letzten Import");
+
             builder.AddOrUpdate("Admin.Configuration.Languages.NumberOfTranslatedResources",
                 "{0} of {1}",
                 "{0} von {1}");
@@ -108,6 +115,20 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Configuration.Languages.ImportResources",
                 "Import resources",
                 "Importiere Ressourcen");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.OnePublishedLanguageRequired",
+                "At least one published language is required.",
+                "Mindestens eine veröffentlichte Sprache ist erforderlich.");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.Fields.AvailableLanguageSetId",
+                "Available Languages",
+                "Verfügbare Sprachen",
+                "Specifies the available language whose localized resources are to be imported.",
+                "Legt die verfügbare Sprache fest, deren lokalisierte Ressourcen importiert werden sollen.");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.UploadFileOrSelectLanguage",
+                "Please upload an import file or select an available language whose resources are to be imported.",
+                "Bitte laden Sie eine Importdatei hoch oder wählen Sie eine verfügbare Sprache, deren Ressourcen importiert werden sollen.");
         }
     }
 }

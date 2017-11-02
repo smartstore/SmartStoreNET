@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Localization
@@ -20,7 +21,8 @@ namespace SmartStore.Admin.Models.Localization
 
         public int NumberOfResources { get; set; }
         public int NumberOfTranslatedResources { get; set; }
-        public float TranslatedPercentage { get; set; }
+        public decimal TranslatedPercentage { get; set; }
+        public decimal? TranslatedPercentageAtLastImport { get; set; }
 
         public List<PluginModel> Plugins { get; set; }
 

@@ -32,7 +32,7 @@ namespace SmartStore.Admin.Models.Localization
             public int SetId { get; set; }
             public int NumberOfResources { get; set; }
             public int NumberOfTouched { get; set; }
-            public float TouchedPercentage { get; set; }
+            public decimal TouchedPercentage { get; set; }
         }
     }
 }

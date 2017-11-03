@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -8,6 +8,7 @@
 
 ### Highlights
 * Multi-configurable rounding of order total ("cash rounding"). Can be adjusted and activated separately for each currency and payment method.
+* Connection to translate.smartstore.com. For available languages, localized resources can be downloaded and installed directly.
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing

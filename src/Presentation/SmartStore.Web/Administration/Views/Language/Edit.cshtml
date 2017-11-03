@@ -92,32 +92,41 @@
 @helper TabImportDownload()
 {
     <div>
-        <table class="adminContent">
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AvailableLanguageSetId)
-                </td>
-                <td class="adminData">
-                    <select id="@Html.FieldIdFor(x => x.AvailableLanguageSetId)" name="@Html.FieldNameFor(x => x.AvailableLanguageSetId)" 
-                            class="large-select2 control-large" data-placeholder="@T("Common.Unspecified")">
-                        <option></option>
-                        @foreach (var item in Model.AvailableDownloadLanguages.OrderBy(x => x.DisplayOrder))
-                        {
-                            var translated = T("Admin.Configuration.Languages.TranslatedPercentage", item.TranslatedPercentage.ToString("G29"));
-                            if (item.TranslatedPercentageAtLastImport.HasValue)
+        @if (Model.AvailableDownloadLanguages.Any())
+        {
+            <table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AvailableLanguageSetId)
+                    </td>
+                    <td class="adminData">
+                        <select id="@Html.FieldIdFor(x => x.AvailableLanguageSetId)" name="@Html.FieldNameFor(x => x.AvailableLanguageSetId)" 
+                                class="large-select2 control-large" data-placeholder="@T("Common.Unspecified")">
+                            <option></option>
+                            @foreach (var item in Model.AvailableDownloadLanguages.OrderBy(x => x.DisplayOrder))
                             {
-                                translated = string.Concat(
-                                    translated,
-                                    ". ",
-                                    T("Admin.Configuration.Languages.TranslatedPercentageAtLastImport", item.TranslatedPercentageAtLastImport.Value.ToString("G29")));
+                                var translated = T("Admin.Configuration.Languages.TranslatedPercentage", item.TranslatedPercentage.ToString("G29"));
+                                if (item.TranslatedPercentageAtLastImport.HasValue)
+                                {
+                                    translated = string.Concat(
+                                        translated,
+                                        ". ",
+                                        T("Admin.Configuration.Languages.TranslatedPercentageAtLastImport", item.TranslatedPercentageAtLastImport.Value.ToString("G29")));
+                                }
+                                <option value="@item.Id" data-imagename="@item.FlagImageFileName" data-translated="@(translated).">@item.Name</option>
                             }
-                            <option value="@item.Id" data-imagename="@item.FlagImageFileName" data-translated="@(translated).">@item.Name</option>
-                        }
-                    </select>
-                    @Html.ValidationMessageFor(model => model.AvailableLanguageSetId)
-                </td>
-            </tr>
-        </table>
+                        </select>
+                        @Html.ValidationMessageFor(model => model.AvailableLanguageSetId)
+                    </td>
+                </tr>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                @T("Admin.Configuration.Languages.NoAvailableLanguagesFound", SmartStoreVersion.CurrentFullVersion)
+            </div>
+        }
     </div>
 }
 

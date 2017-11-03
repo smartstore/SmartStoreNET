@@ -39,23 +39,22 @@ namespace SmartStore.Services.Localization
 			IStoreService storeService,
 			IStoreContext storeContext)
         {
-            this._requestCache = requestCache;
-			this._cache = cache;
-            this._languageRepository = languageRepository;
-            this._settingService = settingService;
-            this._localizationSettings = localizationSettings;
-            this._eventPublisher = eventPublisher;
-			this._storeMappingService = storeMappingService;
-			this._storeService = storeService;
-			this._storeContext = storeContext;
+            _requestCache = requestCache;
+			_cache = cache;
+            _languageRepository = languageRepository;
+            _settingService = settingService;
+            _localizationSettings = localizationSettings;
+            _eventPublisher = eventPublisher;
+			_storeMappingService = storeMappingService;
+			_storeService = storeService;
+			_storeContext = storeContext;
         }
 
         public virtual void DeleteLanguage(Language language)
         {
-            if (language == null)
-                throw new ArgumentNullException("language");
-            
-            //update default admin area language (if required)
+			Guard.NotNull(language, nameof(language));
+
+            // Update default admin area language (if required)
             if (_localizationSettings.DefaultAdminLanguageId == language.Id)
             {
                 foreach (var activeLanguage in GetAllLanguages())

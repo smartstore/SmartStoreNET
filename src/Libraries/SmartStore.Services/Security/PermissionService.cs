@@ -24,7 +24,7 @@ namespace SmartStore.Services.Security
         /// {1} : permission system name
         /// </remarks>
         private const string PERMISSIONS_ALLOWED_KEY = "permission:allowed-{0}-{1}";
-        private const string PERMISSIONS_PATTERN_KEY = "permission:";
+        private const string PERMISSIONS_PATTERN_KEY = "permission:*";
         #endregion
 
         #region Fields

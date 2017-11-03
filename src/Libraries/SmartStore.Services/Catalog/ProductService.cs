@@ -17,14 +17,13 @@ using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Catalog
 {
-	public partial class ProductService : IProductService
+    public partial class ProductService : IProductService
 	{
 		private readonly IRepository<Product> _productRepository;
         private readonly IRepository<RelatedProduct> _relatedProductRepository;
         private readonly IRepository<CrossSellProduct> _crossSellProductRepository;
         private readonly IRepository<TierPrice> _tierPriceRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
-        private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
 		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
 		private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
@@ -41,7 +40,6 @@ namespace SmartStore.Services.Catalog
             IRepository<CrossSellProduct> crossSellProductRepository,
             IRepository<TierPrice> tierPriceRepository,
             IRepository<ProductPicture> productPictureRepository,
-            IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
 			IRepository<ProductBundleItem> productBundleItemRepository,
 			IRepository<ShoppingCartItem> shoppingCartItemRepository,
@@ -57,7 +55,6 @@ namespace SmartStore.Services.Catalog
             _crossSellProductRepository = crossSellProductRepository;
             _tierPriceRepository = tierPriceRepository;
             _productPictureRepository = productPictureRepository;
-            _productSpecificationAttributeRepository = productSpecificationAttributeRepository;
             _productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
 			_productBundleItemRepository = productBundleItemRepository;
 			_shoppingCartItemRepository = shoppingCartItemRepository;
@@ -299,7 +296,7 @@ namespace SmartStore.Services.Catalog
 			bool modified = false;
 			if (publishEvent)
 			{
-				modified = _productRepository.IsModified(product);
+				modified = _dbContext.IsModified(product);
 			}
 
             // update
@@ -647,23 +644,6 @@ namespace SmartStore.Services.Catalog
 			{
 				map.AddRange(item.ProductId, item.Discounts);
 			}
-
-			return map;
-		}
-
-		public virtual Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds)
-		{
-			Guard.NotNull(productIds, nameof(productIds));
-
-			var query = _productSpecificationAttributeRepository.TableUntracked
-				.Expand(x => x.SpecificationAttributeOption)
-				.Expand(x => x.SpecificationAttributeOption.SpecificationAttribute)
-				.Where(x => productIds.Contains(x.ProductId));
-
-			var map = query
-				.OrderBy(x => x.DisplayOrder)
-				.ToList()
-				.ToMultimap(x => x.ProductId, x => x);
 
 			return map;
 		}

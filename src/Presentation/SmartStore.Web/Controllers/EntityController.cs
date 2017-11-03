@@ -58,16 +58,14 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult Picker(EntityPickerModel model)
 		{
-            model.PageSize = 48; // _commonSettings.EntityPickerPageSize;
+            model.PageSize = 96; // _commonSettings.EntityPickerPageSize;
 			model.AllString = T("Admin.Common.All");
 
 			if (model.Entity.IsCaseInsensitiveEqual("product"))
 			{
-				var allCategories = _categoryService.GetAllCategories(showHidden: true);
-				var mappedCategories = allCategories.ToDictionary(x => x.Id);
-
-				model.AvailableCategories = allCategories
-					.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = x.Id.ToString() })
+				model.AvailableCategories = _categoryService.GetCategoryTree(includeHidden: true)
+					.FlattenNodes(false)
+					.Select(x => new SelectListItem { Text = x.GetCategoryNameIndented(), Value = x.Id.ToString() })
 					.ToList();
 
 				model.AvailableManufacturers = _manufacturerService.GetAllManufacturers(true)
@@ -87,7 +85,7 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult Picker(EntityPickerModel model, FormCollection form)
 		{
-            model.PageSize = 100; // _commonSettings.EntityPickerPageSize;
+            model.PageSize = 96; // _commonSettings.EntityPickerPageSize;
 			model.PublishedString = T("Common.Published");
 			model.UnpublishedString = T("Common.Unpublished");
 
@@ -135,11 +133,14 @@ namespace SmartStore.Web.Controllers
 						{
 							searchQuery = searchQuery.WithManufacturerIds(null, model.ManufacturerId);
 						}
-
+						
 						if (model.CategoryId != 0)
 						{
-							var catIds = (new[] { model.CategoryId }).Concat(_catalogHelper.GetChildCategoryIds(model.CategoryId));
-							searchQuery = searchQuery.WithCategoryIds(null, catIds.ToArray());
+							var node = _categoryService.GetCategoryTree(model.CategoryId, true);
+							if (node != null)
+							{
+								searchQuery = searchQuery.WithCategoryIds(null, node.Flatten(true).Select(x => x.Id).ToArray());
+							}
 						}		
 
 						var query = _catalogSearchService.PrepareQuery(searchQuery);

@@ -44,12 +44,12 @@ namespace SmartStore.Services.Hooks
 			_specificationAttributeService = specificationAttributeService;
 		}
 
-		protected override void OnDeleting(BaseEntity entity, HookedEntity entry)
+		protected override void OnDeleting(BaseEntity entity, IHookedEntity entry)
 		{
-			var type = entry.Entity.GetUnproxiedType();
+			var type = entry.EntityType;
 
 			if (!_candidateTypes.Contains(type))
-				return;
+				throw new NotSupportedException();
 
 			if (type == typeof(SpecificationAttribute))
 			{

@@ -34,8 +34,6 @@ namespace SmartStore.Core.Data
 			var entity = rs.Create();
 			entity.Id = id;
 
-			rs.Attach(entity);
-
 			// must downcast 'cause of Rhino mocks stub  
 			rs.Context.ChangeState((BaseEntity)entity, System.Data.Entity.EntityState.Deleted);
         }

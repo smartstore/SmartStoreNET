@@ -12,7 +12,7 @@ namespace SmartStore.Services.Security
     public partial class AclService : IAclService
     {
         private const string ACLRECORD_BY_ENTITYID_NAME_KEY = "aclrecord:entityid-name-{0}-{1}";
-        private const string ACLRECORD_PATTERN_KEY = "aclrecord:";
+        private const string ACLRECORD_PATTERN_KEY = "aclrecord:*";
 
 
         private readonly IRepository<AclRecord> _aclRecordRepository;

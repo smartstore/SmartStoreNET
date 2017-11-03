@@ -290,7 +290,7 @@ namespace SmartStore.Services.Catalog
 
 					// >>>>>>> Put clone to db (from here on we need the product clone's ID)
 					_productRepository.Insert(clone);
-					Commit(false);
+					Commit();
 
 					// Related products mapping
 					foreach (var rp in _productService.GetRelatedProductsByProductId1(product.Id, true))
@@ -344,21 +344,15 @@ namespace SmartStore.Services.Catalog
 					ProcessBundleItems(product, clone);
 
 					// >>>>>>> Our final commit
-					Commit(true);
+					Commit();
 				}
 
 				return clone;
 			}
         }
 
-		private void Commit(bool detectChanges)
+		private void Commit()
 		{
-			if (detectChanges)
-			{
-				// Without this, all product properties are updated again, not just the modified ones.
-				((DbContext)_services.DbContext).ChangeTracker.DetectChanges();
-			}
-
 			_services.DbContext.SaveChanges();
 		}
 
@@ -565,7 +559,7 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// >>>>>> Commit
-			Commit(true);
+			Commit();
 
 			// Attribute value localization
 			foreach (var pvav in product.ProductVariantAttributes.SelectMany(x => x.ProductVariantAttributeValues).ToArray())
@@ -605,7 +599,7 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// >>>>>> Commit attributes & values
-			Commit(true);
+			Commit();
 
 			// attribute combinations
 			using (var scope = new DbContextScope(lazyLoading: false, forceNoTracking: false))
@@ -687,7 +681,7 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// >>>>>> Commit combinations
-			Commit(true);
+			Commit();
 		}
 	}
 }

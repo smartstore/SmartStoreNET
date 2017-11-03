@@ -1,12 +1,12 @@
 ﻿@model LanguageModel
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Languages.AddNew").Text;
 }
 @using (Html.BeginForm())
 {
     <div class="section-header">
         <div class="title">
+            <i class="fa fa-language"></i>
             @T("Admin.Configuration.Languages.AddNew") @Html.ActionLink("(" + T("Admin.Configuration.Languages.BackToList") + ")", "List")
         </div>
         <div class="options">

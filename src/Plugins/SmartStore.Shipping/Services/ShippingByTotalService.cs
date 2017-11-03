@@ -221,7 +221,7 @@ namespace SmartStore.Shipping.Services
             {
                 foreach (var entry in patterns)
                 {
-                    var wildcard = new Wildcard(entry);
+                    var wildcard = new Wildcard(entry, true);
                     if (wildcard.IsMatch(zip))
                         return true;
                 }

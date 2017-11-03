@@ -190,7 +190,7 @@ namespace SmartStore.Collections
         {
             CheckNotReadonly();
 
-            this[key].AddRange(values);
+			this[key].AddRange(values);
         }
 
         /// <summary>

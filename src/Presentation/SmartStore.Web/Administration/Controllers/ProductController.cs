@@ -270,7 +270,7 @@ namespace SmartStore.Admin.Controllers
 			p.CountryOfOriginId = m.CountryOfOriginId == 0 ? (int?)null : m.CountryOfOriginId;
 
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
-			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();			
+			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();		
 		}
 
 		[NonAction]
@@ -559,11 +559,9 @@ namespace SmartStore.Admin.Controllers
 			var p = product;
 			var m = model;
 
-			var modifiedProperties = editMode ? _dbContext.GetModifiedProperties(p): new Dictionary<string, object>();
-
-			var nameChanged = modifiedProperties.ContainsKey("Name");
+			var nameChanged = editMode ? _dbContext.IsPropertyModified(p, x => x.Name) : false;
 			var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
-
+			
 			// Handle Download transiency
 			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.DownloadId);
 			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
@@ -1012,11 +1010,9 @@ namespace SmartStore.Admin.Controllers
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-            var allCategories = _categoryService.GetAllCategories(showHidden: true);
-            var mappedCategories = allCategories.ToDictionary(x => x.Id);
-            foreach (var c in allCategories)
+            foreach (var c in _categoryService.GetCategoryTree(includeHidden: true).FlattenNodes(false))
             {
-                model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+                model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameIndented(), Value = c.Id.ToString() });
             }
 
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
@@ -1450,19 +1446,29 @@ namespace SmartStore.Admin.Controllers
             var copyModel = model.CopyProductModel;
             try
             {
-				var product = _productService.GetProductById(copyModel.Id);
-                var newProduct = _copyProductService.CopyProduct(product, copyModel.Name, copyModel.Published, copyModel.CopyImages);
+                Product newProduct = null;
+                var product = _productService.GetProductById(copyModel.Id);
 
-                NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+                for (var i = 1; i <= copyModel.NumberOfCopies; ++i)
+                {
+                    var newName = copyModel.NumberOfCopies > 1 ? $"{copyModel.Name} {i}" : copyModel.Name;
+                    newProduct = _copyProductService.CopyProduct(product, newName, copyModel.Published, copyModel.CopyImages);
+                }
 
-                return RedirectToAction("Edit", new { id = newProduct.Id });
+                if (newProduct != null)
+                {
+                    NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+
+                    return RedirectToAction("Edit", new { id = newProduct.Id });
+                }
             }
             catch (Exception ex)
             {
 				Logger.Error(ex);
 				NotifyError(ex.ToAllMessages());
-                return RedirectToAction("Edit", new { id = copyModel.Id });
             }
+
+            return RedirectToAction("Edit", new { id = copyModel.Id });
         }
 
         #endregion
@@ -1480,10 +1486,11 @@ namespace SmartStore.Admin.Controllers
 				var productCategoriesModel = productCategories
 					.Select(x =>
 					{
-						return new ProductModel.ProductCategoryModel()
+						var node = _categoryService.GetCategoryTree(x.CategoryId);
+						return new ProductModel.ProductCategoryModel
 						{
 							Id = x.Id,
-							Category = _categoryService.GetCategoryById(x.CategoryId).GetCategoryBreadCrumb(_categoryService),
+							Category = node != null ? _categoryService.GetCategoryPath(node) : string.Empty,
 							ProductId = x.ProductId,
 							CategoryId = x.CategoryId,
 							IsFeaturedProduct = x.IsFeaturedProduct,
@@ -2458,46 +2465,49 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var productrSpecs = _specificationAttributeService.GetProductSpecificationAttributesByProductId(productId);
+                var productSpecAttributes = _specificationAttributeService.GetProductSpecificationAttributesByProductId(productId);
+                var specAttributeIds = productSpecAttributes.Select(x => x.SpecificationAttributeOption.SpecificationAttributeId).ToArray();
+                var specOptions = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttributeIds(specAttributeIds);
 
-				var productrSpecsModel = productrSpecs
-					.Select(x =>
-					{
-						var psaModel = new ProductSpecificationAttributeModel
-						{
-							Id = x.Id,
-							SpecificationAttributeName = x.SpecificationAttributeOption.SpecificationAttribute.Name,
-							SpecificationAttributeOptionName = x.SpecificationAttributeOption.Name,
-							SpecificationAttributeOptionAttributeId = x.SpecificationAttributeOption.SpecificationAttributeId,
-							SpecificationAttributeOptionId = x.SpecificationAttributeOptionId,
-							AllowFiltering = x.AllowFiltering,
-							ShowOnProductPage = x.ShowOnProductPage,
-							DisplayOrder = x.DisplayOrder
-						};
-						return psaModel;
-					})
-					.ToList();
+                var productSpecModel = productSpecAttributes
+                    .Select(x =>
+                    {
+                        var attributeId = x.SpecificationAttributeOption.SpecificationAttributeId;
+                        var psaModel = new ProductSpecificationAttributeModel
+                        {
+                            Id = x.Id,
+                            SpecificationAttributeName = x.SpecificationAttributeOption.SpecificationAttribute.Name,
+                            SpecificationAttributeOptionName = x.SpecificationAttributeOption.Name,
+                            SpecificationAttributeId = attributeId,
+                            SpecificationAttributeOptionId = x.SpecificationAttributeOptionId,
+                            AllowFiltering = x.AllowFiltering,
+                            ShowOnProductPage = x.ShowOnProductPage,
+                            DisplayOrder = x.DisplayOrder
+                        };
 
-				foreach (var attr in productrSpecsModel)
-				{
-					var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(attr.SpecificationAttributeOptionAttributeId);
+                        if (specOptions.ContainsKey(attributeId))
+                        {
+                            psaModel.SpecificationAttributeOptions = specOptions[attributeId]
+                                .Select(y => new ProductSpecificationAttributeModel.SpecificationAttributeOption
+                                {
+                                    id = y.Id,
+                                    name = y.Name,
+                                    text = y.Name
+                                })
+                                .ToList();
 
-					foreach (var option in options)
-					{
-						attr.SpecificationAttributeOptions.Add(new ProductSpecificationAttributeModel.SpecificationAttributeOption
-						{
-							id = option.Id,
-							name = option.Name,
-							text = option.Name
-						});
-					}
+                            psaModel.SpecificationAttributeOptionsJsonString = HttpUtility.HtmlEncode(JsonConvert.SerializeObject(psaModel.SpecificationAttributeOptions));
+                        }
 
-					attr.SpecificationAttributeOptionsJsonString = HttpUtility.HtmlEncode(JsonConvert.SerializeObject(attr.SpecificationAttributeOptions));
-				}
+                        return psaModel;
+                    })
+                    .OrderBy(x => x.DisplayOrder)
+                    .ThenBy(x => x.SpecificationAttributeId)
+                    .ToList();
 
-				model.Data = productrSpecsModel;
-				model.Total = productrSpecsModel.Count;
-			}
+                model.Data = productSpecModel;
+                model.Total = productSpecModel.Count;
+            }
 			else
 			{
 				model.Data = Enumerable.Empty<ProductSpecificationAttributeModel>();
@@ -2715,11 +2725,9 @@ namespace SmartStore.Admin.Controllers
 			var model = new BulkEditListModel();
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-			var allCategories = _categoryService.GetAllCategories(showHidden: true);
-			var mappedCategories = allCategories.ToDictionary(x => x.Id);
-			foreach (var c in allCategories)
+			foreach (var c in _categoryService.GetCategoryTree(includeHidden: true).FlattenNodes(false))
 			{
-				model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+				model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameIndented(), Value = c.Id.ToString() });
 			}
 
 			foreach (var m in _manufacturerService.GetAllManufacturers(true))

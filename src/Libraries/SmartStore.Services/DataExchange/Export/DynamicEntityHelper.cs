@@ -412,7 +412,13 @@ namespace SmartStore.Services.DataExchange.Export
 				return null;
 
 			dynamic result = new DynamicEntity(picture);
-			var relativeUrl = _pictureService.Value.GetPictureUrl(picture, 0, false);
+            var relativeUrl = string.Empty;
+
+            try
+            {
+                relativeUrl = _pictureService.Value.GetPictureUrl(picture, 0, false);
+            }
+            catch { }
 
 			result._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
 			result._RelativeUrl = relativeUrl;
@@ -657,16 +663,21 @@ namespace SmartStore.Services.DataExchange.Export
 			else
 				dynObject._ProductTemplateViewPath = "";
 
-			if (ctx.Categories.Count > 0)
+			// Category path
 			{
-				dynObject._CategoryPath = _categoryService.Value.GetCategoryPath(
-					product,
-					null,
-					x => ctx.CategoryPathes.ContainsKey(x) ? ctx.CategoryPathes[x] : null,
-					(id, value) => ctx.CategoryPathes[id] = value,
-					x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.Value.GetCategoryById(x),
-					productCategories.OrderBy(x => x.DisplayOrder).FirstOrDefault()
-				);
+				var categoryPath = string.Empty;
+				var pc = productCategories.OrderBy(x => x.DisplayOrder).FirstOrDefault();
+
+				if (pc != null)
+				{
+					var node = _categoryService.Value.GetCategoryTree(pc.CategoryId, true, ctx.Store.Id);
+					if (node != null)
+					{
+						categoryPath = _categoryService.Value.GetCategoryPath(node, ctx.Projection.LanguageId, false, " > ");
+					}
+				}
+
+				dynObject._CategoryPath = categoryPath;
 			}
 
 			ToDeliveryTime(ctx, dynObject, product.DeliveryTimeId);

@@ -174,8 +174,8 @@ namespace SmartStore.Services.Search.Modelling
 
 		public void ClearAttributeCache()
 		{
-			_cacheManager.RemoveByPattern(ALL_ATTRIBUTE_ID_BY_ALIAS_KEY);
-			_cacheManager.RemoveByPattern(ALL_ATTRIBUTE_ALIAS_BY_ID_KEY);
+			_cacheManager.Remove(ALL_ATTRIBUTE_ID_BY_ALIAS_KEY);
+			_cacheManager.Remove(ALL_ATTRIBUTE_ALIAS_BY_ID_KEY);
 		}
 
 		public int GetAttributeIdByAlias(string attributeAlias, int languageId = 0)
@@ -368,8 +368,8 @@ namespace SmartStore.Services.Search.Modelling
 
 		public void ClearVariantCache()
 		{
-			_cacheManager.RemoveByPattern(ALL_VARIANT_ID_BY_ALIAS_KEY);
-			_cacheManager.RemoveByPattern(ALL_VARIANT_ALIAS_BY_ID_KEY);
+			_cacheManager.Remove(ALL_VARIANT_ID_BY_ALIAS_KEY);
+			_cacheManager.Remove(ALL_VARIANT_ALIAS_BY_ID_KEY);
 		}
 
 		public int GetVariantIdByAlias(string variantAlias, int languageId = 0)
@@ -480,7 +480,7 @@ namespace SmartStore.Services.Search.Modelling
 
 		public void ClearCommonFacetCache()
 		{
-			_cacheManager.RemoveByPattern(ALL_COMMONFACET_ALIAS_BY_KIND_KEY);
+			_cacheManager.Remove(ALL_COMMONFACET_ALIAS_BY_KIND_KEY);
 		}
 
 		public string GetCommonFacetAliasByGroupKind(FacetGroupKind kind, int languageId)

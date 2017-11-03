@@ -40,7 +40,7 @@ namespace SmartStore.Web.Framework
         /// {1} : store identifier
         /// </remarks>
         public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "fw:customerroles:taxdisplaytypes-{0}-{1}";
-        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "fw:customerroles:taxdisplaytypes";
+        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "fw:customerroles:taxdisplaytypes*";
 
         private readonly ICacheManager _cacheManager;
 		private readonly IAssetCache _assetCache;
@@ -112,7 +112,5 @@ namespace SmartStore.Web.Framework
         }
 
         #endregion
-
 	}
-
 }

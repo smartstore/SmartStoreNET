@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core.Data.Hooks;
 
 namespace SmartStore.Core.Domain.DataExchange
 {
@@ -12,6 +13,7 @@ namespace SmartStore.Core.Domain.DataExchange
 	/// Holds info about a synchronization operation with an external system
 	/// </summary>
 	[DataContract]
+	[Hookable(false)]
 	public partial class SyncMapping : BaseEntity
 	{
 		public SyncMapping()

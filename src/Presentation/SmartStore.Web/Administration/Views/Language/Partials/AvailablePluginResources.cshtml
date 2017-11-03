@@ -1,0 +1,18 @@
+﻿@using SmartStore.Admin.Models.Localization;
+@model List<AvailableLanguageModel.PluginModel>
+<div class="available-plugin-resources">
+    @foreach (var plugin in Model)
+    {
+        <div class="item clearfix" style="margin-bottom: 10px;">
+            <img class="icon" src="@Url.Content(plugin.IconUrl)" style="float: left; width: 48px; max-width: 48px; margin: 2px 8px 0 0;" />
+            <div class="data" style="box-sizing: border-box; margin-left: 10px;">
+                <div>
+                    @plugin.FriendlyName.NaIfEmpty()
+                </div>
+                <div class="muted">
+                    @plugin.SystemName
+                </div>
+            </div>
+        </div>
+    }
+</div>

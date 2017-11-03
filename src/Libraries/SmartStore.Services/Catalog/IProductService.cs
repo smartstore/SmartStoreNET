@@ -8,10 +8,10 @@ using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Catalog
 {
-	/// <summary>
-	/// Product service
-	/// </summary>
-	public partial interface IProductService
+    /// <summary>
+    /// Product service
+    /// </summary>
+    public partial interface IProductService
     {
 		#region Products
 
@@ -152,13 +152,6 @@ namespace SmartStore.Services.Catalog
 		/// <param name="productIds">Product identifiers</param>
 		/// <returns>Map of applied discounts</returns>
 		Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds);
-
-		/// <summary>
-		/// Get product specification attributes by product identifiers
-		/// </summary>
-		/// <param name="productIds">Product identifiers</param>
-		/// <returns>Map of product specification attributes</returns>
-		Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds);
 
         #endregion
 

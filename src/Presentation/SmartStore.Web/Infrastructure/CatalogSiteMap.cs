@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using SmartStore.Collections;
-using SmartStore.Core;
-using SmartStore.Core.Data;
-using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Configuration;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
-using SmartStore.Core.Search;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -26,6 +18,8 @@ namespace SmartStore.Web.Infrastructure
 	public class CatalogSiteMap : SiteMapBase
 	{
 		private static object s_lock = new object();
+
+		const string SiteMapName = "catalog";
 
 		private readonly ICategoryService _categoryService;
 		private readonly IPictureService _pictureService;
@@ -50,7 +44,7 @@ namespace SmartStore.Web.Infrastructure
 
 		public override string Name
 		{
-			get { return "catalog"; }
+			get { return SiteMapName; }
 		}
 
 		public override bool ApplyPermissions
@@ -60,11 +54,10 @@ namespace SmartStore.Web.Infrastructure
 
 		protected override string GetCacheKey()
 		{
-			var customerRolesIds = Services.WorkContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 			string cacheKey = "{0}-{1}-{2}".FormatInvariant(
 				Services.WorkContext.WorkingLanguage.Id,
 				Services.StoreContext.CurrentStore.Id,
-				string.Join(",", customerRolesIds));
+				Services.WorkContext.CurrentCustomer.GetRolesIdent());
 
 			return cacheKey;
 		}
@@ -128,204 +121,82 @@ namespace SmartStore.Web.Infrastructure
 
 		protected override TreeNode<MenuItem> Build()
 		{
-			var curParent = new TreeNode<MenuItem>(new MenuItem
+			var categoryTree = _categoryService.GetCategoryTree(0, false, Services.StoreContext.CurrentStore.Id);
+			return ConvertNode(categoryTree.Root).Root;
+		}
+
+		private TreeNode<MenuItem> ConvertNode(TreeNode<ICategoryNode> node)
+		{
+			var cat = node.Value;
+
+			var menuItem = new MenuItem
 			{
-				EntityId = 0,
-				Text = "Home",
-				RouteName = "HomePage"
-			});
+				EntityId = cat.Id,
+				Text = cat.Id > 0 ? cat.GetLocalized(x => x.Name) : cat.Name,
+				BadgeText = cat.Id > 0 ? cat.GetLocalized(x => x.BadgeText) : null,
+				BadgeStyle = (BadgeStyle)cat.BadgeStyle,
+				RouteName = cat.Id > 0 ? "Category" : "HomePage"
+			};
 
-			Category prevCat = null;
-
-			var categories = _categoryService.GetAllCategories(storeId: Services.StoreContext.CurrentStore.Id);
-
-			foreach (var category in categories)
+			if (cat.Id > 0)
 			{
-				var menuItem = new MenuItem
-				{
-					EntityId = category.Id,
-					Text = category.GetLocalized(x => x.Name),
-					BadgeText = category.GetLocalized(x => x.BadgeText),
-					BadgeStyle = (BadgeStyle)category.BadgeStyle,
-					RouteName = "Category"
-				};
-				menuItem.RouteValues.Add("SeName", category.GetSeName());
+				menuItem.RouteValues.Add("SeName", cat.GetSeName());
 
-				if (category.ParentCategoryId == 0 && category.Published && category.PictureId != null)
+				if (cat.ParentCategoryId == 0 && cat.Published && cat.PictureId != null)
 				{
-					menuItem.ImageUrl = _pictureService.GetPictureUrl(category.PictureId.Value);
+					menuItem.ImageUrl = _pictureService.GetPictureUrl(cat.PictureId.Value);
 				}
-
-				// Determine parent
-				if (prevCat != null)
-				{
-					if (category.ParentCategoryId != curParent.Value.EntityId)
-					{
-						if (category.ParentCategoryId == prevCat.Id)
-						{
-							// level +1
-							curParent = curParent.LastChild;
-						}
-						else
-						{
-							// level -x
-							while (!curParent.IsRoot)
-							{
-								if (curParent.Value.EntityId == category.ParentCategoryId)
-								{
-									break;
-								}
-								curParent = curParent.Parent;
-							}
-						}
-					}
-				}
-
-				// add to parent
-				curParent.Append(menuItem);
-
-				prevCat = category;
 			}
 
-			return curParent.Root;
+			var convertedNode = new TreeNode<MenuItem>(menuItem);
+			convertedNode.Id = node.Id;
+
+			if (node.HasChildren)
+			{
+				foreach (var childNode in node.Children)
+				{
+					convertedNode.Append(ConvertNode(childNode));
+				}
+			}			
+
+			return convertedNode;
 		}
 	}
 
-	public class CatalogSiteMapCacheInvalidationHook : IDbSaveHook
+	public class CatalogSiteMapInvalidationConsumer : IConsumer<CategoryTreeChangedEvent>
 	{
 		private readonly ISiteMap _siteMap;
-		private readonly IDbContext _dbContext;
+		private readonly ICommonServices _services;
+		private readonly CatalogSettings _catalogSettings;
 
 		private bool _invalidated;
+		private bool _countsResetted = false;
 
-		private static readonly HashSet<string> _countAffectingProductProps = new HashSet<string>();
-
-		static CatalogSiteMapCacheInvalidationHook()
-		{
-			AddCountAffectingProps(_countAffectingProductProps, 
-				x => x.AvailableEndDateTimeUtc, 
-				x => x.AvailableStartDateTimeUtc,
-				x => x.Deleted,
-				x => x.LowStockActivityId,
-				x => x.LimitedToStores,
-				x => x.ManageInventoryMethodId,
-				x => x.MinStockQuantity,
-				x => x.Published,
-				x => x.SubjectToAcl,
-				x => x.VisibleIndividually);
-		}
-
-		static void AddCountAffectingProps(HashSet<string> props, params Expression<Func<Product, object>>[] lambdas)
-		{
-			foreach (var lambda in lambdas)
-			{
-				props.Add(lambda.ExtractPropertyInfo().Name);
-			}
-		}
-
-		public CatalogSiteMapCacheInvalidationHook(
-			ISiteMapService siteMapService, 
-			IDbContext dbContext)
+		public CatalogSiteMapInvalidationConsumer(
+			ISiteMapService siteMapService,
+			ICommonServices services,
+			CatalogSettings catalogSettings)
 		{
 			_siteMap = siteMapService.GetSiteMap("catalog");
-			_dbContext = dbContext;
+			_services = services;
+			_catalogSettings = catalogSettings;
 		}
 
-		public void OnBeforeSave(HookedEntity entry)
+		public void HandleEvent(CategoryTreeChangedEvent eventMessage)
 		{
-			var entity = entry.Entity;
+			var reason = eventMessage.Reason;
 
-			if (entity is Product && entry.InitialState == EntityState.Modified)
+			if (reason == CategoryTreeChangeReason.ElementCounts)
 			{
-				var modProps = _dbContext.GetModifiedProperties(entity);
-
-				if (modProps.Keys.Any(x => _countAffectingProductProps.Contains(x)))
-				{
-					Invalidate(true);
-				}
+				ResetElementCounts();
 			}
-		}
-
-		public void OnAfterSave(HookedEntity entry)
-		{
-			if (_invalidated)
-			{
-				// Don't bother processing.
-				return;
-			}
-			
-			// INFO: Acl & StoreMapping affect element counts
-
-			var entity = entry.Entity;
-
-			if (entity is Product)
-			{
-				if (entry.InitialState == EntityState.Added)
-				{
-					Invalidate(true);
-				}
-			}
-			else if (entity is Category)
+			else
 			{
 				Invalidate();
 			}
-			else if (entity is Language || entity is CustomerRole)
-			{
-				InvalidateWhen(entry.InitialState == EntityState.Modified || entry.InitialState == EntityState.Deleted);
-			}
-			else if (entity is Setting)
-			{
-				var name = (entity as Setting).Name.ToLowerInvariant();
-				InvalidateWhen(name == "catalogsettings.showcategoryproductnumber" || name == "catalogsettings.showcategoryproductnumberincludingsubcategories");
-			}
-			else if (entity is ProductCategory)
-			{
-				Invalidate(true);
-			}
-			else if (entity is AclRecord)
-			{
-				var acl = entity as AclRecord;
-				if (!acl.IsIdle)
-				{
-					if (acl.EntityName == "Product")
-					{
-						Invalidate(true);
-					}
-					else if (acl.EntityName == "Category")
-					{
-						Invalidate(false);
-					}
-				}
-			}
-			else if (entity is StoreMapping)
-			{
-				var stm = entity as StoreMapping;
-				if (stm.EntityName == "Product")
-				{
-					Invalidate(true);
-				}
-				else if (stm.EntityName == "Category")
-				{
-					Invalidate(false);
-				}
-			}
-			else if (entity is LocalizedProperty)
-			{
-				var lp = entity as LocalizedProperty;
-				var key = lp.LocaleKey;
-				if (lp.LocaleKeyGroup == "Category" && (key == "Name" || key == "FullName" || key == "Description" || key == "BadgeText"))
-				{
-					Invalidate();
-				}
-			}
 		}
 
-		private void Invalidate(bool whenAnyNodeHasCount = false)
-		{
-			InvalidateWhen(!whenAnyNodeHasCount || _siteMap.Root.Flatten().Any(x => x.ElementsCount.HasValue));
-		}
-
-		private void InvalidateWhen(bool condition)
+		private void Invalidate(bool condition = true)
 		{
 			if (condition && !_invalidated)
 			{
@@ -334,12 +205,31 @@ namespace SmartStore.Web.Infrastructure
 			}
 		}
 
-		public void OnBeforeSaveCompleted()
+		private void ResetElementCounts()
 		{
-		}
+			if (!_countsResetted && _catalogSettings.ShowCategoryProductNumber)
+			{
+				var allCachedTrees = _siteMap.GetAllCachedTrees();
+				foreach (var kvp in allCachedTrees)
+				{
+					bool dirty = false;
+					kvp.Value.Traverse(x =>
+					{
+						if (x.Value.ElementsCount.HasValue)
+						{
+							dirty = true;
+							x.Value.ElementsCount = null;
+						}
+					}, true);
 
-		public void OnAfterSaveCompleted()
-		{
+					if (dirty)
+					{
+						_services.Cache.Put(kvp.Key, kvp.Value);
+					}
+				}
+
+				_countsResetted = true;
+			}
 		}
 	}
 }

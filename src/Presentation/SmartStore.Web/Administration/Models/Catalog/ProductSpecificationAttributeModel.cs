@@ -5,19 +5,18 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Catalog
 {
-	public class ProductSpecificationAttributeModel : EntityModelBase
+    public class ProductSpecificationAttributeModel : EntityModelBase
     {
         public ProductSpecificationAttributeModel()
         {
-            this.SpecificationAttributeOptions = new List<SpecificationAttributeOption>();
+            SpecificationAttributeOptions = new List<SpecificationAttributeOption>();
         }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.SpecificationAttribute")]
         [AllowHtml]
         public string SpecificationAttributeName { get; set; }
 
-        public int SpecificationAttributeOptionAttributeId { get; set; }
-
+        public int SpecificationAttributeId { get; set; }
         public int SpecificationAttributeOptionId { get; set; }
 
         public string SpecificationAttributeOptionsJsonString { get; set; }

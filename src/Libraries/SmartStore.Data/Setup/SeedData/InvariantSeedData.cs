@@ -14581,8 +14581,8 @@ namespace SmartStore.Data.Setup
 				{
 					x.ParentGroupedProductId = productGamingAccessoriesId;
 
-					_ctx.Set<Product>().Attach(x);
-					_ctx.Entry(x).State = System.Data.Entity.EntityState.Modified;
+					//_ctx.Set<Product>().Attach(x);
+					//_ctx.Entry(x).State = System.Data.Entity.EntityState.Modified;
 				});
 
 			_ctx.SaveChanges();			

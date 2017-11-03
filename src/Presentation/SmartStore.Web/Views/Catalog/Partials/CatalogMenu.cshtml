@@ -3,6 +3,10 @@
 
 @{
     Layout = "";
+
+    var cutOffItems = Model.Root.Children
+        .Where(x => x.Value.Id == null && x.GetMetadata<bool>("spare", false))
+        .ToList();
 }
 
 <div class="megamenu simple">
@@ -13,7 +17,14 @@
     @foreach (var node in Model.Root.Children)
     {
         <div id="dropdown-menu-@node.Value.EntityId" data-id="@node.Value.EntityId">
-             @CreateDrilldownMenu(node.Children, true)
+            @CreateDrilldownMenu(node.Children, true)
+        </div>
+    }
+
+    @if (cutOffItems.Count > 0)
+    {
+        <div id="dropdown-menu--1" data-id="-1">
+            @CreateDrilldownMenu(cutOffItems, true)
         </div>
     }
 </div>

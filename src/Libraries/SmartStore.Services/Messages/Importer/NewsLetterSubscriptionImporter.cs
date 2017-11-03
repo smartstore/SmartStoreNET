@@ -41,7 +41,7 @@ namespace SmartStore.Services.Messages.Importer
 			var utcNow = DateTime.UtcNow;
 			var currentStoreId = _services.StoreContext.CurrentStore.Id;
 
-			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
+			using (var scope = new DbContextScope(ctx: _services.DbContext, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
 				var segmenter = context.DataSegmenter;
 

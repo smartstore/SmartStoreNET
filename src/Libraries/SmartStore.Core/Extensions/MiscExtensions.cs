@@ -69,19 +69,6 @@ namespace SmartStore
 			return sb.ToString();
 		}
 
-		public static T GetMergedDataValue<T>(this IMergedData mergedData, string key, T defaultValue)
-		{
-			if (mergedData.MergedDataValues != null && !mergedData.MergedDataIgnore)
-			{
-				object value;
-
-				if (mergedData.MergedDataValues.TryGetValue(key, out value))
-					return (T)value;
-			}
-
-			return defaultValue;
-		}
-
 		/// <summary>
 		/// Append grow if string builder is empty. Append delimiter and grow otherwise.
 		/// </summary>

@@ -6,7 +6,6 @@ using System.Diagnostics;
 
 namespace SmartStore
 {
-
 	public class SqlServerInfo
 	{
 		public string ProductVersion { get; set; }

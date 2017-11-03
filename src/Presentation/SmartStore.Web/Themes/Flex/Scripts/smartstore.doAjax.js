@@ -9,7 +9,7 @@
 		normalizeOptions(this, options);
 
 		if (_.isEmpty(options.url)) {
-			console.log('doAjax can\'t find the url!');
+		    console.log('doAjax cannot find the URL!');
 		}
 		else if (!_.isFalse(options.valid)) {
 			doRequestSwitch(options);
@@ -27,11 +27,7 @@
 		opt.ask = (_.isUndefined(opt.ask) ? $(element).attr('data-ask') : opt.ask);
 
 		if (_.isUndefined(opt.type)) {
-			opt.type = (_.isUndefined(opt.autoContainer) ? 'POST' : 'GET');
-		}
-
-		if (!_.isUndefined(opt.autoContainer)) {
-			opt.smallIcon = opt.autoContainer;
+			opt.type = 'POST';
 		}
 
         if ($(element).is('form')) {
@@ -90,15 +86,9 @@
 			url: opt.url + (_.isEmpty(opt.appendToUrl) ? '' : opt.appendToUrl),
 			async: opt.async,
 			beforeSend: function () {
-				if (!_.isUndefined(opt.autoContainer))
-					$(opt.autoContainer).empty();
-
 				_.call(opt.callbackBeforeSend);
 			},
 			success: function (response) {
-				if (!_.isUndefined(opt.autoContainer))
-					$(opt.autoContainer).html(response);
-
 				_.call(opt.callbackSuccess, response);
 			},
 			error: function (objXml) {

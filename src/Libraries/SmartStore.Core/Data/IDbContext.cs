@@ -14,7 +14,6 @@ namespace SmartStore.Core.Data
         DbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity;
 
         int SaveChanges();
-
 		Task<int> SaveChangesAsync();
 
         IList<TEntity> ExecuteStoredProcedureList<TEntity>(string commandText, params object[] parameters) 
@@ -37,9 +36,6 @@ namespace SmartStore.Core.Data
         /// <param name="parameters">The parameters to apply to the command string.</param>
         /// <returns>The result returned by the database after executing the command.</returns>
         int ExecuteSqlCommand(string sql, bool doNotEnsureTransaction = false, int? timeout = null, params object[] parameters);
-
-		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
-		int ExecuteSqlThroughSmo(string sql);
 
         string Alias { get; }
 
@@ -66,6 +62,37 @@ namespace SmartStore.Core.Data
 		/// originating from repositories should be committed immediately.
 		/// </summary>
 		bool AutoCommitEnabled { get; set; }
+
+		/// <summary>
+		/// Detects changes made to the properties and relationships of POCO entities. 
+		/// Please note that normally DetectChanges is called automatically by many of the methods of 
+		/// DbContext and its related classes such that it is rare that this method will need to be called explicitly. 
+		/// However, it may be desirable, usually for performance reasons, to turn off this automatic 
+		/// calling of DetectChanges using the AutoDetectChangesEnabled flag. 
+		/// </summary>
+		void DetectChanges();
+
+		/// <summary>
+		/// Checks whether the underlying ORM mapper is currently in the process of detecting changes.
+		/// </summary>
+		/// <returns></returns>
+		bool IsDetectingChanges();
+
+		/// <summary>
+		/// Gets a value indicating whether the given entity was modified since it has been attached to the context
+		/// </summary>
+		/// <param name="entity">The entity to check</param>
+		/// <returns><c>true</c> if the entity was modified, <c>false</c> otherwise</returns>
+		bool IsModified(BaseEntity entity);
+
+		/// <summary>
+		/// Determines whether an entity property has changed since it was attached.
+		/// </summary>
+		/// <param name="entity">Entity</param>
+		/// <param name="propertyName">The property name to check</param>
+		/// <param name="originalValue">The previous/original property value if change was detected</param>
+		/// <returns><c>true</c> if property has changed, <c>false</c> otherwise</returns>
+		bool TryGetModifiedProperty(BaseEntity entity, string propertyName, out object originalValue);
 
 		/// <summary>
 		/// Gets a list of modified properties for the specified entity
@@ -121,8 +148,8 @@ namespace SmartStore.Core.Data
 		/// </summary>
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance</param>
-		/// <param name="newState">The new state</param>
-		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity;
+		/// <param name="requestedState">The requested new state</param>
+		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState requestedState) where TEntity : BaseEntity;
 
 		/// <summary>
 		/// Reloads the entity from the database overwriting any property values with values from the database. 

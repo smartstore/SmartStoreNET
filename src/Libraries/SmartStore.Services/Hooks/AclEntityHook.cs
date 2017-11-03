@@ -17,9 +17,9 @@ namespace SmartStore.Services.Common
 			_aclService = aclService;
 		}
 
-		protected override void OnDeleted(IAclSupported entity, HookedEntity entry)
+		protected override void OnDeleted(IAclSupported entity, IHookedEntity entry)
 		{
-			var entityType = entry.Entity.GetUnproxiedType();
+			var entityType = entry.EntityType;
 
 			var records = _aclService.Value.GetAclRecordsFor(entityType.Name, entry.Entity.Id);
 			_toDelete.AddRange(records);

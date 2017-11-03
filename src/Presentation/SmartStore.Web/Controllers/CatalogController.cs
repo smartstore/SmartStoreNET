@@ -910,7 +910,9 @@ namespace SmartStore.Web.Controllers
         public ActionResult OffCanvasMenuCategories(int categoryId, int currentCategoryId, int currentProductId)
         {
             var model = _helper.PrepareCategoryNavigationModel(currentCategoryId, currentProductId);
-            ViewBag.SelectedNode = categoryId == 0 ? model.Root : ViewBag.SelectedNode = model.Root.SelectNode(x => x.Value.EntityId == categoryId);
+            ViewBag.SelectedNode = categoryId == 0 
+				? model.Root 
+				: ViewBag.SelectedNode = model.Root.SelectNodeById(categoryId) ?? model.Root.SelectNode(x => x.Value.EntityId == categoryId);
 
             return PartialView(model);
         }

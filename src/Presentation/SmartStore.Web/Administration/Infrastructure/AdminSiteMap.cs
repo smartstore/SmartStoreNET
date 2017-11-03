@@ -5,10 +5,8 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Search;
-using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Infrastructure
@@ -50,10 +48,9 @@ namespace SmartStore.Admin.Infrastructure
 
 		protected override string GetCacheKey()
 		{
-			var customerRolesIds = Services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 			string cacheKey = "{0}-{1}".FormatInvariant(
 				Services.WorkContext.WorkingLanguage.Id,
-				string.Join(",", customerRolesIds));
+				Services.WorkContext.CurrentCustomer.GetRolesIdent());
 
 			return cacheKey;
 		}

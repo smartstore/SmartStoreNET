@@ -1,0 +1,102 @@
+﻿@using SmartStore.Admin.Models.Localization;
+@model List<AvailableLanguageModel>
+
+@if (Model.Any())
+{
+    <div class="alert alert-info">
+        @Html.Raw(T("Admin.Configuration.Languages.AvailableLanguages.Note"))
+    </div>
+
+    <table class="table admin-table available-languages-list language-list">
+		<thead>
+			<tr>
+				<th>@T("Admin.Configuration.Languages.Fields.Name")</th>
+				<th class="ac">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
+                <th class="ac">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
+                <th class="ac">@T("Admin.Configuration.Languages.ContainsPluginResources")</th>
+                <th class="ac">@T("Common.Translated")</th>
+                <th>@T("Admin.Common.Updated")</th>
+				<th>@T("Admin.Common.Actions")</th>
+			</tr>
+		</thead>
+		<tbody>
+            @foreach (var language in Model.OrderBy(x => x.IsInstalled))
+            {
+                <tr class="@(language.IsInstalled ? "disabled" : "")" data-id="@language.Id">
+                    <td>
+                        <div>
+                            @if (language.FlagImageFileName.HasValue())
+                            {
+                                <img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon" style="margin: 0 4px 2px 0; vertical-align: middle;" />
+                            }
+                            @language.Name
+                        </div>
+                        @if (language.Type.HasValue())
+                        {
+                            <div class="muted">@T("Admin.Configuration.Languages.OfType", language.Type)</div>
+                        }
+                    </td>
+                    <td class="ac">
+                        @language.LanguageCulture
+                    </td>
+                    <td class="ac">
+                        @language.UniqueSeoCode
+                    </td>
+                    <td class="ac">
+                        @if (language.Plugins.Any())
+                        {
+                            <a href="javascript:void(0)" class="show-plugin-details">@T("Common.Yes")</a>
+                            <div id="PluginDetails@(language.Id)" class="hide">
+                                @Html.Partial("AvailablePluginResources", language.Plugins)
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="muted">@T("Common.No")</span>
+                        }
+                    </td>
+                    <td class="ac">
+                        @if (language.NumberOfResources == 0)
+                        {
+                            <div class="muted">0 %</div>
+                        }
+                        else
+                        {
+                            string title = language.TranslatedPercentage < 100.0M
+                                ? T("Admin.Configuration.Languages.NumberOfTranslatedResources", language.NumberOfTranslatedResources.ToString("N0"), language.NumberOfResources.ToString("N0")).Text
+                                : string.Empty;
+
+                            <div @Html.Attr("title", title, title.HasValue())>@language.TranslatedPercentage.ToString("G29")%</div>
+                        }
+                        @if (language.TranslatedPercentageAtLastImport.HasValue)
+                        {
+                            <div>@T("Admin.Configuration.Languages.TranslatedPercentageAtLastImport", language.TranslatedPercentageAtLastImport.Value.ToString("G29"))</div>
+                        }
+                    </td>
+                    <td>
+                        @language.UpdatedOnString
+                    </td>
+                    <td style="width: 200px;">
+                        @if (!language.IsInstalled)
+                        {
+                            <a href="@Url.Action("Download", new { setId = language.Id })" 
+                               class="btn btn-block btn-primary download-language@(language.IsDownloadRunning ? " hide" : "")"
+                               onclick="return confirm('@T("Admin.Common.AskToProceed")');">
+                                <i class="fa fa-download"></i>&nbsp;&nbsp;@T("Common.Download")
+                            </a>
+                            <div class="task-progress text-success@(language.IsDownloadRunning ? "" : " hide")" 
+                                data-task-id="@language.Id" data-running="@(language.IsDownloadRunning ? "true" : "false")"></div>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">
+        @T("Admin.Configuration.Languages.NoAvailableLanguagesFound", SmartStoreVersion.CurrentFullVersion)
+    </div>
+}
+

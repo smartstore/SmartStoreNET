@@ -24,7 +24,7 @@ namespace SmartStore.DevTools.Filters
 		{
 			Debug.WriteLine("Executing: {0} - {1}".FormatInvariant(filterContext.ActionDescriptor.ControllerDescriptor.ControllerName, filterContext.ActionDescriptor.ActionName));
 			_notifier.Information("Yeah, my plugin action filter works. NICE!");
-			// Do somethid meaningful here ;-)
+			// Do something meaningful here ;-)
 		}
 		
 		public void OnActionExecuted(ActionExecutedContext filterContext)

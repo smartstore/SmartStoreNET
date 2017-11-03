@@ -503,8 +503,6 @@ namespace SmartStore.Admin.Controllers
 
 				if (model.Provider.EntityType == ExportEntityType.Product)
 				{
-					var allCategories = _categoryService.GetAllCategories(showHidden: true);
-					var mappedCategories = allCategories.ToDictionary(x => x.Id);
 					var allManufacturers = _manufacturerService.GetAllManufacturers(true);
 					var allProductTags = _productTagService.GetAllProductTags();
 
@@ -522,8 +520,9 @@ namespace SmartStore.Admin.Controllers
 
 					model.Filter.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
 
-					model.Filter.AvailableCategories = allCategories
-						.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = x.Id.ToString() })
+					model.Filter.AvailableCategories = _categoryService.GetCategoryTree(includeHidden: true)
+						.FlattenNodes(false)
+						.Select(x => new SelectListItem { Text = x.GetCategoryNameIndented(), Value = x.Id.ToString() })
 						.ToList();
 
 					model.Filter.AvailableManufacturers = allManufacturers
@@ -990,7 +989,6 @@ namespace SmartStore.Admin.Controllers
 				var subscriberModel = new List<ExportPreviewNewsLetterSubscriptionModel>();
 
 				object gridData = null;
-				Dictionary<int, Category> allCategories = null;
 				IList<Store> allStores = null;
 
 				var request = new DataExportRequest(profile, provider);
@@ -1041,16 +1039,10 @@ namespace SmartStore.Admin.Controllers
 					{
 						var category = item.Entity as Category;
 
-						if (allCategories == null)
-						{
-							allCategories = _categoryService.GetAllCategories(showHidden: true, applyNavigationFilters: false)
-								.ToDictionary(x => x.Id);
-						}
-
 						categoryModel.Add(new ExportPreviewCategoryModel
 						{
 							Id = category.Id,
-							Breadcrumb = category.GetCategoryBreadCrumb(_categoryService, allCategories),
+							Breadcrumb = ((ICategoryNode)category).GetCategoryPath(_categoryService, withAlias: true),
 							FullName = item.FullName,
 							Alias = item.Alias,
 							Published = category.Published,

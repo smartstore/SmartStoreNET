@@ -3,6 +3,12 @@
 ## SmartStore.NET 3.1.0
 ### Breaking changes
 * AmazonPay: The plugin has been changed to new "Login with Amazon" services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
+* (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
+* (Dev) Hook framework now passes `IHookedEntity` interface instead of `HookedEntity` class
+
+### Highlights
+* Multi-configurable rounding of order total ("cash rounding"). Can be adjusted and activated separately for each currency and payment method.
+* Connection to translate.smartstore.com. For available languages, localized resources can be downloaded and installed directly.
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
@@ -10,6 +16,8 @@
 * #1142 Customer import creates role multiple times
 * #1244 Variant query model binder cannot handle types text and datepicker
 * #1273 Attribute formatter should consider setting CatalogSettings.ShowVariantCombinationPriceAdjustment
+* Product entity picker should use the wildcard search to find products
+* Hook framework should run hooks with `ImportantAttribute` when hooking was disabled per scope
 
 ### Improvements
 * #1141 Clearer backend order list. Added more infos like payment method.
@@ -18,6 +26,9 @@
 * #1181 Debitoor: Add option to display shipping address on invoices
 * Moved RoundPricesDuringCalculation setting to currency entity
 * #1100 Use new "Login with Amazon" services to initialize an Amazon payment
+* #1285 Copy product: Add option to add more than one copy
+* (Perf) Many improvements in hooking framework
+* #1294 Swiss PostFinance: External payment page too small on mobile devices. Added setting for mobile device template URL, pre-configured with PostFinance template.
 
 ### New Features
 * #431 Added option to randomize the display order for slides on each request
@@ -26,8 +37,8 @@
 * #1117 Added an option to display a dropdown menu for manufacturers 
 * #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
 * #1100 Customer can register in frontend via "Login with Amazon" button
-* #1240 Implement rounding of order total ("cash rounding")
 * #1292 Web API: Add a method to get an order in PDF format
+* Added options to include option names of specification and product attributes in the search index
 
 
 ## SmartStore.NET 3.0.3
@@ -48,7 +59,9 @@
 * Fixed shipping computation method ignoring deactivated PricesIncludeTax setting
 * **Debitoor**: Fixed missing tax rates on Debitoor invoice for net prices
 * #1224 Notifier wasn't working in plugin controllers
-* #1205 Server cannot append header after HTTP headers have been sent
+* #1205 Server cannot append header after 
+* 
+*  headers have been sent
 * #1154 Left offcanvas navigation does not open when in checkout progress
 * #1212 Export: FTP publishing should consider directory structure
 * #1253 Product PDF exporter only exports one picture and ignores the picture number profile setting

@@ -18,7 +18,7 @@ namespace SmartStore.Services
         IConsumer<EntityUpdated<Language>>,
         IConsumer<EntityDeleted<Language>>
 	{
-		public const string STORE_LANGUAGE_MAP_KEY = "svc:storelangmap";
+		public const string STORE_LANGUAGE_MAP_KEY = "svc:storelangmap*";
 
 		private readonly ICacheManager _cacheManager;
 

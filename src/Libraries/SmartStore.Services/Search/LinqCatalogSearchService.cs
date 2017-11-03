@@ -597,14 +597,14 @@ namespace SmartStore.Services.Search
 				{
 					#region Category
 
-					var categoryQuery = _categoryService.GetCategories(null, false, null, true, storeId);
-					categoryQuery = categoryQuery.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
+					var categoryTree = _categoryService.GetCategoryTree(0, false, storeId);
+					var categories = categoryTree.Flatten(false);
+
 					if (descriptor.MaxChoicesCount > 0)
 					{
-						categoryQuery = categoryQuery.Take(descriptor.MaxChoicesCount);
+						categories = categories.Take(descriptor.MaxChoicesCount);
 					}
 
-					var categories = categoryQuery.ToList();
 					var nameQuery = _localizedPropertyRepository.TableUntracked
 						.Where(x => x.LocaleKeyGroup == "Category" && x.LocaleKey == "Name" && x.LanguageId == languageId);
 					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);

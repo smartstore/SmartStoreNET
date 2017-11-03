@@ -23,28 +23,13 @@ namespace SmartStore.Web.Infrastructure
 
         public void HandleEvent(SiteMapBuiltEvent eventMessage)
         {
-			if (eventMessage.Name != "catalog" || _catalogSettings.MaxItemsToDisplayInCatalogMenu.GetValueOrDefault() < 1)
-				return;
-
-            var root = eventMessage.Root;
-            var newNavMmenuItem = new TreeNode<MenuItem>(new MenuItem
-			{
-				Id = "MoreItem",
-				EntityId = -1,
-				Text = _services.Localization.GetResource("CatalogMenu.MoreLink"),
-				Url = "#"
-			});
-
-			var cutOffItems = root.Children
-				// TODO: next statement would be much better code but can't be used because Id ist null for nearly all treenodes
-				//.Where(x => !x.Value.Id.Equals("manufacturer"))
-				.Where(x => x.Value.Id == null)
-				.Skip(_catalogSettings.MaxItemsToDisplayInCatalogMenu.Value)
-                .ToList();
-
-            newNavMmenuItem.AppendRange(cutOffItems);
-
-            root.Append(newNavMmenuItem);
+            if (eventMessage.Name != "catalog" || _catalogSettings.MaxItemsToDisplayInCatalogMenu.GetValueOrDefault() < 1)
+                return;
+            
+            eventMessage.Root.Children
+                .Where(x => x.Value.Id == null)
+                .Skip(_catalogSettings.MaxItemsToDisplayInCatalogMenu.Value)
+                .Each(x => x.SetMetadata("spare", true) );
         }
     }
 }

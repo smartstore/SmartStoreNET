@@ -30,7 +30,7 @@ namespace SmartStore.Services.Seo
 		/// {2} : current language id
 		/// </remarks>
 		public const string XMLSITEMAP_DOCUMENT_KEY = "sitemap:xml-idx{0}-{1}-{2}";
-		public const string XMLSITEMAP_PATTERN_KEY = "sitemap:xml";
+		public const string XMLSITEMAP_PATTERN_KEY = "sitemap:xml*";
 
 		private const string SiteMapsNamespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 		private const string XhtmlNamespace = "http://www.w3.org/1999/xhtml";

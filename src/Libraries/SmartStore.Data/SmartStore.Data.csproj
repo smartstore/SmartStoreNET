@@ -130,6 +130,7 @@
     <Compile Include="Caching\DbCacheExtensions.cs" />
     <Compile Include="Caching\QueryRegistrar.cs" />
     <Compile Include="Caching\SingletonQueries.cs" />
+    <Compile Include="Extensions\DbEntityEntryExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionMap.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionsSetMap.cs" />
@@ -525,6 +526,10 @@
     <Compile Include="Migrations\201710102038287_CurrencyRounding.Designer.cs">
       <DependentUpon>201710102038287_CurrencyRounding.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710252016556_IndexOptionNames.cs" />
+    <Compile Include="Migrations\201710252016556_IndexOptionNames.Designer.cs">
+      <DependentUpon>201710252016556_IndexOptionNames.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -532,7 +537,6 @@
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
-    <Compile Include="Extensions\BaseEntityExtensions.cs" />
     <Compile Include="Extensions\DataReaderExtensions.cs" />
     <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
@@ -954,6 +958,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710102038287_CurrencyRounding.resx">
       <DependentUpon>201710102038287_CurrencyRounding.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710252016556_IndexOptionNames.resx">
+      <DependentUpon>201710252016556_IndexOptionNames.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

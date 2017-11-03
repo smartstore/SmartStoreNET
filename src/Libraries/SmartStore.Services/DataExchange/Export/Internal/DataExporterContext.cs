@@ -32,8 +32,6 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 			FolderContent = request.Profile.GetExportFolder(true, true);
 
-			Categories = new Dictionary<int, Category>();
-			CategoryPathes = new Dictionary<int, string>();
 			DeliveryTimes = new Dictionary<int, DeliveryTime>();
 			QuantityUnits = new Dictionary<int, QuantityUnit>();
 			Stores = new Dictionary<int, Store>();
@@ -110,8 +108,6 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		}
 
 		// data loaded once per export
-		public Dictionary<int, Category> Categories { get; set; }
-		public Dictionary<int, string> CategoryPathes { get; set; }
 		public Dictionary<int, DeliveryTime> DeliveryTimes { get; set; }
 		public Dictionary<int, QuantityUnit> QuantityUnits { get; set; }
 		public Dictionary<int, Store> Stores { get; set; }

@@ -393,7 +393,7 @@ namespace SmartStore.Web.Framework
 							m.For(em => em.HookedType, hookedType);
 							m.For(em => em.ImplType, hook);
 							m.For(em => em.IsLoadHook, typeof(IDbLoadHook).IsAssignableFrom(hook));
-							m.For(em => em.Important, hookedType.HasAttribute<ImportantAttribute>(false));
+							m.For(em => em.Important, hook.HasAttribute<ImportantAttribute>(false));
 						});
 				}
 
@@ -619,7 +619,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WorkflowMessageService>().As<IWorkflowMessageService>().InstancePerRequest();
 			builder.RegisterType<MessageTokenProvider>().As<IMessageTokenProvider>().InstancePerRequest();
 			builder.RegisterType<Tokenizer>().As<ITokenizer>().InstancePerRequest();
-			builder.RegisterType<DefaultEmailSender>().As<IEmailSender>().SingleInstance(); // xxx (http)
+			builder.RegisterType<DefaultEmailSender>().As<IEmailSender>().InstancePerRequest();
 			builder.RegisterType<LocalAsyncState>().As<IAsyncState>().SingleInstance();
 		}
 	}

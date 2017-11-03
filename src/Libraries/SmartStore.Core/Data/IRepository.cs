@@ -94,25 +94,6 @@ namespace SmartStore.Core.Data
 		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path);
 
-		/// <summary>
-		/// Gets a value indicating whether the given entity was modified since it has been attached to the context
-		/// </summary>
-		/// <param name="entity">The entity to check</param>
-		/// <returns><c>true</c> if the entity was modified, <c>false</c> otherwise</returns>
-		bool IsModified(T entity);
-
-        /// <summary>
-        /// Gets a list of modified properties for the specified entity
-        /// </summary>
-        /// <param name="entity">The entity instance for which to get modified properties for</param>
-        /// <returns>
-        /// A dictionary, where the key is the name of the modified property
-        /// and the value is its ORIGINAL value (which was tracked when the entity
-        /// was attached to the context the first time)
-        /// Returns an empty dictionary if no modification could be detected.
-        /// </returns>
-        IDictionary<string, object> GetModifiedProperties(T entity);
-
         /// <summary>
         /// Returns the data context associated with the repository.
         /// </summary>

@@ -4,22 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Net.Mail;
 using System.Net.Mime;
-using System.Net;
 using System.IO;
-using System.ComponentModel;
 using System.Threading.Tasks;
+using SmartStore.Core.Domain.Messages;
 
 namespace SmartStore.Core.Email
 {
     public class DefaultEmailSender : IEmailSender
     {
+		private readonly EmailAccountSettings _emailAccountSettings;
+		
+		public DefaultEmailSender(EmailAccountSettings emailAccountSettings)
+		{
+			_emailAccountSettings = emailAccountSettings;
+		}
 
-        /// <summary>
-        /// Builds System.Net.Mail.Message
-        /// </summary>
-        /// <param name="original">SmartStore.Email.Message</param>
-        /// <returns>System.Net.Mail.Message</returns>        
-        protected virtual MailMessage BuildMailMessage(EmailMessage original)
+		/// <summary>
+		/// Builds System.Net.Mail.Message
+		/// </summary>
+		/// <param name="original">SmartStore.Email.Message</param>
+		/// <returns>System.Net.Mail.Message</returns>        
+		protected virtual MailMessage BuildMailMessage(EmailMessage original)
         {
             MailMessage msg = new MailMessage();
 
@@ -61,9 +66,9 @@ namespace SmartStore.Core.Email
             return msg;
         }
 
-        #region IMailSender Members
+		#region IMailSender Members
 
-        public void SendEmail(SmtpContext context, EmailMessage message)
+		public void SendEmail(SmtpContext context, EmailMessage message)
         {
 			Guard.NotNull(context, nameof(context));
 			Guard.NotNull(message, nameof(message));
@@ -72,6 +77,7 @@ namespace SmartStore.Core.Email
 			{
 				using (var client = context.ToSmtpClient())
 				{
+					ApplySettings(client);
 					client.Send(msg);
 				}
 			}
@@ -83,6 +89,7 @@ namespace SmartStore.Core.Email
 			Guard.NotNull(message, nameof(message));
 
 			var client = context.ToSmtpClient();
+			ApplySettings(client);
 			var msg = this.BuildMailMessage(message);
 
 			return client.SendMailAsync(msg).ContinueWith(t => 
@@ -92,7 +99,17 @@ namespace SmartStore.Core.Email
 			});
 		}
 
-        #endregion
+		private void ApplySettings(SmtpClient client)
+		{
+			var pickupDirLocation = _emailAccountSettings.PickupDirectoryLocation;
+			if (pickupDirLocation.HasValue() && client.DeliveryMethod != SmtpDeliveryMethod.SpecifiedPickupDirectory && Path.IsPathRooted(pickupDirLocation))
+			{
+				client.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
+				client.PickupDirectoryLocation = pickupDirLocation;
+				client.EnableSsl = false;
+			}
+		}
 
-    }
+		#endregion
+	}
 }

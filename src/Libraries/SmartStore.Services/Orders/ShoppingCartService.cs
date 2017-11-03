@@ -27,7 +27,7 @@ namespace SmartStore.Services.Orders
     {
 		// 0 = CustomerId, 1 = CartType, 2 = StoreId
 		const string CARTITEMS_KEY = "sm.cartitems-{0}-{1}-{2}";
-		const string CARTITEMS_PATTERN_KEY = "sm.cartitems-";
+		const string CARTITEMS_PATTERN_KEY = "sm.cartitems-*";
 
 		private readonly IRepository<ShoppingCartItem> _sciRepository;
         private readonly IWorkContext _workContext;

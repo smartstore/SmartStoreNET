@@ -647,8 +647,9 @@ namespace SmartStore.Services.DataExchange.Export
 				foreach (dynamic pva in product.ProductAttributes)
 				{
 					ProductVariantAttribute entityPva = pva.Entity;
+                    ProductAttribute entityPa = pva.Attribute.Entity;
 
-					_writer.WriteStartElement("ProductAttribute");
+                    _writer.WriteStartElement("ProductAttribute");
 					_writer.Write("Id", entityPva.Id.ToString());
 					_writer.Write("TextPrompt", (string)pva.TextPrompt);
 					_writer.Write("IsRequired", entityPva.IsRequired.ToString());
@@ -656,12 +657,16 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("DisplayOrder", entityPva.DisplayOrder.ToString());
 
 					_writer.WriteStartElement("Attribute");
-					_writer.Write("Id", ((int)pva.Attribute.Id).ToString());
-					_writer.Write("Alias", (string)pva.Attribute.Alias);
-					_writer.Write("Name", (string)pva.Attribute.Name);
-					_writer.Write("Description", (string)pva.Attribute.Description);
+					_writer.Write("Id", entityPa.Id.ToString());
+					_writer.Write("Alias", entityPa.Alias);
+					_writer.Write("Name", entityPa.Name);
+					_writer.Write("Description", entityPa.Description);
+                    _writer.Write("AllowFiltering", entityPa.AllowFiltering.ToString());
+                    _writer.Write("DisplayOrder", entityPa.DisplayOrder.ToString());
+                    _writer.Write("FacetTemplateHint", ((int)entityPa.FacetTemplateHint).ToString());
+                    _writer.Write("IndexOptionNames", entityPa.IndexOptionNames.ToString());
 
-					WriteLocalized(pva.Attribute);
+                    WriteLocalized(pva.Attribute);
 
 					_writer.WriteEndElement();	// Attribute
 
@@ -830,6 +835,7 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("ShowOnProductPage", entitySa.ShowOnProductPage.ToString());
 					_writer.Write("FacetSorting", ((int)entitySa.FacetSorting).ToString());
 					_writer.Write("FacetTemplateHint", ((int)entitySa.FacetTemplateHint).ToString());
+                    _writer.Write("IndexOptionNames", entitySa.IndexOptionNames.ToString());
 
 					WriteLocalized(option.SpecificationAttribute);
 

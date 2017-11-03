@@ -35,7 +35,9 @@ namespace SmartStore.Services.Search.Modelling
 	public class CatalogSearchQueryFactory : ICatalogSearchQueryFactory
 	{
 		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "p", "c", "m", "r", "a", "n", "d", "v" };
-		protected readonly HttpContextBase _httpContext;
+        protected static readonly string[] _instantSearchFields = new string[] { "manufacturer", "sku", "gtin", "mpn", "attrname", "variantname" };
+
+        protected readonly HttpContextBase _httpContext;
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;
 		protected readonly ICommonServices _services;
@@ -83,18 +85,12 @@ namespace SmartStore.Services.Search.Modelling
 				fields.Add("shortdescription");
 				fields.Add("tagname");
 
-				if (_searchSettings.SearchFields.Contains("manufacturer"))
-					fields.Add("manufacturer");
-
-				if (_searchSettings.SearchFields.Contains("sku"))
-					fields.Add("sku");
-
-				if (_searchSettings.SearchFields.Contains("gtin"))
-					fields.Add("gtin");
-
-				if (_searchSettings.SearchFields.Contains("mpn"))
-					fields.Add("mpn");
-			}
+                foreach (var fieldName in _instantSearchFields)
+                {
+                    if (_searchSettings.SearchFields.Contains(fieldName))
+                        fields.Add(fieldName);
+                }
+            }
 			else
 			{
 				fields.AddRange(_searchSettings.SearchFields);

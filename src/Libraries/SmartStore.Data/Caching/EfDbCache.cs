@@ -23,7 +23,7 @@ namespace SmartStore.Data.Caching
 			typeof(QueuedEmail).Name
 		};
 
-		private const string KEYPREFIX = "efcache:";
+		private const string KEYPREFIX = "efcache:*";
 		private readonly object _lock = new object();
 
 		private bool _enabled;

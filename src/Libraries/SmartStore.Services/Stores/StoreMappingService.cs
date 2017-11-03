@@ -11,7 +11,7 @@ namespace SmartStore.Services.Stores
 	public partial class StoreMappingService : IStoreMappingService
 	{
 		private const string STOREMAPPING_BY_ENTITYID_NAME_KEY = "storemapping:entityid-name-{0}-{1}";
-		private const string STOREMAPPING_PATTERN_KEY = "storemapping:";
+		private const string STOREMAPPING_PATTERN_KEY = "storemapping:*";
 
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IStoreContext _storeContext;

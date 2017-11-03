@@ -5,9 +5,9 @@
     {
         return;
     }
-
-    Html.AppendScriptParts(true, Url.Content("~/Themes/Flex/Scripts/smartstore.megamenu.js"));
+    
     var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null ? Model.SelectedNode.Parent.Value.EntityId : Model.SelectedNode.Value.EntityId;
+    var renderMoreItem = false;
 }
 
 @functions {
@@ -57,8 +57,13 @@
     {
         var item = node.Value;
 
-        if (!item.Visible)
+        if (!item.Visible || node.GetMetadata<bool>("spare", false))
         {
+            if (node.GetMetadata<bool>("spare", false))
+            {
+                renderMoreItem = true;
+            }
+
             continue;
         }
 
@@ -66,7 +71,7 @@
         var itemState = node.GetNodePathState(Model.Path);
         var isMegaMenuActive = node.GetMetadata<bool?>("IsMegaMenuActive", false);
         var isDropDownActive = isMegaMenuActive == null ? true : (bool)isMegaMenuActive;
-        
+
         <li class='@(GetCssClassForNode(node, itemState))' id="main-nav-item-@item.EntityId" data-id="@item.EntityId">
             @if(node.HasChildren && isDropDownActive)
             {   
@@ -81,10 +86,19 @@
                 </a>
             }
 
-            @if(!String.IsNullOrEmpty(item.BadgeText))
+            @if (!String.IsNullOrEmpty(item.BadgeText))
             {
                 <label class="badge badge-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
             }
+        </li>
+    }
+
+    @if (renderMoreItem)
+    {
+        <li class="nav-item dropdown" id="main-nav-item--1" data-id="-1">
+            <a href="#" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu--1">
+                @T("CatalogMenu.MoreLink")
+            </a>
         </li>
     }
 

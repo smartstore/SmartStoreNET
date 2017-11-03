@@ -85,5 +85,18 @@ namespace SmartStore.DevTools.Controllers
 
 			return View(model);
 		}
-	}
+
+        [AdminAuthorize]
+        public ActionResult ProductEditTab(int productId, FormCollection form)
+        {
+            var model = new BackendExtensionModel
+            {
+                Welcome = "Hello world!"
+            };
+
+            var result = PartialView(model);
+            result.ViewData.TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "CustomProperties[DevTools]" };
+            return result;
+        }       
+    }
 }

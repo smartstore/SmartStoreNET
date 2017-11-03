@@ -149,7 +149,9 @@
     <Compile Include="Controllers\DevToolsController.cs" />
     <Compile Include="Controllers\MyCheckoutController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
+    <Compile Include="Events\CustomTab.cs" />
     <Compile Include="Filters\MachineNameFilter.cs" />
+    <Compile Include="Filters\Samples\SampleProductDetailActionFilter.cs" />
     <Compile Include="Filters\WidgetZoneFilter.cs" />
     <Compile Include="Filters\Samples\SampleCheckoutFilter.cs" />
     <Compile Include="Filters\ProfilerFilter.cs" />
@@ -180,6 +182,11 @@
     <ProjectReference Include="..\..\Presentation\SmartStore.Web.Framework\SmartStore.Web.Framework.csproj">
       <Project>{75fd4163-333c-4dd5-854d-2ef294e45d94}</Project>
       <Name>SmartStore.Web.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Presentation\SmartStore.Web\SmartStore.Web.csproj">
+      <Project>{4f1f649c-1020-45be-a487-f416d9297ff3}</Project>
+      <Name>SmartStore.Web</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +228,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\DevTools\MachineName.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\DevTools\ProductEditTab.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

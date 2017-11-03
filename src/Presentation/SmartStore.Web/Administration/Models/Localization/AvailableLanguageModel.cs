@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartStore.Core.Localization;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Localization
@@ -15,6 +14,7 @@ namespace SmartStore.Admin.Models.Localization
         public bool IsInstalled { get; set; }
         public bool IsDownloadRunning { get; set; }
 
+        public string Version { get; set; }
         public string Type { get; set; }
         public DateTime UpdatedOn { get; set; }
         public string UpdatedOnString { get; set; }
@@ -52,6 +52,6 @@ namespace SmartStore.Admin.Models.Localization
         }
 
         public int SetId { get; private set; }
-        public List<CheckAvailableResourcesResult> CheckAvailableResources { get;  set; }
+        public CheckAvailableResourcesResult AvailableResources { get;  set; }
     }
 }

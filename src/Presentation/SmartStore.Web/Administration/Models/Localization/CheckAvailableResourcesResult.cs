@@ -6,8 +6,23 @@ namespace SmartStore.Admin.Models.Localization
     [Serializable]
     public class CheckAvailableResourcesResult
     {
+        public CheckAvailableResourcesResult()
+        {
+            Resources = new List<AvailableResourcesModel>();
+        }
+
+        public string AppId { get; set; }
+        public string Version { get; set; }
+
+        public List<AvailableResourcesModel> Resources { get; set; }
+    }
+
+    [Serializable]
+    public class AvailableResourcesModel
+    {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Version { get; set; }
         public string Type { get; set; }
         public string DownloadUrl { get; set; }
         public List<string> PluginSystemNames { get; set; }

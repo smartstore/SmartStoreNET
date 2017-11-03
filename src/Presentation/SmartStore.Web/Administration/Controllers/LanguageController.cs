@@ -154,7 +154,7 @@ namespace SmartStore.Admin.Controllers
 
         private void PrepareAvailableLanguageModel(
             AvailableLanguageModel model,
-            CheckAvailableResourcesResult checkResult,
+            AvailableResourcesModel resources,
             Dictionary<int , GenericAttribute> translatedPercentageAtLastImport,
             Dictionary<string, PluginDescriptor> allPlugins = null,
             Language language = null,
@@ -163,20 +163,21 @@ namespace SmartStore.Admin.Controllers
             GenericAttribute attribute = null;
             PluginDescriptor pluginDescriptor = null;
 
-            model.Id = checkResult.Id;
+            model.Id = resources.Id;
             model.IsInstalled = language != null;
-            model.Name = GetCultureDisplayName(checkResult.Language.Culture) ?? checkResult.Language.Name;
-            model.LanguageCulture = checkResult.Language.Culture;
-            model.UniqueSeoCode = checkResult.Language.TwoLetterIsoCode;
-            model.Rtl = checkResult.Language.Rtl;
-            model.Type = checkResult.Type;
-            model.NumberOfResources = checkResult.Aggregation.NumberOfResources;
-            model.NumberOfTranslatedResources = checkResult.Aggregation.NumberOfTouched;
-            model.TranslatedPercentage = Math.Round(checkResult.Aggregation.TouchedPercentage, 2);
-            model.IsDownloadRunning = state != null && state.Id == checkResult.Id;
-            model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(checkResult.UpdatedOn, DateTimeKind.Utc);
+            model.Name = GetCultureDisplayName(resources.Language.Culture) ?? resources.Language.Name;
+            model.LanguageCulture = resources.Language.Culture;
+            model.UniqueSeoCode = resources.Language.TwoLetterIsoCode;
+            model.Rtl = resources.Language.Rtl;
+            model.Version = resources.Version;
+            model.Type = resources.Type;
+            model.NumberOfResources = resources.Aggregation.NumberOfResources;
+            model.NumberOfTranslatedResources = resources.Aggregation.NumberOfTouched;
+            model.TranslatedPercentage = Math.Round(resources.Aggregation.TouchedPercentage, 2);
+            model.IsDownloadRunning = state != null && state.Id == resources.Id;
+            model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(resources.UpdatedOn, DateTimeKind.Utc);
             model.UpdatedOnString = model.UpdatedOn.RelativeFormat(false, "f");
-            model.FlagImageFileName = GetFlagFileName(checkResult.Language.TwoLetterIsoCode);
+            model.FlagImageFileName = GetFlagFileName(resources.Language.TwoLetterIsoCode);
 
             if (language != null && translatedPercentageAtLastImport.TryGetValue(language.Id, out attribute))
             {
@@ -191,7 +192,7 @@ namespace SmartStore.Admin.Controllers
             // Installed plugin infos
             if (allPlugins != null)
             {
-                foreach (var systemName in checkResult.PluginSystemNames)
+                foreach (var systemName in resources.PluginSystemNames)
                 {
                     if (allPlugins.TryGetValue(systemName, out pluginDescriptor))
                     {
@@ -206,11 +207,11 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        private async Task<List<CheckAvailableResourcesResult>> CheckAvailableResources(bool enforce = false)
+        private async Task<CheckAvailableResourcesResult> CheckAvailableResources(bool enforce = false)
         {
-            var cacheKey = "admin:language:checkavailablelanguagesresult";
+            var cacheKey = "admin:language:checkavailableresourcesresult";
             var currentVersion = SmartStoreVersion.CurrentFullVersion;
-            List<CheckAvailableResourcesResult> result = null;
+            CheckAvailableResourcesResult result = null;
             string jsonString = null;
 
             if (!enforce)
@@ -249,10 +250,10 @@ namespace SmartStore.Admin.Controllers
 
             if (jsonString.HasValue())
             {
-                result = JsonConvert.DeserializeObject<List<CheckAvailableResourcesResult>>(jsonString);
+                result = JsonConvert.DeserializeObject<CheckAvailableResourcesResult>(jsonString);
             }
 
-            return result ?? new List<CheckAvailableResourcesResult>();
+            return result ?? new CheckAvailableResourcesResult();
         }
 
         private async Task<string> DownloadAvailableResources(string downloadUrl, string storeUrl)
@@ -356,17 +357,17 @@ namespace SmartStore.Admin.Controllers
             var translatedPercentageAtLastImport = _genericAttributeService.GetAttributes("TranslatedPercentageAtLastImport", "Language").ToDictionarySafe(x => x.EntityId);
 
             var model = new List<AvailableLanguageModel>();
-            var checkResults = await CheckAvailableResources(enforce);
+            var checkResult = await CheckAvailableResources(enforce);
 
-            foreach (var checkResult in checkResults)
+            foreach (var resources in checkResult.Resources)
             {
-                if (checkResult.Language.Culture.HasValue())
+                if (resources.Language.Culture.HasValue())
                 {
                     Language language = null;
-                    languageDic.TryGetValue(checkResult.Language.Culture, out language);
+                    languageDic.TryGetValue(resources.Language.Culture, out language);
 
                     var alModel = new AvailableLanguageModel();
-                    PrepareAvailableLanguageModel(alModel, checkResult, translatedPercentageAtLastImport, allPluginsDic, language, downloadState);
+                    PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, allPluginsDic, language, downloadState);
 
                     model.Add(alModel);
                 }
@@ -398,7 +399,6 @@ namespace SmartStore.Admin.Controllers
                 var language = model.ToEntity();
                 _languageService.InsertLanguage(language);
 
-				//Stores
 				_storeMappingService.SaveStoreMappings<Language>(language, model.SelectedStoreIds);
 
 				var plugins = _pluginFinder.GetPluginDescriptors(true);
@@ -415,7 +415,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareLanguageModel(model, null, true);
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -436,15 +436,15 @@ namespace SmartStore.Admin.Controllers
 
             // Provide combobox with downloadable resources for this language.
             var translatedPercentageAtLastImport = _genericAttributeService.GetAttributes("TranslatedPercentageAtLastImport", "Language").ToDictionarySafe(x => x.EntityId);
-            var checkResults = await CheckAvailableResources();
+            var checkResult = await CheckAvailableResources();
 
-            foreach (var checkResult in checkResults)
+            foreach (var resources in checkResult.Resources)
             {
-                var culture = checkResult.Language.Culture;
-                if (culture.HasValue() && checkResult.Language.TwoLetterIsoCode.IsCaseInsensitiveEqual(language.UniqueSeoCode))
+                var culture = resources.Language.Culture;
+                if (culture.HasValue() && resources.Language.TwoLetterIsoCode.IsCaseInsensitiveEqual(language.UniqueSeoCode))
                 {
                     var alModel = new AvailableLanguageModel();
-                    PrepareAvailableLanguageModel(alModel, checkResult, translatedPercentageAtLastImport, null, language);
+                    PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, null, language);
 
                     model.AvailableDownloadLanguages.Add(alModel);
                 }
@@ -729,8 +729,8 @@ namespace SmartStore.Admin.Controllers
                 }
                 else if ((availableLanguageSetId ?? 0) != 0)
                 {
-                    var checkResults = await CheckAvailableResources();
-                    var availableResources = checkResults.First(x => x.Id == availableLanguageSetId.Value);
+                    var checkResult = await CheckAvailableResources();
+                    var availableResources = checkResult.Resources.First(x => x.Id == availableLanguageSetId.Value);
 
                     tempFilePath = await DownloadAvailableResources(availableResources.DownloadUrl, _services.StoreContext.CurrentStore.Url);
 
@@ -784,8 +784,8 @@ namespace SmartStore.Admin.Controllers
                 };
                 asyncState.Set(state);
 
-                var availableResources = context.CheckAvailableResources.First(x => x.Id == context.SetId);
-                tempFilePath = DownloadAvailableResources(availableResources.DownloadUrl, services.StoreContext.CurrentStore.Url).Result;
+                var resources = context.AvailableResources.Resources.First(x => x.Id == context.SetId);
+                tempFilePath = DownloadAvailableResources(resources.DownloadUrl, services.StoreContext.CurrentStore.Url).Result;
 
                 state.ProgressMessage = T("Admin.Configuration.Languages.ImportResources");
                 asyncState.Set(state);
@@ -794,15 +794,15 @@ namespace SmartStore.Admin.Controllers
                 var allLanguages = languageService.GetAllLanguages();
                 var lastLanguage = allLanguages.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
 
-                var language = languageService.GetLanguageByCulture(availableResources.Language.Culture);
+                var language = languageService.GetLanguageByCulture(resources.Language.Culture);
                 if (language == null)
                 {
                     language = new Language();
-                    language.LanguageCulture = availableResources.Language.Culture;
-                    language.UniqueSeoCode = availableResources.Language.TwoLetterIsoCode;
-                    language.Name = GetCultureDisplayName(availableResources.Language.Culture) ?? availableResources.Name;
-                    language.FlagImageFileName = GetFlagFileName(availableResources.Language.TwoLetterIsoCode);
-                    language.Rtl = availableResources.Language.Rtl;
+                    language.LanguageCulture = resources.Language.Culture;
+                    language.UniqueSeoCode = resources.Language.TwoLetterIsoCode;
+                    language.Name = GetCultureDisplayName(resources.Language.Culture) ?? resources.Name;
+                    language.FlagImageFileName = GetFlagFileName(resources.Language.TwoLetterIsoCode);
+                    language.Rtl = resources.Language.Rtl;
                     language.Published = false;
                     language.DisplayOrder = lastLanguage != null ? lastLanguage.DisplayOrder + 1 : 0;
 
@@ -815,7 +815,7 @@ namespace SmartStore.Admin.Controllers
 
                 services.Localization.ImportResourcesFromXml(language, xmlDoc);
 
-                genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", availableResources.Aggregation.TouchedPercentage);
+                genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", resources.Aggregation.TouchedPercentage);
             }
             catch (Exception exception)
             {
@@ -837,9 +837,9 @@ namespace SmartStore.Admin.Controllers
             if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
             {
                 var ctx = new LanguageDownloadContext(setId);
-                ctx.CheckAvailableResources = await CheckAvailableResources();
+                ctx.AvailableResources = await CheckAvailableResources();
 
-                if (ctx.CheckAvailableResources.Any())
+                if (ctx.AvailableResources.Resources.Any())
                 {
                     var task = AsyncRunner.Run(
                         (container, ct, obj) => DownloadCore(container, ct, obj as LanguageDownloadContext),

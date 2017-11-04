@@ -53,6 +53,11 @@
 
 @helper ProductSearchForm()
 {
+	var availableCategories = (IEnumerable<SelectListItem>)ViewBag.AvailableCategories;
+	var availableManufacturers = (IEnumerable<SelectListItem>)ViewBag.AvailableManufacturers;
+	var availableStores = (IEnumerable<SelectListItem>)ViewBag.AvailableStores;
+	var availableProductTypes = (IEnumerable<SelectListItem>)ViewBag.AvailableProductTypes;
+
 	<div class="control-group mr-2">
 		<div class="form-inline">
 			<div class="input-group">
@@ -72,25 +77,25 @@
 	<div class="entpicker-filter form-row xs-gutters w-100 pt-2" style="display: none">
 		<div class="form-group col mb-0">
 			@Html.LabelFor(model => model.CategoryId, new { @class = "col-form-label text-truncate", @for = "CategoryId" })
-			@Html.DropDownListFor(model => model.CategoryId, Model.AvailableCategories, Model.AllString, new { @class = "form-control form-control-sm" })
+			@Html.DropDownListFor(model => model.CategoryId, availableCategories, T("Admin.Common.All"), new { @class = "form-control form-control-sm" })
 		</div>
 
 		<div class="form-group col mb-0">
 			@Html.LabelFor(model => model.ManufacturerId, new { @class = "col-form-label text-truncate", @for = "ManufacturerId" })
-			@Html.DropDownListFor(model => model.ManufacturerId, Model.AvailableManufacturers, Model.AllString, new { @class = "form-control form-control-sm" })
+			@Html.DropDownListFor(model => model.ManufacturerId, availableManufacturers, T("Admin.Common.All"), new { @class = "form-control form-control-sm" })
 		</div>
 
-		@if (Model.AvailableStores.Count > 1)
+		@if (availableStores.Count() > 1)
 		{
 			<div class="form-group col mb-0">
 				@Html.LabelFor(model => model.StoreId, new { @class = "col-form-label text-truncate", @for = "StoreId" })
-				@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores, Model.AllString, new { @class = "form-control form-control-sm" })
+				@Html.DropDownListFor(model => model.StoreId, availableStores, T("Admin.Common.All"), new { @class = "form-control form-control-sm" })
 			</div>
 		}
 
 		<div class="form-group col mb-0">
 			@Html.LabelFor(model => model.ProductTypeId, new { @class = "col-form-label text-truncate", @for = "ProductTypeId" })
-			@Html.DropDownListFor(model => model.ProductTypeId, Model.AvailableProductTypes, Model.AllString, new { @class = "form-control form-control-sm" })
+			@Html.DropDownListFor(model => model.ProductTypeId, availableProductTypes, T("Admin.Common.All"), new { @class = "form-control form-control-sm" })
 		</div>
 	</div>
 }

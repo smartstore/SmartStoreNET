@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web;
-using System.Web.UI;
 using SmartStore.Utilities;
 using SmartStore.Core.Infrastructure;
 using System.Web.Mvc;
@@ -130,7 +127,24 @@ namespace SmartStore.Web.Framework.UI
             return this as TBuilder;
         }
 
-        public string ToHtmlString()
+		public virtual TBuilder HtmlAttribute(string name, object value)
+		{
+			Guard.NotEmpty(name, nameof(name));
+			Guard.NotNull(value, nameof(value));
+
+			this.Component.HtmlAttributes[name] = value;
+			return this as TBuilder;
+		}
+
+		public virtual TBuilder AddCssClass(string cssClass)
+		{
+			Guard.NotEmpty(cssClass, nameof(cssClass));
+
+			this.Component.HtmlAttributes.AppendCssClass(cssClass);
+			return this as TBuilder;
+		}
+
+		public string ToHtmlString()
         {
             return this.Renderer.ToHtmlString();
         }
@@ -149,7 +163,5 @@ namespace SmartStore.Web.Framework.UI
         {
             return builder.ToComponent();
         }
-
     }
-
 }

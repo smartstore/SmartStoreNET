@@ -6,7 +6,6 @@ namespace SmartStore.Web.Framework.UI
 {
     public class PagerBuilder : NavigatableComponentBuilder<Pager, PagerBuilder>
     {
-
         public PagerBuilder(Pager component, HtmlHelper htmlHelper)
             : base(component, htmlHelper)
         {

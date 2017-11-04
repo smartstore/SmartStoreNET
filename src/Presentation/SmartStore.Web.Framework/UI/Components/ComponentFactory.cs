@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using System.ComponentModel;
 using SmartStore.Core;
 
 namespace SmartStore.Web.Framework.UI
-{
-    
+{  
     public class ComponentFactory : IHideObjectMembers
     {
-
         public ComponentFactory(HtmlHelper helper)
         {
             this.HtmlHelper = helper;
@@ -66,8 +61,11 @@ namespace SmartStore.Web.Framework.UI
             return new PagerBuilder(new Pager(), this.HtmlHelper).Model(model);
         }
 
-        #endregion
+		public virtual EntityPickerBuilder EntityPicker()
+		{
+			return new EntityPickerBuilder(new EntityPicker(), this.HtmlHelper);
+		}
 
-    }
-
+		#endregion
+	}
 }

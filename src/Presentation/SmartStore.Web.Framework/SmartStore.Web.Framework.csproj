@@ -293,6 +293,8 @@
     <Compile Include="UI\Choices\ChoiceItemModel.cs" />
     <Compile Include="UI\Choices\GenericChoiceModel.cs" />
     <Compile Include="UI\Choices\ChoiceModel.cs" />
+    <Compile Include="UI\Components\EntityPicker\EntityPicker.cs" />
+    <Compile Include="UI\Components\EntityPicker\EntityPickerBuilder.cs" />
     <Compile Include="UI\Components\Menu\CatalogMenuProvider.cs" />
     <Compile Include="UI\Components\ViewBasedComponentRenderer.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />
@@ -377,7 +379,6 @@
     <Compile Include="Theming\ThemeableRazorViewEngine.cs" />
     <Compile Include="Theming\ThemeContext.cs" />
     <Compile Include="UI\Components\Enums.cs" />
-    <Compile Include="UI\Components\Button\Button.cs" />
     <Compile Include="UI\Components\Component.cs" />
     <Compile Include="UI\Components\ComponentBuilder.cs" />
     <Compile Include="UI\Components\ComponentFactory.cs" />

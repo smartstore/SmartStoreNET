@@ -7,10 +7,6 @@ namespace SmartStore.Web.Models.Entity
 {
 	public class EntityPickerModel : ModelBase
 	{
-		public string AllString { get; set; }
-		public string PublishedString { get; set; }
-		public string UnpublishedString { get; set; }
-
 		public string Entity { get; set; }
 		public bool HighligtSearchTerm { get; set; }
 		public string DisableIf { get; set; }
@@ -39,11 +35,6 @@ namespace SmartStore.Web.Models.Entity
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
 		public int ProductTypeId { get; set; }
-
-		public IList<SelectListItem> AvailableCategories { get; set; }
-		public IList<SelectListItem> AvailableManufacturers { get; set; }
-		public IList<SelectListItem> AvailableStores { get; set; }
-		public IList<SelectListItem> AvailableProductTypes { get; set; }
 
 		#endregion
 

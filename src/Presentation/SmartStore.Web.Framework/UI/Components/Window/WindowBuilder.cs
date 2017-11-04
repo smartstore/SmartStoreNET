@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public class WindowBuilder : ComponentBuilder<Window, WindowBuilder>
     {
-
         public WindowBuilder(Window Component, HtmlHelper htmlHelper)
             : base(Component, htmlHelper)
         {
@@ -107,7 +102,5 @@ namespace SmartStore.Web.Framework.UI
             base.Component.Height = value;
             return this;
         }
-
     }
-
 }

@@ -180,7 +180,7 @@ namespace SmartStore.Utilities
 
 			return FastProperty.ObjectToDictionary(
 				obj,
-				key => key.Replace("_", "-"));
+				key => key.Replace("_", "-").Replace("@", ""));
 		}
 
 		/// <summary>

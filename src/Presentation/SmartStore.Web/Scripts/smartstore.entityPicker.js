@@ -110,7 +110,6 @@
 		var dialog = $('#entpicker-' + opt.entity + '-dialog');
 
 		function showAndFocusDialog() {
-			dialog = $('#entpicker-' + opt.entity + '-dialog');
 			dialog.find('.modal-title').html(opt.caption || '&nbsp;');
 			dialog.data('entitypicker', opt);
 			dialog.modal('show');

@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public class Window : Component
     {
-
         public Window()
         {
             this.Fade = true;
@@ -48,7 +43,5 @@ namespace SmartStore.Web.Framework.UI
         public int? Width { get; set; }
 
         public int? Height { get; set; }
-
     }
-
 }

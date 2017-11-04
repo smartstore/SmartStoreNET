@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.UI
@@ -65,8 +63,5 @@ namespace SmartStore.Web.Framework.UI
             get; 
             set; 
         }
-
-
     }
-
 }

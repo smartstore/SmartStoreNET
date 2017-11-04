@@ -32,21 +32,22 @@ namespace SmartStore.Web.Framework
 		}
 
 		/// <summary>
-		/// Get a list of all stores
+		/// Get a select list of all stores
 		/// </summary>
 		public static IList<SelectListItem> ToSelectListItems(this IEnumerable<Store> stores)
 		{
-			var lst = new List<SelectListItem>();
+			var list = new List<SelectListItem>();
 
 			foreach (var store in stores)
 			{
-				lst.Add(new SelectListItem
+				list.Add(new SelectListItem
 				{
 					Text = store.Name,
 					Value = store.Id.ToString()
 				});
 			}
-			return lst;
+
+			return list;
 		}
 
 		public static void SelectValue(this List<SelectListItem> lst, string value, string defaultValue = null)

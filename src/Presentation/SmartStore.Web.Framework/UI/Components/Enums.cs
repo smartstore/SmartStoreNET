@@ -12,6 +12,19 @@ namespace SmartStore.Web.Framework.UI
         Danger  
     }
 
+	public enum ButtonStyle
+	{
+		Secondary,
+		Primary,
+		Success,
+		Info,
+		Warning,
+		Danger,
+		Light,
+		Dark,
+		Link
+	}
+
 	public enum BootstrapVersion
 	{
 		V2 = 2,

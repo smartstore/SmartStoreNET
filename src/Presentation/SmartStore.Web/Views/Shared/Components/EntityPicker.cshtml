@@ -1,0 +1,19 @@
+﻿@model EntityPicker
+
+@{ 
+	if (Model.HtmlAttributes.ContainsKey("id"))
+	{
+		Model.Id = "entpicker-toggle-" + CommonHelper.GenerateRandomInteger();
+	}
+}
+
+<button @Html.Attrs(Model.HtmlAttributes)>
+	@if (Model.IconCssClass.HasValue())
+	{
+		<i class="@Model.IconCssClass"></i>
+	}
+	@if (Model.Caption.HasValue())
+	{
+		<span>@Model.Caption</span>
+	}
+</button>

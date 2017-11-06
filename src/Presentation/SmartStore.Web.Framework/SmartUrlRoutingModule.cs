@@ -34,8 +34,7 @@ namespace SmartStore.Web.Framework
 				
 				application.PostResolveRequestCache += (s, e) => PostResolveRequestCache(new HttpContextWrapper(((HttpApplication)s).Context));
 
-				//// INFO: We use httpRuntime[fcnMode] in web.config to disable directory monitoring now.
-				//StopSubDirMonitoring();
+				StopSubDirMonitoring();
 			}			
 		}
 

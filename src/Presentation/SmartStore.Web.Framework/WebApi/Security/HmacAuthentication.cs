@@ -6,10 +6,11 @@ using System.Web;
 
 namespace SmartStore.Web.Framework.WebApi.Security
 {
-	public class HmacAuthentication
+    public class HmacAuthentication
 	{
-		private static readonly string _delimiterRepresentation = "\n";
-		private static readonly string _scheme = "SmNetHmac";
+        protected static readonly string[] _dateFormats = new string[] { "o", "yyyy-MM-ddTHH:mm:ss.FFFFFFFZ" };
+        protected static readonly string _delimiterRepresentation = "\n";
+        protected static readonly string _scheme = "SmNetHmac";
 
 		public static string Scheme1 { get { return _scheme + "1"; } }
 		public static string SignatureMethod { get { return "HMAC-SHA256"; } }
@@ -134,14 +135,17 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			return Scheme1;	// fallback to first version
 		}
 
-		/// <summary>Parse ISO-8601 UTC timestamp including milliseconds.</summary>
-		public bool ParseTimestamp(string timestamp, out DateTime time)
+        /// <summary>
+        /// Parse ISO-8601 UTC timestamp including optional milliseconds.
+        /// Examples: 2013-11-09T11:37:21.1918793Z, 2013-11-09T11:37:21.191Z, 2013-11-09T11:37:21Z.
+        /// </summary>
+        public bool ParseTimestamp(string timestamp, out DateTime time)
 		{
-			if (DateTime.TryParseExact(timestamp, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out time))
-				return true;
-
-			if (DateTime.TryParseExact(timestamp, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out time))
-				return true;
+            foreach (var format in _dateFormats)
+            {
+                if (DateTime.TryParseExact(timestamp, format, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out time))
+                    return true;
+            }
 
 			time = new DateTime();
 			return false;

@@ -8,12 +8,12 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public abstract class NavigatableComponentBuilder<TComponent, TBuilder> : ComponentBuilder<TComponent, TBuilder>
+    public abstract class NavigatableComponentBuilder<TComponent, TBuilder, TModel> : ComponentBuilder<TComponent, TBuilder, TModel>
         where TComponent : Component, INavigatable
-        where TBuilder : ComponentBuilder<TComponent, TBuilder>
+        where TBuilder : ComponentBuilder<TComponent, TBuilder, TModel>
     {
 
-        public NavigatableComponentBuilder(TComponent component, HtmlHelper htmlHelper)
+        public NavigatableComponentBuilder(TComponent component, HtmlHelper<TModel> htmlHelper)
             : base(component, htmlHelper)
         {
         }
@@ -72,12 +72,12 @@ namespace SmartStore.Web.Framework.UI
 
     }
 
-    public abstract class NavigatableComponentWithContentBuilder<TComponent, TBuilder> : NavigatableComponentBuilder<TComponent, TBuilder>
+    public abstract class NavigatableComponentWithContentBuilder<TComponent, TBuilder, TModel> : NavigatableComponentBuilder<TComponent, TBuilder, TModel>
         where TComponent : Component, INavigatable, IContentContainer
-        where TBuilder : ComponentBuilder<TComponent, TBuilder>
+        where TBuilder : ComponentBuilder<TComponent, TBuilder, TModel>
     {
 
-        public NavigatableComponentWithContentBuilder(TComponent component, HtmlHelper htmlHelper)
+        public NavigatableComponentWithContentBuilder(TComponent component, HtmlHelper<TModel> htmlHelper)
             : base(component, htmlHelper)
         {
         }

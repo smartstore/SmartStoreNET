@@ -6,7 +6,6 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
-using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
@@ -17,8 +16,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
-using SmartStore.Services.Seo;
-using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Catalog
 {
@@ -345,71 +342,6 @@ namespace SmartStore.Services.Catalog
 			query = query.Where(c => !c.Deleted);
 
 			return query;
-		}
-
-		public TreeNode<CategoryNode> GetCategoryTree(int parentCategoryId, int storeId = 0)
-		{
-			var root = _cache.Get(CATEGORY_TREE_KEY.FormatInvariant(storeId), () => 
-			{
-				var curParent = new TreeNode<CategoryNode>(new CategoryNode());
-
-				Category prevCat = null;
-
-				var categories = GetAllCategories(showHidden: true, storeId: storeId);
-
-				foreach (var category in categories)
-				{
-					var info = new CategoryNode
-					{
-						Id = category.Id,
-						SeName = category.GetSeName(),
-						Published = category.Published
-					};
-
-					// Determine parent
-					if (prevCat != null)
-					{
-						if (category.ParentCategoryId != curParent.Value.Id)
-						{
-							if (category.ParentCategoryId == prevCat.Id)
-							{
-								// level +1
-								curParent = curParent.LastChild;
-							}
-							else
-							{
-								// level -x
-								while (!curParent.IsRoot)
-								{
-									if (curParent.Value.Id == category.ParentCategoryId)
-									{
-										break;
-									}
-									curParent = curParent.Parent;
-								}
-							}
-						}
-					}
-
-					// add to parent
-					curParent.Append(info);
-
-					prevCat = category;
-				}
-
-				return curParent.Root;
-			});
-
-			if (parentCategoryId > 0)
-			{
-				root = root.SelectNode(x => x.Value.Id == parentCategoryId);
-				if (root == null)
-				{
-					throw new ArgumentException("Category with Id '{0}' does not exist".FormatInvariant(parentCategoryId), nameof(parentCategoryId));
-				}
-			}
-
-			return root;
 		}
 
         public virtual IPagedList<Category> GetAllCategories(
@@ -842,7 +774,7 @@ namespace SmartStore.Services.Catalog
 		}
 
 		public TreeNode<ICategoryNode> GetCategoryTree(int rootCategoryId = 0, bool includeHidden = false, int storeId = 0)
-				{
+		{
 			var storeToken = QuerySettings.IgnoreMultiStore ? "0" : storeId.ToString();
 			var rolesToken = QuerySettings.IgnoreAcl || includeHidden ? "0" : _workContext.CurrentCustomer.GetRolesIdent();
 			var cacheKey = CATEGORY_TREE_KEY.FormatInvariant(includeHidden.ToString().ToLower(), rolesToken, storeToken);
@@ -899,7 +831,7 @@ namespace SmartStore.Services.Catalog
 							{
 								// level +1
 								curParent = curParent.LastChild;
-				}
+							}
 							else
 							{
 								// level -x
@@ -927,9 +859,9 @@ namespace SmartStore.Services.Catalog
 			if (rootCategoryId > 0)
 			{
 				root = root.SelectNodeById(rootCategoryId);
-		}
+			}
 
 			return root;
-    }
+		}
 	}
 }

@@ -353,6 +353,10 @@
 								<i class="fa fa-search"></i>
 								<span>@T("Admin.Common.Search")</span>
 							</button>
+							@(Html.SmartStore().EntityPicker()
+								.DialogTitle(T("Admin.Catalog.Products.Fields.RequireOtherProducts"))
+								.Caption(T("Admin.Common.Search"))
+								.HtmlAttribute("class", "btn btn-warning"))
 						</span>
 					</div>
 					@Html.ValidationMessageFor(model => model.RequiredProductIds)

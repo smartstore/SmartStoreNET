@@ -8,9 +8,9 @@ using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public class EntityPickerBuilder : ComponentBuilder<EntityPicker, EntityPickerBuilder>
+    public class EntityPickerBuilder<TModel> : ComponentBuilder<EntityPicker, EntityPickerBuilder<TModel>, TModel>
     {
-        public EntityPickerBuilder(EntityPicker component, HtmlHelper htmlHelper)
+        public EntityPickerBuilder(EntityPicker component, HtmlHelper<TModel> htmlHelper)
             : base(component, htmlHelper)
         {
 			WithRenderer(new ViewBasedComponentRenderer<EntityPicker>("EntityPicker"));
@@ -24,21 +24,39 @@ namespace SmartStore.Web.Framework.UI
 				false));
 		}
 
-		public EntityPickerBuilder Tooltip(string value)
+		public EntityPickerBuilder<TModel> EntityType(string value)
+		{
+			base.Component.EntityType = value;
+			return this;
+		}
+
+		public EntityPickerBuilder<TModel> Caption(string value)
+		{
+			base.Component.Caption = value;
+			return this;
+		}
+
+		public EntityPickerBuilder<TModel> Tooltip(string value)
 		{
 			base.Component.HtmlAttributes["title"] = value;
 			return this;
 		}
 
-		public EntityPickerBuilder DialogTitle(string value)
+		public EntityPickerBuilder<TModel> DialogTitle(string value)
 		{
 			base.Component.DialogTitle = value;
 			return this;
 		}
 
-		public EntityPickerBuilder DialogUrl(string value)
+		public EntityPickerBuilder<TModel> DialogUrl(string value)
 		{
 			base.Component.DialogUrl = value;
+			return this;
+		}
+
+		public EntityPickerBuilder<TModel> MaxItems(int value)
+		{
+			base.Component.MaxItems = value;
 			return this;
 		}
 	}

@@ -23,6 +23,6 @@ namespace SmartStore.Web.Framework.UI
 
 		public string IconCssClass { get; set; }
 
-		public int MaxSelections { get; set; }
+		public int MaxItems { get; set; }
 	}
 }

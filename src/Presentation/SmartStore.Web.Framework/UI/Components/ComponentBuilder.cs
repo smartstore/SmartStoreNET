@@ -7,13 +7,13 @@ using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public abstract class ComponentBuilder<TComponent, TBuilder> : IHtmlString, IHideObjectMembers 
+    public abstract class ComponentBuilder<TComponent, TBuilder, TModel> : IHtmlString, IHideObjectMembers 
         where TComponent : Component
-        where TBuilder : ComponentBuilder<TComponent, TBuilder>
+        where TBuilder : ComponentBuilder<TComponent, TBuilder, TModel>
     {
         private ComponentRenderer<TComponent> _renderer;
 
-        protected ComponentBuilder(TComponent component, HtmlHelper htmlHelper)
+        protected ComponentBuilder(TComponent component, HtmlHelper<TModel> htmlHelper)
         {
             Guard.NotNull(component, nameof(component));
             Guard.NotNull(htmlHelper, nameof(htmlHelper));
@@ -22,7 +22,7 @@ namespace SmartStore.Web.Framework.UI
             this.HtmlHelper = htmlHelper;
         }
 
-        protected internal HtmlHelper HtmlHelper
+        protected internal HtmlHelper<TModel> HtmlHelper
         {
             get;
             private set;
@@ -159,7 +159,7 @@ namespace SmartStore.Web.Framework.UI
             this.Renderer.Render();
         }
 
-        public static implicit operator TComponent(ComponentBuilder<TComponent, TBuilder> builder)
+        public static implicit operator TComponent(ComponentBuilder<TComponent, TBuilder, TModel> builder)
         {
             return builder.ToComponent();
         }

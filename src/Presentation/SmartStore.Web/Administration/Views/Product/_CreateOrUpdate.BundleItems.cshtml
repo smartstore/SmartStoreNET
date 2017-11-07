@@ -140,57 +140,46 @@
         </tr>
         <tr>
             <td>
-				<button type="button" id="AddNewBundleItemButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
-					<i class="fa fa-plus"></i>
-					@T("Common.AddNew")
-				</button>
+				@(Html.SmartStore().EntityPicker()
+					.HtmlAttribute("class", "btn btn-warning")
+					.DialogTitle(T("Admin.Catalog.Products.BundleItems.AddNew"))
+					.DisableBundleProducts(true)
+					.DisableGroupedProducts(true)
+					.Caption(T("Common.AddNew"))
+					.IconCssClass("fa fa-plus")
+					.OnSelectionCompleted("EntPicker_Completed"))
 
-				<input type="submit" id="btnRefreshBundleItems" name="btnRefreshBundleItems" class="hide" />
+				<input type="submit" id="btnRefreshBundleItems" name="btnRefreshBundleItems" class="d-none" />
             </td>
         </tr>
     </table>
     
     <script>
-	$(document).ready(function () {
-		$('#btnRefreshBundleItems').click(function () {
-			$("#bundleitems-grid").data('tGrid').ajaxRequest();
-			return false;
-		});
-
-		// Toggle bundle infos
-		$(document).on('click', '#ProductBundleInfoLink', function () {
-			var info = $('#ProductBundleInfoContainer');
-			$(this).text($(this).attr(info.is(':visible') ? 'data-in' : 'data-out'));
-			info.slideToggle();
-		});
-
-		// Add new bundle item
-		$(document).on('click', '#AddNewBundleItemButton', function () {
-			$({}).entityPicker('loadDialog', {
-				url: '@Url.Action("Picker", "Entity", new { area = "" })',
-				caption: '@T("Admin.Catalog.Products.BundleItems.AddNew")',
-				disableIf: 'notSimpleProduct',
-				onLoadDialogBefore: function () {
-					$('#AddNewBundleItemButton').button('loading').prop('disabled', true);
-				},
-				onLoadDialogComplete: function () {
-					$('#AddNewBundleItemButton').prop('disabled', false).button('reset');
-				},
-				onOkClicked: function (ids) {
-					$({}).doAjax({
-						type: 'POST',
-						url: '@Url.Action("BundleItemAdd")',
-						data: { "productId": @Model.Id, "selectedProductIds": ids },
-						callbackSuccess: function () {
-							$("#bundleitems-grid").data('tGrid').ajaxRequest();
-						}
-					});
-					return true;
+		function EntPicker_Completed(ids) {
+			$({}).doAjax({
+				type: 'POST',
+				url: '@Url.Action("BundleItemAdd")',
+				data: { "productId": @Model.Id, "selectedProductIds": ids },
+				callbackSuccess: function () {
+					$("#bundleitems-grid").data('tGrid').ajaxRequest();
 				}
 			});
-		});
+			return true;
+		};
 
-	});
+		$(function() {
+			$('#btnRefreshBundleItems').click(function () {
+				$("#bundleitems-grid").data('tGrid').ajaxRequest();
+				return false;
+			});
+
+			// Toggle bundle infos
+			$(document).on('click', '#ProductBundleInfoLink', function () {
+				var info = $('#ProductBundleInfoContainer');
+				$(this).text($(this).attr(info.is(':visible') ? 'data-in' : 'data-out'));
+				info.slideToggle();
+			});	
+		});
     </script>
 }
 else

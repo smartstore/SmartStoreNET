@@ -10,7 +10,7 @@
 			options = normalizeOptions(options, this);
 
 			return this.each(function () {
-				loadDialog(options);
+				loadDialog(this, options);
 			});
 		},
 
@@ -43,11 +43,20 @@
 
 
 	function main(method) {
-		if (methods[method])
+		if (methods[method]) {
 			return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+		}
 
-		if (typeof method === 'object' || !method)
-			return methods.init.apply(this, arguments);
+		if (typeof method === 'object' || !method) {
+			var btn = this;
+			$(btn).on('click', function (e) {
+				if (!btn.is('.disabled')) {
+					loadDialog(btn, method);
+				}
+			});
+
+			return null;
+		}		
 
 		EventBroker.publish("message", { title: 'Method "' + method + '" does not exist on jQuery.entityPicker', type: "error" });
 		return null;
@@ -85,7 +94,12 @@
 		}
 
 		if (_.isEmpty(options.targetInput)) {
-			options.targetInput = self.closest('.input-group').find('> input, > textarea').first();
+			if (self.data('target')) {
+				options.targetInput = $(self.data('target')).first();
+			}
+			else {
+				options.targetInput = self.closest('.input-group').find('> input, > textarea').first();
+			}
 		}
 
 		return options;
@@ -106,7 +120,8 @@
 		footerNote.find('.' + (noteClass || 'default')).show();
 	}
 
-	function loadDialog(opt) {
+	function loadDialog(context /* button */, opt) {
+		var btn = $(context);
 		var dialog = $('#entpicker-' + opt.entity + '-dialog');
 
 		function showAndFocusDialog() {
@@ -139,6 +154,7 @@
 				},
 				url: opt.url,
 				beforeSend: function () {
+					btn.addClass('disabled').prop('disabled', true);
 					if (_.isFunction(opt.onLoadDialogBefore)) {
 						return opt.onLoadDialogBefore();
 					}
@@ -148,6 +164,7 @@
 					showAndFocusDialog();
 				},
 				complete: function () {
+					btn.prop('disabled', false).removeClass('disabled');
 					if (_.isFunction(opt.onLoadDialogComplete)) {
 						opt.onLoadDialogComplete();
 					}

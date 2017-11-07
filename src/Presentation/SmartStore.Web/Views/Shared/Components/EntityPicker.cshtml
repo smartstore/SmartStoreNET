@@ -1,7 +1,7 @@
 ﻿@model EntityPicker
 
 @{ 
-	if (Model.HtmlAttributes.ContainsKey("id"))
+	if (!Model.HtmlAttributes.ContainsKey("id"))
 	{
 		Model.Id = "entpicker-toggle-" + CommonHelper.GenerateRandomInteger();
 	}
@@ -17,3 +17,25 @@
 		<span>@Model.Caption</span>
 	}
 </button>
+
+<script>
+	$(function () {
+		$('#@Model.Id').entityPicker({
+			entity: '@Model.EntityType',
+			url: '@Model.DialogUrl',
+			caption: '@Html.Raw(Model.DialogTitle)',
+			disableIf: '@Html.Raw(Model.DisableGroupedProducts ? "groupedproduct" : (Model.DisableBundleProducts ? "notsimpleproduct" : ""))', // TODO
+			disableIds: '@Html.Raw(Model.DisabledEntityIds == null ? "" : String.Join(",", Model.DisabledEntityIds))', // TODO
+			thumbZoomer: @Model.EnableThumbZoomer.ToString().ToLower(),
+			highligtSearchTerm: @Model.HighlightSearchTerm.ToString().ToLower(),
+			returnField: '@Html.Raw(Model.FieldName)',
+			returnValueDelimiter: '@Html.Raw(Model.Delimiter)',
+			targetInput: @Html.Raw(Model.TargetInputSelector.HasValue() ? "'{0}'".FormatInvariant(Model.TargetInputSelector) : "null"),
+			appendValue: @Model.AppendMode.ToString().ToLower(),
+			maxReturnValues: @Model.MaxItems,
+			onLoadDialogBefore: @Html.Raw(Model.OnDialogLoadingHandlerName.HasValue() ? Model.OnDialogLoadingHandlerName : "null"),
+			onLoadDialogComplete: @Html.Raw(Model.OnDialogLoadedHandlerName.HasValue() ? Model.OnDialogLoadedHandlerName : "null"),
+			onOkClicked: @Html.Raw(Model.OnSelectionCompletedHandlerName.HasValue() ? Model.OnSelectionCompletedHandlerName : "null")
+		});
+	});
+</script>

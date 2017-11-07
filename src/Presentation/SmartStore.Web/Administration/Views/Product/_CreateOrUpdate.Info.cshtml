@@ -5,23 +5,7 @@
 <script>
 	$(function () {
 		$("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
-
 		toggleProductType();
-
-		// add required products
-		$(document).on('click', '#SearchRequiredProductsButton', function () {
-			$('#@(Html.FieldIdFor(x => x.RequiredProductIds))').entityPicker('loadDialog', {
-				url: '@Url.Action("Picker", "Entity", new { area = "" })',
-				caption: '@T("Admin.Catalog.Products.Fields.RequireOtherProducts")',
-				returnValueDelimiter: ',',
-				onLoadDialogBefore: function () {
-					$('#SearchRequiredProductsButton').button('loading').prop('disabled', true);
-				},
-				onLoadDialogComplete: function () {
-					$('#SearchRequiredProductsButton').prop('disabled', false).button('reset');
-				}
-			});
-		});
 	});
 
     function toggleProductType() {
@@ -349,14 +333,10 @@
 					<div class="input-group">
 						@Html.EditorFor(model => model.RequiredProductIds)
 						<span class="input-group-btn">
-							<button type="button" class="btn btn-secondary" id="SearchRequiredProductsButton" data-loading-text="@(T("Common.Loading"))&hellip;">
-								<i class="fa fa-search"></i>
-								<span>@T("Admin.Common.Search")</span>
-							</button>
 							@(Html.SmartStore().EntityPicker()
+								.For(x => x.RequiredProductIds)
 								.DialogTitle(T("Admin.Catalog.Products.Fields.RequireOtherProducts"))
-								.Caption(T("Admin.Common.Search"))
-								.HtmlAttribute("class", "btn btn-warning"))
+								.Caption(T("Admin.Common.Search")))
 						</span>
 					</div>
 					@Html.ValidationMessageFor(model => model.RequiredProductIds)

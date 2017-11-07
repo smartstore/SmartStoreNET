@@ -96,6 +96,12 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
+		public EntityPickerBuilder<TModel> SelectedEntityIds(params int[] values)
+		{
+			base.Component.SelectedEntityIds = values;
+			return this;
+		}
+
 		public EntityPickerBuilder<TModel> EnableThumbZoomer(bool value)
 		{
 			base.Component.EnableThumbZoomer = value;

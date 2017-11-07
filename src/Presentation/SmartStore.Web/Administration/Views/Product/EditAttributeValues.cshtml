@@ -70,10 +70,10 @@
             <button class="btn btn-warning btn-primary btn-below" type="submit" id="btnAddNewValue" name="btnAddNewValue" value="btnAddNewValue" 
 				onclick="javascript:openPopup('@(Url.Action("ProductAttributeValueCreatePopup", "Product", new { productVariantAttributeId = Model.ProductVariantAttributeId, btnId = "btnRefresh", formId = "productvariantattribute-form" }))'); return false;">
                 <i class="fa fa-plus"></i>
-                @T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AddNew")
+				<span>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AddNew")</span>
             </button>
 
-            <button type="submit" id="btnRefresh" name="btnRefresh" value="btnRefresh" class="hide" />
+            <button type="submit" id="btnRefresh" name="btnRefresh" value="btnRefresh" class="d-none" />
 
             <script type="text/javascript">
 				$(document).ready(function () {

@@ -562,12 +562,11 @@ namespace SmartStore.Admin.Controllers
         }       
 
 		[HttpPost]
-		public ActionResult ProductAdd(int manufacturerId, string selectedProductIds)
+		public ActionResult ProductAdd(int manufacturerId, int[] selectedProductIds)
 		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
-				var products = _productService.GetProductsByIds(productIds);
+				var products = _productService.GetProductsByIds(selectedProductIds);
 				ProductManufacturer productManu = null;
 				var maxDisplayOrder = -1;
 

@@ -79,4 +79,9 @@
         max-width: 100%;
         min-height: 1px;
     }
+
+    .modal-flex-fill-area {
+        min-height: 100%;
+        flex: 1;
+    }
 }

@@ -35,6 +35,7 @@ namespace SmartStore.Web.Framework.UI
 		public bool DisableGroupedProducts { get; set; }
 		public bool DisableBundleProducts { get; set; }
 		public int[] DisabledEntityIds { get; set; }
+		public int[] SelectedEntityIds { get; set; }
 
 		public bool EnableThumbZoomer { get; set; }
 		public bool HighlightSearchTerm { get; set; }

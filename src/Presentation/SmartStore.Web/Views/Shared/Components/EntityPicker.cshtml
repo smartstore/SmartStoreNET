@@ -29,13 +29,14 @@
 			thumbZoomer: @Model.EnableThumbZoomer.ToString().ToLower(),
 			highligtSearchTerm: @Model.HighlightSearchTerm.ToString().ToLower(),
 			returnField: '@Html.Raw(Model.FieldName)',
-			returnValueDelimiter: '@Html.Raw(Model.Delimiter)',
+			delim: '@Html.Raw(Model.Delimiter)',
 			targetInput: @Html.Raw(Model.TargetInputSelector.HasValue() ? "'{0}'".FormatInvariant(Model.TargetInputSelector) : "null"),
-			appendValue: @Model.AppendMode.ToString().ToLower(),
-			maxReturnValues: @Model.MaxItems,
-			onLoadDialogBefore: @Html.Raw(Model.OnDialogLoadingHandlerName.HasValue() ? Model.OnDialogLoadingHandlerName : "null"),
-			onLoadDialogComplete: @Html.Raw(Model.OnDialogLoadedHandlerName.HasValue() ? Model.OnDialogLoadedHandlerName : "null"),
-			onOkClicked: @Html.Raw(Model.OnSelectionCompletedHandlerName.HasValue() ? Model.OnSelectionCompletedHandlerName : "null")
+			preselectedIds: @Html.Raw(Model.SelectedEntityIds != null && Model.SelectedEntityIds.Length > 0 ? "[{0}]".FormatInvariant(string.Join(Model.Delimiter, Model.SelectedEntityIds)) : "null"),
+			appendMode: @Model.AppendMode.ToString().ToLower(),
+			maxItems: @Model.MaxItems,
+			onDialogLoading: @Html.Raw(Model.OnDialogLoadingHandlerName.HasValue() ? Model.OnDialogLoadingHandlerName : "null"),
+			onDialogLoaded: @Html.Raw(Model.OnDialogLoadedHandlerName.HasValue() ? Model.OnDialogLoadedHandlerName : "null"),
+			onSelectionCompleted: @Html.Raw(Model.OnSelectionCompletedHandlerName.HasValue() ? Model.OnSelectionCompletedHandlerName : "null")
 		});
 	});
 </script>

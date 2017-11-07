@@ -201,11 +201,8 @@
 				onLoadDialogComplete: function () {
 					$('#AddProductLinkageButton').prop('disabled', false).button('reset');
 				},
-				onOkClicked: function (ids) {
-					var dialog = $('#entity-picker-product-dialog'),
-						item = dialog.find('.entity-picker-list .selected').first();
-
-					$('#linked-product-name').html(item.find('.title').attr('title'));
+				onOkClicked: function (ids, selectedItems) {
+					$('#linked-product-name').html(selectedItems[0].name);
 					return true;
 				}
 			});

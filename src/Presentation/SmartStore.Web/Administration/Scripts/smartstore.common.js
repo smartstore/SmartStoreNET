@@ -10,12 +10,16 @@
 		if (modal.length === 0) {
 			// TODO: (mc) Update to BS4 modal html later
 			var html =
-				'<div id="modal-popup-shared" class="modal modal-flex {0} fade" tabindex="-1" style="border-radius: 0">'.format(!!(fluid) ? 'modal-fluid' : 'modal-xlarge')
-					+ '<div class="modal-body" style="padding: 0">'
-						+ '<iframe class="modal-flex-fill-area" frameborder="0" src="' + url + '" />'
-					+ '</div>'
-					+ '<div class="modal-footer">'
-						+ '<button type="button" class="btn btn-secondary btn-default" data-dismiss="modal">' + window.Res['Common.Close'] + '</button>'
+				'<div id="modal-popup-shared" class="modal modal-flex {0} fade" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'.format(!!(fluid) ? 'modal-fluid' : 'modal-xlarge')
+					+ '<div class="modal-dialog" role="document">'
+						+ '<div class="modal-content">'
+							+ '<div class="modal-body" style="padding: 0">'
+								+ '<iframe class="modal-flex-fill-area" frameborder="0" src="' + url + '" />'
+							+ '</div>'
+							+ '<div class="modal-footer">'
+								+ '<button type="button" class="btn btn-secondary btn-default" data-dismiss="modal">' + window.Res['Common.Close'] + '</button>'
+							+ '</div>'
+						+ '</div>'
 					+ '</div>'
 				+ '</div>';
 
@@ -315,10 +319,11 @@
 			$.ajax({
 				cache: false,
 				type: "GET",
-				async: false,
+				async: true,
 				global: false,
 				url: url,
 				beforeSend: function (xhr) {
+					pane.html(createCircularSpinner(48, true, 2));
 					getFunction(tabbable.data("ajax-onbegin"), ["tab", "pane", "xhr"]).apply(this, [newTab, pane, xhr]);
 				},
 				success: function (data, status, xhr) {

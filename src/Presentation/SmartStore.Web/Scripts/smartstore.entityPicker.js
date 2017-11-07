@@ -51,7 +51,7 @@
 			var btn = this;
 			$(btn).on('click', function (e) {
 				if (!btn.is('.disabled')) {
-					loadDialog(btn, method);
+					loadDialog(btn, normalizeOptions(method, btn));
 				}
 			});
 
@@ -64,7 +64,7 @@
 
 	function normalizeOptions(options, context) {
 		var self = $(context);
-
+		
 		var defaults = {
 			url: '',
 			entity: 'product',
@@ -74,13 +74,14 @@
 			thumbZoomer: false,
 			highligtSearchTerm: true,
 			returnField: 'id',
-			returnValueDelimiter: ',',
+			delim: ',',
 			targetInput: null,
-			appendValue: true,
-			maxReturnValues: 0,
-			onLoadDialogBefore: null,
-			onLoadDialogComplete: null,
-			onOkClicked: null
+			preselectedIds: null,
+			appendMode: true,
+			maxItems: 0,
+			onDialogLoading: null,
+			onDialogLoaded: null,
+			onSelectionCompleted: null
 		};
 
 		options = $.extend({}, defaults, options);
@@ -90,16 +91,26 @@
 		}
 
 		if (_.isEmpty(options.url)) {
-			console.log('entityPicker cannot find the url for entity picker!');
+			console.error('EntityPicker cannot find the url for entity picker!');
 		}
 
-		if (_.isEmpty(options.targetInput)) {
-			if (self.data('target')) {
-				options.targetInput = $(self.data('target')).first();
+		if (!options.targetInput && self.data('target')) {
+			options.targetInput = $(self.data('target')).first();
+		}
+
+		if (options.targetInput && !_.isArray(options.preselectedIds)) {
+			var val = $(options.targetInput).val();
+			if (val.length > 0) {
+				options.preselectedIds = _.map(val.split(options.delim), function (x) {
+					var result = x.trim();
+					if (options.returnField.toLowerCase() === 'id') result = toInt(result);
+					return result;
+				});
 			}
-			else {
-				options.targetInput = self.closest('.input-group').find('> input, > textarea').first();
-			}
+		}
+
+		if (!_.isArray(options.preselectedIds)) {
+			options.preselectedIds = [];
 		}
 
 		return options;
@@ -148,15 +159,15 @@
 					"Entity": opt.entity,
 					"HighligtSearchTerm": opt.highligtSearchTerm,
 					"ReturnField": opt.returnField,
-					"MaxReturnValues": opt.maxReturnValues,
+					"MaxReturnValues": opt.maxItems,
 					"DisableIf": opt.disableIf,
 					"DisableIds": opt.disableIds
 				},
 				url: opt.url,
 				beforeSend: function () {
 					btn.addClass('disabled').prop('disabled', true);
-					if (_.isFunction(opt.onLoadDialogBefore)) {
-						return opt.onLoadDialogBefore();
+					if (_.isFunction(opt.onDialogLoading)) {
+						return opt.onDialogLoading();
 					}
 				},
 				success: function (response) {
@@ -165,8 +176,8 @@
 				},
 				complete: function () {
 					btn.prop('disabled', false).removeClass('disabled');
-					if (_.isFunction(opt.onLoadDialogComplete)) {
-						opt.onLoadDialogComplete();
+					if (_.isFunction(opt.onDialogLoaded)) {
+						opt.onDialogLoaded();
 					}
 				},
 				error: ajaxErrorHandler
@@ -242,14 +253,14 @@
 				list = item.closest('.entpicker-list'),
 				data = dialog.data('entitypicker');
 
-			if (data.maxReturnValues === 1) {
+			if (data.maxItems === 1) {
 				list.find('.entpicker-item').removeClass('selected');
 				item.addClass('selected');
 			}
 			else if (item.hasClass('selected')) {
 				item.removeClass('selected');
 			}
-			else if (data.maxReturnValues === 0 || list.find('.selected').length < data.maxReturnValues) {
+			else if (data.maxItems === 0 || list.find('.selected').length < data.maxItems) {
 				item.addClass('selected');
 			}
 
@@ -266,31 +277,45 @@
 		}, '.entpicker-item');
 
 		// return value(s)
-		dialog.find('.modal-footer .btn-primary').click(function () {
+		dialog.find('.modal-footer .btn-primary').on('click', function () {
 			var dialog = $(this).closest('.entpicker'),
 				items = dialog.find('.entpicker-list .selected'),
-				data = dialog.data('entitypicker'),
+				opts = dialog.data('entitypicker'),
 				result = '';
 
 			items.each(function (index, elem) {
 				var val = $(elem).attr('data-returnvalue');
 				if (!_.isEmpty(val)) {
-					result = (_.isEmpty(result) ? val : (result + data.returnValueDelimiter + val));
+					result = (_.isEmpty(result) ? val : (result + opts.delim + val));
 				}
 			});
 
-			if (data.targetInput) {
-				var existingValue = $(data.targetInput).val();
+			var selectedItems = _.map(items, function (val) {
+				return {
+					id: $(val).data('returnvalue'),
+					name: $(val).find('.title').attr('title')
+				};
+			});
 
-				if (data.appendValue && !_.isEmpty(existingValue) && !_.isEmpty(result)) {
-					result = existingValue + (_.str.endsWith(existingValue, data.returnValueDelimiter) ? '' : data.returnValueDelimiter) + result;
-				}
+			var selectedIds = _.uniq(_.map(selectedItems, function (x) {
+				var result = x.id;
+				if (opts.returnField.toLowerCase() === 'id' && !_.isNumber(result)) result = toInt(result);
+				return result;
+			}));
 
-				$(data.targetInput).val(result).focus().blur();
+			if (opts.appendMode && _.isArray(opts.preselectedIds)) {
+				selectedIds = _.union(opts.preselectedIds, selectedIds);
 			}
 
-			if (_.isFunction(data.onOkClicked)) {
-				if (data.onOkClicked(result)) {
+			if (opts.targetInput) {
+				$(opts.targetInput)
+					.val(selectedIds.join(opts.delim))
+					.focus()
+					.blur();
+			}
+
+			if (_.isFunction(opts.onSelectionCompleted)) {
+				if (opts.onSelectionCompleted(selectedIds, selectedItems, dialog)) {
 					dialog.modal('hide');
 				}
 			}

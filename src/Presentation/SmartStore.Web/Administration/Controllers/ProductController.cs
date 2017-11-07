@@ -1765,12 +1765,11 @@ namespace SmartStore.Admin.Controllers
         }
         
 		[HttpPost]
-		public ActionResult RelatedProductAdd(int productId, string selectedProductIds)
+		public ActionResult RelatedProductAdd(int productId, int[] selectedProductIds)
 		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
-				var products = _productService.GetProductsByIds(productIds);
+				var products = _productService.GetProductsByIds(selectedProductIds);
 				RelatedProduct relation = null;
 				var maxDisplayOrder = -1;
 
@@ -1888,12 +1887,11 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[HttpPost]
-		public ActionResult CrossSellProductAdd(int productId, string selectedProductIds)
+		public ActionResult CrossSellProductAdd(int productId, int[] selectedProductIds)
 		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
-				var products = _productService.GetProductsByIds(productIds);
+				var products = _productService.GetProductsByIds(selectedProductIds);
 
 				foreach (var product in products)
 				{
@@ -2020,7 +2018,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult AssociatedProductAdd(int productId, string selectedProductIds)
+		public ActionResult AssociatedProductAdd(int productId, int[] selectedProductIds)
 		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
@@ -2033,8 +2031,7 @@ namespace SmartStore.Admin.Controllers
 					.OrderByDescending(x => x)
 					.FirstOrDefault();
 
-				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
-				var products = _productService.GetProductsByIds(productIds);
+				var products = _productService.GetProductsByIds(selectedProductIds);
 
 				foreach (var product in products)
 				{
@@ -2211,13 +2208,12 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult BundleItemAdd(int productId, string selectedProductIds)
+		public ActionResult BundleItemAdd(int productId, int[] selectedProductIds)
 		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
 				var utcNow = DateTime.UtcNow;
-				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
-				var products = _productService.GetProductsByIds(productIds);
+				var products = _productService.GetProductsByIds(selectedProductIds);
 
 				var maxDisplayOrder = _productService.GetBundleItems(productId, true)
 					.OrderByDescending(x => x.Item.DisplayOrder)

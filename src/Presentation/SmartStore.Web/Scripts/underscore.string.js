@@ -1,12 +1,11 @@
-﻿// Underscore.string
-// (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
-// Underscore.strings is freely distributable under the terms of the MIT license.
-// Documentation: https://github.com/epeli/underscore.string
-// Some code is borrowed from MooTools and Alexandru Marasteanu.
+﻿//  Underscore.string
+//  (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
+//  Underscore.string is freely distributable under the terms of the MIT license.
+//  Documentation: https://github.com/epeli/underscore.string
+//  Some code is borrowed from MooTools and Alexandru Marasteanu.
+//  Version '2.4.0'
 
-// Version 2.2.0rc
-
-!function(root){
+!function(root, String){
   'use strict';
 
   // Defining helper functions.
@@ -29,49 +28,38 @@
 
   var slice = [].slice;
 
-  var replace = function(str, pattern, something){
-    return (''+str).replace(pattern, something);
-  }
-
-  var defaultToWhiteSpace = function(characters){
-    if (characters != null) {
+  var defaultToWhiteSpace = function(characters) {
+    if (characters == null)
+      return '\\s';
+    else if (characters.source)
+      return characters.source;
+    else
       return '[' + _s.escapeRegExp(characters) + ']';
+  };
+
+  // Helper for toBoolean
+  function boolMatch(s, matchers) {
+    var i, matcher, down = s.toLowerCase();
+    matchers = [].concat(matchers);
+    for (i = 0; i < matchers.length; i += 1) {
+      matcher = matchers[i];
+      if (!matcher) continue;
+      if (matcher.test && matcher.test(s)) return true;
+      if (matcher.toLowerCase() === down) return true;
     }
-    return '\\s';
-  };
-
-  var levenshtein = function(str1, str2) {
-    str1 += ''; str2 += '';
-
-    var current = [], prev, value;
-
-    for (var i = 0; i <= str2.length; i++)
-      for (var j = 0; j <= str1.length; j++) {
-        if (i && j)
-          if (str1.charAt(j - 1) === str2.charAt(i - 1))
-            value = prev;
-          else
-            value = Math.min(current[j], current[j - 1], prev) + 1;
-        else
-          value = i + j;
-
-        prev = current[j];
-        current[j] = value;
-      }
-
-    return current.pop();
-  };
+  }
 
   var escapeChars = {
     lt: '<',
     gt: '>',
     quot: '"',
-    apos: "'",
-    amp: '&'
+    amp: '&',
+    apos: "'"
   };
 
   var reversedEscapeChars = {};
-  for(var key in escapeChars){ reversedEscapeChars[escapeChars[key]] = key; }
+  for(var key in escapeChars) reversedEscapeChars[escapeChars[key]] = key;
+  reversedEscapeChars["'"] = '#39';
 
   // sprintf() for JavaScript 0.7-beta1
   // http://www.diveintojavascript.com/projects/javascript-sprintf
@@ -201,23 +189,27 @@
 
   var _s = {
 
-    VERSION: '2.2.0rc',
+    VERSION: '2.4.0',
 
     isBlank: function(str){
-        return (/^\s*$/).test(str);
+      if (str == null) str = '';
+      return (/^\s*$/).test(str);
     },
 
     stripTags: function(str){
-      return replace(str, /<\/?[^>]+>/g, '');
+      if (str == null) return '';
+      return String(str).replace(/<\/?[^>]+>/g, '');
     },
 
-    capitalize : function(str) {
-      str += '';
+    capitalize : function(str){
+      str = str == null ? '' : String(str);
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
 
     chop: function(str, step){
-      str += ''; step = ~~step;
+      if (str == null) return [];
+      str = String(str);
+      step = ~~step;
       return step > 0 ? str.match(new RegExp('.{1,' + step + '}', 'g')) : [str];
     },
 
@@ -226,26 +218,45 @@
     },
 
     count: function(str, substr){
-      str += ''; substr += '';
-      return str.split(substr).length - 1;
+      if (str == null || substr == null) return 0;
+
+      str = String(str);
+      substr = String(substr);
+
+      var count = 0,
+        pos = 0,
+        length = substr.length;
+
+      while (true) {
+        pos = str.indexOf(substr, pos);
+        if (pos === -1) break;
+        count++;
+        pos += length;
+      }
+
+      return count;
     },
 
     chars: function(str) {
-      return (''+str).split('');
+      if (str == null) return [];
+      return String(str).split('');
     },
 
     swapCase: function(str) {
-      return replace(str, /\S/g, function(ch){
-        return ch === ch.toUpperCase() ? ch.toLowerCase() : ch.toUpperCase();
+      if (str == null) return '';
+      return String(str).replace(/\S/g, function(c){
+        return c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase();
       });
     },
 
     escapeHTML: function(str) {
-      return replace(str, /[&<>"']/g, function(match){ return '&' + reversedEscapeChars[match] + ';'; });
+      if (str == null) return '';
+      return String(str).replace(/[&<>"']/g, function(m){ return '&' + reversedEscapeChars[m] + ';'; });
     },
 
     unescapeHTML: function(str) {
-      return replace(str, /\&([^;]+);/g, function(entity, entityCode){
+      if (str == null) return '';
+      return String(str).replace(/\&([^;]+);/g, function(entity, entityCode){
         var match;
 
         if (entityCode in escapeChars) {
@@ -261,31 +272,8 @@
     },
 
     escapeRegExp: function(str){
-      // From MooTools core 1.2.4
-      return replace(str, /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
-    },
-
-    insert: function(str, i, substr){
-      var arr = _s.chars(str);
-      arr.splice(~~i, 0, ''+substr);
-      return arr.join('');
-    },
-
-    include: function(str, needle){
-      return !!~(''+str).indexOf(needle);
-    },
-
-    join: function() {
-      var args = slice.call(arguments);
-      return args.join(args.shift());
-    },
-
-    lines: function(str) {
-      return (''+str).split("\n");
-    },
-
-    reverse: function(str){
-      return _s.chars(str).reverse().join('');
+      if (str == null) return '';
+      return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
     },
 
     splice: function(str, i, howmany, substr){
@@ -294,29 +282,62 @@
       return arr.join('');
     },
 
+    insert: function(str, i, substr){
+      return _s.splice(str, i, 0, substr);
+    },
+
+    include: function(str, needle){
+      if (needle === '') return true;
+      if (str == null) return false;
+      return String(str).indexOf(needle) !== -1;
+    },
+
+    join: function() {
+      var args = slice.call(arguments),
+        separator = args.shift();
+
+      if (separator == null) separator = '';
+
+      return args.join(separator);
+    },
+
+    lines: function(str) {
+      if (str == null) return [];
+      return String(str).split("\n");
+    },
+
+    reverse: function(str){
+      return _s.chars(str).reverse().join('');
+    },
+
     startsWith: function(str, starts){
-      str += ''; starts += '';
+      if (starts === '') return true;
+      if (str == null || starts == null) return false;
+      str = String(str); starts = String(starts);
       return str.length >= starts.length && str.slice(0, starts.length) === starts;
     },
 
     endsWith: function(str, ends){
-      str += ''; ends += '';
+      if (ends === '') return true;
+      if (str == null || ends == null) return false;
+      str = String(str); ends = String(ends);
       return str.length >= ends.length && str.slice(str.length - ends.length) === ends;
     },
 
     succ: function(str){
-      str += '';
-      var arr = _s.chars(str);
-      arr.splice(str.length-1, 1, String.fromCharCode(str.charCodeAt(str.length-1) + 1));
-      return arr.join('');
+      if (str == null) return '';
+      str = String(str);
+      return str.slice(0, -1) + String.fromCharCode(str.charCodeAt(str.length-1) + 1);
     },
 
     titleize: function(str){
-      return replace(str, /(?:^|\s)\S/g, function(ch){ return ch.toUpperCase(); });
+      if (str == null) return '';
+      str  = String(str).toLowerCase();
+      return str.replace(/(?:^|\s|-)\S/g, function(c){ return c.toUpperCase(); });
     },
 
     camelize: function(str){
-      return _s.trim(str).replace(/[-_\s]+(.)?/g, function(match, ch){ return ch.toUpperCase(); });
+      return _s.trim(str).replace(/[-_\s]+(.)?/g, function(match, c){ return c ? c.toUpperCase() : ""; });
     },
 
     underscored: function(str){
@@ -328,7 +349,7 @@
     },
 
     classify: function(str){
-      return _s.titleize(replace(str, /_/g, ' ')).replace(/\s/g, '');
+      return _s.capitalize(_s.camelize(String(str).replace(/[\W_]/g, ' ')).replace(/\s/g, ''));
     },
 
     humanize: function(str){
@@ -336,32 +357,29 @@
     },
 
     trim: function(str, characters){
-      str += '';
+      if (str == null) return '';
       if (!characters && nativeTrim) return nativeTrim.call(str);
       characters = defaultToWhiteSpace(characters);
-      return str.replace(new RegExp('\^' + characters + '+|' + characters + '+$', 'g'), '');
+      return String(str).replace(new RegExp('^' + characters + '+|' + characters + '+$', 'g'), '');
     },
 
     ltrim: function(str, characters){
-      str += '';
-      if (!characters && nativeTrimLeft) {
-        return nativeTrimLeft.call(str);
-      }
+      if (str == null) return '';
+      if (!characters && nativeTrimLeft) return nativeTrimLeft.call(str);
       characters = defaultToWhiteSpace(characters);
-      return str.replace(new RegExp('^' + characters + '+'), '');
+      return String(str).replace(new RegExp('^' + characters + '+'), '');
     },
 
     rtrim: function(str, characters){
-      str += '';
-      if (!characters && nativeTrimRight) {
-        return nativeTrimRight.call(str);
-      }
+      if (str == null) return '';
+      if (!characters && nativeTrimRight) return nativeTrimRight.call(str);
       characters = defaultToWhiteSpace(characters);
-      return str.replace(new RegExp(characters + '+$'), '');
+      return String(str).replace(new RegExp(characters + '+$'), '');
     },
 
     truncate: function(str, length, truncateStr){
-      str += ''; truncateStr = truncateStr || '...';
+      if (str == null) return '';
+      str = String(str); truncateStr = truncateStr || '...';
       length = ~~length;
       return str.length > length ? str.slice(0, length) + truncateStr : str;
     },
@@ -369,57 +387,53 @@
     /**
      * _s.prune: a more elegant version of truncate
      * prune extra chars, never leaving a half-chopped word.
-     * @author github.com/sergiokas
+     * @author github.com/rwz
      */
     prune: function(str, length, pruneStr){
-      str += ''; length = ~~length;
-      pruneStr = pruneStr != null ? ''+pruneStr : '...';
+      if (str == null) return '';
 
-      var pruned, borderChar, template = str.replace(/\W/g, function(ch){
-        return (ch.toUpperCase() !== ch.toLowerCase()) ? 'A' : ' ';
-      });
+      str = String(str); length = ~~length;
+      pruneStr = pruneStr != null ? String(pruneStr) : '...';
 
-      borderChar = template.charAt(length);
+      if (str.length <= length) return str;
 
-      pruned = template.slice(0, length);
+      var tmpl = function(c){ return c.toUpperCase() !== c.toLowerCase() ? 'A' : ' '; },
+        template = str.slice(0, length+1).replace(/.(?=\W*\w*$)/g, tmpl); // 'Hello, world' -> 'HellAA AAAAA'
 
-      // Check if we're in the middle of a word
-      if (borderChar && borderChar.match(/\S/))
-        pruned = pruned.replace(/\s\S+$/, '');
+      if (template.slice(template.length-2).match(/\w\w/))
+        template = template.replace(/\s*\S+$/, '');
+      else
+        template = _s.rtrim(template.slice(0, template.length-1));
 
-      pruned = _s.rtrim(pruned);
-
-      return (pruned+pruneStr).length > str.length ? str : str.slice(0, pruned.length)+pruneStr;
+      return (template+pruneStr).length > str.length ? str : str.slice(0, template.length)+pruneStr;
     },
 
     words: function(str, delimiter) {
+      if (_s.isBlank(str)) return [];
       return _s.trim(str, delimiter).split(delimiter || /\s+/);
     },
 
     pad: function(str, length, padStr, type) {
-      str += '';
+      str = str == null ? '' : String(str);
+      length = ~~length;
 
       var padlen  = 0;
 
-      length = ~~length;
-
-      if (!padStr) {
+      if (!padStr)
         padStr = ' ';
-      } else if (padStr.length > 1) {
+      else if (padStr.length > 1)
         padStr = padStr.charAt(0);
-      }
 
       switch(type) {
         case 'right':
-          padlen = (length - str.length);
+          padlen = length - str.length;
           return str + strRepeat(padStr, padlen);
         case 'both':
-          padlen = (length - str.length);
-          return strRepeat(padStr, Math.ceil(padlen/2)) +
-                 str +
-                 strRepeat(padStr, Math.floor(padlen/2));
+          padlen = length - str.length;
+          return strRepeat(padStr, Math.ceil(padlen/2)) + str
+                  + strRepeat(padStr, Math.floor(padlen/2));
         default: // 'left'
-          padlen = (length - str.length);
+          padlen = length - str.length;
           return strRepeat(padStr, padlen) + str;
         }
     },
@@ -444,58 +458,77 @@
     },
 
     toNumber: function(str, decimals) {
-      str += '';
-      var num = parseNumber(parseNumber(str).toFixed(~~decimals));
-      return num === 0 && !str.match(/^0+$/) ? Number.NaN : num;
+      if (!str) return 0;
+      str = _s.trim(str);
+      if (!str.match(/^-?\d+(?:\.\d+)?$/)) return NaN;
+      return parseNumber(parseNumber(str).toFixed(~~decimals));
+    },
+
+    numberFormat : function(number, dec, dsep, tsep) {
+      if (isNaN(number) || number == null) return '';
+
+      number = number.toFixed(~~dec);
+      tsep = typeof tsep == 'string' ? tsep : ',';
+
+      var parts = number.split('.'), fnums = parts[0],
+        decimals = parts[1] ? (dsep || '.') + parts[1] : '';
+
+      return fnums.replace(/(\d)(?=(?:\d{3})+$)/g, '$1' + tsep) + decimals;
     },
 
     strRight: function(str, sep){
-      str += ''; sep = sep != null ? ''+sep : sep;
+      if (str == null) return '';
+      str = String(str); sep = sep != null ? String(sep) : sep;
       var pos = !sep ? -1 : str.indexOf(sep);
       return ~pos ? str.slice(pos+sep.length, str.length) : str;
     },
 
     strRightBack: function(str, sep){
-      str += ''; sep = sep != null ? ''+sep : sep;
+      if (str == null) return '';
+      str = String(str); sep = sep != null ? String(sep) : sep;
       var pos = !sep ? -1 : str.lastIndexOf(sep);
       return ~pos ? str.slice(pos+sep.length, str.length) : str;
     },
 
     strLeft: function(str, sep){
-      str += ''; sep = sep != null ? ''+sep : sep;
+      if (str == null) return '';
+      str = String(str); sep = sep != null ? String(sep) : sep;
       var pos = !sep ? -1 : str.indexOf(sep);
       return ~pos ? str.slice(0, pos) : str;
     },
 
     strLeftBack: function(str, sep){
+      if (str == null) return '';
       str += ''; sep = sep != null ? ''+sep : sep;
       var pos = str.lastIndexOf(sep);
       return ~pos ? str.slice(0, pos) : str;
     },
 
-    toSentence: function(array, separator, lastSeparator) {
-        separator || (separator = ', ');
-        lastSeparator || (lastSeparator = ' and ');
-        var length = array.length, str = '';
+    toSentence: function(array, separator, lastSeparator, serial) {
+      separator = separator || ', ';
+      lastSeparator = lastSeparator || ' and ';
+      var a = array.slice(), lastMember = a.pop();
 
-        for (var i = 0; i < length; i++) {
-            str += array[i];
-            if (i === (length - 2)) { str += lastSeparator; }
-            else if (i < (length - 1)) { str += separator; }
-        }
+      if (array.length > 2 && serial) lastSeparator = _s.rtrim(separator) + lastSeparator;
 
-        return str;
+      return a.length ? a.join(separator) + lastSeparator + lastMember : lastMember;
+    },
+
+    toSentenceSerial: function() {
+      var args = slice.call(arguments);
+      args[3] = true;
+      return _s.toSentence.apply(_s, args);
     },
 
     slugify: function(str) {
-      var from  = "ąàáäâãćęèéëêìíïîłńòóöôõùúüûñçżź",
-          to    = "aaaaaaceeeeeiiiilnooooouuuunczz",
+      if (str == null) return '';
+
+      var from  = "ąàáäâãåæăćęèéëêìíïîłńòóöôõøśșțùúüûñçżź",
+          to    = "aaaaaaaaaceeeeeiiiilnoooooosstuuuunczz",
           regex = new RegExp(defaultToWhiteSpace(from), 'g');
 
-      str = (''+str).toLowerCase();
-
-      str = str.replace(regex, function(ch){
-        var index = from.indexOf(ch);
+      str = String(str).toLowerCase().replace(regex, function(c){
+        var index = from.indexOf(c);
         return to.charAt(index) || '-';
       });
 
@@ -506,8 +539,15 @@
       return [wrapper, str, wrapper].join('');
     },
 
-    quote: function(str) {
-      return _s.surround(str, '"');
+    quote: function(str, quoteChar) {
+      return _s.surround(str, quoteChar || '"');
+    },
+
+    unquote: function(str, quoteChar) {
+      quoteChar = quoteChar || '"';
+      if (str[0] === quoteChar && str[str.length-1] === quoteChar)
+        return str.slice(1,str.length-1);
+      else return str;
     },
 
     exports: function() {
@@ -522,25 +562,81 @@
     },
 
     repeat: function(str, qty, separator){
+      if (str == null) return '';
+
       qty = ~~qty;
 
       // using faster implementation if separator is not needed;
-      if (separator == null) return strRepeat(str+'', qty);
+      if (separator == null) return strRepeat(String(str), qty);
 
       // this one is about 300x slower in Google Chrome
       for (var repeat = []; qty > 0; repeat[--qty] = str) {}
       return repeat.join(separator);
-     },
+    },
 
-     grow: function (str, val, delimiter) {
-     	if (_.isEmpty(val))
-     		return str;
-     	if (!_.isEmpty(str))
-     		str += delimiter;
-     	return str + val;
-     },
+    naturalCmp: function(str1, str2){
+      if (str1 == str2) return 0;
+      if (!str1) return -1;
+      if (!str2) return 1;
 
-    levenshtein: levenshtein
+      var cmpRegex = /(\.\d+)|(\d+)|(\D+)/g,
+        tokens1 = String(str1).toLowerCase().match(cmpRegex),
+        tokens2 = String(str2).toLowerCase().match(cmpRegex),
+        count = Math.min(tokens1.length, tokens2.length);
+
+      for(var i = 0; i < count; i++) {
+        var a = tokens1[i], b = tokens2[i];
+
+        if (a !== b){
+          var num1 = parseInt(a, 10);
+          if (!isNaN(num1)){
+            var num2 = parseInt(b, 10);
+            if (!isNaN(num2) && num1 - num2)
+              return num1 - num2;
+          }
+          return a < b ? -1 : 1;
+        }
+      }
+
+      if (tokens1.length === tokens2.length)
+        return tokens1.length - tokens2.length;
+
+      return str1 < str2 ? -1 : 1;
+    },
+
+    levenshtein: function(str1, str2) {
+      if (str1 == null && str2 == null) return 0;
+      if (str1 == null) return String(str2).length;
+      if (str2 == null) return String(str1).length;
+
+      str1 = String(str1); str2 = String(str2);
+
+      var current = [], prev, value;
+
+      for (var i = 0; i <= str2.length; i++)
+        for (var j = 0; j <= str1.length; j++) {
+          if (i && j)
+            if (str1.charAt(j - 1) === str2.charAt(i - 1))
+              value = prev;
+            else
+              value = Math.min(current[j], current[j - 1], prev) + 1;
+          else
+            value = i + j;
+
+          prev = current[j];
+          current[j] = value;
+        }
+
+      return current.pop();
+    },
+
+    toBoolean: function(str, trueValues, falseValues) {
+      if (typeof str === "number") str = "" + str;
+      if (typeof str !== "string") return !!str;
+      str = _s.trim(str);
+      if (boolMatch(str, trueValues || ["true", "1"])) return true;
+      if (boolMatch(str, falseValues || ["false", "0"])) return false;
+    }
   };
 
   // Aliases
@@ -553,26 +649,25 @@
   _s.ljust    = _s.rpad;
   _s.contains = _s.include;
   _s.q        = _s.quote;
+  _s.toBool   = _s.toBoolean;
+
+  // Exporting
 
   // CommonJS module is defined
   if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
-      // Export module
+    if (typeof module !== 'undefined' && module.exports)
       module.exports = _s;
-    }
+
     exports._s = _s;
-
-  } else if (typeof define === 'function' && define.amd) {
-    // Register as a named module with AMD.
-    define('underscore.string', [], function() {
-      return _s;
-    });
-
-  } else {
-    // Integrate with Underscore.js if defined
-    // or create our own underscore object.
-    root._ = root._ || {};
-    root._.string = root._.str = _s;
   }
 
-}(this);
+  // Register as a named module with AMD.
+  if (typeof define === 'function' && define.amd)
+    define('underscore.string', [], function(){ return _s; });
+
+
+  // Integrate with Underscore.js if defined
+  // or create our own underscore object.
+  root._ = root._ || {};
+  root._.string = root._.str = _s;
+}(this, String);

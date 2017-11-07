@@ -1025,6 +1025,7 @@
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\smartstore.globalization.adapter.js" />
     <Content Include="Scripts\smartstore.globalization.js" />
+    <Content Include="Scripts\underscore.min.js" />
     <Content Include="Scripts\underscore.js" />
     <Content Include="Themes\FlexBlue\preview.png" />
     <Content Include="Themes\FlexBlack\preview.png" />
@@ -1061,7 +1062,6 @@
     <Content Include="Scripts\smartstore.column-equalizer.js" />
     <Content Include="Scripts\jquery.scrollTo.js" />
     <Content Include="Scripts\jquery.serialScroll.js" />
-    <Content Include="Scripts\underscore.min.js" />
     <Content Include="Themes\Flex\Content\bs4\js\bootstrap-colorpicker-globalinit.js" />
     <Content Include="Themes\Flex\Content\bs4\js\bootstrap-colorpicker.js" />
     <Content Include="Themes\Flex\Content\bs4\js\bootstrap-datetimepicker.js" />
@@ -1177,6 +1177,7 @@
     <Content Include="Themes\FlexBlue\Views\Web.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Scripts\underscore.min.map" />
     <None Include="Themes\Flex\Content\vendors\photoswipe\LICENSE" />
     <None Include="Themes\Flex\Content\vendors\drift\LICENSE" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\photoswipe-ui-default.js" />
@@ -1580,7 +1581,6 @@
     <Content Include="Scripts\underscore.mixins.js" />
     <Content Include="Scripts\underscore.string.js" />
     <Content Include="Scripts\underscore.string.min.js" />
-    <Content Include="Scripts\underscore.min.map" />
     <None Include="Scripts\_references.js" />
     <Content Include="Content\bootstrap\custom\throbber.less" />
     <Content Include="Content\samples\category_accessories.jpg" />

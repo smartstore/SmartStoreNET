@@ -461,6 +461,9 @@
     <None Include="..\Scripts\modernizr.js">
       <Link>Scripts\Refs\modernizr.js</Link>
     </None>
+    <None Include="..\Scripts\smartstore.globalization.js">
+      <Link>Scripts\Refs\smartstore.globalization.js</Link>
+    </None>
     <Content Include="Content\vendors\colorpicker\js\bootstrap-colorpicker-globalinit.js" />
     <Content Include="Content\vendors\colorpicker\js\bootstrap-colorpicker.js" />
     <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.min.js" />

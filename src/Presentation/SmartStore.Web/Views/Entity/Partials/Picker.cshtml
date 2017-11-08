@@ -3,10 +3,10 @@
 @using SmartStore.Web.Models.Entity;
 
 @{ 
-	var isProductPicker = Model.Entity.IsCaseInsensitiveEqual("product");
+	var isProductPicker = Model.EntityType.IsCaseInsensitiveEqual("product");
 }
 
-<div id="entpicker-@(Model.Entity)-dialog" class="modal modal-flex fade entpicker" role="dialog" aria-hidden="true" tabindex="-1">
+<div id="entpicker-@(Model.EntityType)-dialog" class="modal modal-flex fade entpicker" role="dialog" aria-hidden="true" tabindex="-1">
 	<div class="modal-dialog" role="document">
 		<form class="modal-content" method="POST" action="@Url.Action("Picker", "Entity", new { area = "" })">
 			<div class="modal-header flex-wrap">
@@ -14,10 +14,11 @@
 
 				@if (isProductPicker)
 				{
-					<input type="hidden" name="Entity" value="@Model.Entity" />
+					<input type="hidden" name="EntityType" value="@Model.EntityType" />
 					<input type="hidden" name="HighligtSearchTerm" value="@Model.HighligtSearchTerm.ToString()" />
 					<input type="hidden" name="ReturnField" value="@Model.ReturnField" />
-					<input type="hidden" name="MaxReturnValues" value="@Model.MaxReturnValues" />
+					<input type="hidden" name="MaxItems" value="@Model.MaxItems" />
+					<input type="hidden" name="PreselectedEntityIds" value="@Model.PreselectedEntityIds" />
 					<input type="hidden" name="DisableIf" value="@Model.DisableIf" />
 					<input type="hidden" name="DisableIds" value="@Model.DisableIds" />
 					<input type="hidden" name="PageIndex" value="@Model.PageIndex" />
@@ -32,7 +33,7 @@
 			</div>
 			<div class="modal-footer">
 				<div class="footer-note text-muted">
-					<span class="default" style="display: none">@T(Model.MaxReturnValues == 1 ? "Common.EntityPicker.SinglePickNote" : "Common.EntityPicker.MultiPickNote")</span>
+					<span class="default" style="display: none">@T(Model.MaxItems == 1 ? "Common.EntityPicker.SinglePickNote" : "Common.EntityPicker.MultiPickNote")</span>
 					<span class="not-selectable" style="display: none">@T("Common.NotSelectable").</span>
 				</div>
 				<div class="ml-auto">
@@ -47,7 +48,7 @@
 
 <script>
 	$(function () {
-		$('#entpicker-@(Model.Entity)-dialog').entityPicker('initDialog');
+		$('#entpicker-@(Model.EntityType)-dialog').entityPicker('initDialog');
 	});
 </script>
 

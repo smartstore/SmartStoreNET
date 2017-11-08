@@ -54,40 +54,26 @@
         </tr>
         <tr>
             <td>
-                <button type="button" id="AddNewAssociatedProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
-                    <i class="fa fa-plus"></i>
-                    @T("Admin.Catalog.Products.AssociatedProducts.AddNew")
-                </button>
+				@(Html.SmartStore().EntityPicker()
+					.IconCssClass("fa fa-plus")
+					.DisableGroupedProducts(true)
+					.HtmlAttribute("class", "btn btn-warning")
+					.DialogTitle(T("Admin.Catalog.Products.AssociatedProducts.AddNew"))
+					.Caption(T("Admin.Catalog.Products.AssociatedProducts.AddNew"))
+					.OnSelectionCompleted("AssociatedProducts_Selected"))
 
-                <script type="text/javascript">
-                    $(document).ready(function () {
-
-                    	$(document).on('click', '#AddNewAssociatedProductButton', function () {
-                        	$({}).entityPicker('loadDialog', {
-                            	url: '@Url.Action("Picker", "Entity", new { area = "" })',
-                        		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
-                        		disableIf: 'GroupedProduct',
-                        		onLoadDialogBefore: function () {
-                        			$('#AddNewAssociatedProductButton').button('loading').prop('disabled', true);
-                        		},
-                        		onLoadDialogComplete: function () {
-                        			$('#AddNewAssociatedProductButton').prop('disabled', false).button('reset');
-                        		},
-                            	onOkClicked: function (ids) {
-                            		$({}).doAjax({
-                            			type: 'POST',
-                            			url: '@Url.Action("AssociatedProductAdd")',
-                            			data: { "productId": @Model.Id, "selectedProductIds": ids },
-                            			callbackSuccess: function () {
-                            				$('#associatedproducts-grid').data('tGrid').ajaxRequest();
-                            			}
-                            		});
-                            		return true;
-                            	}
-                            });
-                    	});
-
-                    });
+                <script>
+					function AssociatedProducts_Selected(ids) {
+						$({}).doAjax({
+							type: 'POST',
+							url: '@Url.Action("AssociatedProductAdd")',
+							data: { "productId": @Model.Id, "selectedProductIds": ids },
+							callbackSuccess: function () {
+								$('#associatedproducts-grid').data('tGrid').ajaxRequest();
+							}
+						});
+						return true;
+					}
                 </script>
             </td>
         </tr>

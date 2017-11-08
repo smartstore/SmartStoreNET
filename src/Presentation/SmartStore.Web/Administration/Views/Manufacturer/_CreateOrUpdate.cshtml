@@ -312,10 +312,12 @@
             </tr>
             <tr>
                 <td>
-					<button type="button" id="AddNewProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
-						<i class="fa fa-plus"></i>
-						@T("Admin.Catalog.Manufacturers.Products.AddNew")
-					</button>
+					@(Html.SmartStore().EntityPicker()
+						.IconCssClass("fa fa-plus")
+						.HtmlAttribute("class", "btn btn-warning")
+						.DialogTitle(T("Admin.Catalog.Manufacturers.Products.AddNew"))
+						.Caption(T("Admin.Catalog.Manufacturers.Products.AddNew"))
+						.OnSelectionCompleted("PickProducts_Completed"))
                 </td>
             </tr>
         </table>
@@ -348,12 +350,11 @@
 
 @helper TabStores()
 {
-    <script type="text/javascript">
+    <script>
     	$(document).ready(function () {
     		$("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
         	toggleStoreMapping();
         });
-
 
         function toggleStoreMapping() {
         	if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
@@ -400,39 +401,25 @@
 }
 
 <script type="text/javascript">
-	$(document).ready(function () {
-
+	$(function () {
         $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
 		togglePageSize();
-
-		// add new product
-		$(document).on('click', '#AddNewProductButton', function () {
-			$({}).entityPicker('loadDialog', {
-				url: '@Url.Action("Picker", "Entity", new { area = "" })',
-				caption: '@T("Admin.Catalog.Manufacturers.Products.AddNew")',
-				onLoadDialogBefore: function () {
-					$('#AddNewProductButton').button('loading').prop('disabled', true);
-				},
-				onLoadDialogComplete: function () {
-					$('#AddNewProductButton').prop('disabled', false).button('reset');
-				},
-				onOkClicked: function (ids) {
-					$({}).doAjax({
-						type: 'POST',
-						url: '@Url.Action("ProductAdd")',
-						data: { "manufacturerId": @Model.Id, "selectedProductIds": ids },
-						callbackSuccess: function () {
-							$('#products-grid').data('tGrid').ajaxRequest();
-						}
-					});
-					return true;
-				}
-			});
-		});
     });
 
-    function togglePageSize() {
+	function PickProducts_Completed(ids) {
+		console.log(ids);
+		$({}).doAjax({
+			type: 'POST',
+			url: '@Url.Action("ProductAdd")',
+			data: { "manufacturerId": @Model.Id, "selectedProductIds": ids },
+			callbackSuccess: function () {
+				$('#products-grid').data('tGrid').ajaxRequest();
+			}
+		});
+		return true;
+	}
 
+    function togglePageSize() {
         var isEnabled = $('#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)').val();
 
         if (isEnabled != "false") {

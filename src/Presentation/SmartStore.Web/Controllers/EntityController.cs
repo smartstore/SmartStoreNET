@@ -60,7 +60,7 @@ namespace SmartStore.Web.Controllers
 		{
             model.PageSize = 96; // _commonSettings.EntityPickerPageSize;
 
-			if (model.Entity.IsCaseInsensitiveEqual("product"))
+			if (model.EntityType.IsCaseInsensitiveEqual("product"))
 			{
 				ViewBag.AvailableCategories = _categoryService.GetCategoryTree(includeHidden: true)
 					.FlattenNodes(false)
@@ -91,9 +91,11 @@ namespace SmartStore.Web.Controllers
 				var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
 				var disableIds = model.DisableIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
 
+				var selIds = new HashSet<int>(model.PreselectedEntityIds.ToIntArray());
+
 				using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 				{
-					if (model.Entity.IsCaseInsensitiveEqual("product"))
+					if (model.EntityType.IsCaseInsensitiveEqual("product"))
 					{
 						#region Product
 
@@ -169,7 +171,8 @@ namespace SmartStore.Web.Controllers
 									Title = x.Name,
 									Summary = x.Sku,
 									SummaryTitle = "{0}: {1}".FormatInvariant(sku, x.Sku.NaIfEmpty()),
-									Published = (hasPermission ? x.Published : (bool?)null)
+									Published = (hasPermission ? x.Published : (bool?)null),
+									Selected = selIds.Contains(x.Id)
 								};
 
 								if (disableIfNotSimpleProduct)

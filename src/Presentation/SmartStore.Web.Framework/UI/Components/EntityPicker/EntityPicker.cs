@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Web.WebPages;
-using SmartStore.Utilities;
-
 namespace SmartStore.Web.Framework.UI
 {
     public class EntityPicker : Component
     {
-        public EntityPicker()
+		public EntityPicker()
         {
 			EntityType = "product";
 			IconCssClass = "fa fa-search";

@@ -67,7 +67,7 @@
 		
 		var defaults = {
 			url: '',
-			entity: 'product',
+			entityType: 'product',
 			caption: '&nbsp;',
 			disableIf: '',
 			disableIds: '',
@@ -133,10 +133,10 @@
 
 	function loadDialog(context /* button */, opt) {
 		var btn = $(context);
-		var dialog = $('#entpicker-' + opt.entity + '-dialog');
+		var dialog = $('#entpicker-' + opt.entityType + '-dialog');
 
 		function showAndFocusDialog() {
-			dialog = $('#entpicker-' + opt.entity + '-dialog');
+			dialog = $('#entpicker-' + opt.entityType + '-dialog');
 			dialog.find('.modal-title').html(opt.caption || '&nbsp;');
 			dialog.data('entitypicker', opt);
 			dialog.modal('show');
@@ -156,10 +156,11 @@
 				cache: false,
 				type: 'GET',
 				data: {
-					"Entity": opt.entity,
+					"EntityType": opt.entityType,
 					"HighligtSearchTerm": opt.highligtSearchTerm,
 					"ReturnField": opt.returnField,
-					"MaxReturnValues": opt.maxItems,
+					"MaxItems": opt.maxItems,
+					"PreselectedEntityIds": opt.preselectedIds.join(),
 					"DisableIf": opt.disableIf,
 					"DisableIds": opt.disableIds
 				},
@@ -167,7 +168,7 @@
 				beforeSend: function () {
 					btn.addClass('disabled').prop('disabled', true);
 					if (_.isFunction(opt.onDialogLoading)) {
-						return opt.onDialogLoading();
+						return opt.onDialogLoading(dialog);
 					}
 				},
 				success: function (response) {
@@ -177,7 +178,7 @@
 				complete: function () {
 					btn.prop('disabled', false).removeClass('disabled');
 					if (_.isFunction(opt.onDialogLoaded)) {
-						opt.onDialogLoaded();
+						opt.onDialogLoaded(dialog);
 					}
 				},
 				error: ajaxErrorHandler

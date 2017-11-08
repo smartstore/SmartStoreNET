@@ -21,9 +21,9 @@
 <script>
 	$(function () {
 		$('#@Model.Id').entityPicker({
-			entity: '@Model.EntityType',
+			entityType: '@Model.EntityType',
 			url: '@Model.DialogUrl',
-			caption: '@Html.Raw(Model.DialogTitle)',
+			caption: '@Html.Raw(Model.DialogTitle.NullEmpty() ?? Model.Caption)',
 			disableIf: '@Html.Raw(Model.DisableGroupedProducts ? "groupedproduct" : (Model.DisableBundleProducts ? "notsimpleproduct" : ""))', // TODO
 			disableIds: '@Html.Raw(Model.DisabledEntityIds == null ? "" : String.Join(",", Model.DisabledEntityIds))', // TODO
 			thumbZoomer: @Model.EnableThumbZoomer.ToString().ToLower(),

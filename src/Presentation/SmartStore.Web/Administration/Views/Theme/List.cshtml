@@ -49,10 +49,12 @@
 	</div>
 
     @Html.SmartStore().TabStrip().Name("themes-tab").Items(x =>
-{
-    x.Add().Text(T("Admin.Configuration.Themes")).Content(ThemesTab()).Selected(true);
-    x.Add().Text(T("Admin.Common.Settings")).Content(ThemeSettingsTab());
-})
+    {
+        x.Add().Text(T("Admin.Configuration.Themes")).Content(ThemesTab()).Selected(true);
+        x.Add().Text(T("Admin.Common.Settings")).Content(ThemeSettingsTab());
+
+        EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "themes-config", this.Html, this.Model));
+    })
 }
 
 @helper ThemesTab()

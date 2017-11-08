@@ -141,7 +141,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[HttpPost, ActionName("List")]
-        public ActionResult ListPost(ThemeListModel model)
+        public ActionResult ListPost(ThemeListModel model, FormCollection form)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
@@ -170,7 +170,9 @@ namespace SmartStore.Admin.Controllers
             
 			_services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
-			NotifySuccess(T("Admin.Configuration.Updated"));
+            _services.EventPublisher.Publish(new ModelBoundEvent(model, themeSettings, form));
+
+            NotifySuccess(T("Admin.Configuration.Updated"));
 
 			return RedirectToAction("List", new { storeId = model.StoreId });
         }

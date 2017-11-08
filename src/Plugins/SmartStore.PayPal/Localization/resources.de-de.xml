@@ -68,9 +68,6 @@
   <LocaleResource Name="ExperienceProfileId.Hint">
     <Value>Legt die Experience Profil-ID fest. Das Profil beinhaltet globale Daten wie z.B. Shop-Name und -Logo. Ein Profil braucht nur einmalig angelegt werden. Über den Button können Sie ein neues Profil erstellen oder ein vorhandenes aktualisieren.</Value>
   </LocaleResource>
-  <LocaleResource Name="ExperienceProfileId">
-    <Value>Experience Profil-ID</Value>
-  </LocaleResource>
   <LocaleResource Name="WebhookId">
     <Value>Webhook-ID</Value>
   </LocaleResource>

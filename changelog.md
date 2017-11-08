@@ -19,6 +19,7 @@
 * Product entity picker should use the wildcard search to find products
 * Hook framework should run hooks with `ImportantAttribute` when hooking was disabled per scope
 * #1297 Web API: Parsing the timestamp may fail due to the different accuracy of the milliseconds
+* Debitoor: VAT amount could be transmitted as miscellaneous for deliveries abroad.
 
 ### Improvements
 * #1141 Clearer backend order list. Added more infos like payment method.

@@ -86,12 +86,16 @@
       <HintPath>..\..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ImageResizer, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageResizer.4.0.5\lib\net45\ImageResizer.dll</HintPath>
+    <Reference Include="ImageProcessor, Version=2.5.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ImageProcessor.2.5.6\lib\net45\ImageProcessor.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ImageResizer.Plugins.PrettyGifs, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageResizer.Plugins.PrettyGifs.4.0.5\lib\net45\ImageResizer.Plugins.PrettyGifs.dll</HintPath>
+    <Reference Include="ImageProcessor.Plugins.WebP, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ImageProcessor.Plugins.WebP.1.0.6\lib\net45\ImageProcessor.Plugins.WebP.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Imazen.WebP, Version=9.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Imazen.WebP.9.0.1\lib\net45\Imazen.WebP.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LumenWorks.Framework.IO, Version=3.9.1.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
@@ -265,7 +269,11 @@
     <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
+    <Compile Include="Media\Internal\ImagePostProcessor.cs" />
+    <Compile Include="Media\Internal\ImagePostProcessorBootstrapper.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />
+    <Compile Include="Media\ProcessImageQuery.cs" />
+    <Compile Include="Media\ProcessImageResult.cs" />
     <Compile Include="Media\Storage\DatabaseMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\FileSystemMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\IMediaStorageProvider.cs" />
@@ -374,12 +382,11 @@
     <Compile Include="Logging\DeleteLogsTask.cs" />
     <Compile Include="Media\CachedImageResult.cs" />
     <Compile Include="Media\IImageCache.cs" />
-    <Compile Include="Media\IImageResizerService.cs" />
+    <Compile Include="Media\IImageProcessor.cs" />
     <Compile Include="Media\ImageCache.cs" />
     <Compile Include="Media\ImageCacheExtensions.cs" />
     <Compile Include="Media\ImageHeader.cs" />
-    <Compile Include="Media\ImageResizerService.cs" />
-    <Compile Include="Media\ImageResizerUtil.cs" />
+    <Compile Include="Media\DefaultImageProcessor.cs" />
     <Compile Include="Media\ImageTypes.cs" />
     <Compile Include="Messages\EventPublisherExtensions.cs" />
     <Compile Include="Messages\GenericMessageContext.cs" />
@@ -626,6 +633,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <EmbeddedResource Include="Media\Resources\Native\x86\png.cmd" />
     <None Include="Web References\EuropaCheckVatService\checkVatService.wsdl">
       <SubType>Designer</SubType>
     </None>
@@ -652,6 +660,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Seo\Hooks\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Media\Resources\Native\README.txt" />
+    <EmbeddedResource Include="Media\Resources\Native\x64\gifsicle.exe" />
+    <EmbeddedResource Include="Media\Resources\Native\x86\cjpeg.exe" />
+    <EmbeddedResource Include="Media\Resources\Native\x86\gifsicle.exe" />
+    <EmbeddedResource Include="Media\Resources\Native\x86\jpegtran.exe" />
+    <EmbeddedResource Include="Media\Resources\Native\x86\libjpeg-62.dll" />
+    <EmbeddedResource Include="Media\Resources\Native\x86\pngquant.exe" />
+    <EmbeddedResource Include="Media\Resources\Native\x86\TruePNG.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ImageResizer;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -33,7 +32,7 @@ namespace SmartStore.Services.Media
         private readonly ILogger _logger;
         private readonly IEventPublisher _eventPublisher;
         private readonly MediaSettings _mediaSettings;
-        private readonly IImageResizerService _imageResizerService;
+        private readonly IImageProcessor _imageProcessor;
         private readonly IImageCache _imageCache;
 		private readonly Provider<IMediaStorageProvider> _storageProvider;
 
@@ -46,7 +45,7 @@ namespace SmartStore.Services.Media
             ILogger logger, 
             IEventPublisher eventPublisher,
             MediaSettings mediaSettings,
-            IImageResizerService imageResizerService,
+            IImageProcessor imageProcessor,
             IImageCache imageCache,
 			IProviderManager providerManager)
         {
@@ -56,7 +55,7 @@ namespace SmartStore.Services.Media
             _logger = logger;
             _eventPublisher = eventPublisher;
             _mediaSettings = mediaSettings;
-            _imageResizerService = imageResizerService;
+            _imageProcessor = imageProcessor;
             _imageCache = imageCache;
 
 			var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
@@ -98,11 +97,11 @@ namespace SmartStore.Services.Media
 			int targetSize = 0,
 			string storeLocation = null)
 		{
-			var resizeSettings = new ResizeSettings();
+			var query = new ProcessImageQuery();
 			if (targetSize > 0)
 			{
-				resizeSettings.MaxWidth = targetSize;
-				resizeSettings.MaxHeight = targetSize;
+				query.MaxWidth = targetSize;
+				query.MaxHeight = targetSize;
 			}
 
 			var picture = source as Picture;
@@ -111,7 +110,7 @@ namespace SmartStore.Services.Media
 				picture?.Id,
 				seoFileName,
 				extension,
-				resizeSettings);
+				query);
 
 			if (!cachedImage.Exists)
 			{
@@ -124,11 +123,13 @@ namespace SmartStore.Services.Media
 						if (source is string)
 						{
 							// static default image
+							// TODO: (mc) map virtual path
 							buffer = File.ReadAllBytes((string)source);
 						}
 						else if (source is Picture)
 						{
 							buffer = LoadPictureBinary((Picture)source);
+							//buffer = _storageProvider.Value.OpenRead(picture.ToMedia());
 						}
 						else if (source is byte[])
 						{
@@ -169,11 +170,11 @@ namespace SmartStore.Services.Media
 			int targetSize = 0,
 			string storeLocation = null)
 		{
-			var resizeSettings = new ResizeSettings();
+			var query = new ProcessImageQuery();
 			if (targetSize > 0)
 			{
-				resizeSettings.MaxWidth = targetSize;
-				resizeSettings.MaxHeight = targetSize;
+				query.MaxWidth = targetSize;
+				query.MaxHeight = targetSize;
 			}
 
 			var picture = source as Picture;
@@ -182,7 +183,7 @@ namespace SmartStore.Services.Media
 				picture?.Id,
 				seoFileName,
 				extension,
-				resizeSettings);
+				query);
 
 			if (!cachedImage.Exists)
 			{
@@ -253,10 +254,18 @@ namespace SmartStore.Services.Media
 				return pictureBinary;
 			}
 
-			using (var resultStream = _imageResizerService.ResizeImage(new MemoryStream(pictureBinary), maxSize, maxSize, _mediaSettings.DefaultImageQuality))
+			var query = new ProcessImageQuery(pictureBinary)
 			{
-				var buffer = resultStream.GetBuffer();
-				size = GetPictureSize(buffer);
+				MaxWidth = maxSize,
+				MaxHeight = maxSize,
+				Quality = _mediaSettings.DefaultImageQuality,
+				ExecutePostProcessor = false, // TODO: (mc) Pick from (new) settings for newly uploaded images!
+			};
+
+			using (var result = _imageProcessor.ProcessImage(query))
+			{
+				size = new Size(result.Width, result.Height);
+				var buffer = result.Result.GetBuffer();
 				return buffer;
 			}
 		}

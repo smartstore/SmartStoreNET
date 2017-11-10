@@ -217,7 +217,7 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
 			builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
-			builder.RegisterType<ImageResizerService>().As<IImageResizerService>().SingleInstance();
+			builder.RegisterType<DefaultImageProcessor>().As<IImageProcessor>().InstancePerRequest();
 			builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
 			builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
 

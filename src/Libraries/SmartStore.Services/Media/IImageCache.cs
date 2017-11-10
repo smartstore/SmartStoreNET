@@ -59,10 +59,10 @@ namespace SmartStore.Services.Media
 		/// <param name="pictureId">The picture id of the image to be resolved.</param>
 		/// <param name="seoFileName">The seo friendly picture name of the image to be resolved.</param>
 		/// <param name="extension">The extension of the image to be resolved.</param>
-		/// <param name="settings">The image processing settings.</param>
+		/// <param name="query">The image processing query.</param>
 		/// <returns>An instance of the <see cref="CachedImageResult"/> object</returns>
 		/// <remarks>If the requested image does not exist in the cache, the value of the <c>Exists</c> property will be <c>false</c>.</remarks>
-		CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null);
+		CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null);
 
 		/// <summary>
 		/// Opens a readonly file stream to the cached image

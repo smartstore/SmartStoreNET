@@ -24,17 +24,20 @@ namespace SmartStore.Admin.Controllers
 		private readonly IImageCache _imageCache;
 		private readonly IPermissionService _permissionService;
         private readonly IWebHelper _webHelper;
+		private readonly MediaSettings _mediaSettings;
 
-        public MediaController(
+		public MediaController(
 			IPictureService pictureService,
 			IImageCache imageCache,
 			IPermissionService permissionService, 
-			IWebHelper webHelper)
+			IWebHelper webHelper,
+			MediaSettings mediaSettings)
         {
 			_pictureService = pictureService;
 			_imageCache = imageCache;
 			_permissionService = permissionService;
             _webHelper = webHelper;
+			_mediaSettings = mediaSettings;
         }
 
         [HttpPost]
@@ -145,7 +148,14 @@ namespace SmartStore.Admin.Controllers
 			settings["maxwidth"] = size.ToString();
 			settings["maxheight"] = size.ToString();
 
-			return _imageCache.GetCachedImage(picture, settings);
+			var query = new ProcessImageQuery()
+			{
+				MaxWidth = size,
+				MaxHeight = size,
+				Quality = _mediaSettings.DefaultImageQuality
+			};
+
+			return _imageCache.GetCachedImage(picture, query);
 		}
 
 		private UploadFileResult UploadImageInternal()

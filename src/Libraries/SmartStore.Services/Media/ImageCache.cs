@@ -1,11 +1,10 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
-using ImageResizer;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
@@ -22,20 +21,20 @@ namespace SmartStore.Services.Media
 		private readonly IStoreContext _storeContext;
 		private readonly HttpContextBase _httpContext;
 		private readonly IMediaFileSystem _fileSystem;
-		private readonly IImageResizerService _imageResizerService;
+		private readonly IImageProcessor _imageProcessor;
 
 		public ImageCache(
 			MediaSettings mediaSettings, 
 			IStoreContext storeContext, 
 			HttpContextBase httpContext,
 			IMediaFileSystem fileSystem,
-			IImageResizerService imageResizerService)
+			IImageProcessor imageProcessor)
         {
             _mediaSettings = mediaSettings;
 			_storeContext = storeContext;
 			_httpContext = httpContext;
 			_fileSystem = fileSystem;
-			_imageResizerService = imageResizerService;
+			_imageProcessor = imageProcessor;
 
 			_thumbsRootDir = "Thumbs/";
 
@@ -48,52 +47,86 @@ namespace SmartStore.Services.Media
 			set;
 		}
 
+		private ProcessImageQuery CreateProcessQuery(CachedImageResult cachedImage, byte[] source, int targetSize)
+		{
+			var query = new ProcessImageQuery(source)
+			{
+				Format = cachedImage.Extension,
+				FileName = cachedImage.FileName,
+				Quality = _mediaSettings.DefaultImageQuality,
+				ExecutePostProcessor = false, // cachedImage.Extension == "jpg" || cachedImage.Extension == "jpeg" // TODO: (mc) Pick from settings!
+			};
+
+			if (targetSize > 0)
+			{
+				query.MaxWidth = targetSize;
+				query.MaxHeight = targetSize;
+			}
+
+			return query;
+		}
+
+		private void UpdateCachedImage(ProcessImageResult result, CachedImageResult cachedImage)
+		{
+			if (cachedImage.Extension != result.FileExtension)
+			{
+				cachedImage.Path = Path.ChangeExtension(cachedImage.Path, result.FileExtension);
+				cachedImage.Extension = result.FileExtension;
+			}
+		}
+
 		public byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, int targetSize)
 		{
-			byte[] result;
+			byte[] buffer;
 
 			if (targetSize == 0)
 			{
 				AddImageToCache(cachedImage, source);
-				result = source;
+				buffer = source;
 			}
 			else
 			{
-				var sourceStream = new MemoryStream(source);
-				using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
+				var query = CreateProcessQuery(cachedImage, source, targetSize);
+
+				using (var result = _imageProcessor.ProcessImage(query))
 				{
-					result = resultStream.GetBuffer();
-					AddImageToCache(cachedImage, result);
+					UpdateCachedImage(result, cachedImage);
+
+					buffer = result.Result.GetBuffer();
+					AddImageToCache(cachedImage, buffer);
 				}
 			}
 
 			cachedImage.Exists = true;
 
-			return result;
+			return buffer;
 		}
 
 		public async Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, int targetSize)
 		{
-			byte[] result;
+			byte[] buffer;
 
 			if (targetSize == 0)
 			{
 				await AddImageToCacheAsync(cachedImage, source);
-				result = source;
+				buffer = source;
 			}
 			else
 			{
-				var sourceStream = new MemoryStream(source);
-				using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
+				var query = CreateProcessQuery(cachedImage, source, targetSize);
+
+				using (var result = _imageProcessor.ProcessImage(query))
 				{
-					result = resultStream.GetBuffer();
-					await AddImageToCacheAsync(cachedImage, result);
+					UpdateCachedImage(result, cachedImage);
+
+					buffer = result.Result.GetBuffer();
+					await AddImageToCacheAsync(cachedImage, buffer);
 				}
 			}
 
 			cachedImage.Exists = true;
 
-			return result;
+			return buffer;
 		}
 
 		public void AddImageToCache(CachedImageResult cachedImage, byte[] buffer)
@@ -140,9 +173,9 @@ namespace SmartStore.Services.Media
 			return true;
 		}
 
-        public virtual CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null)
+        public virtual CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
         {
-            var imagePath = this.GetCachedImagePath(pictureId, seoFileName, extension, ImageResizerUtil.CreateResizeSettings(settings));
+            var imagePath = this.GetCachedImagePath(pictureId, seoFileName, extension, query);
 
             var result = new CachedImageResult
             {
@@ -262,9 +295,9 @@ namespace SmartStore.Services.Media
         /// Returns the file name with the subfolder (when multidirs are enabled)
         /// </summary>
         /// <param name="picture"></param>
-        /// <param name="settings"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
-        internal string GetCachedImagePath(int? pictureId, string seoFileName, string extension, ResizeSettings settings = null)
+        internal string GetCachedImagePath(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
         {
             Guard.NotEmpty(extension, nameof(extension));
 
@@ -285,14 +318,13 @@ namespace SmartStore.Services.Media
             seoFileName = seoFileName.EmptyNull();
             extension = extension.TrimStart('.');
 
-            if (!NeedsProcessing(settings))
+            if (query == null || !query.NeedsProcessing())
             {
                 imageFileName = "{0}{1}.{2}".FormatInvariant(firstPart, seoFileName, extension);
             }
             else
             {
-                string hashedProps = CreateSettingsHash(settings);
-                imageFileName = "{0}{1}-{2}.{3}".FormatInvariant(firstPart, seoFileName, hashedProps, extension);
+                imageFileName = "{0}{1}-{2}.{3}".FormatInvariant(firstPart, seoFileName, query.CreateHash(), extension);
             }
 
             if (_mediaSettings.MultipleThumbDirectories)
@@ -307,20 +339,6 @@ namespace SmartStore.Services.Media
             }
 
             return imageFileName;
-        }
-
-        private string CreateSettingsHash(ResizeSettings settings)
-        {
-            if (settings.Count == 2 && settings.MaxWidth > 0 && settings.MaxWidth == settings.MaxHeight)
-            {
-                return settings.MaxWidth.ToString();
-            }
-			return settings.ToString().Hash(Encoding.ASCII);
-        }
-
-        private bool NeedsProcessing(ResizeSettings settings)
-        {
-            return settings != null && settings.Count > 0;
         }
 
 		private string BuildPath(string imagePath)

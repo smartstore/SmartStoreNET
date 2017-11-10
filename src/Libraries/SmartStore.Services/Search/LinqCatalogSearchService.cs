@@ -509,13 +509,17 @@ namespace SmartStore.Services.Search
 				}
 			}
 
-			#endregion
+            #endregion
 
-			query = query.GroupBy(x => x.Id).Select(x => x.FirstOrDefault());
+            query =
+                from p in query
+                group p by p.Id into grp
+                orderby grp.Key
+                select grp.FirstOrDefault();
 
-			#region Sorting
+            #region Sorting
 
-			foreach (var sort in searchQuery.Sorting)
+            foreach (var sort in searchQuery.Sorting)
 			{
 				if (sort.FieldName.IsEmpty())
 				{

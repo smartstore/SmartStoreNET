@@ -388,6 +388,8 @@ namespace SmartStore.Web.Controllers
 				// If a size has been set in the view, we use it in priority
 				int pictureSize = model.ThumbSize.HasValue ? model.ThumbSize.Value : _mediaSettings.ProductThumbPictureSize;
 
+				// TODO: (mc) Change caching strategy according to refactored PictureService
+
 				// Prepare picture model
 				var defaultProductPictureCacheKey = string.Format(
 					ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY,

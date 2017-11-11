@@ -8,6 +8,11 @@ namespace SmartStore.Core.IO
     public interface IFileSystem
     {
 		/// <summary>
+		/// Checks whether the underlying storage is remote, like 'Azure' for example. 
+		/// </summary>
+		bool IsCloudStorage { get; }
+
+		/// <summary>
 		/// Gets the root path
 		/// </summary>
 		string Root { get; }

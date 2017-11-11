@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.Routing;
 using SmartStore.Collections;
+using System.Drawing;
+using ImageProcessor.Imaging.Formats;
 
 namespace SmartStore.Services.Media
 {
@@ -15,7 +18,22 @@ namespace SmartStore.Services.Media
 		{
 		}
 
-		public ProcessImageQuery(object source)
+		public ProcessImageQuery(byte[] source)
+			: this(source, new NameValueCollection())
+		{
+		}
+
+		public ProcessImageQuery(Stream source)
+			: this(source, new NameValueCollection())
+		{
+		}
+
+		public ProcessImageQuery(Image source)
+			: this(source, new NameValueCollection())
+		{
+		}
+
+		public ProcessImageQuery(string source)
 			: this(source, new NameValueCollection())
 		{
 		}
@@ -29,18 +47,18 @@ namespace SmartStore.Services.Media
 			DisposeSource = true;
 		}
 
-		public ProcessImageQuery(ProcessImageQuery request)
-			: base(request)
+		public ProcessImageQuery(ProcessImageQuery query)
+			: base(query)
 		{
-			Guard.NotNull(request, nameof(request));
+			Guard.NotNull(query, nameof(query));
 
-			Source = request.Source;
-			DisposeSource = request.DisposeSource;
+			Source = query.Source;
+			Format = query.Format;
+			DisposeSource = query.DisposeSource;
 		}
 
 		/// <summary>
-		/// The source image's physical path, app-relative virtual path, or a Stream, byte array, 
-		/// Bitmap, VirtualFile, HttpPostedFile, or HttpPostedFileBase instance.
+		/// The source image's physical path, app-relative virtual path, or a Stream, byte array or Image instance.
 		/// </summary>
 		public object Source { get; set; }
 
@@ -61,13 +79,13 @@ namespace SmartStore.Services.Media
 		public int? MaxWidth
 		{
 			get { return Get<int?>("w"); }
-			set { Set("w", value); ScaleMode = value == null ? (string)null : "max"; }
+			set { Set("w", value); }
 		}
 
 		public int? MaxHeight
 		{
 			get { return Get<int?>("h"); }
-			set { Set("h", value); ScaleMode = value == null ? (string)null : "max"; }
+			set { Set("h", value); }
 		}
 
 		public int? Quality
@@ -79,18 +97,16 @@ namespace SmartStore.Services.Media
 		// TODO: (mc) make Enum
 		public string ScaleMode
 		{
-			get { return Get<string>("mode"); }
-			set { Set("mode", value); }
+			get { return Get<string>("m"); }
+			set { Set("m", value); }
 		}
 
 		/// <summary>
-		/// Gets or sets the output file format to use. "png", "jpg", and "gif" are valid values.
-		/// Returns null if unspecified. When format is not specified, the original format of the source image is used (unless it is not a web safe format - jpeg is the fallback in that scenario).
+		/// Gets or sets the output file format either as a string ("png", "jpg", and "gif"),
+		/// or as a format object instance.
+		/// When format is not specified, the original format of the source image is used (unless it is not a web safe format - jpeg is the fallback in that scenario).
 		/// </summary>
-		public string Format {
-			get { return Get<string>("fmt"); }
-			set { Set("fmt", value); }
-		}
+		public object Format { get; set; }
 
 
 		private T Get<T>(string name)
@@ -118,15 +134,33 @@ namespace SmartStore.Services.Media
 
 			foreach (var key in base.AllKeys)
 			{
-				if (key != "fmt")
-				{
-					sb.Append("-");
-					sb.Append(key);
-					sb.Append(base[key]);
-				}
+				if (key == "m" && base["m"] == "max")
+					continue; // Mode 'max' is default and can be omitted
+
+				sb.Append("-");
+				sb.Append(key);
+				sb.Append(base[key]);
 			}
 
 			return sb.ToString();
+		}
+
+		public string GetResultExtension()
+		{
+			if (Format == null)
+			{
+				return null;
+			}
+			else if (Format is ISupportedImageFormat)
+			{
+				return ((ISupportedImageFormat)Format).DefaultExtension;
+			}
+			else if (Format is string)
+			{
+				return (string)Format;
+			}
+
+			return null;
 		}
 	}
 }

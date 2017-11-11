@@ -871,7 +871,7 @@ namespace SmartStore.Admin.Controllers
             {
 				if (defaultPicture != null)
 				{
-					model.PictureThumbnailUrl = Url.Action("Picture", "Media", new { id = defaultPicture.Id, size = _mediaSettings.CartThumbPictureSize });
+					model.PictureThumbnailUrl = Url.Action("Image", "Media", new { id = defaultPicture.Id, size = _mediaSettings.CartThumbPictureSize, area = "" });
 				}
 				else
 				{
@@ -3616,7 +3616,8 @@ namespace SmartStore.Admin.Controllers
 				model.ProductVariantAttributes.Add(pvaModel);
 			}
 		}
-		private async Task PrepareVariantCombinationPictures(ProductVariantAttributeCombinationModel model, Product product)
+
+		private void PrepareVariantCombinationPictures(ProductVariantAttributeCombinationModel model, Product product)
 		{
 			var pictures = _pictureService.GetPicturesByProductId(product.Id);
 			foreach (var picture in pictures)
@@ -3624,7 +3625,7 @@ namespace SmartStore.Admin.Controllers
 				var assignablePicture = new ProductVariantAttributeCombinationModel.PictureSelectItemModel();
 				assignablePicture.Id = picture.Id;
 				assignablePicture.IsAssigned = model.AssignedPictureIds.Contains(picture.Id);
-				assignablePicture.PictureUrl = await _pictureService.GetPictureUrlAsync(picture.Id, 125, false);
+				assignablePicture.PictureUrl = _pictureService.GetPictureUrl(picture.Id, 125, false);
 				model.AssignablePictures.Add(assignablePicture);
 			}
 		}
@@ -3720,7 +3721,7 @@ namespace SmartStore.Admin.Controllers
 			return ProductVariantAttributeCombinationList(command, productId);
 		}
 
-		public async Task<ActionResult> AttributeCombinationCreatePopup(string btnId, string formId, int productId)
+		public ActionResult AttributeCombinationCreatePopup(string btnId, string formId, int productId)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
@@ -3733,7 +3734,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductAttributeCombinationModel(model, null, product);
 			PrepareVariantCombinationAttributes(model, product);
-			await PrepareVariantCombinationPictures(model, product);
+			PrepareVariantCombinationPictures(model, product);
 			PrepareDeliveryTimes(model);
 			PrepareViewBag(btnId, formId, false, false);
 
@@ -3741,7 +3742,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, ValidateInput(false)]
-		public async Task<ActionResult> AttributeCombinationCreatePopup(
+		public ActionResult AttributeCombinationCreatePopup(
 			string btnId,
 			string formId,
 			int productId,
@@ -3781,7 +3782,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductAttributeCombinationModel(model, null, product);
 			PrepareVariantCombinationAttributes(model, product);
-			await PrepareVariantCombinationPictures(model, product);
+			PrepareVariantCombinationPictures(model, product);
 			PrepareDeliveryTimes(model);
 			PrepareViewBag(btnId, formId, warnings.Count == 0, false);
 
@@ -3791,7 +3792,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		public async Task<ActionResult> AttributeCombinationEditPopup(int id, string btnId, string formId)
+		public ActionResult AttributeCombinationEditPopup(int id, string btnId, string formId)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
@@ -3810,7 +3811,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductAttributeCombinationModel(model, combination, product, true);
 			PrepareVariantCombinationAttributes(model, product);
-			await PrepareVariantCombinationPictures(model, product);
+			PrepareVariantCombinationPictures(model, product);
 			PrepareDeliveryTimes(model, model.DeliveryTimeId);
 			PrepareViewBag(btnId, formId);
 

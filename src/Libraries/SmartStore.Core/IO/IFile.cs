@@ -9,6 +9,9 @@ namespace SmartStore.Core.IO
         string Path { get; }
         string Name { get; }
 		long Size { get; }
+		/// <summary>
+		/// Expressed as UTC time
+		/// </summary>
 		DateTime LastUpdated { get; }
 		string FileType { get; }
 		bool Exists { get; }

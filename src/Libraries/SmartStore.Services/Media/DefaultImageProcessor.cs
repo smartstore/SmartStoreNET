@@ -90,32 +90,57 @@ namespace SmartStore.Services.Media
 
 					if (!size.IsEmpty)
 					{
-						processor.Resize(new ResizeLayer(size, resizeMode: ResizeMode.Max, upscale: false));
+						var mode = ResizeMode.Max;
+						if (query.ScaleMode.HasValue() && query.ScaleMode != "max")
+						{
+							// TODO: (mc) Implement! [...]
+						}
+						processor.Resize(new ResizeLayer(size, resizeMode: mode, upscale: false));
 					}
 
 					// Format
-					if (query.Format.HasValue())
+					if (query.Format != null)
 					{
-						var requestedFormat = query.Format.ToLowerInvariant();
-						//requestedFormat = "webp";
-						var quality = query.Quality ?? 90;
+						var format = query.Format as ISupportedImageFormat;
 
-						switch (requestedFormat)
+						if (format == null && query.Format is string)
 						{
-							case "jpg":
-							case "jpeg":
-								processor.Format(new JpegFormat { Quality = quality });
-								break;
-							case "png":
-								processor.Format(new PngFormat { Quality = quality, IsIndexed = true }); // TODO: (mc) get IsIndexed from settings
-								break;
-							case "gif":
-								processor.Format(new GifFormat { Quality = quality });
-								break;
-							case "webp":
-								processor.Format(new WebPFormat { Quality = quality });
-								break;
+							var requestedFormat = ((string)query.Format).ToLowerInvariant();
+							switch (requestedFormat)
+							{
+								case "jpg":
+								case "jpeg":
+									format = new JpegFormat();
+									break;
+								case "png":
+									format = new PngFormat();
+									break;
+								case "gif":
+									format = new GifFormat();
+									break;
+								case "webp":
+									format = new WebPFormat();
+									break;
+							}
 						}
+
+						if (format != null)
+						{
+							processor.Format(format);
+						}
+					}
+
+					// Set Quality
+					if (query.Quality.HasValue)
+					{
+						processor.Quality(query.Quality.Value);
+					}
+
+					// IsIndexed (for PNGs)
+					if (true)
+					{
+						// TODO: (mc) get from settings
+						processor.CurrentImageFormat.IsIndexed = true;
 					}
 
 					// Process

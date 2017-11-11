@@ -778,8 +778,6 @@ namespace SmartStore.Admin.Controllers
             model.DeleteImageCache.FileCount = imageCacheFileCount;
             model.DeleteImageCache.TotalSize = Prettifier.BytesToString(imageCacheTotalSize);
 
-			Debug.WriteLine("ImageService TotalProcessing Time: {0} ms.", _services.Resolve<IImageProcessor>().TotalProcessingTimeMs);
-
             return View(model);
         }
 

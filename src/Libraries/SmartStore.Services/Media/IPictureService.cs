@@ -88,22 +88,6 @@ namespace SmartStore.Services.Media
             PictureType defaultPictureType = PictureType.Entity);
 
 		/// <summary>
-		/// Gets a picture URL asynchronously
-		/// </summary>
-		/// <param name="pictureId">Picture identifier</param>
-		/// <param name="targetSize">The target picture size (longest side)</param>
-		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-		/// <param name="defaultPictureType">Default picture type</param>
-		/// <returns>Picture URL</returns>
-		Task<string> GetPictureUrlAsync(
-			int pictureId,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity);
-
-		/// <summary>
 		/// Gets a picture URL
 		/// </summary>
 		/// <param name="picture">Picture instance</param>
@@ -118,22 +102,6 @@ namespace SmartStore.Services.Media
             bool showDefaultPicture = true,
             string storeLocation = null,
             PictureType defaultPictureType = PictureType.Entity);
-
-		/// <summary>
-		/// Gets a picture URL asynchronously
-		/// </summary>
-		/// <param name="picture">Picture instance</param>
-		/// <param name="targetSize">The target picture size (longest side)</param>
-		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-		/// <param name="defaultPictureType">Default picture type</param>
-		/// <returns>Picture URL</returns>
-		Task<string> GetPictureUrlAsync(
-			Picture picture,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity);
 
 		/// <summary>
 		/// Gets the default picture URL

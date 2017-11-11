@@ -277,6 +277,7 @@
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\MediaController.cs" />
     <Compile Include="Controllers\OrderHelper.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />

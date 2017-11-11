@@ -26,18 +26,18 @@ namespace SmartStore.Services.Media
 		/// </summary>
 		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
 		/// <param name="source">The image binary data.</param>
-		/// <param name="targetSize">The max size of the target image.</param>
+		/// <param name="query">The processing query.</param>
 		/// <returns>The binary buffer of the resized image</returns>
-		byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, int targetSize);
+		byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, ProcessImageQuery query);
 
 		/// <summary>
 		/// Processes (resizes) and adds an image to the cache asynchronously.
 		/// </summary>
 		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
 		/// <param name="source">The image binary data.</param>
-		/// <param name="targetSize">The max size of the target image.</param>
+		/// <param name="query">The processing query.</param>
 		/// <returns>The binary buffer of the resized image</returns>
-		Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, int targetSize);
+		Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, ProcessImageQuery query);
 
 		/// <summary>
 		/// Adds an image to the cache.

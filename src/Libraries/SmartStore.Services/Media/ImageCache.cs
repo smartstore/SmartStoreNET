@@ -14,9 +14,11 @@ namespace SmartStore.Services.Media
 {
 	public class ImageCache : IImageCache
     {
-        private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
+		public const string IdFormatString = "0000000";
 
-        private readonly MediaSettings _mediaSettings;
+		private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
+
+		private readonly MediaSettings _mediaSettings;
 		private readonly string _thumbsRootDir;
 		private readonly IStoreContext _storeContext;
 		private readonly HttpContextBase _httpContext;
@@ -47,21 +49,15 @@ namespace SmartStore.Services.Media
 			set;
 		}
 
-		private ProcessImageQuery CreateProcessQuery(CachedImageResult cachedImage, byte[] source, int targetSize)
+		private ProcessImageQuery CreateProcessQuery(CachedImageResult cachedImage, byte[] source, ProcessImageQuery q)
 		{
-			var query = new ProcessImageQuery(source)
+			var query = new ProcessImageQuery(q)
 			{
+				Source = source,
 				Format = cachedImage.Extension,
 				FileName = cachedImage.FileName,
-				Quality = _mediaSettings.DefaultImageQuality,
 				ExecutePostProcessor = false, // cachedImage.Extension == "jpg" || cachedImage.Extension == "jpeg" // TODO: (mc) Pick from settings!
 			};
-
-			if (targetSize > 0)
-			{
-				query.MaxWidth = targetSize;
-				query.MaxHeight = targetSize;
-			}
 
 			return query;
 		}
@@ -75,56 +71,52 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-		public byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, int targetSize)
+		public byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, ProcessImageQuery query)
 		{
 			byte[] buffer;
 
-			if (targetSize == 0)
+			if (!query.NeedsProcessing())
 			{
 				AddImageToCache(cachedImage, source);
 				buffer = source;
 			}
 			else
 			{
-				var query = CreateProcessQuery(cachedImage, source, targetSize);
+				query = CreateProcessQuery(cachedImage, source, query);
 
 				using (var result = _imageProcessor.ProcessImage(query))
 				{
-					UpdateCachedImage(result, cachedImage);
-
 					buffer = result.Result.GetBuffer();
 					AddImageToCache(cachedImage, buffer);
+
+					UpdateCachedImage(result, cachedImage);
 				}
 			}
-
-			cachedImage.Exists = true;
 
 			return buffer;
 		}
 
-		public async Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, int targetSize)
+		public async Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, ProcessImageQuery query)
 		{
 			byte[] buffer;
 
-			if (targetSize == 0)
+			if (!query.NeedsProcessing())
 			{
 				await AddImageToCacheAsync(cachedImage, source);
 				buffer = source;
 			}
 			else
 			{
-				var query = CreateProcessQuery(cachedImage, source, targetSize);
+				query = CreateProcessQuery(cachedImage, source, query);
 
 				using (var result = _imageProcessor.ProcessImage(query))
 				{
-					UpdateCachedImage(result, cachedImage);
-
 					buffer = result.Result.GetBuffer();
 					await AddImageToCacheAsync(cachedImage, buffer);
+
+					UpdateCachedImage(result, cachedImage);
 				}
 			}
-
-			cachedImage.Exists = true;
 
 			return buffer;
 		}
@@ -133,8 +125,14 @@ namespace SmartStore.Services.Media
         {
 			if (PrepareAddImageToCache(cachedImage, buffer))
 			{
+				var path = BuildPath(cachedImage.Path);
+
 				// save file
-				_fileSystem.WriteAllBytes(BuildPath(cachedImage.Path), buffer);
+				_fileSystem.WriteAllBytes(path, buffer);
+
+				// Refresh info
+				cachedImage.Exists = true;
+				cachedImage.File = _fileSystem.GetFile(path);
 			}
         }
 
@@ -142,8 +140,18 @@ namespace SmartStore.Services.Media
 		{
 			if (PrepareAddImageToCache(cachedImage, buffer))
 			{
+				var path = BuildPath(cachedImage.Path);
+
 				// save file
-				return _fileSystem.WriteAllBytesAsync(BuildPath(cachedImage.Path), buffer);
+				var t = _fileSystem.WriteAllBytesAsync(path, buffer);
+				t.ContinueWith(x =>
+				{
+					// Refresh info
+					cachedImage.Exists = true;
+					cachedImage.File = _fileSystem.GetFile(path);
+				});
+
+				return t;
 			}
 
 			return Task.FromResult(false);
@@ -175,16 +183,20 @@ namespace SmartStore.Services.Media
 
         public virtual CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
         {
-            var imagePath = this.GetCachedImagePath(pictureId, seoFileName, extension, query);
+			Guard.NotEmpty(extension, nameof(extension));
 
-            var result = new CachedImageResult
-            {
-                Path = imagePath, //"Media/Thumbs/" + imagePath,
-                FileName = System.IO.Path.GetFileName(imagePath),
-                Extension = GetCleanFileExtension(imagePath),
-				Exists = _fileSystem.FileExists(BuildPath(imagePath))
-            };
+			extension = query?.GetResultExtension() ?? extension.TrimStart('.').ToLower();
+			var imagePath = GetCachedImagePath(pictureId, seoFileName, extension, query);
 
+			var file = _fileSystem.GetFile(BuildPath(imagePath));
+
+			var result = new CachedImageResult(file)
+			{
+				Path = imagePath,
+				Extension = extension,
+				IsRemote = _fileSystem.IsCloudStorage
+			};
+			
             return result;
         }
 
@@ -226,7 +238,7 @@ namespace SmartStore.Services.Media
 
 			if (HostingEnvironment.IsHosted)
 			{
-				// strip out app path from public url if needed but do not strip away leading slash from publicUrl
+				// strip out app path from public url if needed but do not strip away leading slash
 				var appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
 				if (appPath.Length > 0 && appPath != "/")
 				{
@@ -239,7 +251,7 @@ namespace SmartStore.Services.Media
 
 		public virtual void DeleteCachedImages(Picture picture)
         {
-            var filter = string.Format("{0}*.*", picture.Id.ToString("0000000"));
+            var filter = string.Format("{0}*.*", picture.Id.ToString(IdFormatString));
 
 			var files = _fileSystem.SearchFiles(_thumbsRootDir, filter);
 			foreach (var file in files)
@@ -289,24 +301,24 @@ namespace SmartStore.Services.Media
 			totalSize = _fileSystem.ListFolders(_thumbsRootDir).Sum(x => x.Size);
         }
 
-        #region Utils
+		#region Utils
 
-        /// <summary>
-        /// Returns the file name with the subfolder (when multidirs are enabled)
-        /// </summary>
-        /// <param name="picture"></param>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        internal string GetCachedImagePath(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
+		/// <summary>
+		/// Returns the file name with the subfolder (when multidirs are enabled)
+		/// </summary>
+		/// <param name="pictureId"></param>
+		/// <param name="seoFileName">File name without extension</param>
+		/// <param name="extension">Dot-less file extension</param>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		private string GetCachedImagePath(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
         {
-            Guard.NotEmpty(extension, nameof(extension));
-
             string imageFileName = null;
 
             string firstPart = "";
             if (pictureId.GetValueOrDefault() > 0)
             {
-                firstPart = pictureId.Value.ToString("0000000") + (seoFileName.IsEmpty() ? "" : "-");
+                firstPart = pictureId.Value.ToString(IdFormatString) + (seoFileName.IsEmpty() ? "" : "-");
             }
 
             if (firstPart.IsEmpty() && seoFileName.IsEmpty())
@@ -316,29 +328,24 @@ namespace SmartStore.Services.Media
             }
 
             seoFileName = seoFileName.EmptyNull();
-            extension = extension.TrimStart('.');
 
             if (query == null || !query.NeedsProcessing())
             {
-                imageFileName = "{0}{1}.{2}".FormatInvariant(firstPart, seoFileName, extension);
+                imageFileName = String.Concat(firstPart, seoFileName);
             }
             else
             {
-                imageFileName = "{0}{1}-{2}.{3}".FormatInvariant(firstPart, seoFileName, query.CreateHash(), extension);
-            }
+				imageFileName = String.Concat(firstPart, seoFileName, query.CreateHash());
+			}
 
-            if (_mediaSettings.MultipleThumbDirectories)
+            if (_mediaSettings.MultipleThumbDirectories && imageFileName != null && imageFileName.Length > MULTIPLE_THUMB_DIRECTORIES_LENGTH)
             {
-                // get the first four letters of the file name
-                var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(imageFileName);
-                if (fileNameWithoutExtension != null && fileNameWithoutExtension.Length > MULTIPLE_THUMB_DIRECTORIES_LENGTH)
-                {
-                    var subDirectoryName = fileNameWithoutExtension.Substring(0, MULTIPLE_THUMB_DIRECTORIES_LENGTH);
-                    imageFileName = subDirectoryName + "/" + imageFileName;
-                }
+                // Get the first four letters of the file name
+                var subDirectoryName = imageFileName.Substring(0, MULTIPLE_THUMB_DIRECTORIES_LENGTH);
+                imageFileName = String.Concat(subDirectoryName, "/", imageFileName);
             }
 
-            return imageFileName;
+            return String.Concat(imageFileName, ".", extension);
         }
 
 		private string BuildPath(string imagePath)
@@ -346,7 +353,7 @@ namespace SmartStore.Services.Media
 			if (imagePath.IsEmpty())
 				return null;
 
-			return _thumbsRootDir + imagePath;
+			return String.Concat(_thumbsRootDir, imagePath);
 		}
 
 		private static string GetCleanFileExtension(string url)
@@ -354,7 +361,7 @@ namespace SmartStore.Services.Media
             var extension = System.IO.Path.GetExtension(url);
             if (extension != null)
             {
-                return extension.Replace(".", "").ToLower();
+                return extension.TrimStart('.').ToLower();
             }
 
             return string.Empty;

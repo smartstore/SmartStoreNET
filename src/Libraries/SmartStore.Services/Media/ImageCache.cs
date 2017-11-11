@@ -207,46 +207,21 @@ namespace SmartStore.Services.Media
 			return _fileSystem.GetFile(BuildPath(cachedImage.Path)).OpenRead();
 		}
 
-        public virtual string GetImageUrl(string imagePath, string storeLocation = null)
+        public virtual string GetPublicUrl(string imagePath)
         {
 			if (imagePath.IsEmpty())
                 return null;
 
-			var publicUrl = _fileSystem.GetPublicUrl(BuildPath(imagePath)).EmptyNull();
-			if (publicUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || publicUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-			{
-				// absolute url
-				return publicUrl;
-			}
+			return _fileSystem.GetPublicUrl(BuildPath(imagePath)).EmptyNull();
+		}
 
-			var root = storeLocation;
-
-			if (root.IsEmpty())
-			{
-				var cdnUrl = _storeContext.CurrentStore.ContentDeliveryNetwork;
-				if (cdnUrl.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
-				{
-					root = cdnUrl;
-				}
-			}
-
-			if (root.IsEmpty())
-			{
-				// relative url must start with a slash
-				return publicUrl.EnsureStartsWith("/");
-			}
-
-			if (HostingEnvironment.IsHosted)
-			{
-				// strip out app path from public url if needed but do not strip away leading slash
-				var appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
-				if (appPath.Length > 0 && appPath != "/")
-				{
-					publicUrl = publicUrl.Substring(appPath.Length + 1);
-				}
-			}
-
-			return root.TrimEnd('/', '\\') + publicUrl.EnsureStartsWith("/");
+		public virtual void RefreshInfo(CachedImageResult cachedImage)
+		{
+			Guard.NotNull(cachedImage, nameof(cachedImage));
+			
+			var file = _fileSystem.GetFile(cachedImage.File.Path);
+			cachedImage.File = file;
+			cachedImage.Exists = file.Exists;
 		}
 
 		public virtual void DeleteCachedImages(Picture picture)

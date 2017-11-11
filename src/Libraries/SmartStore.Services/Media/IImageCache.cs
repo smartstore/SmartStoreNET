@@ -14,12 +14,11 @@ namespace SmartStore.Services.Media
     public interface IImageCache
     {
         /// <summary>
-        /// Resolves an http url to the image 
+        /// Resolves a publicly accessible http url to the image 
         /// </summary>
         /// <param name="imagePath">The path of the image relative to the cache root path</param>
-        /// <param name="storeLocation">Store location URL; <c>null</c> to use determine the current store location automatically</param>
         /// <returns>The image http url</returns>
-        string GetImageUrl(string imagePath, string storeLocation = null);
+        string GetPublicUrl(string imagePath);
 
 		/// <summary>
 		/// Processes (resizes) and adds an image to the cache.
@@ -82,11 +81,16 @@ namespace SmartStore.Services.Media
         /// </summary>
         void DeleteCachedImages();
 
-        /// <summary>
-        /// Calculates statistics about the image cache data.
-        /// </summary>
-        /// <param name="fileCount">The total count of files in the cache.</param>
-        /// <param name="totalSize">The total size of files in the cache (in bytes)</param>
-        void CacheStatistics(out long fileCount, out long totalSize);
+		/// <summary>
+		/// Refreshes the file info.
+		/// </summary>
+		void RefreshInfo(CachedImageResult cachedImage);
+
+		/// <summary>
+		/// Calculates statistics about the image cache data.
+		/// </summary>
+		/// <param name="fileCount">The total count of files in the cache.</param>
+		/// <param name="totalSize">The total size of files in the cache (in bytes)</param>
+		void CacheStatistics(out long fileCount, out long totalSize);
     }
 }

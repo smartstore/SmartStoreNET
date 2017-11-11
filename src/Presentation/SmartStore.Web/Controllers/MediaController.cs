@@ -9,6 +9,9 @@ using SmartStore.Core.IO;
 using SmartStore.Services.Media;
 using SmartStore.Services.Common;
 using SmartStore.Core.Logging;
+using SmartStore.Utilities;
+using System.IO;
+using SmartStore.Core.Async;
 
 namespace SmartStore.Web.Controllers
 {
@@ -82,7 +85,7 @@ namespace SmartStore.Web.Controllers
 				var ifNoneMatch = Request.Headers["If-None-Match"];
 				if (ifNoneMatch.HasValue())
 				{
-					etag = GetFileETag(nameWithoutExtension, mime, picture?.UpdatedOnUtc ?? cachedImage.LastModifiedUtc.Value);
+					etag = GetFileETag(nameWithoutExtension, mime, cachedImage.LastModifiedUtc.Value);
 
 					if (etag == ifNoneMatch)
 					{
@@ -107,42 +110,75 @@ namespace SmartStore.Web.Controllers
 			{
 				if (!cachedImage.Exists)
 				{
-					if (picture == null && id == 0)
+					// get the async (semaphore) locker specific to this key
+					var keyLock = AsyncLock.Acquire("lock" + cachedImage.Path);
+
+					// Lock concurrent requests to same resource
+					using (await keyLock.LockAsync())
 					{
-						// This is most likely a request for a default placeholder image
+						_imageCache.RefreshInfo(cachedImage);
+
+						// File could have been processed by another request in the meantime, check again.
+						if (!cachedImage.Exists)
+						{
+							byte[] source;
+
+							if (picture == null)
+							{
+								if (id == 0)
+								{
+									// This is most likely a request for a default placeholder image
+									var mappedPath = CommonHelper.MapPath(Path.Combine(PictureService.DefaultImagesRootPath, name), false);
+									if (!System.IO.File.Exists(mappedPath))
+										return NotFound();
+
+									source = System.IO.File.ReadAllBytes(mappedPath);
+								}
+								else
+								{
+									// Get metadata from DB
+									picture = _pictureService.GetPictureById(id);
+
+									// Picture must exist
+									if (picture == null)
+										return NotFound();
+
+									// Picture's mime must match requested mime
+									if (!picture.MimeType.IsCaseInsensitiveEqual(prevMime ?? mime))
+										return NotFound();
+
+									// When Picture has SeoFileName, it must match requested name
+									// When Picture has NO SeoFileName, requested name must match Id
+									if (picture.SeoFilename.HasValue() && !picture.SeoFilename.IsCaseInsensitiveEqual(nameWithoutExtension))
+										return NotFound();
+									else if (picture.SeoFilename.IsEmpty() && picture.Id.ToString(ImageCache.IdFormatString) != nameWithoutExtension)
+										return NotFound();
+
+									source = await _pictureService.LoadPictureBinaryAsync(picture);
+								}
+							}
+							else
+							{
+								source = await _pictureService.LoadPictureBinaryAsync(picture);
+							}
+
+							var buffer = await _imageCache.ProcessAndAddImageToCacheAsync(cachedImage, source, query);
+							return File(buffer, mime);
+						}
 					}
-					
-					// Create and return result
-					if (picture == null)
-					{
-						// Get metadata from DB
-						picture = _pictureService.GetPictureById(id);
-
-						// Picture must exist
-						if (picture == null)
-							return NotFound();
-
-						// Picture's mime must match requested mime
-						if (!picture.MimeType.IsCaseInsensitiveEqual(prevMime ?? mime))
-							return NotFound();
-
-						// When Picture has SeoFileName, it must match requested name
-						// When Picture has NO SeoFileName, requested name must match Id
-						if (picture.SeoFilename.HasValue() && !picture.SeoFilename.IsCaseInsensitiveEqual(nameWithoutExtension))
-							return NotFound();
-						else if (picture.SeoFilename.IsEmpty() && picture.Id.ToString(ImageCache.IdFormatString) != nameWithoutExtension)
-							return NotFound();
-					}
-
-					var source = await _pictureService.LoadPictureBinaryAsync(picture);
-					var buffer = await _imageCache.ProcessAndAddImageToCacheAsync(cachedImage, source, query);
-					return File(buffer, mime);
 				}
 				else
-				{
-					// open existing stream
-					// TODO: (mc) Handle cloud blobs with proper redirects
-					return File(cachedImage.File.OpenRead(), mime);
+				{			
+					if (cachedImage.IsRemote)
+					{
+						// Redirect to existing remote file
+						return Redirect(_imageCache.GetPublicUrl(cachedImage.Path));
+					}
+					else
+					{
+						// Open existing stream
+						return File(cachedImage.File.OpenRead(), mime);
+					}		
 				}
 			}
 			catch (Exception ex)
@@ -155,7 +191,7 @@ namespace SmartStore.Web.Controllers
 			{
 				if (!isFaulted)
 				{
-					var lastModifiedUtc = picture?.UpdatedOnUtc ?? cachedImage.LastModifiedUtc.Value;
+					var lastModifiedUtc = cachedImage.LastModifiedUtc.GetValueOrDefault();
 					etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
 
 					Response.Cache.SetLastModified(lastModifiedUtc);
@@ -208,10 +244,10 @@ namespace SmartStore.Web.Controllers
 				query.Quality = _mediaSettings.DefaultImageQuality;
 			}
 
-			if (query.Format == null && _userAgent.UserAgent.SupportsWebP)
-			{
-				query.Format = "webp";
-			}
+			//if (query.Format == null && _userAgent.UserAgent.SupportsWebP)
+			//{
+			//	query.Format = "webp";
+			//}
 
 			// TODO: (mc) Handle WebP format properly
 			// TODO: (mc) Publish event ImageQueryCreated

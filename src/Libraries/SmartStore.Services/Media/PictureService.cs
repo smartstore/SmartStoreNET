@@ -30,8 +30,8 @@ namespace SmartStore.Services.Media
         private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
 		private const string STATIC_IMAGE_PATH = "~/Content/Images";
 
-		// 0 = Id, 1 = Size, 2 = DefaultPictureType, 3 = StoreLocation
-		private const string CACHE_LOOKUP_KEY = "image:url-{0}-{1}-{2}-{3}";
+		// 0 = Id, 1 = Size, 2 = DefaultPictureType, 3 = StoreId, 4 = StoreLocation
+		private const string CACHE_LOOKUP_KEY = "image:url-{0}-{1}-{2}-{3}-{4}";
 		private const string CACHE_LOOKUP_KEY_PATTERN = "image:url-{0}-*";
 
 		private readonly IRepository<Picture> _pictureRepository;
@@ -48,15 +48,14 @@ namespace SmartStore.Services.Media
 
 		private string _staticImagePath;
 
-		private static readonly ConcurrentDictionary<string, string> _urlMap;
-		private static readonly string _imagesRootPath;
+		private static readonly string _processedImagesRootPath;
+		private static readonly string _defaultImagesRootPath;
 
 		static PictureService()
 		{
-			_urlMap = new ConcurrentDictionary<string, string>();
-
 			// TODO: (mc) make this configurable per web.config
-			_imagesRootPath = VirtualPathUtility.ToAbsolute("~/media/image/").EnsureEndsWith("/");
+			_processedImagesRootPath = VirtualPathUtility.ToAbsolute("~/media/image/").EnsureEndsWith("/");
+			_defaultImagesRootPath = VirtualPathUtility.ToAbsolute("~/content/images/").EnsureEndsWith("/");
 		}
 
 		public PictureService(
@@ -92,6 +91,11 @@ namespace SmartStore.Services.Media
 		public ILogger Logger { get; set; }
 
 		#region Utilities
+
+		public static string DefaultImagesRootPath
+		{
+			get { return _defaultImagesRootPath; }
+		}
 
 		protected virtual string StaticImagePath
 		{
@@ -147,7 +151,7 @@ namespace SmartStore.Services.Media
 				lock (String.Intern(cachedImage.Path))
 				{
 					byte[] buffer = null;
-
+					
 					try
 					{
 						if (source is string)
@@ -189,7 +193,7 @@ namespace SmartStore.Services.Media
 				}
 			}
 
-			var url = _imageCache.GetImageUrl(cachedImage.Path, storeLocation);
+			var url = _imageCache.GetPublicUrl(cachedImage.Path);
 			return url;
 		}
 
@@ -376,12 +380,14 @@ namespace SmartStore.Services.Media
 		{
 			string url = string.Empty;
 			string path = null;
+			bool isDefaultImage = false;
 
 			if (picture == null)
 			{
 				if (showDefaultPicture)
 				{
 					path = "{0}/{1}".FormatInvariant(0, GetDefaultImageFileName(defaultPictureType));
+					isDefaultImage = targetSize == 0;
 				}
 			}
 			else
@@ -411,7 +417,7 @@ namespace SmartStore.Services.Media
 
 			if (path != null)
 			{
-				url = _imagesRootPath + path;
+				url = (isDefaultImage ? _defaultImagesRootPath : _processedImagesRootPath) + path;
 				if (targetSize > 0)
 				{
 					url += "?size={0}".FormatInvariant(targetSize);
@@ -432,7 +438,7 @@ namespace SmartStore.Services.Media
 			int defaultPictureType, // 0 if showDefaultPicture is false
 			string location)
 		{
-			return CACHE_LOOKUP_KEY.FormatInvariant(pictureId, size, defaultPictureType, location.EmptyNull());
+			return CACHE_LOOKUP_KEY.FormatInvariant(pictureId, size, defaultPictureType, _storeContext.CurrentStore.Id, location.EmptyNull());
 		}
 
 		private string ApplyCdnUrl(string url, string storeLocation)
@@ -442,7 +448,7 @@ namespace SmartStore.Services.Media
 			if (root.IsEmpty())
 			{
 				var cdnUrl = _storeContext.CurrentStore.ContentDeliveryNetwork;
-				if (cdnUrl.HasValue() /*&& !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal*/)
+				if (cdnUrl.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
 				{
 					root = cdnUrl;
 				}

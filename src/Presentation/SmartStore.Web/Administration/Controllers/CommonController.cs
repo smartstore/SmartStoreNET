@@ -788,7 +788,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
-			_imageCache.Value.DeleteCachedImages();
+			_imageCache.Value.Clear();
 
 			// get rid of cached image metadata
 			_services.Cache.Clear();

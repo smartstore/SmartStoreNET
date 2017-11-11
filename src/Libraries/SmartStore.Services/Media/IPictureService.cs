@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Threading.Tasks;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -49,6 +50,13 @@ namespace SmartStore.Services.Media
 		/// <param name="seoFilename">The SEO filename</param>
 		/// <returns>Picture</returns>
 		Picture SetSeoFilename(int pictureId, string seoFilename);
+
+		/// <summary>
+		/// Opens the picture stream from the underlying storage provider for reading
+		/// </summary>
+		/// <param name="picture">Picture</param>
+		/// <returns>Picture stream</returns>
+		Stream OpenPictureStream(Picture picture);
 
 		/// <summary>
 		/// Loads the picture binary from the underlying storage provider

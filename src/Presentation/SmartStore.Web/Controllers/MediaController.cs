@@ -20,17 +20,20 @@ namespace SmartStore.Web.Controllers
 	public partial class MediaController : Controller
     {
 		private readonly IPictureService _pictureService;
+		private readonly IImageProcessor _imageProcessor;
 		private readonly IImageCache _imageCache;
 		private readonly IUserAgent _userAgent;
 		private readonly MediaSettings _mediaSettings;
 
 		public MediaController(
 			IPictureService pictureService,
+			IImageProcessor imageProcessor,
 			IImageCache imageCache,
 			IUserAgent userAgent,
 			MediaSettings mediaSettings)
         {
 			_pictureService = pictureService;
+			_imageProcessor = imageProcessor;
 			_imageCache = imageCache;
 			_userAgent = userAgent;
 			_mediaSettings = mediaSettings;
@@ -69,7 +72,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			var query = CreateImageQuery();
-			var cachedImage = _imageCache.GetCachedImage(id, nameWithoutExtension, extension, query);
+			var cachedImage = _imageCache.Get(id, nameWithoutExtension, extension, query);
 
 			if (extension != cachedImage.Extension)
 			{
@@ -162,23 +165,21 @@ namespace SmartStore.Web.Controllers
 								source = await _pictureService.LoadPictureBinaryAsync(picture);
 							}
 
-							var buffer = await _imageCache.ProcessAndAddImageToCacheAsync(cachedImage, source, query);
-							return File(buffer, mime);
+							source = await ProcessAndPutToCacheAsync(cachedImage, source, query);
+							return File(source, mime);
 						}
 					}
 				}
+
+				if (cachedImage.IsRemote)
+				{
+					// Redirect to existing remote file
+					return Redirect(_imageCache.GetPublicUrl(cachedImage.Path));
+				}
 				else
-				{			
-					if (cachedImage.IsRemote)
-					{
-						// Redirect to existing remote file
-						return Redirect(_imageCache.GetPublicUrl(cachedImage.Path));
-					}
-					else
-					{
-						// Open existing stream
-						return File(cachedImage.File.OpenRead(), mime);
-					}		
+				{
+					// Open existing stream
+					return File(cachedImage.File.OpenRead(), mime);
 				}
 			}
 			catch (Exception ex)
@@ -196,6 +197,40 @@ namespace SmartStore.Web.Controllers
 
 					Response.Cache.SetLastModified(lastModifiedUtc);
 					SetCacheHeaders(Response.Cache, etag);
+				}
+			}
+		}
+
+		private async Task<byte[]> ProcessAndPutToCacheAsync(CachedImageResult cachedImage, byte[] buffer, ProcessImageQuery query)
+		{
+			if (!query.NeedsProcessing())
+			{
+				await _imageCache.PutAsync(cachedImage, buffer);
+				return buffer;
+			}
+			else
+			{
+				var processQuery = new ProcessImageQuery(query)
+				{
+					Source = buffer,
+					Format = cachedImage.Extension,
+					FileName = cachedImage.FileName,
+					DisposeSource = true,
+					ExecutePostProcessor = false, // cachedImage.Extension == "jpg" || cachedImage.Extension == "jpeg" // TODO: (mc) Pick from settings!
+				};
+
+				using (var result = _imageProcessor.ProcessImage(processQuery))
+				{
+					var outBuffer = result.Result.GetBuffer();
+					await _imageCache.PutAsync(cachedImage, outBuffer);
+
+					if (cachedImage.Extension != result.FileExtension)
+					{
+						cachedImage.Path = Path.ChangeExtension(cachedImage.Path, result.FileExtension);
+						cachedImage.Extension = result.FileExtension;
+					}
+
+					return outBuffer;
 				}
 			}
 		}
@@ -244,10 +279,10 @@ namespace SmartStore.Web.Controllers
 				query.Quality = _mediaSettings.DefaultImageQuality;
 			}
 
-			//if (query.Format == null && _userAgent.UserAgent.SupportsWebP)
-			//{
-			//	query.Format = "webp";
-			//}
+			if (query.Format == null && _userAgent.UserAgent.SupportsWebP)
+			{
+				query.Format = "webp";
+			}
 
 			// TODO: (mc) Handle WebP format properly
 			// TODO: (mc) Publish event ImageQueryCreated

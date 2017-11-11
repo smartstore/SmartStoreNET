@@ -13,44 +13,21 @@ namespace SmartStore.Services.Media
     /// </summary>
     public interface IImageCache
     {
-        /// <summary>
-        /// Resolves a publicly accessible http url to the image 
-        /// </summary>
-        /// <param name="imagePath">The path of the image relative to the cache root path</param>
-        /// <returns>The image http url</returns>
-        string GetPublicUrl(string imagePath);
-
-		/// <summary>
-		/// Processes (resizes) and adds an image to the cache.
-		/// </summary>
-		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
-		/// <param name="source">The image binary data.</param>
-		/// <param name="query">The processing query.</param>
-		/// <returns>The binary buffer of the resized image</returns>
-		byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, ProcessImageQuery query);
-
-		/// <summary>
-		/// Processes (resizes) and adds an image to the cache asynchronously.
-		/// </summary>
-		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
-		/// <param name="source">The image binary data.</param>
-		/// <param name="query">The processing query.</param>
-		/// <returns>The binary buffer of the resized image</returns>
-		Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, ProcessImageQuery query);
-
 		/// <summary>
 		/// Adds an image to the cache.
 		/// </summary>
-		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
-		/// <param name="buffer">The image binary data.</param>
-		void AddImageToCache(CachedImageResult cachedImage, byte[] buffer);
+		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>Get()</c> method.</param>
+		/// <param name="buffer">The image binary buffer.</param>
+		/// <returns><c>true</c> when the operation succeded, <c>false</c> otherwise</returns>
+		void Put(CachedImageResult cachedImage, byte[] buffer);
 
 		/// <summary>
 		/// Asynchronously adds an image to the cache.
 		/// </summary>
-		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
-		/// <param name="buffer">The image binary data.</param>
-		Task AddImageToCacheAsync(CachedImageResult cachedImage, byte[] buffer);
+		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>Get()</c> method.</param>
+		/// <param name="buffer">The image binary buffer.</param>
+		/// <returns><c>true</c> when the operation succeded, <c>false</c> otherwise</returns>
+		Task PutAsync(CachedImageResult cachedImage, byte[] buffer);
 
 		/// <summary>
 		/// Gets an instance of the <see cref="CachedImageResult"/> object, which contains information about a cached image.
@@ -61,25 +38,25 @@ namespace SmartStore.Services.Media
 		/// <param name="query">The image processing query.</param>
 		/// <returns>An instance of the <see cref="CachedImageResult"/> object</returns>
 		/// <remarks>If the requested image does not exist in the cache, the value of the <c>Exists</c> property will be <c>false</c>.</remarks>
-		CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null);
+		CachedImageResult Get(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null);
 
 		/// <summary>
 		/// Opens a readonly file stream to the cached image
 		/// </summary>
 		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
 		/// <returns>File stream</returns>
-		Stream OpenCachedImage(CachedImageResult cachedImage);
+		Stream Open(CachedImageResult cachedImage);
 
 		/// <summary>
 		/// Deletes all cached images for the given <see cref="Picture"/>
 		/// </summary>
 		/// <param name="picture">The <see cref="Picture"/> for which to delete cached images</param>
-		void DeleteCachedImages(Picture picture);
+		void Delete(Picture picture);
 
         /// <summary>
         /// Deletes all cached images (nukes all files in the cache folder)
         /// </summary>
-        void DeleteCachedImages();
+        void Clear();
 
 		/// <summary>
 		/// Refreshes the file info.
@@ -92,5 +69,12 @@ namespace SmartStore.Services.Media
 		/// <param name="fileCount">The total count of files in the cache.</param>
 		/// <param name="totalSize">The total size of files in the cache (in bytes)</param>
 		void CacheStatistics(out long fileCount, out long totalSize);
-    }
+
+		/// <summary>
+		/// Resolves a publicly accessible http url to the image 
+		/// </summary>
+		/// <param name="imagePath">The path of the image relative to the cache root path</param>
+		/// <returns>The image http url</returns>
+		string GetPublicUrl(string imagePath);
+	}
 }

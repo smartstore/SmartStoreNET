@@ -13,11 +13,11 @@ namespace SmartStore.Services.Media
 		/// <param name="query">The image processing query.</param>
 		/// <returns>An instance of the <see cref="CachedImageResult"/> object</returns>
 		/// <remarks>If the requested image does not exist in the cache, the value of the <c>Exists</c> property will be <c>false</c>.</remarks>
-		public static CachedImageResult GetCachedImage(this IImageCache imageCache, Picture picture, ProcessImageQuery query = null)
+		public static CachedImageResult Get(this IImageCache imageCache, Picture picture, ProcessImageQuery query = null)
         {
             Guard.NotNull(picture, nameof(picture));
 
-            return imageCache.GetCachedImage(picture.Id, picture.SeoFilename, MimeTypes.MapMimeTypeToExtension(picture.MimeType), query);
+            return imageCache.Get(picture.Id, picture.SeoFilename, MimeTypes.MapMimeTypeToExtension(picture.MimeType), query);
         }
 
 		/// <summary>
@@ -28,10 +28,10 @@ namespace SmartStore.Services.Media
 		/// <param name="extension">The extension of the resulting file</param>
 		/// <param name="buffer">The image binary data.</param>
 		/// <param name="query">The image processing query. This object, if not <c>null</c>, is hashed and appended to the resulting file name.</param>
-		public static void AddImageToCache(this IImageCache imageCache, int? pictureId, string seoFileName, string extension, byte[] buffer, ProcessImageQuery query = null)
+		public static void Put(this IImageCache imageCache, int? pictureId, string seoFileName, string extension, byte[] buffer, ProcessImageQuery query = null)
         {
-            var cachedImage = imageCache.GetCachedImage(pictureId, seoFileName, extension, query);
-            imageCache.AddImageToCache(cachedImage, buffer);
+            var cachedImage = imageCache.Get(pictureId, seoFileName, extension, query);
+            imageCache.Put(cachedImage, buffer);
         }
 
 		/// <summary>
@@ -40,10 +40,10 @@ namespace SmartStore.Services.Media
 		/// <param name="picture">The picture object needed for building the resulting file name.</param>
 		/// <param name="buffer">The image binary data.</param>
 		/// <param name="query">The image processing query. This object, if not <c>null</c>, is hashed and appended to the resulting file name.</param>
-		public static void AddImageToCache(this IImageCache imageCache, Picture picture, byte[] buffer, ProcessImageQuery query = null)
+		public static void Put(this IImageCache imageCache, Picture picture, byte[] buffer, ProcessImageQuery query = null)
         {
             Guard.NotNull(picture, nameof(picture));
-            imageCache.AddImageToCache(picture.Id, picture.SeoFilename, MimeTypes.MapMimeTypeToExtension(picture.MimeType), buffer, query);
+            imageCache.Put(picture.Id, picture.SeoFilename, MimeTypes.MapMimeTypeToExtension(picture.MimeType), buffer, query);
         }
     }
 }

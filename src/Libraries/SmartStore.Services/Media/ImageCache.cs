@@ -49,96 +49,22 @@ namespace SmartStore.Services.Media
 			set;
 		}
 
-		private ProcessImageQuery CreateProcessQuery(CachedImageResult cachedImage, byte[] source, ProcessImageQuery q)
+		public void Put(CachedImageResult cachedImage, byte[] buffer)
 		{
-			var query = new ProcessImageQuery(q)
-			{
-				Source = source,
-				Format = cachedImage.Extension,
-				FileName = cachedImage.FileName,
-				ExecutePostProcessor = false, // cachedImage.Extension == "jpg" || cachedImage.Extension == "jpeg" // TODO: (mc) Pick from settings!
-			};
-
-			return query;
-		}
-
-		private void UpdateCachedImage(ProcessImageResult result, CachedImageResult cachedImage)
-		{
-			if (cachedImage.Extension != result.FileExtension)
-			{
-				cachedImage.Path = Path.ChangeExtension(cachedImage.Path, result.FileExtension);
-				cachedImage.Extension = result.FileExtension;
-			}
-		}
-
-		public byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, ProcessImageQuery query)
-		{
-			byte[] buffer;
-
-			if (!query.NeedsProcessing())
-			{
-				AddImageToCache(cachedImage, source);
-				buffer = source;
-			}
-			else
-			{
-				query = CreateProcessQuery(cachedImage, source, query);
-
-				using (var result = _imageProcessor.ProcessImage(query))
-				{
-					buffer = result.Result.GetBuffer();
-					AddImageToCache(cachedImage, buffer);
-
-					UpdateCachedImage(result, cachedImage);
-				}
-			}
-
-			return buffer;
-		}
-
-		public async Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, ProcessImageQuery query)
-		{
-			byte[] buffer;
-
-			if (!query.NeedsProcessing())
-			{
-				await AddImageToCacheAsync(cachedImage, source);
-				buffer = source;
-			}
-			else
-			{
-				query = CreateProcessQuery(cachedImage, source, query);
-
-				using (var result = _imageProcessor.ProcessImage(query))
-				{
-					buffer = result.Result.GetBuffer();
-					await AddImageToCacheAsync(cachedImage, buffer);
-
-					UpdateCachedImage(result, cachedImage);
-				}
-			}
-
-			return buffer;
-		}
-
-		public void AddImageToCache(CachedImageResult cachedImage, byte[] buffer)
-        {
-			if (PrepareAddImageToCache(cachedImage, buffer))
+			if (PreparePut(cachedImage, buffer))
 			{
 				var path = BuildPath(cachedImage.Path);
 
-				// save file
 				_fileSystem.WriteAllBytes(path, buffer);
 
-				// Refresh info
 				cachedImage.Exists = true;
 				cachedImage.File = _fileSystem.GetFile(path);
 			}
-        }
+		}
 
-		public Task AddImageToCacheAsync(CachedImageResult cachedImage, byte[] buffer)
+		public Task PutAsync(CachedImageResult cachedImage, byte[] buffer)
 		{
-			if (PrepareAddImageToCache(cachedImage, buffer))
+			if (PreparePut(cachedImage, buffer))
 			{
 				var path = BuildPath(cachedImage.Path);
 
@@ -157,7 +83,7 @@ namespace SmartStore.Services.Media
 			return Task.FromResult(false);
 		}
 
-		private bool PrepareAddImageToCache(CachedImageResult cachedImage, byte[] buffer)
+		private bool PreparePut(CachedImageResult cachedImage, byte[] buffer)
 		{
 			Guard.NotNull(cachedImage, nameof(cachedImage));
 
@@ -181,7 +107,7 @@ namespace SmartStore.Services.Media
 			return true;
 		}
 
-        public virtual CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
+        public virtual CachedImageResult Get(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
         {
 			Guard.NotEmpty(extension, nameof(extension));
 
@@ -200,7 +126,7 @@ namespace SmartStore.Services.Media
             return result;
         }
 
-		public virtual Stream OpenCachedImage(CachedImageResult cachedImage)
+		public virtual Stream Open(CachedImageResult cachedImage)
 		{
 			Guard.NotNull(cachedImage, nameof(cachedImage));
 
@@ -224,7 +150,7 @@ namespace SmartStore.Services.Media
 			cachedImage.Exists = file.Exists;
 		}
 
-		public virtual void DeleteCachedImages(Picture picture)
+		public virtual void Delete(Picture picture)
         {
             var filter = string.Format("{0}*.*", picture.Id.ToString(IdFormatString));
 
@@ -235,7 +161,7 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-        public virtual void DeleteCachedImages()
+        public virtual void Clear()
         {
             for (int i = 0; i < 10; i++)
             {
@@ -330,17 +256,6 @@ namespace SmartStore.Services.Media
 
 			return String.Concat(_thumbsRootDir, imagePath);
 		}
-
-		private static string GetCleanFileExtension(string url)
-        {
-            var extension = System.IO.Path.GetExtension(url);
-            if (extension != null)
-            {
-                return extension.TrimStart('.').ToLower();
-            }
-
-            return string.Empty;
-        }
 
         #endregion
 

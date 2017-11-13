@@ -92,6 +92,15 @@
                 @Html.ValidationMessageFor(model => model.SkipShippingIfSingleOption)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ChargeOnlyHighestProductShippingSurcharge)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ChargeOnlyHighestProductShippingSurcharge)
+                @Html.ValidationMessageFor(model => model.ChargeOnlyHighestProductShippingSurcharge)
+            </td>
+        </tr>
 
 		<tr class="adminGroup">
 			<td class="adminTitle">

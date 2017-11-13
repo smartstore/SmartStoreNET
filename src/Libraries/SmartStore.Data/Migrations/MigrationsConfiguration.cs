@@ -129,6 +129,13 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Configuration.Languages.UploadFileOrSelectLanguage",
                 "Please upload an import file or select an available language whose resources are to be imported.",
                 "Bitte laden Sie eine Importdatei hoch oder wählen Sie eine verfügbare Sprache, deren Ressourcen importiert werden sollen.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.ChargeOnlyHighestProductShippingSurcharge",
+                "Charge the highest shipping surcharge only",
+                "Nur den höchsten Transportzuschlag berechnen",
+                "Specifies  whether to charge only the highest additional shipping surcharge of products.",
+                "Bestimmt ob bei der Berechnung der Versandkosten nur der höchste Transportzuschlag von Produkten berücksichtigt wird.");
+
         }
     }
 }

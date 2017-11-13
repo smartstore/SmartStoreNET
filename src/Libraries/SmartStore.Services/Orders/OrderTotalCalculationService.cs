@@ -569,10 +569,7 @@ namespace SmartStore.Services.Orders
             return discountAmount;
         }
 
-
-
-
-
+        
         /// <summary>
         /// Gets shopping cart additional shipping charge
         /// </summary>
@@ -587,17 +584,28 @@ namespace SmartStore.Services.Orders
 
 			foreach (var sci in cart)
 			{
-				if (sci.Item.IsShipEnabled && !sci.Item.IsFreeShipping && sci.Item.Product != null)
-				{
-					if (sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShipping)
-					{
-						sci.ChildItems.Each(x => additionalShippingCharge += (x.Item.Product.AdditionalShippingCharge * x.Item.Quantity));
-					}
-					else
-					{
-						additionalShippingCharge += sci.Item.Product.AdditionalShippingCharge * sci.Item.Quantity;
-					}
-				}
+
+                if (_shippingSettings.ChargeOnlyHighestProductShippingSurcharge)
+                {
+                    if (additionalShippingCharge < sci.Item.Product.AdditionalShippingCharge)
+                    {
+                        additionalShippingCharge = sci.Item.Product.AdditionalShippingCharge;
+                    }
+                }
+                else 
+                {
+                    if (sci.Item.IsShipEnabled && !sci.Item.IsFreeShipping && sci.Item.Product != null)
+                    {
+                        if (sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShipping)
+                        {
+                            sci.ChildItems.Each(x => additionalShippingCharge += (x.Item.Product.AdditionalShippingCharge * x.Item.Quantity));
+                        }
+                        else
+                        {
+                            additionalShippingCharge += sci.Item.Product.AdditionalShippingCharge * sci.Item.Quantity;
+                        }
+                    }
+                }
 			}
             return additionalShippingCharge;
         }

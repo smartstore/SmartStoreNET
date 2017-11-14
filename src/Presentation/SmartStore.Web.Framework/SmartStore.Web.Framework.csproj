@@ -236,6 +236,7 @@
     <Compile Include="Extensions\ActionResultExtensions.cs" />
     <Compile Include="Extensions\HtmlZoneExtensions.cs" />
     <Compile Include="Filters\JsonNetAttribute.cs" />
+    <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
     <Compile Include="Modelling\Results\JsonNetResult.cs" />
     <Compile Include="Plugins\PluginRazorHost.cs" />
@@ -318,7 +319,6 @@
     <Compile Include="Theming\ThemeVarsVirtualFile.cs" />
     <Compile Include="Theming\ThemingVirtualPathProvider.cs" />
     <Compile Include="Theming\ThemeHtmlExtensions.cs" />
-    <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Theming\ThemeVarsRepository.cs" />
     <Compile Include="UI\Components\ComponentRendererUtils.cs" />
     <Compile Include="UI\Components\Menu\MenuExtensions.cs" />

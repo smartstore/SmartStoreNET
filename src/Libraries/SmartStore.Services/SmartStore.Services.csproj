@@ -547,7 +547,7 @@
     <Compile Include="Seo\XmlSitemapGenerator.cs" />
     <Compile Include="Seo\XmlSitemapNode.cs" />
     <Compile Include="Seo\UrlRecordService.cs" />
-    <Compile Include="ServiceCacheConsumer.cs" />
+    <Compile Include="ServiceCacheBuster.cs" />
     <Compile Include="Shipping\IShipmentService.cs" />
     <Compile Include="Shipping\IShippingMethodFilter.cs" />
     <Compile Include="Shipping\ShipmentService.cs" />
@@ -565,7 +565,6 @@
     <Compile Include="Stores\IStoreService.cs" />
     <Compile Include="Stores\StoreMappingService.cs" />
     <Compile Include="Stores\StoreService.cs" />
-    <Compile Include="Tasks\ChangeTaskSchedulerBaseUrlConsumer.cs" />
     <Compile Include="Tasks\CronExpression.cs" />
     <Compile Include="Tasks\InitializeSchedulerFilter.cs" />
     <Compile Include="Tasks\ITaskExecutor.cs" />

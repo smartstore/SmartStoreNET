@@ -254,7 +254,7 @@ namespace SmartStore.Web.Controllers
             {
                 var result = _currencyService.Value
 					.GetAllCurrencies(storeId: _services.StoreContext.CurrentStore.Id)
-                    .Select(x => new CurrencyModel()
+                    .Select(x => new CurrencyModel
                     {
                         Id = x.Id,
                         Name = x.GetLocalized(y => y.Name),

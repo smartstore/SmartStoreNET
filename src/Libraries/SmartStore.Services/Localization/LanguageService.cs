@@ -71,8 +71,7 @@ namespace SmartStore.Services.Localization
             _languageRepository.Delete(language);
 
             // cache
-            _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
-			_cache.RemoveByPattern(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY);	
+            _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);	
 
 			//event notification
 			_eventPublisher.EntityDeleted(language);
@@ -151,7 +150,6 @@ namespace SmartStore.Services.Localization
 
             // cache
             _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
-			_cache.RemoveByPattern(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY);
 
 			//event notification
 			_eventPublisher.EntityInserted(language);
@@ -167,7 +165,6 @@ namespace SmartStore.Services.Localization
 
             //cache
             _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
-			_cache.RemoveByPattern(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY);
 
 			//event notification
 			_eventPublisher.EntityUpdated(language);
@@ -238,7 +235,7 @@ namespace SmartStore.Services.Localization
 		/// <returns>A map of store languages where key is the store id and values are tuples of language ids and seo codes</returns>
 		protected virtual Multimap<int, MinifiedLanguage> GetStoreLanguageMap()
 		{
-			var result = _cache.Get(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY, () =>
+			var result = _cache.Get(ServiceCacheBuster.STORE_LANGUAGE_MAP_KEY, () =>
 			{
 				var map = new Multimap<int, MinifiedLanguage>();
 

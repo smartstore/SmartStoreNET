@@ -2,10 +2,9 @@
 
 namespace SmartStore.Core.Data.Hooks
 {
-	public abstract class DbSaveHook<TEntity> : IDbSaveHook 
-		where TEntity : class
+	public abstract class DbSaveHook<TEntity> : IDbSaveHook where TEntity : class
 	{
-		public void OnBeforeSave(IHookedEntity entry)
+		public virtual void OnBeforeSave(IHookedEntity entry)
 		{
 			var entity = entry.Entity as TEntity;
 			switch (entry.InitialState)
@@ -42,7 +41,7 @@ namespace SmartStore.Core.Data.Hooks
 		}
 
 
-		public void OnAfterSave(IHookedEntity entry)
+		public virtual void OnAfterSave(IHookedEntity entry)
 		{
 			var entity = entry.Entity as TEntity;
 			switch (entry.InitialState)

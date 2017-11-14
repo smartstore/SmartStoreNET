@@ -58,7 +58,7 @@ namespace SmartStore.Utilities
 			return item;
 		}
 
-		public bool AddEnclosue(SyndicationItem item, Picture picture, string pictureUrl)
+		public bool AddEnclosure(SyndicationItem item, Picture picture, string pictureUrl)
 		{
 			if (picture != null && pictureUrl.HasValue())
 			{
@@ -67,6 +67,7 @@ namespace SmartStore.Utilities
 
 				if ((picture.MediaStorageId ?? 0) != 0)
 				{
+					// TODO: (mc) But what about other storage provider?
 					// do not care about storage provider
 					pictureLength = picture.MediaStorage.Data.LongLength;
 				}

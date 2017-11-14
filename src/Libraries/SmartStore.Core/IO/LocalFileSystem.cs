@@ -13,7 +13,8 @@ namespace SmartStore.Core.IO
 	{
 		private string _root;
 		private string _publicPath;		// /Shop/base
-		private string _storagePath;    // C:\SMNET\base		
+		private string _storagePath;    // C:\SMNET\base	
+		private bool _isCloudStorage;	// When public URL is outside of current app	
 
 		public LocalFileSystem()
 			: this(string.Empty, string.Empty)
@@ -36,6 +37,11 @@ namespace SmartStore.Core.IO
 			_publicPath = NormalizePublicPath(publicPath, basePath, pathIsAbsolute);
 
 			_root = basePath;
+		}
+
+		public bool IsCloudStorage
+		{
+			get { return _isCloudStorage; }
 		}
 
 		private void NormalizeStoragePath(ref string basePath, bool basePathIsAbsolute)
@@ -85,6 +91,8 @@ namespace SmartStore.Core.IO
 				// > /MyAppRoot/Media
 				return appVirtualPath + basePath;
 			}
+
+			_isCloudStorage = true;
 
 			return publicPath;
 		}

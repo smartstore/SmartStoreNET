@@ -149,21 +149,6 @@ namespace SmartStore.Services.Catalog
             return null;
         }
 
-        /// <summary>
-        /// Get a default picture of a product 
-        /// </summary>
-        /// <param name="source">Source</param>
-        /// <param name="pictureService">Picture service</param>
-        /// <returns>Product picture</returns>
-        public static Picture GetDefaultProductPicture(this Product source, IPictureService pictureService)
-        {
-			Guard.NotNull(source, nameof(source));
-			Guard.NotNull(pictureService, nameof(pictureService));
-
-            var picture = pictureService.GetPicturesByProductId(source.Id, 1).FirstOrDefault();
-            return picture;
-        }
-
 		public static bool IsAvailableByStock(this Product product)
 		{
 			Guard.NotNull(product, nameof(product));

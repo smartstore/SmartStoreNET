@@ -39,9 +39,6 @@ namespace SmartStore.Web.Infrastructure.Cache
         IConsumer<EntityInserted<ProductManufacturer>>,
         IConsumer<EntityUpdated<ProductManufacturer>>,
         IConsumer<EntityDeleted<ProductManufacturer>>,
-        //categories
-        IConsumer<EntityUpdated<Category>>,
-        IConsumer<EntityDeleted<Category>>,
         //product categories
         IConsumer<EntityInserted<ProductCategory>>,
         IConsumer<EntityUpdated<ProductCategory>>,
@@ -93,10 +90,6 @@ namespace SmartStore.Web.Infrastructure.Cache
         IConsumer<EntityInserted<Picture>>,
         IConsumer<EntityUpdated<Picture>>,
         IConsumer<EntityDeleted<Picture>>,
-        //Product picture mapping
-        IConsumer<EntityInserted<ProductPicture>>,
-        IConsumer<EntityUpdated<ProductPicture>>,
-        IConsumer<EntityDeleted<ProductPicture>>,
         //polls
         IConsumer<EntityInserted<Poll>>,
         IConsumer<EntityUpdated<Poll>>,
@@ -112,10 +105,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         //states/province
         IConsumer<EntityInserted<StateProvince>>,
         IConsumer<EntityUpdated<StateProvince>>,
-        IConsumer<EntityDeleted<StateProvince>>,
-		//stores
-        IConsumer<EntityUpdated<Store>>,
-        IConsumer<EntityDeleted<Store>>
+        IConsumer<EntityDeleted<StateProvince>>
     {
 		/// <summary>
 		/// Key for ManufacturerNavigationModel caching
@@ -262,45 +252,6 @@ namespace SmartStore.Web.Infrastructure.Cache
         public const string PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY = "pres:alsopuchased*";
 
         /// <summary>
-        /// Key for default product picture caching
-        /// </summary>
-        /// <remarks>
-        /// {0} : product id
-        /// {1} : picture size
-        /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
-        /// {3} : language ID ("alt" and "title" can depend on localized product name)
-		/// {4} : current store ID
-        /// </remarks>
-        public const string PRODUCT_DEFAULTPICTURE_MODEL_KEY = "pres:product:picture-{0}-{1}-{2}-{3}-{4}";
-        public const string PRODUCT_DEFAULTPICTURE_PATTERN_KEY = "pres:product:picture*";
-
-        /// <summary>
-        /// Key for category picture caching
-        /// </summary>
-        /// <remarks>
-        /// {0} : category id
-        /// {1} : picture size
-        /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
-        /// {3} : language ID ("alt" and "title" can depend on localized category name)
-		/// {4} : current store ID
-        /// </remarks>
-        public const string CATEGORY_PICTURE_MODEL_KEY = "pres:category:picture-{0}-{1}-{2}-{3}-{4}";
-        public const string CATEGORY_PICTURE_PATTERN_KEY = "pres:category:picture*";
-
-        /// <summary>
-        /// Key for manufacturer picture caching
-        /// </summary>
-        /// <remarks>
-        /// {0} : manufacturer id
-        /// {1} : picture size
-        /// {2} : value indicating whether a default picture is displayed in case if no real picture exists
-        /// {3} : language ID ("alt" and "title" can depend on localized manufacturer name)
-		/// {5} : current store ID
-        /// </remarks>
-        public const string MANUFACTURER_PICTURE_MODEL_KEY = "pres:manufacturer:picture-{0}-{1}-{2}-{3}-{4}";
-        public const string MANUFACTURER_PICTURE_PATTERN_KEY = "pres:manufacturer:picture*";
-
-        /// <summary>
         /// Key for cart picture caching
         /// </summary>
         /// <remarks>
@@ -391,15 +342,6 @@ namespace SmartStore.Web.Infrastructure.Cache
         public const string AVAILABLE_CURRENCIES_MODEL_KEY = "pres:currencies:all-{0}-{1}";
         public const string AVAILABLE_CURRENCIES_PATTERN_KEY = "pres:currencies:*";
 
-		/// <summary>
-		/// Key for store header data
-		/// </summary>
-		/// <remarks>
-		/// {0} : current store ID
-		/// </remarks>
-        public const string SHOPHEADER_MODEL_KEY = "pres:shopheader-{0}";
-		public const string SHOPHEADER_MODEL_PATTERN_KEY = "pres:shopheader*";
-
         private readonly ICacheManager _cacheManager;
         
         public ModelCacheEventConsumer(ICacheManager cacheManager)
@@ -477,13 +419,11 @@ namespace SmartStore.Web.Infrastructure.Cache
         {
             _cacheManager.RemoveByPattern(MANUFACTURER_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(MANUFACTURER_PICTURE_PATTERN_KEY);
         }
         public void HandleEvent(EntityDeleted<Manufacturer> eventMessage)
         {
             _cacheManager.RemoveByPattern(MANUFACTURER_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(MANUFACTURER_PICTURE_PATTERN_KEY);
         }
 
         //product manufacturers
@@ -501,15 +441,6 @@ namespace SmartStore.Web.Infrastructure.Cache
         {
             _cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
 			_cacheManager.RemoveByPattern(MANUFACTURER_HAS_FEATURED_PRODUCTS_PATTERN_KEY);
-        }
-        
-        public void HandleEvent(EntityUpdated<Category> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(CATEGORY_PICTURE_PATTERN_KEY);
-        }
-        public void HandleEvent(EntityDeleted<Category> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(CATEGORY_PICTURE_PATTERN_KEY);
         }
 
         //product categories
@@ -529,14 +460,12 @@ namespace SmartStore.Web.Infrastructure.Cache
         //products
         public void HandleEvent(EntityUpdated<Product> eventMessage)
         {
-            _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
             _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
         }
         public void HandleEvent(EntityDeleted<Product> eventMessage)
         {
-            _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
             _cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
         }
@@ -693,38 +622,15 @@ namespace SmartStore.Web.Infrastructure.Cache
         //Pictures
         public void HandleEvent(EntityInserted<Picture> eventMessage)
         {
-            _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CATEGORY_PICTURE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(MANUFACTURER_PICTURE_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
         }
         public void HandleEvent(EntityUpdated<Picture> eventMessage)
         {
-            _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CATEGORY_PICTURE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(MANUFACTURER_PICTURE_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
         }
         public void HandleEvent(EntityDeleted<Picture> eventMessage)
         {
-            _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CATEGORY_PICTURE_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(MANUFACTURER_PICTURE_PATTERN_KEY);
             _cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
-        }
-
-        //Product picture mappings
-        public void HandleEvent(EntityInserted<ProductPicture> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
-        }
-        public void HandleEvent(EntityUpdated<ProductPicture> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
-        }
-        public void HandleEvent(EntityDeleted<ProductPicture> eventMessage)
-        {
-            _cacheManager.RemoveByPattern(PRODUCT_DEFAULTPICTURE_PATTERN_KEY);
         }
 
         //Polls
@@ -782,16 +688,5 @@ namespace SmartStore.Web.Infrastructure.Cache
         {
             _cacheManager.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
         }
-
-		//stores
-		public void HandleEvent(EntityUpdated<Store> eventMessage)
-		{
-			_cacheManager.RemoveByPattern(SHOPHEADER_MODEL_PATTERN_KEY);
-		}
-		public void HandleEvent(EntityDeleted<Store> eventMessage)
-		{
-			_cacheManager.RemoveByPattern(SHOPHEADER_MODEL_PATTERN_KEY);
-		}
-
     }
 }

@@ -151,11 +151,13 @@ namespace SmartStore.Web.Controllers
 			model.SubCategoryDisplayType = _catalogSettings.SubCategoryDisplayType;
 
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+			var subCategories = _categoryService.GetAllCategoriesByParentCategoryId(categoryId);
+			int pictureSize = _mediaSettings.CategoryThumbPictureSize;
+			var allPictureInfos = _pictureService.GetPictureInfos(subCategories.Select(x => x.PictureId.GetValueOrDefault()), pictureSize, !_catalogSettings.HideCategoryDefaultPictures);
 
-            // subcategories
-            model.SubCategories = _categoryService
-                .GetAllCategoriesByParentCategoryId(categoryId)
-                .Select(x =>
+			// subcategories
+			model.SubCategories = subCategories
+				.Select(x =>
                 {
                     var subCatName = x.GetLocalized(y => y.Name);
                     var subCatModel = new CategoryModel.SubCategoryModel
@@ -167,26 +169,20 @@ namespace SmartStore.Web.Controllers
 
 					_services.DisplayControl.Announce(x);
 
-                    // prepare picture model
-                    int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
-                    subCatModel.PictureModel = _services.Cache.Get(categoryPictureCacheKey, () =>
-                    {
-						var picture = _pictureService.GetPictureById(x.PictureId.GetValueOrDefault());
-						var pictureModel = new PictureModel
-                        {
-							PictureId = x.PictureId.GetValueOrDefault(),
-							Size = pictureSize,
-							FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
-							FullSizeImageWidth = picture?.Width,
-							FullSizeImageHeight = picture?.Height,
-							ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideCategoryDefaultPictures),
-                            Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
-                            AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
-                        };
+					// prepare picture model
+					var pictureInfo = allPictureInfos[x.PictureId.GetValueOrDefault()];
 
-                        return pictureModel;
-                    }, TimeSpan.FromHours(6));
+					subCatModel.PictureModel = new PictureModel
+					{
+						PictureId = pictureInfo.Id,
+						Size = pictureInfo.MaxSize,
+						FullSizeImageUrl = pictureInfo.FullSizeUrl,
+						FullSizeImageWidth = pictureInfo.FullSizeWidth,
+						FullSizeImageHeight = pictureInfo.FullSizeHeight,
+						ImageUrl = pictureInfo.Url,
+						Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
+						AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
+					};
 
                     return subCatModel;
                 })
@@ -283,30 +279,28 @@ namespace SmartStore.Web.Controllers
 				.Where(c => _aclService.Authorize(c) && _storeMappingService.Authorize(c))
 				.ToList();
 
-            var listModel = categories
+			int pictureSize = _mediaSettings.CategoryThumbPictureSize;
+			var allPictureInfos = _pictureService.GetPictureInfos(categories.Select(x => x.PictureId.GetValueOrDefault()), pictureSize, !_catalogSettings.HideCategoryDefaultPictures);
+
+			var listModel = categories
                 .Select(x =>
                 {
                     var catModel = x.ToModel();
 
                     // Prepare picture model
-                    int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, 
-						_services.WorkContext.WorkingLanguage.Id, 
-						_services.StoreContext.CurrentStore.Id);
+					var pictureInfo = allPictureInfos[x.PictureId.GetValueOrDefault()];
 
-                    catModel.PictureModel = _services.Cache.Get(categoryPictureCacheKey, () =>
-                    {
-                        var pictureModel = new PictureModel
-                        {
-							PictureId = x.PictureId.GetValueOrDefault(),
-							Size = pictureSize,
-							FullSizeImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault()),
-							ImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault(), pictureSize, !_catalogSettings.HideCategoryDefaultPictures),
-                            Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), catModel.Name),
-							AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), catModel.Name)
-                        };
-                        return pictureModel;
-                    }, TimeSpan.FromHours(6));
+					catModel.PictureModel = new PictureModel
+					{
+						PictureId = pictureInfo.Id,
+						Size = pictureInfo.MaxSize,
+						FullSizeImageUrl = pictureInfo.FullSizeUrl,
+						FullSizeImageWidth = pictureInfo.FullSizeWidth,
+						FullSizeImageHeight = pictureInfo.FullSizeHeight,
+						ImageUrl = pictureInfo.Url,
+						Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), catModel.Name),
+						AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), catModel.Name)
+					};
 
                     return catModel;
                 })
@@ -714,6 +708,9 @@ namespace SmartStore.Web.Controllers
 
 			var storeUrl = _services.StoreContext.CurrentStore.Url;
 
+			var allPictureIds = result.Hits.Select(x => x.MainPictureId.GetValueOrDefault());
+			var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds, _mediaSettings.ProductDetailsPictureSize, false, storeUrl);
+
 			foreach (var product in result.Hits)
 			{
 				string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, protocol);
@@ -729,11 +726,10 @@ namespace SmartStore.Web.Controllers
 					try
 					{
 						// we add only the first picture
-						var picture = product.ProductPictures.OrderBy(x => x.DisplayOrder).Select(x => x.Picture).FirstOrDefault();
-
+						var picture = _pictureService.GetPictureById(product.MainPictureId.GetValueOrDefault());
 						if (picture != null)
 						{
-							feed.AddEnclosue(item, picture, _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false, storeUrl));
+							feed.AddEnclosure(item, picture, _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false, storeUrl));
 						}
 					}
 					catch { }

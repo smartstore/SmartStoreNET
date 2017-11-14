@@ -110,7 +110,7 @@ namespace SmartStore.Web.Framework.Filters
 				// handle not found (404) from within the MVC pipeline (only called when HttpNotFoundResult is returned from actions)
 				var requestContext = filterContext.RequestContext;
 				var url = requestContext.HttpContext.Request.RawUrl;
-				
+
 				filterContext.Result = new ViewResult
 				{
 					ViewName = "NotFound",

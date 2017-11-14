@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -79,7 +80,7 @@ namespace SmartStore.Services.Catalog.Importer
 		protected override void Import(ImportExecuteContext context)
 		{
 			var srcToDestId = new Dictionary<int, ImportProductMapping>();
-
+			var importStartTime = DateTime.UtcNow;
 			var templateViewPaths = _productTemplateService.GetAllProductTemplates().ToDictionarySafe(x => x.ViewPath, x => x.Id);
 
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
@@ -242,6 +243,11 @@ namespace SmartStore.Services.Catalog.Importer
 						}
 					}
 				}
+
+				// ===========================================================================
+				// 9.) PostProcess: normalization
+				// ===========================================================================
+				DataNormalizer.FixProductMainPictureIds(_productRepository.Context, importStartTime);
 			}
 		}
 

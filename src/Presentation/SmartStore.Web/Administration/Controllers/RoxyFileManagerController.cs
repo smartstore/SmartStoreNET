@@ -28,16 +28,16 @@ namespace SmartStore.Admin.Controllers
 		private Dictionary<string, string> _lang = null;
 		private Dictionary<string, string> _settings = null;
 
-		private readonly Lazy<IImageResizerService> _imageResizer;
+		private readonly Lazy<IImageProcessor> _imageProcessor;
 		private readonly Lazy<IPictureService> _pictureService;
 		private readonly IMediaFileSystem _fileSystem;
 
 		public RoxyFileManagerController(
-			Lazy<IImageResizerService> imageResizer,
+			Lazy<IImageProcessor> imageProcessor,
 			Lazy<IPictureService> pictureService,
 			IMediaFileSystem fileSystem)
 		{
-			_imageResizer = imageResizer;
+			_imageProcessor = imageProcessor;
 			_pictureService = pictureService;
 			_fileSystem = fileSystem;
 		}
@@ -184,13 +184,17 @@ namespace SmartStore.Admin.Controllers
 			if (dest.IsEmpty() || (width == 0 && height == 0))
 				return;
 
-			using (var stream = new FileStream(path, FileMode.Open))
+			var query = new ProcessImageQuery(new FileStream(path, FileMode.Open))
 			{
-				using (var resultStream = _imageResizer.Value.ResizeImage(stream, width, height))
-				{
-					var result = resultStream.GetBuffer();
-					System.IO.File.WriteAllBytes(dest, result);
-				}
+				MaxWidth = width,
+				MaxHeight = height,
+				ExecutePostProcessor = false, // TODO: (mc) Pick from (new) settings for newly uploaded images!
+			};
+
+			using (var result = _imageProcessor.Value.ProcessImage(query))
+			{
+				var buffer = result.Result.GetBuffer();
+				System.IO.File.WriteAllBytes(dest, buffer);
 			}
 		}
 

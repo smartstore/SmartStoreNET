@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using SmartStore.Collections;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
@@ -51,6 +54,13 @@ namespace SmartStore.Services.Media
 		Picture SetSeoFilename(int pictureId, string seoFilename);
 
 		/// <summary>
+		/// Opens the picture stream from the underlying storage provider for reading
+		/// </summary>
+		/// <param name="picture">Picture</param>
+		/// <returns>Picture stream</returns>
+		Stream OpenPictureStream(Picture picture);
+
+		/// <summary>
 		/// Loads the picture binary from the underlying storage provider
 		/// </summary>
 		/// <param name="picture">Picture</param>
@@ -72,6 +82,54 @@ namespace SmartStore.Services.Media
 		Size GetPictureSize(byte[] pictureBinary);
 
 		/// <summary>
+		/// TODO: (mc)
+		/// </summary>
+		/// <param name="pictureIds"></param>
+		/// <param name="targetSize"></param>
+		/// <param name="showDefaultPicture"></param>
+		/// <param name="storeLocation"></param>
+		/// <param name="defaultPictureType"></param>
+		/// <returns></returns>
+		IDictionary<int, PictureInfo> GetPictureInfos(
+			IEnumerable<int> pictureIds,
+			int targetSize = 0,
+			bool showDefaultPicture = true,
+			string storeLocation = null,
+			PictureType defaultPictureType = PictureType.Entity);
+
+		/// <summary>
+		/// TODO: (mc)
+		/// </summary>
+		/// <param name="pictureId"></param>
+		/// <param name="targetSize"></param>
+		/// <param name="showDefaultPicture"></param>
+		/// <param name="storeLocation"></param>
+		/// <param name="defaultPictureType"></param>
+		/// <returns></returns>
+		PictureInfo GetPictureInfo(
+			int? pictureId,
+			int targetSize = 0,
+			bool showDefaultPicture = true,
+			string storeLocation = null,
+			PictureType defaultPictureType = PictureType.Entity);
+
+		/// <summary>
+		/// TODO: (mc)
+		/// </summary>
+		/// <param name="picture"></param>
+		/// <param name="targetSize"></param>
+		/// <param name="showDefaultPicture"></param>
+		/// <param name="storeLocation"></param>
+		/// <param name="defaultPictureType"></param>
+		/// <returns></returns>
+		PictureInfo GetPictureInfo(
+			Picture picture,
+			int targetSize = 0,
+			bool showDefaultPicture = true,
+			string storeLocation = null,
+			PictureType defaultPictureType = PictureType.Entity);
+
+		/// <summary>
 		/// Gets a picture URL
 		/// </summary>
 		/// <param name="pictureId">Picture identifier</param>
@@ -88,22 +146,6 @@ namespace SmartStore.Services.Media
             PictureType defaultPictureType = PictureType.Entity);
 
 		/// <summary>
-		/// Gets a picture URL asynchronously
-		/// </summary>
-		/// <param name="pictureId">Picture identifier</param>
-		/// <param name="targetSize">The target picture size (longest side)</param>
-		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-		/// <param name="defaultPictureType">Default picture type</param>
-		/// <returns>Picture URL</returns>
-		Task<string> GetPictureUrlAsync(
-			int pictureId,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity);
-
-		/// <summary>
 		/// Gets a picture URL
 		/// </summary>
 		/// <param name="picture">Picture instance</param>
@@ -118,22 +160,6 @@ namespace SmartStore.Services.Media
             bool showDefaultPicture = true,
             string storeLocation = null,
             PictureType defaultPictureType = PictureType.Entity);
-
-		/// <summary>
-		/// Gets a picture URL asynchronously
-		/// </summary>
-		/// <param name="picture">Picture instance</param>
-		/// <param name="targetSize">The target picture size (longest side)</param>
-		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-		/// <param name="defaultPictureType">Default picture type</param>
-		/// <returns>Picture URL</returns>
-		Task<string> GetPictureUrlAsync(
-			Picture picture,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity);
 
 		/// <summary>
 		/// Gets the default picture URL
@@ -145,6 +171,13 @@ namespace SmartStore.Services.Media
 		string GetDefaultPictureUrl(int targetSize = 0,
 			PictureType defaultPictureType = PictureType.Entity,
 			string storeLocation = null);
+
+		/// <summary>
+		/// Clears the url cache completely or for a particular store
+		/// </summary>
+		/// <param name="storeId">The store id to remove cache entries for. Pass <c>null</c> to nuke the cache completely.</param>
+		/// <returns>The total count of removed cache entries</returns>
+		int ClearUrlCache(int? storeId = null);
 
 		/// <summary>
 		/// Gets a picture
@@ -260,6 +293,32 @@ namespace SmartStore.Services.Media
 		{
 			var pictureBinary = pictureService.LoadPictureBinary(picture);
 			return pictureService.GetPictureSize(pictureBinary);
+		}
+
+		/// <summary>
+		/// TODO: (mc)
+		/// </summary>
+		/// <param name="products"></param>
+		/// <param name="targetSize"></param>
+		/// <param name="showDefaultPicture"></param>
+		/// <param name="storeLocation"></param>
+		/// <param name="defaultPictureType"></param>
+		/// <returns></returns>
+		public static IDictionary<int, PictureInfo> GetPictureInfos(this IPictureService pictureService, 
+			IEnumerable<Product> products,
+			int targetSize = 0,
+			bool showDefaultPicture = true,
+			string storeLocation = null,
+			PictureType defaultPictureType = PictureType.Entity)
+		{
+			Guard.NotNull(products, nameof(products));
+
+			return pictureService.GetPictureInfos(
+				products.Select(x => x.MainPictureId.GetValueOrDefault()), 
+				targetSize, 
+				showDefaultPicture, 
+				storeLocation, 
+				defaultPictureType);
 		}
 	}
 }

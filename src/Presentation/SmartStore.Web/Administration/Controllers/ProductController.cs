@@ -24,6 +24,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
+using SmartStore.Data.Utilities;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
@@ -863,23 +864,12 @@ namespace SmartStore.Admin.Controllers
 		}
 
         [NonAction]
-        private void PrepareProductPictureThumbnailModel(ProductModel model, Product product, Picture defaultPicture)
+        private void PrepareProductPictureThumbnailModel(ProductModel model, Product product, PictureInfo defaultPicture)
         {
 			Guard.NotNull(model, nameof(model));
 
-			if (product != null && _adminAreaSettings.DisplayProductPictures)
-            {
-				if (defaultPicture != null)
-				{
-					model.PictureThumbnailUrl = Url.Action("Picture", "Media", new { id = defaultPicture.Id, size = _mediaSettings.CartThumbPictureSize });
-				}
-				else
-				{
-					model.PictureThumbnailUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.ProductThumbPictureSize, PictureType.Entity);
-				}
-
-				model.NoThumb = defaultPicture == null;
-            }
+			model.PictureThumbnailUrl = defaultPicture?.Url;
+			model.NoThumb = defaultPicture?.Url.NullEmpty() == null;
         }
 
 		private IQueryable<Product> ApplySorting(IQueryable<Product> query, GridCommand command)
@@ -971,8 +961,6 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		#endregion Utitilies
-
-		#region Methods
 
 		#region Misc
 
@@ -1076,7 +1064,7 @@ namespace SmartStore.Admin.Controllers
 				query = ApplySorting(query, command);
 
 				var products = new PagedList<Product>(query, command.Page - 1, command.PageSize);
-				var pictureMap = _pictureService.GetPicturesByProductIds(products.Select(x => x.Id).ToArray(), 1, true);
+				var pictureInfos = _pictureService.GetPictureInfos(products, _mediaSettings.CartThumbPictureSize);
 
 				gridModel.Data = products.Select(x =>
 				{
@@ -1092,7 +1080,11 @@ namespace SmartStore.Admin.Controllers
                         LimitedToStores = x.LimitedToStores
                     };
 
-					PrepareProductPictureThumbnailModel(productModel, x, pictureMap[x.Id]?.FirstOrDefault());
+					PrepareProductPictureThumbnailModel(productModel, x, pictureInfos.Get(x.MainPictureId.GetValueOrDefault()));
+
+					var defaultPicture = pictureInfos.Get(x.MainPictureId.GetValueOrDefault());
+					productModel.PictureThumbnailUrl = defaultPicture?.Url;
+					productModel.NoThumb = defaultPicture?.Url.NullEmpty() == null;
 
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 					productModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc, DateTimeKind.Utc);
@@ -1262,7 +1254,8 @@ namespace SmartStore.Admin.Controllers
 				locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
             });
 
-            PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPicturesByProductId(product.Id, 1)?.FirstOrDefault());
+			var pictureInfo = _pictureService.GetPictureInfo(product.MainPictureId, _mediaSettings.CartThumbPictureSize);
+			PrepareProductPictureThumbnailModel(model, product, pictureInfo);
             PrepareAclModel(model, product, false);
 			PrepareStoresMappingModel(model, product, false);
 
@@ -1303,10 +1296,14 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+			//If we got this far, something failed, redisplay form
 			PrepareProductModel(model, product, false, true);
-            PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPicturesByProductId(product.Id, 1)?.FirstOrDefault());
-            PrepareAclModel(model, product, true);
+
+			var pictureInfo = _pictureService.GetPictureInfo(product.MainPictureId, _mediaSettings.CartThumbPictureSize);
+			PrepareProductPictureThumbnailModel(model, product, pictureInfo);
+
+			PrepareAclModel(model, product, true);
+
 			PrepareStoresMappingModel(model, product, true);
 
             return View(model);
@@ -1390,8 +1387,11 @@ namespace SmartStore.Admin.Controllers
 					locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
 				});
 
-				PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPicturesByProductId(product.Id, 1)?.FirstOrDefault());
+				var pictureInfo = _pictureService.GetPictureInfo(product.MainPictureId, _mediaSettings.CartThumbPictureSize);
+				PrepareProductPictureThumbnailModel(model, product, pictureInfo);
+
 				PrepareAclModel(model, product, false);
+
 				PrepareStoresMappingModel(model, product, false);
 
 				return PartialView(viewPath.NullEmpty() ?? "_CreateOrUpdate." + tabName, model);
@@ -2345,7 +2345,7 @@ namespace SmartStore.Admin.Controllers
 
 			MediaHelper.UpdatePictureTransientStateFor(productPicture, pp => pp.PictureId);
 
-            _productService.InsertProductPicture(productPicture);
+			_productService.InsertProductPicture(productPicture);
 
             _pictureService.SetSeoFilename(pictureId, _pictureService.GetPictureSeName(product.Name));
 
@@ -3616,7 +3616,8 @@ namespace SmartStore.Admin.Controllers
 				model.ProductVariantAttributes.Add(pvaModel);
 			}
 		}
-		private async Task PrepareVariantCombinationPictures(ProductVariantAttributeCombinationModel model, Product product)
+
+		private void PrepareVariantCombinationPictures(ProductVariantAttributeCombinationModel model, Product product)
 		{
 			var pictures = _pictureService.GetPicturesByProductId(product.Id);
 			foreach (var picture in pictures)
@@ -3624,7 +3625,7 @@ namespace SmartStore.Admin.Controllers
 				var assignablePicture = new ProductVariantAttributeCombinationModel.PictureSelectItemModel();
 				assignablePicture.Id = picture.Id;
 				assignablePicture.IsAssigned = model.AssignedPictureIds.Contains(picture.Id);
-				assignablePicture.PictureUrl = await _pictureService.GetPictureUrlAsync(picture.Id, 125, false);
+				assignablePicture.PictureUrl = _pictureService.GetPictureUrl(picture, 125, false);
 				model.AssignablePictures.Add(assignablePicture);
 			}
 		}
@@ -3720,7 +3721,7 @@ namespace SmartStore.Admin.Controllers
 			return ProductVariantAttributeCombinationList(command, productId);
 		}
 
-		public async Task<ActionResult> AttributeCombinationCreatePopup(string btnId, string formId, int productId)
+		public ActionResult AttributeCombinationCreatePopup(string btnId, string formId, int productId)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
@@ -3733,7 +3734,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductAttributeCombinationModel(model, null, product);
 			PrepareVariantCombinationAttributes(model, product);
-			await PrepareVariantCombinationPictures(model, product);
+			PrepareVariantCombinationPictures(model, product);
 			PrepareDeliveryTimes(model);
 			PrepareViewBag(btnId, formId, false, false);
 
@@ -3741,7 +3742,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, ValidateInput(false)]
-		public async Task<ActionResult> AttributeCombinationCreatePopup(
+		public ActionResult AttributeCombinationCreatePopup(
 			string btnId,
 			string formId,
 			int productId,
@@ -3781,7 +3782,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductAttributeCombinationModel(model, null, product);
 			PrepareVariantCombinationAttributes(model, product);
-			await PrepareVariantCombinationPictures(model, product);
+			PrepareVariantCombinationPictures(model, product);
 			PrepareDeliveryTimes(model);
 			PrepareViewBag(btnId, formId, warnings.Count == 0, false);
 
@@ -3791,7 +3792,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		public async Task<ActionResult> AttributeCombinationEditPopup(int id, string btnId, string formId)
+		public ActionResult AttributeCombinationEditPopup(int id, string btnId, string formId)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
@@ -3810,7 +3811,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductAttributeCombinationModel(model, combination, product, true);
 			PrepareVariantCombinationAttributes(model, product);
-			await PrepareVariantCombinationPictures(model, product);
+			PrepareVariantCombinationPictures(model, product);
 			PrepareDeliveryTimes(model, model.DeliveryTimeId);
 			PrepareViewBag(btnId, formId);
 
@@ -3924,6 +3925,18 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		#endregion
+
+		#region Hidden normalizers
+
+		public ActionResult FixProductMainPictureIds(DateTime? ifModifiedSinceUtc = null)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var count = DataNormalizer.FixProductMainPictureIds(_dbContext, ifModifiedSinceUtc);
+
+			return Content("Fixed {0} ids.".FormatInvariant(count));
+		}
 
 		#endregion
 	}

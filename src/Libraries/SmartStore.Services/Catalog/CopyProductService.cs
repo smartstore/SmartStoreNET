@@ -329,10 +329,11 @@ namespace SmartStore.Services.Catalog
 					// Attr stuff ...
 					ProcessAttributes(product, clone, newName, copyImages, clonedPictures, languages);
 
-					// update "HasTierPrices", "HasDiscountsApplied", "LowestAttributeCombinationPrice" properties
+					// update computed properties
 					clone.HasTierPrices = clone.TierPrices.Count > 0;
 					clone.HasDiscountsApplied = clone.AppliedDiscounts.Count > 0;
 					clone.LowestAttributeCombinationPrice = _productAttributeService.GetLowestCombinationPrice(clone.Id);
+					clone.MainPictureId = clone.ProductPictures.OrderBy(x => x.DisplayOrder).Select(x => x.PictureId).FirstOrDefault();
 
 					// Associated products
 					if (copyAssociatedProducts && product.ProductType != ProductType.BundledProduct)

@@ -592,8 +592,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void UpdateHasDiscountsApplied(Product product)
         {
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			var prevValue = product.HasDiscountsApplied;
 			product.HasDiscountsApplied = product.AppliedDiscounts.Count > 0;
@@ -984,7 +983,6 @@ namespace SmartStore.Services.Catalog
 
 			_productPictureRepository.Insert(productPicture);
 
-            //event notification
             _services.EventPublisher.EntityInserted(productPicture);
         }
 

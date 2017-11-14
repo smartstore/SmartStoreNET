@@ -22,7 +22,7 @@ namespace SmartStore.Web.Infrastructure
 			// Registering this pattern ensures that MVC catches this request and passes it to our media controller.
 			// Within this controller we gonna find the actual file and stream it back to the client, 
 			// or - in case of blob storage - redirect the client to the computed public url.
-			SmartUrlRoutingModule.RegisterRoutablePath(@"/media/image/([1-9]\d*|0)/.*?$", "GET");
+			SmartUrlRoutingModule.RegisterRoutablePath(@"/media/image/([1-9]\d*|0)/.*?$", "GET|HEAD");
 
 			routes.MapRoute("Image",
 				"media/image/{id}/{*name}",

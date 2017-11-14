@@ -22,6 +22,7 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -321,7 +322,11 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             var products = _data.Products();
 			SaveRange(products);
-            //search engine names
+
+			// Fix MainPictureId
+			DataNormalizer.FixProductMainPictureIds(_ctx);
+
+            // Search engine names
             products.Each(x =>
             {
                 Save(new UrlRecord

@@ -152,7 +152,8 @@ namespace SmartStore.Web.Controllers
 								x.Sku,
 								x.Name,
 								x.Published,
-								x.ProductTypeId
+								x.ProductTypeId,
+								x.MainPictureId
 							})
 							.OrderBy(x => x.Name)
 							.Skip(model.PageIndex * model.PageSize)
@@ -160,7 +161,11 @@ namespace SmartStore.Web.Controllers
 							.ToList();
 
 						var productIds = products.Select(x => x.Id).ToArray();
-						var pictures = _productService.GetProductPicturesByProductIds(productIds, true);
+						var allPictureIds = products.Select(x => x.MainPictureId.GetValueOrDefault());
+						var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds,
+							_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
+							!_catalogSettings.HideProductDefaultPictures,
+							storeLocation);
 
 						model.SearchResult = products
 							.Select(x =>
@@ -200,20 +205,7 @@ namespace SmartStore.Web.Controllers
 									item.LabelClassName = "badge-info";
 								}
 
-								var productPicture = pictures[x.Id]?.FirstOrDefault();
-
-								try
-								{
-									item.ImageUrl = _pictureService.GetPictureUrl(
-										productPicture?.Picture,
-										_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
-										!_catalogSettings.HideProductDefaultPictures,
-										storeLocation);
-								}
-								catch (Exception ex)
-								{
-									ex.Dump();
-								}
+								item.ImageUrl = allPictureInfos.Get(x.MainPictureId.GetValueOrDefault())?.Url;
 
 								return item;
 							})

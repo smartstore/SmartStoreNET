@@ -213,6 +213,7 @@ namespace SmartStore.Web.Controllers
             var pictureCacheKey = string.Format(ModelCacheEventConsumer.CART_PICTURE_MODEL_KEY, product.Id, combination == null ? 0 : combination.Id,
 				pictureSize, true, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
 
+			// TODO: (mc) refactor > GetPictureInfos()
             var model = _cacheManager.Get(pictureCacheKey, () =>
             {
 				Picture picture = null;
@@ -1037,7 +1038,7 @@ namespace SmartStore.Web.Controllers
                 CurrentCustomerIsGuest = _workContext.CurrentCustomer.IsGuest(),
                 AnonymousCheckoutAllowed = _orderSettings.AnonymousCheckoutAllowed,
                 DisplayMoveToWishlistButton = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist)
-        };
+			};
 
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
@@ -1059,8 +1060,9 @@ namespace SmartStore.Web.Controllers
                 bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
                 model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0 && minOrderSubtotalAmountOk;
 
-                //products. sort descending (recently added products)
-                foreach (var sci in cart.ToList())
+				// Products. sort descending (recently added products)
+				cart = cart.ToList(); // TBD: (mc) Why?
+                foreach (var sci in cart)
                 {
 					var item = sci.Item;
 					var product = sci.Item.Product;
@@ -1105,7 +1107,7 @@ namespace SmartStore.Web.Controllers
 
 							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
 							if (itemPicture != null)
-								bundleItemModel.PictureUrl = _pictureService.GetPictureUrl(itemPicture.Id, 32);
+								bundleItemModel.PictureUrl = _pictureService.GetPictureUrl(itemPicture, 32);
 
 							cartItemModel.BundleItems.Add(bundleItemModel);
 						}

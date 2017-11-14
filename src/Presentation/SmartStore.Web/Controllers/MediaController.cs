@@ -19,6 +19,8 @@ namespace SmartStore.Web.Controllers
 	[OverrideAuthentication, OverrideAuthorization, OverrideResultFilters] // TBD: (mc) should we also override action filters?
 	public partial class MediaController : Controller
     {
+		private readonly static bool _streamRemoteMedia = CommonHelper.GetAppSetting<bool>("sm:StreamRemoteMedia");
+
 		private readonly IPictureService _pictureService;
 		private readonly IImageProcessor _imageProcessor;
 		private readonly IImageCache _imageCache;
@@ -171,7 +173,12 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 
-				if (cachedImage.IsRemote)
+				if (Request.HttpMethod == "HEAD")
+				{
+					return new HttpStatusCodeResult(200);
+				}
+
+				if (cachedImage.IsRemote && !_streamRemoteMedia)
 				{
 					// Redirect to existing remote file
 					return Redirect(_imageCache.GetPublicUrl(cachedImage.Path));

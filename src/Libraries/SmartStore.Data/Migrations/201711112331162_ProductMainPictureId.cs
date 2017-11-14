@@ -8,6 +8,7 @@ namespace SmartStore.Data.Migrations
 	using Core.Domain.Catalog;
 	using Setup;
 	using Core;
+	using Utilities;
 
 	public partial class ProductMainPictureId : DbMigration, IDataSeeder<SmartObjectContext>
 	{
@@ -28,57 +29,60 @@ namespace SmartStore.Data.Migrations
 
 		public void Seed(SmartObjectContext context)
 		{
-			var query = context.Set<Product>()
-				.AsNoTracking()
-				.Where(x => x.MainPictureId == null)
-				.OrderBy(x => x.Id)
-				.Select(x => x.Id);
+			DataNormalizer.FixProductMainPictureIds(context, true);
 
-			int pageIndex = 0;
-			var productIds = new PagedList<int>(query, pageIndex, 1000);
+			//var query = context.Set<Product>()
+			//	.AsNoTracking()
+			//	.Where(x => x.MainPictureId == null)
+			//	.OrderBy(x => x.Id)
+			//	.Select(x => x.Id);
 
-			do
-			{
-				var map = GetPoductPictureMap(context, productIds);
+			//int pageIndex = 0;
+			//PagedList<int> productIds = null;
 
-				using (var tx = context.Database.BeginTransaction())
-				{
-					foreach (var kvp in map)
-					{
-						context.ExecuteSqlCommand("Update [Product] Set [MainPictureId] = {0} WHERE [Id] = {1}", false, null, kvp.Value, kvp.Key);
-					}
+			//while (true)
+			//{	
+			//	productIds = new PagedList<int>(query, pageIndex, 1000);
 
-					if (map.Any())
-					{
-						context.SaveChanges();
-						tx.Commit();
-					}
-				}
+			//	var map = GetPoductPictureMap(context, productIds);
 
+			//	using (var tx = context.Database.BeginTransaction())
+			//	{
+			//		foreach (var kvp in map)
+			//		{
+			//			context.ExecuteSqlCommand("Update [Product] Set [MainPictureId] = {0} WHERE [Id] = {1}", false, null, kvp.Value, kvp.Key);
+			//		}
 
-				productIds = new PagedList<int>(query, pageIndex++, 1000);
-			}
-			while (productIds.HasNextPage);
+			//		if (map.Any())
+			//		{
+			//			context.SaveChanges();
+			//			tx.Commit();
+			//		}
+			//	}
+
+			//	if (!productIds.HasNextPage)
+			//		break;
+			//}
 		}
 
-		private IDictionary<int, int> GetPoductPictureMap(SmartObjectContext context, IEnumerable<int> productIds)
-		{
-			var map = new Dictionary<int, int>();
+		//private IDictionary<int, int> GetPoductPictureMap(SmartObjectContext context, IEnumerable<int> productIds)
+		//{
+		//	var map = new Dictionary<int, int>();
 
-			var query = from pp in context.Set<ProductPicture>().AsNoTracking()
-						where productIds.Contains(pp.ProductId)
-						group pp by pp.ProductId into g
-						select new
-						{
-							ProductId = g.Key,
-							PictureIds = g.OrderBy(x => x.DisplayOrder)
-								.Take(1)
-								.Select(x => x.PictureId)
-						};
+		//	var query = from pp in context.Set<ProductPicture>().AsNoTracking()
+		//				where productIds.Contains(pp.ProductId)
+		//				group pp by pp.ProductId into g
+		//				select new
+		//				{
+		//					ProductId = g.Key,
+		//					PictureIds = g.OrderBy(x => x.DisplayOrder)
+		//						.Take(1)
+		//						.Select(x => x.PictureId)
+		//				};
 
-			map = query.ToList().ToDictionary(x => x.ProductId, x => x.PictureIds.First());
+		//	map = query.ToList().ToDictionary(x => x.ProductId, x => x.PictureIds.First());
 
-			return map;
-		}
+		//	return map;
+		//}
 	}
 }

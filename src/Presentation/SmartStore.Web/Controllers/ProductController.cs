@@ -218,9 +218,8 @@ namespace SmartStore.Web.Controllers
 						if (preparePictureModel)
 						{
 							m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
-
-							var picture = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
-							if (picture != null)
+							var pictureUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
+							if (pictureUrl != null)
 							{
 								m.PictureModel.PictureId = x.Manufacturer.PictureId.GetValueOrDefault();
 								m.PictureModel.Title = string.Format(T("Media.Product.ImageLinkTitleFormat"), m.Name);

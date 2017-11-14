@@ -312,43 +312,19 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Logo()
         {
-			var model = _services.Cache.Get(ModelCacheEventConsumer.SHOPHEADER_MODEL_KEY.FormatWith(_services.StoreContext.CurrentStore.Id), () =>
+			var logoPictureInfo = _pictureService.Value.GetPictureInfo(_services.StoreContext.CurrentStore.LogoPictureId, showDefaultPicture: false);
+			var hasLogo = logoPictureInfo?.Url != null;
+
+			var model = new ShopHeaderModel
 			{
-                var pictureService = _pictureService.Value;
-				int logoPictureId = _services.StoreContext.CurrentStore.LogoPictureId;
+				LogoUploaded = hasLogo,
+				LogoUrl = logoPictureInfo?.Url,
+				LogoWidth = logoPictureInfo?.FullSizeWidth ?? 0,
+				LogoHeight = logoPictureInfo?.FullSizeHeight ?? 0,
+				LogoTitle = _services.StoreContext.CurrentStore.Name
+			};
 
-                Picture picture = null;
-                if (logoPictureId > 0)
-                {
-                    picture = pictureService.GetPictureById(logoPictureId);
-                }
-
-                string logoUrl = null;
-                Size logoSize = Size.Empty;
-                if (picture != null)
-                {
-                    logoUrl = pictureService.GetPictureUrl(picture);
-					if (picture.Width.HasValue && picture.Height.HasValue)
-					{
-						logoSize = new Size(picture.Width.Value, picture.Height.Value);
-					}
-					else
-					{
-						logoSize = pictureService.GetPictureSize(picture);
-					} 
-                }
-
-                return new ShopHeaderModel
-                {
-                    LogoUploaded = picture != null && logoUrl.HasValue(),
-                    LogoUrl = logoUrl,
-                    LogoWidth = logoSize.Width,
-                    LogoHeight = logoSize.Height,
-					LogoTitle = _services.StoreContext.CurrentStore.Name
-                };
-            });
-            
-            return PartialView(model);
+			return PartialView(model);
         }
 
         public ActionResult SetLanguage(int langid, string returnUrl = "")

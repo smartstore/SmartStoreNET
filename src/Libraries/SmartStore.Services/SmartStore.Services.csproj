@@ -264,6 +264,8 @@
     <Compile Include="Hooks\SearchQueryAliasHook.cs" />
     <Compile Include="Hooks\SlugSupportedHook.cs" />
     <Compile Include="Hooks\AuditableHook.cs" />
+    <Compile Include="Hooks\FixProductMainPictureHook.cs" />
+    <Compile Include="Hooks\StoreSaveHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityHook.cs" />
     <Compile Include="IScopedService.cs" />
     <Compile Include="Localization\LocalizedUrlHelper.cs" />

@@ -448,13 +448,16 @@ namespace SmartStore.Web.Controllers
 
 		private PictureModel CreatePictureModel(ProductDetailsPictureModel model, Picture picture, int pictureSize)
 		{
+			var thumbPictureInfo = _pictureService.GetPictureInfo(picture, _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
+			var pictureInfo = _pictureService.GetPictureInfo(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures);
+
 			var result = new PictureModel
 			{
 				PictureId = picture.Id,
 				Size = pictureSize,
-				ThumbImageUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage),
-				ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
-				FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
+				ThumbImageUrl = thumbPictureInfo.Url,
+				ImageUrl = pictureInfo.Url,
+				FullSizeImageUrl = pictureInfo.FullSizeUrl,
 				FullSizeImageWidth = picture.Width,
 				FullSizeImageHeight = picture.Height,
 				Title = model.Name,
@@ -1403,28 +1406,18 @@ namespace SmartStore.Web.Controllers
         public PictureModel PrepareManufacturerPictureModel(Manufacturer manufacturer, string localizedName)
         {
             var model = new PictureModel();
+			var pictureSize = _mediaSettings.ManufacturerThumbPictureSize;
+			var pictureInfo = _pictureService.GetPictureInfo(manufacturer.PictureId, pictureSize, !_catalogSettings.HideManufacturerDefaultPictures);
 
-            var pictureSize = _mediaSettings.ManufacturerThumbPictureSize;
-            var manufacturerPictureCacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_PICTURE_MODEL_KEY,
-                manufacturer.Id,
-                pictureSize,
-				!_catalogSettings.HideManufacturerDefaultPictures,
-                _services.WorkContext.WorkingLanguage.Id,
-                _services.StoreContext.CurrentStore.Id);
-
-            model = _services.Cache.Get(manufacturerPictureCacheKey, () =>
-            {
-                var pictureModel = new PictureModel
-                {
-                    PictureId = manufacturer.PictureId.GetValueOrDefault(),
-					Size = pictureSize,
-					//FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
-					ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
-                    Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
-                    AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
-                };
-                return pictureModel;
-            }, TimeSpan.FromHours(6));
+			model = new PictureModel
+			{
+				PictureId = manufacturer.PictureId.GetValueOrDefault(),
+				Size = pictureSize,
+				//FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
+				ImageUrl = pictureInfo.Url,
+				Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
+				AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
+			};
 
             return model;
         }
@@ -1436,7 +1429,7 @@ namespace SmartStore.Web.Controllers
                 _services.WorkContext.WorkingLanguage.Id,
                 _services.StoreContext.CurrentStore.Id,
                 manufacturerItemsToDisplay);
-            
+
             var cacheModel = _services.Cache.Get(cacheKey, () =>
             {
                 var manufacturers = _manufacturerService.GetAllManufacturers(null, 0, manufacturerItemsToDisplay + 1, _services.StoreContext.CurrentStore.Id);
@@ -1455,9 +1448,10 @@ namespace SmartStore.Web.Controllers
                         Id = manufacturer.Id,
                         Name = manufacturer.GetLocalized(x => x.Name),
                         SeName = manufacturer.GetSeName(),
-                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
                         DisplayOrder = manufacturer.DisplayOrder,
-                        HasPicture = manufacturer.PictureId != null
+						PictureId = manufacturer.PictureId,
+						PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
+						HasPicture = manufacturer.PictureId != null
                     };
                     model.Manufacturers.Add(modelMan);
                 }

@@ -411,6 +411,8 @@ namespace SmartStore.Services.DataExchange.Export
 			if (picture == null)
 				return null;
 
+			// TODO: (mc) Refactor > GetPictureInfo
+
 			dynamic result = new DynamicEntity(picture);
             var relativeUrl = string.Empty;
 

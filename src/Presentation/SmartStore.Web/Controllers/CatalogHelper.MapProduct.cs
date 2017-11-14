@@ -17,6 +17,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -221,6 +222,12 @@ namespace SmartStore.Web.Controllers
 						batchContext.SpecificationAttributes.LoadAll();
 					}
 
+					if (settings.MapPictures)
+					{
+						//var pids = products.Where(x => x.MainPictureId.HasValue).Select(x => x.MainPictureId.Value);
+						//var pis = ((Services.Media.PictureService)_pictureService).GetPictureInfos(pids, model.ThumbSize ?? 250);
+					}
+
 					var model = new ProductSummaryModel(products)
 					{
 						ViewMode = settings.ViewMode,
@@ -247,10 +254,14 @@ namespace SmartStore.Web.Controllers
 						ShowNewBadge = _catalogSettings.LabelAsNewForMaxDays.HasValue
 					};
 
+					// If a size has been set in the view, we use it in priority
+					int thumbSize = model.ThumbSize.HasValue ? model.ThumbSize.Value : _mediaSettings.ProductThumbPictureSize;
+
 					var mapItemContext = new MapProductSummaryItemContext
 					{
 						BatchContext = batchContext,
 						CachedManufacturerModels = cachedManufacturerModels,
+						PictureInfos = _pictureService.GetPictureInfos(products, thumbSize, !_catalogSettings.HideProductDefaultPictures),
 						Currency = currency,
 						LegalInfo = legalInfo,
 						Model = model,
@@ -385,40 +396,19 @@ namespace SmartStore.Web.Controllers
 			{
 				#region Map product picture
 
-				// If a size has been set in the view, we use it in priority
-				int pictureSize = model.ThumbSize.HasValue ? model.ThumbSize.Value : _mediaSettings.ProductThumbPictureSize;
+				var pictureInfo = ctx.PictureInfos[product.MainPictureId.GetValueOrDefault()];
 
-				// TODO: (mc) Change caching strategy according to refactored PictureService
-
-				// Prepare picture model
-				var defaultProductPictureCacheKey = string.Format(
-					ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY,
-					product.Id,
-					pictureSize,
-					true,
-					_services.WorkContext.WorkingLanguage.Id,
-					ctx.Store.Id);
-
-				item.Picture = _services.Cache.Get(defaultProductPictureCacheKey, () =>
+				item.Picture = new PictureModel
 				{
-					if (!ctx.BatchContext.Pictures.FullyLoaded)
-					{
-						ctx.BatchContext.Pictures.LoadAll();
-					}
-
-					var picture = ctx.BatchContext.Pictures.GetOrLoad(product.Id).FirstOrDefault();
-					var pictureModel = new PictureModel
-					{
-						Size = pictureSize,
-						ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
-						FullSizeImageUrl = _pictureService.GetPictureUrl(picture, 0, !_catalogSettings.HideProductDefaultPictures),
-						Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
-						AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
-						PictureId = picture == null ? 0 : picture.Id
-					};
-
-					return pictureModel;
-				}, TimeSpan.FromHours(6));
+					Size = pictureInfo.MaxSize,
+					ImageUrl = pictureInfo.Url,
+					FullSizeImageUrl = pictureInfo.FullSizeUrl,
+					FullSizeImageWidth = pictureInfo.FullSizeWidth,
+					FullSizeImageHeight = pictureInfo.FullSizeHeight,
+					Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
+					AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
+					PictureId = pictureInfo.Id
+				};
 
 				#endregion
 			}
@@ -812,6 +802,7 @@ namespace SmartStore.Web.Controllers
 			public ProductExportContext BatchContext { get; set; }
 			public Multimap<int, Product> GroupedProducts { get; set; }
 			public Dictionary<int, ManufacturerOverviewModel> CachedManufacturerModels { get; set; }
+			public IDictionary<int, PictureInfo> PictureInfos { get; set; }
 			public Dictionary<string, LocalizedString> Resources { get; set; }
 			public string LegalInfo { get; set; }
 			public Customer Customer { get; set; }

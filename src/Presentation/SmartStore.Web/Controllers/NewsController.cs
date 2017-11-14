@@ -101,11 +101,8 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected void PrepareNewsItemModel(NewsItemModel model, NewsItem newsItem, bool prepareComments)
         {
-            if (newsItem == null)
-                throw new ArgumentNullException("newsItem");
-
-            if (model == null)
-                throw new ArgumentNullException("model");
+			Guard.NotNull(newsItem, nameof(newsItem));
+			Guard.NotNull(model, nameof(model));
 
 			Services.DisplayControl.Announce(newsItem);
 

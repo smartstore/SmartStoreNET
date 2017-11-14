@@ -122,10 +122,14 @@ namespace SmartStore.Web.Infrastructure
 		protected override TreeNode<MenuItem> Build()
 		{
 			var categoryTree = _categoryService.GetCategoryTree(0, false, Services.StoreContext.CurrentStore.Id);
-			return ConvertNode(categoryTree.Root).Root;
+
+			var allPictureIds = categoryTree.Flatten().Select(x => x.PictureId.GetValueOrDefault());
+			var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
+
+			return ConvertNode(categoryTree.Root, allPictureInfos).Root;
 		}
 
-		private TreeNode<MenuItem> ConvertNode(TreeNode<ICategoryNode> node)
+		private TreeNode<MenuItem> ConvertNode(TreeNode<ICategoryNode> node, IDictionary<int, PictureInfo> allPictureInfos)
 		{
 			var cat = node.Value;
 
@@ -144,7 +148,7 @@ namespace SmartStore.Web.Infrastructure
 
 				if (cat.ParentCategoryId == 0 && cat.Published && cat.PictureId != null)
 				{
-					menuItem.ImageUrl = _pictureService.GetPictureUrl(cat.PictureId.Value);
+					menuItem.ImageUrl = allPictureInfos.Get(cat.PictureId.Value)?.Url;
 				}
 			}
 
@@ -155,7 +159,7 @@ namespace SmartStore.Web.Infrastructure
 			{
 				foreach (var childNode in node.Children)
 				{
-					convertedNode.Append(ConvertNode(childNode));
+					convertedNode.Append(ConvertNode(childNode, allPictureInfos));
 				}
 			}			
 

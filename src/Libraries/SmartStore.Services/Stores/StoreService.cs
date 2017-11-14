@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Data;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Services.Stores
 {
@@ -14,9 +16,7 @@ namespace SmartStore.Services.Stores
 		private readonly IEventPublisher _eventPublisher;
 		private bool? _isSingleStoreMode = null;
 
-		public StoreService(
-			IRepository<Store> storeRepository,
-			IEventPublisher eventPublisher)
+		public StoreService(IRepository<Store> storeRepository, IEventPublisher eventPublisher)
 		{
 			_storeRepository = storeRepository;
 			_eventPublisher = eventPublisher;
@@ -24,8 +24,7 @@ namespace SmartStore.Services.Stores
 
 		public virtual void DeleteStore(Store store)
 		{
-			if (store == null)
-				throw new ArgumentNullException("store");
+			Guard.NotNull(store, nameof(store));
 
 			var allStores = GetAllStores();
 			if (allStores.Count == 1)
@@ -58,8 +57,7 @@ namespace SmartStore.Services.Stores
 
 		public virtual void InsertStore(Store store)
 		{
-			if (store == null)
-				throw new ArgumentNullException("store");
+			Guard.NotNull(store, nameof(store));
 
 			_storeRepository.Insert(store);
 
@@ -68,8 +66,7 @@ namespace SmartStore.Services.Stores
 
 		public virtual void UpdateStore(Store store)
 		{
-			if (store == null)
-				throw new ArgumentNullException("store");
+			Guard.NotNull(store, nameof(store));
 
 			_storeRepository.Update(store);
 
@@ -88,8 +85,7 @@ namespace SmartStore.Services.Stores
 
 		public virtual bool IsStoreDataValid(Store store)
 		{
-			if (store == null)
-				throw new ArgumentNullException("store");
+			Guard.NotNull(store, nameof(store));
 
 			if (store.Url.IsEmpty())
 				return false;
@@ -112,7 +108,7 @@ namespace SmartStore.Services.Stores
 						return store.Url.IsWebUrl();
 				}
 			}
-			catch (Exception)
+			catch
 			{
 				return false;
 			}

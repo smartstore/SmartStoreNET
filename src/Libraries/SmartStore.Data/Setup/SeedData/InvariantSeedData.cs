@@ -14646,6 +14646,7 @@ namespace SmartStore.Data.Setup
 		#endregion Forums
 
 		#region Discounts
+
 		public IList<Discount> Discounts()
 		{
 			var sampleDiscountWithCouponCode = new Discount()
@@ -14656,7 +14657,7 @@ namespace SmartStore.Data.Setup
 					UsePercentage = false,
 					DiscountAmount = 10,
 					RequiresCouponCode = true,
-					CouponCode = "123",
+					CouponCode = "123"
 				};
 			var sampleDiscounTwentyPercentTotal = new Discount()
 				{
@@ -14668,7 +14669,7 @@ namespace SmartStore.Data.Setup
 					StartDateUtc = new DateTime(2013, 1, 1),
 					EndDateUtc = new DateTime(2020, 1, 1),
 					RequiresCouponCode = true,
-					CouponCode = "456",
+					CouponCode = "456"
 				};
 
 			var entities = new List<Discount>
@@ -14679,6 +14680,7 @@ namespace SmartStore.Data.Setup
 			this.Alter(entities);
 			return entities;
 		}
+
 		#endregion Discounts
 
 		#region Deliverytimes

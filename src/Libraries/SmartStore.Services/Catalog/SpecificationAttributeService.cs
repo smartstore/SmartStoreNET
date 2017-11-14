@@ -73,9 +73,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttribute");
 
 			_specificationAttributeRepository.Delete(specificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityDeleted(specificationAttribute);
 		}
 
 		public virtual void InsertSpecificationAttribute(SpecificationAttribute specificationAttribute)
@@ -84,9 +81,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttribute");
 
 			_specificationAttributeRepository.Insert(specificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityInserted(specificationAttribute);
 		}
 
 		public virtual void UpdateSpecificationAttribute(SpecificationAttribute specificationAttribute)
@@ -95,9 +89,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttribute");
 
 			_specificationAttributeRepository.Update(specificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityUpdated(specificationAttribute);
 		}
 
 		#endregion
@@ -141,9 +132,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttributeOption");
 
 			_specificationAttributeOptionRepository.Delete(specificationAttributeOption);
-
-			//event notification
-			_eventPublisher.EntityDeleted(specificationAttributeOption);
 		}
 
 		public virtual void InsertSpecificationAttributeOption(SpecificationAttributeOption specificationAttributeOption)
@@ -152,9 +140,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttributeOption");
 
 			_specificationAttributeOptionRepository.Insert(specificationAttributeOption);
-
-			//event notification
-			_eventPublisher.EntityInserted(specificationAttributeOption);
 		}
 
 		public virtual void UpdateSpecificationAttributeOption(SpecificationAttributeOption specificationAttributeOption)
@@ -163,9 +148,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttributeOption");
 
 			_specificationAttributeOptionRepository.Update(specificationAttributeOption);
-
-			//event notification
-			_eventPublisher.EntityUpdated(specificationAttributeOption);
 		}
 
 		#endregion
@@ -178,9 +160,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("productSpecificationAttribute");
 
 			_productSpecificationAttributeRepository.Delete(productSpecificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityDeleted(productSpecificationAttribute);
 		}
 
 		public virtual IList<ProductSpecificationAttribute> GetProductSpecificationAttributesByProductId(int productId)
@@ -269,9 +248,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("productSpecificationAttribute");
 
 			_productSpecificationAttributeRepository.Insert(productSpecificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityInserted(productSpecificationAttribute);
 		}
 
 		public virtual void UpdateProductSpecificationAttribute(ProductSpecificationAttribute productSpecificationAttribute)
@@ -280,9 +256,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("productSpecificationAttribute");
 
 			_productSpecificationAttributeRepository.Update(productSpecificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityUpdated(productSpecificationAttribute);
 		}
 
 		#endregion

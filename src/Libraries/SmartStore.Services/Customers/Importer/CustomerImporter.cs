@@ -204,8 +204,6 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			_customerRepository.AutoCommitEnabled = true;
 
-			Customer lastInserted = null;
-			Customer lastUpdated = null;
 			var currentCustomer = _services.WorkContext.CurrentCustomer;
 			var customerQuery = _customerRepository.Table.Expand(x => x.Addresses);
 			var hasCustomerRoleSystemNames = context.DataSegmenter.HasColumn("CustomerRoleSystemNames");
@@ -307,27 +305,14 @@ namespace SmartStore.Services.Customers.Importer
 				if (row.IsTransient)
 				{
 					_customerRepository.Insert(customer);
-					lastInserted = customer;
 				}
 				else
 				{
 					_customerRepository.Update(customer);
-					lastUpdated = customer;
 				}
 			}
 
 			var num = _customerRepository.Context.SaveChanges();
-
-			if (lastInserted != null)
-			{
-				_services.EventPublisher.EntityInserted(lastInserted);
-			}
-
-			if (lastUpdated != null)
-			{
-				_services.EventPublisher.EntityUpdated(lastUpdated);
-			}
-
 			return num;
 		}
 

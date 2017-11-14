@@ -87,32 +87,5 @@ namespace SmartStore.Services.Tests.Messages
 
             _eventPublisher.AssertWasCalled(x => x.Publish(new EmailSubscribedEvent(subscription.Email)));
         }
-
-        /// <summary>
-        /// Verifies the insert event is fired.
-        /// </summary>
-        [Test]
-        public void VerifyInsertEventIsFired()
-        {
-			_newsLetterSubscriptionService.InsertNewsLetterSubscription(new NewsLetterSubscription { Email = "skyler@csharpwebdeveloper.com", StoreId = 1 });
-
-            _eventPublisher.AssertWasCalled(x => x.EntityInserted(Arg<NewsLetterSubscription>.Is.Anything));
-        }
-
-        /// <summary>
-        /// Verifies the update event is fired.
-        /// </summary>
-        [Test]
-        [Ignore("Ignoring until a solution to the IDbContext methods are found. -SRS")]
-        public void VerifyUpdateEventIsFired()
-        {
-            //Prepare the original result
-			var originalSubscription = new NewsLetterSubscription { Active = false, Email = "skyler@csharpwebdeveloper.com", StoreId = 1 };
-			_subscriptionRepository.Stub(m => m.GetById(Arg<object>.Is.Anything)).Return(originalSubscription);
-
-			_newsLetterSubscriptionService.UpdateNewsLetterSubscription(new NewsLetterSubscription { Email = "skyler@csharpwebdeveloper.com", StoreId = 1 });
-
-            _eventPublisher.AssertWasCalled(x => x.EntityUpdated(Arg<NewsLetterSubscription>.Is.Anything));
-        }
     }
 }

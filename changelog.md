@@ -5,6 +5,7 @@
 * AmazonPay: The plugin has been changed to new "Login with Amazon" services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
 * (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
 * (Dev) Hook framework now passes `IHookedEntity` interface instead of `HookedEntity` class
+* (Dev) Completely removed all `EntityInserted<T>`, `EntityUpdated<T>` and `EntityDeleted<T>` legacy events. We were using DbSaveHooks anyway, which provides a much more powerful and way faster pub-sub mechanism for database operations.
 
 ### Highlights
 * Multi-configurable rounding of order total ("cash rounding"). Can be adjusted and activated separately for each currency and payment method.

@@ -35,9 +35,6 @@ namespace SmartStore.Services.Topics
                 throw new ArgumentNullException("topic");
 
             _topicRepository.Delete(topic);
-
-			//event notification
-			_eventPublisher.EntityDeleted(topic);
         }
 
         public virtual Topic GetTopicById(int topicId)
@@ -94,9 +91,6 @@ namespace SmartStore.Services.Topics
                 throw new ArgumentNullException("topic");
 
             _topicRepository.Insert(topic);
-
-			//event notification
-			_eventPublisher.EntityInserted(topic);
         }
 
         public virtual void UpdateTopic(Topic topic)
@@ -105,9 +99,6 @@ namespace SmartStore.Services.Topics
                 throw new ArgumentNullException("topic");
 
             _topicRepository.Update(topic);
-
-			//event notification
-			_eventPublisher.EntityUpdated(topic);
         }
     }
 }

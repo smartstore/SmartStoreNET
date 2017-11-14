@@ -3,15 +3,11 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
-using System.Threading.Tasks;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Async;
-using SmartStore.Collections;
-using Autofac;
-using System.Diagnostics;
 using SmartStore.Core.Events;
+using Autofac;
 
 namespace SmartStore.Services.Events
 {

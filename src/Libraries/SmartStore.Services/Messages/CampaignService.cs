@@ -52,9 +52,6 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("campaign");
 
             _campaignRepository.Insert(campaign);
-
-            //event notification
-            _eventPublisher.EntityInserted(campaign);
         }
 
         /// <summary>
@@ -67,9 +64,6 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("campaign");
 
             _campaignRepository.Update(campaign);
-
-            //event notification
-            _eventPublisher.EntityUpdated(campaign);
         }
 
         /// <summary>
@@ -82,9 +76,6 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("campaign");
 
             _campaignRepository.Delete(campaign);
-
-            //event notification
-            _eventPublisher.EntityDeleted(campaign);
         }
 
         /// <summary>

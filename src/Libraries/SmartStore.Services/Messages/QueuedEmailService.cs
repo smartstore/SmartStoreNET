@@ -93,9 +93,6 @@ namespace SmartStore.Services.Messages
 					}
 				}
 			}
-
-			// event notification
-			_services.EventPublisher.EntityInserted(queuedEmail);
         }
 
         public virtual void UpdateQueuedEmail(QueuedEmail queuedEmail)
@@ -103,9 +100,6 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(queuedEmail, nameof(queuedEmail));
 
 			_queuedEmailRepository.Update(queuedEmail);
-
-            // event notification
-			_services.EventPublisher.EntityUpdated(queuedEmail);
         }
 
         public virtual void DeleteQueuedEmail(QueuedEmail queuedEmail)
@@ -113,9 +107,6 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(queuedEmail, nameof(queuedEmail));
 
             _queuedEmailRepository.Delete(queuedEmail);
-
-            // event notification
-			_services.EventPublisher.EntityDeleted(queuedEmail);
         }
 
 		public virtual int DeleteAllQueuedEmails()
@@ -321,8 +312,6 @@ namespace SmartStore.Services.Messages
 			}
 
 			_queuedEmailAttachmentRepository.Delete(attachment);
-
-			_services.EventPublisher.EntityDeleted(attachment);
 		}
 
 		public virtual byte[] LoadQueuedEmailAttachmentBinary(QueuedEmailAttachment attachment)

@@ -58,9 +58,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("subscription");
 
             _backInStockSubscriptionRepository.Delete(subscription);
-
-            //event notification
-            _eventPublisher.EntityDeleted(subscription);
         }
 
         /// <summary>
@@ -152,9 +149,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("subscription");
 
             _backInStockSubscriptionRepository.Insert(subscription);
-
-            //event notification
-            _eventPublisher.EntityInserted(subscription);
         }
 
         /// <summary>
@@ -167,9 +161,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("subscription");
 
             _backInStockSubscriptionRepository.Update(subscription);
-
-            //event notification
-            _eventPublisher.EntityUpdated(subscription);
         }
 
         /// <summary>

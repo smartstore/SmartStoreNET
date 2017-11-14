@@ -93,7 +93,6 @@ namespace SmartStore.Services.Catalog
 				if (delete)
 				{
 					category.Deleted = true;
-					_eventPublisher.EntityDeleted(category);
 				}
 				else
 				{
@@ -294,8 +293,6 @@ namespace SmartStore.Services.Catalog
 			category.Deleted = true;
 			UpdateCategory(category);
 
-			_eventPublisher.EntityDeleted(category);
-
 			var childCategories = GetAllCategoriesByParentCategoryId(category.Id, true);
 			DeleteAllCategories(childCategories, deleteChilds);
 		}
@@ -459,8 +456,6 @@ namespace SmartStore.Services.Catalog
 
 			_requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
-
-			_eventPublisher.EntityInserted(category);
 		}
 
 		public virtual void UpdateCategory(Category category)
@@ -483,8 +478,6 @@ namespace SmartStore.Services.Catalog
 
 			_requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
-
-			_eventPublisher.EntityUpdated(category);
 		}
 
 		public virtual void UpdateHasDiscountsApplied(Category category)
@@ -504,9 +497,6 @@ namespace SmartStore.Services.Catalog
 			//cache
 			_requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
-
-			//event notification
-			_eventPublisher.EntityDeleted(productCategory);
 		}
 
 		public virtual IPagedList<ProductCategory> GetProductCategoriesByCategoryId(int categoryId, int pageIndex, int pageSize, bool showHidden = false)
@@ -680,8 +670,6 @@ namespace SmartStore.Services.Catalog
 
 			_requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
-
-			_eventPublisher.EntityInserted(productCategory);
 		}
 
 		public virtual void UpdateProductCategory(ProductCategory productCategory)
@@ -693,8 +681,6 @@ namespace SmartStore.Services.Catalog
 
 			_requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
-
-			_eventPublisher.EntityUpdated(productCategory);
 		}
 
 		public virtual IEnumerable<ICategoryNode> GetCategoryTrail(ICategoryNode node)

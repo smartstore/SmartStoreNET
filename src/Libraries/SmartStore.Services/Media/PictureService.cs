@@ -683,9 +683,6 @@ namespace SmartStore.Services.Media
 
 			// delete entity
 			_pictureRepository.Delete(picture);
-
-			// event notification
-			_eventPublisher.EntityDeleted(picture);
 		}
 
 		public virtual Picture InsertPicture(
@@ -714,9 +711,6 @@ namespace SmartStore.Services.Media
 
 			// Save to storage.
 			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
-
-			// Event notification.
-			_eventPublisher.EntityInserted(picture);
 
 			return picture;
 		}
@@ -787,9 +781,6 @@ namespace SmartStore.Services.Media
 			{
 				_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
 			}		
-
-			// event notification
-			_eventPublisher.EntityUpdated(picture);
 		}
 
 		#endregion

@@ -31,8 +31,6 @@ namespace SmartStore.Services.Stores
 				throw new Exception("You cannot delete the only configured store.");
 
 			_storeRepository.Delete(store);
-
-			_eventPublisher.EntityDeleted(store);
 		}
 
 		public virtual IList<Store> GetAllStores()
@@ -60,8 +58,6 @@ namespace SmartStore.Services.Stores
 			Guard.NotNull(store, nameof(store));
 
 			_storeRepository.Insert(store);
-
-			_eventPublisher.EntityInserted(store);
 		}
 
 		public virtual void UpdateStore(Store store)
@@ -69,8 +65,6 @@ namespace SmartStore.Services.Stores
 			Guard.NotNull(store, nameof(store));
 
 			_storeRepository.Update(store);
-
-			_eventPublisher.EntityUpdated(store);
 		}
 
 		public virtual bool IsSingleStoreMode()

@@ -65,9 +65,6 @@ namespace SmartStore.Services.Directory
             _countryRepository.Delete(country);
 
             _requestCache.RemoveByPattern(COUNTRIES_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityDeleted(country);
         }
 
         /// <summary>
@@ -222,9 +219,6 @@ namespace SmartStore.Services.Directory
             _countryRepository.Insert(country);
 
             _requestCache.RemoveByPattern(COUNTRIES_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityInserted(country);
         }
 
         /// <summary>
@@ -239,9 +233,6 @@ namespace SmartStore.Services.Directory
             _countryRepository.Update(country);
 
             _requestCache.RemoveByPattern(COUNTRIES_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityUpdated(country);
         }
 
         #endregion

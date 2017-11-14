@@ -53,9 +53,6 @@ namespace SmartStore.Services.Directory
                 throw new SmartException(T("Admin.Configuration.DeliveryTimes.CannotDeleteAssignedProducts"));
 
             _deliveryTimeRepository.Delete(deliveryTime);
-
-            //event notification
-            _eventPublisher.EntityDeleted(deliveryTime);
         }
 
         public virtual bool IsAssociated(int deliveryTimeId)
@@ -115,9 +112,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("deliveryTime");
 
             _deliveryTimeRepository.Insert(deliveryTime);
-
-            //event notification
-            _eventPublisher.EntityInserted(deliveryTime);
         }
 
         public virtual void UpdateDeliveryTime(DeliveryTime deliveryTime)
@@ -126,9 +120,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("deliveryTime");
 
             _deliveryTimeRepository.Update(deliveryTime);
-
-            //event notification
-            _eventPublisher.EntityUpdated(deliveryTime);
         }
 
         public virtual void SetToDefault(DeliveryTime deliveryTime)
@@ -143,9 +134,6 @@ namespace SmartStore.Services.Directory
                 time.IsDefault = time.Equals(deliveryTime) ? true : false;
                 _deliveryTimeRepository.Update(time);
             }
-            
-            //event notification
-            _eventPublisher.EntityUpdated(deliveryTime);
         }
         
         public virtual DeliveryTime GetDefaultDeliveryTime()

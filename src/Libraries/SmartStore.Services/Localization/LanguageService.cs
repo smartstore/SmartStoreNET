@@ -72,9 +72,6 @@ namespace SmartStore.Services.Localization
 
             // cache
             _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);	
-
-			//event notification
-			_eventPublisher.EntityDeleted(language);
         }
 
 		public virtual IList<Language> GetAllLanguages(bool showHidden = false, int storeId = 0)
@@ -150,9 +147,6 @@ namespace SmartStore.Services.Localization
 
             // cache
             _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
-
-			//event notification
-			_eventPublisher.EntityInserted(language);
         }
 
         public virtual void UpdateLanguage(Language language)
@@ -165,9 +159,6 @@ namespace SmartStore.Services.Localization
 
             //cache
             _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
-
-			//event notification
-			_eventPublisher.EntityUpdated(language);
         }
 
 		public virtual bool IsPublishedLanguage(string seoCode, int storeId = 0)

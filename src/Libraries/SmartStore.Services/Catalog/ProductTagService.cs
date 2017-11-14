@@ -154,9 +154,6 @@ namespace SmartStore.Services.Catalog
 
 			//cache
 			_cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityDeleted(productTag);
         }
 
         /// <summary>
@@ -222,11 +219,7 @@ namespace SmartStore.Services.Catalog
 
             _productTagRepository.Insert(productTag);
 
-			//cache
 			_cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityInserted(productTag);
         }
 
         /// <summary>
@@ -240,11 +233,7 @@ namespace SmartStore.Services.Catalog
 
             _productTagRepository.Update(productTag);
 
-			//cache
 			_cacheManager.RemoveByPattern(PRODUCTTAG_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityUpdated(productTag);
         }
 
 		/// <summary>

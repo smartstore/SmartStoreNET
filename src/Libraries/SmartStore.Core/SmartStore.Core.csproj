@@ -398,9 +398,6 @@
     <Compile Include="Domain\Polls\PollAnswer.cs" />
     <Compile Include="Domain\Polls\Poll.cs" />
     <Compile Include="Domain\Orders\BestsellersReportLine.cs" />
-    <Compile Include="Events\CommonMessages\EntityDeleted.cs" />
-    <Compile Include="Events\CommonMessages\EntityInserted.cs" />
-    <Compile Include="Events\CommonMessages\EntityUpdated.cs" />
     <Compile Include="Extensions\ConversionExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />

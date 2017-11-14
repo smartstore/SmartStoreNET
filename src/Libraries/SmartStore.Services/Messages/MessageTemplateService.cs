@@ -55,9 +55,6 @@ namespace SmartStore.Services.Messages
 			_messageTemplateRepository.Delete(messageTemplate);
 
 			_requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
-
-			//event notification
-			_eventPublisher.EntityDeleted(messageTemplate);
 		}
 
         public virtual void InsertMessageTemplate(MessageTemplate messageTemplate)
@@ -68,9 +65,6 @@ namespace SmartStore.Services.Messages
             _messageTemplateRepository.Insert(messageTemplate);
 
             _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityInserted(messageTemplate);
         }
 
         public virtual void UpdateMessageTemplate(MessageTemplate messageTemplate)
@@ -81,9 +75,6 @@ namespace SmartStore.Services.Messages
             _messageTemplateRepository.Update(messageTemplate);
 
             _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityUpdated(messageTemplate);
         }
 
         public virtual MessageTemplate GetMessageTemplateById(int messageTemplateId)

@@ -58,9 +58,6 @@ namespace SmartStore.Services.Common
                 throw new ArgumentNullException("address");
 
             _addressRepository.Delete(address);
-
-            //event notification
-            _eventPublisher.EntityDeleted(address);
         }
 
 		public virtual void DeleteAddress(int id)
@@ -146,9 +143,6 @@ namespace SmartStore.Services.Common
                 address.StateProvinceId = null;
 
             _addressRepository.Insert(address);
-
-            //event notification
-            _eventPublisher.EntityInserted(address);
         }
 
         /// <summary>
@@ -167,9 +161,6 @@ namespace SmartStore.Services.Common
                 address.StateProvinceId = null;
 
             _addressRepository.Update(address);
-
-            //event notification
-            _eventPublisher.EntityUpdated(address);
         }
 
         /// <summary>

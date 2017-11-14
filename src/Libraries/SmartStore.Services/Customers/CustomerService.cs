@@ -440,8 +440,6 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customer");
 
             _customerRepository.Insert(customer);
-
-            _services.EventPublisher.EntityInserted(customer);
         }
         
         public virtual void UpdateCustomer(Customer customer)
@@ -450,8 +448,6 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customer");
 
             _customerRepository.Update(customer);
-
-			_services.EventPublisher.EntityUpdated(customer);
         }
 
 		public virtual void ResetCheckoutData(Customer customer, int storeId,
@@ -632,8 +628,6 @@ namespace SmartStore.Services.Customers
                 throw new SmartException("System role could not be deleted");
 
             _customerRoleRepository.Delete(customerRole);
-
-			_services.EventPublisher.EntityDeleted(customerRole);
         }
 
         public virtual CustomerRole GetCustomerRoleById(int customerRoleId)
@@ -675,8 +669,6 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customerRole");
 
             _customerRoleRepository.Insert(customerRole);
-
-			_services.EventPublisher.EntityInserted(customerRole);
         }
 
         public virtual void UpdateCustomerRole(CustomerRole customerRole)
@@ -685,8 +677,6 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customerRole");
 
             _customerRoleRepository.Update(customerRole);
-
-			_services.EventPublisher.EntityUpdated(customerRole);
         }
 
         #endregion

@@ -75,8 +75,6 @@ namespace SmartStore.Services.Configuration
 
 			if (clearCache)
 				ClearCache();
-
-            _eventPublisher.EntityInserted(setting);
         }
 
         public virtual void UpdateSetting(Setting setting, bool clearCache = true)
@@ -89,8 +87,6 @@ namespace SmartStore.Services.Configuration
 
 			if (clearCache)
 				ClearCache();
-
-            _eventPublisher.EntityUpdated(setting);
         }
 
 		private T LoadSettingsJson<T>(int storeId = 0)
@@ -425,8 +421,6 @@ namespace SmartStore.Services.Configuration
 			HasChanges = true;
 
 			ClearCache();
-
-			_eventPublisher.EntityDeleted(setting);
 		}
 
         public virtual void DeleteSetting<T>() where T : ISettings, new()

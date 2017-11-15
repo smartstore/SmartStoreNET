@@ -57,7 +57,15 @@ namespace SmartStore.Core.Tests.Data.Hooks
 			}
 		}
 
-		public bool IsPropertyModified(string propertyName)
+        public bool IsSoftDeleted
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public bool IsPropertyModified(string propertyName)
 		{
 			return false;
 		}

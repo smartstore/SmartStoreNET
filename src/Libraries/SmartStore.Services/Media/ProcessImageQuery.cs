@@ -127,7 +127,7 @@ namespace SmartStore.Services.Media
 
 		public bool NeedsProcessing()
 		{
-			return base.Count > 0 && !(base.Count == 1 && base.Contains("q"));
+			return base.Count > 0;
 		}
 
 		public string CreateHash()

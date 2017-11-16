@@ -36,7 +36,7 @@ namespace SmartStore.Services.Media
 		/// The processing result. If null, the original data
 		/// from <c>Query.Source</c> will be put to storage.
 		/// </summary>
-		public byte[] Result { get; set; }
+		public byte[] ResultBuffer { get; set; }
 
 		/// <summary>
 		/// Size of the result image.

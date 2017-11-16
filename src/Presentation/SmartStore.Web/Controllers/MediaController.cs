@@ -229,7 +229,7 @@ namespace SmartStore.Web.Controllers
 				var processQuery = new ProcessImageQuery(query)
 				{
 					Source = buffer,
-					Format = cachedImage.Extension,
+					Format = query.Format ?? cachedImage.Extension,
 					FileName = cachedImage.FileName,
 					DisposeSource = true
 				};

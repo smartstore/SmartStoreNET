@@ -147,8 +147,6 @@ namespace SmartStore.Services.Media
 
 			var query = new ProcessImageQuery(pictureBinary)
 			{
-				MaxWidth = maxSize,
-				MaxHeight = maxSize,
 				Quality = _mediaSettings.DefaultImageQuality,
 				Format = MimeTypes.MapMimeTypeToExtension(mimeType),
 				IsValidationMode = true
@@ -160,11 +158,11 @@ namespace SmartStore.Services.Media
 				var evt = new ImageUploadValidatedEvent(query, originalSize);
 				_eventPublisher.Publish(evt);
 
-				if (evt.Result != null)
+				if (evt.ResultBuffer != null)
 				{
 					// Maybe subscriber forgot to set this, so check
 					size = evt.ResultSize.IsEmpty ? originalSize : evt.ResultSize;
-					return evt.Result;
+					return evt.ResultBuffer;
 				}
 				else
 				{
@@ -172,6 +170,9 @@ namespace SmartStore.Services.Media
 					return pictureBinary;
 				}
 			}
+
+			query.MaxWidth = maxSize;
+			query.MaxHeight = maxSize;
 
 			using (var result = _imageProcessor.ProcessImage(query))
 			{

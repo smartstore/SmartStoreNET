@@ -108,6 +108,8 @@ namespace SmartStore.Services.Media
 		/// </summary>
 		public object Format { get; set; }
 
+		public bool IsValidationMode { get; set; }
+
 
 		private T Get<T>(string name)
 		{
@@ -125,7 +127,7 @@ namespace SmartStore.Services.Media
 
 		public bool NeedsProcessing()
 		{
-			return base.Count > 0;
+			return base.Count > 0 && !(base.Count == 1 && base.Contains("q"));
 		}
 
 		public string CreateHash()

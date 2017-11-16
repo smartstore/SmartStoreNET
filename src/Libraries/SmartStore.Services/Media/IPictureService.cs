@@ -18,7 +18,7 @@ namespace SmartStore.Services.Media
         /// <param name="pictureBinary">Picture binary</param>
         /// <param name="mimeType">MIME type</param>
         /// <returns>Picture binary or throws an exception</returns>
-        byte[] ValidatePicture(byte[] pictureBinary);
+        byte[] ValidatePicture(byte[] pictureBinary, string mimeType);
 
 		/// <summary>
 		/// Validates input picture dimensions and prevents that the image size exceeds global max size
@@ -27,7 +27,7 @@ namespace SmartStore.Services.Media
 		/// <param name="mimeType">MIME type</param>
 		/// <param name="size">The size of the original input OR the resized picture</param>
 		/// <returns>Picture binary or throws an exception</returns>
-		byte[] ValidatePicture(byte[] pictureBinary, out Size size);
+		byte[] ValidatePicture(byte[] pictureBinary, string mimeType, out Size size);
 
 		/// <summary>
 		/// Finds an equal picture by comparing the binary buffer

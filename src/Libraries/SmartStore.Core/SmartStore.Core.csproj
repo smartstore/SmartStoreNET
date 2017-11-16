@@ -663,6 +663,7 @@
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\UpgradeableReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\WriteLockDisposable.cs" />
+    <Compile Include="Utilities\Throttle.cs" />
     <Compile Include="Utilities\TypeHelper.cs" />
     <Compile Include="Utilities\Wildcard.cs" />
     <Compile Include="WebHelper.cs" />

@@ -129,37 +129,54 @@ namespace SmartStore.Services.Media
 
 		#region Imaging
 
-		public virtual byte[] ValidatePicture(byte[] pictureBinary)
+		public virtual byte[] ValidatePicture(byte[] pictureBinary, string mimeType)
 		{
 			var size = Size.Empty;
-			return ValidatePicture(pictureBinary, out size);
+			return ValidatePicture(pictureBinary, mimeType, out size);
 		}
 
-		public virtual byte[] ValidatePicture(byte[] pictureBinary, out Size size)
+		public virtual byte[] ValidatePicture(byte[] pictureBinary, string mimeType, out Size size)
 		{
+			Guard.NotNull(pictureBinary, nameof(pictureBinary));
+			Guard.NotEmpty(mimeType, nameof(mimeType));
+
 			size = Size.Empty;
 
 			var originalSize = GetPictureSize(pictureBinary);
 			var maxSize = _mediaSettings.MaximumImageSize;
-
-			if (originalSize.IsEmpty || (originalSize.Height <= maxSize && originalSize.Width <= maxSize))
-			{
-				size = originalSize;
-				return pictureBinary;
-			}
 
 			var query = new ProcessImageQuery(pictureBinary)
 			{
 				MaxWidth = maxSize,
 				MaxHeight = maxSize,
 				Quality = _mediaSettings.DefaultImageQuality,
-				ExecutePostProcessor = false, // TODO: (mc) Pick from (new) settings for newly uploaded images!
+				Format = MimeTypes.MapMimeTypeToExtension(mimeType),
+				IsValidationMode = true
 			};
+
+			if (originalSize.IsEmpty || (originalSize.Height <= maxSize && originalSize.Width <= maxSize))
+			{
+				// Give subscribers the chance to (pre)-process
+				var evt = new ImageUploadValidatedEvent(query, originalSize);
+				_eventPublisher.Publish(evt);
+
+				if (evt.Result != null)
+				{
+					// Maybe subscriber forgot to set this, so check
+					size = evt.ResultSize.IsEmpty ? originalSize : evt.ResultSize;
+					return evt.Result;
+				}
+				else
+				{
+					size = originalSize;
+					return pictureBinary;
+				}
+			}
 
 			using (var result = _imageProcessor.ProcessImage(query))
 			{
 				size = new Size(result.Width, result.Height);
-				var buffer = result.Result.GetBuffer();
+				var buffer = result.OutputStream.GetBuffer();
 				return buffer;
 			}
 		}
@@ -727,7 +744,7 @@ namespace SmartStore.Services.Media
 
 			if (validateBinary)
 			{
-				pictureBinary = ValidatePicture(pictureBinary, out size);
+				pictureBinary = ValidatePicture(pictureBinary, mimeType, out size);
 			}
 
 			return InsertPicture(pictureBinary, mimeType, seoFilename, isNew, size.Width, size.Height, isTransient);
@@ -751,7 +768,7 @@ namespace SmartStore.Services.Media
 
 			if (validateBinary && pictureBinary != null)
 			{
-				pictureBinary = ValidatePicture(pictureBinary, out size);
+				pictureBinary = ValidatePicture(pictureBinary, mimeType, out size);
 			}
 
 			// delete old thumbs if a picture has been changed

@@ -11,6 +11,7 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Helpers;
 using Autofac;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Services
 {	
@@ -72,6 +73,11 @@ namespace SmartStore.Services
 		}
 
 		ICustomerActivityService CustomerActivity
+		{
+			get;
+		}
+
+		IPictureService PictureService
 		{
 			get;
 		}

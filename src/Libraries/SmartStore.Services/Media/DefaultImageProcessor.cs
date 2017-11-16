@@ -5,19 +5,23 @@ using System.Linq;
 using System.Drawing;
 using ImageProcessor;
 using ImageProcessor.Imaging;
-using ImageProcessor.Plugins.WebP.Imaging.Formats;
 using ImageProcessor.Imaging.Formats;
 using SmartStore.Core.Logging;
 using ImageProcessor.Configuration;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Media
 {
-	public class DefaultImageProcessor : IImageProcessor
+	public partial class DefaultImageProcessor : IImageProcessor
     {
 		private static long _totalProcessingTime;
 
-		public DefaultImageProcessor()
+		private readonly IEventPublisher _eventPublisher;
+
+		public DefaultImageProcessor(IEventPublisher eventPublisher)
 		{
+			_eventPublisher = eventPublisher;
+
 			Logger = NullLogger.Instance;
 		}
 
@@ -52,7 +56,7 @@ namespace SmartStore.Services.Media
 				using (var processor = new ImageFactory(preserveExifData: false, fixGamma: false))
 				{
 					var source = query.Source;
-
+					
 					// Load source
 					if (source is byte[])
 					{
@@ -73,8 +77,11 @@ namespace SmartStore.Services.Media
 					}
 					else
 					{
-						throw new ArgumentException("Invalid source type '{0}' in query.".FormatInvariant(query.Source.GetType().FullName), nameof(query));
+						throw new ProcessImageException("Invalid source type '{0}' in query.".FormatInvariant(query.Source.GetType().FullName), query);
 					}
+
+					// Pre-process event
+					_eventPublisher.Publish(new ImageProcessingEvent(query, processor));
 
 					var result = new ProcessImageResult
 					{
@@ -83,67 +90,10 @@ namespace SmartStore.Services.Media
 						SourceHeight = processor.Image.Height
 					};
 
-					// Resize
-					var size = query.MaxWidth != null || query.MaxHeight != null
-						? new Size(query.MaxWidth ?? 0, query.MaxHeight ?? 0)
-						: Size.Empty;
-
-					if (!size.IsEmpty)
-					{
-						var mode = ResizeMode.Max;
-						if (query.ScaleMode.HasValue() && query.ScaleMode != "max")
-						{
-							// TODO: (mc) Implement! [...]
-						}
-						processor.Resize(new ResizeLayer(size, resizeMode: mode, upscale: false));
-					}
-
-					// Format
-					if (query.Format != null)
-					{
-						var format = query.Format as ISupportedImageFormat;
-
-						if (format == null && query.Format is string)
-						{
-							var requestedFormat = ((string)query.Format).ToLowerInvariant();
-							switch (requestedFormat)
-							{
-								case "jpg":
-								case "jpeg":
-									format = new JpegFormat();
-									break;
-								case "png":
-									format = new PngFormat();
-									break;
-								case "gif":
-									format = new GifFormat();
-									break;
-								case "webp":
-									format = new WebPFormat();
-									break;
-							}
-						}
-
-						if (format != null)
-						{
-							processor.Format(format);
-						}
-					}
-
-					// Set Quality
-					if (query.Quality.HasValue)
-					{
-						processor.Quality(query.Quality.Value);
-					}
-
-					// IsIndexed (for PNGs)
-					if (true)
-					{
-						// TODO: (mc) get from settings
-						processor.CurrentImageFormat.IsIndexed = true;
-					}
-
-					// Process
+					// Core processing
+					ProcessImageCore(query, processor);
+					
+					// Create & prepare result
 					var outStream = new MemoryStream();
 					processor.Save(outStream);
 
@@ -151,21 +101,21 @@ namespace SmartStore.Services.Media
 					result.Height = processor.Image.Height;
 					result.FileExtension = processor.CurrentImageFormat.DefaultExtension;
 					result.MimeType = processor.CurrentImageFormat.MimeType;
+					result.OutputStream = outStream;
 
-					if (query.ExecutePostProcessor) // TODO: (mc) ask if enabled for current format
-					{
-						outStream = ImagePostProcessor.PostProcessImage(outStream, query.FileName, result.FileExtension, this.Logger);
-					}
+					// Post-process event
+					_eventPublisher.Publish(new ImageProcessedEvent(query, processor, result));
 
-					result.ProcessTimeMs = watch.ElapsedMilliseconds;
-					result.Result = outStream;
+					result.ProcessTimeMs = watch.ElapsedMilliseconds;				
 
 					return result;
 				}
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw;
+				var pex = new ProcessImageException(query, ex);
+				Logger.Error(pex);
+				throw pex;
 			}
 			finally
 			{
@@ -176,6 +126,67 @@ namespace SmartStore.Services.Media
 
 				watch.Stop();
 				_totalProcessingTime += watch.ElapsedMilliseconds;
+			}
+		}
+
+		/// <summary>
+		/// Processes the loaded image. Inheritors should NOT save the image, this is done by the main method. 
+		/// </summary>
+		/// <param name="query">Query</param>
+		/// <param name="processor">Processor instance</param>
+		protected virtual void ProcessImageCore(ProcessImageQuery query, ImageFactory processor)
+		{
+			// Resize
+			var size = query.MaxWidth != null || query.MaxHeight != null
+				? new Size(query.MaxWidth ?? 0, query.MaxHeight ?? 0)
+				: Size.Empty;
+
+			if (!size.IsEmpty)
+			{
+				var scaleMode = ConvertScaleMode(query.ScaleMode);
+				processor.Resize(new ResizeLayer(size, resizeMode: scaleMode, upscale: false));
+			}
+
+			// Format
+			if (query.Format != null)
+			{
+				var format = query.Format as ISupportedImageFormat;
+
+				if (format == null && query.Format is string)
+				{
+					var requestedFormat = ((string)query.Format).ToLowerInvariant();
+					switch (requestedFormat)
+					{
+						case "jpg":
+						case "jpeg":
+							format = new JpegFormat();
+							break;
+						case "png":
+							format = new PngFormat();
+							break;
+						case "gif":
+							format = new GifFormat();
+							break;
+					}
+				}
+
+				if (format != null)
+				{
+					processor.Format(format);
+				}
+			}
+
+			// Set Quality
+			if (query.Quality.HasValue)
+			{
+				processor.Quality(query.Quality.Value);
+			}
+
+			// IsIndexed (for PNGs)
+			if (true)
+			{
+				// TODO: (mc) get from settings
+				processor.CurrentImageFormat.IsIndexed = true;
 			}
 		}
 
@@ -190,6 +201,25 @@ namespace SmartStore.Services.Media
 		public long TotalProcessingTimeMs
 		{
 			get { return _totalProcessingTime; }
+		}
+
+		private ResizeMode ConvertScaleMode(string mode)
+		{
+			switch (mode.EmptyNull().ToLower())
+			{
+				case "boxpad":
+					return ResizeMode.BoxPad;
+				case "crop":
+					return ResizeMode.Crop;
+				case "min":
+					return ResizeMode.Min;
+				case "pad":
+					return ResizeMode.Pad;
+				case "stretch":
+					return ResizeMode.Stretch;
+				default:
+					return ResizeMode.Max;
+			}
 		}
 	}
 }

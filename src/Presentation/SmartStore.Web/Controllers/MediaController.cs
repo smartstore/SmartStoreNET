@@ -12,11 +12,12 @@ using SmartStore.Core.Logging;
 using SmartStore.Utilities;
 using System.IO;
 using SmartStore.Core.Async;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Web.Controllers
 {
 	[SessionState(SessionStateBehavior.Disabled)]
-	[OverrideAuthentication, OverrideAuthorization, OverrideResultFilters] // TBD: (mc) should we also override action filters?
+	[OverrideAuthentication, OverrideAuthorization, OverrideResultFilters, OverrideExceptionFilters] // TBD: (mc) should we also override action filters?
 	public partial class MediaController : Controller
     {
 		private readonly static bool _streamRemoteMedia = CommonHelper.GetAppSetting<bool>("sm:StreamRemoteMedia");
@@ -25,6 +26,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IImageProcessor _imageProcessor;
 		private readonly IImageCache _imageCache;
 		private readonly IUserAgent _userAgent;
+		private readonly IEventPublisher _eventPublisher;
 		private readonly MediaSettings _mediaSettings;
 
 		public MediaController(
@@ -32,12 +34,14 @@ namespace SmartStore.Web.Controllers
 			IImageProcessor imageProcessor,
 			IImageCache imageCache,
 			IUserAgent userAgent,
+			IEventPublisher eventPublisher,
 			MediaSettings mediaSettings)
         {
 			_pictureService = pictureService;
 			_imageProcessor = imageProcessor;
 			_imageCache = imageCache;
 			_userAgent = userAgent;
+			_eventPublisher = eventPublisher;
 			_mediaSettings = mediaSettings;
 
 			Logger = NullLogger.Instance;
@@ -102,7 +106,7 @@ namespace SmartStore.Web.Controllers
 						// content but keeps the connection open for other requests
 						Response.AddHeader("Content-Length", "0");
 
-						SetCacheHeaders(Response.Cache, etag);
+						ApplyResponseHeaders(etag);
 
 						return Content(null);
 					}
@@ -168,6 +172,7 @@ namespace SmartStore.Web.Controllers
 							}
 
 							source = await ProcessAndPutToCacheAsync(cachedImage, source, query);
+
 							return File(source, mime);
 						}
 					}
@@ -192,7 +197,11 @@ namespace SmartStore.Web.Controllers
 			catch (Exception ex)
 			{
 				isFaulted = true;
-				Logger.ErrorFormat(ex, "Error processing media file '{0}'.", cachedImage.Path);
+				if (!(ex is ProcessImageException))
+				{
+					// ProcessImageException is logged already in ImageProcessor
+					Logger.ErrorFormat(ex, "Error processing media file '{0}'.", cachedImage.Path);
+				}
 				return new HttpStatusCodeResult(500, ex.Message);
 			}
 			finally
@@ -203,7 +212,7 @@ namespace SmartStore.Web.Controllers
 					etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
 
 					Response.Cache.SetLastModified(lastModifiedUtc);
-					SetCacheHeaders(Response.Cache, etag);
+					ApplyResponseHeaders(etag);
 				}
 			}
 		}
@@ -222,20 +231,21 @@ namespace SmartStore.Web.Controllers
 					Source = buffer,
 					Format = cachedImage.Extension,
 					FileName = cachedImage.FileName,
-					DisposeSource = true,
-					ExecutePostProcessor = false, // cachedImage.Extension == "jpg" || cachedImage.Extension == "jpeg" // TODO: (mc) Pick from settings!
+					DisposeSource = true
 				};
 
 				using (var result = _imageProcessor.ProcessImage(processQuery))
 				{
-					var outBuffer = result.Result.GetBuffer();
+					var outBuffer = result.OutputStream.GetBuffer();
 					await _imageCache.PutAsync(cachedImage, outBuffer);
-
+					
 					if (cachedImage.Extension != result.FileExtension)
 					{
 						cachedImage.Path = Path.ChangeExtension(cachedImage.Path, result.FileExtension);
 						cachedImage.Extension = result.FileExtension;
 					}
+
+					Logger.DebugFormat($"Processed image '{cachedImage.FileName}' in {result.ProcessTimeMs} ms.", null);
 
 					return outBuffer;
 				}
@@ -248,16 +258,16 @@ namespace SmartStore.Web.Controllers
 			return Content("404: Not Found");
 		}
 
-		private void SetCacheHeaders(HttpCachePolicyBase cache, string etag)
+		protected virtual void ApplyResponseHeaders(string etag)
 		{
+			var cache = this.Response.Cache;
+
 			cache.SetCacheability(System.Web.HttpCacheability.Public);
 			cache.SetExpires(DateTime.Now.ToUniversalTime().AddDays(7));
 			cache.SetMaxAge(TimeSpan.FromDays(7));
 			cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
 			cache.SetETag(etag);
 			//cache.SetValidUntilExpires(false);
-			//cache.VaryByParams["id"] = true;
-			cache.VaryByParams["size"] = true;
 			cache.VaryByHeaders["Accept-Encoding"] = true;
 			//cache.SetLastModified(DateTime.SpecifyKind(picture.UpdatedOnUtc, DateTimeKind.Utc));
 		}
@@ -268,7 +278,7 @@ namespace SmartStore.Web.Controllers
 			return "\"" + String.Concat(seoName, mime, timestamp).Hash(Encoding.UTF8) + "\"";
 		}
 
-		private ProcessImageQuery CreateImageQuery()
+		protected virtual ProcessImageQuery CreateImageQuery()
 		{
 			var query = new ProcessImageQuery(null, Request.QueryString);
 
@@ -286,13 +296,7 @@ namespace SmartStore.Web.Controllers
 				query.Quality = _mediaSettings.DefaultImageQuality;
 			}
 
-			if (query.Format == null && _userAgent.UserAgent.SupportsWebP)
-			{
-				query.Format = "webp";
-			}
-
-			// TODO: (mc) Handle WebP format properly
-			// TODO: (mc) Publish event ImageQueryCreated
+			_eventPublisher.Publish(new ImageQueryCreatedEvent(query, this.HttpContext));
 
 			return query;
 		}

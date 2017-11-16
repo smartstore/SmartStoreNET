@@ -223,7 +223,7 @@ namespace SmartStore.Services.Catalog.Importer
 									}
 
 									var size = Size.Empty;
-									pictureBinary = _pictureService.ValidatePicture(pictureBinary, out size);
+									pictureBinary = _pictureService.ValidatePicture(pictureBinary, image.MimeType, out size);
 									pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 									if (pictureBinary != null && pictureBinary.Length > 0)

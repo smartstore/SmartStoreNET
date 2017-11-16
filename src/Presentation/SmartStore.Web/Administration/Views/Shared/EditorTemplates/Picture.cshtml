@@ -32,21 +32,22 @@
 }
 
 @{
-    var random = CommonHelper.GenerateRandomInteger();
-    var clientId = "picture" + random;
-    var pictureService = EngineContext.Current.Resolve<SmartStore.Services.Media.IPictureService>();
-    int pictureId = Model.HasValue ? Model.Value : 0;
+	var random = CommonHelper.GenerateRandomInteger();
+	var clientId = "picture" + random;
+	var pictureService = this.CommonServices.PictureService;
+	var mediaSettings = this.CommonServices.Resolve<SmartStore.Core.Domain.Media.MediaSettings>();
+	int pictureId = Model.HasValue ? Model.Value : 0;
 	var picture = pictureService.GetPictureById(pictureId);
 
-    Html.AddScriptParts("~/bundles/fileupload");
-    Html.AddCssFileParts("~/css/fileupload");
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
 }
 
 <div id="@clientId" class="fileupload" style="display: inline-block;" data-upload-url='@Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, validate = ValidatePicture, area = "Admin" })'>
     
     @Html.HiddenFor(x => x, new { @class = "hidden"} )
 
-    <img src="@(pictureService.GetPictureUrl(pictureId, 100, true))" class="img-polaroid" alt="" />
+	<img src="@Url.Picture(pictureId, mediaSettings.ProductThumbPictureSize, true)" class="img-polaroid" alt="" style="max-width: 100px" />
 
     <button class="btn remove" @Html.Attr("style", "display:none", picture == null)>
         <i class="fa fa-trash-o"></i>
@@ -114,7 +115,7 @@
         });
 
         elRemove.click(function (e) {
-            img.attr('src', '@pictureService.GetDefaultPictureUrl(100)');
+            img.attr('src', '@pictureService.GetDefaultPictureUrl(mediaSettings.ProductThumbPictureSize)');
             elHidden.val(0);
             $(this).hide();
             e.preventDefault();

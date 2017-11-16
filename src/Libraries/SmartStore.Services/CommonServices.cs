@@ -12,6 +12,7 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
 using Autofac;
 using SmartStore.Services.Helpers;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Services
 {
@@ -28,6 +29,7 @@ namespace SmartStore.Services
 		private readonly Lazy<IEventPublisher> _eventPublisher;
 		private readonly Lazy<ILocalizationService> _localization;
 		private readonly Lazy<ICustomerActivityService> _customerActivity;
+		private readonly Lazy<IPictureService> _pictureService;
 		private readonly Lazy<INotifier> _notifier;
 		private readonly Lazy<IPermissionService> _permissions;
 		private readonly Lazy<ISettingService> _settings;
@@ -48,6 +50,7 @@ namespace SmartStore.Services
 			Lazy<IEventPublisher> eventPublisher,
 			Lazy<ILocalizationService> localization,
 			Lazy<ICustomerActivityService> customerActivity,
+			Lazy<IPictureService> pictureService,
 			Lazy<INotifier> notifier,
 			Lazy<IPermissionService> permissions,
 			Lazy<ISettingService> settings,
@@ -67,6 +70,7 @@ namespace SmartStore.Services
 			this._eventPublisher = eventPublisher;
 			this._localization = localization;
 			this._customerActivity = customerActivity;
+			this._pictureService = pictureService;
 			this._notifier = notifier;
 			this._permissions = permissions;
 			this._settings = settings;
@@ -161,6 +165,14 @@ namespace SmartStore.Services
 			get
 			{
 				return _customerActivity.Value;
+			}
+		}
+
+		public IPictureService PictureService
+		{
+			get
+			{
+				return _pictureService.Value;
 			}
 		}
 

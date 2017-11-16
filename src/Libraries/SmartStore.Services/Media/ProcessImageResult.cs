@@ -7,7 +7,7 @@ namespace SmartStore.Services.Media
 	{
 		public ProcessImageQuery Query { get; set; }
 
-		public MemoryStream Result { get; set; }
+		public MemoryStream OutputStream { get; set; }
 
 		public int? SourceWidth { get; set; }
 		public int? SourceHeight { get; set; }
@@ -21,10 +21,10 @@ namespace SmartStore.Services.Media
 
 		protected override void OnDispose(bool disposing)
 		{
-			if (disposing && Result != null)
+			if (disposing && OutputStream != null)
 			{
-				Result.Dispose();
-				Result = null;
+				OutputStream.Dispose();
+				OutputStream = null;
 			}
 		}
 	}

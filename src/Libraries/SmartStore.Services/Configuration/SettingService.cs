@@ -18,7 +18,7 @@ namespace SmartStore.Services.Configuration
 {
     public partial class SettingService : ScopedServiceBase, ISettingService
     {
-        private const string SETTINGS_ALL_KEY = "setting:all*";
+        private const string SETTINGS_ALL_KEY = "setting:all";
 
         private readonly IRepository<Setting> _settingRepository;
         private readonly IEventPublisher _eventPublisher;
@@ -37,8 +37,7 @@ namespace SmartStore.Services.Configuration
 
 		protected virtual IDictionary<string, CachedSetting> GetAllCachedSettings()
 		{
-			string key = string.Format(SETTINGS_ALL_KEY);
-			return _cacheManager.Get(key, () =>
+			return _cacheManager.Get(SETTINGS_ALL_KEY, () =>
 			{
 				var query = from s in _settingRepository.TableUntracked
 							orderby s.Name, s.StoreId
@@ -516,7 +515,7 @@ namespace SmartStore.Services.Configuration
 
 		protected override void OnClearCache()
 		{
-			_cacheManager.RemoveByPattern(SETTINGS_ALL_KEY);
+			_cacheManager.Remove(SETTINGS_ALL_KEY);
 		}
 
 		protected string CreateCacheKey(string name, int storeId)
@@ -524,21 +523,6 @@ namespace SmartStore.Services.Configuration
 			return name.Trim().ToLowerInvariant() + "/" + storeId.ToString();
 		} 
     }
-
-	//[Serializable]
-	//public class SettingKey : ComparableObject
-	//{
-	//	[ObjectSignature]
-	//	public string Name { get; set; }
-
-	//	[ObjectSignature]
-	//	public int StoreId { get; set; }
-
-	//	public override string ToString()
-	//	{
-	//		return Name + "@__!__@" + StoreId;
-	//	}
-	//}
 
 	[Serializable]
 	public class CachedSetting

@@ -7,6 +7,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Events;
 using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
@@ -26,20 +28,26 @@ namespace SmartStore.Admin.Controllers
 
 		private string _fileRoot = null;
 		private Dictionary<string, string> _lang = null;
-		private Dictionary<string, string> _settings = null;
+		private Dictionary<string, string> _roxySettings = null;
 
 		private readonly Lazy<IImageProcessor> _imageProcessor;
 		private readonly Lazy<IPictureService> _pictureService;
 		private readonly IMediaFileSystem _fileSystem;
+		private readonly IEventPublisher _eventPublisher;
+		private readonly Lazy<MediaSettings> _mediaSettings;
 
 		public RoxyFileManagerController(
 			Lazy<IImageProcessor> imageProcessor,
 			Lazy<IPictureService> pictureService,
-			IMediaFileSystem fileSystem)
+			IMediaFileSystem fileSystem,
+			IEventPublisher eventPublisher,
+			Lazy<MediaSettings> mediaSettings)
 		{
 			_imageProcessor = imageProcessor;
 			_pictureService = pictureService;
 			_fileSystem = fileSystem;
+			_eventPublisher = eventPublisher;
+			_mediaSettings = mediaSettings;
 		}
 
 		#region Utilities
@@ -122,11 +130,11 @@ namespace SmartStore.Admin.Controllers
 		{
 			var result = "";
 
-			if (_settings == null)
-				_settings = ParseJson(CommonHelper.MapPath(CONFIG_FILE));
+			if (_roxySettings == null)
+				_roxySettings = ParseJson(CommonHelper.MapPath(CONFIG_FILE));
 
-			if (_settings.ContainsKey(name))
-				result = _settings[name];
+			if (_roxySettings.ContainsKey(name))
+				result = _roxySettings[name];
 
 			return result;
 		}
@@ -179,21 +187,47 @@ namespace SmartStore.Admin.Controllers
 			height = size.Height;
 		}
 
-		private void ImageResize(string path, string dest, int width, int height)
+		private void ImageResize(string path, string dest, int maxWidth, int maxHeight)
 		{
-			if (dest.IsEmpty() || (width == 0 && height == 0))
+			if (dest.IsEmpty())
 				return;
 
-			var query = new ProcessImageQuery(new FileStream(path, FileMode.Open))
+			if (maxWidth == 0 && maxHeight == 0)
 			{
-				MaxWidth = width,
-				MaxHeight = height,
-				ExecutePostProcessor = false, // TODO: (mc) Pick from (new) settings for newly uploaded images!
+				maxWidth = _mediaSettings.Value.MaximumImageSize;
+				maxHeight = _mediaSettings.Value.MaximumImageSize;
+			}
+
+			var buffer = System.IO.File.ReadAllBytes(path);
+			var originalSize = _pictureService.Value.GetPictureSize(buffer);
+
+			var query = new ProcessImageQuery(buffer)
+			{
+				Quality = _mediaSettings.Value.DefaultImageQuality,
+				Format = Path.GetExtension(path).Trim('.').ToLower(),
+				IsValidationMode = true
 			};
+
+			if (originalSize.IsEmpty || (originalSize.Height <= maxHeight && originalSize.Width <= maxWidth))
+			{
+				// Give subscribers the chance to (pre)-process
+				var evt = new ImageUploadValidatedEvent(query, originalSize);
+				_eventPublisher.Publish(evt);
+
+				if (evt.ResultBuffer != null)
+				{
+					System.IO.File.WriteAllBytes(dest, evt.ResultBuffer);
+				}
+
+				return;
+			}
+
+			if (maxWidth > 0) query.MaxWidth = maxWidth;
+			if (maxHeight > 0) query.MaxHeight = maxHeight;
 
 			using (var result = _imageProcessor.Value.ProcessImage(query))
 			{
-				var buffer = result.OutputStream.GetBuffer();
+				buffer = result.OutputStream.GetBuffer();
 				System.IO.File.WriteAllBytes(dest, buffer);
 			}
 		}

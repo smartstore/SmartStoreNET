@@ -51,14 +51,18 @@ namespace SmartStore.Services.Media
 	/// </summary>
 	public class ImageQueryCreatedEvent
 	{
-		public ImageQueryCreatedEvent(ProcessImageQuery query, HttpContextBase httpContext)
+		public ImageQueryCreatedEvent(ProcessImageQuery query, HttpContextBase httpContext, string mimeType, string extension)
 		{
 			Query = query;
 			HttpContext = httpContext;
+			MimeType = mimeType;
+			Extension = extension;
 		}
 
 		public ProcessImageQuery Query { get; private set; }
 		public HttpContextBase HttpContext { get; private set; }
+		public string MimeType { get; private set; }
+		public string Extension { get; private set; }
 	}
 
 	/// <summary>

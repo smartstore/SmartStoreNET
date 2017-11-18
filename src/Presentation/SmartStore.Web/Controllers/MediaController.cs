@@ -77,7 +77,9 @@ namespace SmartStore.Web.Controllers
 				name = String.Concat(nameWithoutExtension, ".", extension);
 			}
 
-			var query = CreateImageQuery();
+			extension = extension.ToLower();
+
+			var query = CreateImageQuery(mime, extension);
 			var cachedImage = _imageCache.Get(id, nameWithoutExtension, extension, query);
 
 			if (extension != cachedImage.Extension)
@@ -106,7 +108,7 @@ namespace SmartStore.Web.Controllers
 						// content but keeps the connection open for other requests
 						Response.AddHeader("Content-Length", "0");
 
-						ApplyResponseHeaders(etag);
+						ApplyResponseHeaders();
 
 						return Content(null);
 					}
@@ -210,9 +212,8 @@ namespace SmartStore.Web.Controllers
 				{
 					var lastModifiedUtc = cachedImage.LastModifiedUtc.GetValueOrDefault();
 					etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
-
-					Response.Cache.SetLastModified(lastModifiedUtc);
-					ApplyResponseHeaders(etag);
+					ApplyResponseHeaders(lastModifiedUtc);
+					ApplyETagHeader(etag);
 				}
 			}
 		}
@@ -258,18 +259,25 @@ namespace SmartStore.Web.Controllers
 			return Content("404: Not Found");
 		}
 
-		protected virtual void ApplyResponseHeaders(string etag)
+		private void ApplyResponseHeaders(DateTime? lastModifiedUtc = null)
 		{
 			var cache = this.Response.Cache;
 
 			cache.SetCacheability(System.Web.HttpCacheability.Public);
+			cache.VaryByHeaders["Accept-Encoding"] = true;
 			cache.SetExpires(DateTime.Now.ToUniversalTime().AddDays(7));
 			cache.SetMaxAge(TimeSpan.FromDays(7));
 			cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
-			cache.SetETag(etag);
-			//cache.SetValidUntilExpires(false);
-			cache.VaryByHeaders["Accept-Encoding"] = true;
-			//cache.SetLastModified(DateTime.SpecifyKind(picture.UpdatedOnUtc, DateTimeKind.Utc));
+
+			if (lastModifiedUtc.HasValue)
+			{
+				cache.SetLastModified(lastModifiedUtc.Value);
+			}
+		}
+
+		private void ApplyETagHeader(string etag)
+		{
+			this.Response.Cache.SetETag(etag);
 		}
 
 		private string GetFileETag(string seoName, string mime, DateTime lastModifiedUtc)
@@ -278,7 +286,7 @@ namespace SmartStore.Web.Controllers
 			return "\"" + String.Concat(seoName, mime, timestamp).Hash(Encoding.UTF8) + "\"";
 		}
 
-		protected virtual ProcessImageQuery CreateImageQuery()
+		protected virtual ProcessImageQuery CreateImageQuery(string mimeType, string extension)
 		{
 			var query = new ProcessImageQuery(null, Request.QueryString);
 
@@ -296,7 +304,7 @@ namespace SmartStore.Web.Controllers
 				query.Quality = _mediaSettings.DefaultImageQuality;
 			}
 
-			_eventPublisher.Publish(new ImageQueryCreatedEvent(query, this.HttpContext));
+			_eventPublisher.Publish(new ImageQueryCreatedEvent(query, this.HttpContext, mimeType, extension));
 
 			return query;
 		}

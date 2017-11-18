@@ -628,7 +628,7 @@ namespace SmartStore.ComponentModel
 			return fastProperties;
 		}
 
-		private static IEnumerable<PropertyInfo> GetCandidateProperties(Type type)
+		internal static IEnumerable<PropertyInfo> GetCandidateProperties(Type type)
 		{
 			// We avoid loading indexed properties using the Where statement.
 			var properties = type.GetRuntimeProperties().Where(IsCandidateProperty);

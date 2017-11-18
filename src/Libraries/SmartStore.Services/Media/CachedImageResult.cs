@@ -50,10 +50,15 @@ namespace SmartStore.Services.Media
 			get { return System.IO.Path.GetFileName(this.Path); }
 		}
 
-        /// <summary>
-        /// The file extension (without 'dot')
-        /// </summary>
-        public string Extension { get; set; }
+		public long FileSize
+		{
+			get { return !Exists ? 0 : File.Size; }
+		}
+
+		/// <summary>
+		/// The file extension (without 'dot')
+		/// </summary>
+		public string Extension { get; set; }
         
         /// <summary>
         /// The path relative to the cache root folder

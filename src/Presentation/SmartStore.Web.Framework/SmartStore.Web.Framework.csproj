@@ -240,6 +240,8 @@
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
     <Compile Include="Modelling\Results\JsonNetResult.cs" />
     <Compile Include="Plugins\PluginRazorHost.cs" />
+    <Compile Include="Settings\SaveSettingAttribute.cs" />
+    <Compile Include="Settings\LoadSettingAttribute.cs" />
     <Compile Include="Theming\AdminThemedAttribute.cs" />
     <Compile Include="Filters\HandleExceptionFilter.cs" />
     <Compile Include="Filters\NotifyAttribute.cs" />

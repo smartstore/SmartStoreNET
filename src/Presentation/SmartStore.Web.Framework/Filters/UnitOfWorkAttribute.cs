@@ -7,7 +7,6 @@ namespace SmartStore.Web.Framework.Filters
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
     public class UnitOfWorkAttribute : ActionFilterAttribute
     {
-
         public UnitOfWorkAttribute() 
             : this(null, int.MaxValue)
         {

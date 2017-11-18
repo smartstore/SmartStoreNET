@@ -215,7 +215,7 @@ namespace SmartStore.Services.Configuration
 			Guard.NotNull(settingType, nameof(settingType));
 			Guard.HasDefaultConstructor(settingType);
 
-			if (typeof(ISettings).IsAssignableFrom(settingType))
+			if (!typeof(ISettings).IsAssignableFrom(settingType))
 			{
 				throw new ArgumentException($"The type to load settings for must be a subclass of the '{typeof(ISettings).FullName}' interface", nameof(settingType));
 			}

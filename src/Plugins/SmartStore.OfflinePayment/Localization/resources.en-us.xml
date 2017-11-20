@@ -1,5 +1,12 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
 
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.OfflinePayment" AppendRootKey="false">
+    <Value>Offline payment methods</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Description.SmartStore.OfflinePayment" AppendRootKey="false">
+    <Value>Provides offline payment methods, e.g. direct debit, credit card, invoice, prepayment, cash on delivery etc.</Value>
+  </LocaleResource>
+
   <LocaleResource Name="DescriptionText">
     <Value>Description</Value>
   </LocaleResource>

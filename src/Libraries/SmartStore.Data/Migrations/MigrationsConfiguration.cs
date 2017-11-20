@@ -136,6 +136,8 @@ namespace SmartStore.Data.Migrations
                 "Specifies  whether to charge only the highest additional shipping surcharge of products.",
                 "Bestimmt ob bei der Berechnung der Versandkosten nur der höchste Transportzuschlag von Produkten berücksichtigt wird.");
 
+            builder.AddOrUpdate("Order.OrderDetails")
+                .Value("en", "Order Details");
         }
     }
 }

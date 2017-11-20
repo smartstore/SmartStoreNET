@@ -146,9 +146,6 @@
       <LocaleResource Name="NoModuleLoading">
         <Value>Die Zahlart ist nicht aktiv ({0}).</Value>
       </LocaleResource>
-      <LocaleResource Name="IpnLogInfo">
-        <Value>PayPal IPN. Wiederkehrende Zahlung.</Value>
-      </LocaleResource>
       <LocaleResource Name="IpnOrderNotFound">
         <Value>PayPal IPN. Bestellung konnte nicht gefunden werden.</Value>
       </LocaleResource>

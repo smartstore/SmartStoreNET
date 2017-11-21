@@ -254,6 +254,7 @@ $mixed-megamenu-bg:             $megamenu-bg;
     }
 
     .mega-menu-dropdown-heading {
+        position: relative;
         font-size: 1rem;
         font-weight: $font-weight-medium; 
         line-height: 1.4rem;
@@ -261,8 +262,13 @@ $mixed-megamenu-bg:             $megamenu-bg;
         display: block;
         color: $megamenu-heading-color;
         padding-bottom: 0.4rem;
+        transition: transform 0.2s ease-in-out;
 
         &:not(:first-child) { padding-top: 1rem; }
+
+        &:hover {
+            transform: translateX(5px);
+        }
     }
     .mega-menu-dropdown-heading + .mega-menu-dropdown-heading {
         padding-top: .5rem;

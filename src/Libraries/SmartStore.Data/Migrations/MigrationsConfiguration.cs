@@ -3,7 +3,11 @@ namespace SmartStore.Data.Migrations
 	using System;
 	using System.Data.Entity;
 	using System.Data.Entity.Migrations;
+	using System.Linq;
 	using Setup;
+	using SmartStore.Utilities;
+	using SmartStore.Core.Domain.Media;
+	using Core.Domain.Configuration;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -27,6 +31,12 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
+			// Change MediaSettings.MaximumImageSize to 2048 if eq 1200
+			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == TypeHelper.NameOf<MediaSettings>(y => y.MaximumImageSize, true));
+			if (setting != null && setting.Value.Convert<int>() == 1200)
+			{
+				setting.Value = "2048";
+			}
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

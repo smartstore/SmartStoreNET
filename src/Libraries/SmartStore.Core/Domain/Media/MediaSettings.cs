@@ -19,7 +19,7 @@ namespace SmartStore.Core.Domain.Media
 			CartThumbBundleItemPictureSize = 32;
 			MiniCartThumbPictureSize = ProductThumbPictureSize;
 			VariantValueThumbPictureSize = 70;
-			MaximumImageSize = 1280;
+			MaximumImageSize = 2048;
 			DefaultPictureZoomEnabled = true;
 			PictureZoomType = "window";
 			DefaultImageQuality = 90;

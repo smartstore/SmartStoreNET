@@ -399,13 +399,14 @@ namespace SmartStore.Web.Controllers
 
 				var pictureInfo = ctx.PictureInfos.Get(product.MainPictureId.GetValueOrDefault());
 				var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+				var thumbSize = model.ThumbSize ?? _mediaSettings.ProductThumbPictureSize;
 
 				item.Picture = new PictureModel
 				{
 					PictureId = pictureInfo?.Id ?? 0,
-					Size = pictureInfo?.MaxSize,
-					ImageUrl = _pictureService.GetUrl(pictureInfo, model.ThumbSize ?? _mediaSettings.ProductThumbPictureSize, fallbackType),
-					FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0),
+					Size = thumbSize,
+					ImageUrl = _pictureService.GetUrl(pictureInfo, thumbSize, fallbackType),
+					FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
 					FullSizeImageWidth = pictureInfo?.Width,
 					FullSizeImageHeight = pictureInfo?.Height,
 					Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),

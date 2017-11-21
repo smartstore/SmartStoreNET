@@ -35,7 +35,6 @@ namespace SmartStore.Services.Media
 		public string Path { get; set; }
 		public int? Width { get; set; }
 		public int? Height { get; set; }
-		public int MaxSize { get; set; }
 		public string MimeType { get; set; }
 		public string Extension { get; set; }
 	}

@@ -176,7 +176,7 @@ namespace SmartStore.Web.Controllers
 					subCatModel.PictureModel = new PictureModel
 					{
 						PictureId = pictureInfo?.Id ?? 0,
-						Size = pictureInfo?.MaxSize,
+						Size = pictureSize,
 						ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, fallbackType),
 						FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
 						FullSizeImageWidth = pictureInfo?.Width,
@@ -295,7 +295,7 @@ namespace SmartStore.Web.Controllers
 					catModel.PictureModel = new PictureModel
 					{
 						PictureId = pictureInfo?.Id ?? 0,
-						Size = pictureInfo?.MaxSize,
+						Size = pictureSize,
 						ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, fallbackType),
 						FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
 						FullSizeImageWidth = pictureInfo?.Width,

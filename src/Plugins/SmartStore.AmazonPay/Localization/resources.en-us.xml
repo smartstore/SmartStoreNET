@@ -184,7 +184,7 @@ Text suggestions:<ul>
 	<LocaleResource Name="PayButtonSize.Hint">
 		<Value>Specifies the size of the Pay button.</Value>
 	</LocaleResource>
-  <LocaleResource Name="ButtonSize.Medium">
+  <LocaleResource Name="ButtonSize.Small">
     <Value>Small</Value>
   </LocaleResource>
 	<LocaleResource Name="ButtonSize.Medium">

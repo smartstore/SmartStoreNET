@@ -87,31 +87,17 @@ namespace SmartStore.Services.Media
 		/// <param name="pictureIds"></param>
 		/// <param name="targetSize"></param>
 		/// <param name="showDefaultPicture"></param>
-		/// <param name="storeLocation"></param>
-		/// <param name="defaultPictureType"></param>
+		/// <param name="host"></param>
+		/// <param name="fallbackType"></param>
 		/// <returns></returns>
-		IDictionary<int, PictureInfo> GetPictureInfos(
-			IEnumerable<int> pictureIds,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity);
+		IDictionary<int, PictureInfo> GetPictureInfos(IEnumerable<int> pictureIds);
 
 		/// <summary>
 		/// TODO: (mc)
 		/// </summary>
 		/// <param name="pictureId"></param>
-		/// <param name="targetSize"></param>
-		/// <param name="showDefaultPicture"></param>
-		/// <param name="storeLocation"></param>
-		/// <param name="defaultPictureType"></param>
 		/// <returns></returns>
-		PictureInfo GetPictureInfo(
-			int? pictureId,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity);
+		PictureInfo GetPictureInfo(int? pictureId);
 
 		/// <summary>
 		/// TODO: (mc)
@@ -119,65 +105,55 @@ namespace SmartStore.Services.Media
 		/// <param name="picture"></param>
 		/// <param name="targetSize"></param>
 		/// <param name="showDefaultPicture"></param>
-		/// <param name="storeLocation"></param>
-		/// <param name="defaultPictureType"></param>
+		/// <param name="host"></param>
+		/// <param name="fallbackType"></param>
 		/// <returns></returns>
-		PictureInfo GetPictureInfo(
-			Picture picture,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity);
+		PictureInfo GetPictureInfo(Picture picture);
 
 		/// <summary>
-		/// Gets a picture URL
+		/// Builds a url for a given <see cref="pictureId"/>. 
 		/// </summary>
 		/// <param name="pictureId">Picture identifier</param>
 		/// <param name="targetSize">The target picture size (longest side)</param>
-		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-		/// <param name="defaultPictureType">Default picture type</param>
+		/// <param name="host">Store location URL; null to use determine the current store location automatically</param>
+		/// <param name="fallbackType">Specifies the kind of fallback url to return if the <paramref name="pictureId"/> argument is 0 or a picture with the passed id does not exist in the storage.</param>
 		/// <returns>Picture URL</returns>
-		string GetPictureUrl(
-			int pictureId,
-            int targetSize = 0,
-            bool showDefaultPicture = true,
-            string storeLocation = null,
-            PictureType defaultPictureType = PictureType.Entity);
+		string GetUrl(int pictureId, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null);
 
 		/// <summary>
-		/// Gets a picture URL
+		/// Builds a url for a given <see cref="Picture"/> instance. 
 		/// </summary>
 		/// <param name="picture">Picture instance</param>
 		/// <param name="targetSize">The target picture size (longest side)</param>
-		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-		/// <param name="defaultPictureType">Default picture type</param>
+		/// <param name="host">Store location URL; null to use determine the current store location automatically</param>
+		/// <param name="fallbackType">Specifies the kind of fallback url to return if the <paramref name="picture"/> argument is null.</param>
 		/// <returns>Picture URL</returns>
-		string GetPictureUrl(
-			Picture picture,
-            int targetSize = 0,
-            bool showDefaultPicture = true,
-            string storeLocation = null,
-            PictureType defaultPictureType = PictureType.Entity);
+		string GetUrl(Picture picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null);
 
 		/// <summary>
-		/// Gets the default picture URL
+		/// Builds a url for a given <see cref="PictureInfo"/> instance. 
+		/// </summary>
+		/// <param name="info">The PictureInfo instance to build a url for</param>
+		/// <param name="targetSize">The maximum size of the picture. If greather than null, a query is appended to the generated url.</param>
+		/// <param name="host">The host (including scheme) to prepend to the url.</param>
+		/// <param name="fallbackType">Specifies the kind of fallback url to return if the <paramref name="info"/> argument is null.</param>
+		/// <returns>Generated url which can be processed by the media middleware controller</returns>
+		string GetUrl(PictureInfo info, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null);
+
+		/// <summary>
+		/// Gets the fallback picture URL
 		/// </summary>
 		/// <param name="targetSize">The target picture size (longest side)</param>
-		/// <param name="defaultPictureType">Default picture type</param>
-		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
+		/// <param name="host">Store location URL; null to use determine the current store location automatically</param>
+		/// <param name="fallbackType">Default picture type</param>
 		/// <returns>Picture URL</returns>
-		string GetDefaultPictureUrl(int targetSize = 0,
-			PictureType defaultPictureType = PictureType.Entity,
-			string storeLocation = null);
+		string GetFallbackUrl(int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null);
 
 		/// <summary>
 		/// Clears the url cache completely or for a particular store
 		/// </summary>
-		/// <param name="storeId">The store id to remove cache entries for. Pass <c>null</c> to nuke the cache completely.</param>
 		/// <returns>The total count of removed cache entries</returns>
-		int ClearUrlCache(int? storeId = null);
+		int ClearUrlCache();
 
 		/// <summary>
 		/// Gets a picture
@@ -299,26 +275,54 @@ namespace SmartStore.Services.Media
 		/// TODO: (mc)
 		/// </summary>
 		/// <param name="products"></param>
-		/// <param name="targetSize"></param>
-		/// <param name="showDefaultPicture"></param>
-		/// <param name="storeLocation"></param>
-		/// <param name="defaultPictureType"></param>
 		/// <returns></returns>
-		public static IDictionary<int, PictureInfo> GetPictureInfos(this IPictureService pictureService, 
-			IEnumerable<Product> products,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
+		public static IDictionary<int, PictureInfo> GetPictureInfos(this IPictureService pictureService, IEnumerable<Product> products)
 		{
 			Guard.NotNull(products, nameof(products));
 
-			return pictureService.GetPictureInfos(
-				products.Select(x => x.MainPictureId.GetValueOrDefault()), 
-				targetSize, 
-				showDefaultPicture, 
-				storeLocation, 
-				defaultPictureType);
+			return pictureService.GetPictureInfos(products.Select(x => x.MainPictureId.GetValueOrDefault()));
+		}
+
+		/// <summary>
+		/// Builds a picture url
+		/// </summary>
+		/// <param name="pictureId">The picture id to build a url for</param>
+		/// <param name="targetSize">The maximum size of the picture. If greather than null, a query is appended to the generated url.</param>
+		/// <param name="host">The host (including scheme) to prepend to the url.</param>
+		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage.</param>
+		/// <returns>Generated url which can be processed by the media middleware controller</returns>
+		public static string GetPictureUrl(this IPictureService pictureService, int pictureId, int targetSize = 0, bool fallback = true, string host = null)
+		{
+			var fallbackType = fallback ? FallbackPictureType.Entity : FallbackPictureType.NoFallback;
+			return pictureService.GetUrl(pictureId, targetSize, fallbackType, host);
+		}
+
+		/// <summary>
+		/// Builds a picture url
+		/// </summary>
+		/// <param name="picture">The picture to build a url for</param>
+		/// <param name="targetSize">The maximum size of the picture. If greather than null, a query is appended to the generated url.</param>
+		/// <param name="host">The host (including scheme) to prepend to the url.</param>
+		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage.</param>
+		/// <returns>Generated url which can be processed by the media middleware controller</returns>
+		public static string GetPictureUrl(this IPictureService pictureService, Picture picture, int targetSize = 0, bool fallback = true, string host = null)
+		{
+			var fallbackType = fallback ? FallbackPictureType.Entity : FallbackPictureType.NoFallback;
+			return pictureService.GetUrl(picture, targetSize, fallbackType, host);
+		}
+
+		/// <summary>
+		/// Builds a picture url
+		/// </summary>
+		/// <param name="PictureInfo">The picture info to build a url for</param>
+		/// <param name="targetSize">The maximum size of the picture. If greather than null, a query is appended to the generated url.</param>
+		/// <param name="host">The host (including scheme) to prepend to the url.</param>
+		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage.</param>
+		/// <returns>Generated url which can be processed by the media middleware controller</returns>
+		public static string GetPictureUrl(this IPictureService pictureService, PictureInfo info, int targetSize = 0, bool fallback = true, string host = null)
+		{
+			var fallbackType = fallback ? FallbackPictureType.Entity : FallbackPictureType.NoFallback;
+			return pictureService.GetUrl(info, targetSize, fallbackType, host);
 		}
 	}
 }

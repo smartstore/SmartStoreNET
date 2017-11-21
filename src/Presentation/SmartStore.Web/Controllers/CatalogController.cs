@@ -153,7 +153,8 @@ namespace SmartStore.Web.Controllers
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 			var subCategories = _categoryService.GetAllCategoriesByParentCategoryId(categoryId);
 			int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-			var allPictureInfos = _pictureService.GetPictureInfos(subCategories.Select(x => x.PictureId.GetValueOrDefault()), pictureSize, !_catalogSettings.HideCategoryDefaultPictures);
+			var allPictureInfos = _pictureService.GetPictureInfos(subCategories.Select(x => x.PictureId.GetValueOrDefault()));
+			var fallbackType = _catalogSettings.HideCategoryDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 
 			// subcategories
 			model.SubCategories = subCategories
@@ -170,16 +171,16 @@ namespace SmartStore.Web.Controllers
 					_services.DisplayControl.Announce(x);
 
 					// prepare picture model
-					var pictureInfo = allPictureInfos[x.PictureId.GetValueOrDefault()];
+					var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
 
 					subCatModel.PictureModel = new PictureModel
 					{
-						PictureId = pictureInfo.Id,
-						Size = pictureInfo.MaxSize,
-						FullSizeImageUrl = pictureInfo.FullSizeUrl,
-						FullSizeImageWidth = pictureInfo.FullSizeWidth,
-						FullSizeImageHeight = pictureInfo.FullSizeHeight,
-						ImageUrl = pictureInfo.Url,
+						PictureId = pictureInfo?.Id ?? 0,
+						Size = pictureInfo?.MaxSize,
+						ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, fallbackType),
+						FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
+						FullSizeImageWidth = pictureInfo?.Width,
+						FullSizeImageHeight = pictureInfo?.Height,
 						Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
 						AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
 					};
@@ -280,7 +281,8 @@ namespace SmartStore.Web.Controllers
 				.ToList();
 
 			int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-			var allPictureInfos = _pictureService.GetPictureInfos(categories.Select(x => x.PictureId.GetValueOrDefault()), pictureSize, !_catalogSettings.HideCategoryDefaultPictures);
+			var allPictureInfos = _pictureService.GetPictureInfos(categories.Select(x => x.PictureId.GetValueOrDefault()));
+			var fallbackType = _catalogSettings.HideCategoryDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 
 			var listModel = categories
                 .Select(x =>
@@ -288,16 +290,16 @@ namespace SmartStore.Web.Controllers
                     var catModel = x.ToModel();
 
                     // Prepare picture model
-					var pictureInfo = allPictureInfos[x.PictureId.GetValueOrDefault()];
+					var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
 
 					catModel.PictureModel = new PictureModel
 					{
-						PictureId = pictureInfo.Id,
-						Size = pictureInfo.MaxSize,
-						FullSizeImageUrl = pictureInfo.FullSizeUrl,
-						FullSizeImageWidth = pictureInfo.FullSizeWidth,
-						FullSizeImageHeight = pictureInfo.FullSizeHeight,
-						ImageUrl = pictureInfo.Url,
+						PictureId = pictureInfo?.Id ?? 0,
+						Size = pictureInfo?.MaxSize,
+						ImageUrl = _pictureService.GetUrl(pictureInfo, pictureSize, fallbackType),
+						FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
+						FullSizeImageWidth = pictureInfo?.Width,
+						FullSizeImageHeight = pictureInfo?.Height,
 						Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), catModel.Name),
 						AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), catModel.Name)
 					};
@@ -708,8 +710,10 @@ namespace SmartStore.Web.Controllers
 
 			var storeUrl = _services.StoreContext.CurrentStore.Url;
 
-			var allPictureIds = result.Hits.Select(x => x.MainPictureId.GetValueOrDefault());
-			var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds, _mediaSettings.ProductDetailsPictureSize, false, storeUrl);
+			// Prefecthing
+			var allPictureInfos = _pictureService.GetPictureInfos(result.Hits);
+
+			//_mediaSettings.ProductDetailsPictureSize, false, storeUrl
 
 			foreach (var product in result.Hits)
 			{
@@ -729,7 +733,7 @@ namespace SmartStore.Web.Controllers
 						var picture = _pictureService.GetPictureById(product.MainPictureId.GetValueOrDefault());
 						if (picture != null)
 						{
-							feed.AddEnclosure(item, picture, _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false, storeUrl));
+							feed.AddEnclosure(item, picture, _pictureService.GetUrl(picture, _mediaSettings.ProductDetailsPictureSize, FallbackPictureType.NoFallback, storeUrl));
 						}
 					}
 					catch { }

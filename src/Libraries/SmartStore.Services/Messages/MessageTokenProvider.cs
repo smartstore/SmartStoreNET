@@ -165,11 +165,11 @@ namespace SmartStore.Services.Messages
 			return picture;
 		}
 
-		protected virtual string ProductPictureToHtml(Picture picture, Language language, string productName, string productUrl, string storeLocation)
+		protected virtual string ProductPictureToHtml(Picture picture, Language language, string productName, string productUrl, string host)
 		{
 			if (picture != null && _mediaSettings.MessageProductThumbPictureSize > 0)
 			{
-				var imageUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.MessageProductThumbPictureSize, false, storeLocation);
+				var imageUrl = _pictureService.GetUrl(picture, _mediaSettings.MessageProductThumbPictureSize, FallbackPictureType.NoFallback, host);
 				if (imageUrl.HasValue())
 				{
 					var title = _services.Localization.GetResource("Media.Product.ImageLinkTitleFormat", language.Id).FormatInvariant(productName);

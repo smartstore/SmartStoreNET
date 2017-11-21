@@ -978,7 +978,7 @@ namespace SmartStore.PayPal.Services
 			presentation.Add("locale_code", _services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToUpper());
 
 			if (logo != null)
-				presentation.Add("logo_image", _pictureService.Value.GetPictureUrl(logo, showDefaultPicture: false, storeLocation: store.Url));
+				presentation.Add("logo_image", _pictureService.Value.GetPictureUrl(logo, 0, false, store.Url));
 
 			inpuFields.Add("allow_note", false);
 			inpuFields.Add("no_shipping", 0);

@@ -104,7 +104,7 @@ namespace SmartStore.Web.Controllers
 
             //avatar
             bool avatarEnabled = false;
-            string avatarUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.AvatarPictureSize, PictureType.Avatar);
+            string avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
             if (_customerSettings.AllowCustomersToUploadAvatars)
             {
                 avatarEnabled = true;

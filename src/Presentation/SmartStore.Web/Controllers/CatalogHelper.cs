@@ -448,18 +448,17 @@ namespace SmartStore.Web.Controllers
 
 		private PictureModel CreatePictureModel(ProductDetailsPictureModel model, Picture picture, int pictureSize)
 		{
-			var thumbPictureInfo = _pictureService.GetPictureInfo(picture, _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
-			var pictureInfo = _pictureService.GetPictureInfo(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures);
+			var info = _pictureService.GetPictureInfo(picture);
 
 			var result = new PictureModel
 			{
-				PictureId = picture.Id,
+				PictureId = info?.Id ?? 0,
 				Size = pictureSize,
-				ThumbImageUrl = thumbPictureInfo.Url,
-				ImageUrl = pictureInfo.Url,
-				FullSizeImageUrl = pictureInfo.FullSizeUrl,
-				FullSizeImageWidth = picture.Width,
-				FullSizeImageHeight = picture.Height,
+				ThumbImageUrl = _pictureService.GetUrl(info, _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage),
+				ImageUrl = _pictureService.GetPictureUrl(info, pictureSize, !_catalogSettings.HideProductDefaultPictures),
+				FullSizeImageUrl = _pictureService.GetPictureUrl(info, 0, false),
+				FullSizeImageWidth = info?.Width,
+				FullSizeImageHeight = info?.Height,
 				Title = model.Name,
 				AlternateText = model.AlternateText
 			};
@@ -595,9 +594,9 @@ namespace SmartStore.Web.Controllers
 				if (!_catalogSettings.HideProductDefaultPictures)
 				{
 					model.DefaultPictureModel.Size = defaultPictureSize;
-					model.DefaultPictureModel.ThumbImageUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
-					model.DefaultPictureModel.ImageUrl = _pictureService.GetDefaultPictureUrl(defaultPictureSize);
-					model.DefaultPictureModel.FullSizeImageUrl = _pictureService.GetDefaultPictureUrl();
+					model.DefaultPictureModel.ThumbImageUrl = _pictureService.GetFallbackUrl(_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
+					model.DefaultPictureModel.ImageUrl = _pictureService.GetFallbackUrl(defaultPictureSize);
+					model.DefaultPictureModel.FullSizeImageUrl = _pictureService.GetFallbackUrl();
                 }
 			}
 			else
@@ -1407,14 +1406,14 @@ namespace SmartStore.Web.Controllers
         {
             var model = new PictureModel();
 			var pictureSize = _mediaSettings.ManufacturerThumbPictureSize;
-			var pictureInfo = _pictureService.GetPictureInfo(manufacturer.PictureId, pictureSize, !_catalogSettings.HideManufacturerDefaultPictures);
+			var pictureInfo = _pictureService.GetPictureInfo(manufacturer.PictureId);
 
 			model = new PictureModel
 			{
 				PictureId = manufacturer.PictureId.GetValueOrDefault(),
 				Size = pictureSize,
 				//FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
-				ImageUrl = pictureInfo.Url,
+				ImageUrl = _pictureService.GetPictureUrl(pictureInfo, pictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
 				Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
 				AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
 			};

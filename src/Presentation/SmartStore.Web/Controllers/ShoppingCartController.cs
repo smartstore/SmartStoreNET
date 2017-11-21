@@ -1107,7 +1107,7 @@ namespace SmartStore.Web.Controllers
 
 							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
 							if (itemPicture != null)
-								bundleItemModel.PictureUrl = _pictureService.GetPictureUrl(itemPicture, 32);
+								bundleItemModel.PictureUrl = _pictureService.GetUrl(itemPicture, 32);
 
 							cartItemModel.BundleItems.Add(bundleItemModel);
 						}

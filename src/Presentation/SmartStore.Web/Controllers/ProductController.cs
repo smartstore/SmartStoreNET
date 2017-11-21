@@ -218,7 +218,7 @@ namespace SmartStore.Web.Controllers
 						if (preparePictureModel)
 						{
 							m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
-							var pictureUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
+							var pictureUrl = _pictureService.GetUrl(x.Manufacturer.PictureId.GetValueOrDefault());
 							if (pictureUrl != null)
 							{
 								m.PictureModel.PictureId = x.Manufacturer.PictureId.GetValueOrDefault();

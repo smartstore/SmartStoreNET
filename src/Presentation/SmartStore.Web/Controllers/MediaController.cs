@@ -139,7 +139,7 @@ namespace SmartStore.Web.Controllers
 								if (id == 0)
 								{
 									// This is most likely a request for a default placeholder image
-									var mappedPath = CommonHelper.MapPath(Path.Combine(PictureService.DefaultImagesRootPath, name), false);
+									var mappedPath = CommonHelper.MapPath(Path.Combine(PictureService.FallbackImagesRootPath, name), false);
 									if (!System.IO.File.Exists(mappedPath))
 										return NotFound();
 

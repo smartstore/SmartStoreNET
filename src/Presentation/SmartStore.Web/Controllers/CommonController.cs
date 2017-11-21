@@ -312,15 +312,15 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Logo()
         {
-			var logoPictureInfo = _pictureService.Value.GetPictureInfo(_services.StoreContext.CurrentStore.LogoPictureId, showDefaultPicture: false);
-			var hasLogo = logoPictureInfo?.Url != null;
+			var logoPictureInfo = _pictureService.Value.GetPictureInfo(_services.StoreContext.CurrentStore.LogoPictureId);
+			var hasLogo = logoPictureInfo != null;
 
 			var model = new ShopHeaderModel
 			{
 				LogoUploaded = hasLogo,
-				LogoUrl = logoPictureInfo?.Url,
-				LogoWidth = logoPictureInfo?.FullSizeWidth ?? 0,
-				LogoHeight = logoPictureInfo?.FullSizeHeight ?? 0,
+				LogoUrl = _pictureService.Value.GetUrl(logoPictureInfo, 0, FallbackPictureType.NoFallback),
+				LogoWidth = logoPictureInfo?.Width ?? 0,
+				LogoHeight = logoPictureInfo?.Height ?? 0,
 				LogoTitle = _services.StoreContext.CurrentStore.Name
 			};
 
@@ -854,7 +854,7 @@ namespace SmartStore.Web.Controllers
 
 				if (logoPicture != null)
 				{
-					model.LogoUrl = _pictureService.Value.GetPictureUrl(logoPicture, showDefaultPicture: false);
+					model.LogoUrl = _pictureService.Value.GetPictureUrl(logoPicture, fallback: false);
 				}
 
 				model.MerchantCompanyInfo = companyInfoSettings;

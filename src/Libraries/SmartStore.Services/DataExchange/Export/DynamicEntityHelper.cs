@@ -22,6 +22,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Html;
+using SmartStore.Services.Media;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.DataExchange.Export.Events;
@@ -414,21 +415,18 @@ namespace SmartStore.Services.DataExchange.Export
 			// TODO: (mc) Refactor > GetPictureInfo
 
 			dynamic result = new DynamicEntity(picture);
-            var relativeUrl = string.Empty;
+			var pictureInfo = _pictureService.Value.GetPictureInfo(picture);
 
-            try
-            {
-                relativeUrl = _pictureService.Value.GetPictureUrl(picture, 0, false);
-            }
-            catch { }
+			if (pictureInfo != null)
+			{
+				result._FileName = System.IO.Path.GetFileName(pictureInfo.Path);
+				result._RelativeUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback);
+				result._ThumbImageUrl = _pictureService.Value.GetUrl(pictureInfo, thumbPictureSize, FallbackPictureType.NoFallback, ctx.Store.Url);
+				result._ImageUrl = _pictureService.Value.GetUrl(pictureInfo, detailsPictureSize, FallbackPictureType.NoFallback, ctx.Store.Url);
+				result._FullSizeImageUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback, ctx.Store.Url);
 
-			result._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
-			result._RelativeUrl = relativeUrl;
-			result._ThumbImageUrl = _pictureService.Value.GetPictureUrl(picture, thumbPictureSize, false, ctx.Store.Url);
-			result._ImageUrl = _pictureService.Value.GetPictureUrl(picture, detailsPictureSize, false, ctx.Store.Url);
-			result._FullSizeImageUrl = _pictureService.Value.GetPictureUrl(picture, 0, false, ctx.Store.Url);
-
-			//result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
+				//result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
+			}
 
 			return result;
 		}
@@ -861,13 +859,13 @@ namespace SmartStore.Services.DataExchange.Export
 				if (productPictures != null && productPictures.Any())
 				{
 					var firstPicture = productPictures.First().Picture;
-					dynObject._MainPictureUrl = _pictureService.Value.GetPictureUrl(firstPicture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
-					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetPictureUrl(firstPicture, ctx.Projection.PictureSize);
+					dynObject._MainPictureUrl = _pictureService.Value.GetUrl(firstPicture, ctx.Projection.PictureSize, host: ctx.Store.Url);
+					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetUrl(firstPicture, ctx.Projection.PictureSize);
 				}
 				else if (!_catalogSettings.Value.HideProductDefaultPictures)
 				{
-					dynObject._MainPictureUrl = _pictureService.Value.GetDefaultPictureUrl(ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
-					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetDefaultPictureUrl(ctx.Projection.PictureSize);
+					dynObject._MainPictureUrl = _pictureService.Value.GetFallbackUrl(ctx.Projection.PictureSize, host: ctx.Store.Url);
+					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetFallbackUrl(ctx.Projection.PictureSize);
 				}
 				else
 				{

@@ -9,19 +9,21 @@
 
 ### Highlights
 * Multi-configurable rounding of order total ("cash rounding"). Can be adjusted and activated separately for each currency and payment method.
-* Connection to translate.smartstore.com. For available languages, localized resources can be downloaded and installed directly.
 * (Perf) Picture service: new processing and caching strategy! Thumbnails are not created synchronously during the main request anymore, instead a new middleware route defers processing until an image is actually requested by any client.
+* MegaMenu shrinker and *Brands* virtual menu item
+* Connection to translate.smartstore.com. For available languages, localized resources can be downloaded and installed directly.
 
-### Bugfixes
-* #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
-* OutputCache computes ambigous cache keys for blog pages
-* #1142 Customer import creates role multiple times
-* #1244 Variant query model binder cannot handle types text and datepicker
-* #1273 Attribute formatter should consider setting CatalogSettings.ShowVariantCombinationPriceAdjustment
-* Product entity picker should use the wildcard search to find products
-* Hook framework should run hooks with `ImportantAttribute` when hooking was disabled per scope
-* #1297 Web API: Parsing the timestamp may fail due to the different accuracy of the milliseconds
-* Debitoor: VAT amount could be transmitted as miscellaneous for deliveries abroad.
+### New Features
+* 1203 MegaMenu shrinker and *Brands* virtual menu item
+* #431 Added option to randomize the display order for slides on each request
+* #1258 Add option to filter shipping and payment methods by a specific customer role
+* #1247 Allow to import non system customer roles in customer import
+* #1117 Added an option to display a dropdown menu for manufacturers 
+* #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
+* #1100 Customer can register in frontend via "Login with Amazon" button
+* #1292 Web API: Add a method to get an order in PDF format
+* Added options to include option names of specification and product attributes in the search index
+* #441 added option to specify that additional shipping surcharges are considered only once.
 
 ### Improvements
 * #1141 Clearer backend order list. Added more infos like payment method.
@@ -34,16 +36,17 @@
 * (Perf) Many improvements in hooking framework
 * #1294 Swiss PostFinance: External payment page too small on mobile devices. Added setting for mobile device template URL, pre-configured with PostFinance template.
 
-### New Features
-* #431 Added option to randomize the display order for slides on each request
-* #1258 Add option to filter shipping and payment methods by a specific customer role
-* #1247 Allow to import non system customer roles in customer import
-* #1117 Added an option to display a dropdown menu for manufacturers 
-* #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
-* #1100 Customer can register in frontend via "Login with Amazon" button
-* #1292 Web API: Add a method to get an order in PDF format
-* Added options to include option names of specification and product attributes in the search index
-* #441 added option to specify that additional shipping surcharges are considered only once.
+### Bugfixes
+* #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
+* OutputCache computes ambigous cache keys for blog pages
+* #1142 Customer import creates role multiple times
+* #1244 Variant query model binder cannot handle types text and datepicker
+* #1273 Attribute formatter should consider setting CatalogSettings.ShowVariantCombinationPriceAdjustment
+* Product entity picker should use the wildcard search to find products
+* Hook framework should run hooks with `ImportantAttribute` when hooking was disabled per scope
+* #1297 Web API: Parsing the timestamp may fail due to the different accuracy of the milliseconds
+* Debitoor: VAT amount could be transmitted as miscellaneous for deliveries abroad.
+
 
 ## SmartStore.NET 3.0.3
 ### Bugfixes

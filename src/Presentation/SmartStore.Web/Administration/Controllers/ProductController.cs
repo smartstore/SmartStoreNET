@@ -868,8 +868,11 @@ namespace SmartStore.Admin.Controllers
         {
 			Guard.NotNull(model, nameof(model));
 
-			model.PictureThumbnailUrl = defaultPicture?.Url;
-			model.NoThumb = defaultPicture?.Url.NullEmpty() == null;
+			if (defaultPicture != null)
+			{
+				model.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize);
+				model.NoThumb = model.PictureThumbnailUrl.IsEmpty();
+			}
         }
 
 		private IQueryable<Product> ApplySorting(IQueryable<Product> query, GridCommand command)
@@ -1064,8 +1067,8 @@ namespace SmartStore.Admin.Controllers
 				query = ApplySorting(query, command);
 
 				var products = new PagedList<Product>(query, command.Page - 1, command.PageSize);
-				var pictureInfos = _pictureService.GetPictureInfos(products, _mediaSettings.CartThumbPictureSize);
-
+				var pictureInfos = _pictureService.GetPictureInfos(products);
+				//_mediaSettings.CartThumbPictureSize
 				gridModel.Data = products.Select(x =>
 				{
                     var productModel = new ProductModel
@@ -1080,11 +1083,12 @@ namespace SmartStore.Admin.Controllers
                         LimitedToStores = x.LimitedToStores
                     };
 
-					PrepareProductPictureThumbnailModel(productModel, x, pictureInfos.Get(x.MainPictureId.GetValueOrDefault()));
-
 					var defaultPicture = pictureInfos.Get(x.MainPictureId.GetValueOrDefault());
-					productModel.PictureThumbnailUrl = defaultPicture?.Url;
-					productModel.NoThumb = defaultPicture?.Url.NullEmpty() == null;
+					if (defaultPicture != null)
+					{
+						productModel.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize);
+						productModel.NoThumb = productModel.PictureThumbnailUrl.IsEmpty();
+					}
 
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 					productModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc, DateTimeKind.Utc);
@@ -1254,8 +1258,7 @@ namespace SmartStore.Admin.Controllers
 				locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
             });
 
-			var pictureInfo = _pictureService.GetPictureInfo(product.MainPictureId, _mediaSettings.CartThumbPictureSize);
-			PrepareProductPictureThumbnailModel(model, product, pictureInfo);
+			PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
             PrepareAclModel(model, product, false);
 			PrepareStoresMappingModel(model, product, false);
 
@@ -1299,8 +1302,7 @@ namespace SmartStore.Admin.Controllers
 			//If we got this far, something failed, redisplay form
 			PrepareProductModel(model, product, false, true);
 
-			var pictureInfo = _pictureService.GetPictureInfo(product.MainPictureId, _mediaSettings.CartThumbPictureSize);
-			PrepareProductPictureThumbnailModel(model, product, pictureInfo);
+			PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
 
 			PrepareAclModel(model, product, true);
 
@@ -1387,8 +1389,7 @@ namespace SmartStore.Admin.Controllers
 					locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
 				});
 
-				var pictureInfo = _pictureService.GetPictureInfo(product.MainPictureId, _mediaSettings.CartThumbPictureSize);
-				PrepareProductPictureThumbnailModel(model, product, pictureInfo);
+				PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPictureInfo(product.MainPictureId));
 
 				PrepareAclModel(model, product, false);
 
@@ -2368,7 +2369,7 @@ namespace SmartStore.Admin.Controllers
 							Id = x.Id,
 							ProductId = x.ProductId,
 							PictureId = x.PictureId,
-							PictureUrl = _pictureService.GetPictureUrl(x.PictureId),
+							PictureUrl = _pictureService.GetUrl(x.PictureId),
 							DisplayOrder = x.DisplayOrder
 						};
 					})
@@ -3625,7 +3626,7 @@ namespace SmartStore.Admin.Controllers
 				var assignablePicture = new ProductVariantAttributeCombinationModel.PictureSelectItemModel();
 				assignablePicture.Id = picture.Id;
 				assignablePicture.IsAssigned = model.AssignedPictureIds.Contains(picture.Id);
-				assignablePicture.PictureUrl = _pictureService.GetPictureUrl(picture, 125, false);
+				assignablePicture.PictureUrl = _pictureService.GetUrl(picture, 125, FallbackPictureType.NoFallback);
 				model.AssignablePictures.Add(assignablePicture);
 			}
 		}

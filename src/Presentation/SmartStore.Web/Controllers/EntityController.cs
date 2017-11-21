@@ -160,12 +160,8 @@ namespace SmartStore.Web.Controllers
 							.Take(model.PageSize)
 							.ToList();
 
-						var productIds = products.Select(x => x.Id).ToArray();
 						var allPictureIds = products.Select(x => x.MainPictureId.GetValueOrDefault());
-						var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds,
-							_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
-							!_catalogSettings.HideProductDefaultPictures,
-							storeLocation);
+						var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
 
 						model.SearchResult = products
 							.Select(x =>
@@ -205,7 +201,13 @@ namespace SmartStore.Web.Controllers
 									item.LabelClassName = "badge-info";
 								}
 
-								item.ImageUrl = allPictureInfos.Get(x.MainPictureId.GetValueOrDefault())?.Url;
+								var pictureInfo = allPictureInfos.Get(x.MainPictureId.GetValueOrDefault());
+								var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+
+								item.ImageUrl = _pictureService.GetUrl(
+									allPictureInfos.Get(x.MainPictureId.GetValueOrDefault()),
+									_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
+									fallbackType, storeLocation);
 
 								return item;
 							})

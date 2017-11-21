@@ -34,26 +34,28 @@ namespace SmartStore.Web.Framework
 			return fallbackUrl;
 		}
 
-		public static string Picture(this UrlHelper urlHelper, 
-			int? pictureId,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
+		public static string Picture(this UrlHelper urlHelper, int? pictureId, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
 		{
 			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			return pictureService.GetPictureUrl(pictureId.GetValueOrDefault(), targetSize, showDefaultPicture, storeLocation, defaultPictureType);
+			return pictureService.GetUrl(pictureId.GetValueOrDefault(), targetSize, fallbackType, host);
 		}
 
-		public static string Picture(this UrlHelper urlHelper,
-			Picture picture,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
+		public static string Picture(this UrlHelper urlHelper, Picture picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
 		{
 			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			return pictureService.GetPictureUrl(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
+			return pictureService.GetUrl(picture, targetSize, fallbackType, host);
+		}
+
+		public static string Picture(this UrlHelper urlHelper, int? pictureId, int targetSize = 0, bool fallback = true, string host = null)
+		{
+			var pictureService = EngineContext.Current.Resolve<IPictureService>();
+			return pictureService.GetPictureUrl(pictureId.GetValueOrDefault(), targetSize, fallback, host);
+		}
+
+		public static string Picture(this UrlHelper urlHelper, Picture picture, int targetSize = 0, bool fallback = true, string host = null)
+		{
+			var pictureService = EngineContext.Current.Resolve<IPictureService>();
+			return pictureService.GetPictureUrl(picture, targetSize, fallback, host);
 		}
 	}
 }

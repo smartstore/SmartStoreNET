@@ -47,7 +47,7 @@
     
     @Html.HiddenFor(x => x, new { @class = "hidden"} )
 
-	<img src="@Url.Picture(pictureId, mediaSettings.ProductThumbPictureSize, true)" class="img-polaroid" alt="" style="max-width: 100px" />
+	<img src="@Url.Picture(pictureId, mediaSettings.ProductThumbPictureSize)" class="img-polaroid" alt="" style="max-width: 100px" />
 
     <button class="btn remove" @Html.Attr("style", "display:none", picture == null)>
         <i class="fa fa-trash-o"></i>
@@ -115,7 +115,7 @@
         });
 
         elRemove.click(function (e) {
-            img.attr('src', '@pictureService.GetDefaultPictureUrl(mediaSettings.ProductThumbPictureSize)');
+            img.attr('src', '@pictureService.GetFallbackPictureUrl(mediaSettings.ProductThumbPictureSize)');
             elHidden.val(0);
             $(this).hide();
             e.preventDefault();

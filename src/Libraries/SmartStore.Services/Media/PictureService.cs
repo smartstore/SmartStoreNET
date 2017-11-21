@@ -29,20 +29,22 @@ namespace SmartStore.Services.Media
 	public class PictureInfo
 	{
 		public int Id { get; set; }
-		public string Url { get; set; }
-		public string FullSizeUrl { get; set; }
-		public int? FullSizeWidth { get; set; }
-		public int? FullSizeHeight { get; set; }
+		/// <summary>
+		/// The virtual path to the image file to be processed by the media middleware controller, e.g. "/media/image/1234/image.jpg"
+		/// </summary>
+		public string Path { get; set; }
+		public int? Width { get; set; }
+		public int? Height { get; set; }
 		public int MaxSize { get; set; }
 		public string MimeType { get; set; }
+		public string Extension { get; set; }
 	}
 
 	public partial class PictureService : IPictureService
     {
-		// 0 = Id, 1 = StoreId, 2 = Size, 3 = DefaultPictureType, 4 = StoreLocation
-		private const string URLCACHE_LOOKUP_KEY = "image:url-id{0}-st{1}-size{2}-t{3}-l{4}";
-		private const string URLCACHE_LOOKUP_KEY_PATTERN = "image:url-id{0}-st*";
-		private const string URLCACHE_BYSTORE_KEY_PATTERN = "image:url-id*-st{0}-*";
+		// 0 = Id
+		private const string MEDIACACHE_LOOKUP_KEY = "media:info-{0}";
+		private const string MEDIACACHE_LOOKUP_KEY_PATTERN = "media:info-*";
 
 		private readonly IRepository<Picture> _pictureRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
@@ -56,14 +58,16 @@ namespace SmartStore.Services.Media
 		private readonly HttpContextBase _httpContext;
 		private readonly ICacheManager _cacheManager;
 
+		private static readonly string _appPath;
 		private static readonly string _processedImagesRootPath;
-		private static readonly string _defaultImagesRootPath;
+		private static readonly string _fallbackImagesRootPath;
 
 		static PictureService()
 		{
+			_appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull().EnsureEndsWith("/");
 			// TODO: (mc) make this configurable per web.config
-			_processedImagesRootPath = VirtualPathUtility.ToAbsolute("~/media/image/").EnsureEndsWith("/");
-			_defaultImagesRootPath = VirtualPathUtility.ToAbsolute("~/content/images/").EnsureEndsWith("/");
+			_processedImagesRootPath = "media/image/";
+			_fallbackImagesRootPath = "content/images/";
 		}
 
 		public PictureService(
@@ -92,7 +96,7 @@ namespace SmartStore.Services.Media
 
 			var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
 			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
-
+			
 			Logger = NullLogger.Instance;
         }
 
@@ -100,21 +104,21 @@ namespace SmartStore.Services.Media
 
 		#region Utilities
 
-		public static string DefaultImagesRootPath
+		public static string FallbackImagesRootPath
 		{
-			get { return _defaultImagesRootPath; }
+			get { return _fallbackImagesRootPath; }
 		}
 
-		protected virtual string GetDefaultImageFileName(PictureType defaultPictureType = PictureType.Entity)
+		protected virtual string GetFallbackImageFileName(FallbackPictureType defaultPictureType = FallbackPictureType.Entity)
 		{
 			string defaultImageFileName;
 
 			switch (defaultPictureType)
 			{
-				case PictureType.Entity:
+				case FallbackPictureType.Entity:
 					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.png");
 					break;
-				case PictureType.Avatar:
+				case FallbackPictureType.Avatar:
 					defaultImageFileName = _settingService.GetSettingByKey("Media.Customer.DefaultAvatarImageName", "default-avatar.jpg");
 					break;
 				default:
@@ -284,17 +288,12 @@ namespace SmartStore.Services.Media
 			return size;
 		}
 
-		public IDictionary<int, PictureInfo> GetPictureInfos(
-			IEnumerable<int> pictureIds,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
+		public IDictionary<int, PictureInfo> GetPictureInfos(IEnumerable<int> pictureIds)
 		{
 			Guard.NotNull(pictureIds, nameof(pictureIds));
 
-			var allRequestedInfos = (from id in pictureIds.Distinct()
-						   let cacheKey = BuildUrlCacheKey(id, targetSize, showDefaultPicture ? (int)defaultPictureType : 0, storeLocation)
+			var allRequestedInfos = (from id in pictureIds.Distinct().Where(x => x > 0)
+						   let cacheKey = MEDIACACHE_LOOKUP_KEY.FormatInvariant(id)
 						   select new
 						   {
 							   PictureId = id,
@@ -321,7 +320,7 @@ namespace SmartStore.Services.Media
 				{
 					// TBD: (mc) Does this need a locking strategy? Apparently yes. But it is hard to accomplish for a random sequence
 					// without locking the whole thing and loosing performance. Better no lock (?)
-					var newInfo = CreatePictureInfo(uncachedPictures.Get(info.PictureId), targetSize, showDefaultPicture, storeLocation, defaultPictureType);
+					var newInfo = CreatePictureInfo(uncachedPictures.Get(info.PictureId));
 					result.Add(newInfo.Id, newInfo);
 					_cacheManager.Put(info.CacheKey, newInfo);
 				}
@@ -330,189 +329,159 @@ namespace SmartStore.Services.Media
 			return result;
 		}
 
-		public PictureInfo GetPictureInfo(
-			int? pictureId,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
+		public PictureInfo GetPictureInfo(int? pictureId)
 		{
-			var cacheKey = BuildUrlCacheKey(pictureId.GetValueOrDefault(), targetSize, showDefaultPicture ? (int)defaultPictureType : 0, storeLocation);
+			if (pictureId.GetValueOrDefault() < 1)
+				return null;
+
+			var cacheKey = MEDIACACHE_LOOKUP_KEY.FormatInvariant(pictureId.GetValueOrDefault());
 			var info = _cacheManager.Get(cacheKey, () =>
 			{
-				return CreatePictureInfo(GetPictureById(pictureId.GetValueOrDefault()), targetSize, showDefaultPicture, storeLocation, defaultPictureType);
+				return CreatePictureInfo(GetPictureById(pictureId.GetValueOrDefault()));
 			});
 
 			return info;
 		}
 
-		public PictureInfo GetPictureInfo(
-			Picture picture,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
+		public PictureInfo GetPictureInfo(Picture picture)
 		{
-			var cacheKey = BuildUrlCacheKey(picture.Id, targetSize, showDefaultPicture ? (int)defaultPictureType : 0, storeLocation);
-			var info = _cacheManager.Get(cacheKey, () =>
-			{
-				return CreatePictureInfo(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
-			});
-
-			return info;
-		}
-
-		public virtual string GetPictureUrl(
-            int pictureId,
-            int targetSize = 0,
-            bool showDefaultPicture = true,
-            string storeLocation = null,
-            PictureType defaultPictureType = PictureType.Entity)
-        {
-			var cacheKey = BuildUrlCacheKey(pictureId, targetSize, showDefaultPicture ? (int)defaultPictureType : 0, storeLocation);
-			var info = _cacheManager.Get(cacheKey, () =>
-			{
-				return CreatePictureInfo(GetPictureById(pictureId), targetSize, showDefaultPicture, storeLocation, defaultPictureType);
-			});
-
-			return info.Url;
-		}
-
-		public virtual string GetPictureUrl(
-			Picture picture,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
-		{
-			var cacheKey = BuildUrlCacheKey(picture == null ? 0 : picture.Id, targetSize, showDefaultPicture ? (int)defaultPictureType : 0, storeLocation);
-			var info = _cacheManager.Get(cacheKey, () =>
-			{
-				return CreatePictureInfo(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
-			});
-
-			return info.Url;
-		}
-
-		public virtual string GetDefaultPictureUrl(
-			int targetSize = 0,
-			PictureType defaultPictureType = PictureType.Entity,
-			string storeLocation = null)
-		{
-			return GetPictureUrl(0, targetSize, true, storeLocation, defaultPictureType);
-		}
-
-		protected virtual PictureInfo CreatePictureInfo(
-			Picture picture,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
-		{
-			int id = 0;
-			string url = string.Empty;
-			string path = null;
-			string mime = null;
-			bool isDefaultImage = false;
-
 			if (picture == null)
+				return null;
+
+			var cacheKey = MEDIACACHE_LOOKUP_KEY.FormatInvariant(picture.Id);
+			var info = _cacheManager.Get(cacheKey, () =>
 			{
-				if (showDefaultPicture)
-				{
-					var fileName = GetDefaultImageFileName(defaultPictureType);
-					mime = MimeTypes.MapNameToMimeType(fileName);
-					path = "{0}/{1}".FormatInvariant(0, fileName);
-					isDefaultImage = targetSize == 0;
-				}
-			}
-			else
+				return CreatePictureInfo(picture);
+			});
+
+			return info;
+		}
+
+		public virtual string GetUrl(int pictureId, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+        {
+			return GetUrl(GetPictureInfo(pictureId), targetSize, fallbackType, host);
+		}
+
+		public virtual string GetUrl(Picture picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		{
+			return GetUrl(GetPictureInfo(picture), targetSize, fallbackType, host);
+		}
+
+		public string GetUrl(PictureInfo info, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		{
+			string path = null;
+			string query = null;
+
+			if (info?.Path != null)
 			{
-				id = picture.Id;
-				mime = picture.MimeType;
-				path = "{0}/{1}.{2}".FormatInvariant(
-					id,
-					picture.SeoFilename.NullEmpty() ?? picture.Id.ToString(ImageCache.IdFormatString),
-					MimeTypes.MapMimeTypeToExtension(picture.MimeType));
-
-				// Do some maintenance stuff
-				EnsurePictureSizeResolved(picture, true);
-
-				if (picture.IsNew)
-				{
-					_imageCache.Delete(picture);
-
-					// We do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
-					UpdatePicture(
-						picture,
-						null,
-						picture.MimeType,
-						picture.SeoFilename,
-						false,
-						false);
-				}
+				path = info.Path;
 			}
-
-			string fullSizeUrl = null;
+			else if (fallbackType > FallbackPictureType.NoFallback)
+			{
+				path = String.Concat(_fallbackImagesRootPath, "0/", GetFallbackImageFileName(fallbackType));
+			}
 
 			if (path != null)
 			{
-				url = (isDefaultImage ? _defaultImagesRootPath : _processedImagesRootPath) + path;
-
-				url = ApplyCdnUrl(url, storeLocation);
-
-				if (id > 0)
-				{
-					// Don't set fullsize url when there's no picture, even if showDefaultPicture is true.
-					fullSizeUrl = url;
-				}
-
 				if (targetSize > 0)
 				{
-					url += "?size={0}".FormatInvariant(targetSize);
+					// TBD: (mc) let pass query string as NameValueCollection (?)
+					query = "?size=" + targetSize;
 				}
+
+				path = BuildUrlCore(path, query, host);
 			}
 
+			return path;
+		}
+
+		public virtual string GetFallbackUrl(int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		{
+			return GetUrl((PictureInfo)null, targetSize, fallbackType, host);
+		}
+
+		/// <summary>
+		/// Creates a cacheable counterpart for a Picture object instance
+		/// </summary>
+		/// <param name="picture"></param>
+		/// <returns></returns>
+		protected virtual PictureInfo CreatePictureInfo(Picture picture)
+		{
+			if (picture == null)
+				return null;
+
+			var extension = MimeTypes.MapMimeTypeToExtension(picture.MimeType);
+
+			// Build virtual path with pattern "media/image/{id}/{SeoFileName}.{extension}"
+			var path = "{0}{1}/{2}.{3}".FormatInvariant(
+				_processedImagesRootPath,
+				picture.Id,
+				picture.SeoFilename.NullEmpty() ?? picture.Id.ToString(ImageCache.IdFormatString),
+				extension);
+
+			// Do some maintenance stuff
+			EnsurePictureSizeResolved(picture, true);
+
+			if (picture.IsNew)
+			{
+				_imageCache.Delete(picture);
+
+				// We do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
+				UpdatePicture(
+					picture,
+					null,
+					picture.MimeType,
+					picture.SeoFilename,
+					false,
+					false);
+			}
+			
 			return new PictureInfo
 			{
-				Id = id,
-				Url = url,
-				FullSizeUrl = fullSizeUrl,
-				MaxSize = targetSize,
-				FullSizeWidth = picture?.Width,
-				FullSizeHeight = picture?.Height,
-				MimeType = mime
+				Id = picture.Id,
+				MimeType = picture.MimeType,
+				Extension = extension,
+				Path = path,
+				Width = picture?.Width,
+				Height = picture?.Height,
 			};
 		}
 
-		private string ApplyCdnUrl(string url, string storeLocation)
+		protected virtual string BuildUrlCore(string virtualPath, string query, string host)
 		{
-			if (url.IsEmpty())
-				return url;
+			// TBD: (mc) No arg check because of performance?!
 
-			var root = storeLocation;
-			
-			if (root.IsEmpty())
+			var sb = new StringBuilder(_appPath, 100);
+
+			// Strip leading "/", the app path has this already
+			if (virtualPath[0] == '/') virtualPath = virtualPath.Substring(1);
+
+			// Append media path
+			sb.Append(virtualPath);
+
+			// Append query
+			if (query != null && query.Length > 0)
 			{
-				var cdnUrl = _storeContext.CurrentStore.ContentDeliveryNetwork;
-				if (cdnUrl.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
+				if (query[0] != '?') sb.Append("?");
+				sb.Append(query);
+			}
+
+			// Prepend host
+			// TBD: (mc) AutoResolve host? Pass Store entity to correctly resolve scheme?
+			if (host != null)
+			{
+				sb.Insert(0, host.TrimEnd('/'));
+			}
+			else
+			{
+				var cdn = _storeContext.CurrentStore.ContentDeliveryNetwork;
+				if (cdn.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
 				{
-					root = cdnUrl;
+					sb.Insert(0, cdn.TrimEnd('/'));
 				}
 			}
 
-			if (root.HasValue() && HostingEnvironment.IsHosted)
-			{
-				// strip out app path from url if needed but do not strip away leading slash
-				var appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
-				if (appPath.Length > 0 && appPath != "/")
-				{
-					url = url.Substring(appPath.Length + 1);
-				}
-
-				return root.TrimEnd('/', '\\') + url.EnsureStartsWith("/");
-			}
-
-			return url;
+			return sb.ToString();
 		}
 
 		private void EnsurePictureSizeResolved(Picture picture, bool saveOnResolve)
@@ -555,14 +524,9 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-		private string BuildUrlCacheKey(int pictureId, int size, int defaultPictureType /* 0 if showDefaultPicture is false */, string storeLocation = "")
+		public int ClearUrlCache()
 		{
-			return URLCACHE_LOOKUP_KEY.FormatInvariant(pictureId, _storeContext.CurrentStore.Id, size, defaultPictureType, storeLocation);
-		}
-
-		public int ClearUrlCache(int? storeId = null)
-		{
-			return _cacheManager.RemoveByPattern(URLCACHE_BYSTORE_KEY_PATTERN.FormatInvariant(storeId.HasValue ? storeId.Value.ToString() : "*"));
+			return _cacheManager.RemoveByPattern(MEDIACACHE_LOOKUP_KEY_PATTERN);
 		}
 
 		#endregion
@@ -694,7 +658,7 @@ namespace SmartStore.Services.Media
 			_imageCache.Delete(picture);
 
 			// delete from url cache
-			_cacheManager.RemoveByPattern(URLCACHE_LOOKUP_KEY_PATTERN.FormatInvariant(picture.Id));
+			_cacheManager.Remove(MEDIACACHE_LOOKUP_KEY.FormatInvariant(picture.Id));
 
 			// delete from storage
 			_storageProvider.Value.Remove(picture.ToMedia());
@@ -778,7 +742,7 @@ namespace SmartStore.Services.Media
 				_imageCache.Delete(picture);
 
 				// delete from url cache
-				_cacheManager.RemoveByPattern(URLCACHE_LOOKUP_KEY_PATTERN.FormatInvariant(picture.Id));
+				_cacheManager.Remove(MEDIACACHE_LOOKUP_KEY.FormatInvariant(picture.Id));
 			}
 
 			picture.MimeType = mimeType;

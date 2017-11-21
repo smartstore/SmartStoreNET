@@ -9,6 +9,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
@@ -261,7 +262,7 @@ namespace SmartStore.Web.Controllers
 					{
 						BatchContext = batchContext,
 						CachedManufacturerModels = cachedManufacturerModels,
-						PictureInfos = _pictureService.GetPictureInfos(products, thumbSize, !_catalogSettings.HideProductDefaultPictures),
+						PictureInfos = _pictureService.GetPictureInfos(products),
 						Currency = currency,
 						LegalInfo = legalInfo,
 						Model = model,
@@ -396,18 +397,19 @@ namespace SmartStore.Web.Controllers
 			{
 				#region Map product picture
 
-				var pictureInfo = ctx.PictureInfos[product.MainPictureId.GetValueOrDefault()];
+				var pictureInfo = ctx.PictureInfos.Get(product.MainPictureId.GetValueOrDefault());
+				var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 
 				item.Picture = new PictureModel
 				{
-					Size = pictureInfo.MaxSize,
-					ImageUrl = pictureInfo.Url,
-					FullSizeImageUrl = pictureInfo.FullSizeUrl,
-					FullSizeImageWidth = pictureInfo.FullSizeWidth,
-					FullSizeImageHeight = pictureInfo.FullSizeHeight,
+					PictureId = pictureInfo?.Id ?? 0,
+					Size = pictureInfo?.MaxSize,
+					ImageUrl = _pictureService.GetUrl(pictureInfo, model.ThumbSize ?? _mediaSettings.ProductThumbPictureSize, fallbackType),
+					FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0),
+					FullSizeImageWidth = pictureInfo?.Width,
+					FullSizeImageHeight = pictureInfo?.Height,
 					Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
 					AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
-					PictureId = pictureInfo.Id
 				};
 
 				#endregion

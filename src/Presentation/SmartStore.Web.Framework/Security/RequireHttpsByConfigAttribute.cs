@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Security
 {

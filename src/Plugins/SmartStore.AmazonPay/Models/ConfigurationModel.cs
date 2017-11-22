@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Services;
+using SmartStore.ComponentModel;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -124,57 +125,11 @@ namespace SmartStore.AmazonPay.Models
 		{
 			if (fromSettings)
 			{
-				UseSandbox = settings.UseSandbox;
-				SellerId = settings.SellerId;
-				AccessKey = settings.AccessKey;
-				SecretKey = settings.SecretKey;
-				ClientId = settings.ClientId;
-				//ClientSecret = settings.ClientSecret;
-				Marketplace = settings.Marketplace;
-
-				DataFetching = settings.DataFetching;
-				PollingMaxOrderCreationDays = settings.PollingMaxOrderCreationDays;
-				TransactionType = settings.TransactionType;
-				SaveEmailAndPhone = settings.SaveEmailAndPhone;
-				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
-				AdditionalFee = settings.AdditionalFee;
-				AdditionalFeePercentage = settings.AdditionalFeePercentage;
-				AddOrderNotes = settings.AddOrderNotes;
-				InformCustomerAboutErrors = settings.InformCustomerAboutErrors;
-				InformCustomerAddErrors = settings.InformCustomerAddErrors;
-
-				PayButtonColor = settings.PayButtonColor;
-				PayButtonSize = settings.PayButtonSize;
-				AuthButtonType = settings.AuthButtonType;
-				AuthButtonColor = settings.AuthButtonColor;
-				AuthButtonSize = settings.AuthButtonSize;
+				MiniMapper.Map(settings, this);
 			}
 			else
 			{
-				settings.UseSandbox = UseSandbox;
-				settings.SellerId = SellerId;
-				settings.AccessKey = AccessKey;
-				settings.SecretKey = SecretKey;
-				settings.ClientId = ClientId;
-				//settings.ClientSecret = ClientSecret;
-				settings.Marketplace = Marketplace;
-
-				settings.DataFetching = DataFetching;
-				settings.PollingMaxOrderCreationDays = PollingMaxOrderCreationDays;
-				settings.TransactionType = TransactionType;
-				settings.SaveEmailAndPhone = SaveEmailAndPhone;
-				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
-				settings.AdditionalFee = AdditionalFee;
-				settings.AdditionalFeePercentage = AdditionalFeePercentage;
-				settings.AddOrderNotes = AddOrderNotes;
-				settings.InformCustomerAboutErrors = InformCustomerAboutErrors;
-				settings.InformCustomerAddErrors = InformCustomerAddErrors;
-
-				settings.PayButtonColor = PayButtonColor;
-				settings.PayButtonSize = PayButtonSize;
-				settings.AuthButtonType = AuthButtonType;
-				settings.AuthButtonColor = AuthButtonColor;
-				settings.AuthButtonSize = AuthButtonSize;
+				MiniMapper.Map(this, settings);
 			}
 		}
 	}

@@ -94,6 +94,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MiniMapperTest.cs" />
     <Compile Include="Data\Hooks\DefaultDbHookHandlerTests.cs" />
     <Compile Include="Data\Hooks\FakeHooks.cs" />
     <Compile Include="Data\Hooks\HookedEntityMock.cs" />

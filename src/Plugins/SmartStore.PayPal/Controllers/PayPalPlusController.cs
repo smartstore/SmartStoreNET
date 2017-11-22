@@ -153,12 +153,9 @@ namespace SmartStore.PayPal.Controllers
 			return paymentInfo;
 		}
 
-		[AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure()
+		[LoadSetting, AdminAuthorize, ChildActionOnly]
+		public ActionResult Configure(PayPalPlusPaymentSettings settings, int storeScope)
 		{
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
-
 			var model = new PayPalPlusConfigurationModel
 			{
 				ConfigGroups = T("Plugins.SmartStore.PayPal.ConfigGroups").Text.SplitSafe(";")
@@ -182,18 +179,13 @@ namespace SmartStore.PayPal.Controllers
 
 			model.Copy(settings, true);
 
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
-
 			return View(model);
 		}
 
-		[HttpPost, AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure(PayPalPlusConfigurationModel model, FormCollection form)
+		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
+		public ActionResult Configure(PayPalPlusPaymentSettings settings, PayPalPlusConfigurationModel model, FormCollection form, int storeScope)
 		{
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
 			var oldClientId = settings.ClientId;
 			var oldSecret = settings.Secret;
 			var oldProfileId = settings.ExperienceProfileId;
@@ -206,7 +198,7 @@ namespace SmartStore.PayPal.Controllers
 			validator.Validate(model, ModelState);
 
 			if (!ModelState.IsValid)
-				return Configure();
+				return Configure(settings, storeScope);
 
 			ModelState.Clear();
 
@@ -221,15 +213,11 @@ namespace SmartStore.PayPal.Controllers
 				settings.WebhookId = null;
 			}
 
-			using (Services.Settings.BeginScope())
-			{
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
-			}
+			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 
 			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
-			return Configure();
+			return Configure(settings, storeScope);
 		}
 
 		public ActionResult PaymentInfo()

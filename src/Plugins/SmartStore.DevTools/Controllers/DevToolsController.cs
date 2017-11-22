@@ -18,34 +18,16 @@ namespace SmartStore.DevTools.Controllers
             _services = services;
         }
 
-        [AdminAuthorize, ChildActionOnly]
-        public ActionResult Configure()
+        [LoadSetting, ChildActionOnly]
+        public ActionResult Configure(ProfilerSettings settings)
         {
-            // load settings for a chosen store scope
-            var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-            var settings = _services.Settings.LoadSetting<ProfilerSettings>(storeScope);
-
-            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            storeDependingSettingHelper.GetOverrideKeys(settings, settings, storeScope, _services.Settings);
-
             return View(settings);
         }
 
-        [HttpPost, AdminAuthorize, ChildActionOnly]
-        public ActionResult Configure(ProfilerSettings model, FormCollection form)
+        [SaveSetting(false), HttpPost, ChildActionOnly, ActionName("Configure")]
+        public ActionResult ConfigurePost(ProfilerSettings settings)
         {
-            if (!ModelState.IsValid)
-                return Configure();
-
-            ModelState.Clear();
-
-            // Load settings for a chosen store scope
-            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-
-            storeDependingSettingHelper.UpdateSettings(model /*settings*/, form, storeScope, _services.Settings);
-
-			return Configure();
+			return Configure(settings);
         }
 
         public ActionResult MiniProfiler()

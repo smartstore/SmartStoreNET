@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Configuration;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -54,7 +55,7 @@ namespace SmartStore.Web.Framework.Settings
 
 		public void CreateViewDataObject(int activeStoreScopeConfiguration, string rootSettingClass = null)
 		{
-			_viewData[ViewDataKey] = new StoreDependingSettingData()
+			_viewData[ViewDataKey] = new StoreDependingSettingData
 			{
 				ActiveStoreScopeConfiguration = activeStoreScopeConfiguration,
 				RootSettingClass = rootSettingClass

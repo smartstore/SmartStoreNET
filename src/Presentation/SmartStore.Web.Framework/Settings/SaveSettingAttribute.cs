@@ -1,77 +1,92 @@
 ﻿using System;
 using System.Linq;
+using System.Web.Routing;
 using System.Web.Mvc;
-using SmartStore.Core.Configuration;
-using SmartStore.Services;
-using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Framework.Settings
 {
 	[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-	public sealed class SaveSettingAttribute : FilterAttribute, IActionFilter
+	public sealed class SaveSettingAttribute : LoadSettingAttribute
 	{
-		private int _storeId;
-		private ISettings _settings;
 		private FormCollection _form;
-		private bool _modelStateValid;
+		private IDisposable _settingsWriteBatch;
 
-		public ICommonServices Services { get; set; }
-
-		public void OnActionExecuting(ActionExecutingContext filterContext)
+		public SaveSettingAttribute() 
+			: base(true)
 		{
-			_modelStateValid = filterContext.Controller.ViewData.ModelState.IsValid;
-
-			if (!_modelStateValid)
-			{
-				return;
-			}
-
-			// Find the required ISettings concrete type in ActionDescriptor.GetParameters()
-			var settingsParam = LoadSettingAttribute.FindParameter<ISettings>(filterContext, this, true);
-
-			// Get the current configured store id
-			_storeId = filterContext.Controller.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-
-			// Load settings for the settings type obtained with FindSettingsParameter()
-			_settings = Services.Settings.LoadSetting(settingsParam.ParameterType, _storeId);
-
-			if (_settings == null)
-			{
-				throw new InvalidOperationException($"Could not load settings for type '{settingsParam.ParameterType.FullName}'.");
-			}
-
-			// Find the required FormCollection parameter in ActionDescriptor.GetParameters()
-			var formParam = LoadSettingAttribute.FindParameter<FormCollection>(filterContext, this, false);
-			_form = (FormCollection)filterContext.ActionParameters[formParam.ParameterName];
-
-			// Replace settings from action parameters with our loaded settings
-			filterContext.ActionParameters[settingsParam.ParameterName] = _settings;
 		}
 
-		public void OnActionExecuted(ActionExecutedContext filterContext)
+		public SaveSettingAttribute(bool updateParameterFromStore)
+			: base(updateParameterFromStore)
 		{
-			if (!_modelStateValid)
+		}
+
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
+		{
+			if (!filterContext.Controller.ViewData.ModelState.IsValid)
 			{
 				return;
+			}
+
+			base.OnActionExecuting(filterContext);
+
+			// Find the required FormCollection parameter in ActionDescriptor.GetParameters()
+			var formParam = FindActionParameters<FormCollection>(filterContext.ActionDescriptor, requireDefaultConstructor: false, throwIfNotFound: false).FirstOrDefault();
+			_form = formParam != null 
+				? (FormCollection)filterContext.ActionParameters[formParam.ParameterName]
+				: BindFormCollection(filterContext.Controller.ControllerContext);
+
+
+			_settingsWriteBatch = Services.Settings.BeginScope();
+		}
+
+		public override void OnActionExecuted(ActionExecutedContext filterContext)
+		{
+			if (_settingsWriteBatch != null)
+			{
+				_settingsWriteBatch.Dispose();
+				_settingsWriteBatch = null;
+			}
+
+			if (!filterContext.Controller.ViewData.ModelState.IsValid)
+			{
+				return;
+			}
+
+			var redirectResult = filterContext.Result as RedirectToRouteResult;
+			if (redirectResult != null)
+			{
+				var controllerName = redirectResult.RouteValues["controller"] as string;
+				var areaName = redirectResult.RouteValues["area"] as string;
+				if (controllerName.IsCaseInsensitiveEqual("security") && areaName.IsCaseInsensitiveEqual("admin"))
+				{
+					// Insufficient permission. Get outta here, because the action did not run. We must not save.
+					return;
+				}
 			}
 
 			var settingHelper = new StoreDependingSettingHelper(filterContext.Controller.ViewData);
 
-			settingHelper.UpdateSettings(_settings, _form, _storeId, Services.Settings);
-
-			var viewResult = filterContext.Result as ViewResultBase;
-
-			if (viewResult != null)
+			foreach (var param in _settingParams)
 			{
-				var model = viewResult.Model;
-
-				if (model == null)
-				{
-					throw new InvalidOperationException($"Could not obtain a model instance to override keys for'.");
-				}
-
-				settingHelper.GetOverrideKeys(_settings, model, _storeId, Services.Settings);
+				settingHelper.UpdateSettings(param.Instance, _form, _storeId, Services.Settings);
 			}
+
+			base.OnActionExecuted(filterContext);
+		}
+
+		private FormCollection BindFormCollection(ControllerContext controllerContext)
+		{
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(FormCollection)),
+				ModelState = controllerContext.Controller.ViewData.ModelState,
+				ValueProvider = controllerContext.Controller.ValueProvider
+			};
+
+			var modelBinder = ModelBinders.Binders.GetBinder(typeof(FormCollection));
+
+			return (FormCollection)modelBinder.BindModel(controllerContext, bindingContext);
 		}
 	}
 }

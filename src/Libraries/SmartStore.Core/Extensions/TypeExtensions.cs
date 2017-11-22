@@ -54,6 +54,7 @@ namespace SmartStore
             {
                 return !type.IsPredefinedSimpleType();
             }
+
             return false;
         }
 
@@ -133,6 +134,7 @@ namespace SmartStore
                     }
                 }
             }
+
             return false;
         }
 

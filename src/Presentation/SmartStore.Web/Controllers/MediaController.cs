@@ -13,11 +13,13 @@ using SmartStore.Utilities;
 using System.IO;
 using SmartStore.Core.Async;
 using SmartStore.Core.Events;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Controllers
 {
 	[SessionState(SessionStateBehavior.Disabled)]
 	[OverrideAuthentication, OverrideAuthorization, OverrideResultFilters, OverrideExceptionFilters] // TBD: (mc) should we also override action filters?
+	[RequireHttpsByConfigAttribute(SslRequirement.Retain)]
 	public partial class MediaController : Controller
     {
 		private readonly static bool _streamRemoteMedia = CommonHelper.GetAppSetting<bool>("sm:StreamRemoteMedia");

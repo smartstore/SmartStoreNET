@@ -9,7 +9,6 @@ using SmartStore.ComponentModel;
 
 namespace SmartStore.Utilities
 {
-
     [Serializable]
     public class ConvertProblem
     {
@@ -76,7 +75,6 @@ namespace SmartStore.Utilities
 
     public static class DictionaryConverter
     {
-
         public static bool CanCreateType(Type itemType)
         {
             return itemType.IsClass && itemType.GetConstructor(Type.EmptyTypes) != null;

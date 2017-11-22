@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Configuration;
@@ -8,34 +9,72 @@ using SmartStore.Web.Framework.Controllers;
 namespace SmartStore.Web.Framework.Settings
 {
 	[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-	public sealed class LoadSettingAttribute : FilterAttribute, IActionFilter
+	public class LoadSettingAttribute : FilterAttribute, IActionFilter
 	{
-		private int _storeId;
-		private ISettings _settings;
-
-		public ICommonServices Services { get; set; }
-
-		public void OnActionExecuting(ActionExecutingContext filterContext)
+		public sealed class SettingParam
 		{
-			// Find the required ISettings concrete type in ActionDescriptor.GetParameters()
-			var settingsParam = FindParameter<ISettings>(filterContext, this, true);
-
-			// Get the current configured store id
-			_storeId = filterContext.Controller.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-
-			// Load settings for the settings type obtained with FindSettingsParameter()
-			_settings = Services.Settings.LoadSetting(settingsParam.ParameterType, _storeId);
-
-			if (_settings == null)
-			{
-				throw new InvalidOperationException($"Could not load settings for type '{settingsParam.ParameterType.FullName}'.");
-			}
-
-			// Replace settings from action parameters with our loaded settings
-			filterContext.ActionParameters[settingsParam.ParameterName] = _settings;
+			public ISettings Instance { get; set; }
+			public ParameterDescriptor Parameter { get; set; }
 		}
 
-		public void OnActionExecuted(ActionExecutedContext filterContext)
+		protected int _storeId;
+		protected SettingParam[] _settingParams;
+
+		public LoadSettingAttribute() 
+			: this(true)
+		{
+		}
+
+		public LoadSettingAttribute(bool updateParameterFromStore)
+		{
+			UpdateParameterFromStore = updateParameterFromStore;
+		}
+
+		public bool UpdateParameterFromStore { get; set; }
+		public ICommonServices Services { get; set; }
+
+		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+		{
+			// Get the current configured store id
+			_storeId = filterContext.Controller.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			Func<ParameterDescriptor, bool> predicate = (x) => new[] { "storescope", "storeid" }.Contains(x.ParameterName, StringComparer.OrdinalIgnoreCase);
+			var storeScopeParam = FindActionParameters<int>(filterContext.ActionDescriptor, false, false, predicate).FirstOrDefault();
+			if (storeScopeParam != null)
+			{
+				// We found an action param named storeScope with type int. Assign our storeId to it.
+				filterContext.ActionParameters[storeScopeParam.ParameterName] = _storeId;
+			}
+
+			// Find the required ISettings concrete types in ActionDescriptor.GetParameters()
+			_settingParams = FindActionParameters<ISettings>(filterContext.ActionDescriptor)
+				.Select(x => 
+				{
+					// Load settings for the settings type obtained with FindActionParameters<ISettings>()
+					var settings = UpdateParameterFromStore
+						? Services.Settings.LoadSetting(x.ParameterType, _storeId)
+						: filterContext.ActionParameters[x.ParameterName] as ISettings;
+
+					if (settings == null)
+					{
+						throw new InvalidOperationException($"Could not load settings for type '{x.ParameterType.FullName}'.");
+					}
+
+					// Replace settings from action parameters with our loaded settings
+					if (UpdateParameterFromStore)
+					{
+						filterContext.ActionParameters[x.ParameterName] = settings;
+					}
+
+					return new SettingParam
+					{
+						Instance = settings,
+						Parameter = x
+					};
+				})
+				.ToArray();	
+		}
+
+		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
 		{
 			var viewResult = filterContext.Result as ViewResultBase;
 
@@ -49,38 +88,51 @@ namespace SmartStore.Web.Framework.Settings
 				}
 
 				var settingsHelper = new StoreDependingSettingHelper(filterContext.Controller.ViewData);
-				settingsHelper.GetOverrideKeys(_settings, model, _storeId, Services.Settings);
+
+				foreach (var param in _settingParams)
+				{
+					settingsHelper.GetOverrideKeys(param.Instance, model, _storeId, Services.Settings);
+				}	
 			}
 		}
 
-		internal static ParameterDescriptor FindParameter<T>(ActionExecutingContext filterContext, FilterAttribute attribute, bool requireDefaultConstructor)
+		protected IEnumerable<ParameterDescriptor> FindActionParameters<T>(
+			ActionDescriptor actionDescriptor, 
+			bool requireDefaultConstructor = true,
+			bool throwIfNotFound = true,
+			Func<ParameterDescriptor, bool> predicate = null)
 		{
-			Guard.NotNull(filterContext, nameof(filterContext));
-			Guard.NotNull(attribute, nameof(attribute));
+			Guard.NotNull(actionDescriptor, nameof(actionDescriptor));
 
 			var t = typeof(T);
 
-			var query = filterContext
-				.ActionDescriptor
+			var query = actionDescriptor
 				.GetParameters()
 				.Where(x => t.IsAssignableFrom(x.ParameterType));
 
-			var count = query.Count();
+			if (predicate != null)
+			{
+				query = query.Where(predicate);
+			}
 
-			if (count != 1)
+			if (throwIfNotFound && !query.Any())
 			{
 				throw new InvalidOperationException(
-					$"A controller action method with a '{attribute.GetType().Name}' attribute requires exactly one action parameter of type '{t.Name}' in order to execute properly.");
+					$"A controller action method with a '{this.GetType().Name}' attribute requires an action parameter of type '{t.Name}' in order to execute properly.");
 			}
 
-			var param = query.FirstOrDefault();
-
-			if (requireDefaultConstructor && !param.ParameterType.HasDefaultConstructor())
+			if (requireDefaultConstructor)
 			{
-				throw new InvalidOperationException($"The parameter '{param.ParameterName}' must have a default parameterless constructor.");
+				foreach (var param in query)
+				{
+					if (!param.ParameterType.HasDefaultConstructor())
+					{
+						throw new InvalidOperationException($"The parameter '{param.ParameterName}' must have a default parameterless constructor.");
+					}
+				}
 			}
 
-			return param;
+			return query;
 		}
 	}
 }

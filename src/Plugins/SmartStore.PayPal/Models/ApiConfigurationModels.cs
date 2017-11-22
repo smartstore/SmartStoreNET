@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Web.Mvc;
+using SmartStore.ComponentModel;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
@@ -62,29 +63,9 @@ namespace SmartStore.PayPal.Models
         public void Copy(PayPalDirectPaymentSettings settings, bool fromSettings)
         {
             if (fromSettings)
-            {
-				SecurityProtocol = settings.SecurityProtocol;
-				UseSandbox = settings.UseSandbox;
-				IpnChangesPaymentStatus = settings.IpnChangesPaymentStatus;
-                TransactMode = Convert.ToInt32(settings.TransactMode);
-                ApiAccountName = settings.ApiAccountName;
-                ApiAccountPassword = settings.ApiAccountPassword;
-                Signature = settings.Signature;
-                AdditionalFee = settings.AdditionalFee;
-                AdditionalFeePercentage = settings.AdditionalFeePercentage;
-            }
+				MiniMapper.Map(settings, this);
             else
-            {
-				settings.SecurityProtocol = SecurityProtocol;
-				settings.UseSandbox = UseSandbox;
-				settings.IpnChangesPaymentStatus = IpnChangesPaymentStatus;
-                settings.TransactMode = (TransactMode)TransactMode;
-                settings.ApiAccountName = ApiAccountName;
-                settings.ApiAccountPassword = ApiAccountPassword;
-                settings.Signature = Signature;
-                settings.AdditionalFee = AdditionalFee;
-                settings.AdditionalFeePercentage = AdditionalFeePercentage;
-            }
+				MiniMapper.Map(this, settings);
         }
     }
 
@@ -108,39 +89,9 @@ namespace SmartStore.PayPal.Models
         public void Copy(PayPalExpressPaymentSettings settings, bool fromSettings)
         {
             if (fromSettings)
-            {
-				SecurityProtocol = settings.SecurityProtocol;
-				UseSandbox = settings.UseSandbox;
-				IpnChangesPaymentStatus = settings.IpnChangesPaymentStatus;
-				TransactMode = Convert.ToInt32(settings.TransactMode);
-				ApiAccountName = settings.ApiAccountName;
-                ApiAccountPassword = settings.ApiAccountPassword;
-                Signature = settings.Signature;
-                AdditionalFee = settings.AdditionalFee;
-                AdditionalFeePercentage = settings.AdditionalFeePercentage;
-				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
-                ConfirmedShipment = settings.ConfirmedShipment;
-                NoShipmentAddress = settings.NoShipmentAddress;
-                CallbackTimeout = settings.CallbackTimeout;
-                DefaultShippingPrice = settings.DefaultShippingPrice;
-            }
+				MiniMapper.Map(settings, this);
             else
-			{
-				settings.SecurityProtocol = SecurityProtocol;
-				settings.UseSandbox = UseSandbox;
-				settings.IpnChangesPaymentStatus = IpnChangesPaymentStatus;
-                settings.TransactMode = (TransactMode)TransactMode;
-				settings.ApiAccountName = ApiAccountName;
-                settings.ApiAccountPassword = ApiAccountPassword;
-                settings.Signature = Signature;
-                settings.AdditionalFee = AdditionalFee;
-                settings.AdditionalFeePercentage = AdditionalFeePercentage;
-				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
-                settings.ConfirmedShipment = ConfirmedShipment;
-                settings.NoShipmentAddress = NoShipmentAddress;
-                settings.CallbackTimeout = CallbackTimeout;
-                settings.DefaultShippingPrice = DefaultShippingPrice;
-            }
+				MiniMapper.Map(this, settings);
         }
     }
 
@@ -162,35 +113,13 @@ namespace SmartStore.PayPal.Models
 		{
 			if (fromSettings)
 			{
-				SecurityProtocol = settings.SecurityProtocol;
-				UseSandbox = settings.UseSandbox;
+				MiniMapper.Map(settings, this);
 				TransactMode = (int)Settings.TransactMode.AuthorizeAndCapture;
-				AdditionalFee = settings.AdditionalFee;
-				AdditionalFeePercentage = settings.AdditionalFeePercentage;
-
-				ClientId = settings.ClientId;
-				Secret = settings.Secret;
-				ExperienceProfileId = settings.ExperienceProfileId;
-				WebhookId = settings.WebhookId;
-				ThirdPartyPaymentMethods = settings.ThirdPartyPaymentMethods;
-				DisplayPaymentMethodLogo = settings.DisplayPaymentMethodLogo;
-				DisplayPaymentMethodDescription = settings.DisplayPaymentMethodDescription;
 			}
 			else
 			{
-				settings.SecurityProtocol = SecurityProtocol;
-				settings.UseSandbox = UseSandbox;
+				MiniMapper.Map(this, settings);
 				settings.TransactMode = Settings.TransactMode.AuthorizeAndCapture;
-				settings.AdditionalFee = AdditionalFee;
-				settings.AdditionalFeePercentage = AdditionalFeePercentage;
-
-				settings.ClientId = ClientId;
-				settings.Secret = Secret;
-				settings.ExperienceProfileId = ExperienceProfileId;
-				settings.WebhookId = WebhookId;
-				settings.ThirdPartyPaymentMethods = ThirdPartyPaymentMethods;
-				settings.DisplayPaymentMethodLogo = DisplayPaymentMethodLogo;
-				settings.DisplayPaymentMethodDescription = DisplayPaymentMethodDescription;
 			}
 		}
 	}

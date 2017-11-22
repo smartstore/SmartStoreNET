@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Globalization;
+using SmartStore.Utilities;
 
 namespace SmartStore.ComponentModel
 {
@@ -77,11 +78,12 @@ namespace SmartStore.ComponentModel
 					continue;
 				}
 
-				object value;
+				object value = null;
 				try
 				{
 					// Get the value from source instance and try to convert it to target props type
 					value = fromProp.GetValue(from).Convert(toProp.Property.PropertyType, culture);
+					
 					// Set it
 					toProp.SetValue(to, value);
 				}

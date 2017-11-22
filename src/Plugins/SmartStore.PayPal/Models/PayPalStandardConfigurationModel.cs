@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Web.Mvc;
+using SmartStore.ComponentModel;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -55,39 +56,9 @@ namespace SmartStore.PayPal.Models
 		public void Copy(PayPalStandardPaymentSettings settings, bool fromSettings)
         {
             if (fromSettings)
-            {
-				SecurityProtocol = settings.SecurityProtocol;
-                UseSandbox = settings.UseSandbox;
-				IpnChangesPaymentStatus = settings.IpnChangesPaymentStatus;
-                BusinessEmail = settings.BusinessEmail;
-                PdtToken = settings.PdtToken;
-                PdtValidateOrderTotal = settings.PdtValidateOrderTotal;
-				PdtValidateOnlyWarn = settings.PdtValidateOnlyWarn;
-                AdditionalFee = settings.AdditionalFee;
-                AdditionalFeePercentage = settings.AdditionalFeePercentage;
-				IsShippingAddressRequired = settings.IsShippingAddressRequired;
-				UsePayPalAddress = settings.UsePayPalAddress;
-                PassProductNamesAndTotals = settings.PassProductNamesAndTotals;
-                EnableIpn = settings.EnableIpn;
-                IpnUrl = settings.IpnUrl;
-            }
+				MiniMapper.Map(settings, this);
             else
-            {
-				settings.SecurityProtocol = SecurityProtocol;
-                settings.UseSandbox = UseSandbox;
-				settings.IpnChangesPaymentStatus = IpnChangesPaymentStatus;
-                settings.BusinessEmail = BusinessEmail;
-                settings.PdtToken = PdtToken;
-                settings.PdtValidateOrderTotal = PdtValidateOrderTotal;
-				settings.PdtValidateOnlyWarn = PdtValidateOnlyWarn;
-                settings.AdditionalFee = AdditionalFee;
-                settings.AdditionalFeePercentage = AdditionalFeePercentage;
-				settings.IsShippingAddressRequired = IsShippingAddressRequired;
-				settings.UsePayPalAddress = UsePayPalAddress;
-                settings.PassProductNamesAndTotals = PassProductNamesAndTotals;
-                settings.EnableIpn = EnableIpn;
-                settings.IpnUrl = IpnUrl;
-            }
+				MiniMapper.Map(this, settings);
         }
 	}
 }

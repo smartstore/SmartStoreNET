@@ -181,6 +181,7 @@
     <Compile Include="Collections\TreeNodeBase.cs" />
     <Compile Include="ComponentModel\MiniMapper.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\DictionaryConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\NullableConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\ProductBundleDataConverter.cs" />

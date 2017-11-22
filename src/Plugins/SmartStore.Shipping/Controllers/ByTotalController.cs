@@ -30,12 +30,12 @@ namespace SmartStore.Shipping.Controllers
 			AdminAreaSettings adminAreaSettings,
 			ICommonServices services)
         {
-            this._shippingService = shippingService;
-            this._shippingByTotalService = shippingByTotalService;
-            this._shippingByTotalSettings = shippingByTotalSettings;
-            this._countryService = countryService;
-			this._adminAreaSettings = adminAreaSettings;
-			this._services = services;
+            _shippingService = shippingService;
+            _shippingByTotalService = shippingByTotalService;
+            _shippingByTotalSettings = shippingByTotalSettings;
+            _countryService = countryService;
+			_adminAreaSettings = adminAreaSettings;
+			_services = services;
         }
 
         public ActionResult Configure()

@@ -181,13 +181,6 @@ namespace SmartStore.Services.Media
 			{
 				processor.Quality(query.Quality.Value);
 			}
-
-			// IsIndexed (for PNGs)
-			if (true)
-			{
-				// TODO: (mc) get from settings
-				processor.CurrentImageFormat.IsIndexed = true;
-			}
 		}
 
 		private void ValidateQuery(ProcessImageQuery query)

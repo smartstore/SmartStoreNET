@@ -105,7 +105,7 @@ namespace SmartStore.Services.Media
 
 		public static string FallbackImagesRootPath
 		{
-			get { return _fallbackImagesRootPath; }
+			get { return "~/" + _fallbackImagesRootPath; }
 		}
 
 		protected virtual string GetFallbackImageFileName(FallbackPictureType defaultPictureType = FallbackPictureType.Entity)
@@ -377,7 +377,7 @@ namespace SmartStore.Services.Media
 			}
 			else if (fallbackType > FallbackPictureType.NoFallback)
 			{
-				path = String.Concat(_fallbackImagesRootPath, "0/", GetFallbackImageFileName(fallbackType));
+				path = String.Concat(_processedImagesRootPath, "0/", GetFallbackImageFileName(fallbackType));
 			}
 
 			if (path != null)

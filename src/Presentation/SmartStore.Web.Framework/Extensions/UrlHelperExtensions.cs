@@ -45,17 +45,5 @@ namespace SmartStore.Web.Framework
 			var pictureService = EngineContext.Current.Resolve<IPictureService>();
 			return pictureService.GetUrl(picture, targetSize, fallbackType, host);
 		}
-
-		public static string Picture(this UrlHelper urlHelper, int? pictureId, int targetSize = 0, bool fallback = true, string host = null)
-		{
-			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			return pictureService.GetPictureUrl(pictureId.GetValueOrDefault(), targetSize, fallback, host);
-		}
-
-		public static string Picture(this UrlHelper urlHelper, Picture picture, int targetSize = 0, bool fallback = true, string host = null)
-		{
-			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			return pictureService.GetPictureUrl(picture, targetSize, fallback, host);
-		}
 	}
 }

@@ -171,7 +171,7 @@
 			        elProgress
 	                    .find('.progress')
 	                    .attr('aria-valuenow', progress)
-	                    .find('.progress-bar').css('width', progress + '%');
+	                    .find('.bar').css('width', progress + '%');
 			    })
             // cancel button
                 .on('click.' + ns, 'button.cancel', eventData, function (e) {

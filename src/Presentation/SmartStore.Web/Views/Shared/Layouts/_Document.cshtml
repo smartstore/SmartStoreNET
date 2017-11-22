@@ -86,8 +86,9 @@
 <!DOCTYPE html>
 <html lang="@this.WorkContext.WorkingLanguage.UniqueSeoCode">
 <head>
-    <title itemprop="name">@Html.SmartTitle(true)</title>
-    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+	<meta http-equiv="Content-type" content="utf-8" />
+	<title itemprop="name">@Html.SmartTitle(true)</title>
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="@(Html.SmartMetaDescription())" />
     <meta name="keywords" content="@(Html.SmartMetaKeywords())" />

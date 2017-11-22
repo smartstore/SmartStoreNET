@@ -31,10 +31,10 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
-			// Change MediaSettings.MaximumImageSize to 2048 if eq 1200
+			// Change MediaSettings.MaximumImageSize to 2048
 			var name = TypeHelper.NameOf<MediaSettings>(y => y.MaximumImageSize, true);
 			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == name);
-			if (setting != null && setting.Value.Convert<int>() == 1200)
+			if (setting != null && setting.Value.Convert<int>() < 2048)
 			{
 				setting.Value = "2048";
 			}

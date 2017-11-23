@@ -49,6 +49,7 @@ namespace SmartStore.Services.Messages
 		private readonly ILanguageService _languageService;
         private readonly IEmailAccountService _emailAccountService;
         private readonly ICurrencyService _currencyService;
+        private readonly IPaymentService _paymentService;
         private readonly IDownloadService _downloadService;
         private readonly IOrderService _orderService;
 		private readonly IProviderManager _providerManager;
@@ -82,7 +83,8 @@ namespace SmartStore.Services.Messages
 			ILanguageService languageService,
             IEmailAccountService emailAccountService,            
 			ICurrencyService currencyService,
-			IDownloadService downloadService,
+            IPaymentService paymentService,
+            IDownloadService downloadService,
             IOrderService orderService, 
 			IProviderManager providerManager,
             IProductAttributeParser productAttributeParser,
@@ -109,6 +111,7 @@ namespace SmartStore.Services.Messages
             _languageService = languageService;
             _emailAccountService = emailAccountService;
             _currencyService = currencyService;
+            _paymentService = paymentService;
             _downloadService = downloadService;
             _orderService = orderService;
 			_providerManager = providerManager;
@@ -451,8 +454,9 @@ namespace SmartStore.Services.Messages
             }
 
             //total
-            var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderTotal, order.CurrencyRate);
-            cusTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, order.CustomerCurrencyCode, false, language);
+            var roundingAmount = decimal.Zero;
+            var orderTotal = order.GetOrderTotalInCustomerCurrency(_currencyService, _paymentService, out roundingAmount);
+            cusTotal = _priceFormatter.FormatPrice(orderTotal, true, order.CustomerCurrencyCode, false, language);
 
             //subtotal
             sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", _services.Localization.GetResource("Messages.Order.SubTotal", language.Id), cusSubTotal));

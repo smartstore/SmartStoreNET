@@ -403,12 +403,6 @@ namespace SmartStore.Web.Controllers
                 model.OrderTotalDiscount = _priceFormatter.FormatPrice(-orderDiscountInCustomerCurrency, true, order.CustomerCurrencyCode, false, language);
             }
 
-            if (order.OrderTotalRounding != decimal.Zero)
-            {
-                var orderTotalRoundinginCustomerCurrency = _currencyService.ConvertCurrency(order.OrderTotalRounding, order.CurrencyRate);
-                model.OrderTotalRounding = _priceFormatter.FormatPrice(orderTotalRoundinginCustomerCurrency, true, order.CustomerCurrencyCode, false, language);
-            }
-
             // Gift cards
             foreach (var gcuh in order.GiftCardUsageHistory)
             {
@@ -434,8 +428,15 @@ namespace SmartStore.Web.Controllers
             }
 
             // Total
-            var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderTotal, order.CurrencyRate);
-            model.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, order.CustomerCurrencyCode, false, language);
+            var roundingAmount = decimal.Zero;
+            var orderTotal = order.GetOrderTotalInCustomerCurrency(_currencyService, _paymentService, out roundingAmount);
+
+            model.OrderTotal = _priceFormatter.FormatPrice(orderTotal, true, order.CustomerCurrencyCode, false, language);
+
+            if (roundingAmount != decimal.Zero)
+            {
+                model.OrderTotalRounding = _priceFormatter.FormatPrice(roundingAmount, true, order.CustomerCurrencyCode, false, language);
+            }
 
             // Checkout attributes
             model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(order.CheckoutAttributeDescription));

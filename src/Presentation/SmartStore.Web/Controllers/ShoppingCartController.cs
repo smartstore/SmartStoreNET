@@ -2009,29 +2009,29 @@ namespace SmartStore.Web.Controllers
                     decimal shoppingCartTaxBase = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
                     decimal shoppingCartTax = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTaxBase, currency);
 
-                        if (shoppingCartTaxBase == 0 && _taxSettings.HideZeroTax)
-                        {
-                            displayTax = false;
-                            displayTaxRates = false;
-                        }
-                        else
-                        {
-                            displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
-                            displayTax = !displayTaxRates;
+                    if (shoppingCartTaxBase == 0 && _taxSettings.HideZeroTax)
+                    {
+                        displayTax = false;
+                        displayTaxRates = false;
+                    }
+                    else
+                    {
+                        displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
+                        displayTax = !displayTaxRates;
 							
-                            model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, true, false);
-                            foreach (var tr in taxRates)
+                        model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, true, false);
+                        foreach (var tr in taxRates)
+                        {
+							var rate = _priceFormatter.FormatTaxRate(tr.Key);
+							var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_workContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
+							model.TaxRates.Add(new OrderTotalsModel.TaxRate
                             {
-								var rate = _priceFormatter.FormatTaxRate(tr.Key);
-								var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_workContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
-								model.TaxRates.Add(new OrderTotalsModel.TaxRate
-                                {
-									Rate = rate,
-                                    Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, currency), true, false),
-									Label = _localizationService.GetResource(labelKey).FormatCurrent(rate)
-                                });
-                            }
+								Rate = rate,
+                                Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, currency), true, false),
+								Label = _localizationService.GetResource(labelKey).FormatCurrent(rate)
+                            });
                         }
+                    }
                 }
 
                 model.DisplayTaxRates = displayTaxRates;
@@ -2050,15 +2050,12 @@ namespace SmartStore.Web.Controllers
 
 				// Cart total
                 var cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
-                if (cartTotal.TotalAmount.HasValue)
+                if (cartTotal.ConvertedFromPrimaryStoreCurrency.TotalAmount.HasValue)
                 {
-                    var shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.TotalAmount.Value, currency);
-                    model.OrderTotal = _priceFormatter.FormatPrice(shoppingCartTotal, true, false);
-
-                    if (cartTotal.RoundingAmount != decimal.Zero)
+                    model.OrderTotal = _priceFormatter.FormatPrice(cartTotal.ConvertedFromPrimaryStoreCurrency.TotalAmount.Value, true, false);
+                    if (cartTotal.ConvertedFromPrimaryStoreCurrency.RoundingAmount != decimal.Zero)
                     {
-                        var totalRoundingAmount = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.RoundingAmount, currency);
-                        model.OrderTotalRounding = _priceFormatter.FormatPrice(totalRoundingAmount, true, false);
+                        model.OrderTotalRounding = _priceFormatter.FormatPrice(cartTotal.ConvertedFromPrimaryStoreCurrency.RoundingAmount, true, false);
                     }
                 }
 

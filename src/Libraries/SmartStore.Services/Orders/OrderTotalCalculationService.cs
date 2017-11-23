@@ -14,6 +14,7 @@ using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
@@ -41,7 +42,8 @@ namespace SmartStore.Services.Orders
         private readonly IGiftCardService _giftCardService;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPaymentService _paymentService;
-		private readonly IProductAttributeParser _productAttributeParser;
+        private readonly ICurrencyService _currencyService;
+        private readonly IProductAttributeParser _productAttributeParser;
         private readonly TaxSettings _taxSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly ShippingSettings _shippingSettings;
@@ -82,6 +84,7 @@ namespace SmartStore.Services.Orders
             IGiftCardService giftCardService,
             IGenericAttributeService genericAttributeService,
             IPaymentService paymentService,
+            ICurrencyService currencyService,
             IProductAttributeParser productAttributeParser,
             TaxSettings taxSettings,
             RewardPointsSettings rewardPointsSettings,
@@ -100,6 +103,7 @@ namespace SmartStore.Services.Orders
             _giftCardService = giftCardService;
             _genericAttributeService = genericAttributeService;
             _paymentService = paymentService;
+            _currencyService = currencyService;
 			_productAttributeParser = productAttributeParser;
             _taxSettings = taxSettings;
             _rewardPointsSettings = rewardPointsSettings;
@@ -1242,12 +1246,16 @@ namespace SmartStore.Services.Orders
 
             // Return null if we have errors
             var roundingAmount = decimal.Zero;
+            var roundingAmountConverted = decimal.Zero;
             var orderTotal = shoppingCartShipping.HasValue ? resultTemp : (decimal?)null;
+            var orderTotalConverted = orderTotal;
 
             if (orderTotal.HasValue)
             {
                 orderTotal = orderTotal.Value - redeemedRewardPointsAmount;
                 orderTotal = orderTotal.Value.RoundIfEnabledFor(currency);
+
+                orderTotalConverted = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotal.Value, currency, store);
 
                 // Order total rounding
                 if (currency.RoundOrderTotalEnabled && paymentMethodSystemName.HasValue())
@@ -1255,42 +1263,25 @@ namespace SmartStore.Services.Orders
                     var paymentMethod = _paymentService.GetPaymentMethodBySystemName(paymentMethodSystemName);
                     if (paymentMethod != null && paymentMethod.RoundOrderTotalEnabled)
                     {
-                        var oldOrderTotal = orderTotal.Value;
-                        switch (currency.RoundOrderTotalRule)
-                        {
-                            case CurrencyRoundingRule.RoundMidpointUp:
-                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, MidpointRounding.AwayFromZero);
-                                break;
-                            case CurrencyRoundingRule.AlwaysRoundDown:
-                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, false);
-                                break;
-                            case CurrencyRoundingRule.AlwaysRoundUp:
-                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, true);
-                                break;
-                            case CurrencyRoundingRule.RoundMidpointDown:
-                            default:
-                                orderTotal = orderTotal.Value.RoundToNearest(currency.RoundOrderTotalDenominator, MidpointRounding.ToEven);
-                                break;
-                        }
-
-                        roundingAmount = orderTotal.Value - Math.Round(oldOrderTotal, 2);
+                        orderTotal = orderTotal.Value.RoundToNearest(currency, out roundingAmount);
+                        orderTotalConverted = orderTotalConverted.Value.RoundToNearest(currency, out roundingAmountConverted);
                     }
                 }
             }
 
-            var result = new ShoppingCartTotal(orderTotal)
-            {
-                RoundingAmount = roundingAmount,
-                DiscountAmount = discountAmount,
-                AppliedDiscount = appliedDiscount,
-                AppliedGiftCards = appliedGiftCards,
-                RedeemedRewardPoints = redeemedRewardPoints,
-                RedeemedRewardPointsAmount = redeemedRewardPointsAmount,
-            };
+            var result = new ShoppingCartTotal(orderTotal);
+            result.RoundingAmount = roundingAmount;
+            result.DiscountAmount = discountAmount;
+            result.AppliedDiscount = appliedDiscount;
+            result.AppliedGiftCards = appliedGiftCards;
+            result.RedeemedRewardPoints = redeemedRewardPoints;
+            result.RedeemedRewardPointsAmount = redeemedRewardPointsAmount;
+
+            result.ConvertedFromPrimaryStoreCurrency.TotalAmount = orderTotalConverted;
+            result.ConvertedFromPrimaryStoreCurrency.RoundingAmount = roundingAmountConverted;
 
             return result;
         }
-
 
         /// <summary>
         /// Gets an order discount (applied to order total)

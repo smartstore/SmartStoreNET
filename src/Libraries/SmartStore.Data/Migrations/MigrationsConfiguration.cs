@@ -42,7 +42,6 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-
 			builder.AddOrUpdate("Admin.Orders.Shipment", "Shipment", "Lieferung");
 			builder.AddOrUpdate("Admin.Order", "Order", "Auftrag");
 

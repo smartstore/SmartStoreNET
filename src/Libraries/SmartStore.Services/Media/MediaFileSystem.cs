@@ -14,6 +14,7 @@ namespace SmartStore.Services.Media
 		public MediaFileSystem()
 			: base(GetMediaBasePath(), CommonHelper.GetAppSetting<string>("sm:MediaPublicPath"))
 		{
+			this.TryCreateFolder("Storage");
 			this.TryCreateFolder("Thumbs");
 			this.TryCreateFolder("Uploaded");
 			this.TryCreateFolder("QueuedEmailAttachment");
@@ -27,6 +28,7 @@ namespace SmartStore.Services.Media
 			{
 				path = "/Media/" + DataSettings.Current.TenantName;
 			}
+
 			return path;
 		}
 	}

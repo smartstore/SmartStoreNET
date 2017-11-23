@@ -15,8 +15,7 @@ namespace SmartStore.Services.Media
 	public class ImageCache : IImageCache
     {
 		public const string IdFormatString = "0000000";
-
-		private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
+		internal const int MaxDirLength = 4;
 
 		private readonly MediaSettings _mediaSettings;
 		private readonly string _thumbsRootDir;
@@ -239,10 +238,10 @@ namespace SmartStore.Services.Media
 				imageFileName = String.Concat(firstPart, seoFileName, query.CreateHash());
 			}
 
-            if (_mediaSettings.MultipleThumbDirectories && imageFileName != null && imageFileName.Length > MULTIPLE_THUMB_DIRECTORIES_LENGTH)
+            if (_mediaSettings.MultipleThumbDirectories && imageFileName != null && imageFileName.Length > MaxDirLength)
             {
                 // Get the first four letters of the file name
-                var subDirectoryName = imageFileName.Substring(0, MULTIPLE_THUMB_DIRECTORIES_LENGTH);
+                var subDirectoryName = imageFileName.Substring(0, MaxDirLength);
                 imageFileName = String.Concat(subDirectoryName, "/", imageFileName);
             }
 

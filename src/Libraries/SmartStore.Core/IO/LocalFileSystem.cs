@@ -215,10 +215,9 @@ namespace SmartStore.Core.IO
 			}
 
 			return directoryInfo
-				.GetFiles()
+				.EnumerateFiles()
 				.Where(fi => !IsHidden(fi))
-				.Select<FileInfo, IFile>(fi => new LocalFile(Path.Combine(Fix(path), fi.Name), fi))
-				.ToList();
+				.Select<FileInfo, IFile>(fi => new LocalFile(Path.Combine(Fix(path), fi.Name), fi));
 		}
 
 		public IEnumerable<IFolder> ListFolders(string path)
@@ -242,10 +241,9 @@ namespace SmartStore.Core.IO
 			}
 
 			return directoryInfo
-				.GetDirectories()
+				.EnumerateDirectories()
 				.Where(di => !IsHidden(di))
-				.Select<DirectoryInfo, IFolder>(di => new LocalFolder(Path.Combine(Fix(path), di.Name), di))
-				.ToList();
+				.Select<DirectoryInfo, IFolder>(di => new LocalFolder(Path.Combine(Fix(path), di.Name), di));
 		}
 
 		private static bool IsHidden(FileSystemInfo di)

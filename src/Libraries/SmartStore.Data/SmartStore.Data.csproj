@@ -534,6 +534,10 @@
     <Compile Include="Migrations\201711112331162_ProductMainPictureId.Designer.cs">
       <DependentUpon>201711112331162_ProductMainPictureId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711222311112_MoveFsMedia.cs" />
+    <Compile Include="Migrations\201711222311112_MoveFsMedia.Designer.cs">
+      <DependentUpon>201711222311112_MoveFsMedia.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -969,6 +973,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711112331162_ProductMainPictureId.resx">
       <DependentUpon>201711112331162_ProductMainPictureId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711222311112_MoveFsMedia.resx">
+      <DependentUpon>201711222311112_MoveFsMedia.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -26,6 +26,7 @@
 * #441 added option to specify that additional shipping surcharges are considered only once.
 
 ### Improvements
+* #649 Media FileSystem provider: segmenting files in subfolders to increase IO perf with huge amount of files
 * #1141 Clearer backend order list. Added more infos like payment method.
 * #1248 New payment integration guidelines for Sofort\Klarna
 * TwitterAuth: better error handling and enhanced admin instruction

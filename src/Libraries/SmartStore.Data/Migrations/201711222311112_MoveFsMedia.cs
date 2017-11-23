@@ -6,12 +6,13 @@ namespace SmartStore.Data.Migrations
 	using System.Linq;
 	using System.Collections.Generic;
 	using SmartStore.Core.Domain.Configuration;
-	using SmartStore.Core.Domain.Media;
 	using SmartStore.Data.Setup;
 	using SmartStore.Utilities;
 	using Core.Infrastructure;
 	using Core.IO;
 	using System.Text.RegularExpressions;
+	using System.IO;
+	using Core.Data;
 
 	public partial class MoveFsMedia : DbMigration, IDataSeeder<SmartObjectContext>
 	{
@@ -34,6 +35,9 @@ namespace SmartStore.Data.Migrations
 		{
 			if (!HostingEnvironment.IsHosted)
 				return;
+
+			// Move the whole media folder to new location at first
+			MoveMediaFolder();
 
 			// Check whether FS storage provider is active...
 			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "Media.Storage.Provider");
@@ -87,6 +91,29 @@ namespace SmartStore.Data.Migrations
 					}
 				}
 			}
+		}
+
+		private void MoveMediaFolder()
+		{
+			// Moves "~/Media/{Tenant}" to "~/App_Data/Tenants/{Tenant}/Media"
+			// This is relevant for local file system only. For cloud storages (like Azure)
+			// we don't need to move the main folder.
+
+			var sourceDir = new DirectoryInfo(CommonHelper.MapPath("~/Media/" + DataSettings.Current.TenantName, false));
+			var destinationDir = new DirectoryInfo(CommonHelper.MapPath("~/App_Data/Tenants/" + DataSettings.Current.TenantName + "/Media", false));
+
+			if (!sourceDir.Exists)
+			{
+				// Source (legacy media folder) does not exist, for whatever reasons. Nothing to move here.
+				return;
+			}
+
+			//if (!destinationDir.Exists)
+			//{
+			//	destinationDir.Create();
+			//}
+
+			sourceDir.MoveTo(destinationDir.FullName);
 		}
 	}
 }

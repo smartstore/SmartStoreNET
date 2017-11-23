@@ -26,7 +26,7 @@ namespace SmartStore.Services.Media
 			var path = CommonHelper.GetAppSetting<string>("sm:MediaStoragePath")?.Trim().NullEmpty();
 			if (path == null)
 			{
-				path = "/Media/" + DataSettings.Current.TenantName;
+				path = "/App_Data/Tenants/" + DataSettings.Current.TenantName + "/Media";
 			}
 
 			return path;

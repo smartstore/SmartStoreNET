@@ -79,6 +79,7 @@ using SmartStore.Services.Themes;
 using SmartStore.Services.Topics;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Bundling;
+using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Plugins;
@@ -661,7 +662,7 @@ namespace SmartStore.Web.Framework
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				pageHelperRegistration.PropertiesAutowired(PropertyWiringOptions.None);
-				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>(-100);
+				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<SmartController>(-100);
 			}
 		}
 

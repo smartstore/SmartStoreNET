@@ -50,7 +50,7 @@ namespace SmartStore.Services.Events
 				{
 					// for wiring up dependencies correctly
 					var newFactory = c.Resolve<IConsumerFactory<T>>();
-					consumers = newFactory.GetConsumers(true);
+					consumers = newFactory.GetConsumers(true).ToArray();
 					foreach (var consumer in consumers)
 					{
 						consumer.HandleEvent(eventMessage);
@@ -69,7 +69,7 @@ namespace SmartStore.Services.Events
 			}
 
 			// now execute all sync consumers
-			consumers = consumerFactory.GetConsumers(false);
+			consumers = consumerFactory.GetConsumers(false).ToArray();
 			foreach (var consumer in consumers)
 			{
 				PublishEvent(consumer, eventMessage);

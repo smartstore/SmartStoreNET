@@ -2062,13 +2062,13 @@
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>
       <Name>SmartStore.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\SmartStore.Services\SmartStore.Services.csproj">
-      <Project>{210541ad-f659-47da-8763-16f36c5cd2f4}</Project>
-      <Name>SmartStore.Services</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SmartStore.Data\SmartStore.Data.csproj">
       <Project>{ccd7f2c9-6a2c-4cf0-8e89-076b8fc0f144}</Project>
       <Name>SmartStore.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\SmartStore.Services\SmartStore.Services.csproj">
+      <Project>{210541ad-f659-47da-8763-16f36c5cd2f4}</Project>
+      <Name>SmartStore.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\SmartStore.Web.Framework\SmartStore.Web.Framework.csproj">
       <Project>{75fd4163-333c-4dd5-854d-2ef294e45d94}</Project>

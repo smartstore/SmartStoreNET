@@ -26,6 +26,8 @@
 * #441 added option to specify that additional shipping surcharges are considered only once.
 
 ### Improvements
+* Target .NET Framework changed: 4.5.2 > 4.6.1.
+* Lower memory consumption
 * #649 Media FileSystem provider: segmenting files in subfolders to increase IO perf with huge amount of files
 * #1141 Clearer backend order list. Added more infos like payment method.
 * #1248 New payment integration guidelines for Sofort\Klarna

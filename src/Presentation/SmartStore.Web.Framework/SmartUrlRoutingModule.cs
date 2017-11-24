@@ -11,13 +11,71 @@ using System.IO;
 using System.Web.Hosting;
 using System.Reflection;
 using SmartStore.Web.Framework.Theming;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Web.Framework
 {
+	public class HttpModuleInitializedEvent
+	{
+		public HttpModuleInitializedEvent(HttpApplication application)
+		{
+			Application = application;
+		}
+
+		public HttpApplication Application { get; private set; }
+	}
+	
+	/// <remarks>
+	/// Request event sequence:
+	/// - BeginRequest
+	/// - AuthenticateRequest 
+	/// - PostAuthenticateRequest 
+	/// - AuthorizeRequest 
+	/// - PostAuthorizeRequest 
+	/// - ResolveRequestCache 
+	/// - PostResolveRequestCache 
+	/// - MapRequestHandler 
+	/// - PostMapRequestHandler 
+	/// - AcquireRequestState 
+	/// - PostAcquireRequestState
+	/// - PreRequestHandlerExecute 
+	/// - PostRequestHandlerExecute 
+	/// - ReleaseRequestState 
+	/// - PostReleaseRequestState 
+	/// - UpdateRequestCache 
+	/// - PostUpdateRequestCache  
+	/// - LogRequest 
+	/// - PostLogRequest  
+	/// - EndRequest  
+	/// - PreSendRequestHeaders  
+	/// - PreSendRequestContent
+	/// </remarks>
 	public class SmartUrlRoutingModule : IHttpModule
 	{
 		private static readonly object _contextKey = new object();
 		private static readonly ConcurrentBag<RoutablePath> _routes = new ConcurrentBag<RoutablePath>();
+
+		static SmartUrlRoutingModule()
+		{
+			StopSubDirMonitoring();
+		}
+
+		private static void StopSubDirMonitoring()
+		{
+			try
+			{
+				// http://stackoverflow.com/questions/2248825/asp-net-restarts-when-a-folder-is-created-renamed-or-deleted
+				var prop = typeof(HttpRuntime).GetProperty("FileChangesMonitor", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+				var o = prop.GetValue(null, null);
+
+				var fi = o.GetType().GetField("_dirMonSubdirs", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase);
+				var monitor = fi.GetValue(o);
+				var mi = monitor.GetType().GetMethod("StopMonitoring", BindingFlags.Instance | BindingFlags.NonPublic);
+				mi.Invoke(monitor, new object[] { });
+			}
+			catch { }
+		}
 
 		public void Init(HttpApplication application)
 		{
@@ -34,24 +92,9 @@ namespace SmartStore.Web.Framework
 				
 				application.PostResolveRequestCache += (s, e) => PostResolveRequestCache(new HttpContextWrapper(((HttpApplication)s).Context));
 
-				StopSubDirMonitoring();
-			}			
-		}
-
-		private void StopSubDirMonitoring()
-		{
-			try
-			{
-				// http://stackoverflow.com/questions/2248825/asp-net-restarts-when-a-folder-is-created-renamed-or-deleted
-				var prop = typeof(HttpRuntime).GetProperty("FileChangesMonitor", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
-				var o = prop.GetValue(null, null);
-
-				var fi = o.GetType().GetField("_dirMonSubdirs", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase);
-				var monitor = fi.GetValue(o);
-				var mi = monitor.GetType().GetMethod("StopMonitoring", BindingFlags.Instance | BindingFlags.NonPublic);
-				mi.Invoke(monitor, new object[] { });
+				// Publish event to give plugins the chance to register custom event handlers for the request lifecycle.
+				EngineContext.Current.Resolve<IEventPublisher>().Publish(new HttpModuleInitializedEvent(application));
 			}
-			catch { }
 		}
 
 		/// <summary>

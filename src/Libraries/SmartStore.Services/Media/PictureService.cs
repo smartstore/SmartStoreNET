@@ -347,7 +347,7 @@ namespace SmartStore.Services.Media
 					// TBD: (mc) Does this need a locking strategy? Apparently yes. But it is hard to accomplish for a random sequence
 					// without locking the whole thing and loosing performance. Better no lock (?)
 					var newInfo = CreatePictureInfo(uncachedPictures.Get(info.PictureId));
-					result.Add(newInfo.Id, newInfo);
+					result.Add(info.PictureId, newInfo);
 					_cacheManager.Put(info.CacheKey, newInfo);
 				}
 			}

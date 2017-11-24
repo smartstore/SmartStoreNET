@@ -43,7 +43,7 @@ namespace SmartStore.Data
 			if (DataSettings.DatabaseIsInstalled() && !DbSeedingMigrator<SmartObjectContext>.IsMigrating)
 			{
 				//// listen to 'ObjectMaterialized' for load hooking
-				//((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectMaterialized;
+				((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectMaterialized;
 			}
 		}
 

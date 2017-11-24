@@ -19,7 +19,6 @@ namespace SmartStore.Data
 {
 	public abstract partial class ObjectContextBase
 	{
-		private IDbHookHandler _dbHookHandler;
 		private SaveChangesOperation _currentSaveOperation;
 
 		private readonly static ConcurrentDictionary<Type, bool> _hookableEntities = new ConcurrentDictionary<Type, bool>();

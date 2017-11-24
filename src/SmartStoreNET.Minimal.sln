@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{7881B112-7843-4542-B1F7-F99553FB9BB7}"
 EndProject
@@ -37,8 +37,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.Shipping", "Plugins\SmartStore.Shipping\SmartStore.Shipping.csproj", "{ACC1E122-B2C8-4441-BDED-D4A77763331A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.DevTools", "Plugins\SmartStore.DevTools\SmartStore.DevTools.csproj", "{542B9C12-E2A1-49BB-9134-0E3484F9D669}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.MegaSearch", "Plugins\SmartStore.MegaSearch-sym\SmartStore.MegaSearch.csproj", "{1B1B2721-A3B2-421B-A454-148235DA5AA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -256,30 +254,6 @@ Global
 		{542B9C12-E2A1-49BB-9134-0E3484F9D669}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{542B9C12-E2A1-49BB-9134-0E3484F9D669}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{542B9C12-E2A1-49BB-9134-0E3484F9D669}.Release|x86.ActiveCfg = Release|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Debug|x86.Build.0 = Debug|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.EFMigrations|Any CPU.ActiveCfg = EFMigrations|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.EFMigrations|Any CPU.Build.0 = EFMigrations|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.EFMigrations|Mixed Platforms.ActiveCfg = EFMigrations|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.EFMigrations|Mixed Platforms.Build.0 = EFMigrations|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.EFMigrations|x86.ActiveCfg = EFMigrations|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.EFMigrations|x86.Build.0 = EFMigrations|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.PluginDev|Any CPU.ActiveCfg = PluginDev|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.PluginDev|Any CPU.Build.0 = PluginDev|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.PluginDev|Mixed Platforms.ActiveCfg = PluginDev|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.PluginDev|Mixed Platforms.Build.0 = PluginDev|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.PluginDev|x86.ActiveCfg = PluginDev|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.PluginDev|x86.Build.0 = PluginDev|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Release|x86.ActiveCfg = Release|Any CPU
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -289,7 +263,6 @@ Global
 		{94D1BEEB-64A3-4EB6-9017-D66AFAF4F2B2} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 		{ACC1E122-B2C8-4441-BDED-D4A77763331A} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 		{542B9C12-E2A1-49BB-9134-0E3484F9D669} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
-		{1B1B2721-A3B2-421B-A454-148235DA5AA2} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 	EndGlobalSection
 	GlobalSection(NDepend) = preSolution
 		Project = ".\SmartStoreNET.ndproj"

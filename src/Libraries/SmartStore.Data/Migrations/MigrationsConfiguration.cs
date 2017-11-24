@@ -148,6 +148,13 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Order.OrderDetails")
                 .Value("en", "Order Details");
-        }
-    }
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Media.AutoGenerateAbsoluteUrls",
+				"Generate absolute URLs",
+				"Absolute URLs erzeugen",
+				"Generates absolute URLs for media files by prepending the current host name (e.g. http://myshop.com/media/image/1.jpg instead of /media/image/1.jpg). Has no effect if a CDN URL has been applied to the store.",
+				"Erzeugt absolute URLs für Mediendateien, indem der aktuelle Hostname vorangestellt wird (z.B. http://meinshop.de/media/image/1.jpg statt /media/image/1.jpg). Hat keine Auswirkung, wenn für den Store eine CDN-URL eingerichtet wurde.");
+
+		}
+	}
 }

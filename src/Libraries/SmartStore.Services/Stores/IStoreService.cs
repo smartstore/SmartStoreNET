@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Services.Stores
 {
@@ -49,5 +50,16 @@ namespace SmartStore.Services.Stores
 		/// </summary>
 		/// <param name="store">Store entity</param>
 		bool IsStoreDataValid(Store store);
+
+		/// <summary>
+		/// Gets the store host name
+		/// </summary>
+		/// <param name="store">The store to get the host name for</param>
+		/// <param name="secure">
+		/// If <c>null</c>, checks whether all pages should be secured per <see cref="SecuritySettings.ForceSslForAllPages"/>.
+		/// If <c>true</c>, returns the secure url, but only if SSL is enabled for the store.
+		/// </param>
+		/// <returns>The host name</returns>
+		string GetHost(Store store, bool? secure = null);
 	}
 }

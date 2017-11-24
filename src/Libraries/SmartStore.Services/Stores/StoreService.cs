@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Media;
+using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Services.Stores
 {
@@ -14,12 +15,15 @@ namespace SmartStore.Services.Stores
 	{
 		private readonly IRepository<Store> _storeRepository;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly SecuritySettings _securitySettings;
+
 		private bool? _isSingleStoreMode = null;
 
-		public StoreService(IRepository<Store> storeRepository, IEventPublisher eventPublisher)
+		public StoreService(IRepository<Store> storeRepository, IEventPublisher eventPublisher, SecuritySettings securitySettings)
 		{
 			_storeRepository = storeRepository;
 			_eventPublisher = eventPublisher;
+			_securitySettings = securitySettings;
 		}
 
 		public virtual void DeleteStore(Store store)
@@ -106,6 +110,13 @@ namespace SmartStore.Services.Stores
 			{
 				return false;
 			}
+		}
+
+		public string GetHost(Store store, bool? secure = null)
+		{
+			Guard.NotNull(store, nameof(store));
+			
+			return store.GetHost(secure ?? _securitySettings.ForceSslForAllPages);
 		}
 	}
 }

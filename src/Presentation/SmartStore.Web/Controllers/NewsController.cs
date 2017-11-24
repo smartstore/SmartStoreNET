@@ -142,7 +142,7 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.AllowCustomersToUploadAvatars)
                     {
                         var customer = nc.Customer;
-                        string avatarUrl = _pictureService.GetPictureUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
+                        string avatarUrl = _pictureService.GetUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
                         if (String.IsNullOrEmpty(avatarUrl) && _customerSettings.DefaultAvatarEnabled)
                             avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
                         commentModel.CustomerAvatarUrl = avatarUrl;

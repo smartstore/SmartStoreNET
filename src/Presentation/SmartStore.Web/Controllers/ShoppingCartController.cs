@@ -239,7 +239,7 @@ namespace SmartStore.Web.Controllers
                 {
                     PictureId = picture != null ? picture.Id : 0,
 					Size = pictureSize,
-					ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
+					ImageUrl = _pictureService.GetUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
                     Title = string.Format(_localizationService.GetResource("Media.Product.ImageLinkTitleFormat"), productName),
                     AlternateText = string.Format(_localizationService.GetResource("Media.Product.ImageAlternateTextFormat"), productName),
                 };

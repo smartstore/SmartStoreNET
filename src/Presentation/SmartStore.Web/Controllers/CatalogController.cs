@@ -708,7 +708,7 @@ namespace SmartStore.Web.Controllers
 
 			var result = _catalogSearchService.Search(query);
 
-			var storeUrl = _services.StoreContext.CurrentStore.Url;
+			var storeUrl = _services.StoreService.GetHost(_services.StoreContext.CurrentStore);
 
 			// Prefecthing
 			var allPictureInfos = _pictureService.GetPictureInfos(result.Hits);

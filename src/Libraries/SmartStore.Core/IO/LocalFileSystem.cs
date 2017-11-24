@@ -72,7 +72,12 @@ namespace SmartStore.Core.IO
 			{
 				if (publicPath.IsEmpty() || (!publicPath.StartsWith("~/") && !publicPath.IsWebUrl(true)))
 				{
-					throw new ArgumentException("When the base path is a fully qualified path, the public path must not be empty, and either be a fully qualified URL or a virtual path (e.g.: ~/Media)", nameof(publicPath));
+					var streamMedia = CommonHelper.GetAppSetting<bool>("sm:StreamRemoteMedia", true);
+					if (!streamMedia)
+					{
+						throw new ArgumentException(@"When the base path is a fully qualified path and remote media streaming is disabled, 
+													the public path must not be empty, and either be a fully qualified URL or a virtual path (e.g.: ~/Media)", nameof(publicPath));
+					}		
 				}
 			}
 
@@ -86,7 +91,7 @@ namespace SmartStore.Core.IO
 				return appVirtualPath + publicPath.Substring(1);
 			}
 
-			if (publicPath.IsEmpty())
+			if (publicPath.IsEmpty() && !basePathIsAbsolute)
 			{
 				// > /MyAppRoot/Media
 				return appVirtualPath + basePath;

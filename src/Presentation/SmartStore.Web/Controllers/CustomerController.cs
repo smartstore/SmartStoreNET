@@ -1586,7 +1586,7 @@ namespace SmartStore.Web.Controllers
 
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatarId);
 
-                    model.AvatarUrl = _pictureService.GetPictureUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
+                    model.AvatarUrl = _pictureService.GetUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
 
 					return View(model);
                 }
@@ -1597,7 +1597,7 @@ namespace SmartStore.Web.Controllers
             }
 
             //If we got this far, something failed, redisplay form
-            model.AvatarUrl = _pictureService.GetPictureUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
+            model.AvatarUrl = _pictureService.GetUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
 
             return View(model);
         }

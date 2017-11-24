@@ -72,7 +72,7 @@ namespace SmartStore.Data.Migrations
 						// The new file name without trailing -0
 						var newName = string.Concat(name, ".", ext);
 						// The subfolder name, e.g. 0024, when file name is 0024893.png
-						var dirName = name.Substring(0, 4);
+						var dirName = name.Substring(0, DirMaxLength);
 
 						string subfolder = null;
 						if (!subfolders.TryGetValue(dirName, out subfolder))

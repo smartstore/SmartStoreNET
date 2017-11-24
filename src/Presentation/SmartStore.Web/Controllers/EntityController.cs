@@ -103,7 +103,6 @@ namespace SmartStore.Web.Controllers
 						model.SearchTerm = model.ProductName.TrimSafe();
 
 						var hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
-						var storeLocation = _services.WebHelper.GetStoreLocation(false);
 						var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
 						var disableIfGroupedProduct = disableIf.Contains("groupedproduct");
 						var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;
@@ -207,7 +206,7 @@ namespace SmartStore.Web.Controllers
 								item.ImageUrl = _pictureService.GetUrl(
 									allPictureInfos.Get(x.MainPictureId.GetValueOrDefault()),
 									_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
-									fallbackType, storeLocation);
+									fallbackType);
 
 								return item;
 							})

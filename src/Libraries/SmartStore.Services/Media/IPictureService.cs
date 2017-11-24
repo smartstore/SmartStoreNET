@@ -289,9 +289,9 @@ namespace SmartStore.Services.Media
 		/// <param name="pictureId">The picture id to build a url for</param>
 		/// <param name="targetSize">The maximum size of the picture. If greather than null, a query is appended to the generated url.</param>
 		/// <param name="host">The host (including scheme) to prepend to the url.</param>
-		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage.</param>
+		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage (default: true).</param>
 		/// <returns>Generated url which can be processed by the media middleware controller</returns>
-		public static string GetPictureUrl(this IPictureService pictureService, int pictureId, int targetSize = 0, bool fallback = true, string host = null)
+		public static string GetUrl(this IPictureService pictureService, int pictureId, int targetSize, bool fallback, string host = null)
 		{
 			var fallbackType = fallback ? FallbackPictureType.Entity : FallbackPictureType.NoFallback;
 			return pictureService.GetUrl(pictureId, targetSize, fallbackType, host);
@@ -303,9 +303,9 @@ namespace SmartStore.Services.Media
 		/// <param name="picture">The picture to build a url for</param>
 		/// <param name="targetSize">The maximum size of the picture. If greather than null, a query is appended to the generated url.</param>
 		/// <param name="host">The host (including scheme) to prepend to the url.</param>
-		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage.</param>
+		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage (default: true).</param>
 		/// <returns>Generated url which can be processed by the media middleware controller</returns>
-		public static string GetPictureUrl(this IPictureService pictureService, Picture picture, int targetSize = 0, bool fallback = true, string host = null)
+		public static string GetUrl(this IPictureService pictureService, Picture picture, int targetSize, bool fallback, string host = null)
 		{
 			var fallbackType = fallback ? FallbackPictureType.Entity : FallbackPictureType.NoFallback;
 			return pictureService.GetUrl(picture, targetSize, fallbackType, host);
@@ -317,9 +317,9 @@ namespace SmartStore.Services.Media
 		/// <param name="PictureInfo">The picture info to build a url for</param>
 		/// <param name="targetSize">The maximum size of the picture. If greather than null, a query is appended to the generated url.</param>
 		/// <param name="host">The host (including scheme) to prepend to the url.</param>
-		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage.</param>
+		/// <param name="fallback">Specifies whether to return a fallback url if the picture does not exist in the storage (default: true).</param>
 		/// <returns>Generated url which can be processed by the media middleware controller</returns>
-		public static string GetPictureUrl(this IPictureService pictureService, PictureInfo info, int targetSize = 0, bool fallback = true, string host = null)
+		public static string GetUrl(this IPictureService pictureService, PictureInfo info, int targetSize, bool fallback, string host = null)
 		{
 			var fallbackType = fallback ? FallbackPictureType.Entity : FallbackPictureType.NoFallback;
 			return pictureService.GetUrl(info, targetSize, fallbackType, host);

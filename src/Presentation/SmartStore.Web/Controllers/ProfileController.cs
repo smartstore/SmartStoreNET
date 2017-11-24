@@ -113,7 +113,7 @@ namespace SmartStore.Web.Controllers
 
                 if (customerAvatarId != 0)
                 {
-                    avatarUrl = _pictureService.GetPictureUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
+                    avatarUrl = _pictureService.GetUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
                 }
                 else
                 {

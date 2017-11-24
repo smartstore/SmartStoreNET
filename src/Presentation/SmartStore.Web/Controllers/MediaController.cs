@@ -74,7 +74,7 @@ namespace SmartStore.Web.Controllers
 			{
 				// Missing or malformed Uri: get picture from DB and determine correct metadata by id
 				picture = _pictureService.GetPictureById(id);
-				if (picture == null) return NotFound();
+				if (picture == null) return NotFound(mime ?? "text/html");
 
 				mime = picture.MimeType;
 				nameWithoutExtension = picture.SeoFilename;
@@ -146,7 +146,7 @@ namespace SmartStore.Web.Controllers
 									// This is most likely a request for a default placeholder image
 									var mappedPath = CommonHelper.MapPath(Path.Combine(PictureService.FallbackImagesRootPath, name), false);
 									if (!System.IO.File.Exists(mappedPath))
-										return NotFound();
+										return NotFound(mime);
 
 									source = System.IO.File.ReadAllBytes(mappedPath);
 								}
@@ -157,18 +157,18 @@ namespace SmartStore.Web.Controllers
 
 									// Picture must exist
 									if (picture == null)
-										return NotFound();
+										return NotFound(mime);
 
 									// Picture's mime must match requested mime
 									if (!picture.MimeType.IsCaseInsensitiveEqual(prevMime ?? mime))
-										return NotFound();
+										return NotFound(mime);
 
 									// When Picture has SeoFileName, it must match requested name
 									// When Picture has NO SeoFileName, requested name must match Id
 									if (picture.SeoFilename.HasValue() && !picture.SeoFilename.IsCaseInsensitiveEqual(nameWithoutExtension))
-										return NotFound();
+										return NotFound(mime);
 									else if (picture.SeoFilename.IsEmpty() && picture.Id.ToString(ImageCache.IdFormatString) != nameWithoutExtension)
-										return NotFound();
+										return NotFound(mime);
 
 									source = await _pictureService.LoadPictureBinaryAsync(picture);
 								}
@@ -193,6 +193,7 @@ namespace SmartStore.Web.Controllers
 				if (cachedImage.IsRemote && !_streamRemoteMedia)
 				{
 					// Redirect to existing remote file
+					Response.ContentType = mime;
 					return Redirect(_imageCache.GetPublicUrl(cachedImage.Path));
 				}
 				else
@@ -258,8 +259,9 @@ namespace SmartStore.Web.Controllers
 			}
 		}
 
-		private ActionResult NotFound()
+		private ActionResult NotFound(string mime)
 		{
+			Response.ContentType = mime.NullEmpty() ?? "text/html";
 			Response.StatusCode = 404;
 			return Content("404: Not Found");
 		}
@@ -270,7 +272,7 @@ namespace SmartStore.Web.Controllers
 
 			cache.SetCacheability(System.Web.HttpCacheability.Public);
 			cache.VaryByHeaders["Accept-Encoding"] = true;
-			cache.SetExpires(DateTime.Now.ToUniversalTime().AddDays(7));
+			cache.SetExpires(DateTime.UtcNow.AddDays(7));
 			cache.SetMaxAge(TimeSpan.FromDays(7));
 			cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
 

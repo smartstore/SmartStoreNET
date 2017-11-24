@@ -114,7 +114,7 @@ namespace SmartStore.Web.Controllers
             {
                 PictureId = picture != null ? picture.Id : 0,
                 Size = pictureSize,
-                ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !catalogSettings.HideProductDefaultPictures),
+                ImageUrl = _pictureService.GetUrl(picture, pictureSize, !catalogSettings.HideProductDefaultPictures),
                 Title = T("Media.Product.ImageLinkTitleFormat", productName),
                 AlternateText = T("Media.Product.ImageAlternateTextFormat", productName)
             };

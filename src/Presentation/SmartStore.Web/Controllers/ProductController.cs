@@ -217,7 +217,7 @@ namespace SmartStore.Web.Controllers
 						var m = x.Manufacturer.ToModel();
 						if (preparePictureModel)
 						{
-							m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
+							m.PictureModel.ImageUrl = _pictureService.GetUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
 							var pictureUrl = _pictureService.GetUrl(x.Manufacturer.PictureId.GetValueOrDefault());
 							if (pictureUrl != null)
 							{
@@ -534,14 +534,14 @@ namespace SmartStore.Web.Controllers
 				if (!bundleItem.Item.HideThumbnail)
 				{
 					var picture = m.GetAssignedPicture(_pictureService, null, bundleItem.Item.ProductId);
-					dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.BundledProductPictureSize, false);
+					dynamicThumbUrl = _pictureService.GetUrl(picture, _mediaSettings.BundledProductPictureSize, false);
 				}
 			}
 			else if (isAssociated)
 			{
 				// Update associated product thumbnail.
 				var picture = m.GetAssignedPicture(_pictureService, null, productId);
-				dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);
+				dynamicThumbUrl = _pictureService.GetUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);
 			}
 			else if (product.ProductType != ProductType.BundledProduct)
 			{

@@ -854,7 +854,7 @@ namespace SmartStore.Web.Controllers
 
 				if (logoPicture != null)
 				{
-					model.LogoUrl = _pictureService.Value.GetPictureUrl(logoPicture, fallback: false);
+					model.LogoUrl = _pictureService.Value.GetUrl(logoPicture, 0, false);
 				}
 
 				model.MerchantCompanyInfo = companyInfoSettings;

@@ -57,13 +57,14 @@ namespace SmartStore.Services.Media
 		private readonly HttpContextBase _httpContext;
 		private readonly ICacheManager _cacheManager;
 
-		private static readonly string _appPath;
+		private readonly string _host;
+		private readonly string _appPath;
+
 		private static readonly string _processedImagesRootPath;
 		private static readonly string _fallbackImagesRootPath;
 
 		static PictureService()
 		{
-			_appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull().EnsureEndsWith("/");
 			// TODO: (mc) make this configurable per web.config
 			_processedImagesRootPath = "media/image/";
 			_fallbackImagesRootPath = "content/images/";
@@ -95,9 +96,35 @@ namespace SmartStore.Services.Media
 
 			var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
 			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
-			
+
 			Logger = NullLogger.Instance;
-        }
+
+			string appPath = "/";
+
+			if (HostingEnvironment.IsHosted)
+			{
+				appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
+
+				var cdn = storeContext.CurrentStore.ContentDeliveryNetwork;
+				if (cdn.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
+				{
+					_host = cdn;
+				}
+				else if (mediaSettings.AutoGenerateAbsoluteUrls)
+				{
+					var uri = httpContext.Request.Url;
+					_host = "{0}://{1}/{2}".FormatInvariant(uri.Scheme, uri.Authority, appPath);
+				}
+				else
+				{
+					_host = appPath;
+				}
+			}
+
+			_host = _host.EmptyNull().EnsureEndsWith("/");
+			_appPath = appPath.EnsureEndsWith("/");
+
+		}
 
 		public ILogger Logger { get; set; }
 
@@ -450,10 +477,26 @@ namespace SmartStore.Services.Media
 		{
 			// TBD: (mc) No arg check because of performance?!
 
-			var sb = new StringBuilder(_appPath, 100);
+			if (host == null)
+			{
+				host = _host;
+			}
+			else if (host == string.Empty)
+			{
+				host = _appPath;
+			}
+			else
+			{
+				host = host.EnsureEndsWith("/");
+			}
 
-			// Strip leading "/", the app path has this already
-			if (virtualPath[0] == '/') virtualPath = virtualPath.Substring(1);
+			var sb = new StringBuilder(host, 100);
+
+			// Strip leading "/", the host/apppath has this already
+			if (virtualPath[0] == '/')
+			{
+				virtualPath = virtualPath.Substring(1);
+			}
 
 			// Append media path
 			sb.Append(virtualPath);
@@ -463,21 +506,6 @@ namespace SmartStore.Services.Media
 			{
 				if (query[0] != '?') sb.Append("?");
 				sb.Append(query);
-			}
-
-			// Prepend host
-			// TBD: (mc) AutoResolve host? Pass Store entity to correctly resolve scheme?
-			if (host != null)
-			{
-				sb.Insert(0, host.TrimEnd('/'));
-			}
-			else
-			{
-				var cdn = _storeContext.CurrentStore.ContentDeliveryNetwork;
-				if (cdn.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
-				{
-					sb.Insert(0, cdn.TrimEnd('/'));
-				}
 			}
 
 			return sb.ToString();

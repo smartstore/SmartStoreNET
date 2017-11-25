@@ -189,18 +189,18 @@ namespace SmartStore.Services.Messages
             return emailAccount;
         }
 
-        private Tuple<string, string> GetReplyToEmail(Customer customer)
-        {
+		private (string Email, string Name) GetReplyToEmail(Customer customer)
+		{
 			if (customer == null || customer.Email.IsEmpty())
-				return new Tuple<string, string>(null, null);
+				return (null, null);
 
 			string email = customer.Email;
 			string name = GetDisplayNameForCustomer(customer);
 
-			return new Tuple<string, string>(email, name);
-        }
+			return (email, name);
+		}
 
-        private string GetDisplayNameForCustomer(Customer customer)
+		private string GetDisplayNameForCustomer(Customer customer)
         {
             if (customer == null)
                 return string.Empty;
@@ -299,7 +299,7 @@ namespace SmartStore.Services.Messages
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(customer);
 
-            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Email, replyTo.Name);
         }
 
         /// <summary>
@@ -942,7 +942,7 @@ namespace SmartStore.Services.Messages
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(returnRequest.Customer);
 
-            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Email, replyTo.Name);
         }
 
         /// <summary>
@@ -1159,8 +1159,8 @@ namespace SmartStore.Services.Messages
             {
                 // use customer email as reply address
 				var replyTo = GetReplyToEmail(ctx.Customer);
-				ctx.ReplyToEmail = replyTo.Item1;
-				ctx.ReplyToName = replyTo.Item2;
+				ctx.ReplyToEmail = replyTo.Email;
+				ctx.ReplyToName = replyTo.Name;
             }
 
 			return SendNotification(messageTemplate, emailAccount, ctx.LanguageId.Value, ctx.Tokens, toEmail, toName, ctx.ReplyToEmail, ctx.ReplyToName);
@@ -1239,7 +1239,7 @@ namespace SmartStore.Services.Messages
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(productReview.Customer);
 
-            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Email, replyTo.Name);
         }
 
         /// <summary>
@@ -1311,7 +1311,7 @@ namespace SmartStore.Services.Messages
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(customer);
 
-            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Email, replyTo.Name);
         }
 
         /// <summary>
@@ -1347,7 +1347,7 @@ namespace SmartStore.Services.Messages
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(blogComment.Customer);
 
-            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Email, replyTo.Name);
         }
 
         /// <summary>
@@ -1383,7 +1383,7 @@ namespace SmartStore.Services.Messages
             // use customer email as sender/reply address
 			var replyTo = GetReplyToEmail(newsComment.Customer);
 
-            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Email, replyTo.Name);
         }
 
         /// <summary>

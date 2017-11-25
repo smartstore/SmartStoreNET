@@ -1244,8 +1244,7 @@ namespace SmartStore.Web.Framework
 
 						var workValues = scope.Resolve<WorkValues<T>>();
 
-						T value;
-						if (!workValues.Values.TryGetValue(w, out value))
+						if (!workValues.Values.TryGetValue(w, out T value))
 						{
 							value = (T)workValues.ComponentContext.ResolveComponent(valueRegistration, p);
 							workValues.Values[w] = value;

@@ -82,9 +82,6 @@ namespace SmartStore.Web.Framework.Theming
 			var chronometer = EngineContext.Current.Resolve<IChronometer>();
 			using (chronometer.Step("Find view '{0}'".FormatInvariant(viewName)))
 			{
-				string[] viewLocationsSearched;
-				string[] masterLocationsSearched;
-
 				var themeName = GetCurrentThemeName(controllerContext);
 				var controllerName = controllerContext.RouteData.GetRequiredString("controller");
 				var areaName = controllerContext.RouteData.GetAreaName();
@@ -100,7 +97,7 @@ namespace SmartStore.Web.Framework.Theming
 					themeName, 
 					"View", 
 					useCache, 
-					out viewLocationsSearched);
+					out var viewLocationsSearched);
 				var masterPath = ResolveViewPath(
 					controllerContext,
 					areaName, 
@@ -112,7 +109,7 @@ namespace SmartStore.Web.Framework.Theming
 					themeName, 
 					"Master", 
 					useCache, 
-					out masterLocationsSearched);
+					out var masterLocationsSearched);
 
 				if (!string.IsNullOrEmpty(viewPath) && (!string.IsNullOrEmpty(masterPath) || string.IsNullOrEmpty(masterName)))
 				{

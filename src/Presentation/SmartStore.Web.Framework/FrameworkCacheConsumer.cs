@@ -39,7 +39,7 @@ namespace SmartStore.Web.Framework
         private readonly ICacheManager _cacheManager;
 		private readonly IAssetCache _assetCache;
 
-		// Item1 = ThemeName, Item2 = SToreId
+		// Item1 = ThemeName, Item2 = StoreId
 		private HashSet<Tuple<string, int>> _themeScopes;
 
 		public FrameworkCacheConsumer(ICacheManager cacheManager, IAssetCache assetCache)

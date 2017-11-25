@@ -1158,9 +1158,9 @@ namespace SmartStore.Services.Messages
             if (ctx.ReplyToCustomer && ctx.Customer != null)
             {
                 // use customer email as reply address
-				var replyTo = GetReplyToEmail(ctx.Customer);
-				ctx.ReplyToEmail = replyTo.Email;
-				ctx.ReplyToName = replyTo.Name;
+				(string email, string name) = GetReplyToEmail(ctx.Customer);
+				ctx.ReplyToEmail = email;
+				ctx.ReplyToName = name;
             }
 
 			return SendNotification(messageTemplate, emailAccount, ctx.LanguageId.Value, ctx.Tokens, toEmail, toName, ctx.ReplyToEmail, ctx.ReplyToName);

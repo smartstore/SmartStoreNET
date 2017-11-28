@@ -77,6 +77,8 @@ using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Services.Themes;
 using SmartStore.Services.Topics;
+using SmartStore.Templating;
+using SmartStore.Templating.Liquid;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Bundling;
 using SmartStore.Web.Framework.Controllers;
@@ -612,6 +614,10 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+			// Templating
+			builder.RegisterType<DotLiquidTemplateEngine>().As<ITemplateEngine>().SingleInstance();
+			builder.RegisterType<DefaultTemplateManager>().As<ITemplateManager>().SingleInstance();
+
 			builder.RegisterType<MessageTemplateService>().As<IMessageTemplateService>().InstancePerRequest();
 			builder.RegisterType<QueuedEmailService>().As<IQueuedEmailService>().InstancePerRequest();
 			builder.RegisterType<NewsLetterSubscriptionService>().As<INewsLetterSubscriptionService>().InstancePerRequest();

@@ -53,12 +53,9 @@ namespace SmartStore.ComponentModel
 		public override object ConvertTo(CultureInfo culture, string format, object value, Type to)
 		{
 			// Dict > Obj
-			var dict = value as IDictionary<string, object>;
-
-			if (dict != null)
+			if (value is IDictionary<string, object>  dict)
 			{
-				ICollection<ConvertProblem> problems;
-				return DictionaryConverter.CreateAndPopulate(to, dict, out problems);
+				return DictionaryConverter.CreateAndPopulate(to, dict, out var problems);
 			}
 
 			return base.ConvertTo(culture, format, value, to);

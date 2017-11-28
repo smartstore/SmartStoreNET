@@ -65,8 +65,7 @@ namespace SmartStore.ComponentModel
 		{
 			Guard.NotNull(type, nameof(type));
 
-			ITypeConverter converter = null;
-			_typeConverters.TryRemove(type, out converter);
+			_typeConverters.TryRemove(type, out var converter);
 			return converter;
 		}
 
@@ -86,8 +85,7 @@ namespace SmartStore.ComponentModel
 		{
 			Guard.NotNull(type, nameof(type));
 
-			ITypeConverter converter;
-			if (_typeConverters.TryGetValue(type, out converter))
+			if (_typeConverters.TryGetValue(type, out var converter))
 			{
 				return converter;
 			}

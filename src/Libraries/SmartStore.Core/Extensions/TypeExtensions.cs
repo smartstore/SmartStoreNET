@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Collections;
 
 namespace SmartStore
 {
@@ -27,11 +28,7 @@ namespace SmartStore
 
         public static bool IsSequenceType(this Type seqType)
         {
-            return (
-                (((seqType != typeof(string))
-                && (seqType != typeof(byte[])))
-                && (seqType != typeof(char[])))
-                && (FindIEnumerable(seqType) != null));
+			return seqType.IsArray || typeof(IEnumerable).IsAssignableFrom(seqType);
         }
 
         public static bool IsPredefinedSimpleType(this Type type)
@@ -82,7 +79,12 @@ namespace SmartStore
             return true;
         }
 
-        public static bool IsInteger(this Type type)
+		public static bool IsPlainObjectType(this Type type)
+		{
+			return type.IsClass && !type.IsSequenceType() && !type.IsPredefinedType();
+		}
+
+		public static bool IsInteger(this Type type)
         {
             switch (Type.GetTypeCode(type))
             {
@@ -343,8 +345,10 @@ namespace SmartStore
         {
             if (seqType == null || seqType == typeof(string))
                 return null;
+
             if (seqType.IsArray)
                 return typeof(IEnumerable<>).MakeGenericType(seqType.GetElementType());
+
             if (seqType.IsGenericType)
             {
 				var args = seqType.GetGenericArguments();
@@ -355,6 +359,7 @@ namespace SmartStore
                         return ienum;
                 }
             }
+
             Type[] ifaces = seqType.GetInterfaces();
             if (ifaces.Length > 0)
             {
@@ -365,8 +370,10 @@ namespace SmartStore
                         return ienum;
                 }
             }
+
             if (seqType.BaseType != null && seqType.BaseType != typeof(object))
                 return FindIEnumerable(seqType.BaseType);
+
             return null;
         }
     }

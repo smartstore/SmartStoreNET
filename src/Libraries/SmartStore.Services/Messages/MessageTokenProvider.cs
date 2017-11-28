@@ -972,7 +972,7 @@ namespace SmartStore.Services.Messages
 
         public virtual void AddGiftCardTokens(IList<Token> tokens, GiftCard giftCard)
         {
-			var order = (giftCard.PurchasedWithOrderItem != null ? giftCard.PurchasedWithOrderItem.Order : null);
+			var order = giftCard?.PurchasedWithOrderItem?.Order;
 
 			if (order != null)
 			{

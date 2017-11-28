@@ -140,7 +140,7 @@
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
                         
                         <div>
-                            <div class="topic-starter text-muted float-left">
+                            <div class="topic-starter text-muted">
                                 @if (@topic.CustomerId > 0)
                                 {
                                     if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)

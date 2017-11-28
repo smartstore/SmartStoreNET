@@ -846,7 +846,6 @@
     <Content Include="Views\Setting\Partials\CommonFacet.cshtml" />
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
     <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
-    <Content Include="Views\Language\Partials\AvailablePluginResources.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

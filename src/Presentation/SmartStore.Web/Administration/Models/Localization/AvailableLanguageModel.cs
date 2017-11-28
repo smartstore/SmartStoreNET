@@ -4,38 +4,32 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Localization
 {
-    public class AvailableLanguageModel : LanguageModel
-    {
-        public AvailableLanguageModel()
-        {
-            Plugins = new List<PluginModel>();
-        }
+	public class AvailableLanguageListModel : ModelBase
+	{
+		public string Version { get; set; }
+		public int ResourceCount { get; set; }
 
+		public List<AvailableLanguageModel> Languages { get; set; }
+	}
+
+	public class AvailableLanguageModel : LanguageModel
+    {
         public bool IsInstalled { get; set; }
         public bool IsDownloadRunning { get; set; }
 
-        public string Version { get; set; }
+		public int? PreviousSetId { get; set; }
+		public string Version { get; set; }
         public string Type { get; set; }
-        public DateTime UpdatedOn { get; set; }
+		public DateTime UpdatedOn { get; set; }
         public string UpdatedOnString { get; set; }
 
-        public int NumberOfResources { get; set; }
-        public int NumberOfTranslatedResources { get; set; }
-        public decimal TranslatedPercentage { get; set; }
+		public int TranslatedCount { get; set; }
+		public decimal TranslatedPercentage { get; set; }
         public decimal? TranslatedPercentageAtLastImport { get; set; }
-
-        public List<PluginModel> Plugins { get; set; }
-
-        public class PluginModel
-        {
-            public string SystemName { get; set; }
-            public string FriendlyName { get; set; }
-            public string IconUrl { get; set; }
-        }
-    }
+	}
 
 
-    public class LanguageDownloadState
+	public class LanguageDownloadState
     {
         public int Id { get; set; }
         public int ProgressPercent { get; set; }

@@ -2052,6 +2052,7 @@
     <Content Include="Themes\Flex\Content\_print.scss" />
     <Content Include="Views\Entity\Partials\Picker.cshtml" />
     <Content Include="Views\Entity\Partials\Picker.List.cshtml" />
+    <Content Include="Themes\Flex\Content\_rtl.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

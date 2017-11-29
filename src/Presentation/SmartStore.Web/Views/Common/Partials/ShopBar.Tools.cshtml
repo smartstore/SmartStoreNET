@@ -1,20 +1,21 @@
 ﻿@model ShopBarModel
 @using SmartStore.Web.Models.Common;
 @{ 
-    if (IsStoreClosed)
-    {
-        return;
-    }
+	if (IsStoreClosed)
+	{
+		return;
+	}
 
-    string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
-    var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
+	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
+	var isRtl = this.WorkContext.WorkingLanguage.Rtl;
 }
 
 <div class="shopbar-col shopbar-tools" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { cart = Model.ShoppingCartEnabled, wishlist = Model.WishlistEnabled, compare = Model.CompareProductsEnabled })">
 
 	<!-- Hamburger Menu -->
 	<div class="shopbar-tool d-lg-none" id="shopbar-menu">
-		<a class="shopbar-button" href="#" data-toggle="offcanvas" data-autohide="true" data-placement="left" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-menu">
+		<a class="shopbar-button" href="#" data-toggle="offcanvas" data-autohide="true" data-placement="@(isRtl ? "right" : "left")" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-menu">
 			<span class="shopbar-button-icon">
 				<i class="icm icm-menu"></i>
 			</span>
@@ -82,7 +83,7 @@
 	{
 		<div class="shopbar-tool" id="shopbar-cart" data-target="#cart-tab">
 			<a href="@Url.RouteUrl("ShoppingCart")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { cart = true })"
-			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+			   data-autohide="true" data-placement="@(isRtl ? "left" : "right")" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-bag"></i>
 					<span class='badge badge-pill label-cart-amount badge-@(labelStyle)' style="@(Model.CartItemsCount == 0 ? "display:none" : "")" data-bind-to="CartItemsCount">
@@ -106,7 +107,7 @@
 
 @using (Html.BeginZoneContent("end", key: "offcanvas-menu"))
 {
-	<aside id="offcanvas-menu" class="offcanvas offcanvas-overlay offcanvas-left offcanvas-shadow" data-blocker="true" data-overlay="true">
+	<aside id="offcanvas-menu" class="offcanvas offcanvas-overlay offcanvas-@(isRtl ? "right" : "left") offcanvas-shadow" data-blocker="true" data-overlay="true">
         <div class="offcanvas-content">
             <div id="menu-container" 
                  data-url-home="@(Url.Action("OffCanvasMenu", "Catalog"))" 
@@ -120,7 +121,7 @@
 
 @using (Html.BeginZoneContent("end", key: "offcanvas-cart"))
 {
-	<aside id="offcanvas-cart" class="offcanvas offcanvas-lg offcanvas-overlay offcanvas-right offcanvas-shadow" data-lg="true" data-blocker="true" data-overlay="true">
+	<aside id="offcanvas-cart" class="offcanvas offcanvas-lg offcanvas-overlay offcanvas-@(isRtl ? "left" : "right") offcanvas-shadow" data-lg="true" data-blocker="true" data-overlay="true">
 		<div class="offcanvas-content">
 			@Html.Action("OffCanvasCart", "ShoppingCart", new { area = "" })
 		</div>

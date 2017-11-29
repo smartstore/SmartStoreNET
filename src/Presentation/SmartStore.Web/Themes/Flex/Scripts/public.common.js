@@ -102,7 +102,8 @@
         		var list = $(this);
 
         		list.slick({
-        			infinite: false,
+					infinite: false,
+					rtl: $("body").hasClass("rtl"),
         			dots: true,
         			cssEase: 'ease-in-out',
         			speed: 300,

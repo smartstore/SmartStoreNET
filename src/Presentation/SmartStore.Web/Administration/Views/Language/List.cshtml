@@ -77,18 +77,6 @@
     <div id="AvailableLanguages"></div>
 </div>
 
-<div id="PluginDetailsDialog" class="modal hide fade" tabindex="-1">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
-        <h4 class="caption">@T("Admin.Configuration.Languages.ContainsResourcesOfPlugins")</h4>
-    </div>
-    <div class="modal-body"></div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-    </div>
-</div>
-
-
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -102,18 +90,6 @@
 	        callbackSuccess: function (resp) {
 	            $('#AvailableLanguages').html(resp);
 	        }
-	    });
-
-	    // Show plugin details
-	    $(document).on('click', 'a.show-plugin-details', function (e) {
-	        e.stopPropagation();
-	        var setId = $(this).closest('tr').attr('data-id'),
-	            dialog = $('#PluginDetailsDialog'),
-                html = $('#PluginDetails' + setId).html();
-
-	        dialog.find('.modal-body').html(html || 'n/a');
-	        dialog.modal('show');
-	        return false;
 	    });
 
         // Watch language download progress

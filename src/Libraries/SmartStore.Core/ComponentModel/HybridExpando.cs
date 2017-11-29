@@ -116,9 +116,22 @@ namespace SmartStore.ComponentModel
 
 		public override IEnumerable<string> GetDynamicMemberNames()
         {
-            foreach (var prop in this.GetProperties(true))
-                yield return prop.Key;
+			foreach (var kvp in this.Properties.Keys)
+			{
+				yield return kvp;
         }
+
+			if (_instance != null)
+			{
+				foreach (var kvp in FastProperty.GetProperties(_instance))
+				{
+					if (!this.Properties.ContainsKey(kvp.Key))
+					{
+						yield return kvp.Key;
+					}
+				}
+			}
+		}
 
 
         /// <summary>
@@ -138,7 +151,7 @@ namespace SmartStore.ComponentModel
 			result = null;
 
 			// first check the Properties collection for member
-			if (Properties.Keys.Contains(name))
+			if (Properties.ContainsKey(name))
 			{
 				result = Properties[name];
 				return true;
@@ -175,6 +188,13 @@ namespace SmartStore.ComponentModel
 		protected virtual bool TrySetMemberCore(string name, object value)
 		{
 			// first check to see if there's a native property to set
+			if (Properties.ContainsKey(name))
+			{
+				Properties[name] = value;
+				return true;
+			}
+
+			// Check to see if there's a native property to set
 			if (_instance != null)
 			{
 				try
@@ -192,6 +212,19 @@ namespace SmartStore.ComponentModel
 		}
 
 		/// <summary>
+		/// Dynamic invocation method. Currently allows only for Reflection based
+		/// operation (no ability to add methods dynamically).
+		/// </summary>
+		/// <param name="binder"></param>
+		/// <param name="args"></param>
+		/// <param name="result"></param>
+		public void Override(string name, object value = null)
+		{
+			Guard.NotEmpty(name, nameof(name));
+			Properties[name] = value;
+		}
+
+		/// <returns></returns>
 		/// Dynamic invocation method. Currently allows only for Reflection based
 		/// operation (no ability to add methods dynamically).
 		/// </summary>
@@ -267,7 +300,7 @@ namespace SmartStore.ComponentModel
         protected bool InvokeMethod(object instance, string name, object[] args, out object result)
         {
             // Look at the instanceType
-            var mi = _instanceType != null ? _instanceType.GetMethod(name, BindingFlags.Instance | BindingFlags.Public) : null;
+            var mi = _instanceType?.GetMethod(name, BindingFlags.Instance | BindingFlags.Public);
             if (mi != null)
             {
                 result = mi.Invoke(instance ?? this, args);
@@ -302,8 +335,7 @@ namespace SmartStore.ComponentModel
 		{
 			get
 			{
-				object result = null;
-				if (!TryGetMemberCore(key, out result))
+				if (!TryGetMemberCore(key, out var result))
 				{
 					throw new KeyNotFoundException();
 				}
@@ -324,9 +356,9 @@ namespace SmartStore.ComponentModel
 		/// <returns></returns>
 		public IEnumerable<KeyValuePair<string, object>> GetProperties(bool includeInstanceProperties = false)
         {
-			foreach (var key in this.Properties.Keys)
+			foreach (var kvp in this.Properties)
 			{
-				yield return new KeyValuePair<string, object>(key, this.Properties[key]);
+				yield return kvp;
 			}
 				
 			if (includeInstanceProperties && _instance != null)
@@ -339,7 +371,6 @@ namespace SmartStore.ComponentModel
 					}
 				}
             }
-
         }
 
         /// <summary>
@@ -397,15 +428,9 @@ namespace SmartStore.ComponentModel
 		{
 			get
 			{
-				var count = Properties.Count;
-				if (_instanceType != null)
-				{
-					count += FastProperty.GetProperties(_instanceType).Count;
+				return GetDynamicMemberNames().Count();
 				}
-
-				return count;
 			}
-		}
 
 		bool ICollection<KeyValuePair<string, object>>.IsReadOnly
 		{

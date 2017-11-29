@@ -443,8 +443,7 @@ namespace SmartStore.Web.Framework
 			{
 				if (DataSettings.DatabaseIsInstalled())
 				{
-					var prop = e.Component.Metadata.Get("Property.DbQuerySettings") as FastProperty;
-					if (prop != null)
+					if (e.Component.Metadata.Get("Property.DbQuerySettings") is FastProperty prop)
 					{
 						var querySettings = e.Context.Resolve<DbQuerySettings>();
 						prop.SetValue(e.Instance, querySettings);
@@ -495,8 +494,7 @@ namespace SmartStore.Web.Framework
 			{
 				if (DataSettings.DatabaseIsInstalled() && e.Context.Resolve<IEngine>().IsFullyInitialized)
 				{
-					var prop = e.Component.Metadata.Get("Property.T") as FastProperty;
-					if (prop != null)
+					if (e.Component.Metadata.Get("Property.T") is FastProperty prop)
 					{
 						try
 						{
@@ -730,9 +728,8 @@ namespace SmartStore.Web.Framework
 			
 			var baseType = typeof(WebApiEntityController<,>);
 			var type = registration.Activator.LimitType;
-			Type implementingType;
 
-			if (!type.IsSubClass(baseType, out implementingType))
+			if (!type.IsSubClass(baseType, out var implementingType))
 				return;
 
 			var repoProperty = FindRepositoryProperty(type, implementingType.GetGenericArguments()[0]);
@@ -1155,8 +1152,7 @@ namespace SmartStore.Web.Framework
                 Service service,
                 Func<Service, IEnumerable<IComponentRegistration>> registrations)
         {
-            var ts = service as TypedService;
-            if (ts != null && typeof(ISettings).IsAssignableFrom(ts.ServiceType))
+            if (service is TypedService ts && typeof(ISettings).IsAssignableFrom(ts.ServiceType))
             {
 				var buildMethod = BuildMethod.MakeGenericMethod(ts.ServiceType);
 				yield return (IComponentRegistration)buildMethod.Invoke(null, null);
@@ -1169,11 +1165,9 @@ namespace SmartStore.Web.Framework
 				.ForDelegate((c, p) =>
 				{
 					int currentStoreId = 0;
-					IStoreContext storeContext;
-
 					try
 					{
-						if (c.TryResolve(out storeContext))
+						if (c.TryResolve(out IStoreContext storeContext))
 						{
 							currentStoreId = storeContext.CurrentStore.Id;
 							//uncomment the code below if you want load settings per store only when you have two stores installed.

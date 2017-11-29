@@ -102,7 +102,7 @@ namespace SmartStore.Services.Messages
             var subjectReplaced = _tokenizer.Replace(subject, tokens, false);
             var bodyReplaced = _tokenizer.Replace(body, tokens, true);
 			
-            bodyReplaced = WebHelper.MakeAllUrlsAbsolute(bodyReplaced, _httpRequest);
+			bodyReplaced = WebHelper.MakeAllUrlsAbsolute(bodyReplaced, _httpRequest);
 			
             var email = new QueuedEmail
             {
@@ -205,38 +205,39 @@ namespace SmartStore.Services.Messages
             if (customer == null)
                 return string.Empty;
 
-            Func<Address, string> getName = (address) => {
-                if (address == null)
-                    return null;
-
-                string result = string.Empty;
-                if (address.FirstName.HasValue() || address.LastName.HasValue())
-                {
-                    result = string.Format("{0} {1}", address.FirstName, address.LastName).Trim();
-                }
-
-                if (address.Company.HasValue())
-                {
-                    result = string.Concat(result, result.HasValue() ? ", " : "", address.Company);
-                }
-
-                return result;
-            };
-
-            string name = getName(customer.BillingAddress);
+            string name = GetName(customer.BillingAddress);
             if (name.IsEmpty())
             {
-                name = getName(customer.ShippingAddress);
+                name = GetName(customer.ShippingAddress);
             }
             if (name.IsEmpty())
             {
-                name = getName(customer.Addresses.FirstOrDefault());
+                name = GetName(customer.Addresses.FirstOrDefault());
             }
 
             name = name.TrimSafe().NullEmpty();
 
             return name ?? customer.Username.EmptyNull();
-        }
+
+			string GetName(Address address)
+			{
+				if (address == null)
+					return null;
+
+				string result = string.Empty;
+				if (address.FirstName.HasValue() || address.LastName.HasValue())
+				{
+					result = string.Format("{0} {1}", address.FirstName, address.LastName).Trim();
+				}
+
+				if (address.Company.HasValue())
+				{
+					result = string.Concat(result, result.HasValue() ? ", " : "", address.Company);
+				}
+
+				return result;
+			};
+		}
 
 		protected Language EnsureLanguageIsActive(int languageId, int storeId)
         {
@@ -1178,9 +1179,8 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("giftCard");
 
 			Store store = null;
-			var order = giftCard.PurchasedWithOrderItem != null ?
-				giftCard.PurchasedWithOrderItem.Order :
-				null;
+			var order = giftCard?.PurchasedWithOrderItem?.Order;
+
 			if (order != null)
 				store = _storeService.GetStoreById(order.StoreId);
 			if (store == null)

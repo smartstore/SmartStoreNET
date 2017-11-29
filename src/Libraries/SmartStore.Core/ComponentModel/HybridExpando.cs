@@ -116,7 +116,7 @@ namespace SmartStore.ComponentModel
 
 		public override IEnumerable<string> GetDynamicMemberNames()
         {
-            foreach (var prop in this.GetProperties(false))
+            foreach (var prop in this.GetProperties(true))
                 yield return prop.Key;
         }
 

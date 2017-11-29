@@ -71,12 +71,12 @@ namespace SmartStore.ComponentModel
         /// </summary>
         private Type _instanceType;
 
-        /// <summary>
-        /// String Dictionary that contains the extra dynamic values
-        /// stored on this object/instance
-        /// </summary>        
-        /// <remarks>Using PropertyBag to support XML Serialization of the dictionary</remarks>
-        public PropertyBag Properties = new PropertyBag();
+		/// <summary>
+		/// String Dictionary that contains the extra dynamic and overridden instance values
+		/// stored on this object/instance
+		/// </summary>        
+		/// <remarks>Using PropertyBag to support XML Serialization of the dictionary</remarks>
+		public PropertyBag Properties = new PropertyBag();
 
         /// <summary>
         /// This constructor just works off the internal dictionary and any 
@@ -116,9 +116,22 @@ namespace SmartStore.ComponentModel
 
 		public override IEnumerable<string> GetDynamicMemberNames()
         {
-            foreach (var prop in this.GetProperties(false))
-                yield return prop.Key;
-        }
+			foreach (var kvp in this.Properties.Keys)
+			{
+				yield return kvp;
+			}
+
+			if (_instance != null)
+			{
+				foreach (var kvp in FastProperty.GetProperties(_instance))
+				{
+					if (!this.Properties.ContainsKey(kvp.Key))
+					{
+						yield return kvp.Key;
+					}
+				}
+			}
+		}
 
 
         /// <summary>
@@ -138,7 +151,7 @@ namespace SmartStore.ComponentModel
 			result = null;
 
 			// first check the Properties collection for member
-			if (Properties.Keys.Contains(name))
+			if (Properties.ContainsKey(name))
 			{
 				result = Properties[name];
 				return true;
@@ -174,7 +187,14 @@ namespace SmartStore.ComponentModel
 
 		protected virtual bool TrySetMemberCore(string name, object value)
 		{
-			// first check to see if there's a native property to set
+			// First check to see if there's a custom or overridden dynamic member
+			if (Properties.ContainsKey(name))
+			{
+				Properties[name] = value;
+				return true;
+			}
+
+			// Check to see if there's a native property to set
 			if (_instance != null)
 			{
 				try
@@ -189,6 +209,19 @@ namespace SmartStore.ComponentModel
 			// no match - set or add to dictionary
 			Properties[name] = value;
 			return true;
+		}
+
+		/// <summary>
+		/// Overrides an instance member. After calling Override(), the member's value
+		/// is retrieved from the dynamic PropertyBag, not via instance reflection anymore.
+		/// This method is just a shortcut for <code>Properties[name] = value;</code>
+		/// </summary>
+		/// <param name="name">The property name to override</param>
+		/// <param name="value">The new value. Can be of any type and doesn't need to match the overridden propertie's type.</param>
+		public void Override(string name, object value = null)
+		{
+			Guard.NotEmpty(name, nameof(name));
+			Properties[name] = value;
 		}
 
 		/// <summary>
@@ -267,7 +300,7 @@ namespace SmartStore.ComponentModel
         protected bool InvokeMethod(object instance, string name, object[] args, out object result)
         {
             // Look at the instanceType
-            var mi = _instanceType != null ? _instanceType.GetMethod(name, BindingFlags.Instance | BindingFlags.Public) : null;
+            var mi = _instanceType?.GetMethod(name, BindingFlags.Instance | BindingFlags.Public);
             if (mi != null)
             {
                 result = mi.Invoke(instance ?? this, args);
@@ -302,8 +335,7 @@ namespace SmartStore.ComponentModel
 		{
 			get
 			{
-				object result = null;
-				if (!TryGetMemberCore(key, out result))
+				if (!TryGetMemberCore(key, out var result))
 				{
 					throw new KeyNotFoundException();
 				}
@@ -324,9 +356,9 @@ namespace SmartStore.ComponentModel
 		/// <returns></returns>
 		public IEnumerable<KeyValuePair<string, object>> GetProperties(bool includeInstanceProperties = false)
         {
-			foreach (var key in this.Properties.Keys)
+			foreach (var kvp in this.Properties)
 			{
-				yield return new KeyValuePair<string, object>(key, this.Properties[key]);
+				yield return kvp;
 			}
 				
 			if (includeInstanceProperties && _instance != null)
@@ -339,7 +371,6 @@ namespace SmartStore.ComponentModel
 					}
 				}
             }
-
         }
 
         /// <summary>
@@ -397,13 +428,7 @@ namespace SmartStore.ComponentModel
 		{
 			get
 			{
-				var count = Properties.Count;
-				if (_instanceType != null)
-				{
-					count += FastProperty.GetProperties(_instanceType).Count;
-				}
-
-				return count;
+				return GetDynamicMemberNames().Count();
 			}
 		}
 

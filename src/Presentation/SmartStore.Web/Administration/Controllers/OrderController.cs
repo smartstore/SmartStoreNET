@@ -692,7 +692,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
 		protected ShipmentModel PrepareShipmentModel(Shipment shipment, bool prepareProducts, bool prepareAddresses)
         {
-            //measures
+            // Measures
             var baseWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
             var baseWeightIn = baseWeight != null ? baseWeight.Name : "";
             var baseDimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId);
@@ -705,6 +705,8 @@ namespace SmartStore.Admin.Controllers
                 Id = shipment.Id,
                 OrderId = shipment.OrderId,
 				StoreId = orderStoreId,
+				OrderNumber = shipment.Order.GetOrderNumber(),
+				PurchaseOrderNumber = shipment.Order.PurchaseOrderNumber,
 				ShippingMethod = shipment.Order.ShippingMethod,
                 TrackingNumber = shipment.TrackingNumber,
                 TotalWeight = shipment.TotalWeight.HasValue ? string.Format("{0:F2} [{1}]", shipment.TotalWeight, baseWeightIn) : "",
@@ -732,14 +734,14 @@ namespace SmartStore.Admin.Controllers
                     if (orderItem == null)
                         continue;
 
-                    //quantities
+                    // Quantities
                     var qtyInThisShipment = shipmentItem.Quantity;
                     var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
                     var qtyOrdered = orderItem.Quantity;
                     var qtyInAllShipments = orderItem.GetShipmentItemsCount();
 
                     orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
-                    var shipmentItemModel = new ShipmentModel.ShipmentItemModel()
+                    var shipmentItemModel = new ShipmentModel.ShipmentItemModel
                     {
                         Id = shipmentItem.Id,
                         OrderItemId = orderItem.Id,
@@ -761,6 +763,7 @@ namespace SmartStore.Admin.Controllers
                     model.Items.Add(shipmentItemModel);
                 }
             }
+
             return model;
         }
 

@@ -12,6 +12,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Templating;
 using SmartStore.Core.Email;
+using PreMailer.Net;
 
 namespace SmartStore.Services.Messages
 {
@@ -96,6 +97,9 @@ namespace SmartStore.Services.Messages
 
 			var subject = RenderTemplate(messageTemplate.GetLocalized((x) => x.Subject, languageId), model, formatProvider);
 			var body = RenderBodyTemplate(messageContext, model, formatProvider);
+
+			// CSS inliner
+			body = MoveCssInline(body, model);
 
 			// Create queued email from template
 			var qe = new QueuedEmail
@@ -188,6 +192,22 @@ namespace SmartStore.Services.Messages
 		private string BuildTemplateKey(MessageContext messageContext)
 		{
 			return "MessageTemplate/" + messageContext.MessageTemplate.Name + "/" + messageContext.Language.Id + "/Body";
+		}
+
+		private string MoveCssInline(string html, dynamic model)
+		{
+			Uri baseUri = null;
+
+			try
+			{
+				// 'Store' is a global model part, so we pretty can be sure it exists
+				baseUri = new Uri((string)model.Store.Url);
+			}
+			catch { }
+
+			var pm = new PreMailer.Net.PreMailer(html, baseUri);
+			var result = pm.MoveCssInline(true, "#ignore");
+			return result.Html;
 		}
 
 		protected virtual void CreateAttachments(QueuedEmail queuedEmail, MessageContext messageContext)

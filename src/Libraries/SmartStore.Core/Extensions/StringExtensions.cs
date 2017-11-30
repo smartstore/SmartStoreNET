@@ -9,7 +9,8 @@ using System.IO;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using HtmlAgilityPack;
+using AngleSharp.Dom;
+using AngleSharp.Parser.Html;
 
 namespace SmartStore
 {
@@ -456,29 +457,28 @@ namespace SmartStore
 			if (source.IsEmpty())
 				return string.Empty;
 
-			var doc = new HtmlDocument
-			{
-				OptionOutputOriginalCase = true,
-				OptionFixNestedTags = true,
-				OptionAutoCloseOnEnd = true,
-				OptionDefaultStreamEncoding = Encoding.UTF8
-			};
+			var ignoreTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "script", "style", "svg", "img" };
 
-			doc.LoadHtml(source);
-			var nodes = doc.DocumentNode.Descendants().Where(n =>
-			   n.NodeType == HtmlNodeType.Text &&
-			   n.ParentNode.Name != "script" &&
-			   n.ParentNode.Name != "style" &&
-			   n.ParentNode.Name != "svg");
+			var parser = new HtmlParser();
+			var doc = parser.Parse(source);
+
+			var treeWalker = doc.CreateTreeWalker(doc.Body, FilterSettings.Text);
 
 			var sb = new StringBuilder();
-			foreach (var node in nodes)
+
+			var node = treeWalker.ToNext();
+			while (node != null)
 			{
-				var text = node.InnerText;
-				if (text.HasValue())
+				if (!ignoreTags.Contains(node.Parent.NodeName))
 				{
-					sb.AppendLine(node.InnerText);
+					var text = node.TextContent;
+					if (text.HasValue())
+					{
+						sb.AppendLine(text);
+					}
 				}
+
+				node = treeWalker.ToNext();
 			}
 
 			return sb.ToString().HtmlDecode();

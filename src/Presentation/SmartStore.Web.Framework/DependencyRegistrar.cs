@@ -616,6 +616,9 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<DotLiquidTemplateEngine>().As<ITemplateEngine>().SingleInstance();
 			builder.RegisterType<DefaultTemplateManager>().As<ITemplateManager>().SingleInstance();
 
+			builder.RegisterType<MessageModelProvider>().As<IMessageModelProvider>().InstancePerRequest();
+			builder.RegisterType<MessageFactory>().As<IMessageFactory>().InstancePerRequest();
+
 			builder.RegisterType<MessageTemplateService>().As<IMessageTemplateService>().InstancePerRequest();
 			builder.RegisterType<QueuedEmailService>().As<IQueuedEmailService>().InstancePerRequest();
 			builder.RegisterType<NewsLetterSubscriptionService>().As<INewsLetterSubscriptionService>().InstancePerRequest();

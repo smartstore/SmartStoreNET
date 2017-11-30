@@ -18,6 +18,12 @@ namespace SmartStore.Templating.Liquid
 			_template = template;
 		}
 
+		public DateTime TimeStamp
+		{
+			get;
+			internal set;
+		}
+
 		public string Render(object data, IFormatProvider formatProvider)
 		{
 			Guard.NotNull(data, nameof(data));

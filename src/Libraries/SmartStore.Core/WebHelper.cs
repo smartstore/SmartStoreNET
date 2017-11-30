@@ -60,7 +60,7 @@ namespace SmartStore.Core
 		public virtual string GetClientIdent()
  		{
  			var ipAddress = this.GetCurrentIpAddress();
- 			var userAgent = _httpContext.Request != null ? _httpContext.Request.UserAgent : string.Empty;
+ 			var userAgent = _httpContext.Request?.UserAgent.EmptyNull();
  
  			if (ipAddress.HasValue() && userAgent.HasValue())
  			{

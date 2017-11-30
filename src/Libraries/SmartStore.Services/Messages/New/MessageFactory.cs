@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
+using System.Globalization;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Localization;
@@ -11,14 +11,18 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Templating;
+using SmartStore.Core.Email;
 
 namespace SmartStore.Services.Messages
 {
-	public partial class MessageFactory
+	public partial class MessageFactory : IMessageFactory
 	{
 		private readonly ICommonServices _services;
+		private readonly ITemplateEngine _templateEngine;
 		private readonly ITemplateManager _templateManager;
+		private readonly IMessageModelProvider _modelProvider;
 		private readonly IMessageTemplateService _messageTemplateService;
+		private readonly IQueuedEmailService _queuedEmailService;
 		private readonly ILanguageService _languageService;
 		private readonly IEmailAccountService _emailAccountService;
 		private readonly EmailAccountSettings _emailAccountSettings;
@@ -26,9 +30,12 @@ namespace SmartStore.Services.Messages
 		private readonly IDownloadService _downloadService;
 
 		public MessageFactory(
-			ICommonServices services, 
+			ICommonServices services,
+			ITemplateEngine templateEngine,
 			ITemplateManager templateManager,
+			IMessageModelProvider modelProvider,
 			IMessageTemplateService messageTemplateService,
+			IQueuedEmailService queuedEmailService,
 			ILanguageService languageService,
 			IEmailAccountService emailAccountService,
 			EmailAccountSettings emailAccountSettings,
@@ -36,8 +43,11 @@ namespace SmartStore.Services.Messages
 			HttpRequestBase httpRequest)
 		{
 			_services = services;
+			_templateEngine = templateEngine;
 			_templateManager = templateManager;
+			_modelProvider = modelProvider;
 			_messageTemplateService = messageTemplateService;
+			_queuedEmailService = queuedEmailService;
 			_languageService = languageService;
 			_emailAccountService = emailAccountService;
 			_emailAccountSettings = emailAccountSettings;
@@ -51,17 +61,167 @@ namespace SmartStore.Services.Messages
 		public Localizer T { get; set; }
 		public ILogger Logger { get; set; }
 
-		public QueuedEmail CreateMessage(MessageContext context, bool queue, params object[] modelParts)
+		public virtual (QueuedEmail Email, dynamic Model) CreateMessage(MessageContext messageContext, bool queue, params object[] modelParts)
 		{
-			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(messageContext, nameof(messageContext));
 
-			ValidateMessageContext(context);
+			ValidateMessageContext(messageContext);
 
-			// TODO: (mc) Liquid > add models (Store, Contact, Bank, Customer, EmailAccount etc. > all globals)
+			var model = new ExpandoObject() as IDictionary<string, object>;
+
+			// Add all global template model parts
+			_modelProvider.AddGlobalModelParts(messageContext, model);
+
+			// Add specific template models for passed parts
+			foreach (var part in modelParts)
+			{
+				_modelProvider.AddModelPart(part, messageContext, model);
+			}
+
+			// Give implementors the chance to customize the final template model
+			_services.EventPublisher.Publish(new MessageModelCreatedEvent(messageContext, (dynamic)model));
+
 			// TODO: (mc) Liquid > Handle ctx.ReplyToCustomer, but how?
 
-			return null;
+			// Get format provider for requested language
+			var formatProvider = GetFormatProvider(messageContext);
+
+			var messageTemplate = messageContext.MessageTemplate;
+			var languageId = messageContext.Language.Id;
+
+			// Render templates
+			var to = RenderTemplate("John Doe <john@doe.com>", model, formatProvider).Convert<EmailAddress>(); // TODO: (mc) Liquid > Make MessageTemplate field
+			var bcc = RenderTemplate(messageTemplate.GetLocalized((x) => x.BccEmailAddresses, languageId), model, formatProvider, false);
+			var replyTo = RenderTemplate("He Man <he@man.com>", model, formatProvider, false)?.Convert<EmailAddress>(); // TODO: (mc) Liquid > Make MessageTemplate field
+
+			var subject = RenderTemplate(messageTemplate.GetLocalized((x) => x.Subject, languageId), model, formatProvider);
+			var body = RenderBodyTemplate(messageContext, model, formatProvider);
+
+			// Create queued email from template
+			var qe = new QueuedEmail
+			{
+				Priority = 5,
+				From = messageContext.EmailAccount.Email,
+				FromName = messageContext.EmailAccount.DisplayName,
+				To = to.Address,
+				ToName = to.DisplayName, // TODO: (mc) Liquid > Combine both Address & DisplayName fields (?) 
+				Bcc = bcc,
+				ReplyTo = replyTo?.Address,
+				ReplyToName = replyTo?.DisplayName,
+				Subject = subject,
+				Body = body,
+				CreatedOnUtc = DateTime.UtcNow,
+				EmailAccountId = messageContext.EmailAccount.Id,
+				SendManually = messageTemplate.SendManually
+			};
+
+			// Create and add attachments (if any)
+			CreateAttachments(qe, messageContext);
+
+			if (queue)
+			{
+				// Put to queue
+				QueueMessage(qe, messageContext, (dynamic)model);
+			}
+
+			return (qe, (dynamic)model);
 		}
+
+		public virtual void QueueMessage(QueuedEmail queuedEmail, MessageContext messageContext, dynamic model)
+		{
+			Guard.NotNull(queuedEmail, nameof(queuedEmail));
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(model, nameof(model));
+
+			// Publish event so that integrators can add attachments, alter the email etc.
+			_services.EventPublisher.Publish(new MessageQueuingEvent
+			{
+				QueuedEmail = queuedEmail,
+				MessageContext = messageContext,
+				MessageModel = model
+			});
+
+			_queuedEmailService.InsertQueuedEmail(queuedEmail);
+		}
+
+		private IFormatProvider GetFormatProvider(MessageContext messageContext)
+		{
+			var culture = messageContext.Language.LanguageCulture;
+
+			if (LocalizationHelper.IsValidCultureCode(culture))
+			{
+				return CultureInfo.GetCultureInfo(culture);
+			}
+
+			return CultureInfo.CurrentCulture;
+		}
+
+		private string RenderTemplate(string template, dynamic model, IFormatProvider formatProvider, bool required = true)
+		{
+			if (!required && template.IsEmpty())
+			{
+				return null;
+			}			
+
+			return _templateEngine.Render(template, model, formatProvider);
+		}
+
+		private string RenderBodyTemplate(MessageContext messageContext, dynamic model, IFormatProvider formatProvider)
+		{
+			var key = BuildTemplateKey(messageContext);
+			var template = _templateManager.GetOrAdd(key, GetBodyTemplate);
+
+			if (true) // TODO: (mc) Liquid > Check TimeSpan and invalidate
+			{
+				template = _templateEngine.Compile(GetBodyTemplate());
+				_templateManager.Put(key, template);
+			}
+
+			return template.Render(model, formatProvider);
+
+			string GetBodyTemplate()
+			{
+				return messageContext.MessageTemplate.GetLocalized((x) => x.Body, messageContext.Language.Id);
+			}
+		}
+
+		private string BuildTemplateKey(MessageContext messageContext)
+		{
+			return "MessageTemplate/" + messageContext.MessageTemplate.Name + "/" + messageContext.Language.Id + "/Body";
+		}
+
+		protected virtual void CreateAttachments(QueuedEmail queuedEmail, MessageContext messageContext)
+		{
+			var messageTemplate = messageContext.MessageTemplate;
+			var languageId = messageContext.Language.Id;
+
+			// create attachments if any
+			var fileIds = (new int?[]
+				{
+					messageTemplate.GetLocalized(x => x.Attachment1FileId, languageId),
+					messageTemplate.GetLocalized(x => x.Attachment2FileId, languageId),
+					messageTemplate.GetLocalized(x => x.Attachment3FileId, languageId)
+				})
+				.Where(x => x.HasValue)
+				.Select(x => x.Value)
+				.ToArray();
+
+			if (fileIds.Any())
+			{
+				var files = _downloadService.GetDownloadsByIds(fileIds);
+				foreach (var file in files)
+				{
+					queuedEmail.Attachments.Add(new QueuedEmailAttachment
+					{
+						StorageLocation = EmailAttachmentStorageLocation.FileReference,
+						FileId = file.Id,
+						Name = (file.Filename.NullEmpty() ?? file.Id.ToString()) + file.Extension.EmptyNull(),
+						MimeType = file.ContentType.NullEmpty() ?? "application/octet-stream"
+					});
+				}
+			}
+		}
+
 
 		private void ValidateMessageContext(MessageContext ctx)
 		{

@@ -283,6 +283,9 @@
     <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
+    <Compile Include="Messages\New\Events.cs" />
+    <Compile Include="Messages\New\IMessageFactory.cs" />
+    <Compile Include="Messages\New\IMessageModelProvider.cs" />
     <Compile Include="Messages\New\MessageFactory.cs" />
     <Compile Include="Messages\New\MessageContext.cs" />
     <Compile Include="Messages\New\MessageModelProvider.cs" />

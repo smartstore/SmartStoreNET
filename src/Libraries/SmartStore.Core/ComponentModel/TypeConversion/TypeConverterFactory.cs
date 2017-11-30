@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Email;
 
 namespace SmartStore.ComponentModel
 {
@@ -41,6 +42,8 @@ namespace SmartStore.ComponentModel
 			_typeConverters.TryAdd(typeof(Dictionary<string, object>), converter);
 			_typeConverters.TryAdd(typeof(RouteValueDictionary), new DictionaryTypeConverter<RouteValueDictionary>());
 			_typeConverters.TryAdd(typeof(ExpandoObject), new DictionaryTypeConverter<ExpandoObject>());
+
+			_typeConverters.TryAdd(typeof(EmailAddress), new EmailAddressConverter());
 		}
 
 		public static void RegisterConverter<T>(ITypeConverter typeConverter)

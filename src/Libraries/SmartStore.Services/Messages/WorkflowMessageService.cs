@@ -1119,8 +1119,10 @@ namespace SmartStore.Services.Messages
             Guard.NotNull(cfg, nameof(cfg));
             Guard.NotEmpty(messageTemplateName, nameof(messageTemplateName));
 
-            var ctx = new GenericMessageContext();
-            ctx.MessagenTokenProvider = _messageTokenProvider;
+            var ctx = new GenericMessageContext
+			{
+				MessagenTokenProvider = _messageTokenProvider
+			};
 
             cfg(ctx);
 

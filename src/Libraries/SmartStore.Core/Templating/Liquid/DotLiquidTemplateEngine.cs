@@ -15,7 +15,10 @@ namespace SmartStore.Templating.Liquid
 		{
 			Guard.NotEmpty(template, nameof(template));
 
-			return new DotLiquidTemplate(Template.Parse(template));
+			return new DotLiquidTemplate(Template.Parse(template))
+			{
+				TimeStamp = DateTime.UtcNow
+			};
 		}
 
 		public string Render(string template, object data, IFormatProvider formatProvider)

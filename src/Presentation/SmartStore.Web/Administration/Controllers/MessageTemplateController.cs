@@ -17,10 +17,8 @@ using Telerik.Web.Mvc;
 namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
-    public class MessageTemplateController : AdminControllerBase
+    public partial class MessageTemplateController : AdminControllerBase
     {
-        #region Fields
-
         private readonly IMessageTemplateService _messageTemplateService;
         private readonly IEmailAccountService _emailAccountService;
         private readonly ILanguageService _languageService;
@@ -31,7 +29,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
         private readonly EmailAccountSettings _emailAccountSettings;
-        #endregion Fields
 
         #region Constructors
 
@@ -116,7 +113,7 @@ namespace SmartStore.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
                 return AccessDeniedView();
-
+			
 			var model = new MessageTemplateListModel();
 
 			foreach (var s in _storeService.GetAllStores())

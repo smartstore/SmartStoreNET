@@ -613,7 +613,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			// Templating
-			builder.RegisterType<DotLiquidTemplateEngine>().As<ITemplateEngine>().SingleInstance();
+			builder.RegisterType<LiquidTemplateEngine>().As<ITemplateEngine>().SingleInstance();
 			builder.RegisterType<DefaultTemplateManager>().As<ITemplateManager>().SingleInstance();
 
 			builder.RegisterType<MessageModelProvider>().As<IMessageModelProvider>().InstancePerRequest();

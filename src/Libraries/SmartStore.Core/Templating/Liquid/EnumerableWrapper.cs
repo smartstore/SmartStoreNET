@@ -30,7 +30,7 @@ namespace SmartStore.Templating.Liquid
 		{
 			return _enumerable
 				.Cast<object>()
-				.Select(x => DotLiquidUtil.CreateSafeObject(x))
+				.Select(x => LiquidUtil.CreateSafeObject(x))
 				.OfType<ILiquidizable>()
 				.GetEnumerator();
 		}

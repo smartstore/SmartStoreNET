@@ -4,9 +4,9 @@ using DotLiquid.NamingConventions;
 
 namespace SmartStore.Templating.Liquid
 {
-	public partial class DotLiquidTemplateEngine : ITemplateEngine
+	public partial class LiquidTemplateEngine : ITemplateEngine
 	{
-		public DotLiquidTemplateEngine()
+		public LiquidTemplateEngine()
 		{
 			Template.NamingConvention = new CSharpNamingConvention();
 		}
@@ -15,7 +15,7 @@ namespace SmartStore.Templating.Liquid
 		{
 			Guard.NotEmpty(template, nameof(template));
 
-			return new DotLiquidTemplate(Template.Parse(template))
+			return new LiquidTemplate(Template.Parse(template))
 			{
 				TimeStamp = DateTime.UtcNow
 			};

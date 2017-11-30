@@ -16,7 +16,7 @@ namespace SmartStore.Templating.Liquid
 		{
 			if (!_safeObjects.TryGetValue(name, out var safeObject))
 			{
-				safeObject = DotLiquidUtil.CreateSafeObject(InvokeMember(name));
+				safeObject = LiquidUtil.CreateSafeObject(InvokeMember(name));
 				if (safeObject is ISafeObject)
 				{
 					_safeObjects[name] = safeObject;

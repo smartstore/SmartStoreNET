@@ -15,7 +15,7 @@ using SmartStore.Templating.Liquid;
 namespace SmartStore.Core.Tests.Templating
 {
 	[TestFixture]
-	public class DotLiquidTemplateTests
+	public class LiquidTemplateTests
 	{
 		private ITemplateEngine _engine;
 		private IFormatProvider _deCulture;
@@ -26,7 +26,7 @@ namespace SmartStore.Core.Tests.Templating
 		{
 			_deCulture = CultureInfo.GetCultureInfo("de-DE");
 			_enCulture = CultureInfo.GetCultureInfo("en-US");
-			_engine = new DotLiquidTemplateEngine();
+			_engine = new LiquidTemplateEngine();
 		}
 
 		[Test]

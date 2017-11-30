@@ -456,7 +456,7 @@ namespace SmartStore
 			if (source.IsEmpty())
 				return string.Empty;
 
-			var doc = new HtmlDocument()
+			var doc = new HtmlDocument
 			{
 				OptionOutputOriginalCase = true,
 				OptionFixNestedTags = true,

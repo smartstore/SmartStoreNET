@@ -467,9 +467,9 @@
     <Compile Include="Templating\ITemplateEngine.cs" />
     <Compile Include="Templating\ITemplateManager.cs" />
     <Compile Include="Templating\Liquid\DictionaryDrop.cs" />
-    <Compile Include="Templating\Liquid\DotLiquidTemplate.cs" />
-    <Compile Include="Templating\Liquid\DotLiquidTemplateEngine.cs" />
-    <Compile Include="Templating\Liquid\DotLiquidUtil.cs" />
+    <Compile Include="Templating\Liquid\LiquidTemplate.cs" />
+    <Compile Include="Templating\Liquid\LiquidTemplateEngine.cs" />
+    <Compile Include="Templating\Liquid\LiquidUtil.cs" />
     <Compile Include="Templating\Liquid\EnumerableWrapper.cs" />
     <Compile Include="Templating\Liquid\ObjectDrop.cs" />
     <Compile Include="Templating\Liquid\SafeDropBase.cs" />

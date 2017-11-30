@@ -7,11 +7,11 @@ using SmartStore.ComponentModel;
 
 namespace SmartStore.Templating.Liquid
 {
-	internal class DotLiquidTemplate : ITemplate
+	internal class LiquidTemplate : ITemplate
 	{
 		private readonly Template _template;
 
-		public DotLiquidTemplate(Template template)
+		public LiquidTemplate(Template template)
 		{
 			Guard.NotNull(template, nameof(template));
 
@@ -43,7 +43,7 @@ namespace SmartStore.Templating.Liquid
 			{
 				foreach (var kvp in dict)
 				{
-					hash[kvp.Key] = DotLiquidUtil.CreateSafeObject(kvp.Value);
+					hash[kvp.Key] = LiquidUtil.CreateSafeObject(kvp.Value);
 				}
 			}
 			else
@@ -51,7 +51,7 @@ namespace SmartStore.Templating.Liquid
 				var props = FastProperty.GetProperties(data);
 				foreach (var prop in props)
 				{
-					hash[prop.Key] = DotLiquidUtil.CreateSafeObject(prop.Value.GetValue(data));
+					hash[prop.Key] = LiquidUtil.CreateSafeObject(prop.Value.GetValue(data));
 				}
 			}
 

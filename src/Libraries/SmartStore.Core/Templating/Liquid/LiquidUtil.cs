@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SmartStore.Templating.Liquid
 {
-	internal static class DotLiquidUtil
+	internal static class LiquidUtil
 	{
 		private static readonly IDictionary<Type, Func<object, object>> _typeWrapperCache 
 			= new Dictionary<Type, Func<object, object>>();

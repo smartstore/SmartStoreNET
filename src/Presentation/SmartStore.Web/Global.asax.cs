@@ -15,6 +15,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Themes;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Bundling;
 using SmartStore.Web.Framework.Filters;

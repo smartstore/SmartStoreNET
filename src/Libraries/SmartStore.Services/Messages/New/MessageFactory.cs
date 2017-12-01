@@ -12,7 +12,11 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Templating;
 using SmartStore.Core.Email;
-using PreMailer.Net;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Messages
 {
@@ -66,12 +70,20 @@ namespace SmartStore.Services.Messages
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 
-			ValidateMessageContext(messageContext);
+			ValidateMessageContext(messageContext, ref modelParts);
+
+			modelParts = modelParts ?? new object[0];
 
 			var model = new ExpandoObject() as IDictionary<string, object>;
 
 			// Add all global template model parts
 			_modelProvider.AddGlobalModelParts(messageContext, model);
+
+			// Handle TestMode
+			if (messageContext.TestMode && modelParts.Length == 0)
+			{
+				modelParts = GetTestEntities(messageContext).ToArray();
+			}
 
 			// Add specific template models for passed parts
 			foreach (var part in modelParts)
@@ -96,10 +108,12 @@ namespace SmartStore.Services.Messages
 			var replyTo = RenderTemplate("He Man <he@man.com>", model, formatProvider, false)?.Convert<EmailAddress>(); // TODO: (mc) Liquid > Make MessageTemplate field
 
 			var subject = RenderTemplate(messageTemplate.GetLocalized((x) => x.Subject, languageId), model, formatProvider);
+			((dynamic)model).Email.Subject = subject;
+
 			var body = RenderBodyTemplate(messageContext, model, formatProvider);
 
 			// CSS inliner
-			body = MoveCssInline(body, model);
+			body = InlineCss(body, model);
 
 			// Create queued email from template
 			var qe = new QueuedEmail
@@ -148,6 +162,17 @@ namespace SmartStore.Services.Messages
 			_queuedEmailService.InsertQueuedEmail(queuedEmail);
 		}
 
+		public virtual IEnumerable<BaseEntity> GetTestEntities(MessageContext messageContext)
+		{
+			// TODO: (mc) Liquid > implement!
+			yield return new Product();
+			yield return new Order();
+			yield return new Shipment();
+			yield return new OrderNote();
+			yield return new RecurringPayment();
+			yield return new GiftCard();
+		}
+
 		private IFormatProvider GetFormatProvider(MessageContext messageContext)
 		{
 			var culture = messageContext.Language.LanguageCulture;
@@ -194,7 +219,7 @@ namespace SmartStore.Services.Messages
 			return "MessageTemplate/" + messageContext.MessageTemplate.Name + "/" + messageContext.Language.Id + "/Body";
 		}
 
-		private string MoveCssInline(string html, dynamic model)
+		private string InlineCss(string html, dynamic model)
 		{
 			Uri baseUri = null;
 
@@ -243,7 +268,7 @@ namespace SmartStore.Services.Messages
 		}
 
 
-		private void ValidateMessageContext(MessageContext ctx)
+		private void ValidateMessageContext(MessageContext ctx, ref object[] modelParts)
 		{
 			if (!ctx.StoreId.HasValue)
 			{
@@ -269,12 +294,22 @@ namespace SmartStore.Services.Messages
 
 			if (ctx.Customer == null)
 			{
-				ctx.Customer = _services.WorkContext.CurrentCustomer;
+				Customer customer = null;
+				if (modelParts != null)
+				{
+					customer = modelParts.OfType<Customer>().FirstOrDefault();
+					if (customer != null)
+					{
+						modelParts = modelParts.Where(x => !object.ReferenceEquals(x, customer)).ToArray();
+					}
+				}
+
+				ctx.Customer = customer ?? _services.WorkContext.CurrentCustomer;
 			}
 
 			if (ctx.Customer.IsSystemAccount)
 			{
-				throw new ArgumentException("Cannot create messages for customer system accounts.", nameof(ctx));
+				throw new ArgumentException("Cannot create messages for system customer accounts.", nameof(ctx));
 			}
 
 			if (ctx.MessageTemplate == null)

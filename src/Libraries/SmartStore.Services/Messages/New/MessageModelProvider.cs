@@ -26,12 +26,14 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Core;
+using SmartStore.Templating;
 
 namespace SmartStore.Services.Messages
 {
 	public partial class MessageModelProvider : IMessageModelProvider
 	{
 		private readonly ICommonServices _services;
+		private readonly ITemplateEngine _templateEngine;
 		private readonly IEmailAccountService _emailAccountService;
 		private readonly MediaSettings _mediaSettings;
 		private readonly ContactDataSettings _contactDataSettings;
@@ -45,6 +47,7 @@ namespace SmartStore.Services.Messages
 
 		public MessageModelProvider(
 			ICommonServices services,
+			ITemplateEngine templateEngine,
 			IEmailAccountService emailAccountService,
 			MediaSettings mediaSettings,
 			ContactDataSettings contactDataSettings,
@@ -57,6 +60,7 @@ namespace SmartStore.Services.Messages
 			SecuritySettings securitySettings)
 		{
 			_services = services;
+			_templateEngine = templateEngine;
 			_emailAccountService = emailAccountService;
 			_mediaSettings = mediaSettings;
 			_contactDataSettings = contactDataSettings;
@@ -73,7 +77,10 @@ namespace SmartStore.Services.Messages
 		{
 			Guard.NotNull(model, nameof(model));
 
+			model["Email"] = new ExpandoObject();
+			model["Theme"] = CreateThemeModelPart();
 			model["Store"] = CreateModelPart(messageContext.Store, messageContext);
+			model["Customer"] = CreateModelPart(messageContext.Customer, messageContext);
 			model["Company"] = CreateCompanyModelPart();
 			model["Contact"] = CreateContactModelPart();
 			model["Bank"] = CreateBankModelPart();
@@ -89,86 +96,93 @@ namespace SmartStore.Services.Messages
 
 			object modelPart = null;
 
-			switch (part)
+			if (messageContext.TestMode && part is BaseEntity be)
 			{
-				case Order x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case Product x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case Customer x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case Shipment x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case OrderNote x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case RecurringPayment x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ReturnRequest x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case GiftCard x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case NewsLetterSubscription x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ProductReview x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case BlogComment x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case NewsComment x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ForumTopic x:
-					name = "Forum";
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ForumPost x:
-					name = "Forum";
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case Forum x:
-					name = "Forum";
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case PrivateMessage x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case BackInStockSubscription x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				default:
-					var evt = new MessageModelPartMappingEvent(part);
-					_services.EventPublisher.Publish(evt);
+				modelPart = _templateEngine.CreateTestModelFor(be, name);
+			}
+			else
+			{
+				switch (part)
+				{
+					case Order x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case Product x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					//case Customer x:
+					//	modelPart = CreateModelPart(x, messageContext);
+					//	break;
+					case Shipment x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case OrderNote x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case RecurringPayment x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case ReturnRequest x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case GiftCard x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case NewsLetterSubscription x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case ProductReview x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case BlogComment x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case NewsComment x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case ForumTopic x:
+						name = "Forum";
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case ForumPost x:
+						name = "Forum";
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case Forum x:
+						name = "Forum";
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case PrivateMessage x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					case BackInStockSubscription x:
+						modelPart = CreateModelPart(x, messageContext);
+						break;
+					default:
+						var evt = new MessageModelPartMappingEvent(part);
+						_services.EventPublisher.Publish(evt);
 
-					if (evt.Result != null && !object.ReferenceEquals(evt.Result, part))
-					{
-						modelPart = evt.Result;
-						if (evt.Name.HasValue())
+						if (evt.Result != null && !object.ReferenceEquals(evt.Result, part))
 						{
-							name = evt.Name;
+							modelPart = evt.Result;
+							if (evt.Name.HasValue())
+							{
+								name = evt.Name;
+							}
+							else
+							{
+								name = ResolvePartName(evt.Result) ?? name;
+							}
 						}
 						else
 						{
-							name = ResolvePartName(evt.Result) ?? name;
+							modelPart = part;
 						}
-					}
-					else
-					{
-						modelPart = part;
-					}
 
-					modelPart = evt.Result ?? part;
-					name = evt.Name.NullEmpty() ?? name;
-					break;
+						modelPart = evt.Result ?? part;
+						name = evt.Name.NullEmpty() ?? name;
+						break;
+				}
 			}
 
 			if (modelPart != null)
@@ -203,6 +217,27 @@ namespace SmartStore.Services.Messages
 		}
 
 		#region Global model part handlers
+
+		protected virtual object CreateThemeModelPart()
+		{
+			dynamic model = new ExpandoObject();
+
+			// TODO: (mc) Liquid > make theme variables (?)
+			model.FontFamily = "Arial, 'Helvetica Neue', Helvetica, sans-serif";
+			model.BodyBg = "#f2f4f6";
+			model.BodyColor = "#74787e";
+			model.TitleColor = "#2f3133";
+			model.ContentBg = "#fff";
+			model.ShadeColor = "#edeff2";
+			model.LinkColor = "#3869D4";
+			model.BrandPrimary = "#3f51b5";
+			model.BrandSuccess = "#4caf50";
+			model.BrandWarning = "#ff9800";
+			model.BrandDanger = "#f44336";
+			model.MutedColor = "#9ba2ab";
+
+			return model;
+		}
 
 		protected virtual object CreateCompanyModelPart()
 		{

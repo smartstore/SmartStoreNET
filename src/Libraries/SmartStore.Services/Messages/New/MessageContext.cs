@@ -33,5 +33,7 @@ namespace SmartStore.Services.Messages
 		/// </summary>
 		/// <remarks>Value is ignored, if <c>Customer</c> property is <c>null</c></remarks>
 		public bool ReplyToCustomer { get; set; }
+
+		public bool TestMode { get; set; }
 	}
 }

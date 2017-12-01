@@ -466,14 +466,17 @@
     <Compile Include="Templating\ITemplateEngine.cs" />
     <Compile Include="Templating\ITemplateManager.cs" />
     <Compile Include="Templating\Liquid\DictionaryDrop.cs" />
+    <Compile Include="Templating\Liquid\LiquidFileSystem.cs" />
     <Compile Include="Templating\Liquid\LiquidTemplate.cs" />
     <Compile Include="Templating\Liquid\LiquidTemplateEngine.cs" />
     <Compile Include="Templating\Liquid\LiquidUtil.cs" />
     <Compile Include="Templating\Liquid\EnumerableWrapper.cs" />
     <Compile Include="Templating\Liquid\ObjectDrop.cs" />
     <Compile Include="Templating\Liquid\SafeDropBase.cs" />
+    <Compile Include="Templating\Liquid\TestDrop.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\InheritedThemeFileResult.cs" />
+    <Compile Include="Themes\IThemeContext.cs" />
     <Compile Include="Themes\IThemeFileResolver.cs" />
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />

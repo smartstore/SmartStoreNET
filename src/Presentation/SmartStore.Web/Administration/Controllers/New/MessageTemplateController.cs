@@ -65,14 +65,13 @@ namespace SmartStore.Admin.Controllers
 			var context = new MessageContext
 			{
 				MessageTemplate = model,
-				Customer = Services.WorkContext.CurrentCustomer
+				Customer = Services.WorkContext.CurrentCustomer,
+				TestMode = true
 			};
 
-			var result = factory.CreateMessage(context, false, context.Customer);
+			var result = factory.CreateMessage(context, false);
 			var messageModel = result.Model;
-			var content = "Subject:\n{0}\n\nBody:\n{1}".FormatInvariant(result.Email.Subject, result.Email.Body);
-
-			return Content(content, "text/plain");
+			return Content(result.Email.Body, "text/html");
 		}
 	}
 }

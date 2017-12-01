@@ -1,0 +1,57 @@
+﻿
+@{ 
+	var cdn = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/";
+
+	Html.AddScriptParts(true,
+		cdn + "codemirror.min.js",
+		cdn + "addon/hint/show-hint.min.js",
+		cdn + "addon/hint/xml-hint.min.js",
+		cdn + "addon/hint/html-hint.min.js",
+		cdn + "addon/mode/multiplex.min.js",
+		cdn + "addon/mode/overlay.min.js",
+		cdn + "mode/xml/xml.min.js",
+		cdn + "mode/javascript/javascript.min.js",
+		cdn + "mode/css/css.min.js",
+		cdn + "mode/htmlmixed/htmlmixed.min.js",
+		cdn + "addon/selection/active-line.min.js",
+		cdn + "addon/edit/matchbrackets.min.js",
+		"~/Content/editors/CodeMirror/mode/liquid/liquid.js");
+
+	Html.AddCssFileParts(true,
+		cdn + "codemirror.min.css",
+		cdn + "addon/hint/show-hint.min.css",
+		cdn + "theme/eclipse.min.css",
+		"~/Content/editors/CodeMirror/mode/liquid/liquid.css");
+	}
+
+<script type="text/javascript">
+    $(function () {
+		if (window.CodeMirror !== undefined) {
+            var el = $('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)');
+            CodeMirror.fromTextArea(el[0], {
+				mode: "htmlmixedliquid",
+				theme: "eclipse",
+				lineNumbers: true,
+				lineWrapping: true,
+                tabSize: 2,
+				smartIndent: true,
+				matchBrackets: true,
+				styleActiveLine: true,
+				continueComments: "Enter"
+            });
+        }
+    });
+</script>
+
+<style>
+	.CodeMirror {
+		border: 1px solid rgba(0,0,0, 0.25);
+		height: 500px;
+	}
+</style>
+
+@Html.TextArea(string.Empty, /* Name suffix */
+			   (string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */
+			   new { @class = "form-control", style = "max-width: initial;", rows = 20 }
+)
+

@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
-using System.Web.Optimization;
 using SmartStore.Admin.Models.Themes;
 using SmartStore.Collections;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Core.Localization;
 using SmartStore.Core.Packaging;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
@@ -25,7 +18,6 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Admin.Controllers

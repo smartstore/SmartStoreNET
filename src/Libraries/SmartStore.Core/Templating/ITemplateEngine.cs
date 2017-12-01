@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core;
 
 namespace SmartStore.Templating
 {
@@ -11,5 +12,6 @@ namespace SmartStore.Templating
 	{
 		ITemplate Compile(string template);
 		string Render(string template, object data, IFormatProvider formatProvider);
+		object CreateTestModelFor(BaseEntity entity, string modelPrefix);
 	}
 }

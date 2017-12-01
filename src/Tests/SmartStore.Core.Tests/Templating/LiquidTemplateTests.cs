@@ -26,7 +26,7 @@ namespace SmartStore.Core.Tests.Templating
 		{
 			_deCulture = CultureInfo.GetCultureInfo("de-DE");
 			_enCulture = CultureInfo.GetCultureInfo("en-US");
-			_engine = new LiquidTemplateEngine();
+			_engine = new LiquidTemplateEngine(null);
 		}
 
 		[Test]

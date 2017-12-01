@@ -8,9 +8,9 @@ using System.Web.Optimization;
 using BundleTransformer.Core.Orderers;
 using BundleTransformer.Core.Bundles;
 using SmartStore.Core;
-using SmartStore.Web.Framework.Theming;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Theming.Assets;
+using SmartStore.Core.Themes;
 
 namespace SmartStore.Web.Framework.UI
 {

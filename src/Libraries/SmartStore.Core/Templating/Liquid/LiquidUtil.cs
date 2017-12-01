@@ -16,6 +16,11 @@ namespace SmartStore.Templating.Liquid
 				return null;
 			}
 
+			if (value is TestDrop)
+			{
+				return value;
+			}
+
 			var valueType = value.GetType();
 			
 			if (!_typeWrapperCache.TryGetValue(valueType, out var fn))

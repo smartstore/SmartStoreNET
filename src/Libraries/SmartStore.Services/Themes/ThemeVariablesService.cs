@@ -65,7 +65,7 @@ namespace SmartStore.Services.Themes
                 });
 
                 // ...then merge with persisted runtime records
-                var query = from v in _rsVariables.Table
+                var query = from v in _rsVariables.TableUntracked
 							where v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)
                             select v;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Web;
@@ -8,6 +7,7 @@ using System.Web.Mvc;
 using System.Web.WebPages;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Themes;
 using SmartStore.Services.Common;
 using SmartStore.Utilities;
 

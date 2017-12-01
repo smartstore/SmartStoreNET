@@ -670,6 +670,8 @@
     <Content Include="Content\editors\ckeditor\skins\smartstore\images\refresh.png" />
     <Content Include="Content\editors\ckeditor\skins\smartstore\skin.js" />
     <Content Include="Content\editors\ckeditor\styles.js" />
+    <Content Include="Content\editors\CodeMirror\mode\liquid\liquid.css" />
+    <Content Include="Content\editors\CodeMirror\mode\liquid\liquid.js" />
     <Content Include="Content\editors\summernote\globalinit.js" />
     <Content Include="Content\editors\summernote\langs\summernote-de-DE.js" />
     <Content Include="Content\editors\summernote\summernote.css" />
@@ -2053,6 +2055,8 @@
     <Content Include="Views\Entity\Partials\Picker.cshtml" />
     <Content Include="Views\Entity\Partials\Picker.List.cshtml" />
     <Content Include="Themes\Flex\Content\_rtl.scss" />
+    <Content Include="Themes\Flex\Views\Shared\EmailTemplates\master-head.liquid" />
+    <Content Include="Themes\Flex\Views\Shared\EmailTemplates\master-foot.liquid" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

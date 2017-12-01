@@ -9,7 +9,7 @@ namespace SmartStore.Templating
 {
 	public interface ITemplate
 	{
-		DateTime TimeStamp { get; }
+		string Source { get; }
 		string Render(object data, IFormatProvider formatProvider);
 	}
 }

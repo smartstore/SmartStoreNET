@@ -198,11 +198,15 @@ namespace SmartStore.Services.Messages
 		private string RenderBodyTemplate(MessageContext messageContext, dynamic model, IFormatProvider formatProvider)
 		{
 			var key = BuildTemplateKey(messageContext);
-			var template = _templateManager.GetOrAdd(key, GetBodyTemplate);
+			var source = messageContext.MessageTemplate.GetLocalized((x) => x.Body, messageContext.Language.Id);
+			var fromCache = true;
+			var template = _templateManager.GetOrAdd(key, GetBodyTemplate);	
 
-			if (true) // TODO: (mc) Liquid > Check TimeSpan and invalidate
+			if (fromCache && template.Source != source)
 			{
-				template = _templateEngine.Compile(GetBodyTemplate());
+				// The template was resolved from template cache, but it has expired
+				// because the source text has changed.
+				template = _templateEngine.Compile(source);
 				_templateManager.Put(key, template);
 			}
 
@@ -210,7 +214,8 @@ namespace SmartStore.Services.Messages
 
 			string GetBodyTemplate()
 			{
-				return messageContext.MessageTemplate.GetLocalized((x) => x.Body, messageContext.Language.Id);
+				fromCache = false;
+				return source;
 			}
 		}
 

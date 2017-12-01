@@ -133,8 +133,7 @@ namespace SmartStore
         {
             Guard.NotNull(httpContext, nameof(httpContext));
 
-            var handler = httpContext.Handler as MvcHandler;
-            if (handler != null && handler.RequestContext != null)
+            if (httpContext.Handler is MvcHandler handler && handler.RequestContext != null)
             {
                 return handler.RequestContext.RouteData;
             }

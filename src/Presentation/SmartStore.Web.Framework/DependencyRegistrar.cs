@@ -477,6 +477,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<LocalizationService>().As<ILocalizationService>().InstancePerRequest();
 
 			builder.RegisterType<Text>().As<IText>().InstancePerRequest();
+			builder.Register<Localizer>(c => c.Resolve<IText>().Get).InstancePerRequest();
 
 			builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>().InstancePerRequest();
 		}

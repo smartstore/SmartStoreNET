@@ -11,7 +11,7 @@ namespace SmartStore.Templating
 	public interface ITemplateEngine
 	{
 		ITemplate Compile(string template);
-		string Render(string template, object data, IFormatProvider formatProvider);
+		string Render(string source, object data, IFormatProvider formatProvider);
 		object CreateTestModelFor(BaseEntity entity, string modelPrefix);
 	}
 }

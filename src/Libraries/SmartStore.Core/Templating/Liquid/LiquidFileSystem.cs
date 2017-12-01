@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Web;
+using System.Web.Caching;
+using DotLiquid;
+using DotLiquid.FileSystems;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
 using SmartStore.Core.Themes;
-using DotLiquid;
-using SmartStore.Core.Infrastructure;
-using System.Web;
 
 namespace SmartStore.Templating.Liquid
 {
-	internal class LiquidFileSystem : DotLiquid.FileSystems.IFileSystem
+	internal class LiquidFileSystem : ITemplateFileSystem
 	{
 		private readonly IVirtualPathProvider _vpp;
 
@@ -21,16 +19,43 @@ namespace SmartStore.Templating.Liquid
 			_vpp = vpp;
 		}
 
+		public Template GetTemplate(Context context, string templateName)
+		{
+			var virtualPath = ResolveVirtualPath(context, templateName);
+
+			if (virtualPath.IsEmpty())
+			{
+				return null;
+			}
+
+			var cacheKey = HttpRuntime.Cache.BuildScopedKey("LiquidPartial://" + virtualPath);
+			var cachedTemplate = HttpRuntime.Cache.Get(cacheKey);
+
+			if (cachedTemplate == null)
+			{
+				// Read from file, compile and put to cache with file dependeny
+				var source = ReadTemplateFileInternal(virtualPath);
+				cachedTemplate = Template.Parse(source);
+				var cacheDependency = _vpp.GetCacheDependency(virtualPath, DateTime.UtcNow);
+				HttpRuntime.Cache.Insert(cacheKey, cachedTemplate, cacheDependency);
+			}
+
+			return (Template)cachedTemplate;
+		}
+
 		public string ReadTemplateFile(Context context, string templateName)
 		{
-			var path = ((string)context[templateName]).NullEmpty() ?? templateName;
+			var virtualPath = ResolveVirtualPath(context, templateName);
 
-			if (path.IsEmpty())
+			return ReadTemplateFileInternal(virtualPath);
+		}
+
+		private string ReadTemplateFileInternal(string virtualPath)
+		{
+			if (virtualPath.IsEmpty())
+			{
 				return string.Empty;
-
-			path = path.EnsureEndsWith(".liquid");
-
-			var virtualPath = ResolveVirtualPath(path);
+			}
 
 			if (!_vpp.FileExists(virtualPath))
 			{
@@ -43,8 +68,15 @@ namespace SmartStore.Templating.Liquid
 			}
 		}
 
-		private string ResolveVirtualPath(string path)
+		private string ResolveVirtualPath(Context context, string templateName)
 		{
+			var path = ((string)context[templateName]).NullEmpty() ?? templateName;
+
+			if (path.IsEmpty())
+				return string.Empty;
+
+			path = path.EnsureEndsWith(".liquid");
+
 			string virtualPath = null;
 
 			if (!path.StartsWith("~/"))

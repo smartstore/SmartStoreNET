@@ -9,16 +9,22 @@ namespace SmartStore.Templating.Liquid
 {
 	internal class LiquidTemplate : ITemplate
 	{
-		private readonly Template _template;
-
-		public LiquidTemplate(Template template)
+		public LiquidTemplate(Template template, string source)
 		{
 			Guard.NotNull(template, nameof(template));
+			Guard.NotNull(source, nameof(source));
 
-			_template = template;
+			Template = template;
+			Source = source;
 		}
 
-		public DateTime TimeStamp
+		public string Source
+		{
+			get;
+			internal set;
+		}
+
+		public Template Template
 		{
 			get;
 			internal set;
@@ -30,7 +36,7 @@ namespace SmartStore.Templating.Liquid
 			Guard.NotNull(formatProvider, nameof(formatProvider));
 			
 			var p = CreateParameters(data, formatProvider);
-			return _template.Render(p);
+			return Template.Render(p);
 		}
 
 		private RenderParameters CreateParameters(object data, IFormatProvider formatProvider)

@@ -13,20 +13,22 @@ namespace SmartStore.Templating.Liquid
 		{
 			Template.NamingConvention = new CSharpNamingConvention();
 
-			if (vpp != null && HostingEnvironment.IsHosted)
+			if (HostingEnvironment.IsHosted)
 			{
-				Template.FileSystem = new LiquidFileSystem(vpp);
-			}		
+				if (vpp != null)
+				{
+					Template.FileSystem = new LiquidFileSystem(vpp);
+				}
+
+				Template.RegisterTag<T>("T");
+			}
 		}
 
-		public ITemplate Compile(string template)
+		public ITemplate Compile(string source)
 		{
-			Guard.NotEmpty(template, nameof(template));
+			Guard.NotEmpty(source, nameof(source));
 
-			return new LiquidTemplate(Template.Parse(template))
-			{
-				TimeStamp = DateTime.UtcNow
-			};
+			return new LiquidTemplate(Template.Parse(source), source);
 		}
 
 		public string Render(string template, object data, IFormatProvider formatProvider)

@@ -1,14 +1,20 @@
 ﻿@using SmartStore.Core.Domain.Messages
+@using SmartStore.Collections
+@using SmartStore.Services.Messages
 
-@model MessageTemplate
+@model MessageTemplateModel
 
 @{
     ViewBag.Title = T("Admin.ContentManagement.MessageTemplates.EditMessageTemplateDetails").Text;
+
+	var modelTree = (TreeNode<ModelTreeMember>)ViewBag.LastModelTree;
 }
 
 @using (Html.BeginForm())
 {
-    <div class="section-header">
+	<input type="hidden" name="Id" value="@Model.Id" />
+	
+	<div class="section-header">
         <div class="title">
             <i class="fa fa-pencil-square-o"></i>
             @T("Admin.ContentManagement.MessageTemplates.EditMessageTemplateDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.ContentManagement.MessageTemplates.BackToList") + ")", "List")
@@ -23,6 +29,24 @@
     </div>
 
     <table  class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.To)
+			</td>
+			<td class="adminData">
+				@Html.TextBoxFor(model => model.To, new { @class = "input-large" })
+				@Html.ValidationMessageFor(model => model.To)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ReplyTo)
+			</td>
+			<td class="adminData">
+				@Html.TextBoxFor(model => model.ReplyTo, new { @class = "input-large" })
+				@Html.ValidationMessageFor(model => model.ReplyTo)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Subject)
@@ -42,4 +66,26 @@
 			</td>
 		</tr>
 	</table>
+}
+
+@if (modelTree != null && modelTree.HasChildren)
+{
+	<h2>Model Tree</h2>
+	foreach (var node in modelTree.FlattenNodes(false))
+	{
+		<div style="padding-left:@((node.Depth - 1) * 20)px">
+			@if (node.HasChildren)
+			{
+				<strong>@node.Value.Name</strong>
+			}
+			else
+			{
+				<span>@node.Value.Name</span>
+			}
+			@if (node.Value.Kind == ModelTreeMemberKind.Collection)
+			{
+				<i class="fa fa-link" style="padding-left: 8px"></i>
+			}
+		</div>
+	}
 }

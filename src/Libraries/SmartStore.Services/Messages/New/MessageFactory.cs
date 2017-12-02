@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Customers;
+using Newtonsoft.Json;
 
 namespace SmartStore.Services.Messages
 {
@@ -103,9 +104,9 @@ namespace SmartStore.Services.Messages
 			var languageId = messageContext.Language.Id;
 
 			// Render templates
-			var to = RenderTemplate("John Doe <john@doe.com>", model, formatProvider).Convert<EmailAddress>(); // TODO: (mc) Liquid > Make MessageTemplate field
+			var to = RenderTemplate(messageTemplate.To, model, formatProvider).Convert<EmailAddress>(); // TODO: (mc) Liquid > Make MessageTemplate field
 			var bcc = RenderTemplate(messageTemplate.GetLocalized((x) => x.BccEmailAddresses, languageId), model, formatProvider, false);
-			var replyTo = RenderTemplate("He Man <he@man.com>", model, formatProvider, false)?.Convert<EmailAddress>(); // TODO: (mc) Liquid > Make MessageTemplate field
+			var replyTo = RenderTemplate(messageTemplate.ReplyTo, model, formatProvider, false)?.Convert<EmailAddress>(); // TODO: (mc) Liquid > Make MessageTemplate field
 
 			var subject = RenderTemplate(messageTemplate.GetLocalized((x) => x.Subject, languageId), model, formatProvider);
 			((dynamic)model).Email.Subject = subject;
@@ -114,6 +115,18 @@ namespace SmartStore.Services.Messages
 
 			// CSS inliner
 			body = InlineCss(body, model);
+
+			// Model tree
+			var modelTree = _modelProvider.BuildModelTree(model);
+			var modelTreeJson = JsonConvert.SerializeObject(modelTree, Formatting.Indented);
+			if (modelTreeJson != messageTemplate.LastModelTree)
+			{
+				messageContext.MessageTemplate.LastModelTree = modelTreeJson;
+				if (!messageTemplate.IsTransientRecord())
+				{
+					_messageTemplateService.UpdateMessageTemplate(messageContext.MessageTemplate);
+				}	
+			}
 
 			// Create queued email from template
 			var qe = new QueuedEmail
@@ -283,6 +296,11 @@ namespace SmartStore.Services.Messages
 			else
 			{
 				ctx.Store = _services.StoreService.GetStoreById(ctx.StoreId.Value);
+			}
+
+			if (ctx.BaseUri == null)
+			{
+				ctx.BaseUri = new Uri(_services.StoreService.GetHost(ctx.Store));
 			}
 
 			if (!ctx.LanguageId.HasValue)

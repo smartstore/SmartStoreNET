@@ -10,7 +10,7 @@ using SmartStore.Core.Localization;
 
 namespace SmartStore.Templating.Liquid
 {
-	public sealed class T : Tag
+	internal sealed class T : Tag
 	{
 		private static readonly Regex Syntax = R.B(@"^({0})", DotLiquid.Liquid.QuotedFragment);
 

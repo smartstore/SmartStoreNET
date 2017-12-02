@@ -6,7 +6,7 @@ using SmartStore.Core;
 
 namespace SmartStore.Templating.Liquid
 {
-	internal class TestDrop : ILiquidizable, IIndexable, IContextAware, ISafeObject
+	internal class TestDrop : ILiquidizable, IIndexable, ISafeObject
 	{
 		private readonly BaseEntity _entity;
 		private readonly Type _type;
@@ -24,8 +24,6 @@ namespace SmartStore.Templating.Liquid
 
 			_modelPrefix = _modelPrefix ?? string.Empty;
 		}
-
-		public Context Context { get; set; }
 
 		public bool ContainsKey(object key)
 		{

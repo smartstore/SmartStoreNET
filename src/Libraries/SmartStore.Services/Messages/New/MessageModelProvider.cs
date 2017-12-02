@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Linq.Expressions;
 using System.Dynamic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Web.Mvc;
+using SmartStore.Collections;
 using SmartStore.ComponentModel;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -19,17 +20,30 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Services.Orders;
-using SmartStore.Services.Localization;
 using SmartStore.Core.Html;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Core;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
 using SmartStore.Templating;
 
 namespace SmartStore.Services.Messages
 {
+	public enum ModelTreeMemberKind
+	{
+		Primitive,
+		Complex,
+		Collection,
+		Root
+	}
+
+	public class ModelTreeMember
+	{
+		public string Name { get; set; }
+		public ModelTreeMemberKind Kind { get; set; }
+	}
+
 	public partial class MessageModelProvider : IMessageModelProvider
 	{
 		private readonly ICommonServices _services;
@@ -44,6 +58,7 @@ namespace SmartStore.Services.Messages
 		private readonly BankConnectionSettings _bankConnectionSettings;
 		private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly SecuritySettings _securitySettings;
+		private readonly UrlHelper _urlHelper;
 
 		public MessageModelProvider(
 			ICommonServices services,
@@ -57,7 +72,8 @@ namespace SmartStore.Services.Messages
 			CompanyInformationSettings companyInfoSettings,
 			BankConnectionSettings bankConnectionSettings,
 			ShoppingCartSettings shoppingCartSettings,
-			SecuritySettings securitySettings)
+			SecuritySettings securitySettings,
+			UrlHelper urlHelper)
 		{
 			_services = services;
 			_templateEngine = templateEngine;
@@ -71,13 +87,18 @@ namespace SmartStore.Services.Messages
 			_bankConnectionSettings = bankConnectionSettings;
 			_shoppingCartSettings = shoppingCartSettings;
 			_securitySettings = securitySettings;
+			_urlHelper = urlHelper;
 		}
 
 		public virtual void AddGlobalModelParts(MessageContext messageContext, IDictionary<string, object> model)
 		{
 			Guard.NotNull(model, nameof(model));
 
-			model["Email"] = new ExpandoObject();
+			dynamic email = new ExpandoObject();
+			email.Email = messageContext.EmailAccount.Email;
+			email.SenderName = messageContext.EmailAccount.DisplayName;
+
+			model["Email"] = email;
 			model["Theme"] = CreateThemeModelPart();
 			model["Store"] = CreateModelPart(messageContext.Store, messageContext);
 			model["Customer"] = CreateModelPart(messageContext.Customer, messageContext);
@@ -159,28 +180,35 @@ namespace SmartStore.Services.Messages
 						modelPart = CreateModelPart(x, messageContext);
 						break;
 					default:
-						var evt = new MessageModelPartMappingEvent(part);
-						_services.EventPublisher.Publish(evt);
+						var partType = part.GetType();
+						modelPart = part;
 
-						if (evt.Result != null && !object.ReferenceEquals(evt.Result, part))
+						if (partType.IsPlainObjectType() && !partType.IsAnonymous())
 						{
-							modelPart = evt.Result;
-							if (evt.Name.HasValue())
+							var evt = new MessageModelPartMappingEvent(part);
+							_services.EventPublisher.Publish(evt);
+
+							if (evt.Result != null && !object.ReferenceEquals(evt.Result, part))
 							{
-								name = evt.Name;
+								modelPart = evt.Result;
+								if (evt.Name.HasValue())
+								{
+									name = evt.Name;
+								}
+								else
+								{
+									name = ResolvePartName(evt.Result) ?? name;
+								}
 							}
 							else
 							{
-								name = ResolvePartName(evt.Result) ?? name;
+								modelPart = part;
 							}
-						}
-						else
-						{
-							modelPart = part;
+
+							modelPart = evt.Result ?? part;
+							name = evt.Name.NullEmpty() ?? name;
 						}
 
-						modelPart = evt.Result ?? part;
-						name = evt.Name.NullEmpty() ?? name;
 						break;
 				}
 			}
@@ -288,17 +316,22 @@ namespace SmartStore.Services.Messages
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
-			
-			var he = new HybridExpando(part);
-			he["Email"] = _emailAccountService.GetDefaultEmailAccount()?.Email;
 
-			var host = _services.StoreService.GetHost(messageContext.Store);
-			he["URL"] = host;
-			he.Override(nameof(part.Url), host);
+			var disallow = new HashSet<string> { nameof(part.PrimaryExchangeRateCurrencyId), nameof(part.PrimaryExchangeRateCurrencyId) };
+
+			var m = new HybridExpando(part, disallow, MemberOptMethod.Disallow);
+			m["Email"] = messageContext.EmailAccount.Email;
+			m["EmailName"] = messageContext.EmailAccount.DisplayName;
+
+			var host = messageContext.BaseUri.ToString();
+			m["URL"] = host;
+			m.Override(nameof(part.Url), host);
+			m.Override(nameof(part.PrimaryStoreCurrency), part.PrimaryStoreCurrency?.CurrencyCode);
+			m.Override(nameof(part.PrimaryExchangeRateCurrency), part.PrimaryExchangeRateCurrency?.CurrencyCode);
 
 			// TODO: (mc) Liquid > Use in templates
 			var logoInfo = _services.PictureService.GetPictureInfo(messageContext.Store.LogoPictureId);
-			he["Logo"] = new
+			m["Logo"] = new
 			{
 				Src = _services.PictureService.GetUrl(logoInfo, 0, FallbackPictureType.NoFallback, host),
 				Href = host,
@@ -308,9 +341,9 @@ namespace SmartStore.Services.Messages
 
 			// TODO: (mc) Liquid > GetSupplierIdentification() as Partial
 
-			PublishModelPartCreatedEvent<Store>(part, he);
+			PublishModelPartCreatedEvent<Store>(part, m);
 
-			return he;
+			return m;
 		}
 
 		protected virtual object CreateModelPart(Order part, MessageContext messageContext)
@@ -334,16 +367,46 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			var he = new HybridExpando(part);
+			var allow = new HashSet<string> 
+			{
+				nameof(part.Id),
+				nameof(part.CustomerGuid),
+				nameof(part.Username),
+				nameof(part.Email),
+				nameof(part.IsTaxExempt),
+				nameof(part.LastIpAddress),
+				nameof(part.CreatedOnUtc),
+				nameof(part.LastLoginDateUtc),
+				nameof(part.LastActivityDateUtc)
+			};
 
-			he.Override("Email", part.FindEmail());
-			he["FullName"] = GetDisplayNameForCustomer(part);
+			var m = new HybridExpando(part, allow, MemberOptMethod.Allow);
 
-			// [...]
+			var email = part.FindEmail();
 
-			PublishModelPartCreatedEvent<Customer>(part, he);
+			m.Properties[nameof(part.Email)] = email;
+			m.Properties[nameof(part.RewardPointsHistory)] = part.RewardPointsHistory.Select(x => CreateModelPart(x, messageContext)).ToList();
+			m.Properties[nameof(part.BillingAddress)] = CreateModelPart(part.BillingAddress, messageContext);
+			m.Properties[nameof(part.ShippingAddress)] = CreateModelPart(part.ShippingAddress, messageContext);
 
-			return he;
+			m["FullName"] = GetDisplayNameForCustomer(part);
+			m["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
+			m["VatNumberStatus"] = part.GetAttribute<VatNumberStatus>(SystemCustomerAttributeNames.VatNumberStatusId).ToString();
+			m["CustomerNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
+
+			m["PasswordRecoveryURL"] = BuildActionUrl("passwordrecoveryconfirm", "customer", 
+				new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), email = email, area = "" },
+				messageContext);
+
+			m["AccountActivationURL"] = BuildActionUrl("activation", "customer",
+				new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), email = email, area = "" },
+				messageContext);
+
+			m["WishlistUrl"] = BuildRouteUrl("Wishlist", new { customerGuid = part.CustomerGuid }, messageContext);
+			
+			PublishModelPartCreatedEvent<Customer>(part, m);
+
+			return m;
 		}
 
 		protected virtual object CreateModelPart(Shipment part, MessageContext messageContext)
@@ -381,7 +444,9 @@ namespace SmartStore.Services.Messages
 				orderItem = _services.Resolve<IOrderService>().GetOrderItemById(part.OrderItemId);
 			}
 
-			var he = new HybridExpando(part);
+			var disallow = new[] { nameof(part.AdminComment), nameof(part.Customer) };
+
+			var he = new HybridExpando(part, disallow, MemberOptMethod.Disallow);
 			he["ProductName"] = orderItem?.Product?.Name; // TODO: Liquid > Product.Name > ProductName
 			he["Reason"] = part.ReasonForReturn;
 			he["Status"] = part.ReturnRequestStatus.GetLocalizedEnum(_services.Localization, _services.WorkContext);
@@ -475,9 +540,146 @@ namespace SmartStore.Services.Messages
 			return null;
 		}
 
+		protected virtual object CreateModelPart(Address part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			return null;
+		}
+
+		protected virtual object CreateModelPart(ShoppingCartItem part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			return null;
+		}
+
+		protected virtual object CreateModelPart(RewardPointsHistory part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			return null;
+		}
+
+		#endregion
+
+		#region Model Tree
+
+		public TreeNode<ModelTreeMember> BuildModelTree(IDictionary<string, object> model)
+		{
+			Guard.NotNull(model, nameof(model));
+
+			var root = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = "Model", Kind = ModelTreeMemberKind.Root });
+
+			foreach (var kvp in model)
+			{
+				root.Append(BuildModelTreePart(kvp.Key, kvp.Value));
+			}
+
+			return root;
+		}
+
+		private TreeNode<ModelTreeMember> BuildModelTreePart(string modelName, object instance)
+		{
+			var t = instance?.GetType();
+			TreeNode<ModelTreeMember> node = null;
+
+			if (t == null || t.IsPredefinedType())
+			{
+				node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = modelName, Kind = ModelTreeMemberKind.Primitive });
+			}
+			else if (t.IsSequenceType() && !(instance is IDictionary<string, object>))
+			{
+				node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = modelName, Kind = ModelTreeMemberKind.Collection });
+			}
+			else
+			{
+				node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = modelName, Kind = ModelTreeMemberKind.Complex });
+
+				if (instance is IDictionary<string, object> dict)
+				{
+					foreach (var kvp in dict)
+					{
+						node.Append(BuildModelTreePart(kvp.Key, kvp.Value));
+					}
+				}
+				else if (instance is IDynamicMetaObjectProvider dyn)
+				{
+					foreach (var name in dyn.GetMetaObject(Expression.Constant(dyn)).GetDynamicMemberNames())
+					{
+						// we don't want to go deeper in "pure" dynamic objects
+						node.Append(new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = name, Kind = ModelTreeMemberKind.Primitive }));
+					}
+				}
+				else
+				{
+					node.AppendRange(BuildModelTreePartForClass(instance));
+				}
+			}
+
+			return node;
+		}
+
+		private IEnumerable<TreeNode<ModelTreeMember>> BuildModelTreePartForClass(object instance)
+		{
+			var type = instance?.GetType();
+
+			if (type == null)
+			{
+				yield break;
+			}
+
+			foreach (var prop in FastProperty.GetProperties(type).Values)
+			{
+				var pi = prop.Property;
+
+				if (pi.PropertyType.IsPredefinedType())
+				{
+					yield return new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Primitive });
+				}
+				else if (typeof(IDictionary<string, object>).IsAssignableFrom(pi.PropertyType))
+				{
+					yield return BuildModelTreePart(prop.Name, prop.GetValue(instance));
+				}
+				else if (pi.PropertyType.IsSequenceType())
+				{
+					yield return new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Collection });
+				}
+				else
+				{
+					var node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Complex });
+					node.AppendRange(BuildModelTreePartForClass(prop.GetValue(instance)));
+					yield return node;
+				}
+			}
+		}
+
 		#endregion
 
 		#region Utils
+
+		private string BuildUrl(string url, MessageContext ctx)
+		{
+			return ctx.BaseUri.ToString().TrimEnd('/') + url;
+		}
+
+		private string BuildRouteUrl(object routeValues, MessageContext ctx)
+		{
+			return ctx.BaseUri.ToString().TrimEnd('/') + _urlHelper.RouteUrl(routeValues);
+		}
+
+		private string BuildRouteUrl(string routeName, object routeValues, MessageContext ctx)
+		{
+			return ctx.BaseUri.ToString().TrimEnd('/') + _urlHelper.RouteUrl(routeName, routeValues);
+		}
+
+		private string BuildActionUrl(string action, string controller, object routeValues, MessageContext ctx)
+		{
+			return ctx.BaseUri.ToString().TrimEnd('/') + _urlHelper.Action(action, controller, routeValues);
+		}
 
 		private void PublishModelPartCreatedEvent<T>(T source, dynamic part) where T : class
 		{

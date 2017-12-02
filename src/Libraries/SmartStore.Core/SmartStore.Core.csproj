@@ -462,6 +462,7 @@
     <Compile Include="Search\SearchSort.cs" />
     <Compile Include="Security\SmartStorePrincipal.cs" />
     <Compile Include="Templating\DefaultTemplateManager.cs" />
+    <Compile Include="Templating\Events.cs" />
     <Compile Include="Templating\ITemplate.cs" />
     <Compile Include="Templating\ITemplateEngine.cs" />
     <Compile Include="Templating\ITemplateManager.cs" />
@@ -474,6 +475,7 @@
     <Compile Include="Templating\Liquid\Drops\ObjectDrop.cs" />
     <Compile Include="Templating\Liquid\Drops\SafeDropBase.cs" />
     <Compile Include="Templating\Liquid\Drops\TestDrop.cs" />
+    <Compile Include="Templating\Liquid\Tags\Zone.cs" />
     <Compile Include="Templating\Liquid\Tags\T.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\InheritedThemeFileResult.cs" />

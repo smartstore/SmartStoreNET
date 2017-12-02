@@ -40,7 +40,13 @@ using System.Collections;
 
 namespace SmartStore.ComponentModel
 {
-    /// <summary>
+    public enum MemberOptMethod
+	{
+		Allow,
+		Disallow
+	}
+	
+	/// <summary>
     /// Class that provides extensible properties and methods to an
     /// existing object when cast to dynamic. This
     /// dynamic object stores 'extra' properties in a dictionary or
@@ -71,20 +77,29 @@ namespace SmartStore.ComponentModel
         /// </summary>
         private Type _instanceType;
 
-        /// <summary>
-        /// String Dictionary that contains the extra dynamic values
-        /// stored on this object/instance
-        /// </summary>        
-        /// <remarks>Using PropertyBag to support XML Serialization of the dictionary</remarks>
-        public PropertyBag Properties = new PropertyBag();
+		/// <summary>
+		/// Adjusted property list for the wrapped instance type after white/black-list members has been applied.
+		/// </summary>
+		private IDictionary<string, FastProperty> _instanceProps;
+		private readonly static IDictionary<string, FastProperty> EmptyProps = new Dictionary<string, FastProperty>();
 
-        /// <summary>
-        /// This constructor just works off the internal dictionary and any 
-        /// public properties of this object.
-        /// 
-        /// Note you can subclass Expando.
-        /// </summary>
-        public HybridExpando()
+		/// <summary>
+		/// String Dictionary that contains the extra dynamic values
+		/// stored on this object/instance
+		/// </summary>        
+		/// <remarks>Using PropertyBag to support XML Serialization of the dictionary</remarks>
+		public PropertyBag Properties = new PropertyBag();
+
+		private readonly HashSet<string> _optMembers;
+		private readonly MemberOptMethod _optMethod;
+
+		/// <summary>
+		/// This constructor just works off the internal dictionary and any 
+		/// public properties of this object.
+		/// 
+		/// Note you can subclass Expando.
+		/// </summary>
+		public HybridExpando()
         {
             Initialize(this);
         }
@@ -101,12 +116,32 @@ namespace SmartStore.ComponentModel
         {
             Initialize(instance);
         }
-        
-        protected void Initialize(object instance)
+
+		/// <summary>
+		/// Allows passing in an existing instance variable to 'extend'
+		/// along with a list of member names to allow or disallow.
+		/// </summary>
+		/// <param name="instance"></param>
+		public HybridExpando(object instance, IEnumerable<string> optMembers, MemberOptMethod optMethod)
+		{
+			Initialize(instance);
+
+			_optMethod = optMethod;
+
+			if (optMembers is HashSet<string> h)
+			{
+				_optMembers = h;
+			}
+			else
+			{
+				_optMembers = new HashSet<string>(optMembers);
+			}
+		}
+
+		protected void Initialize(object instance)
         {
             _instance = instance;
-            if (instance != null)
-                _instanceType = instance.GetType();
+			_instanceType = instance?.GetType();
         }
 
 		protected object WrappedObject
@@ -119,29 +154,26 @@ namespace SmartStore.ComponentModel
 			foreach (var kvp in this.Properties.Keys)
 			{
 				yield return kvp;
-        }
+			}
 
-			if (_instance != null)
+			foreach (var kvp in GetInstanceProperties())
 			{
-				foreach (var kvp in FastProperty.GetProperties(_instance))
+				if (!this.Properties.ContainsKey(kvp.Key))
 				{
-					if (!this.Properties.ContainsKey(kvp.Key))
-					{
-						yield return kvp.Key;
-					}
+					yield return kvp.Key;
 				}
 			}
 		}
 
 
-        /// <summary>
-        /// Try to retrieve a member by name first from instance properties
-        /// followed by the collection entries.
-        /// </summary>
-        /// <param name="binder"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+		/// <summary>
+		/// Try to retrieve a member by name first from instance properties
+		/// followed by the collection entries.
+		/// </summary>
+		/// <param name="binder"></param>
+		/// <param name="result"></param>
+		/// <returns></returns>
+		public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
 			return TryGetMemberCore(binder.Name, out result);
         }
@@ -259,8 +291,7 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool GetProperty(object instance, string name, out object result)
         {
-			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, PropertyCachingStrategy.EagerCached) : null;
-			if (fastProp != null)
+			if (GetInstanceProperties().TryGetValue(name, out var fastProp))
 			{
 				result = fastProp.GetValue(instance ?? this);
 				return true;
@@ -279,12 +310,11 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool SetProperty(object instance, string name, object value)
         {
-			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, PropertyCachingStrategy.EagerCached) : null;
-			if (fastProp != null)
+			if (GetInstanceProperties().TryGetValue(name, out var fastProp))
 			{
 				fastProp.SetValue(instance ?? this, value);
 				return true;
-            }
+			}
 
 			return false;
         }
@@ -361,9 +391,9 @@ namespace SmartStore.ComponentModel
 				yield return kvp;
 			}
 				
-			if (includeInstanceProperties && _instance != null)
+			if (includeInstanceProperties)
             {
-                foreach (var prop in FastProperty.GetProperties(_instance).Values)
+                foreach (var prop in GetInstanceProperties().Values)
 				{
 					if (!this.Properties.ContainsKey(prop.Name))
 					{
@@ -372,6 +402,30 @@ namespace SmartStore.ComponentModel
 				}
             }
         }
+
+		private IDictionary<string, FastProperty> GetInstanceProperties()
+		{
+			if (_instance == null)
+			{
+				return EmptyProps;
+			}
+
+			if (_instanceProps == null)
+			{
+				var props = FastProperty.GetProperties(_instance) as IDictionary<string, FastProperty>;
+
+				if (_optMembers != null)
+				{
+					props = props
+						.Where(x => _optMethod == MemberOptMethod.Allow ? _optMembers.Contains(x.Key) : !_optMembers.Contains(x.Key))
+						.ToDictionary(x => x.Key, x => x.Value);
+				}
+
+				_instanceProps = props;
+			}
+
+			return _instanceProps;
+		}
 
         /// <summary>
         /// Checks whether a property exists in the Property collection
@@ -398,10 +452,10 @@ namespace SmartStore.ComponentModel
 				return true;
 			}
 
-            if (includeInstanceProperties && _instance != null)
+            if (includeInstanceProperties)
             {
-				return FastProperty.GetProperties(_instance).ContainsKey(propertyName);
-            }
+				return GetInstanceProperties().ContainsKey(propertyName);
+			}
 
             return false;
         }

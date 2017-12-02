@@ -619,14 +619,14 @@ namespace SmartStore.ComponentModel
 			// part of the sequence of properties returned by this method.
 			type = Nullable.GetUnderlyingType(type) ?? type;
 
-			if (!cache.TryGetValue(type, out var fastProperties))
-			{
-				var candidates = GetCandidateProperties(type);
-				fastProperties = candidates.Select(p => createPropertyHelper(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-				cache.TryAdd(type, fastProperties);
-			}
+			return cache.GetOrAdd(type, Get);
 
-			return fastProperties;
+			IDictionary<string, FastProperty> Get(Type t)
+			{
+				var candidates = GetCandidateProperties(t);
+				var fastProperties = candidates.Select(p => createPropertyHelper(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+				return fastProperties;
+			}
 		}
 
 		internal static IEnumerable<PropertyInfo> GetCandidateProperties(Type type)

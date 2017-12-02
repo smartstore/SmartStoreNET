@@ -35,5 +35,7 @@ namespace SmartStore.Services.Messages
 		public bool ReplyToCustomer { get; set; }
 
 		public bool TestMode { get; set; }
+
+		public Uri BaseUri { get; set; }
 	}
 }

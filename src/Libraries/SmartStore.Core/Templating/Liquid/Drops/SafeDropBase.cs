@@ -8,7 +8,7 @@ namespace SmartStore.Templating.Liquid
 	{
 	}
 
-	internal abstract class SafeDropBase : ILiquidizable, IIndexable, IContextAware, ISafeObject
+	internal abstract class SafeDropBase : ILiquidizable, IIndexable, ISafeObject
 	{
 		private readonly IDictionary<string, object> _safeObjects = new Dictionary<string, object>();
 
@@ -25,8 +25,6 @@ namespace SmartStore.Templating.Liquid
 
 			return safeObject;
 		}
-
-		public Context Context { get;  set; }
 
 		public abstract bool ContainsKey(object key);
 

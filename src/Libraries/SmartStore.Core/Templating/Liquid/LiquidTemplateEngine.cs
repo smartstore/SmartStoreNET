@@ -3,24 +3,26 @@ using System.Web.Hosting;
 using DotLiquid;
 using DotLiquid.NamingConventions;
 using SmartStore.Core;
+using SmartStore.Core.Events;
 using SmartStore.Core.IO;
 
 namespace SmartStore.Templating.Liquid
 {
 	public partial class LiquidTemplateEngine : ITemplateEngine
 	{
-		public LiquidTemplateEngine(IVirtualPathProvider vpp)
+		public LiquidTemplateEngine(IVirtualPathProvider vpp, IEventPublisher eventPublisher)
 		{
 			Template.NamingConvention = new CSharpNamingConvention();
 
 			if (HostingEnvironment.IsHosted)
 			{
-				if (vpp != null)
-				{
-					Template.FileSystem = new LiquidFileSystem(vpp);
-				}
+				Template.FileSystem = new LiquidFileSystem(vpp);
 
+				// Register tag "T"
 				Template.RegisterTag<T>("T");
+
+				// Register tag "zone"
+				Template.RegisterTagFactory(new ZoneTagFactory(eventPublisher));
 			}
 		}
 

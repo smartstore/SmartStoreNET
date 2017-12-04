@@ -227,8 +227,10 @@ namespace SmartStore.Web.Controllers
         }
 
 		[ActionName("rss"), Compress]
-        public ActionResult ListRss(int languageId)
+        public ActionResult ListRss(int? languageId)
         {
+			languageId = languageId ?? _workContext.WorkingLanguage.Id;
+
 			DateTime? maxAge = null;
 			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
 			var selfLink = Url.Action("rss", "News", new { languageId = languageId }, protocol);
@@ -237,19 +239,23 @@ namespace SmartStore.Web.Controllers
 			var title = "{0} - News".FormatInvariant(_storeContext.CurrentStore.Name);
 
 			if (_newsSettings.MaxAgeInDays > 0)
+			{
 				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_newsSettings.MaxAgeInDays, 0, 0, 0));
+			}
 
-			var language = _languageService.GetLanguageById(languageId);
+			var language = _languageService.GetLanguageById(languageId.Value);
 			var feed = new SmartSyndicationFeed(new Uri(newsLink), title);
 
 			feed.AddNamespaces(true);
 			feed.Init(selfLink, language);
 
 			if (!_newsSettings.Enabled)
+			{
 				return new RssActionResult { Feed = feed };
+			}
 
 			var items = new List<SyndicationItem>();
-			var newsItems = _newsService.GetAllNews(languageId, _storeContext.CurrentStore.Id, 0, int.MaxValue, false, maxAge);
+			var newsItems = _newsService.GetAllNews(languageId.Value, _storeContext.CurrentStore.Id, 0, int.MaxValue, false, maxAge);
 
 			foreach (var news in newsItems)
 			{

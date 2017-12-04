@@ -254,8 +254,10 @@ namespace SmartStore.Web.Controllers
         }
 
 		[Compress]
-        public ActionResult ListRss(int languageId)
+        public ActionResult ListRss(int? languageId)
         {
+			languageId = languageId ?? _workContext.WorkingLanguage.Id;
+
 			DateTime? maxAge = null;
 			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
 			var selfLink = Url.RouteUrl("BlogRSS", new { languageId = languageId }, protocol);
@@ -264,19 +266,23 @@ namespace SmartStore.Web.Controllers
 			var title = "{0} - Blog".FormatInvariant(_storeContext.CurrentStore.Name);
 
 			if (_blogSettings.MaxAgeInDays > 0)
+			{
 				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_blogSettings.MaxAgeInDays, 0, 0, 0));
+			}
 
-			var language = _languageService.GetLanguageById(languageId);
+			var language = _languageService.GetLanguageById(languageId.Value);
 			var feed = new SmartSyndicationFeed(new Uri(blogLink), title);
 
 			feed.AddNamespaces(false);
 			feed.Init(selfLink, language);
 
 			if (!_blogSettings.Enabled)
+			{
 				return new RssActionResult { Feed = feed };
+			}
 
 			var items = new List<SyndicationItem>();
-			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId, null, null, 0, int.MaxValue, false, maxAge);
+			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId.Value, null, null, 0, int.MaxValue, false, maxAge);
 
 			foreach (var blogPost in blogPosts)
 			{

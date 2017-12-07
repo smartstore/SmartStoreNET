@@ -169,7 +169,6 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.EmailAccount, mo => mo.Ignore())
 				.ForMember(dest => dest.EmailAccountId, mo => mo.Ignore())
 				.ForMember(dest => dest.ReplyTo, mo => mo.Ignore())
-				.ForMember(dest => dest.ReplyToName, mo => mo.Ignore())
 				.ForMember(dest => dest.Attachments, mo => mo.Ignore());
 			//campaign
 			CreateMap<Campaign, CampaignModel>()

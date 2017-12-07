@@ -178,7 +178,9 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Blogs\BlogMessageFactoryExtensions.cs" />
     <Compile Include="Catalog\CategoryTreeChangeHandler.cs" />
+    <Compile Include="Catalog\CatalogMessageFactoryExtensions.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelper.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelperExtensions.cs" />
     <Compile Include="Catalog\Importer\CategoryImporter.cs" />
@@ -195,6 +197,7 @@
     <Compile Include="Common\IUserAgent.cs" />
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
+    <Compile Include="Customers\CustomerMessageFactoryExtensions.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
     <Compile Include="Customers\Importer\CustomerImporter.cs" />
     <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
@@ -260,6 +263,7 @@
     <Compile Include="Events\DefaultMessageBus.cs" />
     <Compile Include="Events\IMessageBroker.cs" />
     <Compile Include="Events\IMessageBus.cs" />
+    <Compile Include="Forums\ForumMessageFactoryExtensions.cs" />
     <Compile Include="Hooks\LocalizedEntityRelationHook.cs" />
     <Compile Include="Hooks\PictureHook.cs" />
     <Compile Include="Hooks\SearchQueryAliasHook.cs" />
@@ -298,7 +302,9 @@
     <Compile Include="Messages\QueuedMessagesClearTask.cs" />
     <Compile Include="Messages\QueuingEmailEvent.cs" />
     <Compile Include="Messages\QueuingEmailEventConsumer.cs" />
+    <Compile Include="News\NewsMessageFactoryExtensions.cs" />
     <Compile Include="Orders\AddToCartContext.cs" />
+    <Compile Include="Orders\OrderMessageFactoryExtensions.cs" />
     <Compile Include="Orders\ShoppingCartTotal.cs" />
     <Compile Include="Payments\IPaymentMethodFilter.cs" />
     <Compile Include="Pdf\Content\PdfHtmlContent.cs" />

@@ -47,5 +47,10 @@ namespace SmartStore.Core.Email
 		public override string ToString() => _inner.ToString();
 
 		public MailAddress ToMailAddress() => _inner;
-    }
+
+		public static implicit operator string(EmailAddress obj)
+		{
+			return obj.ToString();
+		}
+	}
 }

@@ -225,14 +225,14 @@ namespace SmartStore.Services.Messages
 			// 'internal' for testing purposes
 
 			var msg = new EmailMessage(
-				new EmailAddress(qe.To, qe.ToName),
+				new EmailAddress(qe.To),
 				qe.Subject.Replace("\r\n", string.Empty),
 				qe.Body,
-				new EmailAddress(qe.From, qe.FromName));
+				new EmailAddress(qe.From));
 
 			if (qe.ReplyTo.HasValue())
 			{
-				msg.ReplyTo.Add(new EmailAddress(qe.ReplyTo, qe.ReplyToName));
+				msg.ReplyTo.Add(new EmailAddress(qe.ReplyTo));
 			}
 
 			AddEmailAddresses(qe.CC, msg.Cc);

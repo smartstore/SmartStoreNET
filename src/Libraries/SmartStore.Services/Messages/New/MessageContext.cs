@@ -32,10 +32,15 @@ namespace SmartStore.Services.Messages
 		/// Gets or sets a value specifying whether customer's email should be used as reply address
 		/// </summary>
 		/// <remarks>Value is ignored, if <c>Customer</c> property is <c>null</c></remarks>
-		public bool ReplyToCustomer { get; set; }
+		public bool ReplyToCustomer { get; set; } // TBD: (mc) Liquid > obsolete now 'cause of MessageTemplate.ReplyTo (?)
 
 		public bool TestMode { get; set; }
 
 		public Uri BaseUri { get; set; }
+
+		public static MessageContext Create(string messageTemplateName, int languageId, int? storeId = null)
+		{
+			return new MessageContext { MessageTemplateName = messageTemplateName, LanguageId = languageId, StoreId = storeId };
+		}
 	}
 }

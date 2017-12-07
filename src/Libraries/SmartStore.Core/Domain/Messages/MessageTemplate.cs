@@ -11,7 +11,7 @@ namespace SmartStore.Core.Domain.Messages
     /// </summary>
 	public partial class MessageTemplate : BaseEntity, ILocalizedEntity, IStoreMappingSupported
     {
-        /// <summary>
+		/// <summary>
         /// Gets or sets the name
         /// </summary>
         public string Name { get; set; }

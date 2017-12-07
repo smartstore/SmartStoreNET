@@ -148,7 +148,8 @@ namespace SmartStore.Web.Infrastructure
 
 				if (cat.ParentCategoryId == 0 && cat.Published && cat.PictureId != null)
 				{
-					menuItem.ImageUrl = _pictureService.GetUrl(allPictureInfos.Get(cat.PictureId.Value), 0, false);
+					menuItem.ImageId = cat.PictureId;
+					//menuItem.ImageUrl = _pictureService.GetUrl(allPictureInfos.Get(cat.PictureId.Value), 0, false);
 				}
 			}
 

@@ -545,9 +545,9 @@
     <Compile Include="Migrations\201711291017168_SyncStringResources.Designer.cs">
       <DependentUpon>201711291017168_SyncStringResources.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201712012244443_Liquid.cs" />
-    <Compile Include="Migrations\201712012244443_Liquid.Designer.cs">
-      <DependentUpon>201712012244443_Liquid.cs</DependentUpon>
+    <Compile Include="Migrations\201712071909335_Liquid.cs" />
+    <Compile Include="Migrations\201712071909335_Liquid.Designer.cs">
+      <DependentUpon>201712071909335_Liquid.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -991,8 +991,8 @@
     <EmbeddedResource Include="Migrations\201711291017168_SyncStringResources.resx">
       <DependentUpon>201711291017168_SyncStringResources.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712012244443_Liquid.resx">
-      <DependentUpon>201712012244443_Liquid.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201712071909335_Liquid.resx">
+      <DependentUpon>201712071909335_Liquid.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

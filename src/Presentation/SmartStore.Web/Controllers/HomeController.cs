@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Email;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
@@ -144,17 +145,14 @@ namespace SmartStore.Web.Controllers
 				}
 				_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail
 				{
-					From = from,
-					FromName = fromName,
-					To = emailAccount.Email,
-					ToName = emailAccount.DisplayName,
+					From = new EmailAddress(from, fromName),
+					To = emailAccount.ToEmailAddress(),
 					Priority = 5,
 					Subject = subject,
 					Body = body,
 					CreatedOnUtc = DateTime.UtcNow,
 					EmailAccountId = emailAccount.Id,
-					ReplyTo = email,
-					ReplyToName = fullName
+					ReplyTo = new EmailAddress(email, fullName)
 				});
 
 				model.SuccessfullySent = true;

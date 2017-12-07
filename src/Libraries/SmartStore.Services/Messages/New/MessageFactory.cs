@@ -67,7 +67,7 @@ namespace SmartStore.Services.Messages
 		public Localizer T { get; set; }
 		public ILogger Logger { get; set; }
 
-		public virtual (QueuedEmail Email, dynamic Model) CreateMessage(MessageContext messageContext, bool queue, params object[] modelParts)
+		public virtual CreateMessageResult CreateMessage(MessageContext messageContext, bool queue, params object[] modelParts)
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 
@@ -89,7 +89,10 @@ namespace SmartStore.Services.Messages
 			// Add specific template models for passed parts
 			foreach (var part in modelParts)
 			{
-				_modelProvider.AddModelPart(part, messageContext, model);
+				if (model != null)
+				{
+					_modelProvider.AddModelPart(part, messageContext, model);
+				}
 			}
 
 			// Give implementors the chance to customize the final template model
@@ -104,9 +107,9 @@ namespace SmartStore.Services.Messages
 			var languageId = messageContext.Language.Id;
 
 			// Render templates
-			var to = RenderTemplate(messageTemplate.To, model, formatProvider).Convert<EmailAddress>(); // TODO: (mc) Liquid > Make MessageTemplate field
+			var to = RenderTemplate(messageTemplate.To, model, formatProvider).Convert<EmailAddress>();
 			var bcc = RenderTemplate(messageTemplate.GetLocalized((x) => x.BccEmailAddresses, languageId), model, formatProvider, false);
-			var replyTo = RenderTemplate(messageTemplate.ReplyTo, model, formatProvider, false)?.Convert<EmailAddress>(); // TODO: (mc) Liquid > Make MessageTemplate field
+			var replyTo = RenderTemplate(messageTemplate.ReplyTo, model, formatProvider, false)?.Convert<EmailAddress>();
 
 			var subject = RenderTemplate(messageTemplate.GetLocalized((x) => x.Subject, languageId), model, formatProvider);
 			((dynamic)model).Email.Subject = subject;
@@ -132,13 +135,10 @@ namespace SmartStore.Services.Messages
 			var qe = new QueuedEmail
 			{
 				Priority = 5,
-				From = messageContext.EmailAccount.Email,
-				FromName = messageContext.EmailAccount.DisplayName,
-				To = to.Address,
-				ToName = to.DisplayName, // TODO: (mc) Liquid > Combine both Address & DisplayName fields (?) 
+				From = messageContext.EmailAccount.ToEmailAddress(),
+				To = to.ToString(),
 				Bcc = bcc,
-				ReplyTo = replyTo?.Address,
-				ReplyToName = replyTo?.DisplayName,
+				ReplyTo = replyTo?.ToString(),
 				Subject = subject,
 				Body = body,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -152,16 +152,16 @@ namespace SmartStore.Services.Messages
 			if (queue)
 			{
 				// Put to queue
-				QueueMessage(qe, messageContext, (dynamic)model);
+				QueueMessage(messageContext, qe, (dynamic)model);
 			}
 
-			return (qe, (dynamic)model);
+			return new CreateMessageResult { Email = qe, Model = (dynamic)model };
 		}
 
-		public virtual void QueueMessage(QueuedEmail queuedEmail, MessageContext messageContext, dynamic model)
+		public virtual void QueueMessage(MessageContext messageContext, QueuedEmail queuedEmail, dynamic model)
 		{
-			Guard.NotNull(queuedEmail, nameof(queuedEmail));
 			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(queuedEmail, nameof(queuedEmail));
 			Guard.NotNull(model, nameof(model));
 
 			// Publish event so that integrators can add attachments, alter the email etc.
@@ -288,7 +288,7 @@ namespace SmartStore.Services.Messages
 
 		private void ValidateMessageContext(MessageContext ctx, ref object[] modelParts)
 		{
-			if (!ctx.StoreId.HasValue)
+			if (ctx.StoreId.GetValueOrDefault() == 0)
 			{
 				ctx.Store = _services.StoreContext.CurrentStore;
 				ctx.StoreId = ctx.Store.Id;
@@ -303,7 +303,7 @@ namespace SmartStore.Services.Messages
 				ctx.BaseUri = new Uri(_services.StoreService.GetHost(ctx.Store));
 			}
 
-			if (!ctx.LanguageId.HasValue)
+			if (ctx.LanguageId.GetValueOrDefault() == 0)
 			{
 				ctx.Language = _services.WorkContext.WorkingLanguage;
 				ctx.LanguageId = ctx.Language.Id;

@@ -1,41 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Domain.News;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.Services.Messages
 {
+	public class CreateMessageResult
+	{
+		public QueuedEmail Email { get; set; }
+		public dynamic Model { get; set; }
+	}
+
 	public interface IMessageFactory
 	{
-		(QueuedEmail Email, dynamic Model) CreateMessage(MessageContext messageContext, bool queue, params object[] modelParts);
+		CreateMessageResult CreateMessage(MessageContext messageContext, bool queue, params object[] modelParts);
 
-		void QueueMessage(QueuedEmail queuedEmail, MessageContext messageContext, dynamic model);
+		void QueueMessage(MessageContext messageContext, QueuedEmail queuedEmail, dynamic model);
 
 		IEnumerable<BaseEntity> GetTestEntities(MessageContext messageContext);
 	}
 
 	public static class IMessageFactoryExtensions
 	{
-		public static (QueuedEmail Email, dynamic Model) QueueCustomerWelcomeMessage(this IMessageFactory factory, MessageContext messageContext, Customer customer)
+		/// <summary>
+		/// Sends a newsletter subscription activation message
+		/// </summary>
+		public static CreateMessageResult SendNewsLetterSubscriptionActivationMessage(this IMessageFactory factory, NewsLetterSubscription subscription, int languageId = 0)
 		{
-			Guard.NotNull(customer, nameof(customer));
-
-			return factory.CreateMessage(messageContext, true, customer);
+			Guard.NotNull(subscription, nameof(subscription));
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewsLetterSubscriptionActivation, languageId), true, subscription);
 		}
 
-		public static (QueuedEmail Email, dynamic Model) QueueShareProductMessage(this IMessageFactory factory, MessageContext messageContext, 
-			Customer customer,
-			Product product,
-			string senderEmail, string recipientEmail, string personalMessage)
+		/// <summary>
+		/// Sends a newsletter subscription deactivation message
+		/// </summary>
+		public static CreateMessageResult SendNewsLetterSubscriptionDeactivationMessage(this IMessageFactory factory, NewsLetterSubscription subscription, int languageId = 0)
 		{
-			Guard.NotNull(customer, nameof(customer));
-			Guard.NotNull(product, nameof(product));
-
-			var model = new { __Name = "EmailAFriend", PersonalMessage = personalMessage, Email = recipientEmail };
-
-			return factory.CreateMessage(messageContext, true, customer, product, model);
+			Guard.NotNull(subscription, nameof(subscription));
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewsLetterSubscriptionDeactivation, languageId), true, subscription);
 		}
 	}
 }

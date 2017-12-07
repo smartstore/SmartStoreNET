@@ -147,11 +147,10 @@ namespace SmartStore.Services.Messages
                 string subject = _tokenizer.Replace(campaign.Subject, tokens, false);
                 string body = _tokenizer.Replace(campaign.Body, tokens, true);
 
-                var email = new QueuedEmail()
+                var email = new QueuedEmail
                 {
                     Priority = 3,
-                    From = emailAccount.Email,
-                    FromName = emailAccount.DisplayName,
+                    From = emailAccount.ToEmailAddress(),
                     To = subscription.Email,
                     Subject = subject,
                     Body = body,

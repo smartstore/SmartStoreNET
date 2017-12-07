@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Events;
 using SmartStore.Templating;
 using SmartStore.Templating.Liquid;
 
@@ -26,7 +24,7 @@ namespace SmartStore.Core.Tests.Templating
 		{
 			_deCulture = CultureInfo.GetCultureInfo("de-DE");
 			_enCulture = CultureInfo.GetCultureInfo("en-US");
-			_engine = new LiquidTemplateEngine(null);
+			_engine = new LiquidTemplateEngine(null, NullEventPublisher.Instance);
 		}
 
 		[Test]

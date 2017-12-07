@@ -34,8 +34,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			{
 				var queuedEmail = new QueuedEmail
 				{
-					From = emailAccount.Email,
-					FromName = emailAccount.DisplayName,
+					From = emailAccount.ToEmailAddress(),
 					SendManually = false,
 					To = email,
 					Subject = deployment.EmailSubject.NaIfEmpty(),

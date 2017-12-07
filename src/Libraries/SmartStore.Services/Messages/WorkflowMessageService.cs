@@ -107,14 +107,11 @@ namespace SmartStore.Services.Messages
             var email = new QueuedEmail
             {
                 Priority = 5,
-                From = emailAccount.Email,
-                FromName = emailAccount.DisplayName,
+                From = emailAccount.ToEmailAddress(),
                 To = toEmailAddress,
-                ToName = toName,
                 CC = string.Empty,
                 Bcc = bcc,
 				ReplyTo = replyTo,
-				ReplyToName = replyToName,
                 Subject = subjectReplaced,
                 Body = bodyReplaced,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -655,7 +652,7 @@ namespace SmartStore.Services.Messages
 			var messageTemplate = GetActiveMessageTemplate("Customer.NewOrderNote", store.Id);
 			if (messageTemplate == null)
                 return 0;
-
+			
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);

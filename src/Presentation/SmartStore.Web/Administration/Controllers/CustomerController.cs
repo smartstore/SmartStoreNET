@@ -16,6 +16,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Email;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Affiliates;
@@ -1122,10 +1123,8 @@ namespace SmartStore.Admin.Controllers
                 var email = new QueuedEmail
                 {
                     EmailAccountId = emailAccount.Id,
-                    FromName = emailAccount.DisplayName,
-                    From = emailAccount.Email,
-                    ToName = customer.GetFullName(),
-                    To = customer.Email,
+					From = emailAccount.ToEmailAddress(),
+					To = new EmailAddress(customer.Email, customer.GetFullName()),
                     Subject = model.SendEmail.Subject,
                     Body = model.SendEmail.Body,
                     CreatedOnUtc = DateTime.UtcNow,

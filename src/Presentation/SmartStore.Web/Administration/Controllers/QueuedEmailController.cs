@@ -172,9 +172,7 @@ namespace SmartStore.Admin.Controllers
             {
                 Priority = queuedEmail.Priority,
                 From = queuedEmail.From,
-                FromName = queuedEmail.FromName,
                 To = queuedEmail.To,
-                ToName = queuedEmail.ToName,
                 CC = queuedEmail.CC,
                 Bcc = queuedEmail.Bcc,
                 Subject = queuedEmail.Subject,

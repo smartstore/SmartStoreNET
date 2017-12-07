@@ -670,8 +670,8 @@
     <Content Include="Content\editors\ckeditor\skins\smartstore\images\refresh.png" />
     <Content Include="Content\editors\ckeditor\skins\smartstore\skin.js" />
     <Content Include="Content\editors\ckeditor\styles.js" />
-    <Content Include="Content\editors\CodeMirror\mode\liquid\liquid.css" />
-    <Content Include="Content\editors\CodeMirror\mode\liquid\liquid.js" />
+    <Content Include="Content\editors\CodeMirror\liquid.css" />
+    <Content Include="Content\editors\CodeMirror\liquid.js" />
     <Content Include="Content\editors\summernote\globalinit.js" />
     <Content Include="Content\editors\summernote\langs\summernote-de-DE.js" />
     <Content Include="Content\editors\summernote\summernote.css" />

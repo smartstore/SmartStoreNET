@@ -26,9 +26,12 @@ namespace SmartStore
 	        return null;
         }
 
-        public static bool IsSequenceType(this Type seqType)
+        public static bool IsSequenceType(this Type type)
         {
-			return seqType.IsArray || typeof(IEnumerable).IsAssignableFrom(seqType);
+			if (type == typeof(string))
+				return false;
+
+			return type.IsArray || typeof(IEnumerable).IsAssignableFrom(type);
         }
 
         public static bool IsPredefinedSimpleType(this Type type)
@@ -37,6 +40,7 @@ namespace SmartStore
             {
                 return true;
             }
+
             if (type.IsEnum)
             {
                 return true;

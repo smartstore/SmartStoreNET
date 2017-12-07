@@ -29,7 +29,7 @@ namespace SmartStore.Templating.Liquid
 				{
 					fn = x => new DictionaryDrop((IDictionary<string, object>)x);
 				}
-				else if (valueType.IsSequenceType() && !(value is string))
+				else if (valueType.IsSequenceType())
 				{
 					var genericArgs = valueType.GetGenericArguments();
 					var isEnumerable = genericArgs.Length == 1 && valueType.IsSubClass(typeof(IEnumerable<>));

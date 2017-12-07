@@ -5,8 +5,15 @@
 	Html.AddScriptParts(true,
 		cdn + "codemirror.min.js",
 		cdn + "addon/hint/show-hint.min.js",
-		cdn + "addon/hint/xml-hint.min.js",
-		cdn + "addon/hint/html-hint.min.js",
+		//cdn + "addon/hint/xml-hint.min.js",
+		//cdn + "addon/hint/html-hint.min.js",
+		//cdn + "addon/hint/css-hint.min.js",
+		cdn + "addon/hint/javascript-hint.min.js",
+		cdn + "addon/fold/xml-fold.min.js",
+		cdn + "addon/fold/foldcode.min.js",
+		cdn + "addon/edit/closetag.min.js",
+		cdn + "addon/edit/closebrackets.min.js",
+		cdn + "addon/edit/matchtags.min.js",
 		cdn + "addon/mode/multiplex.min.js",
 		cdn + "addon/mode/overlay.min.js",
 		cdn + "mode/xml/xml.min.js",
@@ -15,13 +22,13 @@
 		cdn + "mode/htmlmixed/htmlmixed.min.js",
 		cdn + "addon/selection/active-line.min.js",
 		cdn + "addon/edit/matchbrackets.min.js",
-		"~/Content/editors/CodeMirror/mode/liquid/liquid.js");
+		"~/Content/editors/CodeMirror/liquid.js");
 
 	Html.AddCssFileParts(true,
 		cdn + "codemirror.min.css",
 		cdn + "addon/hint/show-hint.min.css",
 		cdn + "theme/eclipse.min.css",
-		"~/Content/editors/CodeMirror/mode/liquid/liquid.css");
+		"~/Content/editors/CodeMirror/liquid.css");
 	}
 
 <script type="text/javascript">
@@ -35,8 +42,12 @@
 				lineWrapping: true,
                 tabSize: 2,
 				smartIndent: true,
+				matchTags: true,
 				matchBrackets: true,
+				autoCloseTags: true,
+				autoCloseBrackets: true,
 				styleActiveLine: true,
+				extraKeys: { "Ctrl-Space": "autocomplete" },
 				continueComments: "Enter"
             });
         }

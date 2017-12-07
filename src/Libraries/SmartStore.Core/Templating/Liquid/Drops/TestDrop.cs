@@ -39,7 +39,8 @@ namespace SmartStore.Templating.Liquid
 				if (key is string name)
 				{
 					var modelPrefix = _modelPrefix + name;
-					var pi = FastProperty.GetProperty(_type, name)?.Property;
+					var fastProp = FastProperty.GetProperty(_type, name);
+					var pi = fastProp?.Property;
 					bool invalid = false;
 
 					if (pi == null)
@@ -51,7 +52,7 @@ namespace SmartStore.Templating.Liquid
 					{
 						value = "{{ " + modelPrefix + " }}";
 					}
-					else if (pi.PropertyType.IsSequenceType())
+					else if (fastProp.IsSequenceType)
 					{
 						var seqType = pi.PropertyType.GetGenericArguments()[0];
 						if (typeof(BaseEntity).IsAssignableFrom(seqType))

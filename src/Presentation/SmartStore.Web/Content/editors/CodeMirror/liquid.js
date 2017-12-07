@@ -131,7 +131,7 @@ CodeMirror.defineMode("liquid", function (config, parserConfig) {
 				// Immediately work off any autocompletion objects on the stack
 				while (cc.length && cc[cc.length - 1].ac)
 					cc.pop()();
-
+				
 				if (cx.marked) return cx.marked;
 				return null;
 			}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+    <To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+    <Subject>{{ Store.Name }}. New blog comment</Subject>
+    <Body><![CDATA[
+{% extends 'master' %}
+
+{% block 'body' %}
+	<p>
+		A new blog comment has been created for blog post "{{ BlogComment.BlogPostTitle }}".
+	</p>
+{% endblock %}   
+]]></Body>
+</MessageTemplate>
+

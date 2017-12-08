@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using DotLiquid;
 using DotLiquid.Exceptions;
@@ -35,10 +36,18 @@ namespace SmartStore.Templating.Liquid
 		public override void Render(Context context, TextWriter result)
 		{
 			var resName = (string)context[_resName] ?? _resName;
+			var localizer = EngineContext.Current.Resolve<LocalizerEx>();
+			string resValue = string.Empty;
 
-			var localizer = EngineContext.Current.Resolve<Localizer>();
-			var resValue = localizer(resName);
-
+			if (context["Context.LanguageId"] is int lid)
+			{
+				resValue = localizer(resName, lid);
+			}
+			else
+			{
+				resValue = localizer(resName, 0);
+			}
+			
 			result.Write(resValue);
 		}
 	}

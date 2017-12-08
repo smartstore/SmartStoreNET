@@ -159,36 +159,17 @@ namespace SmartStore.Services.Customers
 				return lastName;
 			}
 
-			string name = GetName(customer.BillingAddress);
+			string name = customer.BillingAddress?.GetFullName();
 			if (name.IsEmpty())
 			{
-				name = GetName(customer.ShippingAddress);
+				name = customer.ShippingAddress?.GetFullName();
 			}
 			if (name.IsEmpty())
 			{
-				name = GetName(customer.Addresses.FirstOrDefault());
+				name = customer.Addresses.FirstOrDefault()?.GetFullName();
 			}
 
 			return name.TrimSafe();
-
-			string GetName(Address address)
-			{
-				if (address == null)
-					return null;
-
-				string result = string.Empty;
-				if (address.FirstName.HasValue() || address.LastName.HasValue())
-				{
-					result = string.Format("{0} {1}", address.FirstName, address.LastName).Trim();
-				}
-
-				if (address.Company.HasValue())
-				{
-					result = string.Concat(result, result.HasValue() ? ", " : "", address.Company);
-				}
-
-				return result;
-			};
 		}
 
         /// <summary>

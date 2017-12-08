@@ -13,7 +13,8 @@
 @using (Html.BeginForm())
 {
 	<input type="hidden" name="Id" value="@Model.Id" />
-	
+	<input type="hidden" name="Name" value="@Model.Name" />
+
 	<div class="section-header">
         <div class="title">
             <i class="fa fa-pencil-square-o"></i>
@@ -22,6 +23,7 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
+			<button type="submit" name="save-in-file" value="save-in-file" class="btn btn-default"><i class="fa fa-floppy-o"></i>&nbsp;In Datei speichern</button>
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }

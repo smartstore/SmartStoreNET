@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using System.Xml;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Collections;
 using SmartStore.ComponentModel;
@@ -11,6 +13,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -39,6 +42,15 @@ namespace SmartStore.Admin.Controllers
 					liquidTemplate.Id = 0;
 					liquidTemplate.To = "{{ Customer.FullName }} <{{ Customer.Email }}>";
 					liquidTemplate.Name += ".Liquid";
+
+					var fileTemplate = GetTemplateFromFile(template.Name);
+					if (fileTemplate != null)
+					{
+						liquidTemplate.To = fileTemplate.To ?? liquidTemplate.To;
+						liquidTemplate.ReplyTo = fileTemplate.ReplyTo ?? liquidTemplate.ReplyTo;
+						liquidTemplate.Subject = fileTemplate.Subject ?? liquidTemplate.Subject;
+						liquidTemplate.Body = fileTemplate.Body ?? liquidTemplate.Body;
+					}
 
 					_messageTemplateService.InsertMessageTemplate(liquidTemplate);
 				}
@@ -86,6 +98,48 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return RedirectToAction("Edit2", template.Id);
+		}
+
+		[HttpPost, FormValueRequired("save-in-file"), ActionName("Edit2")]
+		public ActionResult SaveInFile(MessageTemplateModel model)
+		{
+			var doc = new XmlDocument();
+			doc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><MessageTemplate></MessageTemplate>");
+
+			var root = doc.DocumentElement;
+			root.AppendChild(doc.CreateElement("To")).InnerText = model.To;
+			if (model.ReplyTo.HasValue())
+				root.AppendChild(doc.CreateElement("ReplyTo")).InnerText = model.ReplyTo;
+			root.AppendChild(doc.CreateElement("Subject")).InnerText = model.Subject;
+			root.AppendChild(doc.CreateElement("Body")).AppendChild(doc.CreateCDataSection(model.Body));
+
+			string path = Path.Combine(CommonHelper.MapPath("~/App_Data/Localization/Emails/de"), model.Name.RemoveEncloser("", ".Liquid") + ".xml");
+			var xml = Prettifier.PrettifyXML(doc.OuterXml);
+			System.IO.File.WriteAllText(path, xml);
+
+			return RedirectToAction("Edit2", model.Id);
+		}
+
+
+		private MessageTemplate GetTemplateFromFile(string messageTemplateName)
+		{
+			string path = Path.Combine(CommonHelper.MapPath("~/App_Data/Localization/Emails/de"), messageTemplateName + ".xml");
+			if (!System.IO.File.Exists(path))
+				return null;
+
+			var doc = new XmlDocument();
+			doc.Load(path);
+			var root = doc.DocumentElement;
+
+			var tpl = new MessageTemplate
+			{
+				To = root["To"]?.InnerText?.Trim(),
+				ReplyTo = root["ReplyTo"]?.InnerText?.Trim(),
+				Subject = root["Subject"]?.InnerText?.Trim(),
+				Body = root["Body"]?.InnerText?.Trim()
+			};
+
+			return tpl;
 		}
 
 

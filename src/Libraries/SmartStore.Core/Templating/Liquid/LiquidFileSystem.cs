@@ -59,7 +59,7 @@ namespace SmartStore.Templating.Liquid
 
 			if (!_vpp.FileExists(virtualPath))
 			{
-				throw new IOException($"Include file '{virtualPath}' does not exist.");
+				throw new FileNotFoundException($"Include file '{virtualPath}' does not exist.");
 			}
 
 			using (var stream = _vpp.OpenFile(virtualPath))

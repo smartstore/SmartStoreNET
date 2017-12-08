@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
@@ -21,11 +22,18 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
+using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
+using SmartStore.Services.Topics;
+using SmartStore.Services.Seo;
 using SmartStore.Templating;
 
 namespace SmartStore.Services.Messages
@@ -88,11 +96,25 @@ namespace SmartStore.Services.Messages
 			_shoppingCartSettings = shoppingCartSettings;
 			_securitySettings = securitySettings;
 			_urlHelper = urlHelper;
+
+			T = NullLocalizer.InstanceEx;
+			Logger = NullLogger.Instance;
 		}
+
+		public LocalizerEx T { get; set; }
+		public ILogger Logger { get; set; }
 
 		public virtual void AddGlobalModelParts(MessageContext messageContext, IDictionary<string, object> model)
 		{
 			Guard.NotNull(model, nameof(model));
+
+			model["Context"] = new Dictionary<string, object>
+			{
+				{ "TemplateName", messageContext.MessageTemplate.Name },
+				{ "LanguageId", messageContext.Language.Id },
+				{ "LanguageCulture", messageContext.Language.LanguageCulture },
+				{ "BaseUrl", messageContext.BaseUri.ToString() }
+			};
 
 			dynamic email = new ExpandoObject();
 			email.Email = messageContext.EmailAccount.Email;
@@ -351,7 +373,108 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			return null;
+			var allow = new HashSet<string>
+			{
+				nameof(part.Id),
+				nameof(part.OrderNumber),
+				nameof(part.OrderGuid),
+				nameof(part.StoreId),
+				nameof(part.OrderStatus),
+				nameof(part.PaymentStatus),
+				nameof(part.ShippingStatus),
+				nameof(part.CustomerTaxDisplayType),
+				nameof(part.TaxRatesDictionary),
+				nameof(part.VatNumber),
+				nameof(part.AffiliateId),
+				nameof(part.CustomerIp),
+				nameof(part.CardType),
+				nameof(part.CardName),
+				nameof(part.MaskedCreditCardNumber),
+				nameof(part.DirectDebitAccountHolder),
+				nameof(part.DirectDebitBankCode), // TODO: (mc) Liquid > Bank data (?)
+				nameof(part.PurchaseOrderNumber),
+				nameof(part.PaidDateUtc),
+				nameof(part.ShippingMethod),
+				nameof(part.PaymentMethodSystemName),
+				nameof(part.ShippingRateComputationMethodSystemName),
+				nameof(part.CreatedOnUtc)
+				// TODO: (mc) Liquid > More whitelisting?
+			};
+
+			var m = new HybridExpando(part, allow, MemberOptMethod.Allow);
+			var d = m as dynamic;
+			
+			d.ID = part.Id;
+			d.Billing = CreateModelPart(part.BillingAddress, messageContext);
+			d.Shipping = CreateModelPart(part.BillingAddress ?? new Address(), messageContext);
+			d.CustomerFullName = part.BillingAddress.GetFullName();
+			d.CustomerEmail = part.BillingAddress.Email;
+			d.CustomerComment = part.CustomerOrderComment;
+			d.Disclaimer = GetTopic("Disclaimer", messageContext);
+			d.ConditionsOfUse = GetTopic("ConditionsOfUse", messageContext);
+
+			// Payment method
+			var paymentMethodName = part.PaymentMethodSystemName;
+			var paymentMethod = _services.Resolve<IProviderManager>().GetProvider<IPaymentMethod>(part.PaymentMethodSystemName);
+			if (paymentMethod != null)
+			{
+				paymentMethodName = GetLocalizedValue(messageContext, paymentMethod.Metadata, nameof(paymentMethod.Metadata.FriendlyName), x => x.FriendlyName);
+			}
+			d.PaymentMethod = paymentMethodName;
+
+			// CreatedOn
+			var createdOn = part.CreatedOnUtc.ToString("D");
+			if (messageContext.Language?.LanguageCulture != null)
+			{
+				var localDate = _services.DateTimeHelper.ConvertToUserTime(part.CreatedOnUtc, TimeZoneInfo.Utc, _services.DateTimeHelper.GetCustomerTimeZone(part.Customer));
+				createdOn = localDate.ToString("D", new CultureInfo(messageContext.Language.LanguageCulture));
+			}
+			d.CreatedOn = createdOn;
+
+			d.OrderURLForCustomer = part.Customer != null && !part.Customer.IsGuest() 
+				? BuildActionUrl("Details", "Order", new { id = part.Id }, messageContext) 
+				: "";
+
+			// Overrides
+			m.Properties["OrderNumber"] = part.GetOrderNumber();
+			m.Properties["AcceptThirdPartyEmailHandOver"] = GetBoolResource(part.AcceptThirdPartyEmailHandOver, messageContext);
+			m.Properties["OrderNotes"] = part.OrderNotes.Select(x => CreateModelPart(x, messageContext)).ToList();
+
+			// Items, Totals & co.
+			d.Items = part.OrderItems.Select(x => CreateModelPart(x, messageContext)).ToList();
+			d.Totals = new { }; // TODO: (mc) Liquid
+
+			// Checkout Attributes
+			if (part.CheckoutAttributeDescription.HasValue())
+			{
+				d.CheckoutAttributes = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(part.CheckoutAttributeDescription));
+			}
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(OrderItem part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			// TODO: (mc) Liquid
+
+			var product = part.Product;
+			if (product == null)
+			{
+				return new Dictionary<string, object>();
+			}
+
+			product.MergeWithCombination(part.AttributesXml, _services.Resolve<IProductAttributeParser>());
+
+			var m = new Dictionary<string, object>
+			{
+				{ "Name", product.GetLocalized(x => x.Name, messageContext.Language.Id) },
+				{ "Url", _services.Resolve<ProductUrlHelper>().GetProductUrl(product.Id, product.GetSeName(), part.AttributesXml) }
+			};
+
+			return m;
 		}
 
 		protected virtual object CreateModelPart(Product part, MessageContext messageContext)
@@ -446,18 +569,18 @@ namespace SmartStore.Services.Messages
 
 			var disallow = new[] { nameof(part.AdminComment), nameof(part.Customer) };
 
-			var he = new HybridExpando(part, disallow, MemberOptMethod.Disallow);
-			he["ProductName"] = orderItem?.Product?.Name; // TODO: Liquid > Product.Name > ProductName
-			he["Reason"] = part.ReasonForReturn;
-			he["Status"] = part.ReturnRequestStatus.GetLocalizedEnum(_services.Localization, _services.WorkContext);
+			var m = new HybridExpando(part, disallow, MemberOptMethod.Disallow);
+			m["ProductName"] = orderItem?.Product?.Name; // TODO: Liquid > Product.Name > ProductName
+			m["Reason"] = part.ReasonForReturn;
+			m["Status"] = part.ReturnRequestStatus.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 
 			// TODO: Liquid > WTF?
-			he.Override(nameof(part.CustomerComments), HtmlUtils.FormatText(part.CustomerComments, false, true, false, false, false, false));
-			he.Override(nameof(part.StaffNotes), HtmlUtils.FormatText(part.StaffNotes, false, true, false, false, false, false));
+			m.Override(nameof(part.CustomerComments), HtmlUtils.FormatText(part.CustomerComments, false, true, false, false, false, false));
+			m.Override(nameof(part.StaffNotes), HtmlUtils.FormatText(part.StaffNotes, false, true, false, false, false, false));
 
-			PublishModelPartCreatedEvent<ReturnRequest>(part, he);
+			PublishModelPartCreatedEvent<ReturnRequest>(part, m);
 
-			return he;
+			return m;
 		}
 
 		protected virtual object CreateModelPart(GiftCard part, MessageContext messageContext)
@@ -545,7 +668,15 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			return null;
+			var m = new HybridExpando(part);
+
+			m["FullSalutation"] = part.GetFullSalutaion();
+
+			// Overrides
+			m.Properties["StateProvince"] = part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull();
+			m.Properties["Country"] = part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull();
+
+			return m;
 		}
 
 		protected virtual object CreateModelPart(ShoppingCartItem part, MessageContext messageContext)
@@ -739,9 +870,33 @@ namespace SmartStore.Services.Messages
 			return result;
 		}
 
+		private object GetTopic(string topicSystemName, MessageContext ctx)
+		{
+			var topicService = _services.Resolve<ITopicService>();
+
+			// Load by store
+			var topic = topicService.GetTopicBySystemName(topicSystemName, ctx.Store.Id);
+			if (topic == null)
+			{
+				// Not found. Let's find topic assigned to all stores
+				topic = topicService.GetTopicBySystemName(topicSystemName, 0);
+			}
+
+			return new
+			{
+				Title = topic?.Title.EmptyNull(),
+				Body = topic?.Body.EmptyNull()
+			};
+		}
+
 		private string GetDisplayNameForCustomer(Customer customer)
 		{
 			return customer.GetFullName().NullEmpty() ?? customer?.Username;
+		}
+
+		private string GetBoolResource(bool value, MessageContext ctx)
+		{
+			return _services.Localization.GetResource(value ? "Common.Yes" : "Common.No", ctx.Language.Id);
 		}
 
 		#endregion

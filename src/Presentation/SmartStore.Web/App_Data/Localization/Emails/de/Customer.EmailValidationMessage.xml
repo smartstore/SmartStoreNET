@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+    <To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+    <ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
+    <Subject>{{ Store.Name }}. Registrierung bestätigen</Subject>
+    <Body><![CDATA[
+{% extends 'master' %}
+
+{% block 'body' %}
+  <p>
+    Bitte bestätigen Sie Ihre Registrierung mit einem Klick auf diesen <a href="{{ Customer.AccountActivationURL }}">Link</a>.
+  </p>
+{% endblock %}
+   
+]]></Body>
+</MessageTemplate>
+

@@ -165,6 +165,10 @@
 			.content-cell {
 				padding: 35px;
 			}
+
+			.content-cell > *:last-child {
+				margin-bottom: 0;
+			}
 	    
 			/* Attribute list ------------------------------ */
 
@@ -413,15 +417,14 @@
 			/* Design time ------------------------------ */
 			
 			.dtc-var {
-				color: #0000c0;
+				/*color: #0000c0;
 				font-weight: bold;
-				font-size: 12px;
+				font-size: 12px;*/
 			}
 			
 			.dtc-var.invalid {
-				color: #f44336;
-				text-decoration: line-through;
-				
+				/*color: #f44336;
+				text-decoration: line-through;*/
 			}
 			
 			{% block 'css' %}{% endblock %}

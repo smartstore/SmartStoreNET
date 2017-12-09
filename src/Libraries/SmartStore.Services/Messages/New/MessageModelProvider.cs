@@ -33,6 +33,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Topics;
+using SmartStore.Services.Forums;
 using SmartStore.Services.Seo;
 using SmartStore.Templating;
 
@@ -57,44 +58,17 @@ namespace SmartStore.Services.Messages
 		private readonly ICommonServices _services;
 		private readonly ITemplateEngine _templateEngine;
 		private readonly IEmailAccountService _emailAccountService;
-		private readonly MediaSettings _mediaSettings;
-		private readonly ContactDataSettings _contactDataSettings;
-		private readonly MessageTemplatesSettings _templatesSettings;
-		private readonly CatalogSettings _catalogSettings;
-		private readonly TaxSettings _taxSettings;
-		private readonly CompanyInformationSettings _companyInfoSettings;
-		private readonly BankConnectionSettings _bankConnectionSettings;
-		private readonly ShoppingCartSettings _shoppingCartSettings;
-		private readonly SecuritySettings _securitySettings;
 		private readonly UrlHelper _urlHelper;
 
 		public MessageModelProvider(
 			ICommonServices services,
 			ITemplateEngine templateEngine,
 			IEmailAccountService emailAccountService,
-			MediaSettings mediaSettings,
-			ContactDataSettings contactDataSettings,
-			MessageTemplatesSettings templatesSettings,
-			CatalogSettings catalogSettings,
-			TaxSettings taxSettings,
-			CompanyInformationSettings companyInfoSettings,
-			BankConnectionSettings bankConnectionSettings,
-			ShoppingCartSettings shoppingCartSettings,
-			SecuritySettings securitySettings,
 			UrlHelper urlHelper)
 		{
 			_services = services;
 			_templateEngine = templateEngine;
 			_emailAccountService = emailAccountService;
-			_mediaSettings = mediaSettings;
-			_contactDataSettings = contactDataSettings;
-			_templatesSettings = templatesSettings;
-			_catalogSettings = catalogSettings;
-			_taxSettings = taxSettings;
-			_companyInfoSettings = companyInfoSettings;
-			_bankConnectionSettings = bankConnectionSettings;
-			_shoppingCartSettings = shoppingCartSettings;
-			_securitySettings = securitySettings;
 			_urlHelper = urlHelper;
 
 			T = NullLocalizer.InstanceEx;
@@ -121,12 +95,13 @@ namespace SmartStore.Services.Messages
 			email.SenderName = messageContext.EmailAccount.DisplayName;
 
 			model["Email"] = email;
-			model["Theme"] = CreateThemeModelPart();
-			model["Store"] = CreateModelPart(messageContext.Store, messageContext);
+			model["Theme"] = CreateThemeModelPart(messageContext);
+			model["Company"] = CreateCompanyModelPart(messageContext);
+			model["Contact"] = CreateContactModelPart(messageContext);
+			model["Bank"] = CreateBankModelPart(messageContext);
+
 			model["Customer"] = CreateModelPart(messageContext.Customer, messageContext);
-			model["Company"] = CreateCompanyModelPart();
-			model["Contact"] = CreateContactModelPart();
-			model["Bank"] = CreateBankModelPart();
+			model["Store"] = CreateModelPart(messageContext.Store, messageContext);
 		}
 
 		public virtual void AddModelPart(object part, MessageContext messageContext, IDictionary<string, object> model, string name = null)
@@ -135,104 +110,94 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(model, nameof(model));
 			
-			name = name.NullEmpty() ?? ResolvePartName(part);
+			name = name.NullEmpty() ?? ResolveModelName(part);
 
 			object modelPart = null;
 
-			if (messageContext.TestMode && part is BaseEntity be)
+			switch (part)
 			{
-				modelPart = _templateEngine.CreateTestModelFor(be, name);
-			}
-			else
-			{
-				switch (part)
-				{
-					case Order x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case Product x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					//case Customer x:
-					//	modelPart = CreateModelPart(x, messageContext);
-					//	break;
-					case Shipment x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case OrderNote x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case RecurringPayment x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case ReturnRequest x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case GiftCard x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case NewsLetterSubscription x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case ProductReview x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case BlogComment x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case NewsComment x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case ForumTopic x:
-						name = "Forum";
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case ForumPost x:
-						name = "Forum";
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case Forum x:
-						name = "Forum";
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case PrivateMessage x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					case BackInStockSubscription x:
-						modelPart = CreateModelPart(x, messageContext);
-						break;
-					default:
-						var partType = part.GetType();
-						modelPart = part;
+				case Order x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case Product x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case Customer x:
+					//modelPart = CreateModelPart(x, messageContext);
+					break;
+				case Shipment x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case OrderNote x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case RecurringPayment x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case ReturnRequest x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case GiftCard x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case NewsLetterSubscription x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case ProductReview x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case BlogComment x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case NewsComment x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case ForumTopic x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case ForumPost x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case Forum x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case PrivateMessage x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case BackInStockSubscription x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				default:
+					var partType = part.GetType();
+					modelPart = part;
 
-						if (partType.IsPlainObjectType() && !partType.IsAnonymous())
+					if (!messageContext.TestMode && partType.IsPlainObjectType() && !partType.IsAnonymous())
+					{
+						var evt = new MessageModelPartMappingEvent(part);
+						_services.EventPublisher.Publish(evt);
+
+						if (evt.Result != null && !object.ReferenceEquals(evt.Result, part))
 						{
-							var evt = new MessageModelPartMappingEvent(part);
-							_services.EventPublisher.Publish(evt);
-
-							if (evt.Result != null && !object.ReferenceEquals(evt.Result, part))
+							modelPart = evt.Result;
+							if (evt.Name.HasValue())
 							{
-								modelPart = evt.Result;
-								if (evt.Name.HasValue())
-								{
-									name = evt.Name;
-								}
-								else
-								{
-									name = ResolvePartName(evt.Result) ?? name;
-								}
+								name = evt.Name;
 							}
 							else
 							{
-								modelPart = part;
+								name = ResolveModelName(evt.Result) ?? name;
 							}
-
-							modelPart = evt.Result ?? part;
-							name = evt.Name.NullEmpty() ?? name;
+						}
+						else
+						{
+							modelPart = part;
 						}
 
-						break;
-				}
+						modelPart = evt.Result ?? part;
+						name = evt.Name.NullEmpty() ?? name;
+					}
+
+					break;
 			}
 
 			if (modelPart != null)
@@ -266,9 +231,48 @@ namespace SmartStore.Services.Messages
 			}	
 		}
 
+		public string ResolveModelName(object model)
+		{
+			Guard.NotNull(model, nameof(model));
+
+			string name = null;
+			var type = model.GetType();
+
+			try
+			{
+				if (model is BaseEntity be)
+				{
+					name = be.GetUnproxiedType().Name;
+				}
+				else if (model is IDictionary<string, object> d)
+				{
+					name = d.Get("__Name") as string;
+				}
+				else if (model is IDynamicMetaObjectProvider x)
+				{
+					name = ((dynamic)model).__Name as string;
+				}
+				else if (type.IsAnonymous())
+				{
+					var prop = FastProperty.GetProperty(type, "__Name", PropertyCachingStrategy.EagerCached);
+					if (prop != null)
+					{
+						name = prop.GetValue(model) as string;
+					}
+				}
+				else if (type.IsPlainObjectType())
+				{
+					name = type.Name;
+				}
+			}
+			catch { }
+
+			return name;
+		}
+
 		#region Global model part handlers
 
-		protected virtual object CreateThemeModelPart()
+		protected virtual object CreateThemeModelPart(MessageContext messageContext)
 		{
 			dynamic model = new ExpandoObject();
 
@@ -289,43 +293,46 @@ namespace SmartStore.Services.Messages
 			return model;
 		}
 
-		protected virtual object CreateCompanyModelPart()
+		protected virtual object CreateCompanyModelPart(MessageContext messageContext)
 		{
-			var he = new HybridExpando(_companyInfoSettings);
-			PublishModelPartCreatedEvent<CompanyInformationSettings>(_companyInfoSettings, he);
-			return he;
+			var settings = _services.Settings.LoadSetting<CompanyInformationSettings>(messageContext.Store.Id);
+			var m = new HybridExpando(settings);
+			PublishModelPartCreatedEvent<CompanyInformationSettings>(settings, m);
+			return m;
 		}
 
-		protected virtual object CreateBankModelPart()
+		protected virtual object CreateBankModelPart(MessageContext messageContext)
 		{
-			var he = new HybridExpando(_bankConnectionSettings);
-			PublishModelPartCreatedEvent<BankConnectionSettings>(_bankConnectionSettings, he);
-			return he;
+			var settings = _services.Settings.LoadSetting<BankConnectionSettings>(messageContext.Store.Id);
+			var m = new HybridExpando(settings);
+			PublishModelPartCreatedEvent<BankConnectionSettings>(settings, m);
+			return m;
 		}
 
-		protected virtual object CreateContactModelPart()
+		protected virtual object CreateContactModelPart(MessageContext messageContext)
 		{
-			var contact = new HybridExpando(_contactDataSettings) as dynamic;
+			var settings = _services.Settings.LoadSetting<ContactDataSettings>(messageContext.Store.Id);
+			var contact = new HybridExpando(settings) as dynamic;
 
 			// TODO: (mc) Liquid > Use following aliases in Partials
 			// Aliases
 			contact.Phone = new
 			{
-				Company = _contactDataSettings.CompanyTelephoneNumber,
-				Hotline = _contactDataSettings.HotlineTelephoneNumber,
-				Mobile = _contactDataSettings.MobileTelephoneNumber,
-				Fax = _contactDataSettings.CompanyFaxNumber
+				Company = settings.CompanyTelephoneNumber,
+				Hotline = settings.HotlineTelephoneNumber,
+				Mobile = settings.MobileTelephoneNumber,
+				Fax = settings.CompanyFaxNumber
 			};
 
 			contact.Email = new
 			{
-				Company = _contactDataSettings.CompanyEmailAddress,
-				Webmaster = _contactDataSettings.WebmasterEmailAddress,
-				Support = _contactDataSettings.SupportEmailAddress,
-				Contact = _contactDataSettings.ContactEmailAddress
+				Company = settings.CompanyEmailAddress,
+				Webmaster = settings.WebmasterEmailAddress,
+				Support = settings.SupportEmailAddress,
+				Contact = settings.ContactEmailAddress
 			};
 
-			PublishModelPartCreatedEvent<ContactDataSettings>(_contactDataSettings, contact);
+			PublishModelPartCreatedEvent<ContactDataSettings>(settings, contact);
 
 			return contact;
 		}
@@ -432,7 +439,7 @@ namespace SmartStore.Services.Messages
 			d.CreatedOn = createdOn;
 
 			d.OrderURLForCustomer = part.Customer != null && !part.Customer.IsGuest() 
-				? BuildActionUrl("Details", "Order", new { id = part.Id }, messageContext) 
+				? BuildActionUrl("Details", "Order", new { id = part.Id, area = "" }, messageContext) 
 				: "";
 
 			// Overrides
@@ -509,13 +516,14 @@ namespace SmartStore.Services.Messages
 
 			m.Properties[nameof(part.Email)] = email;
 			m.Properties[nameof(part.RewardPointsHistory)] = part.RewardPointsHistory.Select(x => CreateModelPart(x, messageContext)).ToList();
-			m.Properties[nameof(part.BillingAddress)] = CreateModelPart(part.BillingAddress, messageContext);
-			m.Properties[nameof(part.ShippingAddress)] = CreateModelPart(part.ShippingAddress, messageContext);
+			m.Properties[nameof(part.BillingAddress)] = CreateModelPart(part.BillingAddress ?? new Address(), messageContext);
+			m.Properties[nameof(part.ShippingAddress)] = CreateModelPart(part.ShippingAddress ?? new Address(), messageContext);
 
 			m["FullName"] = GetDisplayNameForCustomer(part);
 			m["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
 			m["VatNumberStatus"] = part.GetAttribute<VatNumberStatus>(SystemCustomerAttributeNames.VatNumberStatusId).ToString();
 			m["CustomerNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
+			m["IsRegistered"] = part.IsRegistered();
 
 			m["PasswordRecoveryURL"] = BuildActionUrl("passwordrecoveryconfirm", "customer", 
 				new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), email = email, area = "" },
@@ -526,7 +534,8 @@ namespace SmartStore.Services.Messages
 				messageContext);
 
 			m["WishlistUrl"] = BuildRouteUrl("Wishlist", new { customerGuid = part.CustomerGuid }, messageContext);
-			
+			m["EditUrl"] = BuildActionUrl("Edit", "Customer", new { id = part.Id, area = "admin" }, messageContext);
+
 			PublishModelPartCreatedEvent<Customer>(part, m);
 
 			return m;
@@ -620,7 +629,14 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			return null;
+			var m = new Dictionary<string, object>
+			{
+				{  "PostTitle", part.BlogPost.Title },
+				{  "PostUrl", BuildRouteUrl("BlogPost", new { SeName = part.BlogPost.GetSeName(part.BlogPost.LanguageId, ensureTwoPublishedLanguages: false) }, messageContext) },
+				{  "Text", part.CommentText }
+			};
+
+			return m;
 		}
 
 		protected virtual object CreateModelPart(NewsComment part, MessageContext messageContext)
@@ -636,7 +652,19 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			return null;
+			// TODO: (mc) Liquid > Implement TopicSlugPaged with friendlyForumTopicPageIndex param!
+			
+			var m = new Dictionary<string, object>
+			{
+				{ "Subject", part.Subject },
+				{ "NumReplies", part.NumReplies },
+				{ "NumPosts", part.NumPosts },
+				{ "NumViews", part.Views },
+				{ "Body", part.GetFirstPost(_services.Resolve<IForumService>())?.FormatPostText() },
+				{ "Url", BuildRouteUrl("TopicSlug", new { id = part.Id, slug = part.GetSeName() }, messageContext) },
+			};
+
+			return m;
 		}
 
 		protected virtual object CreateModelPart(ForumPost part, MessageContext messageContext)
@@ -644,7 +672,13 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			return null;
+			var m = new Dictionary<string, object>
+			{
+				{ "Author", part.Customer.FormatUserName() },
+				{ "Body", part.FormatPostText() }
+			};
+
+			return m;
 		}
 
 		protected virtual object CreateModelPart(Forum part, MessageContext messageContext)
@@ -652,7 +686,16 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			return null;
+			var m = new Dictionary<string, object>
+			{
+				{ "Name", part.GetLocalized(x => x.Name, messageContext.Language.Id) },
+				{ "GroupName", part.ForumGroup?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull() },
+				{ "NumPosts", part.NumPosts },
+				{ "NumTopics", part.NumTopics },
+				{ "Url", BuildRouteUrl("ForumSlug", new {  id = part.Id, slug = part.GetSeName(messageContext.Language.Id) }, messageContext) },
+			};
+			
+			return m;
 		}
 
 		protected virtual object CreateModelPart(BackInStockSubscription part, MessageContext messageContext)
@@ -817,43 +860,6 @@ namespace SmartStore.Services.Messages
 			_services.EventPublisher.Publish(new MessageModelPartCreatedEvent<T>(source, part));
 		}
 
-		private string ResolvePartName(object part)
-		{
-			string name = null;
-			var type = part.GetType();
-
-			try
-			{
-				if (part is BaseEntity be)
-				{
-					name = be.GetUnproxiedType().Name;
-				}
-				else if (part is IDictionary<string, object> d)
-				{
-					name = d.Get("__Name") as string;
-				}
-				else if (part is IDynamicMetaObjectProvider x)
-				{
-					name = ((dynamic)part).__Name as string;
-				}
-				else if (type.IsAnonymous())
-				{
-					var prop = FastProperty.GetProperty(type, "__Name", PropertyCachingStrategy.EagerCached);
-					if (prop != null)
-					{
-						name = prop.GetValue(part) as string;
-					}
-				}
-				else if (type.IsPlainObjectType())
-				{
-					name = type.Name;
-				}
-			}
-			catch { }
-
-			return name;
-		}
-
 		private string GetLocalizedValue(MessageContext messageContext, ProviderMetadata metadata, string propertyName, Expression<Func<ProviderMetadata, string>> fallback)
 		{
 			// TODO: (mc) this actually belongs to PluginMediator, but we simply cannot add a dependency to framework from here. Refactor later!
@@ -891,7 +897,7 @@ namespace SmartStore.Services.Messages
 
 		private string GetDisplayNameForCustomer(Customer customer)
 		{
-			return customer.GetFullName().NullEmpty() ?? customer?.Username;
+			return customer.GetFullName().NullEmpty() ?? customer.Username ?? customer.FindEmail();
 		}
 
 		private string GetBoolResource(bool value, MessageContext ctx)

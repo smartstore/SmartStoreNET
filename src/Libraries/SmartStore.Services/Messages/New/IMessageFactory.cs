@@ -24,7 +24,7 @@ namespace SmartStore.Services.Messages
 
 		void QueueMessage(MessageContext messageContext, QueuedEmail queuedEmail, dynamic model);
 
-		IEnumerable<BaseEntity> GetTestEntities(MessageContext messageContext);
+		object[] GetTestModels(MessageContext messageContext);
 	}
 
 	public static class IMessageFactoryExtensions

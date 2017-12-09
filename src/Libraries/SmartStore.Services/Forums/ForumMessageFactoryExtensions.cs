@@ -16,7 +16,7 @@ namespace SmartStore.Services.Forums
 			Guard.NotNull(customer, nameof(customer));
 			Guard.NotNull(forumTopic, nameof(forumTopic));
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewForumTopic, languageId), true, forumTopic, forumTopic.Forum, customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewForumTopic, languageId, customer: customer), true, forumTopic, forumTopic.Forum);
 		}
 
 		/// <summary>
@@ -30,7 +30,7 @@ namespace SmartStore.Services.Forums
 
 			// TBD: (mc) Liquid > how to handle "friendlyForumTopicPageIndex" (?) > see "MessageTokenProvider.AddForumTopicTokens()"
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewForumPost, languageId), true, forumPost, forumPost.ForumTopic, forumPost.ForumTopic.Forum, customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewForumPost, languageId, customer: customer), true, forumPost, forumPost.ForumTopic, forumPost.ForumTopic.Forum);
 		}
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace SmartStore.Services.Forums
 			Guard.NotNull(customer, nameof(customer));
 			Guard.NotNull(privateMessage, nameof(privateMessage));
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewPrivateMessage, languageId, privateMessage.StoreId), true, privateMessage, customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewPrivateMessage, languageId, privateMessage.StoreId, customer), true, privateMessage);
 		}
 	}
 }

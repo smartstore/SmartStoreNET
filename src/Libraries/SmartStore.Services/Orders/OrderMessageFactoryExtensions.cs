@@ -23,7 +23,7 @@ namespace SmartStore.Services.Orders
 		public static CreateMessageResult SendOrderPlacedCustomerNotification(this IMessageFactory factory, Order order, int languageId = 0)
 		{
 			Guard.NotNull(order, nameof(order));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.OrderPlacedCustomer, languageId, order.StoreId), true, order, order.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.OrderPlacedCustomer, languageId, order.StoreId, order.Customer), true, order);
 		}
 
 		/// <summary>
@@ -34,7 +34,7 @@ namespace SmartStore.Services.Orders
 			Guard.NotNull(shipment, nameof(shipment));
 			Guard.NotNull(shipment.Order, nameof(shipment.Order));
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShipmentSentCustomer, languageId, shipment.Order.StoreId), true, shipment, shipment.Order, shipment.Order.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShipmentSentCustomer, languageId, shipment.Order.StoreId, shipment.Order.Customer), true, shipment, shipment.Order);
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@ namespace SmartStore.Services.Orders
 			Guard.NotNull(shipment, nameof(shipment));
 			Guard.NotNull(shipment.Order, nameof(shipment.Order));
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShipmentDeliveredCustomer, languageId, shipment.Order.StoreId), true, shipment, shipment.Order, shipment.Order.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShipmentDeliveredCustomer, languageId, shipment.Order.StoreId, shipment.Order.Customer), true, shipment, shipment.Order);
 		}
 
 		/// <summary>
@@ -54,7 +54,7 @@ namespace SmartStore.Services.Orders
 		public static CreateMessageResult SendOrderCompletedCustomerNotification(this IMessageFactory factory, Order order, int languageId = 0)
 		{
 			Guard.NotNull(order, nameof(order));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.OrderCompletedCustomer, languageId, order.StoreId), true, order, order.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.OrderCompletedCustomer, languageId, order.StoreId, order.Customer), true, order);
 		}
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace SmartStore.Services.Orders
 		public static CreateMessageResult SendOrderCancelledCustomerNotification(this IMessageFactory factory, Order order, int languageId = 0)
 		{
 			Guard.NotNull(order, nameof(order));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.OrderCancelledCustomer, languageId, order.StoreId), true, order, order.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.OrderCancelledCustomer, languageId, order.StoreId, order.Customer), true, order);
 		}
 
 		/// <summary>
@@ -72,7 +72,7 @@ namespace SmartStore.Services.Orders
 		public static CreateMessageResult SendNewOrderNoteAddedCustomerNotification(this IMessageFactory factory, OrderNote orderNote, int languageId = 0)
 		{
 			Guard.NotNull(orderNote, nameof(orderNote));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.OrderNoteAddedCustomer, languageId, orderNote.Order?.StoreId), true, orderNote, orderNote.Order, orderNote.Order.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.OrderNoteAddedCustomer, languageId, orderNote.Order?.StoreId, orderNote.Order?.Customer), true, orderNote, orderNote.Order);
 		}
 
 		/// <summary>
@@ -81,8 +81,9 @@ namespace SmartStore.Services.Orders
 		public static CreateMessageResult SendRecurringPaymentCancelledStoreOwnerNotification(this IMessageFactory factory, RecurringPayment recurringPayment, int languageId = 0)
 		{
 			Guard.NotNull(recurringPayment, nameof(recurringPayment));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.RecurringPaymentCancelledStoreOwner, languageId, recurringPayment.InitialOrder?.StoreId), true,
-				recurringPayment, recurringPayment.InitialOrder, recurringPayment.InitialOrder?.Customer);
+			var order = recurringPayment.InitialOrder;
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.RecurringPaymentCancelledStoreOwner, languageId, order?.StoreId, order?.Customer), true,
+				recurringPayment, order);
 		}
 
 		/// <summary>
@@ -93,7 +94,7 @@ namespace SmartStore.Services.Orders
 			Guard.NotNull(returnRequest, nameof(returnRequest));
 			Guard.NotNull(orderItem, nameof(orderItem));
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewReturnRequestStoreOwner, languageId, orderItem.Order?.StoreId), true, returnRequest, returnRequest.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewReturnRequestStoreOwner, languageId, orderItem.Order?.StoreId, returnRequest.Customer), true, returnRequest);
 		}
 
 		/// <summary>
@@ -104,7 +105,7 @@ namespace SmartStore.Services.Orders
 			Guard.NotNull(returnRequest, nameof(returnRequest));
 			Guard.NotNull(orderItem, nameof(orderItem));
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ReturnRequestStatusChangedCustomer, languageId, orderItem.Order?.StoreId), true, returnRequest, returnRequest.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ReturnRequestStatusChangedCustomer, languageId, orderItem.Order?.StoreId, returnRequest.Customer), true, returnRequest);
 		}
 
 		/// <summary>

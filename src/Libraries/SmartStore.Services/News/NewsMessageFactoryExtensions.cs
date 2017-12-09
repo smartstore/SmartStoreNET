@@ -13,7 +13,7 @@ namespace SmartStore.Services.News
 		public static CreateMessageResult SendNewsCommentNotificationMessage(this IMessageFactory factory, NewsComment newsComment, int languageId = 0)
 		{
 			Guard.NotNull(newsComment, nameof(newsComment));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewsCommentStoreOwner, languageId), true, newsComment);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewsCommentStoreOwner, languageId, customer: newsComment.Customer), true, newsComment);
 		}
 	}
 }

@@ -38,6 +38,9 @@ namespace SmartStore.Admin.Models.Messages
 		[AllowHtml]
 		public string ReplyTo { get; set; }
 
+		[AllowHtml]
+		public string ModelTypes { get; set; }  // TODO: (mc) Liquid > Remove later (?)
+
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
 		[ScriptIgnore, JsonIgnore]
 		public string LastModelTree { get; set; }

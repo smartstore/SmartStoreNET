@@ -22,6 +22,12 @@ namespace SmartStore.Core.Domain.Messages
 		[StringLength(500)]
 		public string ReplyTo { get; set; }
 
+		/// <summary>
+		/// A comma separated list of required model types (e.g.: Product, Order, Customer, GiftCard)
+		/// </summary>
+		[StringLength(500)]
+		public string ModelTypes { get; set; }
+
 		[MaxLength]
 		public string LastModelTree { get; set; }
 

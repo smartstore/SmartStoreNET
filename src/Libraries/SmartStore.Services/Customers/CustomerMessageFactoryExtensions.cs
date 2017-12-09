@@ -13,7 +13,7 @@ namespace SmartStore.Services.Customers
 		public static CreateMessageResult SendCustomerRegisteredNotificationMessage(this IMessageFactory factory, Customer customer, int languageId = 0)
 		{
 			Guard.NotNull(customer, nameof(customer));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.CustomerRegistered, languageId), true, customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.CustomerRegistered, languageId, customer: customer), true);
 		}
 
 		/// <summary>
@@ -22,7 +22,7 @@ namespace SmartStore.Services.Customers
 		public static CreateMessageResult SendCustomerWelcomeMessage(this IMessageFactory factory, Customer customer, int languageId = 0)
 		{
 			Guard.NotNull(customer, nameof(customer));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.CustomerWelcome, languageId), true, customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.CustomerWelcome, languageId, customer: customer), true);
 		}
 
 		/// <summary>
@@ -31,7 +31,7 @@ namespace SmartStore.Services.Customers
 		public static CreateMessageResult SendCustomerEmailValidationMessage(this IMessageFactory factory, Customer customer, int languageId = 0)
 		{
 			Guard.NotNull(customer, nameof(customer));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.CustomerEmailValidation, languageId), true, customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.CustomerEmailValidation, languageId, customer: customer), true);
 		}
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace SmartStore.Services.Customers
 		public static CreateMessageResult SendCustomerPasswordRecoveryMessage(this IMessageFactory factory, Customer customer, int languageId = 0)
 		{
 			Guard.NotNull(customer, nameof(customer));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.CustomerPasswordRecovery, languageId), true, customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.CustomerPasswordRecovery, languageId, customer: customer), true);
 		}
 
 		/// <summary>
@@ -59,7 +59,7 @@ namespace SmartStore.Services.Customers
 				To = toEmail
 			};
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShareWishlist, languageId), true, customer, model);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShareWishlist, languageId, customer: customer), true, model);
 		}
 
 		/// <summary>
@@ -76,7 +76,7 @@ namespace SmartStore.Services.Customers
 				Address = vatAddress
 			};
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewVatSubmittedStoreOwner, languageId), true, customer, model);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewVatSubmittedStoreOwner, languageId, customer: customer), true, model);
 		}
 	}
 }

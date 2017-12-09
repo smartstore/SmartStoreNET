@@ -25,7 +25,7 @@ namespace SmartStore.Services.Catalog
 				To = toEmail
 			};
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShareProduct, languageId), true, customer, product, model);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShareProduct, languageId, customer: customer), true, product, model);
 		}
 
 		public static CreateMessageResult SendProductQuestionMessage(this IMessageFactory factory, Customer customer, Product product,
@@ -43,7 +43,7 @@ namespace SmartStore.Services.Catalog
 				SenderPhone = senderPhone
 			};
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ProductQuestion, languageId), true, customer, product, model);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ProductQuestion, languageId, customer: customer), true, product, model);
 		}
 
 		/// <summary>
@@ -52,7 +52,7 @@ namespace SmartStore.Services.Catalog
 		public static CreateMessageResult SendProductReviewNotificationMessage(this IMessageFactory factory, ProductReview productReview, int languageId = 0)
 		{
 			Guard.NotNull(productReview, nameof(productReview));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ProductReviewStoreOwner, languageId), true, productReview, productReview.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ProductReviewStoreOwner, languageId, customer: productReview.Customer), true, productReview);
 		}
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace SmartStore.Services.Catalog
 		public static CreateMessageResult SendBackInStockNotification(this IMessageFactory factory, BackInStockSubscription subscription, int languageId = 0)
 		{
 			Guard.NotNull(subscription, nameof(subscription));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.BackInStockCustomer, languageId, subscription.StoreId), true, subscription, subscription.Customer);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.BackInStockCustomer, languageId, subscription.StoreId, subscription.Customer), true, subscription);
 		}
 	}
 }

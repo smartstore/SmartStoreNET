@@ -3,6 +3,7 @@
     <To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
     <ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
     <Subject>{{ Store.Name }}. Registrierung bestätigen</Subject>
+    <ModelTypes>Customer</ModelTypes>
     <Body><![CDATA[
 {% extends 'master' %}
 

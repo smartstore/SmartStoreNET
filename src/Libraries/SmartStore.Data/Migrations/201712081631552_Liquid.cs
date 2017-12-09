@@ -1,15 +1,16 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
+	using System;
+	using System.Data.Entity.Migrations;
 	using SmartStore.Data.Setup;
 
 	public partial class Liquid : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
-		public override void Up()
+        public override void Up()
         {
             AddColumn("dbo.MessageTemplate", "To", c => c.String(nullable: false, maxLength: 500, defaultValue: " "));
             AddColumn("dbo.MessageTemplate", "ReplyTo", c => c.String(maxLength: 500));
+            AddColumn("dbo.MessageTemplate", "ModelTypes", c => c.String(maxLength: 500));
             AddColumn("dbo.MessageTemplate", "LastModelTree", c => c.String());
             DropColumn("dbo.QueuedEmail", "FromName");
             DropColumn("dbo.QueuedEmail", "ToName");
@@ -22,6 +23,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.QueuedEmail", "ToName", c => c.String(maxLength: 500));
             AddColumn("dbo.QueuedEmail", "FromName", c => c.String(maxLength: 500));
             DropColumn("dbo.MessageTemplate", "LastModelTree");
+            DropColumn("dbo.MessageTemplate", "ModelTypes");
             DropColumn("dbo.MessageTemplate", "ReplyTo");
             DropColumn("dbo.MessageTemplate", "To");
         }

@@ -2,6 +2,7 @@
 <MessageTemplate>
 	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
 	<Subject>Bestelleingangsbestätigung - {{ Store.Name }}</Subject>
+	<ModelTypes>Order, Order.Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}

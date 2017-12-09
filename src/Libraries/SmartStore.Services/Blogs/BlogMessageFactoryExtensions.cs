@@ -13,7 +13,7 @@ namespace SmartStore.Services.Blogs
 		public static CreateMessageResult SendBlogCommentNotificationMessage(this IMessageFactory factory, BlogComment blogComment, int languageId = 0)
 		{
 			Guard.NotNull(blogComment, nameof(blogComment));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.BlogCommentStoreOwner, languageId), true, blogComment);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.BlogCommentStoreOwner, languageId, customer: blogComment.Customer), true, blogComment);
 		}
 	}
 }

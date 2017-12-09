@@ -38,9 +38,15 @@ namespace SmartStore.Services.Messages
 
 		public Uri BaseUri { get; set; }
 
-		public static MessageContext Create(string messageTemplateName, int languageId, int? storeId = null)
+		public static MessageContext Create(string messageTemplateName, int languageId, int? storeId = null, Customer customer = null)
 		{
-			return new MessageContext { MessageTemplateName = messageTemplateName, LanguageId = languageId, StoreId = storeId };
+			return new MessageContext
+			{
+				MessageTemplateName = messageTemplateName,
+				LanguageId = languageId,
+				StoreId = storeId,
+				Customer = customer
+			};
 		}
 	}
 }

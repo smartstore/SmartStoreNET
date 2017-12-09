@@ -46,10 +46,11 @@ namespace SmartStore.Admin.Controllers
 					var fileTemplate = GetTemplateFromFile(template.Name);
 					if (fileTemplate != null)
 					{
-						liquidTemplate.To = fileTemplate.To ?? liquidTemplate.To;
-						liquidTemplate.ReplyTo = fileTemplate.ReplyTo ?? liquidTemplate.ReplyTo;
-						liquidTemplate.Subject = fileTemplate.Subject ?? liquidTemplate.Subject;
-						liquidTemplate.Body = fileTemplate.Body ?? liquidTemplate.Body;
+						liquidTemplate.To = fileTemplate.To.NullEmpty() ?? liquidTemplate.To;
+						liquidTemplate.ReplyTo = fileTemplate.ReplyTo.NullEmpty() ?? liquidTemplate.ReplyTo;
+						liquidTemplate.Subject = fileTemplate.Subject.NullEmpty() ?? liquidTemplate.Subject;
+						liquidTemplate.ModelTypes = fileTemplate.ModelTypes.NullEmpty() ?? liquidTemplate.ModelTypes;
+						liquidTemplate.Body = fileTemplate.Body.NullEmpty() ?? liquidTemplate.Body;
 					}
 
 					_messageTemplateService.InsertMessageTemplate(liquidTemplate);
@@ -87,7 +88,7 @@ namespace SmartStore.Admin.Controllers
 				var context = new MessageContext
 				{
 					MessageTemplate = template,
-					Customer = Services.WorkContext.CurrentCustomer,
+					//Customer = Services.WorkContext.CurrentCustomer,
 					TestMode = true
 				};
 
@@ -103,6 +104,14 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, FormValueRequired("save-in-file"), ActionName("Edit2")]
 		public ActionResult SaveInFile(MessageTemplateModel model)
 		{
+			var tpl = _messageTemplateService.GetMessageTemplateById(model.Id);
+			tpl.To = model.To;
+			tpl.ReplyTo = model.ReplyTo;
+			tpl.Subject = model.Subject;
+			tpl.ModelTypes = model.ModelTypes;
+			tpl.Body = model.Body;
+			Services.DbContext.SaveChanges();
+
 			var doc = new XmlDocument();
 			doc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><MessageTemplate></MessageTemplate>");
 
@@ -111,9 +120,10 @@ namespace SmartStore.Admin.Controllers
 			if (model.ReplyTo.HasValue())
 				root.AppendChild(doc.CreateElement("ReplyTo")).InnerText = model.ReplyTo;
 			root.AppendChild(doc.CreateElement("Subject")).InnerText = model.Subject;
+			root.AppendChild(doc.CreateElement("ModelTypes")).InnerText = model.ModelTypes;
 			root.AppendChild(doc.CreateElement("Body")).AppendChild(doc.CreateCDataSection(model.Body));
 
-			string path = Path.Combine(CommonHelper.MapPath("~/App_Data/Localization/Emails/de"), model.Name.RemoveEncloser("", ".Liquid") + ".xml");
+			string path = Path.Combine(CommonHelper.MapPath("~/App_Data/EmailTemplates/de"), model.Name.RemoveEncloser("", ".Liquid") + ".xml");
 			var xml = Prettifier.PrettifyXML(doc.OuterXml);
 			System.IO.File.WriteAllText(path, xml);
 
@@ -123,7 +133,7 @@ namespace SmartStore.Admin.Controllers
 
 		private MessageTemplate GetTemplateFromFile(string messageTemplateName)
 		{
-			string path = Path.Combine(CommonHelper.MapPath("~/App_Data/Localization/Emails/de"), messageTemplateName + ".xml");
+			string path = Path.Combine(CommonHelper.MapPath("~/App_Data/EmailTemplates/de"), messageTemplateName + ".xml");
 			if (!System.IO.File.Exists(path))
 				return null;
 
@@ -136,6 +146,7 @@ namespace SmartStore.Admin.Controllers
 				To = root["To"]?.InnerText?.Trim(),
 				ReplyTo = root["ReplyTo"]?.InnerText?.Trim(),
 				Subject = root["Subject"]?.InnerText?.Trim(),
+				ModelTypes = root["ModelTypes"]?.InnerText?.Trim(),
 				Body = root["Body"]?.InnerText?.Trim()
 			};
 

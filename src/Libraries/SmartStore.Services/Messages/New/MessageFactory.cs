@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Globalization;
+using System.Data.Entity;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Localization;
@@ -17,7 +20,10 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Customers;
-using Newtonsoft.Json;
+using SmartStore.Core.Domain.Blogs;
+using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.News;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Services.Messages
 {
@@ -71,20 +77,25 @@ namespace SmartStore.Services.Messages
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 
-			ValidateMessageContext(messageContext, ref modelParts);
-
 			modelParts = modelParts ?? new object[0];
+
+			// Handle TestMode
+			if (messageContext.TestMode && modelParts.Length == 0)
+			{
+				modelParts = GetTestModels(messageContext);
+				//var testCustomer = modelParts.OfType<Customer>().FirstOrDefault();
+				//if (testCustomer != null)
+				//{
+				//	messageContext.Customer = testCustomer;
+				//}
+			}
+
+			ValidateMessageContext(messageContext, ref modelParts);
 
 			var model = new ExpandoObject() as IDictionary<string, object>;
 
 			// Add all global template model parts
 			_modelProvider.AddGlobalModelParts(messageContext, model);
-
-			// Handle TestMode
-			if (messageContext.TestMode && modelParts.Length == 0)
-			{
-				modelParts = GetTestEntities(messageContext).ToArray();
-			}
 
 			// Add specific template models for passed parts
 			foreach (var part in modelParts)
@@ -173,17 +184,6 @@ namespace SmartStore.Services.Messages
 			});
 
 			_queuedEmailService.InsertQueuedEmail(queuedEmail);
-		}
-
-		public virtual IEnumerable<BaseEntity> GetTestEntities(MessageContext messageContext)
-		{
-			// TODO: (mc) Liquid > implement!
-			yield return new Product();
-			yield return new Order();
-			yield return new Shipment();
-			yield return new OrderNote();
-			yield return new RecurringPayment();
-			yield return new GiftCard();
 		}
 
 		private IFormatProvider GetFormatProvider(MessageContext messageContext)
@@ -323,6 +323,7 @@ namespace SmartStore.Services.Messages
 					customer = modelParts.OfType<Customer>().FirstOrDefault();
 					if (customer != null)
 					{
+						// Exclude the found customer from parts list
 						modelParts = modelParts.Where(x => !object.ReferenceEquals(x, customer)).ToArray();
 					}
 				}
@@ -342,10 +343,10 @@ namespace SmartStore.Services.Messages
 					throw new ArgumentException("'MessageTemplateName' must not be empty if 'MessageTemplate' is null.", nameof(ctx));
 				}
 
-				ctx.MessageTemplate = GetActiveMessageTemplate(ctx.MessageTemplateName, ctx.StoreId.Value);
+				ctx.MessageTemplate = GetActiveMessageTemplate(ctx.MessageTemplateName, ctx.Store.Id);
 			}
 
-			ctx.EmailAccount = GetEmailAccountOfMessageTemplate(ctx.MessageTemplate, ctx.LanguageId.Value);
+			ctx.EmailAccount = GetEmailAccountOfMessageTemplate(ctx.MessageTemplate, ctx.Language.Id);
 		}
 
 		protected MessageTemplate GetActiveMessageTemplate(string messageTemplateName, int storeId)
@@ -382,5 +383,240 @@ namespace SmartStore.Services.Messages
 
 			ctx.Language = language ?? throw new SmartException(T("Common.Error.NoActiveLanguage"));
 		}
+
+		#region TestModels
+
+		public virtual object[] GetTestModels(MessageContext messageContext)
+		{
+			var factories = new Dictionary<string, Func<object>>(StringComparer.OrdinalIgnoreCase)
+			{
+				{ "BlogComment", CreateBlogCommentTestModel },
+				{ "Product", CreateProductTestModel },
+				{ "Customer", CreateCustomerTestModel },
+				{ "Order", CreateOrderTestModel },
+				{ "Shipment", CreateShipmentTestModel },
+				{ "OrderNote", CreateOrderNoteTestModel },
+				{ "RecurringPayment", CreateRecurringPaymentTestModel },
+				{ "NewsLetterSubscription", CreateNewsLetterSubscriptionTestModel },
+				{ "ReturnRequest", CreateReturnRequestTestModel },
+				{ "OrderItem", CreateOrderItemTestModel },
+				{ "ForumTopic", CreateForumTopicTestModel },
+				{ "ForumPost", CreateForumPostTestModel },
+				{ "PrivateMessage", CreatePrivateMessageTestModel },
+				{ "GiftCard", CreateGiftCardTestModel },
+				{ "ProductReview", CreateProductReviewTestModel },
+				{ "NewsComment", CreateNewsCommentTestModel },
+				{ "BackInStockSubscription", CreateBackInStockSubscriptionTestModel }
+			};
+
+			var modelNames = messageContext.MessageTemplate.ModelTypes
+				.SplitSafe(",")
+				.Select(x => x.Trim())
+				.Distinct()
+				.ToArray();
+
+			var models = new Dictionary<string, object>();
+			var result = new List<object>();
+
+			foreach (var modelName in modelNames)
+			{
+				var model = GetModelFromExpression(modelName, models, factories);
+				if (model != null)
+				{
+					result.Add(model);
+				}
+			}
+
+			return result.ToArray();
+		}
+
+		private object GetModelFromExpression(string expression, IDictionary<string, object> models, IDictionary<string, Func<object>> factories)
+		{
+			object currentModel = null;
+			int dotIndex = 0;
+			int len = expression.Length;
+			bool bof = true;
+			string token = null;
+
+			for (var i = 0; i < len; i++)
+			{
+				if (expression[i] == '.')
+				{
+					dotIndex = i;
+					bof = false;
+					token = expression.Substring(0, i);
+				}
+				else if (i == len - 1)
+				{
+					// End reached
+					token = expression;
+				}
+				else
+				{
+					continue;
+				}
+
+				if (!models.TryGetValue(token, out currentModel))
+				{
+					if (bof)
+					{
+						// It's a simple dot-less expression where the token
+						// is actually the model name
+						currentModel = factories.Get(token)?.Invoke();
+					}
+					else
+					{
+						// Sub-token, e.g. "Order.Customer"
+						// Get "Customer" part, this is our property name, NOT the model name
+						var propName = token.Substring(dotIndex + 1);
+						// Get parent model "Order"
+						var parentModel = models.Get(token.Substring(0, dotIndex));
+						if (parentModel == null)
+							break;
+
+						// Get "Customer" property of Order
+						var fastProp = FastProperty.GetProperty(parentModel.GetType(), propName, PropertyCachingStrategy.Uncached);
+						if (fastProp != null)
+						{
+							// Get "Customer" value
+							var propValue = fastProp.GetValue(parentModel);
+							if (propValue != null)
+							{
+								currentModel = propValue;
+								//// Resolve logical model name...
+								//var modelName = _modelProvider.ResolveModelName(propValue);
+								//if (modelName != null)
+								//{
+								//	// ...and create the value
+								//	currentModel = factories.Get(modelName)?.Invoke();
+								//}
+							}
+						}
+					}
+
+					if (currentModel == null)
+						break;
+
+					// Put it in dict as e.g. "Order.Customer"
+					models[token] = currentModel;
+				}
+			}
+
+			return currentModel;
+		}
+
+		private object CreateBlogCommentTestModel()
+		{
+			return GetRandomEntity<BlogComment>(x => true);
+		}
+
+		private object CreateProductTestModel()
+		{
+			return GetRandomEntity<Product>(x => !x.Deleted && x.VisibleIndividually && x.Published);
+		}
+
+		private object CreateCustomerTestModel()
+		{
+			return GetRandomEntity<Customer>(x => !x.Deleted && !x.IsSystemAccount && !string.IsNullOrEmpty(x.Email));
+		}
+
+		private object CreateOrderTestModel()
+		{
+			return GetRandomEntity<Order>(x => !x.Deleted);
+		}
+
+		private object CreateShipmentTestModel()
+		{
+			return GetRandomEntity<Shipment>(x => !x.Order.Deleted);
+		}
+
+		private object CreateOrderNoteTestModel()
+		{
+			return GetRandomEntity<OrderNote>(x => !x.Order.Deleted);
+		}
+
+		private object CreateRecurringPaymentTestModel()
+		{
+			return GetRandomEntity<RecurringPayment>(x => !x.Deleted);
+		}
+
+		private object CreateNewsLetterSubscriptionTestModel()
+		{
+			return GetRandomEntity<NewsLetterSubscription>(x => true);
+		}
+
+		private object CreateReturnRequestTestModel()
+		{
+			return GetRandomEntity<ReturnRequest>(x => true);
+		}
+
+		private object CreateOrderItemTestModel()
+		{
+			return GetRandomEntity<OrderItem>(x => !x.Order.Deleted);
+		}
+
+		private object CreateForumTopicTestModel()
+		{
+			return GetRandomEntity<ForumTopic>(x => true);
+		}
+
+		private object CreateForumPostTestModel()
+		{
+			return GetRandomEntity<ForumPost>(x => true);
+		}
+
+		private object CreatePrivateMessageTestModel()
+		{
+			return GetRandomEntity<PrivateMessage>(x => true);
+		}
+
+		private object CreateGiftCardTestModel()
+		{
+			return GetRandomEntity<GiftCard>(x => true);
+		}
+
+		private object CreateProductReviewTestModel()
+		{
+			return GetRandomEntity<ProductReview>(x => !x.Product.Deleted && x.Product.VisibleIndividually && x.Product.Published);
+		}
+
+		private object CreateNewsCommentTestModel()
+		{
+			return GetRandomEntity<NewsComment>(x => x.NewsItem.Published);
+		}
+
+		private object CreateBackInStockSubscriptionTestModel()
+		{
+			return GetRandomEntity<BackInStockSubscription>(x => !x.Product.Deleted && x.Product.VisibleIndividually && x.Product.Published);
+		}
+
+		private object GetRandomEntity<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity, new()
+		{
+			var dbSet = _services.DbContext.Set<T>().AsNoTracking();
+
+			var query = dbSet.Where(predicate);
+
+			// Determine how many entities match the given predicate
+			var count = query.Count();
+
+			object result;
+
+			if (count > 0)
+			{
+				// Fetch a random one
+				var skip = new Random().Next(count - 1);
+				result = query.OrderBy(x => x.Id).Skip(skip).FirstOrDefault();
+			}
+			else
+			{
+				// No entity macthes the predicate. Provide a fallback test entity
+				var entity = Activator.CreateInstance<T>();
+				result = _templateEngine.CreateTestModelFor(entity, entity.GetUnproxiedType().Name);
+			}
+
+			return result;
+		}
+
+		#endregion
 	}
 }

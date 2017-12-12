@@ -810,7 +810,9 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			var m = new HybridExpando(part);
+			var disallow = new[] { nameof(part.CreatedOnUtc), nameof(part.StateProvinceId), nameof(part.CountryId), };
+
+			var m = new HybridExpando(part, disallow, MemberOptMethod.Disallow);
 
 			m["FullSalutation"] = part.GetFullSalutaion();
 

@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -24,6 +24,7 @@
 * #1292 Web API: Add a method to get an order in PDF format
 * Added options to include option names of specification and product attributes in the search index
 * #441 added option to specify that additional shipping surcharges are considered only once.
+* #1295 Sales tracking (tracking pixel) for Billiger.de
 
 ### Improvements
 * Target .NET Framework changed: 4.5.2 > 4.6.1.

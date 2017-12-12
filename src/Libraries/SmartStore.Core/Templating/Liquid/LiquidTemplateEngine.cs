@@ -42,7 +42,7 @@ namespace SmartStore.Templating.Liquid
 			return Compile(template).Render(data, formatProvider);
 		}
 
-		public object CreateTestModelFor(BaseEntity entity, string modelPrefix)
+		public ITestModel CreateTestModelFor(BaseEntity entity, string modelPrefix)
 		{
 			Guard.NotNull(entity, nameof(entity));
 

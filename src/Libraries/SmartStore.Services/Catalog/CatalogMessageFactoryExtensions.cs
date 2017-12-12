@@ -3,6 +3,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Common;
 
 namespace SmartStore.Services.Catalog
 {
@@ -52,7 +53,7 @@ namespace SmartStore.Services.Catalog
 		public static CreateMessageResult SendProductReviewNotificationMessage(this IMessageFactory factory, ProductReview productReview, int languageId = 0)
 		{
 			Guard.NotNull(productReview, nameof(productReview));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ProductReviewStoreOwner, languageId, customer: productReview.Customer), true, productReview);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ProductReviewStoreOwner, languageId, customer: productReview.Customer), true, productReview, productReview.Product);
 		}
 
 		/// <summary>
@@ -67,10 +68,14 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// Sends a 'Back in stock' notification message to a customer
 		/// </summary>
-		public static CreateMessageResult SendBackInStockNotification(this IMessageFactory factory, BackInStockSubscription subscription, int languageId = 0)
+		public static CreateMessageResult SendBackInStockNotification(this IMessageFactory factory, BackInStockSubscription subscription)
 		{
 			Guard.NotNull(subscription, nameof(subscription));
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.BackInStockCustomer, languageId, subscription.StoreId, subscription.Customer), true, subscription);
+
+			var customer = subscription.Customer;
+			var languageId = customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId);
+
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.BackInStockCustomer, languageId, subscription.StoreId, customer), true, subscription);
 		}
 	}
 }

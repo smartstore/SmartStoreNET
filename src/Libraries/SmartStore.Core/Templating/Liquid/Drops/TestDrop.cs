@@ -6,7 +6,7 @@ using SmartStore.Core;
 
 namespace SmartStore.Templating.Liquid
 {
-	internal class TestDrop : ILiquidizable, IIndexable, ISafeObject
+	internal class TestDrop : ITestModel, ILiquidizable, IIndexable, ISafeObject
 	{
 		private readonly BaseEntity _entity;
 		private readonly Type _type;
@@ -23,6 +23,11 @@ namespace SmartStore.Templating.Liquid
 			}
 
 			_modelPrefix = _modelPrefix ?? string.Empty;
+		}
+
+		public string ModelName
+		{
+			get => _type.Name;
 		}
 
 		public bool ContainsKey(object key)
@@ -70,10 +75,10 @@ namespace SmartStore.Templating.Liquid
 						value = new TestDrop((BaseEntity)Activator.CreateInstance(pi.PropertyType), modelPrefix);
 					}
 
-					if (value is string s)
-					{
-						value = "<span class='dtc-var{0}'>{1}</span>".FormatInvariant(invalid ? " invalid" : "", value);
-					}
+					//if (value is string s)
+					//{
+					//	value = "<span class='dtc-var{0}'>{1}</span>".FormatInvariant(invalid ? " invalid" : "", value);
+					//}
 				}
 
 				return value;

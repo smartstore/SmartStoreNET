@@ -3,19 +3,29 @@
 	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
 	<Subject>{{ Store.Name }}. - Benachrichtigung über einen neuen Beitrag</Subject>
 	<ModelTypes>Customer, ForumPost, ForumPost.ForumTopic, ForumPost.ForumTopic.Forum</ModelTypes>
-	<Body><![CDATA[
+	<Body><![CDATA[{% extends 'master' %}
 
-          <p>Hallo&nbsp;%Customer.FullName%,&nbsp;
-            <br />
-            &nbsp;
-          </p>
-          <p>ein neuer Beitrag wurde in&nbsp;<a href="%Forums.TopicURL%">&quot;%Forums.TopicName%&quot;</a>&nbsp;im Forum&nbsp;<a href="%Forums.ForumURL%">&quot;%Forums.ForumName%&quot;</a>&nbsp;erstellt.
-          </p>
-          <p>Klicken Sie&nbsp;<a href="%Forums.TopicURL%">hier</a>&nbsp;f&uuml;r weitere Informationen.
-          </p>
-          <p>Autor des Beitrags:&nbsp;%Forums.PostAuthor%
-            <br />
-            Inhalt des Beitrags: %Forums.PostBody%
-          </p>
+{% block 'body' %}
+<h1>
+  Hallo {{ Customer.FullName }},
+</h1>
+<p>
+  Im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neuer Beitrag von <strong>{{ ForumPost.Author }}</strong> erstellt:
+</p>
+<table class="body-action">
+  <tr>
+  	<td>
+      <a href="{{ ForumTopic.Url }}" class="btn btn-primary">Zum Beitrag</a>
+    </td>
+  </tr>
+</table>
+<p class="message-title">
+  {{ ForumTopic.Subject }}
+</p>
+<p class="message-body">
+  "{{ ForumPost.Body | Truncate: 400 }}"
+</p>
+
+{% endblock %}
           ]]></Body>
 </MessageTemplate>

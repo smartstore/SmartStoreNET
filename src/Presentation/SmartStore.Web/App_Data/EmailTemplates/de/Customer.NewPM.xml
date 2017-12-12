@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
-	<Subject>{{ Store.Name }}. Benachrichtigung über ein neues Thema</Subject>
-	<ModelTypes>Customer, ForumTopic, ForumTopic.Forum</ModelTypes>
+	<Subject>{{ Store.Name }}. Neue private Nachricht</Subject>
+	<ModelTypes>Customer, PrivateMessage</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
@@ -10,20 +10,20 @@
   Hallo {{ Customer.FullName }},
 </h1>
 <p>
-  Im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neuer Beitrag erstellt:
+  Sie haben eine neue private Nachricht von <b>{{ PrivateMessage.FromName }}</b> erhalten.
 </p>
 <table class="body-action">
   <tr>
   	<td>
-      <a href="{{ ForumTopic.Url }}" class="btn btn-primary">Zum Beitrag</a>
+      <a href="{{ PrivateMessage.Url }}" class="btn btn-primary">Zur Nachricht</a>
     </td>
   </tr>
 </table>
 <p class="message-title">
-  {{ ForumTopic.Subject }}
+  {{ PrivateMessage.Subject }}
 </p>
 <p class="message-body">
-  "{{ ForumTopic.Body | Truncate: 400 }}"
+  "{{ PrivateMessage.Text | Strip }}"
 </p>
 
 {% endblock %}]]></Body>

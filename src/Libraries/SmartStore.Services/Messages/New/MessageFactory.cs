@@ -83,11 +83,6 @@ namespace SmartStore.Services.Messages
 			if (messageContext.TestMode && modelParts.Length == 0)
 			{
 				modelParts = GetTestModels(messageContext);
-				//var testCustomer = modelParts.OfType<Customer>().FirstOrDefault();
-				//if (testCustomer != null)
-				//{
-				//	messageContext.Customer = testCustomer;
-				//}
 			}
 
 			ValidateMessageContext(messageContext, ref modelParts);
@@ -120,7 +115,7 @@ namespace SmartStore.Services.Messages
 			// Render templates
 			var to = RenderTemplate(messageTemplate.To, model, formatProvider).Convert<EmailAddress>();
 			var bcc = RenderTemplate(messageTemplate.GetLocalized((x) => x.BccEmailAddresses, languageId), model, formatProvider, false);
-			var replyTo = RenderTemplate(messageTemplate.ReplyTo, model, formatProvider, false)?.Convert<EmailAddress>();
+			var replyTo = RenderTemplate(messageTemplate.ReplyTo, model, formatProvider, false)?.NullEmpty().Convert<EmailAddress>();
 
 			var subject = RenderTemplate(messageTemplate.GetLocalized((x) => x.Subject, languageId), model, formatProvider);
 			((dynamic)model).Email.Subject = subject;
@@ -474,22 +469,31 @@ namespace SmartStore.Services.Messages
 						if (parentModel == null)
 							break;
 
-						// Get "Customer" property of Order
-						var fastProp = FastProperty.GetProperty(parentModel.GetType(), propName, PropertyCachingStrategy.Uncached);
-						if (fastProp != null)
+						if (parentModel is ITestModel)
 						{
-							// Get "Customer" value
-							var propValue = fastProp.GetValue(parentModel);
-							if (propValue != null)
+							// When the parent model is a test model, we need to create a random instance
+							// instead of using the property value (which is null/void in this case)
+							currentModel = factories.Get(propName)?.Invoke();
+						}
+						else
+						{
+							// Get "Customer" property of Order
+							var fastProp = FastProperty.GetProperty(parentModel.GetType(), propName, PropertyCachingStrategy.Uncached);
+							if (fastProp != null)
 							{
-								currentModel = propValue;
-								//// Resolve logical model name...
-								//var modelName = _modelProvider.ResolveModelName(propValue);
-								//if (modelName != null)
-								//{
-								//	// ...and create the value
-								//	currentModel = factories.Get(modelName)?.Invoke();
-								//}
+								// Get "Customer" value
+								var propValue = fastProp.GetValue(parentModel);
+								if (propValue != null)
+								{
+									currentModel = propValue;
+									//// Resolve logical model name...
+									//var modelName = _modelProvider.ResolveModelName(propValue);
+									//if (modelName != null)
+									//{
+									//	// ...and create the value
+									//	currentModel = factories.Get(modelName)?.Invoke();
+									//}
+								}
 							}
 						}
 					}

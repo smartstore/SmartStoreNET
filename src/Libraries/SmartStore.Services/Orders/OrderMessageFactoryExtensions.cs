@@ -81,6 +81,7 @@ namespace SmartStore.Services.Orders
 		public static CreateMessageResult SendRecurringPaymentCancelledStoreOwnerNotification(this IMessageFactory factory, RecurringPayment recurringPayment, int languageId = 0)
 		{
 			Guard.NotNull(recurringPayment, nameof(recurringPayment));
+
 			var order = recurringPayment.InitialOrder;
 			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.RecurringPaymentCancelledStoreOwner, languageId, order?.StoreId, order?.Customer), true,
 				recurringPayment, order);
@@ -93,8 +94,9 @@ namespace SmartStore.Services.Orders
 		{
 			Guard.NotNull(returnRequest, nameof(returnRequest));
 			Guard.NotNull(orderItem, nameof(orderItem));
-
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewReturnRequestStoreOwner, languageId, orderItem.Order?.StoreId, returnRequest.Customer), true, returnRequest);
+			
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewReturnRequestStoreOwner, languageId, orderItem.Order?.StoreId, returnRequest.Customer), true, 
+				returnRequest, orderItem, orderItem.Order, orderItem.Product);
 		}
 
 		/// <summary>
@@ -115,8 +117,10 @@ namespace SmartStore.Services.Orders
 		{
 			Guard.NotNull(giftCard, nameof(giftCard));
 
-			var storeId = giftCard?.PurchasedWithOrderItem?.Order?.StoreId;
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.GiftCardCustomer, languageId, storeId), true, giftCard);
+			var orderItem = giftCard.PurchasedWithOrderItem;
+			var customer = orderItem?.Order?.Customer;
+			var storeId = orderItem?.Order?.StoreId;
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.GiftCardCustomer, languageId, storeId, customer), true, giftCard, orderItem, orderItem?.Product);
 		}
 	}
 }

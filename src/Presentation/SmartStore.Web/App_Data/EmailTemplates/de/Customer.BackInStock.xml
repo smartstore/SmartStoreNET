@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
-	<Subject>{{ Store.Name }}. Artikel wieder verfügbar</Subject>
-	<ModelTypes>BackInStockSubscription, BackInStockSubscription.Customer</ModelTypes>
+	<Subject>{{ Store.Name }}. Artikel '{{ Product.Name | Truncate: 40 }}' wieder verfügbar</Subject>
+	<ModelTypes>Product</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
@@ -10,12 +10,12 @@
   Hallo {{ Customer.FullName }},
 </h1>
 <p>
-  Der Artikel <b>{{ BackInStockSubscription.ProductName }}</b> ist wieder verfügbar.
+  Der Artikel <b>{{ Product.Name }}</b> ist wieder verfügbar.
 </p>
 <table class="body-action">
   <tr>
   	<td>
-      <a href="{{ BackInStockSubscription.ProductUrl }}" class="btn btn-primary">Zum Artikel</a>
+      <a href="{{ Product.Url }}" class="btn btn-primary">Zum Artikel</a>
     </td>
   </tr>
 </table>

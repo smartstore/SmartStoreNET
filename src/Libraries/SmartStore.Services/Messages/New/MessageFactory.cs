@@ -400,8 +400,7 @@ namespace SmartStore.Services.Messages
 				{ "PrivateMessage", CreatePrivateMessageTestModel },
 				{ "GiftCard", CreateGiftCardTestModel },
 				{ "ProductReview", CreateProductReviewTestModel },
-				{ "NewsComment", CreateNewsCommentTestModel },
-				{ "BackInStockSubscription", CreateBackInStockSubscriptionTestModel }
+				{ "NewsComment", CreateNewsCommentTestModel }
 			};
 
 			var modelNames = messageContext.MessageTemplate.ModelTypes
@@ -587,11 +586,6 @@ namespace SmartStore.Services.Messages
 		private object CreateNewsCommentTestModel()
 		{
 			return GetRandomEntity<NewsComment>(x => x.NewsItem.Published);
-		}
-
-		private object CreateBackInStockSubscriptionTestModel()
-		{
-			return GetRandomEntity<BackInStockSubscription>(x => !x.Product.Deleted && x.Product.VisibleIndividually && x.Product.Published);
 		}
 
 		private object GetRandomEntity<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity, new()

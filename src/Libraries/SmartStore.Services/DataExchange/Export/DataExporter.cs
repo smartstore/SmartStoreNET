@@ -1407,7 +1407,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 						using (var scope = new DbContextScope(_dbContext, false, null, false, false, false, false))
 						{
-							foreach (var chunk in ctx.EntityIdsLoaded.Chunk())
+							foreach (var chunk in ctx.EntityIdsLoaded.Slice(128))
 							{
 								var entities = _orderRepository.Value.Table.Where(x => chunk.Contains(x.Id)).ToList();
 

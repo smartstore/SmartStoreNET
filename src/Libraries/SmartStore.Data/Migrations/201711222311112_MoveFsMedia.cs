@@ -60,7 +60,7 @@ namespace SmartStore.Data.Migrations
 
 			// Get root files
 			var files = fs.ListFiles("").ToList();
-			foreach (var chunk in files.Chunk(500))
+			foreach (var chunk in files.Slice(500))
 			{
 				foreach (var file in chunk)
 				{

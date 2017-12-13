@@ -116,7 +116,7 @@ namespace SmartStore.Data.Utilities
 			}
 
 			// 2nd pass
-			foreach (var chunk in toUpate.Chunk(1000))
+			foreach (var chunk in toUpate.Slice(1000))
 			{
 				using (var tx = ctx.Database.BeginTransaction())
 				{

@@ -421,7 +421,7 @@ namespace SmartStore.Web.Controllers
         }
 
 		[Compress]
-        public ActionResult ForumRss(int id)
+        public ActionResult ForumRss(int id = 0)
         {
             if (!_forumSettings.ForumsEnabled)
 				return HttpNotFound();

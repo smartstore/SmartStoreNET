@@ -90,6 +90,14 @@
 			</tr>
 		}
 		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FolderName)
+			</td>
+			<td class="adminData">
+				@Model.FolderName.NaIfEmpty()
+			</td>
+		</tr>
+		<tr>
 			<td colspan="2">&nbsp;</td>
 		</tr>
 		<tr>

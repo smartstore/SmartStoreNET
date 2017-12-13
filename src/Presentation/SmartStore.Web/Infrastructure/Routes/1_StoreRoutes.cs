@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Mvc.Routing.Constraints;
 using System.Web.Routing;
 using SmartStore.Web.Framework;
@@ -8,7 +7,7 @@ using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.Web.Infrastructure
 {
-    public partial class StoreRoutes : IRouteProvider
+	public partial class StoreRoutes : IRouteProvider
     {
         public void RegisterRoutes(RouteCollection routes)
         {
@@ -230,8 +229,7 @@ namespace SmartStore.Web.Infrastructure
 
             routes.MapLocalizedRoute("BlogRSS",
                 "blog/rss/{languageId}",
-                new { controller = "Blog", action = "ListRss" },
-				new { languageId = idConstraint },
+                new { controller = "Blog", action = "ListRss", languageId = UrlParameter.Optional },
                 new[] { "SmartStore.Web.Controllers" });
 
 

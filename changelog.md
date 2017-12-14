@@ -50,6 +50,7 @@
 * Hook framework should run hooks with `ImportantAttribute` when hooking was disabled per scope
 * #1297 Web API: Parsing the timestamp may fail due to the different accuracy of the milliseconds
 * Debitoor: VAT amount could be transmitted as miscellaneous for deliveries abroad.
+* Prices with discounts limited to categories and customer groups were shown to all users in product lists
 
 
 ## SmartStore.NET 3.0.3

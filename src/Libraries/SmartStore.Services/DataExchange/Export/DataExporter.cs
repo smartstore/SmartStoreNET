@@ -631,7 +631,8 @@ namespace SmartStore.Services.DataExchange.Export
 			IEnumerable<Product> products = null,
 			Customer customer = null,
 			int? storeId = null,
-			int? maxPicturesPerProduct = null)
+			int? maxPicturesPerProduct = null,
+			bool showHidden = true)
 		{
 			if (customer == null)
 				customer = _services.WorkContext.CurrentCustomer;
@@ -644,10 +645,10 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
 				x => _productService.Value.GetProductSpecificationAttributesByProductIds(x),
 				x => _productService.Value.GetTierPricesByProductIds(x, customer, storeId.GetValueOrDefault()),
-				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, true),
+				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, showHidden),
 				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
 				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
-				x => _productService.Value.GetBundleItemsByProductIds(x, true),
+				x => _productService.Value.GetBundleItemsByProductIds(x, showHidden),
 				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
 				x => _productService.Value.GetProductPicturesByProductIds(x),
 				x => _productService.Value.GetProductTagsByProductIds(x)

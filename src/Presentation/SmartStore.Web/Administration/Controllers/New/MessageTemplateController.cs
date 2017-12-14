@@ -1,12 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web.Mvc;
 using System.Xml;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Collections;
 using SmartStore.ComponentModel;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Services;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -130,7 +133,6 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("Edit2", model.Id);
 		}
 
-
 		private MessageTemplate GetTemplateFromFile(string messageTemplateName)
 		{
 			string path = Path.Combine(CommonHelper.MapPath("~/App_Data/EmailTemplates/de"), messageTemplateName + ".xml");
@@ -153,7 +155,44 @@ namespace SmartStore.Admin.Controllers
 			return tpl;
 		}
 
+		[FormValueRequired("send-test-mail"), ActionName("Edit2")]
+		public ActionResult SendTestMail()
+		{
+			var svc = Services.Resolve<IWorkflowMessageService>();
 
+			var order = GetRandomEntity<Order>(x => !x.Deleted) as Order;
+
+			var id = svc.SendOrderPlacedCustomerNotification(order, order.CustomerLanguageId);
+			var qe = Services.Resolve<IQueuedEmailService>().GetQueuedEmailById(id);
+
+			return Content(qe.Body, "text/html");
+		}
+
+		private object GetRandomEntity<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity, new()
+		{
+			var dbSet = Services.DbContext.Set<T>().AsNoTracking();
+
+			var query = dbSet.Where(predicate);
+
+			// Determine how many entities match the given predicate
+			var count = query.Count();
+
+			object result;
+
+			if (count > 0)
+			{
+				// Fetch a random one
+				var skip = new Random().Next(count - 1);
+				result = query.OrderBy(x => x.Id).Skip(skip).FirstOrDefault();
+			}
+			else
+			{
+				// No entity macthes the predicate. Provide a fallback test entity
+				result = Activator.CreateInstance<T>();
+			}
+
+			return result;
+		}
 
 
 		public ActionResult EditTest()

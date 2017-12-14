@@ -62,8 +62,8 @@ namespace SmartStore.Services.Messages
 
 			d.ID = part.Id;
 			d.Billing = CreateModelPart(part.BillingAddress, messageContext);
-			d.Shipping = CreateModelPart(part.BillingAddress ?? new Address(), messageContext);
-			d.CustomerFullName = part.BillingAddress.GetFullName();
+			d.Shipping = part.ShippingAddress == null ? null : CreateModelPart(part.ShippingAddress, messageContext);
+			//d.CustomerFullName = part.BillingAddress.GetFullName();
 			d.CustomerEmail = part.BillingAddress.Email;
 			d.CustomerComment = part.CustomerOrderComment;
 			d.Disclaimer = GetTopic("Disclaimer", messageContext);
@@ -211,7 +211,7 @@ namespace SmartStore.Services.Messages
 			}).ToArray();
 
 			// Reward Points
-			m.RedeemedRewardPoints = order.RedeemedRewardPointsEntry != null ? null : new
+			m.RedeemedRewardPoints = order.RedeemedRewardPointsEntry == null ? null : new
 			{
 				Title = T("Messages.Order.RewardPoints", language.Id, -order.RedeemedRewardPointsEntry.Points),
 				Amount = FormatPrice(-order.RedeemedRewardPointsEntry.UsedAmount, order, messageContext)
@@ -266,7 +266,8 @@ namespace SmartStore.Services.Messages
 
 			var productAttributeParser = _services.Resolve<IProductAttributeParser>();
 			var downloadService = _services.Resolve<IDownloadService>();
-
+			var order = part.Order;
+			var isNet = order.CustomerTaxDisplayType == TaxDisplayType.ExcludingTax;
 			var product = part.Product;
 			product.MergeWithCombination(part.AttributesXml, productAttributeParser);
 
@@ -274,9 +275,14 @@ namespace SmartStore.Services.Messages
 			{
 				{ "DownloadUrl", !downloadService.IsDownloadAllowed(part) ? "" : BuildActionUrl("GetDownload", "Download", new { id = part.OrderItemGuid, area = "" }, messageContext) },
 				{ "AttributeDescription", part.AttributeDescription },
+				{ "Weight", part.ItemWeight },
+				{ "TaxRate", part.TaxRate },
+				{ "Qty", part.Quantity },
+				{ "UnitPrice", FormatPrice(isNet ? part.UnitPriceExclTax : part.UnitPriceInclTax, part.Order, messageContext) },
+				{ "LineTotal", FormatPrice(isNet ? part.PriceExclTax : part.PriceInclTax, part.Order, messageContext) },
 				{ "Product", CreateModelPart(product, messageContext, part.AttributesXml) }
 			};
-
+			
 			PublishModelPartCreatedEvent<OrderItem>(part, m);
 
 			return m;

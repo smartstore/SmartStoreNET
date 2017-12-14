@@ -1,0 +1,40 @@
+<p>
+{% if address.Company %}
+	{{ address.Company }}<br />
+{% endif %}
+{% if address.FullSalutation %}
+	{{ address.FullSalutation }}
+	{% raw %} {% endraw %}
+{% endif %}
+{% if address.FullName %}
+	{{ address.FullName }}
+{% endif %}
+{% if address.Address1 %}
+	<br/>{{ address.Address1 }}
+{% endif %}
+{% if address.Address2 %}
+	<br/>{{ address.Address2 }}
+{% endif %}
+{% if address.FullCity %}
+	<br/>{{ address.FullCity }}
+{% endif %}
+{% if address.State %}
+	<br/>{{ address.State }}
+{% endif %}
+{% if address.Country %}
+	<br/>{{ address.Country }}
+{% endif %}
+
+{% if address.Email or address.Phone or address.Fax %}
+	<br />
+	{% if address.Email  %}
+		<br />{% T 'Order.Email' %}: {{ address.Email }}
+	{% endif %}
+	{% if address.Phone  %}
+		<br />{% T 'Order.Phone' %}: {{ address.Phone }}
+	{% endif %}
+	{% if address.Fax  %}
+		<br />{% T 'Order.Fax' %}: {{ address.Fax }}
+	{% endif %}
+{% endif %}
+</p>

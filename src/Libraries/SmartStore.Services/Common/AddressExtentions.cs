@@ -86,7 +86,7 @@ namespace SmartStore.Services.Common
 		/// <summary>
 		/// Returns the full name of the address.
 		/// </summary>
-		public static string GetFullName(this Address address)
+		public static string GetFullName(this Address address, bool withCompanyName = true)
 		{
 			if (address == null)
 				return null;
@@ -97,7 +97,7 @@ namespace SmartStore.Services.Common
 				result = string.Format("{0} {1}", address.FirstName, address.LastName).Trim();
 			}
 
-			if (address.Company.HasValue())
+			if (withCompanyName && address.Company.HasValue())
 			{
 				result = string.Concat(result, result.HasValue() ? ", " : "", address.Company);
 			}

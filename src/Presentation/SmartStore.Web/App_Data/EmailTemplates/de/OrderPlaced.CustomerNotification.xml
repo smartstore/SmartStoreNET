@@ -7,69 +7,61 @@
 
 {% block 'body' %}
 <h1>
-  Hallo {{ Order.CustomerFullName }},
+  Hallo {{ Customer.FullName }},
 </h1>
 <p>
-  herzlichen Dank für Ihre Bestellung bei <a href="%Store.URL%">%Store.Name%</a>, deren Erhalt wir hiermit bestätigen. Eine Übersicht über Ihre Bestellung finden Sie unten.
+  herzlichen Dank für Ihre Bestellung bei <a href="{{ Store.URL }}">{{ Store.Name }}</a>, deren Erhalt wir hiermit bestätigen. Eine Übersicht über Ihre Bestellung finden Sie unten.
 </p>
 
-			<table style="height: 26px;" width="777">
-				<tbody>
-					<tr>
-						<td><strong>Order Number:</strong> %Order.OrderNumber%<p>%TrustedShops.CustomerReviews%</p>
-</td>
-						<td>&nbsp;
-						<p>&nbsp;</p>
-						<p>%TrustedShops.CustomerReviews%</p>
-</td>
-						<td style="text-align: left;"><strong>Datum</strong>: %Order.CreatedOn%<p>%TrustedShops.CustomerReviews%</p>
-</td>
-					</tr>
-				</tbody>
-			</table>
+<table>
+  <thead>
+  	<tr>
+    	<th class="text-muted">Bestellt am</th>
+      <th class="text-muted">Bestellnr.</th>
+      <th class="text-muted">Gesamtsumme</th>
+    </tr>
+  </thead>
+  <tbody>
+  	<tr>
+    	<td>{{ Order.CreatedOn | Date:'d' }}</td>
+      <td>{{ Order.OrderNumber }}</td>
+      <td>{{ Order.Totals.Total }}</td>
+    </tr>
+  </tbody>
+</table>
 
-			<p>&nbsp;</p>
-
-			<table style="height: 98px;" width="777">
-				<tbody>
-					<tr>
-						<td>
-						<p><strong>Rechnungsadresse</strong><br />
-						%Order.BillingCompany%<br />
-						%Order.BillingFirstName% %Order.BillingLastName%<br />
-						%Order.BillingAddress1%<br />
-						%Order.BillingAddress2%</p>
-
-						<p>%Order.BillingPhoneNumber%<br />
-						<span style="background-color: #efefef;">%Order.BillingFaxNumber%<br />
-						%Order.BillingEmail%</span></p>
-
-						<p>%Order.BillingCity% %Order.BillingZipPostalCode%<br />
-						%Order.BillingStateProvince% %Order.BillingCountry%</p>
-						<p>%TrustedShops.CustomerReviews%</p>
-</td>
-						<td>&nbsp;
-						<p>&nbsp;</p>
-						<p>%TrustedShops.CustomerReviews%</p>
-</td>
-						<td>
-						<p><strong>Lieferadresse</strong><br />
-						%Order.ShippingCompany%<br />
-						%Order.ShippingFirstName% %Order.ShippingLastName%<br />
-						%Order.ShippingAddress1%<br />
-						%Order.ShippingAddress2%<br />
-						<br />
-						%Order.ShippingPhoneNumber%<br />
-						%Order.ShippingFaxNumber%<br />
-						%Order.ShippingEmail%</p>
-
-						<p>%Order.ShippingCity% %Order.ShippingZipPostalCode%<br />
-						%Order.ShippingStateProvince% %Order.ShippingCountry%</p>
-						<p>%TrustedShops.CustomerReviews%</p>
-</td>
-					</tr>
-				</tbody>
-			</table>
+<table>
+  <tbody>
+  	<tr>
+    	<td class="card">
+        
+        <table class="order-details">
+          <thead>
+          	<tr>
+              <th>Rechnungsanschrift</th>
+              {% if Order.Shipping %}
+              	<th>Versandanschrift</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td width="50%">
+              	{% include 'address' with Order.Billing %}
+              </td>
+              {% if Order.Shipping %}
+              	<td width="50%">
+                	{% include 'address' with Order.Shipping %}
+              	</td>
+              {% endif %}
+            </tr>
+          </tbody>
+        </table>
+        
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 			<p><br />
 			<strong>Versandart:</strong> %Order.ShippingMethod%</p>
@@ -82,16 +74,20 @@
 
 			<p>%Order.Product(s)%</p>
 
-			<p>&nbsp;</p>
+<table id="conditions-of-use">
+  <tr>
+  	<td>
+    	{{ Order.ConditionsOfUse.Body }}
+    </td>
+  </tr>
+</table>
 
-			<p>%Store.SupplierIdentification%</p>
-
-			<p>%Order.ConditionsOfUse%</p>
-
-			<p>%Order.Disclaimer%</p>
-
-			<p>&nbsp;</p>
-			<p>%TrustedShops.CustomerReviews%</p>
-{% endblock %}
-]]></Body>
+<table id="disclaimer">
+  <tr>
+  	<td>
+    	{{ Order.Disclaimer.Body }}
+    </td>
+  </tr>
+</table>
+{% endblock %}]]></Body>
 </MessageTemplate>

@@ -34,6 +34,7 @@ using SmartStore.Templating;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Media;
 using SmartStore.Core.Domain.Directory;
+using System.Text;
 
 namespace SmartStore.Services.Messages
 {
@@ -279,12 +280,12 @@ namespace SmartStore.Services.Messages
 			dynamic model = new ExpandoObject();
 
 			// TODO: (mc) Liquid > make theme variables (?)
-			model.FontFamily = "Arial, 'Helvetica Neue', Helvetica, sans-serif";
+			model.FontFamily = "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 			model.BodyBg = "#f2f4f6";
 			model.BodyColor = "#74787e";
 			model.TitleColor = "#2f3133";
 			model.ContentBg = "#fff";
-			model.ShadeColor = "#edeff2";
+			model.ShadeColor = "#e2e2e2";
 			model.LinkColor = "#3869D4";
 			model.BrandPrimary = "#3f51b5";
 			model.BrandSuccess = "#4caf50";
@@ -697,19 +698,67 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			var disallow = new[] { nameof(part.CreatedOnUtc), nameof(part.StateProvinceId), nameof(part.CountryId), };
+			//var disallow = new[] { nameof(part.CreatedOnUtc), nameof(part.StateProvinceId), nameof(part.CountryId), };
 
-			var m = new HybridExpando(part, disallow, MemberOptMethod.Disallow);
+			//var m = new HybridExpando(part, disallow, MemberOptMethod.Disallow);
 
-			m["FullSalutation"] = part.GetFullSalutaion();
+			//m["FullSalutation"] = part.GetFullSalutaion();
 
-			// Overrides
-			m.Properties["StateProvince"] = part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull();
-			m.Properties["Country"] = part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull();
+			//// Overrides
+			//m.Properties["StateProvince"] = part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull();
+			//m.Properties["Country"] = part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull();
+
+			var settings = _services.Resolve<AddressSettings>();
+
+			var m = new Dictionary<string, object>
+			{
+				{ "Title", part.Title },
+				{ "Salutation", part.Salutation },
+				{ "FullSalutation", part.GetFullSalutaion() },
+				{ "FullName", part.GetFullName(false) },
+				{ "Company", settings.CompanyEnabled ? part.Company : "" },
+				{ "FirstName", part.FirstName },
+				{ "LastName", part.LastName },
+				{ "Address1", settings.StreetAddressEnabled ? part.Address1 : "" },
+				{ "Address2", settings.StreetAddress2Enabled ? part.Address2 : "" },
+				{ "Country", settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull() : "" },
+				{ "State", settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull() : "" },
+				{ "City", settings.CityEnabled ? part.City : "" },
+				{ "ZipCode", settings.ZipPostalCodeEnabled ? part.ZipPostalCode : "" },
+				{ "Email", part.Email },
+				{ "Phone", settings.PhoneEnabled ? part.PhoneNumber : "" },
+				{ "Fax", settings.FaxEnabled ? part.FaxNumber : "" }
+			};
+
+			m["FullCity"] = GetFullCity();
 
 			PublishModelPartCreatedEvent<Address>(part, m);
 
 			return m;
+
+			string GetFullCity()
+			{
+				var zip = m["ZipCode"] as string;
+				var city = m["City"] as string;
+
+				var sb = new StringBuilder();
+
+				if (city.HasValue())
+				{
+					sb.Append(city);
+					if (zip.HasValue())
+					{
+						sb.Append(", ");
+					}
+				}
+
+				if (zip.HasValue())
+				{
+					sb.Append(zip);
+				}
+
+				return sb.ToString();
+			}
 		}
 
 		protected virtual object CreateModelPart(RewardPointsHistory part, MessageContext messageContext)

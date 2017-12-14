@@ -11,6 +11,8 @@ using SmartStore.Services.Topics;
 using SmartStore.Services.Media;
 using SmartStore.Services.Directory;
 using SmartStore.Core.Domain.Orders;
+using System.Text;
+using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Services.Messages
 {

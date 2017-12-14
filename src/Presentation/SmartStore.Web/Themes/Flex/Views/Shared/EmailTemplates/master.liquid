@@ -6,22 +6,8 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<title>{{ Email.Subject }}</title>
 		<style type="text/css" rel="stylesheet" media="all">
-			/* Client-specific Styles ------------ */
-		
-			#outlook a { padding:0; } /* Force Outlook to provide a "view in browser" menu link. */
-			body { width:100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; margin: 0; padding: 0; }
-			/* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
-			.ExternalClass { width:100%; } /* Force Hotmail to display emails at full width */
-			.ExternalClass, 
-			.ExternalClass p, 
-			.ExternalClass span, 
-			.ExternalClass font, 
-			.ExternalClass td, 
-			.ExternalClass div { line-height: 100%; } /* Force Hotmail to display normal line spacing.  More on that: http://www.emailonacid.com/forum/viewthread/43/ */
-			#backgroundTable { margin: 0; padding: 0; width: 100% !important; line-height: 100% !important; }
 
 			/* Base ------------------------------ */
-
 			*:not(br):not(tr):not(html) {
 				font-family: {{ Theme.FontFamily }};
 				box-sizing: border-box;
@@ -63,6 +49,10 @@
 				word-break: break-word;
 			}
 			
+			p:last-child {
+				margin-bottom: 0;
+			}
+			
 	    	/* Layout ------------------------------ */
 	    
 			.wrapper {
@@ -84,6 +74,21 @@
 				-premailer-cellspacing: 0;
 			}
 			
+			/* Tables ------------------------------ */
+			
+			table {
+				width: 100%;
+				-premailer-width: 100%;
+			}
+			
+			th {
+				text-align: left;
+			}
+			
+			td {
+				vertical-align: top;
+				-premailer-valign: top;
+			}
 			
 	    	/* Masthead ----------------------- */
 	    
@@ -163,13 +168,20 @@
 			}
 
 			.content-cell {
-				padding: 35px;
+				padding: 35px 0;
 			}
 
 			.content-cell > *:last-child {
 				margin-bottom: 0;
 			}
-	    
+	    	
+	    	/* Card ------------------------------ */
+	    	
+	    	.card {
+	    		border: 1px solid {{ Theme.ShadeColor }};
+	    		padding: 10px;
+	    	}
+	    	
 			/* Attribute list ------------------------------ */
 
 			.attributes {
@@ -377,35 +389,47 @@
 			}
 	    
 			/* Typo ------------------------------ */
-
+			
+			body, 
+			p,
+			td,
+			th {
+				font-size: 14px;
+			}
+			
+			b,
+			strong,
+			th {
+				font-weight: 600;
+			}
+			
 			h1 {
 				margin-top: 0;
 				color: {{ Theme.TitleColor }};
-				font-size: 19px;
-				font-weight: bold;
+				font-size: 22px;
+				font-weight: 600;
 				text-align: left;
 			}
 
 			h2 {
 				margin-top: 0;
 				color: {{ Theme.TitleColor }};
-				font-size: 16px;
-				font-weight: bold;
+				font-size: 19px;
+				font-weight: 600;
 				text-align: left;
 			}
 
 			h3 {
 				margin-top: 0;
 				color: {{ Theme.TitleColor }};
-				font-size: 14px;
-				font-weight: bold;
+				font-size: 16px;
+				font-weight: 600;
 				text-align: left;
 			}
 
 			p {
 				margin-top: 0;
 				color: {{ Theme.BodyColor }};
-				font-size: 16px;
 				line-height: 1.5em;
 				text-align: left;
 			}
@@ -463,6 +487,20 @@
     	</style>
     
 		<style type="text/css" id="ignore">
+			/* Client-specific Styles ------------ */
+		
+			#outlook a { padding:0; } /* Force Outlook to provide a "view in browser" menu link. */
+			body { width:100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; margin: 0; padding: 0; }
+			/* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
+			.ExternalClass { width:100%; } /* Force Hotmail to display emails at full width */
+			.ExternalClass, 
+			.ExternalClass p, 
+			.ExternalClass span, 
+			.ExternalClass font, 
+			.ExternalClass td, 
+			.ExternalClass div { line-height: 100%; } /* Force Hotmail to display normal line spacing.  More on that: http://www.emailonacid.com/forum/viewthread/43/ */
+			#backgroundTable { margin: 0; padding: 0; width: 100% !important; line-height: 100% !important; }
+		
     		/*Media Queries ------------------------------ */
 			@media only screen and (max-width: 600px) {
 				.email-body_inner,

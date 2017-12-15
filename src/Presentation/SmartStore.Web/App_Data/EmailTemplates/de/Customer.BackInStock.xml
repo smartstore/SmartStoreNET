@@ -9,15 +9,11 @@
 <h1>
   Hallo {{ Customer.FullName }},
 </h1>
-<p>
+<p class="text-lg">
   Der Artikel <b>{{ Product.Name }}</b> ist wieder verfügbar.
 </p>
-<table class="body-action">
-  <tr>
-  	<td>
-      <a href="{{ Product.Url }}" class="btn btn-primary">Zum Artikel</a>
-    </td>
-  </tr>
-</table>
+<p class="m-t-4">
+	<a href="{{ Product.Url }}" class="btn btn-primary">Zum Artikel</a>
+</p>
 {% endblock %}]]></Body>
 </MessageTemplate>

@@ -9,22 +9,27 @@
 <h1>
   Hallo {{ Customer.FullName }},
 </h1>
-<p>
+
+<p class="text-lg">
   Im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neuer Beitrag erstellt:
 </p>
-<table class="body-action">
-  <tr>
-  	<td>
-      <a href="{{ ForumTopic.Url }}" class="btn btn-primary">Zum Beitrag</a>
+
+<p class="m-t-4 m-b-4">
+  <a href="{{ ForumTopic.Url }}" class="btn btn-primary">Zum Beitrag</a>
+</p>
+
+<table class="w-100 brd bg-light">
+	<tr>
+  	<td class="p-3">
+      <h3 class="m-b-3">
+        {{ ForumTopic.Subject }}
+      </h3>
+      <p class="message">
+        "{{ ForumTopic.Body | Truncate: 400 }}"
+      </p>
     </td>
-  </tr>
+  </tr> 
 </table>
-<p class="message-title">
-  {{ ForumTopic.Subject }}
-</p>
-<p class="message-body">
-  "{{ ForumTopic.Body | Truncate: 400 }}"
-</p>
 
 {% endblock %}]]></Body>
 </MessageTemplate>

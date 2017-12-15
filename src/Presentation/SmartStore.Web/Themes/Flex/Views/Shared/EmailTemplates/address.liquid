@@ -1,10 +1,9 @@
-<p>
+<p class="m-b-2">
 {% if address.Company %}
 	{{ address.Company }}<br />
 {% endif %}
 {% if address.FullSalutation %}
-	{{ address.FullSalutation }}
-	{% raw %} {% endraw %}
+	{{ address.FullSalutation }}&nbsp;
 {% endif %}
 {% if address.FullName %}
 	{{ address.FullName }}
@@ -19,22 +18,23 @@
 	<br/>{{ address.FullCity }}
 {% endif %}
 {% if address.State %}
-	<br/>{{ address.State }}
+	<br/>{{ address.State }}{% if address.Country %},{% endif %}
 {% endif %}
 {% if address.Country %}
-	<br/>{{ address.Country }}
-{% endif %}
-
-{% if address.Email or address.Phone or address.Fax %}
-	<br />
-	{% if address.Email  %}
-		<br />{% T 'Order.Email' %}: {{ address.Email }}
-	{% endif %}
-	{% if address.Phone  %}
-		<br />{% T 'Order.Phone' %}: {{ address.Phone }}
-	{% endif %}
-	{% if address.Fax  %}
-		<br />{% T 'Order.Fax' %}: {{ address.Fax }}
-	{% endif %}
+	{{ address.Country }}
 {% endif %}
 </p>
+
+{% if address.Email or address.Phone or address.Fax %}
+<p class="m-b-2">
+	{% if address.Email  %}
+		<div>{{ address.Email }}</div>
+	{% endif %}
+	{% if address.Phone  %}
+		<div>{% T 'Order.Phone' %}: {{ address.Phone }}</div>
+	{% endif %}
+	{% if address.Fax  %}
+		<div>{% T 'Order.Fax' %}: {{ address.Fax }}</div>
+	{% endif %}
+</p>
+{% endif %}

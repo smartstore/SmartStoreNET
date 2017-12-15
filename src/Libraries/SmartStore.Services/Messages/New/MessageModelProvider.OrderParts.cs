@@ -62,13 +62,13 @@ namespace SmartStore.Services.Messages
 
 			d.ID = part.Id;
 			d.Billing = CreateModelPart(part.BillingAddress, messageContext);
-			d.Shipping = part.ShippingAddress == null ? null : CreateModelPart(part.ShippingAddress, messageContext);
-			//d.CustomerFullName = part.BillingAddress.GetFullName();
-			d.CustomerEmail = part.BillingAddress.Email;
-			d.CustomerComment = part.CustomerOrderComment;
+			d.Shipping = part.ShippingAddress?.IsPostalDataEqual(part.BillingAddress) == true ? null : CreateModelPart(part.ShippingAddress, messageContext);
+			d.CustomerEmail = part.BillingAddress.Email.NullEmpty();
+			d.CustomerComment = part.CustomerOrderComment.NullEmpty();
 			d.Disclaimer = GetTopic("Disclaimer", messageContext);
 			d.ConditionsOfUse = GetTopic("ConditionsOfUse", messageContext);
 			d.CreatedOn = ToUserDate(part.CreatedOnUtc, messageContext);
+			d.Status = part.OrderStatus.GetLocalizedEnum(_services.Localization, messageContext.Language.Id);
 
 			// Payment method
 			var paymentMethodName = part.PaymentMethodSystemName;
@@ -77,14 +77,14 @@ namespace SmartStore.Services.Messages
 			{
 				paymentMethodName = GetLocalizedValue(messageContext, paymentMethod.Metadata, nameof(paymentMethod.Metadata.FriendlyName), x => x.FriendlyName);
 			}
-			d.PaymentMethod = paymentMethodName;
+			d.PaymentMethod = paymentMethodName.NullEmpty();
 
 			d.OrderURLForCustomer = part.Customer != null && !part.Customer.IsGuest()
 				? BuildActionUrl("Details", "Order", new { id = part.Id, area = "" }, messageContext)
 				: "";
 
 			// Overrides
-			m.Properties["OrderNumber"] = part.GetOrderNumber();
+			m.Properties["OrderNumber"] = part.GetOrderNumber().NullEmpty();
 			m.Properties["AcceptThirdPartyEmailHandOver"] = GetBoolResource(part.AcceptThirdPartyEmailHandOver, messageContext);
 			m.Properties["OrderNotes"] = part.OrderNotes.Select(x => CreateModelPart(x, messageContext)).ToList();
 
@@ -95,7 +95,7 @@ namespace SmartStore.Services.Messages
 			// Checkout Attributes
 			if (part.CheckoutAttributeDescription.HasValue())
 			{
-				d.CheckoutAttributes = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(part.CheckoutAttributeDescription));
+				d.CheckoutAttributes = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(part.CheckoutAttributeDescription)).NullEmpty();
 			}
 
 			PublishModelPartCreatedEvent<Order>(part, m);
@@ -117,6 +117,7 @@ namespace SmartStore.Services.Messages
 			var taxRates = new SortedDictionary<decimal, decimal>();
 			string cusTaxTotal = string.Empty;
 			string cusDiscount = string.Empty;
+			string cusRounding = string.Empty;
 			string cusTotal = string.Empty;
 
 			var subTotals = GetSubTotals(order, messageContext);
@@ -177,15 +178,22 @@ namespace SmartStore.Services.Messages
 			var orderTotal = order.GetOrderTotalInCustomerCurrency(currencyService, paymentService, out roundingAmount);
 			cusTotal = priceFormatter.FormatPrice(orderTotal, true, order.CustomerCurrencyCode, false, language);
 
+			// Rounding
+			if (roundingAmount != decimal.Zero)
+			{
+				cusRounding = priceFormatter.FormatPrice(roundingAmount, true, order.CustomerCurrencyCode, false, language);
+			}
+
 			// Model
 			dynamic m = new ExpandoObject();
 
-			m.SubTotal = subTotals.SubTotal;
-			m.SubTotalDiscount = subTotals.DisplaySubTotalDiscount ? subTotals.SubTotalDiscount : "";
-			m.Shipping = dislayShipping ? subTotals.ShippingTotal : "";
-			m.Payment = displayPaymentMethodFee ? subTotals.PaymentFee : "";
-			m.Tax = displayTax ? cusTaxTotal : "";
-			m.Discount = dislayDiscount ? cusDiscount : "";
+			m.SubTotal = subTotals.SubTotal.NullEmpty();
+			m.SubTotalDiscount = subTotals.DisplaySubTotalDiscount ? subTotals.SubTotalDiscount : null;
+			m.Shipping = dislayShipping ? subTotals.ShippingTotal : null;
+			m.Payment = displayPaymentMethodFee ? subTotals.PaymentFee : null;
+			m.Tax = displayTax ? cusTaxTotal : null;
+			m.Discount = dislayDiscount ? cusDiscount : null;
+			m.RoundingDiff = cusRounding.NullEmpty();
 			m.Total = cusTotal;
 
 			// TaxRates
@@ -193,7 +201,7 @@ namespace SmartStore.Services.Messages
 			{
 				return new
 				{
-					Rate = T("Messages.Order.TaxRateLine", language.Id, priceFormatter.FormatTaxRate(x.Key)),
+					Rate = T("Order.TaxRateLine", language.Id, priceFormatter.FormatTaxRate(x.Key)).Text,
 					Value = FormatPrice(x.Value, order, messageContext)
 				};
 			}).ToArray();
@@ -204,7 +212,7 @@ namespace SmartStore.Services.Messages
 			{
 				return new
 				{
-					GiftCard = T("Messages.Order.GiftCardInfo", language.Id, x.GiftCard.GiftCardCouponCode),
+					GiftCard = T("Order.GiftCardInfo", language.Id, x.GiftCard.GiftCardCouponCode).Text,
 					UsedAmount = FormatPrice(-x.UsedValue, order, messageContext),
 					RemainingAmount = FormatPrice(x.GiftCard.GetGiftCardRemainingAmount(), order, messageContext)
 				};
@@ -213,7 +221,7 @@ namespace SmartStore.Services.Messages
 			// Reward Points
 			m.RedeemedRewardPoints = order.RedeemedRewardPointsEntry == null ? null : new
 			{
-				Title = T("Messages.Order.RewardPoints", language.Id, -order.RedeemedRewardPointsEntry.Points),
+				Title = T("Order.RewardPoints", language.Id, -order.RedeemedRewardPointsEntry.Points).Text,
 				Amount = FormatPrice(-order.RedeemedRewardPointsEntry.UsedAmount, order, messageContext)
 			};
 
@@ -244,17 +252,17 @@ namespace SmartStore.Services.Messages
 			var orderSubTotalDiscount = currencyService.ConvertCurrency(subTotalDiscount, order.CurrencyRate);
 			if (orderSubTotalDiscount > decimal.Zero)
 			{
-				cusSubTotalDiscount = priceFormatter.FormatPrice(-orderSubTotalDiscount, true, order.CustomerCurrencyCode, language, false);
+				cusSubTotalDiscount = priceFormatter.FormatPrice(-orderSubTotalDiscount, true, order.CustomerCurrencyCode, language, false, false);
 				dislaySubTotalDiscount = true;
 			}
 
 			// Shipping
 			var orderShipping = currencyService.ConvertCurrency(shipping, order.CurrencyRate);
-			cusShipTotal = priceFormatter.FormatShippingPrice(orderShipping, true, order.CustomerCurrencyCode, language, false);
+			cusShipTotal = priceFormatter.FormatShippingPrice(orderShipping, true, order.CustomerCurrencyCode, language, false, false);
 
 			// Payment method additional fee
 			var paymentMethodAdditionalFee = currencyService.ConvertCurrency(payment, order.CurrencyRate);
-			cusPaymentMethodFee = priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFee, true, order.CustomerCurrencyCode, language, false);
+			cusPaymentMethodFee = priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFee, true, order.CustomerCurrencyCode, language, false, false);
 
 			return (cusSubTotal, cusSubTotalDiscount, cusShipTotal, cusPaymentMethodFee, dislaySubTotalDiscount);
 		}
@@ -273,8 +281,8 @@ namespace SmartStore.Services.Messages
 
 			var m = new Dictionary<string, object>
 			{
-				{ "DownloadUrl", !downloadService.IsDownloadAllowed(part) ? "" : BuildActionUrl("GetDownload", "Download", new { id = part.OrderItemGuid, area = "" }, messageContext) },
-				{ "AttributeDescription", part.AttributeDescription },
+				{ "DownloadUrl", !downloadService.IsDownloadAllowed(part) ? null : BuildActionUrl("GetDownload", "Download", new { id = part.OrderItemGuid, area = "" }, messageContext) },
+				{ "AttributeDescription", part.AttributeDescription.NullEmpty() },
 				{ "Weight", part.ItemWeight },
 				{ "TaxRate", part.TaxRate },
 				{ "Qty", part.Quantity },
@@ -282,7 +290,7 @@ namespace SmartStore.Services.Messages
 				{ "LineTotal", FormatPrice(isNet ? part.PriceExclTax : part.PriceInclTax, part.Order, messageContext) },
 				{ "Product", CreateModelPart(product, messageContext, part.AttributesXml) }
 			};
-			
+
 			PublishModelPartCreatedEvent<OrderItem>(part, m);
 
 			return m;
@@ -297,7 +305,7 @@ namespace SmartStore.Services.Messages
 			{
 				{ "Id", part.Id },
 				{ "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) },
-				{ "Text", part.FormatOrderNoteText() }
+				{ "Text", part.FormatOrderNoteText().NullEmpty() }
 			};
 
 			PublishModelPartCreatedEvent<OrderNote>(part, m);
@@ -341,7 +349,7 @@ namespace SmartStore.Services.Messages
 			var m = new Dictionary<string, object>
 			{
 				{ "Id", part.Id },
-				{ "TrackingNumber", part.TrackingNumber },
+				{ "TrackingNumber", part.TrackingNumber.NullEmpty() },
 				{ "TotalWeight", part.TotalWeight },
 				{ "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) },
 				{ "DeliveredOn", ToUserDate(part.DeliveryDateUtc, messageContext) },
@@ -385,11 +393,11 @@ namespace SmartStore.Services.Messages
 			var m = new Dictionary<string, object>
 			{
 				{ "Id", part.Id },
-				{ "Reason", part.ReasonForReturn },
+				{ "Reason", part.ReasonForReturn.NullEmpty() },
 				{ "Status", part.ReturnRequestStatus.GetLocalizedEnum(_services.Localization, messageContext.Language.Id) },
-				{ "RequestedAction", part.RequestedAction },
-				{ "CustomerComments", HtmlUtils.FormatText(part.CustomerComments, true, false, false, false, false, false) },
-				{ "StaffNotes", HtmlUtils.FormatText(part.StaffNotes, true, false, false, false, false, false) },
+				{ "RequestedAction", part.RequestedAction.NullEmpty() },
+				{ "CustomerComments", HtmlUtils.FormatText(part.CustomerComments, true, false, false, false, false, false).NullEmpty() },
+				{ "StaffNotes", HtmlUtils.FormatText(part.StaffNotes, true, false, false, false, false, false).NullEmpty() },
 				{ "Quantity", part.Quantity }
 			};
 

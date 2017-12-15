@@ -35,6 +35,8 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Media;
 using SmartStore.Core.Domain.Directory;
 using System.Text;
+using System.Drawing;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
@@ -282,16 +284,16 @@ namespace SmartStore.Services.Messages
 			// TODO: (mc) Liquid > make theme variables (?)
 			model.FontFamily = "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 			model.BodyBg = "#f2f4f6";
-			model.BodyColor = "#74787e";
+			model.BodyColor = "#555";
 			model.TitleColor = "#2f3133";
 			model.ContentBg = "#fff";
 			model.ShadeColor = "#e2e2e2";
-			model.LinkColor = "#3869D4";
+			model.LinkColor = "#0066c0";
 			model.BrandPrimary = "#3f51b5";
 			model.BrandSuccess = "#4caf50";
 			model.BrandWarning = "#ff9800";
 			model.BrandDanger = "#f44336";
-			model.MutedColor = "#9ba2ab";
+			model.MutedColor = "#a5a5a5";
 
 			return model;
 		}
@@ -321,18 +323,18 @@ namespace SmartStore.Services.Messages
 			// Aliases
 			contact.Phone = new
 			{
-				Company = settings.CompanyTelephoneNumber,
-				Hotline = settings.HotlineTelephoneNumber,
-				Mobile = settings.MobileTelephoneNumber,
-				Fax = settings.CompanyFaxNumber
+				Company = settings.CompanyTelephoneNumber.NullEmpty(),
+				Hotline = settings.HotlineTelephoneNumber.NullEmpty(),
+				Mobile = settings.MobileTelephoneNumber.NullEmpty(),
+				Fax = settings.CompanyFaxNumber.NullEmpty()
 			};
 
 			contact.Email = new
 			{
-				Company = settings.CompanyEmailAddress,
-				Webmaster = settings.WebmasterEmailAddress,
-				Support = settings.SupportEmailAddress,
-				Contact = settings.ContactEmailAddress
+				Company = settings.CompanyEmailAddress.NullEmpty(),
+				Webmaster = settings.WebmasterEmailAddress.NullEmpty(),
+				Support = settings.SupportEmailAddress.NullEmpty(),
+				Contact = settings.ContactEmailAddress.NullEmpty()
 			};
 
 			PublishModelPartCreatedEvent<ContactDataSettings>(settings, contact);
@@ -362,7 +364,7 @@ namespace SmartStore.Services.Messages
 			m.Override(nameof(part.PrimaryExchangeRateCurrency), part.PrimaryExchangeRateCurrency?.CurrencyCode);
 
 			var logoInfo = _services.PictureService.GetPictureInfo(messageContext.Store.LogoPictureId);
-			m["Logo"] = CreateModelPart(logoInfo, messageContext, host);
+			m["Logo"] = CreateModelPart(logoInfo, messageContext, host, null, new Size(400, 75));
 
 			// TODO: (mc) Liquid > GetSupplierIdentification() as Partial
 			// Issue: https://github.com/smartstoreag/SmartStoreNET/issues/1321
@@ -372,7 +374,11 @@ namespace SmartStore.Services.Messages
 			return m;
 		}
 
-		protected virtual object CreateModelPart(PictureInfo part, MessageContext messageContext, string href, int? targetSize = null, string alt = null)
+		protected virtual object CreateModelPart(PictureInfo part, MessageContext messageContext, 
+			string href, 
+			int? targetSize = null, 
+			Size? clientMaxSize = null,
+			string alt = null)
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotEmpty(href, nameof(href));
@@ -380,12 +386,23 @@ namespace SmartStore.Services.Messages
 			if (part == null)
 				return null;
 
+			var width = part.Width;
+			var height = part.Height;
+
+			if (width.HasValue && height.HasValue && (targetSize.HasValue || clientMaxSize.HasValue))
+			{
+				var maxSize = clientMaxSize ?? new Size(targetSize.Value, targetSize.Value);
+				var size = ImagingHelper.Rescale(new Size(width.Value, height.Value), maxSize);
+				width = size.Width;
+				height = size.Height;
+			}
+
 			var m = new
 			{
 				Src = _services.PictureService.GetUrl(part, targetSize.GetValueOrDefault(), FallbackPictureType.NoFallback, messageContext.BaseUri.ToString()),
 				Href = href,
-				Width = part?.Width,
-				Height = part?.Height,
+				Width = width,
+				Height = height,
 				Alt = alt
 			};
 
@@ -412,18 +429,18 @@ namespace SmartStore.Services.Messages
 			var url = productUrlHelper.GetProductUrl(part.Id, part.GetSeName(messageContext.Language.Id), attributesXml);
 			var pictureInfo = GetPictureFor(part, null);
 			var name = part.GetLocalized(x => x.Name, messageContext.Language.Id);
-			var alt = T("Media.Product.ImageAlternateTextFormat", messageContext.Language.Id, name);
+			var alt = T("Media.Product.ImageAlternateTextFormat", messageContext.Language.Id, name).Text;
 			
 			var m = new Dictionary<string, object>
 			{
 				{ "Id", part.Id },
-				{ "Sku", catalogSettings.ShowProductSku ? part.Sku : "" },
+				{ "Sku", catalogSettings.ShowProductSku ? part.Sku : null },
 				{ "Name", name },
-				{ "Description", part.GetLocalized(x => x.ShortDescription, messageContext.Language.Id) },
+				{ "Description", part.GetLocalized(x => x.ShortDescription, messageContext.Language.Id).NullEmpty() },
 				{ "StockQuantity", part.StockQuantity },
-				{ "AdditionalShippingCharge", additionalShippingChargeFormatted },
+				{ "AdditionalShippingCharge", additionalShippingChargeFormatted.NullEmpty() },
 				{ "Url", url },
-				{ "Thumbnail", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.MessageProductThumbPictureSize, alt) },
+				{ "Thumbnail", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.MessageProductThumbPictureSize, new Size(50, 50), alt) },
 				{ "DeliveryTime", null },
 				{ "QtyUnit", null }
 			};
@@ -477,10 +494,10 @@ namespace SmartStore.Services.Messages
 			m.Properties[nameof(part.BillingAddress)] = CreateModelPart(part.BillingAddress ?? new Address(), messageContext);
 			m.Properties[nameof(part.ShippingAddress)] = CreateModelPart(part.ShippingAddress ?? new Address(), messageContext);
 
-			m["FullName"] = GetDisplayNameForCustomer(part);
-			m["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
+			m["FullName"] = GetDisplayNameForCustomer(part).NullEmpty();
+			m["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber).NullEmpty();
 			m["VatNumberStatus"] = part.GetAttribute<VatNumberStatus>(SystemCustomerAttributeNames.VatNumberStatusId).ToString();
-			m["CustomerNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
+			m["CustomerNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber).NullEmpty();
 			m["IsRegistered"] = part.IsRegistered();
 
 			m["PasswordRecoveryURL"] = BuildActionUrl("passwordrecoveryconfirm", "customer", 
@@ -514,16 +531,16 @@ namespace SmartStore.Services.Messages
 			var m = new Dictionary<string, object>
 			{
 				{ "Id", part.Id },
-				{ "SenderName", part.SenderName },
-				{ "SenderEmail", part.SenderEmail },
-				{ "RecipientName", part.RecipientName },
-				{ "RecipientEmail", part.RecipientEmail },
+				{ "SenderName", part.SenderName.NullEmpty() },
+				{ "SenderEmail", part.SenderEmail.NullEmpty() },
+				{ "RecipientName", part.RecipientName.NullEmpty() },
+				{ "RecipientEmail", part.RecipientEmail.NullEmpty() },
 				{ "Amount", _services.Resolve<IPriceFormatter>().FormatPrice(part.Amount, true, false) },
-				{ "CouponCode", part.GiftCardCouponCode }
+				{ "CouponCode", part.GiftCardCouponCode.NullEmpty() }
 			};
 
 			// Message
-			var message = "";
+			var message = (string)null;
 			if (part.Message.HasValue())
 			{
 				message = HtmlUtils.FormatText(part.Message, true, false, false, false, false, false);
@@ -531,7 +548,7 @@ namespace SmartStore.Services.Messages
 			m["Message"] = message;
 
 			// RemainingAmount
-			var remainingAmount = "";
+			var remainingAmount = (string)null;
 			var order = part?.PurchasedWithOrderItem?.Order;
 			if (order != null)
 			{
@@ -553,7 +570,7 @@ namespace SmartStore.Services.Messages
 			var m = new Dictionary<string, object>
 			{
 				{ "Id", part.Id },
-				{ "Email", part.Email },
+				{ "Email", part.Email.NullEmpty() },
 				{ "ActivationUrl", BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = true }, messageContext) },
 				{ "DeactivationUrl", BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = false }, messageContext) }
 			};
@@ -570,8 +587,8 @@ namespace SmartStore.Services.Messages
 
 			var m = new Dictionary<string, object>
 			{
-				{ "Title", part.Title },
-				{ "Text", HtmlUtils.FormatText(part.ReviewText, true, false, false, false, false, false) },
+				{ "Title", part.Title.NullEmpty() },
+				{ "Text", HtmlUtils.FormatText(part.ReviewText, true, false, false, false, false, false).NullEmpty() },
 				{ "Rating", part.Rating }
 			};
 
@@ -587,12 +604,12 @@ namespace SmartStore.Services.Messages
 
 			var m = new Dictionary<string, object>
 			{
-				{  "Subject", part.Subject },
-				{  "Text", part.FormatPrivateMessageText() },
-				{  "FromEmail", part.FromCustomer?.FindEmail() },
-				{  "ToEmail", part.ToCustomer?.FindEmail() },
-				{  "FromName", part.FromCustomer?.GetFullName() },
-				{  "ToName", part.ToCustomer?.GetFullName() },
+				{  "Subject", part.Subject.NullEmpty() },
+				{  "Text", part.FormatPrivateMessageText().NullEmpty() },
+				{  "FromEmail", part.FromCustomer?.FindEmail().NullEmpty() },
+				{  "ToEmail", part.ToCustomer?.FindEmail().NullEmpty() },
+				{  "FromName", part.FromCustomer?.GetFullName().NullEmpty() },
+				{  "ToName", part.ToCustomer?.GetFullName().NullEmpty() },
 				{  "Url", BuildActionUrl("View", "PrivateMessages", new { id = part.Id, area = "" }, messageContext) }
 			};
 
@@ -608,9 +625,9 @@ namespace SmartStore.Services.Messages
 
 			var m = new Dictionary<string, object>
 			{
-				{  "PostTitle", part.BlogPost.Title },
+				{  "PostTitle", part.BlogPost.Title.NullEmpty() },
 				{  "PostUrl", BuildRouteUrl("BlogPost", new { SeName = part.BlogPost.GetSeName(part.BlogPost.LanguageId, ensureTwoPublishedLanguages: false) }, messageContext) },
-				{  "Text", part.CommentText }
+				{  "Text", part.CommentText.NullEmpty() }
 			};
 
 			PublishModelPartCreatedEvent<BlogComment>(part, m);
@@ -625,9 +642,9 @@ namespace SmartStore.Services.Messages
 
 			var m = new Dictionary<string, object>
 			{
-				{  "NewsTitle", part.NewsItem.Title },
-				{  "Title", part.CommentTitle },
-				{  "Text", HtmlUtils.FormatText(part.CommentText, true, false, false, false, false, false) },
+				{  "NewsTitle", part.NewsItem.Title.NullEmpty() },
+				{  "Title", part.CommentTitle.NullEmpty() },
+				{  "Text", HtmlUtils.FormatText(part.CommentText, true, false, false, false, false, false).NullEmpty() },
 				{  "NewsUrl", BuildRouteUrl("NewsItem", new { SeName = part.NewsItem.GetSeName(messageContext.Language.Id) }, messageContext) }
 			};
 
@@ -645,11 +662,11 @@ namespace SmartStore.Services.Messages
 			
 			var m = new Dictionary<string, object>
 			{
-				{ "Subject", part.Subject },
+				{ "Subject", part.Subject.NullEmpty() },
 				{ "NumReplies", part.NumReplies },
 				{ "NumPosts", part.NumPosts },
 				{ "NumViews", part.Views },
-				{ "Body", part.GetFirstPost(_services.Resolve<IForumService>())?.FormatPostText() },
+				{ "Body", part.GetFirstPost(_services.Resolve<IForumService>())?.FormatPostText().NullEmpty() },
 				{ "Url", BuildRouteUrl("TopicSlug", new { id = part.Id, slug = part.GetSeName() }, messageContext) },
 			};
 
@@ -665,8 +682,8 @@ namespace SmartStore.Services.Messages
 
 			var m = new Dictionary<string, object>
 			{
-				{ "Author", part.Customer.FormatUserName() },
-				{ "Body", part.FormatPostText() }
+				{ "Author", part.Customer.FormatUserName().NullEmpty() },
+				{ "Body", part.FormatPostText().NullEmpty() }
 			};
 
 			PublishModelPartCreatedEvent<ForumPost>(part, m);
@@ -681,8 +698,8 @@ namespace SmartStore.Services.Messages
 
 			var m = new Dictionary<string, object>
 			{
-				{ "Name", part.GetLocalized(x => x.Name, messageContext.Language.Id) },
-				{ "GroupName", part.ForumGroup?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull() },
+				{ "Name", part.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() },
+				{ "GroupName", part.ForumGroup?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() },
 				{ "NumPosts", part.NumPosts },
 				{ "NumTopics", part.NumTopics },
 				{ "Url", BuildRouteUrl("ForumSlug", new {  id = part.Id, slug = part.GetSeName(messageContext.Language.Id) }, messageContext) },
@@ -698,39 +715,29 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			//var disallow = new[] { nameof(part.CreatedOnUtc), nameof(part.StateProvinceId), nameof(part.CountryId), };
-
-			//var m = new HybridExpando(part, disallow, MemberOptMethod.Disallow);
-
-			//m["FullSalutation"] = part.GetFullSalutaion();
-
-			//// Overrides
-			//m.Properties["StateProvince"] = part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull();
-			//m.Properties["Country"] = part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull();
-
 			var settings = _services.Resolve<AddressSettings>();
 
 			var m = new Dictionary<string, object>
 			{
-				{ "Title", part.Title },
-				{ "Salutation", part.Salutation },
-				{ "FullSalutation", part.GetFullSalutaion() },
-				{ "FullName", part.GetFullName(false) },
-				{ "Company", settings.CompanyEnabled ? part.Company : "" },
-				{ "FirstName", part.FirstName },
-				{ "LastName", part.LastName },
-				{ "Address1", settings.StreetAddressEnabled ? part.Address1 : "" },
-				{ "Address2", settings.StreetAddress2Enabled ? part.Address2 : "" },
-				{ "Country", settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull() : "" },
-				{ "State", settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).EmptyNull() : "" },
-				{ "City", settings.CityEnabled ? part.City : "" },
-				{ "ZipCode", settings.ZipPostalCodeEnabled ? part.ZipPostalCode : "" },
-				{ "Email", part.Email },
-				{ "Phone", settings.PhoneEnabled ? part.PhoneNumber : "" },
-				{ "Fax", settings.FaxEnabled ? part.FaxNumber : "" }
+				{ "Title", part.Title.NullEmpty() },
+				{ "Salutation", part.Salutation.NullEmpty() },
+				{ "FullSalutation", part.GetFullSalutaion().NullEmpty() },
+				{ "FullName", part.GetFullName(false).NullEmpty() },
+				{ "Company", settings.CompanyEnabled ? part.Company : null },
+				{ "FirstName", part.FirstName.NullEmpty() },
+				{ "LastName", part.LastName.NullEmpty() },
+				{ "Address1", settings.StreetAddressEnabled ? part.Address1 : null },
+				{ "Address2", settings.StreetAddress2Enabled ? part.Address2 : null },
+				{ "Country", settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() : null },
+				{ "State", settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() : null },
+				{ "City", settings.CityEnabled ? part.City : null },
+				{ "ZipCode", settings.ZipPostalCodeEnabled ? part.ZipPostalCode : null },
+				{ "Email", part.Email.NullEmpty() },
+				{ "Phone", settings.PhoneEnabled ? part.PhoneNumber : null },
+				{ "Fax", settings.FaxEnabled ? part.FaxNumber : null }
 			};
 
-			m["FullCity"] = GetFullCity();
+			m["FullCity"] = GetFullCity().NullEmpty();
 
 			PublishModelPartCreatedEvent<Address>(part, m);
 
@@ -770,7 +777,7 @@ namespace SmartStore.Services.Messages
 			{
 				{ "Id", part.Id },
 				{ "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) },
-				{ "Message", part.Message },
+				{ "Message", part.Message.NullEmpty() },
 				{ "Points", part.Points },
 				{ "PointsBalance", part.PointsBalance },
 				{ "UsedAmount", part.UsedAmount }

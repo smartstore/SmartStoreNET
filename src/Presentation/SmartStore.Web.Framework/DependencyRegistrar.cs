@@ -500,8 +500,16 @@ namespace SmartStore.Web.Framework
 					{
 						try
 						{
-							Localizer localizer = e.Context.Resolve<IText>().Get;
-							prop.SetValue(e.Instance, localizer);
+							if (prop.Property.PropertyType == typeof(Localizer))
+							{
+								Localizer localizer = e.Context.Resolve<IText>().Get;
+								prop.SetValue(e.Instance, localizer);
+							}
+							else
+							{
+								LocalizerEx localizerEx = e.Context.Resolve<IText>().Get;
+								prop.SetValue(e.Instance, localizerEx);
+							}
 						}
 						catch { }
 					}
@@ -511,7 +519,7 @@ namespace SmartStore.Web.Framework
 
 		private static PropertyInfo FindUserProperty(Type type)
 		{
-			return type.GetProperty("T", typeof(Localizer));
+			return type.GetProperty("T", typeof(Localizer)) ?? type.GetProperty("T", typeof(LocalizerEx));
 		}
 	}
 

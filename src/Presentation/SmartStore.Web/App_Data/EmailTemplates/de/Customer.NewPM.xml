@@ -9,22 +9,26 @@
 <h1>
   Hallo {{ Customer.FullName }},
 </h1>
-<p>
+<p class="text-lg">
   Sie haben eine neue private Nachricht von <b>{{ PrivateMessage.FromName }}</b> erhalten.
 </p>
-<table class="body-action">
-  <tr>
-  	<td>
-      <a href="{{ PrivateMessage.Url }}" class="btn btn-primary">Zur Nachricht</a>
+
+<p class="m-t-4 m-b-4">
+  <a href="{{ PrivateMessage.Url }}" class="btn btn-primary">Zur Nachricht</a>
+</p>
+
+<table class="w-100 brd bg-light">
+	<tr>
+  	<td class="p-3">
+      <h3 class="m-b-3">
+        {{ PrivateMessage.Subject }}
+      </h3>
+      <p class="message">
+        "{{ PrivateMessage.Text | Strip }}"
+      </p>
     </td>
-  </tr>
+  </tr> 
 </table>
-<p class="message-title">
-  {{ PrivateMessage.Subject }}
-</p>
-<p class="message-body">
-  "{{ PrivateMessage.Text | Strip }}"
-</p>
 
 {% endblock %}]]></Body>
 </MessageTemplate>

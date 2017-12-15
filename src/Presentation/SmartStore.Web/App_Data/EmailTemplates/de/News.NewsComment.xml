@@ -10,14 +10,23 @@
 <h1>
   Neuer News Kommentar,
 </h1>
-<p>
+
+<p class="text-lg">
   der News-Eintrag <a href="{{ NewsComment.NewsUrl }}">{{ NewsComment.NewsTitle }}</a> wurde von <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> kommentiert
 </p>
-<p class="message-title">
-  {{ NewsComment.Title }}
-</p>
-<p class="message-body">
-  "{{ NewsComment.Text | Truncate: 400 }}"
-</p>
+
+<table class="w-100 brd bg-light">
+	<tr>
+  	<td class="p-3">
+      <h3 class="m-b-3">
+        {{ NewsComment.Title }}
+      </h3>
+      <p class="message">
+        "{{ NewsComment.Text | Truncate: 400 }}"
+      </p>
+    </td>
+  </tr> 
+</table>
+
 {% endblock %}]]></Body>
 </MessageTemplate>

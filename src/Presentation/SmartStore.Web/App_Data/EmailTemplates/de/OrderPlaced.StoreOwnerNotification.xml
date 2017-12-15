@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
-	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
-	<Subject>Bestelleingangsbestätigung - {{ Store.Name }}</Subject>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
+	<Subject>Neue Bestellung eingegangen von '{{ Customer.FullName }}'</Subject>
 	<ModelTypes>Order, Order.Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Hallo {{ Customer.FullName }},
+  Neue Bestellung eingegangen,
 </h1>
-<p>
-  herzlichen Dank für Ihre Bestellung bei <a href="{{ Store.URL }}">{{ Store.Name }}</a>, deren Erhalt wir hiermit bestätigen. Eine Übersicht über Ihre Bestellung finden Sie unten.
-</p>
 
 <table class="w-100 m-b-3">
   <thead>
@@ -71,20 +69,5 @@
 
 {% include 'order' %}
 
-<table id="conditions-of-use">
-  <tr>
-  	<td class="text-xs">
-    	{{ Order.ConditionsOfUse.Body }}
-    </td>
-  </tr>
-</table>
-
-<table id="disclaimer">
-  <tr>
-  	<td class="text-xs">
-    	{{ Order.Disclaimer.Body }}
-    </td>
-  </tr>
-</table>
 {% endblock %}]]></Body>
 </MessageTemplate>

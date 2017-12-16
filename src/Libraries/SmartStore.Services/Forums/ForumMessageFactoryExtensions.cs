@@ -22,15 +22,18 @@ namespace SmartStore.Services.Forums
 		/// <summary>
 		/// Sends a forum subscription message to a customer
 		/// </summary>
-		/// <param name="friendlyForumTopicPageIndex">Friendly forum topic page to use for URL generation (1-based)</param>
-		public static CreateMessageResult SendNewForumPostMessage(this IMessageFactory factory, Customer customer, ForumPost forumPost, int friendlyForumTopicPageIndex, int languageId = 0)
+		/// <param name="topicPageIndex">Friendly forum topic page to use for URL generation (1-based)</param>
+		public static CreateMessageResult SendNewForumPostMessage(this IMessageFactory factory, Customer customer, ForumPost forumPost, int topicPageIndex, int languageId = 0)
 		{
 			Guard.NotNull(customer, nameof(customer));
 			Guard.NotNull(forumPost, nameof(forumPost));
 
-			// TBD: (mc) Liquid > how to handle "friendlyForumTopicPageIndex" (?) > see "MessageTokenProvider.AddForumTopicTokens()"
+			var bag = new ModelPart
+			{
+				["TopicPageIndex"] = topicPageIndex
+			};
 
-			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewForumPost, languageId, customer: customer), true, forumPost, forumPost.ForumTopic, forumPost.ForumTopic.Forum);
+			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewForumPost, languageId, customer: customer), true, bag, forumPost, forumPost.ForumTopic, forumPost.ForumTopic.Forum);
 		}
 
 		/// <summary>

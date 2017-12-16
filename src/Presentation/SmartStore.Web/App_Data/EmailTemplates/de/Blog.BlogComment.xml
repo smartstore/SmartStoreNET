@@ -10,7 +10,7 @@
 <h1>
   Neuer Blog Kommentar,
 </h1>
-<p class="text-lg">
+<p>
   der Blog-Eintrag <a href="{{ BlogComment.PostUrl }}">{{ BlogComment.PostTitle }}</a> wurde von <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> kommentiert:
 </p>
 <table class="w-100 brd bg-light m-t-4">

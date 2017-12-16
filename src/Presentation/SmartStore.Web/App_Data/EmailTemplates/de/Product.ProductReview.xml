@@ -11,7 +11,7 @@
   Neue Produktrezension,
 </h1>
 
-<p class="text-lg">
+<p>
   {% if Customer.IsRegistered %}
   	<a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> 
   {% else %}

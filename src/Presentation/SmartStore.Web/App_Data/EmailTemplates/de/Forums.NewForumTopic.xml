@@ -10,7 +10,7 @@
   Hallo {{ Customer.FullName }},
 </h1>
 
-<p class="text-lg">
+<p>
   Im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neuer Beitrag erstellt:
 </p>
 

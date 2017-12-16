@@ -97,11 +97,10 @@ namespace SmartStore.ComponentModel
 		/// This constructor just works off the internal dictionary and any 
 		/// public properties of this object.
 		/// 
-		/// Note you can subclass Expando.
+		/// Note you can subclass HybridExpando.
 		/// </summary>
 		public HybridExpando()
         {
-            Initialize(this);
         }
 
         /// <summary>
@@ -114,7 +113,9 @@ namespace SmartStore.ComponentModel
         /// <param name="instance"></param>
         public HybridExpando(object instance)
         {
-            Initialize(instance);
+			Guard.NotNull(instance, nameof(instance));
+
+			Initialize(instance);
         }
 
 		/// <summary>
@@ -124,6 +125,8 @@ namespace SmartStore.ComponentModel
 		/// <param name="instance"></param>
 		public HybridExpando(object instance, IEnumerable<string> optMembers, MemberOptMethod optMethod)
 		{
+			Guard.NotNull(instance, nameof(instance));
+
 			Initialize(instance);
 
 			_optMethod = optMethod;

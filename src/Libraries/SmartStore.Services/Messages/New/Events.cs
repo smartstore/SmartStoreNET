@@ -52,7 +52,7 @@ namespace SmartStore.Services.Messages
 		/// <summary>
 		/// The name of the model part. If <c>null</c> the source's type name is used.
 		/// </summary>
-		public string Name { get; set; }
+		public string ModelPartName { get; set; }
 	}
 
 	/// <summary>
@@ -60,7 +60,7 @@ namespace SmartStore.Services.Messages
 	/// </summary>
 	public class MessageModelCreatedEvent
 	{
-		public MessageModelCreatedEvent(MessageContext messageContext, dynamic model)
+		public MessageModelCreatedEvent(MessageContext messageContext, TemplateModel model)
 		{
 			MessageContext = messageContext;
 			Model = model;
@@ -71,7 +71,7 @@ namespace SmartStore.Services.Messages
 		/// <summary>
 		/// The result message model.
 		/// </summary>
-		public dynamic Model { get; private set; }
+		public TemplateModel Model { get; private set; }
 	}
 
 	/// <summary>
@@ -82,6 +82,6 @@ namespace SmartStore.Services.Messages
 	{
 		public QueuedEmail QueuedEmail { get; set; }
 		public MessageContext MessageContext { get; set; }
-		public dynamic MessageModel { get; set; }
+		public TemplateModel MessageModel { get; set; }
 	}
 }

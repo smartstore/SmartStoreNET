@@ -10,9 +10,11 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Topics;
 using SmartStore.Services.Media;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Localization;
 using SmartStore.Core.Domain.Orders;
 using System.Text;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Html;
 
 namespace SmartStore.Services.Messages
 {
@@ -71,10 +73,16 @@ namespace SmartStore.Services.Messages
 				topic = topicService.GetTopicBySystemName(topicSystemName, 0);
 			}
 
+			var body = topic?.GetLocalized(x => x.Body, ctx.Language.Id);
+			if (body.HasValue())
+			{
+				body = HtmlUtils.RelativizeFontSizes(body);
+			}
+
 			return new
 			{
-				Title = topic?.Title.EmptyNull(),
-				Body = topic?.Body.EmptyNull()
+				Title = topic?.GetLocalized(x => x.Title, ctx.Language.Id).NullEmpty(),
+				Body = body.NullEmpty()
 			};
 		}
 

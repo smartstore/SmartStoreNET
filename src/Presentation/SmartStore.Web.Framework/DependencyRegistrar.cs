@@ -478,7 +478,7 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<Text>().As<IText>().InstancePerRequest();
 			builder.Register<Localizer>(c => c.Resolve<IText>().Get).InstancePerRequest();
-			builder.Register<LocalizerEx>(c => c.Resolve<IText>().Get).InstancePerRequest();
+			builder.Register<LocalizerEx>(c => c.Resolve<IText>().GetEx).InstancePerRequest();
 
 			builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>().InstancePerRequest();
 		}
@@ -500,6 +500,7 @@ namespace SmartStore.Web.Framework
 					{
 						try
 						{
+							var iText = e.Context.Resolve<IText>();
 							if (prop.Property.PropertyType == typeof(Localizer))
 							{
 								Localizer localizer = e.Context.Resolve<IText>().Get;
@@ -507,7 +508,7 @@ namespace SmartStore.Web.Framework
 							}
 							else
 							{
-								LocalizerEx localizerEx = e.Context.Resolve<IText>().Get;
+								LocalizerEx localizerEx = e.Context.Resolve<IText>().GetEx;
 								prop.SetValue(e.Instance, localizerEx);
 							}
 						}

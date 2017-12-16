@@ -9,7 +9,7 @@
 <h1>
   Hallo {{ Customer.FullName }},
 </h1>
-<p class="text-lg">
+<p>
   Der Artikel <b>{{ Product.Name }}</b> ist wieder verfügbar.
 </p>
 <p class="m-t-4">

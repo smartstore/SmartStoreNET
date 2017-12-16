@@ -18,12 +18,11 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(customer, nameof(customer));
 			Guard.NotNull(product, nameof(product));
 
-			var model = new
+			var model = new NamedModelPart("Message")
 			{
-				__Name = "Message",
-				Body = personalMessage,
-				From = fromEmail,
-				To = toEmail
+				["Body"] = personalMessage,
+				["From"] = fromEmail,
+				["To"] = toEmail
 			};
 
 			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShareProduct, languageId, customer: customer), true, product, model);
@@ -35,13 +34,12 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(customer, nameof(customer));
 			Guard.NotNull(product, nameof(product));
 
-			var model = new
+			var model = new NamedModelPart("Message")
 			{
-				__Name = "Message",
-				Message = question,
-				SenderEmail = senderEmail,
-				SenderName = senderName,
-				SenderPhone = senderPhone
+				["Message"] = question,
+				["SenderEmail"] = senderEmail,
+				["SenderName"] = senderName,
+				["SenderPhone"] = senderPhone
 			};
 
 			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ProductQuestion, languageId, customer: customer), true, product, model);

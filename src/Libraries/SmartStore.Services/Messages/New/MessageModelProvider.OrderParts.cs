@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Web;
 using SmartStore.ComponentModel;
-using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
@@ -79,14 +76,13 @@ namespace SmartStore.Services.Messages
 			}
 			d.PaymentMethod = paymentMethodName.NullEmpty();
 
-			d.OrderURLForCustomer = part.Customer != null && !part.Customer.IsGuest()
+			d.Url = part.Customer != null && !part.Customer.IsGuest()
 				? BuildActionUrl("Details", "Order", new { id = part.Id, area = "" }, messageContext)
-				: "";
+				: null;
 
 			// Overrides
 			m.Properties["OrderNumber"] = part.GetOrderNumber().NullEmpty();
 			m.Properties["AcceptThirdPartyEmailHandOver"] = GetBoolResource(part.AcceptThirdPartyEmailHandOver, messageContext);
-			m.Properties["OrderNotes"] = part.OrderNotes.Select(x => CreateModelPart(x, messageContext)).ToList();
 
 			// Items, Totals & Co.
 			d.Items = part.OrderItems.Where(x => x.Product != null).Select(x => CreateModelPart(x, messageContext)).ToList();
@@ -398,7 +394,8 @@ namespace SmartStore.Services.Messages
 				{ "RequestedAction", part.RequestedAction.NullEmpty() },
 				{ "CustomerComments", HtmlUtils.FormatText(part.CustomerComments, true, false, false, false, false, false).NullEmpty() },
 				{ "StaffNotes", HtmlUtils.FormatText(part.StaffNotes, true, false, false, false, false, false).NullEmpty() },
-				{ "Quantity", part.Quantity }
+				{ "Quantity", part.Quantity },
+				{ "Url", BuildActionUrl("Edit", "ReturnRequest", new { id = part.Id, area = "admin" }, messageContext) }
 			};
 
 			PublishModelPartCreatedEvent<ReturnRequest>(part, m);

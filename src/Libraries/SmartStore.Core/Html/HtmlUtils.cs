@@ -3,22 +3,20 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Linq;
+using AngleSharp;
+using AngleSharp.Parser.Html;
+using AngleSharp.Parser.Css;
 
 namespace SmartStore.Core.Html
 {
     /// <summary>
-    /// Represents a HTML helper
+    /// Utility class for html manipulation or creation
     /// </summary>
     public partial class HtmlUtils
     {
-        #region Fields
-        private readonly static Regex paragraphStartRegex = new Regex("<p>", RegexOptions.IgnoreCase);
-        private readonly static Regex paragraphEndRegex = new Regex("</p>", RegexOptions.IgnoreCase);
+        private readonly static Regex _paragraphStartRegex = new Regex("<p>", RegexOptions.IgnoreCase);
+        private readonly static Regex _paragraphEndRegex = new Regex("</p>", RegexOptions.IgnoreCase);
         //private static Regex ampRegex = new Regex("&(?!(?:#[0-9]{2,4};|[a-z0-9]+;))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        #endregion
-
-        #region Utilities
 
         private static string EnsureOnlyAllowedHtml(string text)
         {
@@ -56,9 +54,7 @@ namespace SmartStore.Core.Html
 
 	        return allowedTags.Any(aTag => tag == aTag);
         }
-        #endregion
 
-        #region Methods
         /// <summary>
         /// Formats the text
         /// </summary>
@@ -70,9 +66,14 @@ namespace SmartStore.Core.Html
         /// <param name="resolveLinks">A value indicating whether to resolve links</param>
         /// <param name="addNoFollowTag">A value indicating whether to add "noFollow" tag</param>
         /// <returns>Formatted text</returns>
-        public static string FormatText(string text, bool stripTags,
-            bool convertPlainTextToHtml, bool allowHtml, 
-            bool allowBBCode, bool resolveLinks, bool addNoFollowTag)
+        public static string FormatText(
+			string text, 
+			bool stripTags,
+            bool convertPlainTextToHtml, 
+			bool allowHtml, 
+            bool allowBBCode, 
+			bool resolveLinks, 
+			bool addNoFollowTag)
         {
 
             if (String.IsNullOrEmpty(text))
@@ -178,8 +179,7 @@ namespace SmartStore.Core.Html
         /// <param name="decode">A value indicating whether to decode text</param>
         /// <param name="replaceAnchorTags">A value indicating whether to replace anchor text (remove a tag from the following url <a href="http://example.com">Name</a> and output only the string "Name")</param>
         /// <returns>Formatted text</returns>
-        public static string ConvertHtmlToPlainText(string text,
-            bool decode = false, bool replaceAnchorTags = false)
+        public static string ConvertHtmlToPlainText(string text, bool decode = false, bool replaceAnchorTags = false)
         {
             if (String.IsNullOrEmpty(text))
                 return string.Empty;
@@ -257,8 +257,8 @@ namespace SmartStore.Core.Html
             if (String.IsNullOrEmpty(text))
                 return string.Empty;
 
-            text = paragraphStartRegex.Replace(text, string.Empty);
-            text = paragraphEndRegex.Replace(text, "\n");
+            text = _paragraphStartRegex.Replace(text, string.Empty);
+            text = _paragraphEndRegex.Replace(text, "\n");
             text = text.Replace("\r\n", "\n").Replace("\r", "\n");
             text = text + "\n\n";
             text = text.Replace("\n\n", "\n");
@@ -271,8 +271,39 @@ namespace SmartStore.Core.Html
                     builder.AppendFormat("<p>{0}</p>\n", str);
                 }
             }
+
             return builder.ToString();
         }
-        #endregion
+
+		/// <summary>
+		/// Converts all occurences of pixel-based inline font-size expression to relative 'em'
+		/// </summary>
+		/// <param name="html"></param>
+		/// <param name="baseFontSizePx"></param>
+		/// <returns></returns>
+		public static string RelativizeFontSizes(string html, int baseFontSizePx = 16)
+		{
+			Guard.NotEmpty(html, nameof(html));
+			Guard.IsPositive(baseFontSizePx, nameof(baseFontSizePx));
+
+			var parser = new HtmlParser(new AngleSharp.Configuration().WithCss());
+			var doc = parser.Parse(html);
+
+			var nodes = doc.QuerySelectorAll("*[style]");
+			foreach (var node in nodes)
+			{
+				if (node.Style.FontSize is string s && s.EndsWith("px"))
+				{
+					var size = s.Substring(0, s.Length - 2).Convert<int>();
+					if (size > 0)
+					{
+						//node.Style.FontSize = Math.Round(((double)size / (double)baseFontSizePx), 4) + "em";
+						node.Style.FontSize = "{0}em".FormatInvariant(Math.Round(((double)size / (double)baseFontSizePx), 4));
+					}
+				}
+			}
+
+			return doc.Body.InnerHtml;
+		}
     }
 }

@@ -296,11 +296,13 @@
     <Compile Include="Messages\New\Events.cs" />
     <Compile Include="Messages\New\IMessageFactory.cs" />
     <Compile Include="Messages\New\IMessageModelProvider.cs" />
+    <Compile Include="Messages\New\IModelPart.cs" />
     <Compile Include="Messages\New\MessageFactory.cs" />
     <Compile Include="Messages\New\MessageContext.cs" />
     <Compile Include="Messages\New\MessageModelProvider.OrderParts.cs" />
     <Compile Include="Messages\New\MessageModelProvider.Utils.cs" />
     <Compile Include="Messages\New\MessageModelProvider.cs" />
+    <Compile Include="Messages\New\TemplateModel.cs" />
     <Compile Include="Messages\QueuedMessagesClearTask.cs" />
     <Compile Include="Messages\QueuingEmailEvent.cs" />
     <Compile Include="Messages\QueuingEmailEventConsumer.cs" />

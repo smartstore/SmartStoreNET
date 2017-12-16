@@ -87,24 +87,23 @@ namespace SmartStore.Services.Messages
 
 			ValidateMessageContext(messageContext, ref modelParts);
 
-			var model = new ExpandoObject() as IDictionary<string, object>;
+			// Create and assign model
+			var model = messageContext.Model = new TemplateModel();
 
 			// Add all global template model parts
-			_modelProvider.AddGlobalModelParts(messageContext, model);
+			_modelProvider.AddGlobalModelParts(messageContext);
 
 			// Add specific template models for passed parts
 			foreach (var part in modelParts)
 			{
 				if (model != null)
 				{
-					_modelProvider.AddModelPart(part, messageContext, model);
+					_modelProvider.AddModelPart(part, messageContext);
 				}
 			}
 
 			// Give implementors the chance to customize the final template model
-			_services.EventPublisher.Publish(new MessageModelCreatedEvent(messageContext, (dynamic)model));
-
-			// TODO: (mc) Liquid > Handle ctx.ReplyToCustomer, but how?
+			_services.EventPublisher.Publish(new MessageModelCreatedEvent(messageContext, model));
 
 			// Get format provider for requested language
 			var formatProvider = GetFormatProvider(messageContext);
@@ -158,24 +157,23 @@ namespace SmartStore.Services.Messages
 			if (queue)
 			{
 				// Put to queue
-				QueueMessage(messageContext, qe, (dynamic)model);
+				QueueMessage(messageContext, qe);
 			}
 
-			return new CreateMessageResult { Email = qe, Model = (dynamic)model };
+			return new CreateMessageResult { Email = qe, Model = model };
 		}
 
-		public virtual void QueueMessage(MessageContext messageContext, QueuedEmail queuedEmail, dynamic model)
+		public virtual void QueueMessage(MessageContext messageContext, QueuedEmail queuedEmail)
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(queuedEmail, nameof(queuedEmail));
-			Guard.NotNull(model, nameof(model));
 
 			// Publish event so that integrators can add attachments, alter the email etc.
 			_services.EventPublisher.Publish(new MessageQueuingEvent
 			{
 				QueuedEmail = queuedEmail,
 				MessageContext = messageContext,
-				MessageModel = model
+				MessageModel = messageContext.Model
 			});
 
 			_queuedEmailService.InsertQueuedEmail(queuedEmail);
@@ -310,17 +308,16 @@ namespace SmartStore.Services.Messages
 
 			EnsureLanguageIsActive(ctx);
 
+			var parts = modelParts?.AsEnumerable() ?? Enumerable.Empty<object>();
+
 			if (ctx.Customer == null)
 			{
-				Customer customer = null;
-				if (modelParts != null)
+				// Try to move Customer from parts to MessageContext
+				var customer = parts.OfType<Customer>().FirstOrDefault();
+				if (customer != null)
 				{
-					customer = modelParts.OfType<Customer>().FirstOrDefault();
-					if (customer != null)
-					{
-						// Exclude the found customer from parts list
-						modelParts = modelParts.Where(x => !object.ReferenceEquals(x, customer)).ToArray();
-					}
+					// Exclude the found customer from parts list
+					parts = parts.Where(x => !object.ReferenceEquals(x, customer));
 				}
 
 				ctx.Customer = customer ?? _services.WorkContext.CurrentCustomer;
@@ -342,6 +339,15 @@ namespace SmartStore.Services.Messages
 			}
 
 			ctx.EmailAccount = GetEmailAccountOfMessageTemplate(ctx.MessageTemplate, ctx.Language.Id);
+
+			// Sort parts: "IModelPart" instances must come first
+			var bagParts = parts.OfType<IModelPart>();
+			if (bagParts.Any())
+			{
+				parts = bagParts.Concat(parts.Except(bagParts));
+			}		
+
+			modelParts = parts.ToArray();
 		}
 
 		protected MessageTemplate GetActiveMessageTemplate(string messageTemplateName, int storeId)
@@ -385,22 +391,22 @@ namespace SmartStore.Services.Messages
 		{
 			var factories = new Dictionary<string, Func<object>>(StringComparer.OrdinalIgnoreCase)
 			{
-				{ "BlogComment", CreateBlogCommentTestModel },
-				{ "Product", CreateProductTestModel },
-				{ "Customer", CreateCustomerTestModel },
-				{ "Order", CreateOrderTestModel },
-				{ "Shipment", CreateShipmentTestModel },
-				{ "OrderNote", CreateOrderNoteTestModel },
-				{ "RecurringPayment", CreateRecurringPaymentTestModel },
-				{ "NewsLetterSubscription", CreateNewsLetterSubscriptionTestModel },
-				{ "ReturnRequest", CreateReturnRequestTestModel },
-				{ "OrderItem", CreateOrderItemTestModel },
-				{ "ForumTopic", CreateForumTopicTestModel },
-				{ "ForumPost", CreateForumPostTestModel },
-				{ "PrivateMessage", CreatePrivateMessageTestModel },
-				{ "GiftCard", CreateGiftCardTestModel },
-				{ "ProductReview", CreateProductReviewTestModel },
-				{ "NewsComment", CreateNewsCommentTestModel }
+				{ "BlogComment", () => GetRandomEntity<BlogComment>(x => true) },
+				{ "Product", () => GetRandomEntity<Product>(x => !x.Deleted && x.VisibleIndividually && x.Published) },
+				{ "Customer", () => GetRandomEntity<Customer>(x => !x.Deleted && !x.IsSystemAccount && !string.IsNullOrEmpty(x.Email)) },
+				{ "Order", () => GetRandomEntity<Order>(x => !x.Deleted) },
+				{ "Shipment", () => GetRandomEntity<Shipment>(x => !x.Order.Deleted) },
+				{ "OrderNote", () => GetRandomEntity<OrderNote>(x => !x.Order.Deleted) },
+				{ "RecurringPayment", () => GetRandomEntity<RecurringPayment>(x => !x.Deleted) },
+				{ "NewsLetterSubscription", () => GetRandomEntity<NewsLetterSubscription>(x => true) },
+				{ "ReturnRequest", () => GetRandomEntity<ReturnRequest>(x => true) },
+				{ "OrderItem", () => GetRandomEntity<OrderItem>(x => !x.Order.Deleted) },
+				{ "ForumTopic", () => GetRandomEntity<ForumTopic>(x => true) },
+				{ "ForumPost", () => GetRandomEntity<ForumPost>(x => true) },
+				{ "PrivateMessage", () => GetRandomEntity<PrivateMessage>(x => true) },
+				{ "GiftCard", () => GetRandomEntity<GiftCard>(x => true) },
+				{ "ProductReview", () => GetRandomEntity<ProductReview>(x => !x.Product.Deleted && x.Product.VisibleIndividually && x.Product.Published) },
+				{ "NewsComment", () => GetRandomEntity<NewsComment>(x => x.NewsItem.Published) }
 			};
 
 			var modelNames = messageContext.MessageTemplate.ModelTypes
@@ -508,89 +514,9 @@ namespace SmartStore.Services.Messages
 			return currentModel;
 		}
 
-		private object CreateBlogCommentTestModel()
-		{
-			return GetRandomEntity<BlogComment>(x => true);
-		}
-
-		private object CreateProductTestModel()
-		{
-			return GetRandomEntity<Product>(x => !x.Deleted && x.VisibleIndividually && x.Published);
-		}
-
-		private object CreateCustomerTestModel()
-		{
-			return GetRandomEntity<Customer>(x => !x.Deleted && !x.IsSystemAccount && !string.IsNullOrEmpty(x.Email));
-		}
-
-		private object CreateOrderTestModel()
-		{
-			return GetRandomEntity<Order>(x => !x.Deleted);
-		}
-
-		private object CreateShipmentTestModel()
-		{
-			return GetRandomEntity<Shipment>(x => !x.Order.Deleted);
-		}
-
-		private object CreateOrderNoteTestModel()
-		{
-			return GetRandomEntity<OrderNote>(x => !x.Order.Deleted);
-		}
-
-		private object CreateRecurringPaymentTestModel()
-		{
-			return GetRandomEntity<RecurringPayment>(x => !x.Deleted);
-		}
-
-		private object CreateNewsLetterSubscriptionTestModel()
-		{
-			return GetRandomEntity<NewsLetterSubscription>(x => true);
-		}
-
-		private object CreateReturnRequestTestModel()
-		{
-			return GetRandomEntity<ReturnRequest>(x => true);
-		}
-
-		private object CreateOrderItemTestModel()
-		{
-			return GetRandomEntity<OrderItem>(x => !x.Order.Deleted);
-		}
-
-		private object CreateForumTopicTestModel()
-		{
-			return GetRandomEntity<ForumTopic>(x => true);
-		}
-
-		private object CreateForumPostTestModel()
-		{
-			return GetRandomEntity<ForumPost>(x => true);
-		}
-
-		private object CreatePrivateMessageTestModel()
-		{
-			return GetRandomEntity<PrivateMessage>(x => true);
-		}
-
-		private object CreateGiftCardTestModel()
-		{
-			return GetRandomEntity<GiftCard>(x => true);
-		}
-
-		private object CreateProductReviewTestModel()
-		{
-			return GetRandomEntity<ProductReview>(x => !x.Product.Deleted && x.Product.VisibleIndividually && x.Product.Published);
-		}
-
-		private object CreateNewsCommentTestModel()
-		{
-			return GetRandomEntity<NewsComment>(x => x.NewsItem.Published);
-		}
-
 		private object GetRandomEntity<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity, new()
 		{
-			var dbSet = _services.DbContext.Set<T>().AsNoTracking();
+			var dbSet = _services.DbContext.Set<T>();
 
 			var query = dbSet.Where(predicate);
 

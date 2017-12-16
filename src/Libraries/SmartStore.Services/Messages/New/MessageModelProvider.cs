@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.ComponentModel;
@@ -11,6 +13,7 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
@@ -26,16 +29,13 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.Localization;
-using SmartStore.Services.Orders;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
+using SmartStore.Services.Orders;
 using SmartStore.Services.Seo;
 using SmartStore.Templating;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Media;
-using SmartStore.Core.Domain.Directory;
-using System.Text;
-using System.Drawing;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
@@ -79,9 +79,11 @@ namespace SmartStore.Services.Messages
 		public LocalizerEx T { get; set; }
 		public ILogger Logger { get; set; }
 
-		public virtual void AddGlobalModelParts(MessageContext messageContext, IDictionary<string, object> model)
+		public virtual void AddGlobalModelParts(MessageContext messageContext)
 		{
-			Guard.NotNull(model, nameof(model));
+			Guard.NotNull(messageContext, nameof(messageContext));
+
+			var model = messageContext.Model;
 
 			model["Context"] = new Dictionary<string, object>
 			{
@@ -105,18 +107,25 @@ namespace SmartStore.Services.Messages
 			model["Store"] = CreateModelPart(messageContext.Store, messageContext);
 		}
 
-		public virtual void AddModelPart(object part, MessageContext messageContext, IDictionary<string, object> model, string name = null)
+		public virtual void AddModelPart(object part, MessageContext messageContext, string name = null)
 		{
 			Guard.NotNull(part, nameof(part));
 			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(model, nameof(model));
-			
+
+			var model = messageContext.Model;
+
 			name = name.NullEmpty() ?? ResolveModelName(part);
 
 			object modelPart = null;
 
 			switch (part)
 			{
+				case INamedModelPart x:
+					modelPart = x;
+					break;
+				case IModelPart x:
+					MergeModelBag(x, model, messageContext);
+					break;
 				case Order x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
@@ -180,14 +189,7 @@ namespace SmartStore.Services.Messages
 						if (evt.Result != null && !object.ReferenceEquals(evt.Result, part))
 						{
 							modelPart = evt.Result;
-							if (evt.Name.HasValue())
-							{
-								name = evt.Name;
-							}
-							else
-							{
-								name = ResolveModelName(evt.Result) ?? name;
-							}
+							name = evt.ModelPartName.NullEmpty() ?? ResolveModelName(evt.Result) ?? name;
 						}
 						else
 						{
@@ -195,7 +197,7 @@ namespace SmartStore.Services.Messages
 						}
 
 						modelPart = evt.Result ?? part;
-						name = evt.Name.NullEmpty() ?? name;
+						name = evt.ModelPartName.NullEmpty() ?? name;
 					}
 
 					break;
@@ -205,7 +207,7 @@ namespace SmartStore.Services.Messages
 			{
 				if (name.IsEmpty())
 				{
-					throw new SmartException($"Could not resolve a model key for part '{modelPart.GetType().Name}'. When using dictionaries, anonymous or dynamic objects please specify the key via '__Name' member.");
+					throw new SmartException($"Could not resolve a model key for part '{modelPart.GetType().Name}'. Use an instance of 'NamedModelPart' class to pass model with name.");
 				}
 
 				if (model.TryGetValue(name, out var existing))
@@ -249,21 +251,9 @@ namespace SmartStore.Services.Messages
 				{
 					name = te.ModelName;
 				}
-				else if (model is IDictionary<string, object> d)
+				else if (model is INamedModelPart mp)
 				{
-					name = d.Get("__Name") as string;
-				}
-				else if (model is IDynamicMetaObjectProvider x)
-				{
-					name = ((dynamic)model).__Name as string;
-				}
-				else if (type.IsAnonymous())
-				{
-					var prop = FastProperty.GetProperty(type, "__Name", PropertyCachingStrategy.EagerCached);
-					if (prop != null)
-					{
-						name = prop.GetValue(model) as string;
-					}
+					name = mp.ModelPartName;
 				}
 				else if (type.IsPlainObjectType())
 				{
@@ -340,6 +330,21 @@ namespace SmartStore.Services.Messages
 			PublishModelPartCreatedEvent<ContactDataSettings>(settings, contact);
 
 			return contact;
+		}
+
+		#endregion
+
+		#region Generic model part handlers
+
+		protected virtual void MergeModelBag(IModelPart part, IDictionary<string, object> model, MessageContext messageContext)
+		{
+			if (!(model.Get("Bag") is IDictionary<string, object> bag))
+			{
+				model["Bag"] = bag = new Dictionary<string, object>();
+			}
+
+			var source = part as IDictionary<string, object>;
+			bag.Merge(source);
 		}
 
 		#endregion
@@ -559,7 +564,7 @@ namespace SmartStore.Services.Messages
 
 			PublishModelPartCreatedEvent<GiftCard>(part, m);
 
-			return null;
+			return m;
 		}
 
 		protected virtual object CreateModelPart(NewsLetterSubscription part, MessageContext messageContext)
@@ -658,8 +663,12 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			// TODO: (mc) Liquid > Implement TopicSlugPaged with friendlyForumTopicPageIndex param!
-			
+			var pageIndex = messageContext.Model.GetFromBag<int>("TopicPageIndex");
+
+			var url = pageIndex > 0 ?
+				BuildRouteUrl("TopicSlugPaged", new { id = part.Id, slug = part.GetSeName(), page = pageIndex }, messageContext) :
+				BuildRouteUrl("TopicSlug", new { id = part.Id, slug = part.GetSeName() }, messageContext);
+
 			var m = new Dictionary<string, object>
 			{
 				{ "Subject", part.Subject.NullEmpty() },
@@ -667,7 +676,7 @@ namespace SmartStore.Services.Messages
 				{ "NumPosts", part.NumPosts },
 				{ "NumViews", part.Views },
 				{ "Body", part.GetFirstPost(_services.Resolve<IForumService>())?.FormatPostText().NullEmpty() },
-				{ "Url", BuildRouteUrl("TopicSlug", new { id = part.Id, slug = part.GetSeName() }, messageContext) },
+				{ "Url", url },
 			};
 
 			PublishModelPartCreatedEvent<ForumTopic>(part, m);
@@ -792,7 +801,7 @@ namespace SmartStore.Services.Messages
 
 		#region Model Tree
 
-		public TreeNode<ModelTreeMember> BuildModelTree(IDictionary<string, object> model)
+		public TreeNode<ModelTreeMember> BuildModelTree(TemplateModel model)
 		{
 			Guard.NotNull(model, nameof(model));
 

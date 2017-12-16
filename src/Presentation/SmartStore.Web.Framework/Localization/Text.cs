@@ -15,10 +15,10 @@ namespace SmartStore.Web.Framework.Localization
 		
 		public LocalizedString Get(string key, params object[] args)
 		{
-			return Get(key, 0, args);
+			return GetEx(key, 0, args);
 		}
 
-		public LocalizedString Get(string key, int languageId, params object[] args)
+		public LocalizedString GetEx(string key, int languageId, params object[] args)
 		{
 			try
 			{

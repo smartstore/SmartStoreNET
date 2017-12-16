@@ -51,12 +51,11 @@ namespace SmartStore.Services.Customers
 		{
 			Guard.NotNull(customer, nameof(customer));
 
-			var model = new
+			var model = new NamedModelPart("Wishlist")
 			{
-				__Name = "Wishlist",
-				PersonalMessage = personalMessage,
-				From = fromEmail,
-				To = toEmail
+				["PersonalMessage"] = personalMessage,
+				["From"] = fromEmail,
+				["To"] = toEmail
 			};
 
 			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShareWishlist, languageId, customer: customer), true, model);
@@ -69,11 +68,10 @@ namespace SmartStore.Services.Customers
 		{
 			Guard.NotNull(customer, nameof(customer));
 
-			var model = new
+			var model = new NamedModelPart("VatValidationResult")
 			{
-				__Name = "VatValidationResult",
-				Name = vatName,
-				Address = vatAddress
+				["Name"] = vatName,
+				["Address"] = vatAddress
 			};
 
 			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.NewVatSubmittedStoreOwner, languageId, customer: customer), true, model);

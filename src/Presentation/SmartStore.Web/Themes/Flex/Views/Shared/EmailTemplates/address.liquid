@@ -1,4 +1,4 @@
-<p class="m-b-2">
+<p class="m-b-2 text-sm">
 {% if address.Company %}
 	{{ address.Company }}<br />
 {% endif %}
@@ -26,7 +26,7 @@
 </p>
 
 {% if address.Email or address.Phone or address.Fax %}
-<p class="m-b-2">
+<div class="m-b-2 text-sm">
 	{% if address.Email  %}
 		<div>{{ address.Email }}</div>
 	{% endif %}
@@ -36,5 +36,5 @@
 	{% if address.Fax  %}
 		<div>{% T 'Order.Fax' %}: {{ address.Fax }}</div>
 	{% endif %}
-</p>
+</div>
 {% endif %}

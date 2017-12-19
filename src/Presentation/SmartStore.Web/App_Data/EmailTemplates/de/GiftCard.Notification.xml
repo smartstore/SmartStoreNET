@@ -3,7 +3,7 @@
 	<To>{{ GiftCard.RecipientName }} &lt;{{ GiftCard.RecipientEmail }}&gt;</To>
 	<ReplyTo>{{ GiftCard.RecipientName }} &lt;{{ GiftCard.RecipientEmail }}&gt;</ReplyTo>
 	<Subject>{{ GiftCard.SenderName }} hat Ihnen einen Geschenkgutschein für {{ Store.Name }} geschickt</Subject>
-	<ModelTypes>GiftCard, GiftCard.PurchasedWithOrderItem, GiftCard.PurchasedWithOrderItem.Product</ModelTypes>
+	<ModelTypes>GiftCard, GiftCard.PurchasedWithOrderItem, GiftCard.PurchasedWithOrderItem.Product, GiftCard.PurchasedWithOrderItem.Order.Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}

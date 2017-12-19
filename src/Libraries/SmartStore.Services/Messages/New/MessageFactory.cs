@@ -29,6 +29,8 @@ namespace SmartStore.Services.Messages
 {
 	public partial class MessageFactory : IMessageFactory
 	{
+		const string LoremIpsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.";
+
 		private readonly ICommonServices _services;
 		private readonly ITemplateEngine _templateEngine;
 		private readonly ITemplateManager _templateManager;
@@ -389,6 +391,10 @@ namespace SmartStore.Services.Messages
 
 		public virtual object[] GetTestModels(MessageContext messageContext)
 		{
+			var templateName = (messageContext.MessageTemplate?.Name ?? messageContext.MessageTemplateName);
+			// TODO: (mc) Liquid > no .Liquid
+			templateName = templateName.RemoveEncloser("", ".Liquid");
+
 			var factories = new Dictionary<string, Func<object>>(StringComparer.OrdinalIgnoreCase)
 			{
 				{ "BlogComment", () => GetRandomEntity<BlogComment>(x => true) },
@@ -427,6 +433,43 @@ namespace SmartStore.Services.Messages
 				}
 			}
 
+			// Some models are special
+			switch (templateName)
+			{
+				case MessageTemplateNames.ProductQuestion:
+					result.Add(new NamedModelPart("Message")
+					{
+						["Message"] = LoremIpsum,
+						["SenderEmail"] = "jane@doe.com",
+						["SenderName"] = "Jane Doe",
+						["SenderPhone"] = "123456789"
+					});
+					break;
+				case MessageTemplateNames.ShareProduct:
+					result.Add(new NamedModelPart("Message")
+					{
+						["Body"] = LoremIpsum,
+						["From"] = "jane@doe.com",
+						["To"] = "john@doe.com",
+					});
+					break;
+				case MessageTemplateNames.ShareWishlist:
+					result.Add(new NamedModelPart("Wishlist")
+					{
+						["PersonalMessage"] = LoremIpsum,
+						["From"] = "jane@doe.com",
+						["To"] = "john@doe.com",
+					});
+					break;
+				case MessageTemplateNames.NewVatSubmittedStoreOwner:
+					result.Add(new NamedModelPart("VatValidationResult")
+					{
+						["Name"] = "VatName",
+						["Address"] = "VatAddress"
+					});
+					break;
+			}
+
 			return result.ToArray();
 		}
 
@@ -442,7 +485,6 @@ namespace SmartStore.Services.Messages
 			{
 				if (expression[i] == '.')
 				{
-					dotIndex = i;
 					bof = false;
 					token = expression.Substring(0, i);
 				}
@@ -508,6 +550,11 @@ namespace SmartStore.Services.Messages
 
 					// Put it in dict as e.g. "Order.Customer"
 					models[token] = currentModel;
+				}
+
+				if (!bof)
+				{
+					dotIndex = i;
 				}
 			}
 

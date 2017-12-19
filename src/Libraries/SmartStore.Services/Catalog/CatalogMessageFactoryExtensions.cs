@@ -20,9 +20,9 @@ namespace SmartStore.Services.Catalog
 
 			var model = new NamedModelPart("Message")
 			{
-				["Body"] = personalMessage,
-				["From"] = fromEmail,
-				["To"] = toEmail
+				["Body"] = personalMessage.NullEmpty(),
+				["From"] = fromEmail.NullEmpty(),
+				["To"] = toEmail.NullEmpty()
 			};
 
 			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShareProduct, languageId, customer: customer), true, product, model);
@@ -36,10 +36,10 @@ namespace SmartStore.Services.Catalog
 
 			var model = new NamedModelPart("Message")
 			{
-				["Message"] = question,
-				["SenderEmail"] = senderEmail,
-				["SenderName"] = senderName,
-				["SenderPhone"] = senderPhone
+				["Message"] = question.NullEmpty(),
+				["SenderEmail"] = senderEmail.NullEmpty(),
+				["SenderName"] = senderName.NullEmpty(),
+				["SenderPhone"] = senderPhone.NullEmpty()
 			};
 
 			return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ProductQuestion, languageId, customer: customer), true, product, model);

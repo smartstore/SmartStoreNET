@@ -446,6 +446,7 @@ namespace SmartStore.Services.Messages
 				{ "AdditionalShippingCharge", additionalShippingChargeFormatted.NullEmpty() },
 				{ "Url", url },
 				{ "Thumbnail", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.MessageProductThumbPictureSize, new Size(50, 50), alt) },
+				{ "ThumbnailLg", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.ProductThumbPictureSize, new Size(120, 120), alt) },
 				{ "DeliveryTime", null },
 				{ "QtyUnit", null }
 			};
@@ -490,38 +491,51 @@ namespace SmartStore.Services.Messages
 				nameof(part.LastActivityDateUtc)
 			};
 
-			var m = new HybridExpando(part, allow, MemberOptMethod.Allow);
-
 			var email = part.FindEmail();
+			var pwdRecoveryToken = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken).NullEmpty();
+			var accountActivationToken = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken).NullEmpty();
 
-			m.Properties[nameof(part.Email)] = email;
-			m.Properties[nameof(part.RewardPointsHistory)] = part.RewardPointsHistory.Select(x => CreateModelPart(x, messageContext)).ToList();
-			m.Properties[nameof(part.BillingAddress)] = CreateModelPart(part.BillingAddress ?? new Address(), messageContext);
-			m.Properties[nameof(part.ShippingAddress)] = CreateModelPart(part.ShippingAddress ?? new Address(), messageContext);
-
-			m["FullName"] = GetDisplayNameForCustomer(part).NullEmpty();
-			m["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber).NullEmpty();
-			m["VatNumberStatus"] = part.GetAttribute<VatNumberStatus>(SystemCustomerAttributeNames.VatNumberStatusId).ToString();
-			m["CustomerNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber).NullEmpty();
-			m["IsRegistered"] = part.IsRegistered();
-
-			m["PasswordRecoveryURL"] = BuildActionUrl("passwordrecoveryconfirm", "customer", 
-				new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), email = email, area = "" },
-				messageContext);
-
-			m["AccountActivationURL"] = BuildActionUrl("activation", "customer",
-				new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), email = email, area = "" },
-				messageContext);
-
-			m["WishlistUrl"] = BuildRouteUrl("Wishlist", new { customerGuid = part.CustomerGuid }, messageContext);
-			m["EditUrl"] = BuildActionUrl("Edit", "Customer", new { id = part.Id, area = "admin" }, messageContext);
-
-			// Reward Points
 			int rewardPointsBalance = part.GetRewardPointsBalance();
 			decimal rewardPointsAmountBase = _services.Resolve<IOrderTotalCalculationService>().ConvertRewardPointsToAmount(rewardPointsBalance);
 			decimal rewardPointsAmount = _services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, _services.WorkContext.WorkingCurrency);
-			m["RewardPointsAmount"] = rewardPointsAmount;
-			m["RewardPointsBalance"] = _services.Resolve<IPriceFormatter>().FormatPrice(rewardPointsAmount, true, false);
+
+			var m = new Dictionary<string, object>
+			{
+				["Id"] = part.Id,
+				["CustomerGuid"] = part.CustomerGuid,
+				["Username"] = part.Username,
+				["Email"] = email,
+				["IsTaxExempt"] = part.IsTaxExempt,
+				["LastIpAddress"] = part.LastIpAddress,
+				["CreatedOn"] = ToUserDate(part.CreatedOnUtc, messageContext),
+				["LastLoginOn"] = ToUserDate(part.LastLoginDateUtc, messageContext),
+				["LastActivityOn"] = ToUserDate(part.LastActivityDateUtc, messageContext),
+
+				["FullName"] = GetDisplayNameForCustomer(part).NullEmpty(),
+				["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber).NullEmpty(),
+				["VatNumberStatus"] = part.GetAttribute<VatNumberStatus>(SystemCustomerAttributeNames.VatNumberStatusId).GetLocalizedEnum(_services.Localization, messageContext.Language.Id).NullEmpty(),
+				["CustomerNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber).NullEmpty(),
+				["IsRegistered"] = part.IsRegistered(),
+
+				// URLs
+				["WishlistUrl"] = BuildRouteUrl("Wishlist", new { customerGuid = part.CustomerGuid }, messageContext),
+				["EditUrl"] = BuildActionUrl("Edit", "Customer", new { id = part.Id, area = "admin" }, messageContext),
+				["PasswordRecoveryURL"] = pwdRecoveryToken == null ? null : BuildActionUrl("passwordrecoveryconfirm", "customer",
+					new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), email = email, area = "" },
+					messageContext),
+				["AccountActivationURL"] = accountActivationToken == null ? null : BuildActionUrl("activation", "customer",
+					new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), email = email, area = "" },
+					messageContext),
+
+				// Addresses
+				["BillingAddress"] = CreateModelPart(part.BillingAddress ?? new Address(), messageContext),
+				["ShippingAddress"] = part.ShippingAddress == null ? null : CreateModelPart(part.ShippingAddress, messageContext),		
+
+				// Reward Points
+				["RewardPointsAmount"] = rewardPointsAmount,
+				["RewardPointsBalance"] = _services.Resolve<IPriceFormatter>().FormatPrice(rewardPointsAmount, true, false),
+				["RewardPointsHistory"] = part.RewardPointsHistory.Count == 0 ? null : part.RewardPointsHistory.Select(x => CreateModelPart(x, messageContext)).ToList(),
+			};
 
 			PublishModelPartCreatedEvent<Customer>(part, m);
 

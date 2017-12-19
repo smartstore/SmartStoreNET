@@ -38,7 +38,7 @@
 {% endif %}
 
 {% if ReturnRequest.CustomerComments %}
-<table class="brd bg-light p-3">
+<table class="w-100 brd bg-light p-3">
   <tr>
   	<td>
       <h3>Kommentar</h3>

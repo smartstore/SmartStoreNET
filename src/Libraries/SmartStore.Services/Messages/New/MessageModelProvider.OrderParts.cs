@@ -351,7 +351,7 @@ namespace SmartStore.Services.Messages
 				{ "DeliveredOn", ToUserDate(part.DeliveryDateUtc, messageContext) },
 				{ "ShippedOn", ToUserDate(part.ShippedDateUtc, messageContext) },
 				{ "Url", BuildActionUrl("ShipmentDetails", "Order", new { id = part.Id, area = "" }, messageContext)},
-				{ "OrderItems", orderItems.Where(x => x.Product != null).Select(x => CreateModelPart(x, messageContext)).ToList() },
+				{ "Items", orderItems.Where(x => x.Product != null).Select(x => CreateModelPart(x, messageContext)).ToList() },
 			};
 
 			PublishModelPartCreatedEvent<Shipment>(part, m);
@@ -373,7 +373,8 @@ namespace SmartStore.Services.Messages
 				{ "CycleLength", part.CycleLength },
 				{ "CyclePeriod", part.CyclePeriod.GetLocalizedEnum(_services.Localization, messageContext.Language.Id) },
 				{ "CyclesRemaining", part.CyclesRemaining },
-				{ "TotalCycles", part.TotalCycles }
+				{ "TotalCycles", part.TotalCycles },
+				{ "Url", BuildActionUrl("Edit", "RecurringPayment", new { id = part.Id, area = "admin" }, messageContext) }
 			};
 
 			PublishModelPartCreatedEvent<RecurringPayment>(part, m);

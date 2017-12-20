@@ -46,7 +46,6 @@ namespace SmartStore.Web.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerContentService _customerContentService;
         private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
@@ -71,7 +70,6 @@ namespace SmartStore.Web.Controllers
 			ILocalizationService localizationService,
             ICustomerContentService customerContentService,
 			IDateTimeHelper dateTimeHelper,
-            IWorkflowMessageService workflowMessageService,
 			IWebHelper webHelper,
             ICacheManager cacheManager,
 			ICustomerActivityService customerActivityService,
@@ -91,7 +89,6 @@ namespace SmartStore.Web.Controllers
             this._localizationService = localizationService;
             this._customerContentService = customerContentService;
             this._dateTimeHelper = dateTimeHelper;
-            this._workflowMessageService = workflowMessageService;
             this._webHelper = webHelper;
             this._cacheManager = cacheManager;
             this._customerActivityService = customerActivityService;
@@ -361,7 +358,7 @@ namespace SmartStore.Web.Controllers
 
                 //notify a store owner
                 if (_blogSettings.NotifyAboutNewBlogComments)
-                    _workflowMessageService.SendBlogCommentNotificationMessage(comment, _localizationSettings.DefaultAdminLanguageId);
+                    Services.MessageFactory.SendBlogCommentNotificationMessage(comment, _localizationSettings.DefaultAdminLanguageId);
 
                 //activity log
                 _customerActivityService.InsertActivity("PublicStore.AddBlogComment", _localizationService.GetResource("ActivityLog.PublicStore.AddBlogComment"));

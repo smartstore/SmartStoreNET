@@ -26,7 +26,6 @@ namespace SmartStore.Services.Forums
         private readonly IRepository<Customer> _customerRepository;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerService _customerService;
-        private readonly IWorkflowMessageService _workflowMessageService;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly ICommonServices _services;
 
@@ -41,7 +40,6 @@ namespace SmartStore.Services.Forums
             IRepository<Customer> customerRepository,
             IGenericAttributeService genericAttributeService,
             ICustomerService customerService,
-            IWorkflowMessageService workflowMessageService,
 			IRepository<StoreMapping> storeMappingRepository,
 			ICommonServices services)
         {
@@ -55,7 +53,6 @@ namespace SmartStore.Services.Forums
             _customerRepository = customerRepository;
             _genericAttributeService = genericAttributeService;
             _customerService = customerService;
-            _workflowMessageService = workflowMessageService;
 			_storeMappingRepository = storeMappingRepository;
 			_services = services;
         }
@@ -487,7 +484,7 @@ namespace SmartStore.Services.Forums
 
                     if (!String.IsNullOrEmpty(subscription.Customer.Email))
                     {
-                        _workflowMessageService.SendNewForumTopicMessage(subscription.Customer, forumTopic, forum, languageId);
+                        _services.MessageFactory.SendNewForumTopicMessage(subscription.Customer, forumTopic, languageId);	
                     }
                 }
             }
@@ -654,7 +651,7 @@ namespace SmartStore.Services.Forums
 
                     if (!String.IsNullOrEmpty(subscription.Customer.Email))
                     {
-                        _workflowMessageService.SendNewForumPostMessage(subscription.Customer, forumPost, forumTopic, forum, friendlyTopicPageIndex, languageId);
+                        _services.MessageFactory.SendNewForumPostMessage(subscription.Customer, forumPost, friendlyTopicPageIndex, languageId);
                     }
                 }
             }
@@ -756,7 +753,7 @@ namespace SmartStore.Services.Forums
             //Email notification
             if (_forumSettings.NotifyAboutPrivateMessages)
             {
-                _workflowMessageService.SendPrivateMessageNotification(customerTo, privateMessage, _services.WorkContext.WorkingLanguage.Id);                
+				_services.MessageFactory.SendPrivateMessageNotification(customerTo, privateMessage, _services.WorkContext.WorkingLanguage.Id);                
             }
         }
 

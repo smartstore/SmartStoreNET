@@ -27,7 +27,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILocalizationService _localizationService;
-        private readonly IMessageTokenProvider _messageTokenProvider;
         private readonly IPermissionService _permissionService;
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
@@ -40,7 +39,6 @@ namespace SmartStore.Admin.Controllers
 			ILanguageService languageService, 
             ILocalizedEntityService localizedEntityService,
             ILocalizationService localizationService, 
-			IMessageTokenProvider messageTokenProvider,
 			IPermissionService permissionService, 
 			IStoreService storeService,
 			IStoreMappingService storeMappingService,
@@ -52,7 +50,6 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
             _localizedEntityService = localizedEntityService;
             _localizationService = localizationService;
-            _messageTokenProvider = messageTokenProvider;
             _permissionService = permissionService;
 			_storeService = storeService;
 			_storeMappingService = storeMappingService;
@@ -161,7 +158,7 @@ namespace SmartStore.Admin.Controllers
 
 			// TODO: (mc) Liquid > LastModelTree
             var model = messageTemplate.ToModel();
-            model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
+            //model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
 			DeserializeLastModelTree(messageTemplate);
 
 			// available email accounts
@@ -233,7 +230,7 @@ namespace SmartStore.Admin.Controllers
 
 			// TODO: (mc) Liquid > LastModelTree
 			// If we got this far, something failed, redisplay form
-			model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
+			//model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
 			DeserializeLastModelTree(messageTemplate);
 
 			// Available email accounts

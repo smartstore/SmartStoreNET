@@ -29,7 +29,6 @@ namespace SmartStore.Services.Catalog
 		private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
 		private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
-        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDbContext _dbContext;
         private readonly LocalizationSettings _localizationSettings;
 		private readonly ICommonServices _services;
@@ -45,7 +44,6 @@ namespace SmartStore.Services.Catalog
 			IRepository<ShoppingCartItem> shoppingCartItemRepository,
 			IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
-            IWorkflowMessageService workflowMessageService,
 			IDbContext dbContext,
             LocalizationSettings localizationSettings,
 			ICommonServices services)
@@ -60,7 +58,6 @@ namespace SmartStore.Services.Catalog
 			_shoppingCartItemRepository = shoppingCartItemRepository;
             _productAttributeService = productAttributeService;
             _productAttributeParser = productAttributeParser;
-            _workflowMessageService = workflowMessageService;
             _dbContext = dbContext;
             _localizationSettings = localizationSettings;
 			_services = services;
@@ -512,10 +509,10 @@ namespace SmartStore.Services.Catalog
 						product.Published = newPublished;
 
 						UpdateProduct(product);
-
+						
                         //send email notification
 						if (decrease && product.NotifyAdminForQuantityBelow > result.StockQuantityNew)
-                            _workflowMessageService.SendQuantityBelowStoreOwnerNotification(product, _localizationSettings.DefaultAdminLanguageId);                        
+                            _services.MessageFactory.SendQuantityBelowStoreOwnerNotification(product, _localizationSettings.DefaultAdminLanguageId);                        
                     }
                     break;
                 case ManageInventoryMethod.ManageStockByAttributes:

@@ -635,9 +635,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<NewsLetterSubscriptionService>().As<INewsLetterSubscriptionService>().InstancePerRequest();
 			builder.RegisterType<CampaignService>().As<ICampaignService>().InstancePerRequest();
 			builder.RegisterType<EmailAccountService>().As<IEmailAccountService>().InstancePerRequest();
-			builder.RegisterType<WorkflowMessageService>().As<IWorkflowMessageService>().InstancePerRequest();
-			builder.RegisterType<MessageTokenProvider>().As<IMessageTokenProvider>().InstancePerRequest();
-			builder.RegisterType<Tokenizer>().As<ITokenizer>().InstancePerRequest();
 			builder.RegisterType<DefaultEmailSender>().As<IEmailSender>().InstancePerRequest();
 			builder.RegisterType<LocalAsyncState>().As<IAsyncState>().SingleInstance();
 		}

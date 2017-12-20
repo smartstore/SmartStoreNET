@@ -18,7 +18,7 @@ namespace SmartStore.Services.Catalog
         #region Fields
 
         private readonly IRepository<BackInStockSubscription> _backInStockSubscriptionRepository;
-        private readonly IWorkflowMessageService _workflowMessageService;
+        private readonly IMessageFactory _messageFactory;
 		private readonly IWorkContext _workContext;
         private readonly IEventPublisher _eventPublisher;
 
@@ -26,22 +26,16 @@ namespace SmartStore.Services.Catalog
         
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="backInStockSubscriptionRepository">Back in stock subscription repository</param>
-        /// <param name="workflowMessageService">Workflow message service</param>
-		/// <param name="workContext">Work context</param>
-        /// <param name="eventPublisher">Event publisher</param>
-        public BackInStockSubscriptionService(IRepository<BackInStockSubscription> backInStockSubscriptionRepository,
-            IWorkflowMessageService workflowMessageService,
+        public BackInStockSubscriptionService(
+			IRepository<BackInStockSubscription> backInStockSubscriptionRepository,
+			IMessageFactory messageFactory,
 			IWorkContext workContext,
             IEventPublisher eventPublisher)
         {
-            this._backInStockSubscriptionRepository = backInStockSubscriptionRepository;
-            this._workflowMessageService = workflowMessageService;
-			this._workContext = workContext;
-            this._eventPublisher = eventPublisher;
+            _backInStockSubscriptionRepository = backInStockSubscriptionRepository;
+            _messageFactory = messageFactory;
+			_workContext = workContext;
+            _eventPublisher = eventPublisher;
         }
 
         #endregion
@@ -177,12 +171,10 @@ namespace SmartStore.Services.Catalog
 			var subscriptions = GetAllSubscriptionsByProductId(product.Id, 0, 0, int.MaxValue);
             foreach (var subscription in subscriptions)
             {
-                //ensure that customer is registered (simple and fast way)
+                // Ensure that customer is registered (simple and fast way)
 				if (subscription.Customer.Email.IsEmail())
                 {
-					var customer = subscription.Customer;
-					var customerLanguageId = customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, subscription.StoreId);
-					_workflowMessageService.SendBackInStockNotification(subscription, customerLanguageId);
+					_messageFactory.SendBackInStockNotification(subscription);
                     result++;
                 }
             }

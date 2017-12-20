@@ -18,7 +18,6 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -55,7 +54,6 @@ namespace SmartStore.AmazonPay.Services
 		private readonly IAddressService _addressService;
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
-		private readonly IWorkflowMessageService _workflowMessageService;
 
 		private readonly IPriceFormatter _priceFormatter;
 		private readonly IDateTimeHelper _dateTimeHelper;
@@ -80,7 +78,6 @@ namespace SmartStore.AmazonPay.Services
 			IAddressService addressService,
 			IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
-			IWorkflowMessageService workflowMessageService,
 			IPriceFormatter priceFormatter,
 			IDateTimeHelper dateTimeHelper,
 			IPluginFinder pluginFinder,
@@ -103,7 +100,6 @@ namespace SmartStore.AmazonPay.Services
 			_addressService = addressService;
 			_orderService = orderService;
 			_orderProcessingService = orderProcessingService;
-			_workflowMessageService = workflowMessageService;
 
 			_priceFormatter = priceFormatter;
 			_dateTimeHelper = dateTimeHelper;
@@ -788,8 +784,8 @@ namespace SmartStore.AmazonPay.Services
 
 						order.OrderNotes.Add(orderNote);
 						_orderService.UpdateOrder(order);
-
-						_workflowMessageService.SendNewOrderNoteAddedCustomerNotification(orderNote, _services.WorkContext.WorkingLanguage.Id);
+						
+						_services.MessageFactory.SendNewOrderNoteAddedCustomerNotification(orderNote, _services.WorkContext.WorkingLanguage.Id);
 						break;
 					}
 

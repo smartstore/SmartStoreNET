@@ -408,7 +408,6 @@
     <Compile Include="Media\DefaultImageProcessor.cs" />
     <Compile Include="Media\ImageTypes.cs" />
     <Compile Include="Messages\EventPublisherExtensions.cs" />
-    <Compile Include="Messages\GenericMessageContext.cs" />
     <Compile Include="Messages\NewsLetterSubscriptionService.cs" />
     <Compile Include="News\NewsService.cs" />
     <Compile Include="News\INewsService.cs" />
@@ -455,13 +454,11 @@
     <Compile Include="Messages\INewsLetterSubscriptionService.cs" />
     <Compile Include="Messages\IQueuedEmailService.cs" />
     <Compile Include="Messages\ITokenizer.cs" />
-    <Compile Include="Messages\IWorkflowMessageService.cs" />
     <Compile Include="Messages\MessageTemplateService.cs" />
     <Compile Include="Messages\QueuedEmailService.cs" />
     <Compile Include="Messages\QueuedMessagesSendTask.cs" />
     <Compile Include="Messages\Tokenizer.cs" />
     <Compile Include="Messages\Token.cs" />
-    <Compile Include="Messages\WorkflowMessageService.cs" />
     <Compile Include="Orders\AutoUpdateOrderItemContext.cs" />
     <Compile Include="Orders\AppliedGiftCard.cs" />
     <Compile Include="Orders\CheckoutAttributeFormatter.cs" />

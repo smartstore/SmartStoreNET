@@ -51,7 +51,6 @@ namespace SmartStore.Web.Controllers
 		private readonly ICustomerService _customerService;
 		private readonly IShoppingCartService _shoppingCartService;
 		private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
-		private readonly IWorkflowMessageService _workflowMessageService;
 		private readonly IProductTagService _productTagService;
 		private readonly IOrderReportService _orderReportService;
 		private readonly IBackInStockSubscriptionService _backInStockSubscriptionService;
@@ -83,7 +82,6 @@ namespace SmartStore.Web.Controllers
 			ICustomerService customerService,
 			IShoppingCartService shoppingCartService,
 			IRecentlyViewedProductsService recentlyViewedProductsService, 
-			IWorkflowMessageService workflowMessageService, 
 			IProductTagService productTagService,
 			IOrderReportService orderReportService,
 			IBackInStockSubscriptionService backInStockSubscriptionService, 
@@ -114,7 +112,6 @@ namespace SmartStore.Web.Controllers
 			_customerService = customerService;
 			_shoppingCartService = shoppingCartService;
 			_recentlyViewedProductsService = recentlyViewedProductsService;
-			_workflowMessageService = workflowMessageService;
 			_productTagService = productTagService;
 			_orderReportService = orderReportService;
 			_backInStockSubscriptionService = backInStockSubscriptionService;
@@ -720,7 +717,7 @@ namespace SmartStore.Web.Controllers
 
 				// notify store owner
 				if (_catalogSettings.NotifyStoreOwnerAboutNewProductReviews)
-					_workflowMessageService.SendProductReviewNotificationMessage(productReview, _localizationSettings.DefaultAdminLanguageId);
+					Services.MessageFactory.SendProductReviewNotificationMessage(productReview, _localizationSettings.DefaultAdminLanguageId);
 
 				// activity log
 				_services.CustomerActivity.InsertActivity("PublicStore.AddProductReview", T("ActivityLog.PublicStore.AddProductReview"), product.Name);
@@ -859,16 +856,15 @@ namespace SmartStore.Web.Controllers
 			if (ModelState.IsValid)
 			{
 				// email
-				var result = _workflowMessageService.SendProductQuestionMessage(
+				var msg = Services.MessageFactory.SendProductQuestionMessage(
 					_services.WorkContext.CurrentCustomer,
-					_services.WorkContext.WorkingLanguage.Id,
 					product,
 					model.SenderEmail,
 					model.SenderName,
 					model.SenderPhone,
 					Core.Html.HtmlUtils.FormatText(model.Question, false, true, false, false, false, false));
 
-				if (result > 0)
+				if (msg?.Email?.Id != null)
 				{
 					this.NotifySuccess(T("Products.AskQuestion.Sent"), true);
 					return RedirectToRoute("Product", new { SeName = product.GetSeName() });
@@ -932,10 +928,12 @@ namespace SmartStore.Web.Controllers
 			if (ModelState.IsValid)
 			{
 				//email
-				_workflowMessageService.SendProductEmailAFriendMessage(_services.WorkContext.CurrentCustomer,
-						_services.WorkContext.WorkingLanguage.Id, product,
-						model.YourEmailAddress, model.FriendEmail,
-						Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+				Services.MessageFactory.SendShareProductMessage(
+					_services.WorkContext.CurrentCustomer,
+					product,
+					model.YourEmailAddress, 
+					model.FriendEmail,
+					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
 
 				model.ProductId = product.Id;
 				model.ProductName = product.GetLocalized(x => x.Name);

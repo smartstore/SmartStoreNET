@@ -27,7 +27,6 @@ namespace SmartStore.Admin.Controllers
 
         private readonly IGiftCardService _giftCardService;
         private readonly IPriceFormatter _priceFormatter;
-        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly LocalizationSettings _localizationSettings;
         private readonly ILanguageService _languageService;
@@ -41,7 +40,6 @@ namespace SmartStore.Admin.Controllers
 
 		public GiftCardController(IGiftCardService giftCardService,
             IPriceFormatter priceFormatter,
-			IWorkflowMessageService workflowMessageService,
             IDateTimeHelper dateTimeHelper,
 			LocalizationSettings localizationSettings,
             ILanguageService languageService,
@@ -49,15 +47,14 @@ namespace SmartStore.Admin.Controllers
 			ICommonServices services,
 			AdminAreaSettings adminAreaSettings)
         {
-            this._giftCardService = giftCardService;
-            this._priceFormatter = priceFormatter;
-            this._workflowMessageService = workflowMessageService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._localizationSettings = localizationSettings;
-            this._languageService = languageService;
-            this._customerActivityService = customerActivityService;
-			this._services = services;
-			this._adminAreaSettings = adminAreaSettings;
+            _giftCardService = giftCardService;
+            _priceFormatter = priceFormatter;
+            _dateTimeHelper = dateTimeHelper;
+            _localizationSettings = localizationSettings;
+            _languageService = languageService;
+            _customerActivityService = customerActivityService;
+			_services = services;
+			_adminAreaSettings = adminAreaSettings;
         }
 
         #endregion
@@ -264,13 +261,12 @@ namespace SmartStore.Admin.Controllers
 	                languageId = _localizationSettings.DefaultAdminLanguageId;
 	            }
 
-	            int queuedEmailId = _workflowMessageService.SendGiftCardNotification(giftCard, languageId);
+	            var msg = Services.MessageFactory.SendGiftCardNotification(giftCard, languageId);
 
-                if (queuedEmailId > 0)
+                if (msg?.Email?.Id != null)
                 {
                     giftCard.IsRecipientNotified = true;
                     _giftCardService.UpdateGiftCard(giftCard);
-
 					NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
                 }
             }

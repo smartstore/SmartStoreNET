@@ -79,7 +79,6 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly ICheckoutAttributeService _checkoutAttributeService;
         private readonly IPaymentService _paymentService;
-        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IPermissionService _permissionService;
         private readonly IDownloadService _downloadService;
         private readonly ICacheManager _cacheManager;
@@ -126,7 +125,6 @@ namespace SmartStore.Web.Controllers
             IStateProvinceService stateProvinceService, IShippingService shippingService, 
             IOrderTotalCalculationService orderTotalCalculationService,
             ICheckoutAttributeService checkoutAttributeService, IPaymentService paymentService,
-            IWorkflowMessageService workflowMessageService,
             IPermissionService permissionService, IDeliveryTimeService deliveryTimeService,
             IDownloadService downloadService, ICacheManager cacheManager,
             IWebHelper webHelper, ICustomerActivityService customerActivityService,
@@ -169,7 +167,6 @@ namespace SmartStore.Web.Controllers
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._checkoutAttributeService = checkoutAttributeService;
             this._paymentService = paymentService;
-            this._workflowMessageService = workflowMessageService;
             this._permissionService = permissionService;
             this._downloadService = downloadService;
             this._cacheManager = cacheManager;
@@ -2511,9 +2508,11 @@ namespace SmartStore.Web.Controllers
             if (ModelState.IsValid)
             {
                 //email
-                _workflowMessageService.SendWishlistEmailAFriendMessage(_workContext.CurrentCustomer,
-                        _workContext.WorkingLanguage.Id, model.YourEmailAddress,
-                        model.FriendEmail, Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+                Services.MessageFactory.SendShareWishlistMessage(
+					_workContext.CurrentCustomer,
+					model.YourEmailAddress,
+                    model.FriendEmail, 
+					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
 
                 model.SuccessfullySent = true;
                 model.Result = _localizationService.GetResource("Wishlist.EmailAFriend.SuccessfullySent");

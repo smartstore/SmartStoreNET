@@ -70,7 +70,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IProductService _productService;
         private readonly IPermissionService _permissionService;
-	    private readonly IWorkflowMessageService _workflowMessageService;
 	    private readonly ICategoryService _categoryService;
         private readonly IManufacturerService _manufacturerService;
 	    private readonly IProductAttributeService _productAttributeService;
@@ -102,28 +101,38 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
         private readonly IPdfConverter _pdfConverter;
         private readonly ICommonServices _services;
-        private readonly Lazy<IPictureService> _pictureService;
 
         #endregion
 
         #region Ctor
 
         public OrderController(IOrderService orderService, 
-            IOrderReportService orderReportService, IOrderProcessingService orderProcessingService,
-            IDateTimeHelper dateTimeHelper, IPriceFormatter priceFormatter, ILocalizationService localizationService,
-            IWorkContext workContext, ICurrencyService currencyService,
-            IEncryptionService encryptionService, IPaymentService paymentService,
+            IOrderReportService orderReportService, 
+			IOrderProcessingService orderProcessingService,
+            IDateTimeHelper dateTimeHelper, 
+			IPriceFormatter priceFormatter,
+			ILocalizationService localizationService,
+            IWorkContext workContext, 
+			ICurrencyService currencyService,
+            IEncryptionService encryptionService, 
+			IPaymentService paymentService,
             IMeasureService measureService,
-            IAddressService addressService, ICountryService countryService,
-            IStateProvinceService stateProvinceService, IProductService productService,
+            IAddressService addressService, 
+			ICountryService countryService,
+            IStateProvinceService stateProvinceService, 
+			IProductService productService,
             IPermissionService permissionService,
-            IWorkflowMessageService workflowMessageService,
-            ICategoryService categoryService, IManufacturerService manufacturerService,
-            IProductAttributeService productAttributeService, IProductAttributeParser productAttributeParser,
-            IProductAttributeFormatter productAttributeFormatter, IShoppingCartService shoppingCartService,
+            ICategoryService categoryService, 
+			IManufacturerService manufacturerService,
+            IProductAttributeService productAttributeService, 
+			IProductAttributeParser productAttributeParser,
+            IProductAttributeFormatter productAttributeFormatter, 
+			IShoppingCartService shoppingCartService,
             ICheckoutAttributeFormatter checkoutAttributeFormatter, 
-            IGiftCardService giftCardService, IDownloadService downloadService,
-			IShipmentService shipmentService, IStoreService storeService,
+            IGiftCardService giftCardService, 
+			IDownloadService downloadService,
+			IShipmentService shipmentService, 
+			IStoreService storeService,
 			ITaxService taxService,
 			IPriceCalculationService priceCalculationService,
 			IEventPublisher eventPublisher,
@@ -132,11 +141,16 @@ namespace SmartStore.Admin.Controllers
 			IAffiliateService affiliateService,
 			ICustomerActivityService customerActivityService,
 			ICatalogSearchService catalogSearchService,
-			CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
-            MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings,
+			CatalogSettings catalogSettings, 
+			CurrencySettings currencySettings, 
+			TaxSettings taxSettings,
+            MeasureSettings measureSettings, 
+			PdfSettings pdfSettings, 
+			AddressSettings addressSettings,
 			AdminAreaSettings adminAreaSettings,
 			SearchSettings searchSettings,
-			IPdfConverter pdfConverter, ICommonServices services, Lazy<IPictureService> pictureService)
+			IPdfConverter pdfConverter, 
+			ICommonServices services)
 		{
             _orderService = orderService;
             _orderReportService = orderReportService;
@@ -154,7 +168,6 @@ namespace SmartStore.Admin.Controllers
             _stateProvinceService = stateProvinceService;
             _productService = productService;
             _permissionService = permissionService;
-            _workflowMessageService = workflowMessageService;
             _categoryService = categoryService;
             _manufacturerService = manufacturerService;
             _productAttributeService = productAttributeService;
@@ -186,7 +199,6 @@ namespace SmartStore.Admin.Controllers
             _checkoutAttributeFormatter = checkoutAttributeFormatter;
             _pdfConverter = pdfConverter;
             _services = services;
-            _pictureService = pictureService;
 		}
         
         #endregion
@@ -2475,10 +2487,8 @@ namespace SmartStore.Admin.Controllers
             //new order notification
             if (displayToCustomer)
             {
-                //email
-                _workflowMessageService.SendNewOrderNoteAddedCustomerNotification(
-                    orderNote, _workContext.WorkingLanguage.Id);
-
+                // Email
+                Services.MessageFactory.SendNewOrderNoteAddedCustomerNotification(orderNote, _workContext.WorkingLanguage.Id);
             }
 
             return Json(new { Result = true }, JsonRequestBehavior.AllowGet);

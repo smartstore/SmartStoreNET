@@ -12,6 +12,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Helpers;
 using Autofac;
 using SmartStore.Services.Media;
+using SmartStore.Services.Messages;
 
 namespace SmartStore.Services
 {	
@@ -108,6 +109,11 @@ namespace SmartStore.Services
 		}
 
 		IChronometer Chronometer
+		{
+			get;
+		}
+
+		IMessageFactory MessageFactory
 		{
 			get;
 		}

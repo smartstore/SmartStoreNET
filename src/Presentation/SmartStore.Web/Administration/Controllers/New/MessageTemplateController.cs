@@ -11,15 +11,10 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services;
-using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
-using SmartStore.Services.Stores;
 using SmartStore.Utilities;
-using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
-using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -105,7 +100,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, FormValueRequired("save-in-file"), ActionName("Edit2")]
-		public ActionResult SaveInFile(MessageTemplateModel model)
+		public ActionResult SaveInFile2(MessageTemplateModel model)
 		{
 			var tpl = _messageTemplateService.GetMessageTemplateById(model.Id);
 			tpl.To = model.To;
@@ -155,100 +150,100 @@ namespace SmartStore.Admin.Controllers
 			return tpl;
 		}
 
-		[FormValueRequired("send-test-mail"), ActionName("Edit2")]
-		public ActionResult SendTestMail()
-		{
-			var svc = Services.Resolve<IWorkflowMessageService>();
+		//[FormValueRequired("send-test-mail"), ActionName("Edit2")]
+		//public ActionResult SendTestMail()
+		//{
+		//	var svc = Services.Resolve<IWorkflowMessageService>();
 
-			var order = GetRandomEntity<Order>(x => !x.Deleted) as Order;
+		//	var order = GetRandomEntity<Order>(x => !x.Deleted) as Order;
 
-			var id = svc.SendOrderPlacedCustomerNotification(order, order.CustomerLanguageId);
-			var qe = Services.Resolve<IQueuedEmailService>().GetQueuedEmailById(id);
+		//	var id = svc.SendOrderPlacedCustomerNotification(order, order.CustomerLanguageId);
+		//	var qe = Services.Resolve<IQueuedEmailService>().GetQueuedEmailById(id);
 
-			return Content(qe.Body, "text/html");
-		}
+		//	return Content(qe.Body, "text/html");
+		//}
 
-		private object GetRandomEntity<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity, new()
-		{
-			var dbSet = Services.DbContext.Set<T>().AsNoTracking();
+		//private object GetRandomEntity<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity, new()
+		//{
+		//	var dbSet = Services.DbContext.Set<T>().AsNoTracking();
 
-			var query = dbSet.Where(predicate);
+		//	var query = dbSet.Where(predicate);
 
-			// Determine how many entities match the given predicate
-			var count = query.Count();
+		//	// Determine how many entities match the given predicate
+		//	var count = query.Count();
 
-			object result;
+		//	object result;
 
-			if (count > 0)
-			{
-				// Fetch a random one
-				var skip = new Random().Next(count - 1);
-				result = query.OrderBy(x => x.Id).Skip(skip).FirstOrDefault();
-			}
-			else
-			{
-				// No entity macthes the predicate. Provide a fallback test entity
-				result = Activator.CreateInstance<T>();
-			}
+		//	if (count > 0)
+		//	{
+		//		// Fetch a random one
+		//		var skip = new Random().Next(count - 1);
+		//		result = query.OrderBy(x => x.Id).Skip(skip).FirstOrDefault();
+		//	}
+		//	else
+		//	{
+		//		// No entity macthes the predicate. Provide a fallback test entity
+		//		result = Activator.CreateInstance<T>();
+		//	}
 
-			return result;
-		}
+		//	return result;
+		//}
 
 
-		public ActionResult EditTest()
-		{
-			var path = @"D:\_temp\Emails\email.liquid";
-			string body;
-			if (!System.IO.File.Exists(path))
-			{
-				body = @"<a href='{{ Store.Url }}'>
-  <img src='{{ Store.Logo.Src }}' width='{{ Store.Logo.Width }}' height='{{ Store.Logo.Height }}' alt='{{ Store.Name }}'>
-  </a>
+	//	public ActionResult EditTest()
+	//	{
+	//		var path = @"D:\_temp\Emails\email.liquid";
+	//		string body;
+	//		if (!System.IO.File.Exists(path))
+	//		{
+	//			body = @"<a href='{{ Store.Url }}'>
+ // <img src='{{ Store.Logo.Src }}' width='{{ Store.Logo.Width }}' height='{{ Store.Logo.Height }}' alt='{{ Store.Name }}'>
+ // </a>
   
-  <div>
-    Welcome {{ Customer.FullName }}, {{ Customer.Email }}
-  </div>
-  <div>
-	{{ Company.CompanyName }}
-    {{ Company.Firstname }}
-    {{ Company.Lastname }}
-    {{ Company.Street }}
-  </div>";
+ // <div>
+ //   Welcome {{ Customer.FullName }}, {{ Customer.Email }}
+ // </div>
+ // <div>
+	//{{ Company.CompanyName }}
+ //   {{ Company.Firstname }}
+ //   {{ Company.Lastname }}
+ //   {{ Company.Street }}
+ // </div>";
 
-				System.IO.File.WriteAllText(path, body);
-			}
-			else
-			{
-				body = System.IO.File.ReadAllText(path);
-			}
+	//			System.IO.File.WriteAllText(path, body);
+	//		}
+	//		else
+	//		{
+	//			body = System.IO.File.ReadAllText(path);
+	//		}
 
-			var messageTemplate = new MessageTemplate
-			{
-				Name = "MessageTemplate.Test",
-				Subject = "Welcome to {{ Store.Name }}",
-				Body = body
-			};
+	//		var messageTemplate = new MessageTemplate
+	//		{
+	//			Name = "MessageTemplate.Test",
+	//			Subject = "Welcome to {{ Store.Name }}",
+	//			Body = body
+	//		};
 
-			return View("Edit2", messageTemplate);
-		}
+	//		return View("Edit2", messageTemplate);
+	//	}
 
-		[HttpPost, FormValueRequired("save", "save-continue")]
-		public ActionResult EditTest(MessageTemplate model)
-		{
-			System.IO.File.WriteAllText(@"D:\_temp\Emails\email.liquid", model.Body);
+		//[HttpPost, FormValueRequired("save", "save-continue")]
+		//public ActionResult EditTest(MessageTemplate model)
+		//{
+		//	System.IO.File.WriteAllText(@"D:\_temp\Emails\email.liquid", model.Body);
 
-			var factory = Services.Resolve<IMessageFactory>();
+		//	var factory = Services.Resolve<IMessageFactory>();
 
-			var context = new MessageContext
-			{
-				MessageTemplate = model,
-				Customer = Services.WorkContext.CurrentCustomer,
-				TestMode = true
-			};
+		//	var context = new MessageContext
+		//	{
+		//		MessageTemplate = model,
+		//		Customer = Services.WorkContext.CurrentCustomer,
+		//		TestMode = true
+		//	};
 
-			var result = factory.CreateMessage(context, false);
-			var messageModel = result.Model;
-			return Content(result.Email.Body, "text/html");
-		}
+		//	var result = factory.CreateMessage(context, false);
+		//	var messageModel = result.Model;
+		//	return Content(result.Email.Body, "text/html");
+		//}
 	}
 }

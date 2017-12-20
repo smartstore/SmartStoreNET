@@ -11,10 +11,12 @@ using SmartStore.Core;
 
 namespace SmartStore.Data.Utilities
 {
-	public static class DataNormalizer
+	public static class DataMigrator
 	{
+		#region Product.MainPicture
+
 		/// <summary>
-		///Fixes 'MainPictureId' property of a single product entity
+		/// Fixes 'MainPictureId' property of a single product entity
 		/// </summary>
 		/// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
 		/// <param name="entities">When <c>null</c>, Product.ProductPictures gets called.</param>
@@ -152,5 +154,7 @@ namespace SmartStore.Data.Utilities
 
 			return map;
 		}
+
+		#endregion
 	}
 }

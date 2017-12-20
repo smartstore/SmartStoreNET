@@ -247,7 +247,7 @@ namespace SmartStore.Services.Catalog.Importer
 				// ===========================================================================
 				// 9.) PostProcess: normalization
 				// ===========================================================================
-				DataNormalizer.FixProductMainPictureIds(_productRepository.Context, importStartTime);
+				DataMigrator.FixProductMainPictureIds(_productRepository.Context, importStartTime);
 			}
 		}
 

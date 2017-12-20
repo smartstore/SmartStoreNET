@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = T("Admin.ContentManagement.MessageTemplates.EditMessageTemplateDetails").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -12,6 +13,7 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
+			<button type="submit" name="preview" value="preview" class="btn btn-secondary"><i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")</button>
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
             <button type="submit" name="message-template-copy" id="message-template-copy" class="btn" value="@T("Admin.ContentManagement.MessageTemplates.Copy")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
@@ -27,4 +29,5 @@
 
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
+
 @Html.DeleteConfirmation("message-template-delete")

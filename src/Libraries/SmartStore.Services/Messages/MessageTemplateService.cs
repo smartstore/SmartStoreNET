@@ -147,6 +147,8 @@ namespace SmartStore.Services.Messages
 			var mtCopy = new MessageTemplate
 			{
 				Name = messageTemplate.Name,
+				To = messageTemplate.To,
+				ReplyTo = messageTemplate.ReplyTo,
 				BccEmailAddresses = messageTemplate.BccEmailAddresses,
 				Subject = messageTemplate.Subject,
 				Body = messageTemplate.Body,

@@ -24,7 +24,7 @@ namespace SmartStore.Data.Migrations
 
 		public void Seed(SmartObjectContext context)
 		{
-			DataNormalizer.FixProductMainPictureIds(context, true);
+			DataMigrator.FixProductMainPictureIds(context, true);
 		}
 	}
 }

@@ -324,7 +324,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			SaveRange(products);
 
 			// Fix MainPictureId
-			DataNormalizer.FixProductMainPictureIds(_ctx);
+			DataMigrator.FixProductMainPictureIds(_ctx);
 
             // Search engine names
             products.Each(x =>

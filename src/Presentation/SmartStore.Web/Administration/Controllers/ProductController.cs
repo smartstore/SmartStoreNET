@@ -3934,7 +3934,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var count = DataNormalizer.FixProductMainPictureIds(_dbContext, ifModifiedSinceUtc);
+			var count = DataMigrator.FixProductMainPictureIds(_dbContext, ifModifiedSinceUtc);
 
 			return Content("Fixed {0} ids.".FormatInvariant(count));
 		}

@@ -45,7 +45,7 @@ namespace SmartStore.Services.Common
 		{
 			foreach (var product in _products)
 			{
-				DataNormalizer.FixProductMainPictureId(_rsProduct.Context, product);
+				DataMigrator.FixProductMainPictureId(_rsProduct.Context, product);
 			}
 
 			_products.Clear();

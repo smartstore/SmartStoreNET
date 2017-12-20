@@ -4,6 +4,7 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.ModelTypes)
 
 @Html.SmartStore().TabStrip().Name("template-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
 {
@@ -60,16 +61,34 @@
 				@Html.SmartLabelFor(model => model.Locales[item].EmailAccountId)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(model => Model.Locales[item].EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName", Model.Locales[item].EmailAccountId))
+				@Html.DropDownListFor(model => Model.Locales[item].EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName", Model.Locales[item].EmailAccountId), new { @class = "input-large" })
 				@Html.ValidationMessageFor(model => model.Locales[item].EmailAccountId)
 			</td>
 		</tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].To)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => Model.Locales[item].To, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.Locales[item].To)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].ReplyTo)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => Model.Locales[item].ReplyTo, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.Locales[item].ReplyTo)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Locales[item].BccEmailAddresses)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => Model.Locales[item].BccEmailAddresses)
+                @Html.TextBoxFor(model => Model.Locales[item].BccEmailAddresses, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.Locales[item].BccEmailAddresses)
             </td>
         </tr>
@@ -114,7 +133,7 @@
                 @Html.SmartLabelFor(model => model.Locales[item].Body)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => Model.Locales[item].Body, "RichEditor")
+                @Html.EditorFor(model => Model.Locales[item].Body, "CodeMirror")
                 @Html.ValidationMessageFor(model => model.Locales[item].Body)
             </td>
         </tr>
@@ -131,16 +150,34 @@
                  @Html.SmartLabelFor(model => model.EmailAccountId)
              </td>
              <td class="adminData">
-                 @Html.DropDownListFor(model => model.EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName"))
+                 @Html.DropDownListFor(model => model.EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName"), new { @class = "input-large" })
                  @Html.ValidationMessageFor(model => model.EmailAccountId)
              </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.To)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => model.To, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.To)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ReplyTo)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => model.ReplyTo, new { @class = "input-large" })
+                @Html.ValidationMessageFor(model => model.ReplyTo)
+            </td>
         </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BccEmailAddresses)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.BccEmailAddresses)
+                @Html.TextBoxFor(model => model.BccEmailAddresses, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.BccEmailAddresses)
             </td>
         </tr>
@@ -185,7 +222,7 @@
                 @Html.SmartLabelFor(model => model.Body)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Body, "RichEditor")
+                @Html.EditorFor(model => model.Body, "CodeMirror")
                 @Html.ValidationMessageFor(model => model.Body)
             </td>
         </tr>

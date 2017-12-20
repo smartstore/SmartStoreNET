@@ -46,11 +46,9 @@ namespace SmartStore.Templating.Liquid
 					var modelPrefix = _modelPrefix + name;
 					var fastProp = FastProperty.GetProperty(_type, name);
 					var pi = fastProp?.Property;
-					bool invalid = false;
 
 					if (pi == null)
 					{
-						invalid = true;
 						value = "{{ " + modelPrefix + " }}";
 					}
 					else if (pi.PropertyType.IsPredefinedType())

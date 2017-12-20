@@ -90,7 +90,15 @@ namespace SmartStore.Admin.Models.Messages
     {
         public int LanguageId { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
+		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.To")]
+		[AllowHtml]
+		public string To { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.ReplyTo")]
+		[AllowHtml]
+		public string ReplyTo { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
         [AllowHtml]
         public string BccEmailAddresses { get; set; }
 

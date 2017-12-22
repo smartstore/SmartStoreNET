@@ -87,7 +87,7 @@ namespace SmartStore.Services
 		public IComponentContext Container => _container;
 		public IApplicationEnvironment ApplicationEnvironment => _env.Value;
 		public ICacheManager Cache => _cacheManager.Value;
-		public IRequestCache RequestCache => _requestCache.Value
+		public IRequestCache RequestCache => _requestCache.Value;
 		public IDbContext DbContext => _dbContext.Value;
 		public IStoreContext StoreContext => _storeContext.Value;
 		public IWebHelper WebHelper => _webHelper.Value;

@@ -267,7 +267,7 @@ namespace SmartStore.Admin.Controllers
 			if (template == null)
 			{
 				return RedirectToAction("List");
-			}			
+			}
 
 			try
 			{

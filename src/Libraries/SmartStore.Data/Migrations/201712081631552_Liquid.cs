@@ -62,6 +62,20 @@ namespace SmartStore.Data.Migrations
 				"Antwort an",
 				"Reply-To address of the email.",
 				"Antwortadresse der E-Mail.");
+
+			builder.AddOrUpdate("Common.Error.NoMessageTemplate",
+				"The message template '{0}' does not exist.",
+				"Die Nachrichtenvorlage '{0}' existiert nicht.");
+
+			builder.AddOrUpdate("Admin.ContentManagement.MessageTemplates.NoModelTree",
+				"Variables are unknown until at least one message of the current type has either been sent or previewed.",
+				"Variablen sind erst bekannt, wenn mind. eine Nachricht vom aktuellen Typ entweder gesendet oder getestet wurde.");
+
+			builder.AddOrUpdate("Admin.Promotions.Campaigns.Fields.AllowedTokens",
+				"Allowed template variables",
+				"Erlaubte Template Variablen",
+				"Inserts the selected variable in the HTML document.",
+				"Fügt die gewählte Variable in das HTML-Dokument ein.");
 		}
 
 		private Language ResolveMasterLanguage(SmartObjectContext context)

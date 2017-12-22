@@ -521,8 +521,8 @@
 				color: {{ Theme.TitleColor }};
 				text-decoration: none;
 			}
-			
-			{% block 'css' %}{% endblock %}
+		
+			{% zone 'css' %}
     	</style>
 	</head>
   	<body>
@@ -559,6 +559,7 @@
 	</style>
   	
   	{% block 'wrapper_before' %}{% endblock %}
+  	{% zone 'wrapper_before' %}
   	
     <table class="wrapper">
 		<tr>
@@ -567,10 +568,12 @@
 		    		<tr>
 		      			<td class="masthead">
 		      				{% block 'header_before' %}{% endblock %}
+		      				{% zone 'header_before' %}
 		      				{% block 'header' %}
 								{% include 'header' %}
 							{% endblock %}
 							{% block 'header_after' %}{% endblock %}
+							{% zone 'header_after' %}
 		      			</td>
 		    		</tr>
 		    		<!-- Email Body -->
@@ -581,8 +584,10 @@
 		          				<tr>
 		            				<td class="content-cell">
 		            					{% block 'body_before' %}{% endblock %}
+		            					{% zone 'body_before' %}
 		            					{% block 'body' %}{% endblock %}
 		            					{% block 'body_after' %}{% endblock %}
+		            					{% zone 'body_after' %}
 									</td>
 								</tr>
 							</table>
@@ -594,10 +599,12 @@
               					<tr>
 									<td class="content-cell" align="center">
 										{% block 'footer_before' %}{% endblock %}
+										{% zone 'footer_before' %}
 					      				{% block 'footer' %}
 											{% include 'footer' %}
 										{% endblock %}
 										{% block 'footer_after' %}{% endblock %}
+										{% zone 'footer_after' %}
 									</td>
 								</tr>
 							</table>
@@ -609,6 +616,7 @@
     </table>
     
     {% block 'wrapper_after' %}{% endblock %}
+    {% zone 'wrapper_after' %}
     
 	</body>
 </html>

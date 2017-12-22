@@ -7,6 +7,7 @@ using SmartStore.Admin.Validators.Messages;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Collections;
+using SmartStore.Services.Messages;
 
 namespace SmartStore.Admin.Models.Messages
 {
@@ -29,7 +30,7 @@ namespace SmartStore.Admin.Models.Messages
         public DateTime CreatedOn { get; set; }
 
         [SmartResourceDisplayName("Admin.Promotions.Campaigns.Fields.AllowedTokens")]
-        public TreeNode<string> TokensTree { get; set; }
+        public TreeNode<ModelTreeMember> LastModelTree { get; set; }
 
         [SmartResourceDisplayName("Admin.Promotions.Campaigns.Fields.TestEmail")]
         [AllowHtml]

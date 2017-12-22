@@ -1,5 +1,7 @@
 ﻿using System;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Email;
 
 namespace SmartStore.Services.Messages
 {
@@ -7,6 +9,7 @@ namespace SmartStore.Services.Messages
 	{
 		public QueuedEmail Email { get; set; }
 		public TemplateModel Model { get; set; }
+		public MessageContext MessageContext { get; set; }
 	}
 
 	public interface IMessageFactory
@@ -20,6 +23,29 @@ namespace SmartStore.Services.Messages
 
 	public static class IMessageFactoryExtensions
 	{
+		/// <summary>
+		/// Sends the "ContactUs" message to the store owner
+		/// </summary>
+		public static CreateMessageResult SendContactUsMessage(this IMessageFactory factory, Customer customer,
+			string senderEmail, string senderName, string subject, string message, EmailAddress senderEmailAddress, int languageId = 0)
+		{
+			var model = new NamedModelPart("Message")
+			{
+				["Subject"] = subject.NullEmpty(),
+				["Message"] = message.NullEmpty(),
+				["SenderEmail"] = senderEmail.NullEmpty(),
+				["SenderName"] = senderName.NullEmpty()
+			};
+
+			var messageContext = MessageContext.Create(MessageTemplateNames.SystemContactUs, languageId, customer: customer);
+			if (senderEmailAddress != null)
+			{
+				messageContext.SenderEmailAddress = senderEmailAddress;
+			}
+
+			return factory.CreateMessage(messageContext, true, model);
+		}
+
 		/// <summary>
 		/// Sends a newsletter subscription activation message
 		/// </summary>

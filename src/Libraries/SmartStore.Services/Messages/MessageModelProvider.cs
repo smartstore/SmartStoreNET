@@ -5,6 +5,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.ComponentModel;
@@ -58,17 +59,20 @@ namespace SmartStore.Services.Messages
 	{
 		private readonly ICommonServices _services;
 		private readonly ITemplateEngine _templateEngine;
+		private readonly IMessageTemplateService _messageTemplateService;
 		private readonly IEmailAccountService _emailAccountService;
 		private readonly UrlHelper _urlHelper;
 
 		public MessageModelProvider(
 			ICommonServices services,
 			ITemplateEngine templateEngine,
+			IMessageTemplateService messageTemplateService,
 			IEmailAccountService emailAccountService,
 			UrlHelper urlHelper)
 		{
 			_services = services;
 			_templateEngine = templateEngine;
+			_messageTemplateService = messageTemplateService;
 			_emailAccountService = emailAccountService;
 			_urlHelper = urlHelper;
 
@@ -151,6 +155,9 @@ namespace SmartStore.Services.Messages
 					modelPart = CreateModelPart(x, messageContext);
 					break;
 				case NewsLetterSubscription x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case Campaign x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
 				case ProductReview x:
@@ -585,16 +592,50 @@ namespace SmartStore.Services.Messages
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
-			
+
+			var gid = part.NewsLetterSubscriptionGuid;
+
 			var m = new Dictionary<string, object>
 			{
 				{ "Id", part.Id },
 				{ "Email", part.Email.NullEmpty() },
-				{ "ActivationUrl", BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = true }, messageContext) },
-				{ "DeactivationUrl", BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = false }, messageContext) }
+				{ "ActivationUrl", gid == Guid.Empty ? null : BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = true }, messageContext) },
+				{ "DeactivationUrl", gid == Guid.Empty ? null : BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = false }, messageContext) }
 			};
 
+			var customer = messageContext.Customer;
+			if (customer != null && customer.Email.IsCaseInsensitiveEqual(part.Email.EmptyNull()))
+			{
+				// Set FullName only if a customer account exists for the subscriber's email address.
+				m["FullName"] = customer.GetFullName();
+			}
+
 			PublishModelPartCreatedEvent<NewsLetterSubscription>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(Campaign part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var protocol = messageContext.BaseUri.Scheme;
+			var host = messageContext.BaseUri.Host;
+			var body = HtmlUtils.RelativizeFontSizes(part.Body.EmptyNull());
+
+			// We must render the body separately
+			body = _templateEngine.Render(body, messageContext.Model, messageContext.FormatProvider);
+
+			var m = new Dictionary<string, object>
+			{
+				{ "Id", part.Id },
+				{ "Subject", part.Subject.NullEmpty() },
+				{ "Body", WebHelper.MakeAllUrlsAbsolute(body, protocol, host).NullEmpty() },
+				{ "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
+			};
+			
+			PublishModelPartCreatedEvent<Campaign>(part, m);
 
 			return m;
 		}
@@ -814,6 +855,32 @@ namespace SmartStore.Services.Messages
 		#endregion
 
 		#region Model Tree
+
+		public TreeNode<ModelTreeMember> GetLastModelTree(string messageTemplateName)
+		{
+			Guard.NotEmpty(messageTemplateName, nameof(messageTemplateName));
+
+			var template = _messageTemplateService.GetMessageTemplateByName(messageTemplateName, _services.StoreContext.CurrentStore.Id);
+
+			if (template != null)
+			{
+				return GetLastModelTree(template);
+			}
+
+			return null;
+		}
+
+		public TreeNode<ModelTreeMember> GetLastModelTree(MessageTemplate template)
+		{
+			Guard.NotNull(template, nameof(template));
+
+			if (template.LastModelTree.IsEmpty())
+			{
+				return null;
+			}
+
+			return Newtonsoft.Json.JsonConvert.DeserializeObject<TreeNode<ModelTreeMember>>(template.LastModelTree);
+		}
 
 		public TreeNode<ModelTreeMember> BuildModelTree(TemplateModel model)
 		{

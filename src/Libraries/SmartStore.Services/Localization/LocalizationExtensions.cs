@@ -140,46 +140,49 @@ namespace SmartStore.Services.Localization
 			bool ensureTwoPublishedLanguages = true)
 			where T : ILocalizedEntity
 		{
-			var member = keySelector.Body as MemberExpression;
-			if (member == null)
-			{
-				throw new ArgumentException(string.Format(
-					"Expression '{0}' refers to a method, not a property.",
-					keySelector));
-			}
-
-			var propInfo = member.Member as PropertyInfo;
-			if (propInfo == null)
-			{
-				throw new ArgumentException(string.Format(
-					   "Expression '{0}' refers to a field, not a property.",
-					   keySelector));
-			}
-
 			TPropType result = default(TPropType);
 			string resultStr = string.Empty;
 
-			// load localized value
-			string localeKey = propInfo.Name;
-
-			if (languageId > 0)
+			if (entityId > 0)
 			{
-				// ensure that we have at least two published languages
-				bool loadLocalizedValue = true;
-				if (ensureTwoPublishedLanguages)
+				var member = keySelector.Body as MemberExpression;
+				if (member == null)
 				{
-					var lService = EngineContext.Current.Resolve<ILanguageService>();
-					var totalPublishedLanguages = lService.GetLanguagesCount(false);
-					loadLocalizedValue = totalPublishedLanguages >= 2;
+					throw new ArgumentException(string.Format(
+						"Expression '{0}' refers to a method, not a property.",
+						keySelector));
 				}
 
-				// localized value
-				if (loadLocalizedValue)
+				var propInfo = member.Member as PropertyInfo;
+				if (propInfo == null)
 				{
-					var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
-					resultStr = leService.GetLocalizedValue(languageId, entityId, localeKeyGroup, localeKey);
-					if (!String.IsNullOrEmpty(resultStr))
-						result = resultStr.Convert<TPropType>();
+					throw new ArgumentException(string.Format(
+						   "Expression '{0}' refers to a field, not a property.",
+						   keySelector));
+				}
+
+				// Load localized value
+				string localeKey = propInfo.Name;
+
+				if (languageId > 0)
+				{
+					// Ensure that we have at least two published languages
+					bool loadLocalizedValue = true;
+					if (ensureTwoPublishedLanguages)
+					{
+						var lService = EngineContext.Current.Resolve<ILanguageService>();
+						var totalPublishedLanguages = lService.GetLanguagesCount(false);
+						loadLocalizedValue = totalPublishedLanguages >= 2;
+					}
+
+					// Localized value
+					if (loadLocalizedValue)
+					{
+						var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
+						resultStr = leService.GetLocalizedValue(languageId, entityId, localeKeyGroup, localeKey);
+						if (!String.IsNullOrEmpty(resultStr))
+							result = resultStr.Convert<TPropType>();
+					}
 				}
 			}
 

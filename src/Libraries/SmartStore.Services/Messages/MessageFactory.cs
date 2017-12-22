@@ -1,29 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
+using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web;
-using System.Globalization;
-using System.Data.Entity;
 using Newtonsoft.Json;
-using SmartStore.Core.Domain.Localization;
+using SmartStore.ComponentModel;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Blogs;
+using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Domain.News;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Email;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Templating;
-using SmartStore.Core.Email;
-using SmartStore.Core;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Blogs;
-using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Domain.News;
-using SmartStore.ComponentModel;
 
 namespace SmartStore.Services.Messages
 {
@@ -40,7 +37,6 @@ namespace SmartStore.Services.Messages
 		private readonly ILanguageService _languageService;
 		private readonly IEmailAccountService _emailAccountService;
 		private readonly EmailAccountSettings _emailAccountSettings;
-		private readonly HttpRequestBase _httpRequest;
 		private readonly IDownloadService _downloadService;
 
 		public MessageFactory(
@@ -53,8 +49,7 @@ namespace SmartStore.Services.Messages
 			ILanguageService languageService,
 			IEmailAccountService emailAccountService,
 			EmailAccountSettings emailAccountSettings,
-			IDownloadService downloadService,
-			HttpRequestBase httpRequest)
+			IDownloadService downloadService)
 		{
 			_services = services;
 			_templateEngine = templateEngine;
@@ -66,7 +61,6 @@ namespace SmartStore.Services.Messages
 			_emailAccountService = emailAccountService;
 			_emailAccountSettings = emailAccountSettings;
 			_downloadService = downloadService;
-			_httpRequest = httpRequest;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -89,6 +83,9 @@ namespace SmartStore.Services.Messages
 
 			ValidateMessageContext(messageContext, ref modelParts);
 
+			// Get format provider for requested language
+			messageContext.FormatProvider = GetFormatProvider(messageContext);
+
 			// Create and assign model
 			var model = messageContext.Model = new TemplateModel();
 
@@ -107,21 +104,18 @@ namespace SmartStore.Services.Messages
 			// Give implementors the chance to customize the final template model
 			_services.EventPublisher.Publish(new MessageModelCreatedEvent(messageContext, model));
 
-			// Get format provider for requested language
-			var formatProvider = GetFormatProvider(messageContext);
-
 			var messageTemplate = messageContext.MessageTemplate;
 			var languageId = messageContext.Language.Id;
 
 			// Render templates
-			var to = RenderTemplate(messageTemplate.To, model, formatProvider).Convert<EmailAddress>();
-			var bcc = RenderTemplate(messageTemplate.GetLocalized((x) => x.BccEmailAddresses, languageId), model, formatProvider, false);
-			var replyTo = RenderTemplate(messageTemplate.ReplyTo, model, formatProvider, false)?.NullEmpty().Convert<EmailAddress>();
+			var to = RenderEmailAddress(messageTemplate.To, messageContext);
+			var replyTo = RenderEmailAddress(messageTemplate.ReplyTo, messageContext, false);
+			var bcc = RenderTemplate(messageTemplate.GetLocalized((x) => x.BccEmailAddresses, languageId), messageContext, false);
 
-			var subject = RenderTemplate(messageTemplate.GetLocalized((x) => x.Subject, languageId), model, formatProvider);
+			var subject = RenderTemplate(messageTemplate.GetLocalized((x) => x.Subject, languageId), messageContext);
 			((dynamic)model).Email.Subject = subject;
 
-			var body = RenderBodyTemplate(messageContext, model, formatProvider);
+			var body = RenderBodyTemplate(messageContext);
 
 			// CSS inliner
 			body = InlineCss(body, model);
@@ -142,7 +136,7 @@ namespace SmartStore.Services.Messages
 			var qe = new QueuedEmail
 			{
 				Priority = 5,
-				From = messageContext.EmailAccount.ToEmailAddress(),
+				From = messageContext.SenderEmailAddress ?? messageContext.EmailAccount.ToEmailAddress(),
 				To = to.ToString(),
 				Bcc = bcc,
 				ReplyTo = replyTo?.ToString(),
@@ -162,7 +156,7 @@ namespace SmartStore.Services.Messages
 				QueueMessage(messageContext, qe);
 			}
 
-			return new CreateMessageResult { Email = qe, Model = model };
+			return new CreateMessageResult { Email = qe, Model = model, MessageContext = messageContext };
 		}
 
 		public virtual void QueueMessage(MessageContext messageContext, QueuedEmail queuedEmail)
@@ -193,20 +187,50 @@ namespace SmartStore.Services.Messages
 			return CultureInfo.CurrentCulture;
 		}
 
-		private string RenderTemplate(string template, dynamic model, IFormatProvider formatProvider, bool required = true)
+		private EmailAddress RenderEmailAddress(string email, MessageContext ctx, bool required = true)
+		{
+			string parsed = null;
+
+			try
+			{
+				parsed = RenderTemplate(email, ctx, required);
+
+				if (required || parsed != null)
+				{
+					return parsed.Convert<EmailAddress>();
+				}
+				else
+				{
+					return null;
+				}
+			}
+			catch (Exception ex)
+			{
+				if (ctx.TestMode)
+				{
+					return new EmailAddress("john@doe.com", "John Doe");
+				}
+
+				var ex2 = new SmartException($"Failed to parse email address for variable '{email}'. Value was '{parsed.EmptyNull()}': {ex.Message}", ex);
+				_services.Notifier.Error(ex2.Message);
+				throw ex2;
+			}
+		}
+
+		private string RenderTemplate(string template, MessageContext ctx, bool required = true)
 		{
 			if (!required && template.IsEmpty())
 			{
 				return null;
 			}			
 
-			return _templateEngine.Render(template, model, formatProvider);
+			return _templateEngine.Render(template, ctx.Model, ctx.FormatProvider);
 		}
 
-		private string RenderBodyTemplate(MessageContext messageContext, dynamic model, IFormatProvider formatProvider)
+		private string RenderBodyTemplate(MessageContext ctx)
 		{
-			var key = BuildTemplateKey(messageContext);
-			var source = messageContext.MessageTemplate.GetLocalized((x) => x.Body, messageContext.Language.Id);
+			var key = BuildTemplateKey(ctx);
+			var source = ctx.MessageTemplate.GetLocalized((x) => x.Body, ctx.Language.Id);
 			var fromCache = true;
 			var template = _templateManager.GetOrAdd(key, GetBodyTemplate);	
 
@@ -218,7 +242,7 @@ namespace SmartStore.Services.Messages
 				_templateManager.Put(key, template);
 			}
 
-			return template.Render(model, formatProvider);
+			return template.Render(ctx.Model, ctx.FormatProvider);
 
 			string GetBodyTemplate()
 			{
@@ -229,7 +253,8 @@ namespace SmartStore.Services.Messages
 
 		private string BuildTemplateKey(MessageContext messageContext)
 		{
-			return "MessageTemplate/" + messageContext.MessageTemplate.Name + "/" + messageContext.Language.Id + "/Body";
+			var prefix = messageContext.MessageTemplate.IsTransientRecord() ? "TransientTemplate/" : "MessageTemplate/";
+			return prefix + messageContext.MessageTemplate.Name + "/" + messageContext.Language.Id + "/Body";
 		}
 
 		private string InlineCss(string html, dynamic model)
@@ -283,6 +308,20 @@ namespace SmartStore.Services.Messages
 
 		private void ValidateMessageContext(MessageContext ctx, ref object[] modelParts)
 		{
+			var t = ctx.MessageTemplate;
+			if (t != null)
+			{
+				if (t.To.IsEmpty() || t.Subject.IsEmpty() || t.Name.IsEmpty())
+				{
+					throw new InvalidOperationException("Message template validation failed, because at least one of the following properties has not been set: Name, To, Subject.");
+				}
+				
+				if (ctx.EmailAccount == null && t.EmailAccountId < 1)
+				{
+					throw new InvalidOperationException("No EmailAccount has been provided for MessageContext. Either set MessageContext.EmailAccount explicitly or use a template with a valid EmailAccount Id.");
+				}
+			}
+
 			if (ctx.StoreId.GetValueOrDefault() == 0)
 			{
 				ctx.Store = _services.StoreContext.CurrentStore;
@@ -340,7 +379,10 @@ namespace SmartStore.Services.Messages
 				ctx.MessageTemplate = GetActiveMessageTemplate(ctx.MessageTemplateName, ctx.Store.Id);
 			}
 
-			ctx.EmailAccount = GetEmailAccountOfMessageTemplate(ctx.MessageTemplate, ctx.Language.Id);
+			if (ctx.EmailAccount == null)
+			{
+				ctx.EmailAccount = GetEmailAccountOfMessageTemplate(ctx.MessageTemplate, ctx.Language.Id);
+			}			
 
 			// Sort parts: "IModelPart" instances must come first
 			var bagParts = parts.OfType<IModelPart>();
@@ -365,7 +407,18 @@ namespace SmartStore.Services.Messages
 		{
 			var accountId = messageTemplate.GetLocalized(x => x.EmailAccountId, languageId);
 			var account = _emailAccountService.GetEmailAccountById(accountId);
-			return account ?? _emailAccountService.GetDefaultEmailAccount();
+
+			if (account == null)
+			{
+				account = _emailAccountService.GetDefaultEmailAccount();
+			}
+
+			if (account == null)
+			{
+				throw new SmartException(T("Common.Error.NoEmailAccount"));
+			}
+
+			return account;
 		}
 
 		private void EnsureLanguageIsActive(MessageContext ctx)
@@ -392,8 +445,6 @@ namespace SmartStore.Services.Messages
 		public virtual object[] GetTestModels(MessageContext messageContext)
 		{
 			var templateName = (messageContext.MessageTemplate?.Name ?? messageContext.MessageTemplateName);
-			// TODO: (mc) Liquid > no .Liquid
-			templateName = templateName.RemoveEncloser("", ".Liquid");
 
 			var factories = new Dictionary<string, Func<object>>(StringComparer.OrdinalIgnoreCase)
 			{
@@ -405,6 +456,7 @@ namespace SmartStore.Services.Messages
 				{ "OrderNote", () => GetRandomEntity<OrderNote>(x => !x.Order.Deleted) },
 				{ "RecurringPayment", () => GetRandomEntity<RecurringPayment>(x => !x.Deleted) },
 				{ "NewsLetterSubscription", () => GetRandomEntity<NewsLetterSubscription>(x => true) },
+				{ "Campaign", () => GetRandomEntity<Campaign>(x => true) },
 				{ "ReturnRequest", () => GetRandomEntity<ReturnRequest>(x => true) },
 				{ "OrderItem", () => GetRandomEntity<OrderItem>(x => !x.Order.Deleted) },
 				{ "ForumTopic", () => GetRandomEntity<ForumTopic>(x => true) },
@@ -434,40 +486,54 @@ namespace SmartStore.Services.Messages
 			}
 
 			// Some models are special
-			switch (templateName)
+			var isTransientTemplate = messageContext.MessageTemplate != null && messageContext.MessageTemplate.IsTransientRecord();
+
+			if (!isTransientTemplate)
 			{
-				case MessageTemplateNames.ProductQuestion:
-					result.Add(new NamedModelPart("Message")
-					{
-						["Message"] = LoremIpsum,
-						["SenderEmail"] = "jane@doe.com",
-						["SenderName"] = "Jane Doe",
-						["SenderPhone"] = "123456789"
-					});
-					break;
-				case MessageTemplateNames.ShareProduct:
-					result.Add(new NamedModelPart("Message")
-					{
-						["Body"] = LoremIpsum,
-						["From"] = "jane@doe.com",
-						["To"] = "john@doe.com",
-					});
-					break;
-				case MessageTemplateNames.ShareWishlist:
-					result.Add(new NamedModelPart("Wishlist")
-					{
-						["PersonalMessage"] = LoremIpsum,
-						["From"] = "jane@doe.com",
-						["To"] = "john@doe.com",
-					});
-					break;
-				case MessageTemplateNames.NewVatSubmittedStoreOwner:
-					result.Add(new NamedModelPart("VatValidationResult")
-					{
-						["Name"] = "VatName",
-						["Address"] = "VatAddress"
-					});
-					break;
+				switch (templateName)
+				{
+					case MessageTemplateNames.SystemContactUs:
+						result.Add(new NamedModelPart("Message")
+						{
+							["Subject"] = "Test subject",
+							["Message"] = LoremIpsum,
+							["SenderEmail"] = "jane@doe.com",
+							["SenderName"] = "Jane Doe"
+						});
+						break;
+					case MessageTemplateNames.ProductQuestion:
+						result.Add(new NamedModelPart("Message")
+						{
+							["Message"] = LoremIpsum,
+							["SenderEmail"] = "jane@doe.com",
+							["SenderName"] = "Jane Doe",
+							["SenderPhone"] = "123456789"
+						});
+						break;
+					case MessageTemplateNames.ShareProduct:
+						result.Add(new NamedModelPart("Message")
+						{
+							["Body"] = LoremIpsum,
+							["From"] = "jane@doe.com",
+							["To"] = "john@doe.com",
+						});
+						break;
+					case MessageTemplateNames.ShareWishlist:
+						result.Add(new NamedModelPart("Wishlist")
+						{
+							["PersonalMessage"] = LoremIpsum,
+							["From"] = "jane@doe.com",
+							["To"] = "john@doe.com",
+						});
+						break;
+					case MessageTemplateNames.NewVatSubmittedStoreOwner:
+						result.Add(new NamedModelPart("VatValidationResult")
+						{
+							["Name"] = "VatName",
+							["Address"] = "VatAddress"
+						});
+						break;
+				}
 			}
 
 			return result.ToArray();

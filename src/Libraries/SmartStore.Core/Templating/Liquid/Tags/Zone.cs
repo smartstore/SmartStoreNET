@@ -60,6 +60,8 @@ namespace SmartStore.Templating.Liquid
 				var model = context.Environments.First();
 				var evt = new ZoneRenderingEvent(zoneName, model);
 
+				evt.LiquidContext = context;
+
 				EventPublisher.Publish(evt);
 
 				if (evt.Snippets != null && evt.Snippets.Count > 0)

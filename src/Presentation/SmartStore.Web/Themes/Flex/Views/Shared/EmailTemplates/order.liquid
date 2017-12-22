@@ -1,4 +1,5 @@
 <!-- Order Items -->
+{% zone 'order_items_before' %}
 <table class="w-100 brd order-items" cellpadding="10">
 	<thead>
 		<tr>
@@ -64,6 +65,7 @@
 </table>
 
 <!-- Order Summary -->
+{% zone 'order_summary_before' %}
 {% assign totals = Order.Totals %}
 <table class="w-100 brd bg-light order-summary m-b-4" cellpadding="10" style="border-top: 0">
 	<tr>
@@ -173,6 +175,8 @@
 		</td>
 	</td>
 </table>
+
+{% zone 'order_summary_after' %}
 
 
 

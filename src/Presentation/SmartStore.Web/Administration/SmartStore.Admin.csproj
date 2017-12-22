@@ -198,7 +198,6 @@
     <Compile Include="Controllers\CustomerRoleController.cs" />
     <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
-    <Compile Include="Controllers\New\MessageTemplateController.cs" />
     <Compile Include="Controllers\QuantityUnitController.cs" />
     <Compile Include="Controllers\DeliveryTimeController.cs" />
     <Compile Include="Controllers\DiscountController.cs" />
@@ -840,14 +839,13 @@
     <Content Include="Views\Export\_ProfileList.cshtml" />
     <Content Include="Views\Product\EditorTemplates\TierPriceCalculationMethod.cshtml" />
     <Content Include="Views\Setting\Search.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\TokenSelector.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\ModelTree.cshtml" />
     <Content Include="Views\ProductAttribute\OptionCreatePopup.cshtml" />
     <Content Include="Views\ProductAttribute\OptionEditPopup.cshtml" />
     <Content Include="Views\ProductAttribute\_CreateOrUpdateOption.cshtml" />
     <Content Include="Views\Setting\Partials\CommonFacet.cshtml" />
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
     <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
-    <Content Include="Views\MessageTemplate\Edit2.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\CodeMirror.cshtml" />
   </ItemGroup>
   <ItemGroup>

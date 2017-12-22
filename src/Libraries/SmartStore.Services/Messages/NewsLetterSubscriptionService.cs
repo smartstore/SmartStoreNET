@@ -256,12 +256,12 @@ namespace SmartStore.Services.Messages
             {
                 if (isSubscribe)
                 {
-                    _eventPublisher.PublishNewsletterSubscribe(email);
-                }
+					_eventPublisher.Publish(new EmailSubscribedEvent(email));
+				}
                 else
                 {
-                    _eventPublisher.PublishNewsletterUnsubscribe(email);
-                }
+					_eventPublisher.Publish(new EmailUnsubscribedEvent(email));
+				}
             }
         }
 

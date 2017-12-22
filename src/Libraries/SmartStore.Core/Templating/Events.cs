@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DotLiquid;
 
 namespace SmartStore.Templating
 {
@@ -18,6 +19,8 @@ namespace SmartStore.Templating
 			Model = model;
 		}
 
+		internal Context LiquidContext { get; set; }
+
 		/// <summary>
 		/// The name of the zone which is rendered.
 		/// </summary>
@@ -27,6 +30,16 @@ namespace SmartStore.Templating
 		/// The template model
 		/// </summary>
 		public IDictionary<string, object> Model { get; private set; }
+
+		/// <summary>
+		/// Evaluates an expression - e.g. Product.Sku - and returns it's value.
+		/// </summary>
+		/// <param name="expression"></param>
+		/// <returns></returns>
+		public object Evaluate(string expression)
+		{
+			return LiquidContext[expression, false];
+		}
 
 		/// <summary>
 		/// Specifies the custom content which the template engine should parse and inject.

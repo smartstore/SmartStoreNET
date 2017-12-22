@@ -33,5 +33,7 @@ namespace SmartStore.Core.Domain.Messages
 		public const string BlogCommentStoreOwner = "Blog.BlogComment";
 		public const string NewsCommentStoreOwner = "News.NewsComment";
 		public const string BackInStockCustomer = "Customer.BackInStock";
+		public const string SystemCampaign = "System.Campaign";
+		public const string SystemContactUs = "System.ContactUs";
 	}
 }

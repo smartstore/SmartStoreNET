@@ -1,6 +1,6 @@
 ﻿@model MessageTemplateModel
 
-@using SmartStore.Web.Framework.UI;
+@using SmartStore.Web.Framework.UI
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
@@ -18,14 +18,14 @@
 @helper TabInfo()
 {  
     <table class="adminContent" style="margin-bottom: 8px">
-        <tr>
+        @*<tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.TokensTree)
+                @Html.SmartLabelFor(model => model.LastModelTree)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.TokensTree, "TokenSelector")
+                @Html.EditorFor(model => model.LastModelTree, "ModelTree")
             </td>
-        </tr>
+        </tr>*@
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Name)

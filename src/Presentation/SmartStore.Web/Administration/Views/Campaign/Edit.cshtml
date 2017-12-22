@@ -10,7 +10,7 @@
             @T("Admin.Promotions.Campaigns.EditCampaignDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Promotions.Campaigns.BackToList") + ")", "List")
         </div>
         <div class="options">
-			<button type="submit" name="preview" value="preview" class="btn btn-secondary"><i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")</button>
+			<a id="btn-preview-template" class="btn btn-secondary" href="@Url.Action("Preview", new { id = Model.Id })"><i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")</a>
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
             <button type="submit" name="campaign-delete" id="campaign-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
@@ -20,3 +20,13 @@
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("campaign-delete")
+
+<script>
+	$(function () {
+		$('#btn-preview-template').on('click', function (e) {
+			e.preventDefault();
+			openPopup($(this).attr('href'));
+			return false;
+		});
+	});
+</script>

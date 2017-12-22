@@ -93,14 +93,17 @@ namespace SmartStore.ComponentModel
 		private readonly HashSet<string> _optMembers;
 		private readonly MemberOptMethod _optMethod;
 
+		private readonly bool _returnNullWhenFalsy;
+
 		/// <summary>
 		/// This constructor just works off the internal dictionary and any 
 		/// public properties of this object.
 		/// 
 		/// Note you can subclass HybridExpando.
 		/// </summary>
-		public HybridExpando()
+		public HybridExpando(bool returnNullWhenFalsy = false)
         {
+			_returnNullWhenFalsy = returnNullWhenFalsy;
         }
 
         /// <summary>
@@ -111,10 +114,11 @@ namespace SmartStore.ComponentModel
         /// check native properties and only check the Dictionary!
         /// </remarks>
         /// <param name="instance"></param>
-        public HybridExpando(object instance)
+        public HybridExpando(object instance, bool returnNullWhenFalsy = false)
         {
 			Guard.NotNull(instance, nameof(instance));
 
+			_returnNullWhenFalsy = returnNullWhenFalsy;
 			Initialize(instance);
         }
 
@@ -123,10 +127,11 @@ namespace SmartStore.ComponentModel
 		/// along with a list of member names to allow or disallow.
 		/// </summary>
 		/// <param name="instance"></param>
-		public HybridExpando(object instance, IEnumerable<string> optMembers, MemberOptMethod optMethod)
+		public HybridExpando(object instance, IEnumerable<string> optMembers, MemberOptMethod optMethod, bool returnNullWhenFalsy = false)
 		{
 			Guard.NotNull(instance, nameof(instance));
 
+			_returnNullWhenFalsy = returnNullWhenFalsy;
 			Initialize(instance);
 
 			_optMethod = optMethod;
@@ -184,27 +189,65 @@ namespace SmartStore.ComponentModel
 		protected virtual bool TryGetMemberCore(string name, out object result)
 		{
 			result = null;
+			bool exists = false;
 
 			// first check the Properties collection for member
 			if (Properties.ContainsKey(name))
 			{
 				result = Properties[name];
-				return true;
+				exists = true;
 			}
 
 			// Next check for public properties via Reflection
-			if (_instance != null)
+			if (!exists && _instance != null)
 			{
 				try
 				{
-					return GetProperty(_instance, name, out result);
+					exists = GetProperty(_instance, name, out result);
 				}
 				catch { }
 			}
 
+			// Falsy check
+			if (_returnNullWhenFalsy && result != null)
+			{
+				var isFalsy = false;
+				switch (result)
+				{
+					case string x:
+						isFalsy = x.IsEmpty();
+						break;
+					case bool x:
+						isFalsy = x == false;
+						break;
+					case DateTime x:
+						isFalsy = x == DateTime.MinValue;
+						break;
+					case TimeSpan x:
+						isFalsy = x == TimeSpan.MinValue;
+						break;
+					case Guid x:
+						isFalsy = x == Guid.Empty;
+						break;
+					case IComparable x:
+						isFalsy = x.CompareTo(0) == 0;
+						break;
+					case IEnumerable<object> x:
+						isFalsy = !x.Any();
+						break;
+					case IEnumerable x:
+						isFalsy = !x.GetEnumerator().MoveNext();
+						break;
+				}
+
+				if (isFalsy)
+				{
+					result = null;
+				}
+			}
+
 			// failed to retrieve a property
-			result = null;
-			return false;
+			return exists;
 		}
 
 

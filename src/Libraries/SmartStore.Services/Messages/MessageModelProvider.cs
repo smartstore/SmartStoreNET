@@ -103,10 +103,6 @@ namespace SmartStore.Services.Messages
 
 			model["Email"] = email;
 			model["Theme"] = CreateThemeModelPart(messageContext);
-			model["Company"] = CreateCompanyModelPart(messageContext);
-			model["Contact"] = CreateContactModelPart(messageContext);
-			model["Bank"] = CreateBankModelPart(messageContext);
-
 			model["Customer"] = CreateModelPart(messageContext.Customer, messageContext);
 			model["Store"] = CreateModelPart(messageContext.Store, messageContext);
 		}
@@ -228,7 +224,7 @@ namespace SmartStore.Services.Messages
 					else
 					{
 						// Wrap in HybridExpando and merge
-						var he = new HybridExpando(existing);
+						var he = new HybridExpando(existing, true);
 						he.Merge(FastProperty.ObjectToDictionary(modelPart), true);
 						model[name] = he;
 					}
@@ -276,29 +272,29 @@ namespace SmartStore.Services.Messages
 
 		protected virtual object CreateThemeModelPart(MessageContext messageContext)
 		{
-			dynamic model = new ExpandoObject();
+			var m = new Dictionary<string, object>
+			{
+				{ "FontFamily", "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" },
+				{ "BodyBg", "#f2f4f6" },
+				{ "BodyColor", "#555" },
+				{ "TitleColor", "#2f3133" },
+				{ "ContentBg", "#fff" },
+				{ "ShadeColor", "#e2e2e2" },
+				{ "LinkColor", "#0066c0" },
+				{ "BrandPrimary", "#3f51b5" },
+				{ "BrandSuccess", "#4caf50" },
+				{ "BrandWarning", "#ff9800" },
+				{ "BrandDanger", "#f44336" },
+				{ "MutedColor", "#a5a5a5" },
+			};
 
-			// TODO: (mc) Liquid > make theme variables (?)
-			model.FontFamily = "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
-			model.BodyBg = "#f2f4f6";
-			model.BodyColor = "#555";
-			model.TitleColor = "#2f3133";
-			model.ContentBg = "#fff";
-			model.ShadeColor = "#e2e2e2";
-			model.LinkColor = "#0066c0";
-			model.BrandPrimary = "#3f51b5";
-			model.BrandSuccess = "#4caf50";
-			model.BrandWarning = "#ff9800";
-			model.BrandDanger = "#f44336";
-			model.MutedColor = "#a5a5a5";
-
-			return model;
+			return m;
 		}
 
 		protected virtual object CreateCompanyModelPart(MessageContext messageContext)
 		{
 			var settings = _services.Settings.LoadSetting<CompanyInformationSettings>(messageContext.Store.Id);
-			var m = new HybridExpando(settings);
+			var m = new HybridExpando(settings, true);
 			PublishModelPartCreatedEvent<CompanyInformationSettings>(settings, m);
 			return m;
 		}
@@ -306,7 +302,7 @@ namespace SmartStore.Services.Messages
 		protected virtual object CreateBankModelPart(MessageContext messageContext)
 		{
 			var settings = _services.Settings.LoadSetting<BankConnectionSettings>(messageContext.Store.Id);
-			var m = new HybridExpando(settings);
+			var m = new HybridExpando(settings, true);
 			PublishModelPartCreatedEvent<BankConnectionSettings>(settings, m);
 			return m;
 		}
@@ -314,7 +310,7 @@ namespace SmartStore.Services.Messages
 		protected virtual object CreateContactModelPart(MessageContext messageContext)
 		{
 			var settings = _services.Settings.LoadSetting<ContactDataSettings>(messageContext.Store.Id);
-			var contact = new HybridExpando(settings) as dynamic;
+			var contact = new HybridExpando(settings, true) as dynamic;
 
 			// TODO: (mc) Liquid > Use following aliases in Partials
 			// Aliases
@@ -363,23 +359,25 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			var disallow = new HashSet<string> { nameof(part.PrimaryExchangeRateCurrencyId), nameof(part.PrimaryExchangeRateCurrencyId) };
-
-			var m = new HybridExpando(part, disallow, MemberOptMethod.Disallow);
-			m["Email"] = messageContext.EmailAccount.Email;
-			m["EmailName"] = messageContext.EmailAccount.DisplayName;
-
 			var host = messageContext.BaseUri.ToString();
-			m["URL"] = host;
-			m.Override(nameof(part.Url), host);
-			m.Override(nameof(part.PrimaryStoreCurrency), part.PrimaryStoreCurrency?.CurrencyCode);
-			m.Override(nameof(part.PrimaryExchangeRateCurrency), part.PrimaryExchangeRateCurrency?.CurrencyCode);
-
 			var logoInfo = _services.PictureService.GetPictureInfo(messageContext.Store.LogoPictureId);
-			m["Logo"] = CreateModelPart(logoInfo, messageContext, host, null, new Size(400, 75));
 
-			// TODO: (mc) Liquid > GetSupplierIdentification() as Partial
 			// Issue: https://github.com/smartstoreag/SmartStoreNET/issues/1321
+
+			var m = new Dictionary<string, object>
+			{
+				{ "Email", messageContext.EmailAccount.Email },
+				{ "EmailName", messageContext.EmailAccount.DisplayName },
+				{ "Name", part.Name },
+				{ "Url", host },
+				{ "Cdn", part.ContentDeliveryNetwork },
+				{ "PrimaryStoreCurrency", part.PrimaryStoreCurrency?.CurrencyCode },
+				{ "PrimaryExchangeRateCurrency", part.PrimaryExchangeRateCurrency?.CurrencyCode },
+				{ "Logo", CreateModelPart(logoInfo, messageContext, host, null, new Size(400, 75)) },
+				{ "Company", CreateCompanyModelPart(messageContext) },
+				{ "Contact", CreateContactModelPart(messageContext) },
+				{ "Bank", CreateBankModelPart(messageContext) }
+			};
 
 			PublishModelPartCreatedEvent<Store>(part, m);
 

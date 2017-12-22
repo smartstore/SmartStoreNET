@@ -220,8 +220,6 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ActionName("Edit")]
-		[FormValueRequired("preview")]
 		public ActionResult Preview(int id)
 		{
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))

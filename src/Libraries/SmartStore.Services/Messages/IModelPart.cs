@@ -27,6 +27,7 @@ namespace SmartStore.Services.Messages
 	public class NamedModelPart : HybridExpando, INamedModelPart
 	{
 		public NamedModelPart(string modelPartName)
+			: base(true)
 		{
 			Guard.NotEmpty(modelPartName, nameof(modelPartName));
 			ModelPartName = modelPartName;

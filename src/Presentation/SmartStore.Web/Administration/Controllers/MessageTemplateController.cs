@@ -159,7 +159,7 @@ namespace SmartStore.Admin.Controllers
 			// TODO: (mc) Liquid > LastModelTree
             var model = messageTemplate.ToModel();
             //model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
-			DeserializeLastModelTree(messageTemplate);
+			PrepareLastModelTree(messageTemplate);
 
 			// available email accounts
 			foreach (var ea in _emailAccountService.GetAllEmailAccounts())
@@ -189,12 +189,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-		private void DeserializeLastModelTree(MessageTemplate template)
+		private void PrepareLastModelTree(MessageTemplate template)
 		{
-			if (template.LastModelTree.HasValue())
-			{
-				ViewBag.LastModelTree = Newtonsoft.Json.JsonConvert.DeserializeObject<TreeNode<ModelTreeMember>>(template.LastModelTree);
-			}
+			ViewBag.LastModelTree = Services.Resolve<IMessageModelProvider>().GetLastModelTree(template);
 		}
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
@@ -231,7 +228,7 @@ namespace SmartStore.Admin.Controllers
 			// TODO: (mc) Liquid > LastModelTree
 			// If we got this far, something failed, redisplay form
 			//model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
-			DeserializeLastModelTree(messageTemplate);
+			PrepareLastModelTree(messageTemplate);
 
 			// Available email accounts
 			foreach (var ea in _emailAccountService.GetAllEmailAccounts())
@@ -258,8 +255,6 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("List");
 		}
 
-		[HttpPost, ActionName("Edit")]
-		[FormValueRequired("preview")]
 		public ActionResult Preview(int id)
 		{
 			// TODO: (mc) Liquid > Display info about preview models

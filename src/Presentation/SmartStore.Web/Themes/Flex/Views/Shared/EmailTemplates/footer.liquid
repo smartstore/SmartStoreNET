@@ -1,22 +1,34 @@
 <p class="text-center">&copy; 2018 SmartStore AG. Alle Rechte vorbehalten.</p>
 
+{% assign company = Store.Company %}
+{% assign contact = Store.Contact %}
+{% assign bank = Store.Bank %}
+
 <table class="w-100">
 	<tbody>
 		<tr>
 			<td width="33%">
 				<p class="text-xs text-muted">
-					SmartStore AG
-					<br/>Kaiserstr. 63-65
-					<br/>44135 Dortmund
-					<br/>Deutschland, NRW
+					{{ Store.Name }}
+					{% if company.CompanyName %}<br/>{{ company.CompanyName }}{% endif %}
+					{% if company.Street %}<br/>{{ company.Street }}{% endif %}
+					{% if company.Street2 %}<br/>{{ company.Street2 }}{% endif %}
+					
+					{% if company.ZipCode or company.City %}
+						<br/>{% if company.ZipCode %}{{ company.ZipCode }}&nbsp;{% endif %}{{ company.City }}
+					{% endif %}
+					
+					{% if company.CountryName or company.Region %}
+						<br/>{% if company.CountryName %}{{ company.CountryName }}{% endif %}{% if company.Region %}{% if company.CountryName %}, {% endif %}{{ company.Region }}{% endif %}
+					{% endif %}
 				</p>
 			</td>
 			<td width="33%">
 				<p class="text-xs text-muted">
-					Url: <a href="http://www.smartstore.com">http://www.smartstore.com</a>
-					<br/>Mail: info@smartstore.com
-					<br />Fon: +49 (0) 231.5335-0
-					<br/>Fax: +49 (0) 231.5335-101
+					<a href="{{ Store.Url }}">{{ Store.Url }}</a>
+					{% if contact.Email.Company %}<br/>Mail: <a href="mailto:{{ contact.Email.Company }}">{{ contact.Email.Company }}</a>{% endif %}
+					{% if contact.Phone.Company %}<br/>Fon: {{ contact.Phone.Company }}{% endif %}
+					{% if contact.Phone.Fax %}<br/>Fax: {{ contact.Phone.Fax }}{% endif %}
 				</p>
 			</td>
 			<td width="33%">

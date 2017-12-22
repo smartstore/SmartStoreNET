@@ -13,7 +13,8 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-			<button type="submit" name="save-in-file" value="save-in-file" class="btn btn-danger"><i class="fa fa-floppy-o"></i>&nbsp;Save as XML</button>
+			@* CAUTION: saving a template to XML overwrites the original raw content *@
+			@*<button type="submit" name="save-in-file" value="save-in-file" class="btn btn-danger"><i class="fa fa-floppy-o"></i>&nbsp;Save as XML</button>*@
 			<button type="submit" name="preview" value="preview" class="btn btn-secondary"><i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")</button>
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>

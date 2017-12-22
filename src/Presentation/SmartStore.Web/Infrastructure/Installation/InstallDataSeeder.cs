@@ -267,6 +267,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_ctx.SaveChanges();
         }
 
+		private void PopulateMessageTemplates()
+		{
+			var converter = new MessageTemplateConverter(_ctx);
+			converter.ImportAll(_config.Language);
+		}
+
 		private void PopulateCategories()
         {
             var categoriesFirstLevel = _data.CategoriesFirstLevel();
@@ -596,7 +602,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());
 			Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
-			Populate("PopulateMessageTemplates", _data.MessageTemplates());
+			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
 			Populate("PopulateTopics", _data.Topics());
 			Populate("PopulateSettings", PopulateSettings);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());

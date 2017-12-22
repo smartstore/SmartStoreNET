@@ -200,7 +200,7 @@ namespace SmartStore.Web.Controllers
 				using (var scope = new DbContextScope(ctx: _services.DbContext, autoCommit: false, validateOnSave: false))
 				{
 					// Run in uncommitting scope, because pictures could be updated (IsNew property) 
-					var batchContext = _dataExporter.Value.CreateProductExportContext(products, maxPicturesPerProduct: 1);
+					var batchContext = _dataExporter.Value.CreateProductExportContext(products, customer, null, 1, false);
 
 					if (settings.MapPrices)
 					{

@@ -84,7 +84,8 @@ namespace SmartStore.Web.Framework.Settings
 
 				if (model == null)
 				{
-					throw new InvalidOperationException($"Could not obtain a model instance to override keys for'.");
+					// Nothing to override. E.g. insufficient permission.
+					return;
 				}
 
 				var settingsHelper = new StoreDependingSettingHelper(filterContext.Controller.ViewData);

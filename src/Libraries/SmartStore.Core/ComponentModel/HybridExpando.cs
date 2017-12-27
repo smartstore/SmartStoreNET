@@ -37,6 +37,7 @@ using System.Linq;
 using System.Dynamic;
 using System.Reflection;
 using System.Collections;
+using SmartStore.Utilities;
 
 namespace SmartStore.ComponentModel
 {
@@ -209,41 +210,9 @@ namespace SmartStore.ComponentModel
 			}
 
 			// Falsy check
-			if (_returnNullWhenFalsy && result != null)
+			if (_returnNullWhenFalsy && result != null && !CommonHelper.IsTruthy(result))
 			{
-				var isFalsy = false;
-				switch (result)
-				{
-					case string x:
-						isFalsy = x.IsEmpty();
-						break;
-					case bool x:
-						isFalsy = x == false;
-						break;
-					case DateTime x:
-						isFalsy = x == DateTime.MinValue;
-						break;
-					case TimeSpan x:
-						isFalsy = x == TimeSpan.MinValue;
-						break;
-					case Guid x:
-						isFalsy = x == Guid.Empty;
-						break;
-					case IComparable x:
-						isFalsy = x.CompareTo(0) == 0;
-						break;
-					case IEnumerable<object> x:
-						isFalsy = !x.Any();
-						break;
-					case IEnumerable x:
-						isFalsy = !x.GetEnumerator().MoveNext();
-						break;
-				}
-
-				if (isFalsy)
-				{
-					result = null;
-				}
+				result = null;
 			}
 
 			// failed to retrieve a property

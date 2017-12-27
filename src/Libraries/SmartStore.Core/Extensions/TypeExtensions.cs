@@ -106,9 +106,16 @@ namespace SmartStore
             }
         }
 
-        public static bool IsNullable(this Type type)
+        public static bool IsNullable(this Type type, out Type wrappedType)
         {
-            return type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+			wrappedType = null;
+
+			if (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+			{
+				wrappedType = type.GetGenericArguments()[0];
+			}
+
+			return false;
         }
 
         public static bool IsConstructable(this Type type)
@@ -217,11 +224,12 @@ namespace SmartStore
         /// </summary>
         public static Type GetNonNullableType(this Type type)
         {
-            if (!IsNullable(type))
+            if (!IsNullable(type, out var wrappedType))
             {
                 return type;
             }
-            return type.GetGenericArguments()[0];
+
+            return wrappedType;
         }
 
 		/// <summary>

@@ -258,7 +258,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             {
                 ParameterInfo param = methodCall.Method.GetParameters()[i];
                 bool isReferenceType = !param.ParameterType.IsValueType;
-                bool isNullable = param.ParameterType.IsNullable();
+                bool isNullable = param.ParameterType.IsNullable(out _);
 				
                 string controllerParameterName = param.Name;
                 bool routeDataContainsValueForParameterName = routeData.Values.ContainsKey(controllerParameterName);

@@ -11,7 +11,6 @@ using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Security;
-using SmartStore.Services.Stores;
 using SmartStore.Services.Themes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -28,7 +27,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ISettingService _settingService;
         private readonly IThemeRegistry _themeRegistry;
         private readonly IThemeVariablesService _themeVarService;
-		private readonly IStoreService _storeService;
 		private readonly IPackageManager _packageManager;
 		private readonly ICommonServices _services;
 		private readonly IThemeContext _themeContext;
@@ -39,7 +37,6 @@ namespace SmartStore.Admin.Controllers
             ISettingService settingService, 
 			IThemeRegistry themeRegistry,
             IThemeVariablesService themeVarService,
-			IStoreService storeService,
 			IPackageManager packageManager,
 			ICommonServices services,
 			IThemeContext themeContext,
@@ -49,7 +46,6 @@ namespace SmartStore.Admin.Controllers
             _settingService = settingService;
             _themeVarService = themeVarService;
             _themeRegistry = themeRegistry;
-			_storeService = storeService;
 			_packageManager = packageManager;
 			_services = services;
 			_themeContext = themeContext;
@@ -95,7 +91,7 @@ namespace SmartStore.Admin.Controllers
 			model.Themes.AddRange(GetThemes(themeSettings));
 
 			model.StoreId = selectedStoreId;
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems();
+			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems();
 
             return View(model);
         }
@@ -183,7 +179,7 @@ namespace SmartStore.Admin.Controllers
             {
                 ThemeName = theme,
 				StoreId = storeId,
-				AvailableStores = _storeService.GetAllStores().ToSelectListItems()
+				AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems()
             };
 
 			ViewData["ConfigureThemeUrl"] = Url.Action("Configure", new { theme = theme });
@@ -434,7 +430,7 @@ namespace SmartStore.Admin.Controllers
 						 }).ToList();
 
 			var currentStore = _services.StoreContext.CurrentStore;
-			ViewBag.Stores = (_storeService.GetAllStores().Select(x => new SelectListItem
+			ViewBag.Stores = (_services.StoreService.GetAllStores().Select(x => new SelectListItem
 						 {
 							 Value = x.Id.ToString(),
 							 Text = x.Name,

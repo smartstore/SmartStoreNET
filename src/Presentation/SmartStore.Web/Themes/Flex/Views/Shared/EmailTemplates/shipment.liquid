@@ -2,8 +2,8 @@
 <table class="w-100 brd order-items" cellpadding="10">
 	<thead>
 		<tr>
-			<th style="padding-right: 0" colspan="2" nowrap>{% T 'Order.Product(s).Item' %}</th>
-			<th style="padding-right: 0" nowrap>{% T 'Order.Product(s).Quantity' %}</th>
+			<th style="padding-right: 0" colspan="2" nowrap>{{ 'Order.Product(s).Item' | T }}</th>
+			<th style="padding-right: 0" nowrap>{{ 'Order.Product(s).Quantity' | T }}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -26,7 +26,7 @@
 						</a>
 						{% if product.Sku %}
 							<div class="text-sm">
-								{% T 'Order.Product(s).SKU' %}: <span class="text-muted">{{ product.Sku }}</span>
+								{{ 'Order.Product(s).SKU' | T }}: <span class="text-muted">{{ product.Sku }}</span>
 							</div>
 						{% endif %}						
 					</div>

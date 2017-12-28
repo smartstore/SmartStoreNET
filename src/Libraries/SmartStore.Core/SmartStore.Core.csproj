@@ -468,7 +468,7 @@
     <Compile Include="Templating\ITemplateEngine.cs" />
     <Compile Include="Templating\ITemplateManager.cs" />
     <Compile Include="Templating\Liquid\Drops\DictionaryDrop.cs" />
-    <Compile Include="Templating\Liquid\LiquidFileSystem.cs" />
+    <Compile Include="Templating\Liquid\Filters\TranslationFilters.cs" />
     <Compile Include="Templating\Liquid\LiquidTemplate.cs" />
     <Compile Include="Templating\Liquid\LiquidTemplateEngine.cs" />
     <Compile Include="Templating\Liquid\LiquidUtil.cs" />

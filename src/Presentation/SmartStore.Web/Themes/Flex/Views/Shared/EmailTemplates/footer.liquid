@@ -1,4 +1,4 @@
-<p class="text-center">&copy; 2018 SmartStore AG. Alle Rechte vorbehalten.</p>
+<p class="text-center">{{ Store.Copyright }}</p>
 
 {% assign company = Store.Company %}
 {% assign contact = Store.Contact %}
@@ -11,34 +11,33 @@
 				<p class="text-xs text-muted">
 					{{ Store.Name }}
 					{% if company.CompanyName %}<br/>{{ company.CompanyName }}{% endif %}
+					{% if company.NameLine %}<br/>{{ company.NameLine | Join }}{% endif %}
 					{% if company.Street %}<br/>{{ company.Street }}{% endif %}
 					{% if company.Street2 %}<br/>{{ company.Street2 }}{% endif %}
-					
-					{% if company.ZipCode or company.City %}
-						<br/>{% if company.ZipCode %}{{ company.ZipCode }}&nbsp;{% endif %}{{ company.City }}
-					{% endif %}
-					
-					{% if company.CountryName or company.Region %}
-						<br/>{% if company.CountryName %}{{ company.CountryName }}{% endif %}{% if company.Region %}{% if company.CountryName %}, {% endif %}{{ company.Region }}{% endif %}
-					{% endif %}
+					{% if company.CityLine %}<br/>{{ company.CityLine | Join }}{% endif %}
+					{% if company.CountryLine %}<br/>{{ company.CountryLine | Join:', ' }}{% endif %}
 				</p>
 			</td>
 			<td width="33%">
 				<p class="text-xs text-muted">
 					<a href="{{ Store.Url }}">{{ Store.Url }}</a>
-					{% if contact.Email.Company %}<br/>Mail: <a href="mailto:{{ contact.Email.Company }}">{{ contact.Email.Company }}</a>{% endif %}
-					{% if contact.Phone.Company %}<br/>Fon: {{ contact.Phone.Company }}{% endif %}
-					{% if contact.Phone.Fax %}<br/>Fax: {{ contact.Phone.Fax }}{% endif %}
+					{% if contact.Email.Company %}<br/>{% T 'PDFInvoice.Footer.Mail' : contact.Email.Company %}{% endif %}
+					{% if contact.Phone.Company %}<br/>{% T 'PDFInvoice.Footer.Fon' : contact.Phone.Company %}{% endif %}
+					{% if contact.Phone.Fax %}<br/>{% T 'PDFInvoice.Footer.Fax' : contact.Phone.Fax %}{% endif %}
+					
+					{% if company.TaxNumber %}<br/>{% T 'PDFInvoice.TaxNumber' %}&nbsp;{{ company.TaxNumber }}{% endif %}
+					{% if company.VatId %}<br/>{% T 'PDFInvoice.VatId' %}&nbsp;{{ company.VatId }}{% endif %}
+					{% if company.CommercialRegister %}<br/>{% T 'PDFInvoice.CommercialRegisterHeading' %}&nbsp;{{ company.CommercialRegister }}{% endif %}
 				</p>
 			</td>
 			<td width="33%">
 				<p class="text-xs text-muted">
-					Sparkasse Nirgendwo
-					<br/>BLZ 123456
-					<br/>Kto 456789087
-					<br/>SmartStore AG
-					<br/>DE VAT 1234566777
-					<br/>BIC 847538945789374
+					{% if bank.BankName %}{{ bank.BankName }}{% endif %}
+					{% if bank.Bankcode %}<br/>{% T 'PDFInvoice.Footer.Bankcode' : bank.Bankcode %}{% endif %}
+					{% if bank.AccountNumber %}<br/>{% T 'PDFInvoice.Footer.AccountNumber' : bank.AccountNumber %}{% endif %}
+					{% if bank.AccountHolder %}<br/>{% T 'PDFInvoice.Footer.AccountHolder' : bank.AccountHolder %}{% endif %}
+					{% if bank.Iban %}<br/>{% T 'PDFInvoice.Footer.Iban' : bank.Iban %}{% endif %}
+					{% if bank.Bic %}<br/>{% T 'PDFInvoice.Footer.Bic' : bank.Bic %}{% endif %}
 				</p>
 			</td>
 		</tr>

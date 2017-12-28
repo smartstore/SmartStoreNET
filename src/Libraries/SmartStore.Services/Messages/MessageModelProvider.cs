@@ -294,7 +294,13 @@ namespace SmartStore.Services.Messages
 		protected virtual object CreateCompanyModelPart(MessageContext messageContext)
 		{
 			var settings = _services.Settings.LoadSetting<CompanyInformationSettings>(messageContext.Store.Id);
-			var m = new HybridExpando(settings, true);
+			dynamic m = new HybridExpando(settings, true);
+
+			m.NameLine = Concat(settings.Salutation, settings.Title, settings.Firstname, settings.Lastname);
+			m.StreetLine = Concat(settings.Street, settings.Street2);
+			m.CityLine = Concat(settings.ZipCode, settings.City);
+			m.CountryLine = Concat(settings.CountryName, settings.Region);
+
 			PublishModelPartCreatedEvent<CompanyInformationSettings>(settings, m);
 			return m;
 		}
@@ -376,7 +382,8 @@ namespace SmartStore.Services.Messages
 				{ "Logo", CreateModelPart(logoInfo, messageContext, host, null, new Size(400, 75)) },
 				{ "Company", CreateCompanyModelPart(messageContext) },
 				{ "Contact", CreateContactModelPart(messageContext) },
-				{ "Bank", CreateBankModelPart(messageContext) }
+				{ "Bank", CreateBankModelPart(messageContext) },
+				{ "Copyright", T("Content.CopyrightNotice", messageContext.Language.Id, DateTime.Now.Year.ToString(), part.Name).Text }
 			};
 
 			PublishModelPartCreatedEvent<Store>(part, m);

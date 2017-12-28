@@ -39,7 +39,7 @@
 				
 				<div>@JoinValues(new string[] { company.Street, company.Street2 }, " &middot; ")</div>
 				<div>@JoinValues(new string[] { company.ZipCode, company.City })</div>
-				<div>@JoinValues(new string[] { company.CountryName, company.StateName }, ", ")</div>
+				<div>@JoinValues(new string[] { company.CountryName, company.Region }, ", ")</div>
 			</td>
 			<td style="width: 33%;">
 				<div>@T("PDFInvoice.Footer.Url", Model.StoreUrl)</div>

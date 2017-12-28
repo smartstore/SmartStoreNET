@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Orders;
 using System.Text;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Html;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
@@ -153,6 +154,11 @@ namespace SmartStore.Services.Messages
 			}
 
 			return pictureInfo;
+		}
+
+		private object[] Concat(params object[] values)
+		{
+			return values.Where(x => CommonHelper.IsTruthy(x)).ToArray();
 		}
 	}
 }

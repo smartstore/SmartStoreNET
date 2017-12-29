@@ -100,6 +100,9 @@
       <HintPath>..\..\packages\BundleTransformer.SassAndScss.1.9.154\lib\net40\BundleTransformer.SassAndScss.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="DotLiquid, Version=2.0.254.0, Culture=neutral, PublicKeyToken=82e46016ecf9f07c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\DotLiquid.2.0.254\lib\net45\DotLiquid.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -245,6 +248,17 @@
     <Compile Include="Plugins\PluginRazorHost.cs" />
     <Compile Include="Settings\SaveSettingAttribute.cs" />
     <Compile Include="Settings\LoadSettingAttribute.cs" />
+    <Compile Include="Templating\Events.cs" />
+    <Compile Include="Templating\Liquid\Drops\DictionaryDrop.cs" />
+    <Compile Include="Templating\Liquid\Drops\EnumerableWrapper.cs" />
+    <Compile Include="Templating\Liquid\Drops\ObjectDrop.cs" />
+    <Compile Include="Templating\Liquid\Drops\SafeDropBase.cs" />
+    <Compile Include="Templating\Liquid\Drops\TestDrop.cs" />
+    <Compile Include="Templating\Liquid\Filters\AdditionalFilters.cs" />
+    <Compile Include="Templating\Liquid\LiquidTemplate.cs" />
+    <Compile Include="Templating\Liquid\LiquidTemplateEngine.cs" />
+    <Compile Include="Templating\Liquid\LiquidUtil.cs" />
+    <Compile Include="Templating\Liquid\Tags\Zone.cs" />
     <Compile Include="Theming\AdminThemedAttribute.cs" />
     <Compile Include="Filters\HandleExceptionFilter.cs" />
     <Compile Include="Filters\NotifyAttribute.cs" />

@@ -11,34 +11,35 @@ using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Themes;
+using SmartStore.Services;
 
 namespace SmartStore.Templating.Liquid
 {
 	public partial class LiquidTemplateEngine : ITemplateEngine, ITemplateFileSystem
 	{
-		//private readonly Work<ICommonServices> _services;
+		private readonly Work<ICommonServices> _services;
 		private readonly Work<LocalizerEx> _localizer;
 		private readonly Work<IThemeContext> _themeContext;
 		private readonly IVirtualPathProvider _vpp;
 
 		public LiquidTemplateEngine(
+			Work<ICommonServices> services,
 			IVirtualPathProvider vpp, 
-			IEventPublisher eventPublisher,
 			Work<IThemeContext> themeContext,
 			Work<LocalizerEx> localizer)
 		{
-			Template.NamingConvention = new CSharpNamingConvention();
-
+			_services = services;
 			_vpp = vpp;
 			_localizer = localizer;
 			_themeContext = themeContext;
-
+		
 			// Register tag "zone"
-			Template.RegisterTagFactory(new ZoneTagFactory(eventPublisher));
+			Template.RegisterTagFactory(new ZoneTagFactory(_services.Value.EventPublisher));
 
 			// Register Filters
 			Template.RegisterFilter(typeof(AdditionalFilters));
 
+			Template.NamingConvention = new CSharpNamingConvention();
 			Template.FileSystem = this;
 		}
 

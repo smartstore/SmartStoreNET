@@ -66,6 +66,9 @@
       <HintPath>..\..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="DotLiquid, Version=2.0.254.0, Culture=neutral, PublicKeyToken=82e46016ecf9f07c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\DotLiquid.2.0.254\lib\net45\DotLiquid.dll</HintPath>
+    </Reference>
     <Reference Include="FluentValidation, Version=6.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\FluentValidation.6.4.1\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
@@ -147,6 +150,7 @@
     <Compile Include="Public\Validators\ShoppingCart\WishlistEmailAFriendValidatorTests.cs" />
     <Compile Include="Public\Validators\TestValidator.cs" />
     <Compile Include="Public\Validators\CreditCardValidatorTests.cs" />
+    <Compile Include="Framework\Templating\LiquidTemplateTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

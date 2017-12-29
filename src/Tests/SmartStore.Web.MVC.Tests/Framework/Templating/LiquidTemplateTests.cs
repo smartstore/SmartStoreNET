@@ -7,10 +7,16 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
+using SmartStore.Core.Themes;
+using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Core.Localization;
 using SmartStore.Templating;
 using SmartStore.Templating.Liquid;
+using Rhino.Mocks;
+using SmartStore.Tests;
+using SmartStore.Services;
 
-namespace SmartStore.Core.Tests.Templating
+namespace SmartStore.Web.MVC.Tests.Framework.Templating
 {
 	[TestFixture]
 	public class LiquidTemplateTests
@@ -22,9 +28,13 @@ namespace SmartStore.Core.Tests.Templating
 		[SetUp]
 		public virtual void SetUp()
 		{
+			var services = new Work<ICommonServices>(x => new MockCommonServices());
+			var localizer = new Work<LocalizerEx>(x => NullLocalizer.InstanceEx);
+			var themeContext = new Work<IThemeContext>(x => MockRepository.GenerateMock<IThemeContext>());
+
 			_deCulture = CultureInfo.GetCultureInfo("de-DE");
 			_enCulture = CultureInfo.GetCultureInfo("en-US");
-			_engine = new LiquidTemplateEngine(null, NullEventPublisher.Instance);
+			_engine = new LiquidTemplateEngine(services, null, themeContext, localizer);
 		}
 
 		[Test]

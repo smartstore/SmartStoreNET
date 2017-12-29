@@ -468,7 +468,7 @@
     <Compile Include="Templating\ITemplateEngine.cs" />
     <Compile Include="Templating\ITemplateManager.cs" />
     <Compile Include="Templating\Liquid\Drops\DictionaryDrop.cs" />
-    <Compile Include="Templating\Liquid\Filters\TranslationFilters.cs" />
+    <Compile Include="Templating\Liquid\Filters\AdditionalFilters.cs" />
     <Compile Include="Templating\Liquid\LiquidTemplate.cs" />
     <Compile Include="Templating\Liquid\LiquidTemplateEngine.cs" />
     <Compile Include="Templating\Liquid\LiquidUtil.cs" />
@@ -477,7 +477,6 @@
     <Compile Include="Templating\Liquid\Drops\SafeDropBase.cs" />
     <Compile Include="Templating\Liquid\Drops\TestDrop.cs" />
     <Compile Include="Templating\Liquid\Tags\Zone.cs" />
-    <Compile Include="Templating\Liquid\Tags\T.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\InheritedThemeFileResult.cs" />
     <Compile Include="Themes\IThemeContext.cs" />

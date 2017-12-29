@@ -37,7 +37,7 @@ namespace SmartStore.Templating.Liquid
 			Template.RegisterTagFactory(new ZoneTagFactory(eventPublisher));
 
 			// Register Filters
-			Template.RegisterFilter(typeof(TranslationFilters));
+			Template.RegisterFilter(typeof(AdditionalFilters));
 
 			Template.FileSystem = this;
 		}

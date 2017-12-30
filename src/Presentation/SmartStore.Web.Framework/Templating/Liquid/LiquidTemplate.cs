@@ -43,21 +43,38 @@ namespace SmartStore.Templating.Liquid
 		{
 			var p = new RenderParameters(formatProvider);
 
-			var hash = new Hash();
-
-			if (data is IDictionary<string, object> dict)
+			Hash hash = null;
+			
+			if (data is ISafeObject so)
 			{
-				foreach (var kvp in dict)
+				if (so.GetWrappedObject() is IDictionary<string, object> soDict)
 				{
-					hash[kvp.Key] = LiquidUtil.CreateSafeObject(kvp.Value);
+					hash = Hash.FromDictionary(soDict);
+				}
+				else
+				{
+					data = so.GetWrappedObject();
 				}
 			}
-			else
+
+			if (hash == null)
 			{
-				var props = FastProperty.GetProperties(data);
-				foreach (var prop in props)
+				hash = new Hash();
+
+				if (data is IDictionary<string, object> dict)
 				{
-					hash[prop.Key] = LiquidUtil.CreateSafeObject(prop.Value.GetValue(data));
+					foreach (var kvp in dict)
+					{
+						hash[kvp.Key] = LiquidUtil.CreateSafeObject(kvp.Value);
+					}
+				}
+				else
+				{
+					var props = FastProperty.GetProperties(data);
+					foreach (var prop in props)
+					{
+						hash[prop.Key] = LiquidUtil.CreateSafeObject(prop.Value.GetValue(data));
+					}
 				}
 			}
 

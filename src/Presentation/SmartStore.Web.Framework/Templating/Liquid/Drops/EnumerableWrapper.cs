@@ -21,6 +21,8 @@ namespace SmartStore.Templating.Liquid
 			return GetEnumeratorInternal();
 		}
 
+		public object GetWrappedObject() => _enumerable;
+
 		IEnumerator<ILiquidizable> IEnumerable<ILiquidizable>.GetEnumerator()
 		{
 			return GetEnumeratorInternal();

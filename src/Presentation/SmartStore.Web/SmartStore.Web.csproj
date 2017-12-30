@@ -470,6 +470,7 @@
   <ItemGroup>
     <Content Include="404.html" />
     <Content Include="500.html" />
+    <Content Include="App_Data\AddressFormats.xml" />
     <Content Include="App_Data\Localization\App\de\all.smres.xml">
       <SubType>Designer</SubType>
     </Content>

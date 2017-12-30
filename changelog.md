@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -13,6 +13,7 @@
 * Multi-configurable rounding of order total ("cash rounding"). Can be adjusted and activated separately for each currency and payment method.
 * (Perf) Picture service: new processing and caching strategy! Thumbnails are not created synchronously during the main request anymore, instead a new middleware route defers processing until an image is actually requested by any client.
 * MegaMenu shrinker and *Brands* virtual menu item
+* Address formatting templates by country
 * Connection to translate.smartstore.com. For available languages, localized resources can be downloaded and installed directly.
 
 ### New Features

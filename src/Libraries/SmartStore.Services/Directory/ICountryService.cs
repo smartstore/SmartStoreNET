@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Directory
@@ -74,5 +76,21 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="country">Country</param>
         void UpdateCountry(Country country);
-    }
+
+		/// <summary>
+		/// Formats the address according to the countries address formatting template
+		/// </summary>
+		/// <param name="address">Address to format</param>
+		/// <param name="newLineToBr">Whether new lines should be replaced with html BR tags</param>
+		/// <returns>The formatted address</returns>
+		string FormatAddress(Address address, bool newLineToBr = false);
+
+		/// <summary>
+		/// Formats the address according to the countries address formatting template
+		/// </summary>
+		/// <param name="address">Address to format. Usually passed by the template engine as a dictionary</param>
+		/// <param name="country">The country to get the formatting template from. If <c>null</c>, the system global template will be used.</param>
+		/// <returns>The formatted address</returns>
+		string FormatAddress(object address, Country country = null, IFormatProvider formatProvider = null);
+	}
 }

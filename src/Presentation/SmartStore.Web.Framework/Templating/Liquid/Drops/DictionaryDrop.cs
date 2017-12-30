@@ -25,5 +25,10 @@ namespace SmartStore.Templating.Liquid
 		{
 			return _inner.Get(name);
 		}
+
+		public override object GetWrappedObject()
+		{
+			return _inner;
+		}
 	}
 }

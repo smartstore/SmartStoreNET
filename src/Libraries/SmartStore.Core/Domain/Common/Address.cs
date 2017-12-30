@@ -109,7 +109,6 @@ namespace SmartStore.Core.Domain.Common
 		[DataMember]
 		public virtual StateProvince StateProvince { get; set; }
 
-
         public object Clone()
         {
             var addr = new Address()
@@ -134,5 +133,18 @@ namespace SmartStore.Core.Domain.Common
             };
             return addr;
         }
+
+		public static string DefaultAddressFormat
+		{
+			get
+			{
+				return @"{{ Salutation }} {{ Title }} {{ FirstName }} {{ LastName }}
+{{ Company }}
+{{ Street1 }}
+{{ Street2 }}
+{{ ZipCode }} {{ City }}
+{{ Country | Upcase }}";
+			}
+		}
     }
 }

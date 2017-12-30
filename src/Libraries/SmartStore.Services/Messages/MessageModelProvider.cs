@@ -135,6 +135,9 @@ namespace SmartStore.Services.Messages
 				case Customer x:
 					//modelPart = CreateModelPart(x, messageContext);
 					break;
+				case Address x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
 				case Shipment x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
@@ -786,25 +789,46 @@ namespace SmartStore.Services.Messages
 
 			var settings = _services.Resolve<AddressSettings>();
 
+			var salutation = part.Salutation.NullEmpty();
+			var title = part.Title.NullEmpty();
+			var company = settings.CompanyEnabled ? part.Company : null;
+			var firstName = part.FirstName.NullEmpty();
+			var lastName = part.LastName.NullEmpty();
+			var street1 = settings.StreetAddressEnabled ? part.Address1 : null;
+			var street2 = settings.StreetAddress2Enabled ? part.Address2 : null;
+			var zip = settings.ZipPostalCodeEnabled ? part.ZipPostalCode : null;
+			var city = settings.CityEnabled ? part.City : null;
+			var country = settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() : null;
+			var state = settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() : null;
+			
 			var m = new Dictionary<string, object>
 			{
-				{ "Title", part.Title.NullEmpty() },
-				{ "Salutation", part.Salutation.NullEmpty() },
+				{ "Title", title },
+				{ "Salutation", salutation },
 				{ "FullSalutation", part.GetFullSalutaion().NullEmpty() },
 				{ "FullName", part.GetFullName(false).NullEmpty() },
-				{ "Company", settings.CompanyEnabled ? part.Company : null },
-				{ "FirstName", part.FirstName.NullEmpty() },
-				{ "LastName", part.LastName.NullEmpty() },
-				{ "Address1", settings.StreetAddressEnabled ? part.Address1 : null },
-				{ "Address2", settings.StreetAddress2Enabled ? part.Address2 : null },
-				{ "Country", settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() : null },
-				{ "State", settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() : null },
-				{ "City", settings.CityEnabled ? part.City : null },
-				{ "ZipCode", settings.ZipPostalCodeEnabled ? part.ZipPostalCode : null },
+				{ "Company", company },
+				{ "FirstName", firstName },
+				{ "LastName", lastName },
+				{ "Street1", street1 },
+				{ "Street2", street2 },
+				{ "Country", country },
+				{ "CountryId", part.Country?.Id },
+				{ "CountryAbbrev2", settings.CountryEnabled ? part.Country?.TwoLetterIsoCode.NullEmpty() : null },
+				{ "CountryAbbrev3", settings.CountryEnabled ? part.Country?.ThreeLetterIsoCode.NullEmpty() : null },
+				{ "State", state },
+				{ "StateAbbrev", settings.StateProvinceEnabled ? part.StateProvince?.Abbreviation.NullEmpty() : null },
+				{ "City", city },
+				{ "ZipCode", zip },
 				{ "Email", part.Email.NullEmpty() },
 				{ "Phone", settings.PhoneEnabled ? part.PhoneNumber : null },
 				{ "Fax", settings.FaxEnabled ? part.FaxNumber : null }
 			};
+
+			m["NameLine"] = Concat(salutation, title, firstName, lastName);
+			m["StreetLine"] = Concat(street1, street2);
+			m["CityLine"] = Concat(zip, city);
+			m["CountryLine"] = Concat(country, state);
 
 			m["FullCity"] = GetFullCity().NullEmpty();
 
@@ -814,8 +838,8 @@ namespace SmartStore.Services.Messages
 
 			string GetFullCity()
 			{
-				var zip = m["ZipCode"] as string;
-				var city = m["City"] as string;
+				zip = m["ZipCode"] as string;
+				city = m["City"] as string;
 
 				var sb = new StringBuilder();
 

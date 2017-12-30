@@ -45,6 +45,8 @@ namespace SmartStore.Templating.Liquid
 
 		#region Services
 
+		public ICommonServices Services => _services.Value;
+
 		public LocalizedString T(string key, int languageId, params object[] args)
 		{
 			return _localizer.Value(key, languageId, args);
@@ -56,14 +58,14 @@ namespace SmartStore.Templating.Liquid
 
 		public ITemplate Compile(string source)
 		{
-			Guard.NotEmpty(source, nameof(source));
+			Guard.NotNull(source, nameof(source));
 
 			return new LiquidTemplate(Template.Parse(source), source);
 		}
 
 		public string Render(string template, object data, IFormatProvider formatProvider)
 		{
-			Guard.NotEmpty(template, nameof(template));
+			Guard.NotNull(template, nameof(template));
 			Guard.NotNull(data, nameof(data));
 			Guard.NotNull(formatProvider, nameof(formatProvider));
 

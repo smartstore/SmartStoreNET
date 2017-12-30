@@ -47,5 +47,10 @@ namespace SmartStore.Templating.Liquid
 
 			return null;
 		}
+
+		public override object GetWrappedObject()
+		{
+			return _data;
+		}
 	}
 }

@@ -6,6 +6,9 @@ using System.Text;
 using DotLiquid;
 using Newtonsoft.Json;
 using SmartStore.Utilities;
+using SmartStore.Services;
+using SmartStore.Services.Directory;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Templating.Liquid
 {
@@ -32,6 +35,30 @@ namespace SmartStore.Templating.Liquid
 			{
 				ReferenceLoopHandling = ReferenceLoopHandling.Ignore
 			});
+		}
+
+		public static string FormatAddress(Context context, object input)
+		{
+			if (input == null)
+				return null;
+
+			var engine = GetEngine();
+			var countryService = engine.Services.Resolve<ICountryService>();
+
+			Country country = null;
+
+			// We know that we converted Address entity to a dictionary.
+
+			if (input is IDictionary<string, object> dict)
+			{
+				country = countryService.GetCountryById(dict.Get("CountryId").Convert<int?>().GetValueOrDefault());
+			}
+			else if (input is IIndexable lq)
+			{
+				country = countryService.GetCountryById(lq["CountryId"].Convert<int?>().GetValueOrDefault());
+			}
+
+			return countryService.FormatAddress(input, country, context.FormatProvider);
 		}
 
 		#endregion

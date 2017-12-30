@@ -83,9 +83,6 @@ namespace SmartStore.Services.Messages
 
 			ValidateMessageContext(messageContext, ref modelParts);
 
-			// Get format provider for requested language
-			messageContext.FormatProvider = GetFormatProvider(messageContext);
-
 			// Create and assign model
 			var model = messageContext.Model = new TemplateModel();
 
@@ -173,18 +170,6 @@ namespace SmartStore.Services.Messages
 			});
 
 			_queuedEmailService.InsertQueuedEmail(queuedEmail);
-		}
-
-		private IFormatProvider GetFormatProvider(MessageContext messageContext)
-		{
-			var culture = messageContext.Language.LanguageCulture;
-
-			if (LocalizationHelper.IsValidCultureCode(culture))
-			{
-				return CultureInfo.GetCultureInfo(culture);
-			}
-
-			return CultureInfo.CurrentCulture;
 		}
 
 		private EmailAddress RenderEmailAddress(string email, MessageContext ctx, bool required = true)

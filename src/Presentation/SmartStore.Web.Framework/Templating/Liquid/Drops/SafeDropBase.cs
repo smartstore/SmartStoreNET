@@ -6,6 +6,7 @@ namespace SmartStore.Templating.Liquid
 {
 	internal interface ISafeObject
 	{
+		object GetWrappedObject();
 	}
 
 	internal abstract class SafeDropBase : ILiquidizable, IIndexable, ISafeObject
@@ -42,5 +43,7 @@ namespace SmartStore.Templating.Liquid
 		{
 			return this;
 		}
+
+		public abstract object GetWrappedObject();
 	}
 }

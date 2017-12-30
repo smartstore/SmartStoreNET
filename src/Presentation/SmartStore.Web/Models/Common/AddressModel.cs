@@ -109,6 +109,7 @@ namespace SmartStore.Web.Models.Common
         public IList<SelectListItem> AvailableStates { get; set; }
         public IList<SelectListItem> AvailableSalutations { get; set; }
 
+		public string FormattedAddress { get; set; }
 
 		public string GetFormattedName()
 		{

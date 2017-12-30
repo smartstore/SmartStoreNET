@@ -1,28 +1,5 @@
 <p class="m-b-2 text-sm">
-{% if address.Company %}
-	{{ address.Company }}<br />
-{% endif %}
-{% if address.FullSalutation %}
-	{{ address.FullSalutation }}&nbsp;
-{% endif %}
-{% if address.FullName %}
-	{{ address.FullName }}
-{% endif %}
-{% if address.Address1 %}
-	<br/>{{ address.Address1 }}
-{% endif %}
-{% if address.Address2 %}
-	<br/>{{ address.Address2 }}
-{% endif %}
-{% if address.FullCity %}
-	<br/>{{ address.FullCity }}
-{% endif %}
-{% if address.State %}
-	<br/>{{ address.State }}{% if address.Country %},{% endif %}
-{% endif %}
-{% if address.Country %}
-	{{ address.Country }}
-{% endif %}
+{{ address | FormatAddress | NewlineToBr }}
 </p>
 
 {% if address.Email or address.Phone or address.Fax %}

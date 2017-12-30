@@ -30,6 +30,11 @@ namespace SmartStore.Templating.Liquid
 			get => _type.Name;
 		}
 
+		public object GetWrappedObject()
+		{
+			return _entity;
+		}
+
 		public bool ContainsKey(object key)
 		{
 			return true;

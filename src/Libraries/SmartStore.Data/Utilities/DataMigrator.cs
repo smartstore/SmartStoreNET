@@ -8,6 +8,10 @@ using EfState = System.Data.Entity.EntityState;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Utilities;
+using System.IO;
+using System.Xml.Linq;
 
 namespace SmartStore.Data.Utilities
 {
@@ -153,6 +157,44 @@ namespace SmartStore.Data.Utilities
 			map = query.ToList().ToDictionary(x => x.ProductId, x => x.PictureIds.First());
 
 			return map;
+		}
+
+		#endregion
+
+		#region Address Formats
+
+		public static int ImportAddressFormats(IDbContext context)
+		{
+			var ctx = context as SmartObjectContext;
+			if (ctx == null)
+				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+
+			var filePath = CommonHelper.MapPath("~/App_Data/AddressFormats.xml");
+
+			if (!File.Exists(filePath))
+			{
+				return 0;
+			}
+
+			var countries = ctx.Set<Country>()
+				.Where(x => string.IsNullOrEmpty(x.AddressFormat))
+				.ToList()
+				.ToDictionarySafe(x => x.TwoLetterIsoCode, StringComparer.OrdinalIgnoreCase);
+
+			var doc = XDocument.Load(filePath);
+
+			foreach (var node in doc.Root.Nodes().OfType<XElement>())
+			{
+				var code = node.Attribute("code")?.Value?.Trim();
+				var format = node.Value.Trim();
+
+				if (code.HasValue() && countries.TryGetValue(code, out var country))
+				{
+					country.AddressFormat = format;
+				}
+			}
+
+			return ctx.SaveChanges();
 		}
 
 		#endregion

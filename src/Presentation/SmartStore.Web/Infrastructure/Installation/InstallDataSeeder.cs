@@ -150,6 +150,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 		private void PopulateCountriesAndStates()
         {
 			SaveRange(_data.Countries().Where(x => x != null));
+			DataMigrator.ImportAddressFormats(_ctx);
         }
 
 		private void PopulateShippingMethods()

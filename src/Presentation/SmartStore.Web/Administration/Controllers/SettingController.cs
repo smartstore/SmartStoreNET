@@ -655,11 +655,13 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("RewardPoints");
         }
 
-		[LoadSetting]
-        public ActionResult Order(OrderSettings orderSettings, int storeScope)
+        public ActionResult Order()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
+
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var orderSettings = _services.Settings.LoadSetting<OrderSettings>(storeScope);
 
 			var allStores = _services.StoreService.GetAllStores();
 			var store = (storeScope == 0 ? _services.StoreContext.CurrentStore : allStores.FirstOrDefault(x => x.Id == storeScope));
@@ -688,17 +690,21 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Order(OrderSettings orderSettings, OrderSettingsModel model, FormCollection form, int storeScope)
+        public ActionResult Order(OrderSettingsModel model, FormCollection form)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
 			if (!ModelState.IsValid)
-				return Order(orderSettings, storeScope);
+				return Order();
 
 			ModelState.Clear();
 
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var orderSettings = _services.Settings.LoadSetting<OrderSettings>(storeScope);
 			orderSettings = model.ToEntity(orderSettings);
+
+			StoreDependingSettings.UpdateSettings(orderSettings, form, storeScope, _services.Settings);
 
 			_services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestActions, 0, false);				
 			_services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestReasons, 0, false);
@@ -739,11 +745,13 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Order");
         }
 
-		[LoadSetting]
-        public ActionResult ShoppingCart(ShoppingCartSettings shoppingCartSettings, int storeScope)
+        public ActionResult ShoppingCart()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
+
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var shoppingCartSettings = _services.Settings.LoadSetting<ShoppingCartSettings>(storeScope);
 
 			var model = shoppingCartSettings.ToModel();
 
@@ -760,18 +768,22 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
         }
 
-        [SaveSetting, HttpPost]
-        public ActionResult ShoppingCart(ShoppingCartSettings shoppingCartSettings, ShoppingCartSettingsModel model, FormCollection form, int storeScope)
+        [HttpPost]
+        public ActionResult ShoppingCart(ShoppingCartSettingsModel model, FormCollection form)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
 			if (!ModelState.IsValid)
-				return ShoppingCart(shoppingCartSettings, storeScope);
+				return ShoppingCart();
 
 			ModelState.Clear();
 
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var shoppingCartSettings = _services.Settings.LoadSetting<ShoppingCartSettings>(storeScope);
 			shoppingCartSettings = model.ToEntity(shoppingCartSettings);
+
+			StoreDependingSettings.UpdateSettings(shoppingCartSettings, form, storeScope, _services.Settings);
 
 			_services.Settings.SaveSetting(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, 0, false);
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Web.Routing;
 using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.Settings
@@ -23,12 +22,12 @@ namespace SmartStore.Web.Framework.Settings
 
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
+			base.OnActionExecuting(filterContext);
+
 			if (!filterContext.Controller.ViewData.ModelState.IsValid)
 			{
 				return;
 			}
-
-			base.OnActionExecuting(filterContext);
 
 			// Find the required FormCollection parameter in ActionDescriptor.GetParameters()
 			var formParam = FindActionParameters<FormCollection>(filterContext.ActionDescriptor, requireDefaultConstructor: false, throwIfNotFound: false).FirstOrDefault();

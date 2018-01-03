@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.DataExchange;
@@ -25,8 +24,9 @@ namespace SmartStore.Services.DataExchange
 		/// </summary>
 		/// <param name="contextName">The context (external application) name. Leave <c>null</c> to load all records regardless of context.</param>
 		/// <param name="entityName">The entity name. Leave <c>null</c> to load all records regardless of entity name.</param>
+		/// <param name="entityIds">Array of entity identifiers</param>
 		/// <returns>SyncMappings</returns>
-		IList<SyncMapping> GetAllSyncMappings(string contextName = null, string entityName = null);
+		IList<SyncMapping> GetAllSyncMappings(string contextName = null, string entityName = null, int[] entityIds = null);
 
 		/// <summary>
 		/// Gets a sync mapping record by (target) entity id, name and context name.

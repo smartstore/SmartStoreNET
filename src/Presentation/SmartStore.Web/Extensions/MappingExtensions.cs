@@ -39,13 +39,13 @@ namespace SmartStore.Web
             return model;
         }
 
-		//manufacturer
+		// Manufacturer
 		public static ManufacturerModel ToModel(this Manufacturer entity)
         {
             if (entity == null)
                 return null;
 
-            var model = new ManufacturerModel()
+            var model = new ManufacturerModel
             {
                 Id = entity.Id,
                 Name = entity.GetLocalized(x => x.Name),
@@ -88,17 +88,20 @@ namespace SmartStore.Web
 
 				model.EmailMatch = address.Email;
 				model.CountryName = address.Country?.GetLocalized(x => x.Name);
-				model.StateProvinceName = address.StateProvince.GetLocalized(x => x.Name);
+				if (address.StateProvinceId.HasValue && address.StateProvince != null)
+				{
+					model.StateProvinceName = address.StateProvince.GetLocalized(x => x.Name);
+				}
 				model.FormattedAddress = Core.Infrastructure.EngineContext.Current.Resolve<IAddressService>().FormatAddress(address, true);
 			}
 
-            // countries and states
+            // Countries and states
             if (addressSettings.CountryEnabled && loadCountries != null)
             {
                 if (localizationService == null)
                     throw new ArgumentNullException("localizationService");
 
-                model.AvailableCountries.Add(new SelectListItem() { Text = localizationService.GetResource("Address.SelectCountry"), Value = "0" });
+                model.AvailableCountries.Add(new SelectListItem { Text = localizationService.GetResource("Address.SelectCountry"), Value = "0" });
                 foreach (var c in loadCountries())
                 {
                     model.AvailableCountries.Add(new SelectListItem
@@ -111,7 +114,7 @@ namespace SmartStore.Web
 
                 if (addressSettings.StateProvinceEnabled)
                 {
-                    // states
+                    // States
                     if (stateProvinceService == null)
                         throw new ArgumentNullException("stateProvinceService");
 
@@ -122,7 +125,7 @@ namespace SmartStore.Web
                     {
                         foreach (var s in states)
                         {
-                            model.AvailableStates.Add(new SelectListItem()
+                            model.AvailableStates.Add(new SelectListItem
                             {
                                 Text = s.GetLocalized(x => x.Name),
                                 Value = s.Id.ToString(),
@@ -132,7 +135,7 @@ namespace SmartStore.Web
                     }
                     else
                     {
-                        model.AvailableStates.Add(new SelectListItem()
+                        model.AvailableStates.Add(new SelectListItem
                         {
                             Text = localizationService.GetResource("Address.OtherNonUS"),
                             Value = "0"

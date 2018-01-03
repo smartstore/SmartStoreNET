@@ -788,6 +788,7 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(part, nameof(part));
 
 			var settings = _services.Resolve<AddressSettings>();
+			var languageId = messageContext.Language?.Id ?? messageContext.LanguageId;
 
 			var salutation = part.Salutation.NullEmpty();
 			var title = part.Title.NullEmpty();
@@ -798,8 +799,8 @@ namespace SmartStore.Services.Messages
 			var street2 = settings.StreetAddress2Enabled ? part.Address2 : null;
 			var zip = settings.ZipPostalCodeEnabled ? part.ZipPostalCode : null;
 			var city = settings.CityEnabled ? part.City : null;
-			var country = settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() : null;
-			var state = settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() : null;
+			var country = settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, languageId ?? 0).NullEmpty() : null;
+			var state = settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, languageId ?? 0).NullEmpty() : null;
 			
 			var m = new Dictionary<string, object>
 			{

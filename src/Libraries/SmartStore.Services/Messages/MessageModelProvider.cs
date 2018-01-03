@@ -830,35 +830,9 @@ namespace SmartStore.Services.Messages
 			m["CityLine"] = Concat(zip, city);
 			m["CountryLine"] = Concat(country, state);
 
-			m["FullCity"] = GetFullCity().NullEmpty();
-
 			PublishModelPartCreatedEvent<Address>(part, m);
 
 			return m;
-
-			string GetFullCity()
-			{
-				zip = m["ZipCode"] as string;
-				city = m["City"] as string;
-
-				var sb = new StringBuilder();
-
-				if (city.HasValue())
-				{
-					sb.Append(city);
-					if (zip.HasValue())
-					{
-						sb.Append(", ");
-					}
-				}
-
-				if (zip.HasValue())
-				{
-					sb.Append(zip);
-				}
-
-				return sb.ToString();
-			}
 		}
 
 		protected virtual object CreateModelPart(RewardPointsHistory part, MessageContext messageContext)

@@ -19,8 +19,6 @@
 		try {
 			if (!isAuthentication) {
 				scope += ' payments:widget payments:shipping_address payments:billing_address';
-				
-				amazon.Login.logout();
 			}
 		}
 		catch (e) {

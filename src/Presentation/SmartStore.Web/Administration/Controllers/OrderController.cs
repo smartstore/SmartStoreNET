@@ -736,6 +736,13 @@ namespace SmartStore.Admin.Controllers
 				var store = _services.StoreService.GetStoreById(orderStoreId) ?? _services.StoreContext.CurrentStore;
 				var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
 				model.MerchantCompanyInfo = companyInfoSettings;
+
+				if (model.ShippingAddress != null)
+				{
+					model.FormattedShippingAddress = _addressService.FormatAddress(model.ShippingAddress, true);
+				}
+
+				model.FormattedMerchantAddress = _addressService.FormatAddress(model.MerchantCompanyInfo, true);
 			}
 
             if (prepareProducts)
@@ -1682,7 +1689,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = new OrderModel.UploadLicenseModel
             {
-                LicenseDownloadId = orderItem.LicenseDownloadId.HasValue ? orderItem.LicenseDownloadId.Value : 0,
+                LicenseDownloadId = orderItem.LicenseDownloadId ?? 0,
                 OrderId = order.Id,
                 OrderItemId = orderItem.Id
             };
@@ -1758,8 +1765,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var model = new OrderModel.AddOrderProductModel();
-            model.OrderId = orderId;
+            var model = new OrderModel.AddOrderProductModel { OrderId = orderId };
 
             foreach (var c in _categoryService.GetCategoryTree(includeHidden: true).FlattenNodes(false))
             {
@@ -1857,8 +1863,7 @@ namespace SmartStore.Admin.Controllers
             decimal.TryParse(form["UnitPriceInclTax"], out unitPriceInclTax);
             var unitPriceExclTax = decimal.Zero;
             decimal.TryParse(form["UnitPriceExclTax"], out unitPriceExclTax);
-            var quantity = 1;
-            int.TryParse(form["Quantity"], out quantity);
+            int.TryParse(form["Quantity"], out var quantity);
             var priceInclTax = decimal.Zero;
             decimal.TryParse(form["SubTotalInclTax"], out priceInclTax);
             var priceExclTax = decimal.Zero;
@@ -1936,10 +1941,9 @@ namespace SmartStore.Admin.Controllers
 
 					foreach (var bundleItem in bundleItems)
 					{
-						decimal taxRate;
 						var finalPrice = _priceCalculationService.GetFinalPrice(bundleItem.Item.Product, bundleItems, order.Customer, decimal.Zero, true, bundleItem.Item.Quantity);
 						var bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(bundleItem.Item.Product, bundleItem.Item.Product.TaxCategoryId, finalPrice,
-							includingTax, order.Customer, currency, _taxSettings.PricesIncludeTax, out taxRate);
+							includingTax, order.Customer, currency, _taxSettings.PricesIncludeTax, out var taxRate);
 
 						bundleItem.ToOrderData(listBundleData, bundleItemSubTotalWithDiscountBase);
 					}
@@ -2022,8 +2026,7 @@ namespace SmartStore.Admin.Controllers
             if (address == null)
                 throw new ArgumentException("No address found with the specified id", "addressId");
 
-            var model = new OrderAddressModel();
-            model.OrderId = orderId;
+            var model = new OrderAddressModel { OrderId = orderId };
 
 			PrepareOrderAddressModel(model, address);
 

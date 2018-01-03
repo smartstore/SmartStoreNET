@@ -9,6 +9,7 @@ using SmartStore.Utilities;
 using SmartStore.Services;
 using SmartStore.Services.Directory;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Services.Common;
 
 namespace SmartStore.Templating.Liquid
 {
@@ -44,6 +45,7 @@ namespace SmartStore.Templating.Liquid
 
 			var engine = GetEngine();
 			var countryService = engine.Services.Resolve<ICountryService>();
+			var addressService = engine.Services.Resolve<IAddressService>();
 
 			Country country = null;
 
@@ -58,7 +60,7 @@ namespace SmartStore.Templating.Liquid
 				country = countryService.GetCountryById(lq["CountryId"].Convert<int?>().GetValueOrDefault());
 			}
 
-			return countryService.FormatAddress(input, country, context.FormatProvider);
+			return addressService.FormatAddress(input, country?.AddressFormat, context.FormatProvider);
 		}
 
 		#endregion

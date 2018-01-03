@@ -1,16 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
-using SmartStore.Templating;
-using SmartStore.Services.Messages;
-using System.Globalization;
 
 namespace SmartStore.Services.Directory
 {
@@ -24,21 +17,15 @@ namespace SmartStore.Services.Directory
 		private readonly ICommonServices _services;
 		private readonly IRepository<Country> _countryRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-		private readonly ITemplateEngine _templateEngine;
-		private readonly IMessageModelProvider _messageModelProvider;
 
 		public CountryService(
 			ICommonServices services,
             IRepository<Country> countryRepository,
-			IRepository<StoreMapping> storeMappingRepository,
-			ITemplateEngine templateEngine,
-			IMessageModelProvider messageModelProvider)
+			IRepository<StoreMapping> storeMappingRepository)
         {
             _countryRepository = countryRepository;
 			_services = services;
 			_storeMappingRepository = storeMappingRepository;
-			_templateEngine = templateEngine;
-			_messageModelProvider = messageModelProvider;
         }
 
 		public DbQuerySettings QuerySettings { get; set; }
@@ -174,40 +161,5 @@ namespace SmartStore.Services.Directory
 
 			_services.RequestCache.RemoveByPattern(COUNTRIES_PATTERN_KEY);
         }
-
-		public virtual string FormatAddress(Address address, bool newLineToBr = false)
-		{
-			Guard.NotNull(address, nameof(address));
-
-			var template = address.Country?.AddressFormat.NullEmpty() ?? Address.DefaultAddressFormat;
-
-			var messageContext = new MessageContext
-			{
-				Language = _services.WorkContext.WorkingLanguage,
-				Store = _services.StoreContext.CurrentStore,
-				Model = new TemplateModel()
-			};
-
-			_messageModelProvider.AddModelPart(address, messageContext, "Address");
-			var model = messageContext.Model["Address"];
-			var result = _templateEngine.Render(template, model, messageContext.FormatProvider).Compact(true);
-
-			if (newLineToBr)
-			{
-				result = Core.Html.HtmlUtils.ConvertPlainTextToHtml(result);
-			}		
-
-			return result;
-		}
-
-		public virtual string FormatAddress(object address, Country country = null, IFormatProvider formatProvider = null)
-		{
-			Guard.NotNull(address, nameof(address));
-
-			var template = country?.AddressFormat.NullEmpty() ?? Address.DefaultAddressFormat;
-			var result = _templateEngine.Render(template, address, formatProvider ?? CultureInfo.CurrentCulture).Compact(true);
-
-			return result;
-		}
 	}
 }

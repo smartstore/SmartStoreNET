@@ -62,27 +62,7 @@
 						</span>
 					</div>
 					<div class="mt-2">
-						@if (address.CompanyEnabled && address.Company.HasValue())
-                        {
-							<div>@address.Company</div>
-                        }
-						<div>@JoinValues(new string[] { address.FirstName, address.LastName })</div>
-						@if (address.StreetAddressEnabled && address.Address1.HasValue())
-                        {
-							<div>@address.Address1</div>
-                        }
-						@if (address.StreetAddress2Enabled && address.Address2.HasValue())
-                        {
-							<div>@address.Address2</div>
-                        }
-						@if (address.ZipPostalCodeEnabled || address.CityEnabled)
-                        {
-							<div>@JoinValues(new string[] { address.ZipPostalCode, address.City })</div>
-                        }
-						@if (address.StateProvinceEnabled || address.CountryEnabled)
-                        {
-							<div>@JoinValues(new string[] { address.CountryName, address.StateProvinceName }, ", ")</div>
-                        }
+						@Html.Raw(address.FormattedAddress)
 					</div>
 				</div>
 

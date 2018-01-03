@@ -220,8 +220,7 @@ namespace SmartStore.Web.Controllers
 				var routeValues = this.Request.RequestContext.RouteData.Values;
 				var controller = routeValues["controller"].ToString();
 
-				object val;
-				if (!routeValues.TryGetValue(controller + "id", out val))
+				if (!routeValues.TryGetValue(controller + "id", out var val))
 				{
 					controller = routeValues["action"].ToString();
 					routeValues.TryGetValue(controller + "id", out val);
@@ -860,6 +859,7 @@ namespace SmartStore.Web.Controllers
 				model.MerchantCompanyInfo = companyInfoSettings;
 				model.MerchantBankAccount = bankSettings;
 				model.MerchantContactData = contactSettings;
+				model.MerchantFormattedAddress = Services.Resolve<IAddressService>().FormatAddress(companyInfoSettings, true);
 
 				return model;			
 			}, TimeSpan.FromMinutes(1) /* 1 min. (just for the duration of pdf processing) */);

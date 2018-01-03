@@ -6,6 +6,7 @@ using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Seo;
@@ -75,20 +76,20 @@ namespace SmartStore.Web
             IStateProvinceService stateProvinceService = null,
             Func<IList<Country>> loadCountries = null)
         {
-            if (model == null)
-                throw new ArgumentNullException("model");
+			Guard.NotNull(model, nameof(model));
+			Guard.NotNull(addressSettings, nameof(addressSettings));
 
-            if (addressSettings == null)
-                throw new ArgumentNullException("addressSettings");
-			
-            if (!excludeProperties && address != null)
+			// Form fields
+			MiniMapper.Map(addressSettings, model);
+
+			if (!excludeProperties && address != null)
             {
 				MiniMapper.Map(address, model);
 
 				model.EmailMatch = address.Email;
 				model.CountryName = address.Country?.GetLocalized(x => x.Name);
 				model.StateProvinceName = address.StateProvince.GetLocalized(x => x.Name);
-				model.FormattedAddress = Core.Infrastructure.EngineContext.Current.Resolve<ICountryService>().FormatAddress(address, true);
+				model.FormattedAddress = Core.Infrastructure.EngineContext.Current.Resolve<IAddressService>().FormatAddress(address, true);
 			}
 
             // countries and states
@@ -149,9 +150,6 @@ namespace SmartStore.Web
                     model.AvailableSalutations.Add(new SelectListItem { Value = sal, Text = sal });
                 }
             }
-
-			// Form fields
-			MiniMapper.Map(addressSettings, model);
         }
 
         public static Address ToEntity(this AddressModel model)

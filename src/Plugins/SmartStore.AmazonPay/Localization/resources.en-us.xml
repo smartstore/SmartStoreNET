@@ -43,6 +43,9 @@ Text suggestions:<ul>
 	<LocaleResource Name="OrderNotFound">
 		<Value>Cannot find an order with the payment method "Login and Pay with Amazon" and the identification '{0}'.</Value>
 	</LocaleResource>
+	<LocaleResource Name="AuthorizationSoftDeclineMessage">
+		<Value>Unfortunately Amazon Payments declined the payment for your order in our online shop. Please choose another payment method.</Value>
+	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>
 			<![CDATA[<p>Unfortunately Amazon Payments declined the payment for your order in our online shop. Please contact us.</p>]]>

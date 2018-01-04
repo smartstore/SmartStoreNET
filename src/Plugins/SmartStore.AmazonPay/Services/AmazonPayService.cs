@@ -311,10 +311,10 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else if (type == AmazonPayRequestType.AuthenticationPublicInfo)
 				{
-                    if (settings.SellerId.IsEmpty() || settings.AccessKey.IsEmpty() || settings.SecretKey.IsEmpty())
-                    {
-                        return null;
-                    }
+					if (settings.SellerId.IsEmpty() || settings.AccessKey.IsEmpty() || settings.SecretKey.IsEmpty())
+					{
+						return null;
+					}
 
 					model.ButtonHandlerUrl = $"{storeLocation}Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler";
 
@@ -378,6 +378,14 @@ namespace SmartStore.AmazonPay.Services
 					model.ButtonType = "PwA";
 					model.ButtonColor = settings.PayButtonColor;
 					model.ButtonSize = settings.PayButtonSize;
+
+					var failedPaymentReason = _httpContext.Session["AmazonPayFailedPaymentReason"] as string;
+					if (failedPaymentReason.IsCaseInsensitiveEqual("AmazonRejected"))
+					{
+						model.Logout = true;
+						_services.Notifier.Error(new LocalizedString(T("Plugins.Payments.AmazonPay.AuthorizationSoftDeclineMessage")));
+					}
+					_httpContext.Session.SafeRemove("AmazonPayFailedPaymentReason");
 				}
 				else if (type == AmazonPayRequestType.AuthenticationPublicInfo)
 				{
@@ -398,7 +406,9 @@ namespace SmartStore.AmazonPay.Services
 					var shippingToCountryNotAllowed = tempData[AmazonPayPlugin.SystemName + "ShippingToCountryNotAllowed"];
 
 					if (shippingToCountryNotAllowed != null && true == (bool)shippingToCountryNotAllowed)
+					{
 						model.Warning = T("Plugins.Payments.AmazonPay.ShippingToCountryNotAllowed");
+					}
 				}
 				else if (type == AmazonPayRequestType.ShippingMethod)
 				{
@@ -1015,6 +1025,7 @@ namespace SmartStore.AmazonPay.Services
 					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
 					.WithAmount(request.OrderTotal)
 					.WithTransactionTimeout(0);
+					//.WithSellerAuthorizationNote("{\"SandboxSimulation\": {\"State\":\"Declined\", \"ReasonCode\":\"AmazonRejected\"}}");
 
 				var authorizeResponse = client.Authorize(synchronousRequest);
 
@@ -1032,6 +1043,7 @@ namespace SmartStore.AmazonPay.Services
 						.WithCaptureNow(captureNow)
 						.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
 						.WithAmount(request.OrderTotal);
+						//.WithSellerAuthorizationNote("{\"SandboxSimulation\": {\"State\":\"Declined\", \"ReasonCode\":\"AmazonRejected\"}}");
 
 					authorizeResponse = client.Authorize(asynchronousRequest);
 				}
@@ -1078,6 +1090,15 @@ namespace SmartStore.AmazonPay.Services
 					{
 						error = authorizeResponse.GetReasonDescription();
 						error = error.HasValue() ? $"{reason}: {error}" : reason;
+
+						if (reason.IsCaseInsensitiveEqual("AmazonRejected"))
+						{
+							// Reviewed: Must be logged out and redirected to shopping cart.
+							_httpContext.Session["AmazonPayFailedPaymentReason"] = reason;
+
+							// Quite ugly to force a redirect deep in service layer code but CheckoutController.ConfirmOrder doesn't give us the chance to use a filter.
+							_httpContext.Response.RedirectToRoute("ShoppingCart");
+						}
 					}
 				}
 				else

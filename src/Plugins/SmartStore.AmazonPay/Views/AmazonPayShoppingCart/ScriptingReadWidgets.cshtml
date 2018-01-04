@@ -10,7 +10,6 @@
 		}
 		catch (e) {
 			console.log(e);
-			displayNotification(e, 'error');
 		}
 	};
 
@@ -24,13 +23,12 @@
 					designMode: 'responsive'
 				},
 				onError: function (e) {
-					displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');
+					console.log(e.getErrorCode() + ': ' + e.getErrorMessage());
 				}
 			}).bind('amazon-pay-read-address-book-widget');
 		}
 		catch (e) {
 			console.log(e);
-			displayNotification(e, 'error');
 		}
 
 		try {
@@ -42,13 +40,12 @@
 					designMode: 'responsive'
 				},
 				onError: function (e) {
-					displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');
+					console.log(e.getErrorCode() + ': ' + e.getErrorMessage());
 				}
 			}).bind('amazon-pay-read-wallet-widget');
 		}
 		catch (e) {
 			console.log(e);
-			displayNotification(e, 'error');
 		}
 	};
 </script>

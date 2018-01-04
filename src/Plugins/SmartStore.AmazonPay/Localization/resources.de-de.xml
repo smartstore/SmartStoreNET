@@ -43,6 +43,9 @@ Textvorschläge:<ul>
 	<LocaleResource Name="OrderNotFound">
 		<Value>Ein Auftrag mit der Zahlungsart "Login und Bezahlen mit Amazon" und der Kennung '{0}' wurde nicht gefunden.</Value>
 	</LocaleResource>
+	<LocaleResource Name="AuthorizationSoftDeclineMessage">
+		<Value>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Payments zurückgewiesen. Bitte wählen Sie eine andere Zahlart.</Value>
+	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>
 			<![CDATA[<p>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Payments zurückgewiesen. Bitte kontaktieren Sie uns.</p>]]>

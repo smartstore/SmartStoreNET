@@ -19,6 +19,11 @@
 		try {
 			if (!isAuthentication) {
 				scope += ' payments:widget payments:shipping_address payments:billing_address';
+
+				@if(Model.Logout)
+				{
+					<text>amazon.Login.logout();</text>
+				}
 			}
 		}
 		catch (e) {

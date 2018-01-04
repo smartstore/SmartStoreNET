@@ -485,22 +485,30 @@ namespace SmartStore.AmazonPay.Services
 				{
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, AmazonPayPlugin.SystemName, store.Id);
 
-					decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart);
-					if (shoppingCartTotalBase.HasValue)
+					var failedPaymentReason = _httpContext.Session["AmazonPayFailedPaymentReason"] as string;
+					if (failedPaymentReason.IsCaseInsensitiveEqual("InvalidPaymentMethod"))
 					{
-						var client = CreateClient(settings);
-						var setOrderRequest = new SetOrderReferenceDetailsRequest()
-							.WithMerchantId(settings.SellerId)
-							.WithAmazonOrderReferenceId(model.OrderReferenceId)
-							.WithPlatformId(PlatformId)
-							.WithAmount(shoppingCartTotalBase.Value)
-							.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
-							.WithStoreName(store.Name);
-
-						var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
-						if (!setOrderResponse.GetSuccess())
+						_services.Notifier.Warning(new LocalizedString(T("Payment.PayingFailed")));
+					}
+					else
+					{
+						decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart);
+						if (shoppingCartTotalBase.HasValue)
 						{
-							LogError(setOrderResponse);
+							var client = CreateClient(settings);
+							var setOrderRequest = new SetOrderReferenceDetailsRequest()
+								.WithMerchantId(settings.SellerId)
+								.WithAmazonOrderReferenceId(model.OrderReferenceId)
+								.WithPlatformId(PlatformId)
+								.WithAmount(shoppingCartTotalBase.Value)
+								.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+								.WithStoreName(store.Name);
+
+							var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
+							if (!setOrderResponse.GetSuccess())
+							{
+								LogError(setOrderResponse);
+							}
 						}
 					}
 
@@ -900,7 +908,6 @@ namespace SmartStore.AmazonPay.Services
 
 				if (!IsPaymentMethodActive(store.Id, true))
 				{
-					//_httpContext.ResetCheckoutState();
 					result.AddError(T("Plugins.Payments.AmazonPay.PaymentMethodNotActive", store.Name));
 					return result;
 				}
@@ -911,76 +918,53 @@ namespace SmartStore.AmazonPay.Services
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = CreateClient(settings);
 
-				var setOrderRequest = new SetOrderReferenceDetailsRequest()
-					.WithMerchantId(settings.SellerId)
-					.WithAmazonOrderReferenceId(state.OrderReferenceId)
-					.WithPlatformId(PlatformId)
-					.WithAmount(request.OrderTotal)
-					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
-					.WithSellerOrderId(orderGuid)
-					.WithStoreName(store.Name);
-
-				var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
-				if (setOrderResponse.GetSuccess())
+				var failedPaymentReason = _httpContext.Session["AmazonPayFailedPaymentReason"] as string;
+				if (!failedPaymentReason.IsCaseInsensitiveEqual("InvalidPaymentMethod"))
 				{
-					if (setOrderResponse.GetHasConstraint())
-					{
-						var ids = setOrderResponse.GetConstraintIdList();
-						var descriptions = setOrderResponse.GetDescriptionList();
+					var setOrderRequest = new SetOrderReferenceDetailsRequest()
+						.WithMerchantId(settings.SellerId)
+						.WithAmazonOrderReferenceId(state.OrderReferenceId)
+						.WithPlatformId(PlatformId)
+						.WithAmount(request.OrderTotal)
+						.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
+						.WithSellerOrderId(orderGuid)
+						.WithStoreName(store.Name);
 
-						foreach (var id in ids)
+					var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
+					if (setOrderResponse.GetSuccess())
+					{
+						if (setOrderResponse.GetHasConstraint())
 						{
-							var idx = ids.IndexOf(id);
-							if (idx < descriptions.Count)
+							var ids = setOrderResponse.GetConstraintIdList();
+							var descriptions = setOrderResponse.GetDescriptionList();
+
+							foreach (var id in ids)
 							{
-								result.Errors.Add($"{descriptions[idx]} ({id})");
+								var idx = ids.IndexOf(id);
+								if (idx < descriptions.Count)
+								{
+									result.Errors.Add($"{descriptions[idx]} ({id})");
+								}
 							}
 						}
 					}
-				}
-				else
-				{
-					var message = LogError(setOrderResponse);
-					result.AddError(message);
+					else
+					{
+						var message = LogError(setOrderResponse);
+						result.AddError(message);
+					}
+
+					if (!result.Success)
+					{
+						return result;
+					}
 				}
 
-				if (!result.Success)
-				{
-					return result;
-				}
-
-				// Inform Amazon that the buyer has placed the order.
 				var confirmRequest = new ConfirmOrderReferenceRequest()
 					.WithMerchantId(settings.SellerId)
 					.WithAmazonOrderReferenceId(state.OrderReferenceId);
 
 				client.ConfirmOrderReference(confirmRequest);
-
-				// Address and payment cannot be changed if order is in open state, amazon widgets then might show an error.
-				//state.IsOrderConfirmed = true;
-
-				//var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
-				//var isShippable = cart.RequiresShipping();
-
-				//var getOrderRequest = new GetOrderReferenceDetailsRequest()
-				//	.WithMerchantId(settings.SellerId)
-				//	.WithAmazonOrderReferenceId(state.OrderReferenceId)
-				//	.WithaddressConsentToken(state.AddressConsentToken);
-
-				//var getOrderResponse = client.GetOrderReferenceDetails(getOrderRequest);
-
-				//FindAndApplyAddress(getOrderResponse, customer, isShippable, false);
-
-				//if (settings.CanSaveEmailAndPhone(customer.Email))
-				//{
-				//	customer.Email = getOrderResponse.GetEmail();
-				//}
-				//_customerService.UpdateCustomer(customer);
-
-				//if (settings.CanSaveEmailAndPhone(customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone, store.Id)))
-				//{
-				//	_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, getOrderResponse.GetPhone());
-				//}
 			}
 			catch (Exception exception)
 			{
@@ -993,7 +977,6 @@ namespace SmartStore.AmazonPay.Services
 
 		public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request)
 		{
-			// Initiate Amazon payment. We do not add errors to request.Errors cause of asynchronous processing.
 			var result = new ProcessPaymentResult();
 			var orderNoteErrors = new List<string>();
 			var informCustomerAboutErrors = false;
@@ -1003,6 +986,7 @@ namespace SmartStore.AmazonPay.Services
 
 			result.NewPaymentStatus = PaymentStatus.Pending;
 
+			_httpContext.Session.SafeRemove("AmazonPayFailedPaymentReason");
 			_httpContext.Session.SafeRemove("AmazonPayCheckoutCompletedNote");
 
 			try
@@ -1025,7 +1009,18 @@ namespace SmartStore.AmazonPay.Services
 					.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
 					.WithAmount(request.OrderTotal)
 					.WithTransactionTimeout(0);
-					//.WithSellerAuthorizationNote("{\"SandboxSimulation\": {\"State\":\"Declined\", \"ReasonCode\":\"AmazonRejected\"}}");
+
+				if (settings.UseSandbox)
+				{
+					var authNote = _services.Settings.GetSettingByKey<string>("SmartStore.AmazonPay.SellerAuthorizationNote");
+					if (authNote.HasValue())
+					{
+						// See https://pay.amazon.com/de/developer/documentation/lpwa/201956480
+						//{"SandboxSimulation": {"State":"Declined", "ReasonCode":"InvalidPaymentMethod", "PaymentMethodUpdateTimeInMins":5}}
+						//{"SandboxSimulation": {"State":"Declined", "ReasonCode":"AmazonRejected"}}
+						synchronousRequest = synchronousRequest.WithSellerAuthorizationNote(authNote);
+					}
+				}
 
 				var authorizeResponse = client.Authorize(synchronousRequest);
 
@@ -1043,7 +1038,6 @@ namespace SmartStore.AmazonPay.Services
 						.WithCaptureNow(captureNow)
 						.WithCurrencyCode(ConvertCurrency(store.PrimaryStoreCurrency.CurrencyCode))
 						.WithAmount(request.OrderTotal);
-						//.WithSellerAuthorizationNote("{\"SandboxSimulation\": {\"State\":\"Declined\", \"ReasonCode\":\"AmazonRejected\"}}");
 
 					authorizeResponse = client.Authorize(asynchronousRequest);
 				}
@@ -1093,11 +1087,17 @@ namespace SmartStore.AmazonPay.Services
 
 						if (reason.IsCaseInsensitiveEqual("AmazonRejected"))
 						{
-							// Reviewed: Must be logged out and redirected to shopping cart.
+							// Must be logged out and redirected to shopping cart.
 							_httpContext.Session["AmazonPayFailedPaymentReason"] = reason;
 
-							// Quite ugly to force a redirect deep in service layer code but CheckoutController.ConfirmOrder doesn't give us the chance to use a filter.
 							_httpContext.Response.RedirectToRoute("ShoppingCart");
+						}
+						else if (reason.IsCaseInsensitiveEqual("InvalidPaymentMethod"))
+						{
+							// Must be redirected to checkout payment page.
+							_httpContext.Session["AmazonPayFailedPaymentReason"] = reason;
+
+							_httpContext.Response.RedirectToRoute(new { Controller = "Checkout", Action = "PaymentMethod", Area = "" });
 						}
 					}
 				}
@@ -1124,7 +1124,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 			}
 
-			// Customer needs to be informed of an amazon error here. Hooking OrderPlaced.CustomerNotification won't work
+			// Customer needs to be informed of an Amazon error here. Hooking OrderPlaced.CustomerNotification won't work
 			// cause of asynchronous processing. Solution: we add a customer order note that is also send as an email.
 			if (informCustomerAboutErrors && orderNoteErrors.Any())
 			{
@@ -1374,6 +1374,11 @@ namespace SmartStore.AmazonPay.Services
 					isRefund = true;
 					var response = parser.GetRefundResponse();
 					data = GetDetails(response);
+				}
+				else
+				{
+					// Ignore, e.g. OrderReferenceNotification.
+					return;
 				}
 
 				if (data == null)

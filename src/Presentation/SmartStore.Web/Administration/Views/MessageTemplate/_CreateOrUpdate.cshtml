@@ -133,7 +133,7 @@
                 @Html.SmartLabelFor(model => model.Locales[item].Body)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => Model.Locales[item].Body, "CodeMirror")
+                @Html.EditorFor(model => Model.Locales[item].Body, "CodeMirror", new { ModelTree = ViewBag.LastModelTreeJson })
                 @Html.ValidationMessageFor(model => model.Locales[item].Body)
             </td>
         </tr>
@@ -222,7 +222,7 @@
                 @Html.SmartLabelFor(model => model.Body)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Body, "CodeMirror")
+                @Html.EditorFor(model => model.Body, "CodeMirror", new { ModelTree = ViewBag.LastModelTreeJson })
                 @Html.ValidationMessageFor(model => model.Body)
             </td>
         </tr>

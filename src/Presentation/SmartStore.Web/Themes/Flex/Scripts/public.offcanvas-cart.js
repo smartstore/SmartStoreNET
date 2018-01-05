@@ -156,7 +156,6 @@ $(function () {
     var shouldOpen = !$("body").hasClass("no-offcanvas-cart");
 
     shopBar.find(".shopbar-button").on("click", function (e) {
-
         var isMenu = $(e.target).closest(".shopbar-button").data("target") == "#offcanvas-menu";
 
         if (!shouldOpen && !isMenu) {
@@ -170,7 +169,7 @@ $(function () {
             var tool = el.parent();
 
             // Open corresponding tab
-            $('.nav-tabs a' + tool.data("target")).tab('show');
+            $(tool.data("target")).tab('show');
         }
     });
 

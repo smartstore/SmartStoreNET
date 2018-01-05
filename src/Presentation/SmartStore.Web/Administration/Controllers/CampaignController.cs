@@ -291,10 +291,8 @@ namespace SmartStore.Admin.Controllers
 
 		private void DeserializeLastModelTree(MessageTemplate template)
 		{
-			if (template.LastModelTree.HasValue())
-			{
-				ViewBag.LastModelTree = Newtonsoft.Json.JsonConvert.DeserializeObject<TreeNode<ModelTreeMember>>(template.LastModelTree);
-			}
+			ViewBag.LastModelTreeJson = template.LastModelTree;
+			ViewBag.LastModelTree = _messageModelProvider.GetLastModelTree(template);
 		}
 	}
 }

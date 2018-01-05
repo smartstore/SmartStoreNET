@@ -1,14 +1,30 @@
 ﻿
+@functions {
+	private string ModelTree
+	{
+		get
+		{
+			if (ViewData.ContainsKey("ModelTree"))
+			{
+				return ViewData["ModelTree"].Convert<string>();
+			}
+
+			return null;
+		}
+	}
+}
+
 @{ 
 	var cdn = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/";
 
 	Html.AddScriptParts(true,
 		cdn + "codemirror.min.js",
 		cdn + "addon/hint/show-hint.min.js",
+		"~/Content/editors/CodeMirror/liquid.js",
 		//cdn + "addon/hint/xml-hint.min.js",
 		//cdn + "addon/hint/html-hint.min.js",
 		//cdn + "addon/hint/css-hint.min.js",
-		cdn + "addon/hint/javascript-hint.min.js",
+		//cdn + "addon/hint/javascript-hint.min.js",
 		cdn + "addon/fold/xml-fold.min.js",
 		cdn + "addon/fold/foldcode.min.js",
 		cdn + "addon/edit/closetag.min.js",
@@ -21,15 +37,14 @@
 		cdn + "mode/css/css.min.js",
 		cdn + "mode/htmlmixed/htmlmixed.min.js",
 		cdn + "addon/selection/active-line.min.js",
-		cdn + "addon/edit/matchbrackets.min.js",
-		"~/Content/editors/CodeMirror/liquid.js");
+		cdn + "addon/edit/matchbrackets.min.js");
 
 	Html.AddCssFileParts(true,
 		cdn + "codemirror.min.css",
 		cdn + "addon/hint/show-hint.min.css",
 		cdn + "theme/eclipse.min.css",
 		"~/Content/editors/CodeMirror/liquid.css");
-	}
+}
 
 <script type="text/javascript">
     $(function () {
@@ -47,9 +62,35 @@
 				autoCloseTags: true,
 				autoCloseBrackets: true,
 				styleActiveLine: true,
-				extraKeys: { "Ctrl-Space": "autocomplete" },
-				continueComments: "Enter"
-            });
+				continueComments: "Enter",
+				extraKeys: {
+					//"'.'": completeAfter,
+					//"'{'": completeAfter,
+					"Ctrl-Q": "autocomplete"
+				},
+				hintOptions: {
+					hint: CodeMirror.hint.liquid,
+					modelTree: @Html.Raw(ModelTree.HasValue() ? "JSON.parse('" + ModelTree +  "')" : "null")
+				}
+			});
+
+			function completeAfterDot(cm) {
+				return completeAfter(cm, function () {
+					var cur = cm.getCursor();
+					return cm.getRange(CodeMirror.Pos(cur.line, cur.ch - 1), cur) == "<";
+				});
+			}
+
+			function completeAfter(cm, pred) {
+				var cur = cm.getCursor();
+				
+				if (!pred || pred()) setTimeout(function () {
+					if (!cm.state.completionActive) {
+						cm.showHint({ completeSingle: false });
+					}	
+				}, 100);
+				return CodeMirror.Pass;
+			}
         }
     });
 </script>

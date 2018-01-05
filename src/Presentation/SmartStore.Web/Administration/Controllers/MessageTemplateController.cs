@@ -191,6 +191,7 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareLastModelTree(MessageTemplate template)
 		{
+			ViewBag.LastModelTreeJson = template.LastModelTree;
 			ViewBag.LastModelTree = Services.Resolve<IMessageModelProvider>().GetLastModelTree(template);
 		}
 

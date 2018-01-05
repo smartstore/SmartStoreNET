@@ -1,24 +1,4 @@
-﻿//CodeMirror.defineMode("liquid2", function (config) {
-//	return CodeMirror.multiplexingMode(
-//		CodeMirror.getMode(config, "htmlmixed"),
-//		{
-//			open: "{{",
-//			close: "}}",
-//			mode: CodeMirror.getMode(config, "text/x-liquid"),
-//			delimStyle: "liquid variable variable-2",
-//			innerStyle: "liquid variable variable-2"
-//		},
-//		{
-//			open: "{%",
-//			close: "%}",
-//			mode: CodeMirror.getMode(config, "text/x-liquid"),
-//			delimStyle: "liquid variable-2 special keyword",
-//			innerStyle: "liquid variable-2 special keyword"
-//		}
-//	);
-//});
-
-// Copyright (c) 2012 Henning Kiel
+﻿// Copyright (c) 2012 Henning Kiel
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -129,9 +109,12 @@ CodeMirror.defineMode("liquid", function (config, parserConfig) {
 			var combinator = cc.length ? cc.pop() : liquidMarkup;
 			if (combinator(type, content)) {
 				// Immediately work off any autocompletion objects on the stack
-				while (cc.length && cc[cc.length - 1].ac)
-					cc.pop()();
 				
+				while (cc.length && cc[cc.length - 1].ac) {
+					cc.pop()();
+				}				
+
+				//if (cx.marked) console.log(cx.marked, type, content);;
 				if (cx.marked) return cx.marked;
 				return null;
 			}
@@ -396,3 +379,99 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 		this.replaceRange(selText, from, to);
 	}
 });
+
+
+(function () {
+	var Pos = CodeMirror.Pos;
+
+	var liquidTags = ("assign block break capture case comment continue cycle elsif else " +
+		"extends for if include literal raw tablerow unless zone").split(" ");
+
+	var liquidFilters = ("Abs Append AtLeast AtMost Capitalize Ceil Compact Currency Date Default " +
+		"DividedBy Downcase Escape First Floor FormatAddress H Handleize ImgTag Join Json Last Lstrip " +
+		"Map Md5 Minus Modulo NewlineToBr Pluralize Plus Prepend Prettify Remove RemoveFirst Replace " +
+		"ReplaceFirst Reverse Round Rstrip SanitizeHtmlId ScriptTag Sha1 Size Slice Sort " +
+		"Split Strip StripHtml StripNewlines StylesheetTag T Times Truncate TruncateWords Uniq Upcase UrlEncode UrlDecode").split(" ");
+
+	//CodeMirror.commands.autocomplete = function (cm) {
+	//	cm.showHint({ hint: CodeMirror.hint.liquid });
+	//}
+
+	function flattenTreeNodes(nodes) {
+		return _.toArray(_.map(nodes || [], function (x) { return x.Value.Name; })).sort();
+	}
+
+	function findTreeNode(nodes, str) {
+		return _.find(nodes || [], function (x) { return x.Value.Name.toLowerCase() == str.toLowerCase(); });
+	}
+
+	CodeMirror.registerHelper("hint", "liquid", function (cm, options) {
+		var cur = cm.getCursor(),
+			token = cm.getTokenAt(cur),
+			modelTree = options.modelTree || { "Children": [] },
+			isType = function (token, s) { return (token.type || "").indexOf(s) >= 0; };
+
+		if (!isType(token, "liquid")) {
+			return null;
+		}
+
+		var from = Pos(cur.line, token.start),
+			to = Pos(cur.line, token.end),
+			list = []; 
+
+		//// If it's not a 'word-style' token, ignore the token.
+		//if (!/^[\w$_]*$/.test(token.string)) {
+		//	token = {
+		//		start: cur.ch, end: cur.ch, string: "", state: token.state,
+		//		type: token.string == "." ? "variable" : null
+		//	};
+		//} else if (token.end > cur.ch) {
+		//	token.end = cur.ch;
+		//	token.string = token.string.slice(0, cur.ch - token.start);
+		//}
+
+		if (isType(token, "liquid-tag-name")) {
+			list = liquidTags;
+		}
+		else if (isType(token, "liquid-filter")) {
+			list = liquidFilters;
+		}
+		else if (isType(token, "liquid-variable")) {
+			list = flattenTreeNodes(modelTree.Children);
+		}
+		else if (modelTree.Children.length) {
+			var tprop = token;
+
+			// If it is a variable/method, find out what it is part of.
+			while (isType(tprop, "liquid-method")) {
+				tprop = cm.getTokenAt(Pos(cur.line, tprop.start));
+				if (tprop.string != ".") return;
+				tprop = cm.getTokenAt(Pos(cur.line, tprop.start));
+				if (!context) var context = [];
+				context.push(tprop);
+			}
+
+			if (context && context.length) {
+				var nodes = modelTree.Children;
+				while (context.length && nodes && nodes.length) {
+					var obj = context.pop();
+					if (isType(obj, "liquid-variable") || isType(obj, "liquid-method")) {
+						var node = findTreeNode(nodes, obj.string);
+						if (node) {
+							nodes = node.Children;
+							if (context.length == 0) {
+								// This is the last token, gather node names now
+								list = flattenTreeNodes(nodes);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (list && list.length) {
+			return { list: list, from: from, to: to };
+		}	
+	});
+})();
+

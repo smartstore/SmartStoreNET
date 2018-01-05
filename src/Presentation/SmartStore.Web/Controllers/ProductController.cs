@@ -12,14 +12,12 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
-using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -413,73 +411,85 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted)
+			{
 				throw new ArgumentException(T("Products.NotFound", id));
+			}
+
+			var customer = _services.WorkContext.CurrentCustomer;
+			var store = _services.StoreContext.CurrentStore;
 
 			var model = new BackInStockSubscribeModel();
 			model.ProductId = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
-			model.IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered();
+			model.IsCurrentCustomerRegistered = customer.IsRegistered();
 			model.MaximumBackInStockSubscriptions = _catalogSettings.MaximumBackInStockSubscriptions;
 			model.CurrentNumberOfBackInStockSubscriptions = _backInStockSubscriptionService
-				 .GetAllSubscriptionsByCustomerId(_services.WorkContext.CurrentCustomer.Id, _services.StoreContext.CurrentStore.Id, 0, 1)
+				 .GetAllSubscriptionsByCustomerId(customer.Id, store.Id, 0, 1)
 				 .TotalCount;
+
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
 				product.BackorderMode == BackorderMode.NoBackorders &&
 				product.AllowBackInStockSubscriptions &&
 				product.StockQuantity <= 0)
 			{
-				//out of stock
+				// Out of stock.
 				model.SubscriptionAllowed = true;
-				model.AlreadySubscribed = _backInStockSubscriptionService
-					.FindSubscription(_services.WorkContext.CurrentCustomer.Id, product.Id, _services.StoreContext.CurrentStore.Id) != null;
+				model.AlreadySubscribed = _backInStockSubscriptionService.FindSubscription(customer.Id, product.Id, store.Id) != null;
 			}
+
 			return View("BackInStockSubscribePopup", model);
 		}
 
-		[HttpPost, ActionName("BackInStockSubscribe")]
-		public ActionResult BackInStockSubscribePopupPOST(int id /* productId */)
+		[HttpPost]
+		public ActionResult BackInStockSubscribePopup(int id /* productId */, FormCollection form)
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted)
+			{
 				throw new ArgumentException(T("Products.NotFound", id));
+			}
 
 			if (!_services.WorkContext.CurrentCustomer.IsRegistered())
+			{
 				return Content(T("BackInStockSubscriptions.OnlyRegistered"));
+			}
 
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
 				product.BackorderMode == BackorderMode.NoBackorders &&
 				product.AllowBackInStockSubscriptions &&
 				product.StockQuantity <= 0)
 			{
-				//out of stock
-				var subscription = _backInStockSubscriptionService
-					.FindSubscription(_services.WorkContext.CurrentCustomer.Id, product.Id, _services.StoreContext.CurrentStore.Id);
+				var customer = _services.WorkContext.CurrentCustomer;
+				var store = _services.StoreContext.CurrentStore;
+
+				// Out of stock.
+				var subscription = _backInStockSubscriptionService.FindSubscription(customer.Id, product.Id, store.Id);
 				if (subscription != null)
 				{
-					//unsubscribe
+					// Unsubscribe.
 					_backInStockSubscriptionService.DeleteSubscription(subscription);
 					return Content("Unsubscribed");
 				}
 				else
 				{
-					if (_backInStockSubscriptionService
-						.GetAllSubscriptionsByCustomerId(_services.WorkContext.CurrentCustomer.Id, _services.StoreContext.CurrentStore.Id, 0, 1)
-						.TotalCount >= _catalogSettings.MaximumBackInStockSubscriptions)
-						return Content(string.Format(T("BackInStockSubscriptions.MaxSubscriptions"), _catalogSettings.MaximumBackInStockSubscriptions));
-
-					//subscribe   
-					subscription = new BackInStockSubscription()
+					if (_backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(customer.Id, store.Id, 0, 1).TotalCount >= _catalogSettings.MaximumBackInStockSubscriptions)
 					{
-						Customer = _services.WorkContext.CurrentCustomer,
+						return Content(string.Format(T("BackInStockSubscriptions.MaxSubscriptions"), _catalogSettings.MaximumBackInStockSubscriptions));
+					}
+
+					// Subscribe.
+					subscription = new BackInStockSubscription
+					{
+						Customer = customer,
 						Product = product,
-						StoreId = _services.StoreContext.CurrentStore.Id,
+						StoreId = store.Id,
 						CreatedOnUtc = DateTime.UtcNow
 					};
+
 					_backInStockSubscriptionService.InsertSubscription(subscription);
 					return Content("Subscribed");
 				}
-
 			}
 			else
 			{

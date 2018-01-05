@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -55,6 +55,7 @@
 * Debitoor: VAT amount could be transmitted as miscellaneous for deliveries abroad.
 * Prices with discounts limited to categories and customer groups were shown to all users in product lists
 * #1330 MegaSearch: Missing variant facets if the variant value is not unique
+* Back-in-stock subscription form was already submitted when opening the popup dialog
 
 
 ## SmartStore.NET 3.0.3

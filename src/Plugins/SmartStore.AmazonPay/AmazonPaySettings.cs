@@ -29,13 +29,13 @@ namespace SmartStore.AmazonPay
 		public string AccessKey { get; set; }
 		public string SecretKey { get; set; }
 		public string ClientId { get; set; }
-		//public string ClientSecret { get; set; }
 		public string Marketplace { get; set; }
 		
 		public AmazonPayDataFetchingType DataFetching { get; set; }
 		public AmazonPayTransactionType TransactionType { get; set; }
 
 		public AmazonPaySaveDataType? SaveEmailAndPhone { get; set; }
+		public bool ShowPayButtonForAdminOnly { get; set; }
 		public bool ShowButtonInMiniShoppingCart { get; set; }
 
 		public int PollingMaxOrderCreationDays { get; set; }

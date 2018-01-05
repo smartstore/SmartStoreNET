@@ -629,17 +629,17 @@ namespace SmartStore.Web.Controllers
 				if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
 					continue;
 
-				string actionName;
-				string controllerName;
-				RouteValueDictionary routeValues;
-				pm.Value.GetPaymentInfoRoute(out actionName, out controllerName, out routeValues);
+				pm.Value.GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues);
 
-				model.Items.Add(new ButtonPaymentMethodModel.ButtonPaymentMethodItem
+				if (actionName.HasValue() && controllerName.HasValue())
 				{
-					ActionName = actionName,
-					ControllerName = controllerName,
-					RouteValues = routeValues
-				});
+					model.Items.Add(new ButtonPaymentMethodModel.ButtonPaymentMethodItem
+					{
+						ActionName = actionName,
+						ControllerName = controllerName,
+						RouteValues = routeValues
+					});
+				}
 			}
 		}
 

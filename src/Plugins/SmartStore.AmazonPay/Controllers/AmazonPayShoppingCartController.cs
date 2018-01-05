@@ -53,19 +53,5 @@ namespace SmartStore.AmazonPay.Controllers
 			}
 			return new EmptyResult();
 		}
-
-		//[ChildActionOnly]
-		//public ActionResult WidgetLibrary()
-		//{
-		//	// Not possible to load it asynchronously cause of document.write inside.
-		//	var widgetUrl = _apiService.GetWidgetUrl();
-
-		//	if (widgetUrl.HasValue())
-		//	{
-		//		return this.Content("<script src=\"{0}\" type=\"text/javascript\"></script>".FormatWith(widgetUrl));
-		//	}
-
-		//	return new EmptyResult();
-		//}
 	}
 }

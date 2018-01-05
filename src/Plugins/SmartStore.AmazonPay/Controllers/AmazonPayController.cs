@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Payments;
@@ -51,8 +52,10 @@ namespace SmartStore.AmazonPay.Controllers
 		public ActionResult Configure(AmazonPaySettings settings)
 		{
 			var model = new ConfigurationModel();
-			model.Copy(settings, true);
+
+			MiniMapper.Map(settings, model);
 			_apiService.SetupConfiguration(model);
+
 			return View(model);
 		}
 
@@ -63,7 +66,7 @@ namespace SmartStore.AmazonPay.Controllers
 				return Configure(settings);
 
 			ModelState.Clear();
-			model.Copy(settings, false);
+			MiniMapper.Map(model, settings);
 
 			Services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
 			Services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
@@ -76,7 +79,7 @@ namespace SmartStore.AmazonPay.Controllers
 				_scheduleTaskService.Value.UpdateTask(task);
 			}
 
-			NotifySuccess(Services.Localization.GetResource("Plugins.Payments.AmazonPay.ConfigSaveNote"));
+			NotifySuccess(T("Plugins.Payments.AmazonPay.ConfigSaveNote"));
 
 			return Configure(settings);
 		}

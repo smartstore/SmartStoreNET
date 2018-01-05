@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Services;
-using SmartStore.ComponentModel;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -28,9 +27,6 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ClientId")]
 		public string ClientId { get; set; }
 
-		//[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ClientSecret")]
-		//public string ClientSecret { get; set; }
-
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.Marketplace")]
 		public string Marketplace { get; set; }
 
@@ -51,6 +47,9 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.SaveEmailAndPhone")]
 		public AmazonPaySaveDataType? SaveEmailAndPhone { get; set; }
 		public List<SelectListItem> SaveEmailAndPhones { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ShowPayButtonForAdminOnly")]
+		public bool ShowPayButtonForAdminOnly { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ShowButtonInMiniShoppingCart")]
 		public bool ShowButtonInMiniShoppingCart { get; set; }
@@ -120,17 +119,5 @@ namespace SmartStore.AmazonPay.Models
 		public string MerchantProductionIpnUrl { get; set; }
 
 		#endregion
-
-		public void Copy(AmazonPaySettings settings, bool fromSettings)
-		{
-			if (fromSettings)
-			{
-				MiniMapper.Map(settings, this);
-			}
-			else
-			{
-				MiniMapper.Map(this, settings);
-			}
-		}
 	}
 }

@@ -112,6 +112,12 @@ Text suggestions:<ul>
 	<LocaleResource Name="UseSandbox.Hint">
 		<Value>Check the box to use the sandbox (testing environment).</Value>
 	</LocaleResource>
+	<LocaleResource Name="ShowPayButtonForAdminOnly">
+		<Value>Show pay button for administrators only</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShowPayButtonForAdminOnly.Hint">
+		<Value>Specifies whether the pay button is visible to administrators only. Intended for testing without having to offer the payment method to customers.</Value>
+	</LocaleResource>
 	<LocaleResource Name="SellerId">
 		<Value>Your Merchant ID</Value>
 	</LocaleResource>
@@ -130,42 +136,36 @@ Text suggestions:<ul>
 	<LocaleResource Name="Marketplace.Uk">
 		<Value>United Kingdom of Great Britain</Value>
 	</LocaleResource>
-  <LocaleResource Name="AccessKey">
-    <Value>Your Access Key ID</Value>
-  </LocaleResource>
-  <LocaleResource Name="AccessKey.Hint">
-    <Value>You can find the Access Key ID at Amazon's Seller Central under Integration - MWS Access Key.</Value>
-  </LocaleResource>
-  <LocaleResource Name="SecretKey">
-    <Value>Your Secret Access Key</Value>
-  </LocaleResource>
-  <LocaleResource Name="SecretKey.Hint">
-    <Value>You can find the Secret Access Key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
-  </LocaleResource>
+	<LocaleResource Name="AccessKey">
+		<Value>Your Access Key ID</Value>
+	</LocaleResource>
+	<LocaleResource Name="AccessKey.Hint">
+		<Value>You can find the Access Key ID at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+	</LocaleResource>
+	<LocaleResource Name="SecretKey">
+		<Value>Your Secret Access Key</Value>
+	</LocaleResource>
+	<LocaleResource Name="SecretKey.Hint">
+		<Value>You can find the Secret Access Key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+	</LocaleResource>
 	<LocaleResource Name="ClientId">
 		<Value>Your Client ID</Value>
 	</LocaleResource>
 	<LocaleResource Name="ClientId.Hint">
 		<Value>You can find the Client ID at Amazon's Seller Central under Integration - MWS Access Key.</Value>
 	</LocaleResource>
-  <LocaleResource Name="MerchantLoginDomains">
-    <Value>Allowed JavaScript origins</Value>
-  </LocaleResource>
-  <LocaleResource Name="MerchantLoginDomains.Hint">
-    <Value>Please enter these origins at Amazon Seller Central under Login with Amazon. The origins must use the HTTPS protocol.</Value>
-  </LocaleResource>
-  <LocaleResource Name="MerchantLoginRedirectUrls">
-    <Value>Allowed redirect URLs</Value>
-  </LocaleResource>
-  <LocaleResource Name="MerchantLoginRedirectUrls.Hint">
-    <Value>Please enter these URLs at Amazon Seller Central under Login with Amazon. The redirect URL protocol must be HTTPS.</Value>
-  </LocaleResource>
-	<!--<LocaleResource Name="ClientSecret">
-		<Value>Your Client Secret</Value>
+	<LocaleResource Name="MerchantLoginDomains">
+		<Value>Allowed JavaScript origins</Value>
 	</LocaleResource>
-	<LocaleResource Name="ClientSecret.Hint">
-		<Value>You can find the Cleint Secret at Amazon's Seller Central under Integration - MWS Access Key.</Value>
-	</LocaleResource>-->
+	<LocaleResource Name="MerchantLoginDomains.Hint">
+		<Value>Please enter these origins at Amazon Seller Central under Login with Amazon. The origins must use the HTTPS protocol.</Value>
+	</LocaleResource>
+	<LocaleResource Name="MerchantLoginRedirectUrls">
+		<Value>Allowed redirect URLs</Value>
+	</LocaleResource>
+	<LocaleResource Name="MerchantLoginRedirectUrls.Hint">
+		<Value>Please enter these URLs at Amazon Seller Central under Login with Amazon. The redirect URL protocol must be HTTPS.</Value>
+	</LocaleResource>
 	<LocaleResource Name="PayButtonColor">
 		<Value>Pay button color</Value>
 	</LocaleResource>

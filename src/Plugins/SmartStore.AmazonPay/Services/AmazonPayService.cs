@@ -366,15 +366,20 @@ namespace SmartStore.AmazonPay.Services
 				model.IsRecurring = cart.IsRecurring();
 				model.WidgetUrl = settings.WidgetUrl;
 
-				if (type == AmazonPayRequestType.MiniShoppingCart && !settings.ShowButtonInMiniShoppingCart)
-				{
-					model.Result = AmazonPayResultType.None;
-					return model;
-				}
-
 				if (type == AmazonPayRequestType.MiniShoppingCart || type == AmazonPayRequestType.ShoppingCart)
 				{
-					// The setting for payment button type has been removed at Amazon Payment's request.
+					if (type == AmazonPayRequestType.MiniShoppingCart && !settings.ShowButtonInMiniShoppingCart)
+					{
+						model.Result = AmazonPayResultType.None;
+						return model;
+					}
+					if (settings.ShowPayButtonForAdminOnly && !customer.IsAdmin())
+					{
+						model.Result = AmazonPayResultType.None;
+						return model;
+					}
+
+					// AmazonPay review: The setting for payment button type has been removed.
 					model.ButtonType = "PwA";
 					model.ButtonColor = settings.PayButtonColor;
 					model.ButtonSize = settings.PayButtonSize;

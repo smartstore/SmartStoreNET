@@ -45,7 +45,7 @@
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
-* OutputCache computes ambigous cache keys for blog pages
+* OutputCache computes ambiguous cache keys for blog pages
 * #1142 Customer import creates role multiple times
 * #1244 Variant query model binder cannot handle types text and datepicker
 * #1273 Attribute formatter should consider setting CatalogSettings.ShowVariantCombinationPriceAdjustment

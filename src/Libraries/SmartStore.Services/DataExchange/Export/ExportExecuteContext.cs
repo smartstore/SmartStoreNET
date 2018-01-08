@@ -30,6 +30,11 @@ namespace SmartStore.Services.DataExchange.Export
         public int ProfileId { get; internal set; }
 
 		/// <summary>
+		/// The export profile
+		/// </summary>
+		public dynamic Profile { get; internal set; }
+
+		/// <summary>
 		/// Provides the data to be exported
 		/// </summary>
 		public IExportDataSegmenterConsumer DataSegmenter { get; set; }

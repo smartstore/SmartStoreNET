@@ -48,7 +48,14 @@
 							@profile.Provider.EntityTypeName.NaIfEmpty()
 						</td>
 						<td class="ac">
-							@Html.IconForFileExtension(profile.Provider.FileExtension, true)
+							@if (profile.Provider.FileExtension.HasValue())
+							{
+								@Html.IconForFileExtension(profile.Provider.FileExtension, true)
+							}
+							else
+							{
+								<span class="muted">@("".NaIfEmpty())</span>
+							}
 						</td>
 						<td id="ExportFileCount@(profile.Id)" class="ac">
 							@{ Html.RenderPartial("ProfileFileCount", profile.FileCount); }

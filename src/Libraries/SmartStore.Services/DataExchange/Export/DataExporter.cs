@@ -1308,6 +1308,7 @@ namespace SmartStore.Services.DataExchange.Export
 						ctx.ExecuteContext.Language = ToDynamic(ctx, ctx.ContextLanguage);
 						ctx.ExecuteContext.Customer = ToDynamic(ctx, ctx.ContextCustomer);
 						ctx.ExecuteContext.Currency = ToDynamic(ctx, ctx.ContextCurrency);
+						ctx.ExecuteContext.Profile = ToDynamic(ctx, ctx.Request.Profile);
 
 						stores.ForEach(x => ExportCoreInner(ctx, x));
 					}

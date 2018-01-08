@@ -29,6 +29,7 @@ using SmartStore.Services.DataExchange.Export.Events;
 using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Seo;
+using SmartStore.Core.Domain;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -245,6 +246,15 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			return (localized.Count == 0 ? null : localized);
+		}
+
+		private dynamic ToDynamic(DataExporterContext ctx, ExportProfile profile)
+		{
+			if (profile == null)
+				return null;
+
+			dynamic result = new DynamicEntity(profile);
+			return result;
 		}
 
 		private dynamic ToDynamic(DataExporterContext ctx, Currency currency)

@@ -1,10 +1,14 @@
 ﻿#Release Notes
 
+##Login and Pay with Amazon 3.0.3.2
+###Improvements
+* Supports merchants registered in the USA and Japan
+
 ##Login and Pay with Amazon 3.0.3.1
 ### New Features
-* Customer can register in frontend via "Login with Amazon" button
+* External authentication via "Login with Amazon" button in shop frontend
 ###Improvements
-* Moved to new SDK AmazonPay.dll.
+* Moved to new SDK AmazonPay.dll
 * Implemented new Login and Pay with Amazon features:
 	* Perf: Widget script is now loaded asynchronously
 	* Widget rendering in responsive design

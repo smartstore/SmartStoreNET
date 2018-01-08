@@ -136,6 +136,12 @@ Textvorschläge:<ul>
 	<LocaleResource Name="Marketplace.Uk">
 		<Value>Großbritannien</Value>
 	</LocaleResource>
+	<LocaleResource Name="Marketplace.Us">
+		<Value>USA</Value>
+	</LocaleResource>
+	<LocaleResource Name="Marketplace.Jp">
+		<Value>Japan</Value>
+	</LocaleResource>
 	<LocaleResource Name="AccessKey">
 		<Value>Ihre Access Key ID</Value>
 	</LocaleResource>

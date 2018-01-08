@@ -109,7 +109,9 @@
 				@Html.DropDownListFor(model => model.Marketplace, new List<SelectListItem>
 				{
 					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.De"), Value = "de" },
-					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.Uk"), Value = "uk" }
+					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.Uk"), Value = "uk" },
+					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.Us"), Value = "us" },
+					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.Jp"), Value = "jp" }
 				})
 				@Html.ValidationMessageFor(model => model.Marketplace)
 			</td>

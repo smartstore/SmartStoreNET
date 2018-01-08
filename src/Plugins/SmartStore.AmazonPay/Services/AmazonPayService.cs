@@ -364,7 +364,7 @@ namespace SmartStore.AmazonPay.Services
 				model.ClientId = settings.ClientId;
 				model.IsShippable = cart.RequiresShipping();
 				model.IsRecurring = cart.IsRecurring();
-				model.WidgetUrl = settings.WidgetUrl;
+				model.WidgetUrl = GetWidgetUrl(settings);
 
 				if (type == AmazonPayRequestType.MiniShoppingCart || type == AmazonPayRequestType.ShoppingCart)
 				{

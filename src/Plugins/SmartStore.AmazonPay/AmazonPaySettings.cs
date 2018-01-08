@@ -48,27 +48,6 @@ namespace SmartStore.AmazonPay
 		public bool InformCustomerAboutErrors { get; set; }
 		public bool InformCustomerAddErrors { get; set; }
 
-		public string WidgetUrl
-		{
-			get
-			{
-				if (SellerId.IsEmpty())
-					return null;
-
-				return UseSandbox
-					? "https://static-eu.payments-amazon.com/OffAmazonPayments/eur/sandbox/lpa/js/Widgets.js"
-					: "https://static-eu.payments-amazon.com/OffAmazonPayments/eur/lpa/js/Widgets.js";
-
-				//string url = (UseSandbox ? AmazonPayCore.UrlWidgetSandboxOld : AmazonPayCore.UrlWidgetProductionOld);
-				//url = url.FormatWith(Marketplace ?? "de");
-
-				//return "{0}?sellerId={1}".FormatWith(
-				//	url,
-				//	HttpUtility.UrlEncode(SellerId)
-				//);
-			}
-		}
-
 		public string PayButtonColor { get; set; }
 		public string PayButtonSize { get; set; }
 

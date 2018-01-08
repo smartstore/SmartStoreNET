@@ -1,30 +1,16 @@
 ﻿
-@functions {
-	private string ModelTree
-	{
-		get
-		{
-			if (ViewData.ContainsKey("ModelTree"))
-			{
-				return ViewData["ModelTree"].Convert<string>();
-			}
-
-			return null;
-		}
-	}
-}
-
 @{ 
+	string modelTree = ViewData["ModelTree"]?.Convert<string>();
+
 	var cdn = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/";
 
 	Html.AddScriptParts(true,
 		cdn + "codemirror.min.js",
 		cdn + "addon/hint/show-hint.min.js",
-		"~/Content/editors/CodeMirror/liquid.js",
-		//cdn + "addon/hint/xml-hint.min.js",
-		//cdn + "addon/hint/html-hint.min.js",
-		//cdn + "addon/hint/css-hint.min.js",
-		//cdn + "addon/hint/javascript-hint.min.js",
+		cdn + "addon/hint/xml-hint.min.js",
+		cdn + "addon/hint/html-hint.min.js",
+		cdn + "addon/hint/css-hint.min.js",
+		cdn + "addon/hint/javascript-hint.min.js",
 		cdn + "addon/fold/xml-fold.min.js",
 		cdn + "addon/fold/foldcode.min.js",
 		cdn + "addon/edit/closetag.min.js",
@@ -37,7 +23,8 @@
 		cdn + "mode/css/css.min.js",
 		cdn + "mode/htmlmixed/htmlmixed.min.js",
 		cdn + "addon/selection/active-line.min.js",
-		cdn + "addon/edit/matchbrackets.min.js");
+		cdn + "addon/edit/matchbrackets.min.js",
+		"~/Content/editors/CodeMirror/liquid.js");
 
 	Html.AddCssFileParts(true,
 		cdn + "codemirror.min.css",
@@ -51,7 +38,7 @@
 		if (window.CodeMirror !== undefined) {
             var el = $('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)');
             CodeMirror.fromTextArea(el[0], {
-				mode: "htmlmixedliquid",
+				mode: "liquid-html",
 				theme: "eclipse",
 				lineNumbers: true,
 				lineWrapping: true,
@@ -64,32 +51,44 @@
 				styleActiveLine: true,
 				continueComments: "Enter",
 				extraKeys: {
-					//"'.'": completeAfter,
-					//"'{'": completeAfter,
-					"Ctrl-Q": "autocomplete"
+					"'.'": completeAfter,
+					"'<'": completeAfter,
+					"'/'": completeIfAfterLt,
+					"' '": completeIfInTag,
+					"'='": completeIfInTag,
+					"Ctrl-Space": "autocomplete"
 				},
 				hintOptions: {
-					hint: CodeMirror.hint.liquid,
-					modelTree: @Html.Raw(ModelTree.HasValue() ? "JSON.parse('" + ModelTree +  "')" : "null")
+					//hint: CodeMirror.hint.auto,
+					closeCharacters: /[\s()\[\]{};:>,.|%]/,
+					completeSingle: false,
+					modelTree: @Html.Raw(modelTree.HasValue() ? "JSON.parse('" + modelTree +  "')" : "null")
 				}
 			});
 
-			function completeAfterDot(cm) {
+			function completeAfter(cm, pred) {
+				var cur = cm.getCursor();
+				if (!pred || pred()) setTimeout(function () {
+					if (!cm.state.completionActive)
+						cm.showHint({ completeSingle: false });
+				}, 100);
+				return CodeMirror.Pass;
+			}
+
+			function completeIfAfterLt(cm) {
 				return completeAfter(cm, function () {
 					var cur = cm.getCursor();
 					return cm.getRange(CodeMirror.Pos(cur.line, cur.ch - 1), cur) == "<";
 				});
 			}
 
-			function completeAfter(cm, pred) {
-				var cur = cm.getCursor();
-				
-				if (!pred || pred()) setTimeout(function () {
-					if (!cm.state.completionActive) {
-						cm.showHint({ completeSingle: false });
-					}	
-				}, 100);
-				return CodeMirror.Pass;
+			function completeIfInTag(cm) {
+				return completeAfter(cm, function () {
+					var tok = cm.getTokenAt(cm.getCursor());
+					if (tok.type == "string" && (!/['"]/.test(tok.string.charAt(tok.string.length - 1)) || tok.string.length == 1)) return false;
+					var inner = CodeMirror.innerMode(cm.getMode(), tok.state).state;
+					return inner.tagName;
+				});
 			}
         }
     });

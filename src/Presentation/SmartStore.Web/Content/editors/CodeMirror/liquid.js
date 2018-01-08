@@ -17,7 +17,7 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-CodeMirror.defineMode("liquid", function (config, parserConfig) {
+CodeMirror.defineMode("liquid", function () {
 	function chain(stream, state, f) {
 		state.tokenize = f;
 		return f(stream, state);
@@ -327,17 +327,28 @@ CodeMirror.defineMode("liquid", function (config, parserConfig) {
 			return (style || "") + " " + (parseType || "");
 		}
 	};
-});
-CodeMirror.defineMIME("application/x-liquid-template", "liquid");
+}, "htmlmixed");
 
-CodeMirror.defineMode("htmlmixedliquid", function (config, parserConfig) {
-	return CodeMirror.overlayMode(CodeMirror.getMode(config, parserConfig.backdrop || "text/html"), CodeMirror.getMode(config, parserConfig.overlay || "application/x-liquid-template"));
+CodeMirror.defineMIME("text/x-liquid", "liquid");
+CodeMirror.defineMIME("application/x-liquid", "liquid");
+
+CodeMirror.modeExtensions["liquid-html"] || CodeMirror.defineMode("liquid-html", function (c, p) {
+	var htmlMode = CodeMirror.getMode(c, p.backdrop || "text/html");
+	var liquidMode = CodeMirror.getMode(c, p.overlay || "text/x-liquid");
+	var overlay = CodeMirror.overlayMode(htmlMode, liquidMode);
+
+	overlay.innerMode = function (state) {
+		return {
+			state: state.base || state.htmlState,
+			mode: (state.overlay && state.overlay.liquidMode) ? liquidMode : state.localMode || htmlMode
+		};
+	};
+
+	return overlay;
 });
 
 // Compatibility with CodeMirror's formatting addon
 if (CodeMirror.modeExtensions) {
-	CodeMirror.modeExtensions["htmlmixedliquid"] = CodeMirror.modeExtensions["htmlmixed"];
-
 	// If the current mode is 'htmlmixed', returns the extension of a mode located at
 	// the specified position (can be htmlmixed, css or javascript). Otherwise, simply
 	// returns the extension of the editor's current mode.
@@ -393,85 +404,176 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 		"ReplaceFirst Reverse Round Rstrip SanitizeHtmlId ScriptTag Sha1 Size Slice Sort " +
 		"Split Strip StripHtml StripNewlines StylesheetTag T Times Truncate TruncateWords Uniq Upcase UrlEncode UrlDecode").split(" ");
 
-	//CodeMirror.commands.autocomplete = function (cm) {
-	//	cm.showHint({ hint: CodeMirror.hint.liquid });
+	//function flattenTreeNodes(node) {
+	//	if (node && node.Children) {
+	//		return _.sortBy(_.map(node.Children, function (x) {
+	//			return {
+	//				text: x.Value.Name,
+	//				className: "cm-hint-kind-" + x.Value.Kind
+	//			};
+	//		}), "text");
+	//	}
+	//	return null;
 	//}
 
-	function flattenTreeNodes(nodes) {
-		return _.toArray(_.map(nodes || [], function (x) { return x.Value.Name; })).sort();
+	function findTreeNode(node, str) {
+		if (node && node.Children) {
+			return _.find(node.Children, function (x) { return x.Value.Name == str; });
+		}
+		return null;
 	}
 
-	function findTreeNode(nodes, str) {
-		return _.find(nodes || [], function (x) { return x.Value.Name.toLowerCase() == str.toLowerCase(); });
+	function findIndex(node, str) {
+		var idx = 0;
+		if (str && node && node.Children) {
+			$.each(node.Children, function (i, x) {
+				if (x.text == str) {
+					idx = i;
+					return false;
+				}
+			});
+		}
+		return idx;
 	}
+
+	function isType(token, s) {
+		s = "liquid" + (s ? "-" : "") + (s || "");
+		return (token.type || "").indexOf(s) >= 0;
+	}
+
+	function getCompletions(token, context, options) {
+		var found = [],
+			strings = [],
+			start = token.string,
+			root = options.modelTree;
+
+		function maybeAdd(str, kind) {
+			var st = (start == "|" || start == "{%") ? "" : start;
+			if (str.lastIndexOf(st, 0) == 0 && !_.contains(strings, str)) {
+				//if (kind === "filter") console.log(str);
+				strings.push(str);
+				var className;
+				if (_.isNumber(kind) || _.isString(kind)) {
+					className = "cm-hint-kind-" + kind;
+				}
+				found.push({ text: str, className: className });
+			}		
+		}
+
+		function gatherCompletions(obj) {
+			if (obj === "tags") {
+				_.each(liquidTags, function (x, i) { maybeAdd(x, "tag"); });
+			}
+			else if (obj === "filters") {
+				_.each(liquidFilters, function (x, i) { maybeAdd(x, "filter"); });
+			}
+			else if (obj && obj.Children) {
+				var sorted = _.sortBy(_.map(obj.Children, function (x) {
+					return { text: x.Value.Name, kind: x.Value.Kind };
+				}), "text");
+				_.each(sorted, function (x, i) { maybeAdd(x.text, x.kind); });
+			}
+		}
+
+		if (context && context.length) {
+			// If this is a property, see if it belongs to some node we can
+			// find in the current environment.
+			var obj = context.pop(), base;
+
+			if (isType(obj, "variable")) {
+				base = findTreeNode(root, obj.string);
+			}
+
+			while (base != null && context.length) {
+				base = findTreeNode(base, context.pop().string);
+			}
+
+			if (base != null) {
+				gatherCompletions(base);
+			}
+		}
+		else {
+			if (isType(token, "filter")) {
+				gatherCompletions("filters");
+			}
+			else if (isType(token, "tag-name")) {
+				gatherCompletions("tags");
+			}
+			else if (isType(token, "output-markup")) {
+				//if (token.string == "{{") {
+				//	gatherCompletions(root);
+				//}
+				if (token.string == "|") {
+					gatherCompletions("filters");
+				}
+			}
+			else {
+				gatherCompletions(root);
+			}
+		}
+
+		return found;
+	};
 
 	CodeMirror.registerHelper("hint", "liquid", function (cm, options) {
 		var cur = cm.getCursor(),
-			token = cm.getTokenAt(cur),
-			modelTree = options.modelTree || { "Children": [] },
-			isType = function (token, s) { return (token.type || "").indexOf(s) >= 0; };
+			token = cm.getTokenAt(cur);
 
-		if (!isType(token, "liquid")) {
+		function seekChar(char) {
+			var t = token;
+			var pos = cur.ch - 1;
+			while (t.string === " " || t.string === char) {
+				t = cm.getTokenAt({ line: cur.line, ch: pos, sticky: cur.sticky });
+				pos--;
+				if (t.string === char) {
+					if (char === "|") t.type += " liquid-filter";
+					else if (char === "{%") t.type += " liquid-tag-name";
+					t.start = cur.ch;
+					t.end = cur.ch;
+					return t;
+				}		
+			}
+
 			return null;
 		}
 
-		var from = Pos(cur.line, token.start),
-			to = Pos(cur.line, token.end),
-			list = []; 
-
-		//// If it's not a 'word-style' token, ignore the token.
-		//if (!/^[\w$_]*$/.test(token.string)) {
-		//	token = {
-		//		start: cur.ch, end: cur.ch, string: "", state: token.state,
-		//		type: token.string == "." ? "variable" : null
-		//	};
-		//} else if (token.end > cur.ch) {
-		//	token.end = cur.ch;
-		//	token.string = token.string.slice(0, cur.ch - token.start);
-		//}
-
-		if (isType(token, "liquid-tag-name")) {
-			list = liquidTags;
+		if (!isType(token)) {
+			return null;
 		}
-		else if (isType(token, "liquid-filter")) {
-			list = liquidFilters;
-		}
-		else if (isType(token, "liquid-variable")) {
-			list = flattenTreeNodes(modelTree.Children);
-		}
-		else if (modelTree.Children.length) {
-			var tprop = token;
 
-			// If it is a variable/method, find out what it is part of.
-			while (isType(tprop, "liquid-method")) {
-				tprop = cm.getTokenAt(Pos(cur.line, tprop.start));
-				if (tprop.string != ".") return;
-				tprop = cm.getTokenAt(Pos(cur.line, tprop.start));
-				if (!context) var context = [];
-				context.push(tprop);
+		// If it's not a 'word-style' token, ignore the token.
+		if (!/^[\w$_]*$/.test(token.string)) {
+			var t2 = seekChar("|") || seekChar("{%");
+			if (t2 != null) {
+				token = t2;
 			}
-
-			if (context && context.length) {
-				var nodes = modelTree.Children;
-				while (context.length && nodes && nodes.length) {
-					var obj = context.pop();
-					if (isType(obj, "liquid-variable") || isType(obj, "liquid-method")) {
-						var node = findTreeNode(nodes, obj.string);
-						if (node) {
-							nodes = node.Children;
-							if (context.length == 0) {
-								// This is the last token, gather node names now
-								list = flattenTreeNodes(nodes);
-							}
-						}
-					}
-				}
+			else {
+				token = {
+					start: cur.ch, end: cur.ch, string: "", state: token.state,
+					type: token.string == "." ? token.type + " liquid-method" : null
+				};
 			}
 		}
+		else if (token.end > cur.ch) {
+			token.end = cur.ch;
+			token.string = token.string.slice(0, cur.ch - token.start);
+		}
 
-		if (list && list.length) {
-			return { list: list, from: from, to: to };
-		}	
+		var tprop = token;
+		// If it is a method, find out what it is part of.
+		while (isType(tprop, "method")) {
+			tprop = cm.getTokenAt(Pos(cur.line, tprop.start));
+			if (tprop.string != ".") return;
+			tprop = cm.getTokenAt(Pos(cur.line, tprop.start));
+			if (!context) var context = [];
+			context.push(tprop);
+		}
+
+		return {
+			list: getCompletions(token, context, options),
+			from: Pos(cur.line, token.start),
+			to: Pos(cur.line, token.end)
+		};
 	});
 })();
 

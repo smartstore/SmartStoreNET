@@ -18,7 +18,7 @@ namespace SmartStore.AmazonPay
 
 			PayButtonColor = "Gold";
 			PayButtonSize = "small";
-			AuthButtonType = "Login";
+			AuthButtonType = "LwA";
 			AuthButtonColor = "Gold";
 			AuthButtonSize = "medium";
 		}

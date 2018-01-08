@@ -183,7 +183,7 @@ namespace SmartStore.Web.Controllers
 					Id = product.Id,
 					Name = product.GetLocalized(x => x.Name),
 					ShortDescription = product.GetLocalized(x => x.ShortDescription),
-					FullDescription = product.GetLocalized(x => x.FullDescription),
+					FullDescription = product.GetLocalized(x => x.FullDescription, detectEmptyHtml: true),
 					MetaKeywords = product.GetLocalized(x => x.MetaKeywords),
 					MetaDescription = product.GetLocalized(x => x.MetaDescription),
 					MetaTitle = product.GetLocalized(x => x.MetaTitle),
@@ -915,7 +915,7 @@ namespace SmartStore.Web.Controllers
 			model.ShowSku = _catalogSettings.ShowProductSku;
 			model.Sku = product.Sku;
 			model.ShortDescription = product.GetLocalized(x => x.ShortDescription);
-			model.FullDescription = product.GetLocalized(x => x.FullDescription);
+			model.FullDescription = product.GetLocalized(x => x.FullDescription, detectEmptyHtml: true);
 			model.MetaKeywords = product.GetLocalized(x => x.MetaKeywords);
 			model.MetaDescription = product.GetLocalized(x => x.MetaDescription);
 			model.MetaTitle = product.GetLocalized(x => x.MetaTitle);

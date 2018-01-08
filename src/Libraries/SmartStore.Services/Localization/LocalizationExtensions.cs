@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Xml;
@@ -16,13 +17,14 @@ namespace SmartStore.Services.Localization
 	public static class LocalizationExtensions
     {
 		/// <summary>
-        /// Get localized property of an entity
-        /// </summary>
-        /// <typeparam name="T">Entity type</typeparam>
-        /// <param name="entity">Entity</param>
-        /// <param name="keySelector">Key selector</param>
-        /// <returns>Localized property</returns>
-        public static string GetLocalized<T>(this T entity, Expression<Func<T, string>> keySelector)
+		/// Get localized property of an entity
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <param name="keySelector">Key selector</param>
+		/// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
+		/// <returns>Localized property</returns>
+		public static string GetLocalized<T>(this T entity, Expression<Func<T, string>> keySelector, bool detectEmptyHtml = false)
             where T : BaseEntity, ILocalizedEntity
         {
 			Guard.NotNull(entity, nameof(entity));
@@ -32,7 +34,8 @@ namespace SmartStore.Services.Localization
 				typeof(T).Name,
 				entity.Id,
 				keySelector,
-				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id);
+				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id,
+				detectEmptyHtml);
 		}
 
         /// <summary>
@@ -44,12 +47,14 @@ namespace SmartStore.Services.Localization
         /// <param name="languageId">Language identifier</param>
         /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
         /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
+		/// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
         /// <returns>Localized property</returns>
         public static string GetLocalized<T>(this T entity, 
             Expression<Func<T, string>> keySelector, 
 			int languageId, 
             bool returnDefaultValue = true, 
-			bool ensureTwoPublishedLanguages = true) 
+			bool ensureTwoPublishedLanguages = true,
+			bool detectEmptyHtml = false) 
             where T : BaseEntity, ILocalizedEntity
         {
 			Guard.NotNull(entity, nameof(entity));
@@ -61,7 +66,8 @@ namespace SmartStore.Services.Localization
 				keySelector,
 				languageId,
 				returnDefaultValue,
-				ensureTwoPublishedLanguages);
+				ensureTwoPublishedLanguages,
+				detectEmptyHtml);
         }
 
 		/// <summary>
@@ -74,12 +80,14 @@ namespace SmartStore.Services.Localization
 		/// <param name="languageId">Language identifier</param>
 		/// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
 		/// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
+		/// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
 		/// <returns>Localized property</returns>
 		public static TPropType GetLocalized<T, TPropType>(this T entity,
 			Expression<Func<T, TPropType>> keySelector,
 			int languageId,
 			bool returnDefaultValue = true,
-			bool ensureTwoPublishedLanguages = true)
+			bool ensureTwoPublishedLanguages = true,
+			bool detectEmptyHtml = false)
 			where T : BaseEntity, ILocalizedEntity
 		{
 			Guard.NotNull(entity, nameof(entity));
@@ -91,7 +99,8 @@ namespace SmartStore.Services.Localization
 				keySelector, 
 				languageId, 
 				returnDefaultValue, 
-				ensureTwoPublishedLanguages);
+				ensureTwoPublishedLanguages,
+				detectEmptyHtml);
 		}
 
 		/// <summary>
@@ -137,7 +146,8 @@ namespace SmartStore.Services.Localization
 			Expression<Func<T, TPropType>> keySelector,
 			int languageId,
 			bool returnDefaultValue = true,
-			bool ensureTwoPublishedLanguages = true)
+			bool ensureTwoPublishedLanguages = true,
+			bool detectEmptyHtml = false)
 			where T : ILocalizedEntity
 		{
 			TPropType result = default(TPropType);
@@ -180,14 +190,22 @@ namespace SmartStore.Services.Localization
 					{
 						var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
 						resultStr = leService.GetLocalizedValue(languageId, entityId, localeKeyGroup, localeKey);
-						if (!String.IsNullOrEmpty(resultStr))
-							result = resultStr.Convert<TPropType>();
+						
+						if (detectEmptyHtml && resultStr.HasValue() && resultStr.RemoveHtml().IsEmpty())
+						{
+							resultStr = string.Empty;
+						}
+
+						if (resultStr.HasValue())
+						{
+							result = (TPropType)resultStr.Convert(typeof(TPropType), CultureInfo.InvariantCulture);
+						}	
 					}
 				}
 			}
-
+			
 			// Set default value if required
-			if (String.IsNullOrEmpty(resultStr) && returnDefaultValue)
+			if (returnDefaultValue && resultStr.IsEmpty())
 			{
 				var localizer = keySelector.Compile();
 				result = localizer(entity);

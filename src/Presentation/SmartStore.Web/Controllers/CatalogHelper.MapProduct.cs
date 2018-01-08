@@ -317,7 +317,7 @@ namespace SmartStore.Web.Controllers
 
 			if (settings.MapFullDescription)
 			{
-				item.FullDescription = product.GetLocalized(x => x.FullDescription);
+				item.FullDescription = product.GetLocalized(x => x.FullDescription, detectEmptyHtml: true);
 			}
 
 			// Price

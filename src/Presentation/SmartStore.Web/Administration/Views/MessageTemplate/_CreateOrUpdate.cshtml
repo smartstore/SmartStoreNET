@@ -16,8 +16,20 @@
 })
 
 @helper TabInfo()
-{  
-    <table class="adminContent" style="margin-bottom: 8px">
+{
+	string modelTree = ViewBag.LastModelTreeJson;
+	string templateName = "MessageTemplate/" + Model.Name;
+
+	if (modelTree.HasValue())
+	{
+		<script>
+			$(function () {
+				SmartStore.Admin.modelTrees["@Html.Raw(templateName)"] = @Html.Raw("JSON.parse('" + modelTree + "')");
+			});
+		</script>
+	}
+
+	<table class="adminContent" style="margin-bottom: 8px">
         @*<tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LastModelTree)
@@ -133,7 +145,7 @@
                 @Html.SmartLabelFor(model => model.Locales[item].Body)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => Model.Locales[item].Body, "Liquid", new { ModelTree = ViewBag.LastModelTreeJson })
+                @Html.EditorFor(model => Model.Locales[item].Body, "Liquid", new { TemplateName = templateName })
                 @Html.ValidationMessageFor(model => model.Locales[item].Body)
             </td>
         </tr>
@@ -222,7 +234,7 @@
                 @Html.SmartLabelFor(model => model.Body)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Body, "Liquid", new { ModelTree = ViewBag.LastModelTreeJson })
+                @Html.EditorFor(model => model.Body, "Liquid", new { TemplateName = templateName })
                 @Html.ValidationMessageFor(model => model.Body)
             </td>
         </tr>

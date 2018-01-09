@@ -444,7 +444,7 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 		var found = [],
 			strings = [],
 			start = token.string,
-			root = options.modelTree;
+			root = options.templateName ? SmartStore.Admin.modelTrees[options.templateName] : null;
 
 		function maybeAdd(str, kind) {
 			var st = (start == "|" || start == "{%") ? "" : start;

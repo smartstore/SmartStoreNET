@@ -1,6 +1,6 @@
 ﻿
 @{ 
-	string modelTree = ViewData["ModelTree"]?.Convert<string>();
+	string templateName = ViewData["TemplateName"]?.Convert<string>();
 
 	var cdn = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/";
 
@@ -61,7 +61,7 @@
 				hintOptions: {
 					closeCharacters: /[\s()\[\]{};:>,.|%]/,
 					completeSingle: false,
-					modelTree: @Html.Raw(modelTree.HasValue() ? "JSON.parse('" + modelTree +  "')" : "null")
+					templateName: @Html.Raw(templateName.HasValue() ? "'" + templateName + "'" : "null")
 				}
 			});
         }

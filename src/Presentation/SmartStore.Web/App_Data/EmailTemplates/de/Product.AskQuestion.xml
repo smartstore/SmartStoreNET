@@ -8,7 +8,7 @@
 
 {% block 'body' %}
 <h1>
-  Produkt Anfrage,
+  Produktanfrage,
 </h1>
 
 <p>

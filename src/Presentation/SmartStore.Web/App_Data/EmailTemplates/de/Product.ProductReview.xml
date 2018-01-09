@@ -15,7 +15,7 @@
   {% if Customer.IsRegistered %}
   	<a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> 
   {% else %}
-  	Gast 
+  	ein Gast 
   {% endif %}
   hat das Produkt <a href="{{ Product.Url }}">{{ Product.Name }}</a> rezensiert.
 </p>

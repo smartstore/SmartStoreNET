@@ -12,7 +12,7 @@
 </h1>
 
 <p class="text-lg">
-  der News-Eintrag <a href="{{ NewsComment.NewsUrl }}">{{ NewsComment.NewsTitle }}</a> wurde von <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> kommentiert
+  der News-Eintrag <a href="{{ NewsComment.NewsUrl }}">{{ NewsComment.NewsTitle }}</a> wurde von <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> kommentiert.
 </p>
 
 <table class="w-100 brd bg-light">

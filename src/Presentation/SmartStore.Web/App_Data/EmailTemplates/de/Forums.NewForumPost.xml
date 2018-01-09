@@ -11,7 +11,7 @@
 </h1>
 
 <p>
-  Im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neuer Beitrag von <strong>{{ ForumPost.Author }}</strong> erstellt:
+  im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neuer Beitrag von <strong>{{ ForumPost.Author }}</strong> erstellt:
 </p>
 
 <p class="m-t-4 m-b-4">

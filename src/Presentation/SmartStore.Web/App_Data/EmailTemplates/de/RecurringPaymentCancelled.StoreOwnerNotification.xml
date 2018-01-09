@@ -15,7 +15,7 @@
 </p>
 
 <p class="m-t-4 m-b-4 text-center">
-  <a class="btn btn-primary" href="{{ ReturnRequest.Url }}">Abo aufrufen</a>
+  <a class="btn btn-primary" href="{{ RecurringPayment.Url }}">Abo aufrufen</a>
 </p>
 
 <p>

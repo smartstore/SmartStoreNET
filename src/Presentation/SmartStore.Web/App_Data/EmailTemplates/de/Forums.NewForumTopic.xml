@@ -11,11 +11,11 @@
 </h1>
 
 <p>
-  Im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neuer Beitrag erstellt:
+  im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neues Thema erstellt:
 </p>
 
 <p class="m-t-4 m-b-4">
-  <a href="{{ ForumTopic.Url }}" class="btn btn-primary">Zum Beitrag</a>
+  <a href="{{ ForumTopic.Url }}" class="btn btn-primary">Zum Thema</a>
 </p>
 
 <table class="w-100 brd bg-light">

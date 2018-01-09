@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
-	<Subject>{{ Store.Name }} - Ihe Bestellung '{{ Order.OrderNumber }}' wurde storniert</Subject>
+	<Subject>{{ Store.Name }} - Ihre Bestellung '{{ Order.OrderNumber }}' wurde storniert</Subject>
 	<ModelTypes>Order, Order.Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
@@ -10,7 +10,7 @@
   Hallo {{ Customer.FullName }},
 </h1>
 <p>
-  Wir haben Ihre Bestellung mit der Nummer <b>{{ Order.OrderNumber }}</b> storniert.
+  wir haben Ihre Bestellung mit der Nummer <b>{{ Order.OrderNumber }}</b> storniert.
 </p>
 
 <table class="w-100 m-b-3">

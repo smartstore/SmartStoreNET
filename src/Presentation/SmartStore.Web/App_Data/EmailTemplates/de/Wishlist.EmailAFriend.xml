@@ -9,7 +9,7 @@
 {% block 'body' %}
 
 <p class="text-center">
-  Wirf mal einen Blick in die Wunschliste von <b>{{ Customer.FullName }}</b>:
+  <b>{{ Customer.FullName }}</b> hat seine Wunschliste mit dir geteilt. Wirf doch mal einen Blick hinein:
 </p>
 
 <p class="text-center m-t-4 m-b-4">

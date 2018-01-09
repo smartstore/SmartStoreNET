@@ -2,13 +2,13 @@
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
 	<ReplyTo>{% if Message.SenderEmail %}{{ Message.SenderName }} &lt;{{ Message.SenderEmail }}&gt;{% endif %}</ReplyTo>
-	<Subject>{{ Message.Subject }}</Subject>
+	<Subject>Kontaktanfrage - {{ Message.Subject }}</Subject>
 	<ModelTypes></ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Kontakt Anfrage,
+  Kontaktanfrage,
 </h1>
 
 <p>

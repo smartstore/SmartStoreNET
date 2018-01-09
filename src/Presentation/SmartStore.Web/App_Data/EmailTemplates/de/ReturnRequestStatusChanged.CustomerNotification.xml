@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
-	<Subject>{{ Store.Name }}. Status-Änderung für Rücksendung</Subject>
+	<Subject>{{ Store.Name }}. Statusänderung für Rücksendung</Subject>
 	<ModelTypes>ReturnRequest, OrderItem, ReturnRequest.Customer, OrderItem.Order</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 

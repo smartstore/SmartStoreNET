@@ -517,32 +517,15 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 		var cur = cm.getCursor(),
 			token = cm.getTokenAt(cur);
 
-		function seekChar(char) {
-			var t = token;
-			var pos = cur.ch - 1;
-			while (t.string === " " || t.string === char) {
-				t = cm.getTokenAt({ line: cur.line, ch: pos, sticky: cur.sticky });
-				pos--;
-				if (t.string === char) {
-					if (char === "|") t.type += " liquid-filter";
-					else if (char === "{%") t.type += " liquid-tag-name";
-					t.start = cur.ch;
-					t.end = cur.ch;
-					return t;
-				}		
-			}
-
-			return null;
-		}
-
 		if (!isType(token)) {
 			return null;
 		}
 
 		// If it's not a 'word-style' token, ignore the token.
 		if (!/^[\w$_]*$/.test(token.string)) {
-			var t2 = seekChar("|") || seekChar("{%");
-			if (t2 != null) {
+			//var t2 = seekDelim("|") || seekDelim("{%");
+			t2 = CodeMirror.hint.seekLeftLiquidDelim(cm, cur, token);
+			if (t2 != null && t2.string !== "{{") {
 				token = t2;
 			}
 			else {
@@ -590,8 +573,11 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 			var cur = cm.getCursor();
 			var token = cm.getTokenAt(cur);
 
-			return CodeMirror.hint.isInLiquid(cm, cur, token) ||
-				CodeMirror.hint.isInHtmlTag(cm, cur, token);
+			if (CodeMirror.hint.isInLiquid(cm, cur, token)) {
+				return CodeMirror.hint.seekLeftLiquidDelim(cm, cur, token);
+			}
+
+			return CodeMirror.hint.isInHtmlTag(cm, cur, token);
 		});
 	});
 
@@ -617,11 +603,34 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 	});
 
 	CodeMirror.registerHelper("hint", "isInLiquid", function (cm, cur, token) {
-		return false;
-		//cur = cur || cm.getCursor();
-		//token = token || cm.getTokenAt(cur);
-		//var inner = CodeMirror.innerMode(cm.getMode(), token.state);
-		//return inner && inner.mode && inner.mode.name == "liquid";
+		cur = cur || cm.getCursor();
+		token = token || cm.getTokenAt(cur);
+		var inner = CodeMirror.innerMode(cm.getMode(), token.state);
+		return inner && inner.mode && inner.mode.name == "liquid";
+	});
+
+	CodeMirror.registerHelper("hint", "seekLeftLiquidDelim", function (cm, cur, token) {
+		cur = cur || cm.getCursor();
+		token = token || cm.getTokenAt(cur);
+		var pos = cur.ch - 1;
+		var delims = ["{{", "{%", "|"];
+
+		var t = token;
+		while (t.string === " " || _.contains(delims, (t.string))) {
+			t = cm.getTokenAt({ line: cur.line, ch: pos, sticky: cur.sticky });
+			delim = t.string;
+			pos--;
+			if (delim !== " ") {
+				if (delim === "|") t.type += " liquid-filter";
+				else if (delim === "{%") t.type += " liquid-tag-name";
+				else if (delim === "{{") t.type += " liquid-variable";
+				t.start = cur.ch;
+				t.end = cur.ch;
+				return t;
+			}
+		}
+
+		return null;
 	});
 })();
 

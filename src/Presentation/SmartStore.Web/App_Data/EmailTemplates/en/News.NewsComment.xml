@@ -2,17 +2,17 @@
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
 	<ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
-	<Subject>{{ Store.Name }}. Neuer News Kommentar</Subject>
+	<Subject>{{ Store.Name }}. New news comment</Subject>
 	<ModelTypes>NewsComment</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Neuer News Kommentar,
+  New news comment,
 </h1>
 
 <p class="text-lg">
-  der News-Eintrag <a href="{{ NewsComment.NewsUrl }}">{{ NewsComment.NewsTitle }}</a> wurde von <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> kommentiert
+  the news entry <a href="{{ NewsComment.NewsUrl }}">{{ NewsComment.NewsTitle }}</a> was commented by <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a>.
 </p>
 
 <table class="w-100 brd bg-light">

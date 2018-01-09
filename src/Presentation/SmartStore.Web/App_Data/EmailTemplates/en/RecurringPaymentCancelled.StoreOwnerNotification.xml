@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
-	<Subject>{{ Store.Name }}. Abo storniert</Subject>
+	<Subject>{{ Store.Name }}. Recurring payment cancelled</Subject>
 	<ModelTypes>RecurringPayment, RecurringPayment.InitialOrder, RecurringPayment.InitialOrder.Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Abo storniert,
+   Recurring payment cancelled,
 </h1>
 
 <p>
-  <b>{{ Customer.FullName }}</b> hat ein Zahlungs-Abo storniert.
+  <b>{{ Customer.FullName }}</b> has cancelled a recurring payment.
 </p>
 
 <p class="m-t-4 m-b-4 text-center">
-  <a class="btn btn-primary" href="{{ ReturnRequest.Url }}">Abo aufrufen</a>
+  <a class="btn btn-primary" href="{{ ReturnRequest.Url }}">Visit payment</a>
 </p>
 
 <p>
-  <b>ID / Kunde:</b><br />
+  <b>ID / Customer:</b><br />
   <span>{{ RecurringPayment.Id }}</span> /
   {% if Customer.EditUrl %}
   	<a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a>
@@ -29,22 +29,22 @@
 </p>
 
 <p>
-  <b>Gestartet am:</b><br />
+  <b>Started on:</b><br />
   <span>{{ RecurringPayment.StartedOn }}</span>
 </p>
 
 <p>
-  <b>Nächste Fälligkeit:</b><br />
+  <b>Next due date:</b><br />
   <span>{{ RecurringPayment.NextOn }}</span>
 </p>
 
 <p>
-  <b>Häufigkeit:</b><br />
+  <b>Cycle period:</b><br />
   <span>{{ RecurringPayment.CyclePeriod }}</span>
 </p>
 
 <p>
-  <b>Noch verbleibende Zahlungen:</b><br />
+  <b>Cycles remaining:</b><br />
   <span>{{ RecurringPayment.CyclesRemaining }}</span>
 </p>
 

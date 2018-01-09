@@ -2,28 +2,28 @@
 <MessageTemplate>
 	<To>{{ Message.To }}</To>
 	<ReplyTo>{% if Message.From %}{{ Message.From }}{% endif %}</ReplyTo>
-	<Subject>{{ Store.Name }} - Empfehlung von {{ Customer.FullName }}</Subject>
+	<Subject>{{ Store.Name }} - Recommendation from {{ Customer.FullName }}</Subject>
 	<ModelTypes>Customer, Product</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 
 <p>
-  <b>{{ Customer.FullName }}</b> möchte dir einen Artikel bei <a href="{{ Store.Url }}">{{ Store.Name }}</a> empfehlen:
+  <b>{{ Customer.FullName }}</b> wants to recommend a product in <a href="{{ Store.Url }}">{{ Store.Name }}</a> to you:
 </p>
 
 <table class="w-100" cellpadding="10">
   <tbody>
     <tr>
     	<td align="center">
-					{% if Product.ThumbnailLg %}
-						{% assign thumb = Product.ThumbnailLg %}
-            <a href="{{ Product.Url }}">
-              <img src="{{ thumb.Src }}" alt="{{ thumb.Alt }}"
-                   {% if thumb.Width %}width="{{ thumb.Width }}"{% endif %}
-                   {% if thumb.Height %}height="{{ thumb.Height }}"{% endif %} />       			
-            </a>
-					{% endif %}
+			{% if Product.ThumbnailLg %}
+				{% assign thumb = Product.ThumbnailLg %}
+	            <a href="{{ Product.Url }}">
+	              <img src="{{ thumb.Src }}" alt="{{ thumb.Alt }}"
+	                   {% if thumb.Width %}width="{{ thumb.Width }}"{% endif %}
+	                   {% if thumb.Height %}height="{{ thumb.Height }}"{% endif %} />       			
+	            </a>
+			{% endif %}
       </td>
       <td width="100%">
         <a href="{{ Product.Url }}">{{ Product.Name }}</a><br/>
@@ -38,7 +38,7 @@
   <tbody>
     <tr>
     	<td class="p-3">
-        <h3>Nachricht</h3>
+        <h3>Message</h3>
         {{ Message.Body }}
       </td>
     </tr>

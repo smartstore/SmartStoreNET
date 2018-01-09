@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
-	<Subject>Willkommen bei {{ Store.Name }}</Subject>
+	<Subject>Welcome to {{ Store.Name }}</Subject>
 	<ModelTypes>Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Hallo {{ Customer.FullName }},
+  Hello {{ Customer.FullName }},
 </h1>
 
 <p>
-  Hezlich Willkommen in unserem Online-Shop, <a href="{{ Store.Url }}">{{ Store.Name }}</a>
+  welcome to our online shop, <a href="{{ Store.Url }}">{{ Store.Name }}</a>
 </p>
 
 <p>
-	Stöbern Sie in Warengruppen und Produkten, lesen Sie im Blog und erfahren Sie alles über Aktionen und Angebote mit unserem Newsletter.
+	browse through our assortment, read the blog and stay informed about our campaigns and special offers with our newsletter.
 </p>
 <br />
 <p>
-  Mit freundlichen Grüßen,
+  Kind regards,
 </p>
 
 <p>
-  Ihr {{ Store.Name }} Team
+  Your {{ Store.Name }} Team
 </p>
 
 {% endblock %}]]></Body>

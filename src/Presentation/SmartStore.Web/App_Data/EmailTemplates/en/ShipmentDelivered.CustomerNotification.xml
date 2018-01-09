@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
-	<Subject>{{ Store.Name }}. Ihre Sendung wurde zugestellt.</Subject>
+	<Subject>{{ Store.Name }}. Your shipment has been delivered.</Subject>
 	<ModelTypes>Shipment, Shipment.Order, Shipment.Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Hallo {{ Customer.FullName }},
+  Hello {{ Customer.FullName }},
 </h1>
 
 <p>
-  Ihre Sendung mit der Nummer <b>{{ Shipment.Id }}</b> wurde zugestellt.
+  your shipment with the Id <b>{{ Shipment.Id }}</b> has been delivered.
 </p>
 
 <table class="w-100 m-b-3">
   <thead>
   	<tr>
-    	<th class="text-muted text-sm">Bestellt am</th>
-      <th class="text-muted text-sm">Bestellnr.</th>
+      <th class="text-muted text-sm">Ordered on</th>
+      <th class="text-muted text-sm">Order number</th>
       <th class="text-muted text-sm">Tracking-ID</th>
-      <th class="text-muted text-sm">Versendet am</th>
+      <th class="text-muted text-sm">Shipped on</th>
     </tr>
   </thead>
   <tbody>
   	<tr>
-    	<td class="text-sm">{{ Order.CreatedOn | Date:'d' }}</td>
+      <td class="text-sm">{{ Order.CreatedOn | Date:'d' }}</td>
       <td class="text-sm">{{ Order.OrderNumber }}</td>
       <td class="text-sm">{{ Shipment.TrackingNumber }}</td>
       <td class="text-sm">{{ Shipment.ShippedOn | Date:'d' }}</td>
@@ -35,7 +35,7 @@
 
 {% if Order.Url %}
 <p class="m-t-4 m-b-4 text-center">
-  <a class="btn btn-primary" href="{{ Order.Url }}">Details aufrufen</a>
+  <a class="btn btn-primary" href="{{ Order.Url }}">Go to details</a>
 </p>
 {% endif %}
 
@@ -48,22 +48,22 @@
           <tbody>
             <tr>
               <td width="50%">
-                <h3>Rechnungsanschrift</h3>
+                <h3>Billing address</h3>
               	{% include 'address' with Order.Billing %}
                 {% if Order.PaymentMethod %}
-                	<h3 class="m-t-2">Zahlart</h3>
+                	<h3 class="m-t-2">Payment method</h3>
                 	<div class="text-sm">{{ Order.PaymentMethod }}</div>
                 {% endif %}
               </td>
               <td width="50%">
-                <h3>Versandanschrift</h3>
+                <h3>Shipping address</h3>
                 {% if Order.Shipping %}
-									{% include 'address' with Order.Shipping %}
+					{% include 'address' with Order.Shipping %}
                 {% else %}
-                	<p class="text-muted text-sm">Wie Rechnungsanschrift</p>
+                	<p class="text-muted text-sm">Same as billing address</p>
                 {% endif %} 
                 {% if Order.ShippingMethod %}
-                	<h3 class="m-t-2">Versandart</h3>
+                	<h3 class="m-t-2">Shipping method</h3>
                 	<div class="text-sm">{{ Order.ShippingMethod }} </div>    	
                 {% endif %}
               </td>

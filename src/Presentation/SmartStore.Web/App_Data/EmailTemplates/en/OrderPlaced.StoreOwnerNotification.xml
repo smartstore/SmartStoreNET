@@ -2,22 +2,22 @@
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
 	<ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
-	<Subject>Neue Bestellung eingegangen von '{{ Customer.FullName }}'</Subject>
+	<Subject>New order has been placed by '{{ Customer.FullName }}'</Subject>
 	<ModelTypes>Order, Order.Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Neue Bestellung eingegangen,
+  New order has been placed,
 </h1>
 
 <table class="w-100 m-b-3">
   <thead>
   	<tr>
-    	<th class="text-muted text-sm">Bestellt am</th>
-      <th class="text-muted text-sm">Bestellnr.</th>
+      <th class="text-muted text-sm">Order date</th>
+      <th class="text-muted text-sm">Order number</th>
       <th class="text-muted text-sm">Status</th>
-      <th class="text-muted text-sm">Gesamtsumme</th>
+      <th class="text-muted text-sm">Total</th>
     </tr>
   </thead>
   <tbody>
@@ -39,22 +39,22 @@
           <tbody>
             <tr>
               <td width="50%">
-                <h3>Rechnungsanschrift</h3>
+                <h3>Billing address</h3>
               	{% include 'address' with Order.Billing %}
                 {% if Order.PaymentMethod %}
-                	<h3 class="m-t-2">Zahlart</h3>
+                	<h3 class="m-t-2">Payment method</h3>
                 	<div class="text-sm">{{ Order.PaymentMethod }}</div>
                 {% endif %}
               </td>
               <td width="50%">
-                <h3>Versandanschrift</h3>
+                <h3>Shipping address</h3>
                 {% if Order.Shipping %}
-									{% include 'address' with Order.Shipping %}
+					{% include 'address' with Order.Shipping %}
                 {% else %}
-                	<p class="text-muted text-sm">Wie Rechnungsanschrift</p>
+                	<p class="text-muted text-sm">Same as billing address</p>
                 {% endif %} 
                 {% if Order.ShippingMethod %}
-                	<h3 class="m-t-2">Versandart</h3>
+                	<h3 class="m-t-2">Shipping method</h3>
                 	<div class="text-sm">{{ Order.ShippingMethod }} </div>  
                 {% endif %}
               </td>

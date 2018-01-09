@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
-	<Subject>{{ Store.Name }} - Neukunden Registrierung</Subject>
+	<Subject>{{ Store.Name }} - New customer registration</Subject>
 	<ModelTypes>Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Neuer Kunde,
+  New customer,
 </h1>
 <p>
-  ein neue Kunde hat sich registriert.
+  a new customer has registered himself in your store.
 </p>
 
 <p>
@@ -18,12 +18,12 @@
   <span>{{ Customer.FullName }}</span>
 </p>
 <p>
-  <b>E-Mail:</b><br />
+  <b>Email:</b><br />
   <a href="mailto:{{ Customer.Email }}">{{ Customer.Email }}</span>
 </p>
 
 <p class="m-t-4 m-b-4 text-center">
-	<a class="btn btn-primary" href="{{ Customer.EditUrl }}">Zum Profil</a>  
+	<a class="btn btn-primary" href="{{ Customer.EditUrl }}">Visit Profile</a>  
 </p>
 {% endblock %}]]></Body>
 </MessageTemplate>

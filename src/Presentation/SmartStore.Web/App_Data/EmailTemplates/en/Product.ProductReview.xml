@@ -2,22 +2,22 @@
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
 	<ReplyTo>{% if Customer.Email %}{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;{% endif %}</ReplyTo>
-	<Subject>{{ Store.Name }}. Neue Produktrezension für '{{ Product.Name | Truncate: 30 }}'</Subject>
+	<Subject>{{ Store.Name }}. New product review for '{{ Product.Name | Truncate: 30 }}'</Subject>
 	<ModelTypes>ProductReview, ProductReview.Customer, ProductReview.Product</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Neue Produktrezension,
+  New product review,
 </h1>
 
 <p>
   {% if Customer.IsRegistered %}
   	<a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> 
   {% else %}
-  	Gast 
+  	A guest
   {% endif %}
-  hat das Produkt <a href="{{ Product.Url }}">{{ Product.Name }}</a> rezensiert.
+  has created a new review for the product <a href="{{ Product.Url }}">{{ Product.Name }}</a>.
 </p>
 
 <table>
@@ -39,7 +39,7 @@
 {% endif %}
 
 <p class="m-t-4 m-b-4">
-  <a href="{{ Product.Url }}" class="btn btn-primary">Zum Produkt</a>
+  <a href="{{ Product.Url }}" class="btn btn-primary">Go to product</a>
 </p>
 
 {% endblock %}]]></Body>

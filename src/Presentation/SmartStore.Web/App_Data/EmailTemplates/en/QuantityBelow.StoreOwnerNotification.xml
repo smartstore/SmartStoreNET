@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
-	<Subject>{ Store.Name } - Mindestlagerbestand von '{{ Product.Name | Truncate:30 }}' unterschritten.</Subject>
+	<Subject>{ Store.Name } - Quantity of '{{ Product.Name | Truncate:30 }}' is below minimum stock quantity.</Subject>
 	<ModelTypes>Product</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 
 <h1>
-  Mindestlagerbestand unterschritten,
+  Quantity fallen below,
 </h1>
 <p>
-  
-  der Mindestlagerbestand für folgendes Produkt wurde unterschritten:
+  the quantity of the following product is below minimum stock quantity:
 </p>
 
 <p>
-  <b>Produkt:</b><br />
+  <b>Product:</b><br />
   <a href="{{ Product.Url }}">{{ Product.Name }}</a>
 </p>
 
@@ -26,7 +25,7 @@
 </p>
 
 <p>
-  <b>Menge:</b><br />
+  <b>Quantity:</b><br />
   {{ Product.StockQuantity }}
 </p>
 

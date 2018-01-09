@@ -2,26 +2,26 @@
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
 	<ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
-	<Subject>{{ Store.Name }}. Neue Umsatzsteuer-ID übermittelt</Subject>
+	<Subject>{{ Store.Name }}. New VAT number submitted</Subject>
 	<ModelTypes>Customer</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Neue Umsatzsteuer-ID,
+  New VAT number,
 </h1>
 
 <p>
-  <b>{{ Customer.FullName }}</b> (<a mailto:{{ Customer.Email }}>{{ Customer.Email }}</a>) hat eine neue Umsatzsteuer-ID übermittelt.
+  <b>{{ Customer.FullName }}</b> (<a mailto:{{ Customer.Email }}>{{ Customer.Email }}</a>) has submitted a new VAT number.
 </p>
 
 <p class="m-t-4 m-b-4 text-center">
-  <a class="btn btn-primary" href="{{ Customer.EditUrl }}">Zum Kundenprofil</a>
+  <a class="btn btn-primary" href="{{ Customer.EditUrl }}">Visit customer profile</a>
 </p>
 
 {% if Customer.VatNumber %}
 <p>
-  <b>Umsatzsteuer-ID:</b><br />
+  <b>VAT number:</b><br />
   <span>{{ Customer.VatNumber }}</span>
 </p>
 {% endif %}
@@ -34,7 +34,7 @@
 {% endif %}
 
 <p>
-  <b>Übermittelt von:</b><br />
+  <b>Received by:</b><br />
   <span>{{ VatValidationResult.Name }} - {{ VatValidationResult.Address }}</span>
 </p>
 

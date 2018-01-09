@@ -114,7 +114,6 @@ CodeMirror.defineMode("liquid", function () {
 					cc.pop()();
 				}				
 
-				//if (cx.marked) console.log(cx.marked, type, content);;
 				if (cx.marked) return cx.marked;
 				return null;
 			}
@@ -450,7 +449,6 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 		function maybeAdd(str, kind) {
 			var st = (start == "|" || start == "{%") ? "" : start;
 			if (str.lastIndexOf(st, 0) == 0 && !_.contains(strings, str)) {
-				//if (kind === "filter") console.log(str);
 				strings.push(str);
 				var className;
 				if (_.isNumber(kind) || _.isString(kind)) {
@@ -574,6 +572,56 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 			from: Pos(cur.line, token.start),
 			to: Pos(cur.line, token.end)
 		};
+	});
+
+	function completeAfter(cm, predicate) {
+		var cur = cm.getCursor();
+		if (!predicate || predicate()) setTimeout(function () {
+			if (!cm.state.completionActive)
+				cm.showHint({ completeSingle: false });
+		}, 100);
+		return CodeMirror.Pass;
+	}
+
+	CodeMirror.registerHelper("hint", "completeAfter", completeAfter);
+
+	CodeMirror.registerHelper("hint", "completeIfAfterSpace", function (cm) {
+		return completeAfter(cm, function () {
+			var cur = cm.getCursor();
+			var token = cm.getTokenAt(cur);
+
+			return CodeMirror.hint.isInLiquid(cm, cur, token) ||
+				CodeMirror.hint.isInHtmlTag(cm, cur, token);
+		});
+	});
+
+	CodeMirror.registerHelper("hint", "completeIfAfterLt", function (cm) {
+		return completeAfter(cm, function () {
+			var cur = cm.getCursor();
+			return cm.getRange(Pos(cur.line, cur.ch - 1), cur) == "<";
+		});
+	});
+
+	CodeMirror.registerHelper("hint", "completeIfInTag", function (cm) {
+		return completeAfter(cm, function () {
+			return CodeMirror.hint.isInHtmlTag(cm);
+		});
+	});
+
+	CodeMirror.registerHelper("hint", "isInHtmlTag", function (cm, cur, token) {
+		cur = cur || cm.getCursor();
+		token = token || cm.getTokenAt(cur);
+		if (token.type == "string" && (!/['"]/.test(token.string.charAt(token.string.length - 1)) || token.string.length == 1)) return false;
+		var inner = CodeMirror.innerMode(cm.getMode(), token.state).state;
+		return inner.tagName;
+	});
+
+	CodeMirror.registerHelper("hint", "isInLiquid", function (cm, cur, token) {
+		return false;
+		//cur = cur || cm.getCursor();
+		//token = token || cm.getTokenAt(cur);
+		//var inner = CodeMirror.innerMode(cm.getMode(), token.state);
+		//return inner && inner.mode && inner.mode.name == "liquid";
 	});
 })();
 

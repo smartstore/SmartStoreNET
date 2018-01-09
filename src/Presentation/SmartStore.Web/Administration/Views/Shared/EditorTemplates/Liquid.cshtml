@@ -59,7 +59,6 @@
 					"Ctrl-Space": "autocomplete"
 				},
 				hintOptions: {
-					//hint: CodeMirror.hint.auto,
 					closeCharacters: /[\s()\[\]{};:>,.|%]/,
 					completeSingle: false,
 					modelTree: @Html.Raw(modelTree.HasValue() ? "JSON.parse('" + modelTree +  "')" : "null")

@@ -22,6 +22,14 @@ namespace SmartStore.Templating
 		internal Context LiquidContext { get; set; }
 
 		/// <summary>
+		/// The name of the rendered template.
+		/// </summary>
+		public string TemplateName
+		{
+			get => Evaluate("Context.TemplateName") as string;
+		}
+
+		/// <summary>
 		/// The name of the zone which is rendered.
 		/// </summary>
 		public string ZoneName { get; private set; }

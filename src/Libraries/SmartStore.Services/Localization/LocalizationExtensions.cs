@@ -35,7 +35,7 @@ namespace SmartStore.Services.Localization
 				entity.Id,
 				keySelector,
 				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id,
-				detectEmptyHtml);
+				detectEmptyHtml: detectEmptyHtml);
 		}
 
         /// <summary>

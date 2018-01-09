@@ -2,35 +2,8 @@
 @{ 
 	string templateName = ViewData["TemplateName"]?.Convert<string>();
 
-	var cdn = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/";
-
-	Html.AddScriptParts(true,
-		cdn + "codemirror.min.js",
-		cdn + "addon/hint/show-hint.min.js",
-		cdn + "addon/hint/xml-hint.min.js",
-		cdn + "addon/hint/html-hint.min.js",
-		cdn + "addon/hint/css-hint.min.js",
-		cdn + "addon/hint/javascript-hint.min.js",
-		cdn + "addon/fold/xml-fold.min.js",
-		cdn + "addon/fold/foldcode.min.js",
-		cdn + "addon/edit/closetag.min.js",
-		cdn + "addon/edit/closebrackets.min.js",
-		cdn + "addon/edit/matchtags.min.js",
-		cdn + "addon/mode/multiplex.min.js",
-		cdn + "addon/mode/overlay.min.js",
-		cdn + "mode/xml/xml.min.js",
-		cdn + "mode/javascript/javascript.min.js",
-		cdn + "mode/css/css.min.js",
-		cdn + "mode/htmlmixed/htmlmixed.min.js",
-		cdn + "addon/selection/active-line.min.js",
-		cdn + "addon/edit/matchbrackets.min.js",
-		"~/Content/editors/CodeMirror/liquid.js");
-
-	Html.AddCssFileParts(true,
-		cdn + "codemirror.min.css",
-		cdn + "addon/hint/show-hint.min.css",
-		cdn + "theme/eclipse.min.css",
-		"~/Content/editors/CodeMirror/liquid.css");
+	Html.AddScriptParts("~/bundles/codemirror");
+	Html.AddCssFileParts("~/css/codemirror");
 }
 
 <script type="text/javascript">
@@ -49,14 +22,15 @@
 				autoCloseTags: true,
 				autoCloseBrackets: true,
 				styleActiveLine: true,
-				continueComments: "Enter",
 				extraKeys: {
 					"'.'": CodeMirror.hint.completeAfter,
 					"'<'": CodeMirror.hint.completeAfter,
 					"'/'": CodeMirror.hint.completeIfAfterLt,
 					"' '": CodeMirror.hint.completeIfAfterSpace,
 					"'='": CodeMirror.hint.completeIfInTag,
-					"Ctrl-Space": "autocomplete"
+					"Ctrl-Space": "autocomplete",
+					"F11": function (cm) { cm.setOption("fullScreen", !cm.getOption("fullScreen")); },
+					"Esc": function (cm) { if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false); }
 				},
 				hintOptions: {
 					closeCharacters: /[\s()\[\]{};:>,.|%]/,
@@ -67,13 +41,6 @@
         }
     });
 </script>
-
-<style>
-	.CodeMirror {
-		border: 1px solid rgba(0,0,0, 0.25);
-		height: 500px;
-	}
-</style>
 
 @Html.TextArea(string.Empty, /* Name suffix */
 			   (string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */

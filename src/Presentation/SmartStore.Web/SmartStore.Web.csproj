@@ -671,8 +671,32 @@
     <Content Include="Content\editors\ckeditor\skins\smartstore\images\refresh.png" />
     <Content Include="Content\editors\ckeditor\skins\smartstore\skin.js" />
     <Content Include="Content\editors\ckeditor\styles.js" />
-    <Content Include="Content\editors\CodeMirror\liquid.css" />
-    <Content Include="Content\editors\CodeMirror\liquid.js" />
+    <Content Include="Content\editors\CodeMirror\addon\display\fullscreen.css" />
+    <Content Include="Content\editors\CodeMirror\addon\fold\xml-fold.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\selection\active-line.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\edit\closebrackets.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\edit\closetag.min.js" />
+    <Content Include="Content\editors\CodeMirror\codemirror.custom.css" />
+    <Content Include="Content\editors\CodeMirror\codemirror.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\css-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\display\fullscreen.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\css\css.min.js" />
+    <Content Include="Content\editors\CodeMirror\codemirror.min.css" />
+    <Content Include="Content\editors\CodeMirror\theme\eclipse.min.css" />
+    <Content Include="Content\editors\CodeMirror\mode\liquid\liquid.css" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\show-hint.min.css" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\html-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\htmlmixed\htmlmixed.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\javascript-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\javascript\javascript.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\liquid\liquid.js" />
+    <Content Include="Content\editors\CodeMirror\addon\edit\matchbrackets.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\edit\matchtags.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\mode\multiplex.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\mode\overlay.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\show-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\xml-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\xml\xml.min.js" />
     <Content Include="Content\editors\summernote\globalinit.js" />
     <Content Include="Content\editors\summernote\langs\summernote-de-DE.js" />
     <Content Include="Content\editors\summernote\summernote.css" />
@@ -2066,7 +2090,9 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Content\editors\CodeMirror\js\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>

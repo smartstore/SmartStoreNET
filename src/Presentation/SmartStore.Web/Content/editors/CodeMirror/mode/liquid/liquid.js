@@ -403,18 +403,6 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 		"ReplaceFirst Reverse Round Rstrip SanitizeHtmlId ScriptTag Sha1 Size Slice Sort " +
 		"Split Strip StripHtml StripNewlines StylesheetTag T Times Truncate TruncateWords Uniq Upcase UrlEncode UrlDecode").split(" ");
 
-	//function flattenTreeNodes(node) {
-	//	if (node && node.Children) {
-	//		return _.sortBy(_.map(node.Children, function (x) {
-	//			return {
-	//				text: x.Value.Name,
-	//				className: "cm-hint-kind-" + x.Value.Kind
-	//			};
-	//		}), "text");
-	//	}
-	//	return null;
-	//}
-
 	function findTreeNode(node, str) {
 		if (node && node.Children) {
 			return _.find(node.Children, function (x) { return x.Value.Name == str; });
@@ -498,9 +486,6 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 				gatherCompletions("tags");
 			}
 			else if (isType(token, "output-markup")) {
-				//if (token.string == "{{") {
-				//	gatherCompletions(root);
-				//}
 				if (token.string == "|") {
 					gatherCompletions("filters");
 				}

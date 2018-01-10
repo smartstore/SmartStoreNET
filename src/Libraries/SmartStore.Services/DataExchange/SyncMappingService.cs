@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.DataExchange;
 
 namespace SmartStore.Services.DataExchange
 {
-	
+
 	public partial class SyncMappingService : ISyncMappingService
 	{
 		private readonly IRepository<SyncMapping> _syncMappingsRepository;
@@ -34,7 +31,7 @@ namespace SmartStore.Services.DataExchange
 			_syncMappingsRepository.InsertRange(mappings);
 		}
 
-		public IList<SyncMapping> GetAllSyncMappings(string contextName = null, string entityName = null)
+		public IList<SyncMapping> GetAllSyncMappings(string contextName = null, string entityName = null, int[] entityIds = null)
 		{
 			var query = _syncMappingsRepository.Table;
 
@@ -46,6 +43,11 @@ namespace SmartStore.Services.DataExchange
 			if (contextName.HasValue())
 			{
 				query = query.Where(x => x.ContextName == contextName);
+			}
+
+			if (entityIds != null && entityIds.Any())
+			{
+				query = query.Where(x => entityIds.Contains(x.EntityId));
 			}
 
 			return query.ToList();

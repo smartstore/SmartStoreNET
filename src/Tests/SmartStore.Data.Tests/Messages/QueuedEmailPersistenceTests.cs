@@ -18,9 +18,7 @@ namespace SmartStore.Data.Tests.Messages
             {
                 Priority = 1,
                 From = "From",
-                FromName = "FromName",
                 To = "To",
-                ToName = "ToName",
                 CC = "CC",
                 Bcc = "Bcc",
                 Subject = "Subject",
@@ -45,9 +43,7 @@ namespace SmartStore.Data.Tests.Messages
             fromDb.ShouldNotBeNull();
             fromDb.Priority.ShouldEqual(1);
             fromDb.From.ShouldEqual("From");
-            fromDb.FromName.ShouldEqual("FromName");
             fromDb.To.ShouldEqual("To");
-            fromDb.ToName.ShouldEqual("ToName");
             fromDb.CC.ShouldEqual("CC");
             fromDb.Bcc.ShouldEqual("Bcc");
             fromDb.Subject.ShouldEqual("Subject");

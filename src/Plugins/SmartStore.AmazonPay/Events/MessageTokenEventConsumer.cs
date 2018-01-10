@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
@@ -9,7 +10,7 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.AmazonPay.Events
 {
-	public class MessageTokenEventConsumer : IConsumer<MessageTokensAddedEvent<Token>>
+	public class MessageTokenEventConsumer : IConsumer<MessageModelCreatedEvent>
 	{
 		private readonly IPluginFinder _pluginFinder;
 		private readonly ICommonServices _services;
@@ -25,9 +26,9 @@ namespace SmartStore.AmazonPay.Events
 			_orderService = orderService;
 		}
 
-		public void HandleEvent(MessageTokensAddedEvent<Token> messageTokenEvent)
+		public void HandleEvent(MessageModelCreatedEvent message)
 		{
-			if (!messageTokenEvent.Message.Name.IsCaseInsensitiveEqual("OrderPlaced.CustomerNotification"))
+			if (message.MessageContext.MessageTemplate.Name != MessageTemplateNames.OrderPlacedCustomer)
 				return;
 
 			var storeId = _services.StoreContext.CurrentStore.Id;
@@ -35,13 +36,25 @@ namespace SmartStore.AmazonPay.Events
 			if (!_pluginFinder.IsPluginReady(_services.Settings, AmazonPayPlugin.SystemName, storeId))
 				return;
 
-            var orderId = messageTokenEvent.Tokens.Where(x => x.Key.Equals("Order.ID")).FirstOrDefault();
-            var order = _orderService.GetOrderById(orderId.Value.ToInt());
+			dynamic model = message.Model;
 
-			var isAmazonPayment = (order != null && order.PaymentMethodSystemName.IsCaseInsensitiveEqual(AmazonPayPlugin.SystemName));
-			var tokenValue = (isAmazonPayment ? _services.Localization.GetResource("Plugins.Payments.AmazonPay.BillingAddressMessageNote") : "");
+			if (model.Order == null)
+				return;
 
-			messageTokenEvent.Tokens.Add(new Token("SmartStore.AmazonPay.BillingAddressMessageNote", tokenValue));
+			var orderId = model.Order.ID;
+
+			if (orderId is int id)
+			{
+				var order = _orderService.GetOrderById(id);
+
+				var isAmazonPayment = (order != null && order.PaymentMethodSystemName.IsCaseInsensitiveEqual(AmazonPayPlugin.SystemName));
+				var tokenValue = (isAmazonPayment ? _services.Localization.GetResource("Plugins.Payments.AmazonPay.BillingAddressMessageNote") : "");
+
+				model.AmazonPay = new Dictionary<string, object>
+				{
+					{ "BillingAddressMessageNote", tokenValue }
+				};
+			}
 		}
 	}
 }

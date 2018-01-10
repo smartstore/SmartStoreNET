@@ -10,14 +10,6 @@
 
 }
 
-@functions {
-	private IHtmlString JoinValues(string[] values, string separator = " ")
-	{
-		var normalized = values.Where(x => x.HasValue());
-		return MvcHtmlString.Create(String.Join(separator, normalized));
-	}
-}
-
 <footer>
 	
     @{ Html.RenderWidget("invoice_footer_before"); }
@@ -25,21 +17,7 @@
 	<table class="text-muted text-smallest">
 		<tr>
 			<td style="width: 33%;">
-				@if (company.CompanyName.HasValue())
-				{
-					<div>@company.CompanyName</div>
-				}
-				@{
-					var fullName = JoinValues(new string[] { company.Salutation, company.Title, company.Firstname, company.Lastname });
-				}
-				@if (fullName.ToString().HasValue())
-				{
-					<div>@fullName</div>
-				}				
-				
-				<div>@JoinValues(new string[] { company.Street, company.Street2 }, " &middot; ")</div>
-				<div>@JoinValues(new string[] { company.ZipCode, company.City })</div>
-				<div>@JoinValues(new string[] { company.CountryName, company.StateName }, ", ")</div>
+				@Html.Raw(Model.MerchantFormattedAddress)
 			</td>
 			<td style="width: 33%;">
 				<div>@T("PDFInvoice.Footer.Url", Model.StoreUrl)</div>

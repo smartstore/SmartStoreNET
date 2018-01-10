@@ -4,6 +4,8 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Data.Utilities;
+using SmartStore.Services;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
@@ -17,47 +19,42 @@ using Telerik.Web.Mvc;
 namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
-    public class MessageTemplateController : AdminControllerBase
+    public partial class MessageTemplateController : AdminControllerBase
     {
-        #region Fields
-
         private readonly IMessageTemplateService _messageTemplateService;
-        private readonly IEmailAccountService _emailAccountService;
+		private readonly IMessageFactory _messageFactory;
+		private readonly IEmailAccountService _emailAccountService;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILocalizationService _localizationService;
-        private readonly IMessageTokenProvider _messageTokenProvider;
         private readonly IPermissionService _permissionService;
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
         private readonly EmailAccountSettings _emailAccountSettings;
-        #endregion Fields
 
-        #region Constructors
-
-        public MessageTemplateController(IMessageTemplateService messageTemplateService, 
-            IEmailAccountService emailAccountService, ILanguageService languageService, 
+        public MessageTemplateController(
+			IMessageTemplateService messageTemplateService,
+			IMessageFactory messageFactory,
+			IEmailAccountService emailAccountService, 
+			ILanguageService languageService, 
             ILocalizedEntityService localizedEntityService,
-            ILocalizationService localizationService, IMessageTokenProvider messageTokenProvider,
-			IPermissionService permissionService, IStoreService storeService,
+            ILocalizationService localizationService, 
+			IPermissionService permissionService, 
+			IStoreService storeService,
 			IStoreMappingService storeMappingService,
 			EmailAccountSettings emailAccountSettings)
         {
-            this._messageTemplateService = messageTemplateService;
-            this._emailAccountService = emailAccountService;
-            this._languageService = languageService;
-            this._localizedEntityService = localizedEntityService;
-            this._localizationService = localizationService;
-            this._messageTokenProvider = messageTokenProvider;
-            this._permissionService = permissionService;
-			this._storeService = storeService;
-			this._storeMappingService = storeMappingService;
-            this._emailAccountSettings = emailAccountSettings;
+            _messageTemplateService = messageTemplateService;
+			_messageFactory = messageFactory;
+            _emailAccountService = emailAccountService;
+            _languageService = languageService;
+            _localizedEntityService = localizedEntityService;
+            _localizationService = localizationService;
+            _permissionService = permissionService;
+			_storeService = storeService;
+			_storeMappingService = storeMappingService;
+            _emailAccountSettings = emailAccountSettings;
         }
-
-        #endregion
-        
-        #region Utilities
 
         [NonAction]
         public void UpdateLocales(MessageTemplate mt, MessageTemplateModel model)
@@ -70,6 +67,8 @@ namespace SmartStore.Admin.Controllers
 				MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment2FileId, lid, false, false), localized.Attachment2FileId, true);
 				MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment3FileId, lid, false, false), localized.Attachment3FileId, true);
 
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.To, localized.To, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.ReplyTo, localized.ReplyTo, lid);
 				_localizedEntityService.SaveLocalizedValue(mt, x => x.BccEmailAddresses, localized.BccEmailAddresses, lid);
 				_localizedEntityService.SaveLocalizedValue(mt, x => x.Subject, localized.Subject, lid);
 				_localizedEntityService.SaveLocalizedValue(mt, x => x.Body, localized.Body, lid);
@@ -102,10 +101,6 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 		}
-        
-        #endregion
-        
-        #region Methods
 
         public ActionResult Index()
         {
@@ -116,7 +111,7 @@ namespace SmartStore.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
                 return AccessDeniedView();
-
+			
 			var model = new MessageTemplateListModel();
 
 			foreach (var s in _storeService.GetAllStores())
@@ -162,10 +157,10 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = messageTemplate.ToModel();
-            model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
+			PrepareLastModelTree(messageTemplate);
 
-            // available email accounts
-            foreach (var ea in _emailAccountService.GetAllEmailAccounts())
+			// available email accounts
+			foreach (var ea in _emailAccountService.GetAllEmailAccounts())
 			{
 				model.AvailableEmailAccounts.Add(ea.ToModel());
 			}
@@ -176,7 +171,9 @@ namespace SmartStore.Admin.Controllers
 			// locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.BccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, languageId, false, false);
+				locale.To = messageTemplate.GetLocalized(x => x.To, languageId, false, false);
+				locale.ReplyTo = messageTemplate.GetLocalized(x => x.ReplyTo, languageId, false, false);
+				locale.BccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, languageId, false, false);
                 locale.Subject = messageTemplate.GetLocalized(x => x.Subject, languageId, false, false);
                 locale.Body = messageTemplate.GetLocalized(x => x.Body, languageId, false, false);
 				locale.Attachment1FileId = messageTemplate.GetLocalized(x => x.Attachment1FileId, languageId, false, false);
@@ -189,6 +186,12 @@ namespace SmartStore.Admin.Controllers
 
             return View(model);
         }
+
+		private void PrepareLastModelTree(MessageTemplate template)
+		{
+			ViewBag.LastModelTreeJson = template.LastModelTree;
+			ViewBag.LastModelTree = Services.Resolve<IMessageModelProvider>().GetLastModelTree(template);
+		}
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
@@ -220,15 +223,15 @@ namespace SmartStore.Admin.Controllers
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));
                 return continueEditing ? RedirectToAction("Edit", messageTemplate.Id) : RedirectToAction("List");
             }
-            
-            //If we got this far, something failed, redisplay form
-            model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
 
-            //available email accounts
-            foreach (var ea in _emailAccountService.GetAllEmailAccounts())
+			// If we got this far, something failed, redisplay form
+			PrepareLastModelTree(messageTemplate);
+
+			// Available email accounts
+			foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());
 			
-			//Store
+			// Store
 			PrepareStoresMappingModel(model, messageTemplate, true);
             return View(model);
         }
@@ -247,6 +250,59 @@ namespace SmartStore.Admin.Controllers
 
 			NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Deleted"));
 			return RedirectToAction("List");
+		}
+
+		public ActionResult Preview(int id)
+		{
+			// TODO: (mc) Liquid > Display info about preview models
+			var template = _messageTemplateService.GetMessageTemplateById(id);
+			if (template == null)
+			{
+				return RedirectToAction("List");
+			}
+
+			try
+			{
+				var context = new MessageContext
+				{
+					MessageTemplate = template,
+					TestMode = true
+				};
+
+				// TODO: (mc) Liquid > make proper UI for testing (IFrame, Recipient etc.)
+				var result = _messageFactory.CreateMessage(context, false);
+				var messageModel = result.Model;
+
+				return Content(result.Email.Body, "text/html");
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex);
+				return RedirectToAction("Edit", template.Id);
+			}
+		}
+
+		[HttpPost, ActionName("Edit")]
+		[FormValueRequired("save-in-file")]
+		public ActionResult SaveInFile(int id)
+		{
+			var template = _messageTemplateService.GetMessageTemplateById(id);
+			if (template == null)
+			{
+				return RedirectToAction("List");
+			}
+
+			try
+			{
+				var converter = new MessageTemplateConverter(Services.DbContext);
+				converter.Save(template, Services.WorkContext.WorkingLanguage);
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex);
+			}
+
+			return RedirectToAction("Edit", template.Id);
 		}
 
 		[HttpPost, ActionName("Edit")]
@@ -272,7 +328,5 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("Edit", new { id = model.Id });
 			}
 		}
-
-        #endregion
     }
 }

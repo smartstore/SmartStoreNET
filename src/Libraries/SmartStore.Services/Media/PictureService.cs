@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Drawing;
@@ -6,9 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ImageResizer;
+using System.Web;
+using System.Web.Hosting;
 using SmartStore.Collections;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
@@ -22,65 +25,126 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
 {
+	[Serializable]
+	public class PictureInfo
+	{
+		public int Id { get; set; }
+		/// <summary>
+		/// The virtual path to the image file to be processed by the media middleware controller, e.g. "/media/image/1234/image.jpg"
+		/// </summary>
+		public string Path { get; set; }
+		public int? Width { get; set; }
+		public int? Height { get; set; }
+		public string MimeType { get; set; }
+		public string Extension { get; set; }
+	}
+
 	public partial class PictureService : IPictureService
     {
-        private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
-		private const string STATIC_IMAGE_PATH = "~/Content/Images";
+		// 0 = Id
+		private const string MEDIACACHE_LOOKUP_KEY = "media:info-{0}";
+		private const string MEDIACACHE_LOOKUP_KEY_PATTERN = "media:info-*";
 
 		private readonly IRepository<Picture> _pictureRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly ISettingService _settingService;
-        private readonly ILogger _logger;
         private readonly IEventPublisher _eventPublisher;
         private readonly MediaSettings _mediaSettings;
-        private readonly IImageResizerService _imageResizerService;
+        private readonly IImageProcessor _imageProcessor;
         private readonly IImageCache _imageCache;
 		private readonly Provider<IMediaStorageProvider> _storageProvider;
+		private readonly IStoreContext _storeContext;
+		private readonly HttpContextBase _httpContext;
+		private readonly ICacheManager _cacheManager;
 
-		private string _staticImagePath;
+		private readonly string _host;
+		private readonly string _appPath;
 
-        public PictureService(
+		private static readonly string _processedImagesRootPath;
+		private static readonly string _fallbackImagesRootPath;
+
+		static PictureService()
+		{
+			// TODO: (mc) make this configurable per web.config
+			_processedImagesRootPath = "media/image/";
+			_fallbackImagesRootPath = "content/images/";
+		}
+
+		public PictureService(
             IRepository<Picture> pictureRepository,
             IRepository<ProductPicture> productPictureRepository,
             ISettingService settingService, 
-            ILogger logger, 
             IEventPublisher eventPublisher,
             MediaSettings mediaSettings,
-            IImageResizerService imageResizerService,
+            IImageProcessor imageProcessor,
             IImageCache imageCache,
-			IProviderManager providerManager)
+			IProviderManager providerManager,
+			IStoreContext storeContext,
+			HttpContextBase httpContext,
+			ICacheManager cacheManager)
         {
             _pictureRepository = pictureRepository;
             _productPictureRepository = productPictureRepository;
             _settingService = settingService;
-            _logger = logger;
             _eventPublisher = eventPublisher;
             _mediaSettings = mediaSettings;
-            _imageResizerService = imageResizerService;
+            _imageProcessor = imageProcessor;
             _imageCache = imageCache;
+			_storeContext = storeContext;
+			_httpContext = httpContext;
+			_cacheManager = cacheManager;
 
 			var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
-
 			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
-        }
+
+			Logger = NullLogger.Instance;
+
+			string appPath = "/";
+
+			if (HostingEnvironment.IsHosted)
+			{
+				appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
+
+				var cdn = storeContext.CurrentStore.ContentDeliveryNetwork;
+				if (cdn.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
+				{
+					_host = cdn;
+				}
+				else if (mediaSettings.AutoGenerateAbsoluteUrls)
+				{
+					var uri = httpContext.Request.Url;
+					_host = "{0}://{1}/{2}".FormatInvariant(uri.Scheme, uri.Authority, appPath);
+				}
+				else
+				{
+					_host = appPath;
+				}
+			}
+
+			_host = _host.EmptyNull().EnsureEndsWith("/");
+			_appPath = appPath.EnsureEndsWith("/");
+
+		}
+
+		public ILogger Logger { get; set; }
 
 		#region Utilities
 
-		protected virtual string StaticImagePath
+		public static string FallbackImagesRootPath
 		{
-			get { return _staticImagePath ?? (_staticImagePath = CommonHelper.MapPath(STATIC_IMAGE_PATH, false)); }
+			get { return "~/" + _fallbackImagesRootPath; }
 		}
 
-		protected virtual string GetDefaultImageFileName(PictureType defaultPictureType = PictureType.Entity)
+		protected virtual string GetFallbackImageFileName(FallbackPictureType defaultPictureType = FallbackPictureType.Entity)
 		{
 			string defaultImageFileName;
 
 			switch (defaultPictureType)
 			{
-				case PictureType.Entity:
+				case FallbackPictureType.Entity:
 					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.png");
 					break;
-				case PictureType.Avatar:
+				case FallbackPictureType.Avatar:
 					defaultImageFileName = _settingService.GetSettingByKey("Media.Customer.DefaultAvatarImageName", "default-avatar.jpg");
 					break;
 				default:
@@ -91,172 +155,59 @@ namespace SmartStore.Services.Media
 			return defaultImageFileName;
 		}
 
-		protected internal virtual string GetProcessedImageUrl(
-			object source, // byte[], string or Picture
-			string seoFileName,
-			string extension,
-			int targetSize = 0,
-			string storeLocation = null)
-		{
-			var resizeSettings = new ResizeSettings();
-			if (targetSize > 0)
-			{
-				resizeSettings.MaxWidth = targetSize;
-				resizeSettings.MaxHeight = targetSize;
-			}
-
-			var picture = source as Picture;
-
-			var cachedImage = _imageCache.GetCachedImage(
-				picture?.Id,
-				seoFileName,
-				extension,
-				resizeSettings);
-
-			if (!cachedImage.Exists)
-			{
-				lock (String.Intern(cachedImage.Path))
-				{
-					byte[] buffer = null;
-
-					try
-					{
-						if (source is string)
-						{
-							// static default image
-							buffer = File.ReadAllBytes((string)source);
-						}
-						else if (source is Picture)
-						{
-							buffer = LoadPictureBinary((Picture)source);
-						}
-						else if (source is byte[])
-						{
-							buffer = (byte[])source;
-						}
-
-						if (buffer == null || buffer.LongLength == 0)
-						{
-							return string.Empty;
-						}
-					}
-					catch (Exception exception)
-					{
-						_logger.ErrorFormat(exception, "Error reading media file '{0}'.", source);
-						return string.Empty;
-					}
-
-					try
-					{
-						_imageCache.ProcessAndAddImageToCache(cachedImage, buffer, targetSize);
-					}
-					catch (Exception exception)
-					{
-						_logger.ErrorFormat(exception, "Error processing/writing media file '{0}'.", cachedImage.Path);
-						return string.Empty;
-					}
-				}
-			}
-
-			var url = _imageCache.GetImageUrl(cachedImage.Path, storeLocation);
-			return url;
-		}
-
-		protected internal virtual async Task<string> GetProcessedImageUrlAsync(
-			object source, // byte[], string or Picture
-			string seoFileName,
-			string extension,
-			int targetSize = 0,
-			string storeLocation = null)
-		{
-			var resizeSettings = new ResizeSettings();
-			if (targetSize > 0)
-			{
-				resizeSettings.MaxWidth = targetSize;
-				resizeSettings.MaxHeight = targetSize;
-			}
-
-			var picture = source as Picture;
-
-			var cachedImage = _imageCache.GetCachedImage(
-				picture?.Id,
-				seoFileName,
-				extension,
-				resizeSettings);
-
-			if (!cachedImage.Exists)
-			{
-				byte[] buffer = null;
-
-				try
-				{
-					if (source is string)
-					{
-						// static default image
-						buffer = File.ReadAllBytes((string)source);
-					}
-					else if (source is Picture)
-					{
-						buffer = await LoadPictureBinaryAsync((Picture)source);
-					}
-					else if (source is byte[])
-					{
-						buffer = (byte[])source;
-					}
-
-					if (buffer == null || buffer.Length == 0)
-					{
-						return string.Empty;
-					}
-				}
-				catch (Exception exception)
-				{
-					_logger.ErrorFormat(exception, "Error reading media file '{0}'.", source);
-					return string.Empty;
-				}
-
-				try
-				{
-					await _imageCache.ProcessAndAddImageToCacheAsync(cachedImage, buffer, targetSize);
-				}
-				catch (Exception exception)
-				{
-					_logger.ErrorFormat(exception, "Error processing/writing media file '{0}'.", cachedImage.Path);
-					return string.Empty;
-				}
-			}
-
-			var url = _imageCache.GetImageUrl(cachedImage.Path, storeLocation);
-			return url;
-		}
-
 		#endregion
 
-		#region Methods
+		#region Imaging
 
-		public virtual byte[] ValidatePicture(byte[] pictureBinary)
+		public virtual byte[] ValidatePicture(byte[] pictureBinary, string mimeType)
 		{
 			var size = Size.Empty;
-			return ValidatePicture(pictureBinary, out size);
+			return ValidatePicture(pictureBinary, mimeType, out size);
 		}
 
-		public virtual byte[] ValidatePicture(byte[] pictureBinary, out Size size)
+		public virtual byte[] ValidatePicture(byte[] pictureBinary, string mimeType, out Size size)
 		{
+			Guard.NotNull(pictureBinary, nameof(pictureBinary));
+			Guard.NotEmpty(mimeType, nameof(mimeType));
+
 			size = Size.Empty;
 
 			var originalSize = GetPictureSize(pictureBinary);
 			var maxSize = _mediaSettings.MaximumImageSize;
 
+			var query = new ProcessImageQuery(pictureBinary)
+			{
+				Quality = _mediaSettings.DefaultImageQuality,
+				Format = MimeTypes.MapMimeTypeToExtension(mimeType),
+				IsValidationMode = true
+			};
+
 			if (originalSize.IsEmpty || (originalSize.Height <= maxSize && originalSize.Width <= maxSize))
 			{
-				size = originalSize;
-				return pictureBinary;
+				// Give subscribers the chance to (pre)-process
+				var evt = new ImageUploadValidatedEvent(query, originalSize);
+				_eventPublisher.Publish(evt);
+
+				if (evt.ResultBuffer != null)
+				{
+					// Maybe subscriber forgot to set this, so check
+					size = evt.ResultSize.IsEmpty ? originalSize : evt.ResultSize;
+					return evt.ResultBuffer;
+				}
+				else
+				{
+					size = originalSize;
+					return pictureBinary;
+				}
 			}
 
-			using (var resultStream = _imageResizerService.ResizeImage(new MemoryStream(pictureBinary), maxSize, maxSize, _mediaSettings.DefaultImageQuality))
+			query.MaxWidth = maxSize;
+			query.MaxHeight = maxSize;
+
+			using (var result = _imageProcessor.ProcessImage(query))
 			{
-				var buffer = resultStream.GetBuffer();
-				size = GetPictureSize(buffer);
+				size = new Size(result.Width, result.Height);
+				var buffer = result.OutputStream.GetBuffer();
 				return buffer;
 			}
 		}
@@ -289,22 +240,11 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-		public virtual string GetPictureSeName(string name)
-        {
-            return SeoHelper.GetSeName(name, true, false);
-        }
-
-		public virtual Picture SetSeoFilename(int pictureId, string seoFilename)
+		public virtual Stream OpenPictureStream(Picture picture)
 		{
-			var picture = GetPictureById(pictureId);
+			Guard.NotNull(picture, nameof(picture));
 
-			// update if it has been changed
-			if (picture != null && seoFilename != picture.SeoFilename)
-			{
-				UpdatePicture(picture, LoadPictureBinary(picture), picture.MimeType, seoFilename, true, false);
-			}
-
-			return picture;
+			return _storageProvider.Value.OpenRead(picture.ToMedia());
 		}
 
 		public virtual byte[] LoadPictureBinary(Picture picture)
@@ -374,106 +314,201 @@ namespace SmartStore.Services.Media
 			return size;
 		}
 
-		public virtual string GetPictureUrl(
-            int pictureId,
-            int targetSize = 0,
-            bool showDefaultPicture = true,
-            string storeLocation = null,
-            PictureType defaultPictureType = PictureType.Entity)
-        {
-            return GetPictureUrl(GetPictureById(pictureId), targetSize, showDefaultPicture, storeLocation, defaultPictureType);
-        }
-
-		public virtual Task<string> GetPictureUrlAsync(
-			int pictureId,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
+		public IDictionary<int, PictureInfo> GetPictureInfos(IEnumerable<int> pictureIds)
 		{
-			return GetPictureUrlAsync(GetPictureById(pictureId), targetSize, showDefaultPicture, storeLocation, defaultPictureType);
-		}
+			Guard.NotNull(pictureIds, nameof(pictureIds));
 
-		public virtual string GetPictureUrl(
-            Picture picture,
-            int targetSize = 0,
-            bool showDefaultPicture = true,
-            string storeLocation = null,
-            PictureType defaultPictureType = PictureType.Entity)
-        {
-			var url = PrepareGetPictureUrl(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
+			var allRequestedInfos = (from id in pictureIds.Distinct().Where(x => x > 0)
+						   let cacheKey = MEDIACACHE_LOOKUP_KEY.FormatInvariant(id)
+						   select new
+						   {
+							   PictureId = id,
+							   CacheKey = cacheKey,
+							   Info = _cacheManager.Contains(cacheKey) ? _cacheManager.Get<PictureInfo>(cacheKey) : (PictureInfo)null
+						   }).ToList();
 
-			if (url.IsEmpty() && picture != null)
+			var result = new Dictionary<int, PictureInfo>(allRequestedInfos.Count);
+			var uncachedPictureIds = allRequestedInfos.Where(x => x.Info == null).Select(x => x.PictureId).ToArray();
+			var uncachedPictures = new Dictionary<int, Picture>();
+
+			if (uncachedPictureIds.Length > 0)
 			{
-				url = GetProcessedImageUrl(
-					picture,
-					picture.SeoFilename,
-					MimeTypes.MapMimeTypeToExtension(picture.MimeType),
-					targetSize,
-					storeLocation);
+				uncachedPictures = GetPicturesByIds(uncachedPictureIds, false).ToDictionary(x => x.Id);
 			}
 
-			return url;
-        }
-
-		public virtual Task<string> GetPictureUrlAsync(
-			Picture picture,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
-		{
-			var url = PrepareGetPictureUrl(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
-
-			if (url.IsEmpty() && picture != null)
+			foreach (var info in allRequestedInfos)
 			{
-				return GetProcessedImageUrlAsync(
-					picture,
-					picture.SeoFilename,
-					MimeTypes.MapMimeTypeToExtension(picture.MimeType),
-					targetSize,
-					storeLocation);
-			}
-
-			return Task.FromResult(url);
-		}
-
-		private string PrepareGetPictureUrl(
-			Picture picture,
-			int targetSize = 0,
-			bool showDefaultPicture = true,
-			string storeLocation = null,
-			PictureType defaultPictureType = PictureType.Entity)
-		{
-			if (picture == null)
-			{
-				if (showDefaultPicture)
+				if (info.Info != null)
 				{
-					return GetDefaultPictureUrl(targetSize, defaultPictureType, storeLocation);
+					result.Add(info.PictureId, info.Info);
 				}
 				else
 				{
-					return string.Empty;
+					// TBD: (mc) Does this need a locking strategy? Apparently yes. But it is hard to accomplish for a random sequence
+					// without locking the whole thing and loosing performance. Better no lock (?)
+					var newInfo = CreatePictureInfo(uncachedPictures.Get(info.PictureId));
+					result.Add(info.PictureId, newInfo);
+					_cacheManager.Put(info.CacheKey, newInfo);
 				}
 			}
 
+			return result;
+		}
+
+		public PictureInfo GetPictureInfo(int? pictureId)
+		{
+			if (pictureId.GetValueOrDefault() < 1)
+				return null;
+
+			var cacheKey = MEDIACACHE_LOOKUP_KEY.FormatInvariant(pictureId.GetValueOrDefault());
+			var info = _cacheManager.Get(cacheKey, () =>
+			{
+				return CreatePictureInfo(GetPictureById(pictureId.GetValueOrDefault()));
+			});
+
+			return info;
+		}
+
+		public PictureInfo GetPictureInfo(Picture picture)
+		{
+			if (picture == null)
+				return null;
+
+			var cacheKey = MEDIACACHE_LOOKUP_KEY.FormatInvariant(picture.Id);
+			var info = _cacheManager.Get(cacheKey, () =>
+			{
+				return CreatePictureInfo(picture);
+			});
+
+			return info;
+		}
+
+		public virtual string GetUrl(int pictureId, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+        {
+			return GetUrl(GetPictureInfo(pictureId), targetSize, fallbackType, host);
+		}
+
+		public virtual string GetUrl(Picture picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		{
+			return GetUrl(GetPictureInfo(picture), targetSize, fallbackType, host);
+		}
+
+		public string GetUrl(PictureInfo info, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		{
+			string path = null;
+			string query = null;
+
+			if (info?.Path != null)
+			{
+				path = info.Path;
+			}
+			else if (fallbackType > FallbackPictureType.NoFallback)
+			{
+				path = String.Concat(_processedImagesRootPath, "0/", GetFallbackImageFileName(fallbackType));
+			}
+
+			if (path != null)
+			{
+				if (targetSize > 0)
+				{
+					// TBD: (mc) let pass query string as NameValueCollection (?)
+					query = "?size=" + targetSize;
+				}
+
+				path = BuildUrlCore(path, query, host);
+			}
+
+			return path;
+		}
+
+		public virtual string GetFallbackUrl(int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		{
+			return GetUrl((PictureInfo)null, targetSize, fallbackType, host);
+		}
+
+		/// <summary>
+		/// Creates a cacheable counterpart for a Picture object instance
+		/// </summary>
+		/// <param name="picture"></param>
+		/// <returns></returns>
+		protected virtual PictureInfo CreatePictureInfo(Picture picture)
+		{
+			if (picture == null)
+				return null;
+
+			var extension = MimeTypes.MapMimeTypeToExtension(picture.MimeType);
+
+			// Build virtual path with pattern "media/image/{id}/{SeoFileName}.{extension}"
+			var path = "{0}{1}/{2}.{3}".FormatInvariant(
+				_processedImagesRootPath,
+				picture.Id,
+				picture.SeoFilename.NullEmpty() ?? picture.Id.ToString(ImageCache.IdFormatString),
+				extension);
+
+			// Do some maintenance stuff
 			EnsurePictureSizeResolved(picture, true);
 
 			if (picture.IsNew)
 			{
-				_imageCache.DeleteCachedImages(picture);		
+				_imageCache.Delete(picture);
 
-				// we do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
+				// We do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
 				UpdatePicture(
 					picture,
-					LoadPictureBinary(picture),
+					null,
 					picture.MimeType,
 					picture.SeoFilename,
 					false,
 					false);
 			}
+			
+			return new PictureInfo
+			{
+				Id = picture.Id,
+				MimeType = picture.MimeType,
+				Extension = extension,
+				Path = path,
+				Width = picture?.Width,
+				Height = picture?.Height,
+			};
+		}
 
-			return string.Empty;
+		protected virtual string BuildUrlCore(string virtualPath, string query, string host)
+		{
+			// TBD: (mc) No arg check because of performance?!
+
+			if (host == null)
+			{
+				host = _host;
+			}
+			else if (host == string.Empty)
+			{
+				host = _appPath;
+			}
+			else
+			{
+				host = host.EnsureEndsWith("/");
+			}
+
+			var sb = new StringBuilder(host, 100);
+
+			// Strip leading "/", the host/apppath has this already
+			if (virtualPath[0] == '/')
+			{
+				virtualPath = virtualPath.Substring(1);
+			}
+
+			// Append media path
+			sb.Append(virtualPath);
+
+			// Append query
+			if (query != null && query.Length > 0)
+			{
+				if (query[0] != '?') sb.Append("?");
+				sb.Append(query);
+			}
+
+			return sb.ToString();
 		}
 
 		private void EnsurePictureSizeResolved(Picture picture, bool saveOnResolve)
@@ -516,60 +551,69 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-		public virtual string GetDefaultPictureUrl(
-			int targetSize = 0,
-			PictureType defaultPictureType = PictureType.Entity,
-			string storeLocation = null)
+		public int ClearUrlCache()
 		{
-			var defaultImageFileName = GetDefaultImageFileName(defaultPictureType);
-			var filePath = Path.Combine(StaticImagePath, defaultImageFileName);
-
-			var url = GetProcessedImageUrl(
-				filePath,
-				Path.GetFileNameWithoutExtension(filePath),
-				Path.GetExtension(filePath),
-				targetSize,
-				storeLocation);
-
-			return url;
+			return _cacheManager.RemoveByPattern(MEDIACACHE_LOOKUP_KEY_PATTERN);
 		}
 
-        public virtual Picture GetPictureById(int pictureId)
-        {
-            if (pictureId == 0)
-                return null;
+		#endregion
 
-            var picture = _pictureRepository.GetById(pictureId);
-            return picture;
-        }
+		#region Metadata Storage
 
-        public virtual IPagedList<Picture> GetPictures(int pageIndex, int pageSize)
-        {
-            var query = from p in _pictureRepository.Table
-                        orderby p.Id descending
-                        select p;
+		public virtual string GetPictureSeName(string name)
+		{
+			return SeoHelper.GetSeName(name, true, false);
+		}
 
-            var pics = new PagedList<Picture>(query, pageIndex, pageSize);
-            return pics;
-        }
+		public virtual Picture SetSeoFilename(int pictureId, string seoFilename)
+		{
+			var picture = GetPictureById(pictureId);
 
-        public virtual IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0)
-        {
-            if (productId == 0)
-                return new List<Picture>();
+			// update if it has been changed
+			if (picture != null && seoFilename != picture.SeoFilename)
+			{
+				UpdatePicture(picture, null, picture.MimeType, seoFilename, true, false);
+			}
 
-            var query = from p in _pictureRepository.Table
+			return picture;
+		}
+
+		public virtual Picture GetPictureById(int pictureId)
+		{
+			if (pictureId == 0)
+				return null;
+
+			var picture = _pictureRepository.GetById(pictureId);
+			return picture;
+		}
+
+		public virtual IPagedList<Picture> GetPictures(int pageIndex, int pageSize)
+		{
+			var query = from p in _pictureRepository.Table
+						orderby p.Id descending
+						select p;
+
+			var pics = new PagedList<Picture>(query, pageIndex, pageSize);
+			return pics;
+		}
+
+		public virtual IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0)
+		{
+			if (productId == 0)
+				return new List<Picture>();
+
+			var query = from p in _pictureRepository.Table
 						join pp in _productPictureRepository.Table on p.Id equals pp.PictureId
-                        orderby pp.DisplayOrder
-                        where pp.ProductId == productId
-                        select p;
+						orderby pp.DisplayOrder
+						where pp.ProductId == productId
+						select p;
 
-            if (recordsToReturn > 0)
-                query = query.Take(recordsToReturn);
+			if (recordsToReturn > 0)
+				query = query.Take(recordsToReturn);
 
-            var pics = query.ToList();
-            return pics;
-        }
+			var pics = query.ToList();
+			return pics;
+		}
 
 		public virtual Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = null, bool withBlobs = false)
 		{
@@ -638,16 +682,16 @@ namespace SmartStore.Services.Media
 			Guard.NotNull(picture, nameof(picture));
 
 			// delete thumbs
-			_imageCache.DeleteCachedImages(picture);
+			_imageCache.Delete(picture);
+
+			// delete from url cache
+			_cacheManager.Remove(MEDIACACHE_LOOKUP_KEY.FormatInvariant(picture.Id));
 
 			// delete from storage
 			_storageProvider.Value.Remove(picture.ToMedia());
 
 			// delete entity
 			_pictureRepository.Delete(picture);
-
-			// event notification
-			_eventPublisher.EntityDeleted(picture);
 		}
 
 		public virtual Picture InsertPicture(
@@ -677,9 +721,6 @@ namespace SmartStore.Services.Media
 			// Save to storage.
 			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
 
-			// Event notification.
-			_eventPublisher.EntityInserted(picture);
-
 			return picture;
 		}
 
@@ -690,25 +731,25 @@ namespace SmartStore.Services.Media
 			bool isNew,
 			bool isTransient = true,
 			bool validateBinary = true)
-        {
+		{
 			var size = Size.Empty;
 
-            if (validateBinary)
-            {
-                pictureBinary = ValidatePicture(pictureBinary, out size);
-            }
+			if (validateBinary)
+			{
+				pictureBinary = ValidatePicture(pictureBinary, mimeType, out size);
+			}
 
 			return InsertPicture(pictureBinary, mimeType, seoFilename, isNew, size.Width, size.Height, isTransient);
-        }
+		}
 
-        public virtual void UpdatePicture(
+		public virtual void UpdatePicture(
 			Picture picture,
 			byte[] pictureBinary,
 			string mimeType,
 			string seoFilename,
 			bool isNew,
 			bool validateBinary = true)
-        {
+		{
 			if (picture == null)
 				return;
 
@@ -717,20 +758,23 @@ namespace SmartStore.Services.Media
 
 			var size = Size.Empty;
 
-            if (validateBinary)
-            {
-                pictureBinary = ValidatePicture(pictureBinary, out size);
-            }
+			if (validateBinary && pictureBinary != null)
+			{
+				pictureBinary = ValidatePicture(pictureBinary, mimeType, out size);
+			}
 
-            // delete old thumbs if a picture has been changed
-            if (seoFilename != picture.SeoFilename)
-            {
-                _imageCache.DeleteCachedImages(picture);
-            }
+			// delete old thumbs if a picture has been changed
+			if (seoFilename != picture.SeoFilename)
+			{
+				_imageCache.Delete(picture);
 
-            picture.MimeType = mimeType;
-            picture.SeoFilename = seoFilename;
-            picture.IsNew = isNew;
+				// delete from url cache
+				_cacheManager.Remove(MEDIACACHE_LOOKUP_KEY.FormatInvariant(picture.Id));
+			}
+
+			picture.MimeType = mimeType;
+			picture.SeoFilename = seoFilename;
+			picture.IsNew = isNew;
 			picture.UpdatedOnUtc = DateTime.UtcNow;
 
 			if (!size.IsEmpty)
@@ -739,15 +783,15 @@ namespace SmartStore.Services.Media
 				picture.Height = size.Height;
 			}
 
-            _pictureRepository.Update(picture);
+			_pictureRepository.Update(picture);
 
 			// save to storage
-			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
+			if (pictureBinary != null)
+			{
+				_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
+			}		
+		}
 
-			// event notification
-			_eventPublisher.EntityUpdated(picture);
-        }
-
-        #endregion
-    }
+		#endregion
+	}
 }

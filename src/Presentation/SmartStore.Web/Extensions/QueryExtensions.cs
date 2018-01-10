@@ -10,9 +10,7 @@ namespace SmartStore.Web
 		{
 			Guard.NotNull(query, nameof(query));
 
-			var viewMode = query.CustomData.Get("ViewMode") as string;
-
-			if (viewMode != null && viewMode.IsCaseInsensitiveEqual("list"))
+			if (query.CustomData.Get("ViewMode") is string viewMode && viewMode.IsCaseInsensitiveEqual("list"))
 			{
 				return ProductSummaryViewMode.List;
 			}

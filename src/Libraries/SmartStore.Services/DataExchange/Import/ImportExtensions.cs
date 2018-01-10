@@ -14,13 +14,27 @@ namespace SmartStore.Services.DataExchange.Import
 		/// </summary>
 		/// <param name="profile">Import profile</param>
 		/// <returns>Folder path</returns>
-		public static string GetImportFolder(this ImportProfile profile, bool content = false, bool create = false)
+		public static string GetImportFolder(
+			this ImportProfile profile,
+			bool content = false,
+			bool create = false, 
+			bool absolutePath = true)
 		{
-			var basePath = DataSettings.Current.TenantPath + "/ImportProfiles/";
-			var path = CommonHelper.MapPath(string.Concat(basePath, profile.FolderName, content ? "/Content" : ""));
+			var path = string.Concat(
+				DataSettings.Current.TenantPath,
+				"/ImportProfiles/",
+				profile.FolderName,
+				content ? "/Content" : "");
 
-			if (create && !System.IO.Directory.Exists(path))
-				System.IO.Directory.CreateDirectory(path);
+			if (absolutePath)
+			{
+				path = CommonHelper.MapPath(path);
+
+				if (create && !System.IO.Directory.Exists(path))
+				{
+					System.IO.Directory.CreateDirectory(path);
+				}
+			}
 
 			return path;
 		}

@@ -83,12 +83,10 @@ namespace SmartStore.PayPal.Controllers
 
         }
 
-		[AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure()
+		[LoadSetting, AdminAuthorize, ChildActionOnly]
+		public ActionResult Configure(PayPalExpressPaymentSettings settings)
 		{
             var model = new PayPalExpressConfigurationModel();
-            int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-            var settings = Services.Settings.LoadSetting<PayPalExpressPaymentSettings>(storeScope);
 
             model.Copy(settings, true);
 
@@ -98,37 +96,25 @@ namespace SmartStore.PayPal.Controllers
 				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
 				.ToList();
 
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
-
 			return View(model);
 		}
 
-		[HttpPost, AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure(PayPalExpressConfigurationModel model, FormCollection form)
+		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
+		public ActionResult Configure(PayPalExpressPaymentSettings settings, PayPalExpressConfigurationModel model)
 		{
 			if (!ModelState.IsValid)
-				return Configure();
+				return Configure(settings);
 
 			ModelState.Clear();
 
-            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-            var settings = Services.Settings.LoadSetting<PayPalExpressPaymentSettings>(storeScope);
-
             model.Copy(settings, false);
 
-			using (Services.Settings.BeginScope())
-			{
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-
-				// multistore context not possible, see IPN handling
-				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
-			}
+			// multistore context not possible, see IPN handling
+			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 
             NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
-			return Configure();
+			return Configure(settings);
 		}
 
 		public ActionResult PaymentInfo()

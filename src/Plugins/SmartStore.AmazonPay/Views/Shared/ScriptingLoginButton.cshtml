@@ -19,8 +19,11 @@
 		try {
 			if (!isAuthentication) {
 				scope += ' payments:widget payments:shipping_address payments:billing_address';
-				
-				amazon.Login.logout();
+
+				@if(Model.Logout)
+				{
+					<text>amazon.Login.logout();</text>
+				}
 			}
 		}
 		catch (e) {
@@ -30,7 +33,7 @@
 
 		try {
 			OffAmazonPayments.Button(isAuthentication ? 'amazon-pay-auth-button' : 'amazon-pay-login-button', '@Html.Raw(Model.SellerId)', {
-				type: '@(Model.ButtonType ?? (Model.Type == AmazonPayRequestType.AuthenticationPublicInfo ? "Login" : "PwA"))',
+				type: '@(Model.ButtonType ?? (Model.Type == AmazonPayRequestType.AuthenticationPublicInfo ? "LwA" : "PwA"))',
 				color: '@(Model.ButtonColor ?? "Gold")',
 				size:  '@(Model.ButtonSize ?? "small")',
 				language: '@(Model.LanguageCode ?? "de-DE")',

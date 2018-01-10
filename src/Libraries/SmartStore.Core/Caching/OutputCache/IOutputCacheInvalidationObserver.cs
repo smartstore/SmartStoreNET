@@ -7,6 +7,7 @@ using Autofac;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Caching
 {
@@ -155,7 +156,7 @@ namespace SmartStore.Core.Caching
 		{
 			Guard.NotNull(propertyAccessor, nameof(propertyAccessor));
 
-			var key = typeof(TSetting).Name + "." + propertyAccessor.ExtractPropertyInfo().Name;
+			var key = TypeHelper.NameOf<TSetting>(propertyAccessor, true);
 			observer.ObserveSetting(key, invalidationAction);
 		}
 	}

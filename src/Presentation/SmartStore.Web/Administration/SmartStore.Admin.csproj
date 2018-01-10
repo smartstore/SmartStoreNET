@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Admin</RootNamespace>
     <AssemblyName>SmartStore.Admin</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <SccProjectName>
@@ -39,6 +39,7 @@
     <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
     <NuGetPackageImportStamp>1e5b888b</NuGetPackageImportStamp>
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -78,12 +79,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="FluentValidation, Version=6.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\FluentValidation.6.4.1\lib\Net45\FluentValidation.dll</HintPath>
@@ -100,7 +101,7 @@
     <Reference Include="SmartStore.Licensing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\lib\SmartStore.Licensing\SmartStore.Licensing.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -115,6 +116,10 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -982,14 +987,14 @@
     <Content Include="Views\Export\_ProfileList.cshtml" />
     <Content Include="Views\Product\EditorTemplates\TierPriceCalculationMethod.cshtml" />
     <Content Include="Views\Setting\Search.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\TokenSelector.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\ModelTree.cshtml" />
     <Content Include="Views\ProductAttribute\OptionCreatePopup.cshtml" />
     <Content Include="Views\ProductAttribute\OptionEditPopup.cshtml" />
     <Content Include="Views\ProductAttribute\_CreateOrUpdateOption.cshtml" />
     <Content Include="Views\Setting\Partials\CommonFacet.cshtml" />
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
     <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
-    <Content Include="Views\Language\Partials\AvailablePluginResources.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper.min.js.map" />
   </ItemGroup>

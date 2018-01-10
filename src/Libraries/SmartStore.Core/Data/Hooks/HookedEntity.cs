@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity.Infrastructure;
+using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Core.Data.Hooks
 {
@@ -35,6 +36,14 @@ namespace SmartStore.Core.Data.Hooks
 		/// </summary>
 		/// <param name="propertyName">Name of the property</param>
 		bool IsPropertyModified(string propertyName);
+
+		/// <summary>
+		/// Gets a value indicating whether the entity is in soft deleted state.
+		/// This is the case when the entity is an instance of <see cref="ISoftDeletable"/>
+		/// and the value of its <c>Deleted</c> property is true AND has changed since tracking.
+		/// But when the entity is not in modified state the snapshot comparison is omitted.
+		/// </summary>
+		bool IsSoftDeleted { get; }
 	}
 
 	public class HookedEntity : IHookedEntity
@@ -80,7 +89,7 @@ namespace SmartStore.Core.Data.Hooks
 			}
 			set
 			{
-				Entry.State = (System.Data.Entity.EntityState)((int)value);
+				Entry.State = (EfState)((int)value);
 			}
 		}
 
@@ -108,6 +117,22 @@ namespace SmartStore.Core.Data.Hooks
 			}
 
 			return false;
+		}
+
+		public bool IsSoftDeleted
+		{
+			get
+			{
+				var entity = Entry.Entity as ISoftDeletable;
+				if (entity != null)
+				{
+					return Entry.State == EfState.Modified 
+						? entity.Deleted && IsPropertyModified("Deleted")
+						: entity.Deleted;
+				}
+
+				return false;
+			}
 		}
 	}
 }

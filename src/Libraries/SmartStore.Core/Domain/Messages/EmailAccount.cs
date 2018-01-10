@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartStore.Core.Email;
 
 namespace SmartStore.Core.Domain.Messages
 {
@@ -70,5 +71,10 @@ namespace SmartStore.Core.Domain.Messages
         {
             return this.MemberwiseClone();
         }
+
+		public EmailAddress ToEmailAddress()
+		{
+			return new EmailAddress(this.Email, this.DisplayName);
+		}
     }
 }

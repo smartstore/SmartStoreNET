@@ -16,10 +16,10 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.GoogleAnalytics.Controllers
 {
-
     public class WidgetsGoogleAnalyticsController : SmartController
     {
         private readonly IWorkContext _workContext;
@@ -43,54 +43,33 @@ namespace SmartStore.GoogleAnalytics.Controllers
         }
 
         [AdminAuthorize]
-        [ChildActionOnly]
-        public ActionResult Configure()
+        [LoadSetting, ChildActionOnly]
+        public ActionResult Configure(GoogleAnalyticsSettings settings)
         {
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(storeScope);
             var model = new ConfigurationModel();
-            model.GoogleId = googleAnalyticsSettings.GoogleId;
-            model.TrackingScript = googleAnalyticsSettings.TrackingScript; 
-            model.EcommerceScript = googleAnalyticsSettings.EcommerceScript;
-            model.EcommerceDetailScript = googleAnalyticsSettings.EcommerceDetailScript;
+			MiniMapper.Map(settings, model);
             
-            model.ZoneId = googleAnalyticsSettings.WidgetZone;
+            model.ZoneId = settings.WidgetZone;
             model.AvailableZones.Add(new SelectListItem() { Text = "<head> HTML tag", Value = "head_html_tag"});
             model.AvailableZones.Add(new SelectListItem() { Text = "Before <body> end HTML tag", Value = "body_end_html_tag_before" });
-
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(googleAnalyticsSettings, model, storeScope, _settingService);
 
             return View(model);
         }
 
         [HttpPost]
         [AdminAuthorize]
-        [ChildActionOnly]
+        [SaveSetting, ChildActionOnly]
 		[ValidateInput(false)]
-        public ActionResult Configure(ConfigurationModel model, FormCollection form)
+        public ActionResult Configure(GoogleAnalyticsSettings settings, ConfigurationModel model)
         {
 			ModelState.Clear();
 
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(storeScope);
-            googleAnalyticsSettings.GoogleId = model.GoogleId;
-            googleAnalyticsSettings.TrackingScript = model.TrackingScript; 
-            googleAnalyticsSettings.EcommerceScript = model.EcommerceScript;
-            googleAnalyticsSettings.EcommerceDetailScript = model.EcommerceDetailScript;
-            googleAnalyticsSettings.WidgetZone = model.ZoneId;
+			MiniMapper.Map(model, settings);
+			settings.WidgetZone = model.ZoneId;
 
-			using (_settingService.BeginScope())
-			{
-				_settingService.SaveSetting(googleAnalyticsSettings, x => x.WidgetZone, 0, false);
+			_settingService.SaveSetting(settings, x => x.WidgetZone, 0, false);
 
-				var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-				storeDependingSettingHelper.UpdateSettings(googleAnalyticsSettings, form, storeScope, _settingService);
-			}
-
-            return Configure();
+            return Configure(settings);
         }
 
         [ChildActionOnly]

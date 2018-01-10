@@ -70,6 +70,12 @@ namespace SmartStore.Admin.Infrastructure
 			var item = new MenuItem();
 			var treeNode = new TreeNode<MenuItem>(item);
 
+			string id = null;
+			if (node.Attributes.ContainsKey("id"))
+				id = node.Attributes["id"] as string;
+
+			treeNode.Id = id;
+
 			if (node.RouteName.HasValue())
 			{
 				item.RouteName = node.RouteName;
@@ -85,15 +91,13 @@ namespace SmartStore.Admin.Infrastructure
 			}
 			item.RouteValues = node.RouteValues;
 
+			item.Id = id;
 			item.Visible = node.Visible;
 			item.Text = node.Title;
 			item.Attributes.Merge(node.Attributes);
 
 			if (node.Attributes.ContainsKey("permissionNames"))
 				item.PermissionNames = node.Attributes["permissionNames"] as string;
-
-			if (node.Attributes.ContainsKey("id"))
-				item.Id = node.Attributes["id"] as string;
 
 			if (node.Attributes.ContainsKey("resKey"))
 				item.ResKey = node.Attributes["resKey"] as string;

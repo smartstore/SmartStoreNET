@@ -156,8 +156,7 @@ namespace SmartStore.Web.Framework
 			object htmlAttributes = null)
         {
 			var metadata = ModelMetadata.FromLambdaExpression(expression, helper.ViewData);
-			object resourceDisplayName = null;
-			metadata.AdditionalValues.TryGetValue("SmartResourceDisplayName", out resourceDisplayName);
+			metadata.AdditionalValues.TryGetValue("SmartResourceDisplayName", out object resourceDisplayName);
 
 			return SmartLabelFor(helper, expression, resourceDisplayName as SmartResourceDisplayName, metadata, displayHint, htmlAttributes);
         }

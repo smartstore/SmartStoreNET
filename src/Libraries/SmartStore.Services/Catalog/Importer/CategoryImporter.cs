@@ -223,7 +223,7 @@ namespace SmartStore.Services.Catalog.Importer
 									}
 
 									var size = Size.Empty;
-									pictureBinary = _pictureService.ValidatePicture(pictureBinary, out size);
+									pictureBinary = _pictureService.ValidatePicture(pictureBinary, image.MimeType, out size);
 									pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 									if (pictureBinary != null && pictureBinary.Length > 0)
@@ -339,8 +339,6 @@ namespace SmartStore.Services.Catalog.Importer
 		{
 			_categoryRepository.AutoCommitEnabled = true;
 
-			Category lastInserted = null;
-			Category lastUpdated = null;
 			var defaultTemplateId = templateViewPaths["CategoryTemplate.ProductsInGridOrLines"];
 
 			foreach (var row in batch)
@@ -428,12 +426,10 @@ namespace SmartStore.Services.Catalog.Importer
 				if (row.IsTransient)
 				{
 					_categoryRepository.Insert(category);
-					lastInserted = category;
 				}
 				else
 				{
 					_categoryRepository.Update(category);
-					lastUpdated = category;
 				}
 			}
 
@@ -447,17 +443,6 @@ namespace SmartStore.Services.Catalog.Importer
 
 				if (id != 0 && srcToDestId.ContainsKey(id))
 					srcToDestId[id].DestinationId = row.Entity.Id;
-			}
-
-			// Perf: notify only about LAST insertion and update
-			if (lastInserted != null)
-			{
-				_services.EventPublisher.EntityInserted(lastInserted);
-			}
-
-			if (lastUpdated != null)
-			{
-				_services.EventPublisher.EntityUpdated(lastUpdated);
 			}
 
 			return num;

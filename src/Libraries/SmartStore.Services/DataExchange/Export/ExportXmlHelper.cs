@@ -549,6 +549,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("MaximumCustomerEnteredPrice", entity.MaximumCustomerEnteredPrice.ToString(_culture));
 			_writer.Write("HasTierPrices", entity.HasTierPrices.ToString());
 			_writer.Write("HasDiscountsApplied", entity.HasDiscountsApplied.ToString());
+			_writer.Write("MainPictureId", entity.MainPictureId.HasValue ? entity.MainPictureId.Value.ToString() : "");
 			_writer.Write("Weight", ((decimal)product.Weight).ToString(_culture));
 			_writer.Write("Length", ((decimal)product.Length).ToString(_culture));
 			_writer.Write("Width", ((decimal)product.Width).ToString(_culture));

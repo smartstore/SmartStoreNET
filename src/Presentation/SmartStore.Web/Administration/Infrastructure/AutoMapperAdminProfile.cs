@@ -169,12 +169,11 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.EmailAccount, mo => mo.Ignore())
 				.ForMember(dest => dest.EmailAccountId, mo => mo.Ignore())
 				.ForMember(dest => dest.ReplyTo, mo => mo.Ignore())
-				.ForMember(dest => dest.ReplyToName, mo => mo.Ignore())
 				.ForMember(dest => dest.Attachments, mo => mo.Ignore());
 			//campaign
 			CreateMap<Campaign, CampaignModel>()
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-				.ForMember(dest => dest.TokensTree, mo => mo.Ignore())
+				.ForMember(dest => dest.LastModelTree, mo => mo.Ignore())
 				.ForMember(dest => dest.TestEmail, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
@@ -303,6 +302,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.HasTierPrices, mo => mo.Ignore())
 				.ForMember(dest => dest.LowestAttributeCombinationPrice, mo => mo.Ignore())
 				.ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore())
+				.ForMember(dest => dest.MainPictureId, mo => mo.Ignore())
 				.ForMember(dest => dest.BackorderMode, mo => mo.Ignore())
 				.ForMember(dest => dest.DownloadActivationType, mo => mo.Ignore())
 				.ForMember(dest => dest.GiftCardType, mo => mo.Ignore())

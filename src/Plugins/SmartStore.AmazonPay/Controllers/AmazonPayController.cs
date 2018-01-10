@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Payments;
@@ -47,44 +48,28 @@ namespace SmartStore.AmazonPay.Controllers
 			return paymentInfo;
 		}
 
-		[AdminAuthorize]
-		public ActionResult Configure()
+		[AdminAuthorize, LoadSetting]
+		public ActionResult Configure(AmazonPaySettings settings)
 		{
 			var model = new ConfigurationModel();
-			int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
 
-			model.Copy(settings, true);
-
+			MiniMapper.Map(settings, model);
 			_apiService.SetupConfiguration(model);
-
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
 
 			return View(model);
 		}
 
-		[HttpPost, AdminAuthorize]
-		public ActionResult Configure(ConfigurationModel model, FormCollection form)
+		[HttpPost, AdminAuthorize, SaveSetting]
+		public ActionResult Configure(AmazonPaySettings settings, ConfigurationModel model, FormCollection form)
 		{
 			if (!ModelState.IsValid)
-				return Configure();
+				return Configure(settings);
 
 			ModelState.Clear();
+			MiniMapper.Map(model, settings);
 
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
-
-			model.Copy(settings, false);
-
-			using (Services.Settings.BeginScope())
-			{
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-
-				Services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
-				Services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
-			}
+			Services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
+			Services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
 
 			var task = _scheduleTaskService.Value.GetTaskByType<DataPollingTask>();
 			if (task != null)
@@ -94,9 +79,9 @@ namespace SmartStore.AmazonPay.Controllers
 				_scheduleTaskService.Value.UpdateTask(task);
 			}
 
-			NotifySuccess(Services.Localization.GetResource("Plugins.Payments.AmazonPay.ConfigSaveNote"));
+			NotifySuccess(T("Plugins.Payments.AmazonPay.ConfigSaveNote"));
 
-			return Configure();
+			return Configure(settings);
 		}
 
 		[HttpPost, AdminAuthorize]

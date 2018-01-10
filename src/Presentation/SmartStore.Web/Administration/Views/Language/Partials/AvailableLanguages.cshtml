@@ -1,7 +1,7 @@
 ﻿@using SmartStore.Admin.Models.Localization;
-@model List<AvailableLanguageModel>
+@model AvailableLanguageListModel
 
-@if (Model.Any())
+@if (Model.Languages.Any())
 {
     <div class="alert alert-info">
         @Html.Raw(T("Admin.Configuration.Languages.AvailableLanguages.Note"))
@@ -11,18 +11,21 @@
 		<thead>
 			<tr>
 				<th>@T("Admin.Configuration.Languages.Fields.Name")</th>
+				<th class="ac">@T("Common.Published")</th>
 				<th class="ac">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
                 <th class="ac">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
-                <th class="ac">@T("Admin.Configuration.Languages.ContainsPluginResources")</th>
                 <th class="ac">@T("Common.Translated")</th>
                 <th>@T("Admin.Common.Updated")</th>
 				<th>@T("Admin.Common.Actions")</th>
 			</tr>
 		</thead>
 		<tbody>
-            @foreach (var language in Model.OrderBy(x => x.IsInstalled))
+            @foreach (var language in Model.Languages
+				.OrderByDescending(x => x.Published)
+				.ThenBy(x => x.IsInstalled)
+				.ThenBy(x => x.DisplayOrder))
             {
-                <tr class="@(language.IsInstalled ? "disabled" : "")" data-id="@language.Id">
+                <tr class="@(language.Published ? "" : "disabled")" data-id="@language.Id">
                     <td>
                         <div>
                             @if (language.FlagImageFileName.HasValue())
@@ -36,6 +39,9 @@
                             <div class="muted">@T("Admin.Configuration.Languages.OfType", language.Type)</div>
                         }
                     </td>
+					<td class="ac">
+						@Html.SymbolForBool(language.Published)
+					</td>
                     <td class="ac">
                         @language.LanguageCulture
                     </td>
@@ -43,29 +49,13 @@
                         @language.UniqueSeoCode
                     </td>
                     <td class="ac">
-                        @if (language.Plugins.Any())
-                        {
-                            <a href="javascript:void(0)" class="show-plugin-details">@T("Common.Yes")</a>
-                            <div id="PluginDetails@(language.Id)" class="hide">
-                                @Html.Partial("AvailablePluginResources", language.Plugins)
-                            </div>
-                        }
-                        else
-                        {
-                            <span class="muted">@T("Common.No")</span>
-                        }
-                    </td>
-                    <td class="ac">
-                        @if (language.NumberOfResources == 0)
+                        @if (Model.ResourceCount == 0)
                         {
                             <div class="muted">0 %</div>
                         }
                         else
                         {
-                            string title = language.TranslatedPercentage < 100.0M
-                                ? T("Admin.Configuration.Languages.NumberOfTranslatedResources", language.NumberOfTranslatedResources.ToString("N0"), language.NumberOfResources.ToString("N0")).Text
-                                : string.Empty;
-
+                            string title = T("Admin.Configuration.Languages.NumberOfTranslatedResources", language.TranslatedCount.ToString("N0"), Model.ResourceCount.ToString("N0")).Text;
                             <div @Html.Attr("title", title, title.HasValue())>@language.TranslatedPercentage.ToString("G29")%</div>
                         }
                         @if (language.TranslatedPercentageAtLastImport.HasValue)
@@ -77,9 +67,10 @@
                         @language.UpdatedOnString
                     </td>
                     <td style="width: 200px;">
-                        @if (!language.IsInstalled)
+                        @if (language.Published)
                         {
                             <a href="@Url.Action("Download", new { setId = language.Id })" 
+							   @Html.Attr("disabled", "disabled", language.IsInstalled)
                                class="btn btn-block btn-primary download-language@(language.IsDownloadRunning ? " hide" : "")"
                                onclick="return confirm('@T("Admin.Common.AskToProceed")');">
                                 <i class="fa fa-download"></i>&nbsp;&nbsp;@T("Common.Download")

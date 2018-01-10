@@ -220,8 +220,7 @@ namespace SmartStore.Web.Controllers
 				var routeValues = this.Request.RequestContext.RouteData.Values;
 				var controller = routeValues["controller"].ToString();
 
-				object val;
-				if (!routeValues.TryGetValue(controller + "id", out val))
+				if (!routeValues.TryGetValue(controller + "id", out var val))
 				{
 					controller = routeValues["action"].ToString();
 					routeValues.TryGetValue(controller + "id", out val);
@@ -254,7 +253,7 @@ namespace SmartStore.Web.Controllers
             {
                 var result = _currencyService.Value
 					.GetAllCurrencies(storeId: _services.StoreContext.CurrentStore.Id)
-                    .Select(x => new CurrencyModel()
+                    .Select(x => new CurrencyModel
                     {
                         Id = x.Id,
                         Name = x.GetLocalized(y => y.Name),
@@ -312,43 +311,19 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Logo()
         {
-			var model = _services.Cache.Get(ModelCacheEventConsumer.SHOPHEADER_MODEL_KEY.FormatWith(_services.StoreContext.CurrentStore.Id), () =>
+			var logoPictureInfo = _pictureService.Value.GetPictureInfo(_services.StoreContext.CurrentStore.LogoPictureId);
+			var hasLogo = logoPictureInfo != null;
+
+			var model = new ShopHeaderModel
 			{
-                var pictureService = _pictureService.Value;
-				int logoPictureId = _services.StoreContext.CurrentStore.LogoPictureId;
+				LogoUploaded = hasLogo,
+				LogoUrl = _pictureService.Value.GetUrl(logoPictureInfo, 0, FallbackPictureType.NoFallback),
+				LogoWidth = logoPictureInfo?.Width ?? 0,
+				LogoHeight = logoPictureInfo?.Height ?? 0,
+				LogoTitle = _services.StoreContext.CurrentStore.Name
+			};
 
-                Picture picture = null;
-                if (logoPictureId > 0)
-                {
-                    picture = pictureService.GetPictureById(logoPictureId);
-                }
-
-                string logoUrl = null;
-                Size logoSize = Size.Empty;
-                if (picture != null)
-                {
-                    logoUrl = pictureService.GetPictureUrl(picture);
-					if (picture.Width.HasValue && picture.Height.HasValue)
-					{
-						logoSize = new Size(picture.Width.Value, picture.Height.Value);
-					}
-					else
-					{
-						logoSize = pictureService.GetPictureSize(picture);
-					} 
-                }
-
-                return new ShopHeaderModel
-                {
-                    LogoUploaded = picture != null && logoUrl.HasValue(),
-                    LogoUrl = logoUrl,
-                    LogoWidth = logoSize.Width,
-                    LogoHeight = logoSize.Height,
-					LogoTitle = _services.StoreContext.CurrentStore.Name
-                };
-            });
-            
-            return PartialView(model);
+			return PartialView(model);
         }
 
         public ActionResult SetLanguage(int langid, string returnUrl = "")
@@ -878,12 +853,13 @@ namespace SmartStore.Web.Controllers
 
 				if (logoPicture != null)
 				{
-					model.LogoUrl = _pictureService.Value.GetPictureUrl(logoPicture, showDefaultPicture: false);
+					model.LogoUrl = _pictureService.Value.GetUrl(logoPicture, 0, false);
 				}
 
 				model.MerchantCompanyInfo = companyInfoSettings;
 				model.MerchantBankAccount = bankSettings;
 				model.MerchantContactData = contactSettings;
+				model.MerchantFormattedAddress = Services.Resolve<IAddressService>().FormatAddress(companyInfoSettings, true);
 
 				return model;			
 			}, TimeSpan.FromMinutes(1) /* 1 min. (just for the duration of pdf processing) */);

@@ -20,7 +20,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Clickatell</RootNamespace>
     <AssemblyName>SmartStore.Clickatell</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>

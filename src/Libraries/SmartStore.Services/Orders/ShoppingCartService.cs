@@ -226,9 +226,6 @@ namespace SmartStore.Services.Orders
 				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CheckoutAttributes, checkoutAttributesXml);
             }
 
-            // event notification
-            _eventPublisher.EntityDeleted(shoppingCartItem);
-
 			// delete child items
 			if (deleteChildCartItems)
 			{
@@ -1099,9 +1096,6 @@ namespace SmartStore.Services.Orders
 					existingCartItem.Item.Quantity = newQuantity;
 					existingCartItem.Item.UpdatedOnUtc = DateTime.UtcNow;
 					_customerService.UpdateCustomer(customer);
-
-					// event notification
-					_eventPublisher.EntityUpdated(existingCartItem.Item);
 				}
 			}
 			else
@@ -1147,7 +1141,6 @@ namespace SmartStore.Services.Orders
 					{
 						customer.ShoppingCartItems.Add(cartItem);
 						_customerService.UpdateCustomer(customer);
-						_eventPublisher.EntityInserted(cartItem);
 					}
 					else
 					{
@@ -1247,7 +1240,6 @@ namespace SmartStore.Services.Orders
 
 				customer.ShoppingCartItems.Add(ctx.Item);
 				_customerService.UpdateCustomer(customer);
-				_eventPublisher.EntityInserted(ctx.Item);
 
 				foreach (var childItem in ctx.ChildItems)
 				{
@@ -1255,7 +1247,6 @@ namespace SmartStore.Services.Orders
 
 					customer.ShoppingCartItems.Add(childItem);
 					_customerService.UpdateCustomer(customer);
-					_eventPublisher.EntityInserted(childItem);
 				}
 			}
 		}
@@ -1286,9 +1277,6 @@ namespace SmartStore.Services.Orders
                         shoppingCartItem.Quantity = newQuantity;
                         shoppingCartItem.UpdatedOnUtc = DateTime.UtcNow;
                         _customerService.UpdateCustomer(customer);
-
-                        // event notification
-                        _eventPublisher.EntityUpdated(shoppingCartItem);
                     }
                 }
                 else

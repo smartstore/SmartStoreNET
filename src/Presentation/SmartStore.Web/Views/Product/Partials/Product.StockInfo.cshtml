@@ -56,7 +56,7 @@
 				</a>
 				<script>
 					$(function () {
-						$(".stock-subscriber").on('click', function (e) {
+						$("a.stock-subscriber").on('click', function (e) {
 							$("#backinstock-subscription-modal .modal-body").html('<iframe id="iframe-backinstocksubsription" src="@Url.Action("BackInStockSubscribe", new { id = @Model.Id })" width="600" height="170" scrolling="no" frameBorder="0" />');
 						});
 					});

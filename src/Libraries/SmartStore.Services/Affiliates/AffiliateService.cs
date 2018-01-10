@@ -89,9 +89,6 @@ namespace SmartStore.Services.Affiliates
                 throw new ArgumentNullException("affiliate");
 
             _affiliateRepository.Insert(affiliate);
-
-            //event notification
-            _eventPublisher.EntityInserted(affiliate);
         }
 
         /// <summary>
@@ -104,9 +101,6 @@ namespace SmartStore.Services.Affiliates
                 throw new ArgumentNullException("affiliate");
 
             _affiliateRepository.Update(affiliate);
-
-            //event notification
-            _eventPublisher.EntityUpdated(affiliate);
         }
 
         #endregion

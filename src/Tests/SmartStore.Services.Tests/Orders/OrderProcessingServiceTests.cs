@@ -75,7 +75,7 @@ namespace SmartStore.Services.Tests.Orders
         ICheckoutAttributeFormatter _checkoutAttributeFormatter;
         ICustomerService _customerService;
         IEncryptionService _encryptionService;
-        IWorkflowMessageService _workflowMessageService;
+        IMessageFactory _messageFactory;
         ICustomerActivityService _customerActivityService;
         ICurrencyService _currencyService;
         PaymentSettings _paymentSettings;
@@ -174,7 +174,7 @@ namespace SmartStore.Services.Tests.Orders
 
             _orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _providerManager,
-                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _paymentService, _productAttributeParser,
+                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _paymentService, _currencyService, _productAttributeParser,
                 _taxSettings, _rewardPointsSettings, _shippingSettings, _shoppingCartSettings, _catalogSettings);
 
             _orderService = MockRepository.GenerateMock<IOrderService>();
@@ -187,7 +187,7 @@ namespace SmartStore.Services.Tests.Orders
             _checkoutAttributeFormatter = MockRepository.GenerateMock<ICheckoutAttributeFormatter>();
             _customerService = MockRepository.GenerateMock<ICustomerService>();
             _encryptionService = MockRepository.GenerateMock<IEncryptionService>();
-            _workflowMessageService = MockRepository.GenerateMock<IWorkflowMessageService>();
+            _messageFactory = MockRepository.GenerateMock<IMessageFactory>();
             _customerActivityService = MockRepository.GenerateMock<ICustomerActivityService>();
             _currencyService = MockRepository.GenerateMock<ICurrencyService>();
 			_affiliateService = MockRepository.GenerateMock<IAffiliateService>();
@@ -211,14 +211,14 @@ namespace SmartStore.Services.Tests.Orders
 
             _orderProcessingService = new OrderProcessingService(_orderService, _webHelper,
                 _localizationService, _languageService,
-                _productService, _paymentService, _logger,
+                _productService, _paymentService,
                 _orderTotalCalcService, _priceCalcService, _priceFormatter,
                 _productAttributeParser, _productAttributeFormatter,
                 _giftCardService, _shoppingCartService, _checkoutAttributeFormatter,
                 _shippingService, _shipmentService, _taxService,
                 _customerService, _discountService,
-                _encryptionService, _workContext, _storeContext, _workflowMessageService,
-                _customerActivityService, _currencyService, _affiliateService,
+                _encryptionService, _workContext, _storeContext,
+                _messageFactory, _customerActivityService, _currencyService, _affiliateService,
                 _eventPublisher, _genericAttributeService,
 				_newsLetterSubscriptionService,
 				_paymentSettings, _rewardPointsSettings,

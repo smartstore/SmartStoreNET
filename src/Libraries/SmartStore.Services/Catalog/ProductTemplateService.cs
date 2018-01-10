@@ -49,9 +49,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("productTemplate");
 
             _productTemplateRepository.Delete(productTemplate);
-
-            //event notification
-            _eventPublisher.EntityDeleted(productTemplate);
         }
 
         /// <summary>
@@ -91,9 +88,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("productTemplate");
 
             _productTemplateRepository.Insert(productTemplate);
-
-            //event notification
-            _eventPublisher.EntityInserted(productTemplate);
         }
 
         /// <summary>
@@ -106,9 +100,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("productTemplate");
 
             _productTemplateRepository.Update(productTemplate);
-
-            //event notification
-            _eventPublisher.EntityUpdated(productTemplate);
         }
         
         #endregion

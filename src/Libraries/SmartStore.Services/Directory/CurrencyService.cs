@@ -56,9 +56,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("currency");
             
             _currencyRepository.Delete(currency);
-
-            //event notification
-            _eventPublisher.EntityDeleted(currency);
         }
 
         public virtual Currency GetCurrencyById(int currencyId)
@@ -103,8 +100,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("currency");
 
             _currencyRepository.Insert(currency);
-
-            _eventPublisher.EntityInserted(currency);
         }
 
         public virtual void UpdateCurrency(Currency currency)
@@ -113,8 +108,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("currency");
 
             _currencyRepository.Update(currency);
-
-            _eventPublisher.EntityUpdated(currency);
         }
 
         public virtual decimal ConvertCurrency(decimal amount, decimal exchangeRate)

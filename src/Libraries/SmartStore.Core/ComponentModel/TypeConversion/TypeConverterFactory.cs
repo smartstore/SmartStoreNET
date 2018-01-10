@@ -2,8 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
+using System.Web.Routing;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Email;
 
 namespace SmartStore.ComponentModel
 {
@@ -33,6 +36,14 @@ namespace SmartStore.ComponentModel
 			_typeConverters.TryAdd(typeof(IList<ProductBundleItemOrderData>), converter);
 			_typeConverters.TryAdd(typeof(List<ProductBundleItemOrderData>), converter);
 			_typeConverters.TryAdd(typeof(ProductBundleItemOrderData), new ProductBundleDataConverter(false));
+
+			converter = new DictionaryTypeConverter<IDictionary<string, object>>();
+			_typeConverters.TryAdd(typeof(IDictionary<string, object>), converter);
+			_typeConverters.TryAdd(typeof(Dictionary<string, object>), converter);
+			_typeConverters.TryAdd(typeof(RouteValueDictionary), new DictionaryTypeConverter<RouteValueDictionary>());
+			_typeConverters.TryAdd(typeof(ExpandoObject), new DictionaryTypeConverter<ExpandoObject>());
+
+			_typeConverters.TryAdd(typeof(EmailAddress), new EmailAddressConverter());
 		}
 
 		public static void RegisterConverter<T>(ITypeConverter typeConverter)
@@ -57,8 +68,7 @@ namespace SmartStore.ComponentModel
 		{
 			Guard.NotNull(type, nameof(type));
 
-			ITypeConverter converter = null;
-			_typeConverters.TryRemove(type, out converter);
+			_typeConverters.TryRemove(type, out var converter);
 			return converter;
 		}
 
@@ -78,8 +88,7 @@ namespace SmartStore.ComponentModel
 		{
 			Guard.NotNull(type, nameof(type));
 
-			ITypeConverter converter;
-			if (_typeConverters.TryGetValue(type, out converter))
+			if (_typeConverters.TryGetValue(type, out var converter))
 			{
 				return converter;
 			}

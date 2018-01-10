@@ -24,9 +24,6 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("content");
 
             _contentRepository.Delete(content);
-
-            //event notification
-            _eventPublisher.EntityDeleted(content);
         }
 
         public virtual IList<CustomerContent> GetAllCustomerContent(int customerId, bool? approved)
@@ -72,9 +69,6 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("content");
 
             _contentRepository.Insert(content);
-
-            //event notification
-            _eventPublisher.EntityInserted(content);
         }
 
         public virtual void UpdateCustomerContent(CustomerContent content)
@@ -83,9 +77,6 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("content");
 
             _contentRepository.Update(content);
-
-            //event notification
-            _eventPublisher.EntityUpdated(content);
         }
     }
 }

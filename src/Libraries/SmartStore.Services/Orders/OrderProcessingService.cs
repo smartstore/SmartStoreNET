@@ -42,7 +42,6 @@ namespace SmartStore.Services.Orders
         private readonly ILanguageService _languageService;
         private readonly IProductService _productService;
         private readonly IPaymentService _paymentService;
-        private readonly ILogger _logger;
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly IPriceFormatter _priceFormatter;
@@ -59,7 +58,7 @@ namespace SmartStore.Services.Orders
         private readonly IEncryptionService _encryptionService;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
-        private readonly IWorkflowMessageService _workflowMessageService;
+        private readonly IMessageFactory _messageFactory;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly ICurrencyService _currencyService;
 		private readonly IAffiliateService _affiliateService;
@@ -79,50 +78,13 @@ namespace SmartStore.Services.Orders
 
 		#region Ctor
 
-		/// <summary>
-		/// Ctor
-		/// </summary>
-		/// <param name="orderService">Order service</param>
-		/// <param name="webHelper">Web helper</param>
-		/// <param name="localizationService">Localization service</param>
-		/// <param name="languageService">Language service</param>
-		/// <param name="productService">Product service</param>
-		/// <param name="paymentService">Payment service</param>
-		/// <param name="logger">Logger</param>
-		/// <param name="orderTotalCalculationService">Order total calculationservice</param>
-		/// <param name="priceCalculationService">Price calculation service</param>
-		/// <param name="priceFormatter">Price formatter</param>
-		/// <param name="productAttributeParser">Product attribute parser</param>
-		/// <param name="productAttributeFormatter">Product attribute formatter</param>
-		/// <param name="giftCardService">Gift card service</param>
-		/// <param name="shoppingCartService">Shopping cart service</param>
-		/// <param name="checkoutAttributeFormatter">Checkout attribute service</param>
-		/// <param name="shippingService">Shipping service</param>
-		/// <param name="shipmentService">Shipment service</param>
-		/// <param name="taxService">Tax service</param>
-		/// <param name="customerService">Customer service</param>
-		/// <param name="discountService">Discount service</param>
-		/// <param name="encryptionService">Encryption service</param>
-		/// <param name="workContext">Work context</param>
-		/// <param name="storeContext">Store context</param>
-		/// <param name="workflowMessageService">Workflow message service</param>
-		/// <param name="customerActivityService">Customer activity service</param>
-		/// <param name="currencyService">Currency service</param>
-		/// <param name="affiliateService">Affiliate service</param>
-		/// <param name="eventPublisher">Event published</param>
-		/// <param name="paymentSettings">Payment settings</param>
-		/// <param name="rewardPointsSettings">Reward points settings</param>
-		/// <param name="orderSettings">Order settings</param>
-		/// <param name="taxSettings">Tax settings</param>
-		/// <param name="localizationSettings">Localization settings</param>
-		/// <param name="currencySettings">Currency settings</param>
-		public OrderProcessingService(IOrderService orderService,
+		public OrderProcessingService(
+			IOrderService orderService,
             IWebHelper webHelper,
             ILocalizationService localizationService,
             ILanguageService languageService,
             IProductService productService,
             IPaymentService paymentService,
-            ILogger logger,
             IOrderTotalCalculationService orderTotalCalculationService,
             IPriceCalculationService priceCalculationService,
             IPriceFormatter priceFormatter,
@@ -139,7 +101,7 @@ namespace SmartStore.Services.Orders
             IEncryptionService encryptionService,
             IWorkContext workContext,
 			IStoreContext storeContext,
-            IWorkflowMessageService workflowMessageService,
+            IMessageFactory messageFactory,
             ICustomerActivityService customerActivityService,
             ICurrencyService currencyService,
 			IAffiliateService affiliateService,
@@ -154,48 +116,49 @@ namespace SmartStore.Services.Orders
             CurrencySettings currencySettings,
 			ShoppingCartSettings shoppingCartSettings)
         {
-            this._orderService = orderService;
-            this._webHelper = webHelper;
-            this._localizationService = localizationService;
-            this._languageService = languageService;
-            this._productService = productService;
-            this._paymentService = paymentService;
-            this._logger = logger;
-            this._orderTotalCalculationService = orderTotalCalculationService;
-            this._priceCalculationService = priceCalculationService;
-            this._priceFormatter = priceFormatter;
-            this._productAttributeParser = productAttributeParser;
-            this._productAttributeFormatter = productAttributeFormatter;
-            this._giftCardService = giftCardService;
-            this._shoppingCartService = shoppingCartService;
-            this._checkoutAttributeFormatter = checkoutAttributeFormatter;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._workflowMessageService = workflowMessageService;
-            this._shippingService = shippingService;
-            this._shipmentService = shipmentService;
-            this._taxService = taxService;
-            this._customerService = customerService;
-            this._discountService = discountService;
-            this._encryptionService = encryptionService;
-            this._customerActivityService = customerActivityService;
-            this._currencyService = currencyService;
-			this._affiliateService = affiliateService;
-            this._eventPublisher = eventPublisher;
-			this._genericAttributeService = genericAttributeService;
-			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
-            this._paymentSettings = paymentSettings;
-            this._rewardPointsSettings = rewardPointsSettings;
-            this._orderSettings = orderSettings;
-            this._taxSettings = taxSettings;
-            this._localizationSettings = localizationSettings;
-            this._currencySettings = currencySettings;
-			this._shoppingCartSettings = shoppingCartSettings;
+            _orderService = orderService;
+            _webHelper = webHelper;
+            _localizationService = localizationService;
+            _languageService = languageService;
+            _productService = productService;
+            _paymentService = paymentService;
+            _orderTotalCalculationService = orderTotalCalculationService;
+            _priceCalculationService = priceCalculationService;
+            _priceFormatter = priceFormatter;
+            _productAttributeParser = productAttributeParser;
+            _productAttributeFormatter = productAttributeFormatter;
+            _giftCardService = giftCardService;
+            _shoppingCartService = shoppingCartService;
+            _checkoutAttributeFormatter = checkoutAttributeFormatter;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _messageFactory = messageFactory;
+            _shippingService = shippingService;
+            _shipmentService = shipmentService;
+            _taxService = taxService;
+            _customerService = customerService;
+            _discountService = discountService;
+            _encryptionService = encryptionService;
+            _customerActivityService = customerActivityService;
+            _currencyService = currencyService;
+			_affiliateService = affiliateService;
+            _eventPublisher = eventPublisher;
+			_genericAttributeService = genericAttributeService;
+			_newsLetterSubscriptionService = newsLetterSubscriptionService;
+            _paymentSettings = paymentSettings;
+            _rewardPointsSettings = rewardPointsSettings;
+            _orderSettings = orderSettings;
+            _taxSettings = taxSettings;
+            _localizationSettings = localizationSettings;
+            _currencySettings = currencySettings;
+			_shoppingCartSettings = shoppingCartSettings;
 
 			T = NullLocalizer.Instance;
+			Logger = NullLogger.Instance;
 		}
 
 		public Localizer T { get; set; }
+		public ILogger Logger { get; set; }
 
 		#endregion
 
@@ -208,7 +171,7 @@ namespace SmartStore.Services.Orders
 				var msg = string.Concat(T(messageKey, order.GetOrderNumber()), " ", string.Join(" ", errors));
 
 				_orderService.AddOrderNote(order, msg);
-				_logger.Error(msg);
+				Logger.Error(msg);
 			}
 		}
 
@@ -306,19 +269,15 @@ namespace SmartStore.Services.Orders
 
                     if (gc.GiftCardType == GiftCardType.Virtual)
                     {
-                        //send email for virtual gift card
+                        // Send email for virtual gift card
                         if (!String.IsNullOrEmpty(gc.RecipientEmail) && !String.IsNullOrEmpty(gc.SenderEmail))
                         {
                             var customerLang = _languageService.GetLanguageById(order.CustomerLanguageId);
                             if (customerLang == null)
                                 customerLang = _languageService.GetAllLanguages().FirstOrDefault();
 
-                            var queuedEmailId = _workflowMessageService.SendGiftCardNotification(gc, customerLang.Id);
-
-							if (queuedEmailId > 0)
-							{
-								isRecipientNotified = true;
-							}
+                            var qe = _messageFactory.SendGiftCardNotification(gc, customerLang.Id);
+							isRecipientNotified = qe?.Email.Id != null;
                         }
                     }
 
@@ -361,20 +320,20 @@ namespace SmartStore.Services.Orders
             if (prevOrderStatus != OrderStatus.Complete && os == OrderStatus.Complete && notifyCustomer)
             {
                 //notification
-                int orderCompletedCustomerNotificationQueuedEmailId = _workflowMessageService.SendOrderCompletedCustomerNotification(order, order.CustomerLanguageId);
-                if (orderCompletedCustomerNotificationQueuedEmailId > 0)
+                var msg = _messageFactory.SendOrderCompletedCustomerNotification(order, order.CustomerLanguageId);
+                if (msg?.Email?.Id != null)
                 {
-					_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerCompletedEmailQueued", orderCompletedCustomerNotificationQueuedEmailId));
+					_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerCompletedEmailQueued", msg.Email.Id));
                 }
             }
 
             if (prevOrderStatus != OrderStatus.Cancelled && os == OrderStatus.Cancelled && notifyCustomer)
             {
                 //notification
-                int orderCancelledCustomerNotificationQueuedEmailId = _workflowMessageService.SendOrderCancelledCustomerNotification(order, order.CustomerLanguageId);
-                if (orderCancelledCustomerNotificationQueuedEmailId > 0)
+                var msg = _messageFactory.SendOrderCancelledCustomerNotification(order, order.CustomerLanguageId);
+                if (msg?.Email?.Id != null)
                 {
-					_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerCancelledEmailQueued", orderCancelledCustomerNotificationQueuedEmailId));
+					_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerCancelledEmailQueued", msg.Email.Id));
                 }
             }
 
@@ -1336,18 +1295,18 @@ namespace SmartStore.Services.Orders
 
 						// notes, messages
 						_orderService.AddOrderNote(order, T("Admin.OrderNotice.OrderPlaced"));
-
+						
                         //send email notifications
-                        int orderPlacedStoreOwnerNotificationQueuedEmailId = _workflowMessageService.SendOrderPlacedStoreOwnerNotification(order, _localizationSettings.DefaultAdminLanguageId);
-                        if (orderPlacedStoreOwnerNotificationQueuedEmailId > 0)
+                        var msg = _messageFactory.SendOrderPlacedStoreOwnerNotification(order, _localizationSettings.DefaultAdminLanguageId);
+                        if (msg?.Email?.Id != null)
                         {
-							_orderService.AddOrderNote(order, T("Admin.OrderNotice.MerchantEmailQueued", orderPlacedStoreOwnerNotificationQueuedEmailId));
+							_orderService.AddOrderNote(order, T("Admin.OrderNotice.MerchantEmailQueued", msg.Email.Id));
                         }
 
-                        int orderPlacedCustomerNotificationQueuedEmailId = _workflowMessageService.SendOrderPlacedCustomerNotification(order, order.CustomerLanguageId);
-                        if (orderPlacedCustomerNotificationQueuedEmailId > 0)
+						msg = _messageFactory.SendOrderPlacedCustomerNotification(order, order.CustomerLanguageId);
+                        if (msg?.Email?.Id != null)
                         {
-							_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerEmailQueued", orderPlacedCustomerNotificationQueuedEmailId));
+							_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerEmailQueued", msg.Email.Id));
                         }
 
                         // check order status
@@ -1416,13 +1375,13 @@ namespace SmartStore.Services.Orders
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+				Logger.Error(ex);
                 result.AddError(ex.Message);
             }
 
 			if (result.Errors.Count > 0)
 			{
-				_logger.Error(string.Join(" ", result.Errors));
+				Logger.Error(string.Join(" ", result.Errors));
 			}
 
             return result;
@@ -1525,7 +1484,7 @@ namespace SmartStore.Services.Orders
             }
             catch (Exception exception)
             {
-				_logger.ErrorsAll(exception);
+				Logger.ErrorsAll(exception);
                 throw;
             }
         }
@@ -1561,7 +1520,7 @@ namespace SmartStore.Services.Orders
 					_orderService.AddOrderNote(initialOrder, T("Admin.OrderNotice.RecurringPaymentCancelled"));
 
                     //notify a store owner
-                    _workflowMessageService.SendRecurringPaymentCancelledStoreOwnerNotification(recurringPayment, _localizationSettings.DefaultAdminLanguageId);
+                    _messageFactory.SendRecurringPaymentCancelledStoreOwnerNotification(recurringPayment, _localizationSettings.DefaultAdminLanguageId);
                 }
             }
             catch (Exception exception)
@@ -1651,10 +1610,10 @@ namespace SmartStore.Services.Orders
             if (notifyCustomer)
             {
                 //notify customer
-                int queuedEmailId = _workflowMessageService.SendShipmentSentCustomerNotification(shipment, order.CustomerLanguageId);
-                if (queuedEmailId > 0)
+                var msg = _messageFactory.SendShipmentSentCustomerNotification(shipment, order.CustomerLanguageId);
+                if (msg?.Email?.Id != null)
                 {
-					_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerShippedEmailQueued", queuedEmailId));
+					_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerShippedEmailQueued", msg.Email.Id));
                 }
             }
 
@@ -1694,10 +1653,10 @@ namespace SmartStore.Services.Orders
             if (notifyCustomer)
             {
                 //send email notification
-                int queuedEmailId = _workflowMessageService.SendShipmentDeliveredCustomerNotification(shipment, order.CustomerLanguageId);
-                if (queuedEmailId > 0)
+                var msg = _messageFactory.SendShipmentDeliveredCustomerNotification(shipment, order.CustomerLanguageId);
+                if (msg?.Email?.Id != null)
                 {
-					_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerDeliveredEmailQueued", queuedEmailId));
+					_orderService.AddOrderNote(order, T("Admin.OrderNotice.CustomerDeliveredEmailQueued", msg.Email.Id));
                 }
             }
 

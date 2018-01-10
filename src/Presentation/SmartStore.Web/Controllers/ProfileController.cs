@@ -104,7 +104,7 @@ namespace SmartStore.Web.Controllers
 
             //avatar
             bool avatarEnabled = false;
-            string avatarUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.AvatarPictureSize, PictureType.Avatar);
+            string avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
             if (_customerSettings.AllowCustomersToUploadAvatars)
             {
                 avatarEnabled = true;
@@ -113,7 +113,7 @@ namespace SmartStore.Web.Controllers
 
                 if (customerAvatarId != 0)
                 {
-                    avatarUrl = _pictureService.GetPictureUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
+                    avatarUrl = _pictureService.GetUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
                 }
                 else
                 {

@@ -16,7 +16,7 @@ namespace SmartStore.Core.Data
 
         public static IEnumerable<T> GetMany<T>(this IRepository<T> rs, IEnumerable<int> ids) where T : BaseEntity
         {
-            foreach (var chunk in ids.Chunk())
+            foreach (var chunk in ids.Slice(128))
             {
                 var items = rs.Table.Where(a => chunk.Contains(a.Id)).ToList();
                 foreach (var item in items)
@@ -75,7 +75,7 @@ namespace SmartStore.Core.Data
 				if (cascade)
 				{
 					var records = query.ToList();
-					foreach (var chunk in records.Chunk(500))
+					foreach (var chunk in records.Slice(500))
 					{
 						rs.DeleteRange(chunk.ToList());
 						count += rs.Context.SaveChanges();
@@ -84,7 +84,7 @@ namespace SmartStore.Core.Data
 				else
 				{
 					var ids = query.Select(x => new { Id = x.Id }).ToList();
-					foreach (var chunk in ids.Chunk(500))
+					foreach (var chunk in ids.Slice(500))
 					{
 						rs.DeleteRange(chunk.Select(x => x.Id));
 						count += rs.Context.SaveChanges();

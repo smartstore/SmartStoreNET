@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Security
 {
@@ -33,8 +32,9 @@ namespace SmartStore.Web.Framework.Security
                 return;
 
 			var securitySettings = SecuritySettings.Value;
+			var isLocalRequest = filterContext.HttpContext.Request.IsLocal;
 
-			if (!securitySettings.UseSslOnLocalhost && filterContext.HttpContext.Request.IsLocal)
+			if (!securitySettings.UseSslOnLocalhost && isLocalRequest)
 				return;
 
 			var webHelper = WebHelper.Value;
@@ -62,7 +62,7 @@ namespace SmartStore.Web.Framework.Security
                                 // string url = "https://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
 								
                                 string url = webHelper.GetThisPageUrl(true, true);
-                                filterContext.Result = new RedirectResult(url, true);
+                                filterContext.Result = new RedirectResult(url, !isLocalRequest);
                             }
                         }
                     }
@@ -74,7 +74,7 @@ namespace SmartStore.Web.Framework.Security
                             // redirect to HTTP version of page
                             // string url = "http://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
                             string url = webHelper.GetThisPageUrl(true, false);
-                            filterContext.Result = new RedirectResult(url, true);
+                            filterContext.Result = new RedirectResult(url, !isLocalRequest);
                         }
                     }
                     break;

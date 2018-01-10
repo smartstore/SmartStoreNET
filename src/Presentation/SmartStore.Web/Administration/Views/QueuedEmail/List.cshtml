@@ -122,7 +122,7 @@
 						columns.Bound(x => x.Priority)
 							.Centered();
 						columns.Bound(x => x.From)
-							.ClientTemplate("<#= FromName #> (<#= From #>)");
+							.ClientTemplate("<#= From #>");
 						columns.Bound(x => x.SendManually)
 							.ClientTemplate(@Html.SymbolForBool("SendManually"))
 							.Centered();

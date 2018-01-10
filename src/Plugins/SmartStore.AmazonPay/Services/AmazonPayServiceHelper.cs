@@ -23,14 +23,31 @@ namespace SmartStore.AmazonPay.Services
 		/// <summary>
 		/// Also named "spId".
 		/// </summary>
-		public static string PlatformId
-		{
-			get { return "A3OJ83WFYM72IY"; }
-		}
+		internal static string PlatformId => "A3OJ83WFYM72IY";
 
-		public static string LeadCode
+		internal static string LeadCode => "SPEXDEAPA-SmartStore.Net-CP-DP";
+
+		internal static string GetWidgetUrl(AmazonPaySettings settings)
 		{
-			get { return "SPEXDEAPA-SmartStore.Net-CP-DP"; }
+			switch (settings.Marketplace.EmptyNull().ToLower())
+			{
+				case "us":
+					return settings.UseSandbox
+						? "https://static-na.payments-amazon.com/OffAmazonPayments/us/sandbox/js/Widgets.js"
+						: "https://static-na.payments-amazon.com/OffAmazonPayments/us/js/Widgets.js";
+				case "uk":
+					return settings.UseSandbox
+						? "https://static-eu.payments-amazon.com/OffAmazonPayments/gbp/sandbox/lpa/js/Widgets.js"
+						: "https://static-eu.payments-amazon.com/OffAmazonPayments/gbp/lpa/js/Widgets.js";
+				case "jp":
+					return settings.UseSandbox
+						? "https://static-fe.payments-amazon.com/OffAmazonPayments/jp/sandbox/lpa/js/Widgets.js"
+						: "https://static-fe.payments-amazon.com/OffAmazonPayments/jp/lpa/js/Widgets.js";
+				default:
+					return settings.UseSandbox
+						? "https://static-eu.payments-amazon.com/OffAmazonPayments/eur/sandbox/lpa/js/Widgets.js"
+						: "https://static-eu.payments-amazon.com/OffAmazonPayments/eur/lpa/js/Widgets.js";
+			}
 		}
 
 		private string GetPluginUrl(string action, bool useSsl = false)
@@ -132,6 +149,22 @@ namespace SmartStore.AmazonPay.Services
 					return Regions.currencyCode.GBP;
 				case "jpy":
 					return Regions.currencyCode.JPY;
+				case "aud":
+					return Regions.currencyCode.AUD;
+				case "zar":
+					return Regions.currencyCode.ZAR;
+				case "chf":
+					return Regions.currencyCode.CHF;
+				case "nok":
+					return Regions.currencyCode.NOK;
+				case "dkk":
+					return Regions.currencyCode.DKK;
+				case "sek":
+					return Regions.currencyCode.SEK;
+				case "nzd":
+					return Regions.currencyCode.NZD;
+				case "hkd":
+					return Regions.currencyCode.HKD;
 				default:
 					return Regions.currencyCode.EUR;
 			}
@@ -519,31 +552,5 @@ namespace SmartStore.AmazonPay.Services
 			var client = new Client(config);
 			return client;
 		}
-
-		//private T WorkaroundSdkCurrencyFormattingBug<T>(Func<T> request)
-		//{
-		//	T result = default(T);
-		//	var oldCulture = Thread.CurrentThread.CurrentCulture;
-		//	var oldUICulture = Thread.CurrentThread.CurrentUICulture;
-
-		//	Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-		//	Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-
-		//	try
-		//	{
-		//		result = request();
-		//	}
-		//	catch (Exception exception)
-		//	{
-		//		Logger.Error(exception);
-		//	}
-		//	finally
-		//	{
-		//		Thread.CurrentThread.CurrentCulture = oldCulture;
-		//		Thread.CurrentThread.CurrentUICulture = oldUICulture;
-		//	}
-
-		//	return result;
-		//}
 	}
 }

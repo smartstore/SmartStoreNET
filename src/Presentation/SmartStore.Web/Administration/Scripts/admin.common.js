@@ -10,7 +10,6 @@ function openModalWindow(modalId) {
     $('#' + modalId).data('modal').show();
 }
 
-
 // global Admin namespace
 var Admin = {
 
@@ -184,4 +183,12 @@ var Admin = {
 	})()
 };
 
-
+(function () {
+	// TODO: (mc) BS4 > move SmartStore namespace to SmartStore.Web and replace $.smartstore.
+	// Also move 'Admin' object above to SmartStore.Admin.
+	var sm = window.SmartStore = {
+		Admin: {
+			modelTrees: {}
+		}
+	};
+})();

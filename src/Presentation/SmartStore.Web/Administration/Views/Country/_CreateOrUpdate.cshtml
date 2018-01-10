@@ -118,6 +118,15 @@
                 @Html.ValidationMessageFor(model => model.DisplayOrder)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddressFormat)
+			</td>
+			<td class="adminData">
+				@Html.TextAreaFor(model => model.AddressFormat, new { style = "width: 500px; height: 300px" })
+				@Html.ValidationMessageFor(model => model.AddressFormat)
+			</td>
+		</tr>
     </table>
 }
 

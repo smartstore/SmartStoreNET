@@ -22,12 +22,14 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Html;
+using SmartStore.Services.Media;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.DataExchange.Export.Events;
 using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Seo;
+using SmartStore.Core.Domain;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -246,6 +248,15 @@ namespace SmartStore.Services.DataExchange.Export
 			return (localized.Count == 0 ? null : localized);
 		}
 
+		private dynamic ToDynamic(DataExporterContext ctx, ExportProfile profile)
+		{
+			if (profile == null)
+				return null;
+
+			dynamic result = new DynamicEntity(profile);
+			return result;
+		}
+
 		private dynamic ToDynamic(DataExporterContext ctx, Currency currency)
 		{
 			if (currency == null)
@@ -411,22 +422,22 @@ namespace SmartStore.Services.DataExchange.Export
 			if (picture == null)
 				return null;
 
+			// TODO: (mc) Refactor > GetPictureInfo
+
 			dynamic result = new DynamicEntity(picture);
-            var relativeUrl = string.Empty;
+			var pictureInfo = _pictureService.Value.GetPictureInfo(picture);
+			var host = _services.StoreService.GetHost(ctx.Store);
 
-            try
-            {
-                relativeUrl = _pictureService.Value.GetPictureUrl(picture, 0, false);
-            }
-            catch { }
+			if (pictureInfo != null)
+			{
+				result._FileName = System.IO.Path.GetFileName(pictureInfo.Path);
+				result._RelativeUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback);
+				result._ThumbImageUrl = _pictureService.Value.GetUrl(pictureInfo, thumbPictureSize, FallbackPictureType.NoFallback, host);
+				result._ImageUrl = _pictureService.Value.GetUrl(pictureInfo, detailsPictureSize, FallbackPictureType.NoFallback, host);
+				result._FullSizeImageUrl = _pictureService.Value.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback, host);
 
-			result._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
-			result._RelativeUrl = relativeUrl;
-			result._ThumbImageUrl = _pictureService.Value.GetPictureUrl(picture, thumbPictureSize, false, ctx.Store.Url);
-			result._ImageUrl = _pictureService.Value.GetPictureUrl(picture, detailsPictureSize, false, ctx.Store.Url);
-			result._FullSizeImageUrl = _pictureService.Value.GetPictureUrl(picture, 0, false, ctx.Store.Url);
-
-			//result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
+				//result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
+			}
 
 			return result;
 		}
@@ -549,7 +560,7 @@ namespace SmartStore.Services.DataExchange.Export
 			result.Name = product.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			result.SeName = seName ?? product.GetSeName(ctx.Projection.LanguageId ?? 0, true, false);
 			result.ShortDescription = product.GetLocalized(x => x.ShortDescription, ctx.Projection.LanguageId ?? 0, true, false);
-			result.FullDescription = product.GetLocalized(x => x.FullDescription, ctx.Projection.LanguageId ?? 0, true, false);
+			result.FullDescription = product.GetLocalized(x => x.FullDescription, ctx.Projection.LanguageId ?? 0, true, false, true);
 			result.MetaKeywords = product.GetLocalized(x => x.MetaKeywords, ctx.Projection.LanguageId ?? 0, true, false);
 			result.MetaDescription = product.GetLocalized(x => x.MetaDescription, ctx.Projection.LanguageId ?? 0, true, false);
 			result.MetaTitle = product.GetLocalized(x => x.MetaTitle, ctx.Projection.LanguageId ?? 0, true, false);
@@ -853,19 +864,19 @@ namespace SmartStore.Services.DataExchange.Export
 
 				dynObject._Brand = brand;
 			}
-
+			
 			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture))
 			{
 				if (productPictures != null && productPictures.Any())
 				{
 					var firstPicture = productPictures.First().Picture;
-					dynObject._MainPictureUrl = _pictureService.Value.GetPictureUrl(firstPicture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
-					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetPictureUrl(firstPicture, ctx.Projection.PictureSize);
+					dynObject._MainPictureUrl = _pictureService.Value.GetUrl(firstPicture, ctx.Projection.PictureSize, host: _services.StoreService.GetHost(ctx.Store));
+					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetUrl(firstPicture, ctx.Projection.PictureSize);
 				}
 				else if (!_catalogSettings.Value.HideProductDefaultPictures)
 				{
-					dynObject._MainPictureUrl = _pictureService.Value.GetDefaultPictureUrl(ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
-					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetDefaultPictureUrl(ctx.Projection.PictureSize);
+					dynObject._MainPictureUrl = _pictureService.Value.GetFallbackUrl(ctx.Projection.PictureSize, host: _services.StoreService.GetHost(ctx.Store));
+					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetFallbackUrl(ctx.Projection.PictureSize);
 				}
 				else
 				{
@@ -1361,7 +1372,7 @@ namespace SmartStore.Services.DataExchange.Export
 				if (pictureId != null)
 				{
 					// reduce traffic and do not export default avatar
-					dynObject._AvatarPictureUrl = _pictureService.Value.GetPictureUrl(pictureId.Value.ToInt(), _mediaSettings.Value.AvatarPictureSize, false, ctx.Store.Url);
+					dynObject._AvatarPictureUrl = _pictureService.Value.GetUrl(pictureId.Value.ToInt(), _mediaSettings.Value.AvatarPictureSize, false, _services.StoreService.GetHost(ctx.Store));
 				}
 			}
 

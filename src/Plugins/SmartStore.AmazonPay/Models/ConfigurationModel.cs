@@ -27,9 +27,6 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ClientId")]
 		public string ClientId { get; set; }
 
-		//[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ClientSecret")]
-		//public string ClientSecret { get; set; }
-
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.Marketplace")]
 		public string Marketplace { get; set; }
 
@@ -50,6 +47,9 @@ namespace SmartStore.AmazonPay.Models
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.SaveEmailAndPhone")]
 		public AmazonPaySaveDataType? SaveEmailAndPhone { get; set; }
 		public List<SelectListItem> SaveEmailAndPhones { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ShowPayButtonForAdminOnly")]
+		public bool ShowPayButtonForAdminOnly { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.ShowButtonInMiniShoppingCart")]
 		public bool ShowButtonInMiniShoppingCart { get; set; }
@@ -119,63 +119,5 @@ namespace SmartStore.AmazonPay.Models
 		public string MerchantProductionIpnUrl { get; set; }
 
 		#endregion
-
-		public void Copy(AmazonPaySettings settings, bool fromSettings)
-		{
-			if (fromSettings)
-			{
-				UseSandbox = settings.UseSandbox;
-				SellerId = settings.SellerId;
-				AccessKey = settings.AccessKey;
-				SecretKey = settings.SecretKey;
-				ClientId = settings.ClientId;
-				//ClientSecret = settings.ClientSecret;
-				Marketplace = settings.Marketplace;
-
-				DataFetching = settings.DataFetching;
-				PollingMaxOrderCreationDays = settings.PollingMaxOrderCreationDays;
-				TransactionType = settings.TransactionType;
-				SaveEmailAndPhone = settings.SaveEmailAndPhone;
-				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
-				AdditionalFee = settings.AdditionalFee;
-				AdditionalFeePercentage = settings.AdditionalFeePercentage;
-				AddOrderNotes = settings.AddOrderNotes;
-				InformCustomerAboutErrors = settings.InformCustomerAboutErrors;
-				InformCustomerAddErrors = settings.InformCustomerAddErrors;
-
-				PayButtonColor = settings.PayButtonColor;
-				PayButtonSize = settings.PayButtonSize;
-				AuthButtonType = settings.AuthButtonType;
-				AuthButtonColor = settings.AuthButtonColor;
-				AuthButtonSize = settings.AuthButtonSize;
-			}
-			else
-			{
-				settings.UseSandbox = UseSandbox;
-				settings.SellerId = SellerId;
-				settings.AccessKey = AccessKey;
-				settings.SecretKey = SecretKey;
-				settings.ClientId = ClientId;
-				//settings.ClientSecret = ClientSecret;
-				settings.Marketplace = Marketplace;
-
-				settings.DataFetching = DataFetching;
-				settings.PollingMaxOrderCreationDays = PollingMaxOrderCreationDays;
-				settings.TransactionType = TransactionType;
-				settings.SaveEmailAndPhone = SaveEmailAndPhone;
-				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
-				settings.AdditionalFee = AdditionalFee;
-				settings.AdditionalFeePercentage = AdditionalFeePercentage;
-				settings.AddOrderNotes = AddOrderNotes;
-				settings.InformCustomerAboutErrors = InformCustomerAboutErrors;
-				settings.InformCustomerAddErrors = InformCustomerAddErrors;
-
-				settings.PayButtonColor = PayButtonColor;
-				settings.PayButtonSize = PayButtonSize;
-				settings.AuthButtonType = AuthButtonType;
-				settings.AuthButtonColor = AuthButtonColor;
-				settings.AuthButtonSize = AuthButtonSize;
-			}
-		}
 	}
 }

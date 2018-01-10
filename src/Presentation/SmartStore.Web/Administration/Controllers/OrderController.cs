@@ -70,7 +70,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IProductService _productService;
         private readonly IPermissionService _permissionService;
-	    private readonly IWorkflowMessageService _workflowMessageService;
 	    private readonly ICategoryService _categoryService;
         private readonly IManufacturerService _manufacturerService;
 	    private readonly IProductAttributeService _productAttributeService;
@@ -102,28 +101,38 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
         private readonly IPdfConverter _pdfConverter;
         private readonly ICommonServices _services;
-        private readonly Lazy<IPictureService> _pictureService;
 
         #endregion
 
         #region Ctor
 
         public OrderController(IOrderService orderService, 
-            IOrderReportService orderReportService, IOrderProcessingService orderProcessingService,
-            IDateTimeHelper dateTimeHelper, IPriceFormatter priceFormatter, ILocalizationService localizationService,
-            IWorkContext workContext, ICurrencyService currencyService,
-            IEncryptionService encryptionService, IPaymentService paymentService,
+            IOrderReportService orderReportService, 
+			IOrderProcessingService orderProcessingService,
+            IDateTimeHelper dateTimeHelper, 
+			IPriceFormatter priceFormatter,
+			ILocalizationService localizationService,
+            IWorkContext workContext, 
+			ICurrencyService currencyService,
+            IEncryptionService encryptionService, 
+			IPaymentService paymentService,
             IMeasureService measureService,
-            IAddressService addressService, ICountryService countryService,
-            IStateProvinceService stateProvinceService, IProductService productService,
+            IAddressService addressService, 
+			ICountryService countryService,
+            IStateProvinceService stateProvinceService, 
+			IProductService productService,
             IPermissionService permissionService,
-            IWorkflowMessageService workflowMessageService,
-            ICategoryService categoryService, IManufacturerService manufacturerService,
-            IProductAttributeService productAttributeService, IProductAttributeParser productAttributeParser,
-            IProductAttributeFormatter productAttributeFormatter, IShoppingCartService shoppingCartService,
+            ICategoryService categoryService, 
+			IManufacturerService manufacturerService,
+            IProductAttributeService productAttributeService, 
+			IProductAttributeParser productAttributeParser,
+            IProductAttributeFormatter productAttributeFormatter, 
+			IShoppingCartService shoppingCartService,
             ICheckoutAttributeFormatter checkoutAttributeFormatter, 
-            IGiftCardService giftCardService, IDownloadService downloadService,
-			IShipmentService shipmentService, IStoreService storeService,
+            IGiftCardService giftCardService, 
+			IDownloadService downloadService,
+			IShipmentService shipmentService, 
+			IStoreService storeService,
 			ITaxService taxService,
 			IPriceCalculationService priceCalculationService,
 			IEventPublisher eventPublisher,
@@ -132,11 +141,16 @@ namespace SmartStore.Admin.Controllers
 			IAffiliateService affiliateService,
 			ICustomerActivityService customerActivityService,
 			ICatalogSearchService catalogSearchService,
-			CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
-            MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings,
+			CatalogSettings catalogSettings, 
+			CurrencySettings currencySettings, 
+			TaxSettings taxSettings,
+            MeasureSettings measureSettings, 
+			PdfSettings pdfSettings, 
+			AddressSettings addressSettings,
 			AdminAreaSettings adminAreaSettings,
 			SearchSettings searchSettings,
-			IPdfConverter pdfConverter, ICommonServices services, Lazy<IPictureService> pictureService)
+			IPdfConverter pdfConverter, 
+			ICommonServices services)
 		{
             _orderService = orderService;
             _orderReportService = orderReportService;
@@ -154,7 +168,6 @@ namespace SmartStore.Admin.Controllers
             _stateProvinceService = stateProvinceService;
             _productService = productService;
             _permissionService = permissionService;
-            _workflowMessageService = workflowMessageService;
             _categoryService = categoryService;
             _manufacturerService = manufacturerService;
             _productAttributeService = productAttributeService;
@@ -186,7 +199,6 @@ namespace SmartStore.Admin.Controllers
             _checkoutAttributeFormatter = checkoutAttributeFormatter;
             _pdfConverter = pdfConverter;
             _services = services;
-            _pictureService = pictureService;
 		}
         
         #endregion
@@ -692,7 +704,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
 		protected ShipmentModel PrepareShipmentModel(Shipment shipment, bool prepareProducts, bool prepareAddresses)
         {
-            //measures
+            // Measures
             var baseWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
             var baseWeightIn = baseWeight != null ? baseWeight.Name : "";
             var baseDimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId);
@@ -705,6 +717,8 @@ namespace SmartStore.Admin.Controllers
                 Id = shipment.Id,
                 OrderId = shipment.OrderId,
 				StoreId = orderStoreId,
+				OrderNumber = shipment.Order.GetOrderNumber(),
+				PurchaseOrderNumber = shipment.Order.PurchaseOrderNumber,
 				ShippingMethod = shipment.Order.ShippingMethod,
                 TrackingNumber = shipment.TrackingNumber,
                 TotalWeight = shipment.TotalWeight.HasValue ? string.Format("{0:F2} [{1}]", shipment.TotalWeight, baseWeightIn) : "",
@@ -722,6 +736,13 @@ namespace SmartStore.Admin.Controllers
 				var store = _services.StoreService.GetStoreById(orderStoreId) ?? _services.StoreContext.CurrentStore;
 				var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
 				model.MerchantCompanyInfo = companyInfoSettings;
+
+				if (model.ShippingAddress != null)
+				{
+					model.FormattedShippingAddress = _addressService.FormatAddress(model.ShippingAddress, true);
+				}
+
+				model.FormattedMerchantAddress = _addressService.FormatAddress(model.MerchantCompanyInfo, true);
 			}
 
             if (prepareProducts)
@@ -732,14 +753,14 @@ namespace SmartStore.Admin.Controllers
                     if (orderItem == null)
                         continue;
 
-                    //quantities
+                    // Quantities
                     var qtyInThisShipment = shipmentItem.Quantity;
                     var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
                     var qtyOrdered = orderItem.Quantity;
                     var qtyInAllShipments = orderItem.GetShipmentItemsCount();
 
                     orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
-                    var shipmentItemModel = new ShipmentModel.ShipmentItemModel()
+                    var shipmentItemModel = new ShipmentModel.ShipmentItemModel
                     {
                         Id = shipmentItem.Id,
                         OrderItemId = orderItem.Id,
@@ -761,6 +782,7 @@ namespace SmartStore.Admin.Controllers
                     model.Items.Add(shipmentItemModel);
                 }
             }
+
             return model;
         }
 
@@ -1667,7 +1689,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = new OrderModel.UploadLicenseModel
             {
-                LicenseDownloadId = orderItem.LicenseDownloadId.HasValue ? orderItem.LicenseDownloadId.Value : 0,
+                LicenseDownloadId = orderItem.LicenseDownloadId ?? 0,
                 OrderId = order.Id,
                 OrderItemId = orderItem.Id
             };
@@ -1743,8 +1765,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var model = new OrderModel.AddOrderProductModel();
-            model.OrderId = orderId;
+            var model = new OrderModel.AddOrderProductModel { OrderId = orderId };
 
             foreach (var c in _categoryService.GetCategoryTree(includeHidden: true).FlattenNodes(false))
             {
@@ -1842,8 +1863,7 @@ namespace SmartStore.Admin.Controllers
             decimal.TryParse(form["UnitPriceInclTax"], out unitPriceInclTax);
             var unitPriceExclTax = decimal.Zero;
             decimal.TryParse(form["UnitPriceExclTax"], out unitPriceExclTax);
-            var quantity = 1;
-            int.TryParse(form["Quantity"], out quantity);
+            int.TryParse(form["Quantity"], out var quantity);
             var priceInclTax = decimal.Zero;
             decimal.TryParse(form["SubTotalInclTax"], out priceInclTax);
             var priceExclTax = decimal.Zero;
@@ -1921,10 +1941,9 @@ namespace SmartStore.Admin.Controllers
 
 					foreach (var bundleItem in bundleItems)
 					{
-						decimal taxRate;
 						var finalPrice = _priceCalculationService.GetFinalPrice(bundleItem.Item.Product, bundleItems, order.Customer, decimal.Zero, true, bundleItem.Item.Quantity);
 						var bundleItemSubTotalWithDiscountBase = _taxService.GetProductPrice(bundleItem.Item.Product, bundleItem.Item.Product.TaxCategoryId, finalPrice,
-							includingTax, order.Customer, currency, _taxSettings.PricesIncludeTax, out taxRate);
+							includingTax, order.Customer, currency, _taxSettings.PricesIncludeTax, out var taxRate);
 
 						bundleItem.ToOrderData(listBundleData, bundleItemSubTotalWithDiscountBase);
 					}
@@ -2007,8 +2026,7 @@ namespace SmartStore.Admin.Controllers
             if (address == null)
                 throw new ArgumentException("No address found with the specified id", "addressId");
 
-            var model = new OrderAddressModel();
-            model.OrderId = orderId;
+            var model = new OrderAddressModel { OrderId = orderId };
 
 			PrepareOrderAddressModel(model, address);
 
@@ -2472,10 +2490,8 @@ namespace SmartStore.Admin.Controllers
             //new order notification
             if (displayToCustomer)
             {
-                //email
-                _workflowMessageService.SendNewOrderNoteAddedCustomerNotification(
-                    orderNote, _workContext.WorkingLanguage.Id);
-
+                // Email
+                Services.MessageFactory.SendNewOrderNoteAddedCustomerNotification(orderNote, _workContext.WorkingLanguage.Id);
             }
 
             return Json(new { Result = true }, JsonRequestBehavior.AllowGet);

@@ -115,9 +115,6 @@ namespace SmartStore.Services.Polls
                 throw new ArgumentNullException("poll");
 
             _pollRepository.Delete(poll);
-
-            //event notification
-            _eventPublisher.EntityDeleted(poll);
         }
 
         public virtual void InsertPoll(Poll poll)
@@ -126,9 +123,6 @@ namespace SmartStore.Services.Polls
                 throw new ArgumentNullException("poll");
 
             _pollRepository.Insert(poll);
-
-            //event notification
-            _eventPublisher.EntityInserted(poll);
         }
 
         public virtual void UpdatePoll(Poll poll)
@@ -137,9 +131,6 @@ namespace SmartStore.Services.Polls
                 throw new ArgumentNullException("poll");
 
             _pollRepository.Update(poll);
-
-            //event notification
-            _eventPublisher.EntityUpdated(poll);
         }
         
         public virtual PollAnswer GetPollAnswerById(int pollAnswerId)
@@ -160,9 +151,6 @@ namespace SmartStore.Services.Polls
                 throw new ArgumentNullException("pollAnswer");
 
             _pollAnswerRepository.Delete(pollAnswer);
-
-            //event notification
-            _eventPublisher.EntityDeleted(pollAnswer);
         }
 
         public virtual bool AlreadyVoted(int pollId, int customerId)

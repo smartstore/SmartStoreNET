@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>Welcome to {{ Store.Name }}</Subject>
+	<ModelTypes>Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hello {{ Customer.FullName }},
+</h1>
+
+<p>
+  welcome to our online shop, <a href="{{ Store.Url }}">{{ Store.Name }}</a>
+</p>
+
+<p>
+	browse through our assortment, read the blog and stay informed about our campaigns and special offers with our newsletter.
+</p>
+<br />
+<p>
+  Kind regards,
+</p>
+
+<p>
+  Your {{ Store.Name }} Team
+</p>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

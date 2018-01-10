@@ -156,14 +156,13 @@ namespace SmartStore.Admin.Controllers
             AvailableLanguageModel model,
             AvailableResourcesModel resources,
             Dictionary<int , GenericAttribute> translatedPercentageAtLastImport,
-            Dictionary<string, PluginDescriptor> allPlugins = null,
             Language language = null,
             LanguageDownloadState state = null)
         {
             GenericAttribute attribute = null;
-            PluginDescriptor pluginDescriptor = null;
 
             model.Id = resources.Id;
+			model.PreviousSetId = resources.PreviousSetId;
             model.IsInstalled = language != null;
             model.Name = GetCultureDisplayName(resources.Language.Culture) ?? resources.Language.Name;
             model.LanguageCulture = resources.Language.Culture;
@@ -171,13 +170,14 @@ namespace SmartStore.Admin.Controllers
             model.Rtl = resources.Language.Rtl;
             model.Version = resources.Version;
             model.Type = resources.Type;
-            model.NumberOfResources = resources.Aggregation.NumberOfResources;
-            model.NumberOfTranslatedResources = resources.Aggregation.NumberOfTouched;
-            model.TranslatedPercentage = Math.Round(resources.Aggregation.TouchedPercentage, 2);
+			model.Published = resources.Published;
+			model.DisplayOrder = resources.DisplayOrder;
+			model.TranslatedCount = resources.TranslatedCount;
+			model.TranslatedPercentage = resources.TranslatedPercentage;
             model.IsDownloadRunning = state != null && state.Id == resources.Id;
             model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(resources.UpdatedOn, DateTimeKind.Utc);
             model.UpdatedOnString = model.UpdatedOn.RelativeFormat(false, "f");
-            model.FlagImageFileName = GetFlagFileName(resources.Language.TwoLetterIsoCode);
+            model.FlagImageFileName = GetFlagFileName(resources.Language.Culture);
 
             if (language != null && translatedPercentageAtLastImport.TryGetValue(language.Id, out attribute))
             {
@@ -188,24 +188,7 @@ namespace SmartStore.Admin.Controllers
                     model.TranslatedPercentageAtLastImport = percentAtLastImport;
                 }
             }
-
-            // Installed plugin infos
-            if (allPlugins != null)
-            {
-                foreach (var systemName in resources.PluginSystemNames)
-                {
-                    if (allPlugins.TryGetValue(systemName, out pluginDescriptor))
-                    {
-                        model.Plugins.Add(new AvailableLanguageModel.PluginModel
-                        {
-                            SystemName = systemName,
-                            FriendlyName = pluginDescriptor.GetLocalizedValue(_services.Localization, "FriendlyName"),
-                            IconUrl = _pluginMediator.GetIconUrl(pluginDescriptor)
-                        });
-                    }
-                }
-            }
-        }
+		}
 
         private async Task<CheckAvailableResourcesResult> CheckAvailableResources(bool enforce = false)
         {
@@ -298,28 +281,21 @@ namespace SmartStore.Admin.Controllers
             return null;
         }
 
-        private string GetFlagFileName(string isoCode)
+        private string GetFlagFileName(string culture)
         {
-            isoCode = isoCode.EmptyNull().ToLower();
+            culture = culture.EmptyNull().ToLower();
 
-            if (isoCode.HasValue())
+            if (culture.HasValue() && culture.SplitToPair(out string cultureLeft, out string cultureRight, "-"))
             {
-                switch (isoCode)
-                {
-                    case "en":
-                        isoCode = "us";
-                        break;
-                }
+				var fileName = cultureRight + ".png";
 
-                var fileName = isoCode + ".png";
+				if (System.IO.File.Exists(CommonHelper.MapPath("~/Content/images/flags/" + fileName)))
+				{
+					return fileName;
+				}
+			}
 
-                if (System.IO.File.Exists(CommonHelper.MapPath("~/Content/images/flags/" + fileName)))
-                {
-                    return fileName;
-                }
-            }
-
-            return null;
+			return null;
         }
 
         #endregion
@@ -350,26 +326,26 @@ namespace SmartStore.Admin.Controllers
             var languages = _languageService.GetAllLanguages(true);
             var languageDic = languages.ToDictionarySafe(x => x.LanguageCulture, StringComparer.OrdinalIgnoreCase);
 
-            var allPlugins = _pluginFinder.GetPluginDescriptors(true);
-            var allPluginsDic = allPlugins.ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
-
             var downloadState = _asyncState.Get<LanguageDownloadState>();
             var translatedPercentageAtLastImport = _genericAttributeService.GetAttributes("TranslatedPercentageAtLastImport", "Language").ToDictionarySafe(x => x.EntityId);
 
-            var model = new List<AvailableLanguageModel>();
-            var checkResult = await CheckAvailableResources(enforce);
+			var checkResult = await CheckAvailableResources(enforce);
 
-            foreach (var resources in checkResult.Resources)
+			var model = new AvailableLanguageListModel();
+			model.Languages = new List<AvailableLanguageModel>();
+			model.Version = checkResult.Version;
+			model.ResourceCount = checkResult.ResourceCount;
+
+			foreach (var resources in checkResult.Resources)
             {
                 if (resources.Language.Culture.HasValue())
                 {
-                    Language language = null;
-                    languageDic.TryGetValue(resources.Language.Culture, out language);
+					languageDic.TryGetValue(resources.Language.Culture, out Language language);
 
-                    var alModel = new AvailableLanguageModel();
-                    PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, allPluginsDic, language, downloadState);
+					var alModel = new AvailableLanguageModel();
+                    PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, language, downloadState);
 
-                    model.Add(alModel);
+                    model.Languages.Add(alModel);
                 }
             }
 
@@ -437,20 +413,47 @@ namespace SmartStore.Admin.Controllers
             // Provide combobox with downloadable resources for this language.
             var translatedPercentageAtLastImport = _genericAttributeService.GetAttributes("TranslatedPercentageAtLastImport", "Language").ToDictionarySafe(x => x.EntityId);
             var checkResult = await CheckAvailableResources();
+			string cultureParentName = null;
 
-            foreach (var resources in checkResult.Resources)
-            {
-                var culture = resources.Language.Culture;
-                if (culture.HasValue() && resources.Language.TwoLetterIsoCode.IsCaseInsensitiveEqual(language.UniqueSeoCode))
-                {
-                    var alModel = new AvailableLanguageModel();
-                    PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, null, language);
+			try
+			{
+				var ci = CultureInfo.GetCultureInfo(language.LanguageCulture);
+				if (!ci.IsNeutralCulture && ci.Parent != null)
+				{
+					cultureParentName = ci.Parent.Name;
+				}
+			}
+			catch { }
 
-                    model.AvailableDownloadLanguages.Add(alModel);
-                }
-            }
+			foreach (var resources in checkResult.Resources.Where(x => x.Published))
+			{
+				var srcCulture = resources.Language.Culture;
+				if (srcCulture.HasValue())
+				{
+					var downloadDisplayOrder = srcCulture.IsCaseInsensitiveEqual(language.LanguageCulture) ? 1 : 0;
 
-            return View(model);
+					if (downloadDisplayOrder == 0 && cultureParentName.IsCaseInsensitiveEqual(srcCulture))
+					{
+						downloadDisplayOrder = 2;
+					}
+
+					if (downloadDisplayOrder == 0 && resources.Language.TwoLetterIsoCode.IsCaseInsensitiveEqual(language.UniqueSeoCode))
+					{
+						downloadDisplayOrder = 3;
+					}
+
+					if (downloadDisplayOrder != 0)
+					{
+						var alModel = new AvailableLanguageModel();
+						PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, language);
+						alModel.DisplayOrder = downloadDisplayOrder;
+
+						model.AvailableDownloadLanguages.Add(alModel);
+					}
+				}
+			}
+
+			return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
@@ -739,7 +742,7 @@ namespace SmartStore.Admin.Controllers
 
                     _services.Localization.ImportResourcesFromXml(language, xmlDoc, null, false, mode, updateTouched);
 
-                    _genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", availableResources.Aggregation.TouchedPercentage);
+                    _genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", availableResources.TranslatedPercentage);
 
                     NotifySuccess(T("Admin.Configuration.Languages.Imported"));
                 }
@@ -801,7 +804,7 @@ namespace SmartStore.Admin.Controllers
                     language.LanguageCulture = resources.Language.Culture;
                     language.UniqueSeoCode = resources.Language.TwoLetterIsoCode;
                     language.Name = GetCultureDisplayName(resources.Language.Culture) ?? resources.Name;
-                    language.FlagImageFileName = GetFlagFileName(resources.Language.TwoLetterIsoCode);
+                    language.FlagImageFileName = GetFlagFileName(resources.Language.Culture);
                     language.Rtl = resources.Language.Rtl;
                     language.Published = false;
                     language.DisplayOrder = lastLanguage != null ? lastLanguage.DisplayOrder + 1 : 0;
@@ -815,7 +818,7 @@ namespace SmartStore.Admin.Controllers
 
                 services.Localization.ImportResourcesFromXml(language, xmlDoc);
 
-                genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", resources.Aggregation.TouchedPercentage);
+                genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", resources.TranslatedPercentage);
             }
             catch (Exception exception)
             {

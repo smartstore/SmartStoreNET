@@ -44,9 +44,6 @@ namespace SmartStore.Services.Media
 				// save to storage
 				_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
 			}
-
-			// event notification
-			_eventPubisher.EntityUpdated(download);
 		}
 
 		public virtual Download GetDownloadById(int downloadId)
@@ -94,9 +91,6 @@ namespace SmartStore.Services.Media
 
 			// delete entity
 			_downloadRepository.Delete(download);
-
-			// event notification
-			_eventPubisher.EntityDeleted(download);
         }
 
         public virtual void InsertDownload(Download download, byte[] downloadBinary)
@@ -107,9 +101,6 @@ namespace SmartStore.Services.Media
 
 			// save to storage
 			_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
-
-			// event notification
-			_eventPubisher.EntityInserted(download);
         }
 
 		public virtual void UpdateDownload(Download download)

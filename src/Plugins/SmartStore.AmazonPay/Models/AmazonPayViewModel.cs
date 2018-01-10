@@ -42,6 +42,7 @@ namespace SmartStore.AmazonPay.Models
 		public string OrderReferenceId { get; set; }
 		public string AddressConsentToken { get; set; }
 		public string Warning { get; set; }
+		public bool Logout { get; set; }
 
 		public string ButtonType { get; set; }
 		public string ButtonColor { get; set; }

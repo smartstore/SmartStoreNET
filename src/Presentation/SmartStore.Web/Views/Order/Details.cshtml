@@ -10,15 +10,15 @@
 }
 
 <div class="page page-order-details">
-    <div class="clearfix mb-3">
-        <div class="page-title mb-3 float-sm-left">
+    <div class="row mb-3">
+        <div class="page-title mb-3 col">
             <h1 class="h2 mb-0">
 				@T("Order.OrderDetails")
 				<small class="text-muted"><small>@Model.OrderNumber</small></small>
 			</h1>
         </div>
 
-        <div class="print-buttons float-sm-right">
+        <div class="print-buttons col col-auto">
             <a href="@Url.Action("print", new { id = Model.Id, pdf = false })" target="print" class="btn btn-secondary btn-sm print-order-button" rel="nofollow">
                 <i class="fa fa-print"></i>
                 <span>@T("Order.Print")</span>

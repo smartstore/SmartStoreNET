@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Data</RootNamespace>
     <AssemblyName>SmartStore.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -67,16 +67,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.3\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.2.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -102,6 +102,9 @@
       <HintPath>..\..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -530,6 +533,26 @@
     <Compile Include="Migrations\201710252016556_IndexOptionNames.Designer.cs">
       <DependentUpon>201710252016556_IndexOptionNames.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711112331162_ProductMainPictureId.cs" />
+    <Compile Include="Migrations\201711112331162_ProductMainPictureId.Designer.cs">
+      <DependentUpon>201711112331162_ProductMainPictureId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711222311112_MoveFsMedia.cs" />
+    <Compile Include="Migrations\201711222311112_MoveFsMedia.Designer.cs">
+      <DependentUpon>201711222311112_MoveFsMedia.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711291017168_SyncStringResources.cs" />
+    <Compile Include="Migrations\201711291017168_SyncStringResources.Designer.cs">
+      <DependentUpon>201711291017168_SyncStringResources.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712081631552_Liquid.cs" />
+    <Compile Include="Migrations\201712081631552_Liquid.Designer.cs">
+      <DependentUpon>201712081631552_Liquid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712290151517_AddressFormat.cs" />
+    <Compile Include="Migrations\201712290151517_AddressFormat.Designer.cs">
+      <DependentUpon>201712290151517_AddressFormat.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -657,6 +680,8 @@
     <Compile Include="SmartObjectContext.cs" />
     <Compile Include="EfRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\DataMigrator.cs" />
+    <Compile Include="Utilities\MessageTemplateConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -961,6 +986,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710252016556_IndexOptionNames.resx">
       <DependentUpon>201710252016556_IndexOptionNames.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711112331162_ProductMainPictureId.resx">
+      <DependentUpon>201711112331162_ProductMainPictureId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711222311112_MoveFsMedia.resx">
+      <DependentUpon>201711222311112_MoveFsMedia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711291017168_SyncStringResources.resx">
+      <DependentUpon>201711291017168_SyncStringResources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712081631552_Liquid.resx">
+      <DependentUpon>201712081631552_Liquid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712290151517_AddressFormat.resx">
+      <DependentUpon>201712290151517_AddressFormat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

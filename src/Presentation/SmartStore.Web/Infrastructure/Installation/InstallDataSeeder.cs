@@ -22,6 +22,7 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -149,6 +150,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 		private void PopulateCountriesAndStates()
         {
 			SaveRange(_data.Countries().Where(x => x != null));
+			DataMigrator.ImportAddressFormats(_ctx);
         }
 
 		private void PopulateShippingMethods()
@@ -266,6 +268,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_ctx.SaveChanges();
         }
 
+		private void PopulateMessageTemplates()
+		{
+			var converter = new MessageTemplateConverter(_ctx);
+			converter.ImportAll(_config.Language);
+		}
+
 		private void PopulateCategories()
         {
             var categoriesFirstLevel = _data.CategoriesFirstLevel();
@@ -321,7 +329,11 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             var products = _data.Products();
 			SaveRange(products);
-            //search engine names
+
+			// Fix MainPictureId
+			DataMigrator.FixProductMainPictureIds(_ctx);
+
+            // Search engine names
             products.Each(x =>
             {
                 Save(new UrlRecord
@@ -527,7 +539,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
+					var storeService = new StoreService(new EfRepository<Store>(_ctx), NullEventPublisher.Instance, new SecuritySettings());
 					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
 
 					var locSettings = new LocalizationSettings();
@@ -591,7 +603,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());
 			Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
-			Populate("PopulateMessageTemplates", _data.MessageTemplates());
+			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
 			Populate("PopulateTopics", _data.Topics());
 			Populate("PopulateSettings", PopulateSettings);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());

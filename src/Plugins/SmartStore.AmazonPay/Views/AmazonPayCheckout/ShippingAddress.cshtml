@@ -92,13 +92,12 @@
 					designMode: 'responsive'
 				},
 				onError: function (e) {
-					displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');
+					console.log(e.getErrorCode() + ': ' + e.getErrorMessage());
 				}
 			}).bind('amazon-pay-address-book-widget');
 		}
 		catch (e) {
 			console.log(e);
-			displayNotification(e, 'error');
 		}
 	};
 </script>

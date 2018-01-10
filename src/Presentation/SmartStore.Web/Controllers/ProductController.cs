@@ -12,14 +12,12 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
-using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -51,7 +49,6 @@ namespace SmartStore.Web.Controllers
 		private readonly ICustomerService _customerService;
 		private readonly IShoppingCartService _shoppingCartService;
 		private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
-		private readonly IWorkflowMessageService _workflowMessageService;
 		private readonly IProductTagService _productTagService;
 		private readonly IOrderReportService _orderReportService;
 		private readonly IBackInStockSubscriptionService _backInStockSubscriptionService;
@@ -83,7 +80,6 @@ namespace SmartStore.Web.Controllers
 			ICustomerService customerService,
 			IShoppingCartService shoppingCartService,
 			IRecentlyViewedProductsService recentlyViewedProductsService, 
-			IWorkflowMessageService workflowMessageService, 
 			IProductTagService productTagService,
 			IOrderReportService orderReportService,
 			IBackInStockSubscriptionService backInStockSubscriptionService, 
@@ -114,7 +110,6 @@ namespace SmartStore.Web.Controllers
 			_customerService = customerService;
 			_shoppingCartService = shoppingCartService;
 			_recentlyViewedProductsService = recentlyViewedProductsService;
-			_workflowMessageService = workflowMessageService;
 			_productTagService = productTagService;
 			_orderReportService = orderReportService;
 			_backInStockSubscriptionService = backInStockSubscriptionService;
@@ -217,10 +212,9 @@ namespace SmartStore.Web.Controllers
 						var m = x.Manufacturer.ToModel();
 						if (preparePictureModel)
 						{
-							m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
-
-							var picture = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
-							if (picture != null)
+							m.PictureModel.ImageUrl = _pictureService.GetUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
+							var pictureUrl = _pictureService.GetUrl(x.Manufacturer.PictureId.GetValueOrDefault());
+							if (pictureUrl != null)
 							{
 								m.PictureModel.PictureId = x.Manufacturer.PictureId.GetValueOrDefault();
 								m.PictureModel.Title = string.Format(T("Media.Product.ImageLinkTitleFormat"), m.Name);
@@ -417,73 +411,85 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted)
+			{
 				throw new ArgumentException(T("Products.NotFound", id));
+			}
+
+			var customer = _services.WorkContext.CurrentCustomer;
+			var store = _services.StoreContext.CurrentStore;
 
 			var model = new BackInStockSubscribeModel();
 			model.ProductId = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
-			model.IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered();
+			model.IsCurrentCustomerRegistered = customer.IsRegistered();
 			model.MaximumBackInStockSubscriptions = _catalogSettings.MaximumBackInStockSubscriptions;
 			model.CurrentNumberOfBackInStockSubscriptions = _backInStockSubscriptionService
-				 .GetAllSubscriptionsByCustomerId(_services.WorkContext.CurrentCustomer.Id, _services.StoreContext.CurrentStore.Id, 0, 1)
+				 .GetAllSubscriptionsByCustomerId(customer.Id, store.Id, 0, 1)
 				 .TotalCount;
+
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
 				product.BackorderMode == BackorderMode.NoBackorders &&
 				product.AllowBackInStockSubscriptions &&
 				product.StockQuantity <= 0)
 			{
-				//out of stock
+				// Out of stock.
 				model.SubscriptionAllowed = true;
-				model.AlreadySubscribed = _backInStockSubscriptionService
-					.FindSubscription(_services.WorkContext.CurrentCustomer.Id, product.Id, _services.StoreContext.CurrentStore.Id) != null;
+				model.AlreadySubscribed = _backInStockSubscriptionService.FindSubscription(customer.Id, product.Id, store.Id) != null;
 			}
+
 			return View("BackInStockSubscribePopup", model);
 		}
 
-		[HttpPost, ActionName("BackInStockSubscribe")]
-		public ActionResult BackInStockSubscribePopupPOST(int id /* productId */)
+		[HttpPost]
+		public ActionResult BackInStockSubscribePopup(int id /* productId */, FormCollection form)
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted)
+			{
 				throw new ArgumentException(T("Products.NotFound", id));
+			}
 
 			if (!_services.WorkContext.CurrentCustomer.IsRegistered())
+			{
 				return Content(T("BackInStockSubscriptions.OnlyRegistered"));
+			}
 
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
 				product.BackorderMode == BackorderMode.NoBackorders &&
 				product.AllowBackInStockSubscriptions &&
 				product.StockQuantity <= 0)
 			{
-				//out of stock
-				var subscription = _backInStockSubscriptionService
-					.FindSubscription(_services.WorkContext.CurrentCustomer.Id, product.Id, _services.StoreContext.CurrentStore.Id);
+				var customer = _services.WorkContext.CurrentCustomer;
+				var store = _services.StoreContext.CurrentStore;
+
+				// Out of stock.
+				var subscription = _backInStockSubscriptionService.FindSubscription(customer.Id, product.Id, store.Id);
 				if (subscription != null)
 				{
-					//unsubscribe
+					// Unsubscribe.
 					_backInStockSubscriptionService.DeleteSubscription(subscription);
 					return Content("Unsubscribed");
 				}
 				else
 				{
-					if (_backInStockSubscriptionService
-						.GetAllSubscriptionsByCustomerId(_services.WorkContext.CurrentCustomer.Id, _services.StoreContext.CurrentStore.Id, 0, 1)
-						.TotalCount >= _catalogSettings.MaximumBackInStockSubscriptions)
-						return Content(string.Format(T("BackInStockSubscriptions.MaxSubscriptions"), _catalogSettings.MaximumBackInStockSubscriptions));
-
-					//subscribe   
-					subscription = new BackInStockSubscription()
+					if (_backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(customer.Id, store.Id, 0, 1).TotalCount >= _catalogSettings.MaximumBackInStockSubscriptions)
 					{
-						Customer = _services.WorkContext.CurrentCustomer,
+						return Content(string.Format(T("BackInStockSubscriptions.MaxSubscriptions"), _catalogSettings.MaximumBackInStockSubscriptions));
+					}
+
+					// Subscribe.
+					subscription = new BackInStockSubscription
+					{
+						Customer = customer,
 						Product = product,
-						StoreId = _services.StoreContext.CurrentStore.Id,
+						StoreId = store.Id,
 						CreatedOnUtc = DateTime.UtcNow
 					};
+
 					_backInStockSubscriptionService.InsertSubscription(subscription);
 					return Content("Subscribed");
 				}
-
 			}
 			else
 			{
@@ -535,14 +541,14 @@ namespace SmartStore.Web.Controllers
 				if (!bundleItem.Item.HideThumbnail)
 				{
 					var picture = m.GetAssignedPicture(_pictureService, null, bundleItem.Item.ProductId);
-					dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.BundledProductPictureSize, false);
+					dynamicThumbUrl = _pictureService.GetUrl(picture, _mediaSettings.BundledProductPictureSize, false);
 				}
 			}
 			else if (isAssociated)
 			{
 				// Update associated product thumbnail.
 				var picture = m.GetAssignedPicture(_pictureService, null, productId);
-				dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);
+				dynamicThumbUrl = _pictureService.GetUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);
 			}
 			else if (product.ProductType != ProductType.BundledProduct)
 			{
@@ -721,7 +727,7 @@ namespace SmartStore.Web.Controllers
 
 				// notify store owner
 				if (_catalogSettings.NotifyStoreOwnerAboutNewProductReviews)
-					_workflowMessageService.SendProductReviewNotificationMessage(productReview, _localizationSettings.DefaultAdminLanguageId);
+					Services.MessageFactory.SendProductReviewNotificationMessage(productReview, _localizationSettings.DefaultAdminLanguageId);
 
 				// activity log
 				_services.CustomerActivity.InsertActivity("PublicStore.AddProductReview", T("ActivityLog.PublicStore.AddProductReview"), product.Name);
@@ -860,16 +866,15 @@ namespace SmartStore.Web.Controllers
 			if (ModelState.IsValid)
 			{
 				// email
-				var result = _workflowMessageService.SendProductQuestionMessage(
+				var msg = Services.MessageFactory.SendProductQuestionMessage(
 					_services.WorkContext.CurrentCustomer,
-					_services.WorkContext.WorkingLanguage.Id,
 					product,
 					model.SenderEmail,
 					model.SenderName,
 					model.SenderPhone,
 					Core.Html.HtmlUtils.FormatText(model.Question, false, true, false, false, false, false));
 
-				if (result > 0)
+				if (msg?.Email?.Id != null)
 				{
 					this.NotifySuccess(T("Products.AskQuestion.Sent"), true);
 					return RedirectToRoute("Product", new { SeName = product.GetSeName() });
@@ -933,10 +938,12 @@ namespace SmartStore.Web.Controllers
 			if (ModelState.IsValid)
 			{
 				//email
-				_workflowMessageService.SendProductEmailAFriendMessage(_services.WorkContext.CurrentCustomer,
-						_services.WorkContext.WorkingLanguage.Id, product,
-						model.YourEmailAddress, model.FriendEmail,
-						Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+				Services.MessageFactory.SendShareProductMessage(
+					_services.WorkContext.CurrentCustomer,
+					product,
+					model.YourEmailAddress, 
+					model.FriendEmail,
+					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
 
 				model.ProductId = product.Id;
 				model.ProductName = product.GetLocalized(x => x.Name);

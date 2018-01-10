@@ -12,6 +12,101 @@ using SmartStore.Core;
 
 namespace SmartStore
 {
+	public static class CollectionSlicer
+	{
+		/// <summary>
+		/// Slices the iteration over an enumerable by the given slice sizes.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="source">The source sequence to slice</param>
+		/// <param name="sizes">
+		/// Slice sizes. At least one size is required. Multiple sizes result in differently sized slices,
+		/// whereat the last size is used for the "rest" (if any)
+		/// </param>
+		/// <returns>The sliced enumerable</returns>
+		public static IEnumerable<IEnumerable<T>> Slice<T>(this IEnumerable<T> source, params int[] sizes)
+		{
+			if (!sizes.Any(step => step != 0))
+			{
+				throw new InvalidOperationException("Can't slice a collection with step length 0.");
+			}
+
+			return new Slicer<T>(source.GetEnumerator(), sizes).Slice();
+		}
+	}
+
+	internal sealed class Slicer<T>
+	{
+		private readonly IEnumerator<T> _iterator;
+		private readonly int[] _sizes;
+		private volatile bool _hasNext;
+		private volatile int _currentSize;
+		private volatile int _index;
+
+		public Slicer(IEnumerator<T> iterator, int[] sizes)
+		{
+			_iterator = iterator;
+			_sizes = sizes;
+			_index = 0;
+			_currentSize = 0;
+			_hasNext = true;
+		}
+
+		public int Index
+		{
+			get { return _index; }
+		}
+
+		public IEnumerable<IEnumerable<T>> Slice()
+		{
+			var length = _sizes.Length;
+			var index = 1;
+			var size = 0;
+
+			for (var i = 0; _hasNext; ++i)
+			{
+				if (i < length)
+				{
+					size = _sizes[i];
+					_currentSize = size - 1;
+				}
+
+				while (_index < index && _hasNext)
+				{
+					_hasNext = MoveNext();
+				}
+
+				if (_hasNext)
+				{
+					yield return new List<T>(SliceInternal());
+					index += size;
+				}
+			}
+		}
+
+		private IEnumerable<T> SliceInternal()
+		{
+			if (_currentSize == -1) yield break;
+			yield return _iterator.Current;
+
+			for (var count = 0; count < _currentSize && _hasNext; ++count)
+			{
+				_hasNext = MoveNext();
+
+				if (_hasNext)
+				{
+					yield return _iterator.Current;
+				}
+			}
+		}
+
+		private bool MoveNext()
+		{
+			++_index;
+			return _iterator.MoveNext();
+		}
+	}
+
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 	public static class EnumerableExtensions
 	{
@@ -38,44 +133,6 @@ namespace SmartStore
 		#endregion
 
 		#region IEnumerable
-
-		private class Status
-        {
-            public bool EndOfSequence;
-        }
-
-        private static IEnumerable<T> TakeOnEnumerator<T>(IEnumerator<T> enumerator, int count, Status status)
-        {
-            while (--count > 0 && (enumerator.MoveNext() || !(status.EndOfSequence = true)))
-            {
-                yield return enumerator.Current;
-            }
-        }
-
-
-        /// <summary>
-        /// Slices the iteration over an enumerable by the given chunk size.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items"></param>
-        /// <param name="chunkSize">SIze of chunk</param>
-        /// <returns>The sliced enumerable</returns>
-        public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> items, int chunkSize = 100)
-        {
-            if (chunkSize < 1)
-            {
-                throw new ArgumentException("Chunks should not be smaller than 1 element");
-            }
-            var status = new Status { EndOfSequence = false };
-            using (var enumerator = items.GetEnumerator())
-            {
-                while (!status.EndOfSequence)
-                {
-                    yield return TakeOnEnumerator(enumerator, chunkSize, status);
-                }
-            }
-        }
-
 
 		/// <summary>
 		/// Performs an action on each item while iterating through a list. 
@@ -115,19 +172,16 @@ namespace SmartStore
 			if (source == null || !source.Any())
 				return DefaultReadOnlyCollection<T>.Empty;
 
-			var readOnly = source as ReadOnlyCollection<T>;
-			if (readOnly != null)
+			if (source is ReadOnlyCollection<T> readOnly)
 			{
 				return readOnly;
 			}
-
-			var list = source as List<T>;
-			if (list != null) 
+			else if (source is List<T> list) 
 			{
 				return list.AsReadOnly();
 			}
 			
-			return new ReadOnlyCollection<T>(source.ToArray());
+			return new ReadOnlyCollection<T>(source.ToList());
         }
 
 		/// <summary>

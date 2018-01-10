@@ -65,9 +65,6 @@ namespace SmartStore.Services.Localization
 			
             // db
             _lsrRepository.Delete(resource);
-
-            // event notification
-            _eventPublisher.EntityDeleted(resource);
         }
 
 		public virtual int DeleteLocaleStringResources(string key, bool keyIsRootKey = true) {
@@ -152,9 +149,6 @@ namespace SmartStore.Services.Localization
 
 			// cache
 			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
-
-            // event notification
-            _eventPublisher.EntityInserted(resource);
         }
 
         public virtual void UpdateLocaleStringResource(LocaleStringResource resource)
@@ -170,9 +164,6 @@ namespace SmartStore.Services.Localization
 			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
 
 			_lsrRepository.Update(resource);
-
-			// event notification
-			_eventPublisher.EntityUpdated(resource);
         }
 
 		protected virtual IDictionary<string, string> GetCachedResourceSegment(string forKey, int languageId)

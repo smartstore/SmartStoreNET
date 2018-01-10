@@ -30,7 +30,19 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string Name { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
+		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.To")]
+		[AllowHtml]
+		public string To { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.ReplyTo")] 
+		[AllowHtml]
+		public string ReplyTo { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
+		[ScriptIgnore, JsonIgnore]
+		public string LastModelTree { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
         [AllowHtml]
         public string BccEmailAddresses { get; set; }
 
@@ -43,7 +55,6 @@ namespace SmartStore.Admin.Models.Messages
         public string Body { get; set; }
 
         [SmartResourceDisplayName("Common.Active")]
-        [AllowHtml]
         public bool IsActive { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.EmailAccount")]
@@ -76,7 +87,15 @@ namespace SmartStore.Admin.Models.Messages
     {
         public int LanguageId { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
+		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.To")]
+		[AllowHtml]
+		public string To { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.ReplyTo")]
+		[AllowHtml]
+		public string ReplyTo { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
         [AllowHtml]
         public string BccEmailAddresses { get; set; }
 

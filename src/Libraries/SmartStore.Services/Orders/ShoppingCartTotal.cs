@@ -8,6 +8,7 @@ namespace SmartStore.Services.Orders
         public ShoppingCartTotal(decimal? totalAmount)
         {
             TotalAmount = totalAmount;
+            ConvertedFromPrimaryStoreCurrency = new ConvertedAmounts();
         }
 
         public static implicit operator decimal?(ShoppingCartTotal obj)
@@ -55,9 +56,24 @@ namespace SmartStore.Services.Orders
         /// </summary>
         public decimal RedeemedRewardPointsAmount { get; set; }
 
+        public ConvertedAmounts ConvertedFromPrimaryStoreCurrency { get; set; }
+
         public override string ToString()
         {
             return (TotalAmount ?? decimal.Zero).FormatInvariant();
+        }
+
+        public class ConvertedAmounts
+        {
+            /// <summary>
+            /// Converted total amount of the shopping cart. <c>null</c> if the cart total couldn't be calculated now.
+            /// </summary>
+            public decimal? TotalAmount { get; set; }
+
+            /// <summary>
+            /// Converted rounding amount
+            /// </summary>
+            public decimal RoundingAmount { get; set; }
         }
     }
 }

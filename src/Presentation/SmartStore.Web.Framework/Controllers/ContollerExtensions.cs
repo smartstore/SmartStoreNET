@@ -183,7 +183,7 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <param name="storeService">Store service</param>
 		/// <param name="workContext">Work context</param>
 		/// <returns>Store ID; 0 if we are in a shared mode</returns>
-		public static int GetActiveStoreScopeConfiguration(this Controller controller, IStoreService storeService, IWorkContext workContext)
+		public static int GetActiveStoreScopeConfiguration(this IController controller, IStoreService storeService, IWorkContext workContext)
 		{
 			//ensure that we have 2 (or more) stores
 			if (storeService.GetAllStores().Count < 2)

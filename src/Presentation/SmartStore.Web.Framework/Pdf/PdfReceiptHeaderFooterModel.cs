@@ -16,6 +16,8 @@ namespace SmartStore.Web.Framework.Pdf
 		public BankConnectionSettings MerchantBankAccount { get; set; }
 		public ContactDataSettings MerchantContactData { get; set; }
 
+		public string MerchantFormattedAddress { get; set; }
+
 		public PdfHeaderFooterVariables Variables { get; set; }
     }
 }

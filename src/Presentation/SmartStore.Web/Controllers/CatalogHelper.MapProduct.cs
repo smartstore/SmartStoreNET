@@ -9,6 +9,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
@@ -17,6 +18,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -198,7 +200,7 @@ namespace SmartStore.Web.Controllers
 				using (var scope = new DbContextScope(ctx: _services.DbContext, autoCommit: false, validateOnSave: false))
 				{
 					// Run in uncommitting scope, because pictures could be updated (IsNew property) 
-					var batchContext = _dataExporter.Value.CreateProductExportContext(products, maxPicturesPerProduct: 1);
+					var batchContext = _dataExporter.Value.CreateProductExportContext(products, customer, null, 1, false);
 
 					if (settings.MapPrices)
 					{
@@ -219,6 +221,12 @@ namespace SmartStore.Web.Controllers
 					if (settings.MapSpecificationAttributes)
 					{
 						batchContext.SpecificationAttributes.LoadAll();
+					}
+
+					if (settings.MapPictures)
+					{
+						//var pids = products.Where(x => x.MainPictureId.HasValue).Select(x => x.MainPictureId.Value);
+						//var pis = ((Services.Media.PictureService)_pictureService).GetPictureInfos(pids, model.ThumbSize ?? 250);
 					}
 
 					var model = new ProductSummaryModel(products)
@@ -247,10 +255,14 @@ namespace SmartStore.Web.Controllers
 						ShowNewBadge = _catalogSettings.LabelAsNewForMaxDays.HasValue
 					};
 
+					// If a size has been set in the view, we use it in priority
+					int thumbSize = model.ThumbSize.HasValue ? model.ThumbSize.Value : _mediaSettings.ProductThumbPictureSize;
+
 					var mapItemContext = new MapProductSummaryItemContext
 					{
 						BatchContext = batchContext,
 						CachedManufacturerModels = cachedManufacturerModels,
+						PictureInfos = _pictureService.GetPictureInfos(products),
 						Currency = currency,
 						LegalInfo = legalInfo,
 						Model = model,
@@ -305,7 +317,7 @@ namespace SmartStore.Web.Controllers
 
 			if (settings.MapFullDescription)
 			{
-				item.FullDescription = product.GetLocalized(x => x.FullDescription);
+				item.FullDescription = product.GetLocalized(x => x.FullDescription, detectEmptyHtml: true);
 			}
 
 			// Price
@@ -385,38 +397,21 @@ namespace SmartStore.Web.Controllers
 			{
 				#region Map product picture
 
-				// If a size has been set in the view, we use it in priority
-				int pictureSize = model.ThumbSize.HasValue ? model.ThumbSize.Value : _mediaSettings.ProductThumbPictureSize;
+				var pictureInfo = ctx.PictureInfos.Get(product.MainPictureId.GetValueOrDefault());
+				var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+				var thumbSize = model.ThumbSize ?? _mediaSettings.ProductThumbPictureSize;
 
-				// Prepare picture model
-				var defaultProductPictureCacheKey = string.Format(
-					ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY,
-					product.Id,
-					pictureSize,
-					true,
-					_services.WorkContext.WorkingLanguage.Id,
-					ctx.Store.Id);
-
-				item.Picture = _services.Cache.Get(defaultProductPictureCacheKey, () =>
+				item.Picture = new PictureModel
 				{
-					if (!ctx.BatchContext.Pictures.FullyLoaded)
-					{
-						ctx.BatchContext.Pictures.LoadAll();
-					}
-
-					var picture = ctx.BatchContext.Pictures.GetOrLoad(product.Id).FirstOrDefault();
-					var pictureModel = new PictureModel
-					{
-						Size = pictureSize,
-						ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
-						FullSizeImageUrl = _pictureService.GetPictureUrl(picture, 0, !_catalogSettings.HideProductDefaultPictures),
-						Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
-						AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
-						PictureId = picture == null ? 0 : picture.Id
-					};
-
-					return pictureModel;
-				}, TimeSpan.FromHours(6));
+					PictureId = pictureInfo?.Id ?? 0,
+					Size = thumbSize,
+					ImageUrl = _pictureService.GetUrl(pictureInfo, thumbSize, fallbackType),
+					FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
+					FullSizeImageWidth = pictureInfo?.Width,
+					FullSizeImageHeight = pictureInfo?.Height,
+					Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
+					AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
+				};
 
 				#endregion
 			}
@@ -810,6 +805,7 @@ namespace SmartStore.Web.Controllers
 			public ProductExportContext BatchContext { get; set; }
 			public Multimap<int, Product> GroupedProducts { get; set; }
 			public Dictionary<int, ManufacturerOverviewModel> CachedManufacturerModels { get; set; }
+			public IDictionary<int, PictureInfo> PictureInfos { get; set; }
 			public Dictionary<string, LocalizedString> Resources { get; set; }
 			public string LegalInfo { get; set; }
 			public Customer Customer { get; set; }

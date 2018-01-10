@@ -101,7 +101,7 @@ namespace SmartStore.Web.Infrastructure
 							SystemName = t.SystemName.SanitizeHtmlId(),
 							Title = t.GetLocalized(x => t.Title),
                             TitleTag = t.TitleTag,
-							Body = t.GetLocalized(x => t.Body),
+							Body = t.GetLocalized(x => t.Body, detectEmptyHtml: true),
 							WidgetZones = t.GetWidgetZones().ToArray(),
 							Priority = t.Priority
 						})

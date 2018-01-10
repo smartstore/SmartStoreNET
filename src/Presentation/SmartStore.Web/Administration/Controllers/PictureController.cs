@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
@@ -11,12 +12,16 @@ namespace SmartStore.Admin.Controllers
     {
         private readonly IPictureService _pictureService;
         private readonly IPermissionService _permissionService;
+		private readonly MediaSettings _mediaSettings;
 
-        public PictureController(IPictureService pictureService,
-             IPermissionService permissionService)
+		public PictureController(
+			IPictureService pictureService,
+             IPermissionService permissionService,
+			 MediaSettings mediaSettings)
         {
-            this._pictureService = pictureService;
-            this._permissionService = permissionService;
+            _pictureService = pictureService;
+            _permissionService = permissionService;
+			_mediaSettings = mediaSettings;
         }
 
         [HttpPost]
@@ -28,12 +33,12 @@ namespace SmartStore.Admin.Controllers
 			var postedFile = Request.ToPostedFileResult();
 
 			var picture = _pictureService.InsertPicture(postedFile.Buffer, postedFile.ContentType, null, true, isTransient, validate);
-
+			
             return Json(
                 new { 
                     success = true, 
                     pictureId = picture.Id,
-                    imageUrl = _pictureService.GetPictureUrl(picture, 100) 
+                    imageUrl = _pictureService.GetUrl(picture, _mediaSettings.ProductThumbPictureSize, host: "") 
                 });
         }
     }

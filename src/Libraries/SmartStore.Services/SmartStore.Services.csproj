@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Services</RootNamespace>
     <AssemblyName>SmartStore.Services</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -62,6 +62,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
@@ -75,23 +78,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EPPlus, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ImageResizer, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageResizer.4.0.5\lib\net45\ImageResizer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ImageResizer.Plugins.PrettyGifs, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageResizer.Plugins.PrettyGifs.4.0.5\lib\net45\ImageResizer.Plugins.PrettyGifs.dll</HintPath>
+    <Reference Include="ImageProcessor, Version=2.5.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ImageProcessor.2.5.6\lib\net45\ImageProcessor.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LumenWorks.Framework.IO, Version=3.9.1.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
@@ -118,6 +117,9 @@
       <HintPath>..\..\packages\NReco.PdfGenerator.1.1.15\lib\net20\NReco.PdfGenerator.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PreMailer.Net, Version=1.5.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\PreMailer.Net.1.5.5\lib\net45\PreMailer.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -131,6 +133,9 @@
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -173,7 +178,9 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Blogs\BlogMessageFactoryExtensions.cs" />
     <Compile Include="Catalog\CategoryTreeChangeHandler.cs" />
+    <Compile Include="Catalog\CatalogMessageFactoryExtensions.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelper.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelperExtensions.cs" />
     <Compile Include="Catalog\Importer\CategoryImporter.cs" />
@@ -190,6 +197,7 @@
     <Compile Include="Common\IUserAgent.cs" />
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
+    <Compile Include="Customers\CustomerMessageFactoryExtensions.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
     <Compile Include="Customers\Importer\CustomerImporter.cs" />
     <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
@@ -255,17 +263,24 @@
     <Compile Include="Events\DefaultMessageBus.cs" />
     <Compile Include="Events\IMessageBroker.cs" />
     <Compile Include="Events\IMessageBus.cs" />
+    <Compile Include="Forums\ForumMessageFactoryExtensions.cs" />
     <Compile Include="Hooks\LocalizedEntityRelationHook.cs" />
     <Compile Include="Hooks\PictureHook.cs" />
     <Compile Include="Hooks\SearchQueryAliasHook.cs" />
     <Compile Include="Hooks\SlugSupportedHook.cs" />
     <Compile Include="Hooks\AuditableHook.cs" />
+    <Compile Include="Hooks\FixProductMainPictureHook.cs" />
+    <Compile Include="Hooks\StoreSaveHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityHook.cs" />
     <Compile Include="IScopedService.cs" />
     <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
+    <Compile Include="Media\Events.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />
+    <Compile Include="Media\ProcessImageException.cs" />
+    <Compile Include="Media\ProcessImageQuery.cs" />
+    <Compile Include="Media\ProcessImageResult.cs" />
     <Compile Include="Media\Storage\DatabaseMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\FileSystemMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\IMediaStorageProvider.cs" />
@@ -278,10 +293,21 @@
     <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
+    <Compile Include="Messages\Events.cs" />
+    <Compile Include="Messages\IMessageFactory.cs" />
+    <Compile Include="Messages\IMessageModelProvider.cs" />
+    <Compile Include="Messages\IModelPart.cs" />
+    <Compile Include="Messages\MessageFactory.cs" />
+    <Compile Include="Messages\MessageContext.cs" />
+    <Compile Include="Messages\MessageModelProvider.OrderParts.cs" />
+    <Compile Include="Messages\MessageModelProvider.Utils.cs" />
+    <Compile Include="Messages\MessageModelProvider.cs" />
+    <Compile Include="Messages\TemplateModel.cs" />
     <Compile Include="Messages\QueuedMessagesClearTask.cs" />
-    <Compile Include="Messages\QueuingEmailEvent.cs" />
-    <Compile Include="Messages\QueuingEmailEventConsumer.cs" />
+    <Compile Include="Messages\CreateAttachmentsConsumer.cs" />
+    <Compile Include="News\NewsMessageFactoryExtensions.cs" />
     <Compile Include="Orders\AddToCartContext.cs" />
+    <Compile Include="Orders\OrderMessageFactoryExtensions.cs" />
     <Compile Include="Orders\ShoppingCartTotal.cs" />
     <Compile Include="Payments\IPaymentMethodFilter.cs" />
     <Compile Include="Pdf\Content\PdfHtmlContent.cs" />
@@ -374,15 +400,12 @@
     <Compile Include="Logging\DeleteLogsTask.cs" />
     <Compile Include="Media\CachedImageResult.cs" />
     <Compile Include="Media\IImageCache.cs" />
-    <Compile Include="Media\IImageResizerService.cs" />
+    <Compile Include="Media\IImageProcessor.cs" />
     <Compile Include="Media\ImageCache.cs" />
     <Compile Include="Media\ImageCacheExtensions.cs" />
     <Compile Include="Media\ImageHeader.cs" />
-    <Compile Include="Media\ImageResizerService.cs" />
-    <Compile Include="Media\ImageResizerUtil.cs" />
+    <Compile Include="Media\DefaultImageProcessor.cs" />
     <Compile Include="Media\ImageTypes.cs" />
-    <Compile Include="Messages\EventPublisherExtensions.cs" />
-    <Compile Include="Messages\GenericMessageContext.cs" />
     <Compile Include="Messages\NewsLetterSubscriptionService.cs" />
     <Compile Include="News\NewsService.cs" />
     <Compile Include="News\INewsService.cs" />
@@ -421,21 +444,14 @@
     <Compile Include="Media\PictureService.cs" />
     <Compile Include="Messages\CampaignService.cs" />
     <Compile Include="Messages\ICampaignService.cs" />
-    <Compile Include="Messages\IMessageTokenProvider.cs" />
-    <Compile Include="Messages\MessageTokenProvider.cs" />
     <Compile Include="Messages\EmailAccountService.cs" />
     <Compile Include="Messages\IEmailAccountService.cs" />
     <Compile Include="Messages\IMessageTemplateService.cs" />
     <Compile Include="Messages\INewsLetterSubscriptionService.cs" />
     <Compile Include="Messages\IQueuedEmailService.cs" />
-    <Compile Include="Messages\ITokenizer.cs" />
-    <Compile Include="Messages\IWorkflowMessageService.cs" />
     <Compile Include="Messages\MessageTemplateService.cs" />
     <Compile Include="Messages\QueuedEmailService.cs" />
     <Compile Include="Messages\QueuedMessagesSendTask.cs" />
-    <Compile Include="Messages\Tokenizer.cs" />
-    <Compile Include="Messages\Token.cs" />
-    <Compile Include="Messages\WorkflowMessageService.cs" />
     <Compile Include="Orders\AutoUpdateOrderItemContext.cs" />
     <Compile Include="Orders\AppliedGiftCard.cs" />
     <Compile Include="Orders\CheckoutAttributeFormatter.cs" />
@@ -538,7 +554,7 @@
     <Compile Include="Seo\XmlSitemapGenerator.cs" />
     <Compile Include="Seo\XmlSitemapNode.cs" />
     <Compile Include="Seo\UrlRecordService.cs" />
-    <Compile Include="ServiceCacheConsumer.cs" />
+    <Compile Include="ServiceCacheBuster.cs" />
     <Compile Include="Shipping\IShipmentService.cs" />
     <Compile Include="Shipping\IShippingMethodFilter.cs" />
     <Compile Include="Shipping\ShipmentService.cs" />
@@ -556,7 +572,6 @@
     <Compile Include="Stores\IStoreService.cs" />
     <Compile Include="Stores\StoreMappingService.cs" />
     <Compile Include="Stores\StoreService.cs" />
-    <Compile Include="Tasks\ChangeTaskSchedulerBaseUrlConsumer.cs" />
     <Compile Include="Tasks\CronExpression.cs" />
     <Compile Include="Tasks\InitializeSchedulerFilter.cs" />
     <Compile Include="Tasks\ITaskExecutor.cs" />

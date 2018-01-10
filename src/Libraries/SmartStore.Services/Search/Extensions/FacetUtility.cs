@@ -8,6 +8,8 @@ namespace SmartStore.Services.Search.Extensions
 {
 	public static class FacetUtility
 	{
+		private const double MAX_PRICE = 1000000000;
+
 		private static int[,] _priceThresholds = new int[,]
 		{
 			{ 10, 5 },
@@ -39,7 +41,7 @@ namespace SmartStore.Services.Search.Extensions
 					return price + _priceThresholds[i, 1];
 			}
 
-			return 1000000000;
+			return MAX_PRICE;
 		}
 
 		public static double MakePriceEven(double price)
@@ -47,7 +49,7 @@ namespace SmartStore.Services.Search.Extensions
 			if (price == 0.0)
 				return GetNextPrice(0.0);
 
-			// get previous threshold for price
+			// Get previous threshold for price.
 			var result = 0.0;
 			for (var i = 1; i <= _priceThresholds.GetUpperBound(0) && result == 0.0; ++i)
 			{
@@ -55,7 +57,7 @@ namespace SmartStore.Services.Search.Extensions
 					result = _priceThresholds[i - 1, 0];
 			}
 
-			while (result < price)
+			while (result < price && result < MAX_PRICE)
 			{
 				result = GetNextPrice(result);
 			}

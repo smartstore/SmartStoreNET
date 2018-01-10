@@ -194,8 +194,6 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 			}
 
-			_eventPublisher.EntityInserted(profile);
-
 			return profile;
 		}
 
@@ -232,8 +230,6 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			_exportProfileRepository.Update(profile);
-
-			_eventPublisher.EntityUpdated(profile);
 		}
 
 		public virtual void DeleteExportProfile(ExportProfile profile, bool force = false)
@@ -251,8 +247,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(scheduleTaskId);
 			_scheduleTaskService.DeleteTask(scheduleTask);
-
-			_eventPublisher.EntityDeleted(profile);
 
 			if (System.IO.Directory.Exists(folder))
 			{
@@ -360,8 +354,6 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			_exportDeploymentRepository.Update(deployment);
-
-			_eventPublisher.EntityUpdated(deployment);
 		}
 
 		public virtual void DeleteExportDeployment(ExportDeployment deployment)
@@ -370,8 +362,6 @@ namespace SmartStore.Services.DataExchange.Export
 				throw new ArgumentNullException("deployment");
 
 			_exportDeploymentRepository.Delete(deployment);
-
-			_eventPublisher.EntityDeleted(deployment);
 		}
 	}
 }

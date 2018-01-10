@@ -1,0 +1,394 @@
+/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+// right to left
+// --------------------------------------------------
+
+body.rtl {
+	direction: rtl;
+	text-align: right;
+
+	.table th,
+	.dropdown-menu {
+		text-align: right;
+	}
+
+	dd {
+		margin-right: 0;
+		padding-right: 0;
+	}
+
+	ul,
+	.list-unstyled,
+	.nav-tabs-line {
+		padding-right: 0;
+	}
+
+	.heading .heading-title {
+		padding-right: 0;
+		padding-left: 1rem;
+	}
+
+	.art-badges {
+		left: initial;
+		right: 0;
+
+		.art-badge {
+			border-radius: 0.85rem 0 0 0.85rem;
+		}
+	}
+
+	.breadcrumb-item {
+		float: right;
+	}
+
+	.dropdown-menu {
+		left: initial;
+		right: 0;
+	}
+
+	// forms
+	.form-group label,
+	.col-form-label {
+		text-align: left;
+	}
+
+	.form-check-label {
+		padding-left: initial;
+
+		.form-check-input {
+			margin-left: initial;
+		}
+
+		span {
+			margin-right: 1.25rem;
+		}
+	}
+
+	fieldset.content-group > legend > span {
+		padding-right: initial;
+		padding-left: 1rem;
+	}
+
+	.form-control + .input-group-addon:not(:first-child) {
+		border-right: initial;
+		border-left: 1px solid rgba(0,0,0,0.15);
+	}
+
+	// product lists
+	.choice-box-group .choice-box,
+	.art-color-opt {
+		float: right;
+	}
+
+	.artlist-carousel .slick-prev {
+		right: 0;
+		left: auto;
+		border-radius: .1875rem 0 0 .1875rem;
+		border-right: none;
+
+		.fa-chevron-left:before {
+			content: "\f054";
+		}
+	}
+
+	.artlist-carousel .slick-next {
+		left: 0;
+		right: auto;
+		border-radius: 0 .1875rem .1875rem 0;
+		border-left: none;
+
+		.fa-chevron-right:before {
+			content: "\f053";
+		}
+	}
+
+	.has-count[data-count]:after {
+		padding-left: 0;
+		padding-right: 0.2rem;
+	}
+
+	.cart-action .cart-action-title:after,
+	.facet-toggle:after {
+		right: initial;
+		left: 0;
+	}
+
+	// product detail
+	.pd-attrs td:first-child {
+		padding-left: 1rem;
+		padding-right: 0;
+	}
+
+	.pd-price-block {
+		float: initial;
+	}
+
+	.pd-actions .pd-action-item {
+		border-right: 0;
+		border-left: 1px solid rgba(0,0,0,0.15);
+	}
+
+	.btn-edit-product {
+		right: initial;
+		left: 0;
+	}
+
+	.art-rating .rating,
+	.pd-rating-box .rating {
+		text-align: left;
+	}
+
+	#pd-gallery .gal {
+		direction: ltr;
+	}
+
+	.review-title h4 {
+		padding-left: 0;
+		padding-right: 90px;
+	}
+
+	// checkout
+	.costep {
+		&:first-child:after,
+		&:last-child:before {
+			display: none;
+		}
+
+		&:first-child:before,
+		&:last-child:after {
+			display: block;
+		}
+	}
+
+	.costep.active {
+		&:before {
+			background-color: $costep-border;
+		}
+
+		&:after {
+			background-color: $costep-active-border;
+		}
+	}
+
+	// forum
+	.forum-topic .block .block-title a {
+		padding-left: 0.75rem;
+		padding-right: initial;
+	}
+
+	.forum-topic .block-title > div {
+		.edit-post-link-button, 
+		.delete-post-link-button,
+		.post-link,
+		.fa {
+			float: right;
+		}
+
+		.fa {
+			margin-top: 5px;
+			margin-left: 5px;
+		}
+	}
+
+
+	.menubar-group {
+		margin-right: 1rem;
+		margin-left: 0;
+	}
+
+	.myaccount-menu .list-group-item,
+	#menubar-my-account .dropdown-item {
+		position: relative;
+
+		.fa {
+			position: absolute;
+			right: 0.75rem;
+			top: 0.75rem;
+		}
+
+		span {
+			padding-right: 1rem;
+		}
+	}
+
+	.myaccount-menu .list-group-item .fa {
+		top: 1rem;
+	}
+	.list-group.has-icons .list-group-item-icon {
+		margin-left: 0.75rem;
+		margin-right: initial;
+	}
+	.list-group .list-group-item.active:before {
+		right: -1px;
+		left: initial;
+	}
+
+	// notifications
+	.alert:after, .validation-summary-valid:after, .validation-summary-errors:after,
+	.alert:before, .validation-summary-valid:before, .validation-summary-errors:before {
+		left: initial;
+		right: 0;
+	}
+
+	.alert, .validation-summary-valid, .validation-summary-errors {
+		padding-right: 4rem;
+		padding-left: 0;
+	}
+
+	.btn .fa + span, .btn .fa + em, .btn .icm + span, .btn .icm + em, .menubar-link .fa + span, .menubar-link .fa + em, .menubar-link .icm + span, .menubar-link .icm + em, .nav-link .fa + span, .nav-link .fa + em, .nav-link .icm + span, .nav-link .icm + em, .dropdown-item .fa + span, .dropdown-item .fa + em, .dropdown-item .icm + span, .dropdown-item .icm + em {
+		padding-right: 0.4em;
+		padding-left: 0;
+	}
+
+	// rtl display brakes text in brackets in chrome
+	.block-title .text-muted:after,
+	.pd-oldprice-line:after,
+	.dropdown-item:after,
+	.pd-oldprice-line:after {
+		content: '\200E';
+	}
+
+	// switch all .fa directional icons
+	.fa-angle-double-left:before {
+		content: "\f101";
+	}
+
+	.fa-angle-double-right:before {
+		content: "\f100";
+	}
+
+	.fa-angle-left:before {
+		content: "\f105";
+	}
+
+	.fa-angle-right:before {
+		content: "\f104";
+	}
+
+	.fa-arrow-circle-left:before {
+		content: "\f0a9";
+	}
+
+	.fa-arrow-circle-right:before {
+		content: "\f0a8";
+	}
+
+	.fa-arrow-circle-o-left:before {
+		content: "\f18e";
+	}
+
+	.fa-arrow-circle-o-right:before {
+		content: "\f190";
+	}
+
+	.fa-arrow-left:before {
+		content: "\f061";
+	}
+
+	.fa-arrow-right:before {
+		content: "\f060";
+	}
+
+	.fa-caret-left:before {
+		content: "\f0da";
+	}
+
+	.fa-caret-right:before {
+		content: "\f0d9";
+	}
+
+	.fa-caret-square-o-left:before {
+		content: "\f152";
+	}
+
+	.fa-caret-square-o-right:before {
+		content: "\f191";
+	}
+
+	.fa-chevron-circle-left:before {
+		content: "\f138";
+	}
+
+	.fa-chevron-circle-right:before {
+		content: "\f137";
+	}
+
+	.fa-chevron-left:before {
+		content: "\f054";
+	}
+
+	.fa-chevron-right:before {
+		content: "\f053";
+	}
+
+	.fa-hand-o-left:before {
+		content: "\f0a4";
+	}
+
+	.fa-hand-o-right:before {
+		content: "\f0a5";
+	}
+
+	.fa-long-arrow-left:before {
+		content: "\f178";
+	}
+
+	.fa-long-arrow-right:before {
+		content: "\f177";
+	}
+
+	.fa-toggle-left:before {
+		content: "\f152";
+	}
+
+	.fa-toggle-right:before {
+		content: "\f191";
+	}
+
+	// Adaption of BS _spacing.scss
+	@each $breakpoint in map-keys($grid-breakpoints) {
+		@include media-breakpoint-up($breakpoint) {
+			$infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+			@each $prop, $abbrev in (margin: m, padding: p) {
+				@each $size, $length in $spacers {
+					.#{$abbrev}r#{$infix}-#{$size} {
+						#{$prop}-left: $length !important;
+						#{$prop}-right: initial !important;
+					}
+
+					.#{$abbrev}l#{$infix}-#{$size} {
+						#{$prop}-right: $length !important;
+						#{$prop}-left: initial !important;
+					}
+				}
+			}
+			// Some special margin utils
+			.mr#{$infix}-auto {
+				margin-right: initial !important;
+				margin-left: auto !important;
+			}
+
+			.ml#{$infix}-auto {
+				margin-left: initial !important;
+				margin-right: auto !important;
+			}
+		}
+	}
+
+	// Adaption of BS _text.scss
+	@each $breakpoint in map-keys($grid-breakpoints) {
+		@include media-breakpoint-up($breakpoint) {
+			$infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+			.text#{$infix}-right {
+				text-align: left !important;
+			}
+
+			.text#{$infix}-left {
+				text-align: right !important;
+			}
+		}
+	}
+}

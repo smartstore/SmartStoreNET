@@ -44,6 +44,7 @@ namespace SmartStore.Services.Tests.Orders
         IGiftCardService _giftCardService;
         IGenericAttributeService _genericAttributeService;
         IPaymentService _paymentService;
+        ICurrencyService _currencyService;
         TaxSettings _taxSettings;
         RewardPointsSettings _rewardPointsSettings;
         ICategoryService _categoryService;
@@ -97,6 +98,7 @@ namespace SmartStore.Services.Tests.Orders
 			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
             _paymentService = MockRepository.GenerateMock<IPaymentService>();
+            _currencyService = MockRepository.GenerateMock<ICurrencyService>();
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
@@ -150,7 +152,7 @@ namespace SmartStore.Services.Tests.Orders
 
 			_orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _providerManager,
-                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _paymentService, _productAttributeParser,
+                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _paymentService, _currencyService, _productAttributeParser,
                 _taxSettings, _rewardPointsSettings, _shippingSettings, _shoppingCartSettings, _catalogSettings);
         }
 

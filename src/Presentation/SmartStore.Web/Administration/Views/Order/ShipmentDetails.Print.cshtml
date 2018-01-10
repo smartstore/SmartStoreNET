@@ -1,9 +1,5 @@
 ﻿@model IEnumerable<ShipmentModel>
-@using SmartStore.Core.Domain.Orders;
-@using SmartStore.Core.Domain.Catalog;
-@using SmartStore.Admin.Models.Shipping;
-@using SmartStore.Services.Localization;
-@using SmartStore.Core.Html;
+
 @{
     Layout = "_Print";
     Html.AddTitleParts(T("Admin.Orders.Shipments.ViewDetails").Text);
@@ -48,34 +44,7 @@
                         </span>
                     </div>
                     <div class="mt-2">
-                        @if (address.Company.HasValue())
-						{
-                            <div>@address.Company</div>
-                        }
-                        <div>@JoinValues(new string[] { address.Salutation, address.Title, address.FirstName, address.LastName })</div>
-                        @if (address.Address1.HasValue())
-                        {
-                            <div>@address.Address1</div>
-                        }
-                        @if (address.Address2.HasValue())
-                        {
-                            <div>@address.Address2</div>
-                        }
-                        @if (address.ZipPostalCode.HasValue() || address.City.HasValue())
-                        {
-                            <div>@JoinValues(new string[] { address.ZipPostalCode, address.City })</div>
-                        }
-                        @if (address.Country != null)
-						{						
-							if (address.StateProvince != null)
-							{
-								<div>@JoinValues(new string[] { address.Country.Name, address.StateProvince.Name }, ", ")</div>
-							}
-							else
-							{
-								<div>@JoinValues(new string[] { address.Country.Name }, ", ")</div>
-							}
-						}
+						@Html.Raw(shipment.FormattedShippingAddress)
                     </div>
                 </div>
 

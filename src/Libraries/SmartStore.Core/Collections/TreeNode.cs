@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -21,16 +22,22 @@ namespace SmartStore.Collections
 		}
 
 		public TreeNode(TValue value, IEnumerable<TValue> children)
+			: this(value)
 		{
-			Value = value;
-			AppendRange(children);
+			if (children != null && children.Any())
+			{
+				AppendRange(children);
+			}
 		}
 
 		public TreeNode(TValue value, IEnumerable<TreeNode<TValue>> children)
+			: this(value)
 		{
 			// for serialization
-			Value = value;
-			AppendRange(children);
+			if (children != null && children.Any())
+			{
+				AppendRange(children);
+			}	
 		}
 
 		public TValue Value
@@ -178,7 +185,11 @@ namespace SmartStore.Collections
 				reader.Read();
 			}
 
-			var treeNode = Activator.CreateInstance(objectType, new object[] { objValue, objChildren });
+			var ctorParams = objChildren != null 
+				? new object[] { objValue, objChildren } 
+				: new object[] { objValue };
+
+			var treeNode = Activator.CreateInstance(objectType, ctorParams);
 
 			// Set Metadata
 			if (metadata != null && metadata.Count > 0)
@@ -198,26 +209,39 @@ namespace SmartStore.Collections
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
-			var idProp = FastProperty.GetProperty(value.GetType(), "Id", PropertyCachingStrategy.Cached);
-			var valueProp = FastProperty.GetProperty(value.GetType(), "Value", PropertyCachingStrategy.Cached);
-			var childrenProp = FastProperty.GetProperty(value.GetType(), "Children", PropertyCachingStrategy.Cached);
-			var metadataProp = FastProperty.GetProperty(value.GetType(), "Metadata", PropertyCachingStrategy.Cached);
-
 			writer.WriteStartObject();
 			{
-				writer.WritePropertyName("Id");
-				serializer.Serialize(writer, idProp.GetValue(value));
+				// Id
+				if (GetPropValue("Id", value) is object o)
+				{
+					writer.WritePropertyName("Id");
+					serializer.Serialize(writer, o);
+				}
 
+				// Value
 				writer.WritePropertyName("Value");
-				serializer.Serialize(writer, valueProp.GetValue(value));
+				serializer.Serialize(writer, GetPropValue("Value", value));
 
-				writer.WritePropertyName("Metadata");
-				serializer.Serialize(writer, metadataProp.GetValue(value));
+				// Metadata
+				if (GetPropValue("Metadata", value) is IDictionary<string, object> dict && dict.Count > 0)
+				{
+					writer.WritePropertyName("Metadata");
+					serializer.Serialize(writer, dict);
+				}
 
-				writer.WritePropertyName("Children");
-				serializer.Serialize(writer, childrenProp.GetValue(value));
+				// Children
+				if (GetPropValue("HasChildren", value) is bool b && b == true)
+				{
+					writer.WritePropertyName("Children");
+					serializer.Serialize(writer, GetPropValue("Children", value));
+				}
 			}
 			writer.WriteEndObject();
+		}
+
+		private object GetPropValue(string name, object instance)
+		{
+			return FastProperty.GetProperty(instance.GetType(), name, PropertyCachingStrategy.Cached).GetValue(instance);
 		}
 	}
 }

@@ -145,9 +145,6 @@ namespace SmartStore.Services.Shipping
                 throw new ArgumentNullException("shippingMethod");
 
             _shippingMethodRepository.Delete(shippingMethod);
-
-            //event notification
-            _eventPublisher.EntityDeleted(shippingMethod);
         }
 
         /// <summary>
@@ -205,9 +202,6 @@ namespace SmartStore.Services.Shipping
                 throw new ArgumentNullException("shippingMethod");
 
             _shippingMethodRepository.Insert(shippingMethod);
-
-            //event notification
-            _eventPublisher.EntityInserted(shippingMethod);
         }
 
         /// <summary>
@@ -220,9 +214,6 @@ namespace SmartStore.Services.Shipping
                 throw new ArgumentNullException("shippingMethod");
 
             _shippingMethodRepository.Update(shippingMethod);
-
-            //event notification
-            _eventPublisher.EntityUpdated(shippingMethod);
         }
 
         #endregion

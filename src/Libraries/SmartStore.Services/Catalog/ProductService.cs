@@ -29,7 +29,6 @@ namespace SmartStore.Services.Catalog
 		private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
 		private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
-        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDbContext _dbContext;
         private readonly LocalizationSettings _localizationSettings;
 		private readonly ICommonServices _services;
@@ -45,7 +44,6 @@ namespace SmartStore.Services.Catalog
 			IRepository<ShoppingCartItem> shoppingCartItemRepository,
 			IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
-            IWorkflowMessageService workflowMessageService,
 			IDbContext dbContext,
             LocalizationSettings localizationSettings,
 			ICommonServices services)
@@ -60,7 +58,6 @@ namespace SmartStore.Services.Catalog
 			_shoppingCartItemRepository = shoppingCartItemRepository;
             _productAttributeService = productAttributeService;
             _productAttributeParser = productAttributeParser;
-            _workflowMessageService = workflowMessageService;
             _dbContext = dbContext;
             _localizationSettings = localizationSettings;
 			_services = services;
@@ -285,28 +282,13 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(product, nameof(product));
 
 			_productRepository.Insert(product);
-
-            _services.EventPublisher.EntityInserted(product);
         }
 
-		public virtual void UpdateProduct(Product product, bool publishEvent = true)
+		public virtual void UpdateProduct(Product product)
         {
 			Guard.NotNull(product, nameof(product));
 
-			bool modified = false;
-			if (publishEvent)
-			{
-				modified = _dbContext.IsModified(product);
-			}
-
-            // update
             _productRepository.Update(product);
-
-            // event notification
-			if (publishEvent && modified)
-			{
-				_services.EventPublisher.EntityUpdated(product);
-			}
         }
 
         public virtual void UpdateProductReviewTotals(Product product)
@@ -527,10 +509,10 @@ namespace SmartStore.Services.Catalog
 						product.Published = newPublished;
 
 						UpdateProduct(product);
-
+						
                         //send email notification
 						if (decrease && product.NotifyAdminForQuantityBelow > result.StockQuantityNew)
-                            _workflowMessageService.SendQuantityBelowStoreOwnerNotification(product, _localizationSettings.DefaultAdminLanguageId);                        
+                            _services.MessageFactory.SendQuantityBelowStoreOwnerNotification(product, _localizationSettings.DefaultAdminLanguageId);                        
                     }
                     break;
                 case ManageInventoryMethod.ManageStockByAttributes:
@@ -592,8 +574,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void UpdateHasDiscountsApplied(Product product)
         {
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			var prevValue = product.HasDiscountsApplied;
 			product.HasDiscountsApplied = product.AppliedDiscounts.Count > 0;
@@ -657,9 +638,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(relatedProduct, nameof(relatedProduct));
 
 			_relatedProductRepository.Delete(relatedProduct);
-
-            //event notification
-            _services.EventPublisher.EntityDeleted(relatedProduct);
         }
 
         public virtual IList<RelatedProduct> GetRelatedProductsByProductId1(int productId1, bool showHidden = false)
@@ -688,9 +666,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(relatedProduct, nameof(relatedProduct));
 
 			_relatedProductRepository.Insert(relatedProduct);
-
-            //event notification
-            _services.EventPublisher.EntityInserted(relatedProduct);
         }
 
         public virtual void UpdateRelatedProduct(RelatedProduct relatedProduct)
@@ -698,9 +673,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(relatedProduct, nameof(relatedProduct));
 
 			_relatedProductRepository.Update(relatedProduct);
-
-            //event notification
-            _services.EventPublisher.EntityUpdated(relatedProduct);
         }
 
 		public virtual int EnsureMutuallyRelatedProducts(int productId1)
@@ -724,9 +696,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(crossSellProduct, nameof(crossSellProduct));
 
 			_crossSellProductRepository.Delete(crossSellProduct);
-
-            //event notification
-            _services.EventPublisher.EntityDeleted(crossSellProduct);
         }
 
         public virtual IList<CrossSellProduct> GetCrossSellProductsByProductId1(int productId1, bool showHidden = false)
@@ -769,9 +738,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(crossSellProduct, nameof(crossSellProduct));
 
 			_crossSellProductRepository.Insert(crossSellProduct);
-
-            //event notification
-            _services.EventPublisher.EntityInserted(crossSellProduct);
         }
 
         public virtual void UpdateCrossSellProduct(CrossSellProduct crossSellProduct)
@@ -779,9 +745,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(crossSellProduct, nameof(crossSellProduct));
 
 			_crossSellProductRepository.Update(crossSellProduct);
-
-            // event notification
-            _services.EventPublisher.EntityUpdated(crossSellProduct);
         }
 
 		public virtual IList<Product> GetCrosssellProductsByShoppingCart(IList<OrganizedShoppingCartItem> cart, int numberOfProducts)
@@ -827,9 +790,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(tierPrice, nameof(tierPrice));
 
 			_tierPriceRepository.Delete(tierPrice);
-
-            //event notification
-            _services.EventPublisher.EntityDeleted(tierPrice);
         }
 
         public virtual TierPrice GetTierPriceById(int tierPriceId)
@@ -871,9 +831,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(tierPrice, nameof(tierPrice));
 
 			_tierPriceRepository.Insert(tierPrice);
-
-            //event notification
-            _services.EventPublisher.EntityInserted(tierPrice);
         }
 
         public virtual void UpdateTierPrice(TierPrice tierPrice)
@@ -881,9 +838,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(tierPrice, nameof(tierPrice));
 
 			_tierPriceRepository.Update(tierPrice);
-
-            //event notification
-            _services.EventPublisher.EntityUpdated(tierPrice);
         }
 
         #endregion
@@ -897,9 +851,6 @@ namespace SmartStore.Services.Catalog
 			UnassignDeletedPictureFromVariantCombinations(productPicture);
 
             _productPictureRepository.Delete(productPicture);
-
-            //event notification
-            _services.EventPublisher.EntityDeleted(productPicture);
         }
 
         private void UnassignDeletedPictureFromVariantCombinations(ProductPicture productPicture)
@@ -983,9 +934,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productPicture, nameof(productPicture));
 
 			_productPictureRepository.Insert(productPicture);
-
-            //event notification
-            _services.EventPublisher.EntityInserted(productPicture);
         }
 
         /// <summary>
@@ -997,9 +945,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productPicture, nameof(productPicture));
 
 			_productPictureRepository.Update(productPicture);
-
-            //event notification
-            _services.EventPublisher.EntityUpdated(productPicture);
         }
 
         #endregion
@@ -1020,9 +965,6 @@ namespace SmartStore.Services.Catalog
 				throw new SmartException("A bundle item cannot be an element of itself.");
 
 			_productBundleItemRepository.Insert(bundleItem);
-
-			//event notification
-			_services.EventPublisher.EntityInserted(bundleItem);
 		}
 
 		public virtual void UpdateBundleItem(ProductBundleItem bundleItem)
@@ -1030,9 +972,6 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(bundleItem, nameof(bundleItem));
 
 			_productBundleItemRepository.Update(bundleItem);
-
-			//event notification
-			_services.EventPublisher.EntityUpdated(bundleItem);
 		}
 
 		public virtual void DeleteBundleItem(ProductBundleItem bundleItem)
@@ -1065,9 +1004,6 @@ namespace SmartStore.Services.Catalog
 
 			// delete bundle item
 			_productBundleItemRepository.Delete(bundleItem);
-
-			// event notification
-			_services.EventPublisher.EntityDeleted(bundleItem);
 		}
 
 		public virtual ProductBundleItem GetBundleItemById(int bundleItemId)

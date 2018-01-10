@@ -30,9 +30,7 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderProcessingService _orderProcessingService;
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerService _customerService;
-        private readonly IWorkflowMessageService _workflowMessageService;
 		private readonly ProductUrlHelper _productUrlHelper;
-
 		private readonly LocalizationSettings _localizationSettings;
         private readonly OrderSettings _orderSettings;
 
@@ -47,24 +45,21 @@ namespace SmartStore.Web.Controllers
             IOrderProcessingService orderProcessingService,
             ILocalizationService localizationService,
             ICustomerService customerService,
-            IWorkflowMessageService workflowMessageService,
 			ProductUrlHelper productUrlHelper,
 			LocalizationSettings localizationSettings,
             OrderSettings orderSettings)
         {
-            this._orderService = orderService;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._currencyService = currencyService;
-            this._priceFormatter = priceFormatter;
-            this._orderProcessingService = orderProcessingService;
-            this._localizationService = localizationService;
-            this._customerService = customerService;
-            this._workflowMessageService = workflowMessageService;
-			this._productUrlHelper = productUrlHelper;
-
-            this._localizationSettings = localizationSettings;
-            this._orderSettings = orderSettings;
+            _orderService = orderService;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _currencyService = currencyService;
+            _priceFormatter = priceFormatter;
+            _orderProcessingService = orderProcessingService;
+            _localizationService = localizationService;
+            _customerService = customerService;
+			_productUrlHelper = productUrlHelper;
+            _localizationSettings = localizationSettings;
+            _orderSettings = orderSettings;
         }
 
         #endregion
@@ -193,8 +188,8 @@ namespace SmartStore.Web.Controllers
                     };
                     _workContext.CurrentCustomer.ReturnRequests.Add(rr);
                     _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                    //notify store owner here (email)
-                    _workflowMessageService.SendNewReturnRequestStoreOwnerNotification(rr, orderItem, _localizationSettings.DefaultAdminLanguageId);
+                    // notify store owner here (email)
+                    Services.MessageFactory.SendNewReturnRequestStoreOwnerNotification(rr, orderItem, _localizationSettings.DefaultAdminLanguageId);
 
                     count++;
                 }

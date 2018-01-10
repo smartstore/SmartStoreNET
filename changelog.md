@@ -1,26 +1,42 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
-* AmazonPay: The plugin has been changed to new "Login with Amazon" services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
+* Message template customizations are lost due to the new template engine. You have to customize the templates again. No automatic migration, sorry :-(
+* Amazon Pay: The plugin has been changed to new *Login and pay with Amazon* services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
 * (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
 * (Dev) Hook framework now passes `IHookedEntity` interface instead of `HookedEntity` class
+* (Dev) Completely removed all `EntityInserted<T>`, `EntityUpdated<T>` and `EntityDeleted<T>` legacy events. We were using DbSaveHooks anyway, which provides a much more powerful and way faster pub-sub mechanism for database operations.
 
 ### Highlights
+* New [Liquid](https://github.com/Shopify/liquid/wiki/Liquid-for-Designers) based template engine
 * Multi-configurable rounding of order total ("cash rounding"). Can be adjusted and activated separately for each currency and payment method.
+* (Perf) Picture service: new processing and caching strategy! Thumbnails are not created synchronously during the main request anymore, instead a new middleware route defers processing until an image is actually requested by any client.
+* MegaMenu shrinker and *Brands* virtual menu item
+* Address formatting templates by country
 * Connection to translate.smartstore.com. For available languages, localized resources can be downloaded and installed directly.
+* **Amazon Pay**:
+	* Supports merchants registered in the USA and Japan
+	* External authentication via *Login with Amazon* button in shop frontend
+	* Several improvements through the new *Login and pay with Amazon* services
 
-### Bugfixes
-* #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
-* OutputCache computes ambigous cache keys for blog pages
-* #1142 Customer import creates role multiple times
-* #1244 Variant query model binder cannot handle types text and datepicker
-* #1273 Attribute formatter should consider setting CatalogSettings.ShowVariantCombinationPriceAdjustment
-* Product entity picker should use the wildcard search to find products
-* Hook framework should run hooks with `ImportantAttribute` when hooking was disabled per scope
-* #1297 Web API: Parsing the timestamp may fail due to the different accuracy of the milliseconds
+### New Features
+* 1203 MegaMenu shrinker and *Brands* virtual menu item
+* #431 Added option to randomize the display order for slides on each request
+* #1258 Add option to filter shipping and payment methods by a specific customer role
+* #1247 Allow to import non system customer roles in customer import
+* #1117 Added an option to display a dropdown menu for manufacturers 
+* #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
+* #1100 Customer can register in frontend via "Login with Amazon" button
+* #1292 Web API: Add a method to get an order in PDF format
+* Added options to include option names of specification and product attributes in the search index
+* #441 added option to specify that additional shipping surcharges are considered only once.
+* #1295 Sales tracking (tracking pixel) for Billiger.de
 
 ### Improvements
+* Target .NET Framework changed: 4.5.2 > 4.6.1.
+* Lower memory consumption
+* #649 Media FileSystem provider: segmenting files in subfolders to increase IO perf with huge amount of files
 * #1141 Clearer backend order list. Added more infos like payment method.
 * #1248 New payment integration guidelines for Sofort\Klarna
 * TwitterAuth: better error handling and enhanced admin instruction
@@ -31,15 +47,19 @@
 * (Perf) Many improvements in hooking framework
 * #1294 Swiss PostFinance: External payment page too small on mobile devices. Added setting for mobile device template URL, pre-configured with PostFinance template.
 
-### New Features
-* #431 Added option to randomize the display order for slides on each request
-* #1258 Add option to filter shipping and payment methods by a specific customer role
-* #1247 Allow to import non system customer roles in customer import
-* #1117 Added an option to display a dropdown menu for manufacturers 
-* #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
-* #1100 Customer can register in frontend via "Login with Amazon" button
-* #1292 Web API: Add a method to get an order in PDF format
-* Added options to include option names of specification and product attributes in the search index
+### Bugfixes
+* #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
+* OutputCache computes ambiguous cache keys for blog pages
+* #1142 Customer import creates role multiple times
+* #1244 Variant query model binder cannot handle types text and datepicker
+* #1273 Attribute formatter should consider setting CatalogSettings.ShowVariantCombinationPriceAdjustment
+* Product entity picker should use the wildcard search to find products
+* Hook framework should run hooks with `ImportantAttribute` when hooking was disabled per scope
+* #1297 Web API: Parsing the timestamp may fail due to the different accuracy of the milliseconds
+* Debitoor: VAT amount could be transmitted as miscellaneous for deliveries abroad.
+* Prices with discounts limited to categories and customer groups were shown to all users in product lists
+* #1330 MegaSearch: Missing variant facets if the variant value is not unique
+* Back-in-stock subscription form was already submitted when opening the popup dialog
 
 
 ## SmartStore.NET 3.0.3

@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
+using SmartStore.Services;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
@@ -25,6 +26,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
@@ -35,7 +37,6 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
-using SmartStore.Services;
 
 namespace SmartStore.Web.Controllers
 {
@@ -67,6 +68,7 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderProcessingService _orderProcessingService;
         private readonly IOrderService _orderService;
         private readonly ICurrencyService _currencyService;
+        private readonly IPaymentService _paymentService;
         private readonly IPriceFormatter _priceFormatter;
         private readonly IPictureService _pictureService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
@@ -80,7 +82,6 @@ namespace SmartStore.Web.Controllers
 		private readonly ProductUrlHelper _productUrlHelper;
 
         private readonly MediaSettings _mediaSettings;
-        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CaptchaSettings _captchaSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
@@ -106,7 +107,9 @@ namespace SmartStore.Web.Controllers
             ICountryService countryService, IStateProvinceService stateProvinceService,
             IOrderTotalCalculationService orderTotalCalculationService,
             IOrderProcessingService orderProcessingService, IOrderService orderService,
-            ICurrencyService currencyService, IPriceFormatter priceFormatter,
+            ICurrencyService currencyService,
+            IPaymentService paymentService,
+            IPriceFormatter priceFormatter,
             IPictureService pictureService, INewsLetterSubscriptionService newsLetterSubscriptionService,
             IForumService forumService, IShoppingCartService shoppingCartService,
             IOpenAuthenticationService openAuthenticationService, 
@@ -115,52 +118,52 @@ namespace SmartStore.Web.Controllers
             ICustomerActivityService customerActivityService, 
 			ProductUrlHelper productUrlHelper,
 			MediaSettings mediaSettings,
-            IWorkflowMessageService workflowMessageService, LocalizationSettings localizationSettings,
+            LocalizationSettings localizationSettings,
             CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
 			PluginMediator pluginMediator)
         {
-            this._services = services;
-            this._authenticationService = authenticationService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._dateTimeSettings = dateTimeSettings;
-            this._taxSettings = taxSettings;
-            this._localizationService = localizationService;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._customerService = customerService;
-            this._genericAttributeService = genericAttributeService;
-            this._customerRegistrationService = customerRegistrationService;
-            this._taxService = taxService;
-            this._rewardPointsSettings = rewardPointsSettings;
-            this._customerSettings = customerSettings;
-            this._addressSettings = addressSettings;
-            this._forumSettings = forumSettings;
-            this._orderSettings = orderSettings;
-            this._addressService = addressService;
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._orderProcessingService = orderProcessingService;
-            this._orderTotalCalculationService = orderTotalCalculationService;
-            this._orderService = orderService;
-            this._currencyService = currencyService;
-            this._priceFormatter = priceFormatter;
-            this._pictureService = pictureService;
-            this._newsLetterSubscriptionService = newsLetterSubscriptionService;
-            this._forumService = forumService;
-            this._shoppingCartService = shoppingCartService;
-            this._openAuthenticationService = openAuthenticationService;
-            this._backInStockSubscriptionService = backInStockSubscriptionService;
-            this._downloadService = downloadService;
-            this._webHelper = webHelper;
-            this._customerActivityService = customerActivityService;
-			this._productUrlHelper = productUrlHelper;
+            _services = services;
+            _authenticationService = authenticationService;
+            _dateTimeHelper = dateTimeHelper;
+            _dateTimeSettings = dateTimeSettings;
+            _taxSettings = taxSettings;
+            _localizationService = localizationService;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _customerService = customerService;
+            _genericAttributeService = genericAttributeService;
+            _customerRegistrationService = customerRegistrationService;
+            _taxService = taxService;
+            _rewardPointsSettings = rewardPointsSettings;
+            _customerSettings = customerSettings;
+            _addressSettings = addressSettings;
+            _forumSettings = forumSettings;
+            _orderSettings = orderSettings;
+            _addressService = addressService;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
+            _orderProcessingService = orderProcessingService;
+            _orderTotalCalculationService = orderTotalCalculationService;
+            _orderService = orderService;
+            _currencyService = currencyService;
+            _paymentService = paymentService;
+            _priceFormatter = priceFormatter;
+            _pictureService = pictureService;
+            _newsLetterSubscriptionService = newsLetterSubscriptionService;
+            _forumService = forumService;
+            _shoppingCartService = shoppingCartService;
+            _openAuthenticationService = openAuthenticationService;
+            _backInStockSubscriptionService = backInStockSubscriptionService;
+            _downloadService = downloadService;
+            _webHelper = webHelper;
+            _customerActivityService = customerActivityService;
+			_productUrlHelper = productUrlHelper;
 
-			this._mediaSettings = mediaSettings;
-            this._workflowMessageService = workflowMessageService;
-            this._localizationSettings = localizationSettings;
-            this._captchaSettings = captchaSettings;
-            this._externalAuthenticationSettings = externalAuthenticationSettings;
-			this._pluginMediator = pluginMediator;
+			_mediaSettings = mediaSettings;
+            _localizationSettings = localizationSettings;
+            _captchaSettings = captchaSettings;
+            _externalAuthenticationSettings = externalAuthenticationSettings;
+			_pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -381,9 +384,9 @@ namespace SmartStore.Web.Controllers
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-			var storeScope = (_orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id);
-
-			var model = new CustomerOrderListModel();
+            var roundingAmount = decimal.Zero;
+            var storeScope = _orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id;
+            var model = new CustomerOrderListModel();
 
 			var orders = _orderService.SearchOrders(storeScope, customer.Id, null, null, null, null, null, null, null, null, pageIndex, _orderSettings.OrderListPageSize);
 
@@ -399,8 +402,8 @@ namespace SmartStore.Web.Controllers
 						IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(x)
 					};
 
-					var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(x.OrderTotal, x.CurrencyRate);
-					orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, x.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
+                    var orderTotal = x.GetOrderTotalInCustomerCurrency(_currencyService, _paymentService, out roundingAmount);
+                    orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotal, true, x.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
 
 					return orderModel;
 				})
@@ -620,15 +623,13 @@ namespace SmartStore.Web.Controllers
                     {
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumber, model.VatNumber);
 
-						string vatName = "";
-						string vatAddress = "";
-						var vatNumberStatus = _taxService.GetVatNumberStatus(model.VatNumber, out vatName, out vatAddress);
+						var vatNumberStatus = _taxService.GetVatNumberStatus(model.VatNumber, out var vatName, out var vatAddress);
 						_genericAttributeService.SaveAttribute(customer,
 							SystemCustomerAttributeNames.VatNumberStatusId,
 							(int)vatNumberStatus);
 						// send VAT number admin notification
 						if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
-							_workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
+							Services.MessageFactory.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
                     }
 
                     // form fields
@@ -744,7 +745,7 @@ namespace SmartStore.Web.Controllers
 
                     // Notifications
                     if (_customerSettings.NotifyNewCustomerRegistration)
-                        _workflowMessageService.SendCustomerRegisteredNotificationMessage(customer, _localizationSettings.DefaultAdminLanguageId);
+                        Services.MessageFactory.SendCustomerRegisteredNotificationMessage(customer, _localizationSettings.DefaultAdminLanguageId);
                     
                     switch (_customerSettings.UserRegistrationType)
                     {
@@ -752,7 +753,7 @@ namespace SmartStore.Web.Controllers
                             {
                                 // email validation message
                                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AccountActivationToken, Guid.NewGuid().ToString());
-                                _workflowMessageService.SendCustomerEmailValidationMessage(customer, _workContext.WorkingLanguage.Id);
+								Services.MessageFactory.SendCustomerEmailValidationMessage(customer, _workContext.WorkingLanguage.Id);
 
                                 return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.EmailValidation });
                             }
@@ -762,8 +763,8 @@ namespace SmartStore.Web.Controllers
                             }
                         case UserRegistrationType.Standard:
                             {
-                                // send customer welcome message
-                                _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
+								// send customer welcome message
+								Services.MessageFactory.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
 
                                 var redirectUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard });
                                 if (!String.IsNullOrEmpty(returnUrl))
@@ -949,8 +950,8 @@ namespace SmartStore.Web.Controllers
             _customerService.UpdateCustomer(customer);
             _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AccountActivationToken, "");
 
-            // Send welcome message
-            _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
+			// Send welcome message
+			Services.MessageFactory.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
             
             var model = new AccountActivationModel();
             model.Result = _localizationService.GetResource("Account.AccountActivation.Activated");
@@ -1039,15 +1040,13 @@ namespace SmartStore.Web.Controllers
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumber, model.VatNumber);
 						if (prevVatNumber != model.VatNumber)
 						{
-							string vatName = "";
-							string vatAddress = "";
-							var vatNumberStatus = _taxService.GetVatNumberStatus(model.VatNumber, out vatName, out vatAddress);
+							var vatNumberStatus = _taxService.GetVatNumberStatus(model.VatNumber, out var vatName, out var vatAddress);
 							_genericAttributeService.SaveAttribute(customer,
 									SystemCustomerAttributeNames.VatNumberStatusId,
 									(int)vatNumberStatus);
 							//send VAT number admin notification
 							if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
-								_workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
+								Services.MessageFactory.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
 						}
                     }
 
@@ -1401,7 +1400,7 @@ namespace SmartStore.Web.Controllers
                     itemModel.DownloadId = item.Product.DownloadId;
 
                 if (_downloadService.IsLicenseDownloadAllowed(item))
-                    itemModel.LicenseId = item.LicenseDownloadId.HasValue ? item.LicenseDownloadId.Value : 0;
+                    itemModel.LicenseId = item.LicenseDownloadId ?? 0;
             }
             
             return View(model);
@@ -1530,10 +1529,10 @@ namespace SmartStore.Web.Controllers
 
             var model = new CustomerAvatarModel();
 			model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
-            model.AvatarUrl = _pictureService.GetPictureUrl(
+            model.AvatarUrl = _pictureService.GetUrl(
                 customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId),
                 _mediaSettings.AvatarPictureSize,
-                false);
+                FallbackPictureType.NoFallback);
             return View(model);
         }
 
@@ -1581,7 +1580,7 @@ namespace SmartStore.Web.Controllers
 
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatarId);
 
-                    model.AvatarUrl = _pictureService.GetPictureUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
+                    model.AvatarUrl = _pictureService.GetUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
 
 					return View(model);
                 }
@@ -1592,7 +1591,7 @@ namespace SmartStore.Web.Controllers
             }
 
             //If we got this far, something failed, redisplay form
-            model.AvatarUrl = _pictureService.GetPictureUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
+            model.AvatarUrl = _pictureService.GetUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
 
             return View(model);
         }
@@ -1640,7 +1639,7 @@ namespace SmartStore.Web.Controllers
                 {
                     var passwordRecoveryToken = Guid.NewGuid();
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.PasswordRecoveryToken, passwordRecoveryToken.ToString());
-                    _workflowMessageService.SendCustomerPasswordRecoveryMessage(customer, _workContext.WorkingLanguage.Id);
+					Services.MessageFactory.SendCustomerPasswordRecoveryMessage(customer, _workContext.WorkingLanguage.Id);
 
                     model.ResultMessage = _localizationService.GetResource("Account.PasswordRecovery.EmailHasBeenSent");
                     model.ResultState = PasswordRecoveryResultState.Success;
@@ -1793,9 +1792,8 @@ namespace SmartStore.Web.Controllers
                 if (value.Equals("on") && key.StartsWith("fs", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var id = key.Replace("fs", "").Trim();
-                    int forumSubscriptionId = 0;
 
-                    if (Int32.TryParse(id, out forumSubscriptionId))
+                    if (Int32.TryParse(id, out var forumSubscriptionId))
                     {
                         var forumSubscription = _forumService.GetSubscriptionById(forumSubscriptionId);
                         if (forumSubscription != null && forumSubscription.CustomerId == _workContext.CurrentCustomer.Id)
@@ -1876,9 +1874,8 @@ namespace SmartStore.Web.Controllers
                 if (value.Equals("on") && key.StartsWith("biss", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var id = key.Replace("biss", "").Trim();
-                    int subscriptionId = 0;
 
-                    if (Int32.TryParse(id, out subscriptionId))
+                    if (Int32.TryParse(id, out var subscriptionId))
                     {
                         var subscription = _backInStockSubscriptionService.GetSubscriptionById(subscriptionId);
                         if (subscription != null && subscription.CustomerId == _workContext.CurrentCustomer.Id)

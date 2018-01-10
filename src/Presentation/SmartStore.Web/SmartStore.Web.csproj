@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
-  <Import Project="..\..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props" Condition="Exists('..\..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props')" />
   <Import Project="..\..\packages\LibSassHost.Native.win-x86.1.0.3\build\LibSassHost.Native.win-x86.props" Condition="Exists('..\..\packages\LibSassHost.Native.win-x86.1.0.3\build\LibSassHost.Native.win-x86.props')" />
   <Import Project="..\..\packages\LibSassHost.Native.win-x64.1.0.3\build\LibSassHost.Native.win-x64.props" Condition="Exists('..\..\packages\LibSassHost.Native.win-x64.1.0.3\build\LibSassHost.Native.win-x64.props')" />
   <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props')" />
@@ -19,7 +19,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Web</RootNamespace>
     <AssemblyName>SmartStore.Web</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <SccProjectName>
@@ -116,16 +116,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.3\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.2.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="FluentValidation, Version=6.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\FluentValidation.6.4.1\lib\Net45\FluentValidation.dll</HintPath>
@@ -151,8 +151,8 @@
       <HintPath>..\..\packages\LibSassHost.1.0.3\lib\net45\LibSassHost.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.8.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -179,6 +179,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -277,6 +280,7 @@
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\MediaController.cs" />
     <Compile Include="Controllers\OrderHelper.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
@@ -466,6 +470,7 @@
   <ItemGroup>
     <Content Include="404.html" />
     <Content Include="500.html" />
+    <Content Include="App_Data\AddressFormats.xml" />
     <Content Include="App_Data\Localization\App\de\all.smres.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -666,6 +671,32 @@
     <Content Include="Content\editors\ckeditor\skins\smartstore\images\refresh.png" />
     <Content Include="Content\editors\ckeditor\skins\smartstore\skin.js" />
     <Content Include="Content\editors\ckeditor\styles.js" />
+    <Content Include="Content\editors\CodeMirror\addon\display\fullscreen.css" />
+    <Content Include="Content\editors\CodeMirror\addon\fold\xml-fold.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\selection\active-line.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\edit\closebrackets.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\edit\closetag.min.js" />
+    <Content Include="Content\editors\CodeMirror\codemirror.custom.css" />
+    <Content Include="Content\editors\CodeMirror\codemirror.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\css-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\display\fullscreen.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\css\css.min.js" />
+    <Content Include="Content\editors\CodeMirror\codemirror.min.css" />
+    <Content Include="Content\editors\CodeMirror\theme\eclipse.min.css" />
+    <Content Include="Content\editors\CodeMirror\mode\liquid\liquid.css" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\show-hint.min.css" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\html-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\htmlmixed\htmlmixed.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\javascript-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\javascript\javascript.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\liquid\liquid.js" />
+    <Content Include="Content\editors\CodeMirror\addon\edit\matchbrackets.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\edit\matchtags.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\mode\multiplex.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\mode\overlay.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\show-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\addon\hint\xml-hint.min.js" />
+    <Content Include="Content\editors\CodeMirror\mode\xml\xml.min.js" />
     <Content Include="Content\editors\summernote\globalinit.js" />
     <Content Include="Content\editors\summernote\langs\summernote-de-DE.js" />
     <Content Include="Content\editors\summernote\summernote.css" />
@@ -1952,7 +1983,10 @@
     <Content Include="Themes\Flex\Content\_print.scss" />
     <Content Include="Views\Entity\Partials\Picker.cshtml" />
     <Content Include="Views\Entity\Partials\Picker.List.cshtml" />
-    <Content Include="Views\Shared\Components\EntityPicker.cshtml" />
+    <Content Include="Themes\Flex\Content\_rtl.scss" />
+    <Content Include="Themes\Flex\Views\Shared\EmailTemplates\footer.liquid" />
+    <Content Include="Themes\Flex\Views\Shared\EmailTemplates\header.liquid" />
+    <Content Include="Themes\Flex\Views\Shared\EmailTemplates\master.liquid" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1960,19 +1994,21 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Content\editors\CodeMirror\js\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>
       <Name>SmartStore.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\SmartStore.Services\SmartStore.Services.csproj">
-      <Project>{210541ad-f659-47da-8763-16f36c5cd2f4}</Project>
-      <Name>SmartStore.Services</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SmartStore.Data\SmartStore.Data.csproj">
       <Project>{ccd7f2c9-6a2c-4cf0-8e89-076b8fc0f144}</Project>
       <Name>SmartStore.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\SmartStore.Services\SmartStore.Services.csproj">
+      <Project>{210541ad-f659-47da-8763-16f36c5cd2f4}</Project>
+      <Name>SmartStore.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\SmartStore.Web.Framework\SmartStore.Web.Framework.csproj">
       <Project>{75fd4163-333c-4dd5-854d-2ef294e45d94}</Project>
@@ -2208,7 +2244,7 @@
     <Error Condition="!Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.4.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props'))" />
     <Error Condition="!Exists('..\..\packages\LibSassHost.Native.win-x64.1.0.3\build\LibSassHost.Native.win-x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LibSassHost.Native.win-x64.1.0.3\build\LibSassHost.Native.win-x64.props'))" />
     <Error Condition="!Exists('..\..\packages\LibSassHost.Native.win-x86.1.0.3\build\LibSassHost.Native.win-x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LibSassHost.Native.win-x86.1.0.3\build\LibSassHost.Native.win-x86.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.4\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>
 </Project>

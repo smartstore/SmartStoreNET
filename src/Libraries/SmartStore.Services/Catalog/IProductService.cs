@@ -52,7 +52,7 @@ namespace SmartStore.Services.Catalog
         /// Updates the product
         /// </summary>
         /// <param name="product">Product</param>
-		void UpdateProduct(Product product, bool publishEvent = true);
+		void UpdateProduct(Product product);
 
         /// <summary>
         /// Update product review totals

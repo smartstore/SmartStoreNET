@@ -1,6 +1,7 @@
 ﻿@model CustomerAddressListModel
 
 @using SmartStore.Web.Models.Customer;
+@using SmartStore.Services.Directory;
 
 @{
 	Html.AddTitleParts(T("PageTitle.Account").Text);
@@ -57,34 +58,9 @@
 					}
 				</div>
 
-                @if (address.CompanyEnabled && !String.IsNullOrEmpty(address.Company))
-                {
-                    <div class="company">@address.Company</div>
-                }
-                @if (address.StreetAddressEnabled)
-                {
-                    <div class="address1">@address.Address1</div>
-                }
-                @if (address.StreetAddress2Enabled && !String.IsNullOrEmpty(address.Address2))
-                {
-                    <div class="address2">@address.Address2</div>
-                }
-                @if (address.CityEnabled || address.StateProvinceEnabled || address.ZipPostalCodeEnabled)
-				{
-					var cityStateZip = address.GetFormattedCityStateZip();
-					if (cityStateZip.HasValue())
-					{
-						<div class="city-state-zip">
-							@Html.Raw(cityStateZip)
-						</div>
-					}
-                }
-                @if (address.CountryEnabled && !String.IsNullOrEmpty(address.CountryName))
-                {
-                    <div class="country">
-                        @address.CountryName
-                    </div>
-                }
+				<div>
+					@Html.Raw(address.FormattedAddress)
+				</div>
             </div>
                 
 			<div class="card-footer d-flex p-0">

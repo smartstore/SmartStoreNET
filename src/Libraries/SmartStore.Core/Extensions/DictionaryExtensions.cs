@@ -81,8 +81,7 @@ namespace SmartStore
 		{
 			Guard.NotNull(instance, nameof(instance));
 
-			TValue val;
-			instance.TryGetValue(key, out val);
+			instance.TryGetValue(key, out var val);
 			return val;
 		}
 

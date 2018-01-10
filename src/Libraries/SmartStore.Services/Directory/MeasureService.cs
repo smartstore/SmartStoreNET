@@ -37,9 +37,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("measureDimension");
 
             _measureDimensionRepository.Delete(measureDimension);
-
-            //event notification
-            _eventPublisher.EntityDeleted(measureDimension);
         }
         
         public virtual MeasureDimension GetMeasureDimensionById(int measureDimensionId)
@@ -77,9 +74,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("measure");
 
             _measureDimensionRepository.Insert(measure);
-
-            //event notification
-            _eventPublisher.EntityInserted(measure);
         }
 
         public virtual void UpdateMeasureDimension(MeasureDimension measure)
@@ -88,9 +82,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("measure");
 
             _measureDimensionRepository.Update(measure);
-
-            //event notification
-            _eventPublisher.EntityUpdated(measure);
         }
 
         public virtual decimal ConvertDimension(decimal quantity, 
@@ -147,9 +138,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("measureWeight");
 
             _measureWeightRepository.Delete(measureWeight);
-
-            //event notification
-            _eventPublisher.EntityDeleted(measureWeight);
         }
 
         public virtual MeasureWeight GetMeasureWeightById(int measureWeightId)
@@ -188,9 +176,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("measure");
 
             _measureWeightRepository.Insert(measure);
-
-            //event notification
-            _eventPublisher.EntityInserted(measure);
         }
 
         public virtual void UpdateMeasureWeight(MeasureWeight measure)
@@ -199,9 +184,6 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("measure");
 
             _measureWeightRepository.Update(measure);
-
-            //event notification
-            _eventPublisher.EntityUpdated(measure);
         }
 
         public virtual decimal ConvertWeight(decimal quantity,

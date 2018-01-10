@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. Statusänderung für Rücksendung</Subject>
+	<ModelTypes>ReturnRequest, OrderItem, ReturnRequest.Customer, OrderItem.Order</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hallo {{ Customer.FullName }},
+</h1>
+
+<p>
+	der Status Ihrer Rücksendung mit der Nummer <b>{{ ReturnRequest.Id }}</b> hat sich geändert.
+</p>
+
+<p>
+  <b>Neuer Status:</b><br />
+  <span>{{ ReturnRequest.Status }}</span>
+</p>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

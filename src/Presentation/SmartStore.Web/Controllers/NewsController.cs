@@ -44,7 +44,6 @@ namespace SmartStore.Web.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerContentService _customerContentService;
         private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
@@ -65,7 +64,7 @@ namespace SmartStore.Web.Controllers
 			IWorkContext workContext, IStoreContext storeContext, 
 			IPictureService pictureService, ILocalizationService localizationService,
             ICustomerContentService customerContentService, IDateTimeHelper dateTimeHelper,
-            IWorkflowMessageService workflowMessageService, IWebHelper webHelper,
+            IWebHelper webHelper,
             ICacheManager cacheManager, ICustomerActivityService customerActivityService,
 			IStoreMappingService storeMappingService,
 			ILanguageService languageService,
@@ -80,7 +79,6 @@ namespace SmartStore.Web.Controllers
             this._localizationService = localizationService;
             this._customerContentService = customerContentService;
             this._dateTimeHelper = dateTimeHelper;
-            this._workflowMessageService = workflowMessageService;
             this._webHelper = webHelper;
             this._cacheManager = cacheManager;
             this._customerActivityService = customerActivityService;
@@ -101,11 +99,8 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected void PrepareNewsItemModel(NewsItemModel model, NewsItem newsItem, bool prepareComments)
         {
-            if (newsItem == null)
-                throw new ArgumentNullException("newsItem");
-
-            if (model == null)
-                throw new ArgumentNullException("model");
+			Guard.NotNull(newsItem, nameof(newsItem));
+			Guard.NotNull(model, nameof(model));
 
 			Services.DisplayControl.Announce(newsItem);
 
@@ -145,9 +140,9 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.AllowCustomersToUploadAvatars)
                     {
                         var customer = nc.Customer;
-                        string avatarUrl = _pictureService.GetPictureUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
+                        string avatarUrl = _pictureService.GetUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
                         if (String.IsNullOrEmpty(avatarUrl) && _customerSettings.DefaultAvatarEnabled)
-                            avatarUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.AvatarPictureSize, PictureType.Avatar);
+                            avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
                         commentModel.CustomerAvatarUrl = avatarUrl;
                     }
 
@@ -230,8 +225,10 @@ namespace SmartStore.Web.Controllers
         }
 
 		[ActionName("rss"), Compress]
-        public ActionResult ListRss(int languageId)
+        public ActionResult ListRss(int? languageId)
         {
+			languageId = languageId ?? _workContext.WorkingLanguage.Id;
+
 			DateTime? maxAge = null;
 			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
 			var selfLink = Url.Action("rss", "News", new { languageId = languageId }, protocol);
@@ -240,19 +237,23 @@ namespace SmartStore.Web.Controllers
 			var title = "{0} - News".FormatInvariant(_storeContext.CurrentStore.Name);
 
 			if (_newsSettings.MaxAgeInDays > 0)
+			{
 				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_newsSettings.MaxAgeInDays, 0, 0, 0));
+			}
 
-			var language = _languageService.GetLanguageById(languageId);
+			var language = _languageService.GetLanguageById(languageId.Value);
 			var feed = new SmartSyndicationFeed(new Uri(newsLink), title);
 
 			feed.AddNamespaces(true);
 			feed.Init(selfLink, language);
 
 			if (!_newsSettings.Enabled)
+			{
 				return new RssActionResult { Feed = feed };
+			}
 
 			var items = new List<SyndicationItem>();
-			var newsItems = _newsService.GetAllNews(languageId, _storeContext.CurrentStore.Id, 0, int.MaxValue, false, maxAge);
+			var newsItems = _newsService.GetAllNews(languageId.Value, _storeContext.CurrentStore.Id, 0, int.MaxValue, false, maxAge);
 
 			foreach (var news in newsItems)
 			{
@@ -331,7 +332,7 @@ namespace SmartStore.Web.Controllers
 
                 //notify a store owner;
                 if (_newsSettings.NotifyAboutNewNewsComments)
-                    _workflowMessageService.SendNewsCommentNotificationMessage(comment, _localizationSettings.DefaultAdminLanguageId);
+                    Services.MessageFactory.SendNewsCommentNotificationMessage(comment, _localizationSettings.DefaultAdminLanguageId);
 
                 //activity log
                 _customerActivityService.InsertActivity("PublicStore.AddNewsComment", _localizationService.GetResource("ActivityLog.PublicStore.AddNewsComment"));

@@ -100,16 +100,6 @@
 				@Html.ValidationMessageFor(model => model.ClientId)
 			</td>
 		</tr>
-		@*<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ClientSecret)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.ClientSecret)
-				@Html.TextBoxFor(model => model.ClientSecret, new { @class = "input-large" })
-				@Html.ValidationMessageFor(model => model.ClientSecret)
-			</td>
-		</tr>*@
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Marketplace)
@@ -119,7 +109,9 @@
 				@Html.DropDownListFor(model => model.Marketplace, new List<SelectListItem>
 				{
 					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.De"), Value = "de" },
-					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.Uk"), Value = "uk" }
+					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.Uk"), Value = "uk" },
+					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.Us"), Value = "us" },
+					new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.Jp"), Value = "jp" }
 				})
 				@Html.ValidationMessageFor(model => model.Marketplace)
 			</td>
@@ -338,6 +330,15 @@
 				<div class="admin-config-group">
 					<div class="title">@Model.ConfigGroups.SafeGet(3)</div>
 				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowPayButtonForAdminOnly)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowPayButtonForAdminOnly)
+				@Html.ValidationMessageFor(model => model.ShowPayButtonForAdminOnly)
 			</td>
 		</tr>
 		<tr>

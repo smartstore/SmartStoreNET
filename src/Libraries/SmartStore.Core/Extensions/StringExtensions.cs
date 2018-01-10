@@ -9,7 +9,8 @@ using System.IO;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using HtmlAgilityPack;
+using AngleSharp.Dom;
+using AngleSharp.Parser.Html;
 
 namespace SmartStore
 {
@@ -375,6 +376,190 @@ namespace SmartStore
         }
 
 		/// <summary>
+		/// Removes all redundant whitespace (empty lines, double space etc.).
+		/// Use ~! literal to keep whitespace wherever necessary.
+		/// </summary>
+		/// <param name="input">Input</param>
+		/// <returns>The compacted string</returns>
+		public static string Compact(this string input, bool removeEmptyLines = false)
+		{
+			Guard.NotNull(input, nameof(input));
+
+			var sb = new StringBuilder();
+			var lines = GetLines(input.Trim(), true, removeEmptyLines).ToArray();
+
+			foreach (var line in lines)
+			{
+				var len = line.Length;
+				var sbLine = new StringBuilder(len);
+				var isChar = false;
+				var isLiteral = false; // When we detect the ~! literal
+				int i = 0;
+				var eof = false;
+				
+				for (i = 0; i < len; i++)
+				{
+					var c = line[i];
+
+					eof = i == len - 1;
+
+					if (Char.IsWhiteSpace(c))
+					{
+						// Space, Tab etc.
+						if (isChar)
+						{
+							// If last char not empty, append the space.
+							sbLine.Append(' ');
+						}
+
+						isLiteral = false;
+						isChar = false;
+					}
+					else
+					{
+						// Char or Literal (~!)
+
+						isLiteral = c == '~' && !eof && line[i + 1] == '!';
+						isChar = true;
+
+						if (isLiteral)
+						{
+							sbLine.Append(' ');
+							i++; // skip next "!" char
+						}
+						else
+						{
+							sbLine.Append(c);
+						}
+					}
+				}
+
+				// Append the compacted and trimmed line
+				sb.AppendLine(sbLine.ToString().Trim().Trim(','));	
+			}
+
+			return sb.ToString().Trim();
+		}
+
+		/// <summary>
+		/// Splits the input string by carriage return.
+		/// </summary>
+		/// <param name="input">The string to split</param>
+		/// <returns>A sequence with string items per line</returns>
+		public static IEnumerable<string> GetLines(this string input, bool trimLines = false, bool removeEmptyLines = false)
+		{
+			if (input.IsEmpty())
+			{
+				yield break;
+			}
+			
+			using (var sr = new StringReader(input))
+			{
+				string line;
+				while ((line = sr.ReadLine()) != null)
+				{
+					if (trimLines)
+					{
+						line = line.Trim();
+					}
+
+					if (removeEmptyLines && IsEmpty(line))
+					{
+						continue;
+					}
+
+					yield return line;
+				}
+			}
+		}
+
+		///// <summary>
+		///// Removes all redundant whitespace (empty lines, double space etc.).
+		///// Use ~! literal to keep whitespace wherever necessary.
+		///// </summary>
+		///// <param name="input">Input</param>
+		///// <returns>The compacted string</returns>
+		//public static string Compact(this string input)
+		//{
+		//	Guard.NotNull(input, nameof(input));
+
+		//	var isNewLine = false;
+		//	var isBlank = false;
+		//	var isChar = false;
+		//	var isLiteral = false; // When we detect the ~! literal
+		//	var len = input.Length;
+		//	int i = 0;
+		//	var eof = false;
+
+		//	var sb = new StringBuilder();
+
+		//	for (i = 0; i < len; i++)
+		//	{
+		//		var c = input[i];
+
+		//		eof = i == len - 1;
+
+		//		if (Char.IsWhiteSpace(c))
+		//		{
+		//			if (c == '\r' && !eof && input[i + 1] == '\n')
+		//			{
+		//				// \r\n detected, don't double-check
+		//				continue;
+		//			}
+
+		//			if (c == '\r' || c == '\n')
+		//			{
+		//				// New line
+		//				if (i > 0 && sb[sb.Length - 1] == ' ')
+		//				{
+		//					// If NewLine is detected, trim end (all trailing whitespace)
+		//					sb.Remove(sb.Length - 1, 1);
+		//				}
+		//			}
+		//			else
+		//			{
+		//				// Space, tab etc.	
+		//				if (isChar)
+		//				{
+		//					// If last char not empty, append the space...
+		//					sb.Append(' ');
+		//				}
+		//			}
+
+		//			isLiteral = false;
+		//			isChar = false;
+		//			isBlank = true;
+		//			isNewLine = c == '\r' || c == '\n';
+		//		}
+		//		else // No WhiteSpace
+		//		{
+		//			if (isNewLine)
+		//			{
+		//				// First non-blank char in current line: write NewLine first.
+		//				sb.AppendLine();
+		//			}
+
+		//			isLiteral = c == '~' && !eof && input[i + 1] == '!';
+		//			isChar = true;
+		//			isNewLine = false;
+		//			isBlank = false;
+
+		//			if (isLiteral)
+		//			{
+		//				sb.Append(' ');
+		//				i++; // skip next "!" char
+		//			}
+		//			else
+		//			{
+		//				sb.Append(c);
+		//			}
+		//		}
+		//	}
+
+		//	return sb.ToString();
+		//}
+
+		/// <summary>
 		/// Ensure that a string starts with a string.
 		/// </summary>
 		/// <param name="value">The target string</param>
@@ -456,29 +641,28 @@ namespace SmartStore
 			if (source.IsEmpty())
 				return string.Empty;
 
-			var doc = new HtmlDocument()
-			{
-				OptionOutputOriginalCase = true,
-				OptionFixNestedTags = true,
-				OptionAutoCloseOnEnd = true,
-				OptionDefaultStreamEncoding = Encoding.UTF8
-			};
+			var ignoreTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "script", "style", "svg", "img" };
 
-			doc.LoadHtml(source);
-			var nodes = doc.DocumentNode.Descendants().Where(n =>
-			   n.NodeType == HtmlNodeType.Text &&
-			   n.ParentNode.Name != "script" &&
-			   n.ParentNode.Name != "style" &&
-			   n.ParentNode.Name != "svg");
+			var parser = new HtmlParser();
+			var doc = parser.Parse(source);
+
+			var treeWalker = doc.CreateTreeWalker(doc.Body, FilterSettings.Text);
 
 			var sb = new StringBuilder();
-			foreach (var node in nodes)
+
+			var node = treeWalker.ToNext();
+			while (node != null)
 			{
-				var text = node.InnerText;
-				if (text.HasValue())
+				if (!ignoreTags.Contains(node.Parent.NodeName))
 				{
-					sb.AppendLine(node.InnerText);
+					var text = node.TextContent;
+					if (text.HasValue())
+					{
+						sb.AppendLine(text);
+					}
 				}
+
+				node = treeWalker.ToNext();
 			}
 
 			return sb.ToString().HtmlDecode();
@@ -725,8 +909,9 @@ namespace SmartStore
         {
 			if (value.HasValue() && x1 > 0 && x2 > x1 && x2 < value.Length) 
             {
-				return value.Substring(0, x1) + (replaceBy == null ? "" : replaceBy) + value.Substring(x2 + 1);
+				return value.Substring(0, x1) + (replaceBy.EmptyNull()) + value.Substring(x2 + 1);
 			}
+
 			return value;
 		}
 

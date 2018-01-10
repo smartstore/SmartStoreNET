@@ -1,22 +1,39 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Mvc.Routing.Constraints;
 using System.Web.Routing;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.Web.Infrastructure
 {
-    public partial class StoreRoutes : IRouteProvider
+	public partial class StoreRoutes : IRouteProvider
     {
         public void RegisterRoutes(RouteCollection routes)
         {
 			var idConstraint = new MinRouteConstraint(1);
-			
+
+			/* Media
+			----------------------------------------*/
+
+			// Match URL pattern /media/image/{id}/{path}[?{query}]. 
+			// By default IIS handles these types of requests (through its static file handler), but we don't want that. 
+			// Registering this pattern ensures that MVC catches this request and passes it to our media controller.
+			// Within this controller we gonna find the actual file and stream it back to the client, 
+			// or - in case of blob storage - redirect the client to the computed public url.
+			SmartUrlRoutingModule.RegisterRoutablePath(@"/media/image/([1-9]\d*|0)/.*?$", "GET|HEAD");
+
+			routes.MapRoute("Image",
+				"media/image/{id}/{*name}",
+				new { controller = "Media", action = "Image" },
+				//new { id = new MinRouteConstraint(0) }, // Don't bother with this, the Regex matches this already
+				new[] { "SmartStore.Web.Controllers" });
+
+
 			/* Common
 			----------------------------------------*/
-			
-            routes.MapLocalizedRoute("HomePage",
+
+			routes.MapLocalizedRoute("HomePage",
 				"",
 				new { controller = "Home", action = "Index"},
 				new[] { "SmartStore.Web.Controllers" });
@@ -93,6 +110,7 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "Common", action = "TaxTypeSelected" },
 				new { customertaxtype = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
+
 
 			/* Catalog
 			----------------------------------------*/
@@ -211,8 +229,7 @@ namespace SmartStore.Web.Infrastructure
 
             routes.MapLocalizedRoute("BlogRSS",
                 "blog/rss/{languageId}",
-                new { controller = "Blog", action = "ListRss" },
-				new { languageId = idConstraint },
+                new { controller = "Blog", action = "ListRss", languageId = UrlParameter.Optional },
                 new[] { "SmartStore.Web.Controllers" });
 
 

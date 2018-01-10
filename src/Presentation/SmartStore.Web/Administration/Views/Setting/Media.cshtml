@@ -20,7 +20,16 @@
     @Html.ValidationSummary(false)
 
     <table class="adminContent">
-        <tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AutoGenerateAbsoluteUrls)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.AutoGenerateAbsoluteUrls)
+				@Html.ValidationMessageFor(model => model.AutoGenerateAbsoluteUrls)
+			</td>
+		</tr>
+		<tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AvatarPictureSize)
             </td>

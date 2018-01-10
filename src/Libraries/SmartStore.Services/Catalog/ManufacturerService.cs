@@ -130,9 +130,6 @@ namespace SmartStore.Services.Catalog
             //cache
             _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityInserted(manufacturer);
         }
 
         public virtual void UpdateManufacturer(Manufacturer manufacturer)
@@ -145,9 +142,6 @@ namespace SmartStore.Services.Catalog
             //cache
             _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityUpdated(manufacturer);
         }
 
 		public virtual void UpdateHasDiscountsApplied(Manufacturer manufacturer)
@@ -165,12 +159,8 @@ namespace SmartStore.Services.Catalog
 
             _productManufacturerRepository.Delete(productManufacturer);
 
-            //cache
             _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityDeleted(productManufacturer);
         }
 
         public virtual IPagedList<ProductManufacturer> GetProductManufacturersByManufacturerId(int manufacturerId, int pageIndex, int pageSize, bool showHidden = false)
@@ -313,12 +303,9 @@ namespace SmartStore.Services.Catalog
 
             _productManufacturerRepository.Insert(productManufacturer);
 
-            //cache
             _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityInserted(productManufacturer);
         }
 
         public virtual void UpdateProductManufacturer(ProductManufacturer productManufacturer)
@@ -328,12 +315,8 @@ namespace SmartStore.Services.Catalog
 
             _productManufacturerRepository.Update(productManufacturer);
 
-            //cache
             _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityUpdated(productManufacturer);
         }
     }
 }

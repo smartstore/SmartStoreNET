@@ -79,7 +79,6 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly ICheckoutAttributeService _checkoutAttributeService;
         private readonly IPaymentService _paymentService;
-        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IPermissionService _permissionService;
         private readonly IDownloadService _downloadService;
         private readonly ICacheManager _cacheManager;
@@ -126,7 +125,6 @@ namespace SmartStore.Web.Controllers
             IStateProvinceService stateProvinceService, IShippingService shippingService, 
             IOrderTotalCalculationService orderTotalCalculationService,
             ICheckoutAttributeService checkoutAttributeService, IPaymentService paymentService,
-            IWorkflowMessageService workflowMessageService,
             IPermissionService permissionService, IDeliveryTimeService deliveryTimeService,
             IDownloadService downloadService, ICacheManager cacheManager,
             IWebHelper webHelper, ICustomerActivityService customerActivityService,
@@ -169,7 +167,6 @@ namespace SmartStore.Web.Controllers
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._checkoutAttributeService = checkoutAttributeService;
             this._paymentService = paymentService;
-            this._workflowMessageService = workflowMessageService;
             this._permissionService = permissionService;
             this._downloadService = downloadService;
             this._cacheManager = cacheManager;
@@ -213,6 +210,7 @@ namespace SmartStore.Web.Controllers
             var pictureCacheKey = string.Format(ModelCacheEventConsumer.CART_PICTURE_MODEL_KEY, product.Id, combination == null ? 0 : combination.Id,
 				pictureSize, true, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
 
+			// TODO: (mc) refactor > GetPictureInfos()
             var model = _cacheManager.Get(pictureCacheKey, () =>
             {
 				Picture picture = null;
@@ -238,7 +236,7 @@ namespace SmartStore.Web.Controllers
                 {
                     PictureId = picture != null ? picture.Id : 0,
 					Size = pictureSize,
-					ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
+					ImageUrl = _pictureService.GetUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
                     Title = string.Format(_localizationService.GetResource("Media.Product.ImageLinkTitleFormat"), productName),
                     AlternateText = string.Format(_localizationService.GetResource("Media.Product.ImageAlternateTextFormat"), productName),
                 };
@@ -631,17 +629,17 @@ namespace SmartStore.Web.Controllers
 				if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
 					continue;
 
-				string actionName;
-				string controllerName;
-				RouteValueDictionary routeValues;
-				pm.Value.GetPaymentInfoRoute(out actionName, out controllerName, out routeValues);
+				pm.Value.GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues);
 
-				model.Items.Add(new ButtonPaymentMethodModel.ButtonPaymentMethodItem
+				if (actionName.HasValue() && controllerName.HasValue())
 				{
-					ActionName = actionName,
-					ControllerName = controllerName,
-					RouteValues = routeValues
-				});
+					model.Items.Add(new ButtonPaymentMethodModel.ButtonPaymentMethodItem
+					{
+						ActionName = actionName,
+						ControllerName = controllerName,
+						RouteValues = routeValues
+					});
+				}
 			}
 		}
 
@@ -1037,7 +1035,7 @@ namespace SmartStore.Web.Controllers
                 CurrentCustomerIsGuest = _workContext.CurrentCustomer.IsGuest(),
                 AnonymousCheckoutAllowed = _orderSettings.AnonymousCheckoutAllowed,
                 DisplayMoveToWishlistButton = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist)
-        };
+			};
 
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
@@ -1059,8 +1057,9 @@ namespace SmartStore.Web.Controllers
                 bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
                 model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0 && minOrderSubtotalAmountOk;
 
-                //products. sort descending (recently added products)
-                foreach (var sci in cart.ToList())
+				// Products. sort descending (recently added products)
+				cart = cart.ToList(); // TBD: (mc) Why?
+                foreach (var sci in cart)
                 {
 					var item = sci.Item;
 					var product = sci.Item.Product;
@@ -1105,7 +1104,7 @@ namespace SmartStore.Web.Controllers
 
 							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
 							if (itemPicture != null)
-								bundleItemModel.PictureUrl = _pictureService.GetPictureUrl(itemPicture.Id, 32);
+								bundleItemModel.PictureUrl = _pictureService.GetUrl(itemPicture, 32);
 
 							cartItemModel.BundleItems.Add(bundleItemModel);
 						}
@@ -2007,29 +2006,29 @@ namespace SmartStore.Web.Controllers
                     decimal shoppingCartTaxBase = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
                     decimal shoppingCartTax = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTaxBase, currency);
 
-                        if (shoppingCartTaxBase == 0 && _taxSettings.HideZeroTax)
-                        {
-                            displayTax = false;
-                            displayTaxRates = false;
-                        }
-                        else
-                        {
-                            displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
-                            displayTax = !displayTaxRates;
+                    if (shoppingCartTaxBase == 0 && _taxSettings.HideZeroTax)
+                    {
+                        displayTax = false;
+                        displayTaxRates = false;
+                    }
+                    else
+                    {
+                        displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
+                        displayTax = !displayTaxRates;
 							
-                            model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, true, false);
-                            foreach (var tr in taxRates)
+                        model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, true, false);
+                        foreach (var tr in taxRates)
+                        {
+							var rate = _priceFormatter.FormatTaxRate(tr.Key);
+							var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_workContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
+							model.TaxRates.Add(new OrderTotalsModel.TaxRate
                             {
-								var rate = _priceFormatter.FormatTaxRate(tr.Key);
-								var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_workContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
-								model.TaxRates.Add(new OrderTotalsModel.TaxRate
-                                {
-									Rate = rate,
-                                    Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, currency), true, false),
-									Label = _localizationService.GetResource(labelKey).FormatCurrent(rate)
-                                });
-                            }
+								Rate = rate,
+                                Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, currency), true, false),
+								Label = _localizationService.GetResource(labelKey).FormatCurrent(rate)
+                            });
                         }
+                    }
                 }
 
                 model.DisplayTaxRates = displayTaxRates;
@@ -2048,15 +2047,12 @@ namespace SmartStore.Web.Controllers
 
 				// Cart total
                 var cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
-                if (cartTotal.TotalAmount.HasValue)
+                if (cartTotal.ConvertedFromPrimaryStoreCurrency.TotalAmount.HasValue)
                 {
-                    var shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.TotalAmount.Value, currency);
-                    model.OrderTotal = _priceFormatter.FormatPrice(shoppingCartTotal, true, false);
-
-                    if (cartTotal.RoundingAmount != decimal.Zero)
+                    model.OrderTotal = _priceFormatter.FormatPrice(cartTotal.ConvertedFromPrimaryStoreCurrency.TotalAmount.Value, true, false);
+                    if (cartTotal.ConvertedFromPrimaryStoreCurrency.RoundingAmount != decimal.Zero)
                     {
-                        var totalRoundingAmount = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.RoundingAmount, currency);
-                        model.OrderTotalRounding = _priceFormatter.FormatPrice(totalRoundingAmount, true, false);
+                        model.OrderTotalRounding = _priceFormatter.FormatPrice(cartTotal.ConvertedFromPrimaryStoreCurrency.RoundingAmount, true, false);
                     }
                 }
 
@@ -2512,9 +2508,11 @@ namespace SmartStore.Web.Controllers
             if (ModelState.IsValid)
             {
                 //email
-                _workflowMessageService.SendWishlistEmailAFriendMessage(_workContext.CurrentCustomer,
-                        _workContext.WorkingLanguage.Id, model.YourEmailAddress,
-                        model.FriendEmail, Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+                Services.MessageFactory.SendShareWishlistMessage(
+					_workContext.CurrentCustomer,
+					model.YourEmailAddress,
+                    model.FriendEmail, 
+					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
 
                 model.SuccessfullySent = true;
                 model.Result = _localizationService.GetResource("Wishlist.EmailAFriend.SuccessfullySent");

@@ -71,15 +71,22 @@ namespace SmartStore.Services.Configuration
 		/// <param name="storeId">Store identifier for which settigns should be loaded</param>
 		T LoadSetting<T>(int storeId = 0) where T : ISettings, new();
 
-        /// <summary>
-        /// Set setting value
-        /// </summary>
-        /// <typeparam name="T">Type</typeparam>
-        /// <param name="key">Key</param>
-        /// <param name="value">Value</param>
+		/// <summary>
+		/// Load settings
+		/// </summary>
+		/// <param name="settingType">Setting class type</param>
+		/// <param name="storeId">Store identifier for which settigns should be loaded</param>
+		ISettings LoadSetting(Type settingType, int storeId = 0);
+
+		/// <summary>
+		/// Set setting value
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="key">Key</param>
+		/// <param name="value">Value</param>
 		/// <param name="storeId">Store identifier</param>
-        /// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
-        void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true);
+		/// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
+		void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true);
 
         /// <summary>
         /// Save settings object
@@ -88,6 +95,13 @@ namespace SmartStore.Services.Configuration
 		/// <param name="settings">Setting instance</param>
 		/// <param name="storeId">Store identifier</param>
 		void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new();
+
+		/// <summary>
+		/// Save settings object
+		/// </summary>
+		/// <param name="settings">Setting instance</param>
+		/// <param name="storeId">Store identifier</param>
+		void SaveSetting(ISettings settings, int storeId = 0);
 
 		/// <summary>
 		/// Save settings object

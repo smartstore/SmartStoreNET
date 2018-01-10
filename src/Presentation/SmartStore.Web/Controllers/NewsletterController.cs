@@ -13,7 +13,6 @@ namespace SmartStore.Web.Controllers
     {
         private readonly IWorkContext _workContext;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
-        private readonly IWorkflowMessageService _workflowMessageService;
 		private readonly IStoreContext _storeContext;
 
         private readonly CustomerSettings _customerSettings;
@@ -21,13 +20,11 @@ namespace SmartStore.Web.Controllers
         public NewsletterController(
             IWorkContext workContext,
 			INewsLetterSubscriptionService newsLetterSubscriptionService,
-            IWorkflowMessageService workflowMessageService,
 			CustomerSettings customerSettings,
 			IStoreContext storeContext)
         {
             this._workContext = workContext;
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
-            this._workflowMessageService = workflowMessageService;
             this._customerSettings = customerSettings;
 			this._storeContext = storeContext;
         }
@@ -64,7 +61,7 @@ namespace SmartStore.Web.Controllers
 					{
 						if (!subscription.Active)
 						{
-							_workflowMessageService.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);
+							Services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);
 						}
 						result = T("Newsletter.SubscribeEmailSent");
 					}
@@ -72,7 +69,7 @@ namespace SmartStore.Web.Controllers
 					{
 						if (subscription.Active)
 						{
-							_workflowMessageService.SendNewsLetterSubscriptionDeactivationMessage(subscription, _workContext.WorkingLanguage.Id);
+							Services.MessageFactory.SendNewsLetterSubscriptionDeactivationMessage(subscription, _workContext.WorkingLanguage.Id);
 						}
 						result = T("Newsletter.UnsubscribeEmailSent");
 					}
@@ -89,7 +86,7 @@ namespace SmartStore.Web.Controllers
 					};
 
 					_newsLetterSubscriptionService.InsertNewsLetterSubscription(subscription);
-					_workflowMessageService.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);
+					Services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);
 
 					result = T("Newsletter.SubscribeEmailSent");
 				}

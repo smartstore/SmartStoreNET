@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using SmartStore.Core;
+using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Security;
-using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Infrastructure

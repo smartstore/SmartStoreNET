@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.FacebookAuth.Core;
 using SmartStore.FacebookAuth.Models;
@@ -26,10 +27,10 @@ namespace SmartStore.FacebookAuth.Controllers
             ExternalAuthenticationSettings externalAuthenticationSettings,
 			ICommonServices services)
         {
-            this._oAuthProviderFacebookAuthorizer = oAuthProviderFacebookAuthorizer;
-            this._openAuthenticationService = openAuthenticationService;
-            this._externalAuthenticationSettings = externalAuthenticationSettings;
-			this._services = services;
+            _oAuthProviderFacebookAuthorizer = oAuthProviderFacebookAuthorizer;
+            _openAuthenticationService = openAuthenticationService;
+            _externalAuthenticationSettings = externalAuthenticationSettings;
+			_services = services;
         }
 
 		private bool HasPermission(bool notify = true)
@@ -42,46 +43,30 @@ namespace SmartStore.FacebookAuth.Controllers
 			return hasPermission;
 		}
         
-		[AdminAuthorize, ChildActionOnly]
-        public ActionResult Configure()
+		[LoadSetting, AdminAuthorize, ChildActionOnly]
+        public ActionResult Configure(FacebookExternalAuthSettings settings)
         {
 			if (!HasPermission(false))
 				return AccessDeniedPartialView();
 
             var model = new ConfigurationModel();
-			int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-			var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(storeScope);
-
-            model.ClientKeyIdentifier = settings.ClientKeyIdentifier;
-            model.ClientSecret = settings.ClientSecret;
-
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
-            
+			MiniMapper.Map(settings, model);
             return View(model);
         }
 
-		[HttpPost, AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure(ConfigurationModel model, FormCollection form)
+		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
+		public ActionResult Configure(FacebookExternalAuthSettings settings, ConfigurationModel model)
         {
 			if (!HasPermission(false))
-				return Configure();
+				return Configure(settings);
 
             if (!ModelState.IsValid)
-                return Configure();
+                return Configure(settings);
 
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-			var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(storeScope);
-
-            settings.ClientKeyIdentifier = model.ClientKeyIdentifier;
-            settings.ClientSecret = model.ClientSecret;
-
-			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
-
+			MiniMapper.Map(model, settings);
 			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
 
-			return Configure();
+			return Configure(settings);
         }
 
         [ChildActionOnly]

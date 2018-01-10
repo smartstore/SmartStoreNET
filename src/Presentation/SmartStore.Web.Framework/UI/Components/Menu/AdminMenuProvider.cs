@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
@@ -10,7 +7,7 @@ namespace SmartStore.Web.Framework.UI
 	{
 		public void BuildMenu(TreeNode<MenuItem> rootNode)
 		{
-			var pluginsNode = rootNode.Children.FirstOrDefault(x => x.Value.Id == "plugins");
+			var pluginsNode = rootNode.SelectNodeById("plugins");
 			BuildMenuCore(pluginsNode);
 		}
 

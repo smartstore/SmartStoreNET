@@ -3,7 +3,11 @@ namespace SmartStore.Data.Migrations
 	using System;
 	using System.Data.Entity;
 	using System.Data.Entity.Migrations;
+	using System.Linq;
 	using Setup;
+	using SmartStore.Utilities;
+	using SmartStore.Core.Domain.Media;
+	using Core.Domain.Configuration;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -27,11 +31,17 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
+			// Change MediaSettings.MaximumImageSize to 2048
+			var name = TypeHelper.NameOf<MediaSettings>(y => y.MaximumImageSize, true);
+			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == name);
+			if (setting != null && setting.Value.Convert<int>() < 2048)
+			{
+				setting.Value = "2048";
+			}
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-
 			builder.AddOrUpdate("Admin.Orders.Shipment", "Shipment", "Lieferung");
 			builder.AddOrUpdate("Admin.Order", "Order", "Auftrag");
 
@@ -74,8 +84,8 @@ namespace SmartStore.Data.Migrations
                 "Bei der Suche nach weiteren verfügbaren Sprachen trat ein Fehler auf.");
 
             builder.AddOrUpdate("Admin.Configuration.Languages.NoAvailableLanguagesFound",
-                "There were no other available languages found for version {0}.",
-                "Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden.");
+				"There were no other available languages found for version {0}. On <a href='http://translate.smartstore.com/'>translate.smartstore.com</a> you will find more details about available resources.",
+				"Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden. Auf <a href='http://translate.smartstore.com/'>translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
 
             builder.AddOrUpdate("Admin.Configuration.Languages.InstalledLanguages",
                 "Installed Languages",
@@ -85,8 +95,8 @@ namespace SmartStore.Data.Migrations
                 "Verfügbare Sprachen");
 
             builder.AddOrUpdate("Admin.Configuration.Languages.AvailableLanguages.Note",
-                "Click <b>Download</b> to install a new language including all localized resources.",
-                "Klicken Sie auf <b>Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren.");
+				"Click <b>Download</b> to install a new language including all localized resources. On <a href='http://translate.smartstore.com/'>translate.smartstore.com</a> you will find more details about available resources.",
+				"Klicken Sie auf <b>Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren. Auf <a href='http://translate.smartstore.com/'>translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
 
             builder.AddOrUpdate("Common.Translated",
                 "Translated",
@@ -101,13 +111,6 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Configuration.Languages.NumberOfTranslatedResources",
                 "{0} of {1}",
                 "{0} von {1}");
-
-            builder.AddOrUpdate("Admin.Configuration.Languages.ContainsPluginResources",
-                "Contains plugin resources",
-                "Enthält Plugin-Ressourcen");
-            builder.AddOrUpdate("Admin.Configuration.Languages.ContainsResourcesOfPlugins",
-                "Contains resources of the following installed plugins",
-                "Enthält Ressourcen zu den folgenden, installierten Plugins");
 
             builder.AddOrUpdate("Admin.Configuration.Languages.DownloadingResources",
                 "Loading ressources",
@@ -129,6 +132,27 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Configuration.Languages.UploadFileOrSelectLanguage",
                 "Please upload an import file or select an available language whose resources are to be imported.",
                 "Bitte laden Sie eine Importdatei hoch oder wählen Sie eine verfügbare Sprache, deren Ressourcen importiert werden sollen.");
-        }
-    }
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.ChargeOnlyHighestProductShippingSurcharge",
+                "Charge the highest shipping surcharge only",
+                "Nur den höchsten Transportzuschlag berechnen",
+                "Specifies  whether to charge only the highest additional shipping surcharge of products.",
+                "Bestimmt ob bei der Berechnung der Versandkosten nur der höchste Transportzuschlag von Produkten berücksichtigt wird.");
+
+            builder.AddOrUpdate("Order.OrderDetails")
+                .Value("en", "Order Details");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Media.AutoGenerateAbsoluteUrls",
+				"Generate absolute URLs",
+				"Absolute URLs erzeugen",
+				"Generates absolute URLs for media files by prepending the current host name (e.g. http://myshop.com/media/image/1.jpg instead of /media/image/1.jpg). Has no effect if a CDN URL has been applied to the store.",
+				"Erzeugt absolute URLs für Mediendateien, indem der aktuelle Hostname vorangestellt wird (z.B. http://meinshop.de/media/image/1.jpg statt /media/image/1.jpg). Hat keine Auswirkung, wenn für den Store eine CDN-URL eingerichtet wurde.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchFieldsNote",
+				"The Name, SKU and Short Description fields can be searched in the standard search. Other fields require a search plugin such as the MegaSearch plugin from <a href='http://www.smartstore.com/de/net#section-pricing' target='_blank'>Premium Edition</a>.",
+				"In der Standardsuche können die Felder Name, SKU und Kurzbeschreibung durchsucht werden. Für weitere Felder ist ein Such-Plugin wie etwa das MegaSearch-Plugin aus der <a href='http://www.smartstore.com/de/net#section-pricing' target='_blank'>Premium Edition</a> notwendig.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.FolderName", "Folder path", "Ordnerpfad");
+		}
+	}
 }

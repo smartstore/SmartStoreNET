@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Core</RootNamespace>
     <AssemblyName>SmartStore.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -62,6 +62,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
@@ -71,15 +74,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -120,6 +119,9 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -179,7 +181,10 @@
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Collections\TreeNodeBase.cs" />
+    <Compile Include="ComponentModel\MiniMapper.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\DictionaryConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\EmailAddressConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\NullableConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\ProductBundleDataConverter.cs" />
@@ -226,6 +231,7 @@
     <Compile Include="Domain\Media\MediaStorage.cs" />
     <Compile Include="Domain\Media\IHasMedia.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
+    <Compile Include="Domain\Messages\MessageTemplateNames.cs" />
     <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />
     <Compile Include="Domain\Orders\CheckoutEnums.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
@@ -398,9 +404,6 @@
     <Compile Include="Domain\Polls\PollAnswer.cs" />
     <Compile Include="Domain\Polls\Poll.cs" />
     <Compile Include="Domain\Orders\BestsellersReportLine.cs" />
-    <Compile Include="Events\CommonMessages\EntityDeleted.cs" />
-    <Compile Include="Events\CommonMessages\EntityInserted.cs" />
-    <Compile Include="Events\CommonMessages\EntityUpdated.cs" />
     <Compile Include="Extensions\ConversionExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
@@ -456,12 +459,18 @@
     <Compile Include="Search\SearchSettings.cs" />
     <Compile Include="Search\SearchSort.cs" />
     <Compile Include="Security\SmartStorePrincipal.cs" />
+    <Compile Include="Templating\DefaultTemplateManager.cs" />
+    <Compile Include="Templating\ITemplate.cs" />
+    <Compile Include="Templating\ITemplateEngine.cs" />
+    <Compile Include="Templating\ITemplateManager.cs" />
+    <Compile Include="Templating\NullTemplateEngine.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\InheritedThemeFileResult.cs" />
+    <Compile Include="Themes\IThemeContext.cs" />
     <Compile Include="Themes\IThemeFileResolver.cs" />
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />
-    <Compile Include="Utilities\ColorHelper.cs" />
+    <Compile Include="Utilities\ImagingHelper.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Domain\Affiliates\Affiliate.cs" />
@@ -666,6 +675,7 @@
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\UpgradeableReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\WriteLockDisposable.cs" />
+    <Compile Include="Utilities\Throttle.cs" />
     <Compile Include="Utilities\TypeHelper.cs" />
     <Compile Include="Utilities\Wildcard.cs" />
     <Compile Include="WebHelper.cs" />

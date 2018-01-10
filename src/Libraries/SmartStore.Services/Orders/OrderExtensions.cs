@@ -5,6 +5,8 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Html;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Payments;
 
 namespace SmartStore.Services.Orders
 {
@@ -61,13 +63,50 @@ namespace SmartStore.Services.Orders
 			orderItem.BundleData = rawData;
 		}
 
+        /// <summary>
+        /// Get the order total in the currency of the customer
+        /// </summary>
+        /// <param name="order">Order</param>
+        /// <param name="currencyService">Currency service</param>
+        /// <param name="paymentService">Payment service</param>
+        /// <param name="roundingAmount">Rounding amount</param>
+        /// <returns>Order total</returns>
+        public static decimal GetOrderTotalInCustomerCurrency(
+            this Order order,
+            ICurrencyService currencyService,
+            IPaymentService paymentService,
+            out decimal roundingAmount)
+        {
+            Guard.NotNull(order, nameof(order));
 
-		/// <summary>
-		/// Gets a value indicating whether an order has items to dispatch
-		/// </summary>
-		/// <param name="order">Order</param>
-		/// <returns>A value indicating whether an order has items to dispatch</returns>
-		public static bool HasItemsToDispatch(this Order order)
+            roundingAmount = order.OrderTotalRounding;
+            var orderTotal = currencyService.ConvertCurrency(order.OrderTotal, order.CurrencyRate);
+
+            // Avoid rounding a rounded value. It would zero roundingAmount.
+            if (orderTotal != order.OrderTotal)
+            {
+                var currency = currencyService.GetCurrencyByCode(order.CustomerCurrencyCode);
+
+                if (currency != null && currency.RoundOrderTotalEnabled && order.PaymentMethodSystemName.HasValue())
+                {
+                    var pm = paymentService.GetPaymentMethodBySystemName(order.PaymentMethodSystemName);
+                    if (pm != null && pm.RoundOrderTotalEnabled)
+                    {
+                        orderTotal = orderTotal.RoundToNearest(currency, out roundingAmount);
+                    }
+                }
+            }
+
+            return orderTotal;
+        }
+
+
+        /// <summary>
+        /// Gets a value indicating whether an order has items to dispatch
+        /// </summary>
+        /// <param name="order">Order</param>
+        /// <returns>A value indicating whether an order has items to dispatch</returns>
+        public static bool HasItemsToDispatch(this Order order)
 		{
 			Guard.NotNull(order, nameof(order));
 

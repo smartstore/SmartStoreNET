@@ -83,22 +83,36 @@ namespace SmartStore.Services.Common
 			return source.FirstOrDefault(addressMatcher);
         }
 
-		/// <summary>Returns the full name of the address.</summary>
-		public static string GetFullName(this Address address)
+		/// <summary>
+		/// Returns the full name of the address.
+		/// </summary>
+		public static string GetFullName(this Address address, bool withCompanyName = true)
 		{
-			if (address != null)
+			if (address == null)
+				return null;
+
+			string result = string.Empty;
+			if (address.FirstName.HasValue() || address.LastName.HasValue())
 			{
-				var sb = new StringBuilder(address.FirstName);
-
-				sb.Grow(address.LastName, " ");		
-
-				if (address.Company.HasValue())
-				{
-					sb.Grow("({0})".FormatWith(address.Company), " ");
-				}
-				return sb.ToString();
+				result = string.Format("{0} {1}", address.FirstName, address.LastName).Trim();
 			}
-			return null;
+
+			if (withCompanyName && address.Company.HasValue())
+			{
+				result = string.Concat(result, result.HasValue() ? ", " : "", address.Company);
+			}
+
+			return result;
+		}
+
+		public static string GetFullSalutaion(this Address address)
+		{
+			if (address == null)
+				return null;
+
+			return string.Format("{0}{1}",
+				address.Salutation.EmptyNull(),
+				address.Title.HasValue() ? " " + address.Title : "");
 		}
 
 		/// <summary>

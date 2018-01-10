@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Shipping;
@@ -14,7 +15,6 @@ namespace SmartStore.Core.Domain.Directory
     {
         private ICollection<StateProvince> _stateProvinces;
         private ICollection<ShippingMethod> _restrictedShippingMethods;
-
 
         /// <summary>
         /// Gets or sets the name
@@ -75,11 +75,17 @@ namespace SmartStore.Core.Domain.Directory
 		/// </summary>
 		[DataMember]
 		public bool LimitedToStores { get; set; }
-       
-        /// <summary>
-        /// Gets or sets the state/provinces
-        /// </summary>
-        public virtual ICollection<StateProvince> StateProvinces
+
+		/// <summary>
+		/// Gets or sets the international mailing address format
+		/// </summary>
+		[DataMember, MaxLength]
+		public string AddressFormat { get; set; }
+
+		/// <summary>
+		/// Gets or sets the state/provinces
+		/// </summary>
+		public virtual ICollection<StateProvince> StateProvinces
         {
 			get { return _stateProvinces ?? (_stateProvinces = new HashSet<StateProvince>()); }
             protected set { _stateProvinces = value; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 using SmartStore.Clickatell.Models;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Web.Framework.Controllers;
@@ -24,43 +25,24 @@ namespace SmartStore.Clickatell.Controllers
             _pluginFinder = pluginFinder;
         }
 
-		public ActionResult Configure()
+		[LoadSetting]
+		public ActionResult Configure(ClickatellSettings settings)
 		{
-			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-			var settings = _services.Settings.LoadSetting<ClickatellSettings>(storeScope);
-
-			var model = new SmsClickatellModel
-			{
-				Enabled = settings.Enabled,
-				PhoneNumber = settings.PhoneNumber,
-				ApiId = settings.ApiId
-			};
-
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
-
+			var model = new SmsClickatellModel();
+			MiniMapper.Map(settings, model);
 			return View(model);
         }
 
-        [HttpPost]
-        public ActionResult Configure(SmsClickatellModel model, FormCollection form)
+        [HttpPost, SaveSetting]
+        public ActionResult Configure(ClickatellSettings settings, SmsClickatellModel model, FormCollection form)
         {
 			if (ModelState.IsValid)
 			{
-				var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-				int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-				var settings = _services.Settings.LoadSetting<ClickatellSettings>(storeScope);
-
-				settings.Enabled = model.Enabled;
-				settings.PhoneNumber = model.PhoneNumber;
-				settings.ApiId = model.ApiId;
-
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
-
+				MiniMapper.Map(model, settings);
 				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 			}
 
-			return Configure();
+			return Configure(settings);
 		}
 
         [HttpPost, ActionName("Configure"), FormValueRequired("test-sms")]

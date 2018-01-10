@@ -15,7 +15,6 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Tax.Controllers
 {
-
 	[AdminAuthorize]
     public class TaxByRegionController : PluginControllerBase
     {
@@ -58,7 +57,7 @@ namespace SmartStore.Tax.Controllers
             model.TaxRates = _taxRateService.GetAllTaxRates()
                 .Select(x =>
                 {
-					var m = new ByRegionTaxRateModel()
+					var m = new ByRegionTaxRateModel
                     {
                         Id = x.Id,
                         TaxCategoryId = x.TaxCategoryId,

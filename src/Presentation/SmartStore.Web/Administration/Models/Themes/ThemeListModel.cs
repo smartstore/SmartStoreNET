@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Themes
 {
-    public class ThemeListModel
+    public class ThemeListModel: TabbableModel
     {
         public ThemeListModel()
         {

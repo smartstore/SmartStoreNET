@@ -421,7 +421,7 @@ namespace SmartStore.Web.Controllers
         }
 
 		[Compress]
-        public ActionResult ForumRss(int id)
+        public ActionResult ForumRss(int id = 0)
         {
             if (!_forumSettings.ForumsEnabled)
 				return HttpNotFound();
@@ -595,9 +595,9 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.AllowCustomersToUploadAvatars)
                     {
                         var customer = post.Customer;
-                        string avatarUrl = _pictureService.GetPictureUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
+                        string avatarUrl = _pictureService.GetUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, FallbackPictureType.NoFallback);
                         if (String.IsNullOrEmpty(avatarUrl) && _customerSettings.DefaultAvatarEnabled)
-                            avatarUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.AvatarPictureSize, PictureType.Avatar);
+                            avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
                         forumPostModel.CustomerAvatarUrl = avatarUrl;
                     }
 

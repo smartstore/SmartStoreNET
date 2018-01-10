@@ -8,6 +8,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Tasks;
@@ -139,6 +140,21 @@ namespace SmartStore.AmazonPay
 
 		public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
 		{
+			try
+			{
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(_services.StoreContext.CurrentStore.Id);
+				if (settings.ShowPayButtonForAdminOnly && !_services.WorkContext.CurrentCustomer.IsAdmin())
+				{
+					actionName = controllerName = null;
+					routeValues = null;
+					return;
+				}
+			}
+			catch (Exception exception)
+			{
+				Logger.Error(exception);
+			}
+
 			actionName = "ShoppingCart";
 			controllerName = "AmazonPayShoppingCart";
 			routeValues = new RouteValueDictionary { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", SystemName } };

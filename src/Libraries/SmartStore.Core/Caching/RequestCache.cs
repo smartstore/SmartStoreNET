@@ -106,15 +106,15 @@ namespace SmartStore.Core.Caching
 			var enumerator = items.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
-				string key = enumerator.Key as string;
-				if (key == null)
-					continue;
-				if (key.StartsWith(RegionName))
+				if (enumerator.Key is string key)
 				{
-					key = key.Substring(prefixLen);
-					if (pattern == "*" || wildcard.IsMatch(key))
+					if (key.StartsWith(RegionName))
 					{
-						yield return key;
+						key = key.Substring(prefixLen);
+						if (pattern == "*" || wildcard.IsMatch(key))
+						{
+							yield return key;
+						}
 					}
 				}
 			}

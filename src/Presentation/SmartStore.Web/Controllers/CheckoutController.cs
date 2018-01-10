@@ -693,14 +693,14 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("ShoppingCart");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();	
+                return new HttpUnauthorizedResult();
 
-			// Check whether payment workflow is required
-			// we ignore reward points during cart total calculation
-			bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
+			// Check whether payment workflow is required. We ignore reward points during cart total calculation.
+			decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, true);
+			var isPaymentWorkflowRequired = !(shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero);
 
 			var model = PreparePaymentMethodModel(cart);
-			bool onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
+			var onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
 
             var checkoutState = _httpContext.GetCheckoutState();
             if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActivePaymentMethod"))

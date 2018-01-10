@@ -1,7 +1,4 @@
 ﻿@model QueuedEmailModel
-           
-
-@using Telerik.Web.Mvc.UI;
 
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
@@ -27,29 +24,11 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.FromName)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.FromName)
-            @Html.ValidationMessageFor(model => model.FromName)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.To)
         </td>
         <td class="adminData">
             @Html.EditorFor(model => model.To)
             @Html.ValidationMessageFor(model => model.To)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ToName)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ToName)
-            @Html.ValidationMessageFor(model => model.ToName)
         </td>
     </tr>
     <tr>

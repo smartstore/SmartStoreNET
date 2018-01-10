@@ -104,7 +104,7 @@
 		  <LibSass-Native-Binaries-x64 Include="$(SrcFolder)\packages\LibSassHost.Native.win-x64.1.0.3\runtimes\win7-x64\native\**\*"/>
       <VC14-Native-Binaries-x86 Include="$(LibFolder)\msvcp140\x86\**\*"/>
       <VC14-Native-Binaries-x64 Include="$(LibFolder)\msvcp140\x64\**\*"/>
-      <RoslynFiles Include="$(SrcFolder)\packages\Microsoft.Net.Compilers.1.3.2\tools\**\*"/>
+      <RoslynFiles Include="$(SrcFolder)\packages\Microsoft.Net.Compilers.2.4.0\tools\**\*"/>
 		</ItemGroup>
 
 		<!-- delete the build folder -->

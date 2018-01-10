@@ -10,6 +10,7 @@ using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
+using SmartStore.Data.Setup;
 using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data
@@ -39,9 +40,9 @@ namespace SmartStore.Data
             this.Alias = null;
 			this.DbHookHandler = NullDbHookHandler.Instance;
 
-			if (DataSettings.DatabaseIsInstalled())
+			if (DataSettings.DatabaseIsInstalled() && !DbSeedingMigrator<SmartObjectContext>.IsMigrating)
 			{
-				// listen to 'ObjectMaterialized' for load hooking
+				//// listen to 'ObjectMaterialized' for load hooking
 				((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectMaterialized;
 			}
 		}

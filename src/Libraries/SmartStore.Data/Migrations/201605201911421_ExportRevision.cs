@@ -5,7 +5,7 @@ namespace SmartStore.Data.Migrations
 	using Core.Domain;
 	using Core.Domain.DataExchange;
 	using Setup;
-	using Utilities;
+	using SmartStore.Utilities;
 
 	public partial class ExportRevision : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{

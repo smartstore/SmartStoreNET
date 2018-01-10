@@ -62,9 +62,6 @@ namespace SmartStore.Services.Shipping
 
             _shipmentRepository.Delete(shipment);
 
-            //event notifications
-            _eventPublisher.EntityDeleted(shipment);
-
 			if (orderId != 0)
 			{
 				var order = _orderRepository.GetById(orderId);
@@ -162,7 +159,6 @@ namespace SmartStore.Services.Shipping
             _shipmentRepository.Insert(shipment);
 
             //event notification
-            _eventPublisher.EntityInserted(shipment);
 			_eventPublisher.PublishOrderUpdated(shipment.Order);
         }
 
@@ -178,7 +174,6 @@ namespace SmartStore.Services.Shipping
             _shipmentRepository.Update(shipment);
 
             //event notification
-            _eventPublisher.EntityUpdated(shipment);
 			_eventPublisher.PublishOrderUpdated(shipment.Order);
         }
 
@@ -196,9 +191,6 @@ namespace SmartStore.Services.Shipping
 			int orderId = shipmentItem.Shipment.OrderId;
 
             _siRepository.Delete(shipmentItem);
-
-            //event notifications
-            _eventPublisher.EntityDeleted(shipmentItem);
 
 			if (orderId != 0)
 			{
@@ -232,9 +224,6 @@ namespace SmartStore.Services.Shipping
 
             _siRepository.Insert(shipmentItem);
 
-            //event notifications
-            _eventPublisher.EntityInserted(shipmentItem);
-
 			if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
 			{
 				_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
@@ -260,9 +249,6 @@ namespace SmartStore.Services.Shipping
 				throw new ArgumentNullException("shipmentItem");
 
             _siRepository.Update(shipmentItem);
-
-            //event notifications
-            _eventPublisher.EntityUpdated(shipmentItem);
 
 			if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
 			{

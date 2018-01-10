@@ -21,13 +21,13 @@ namespace SmartStore.Utilities
 		{
 			Guard.NotNull(operation, nameof(operation));
 
-			Func<bool> wrapper = () =>
+			Run(Operation, attempts, wait, onFailed);
+
+			bool Operation() 
 			{
 				operation();
 				return true;
-			};
-
-			Run(wrapper, attempts, wait, onFailed);
+			}
 		}
 
 		/// <summary>

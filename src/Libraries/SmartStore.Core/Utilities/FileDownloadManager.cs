@@ -155,12 +155,12 @@ namespace SmartStore.Utilities
 				Task <Stream> task = client.GetStreamAsync(item.Url);
 				await task;
 
-				int count;
-				bool canceled = false;
-				byte[] bytes = new byte[_bufferSize];
+				var count = 0;
+				var canceled = false;
+				var bytes = new byte[_bufferSize];
 
 				using (var srcStream = task.Result)
-				using (var dstStream = File.OpenWrite(item.Path))
+				using (var dstStream = File.Open(item.Path, FileMode.Create))
 				{
 					while ((count = srcStream.Read(bytes, 0, bytes.Length)) != 0 && !canceled)
 					{

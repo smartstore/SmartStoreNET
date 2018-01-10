@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStoreNetWebApiClient</RootNamespace>
     <AssemblyName>SmartStoreNetWebApiClient</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>veröffentlichen\</PublishUrl>

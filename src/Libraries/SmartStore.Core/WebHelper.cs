@@ -25,7 +25,7 @@ namespace SmartStore.Core
 		private static object s_lock = new object();
 		private static bool? s_optimizedCompilationsEnabled;
 		private static AspNetHostingPermissionLevel? s_trustLevel;
-		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|scss|less|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|webp|scss|less|liquid|bmp|html|htm|xml|pdf|doc|xls|rar|zip|7z|ico|eot|svg|ttf|woff|otf|axd|ashx)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static ConcurrentDictionary<int, string> s_safeLocalHostNames = new ConcurrentDictionary<int, string>();
@@ -60,7 +60,7 @@ namespace SmartStore.Core
 		public virtual string GetClientIdent()
  		{
  			var ipAddress = this.GetCurrentIpAddress();
- 			var userAgent = _httpContext.Request != null ? _httpContext.Request.UserAgent : string.Empty;
+ 			var userAgent = _httpContext.Request?.UserAgent.EmptyNull();
  
  			if (ipAddress.HasValue() && userAgent.HasValue())
  			{

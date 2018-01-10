@@ -25,5 +25,8 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.SkipShippingIfSingleOption")]
         public bool SkipShippingIfSingleOption { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.ChargeOnlyHighestProductShippingSurcharge")]
+        public bool ChargeOnlyHighestProductShippingSurcharge { get; set; }
     }
 }

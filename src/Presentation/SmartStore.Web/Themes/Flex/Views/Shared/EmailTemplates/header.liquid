@@ -1,0 +1,10 @@
+<a href="{{ Store.Url }}" class="masthead-name" target="_blank">
+	{% if Store.Logo and Store.Logo.Src %}
+	    <img class="masthead-logo" src="{{ Store.Logo.Src }}" alt="{{ Store.Name }}" 
+			{% if Store.Logo.Width %}width="{{ Store.Logo.Width }}"{% endif %}
+			{% if Store.Logo.Height %}height="{{ Store.Logo.Height }}"{% endif %}
+		/>
+	{% else %}
+		{{ Store.Name }}
+	{% endif %}
+</a>

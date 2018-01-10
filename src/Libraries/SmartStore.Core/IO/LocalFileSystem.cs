@@ -13,7 +13,8 @@ namespace SmartStore.Core.IO
 	{
 		private string _root;
 		private string _publicPath;		// /Shop/base
-		private string _storagePath;    // C:\SMNET\base		
+		private string _storagePath;    // C:\SMNET\base	
+		private bool _isCloudStorage;	// When public URL is outside of current app	
 
 		public LocalFileSystem()
 			: this(string.Empty, string.Empty)
@@ -36,6 +37,11 @@ namespace SmartStore.Core.IO
 			_publicPath = NormalizePublicPath(publicPath, basePath, pathIsAbsolute);
 
 			_root = basePath;
+		}
+
+		public bool IsCloudStorage
+		{
+			get { return _isCloudStorage; }
 		}
 
 		private void NormalizeStoragePath(ref string basePath, bool basePathIsAbsolute)
@@ -66,7 +72,12 @@ namespace SmartStore.Core.IO
 			{
 				if (publicPath.IsEmpty() || (!publicPath.StartsWith("~/") && !publicPath.IsWebUrl(true)))
 				{
-					throw new ArgumentException("When the base path is a fully qualified path, the public path must not be empty, and either be a fully qualified URL or a virtual path (e.g.: ~/Media)", nameof(publicPath));
+					var streamMedia = CommonHelper.GetAppSetting<bool>("sm:StreamRemoteMedia", true);
+					if (!streamMedia)
+					{
+						throw new ArgumentException(@"When the base path is a fully qualified path and remote media streaming is disabled, 
+													the public path must not be empty, and either be a fully qualified URL or a virtual path (e.g.: ~/Media)", nameof(publicPath));
+					}		
 				}
 			}
 
@@ -80,11 +91,13 @@ namespace SmartStore.Core.IO
 				return appVirtualPath + publicPath.Substring(1);
 			}
 
-			if (publicPath.IsEmpty())
+			if (publicPath.IsEmpty() && !basePathIsAbsolute)
 			{
 				// > /MyAppRoot/Media
 				return appVirtualPath + basePath;
 			}
+
+			_isCloudStorage = true;
 
 			return publicPath;
 		}
@@ -207,10 +220,9 @@ namespace SmartStore.Core.IO
 			}
 
 			return directoryInfo
-				.GetFiles()
+				.EnumerateFiles()
 				.Where(fi => !IsHidden(fi))
-				.Select<FileInfo, IFile>(fi => new LocalFile(Path.Combine(Fix(path), fi.Name), fi))
-				.ToList();
+				.Select<FileInfo, IFile>(fi => new LocalFile(Path.Combine(Fix(path), fi.Name), fi));
 		}
 
 		public IEnumerable<IFolder> ListFolders(string path)
@@ -234,10 +246,9 @@ namespace SmartStore.Core.IO
 			}
 
 			return directoryInfo
-				.GetDirectories()
+				.EnumerateDirectories()
 				.Where(di => !IsHidden(di))
-				.Select<DirectoryInfo, IFolder>(di => new LocalFolder(Path.Combine(Fix(path), di.Name), di))
-				.ToList();
+				.Select<DirectoryInfo, IFolder>(di => new LocalFolder(Path.Combine(Fix(path), di.Name), di));
 		}
 
 		private static bool IsHidden(FileSystemInfo di)

@@ -13,13 +13,13 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
-	public class QueuingEmailEventConsumer : IConsumer<QueuingEmailEvent>
+	public class CreateAttachmentsConsumer : IConsumer<MessageQueuingEvent>
 	{
 		private readonly PdfSettings _pdfSettings;
 		private readonly HttpRequestBase _httpRequest;
 		private readonly Lazy<FileDownloadManager> _fileDownloadManager;
 
-		public QueuingEmailEventConsumer(
+		public CreateAttachmentsConsumer(
 			PdfSettings pdfSettings, 
 			HttpRequestBase httpRequest, 
 			Lazy<FileDownloadManager> fileDownloadManager)
@@ -35,10 +35,11 @@ namespace SmartStore.Services.Messages
 		public ILogger Logger { get; set; }
 		public Localizer T { get; set; }
 
-		public void HandleEvent(QueuingEmailEvent eventMessage)
+		public void HandleEvent(MessageQueuingEvent message)
 		{
-			var qe = eventMessage.QueuedEmail;
-			var tpl = eventMessage.MessageTemplate;
+			var qe = message.QueuedEmail;
+			var ctx = message.MessageContext;
+			var model = message.MessageModel;
 
 			var handledTemplates = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase)
 			{
@@ -46,18 +47,19 @@ namespace SmartStore.Services.Messages
 				{ "OrderCompleted.CustomerNotification", _pdfSettings.AttachOrderPdfToOrderCompletedEmail }
 			};
 			
-			var shouldHandle = false;
-			if (handledTemplates.TryGetValue(tpl.Name, out shouldHandle) && shouldHandle)
+			if (handledTemplates.TryGetValue(ctx.MessageTemplate.Name, out var shouldHandle) && shouldHandle)
 			{
-				var orderId = eventMessage.Tokens.First(x => x.Key.IsCaseInsensitiveEqual("Order.ID")).Value.ToInt();
-				try
+				if (model.Get("Order") is IDictionary<string, object> order && order.Get("ID") is int orderId)
 				{
-					var qea = CreatePdfInvoiceAttachment(orderId);
-					qe.Attachments.Add(qea);
-				}
-				catch (Exception ex)
-				{
-					Logger.Error(ex, T("Admin.System.QueuedEmails.ErrorCreatingAttachment"));
+					try
+					{
+						var qea = CreatePdfInvoiceAttachment(orderId);
+						qe.Attachments.Add(qea);
+					}
+					catch (Exception ex)
+					{
+						Logger.Error(ex, T("Admin.System.QueuedEmails.ErrorCreatingAttachment"));
+					}
 				}
 			}
 		}

@@ -63,13 +63,13 @@ namespace SmartStore.Templating.Liquid
 			return new LiquidTemplate(Template.Parse(source), source);
 		}
 
-		public string Render(string template, object data, IFormatProvider formatProvider)
+		public string Render(string source, object model, IFormatProvider formatProvider)
 		{
-			Guard.NotNull(template, nameof(template));
-			Guard.NotNull(data, nameof(data));
+			Guard.NotNull(source, nameof(source));
+			Guard.NotNull(model, nameof(model));
 			Guard.NotNull(formatProvider, nameof(formatProvider));
 
-			return Compile(template).Render(data, formatProvider);
+			return Compile(source).Render(model, formatProvider);
 		}
 
 		public ITestModel CreateTestModelFor(BaseEntity entity, string modelPrefix)

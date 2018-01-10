@@ -46,11 +46,9 @@ namespace SmartStore.Services.Messages
 				nameof(part.DirectDebitAccountHolder),
 				nameof(part.DirectDebitBankCode), // TODO: (mc) Liquid > Bank data (?)
 				nameof(part.PurchaseOrderNumber),
-				nameof(part.PaidDateUtc),
 				nameof(part.ShippingMethod),
 				nameof(part.PaymentMethodSystemName),
-				nameof(part.ShippingRateComputationMethodSystemName),
-				nameof(part.CreatedOnUtc)
+				nameof(part.ShippingRateComputationMethodSystemName)
 				// TODO: (mc) Liquid > More whitelisting?
 			};
 
@@ -64,8 +62,9 @@ namespace SmartStore.Services.Messages
 			d.CustomerComment = part.CustomerOrderComment.NullEmpty();
 			d.Disclaimer = GetTopic("Disclaimer", messageContext);
 			d.ConditionsOfUse = GetTopic("ConditionsOfUse", messageContext);
-			d.CreatedOn = ToUserDate(part.CreatedOnUtc, messageContext);
 			d.Status = part.OrderStatus.GetLocalizedEnum(_services.Localization, messageContext.Language.Id);
+			d.CreatedOn = ToUserDate(part.CreatedOnUtc, messageContext);
+			d.PaidOn = ToUserDate(part.PaidDateUtc, messageContext);
 
 			// Payment method
 			var paymentMethodName = part.PaymentMethodSystemName;

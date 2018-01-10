@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using Newtonsoft.Json;
@@ -362,6 +363,10 @@ namespace SmartStore.Services.Messages
 				}
 
 				ctx.MessageTemplate = GetActiveMessageTemplate(ctx.MessageTemplateName, ctx.Store.Id);
+				if (ctx.MessageTemplate == null)
+				{
+					throw new FileNotFoundException("The message template '{0}' does not exist.".FormatInvariant(ctx.MessageTemplateName));
+				}
 			}
 
 			if (ctx.EmailAccount == null)

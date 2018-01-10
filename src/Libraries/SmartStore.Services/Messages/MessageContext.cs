@@ -10,20 +10,42 @@ using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Messages
 {
+	/// <summary>
+	/// A context object which contains all required and optional information
+	/// for the creation of message templates.
+	/// </summary>
 	public class MessageContext
 	{
 		private IFormatProvider _formatProvider;
 
+		/// <summary>
+		/// The source message template. Required if <see cref="MessageTemplateName"/> is empty.
+		/// </summary>
 		public MessageTemplate MessageTemplate { get; set; }
+
+		/// <summary>
+		/// The source message template name. Required if <see cref="MessageTemplate"/> is null.
+		/// </summary>
 		public string MessageTemplateName { get; set; }
 
 		/// <summary>
 		/// If <c>null</c>, the email account specifies the sender.
 		/// </summary>
 		public EmailAddress SenderEmailAddress { get; set; }
+
+		/// <summary>
+		/// If <c>null</c>, obtained from WorkContext.CurrentCustomer.
+		/// </summary>
 		public Customer Customer { get; set; }
 
+		/// <summary>
+		/// If <c>null</c>, obtained from WorkContext.WorkingLanguage.
+		/// </summary>
 		public int? LanguageId { get; set; }
+
+		/// <summary>
+		/// If <c>null</c>, obtained from StoreContext.CurrentStore.
+		/// </summary>
 		public int? StoreId { get; set; }
 
 		internal Language Language { get; set; }
@@ -32,10 +54,19 @@ namespace SmartStore.Services.Messages
 
 		public bool TestMode { get; set; }
 
+		/// <summary>
+		/// If <c>null</c>, obtained from <see cref="SmartStore.Services.Stores.IStoreService.GetHost(Store, bool?)"/>.
+		/// </summary>
 		public Uri BaseUri { get; set; }
 
+		/// <summary>
+		/// The final template model containing all global and template specific model parts.
+		/// </summary>
 		public TemplateModel Model { get; set; }
 
+		/// <summary>
+		/// If <c>null</c>, inferred from <see cref="LanguageId"/>.
+		/// </summary>
 		public IFormatProvider FormatProvider
 		{
 			get

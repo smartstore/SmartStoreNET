@@ -30,12 +30,12 @@ namespace SmartStore.Templating.Liquid
 			internal set;
 		}
 
-		public string Render(object data, IFormatProvider formatProvider)
+		public string Render(object model, IFormatProvider formatProvider)
 		{
-			Guard.NotNull(data, nameof(data));
+			Guard.NotNull(model, nameof(model));
 			Guard.NotNull(formatProvider, nameof(formatProvider));
 			
-			var p = CreateParameters(data, formatProvider);
+			var p = CreateParameters(model, formatProvider);
 			return Template.Render(p);
 		}
 

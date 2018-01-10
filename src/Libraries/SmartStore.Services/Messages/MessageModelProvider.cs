@@ -493,19 +493,6 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			var allow = new HashSet<string> 
-			{
-				nameof(part.Id),
-				nameof(part.CustomerGuid),
-				nameof(part.Username),
-				nameof(part.Email),
-				nameof(part.IsTaxExempt),
-				nameof(part.LastIpAddress),
-				nameof(part.CreatedOnUtc),
-				nameof(part.LastLoginDateUtc),
-				nameof(part.LastActivityDateUtc)
-			};
-
 			var email = part.FindEmail();
 			var pwdRecoveryToken = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken).NullEmpty();
 			var accountActivationToken = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken).NullEmpty();

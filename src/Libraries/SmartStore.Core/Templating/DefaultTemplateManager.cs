@@ -43,14 +43,14 @@ namespace SmartStore.Templating
 			_templates[name] = template;
 		}
 
-		public ITemplate GetOrAdd(string name, Func<string> template)
+		public ITemplate GetOrAdd(string name, Func<string> sourceFactory)
 		{
 			Guard.NotEmpty(name, nameof(name));
-			Guard.NotNull(template, nameof(template));
+			Guard.NotNull(sourceFactory, nameof(sourceFactory));
 
 			return _templates.GetOrAdd(name, key => 
 			{
-				return _engine.Compile(template());
+				return _engine.Compile(sourceFactory());
 			});
 		}
 

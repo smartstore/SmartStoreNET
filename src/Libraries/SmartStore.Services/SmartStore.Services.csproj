@@ -304,8 +304,7 @@
     <Compile Include="Messages\MessageModelProvider.cs" />
     <Compile Include="Messages\TemplateModel.cs" />
     <Compile Include="Messages\QueuedMessagesClearTask.cs" />
-    <Compile Include="Messages\QueuingEmailEvent.cs" />
-    <Compile Include="Messages\QueuingEmailEventConsumer.cs" />
+    <Compile Include="Messages\CreateAttachmentsConsumer.cs" />
     <Compile Include="News\NewsMessageFactoryExtensions.cs" />
     <Compile Include="Orders\AddToCartContext.cs" />
     <Compile Include="Orders\OrderMessageFactoryExtensions.cs" />
@@ -453,7 +452,6 @@
     <Compile Include="Messages\MessageTemplateService.cs" />
     <Compile Include="Messages\QueuedEmailService.cs" />
     <Compile Include="Messages\QueuedMessagesSendTask.cs" />
-    <Compile Include="Messages\Token.cs" />
     <Compile Include="Orders\AutoUpdateOrderItemContext.cs" />
     <Compile Include="Orders\AppliedGiftCard.cs" />
     <Compile Include="Orders\CheckoutAttributeFormatter.cs" />

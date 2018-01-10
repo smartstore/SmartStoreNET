@@ -321,7 +321,6 @@ namespace SmartStore.Services.Messages
 			var settings = _services.Settings.LoadSetting<ContactDataSettings>(messageContext.Store.Id);
 			var contact = new HybridExpando(settings, true) as dynamic;
 
-			// TODO: (mc) Liquid > Use following aliases in Partials
 			// Aliases
 			contact.Phone = new
 			{

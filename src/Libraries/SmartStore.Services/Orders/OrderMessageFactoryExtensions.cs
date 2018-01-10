@@ -117,8 +117,6 @@ namespace SmartStore.Services.Orders
 		{
 			Guard.NotNull(giftCard, nameof(giftCard));
 
-			// TODO: (mc) Liquid > TestModel does not wotk (Stack?)
-
 			var orderItem = giftCard.PurchasedWithOrderItem;
 			var customer = orderItem?.Order?.Customer;
 			var storeId = orderItem?.Order?.StoreId;

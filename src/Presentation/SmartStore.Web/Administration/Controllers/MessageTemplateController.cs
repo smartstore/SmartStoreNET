@@ -156,9 +156,7 @@ namespace SmartStore.Admin.Controllers
             if (messageTemplate == null)
                 return RedirectToAction("List");
 
-			// TODO: (mc) Liquid > LastModelTree
             var model = messageTemplate.ToModel();
-            //model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
 			PrepareLastModelTree(messageTemplate);
 
 			// available email accounts
@@ -226,9 +224,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", messageTemplate.Id) : RedirectToAction("List");
             }
 
-			// TODO: (mc) Liquid > LastModelTree
 			// If we got this far, something failed, redisplay form
-			//model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
 			PrepareLastModelTree(messageTemplate);
 
 			// Available email accounts

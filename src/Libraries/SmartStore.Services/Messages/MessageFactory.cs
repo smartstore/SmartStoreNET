@@ -301,11 +301,6 @@ namespace SmartStore.Services.Messages
 				{
 					throw new InvalidOperationException("Message template validation failed, because at least one of the following properties has not been set: Name, To, Subject.");
 				}
-				
-				if (ctx.EmailAccount == null && t.EmailAccountId < 1)
-				{
-					throw new InvalidOperationException("No EmailAccount has been provided for MessageContext. Either set MessageContext.EmailAccount explicitly or use a template with a valid EmailAccount Id.");
-				}
 			}
 
 			if (ctx.StoreId.GetValueOrDefault() == 0)

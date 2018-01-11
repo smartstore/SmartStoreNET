@@ -13,7 +13,7 @@
   the product <b>{{ Product.Name }}</b> is back in stock.
 </p>
 <p class="m-t-4">
-	<a href="{{ Product.Url }}" class="btn btn-primary">Visit product page</a>
+	<a href="{{ Product.Url }}" class="btn btn-primary">View product page</a>
 </p>
 {% endblock %}]]></Body>
 </MessageTemplate>

@@ -15,7 +15,7 @@
 </p>
 
 <p class="m-t-4 m-b-4 text-center">
-  <a class="btn btn-primary" href="{{ ReturnRequest.Url }}">Visit payment</a>
+  <a class="btn btn-primary" href="{{ ReturnRequest.Url }}">View payment</a>
 </p>
 
 <p>

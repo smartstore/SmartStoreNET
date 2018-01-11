@@ -35,7 +35,7 @@
 
 {% if Order.Url %}
 <p class="m-t-4 m-b-4 text-center">
-  <a class="btn btn-primary" href="{{ Order.Url }}">Go to details</a>
+  <a class="btn btn-primary" href="{{ Order.Url }}">View details</a>
 </p>
 {% endif %}
 

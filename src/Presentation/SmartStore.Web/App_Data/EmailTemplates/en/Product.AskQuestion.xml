@@ -44,7 +44,7 @@
 
 {% if Customer.IsRegistered %}
   <p class="m-t-4 m-b-4 text-center">
-    <a class="btn btn-primary" href="{{ Customer.Url }}">Visit customer profile</a>
+    <a class="btn btn-primary" href="{{ Customer.Url }}">View customer profile</a>
   </p>
 {% endif %}
 

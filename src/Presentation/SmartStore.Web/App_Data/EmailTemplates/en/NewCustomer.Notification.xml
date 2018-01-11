@@ -10,7 +10,7 @@
   New customer,
 </h1>
 <p>
-  a new customer has registered himself in your store.
+  a new customer has created an account in your store.
 </p>
 
 <p>
@@ -23,7 +23,7 @@
 </p>
 
 <p class="m-t-4 m-b-4 text-center">
-	<a class="btn btn-primary" href="{{ Customer.EditUrl }}">Visit Profile</a>  
+	<a class="btn btn-primary" href="{{ Customer.EditUrl }}">View Profile</a>  
 </p>
 {% endblock %}]]></Body>
 </MessageTemplate>

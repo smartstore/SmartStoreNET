@@ -74,6 +74,8 @@ $font-size-xs:   0.75rem;
 $body-color:    $gray-800;
 $link-color:    #0277bb;
 
+$headings-font-weight:			400;
+
 $btn-font-weight:               $font-weight-medium;
 $input-btn-padding-x:           1rem;
 $input-btn-padding-y:           0.5625rem;
@@ -109,16 +111,16 @@ $dropdown-link-active-bg:        darken($dropdown-link-hover-bg, 5%);
 $dropdown-item-padding-y:        0.5rem;
 $dropdown-item-padding-x:        1.5rem;
 
-$alert-padding-y:       1rem;
+$alert-padding-y:				1rem;
 
-$input-group-addon-bg:  $gray-100;          
+$input-group-addon-bg:			$gray-100;
 
+$nav-tabs-border-color:			#e1e4e8;
 
 //
 // Variables shims (TODO: remove later)
 // --------------------------------------------------
-
-$gray-dark:     $gray-900;
+$gray-dark: $gray-900;
 $gray:          $gray-700;
 $gray-light:    $gray-600;
 $gray-lighter:  $gray-200;
@@ -206,14 +208,48 @@ $gray-lightest: $gray-100;
 // Locale Editor
 // --------------------------------------------------
 
-.well.locale-editor {
-    padding-left: 0;
-    padding-right: 0;
+.locale-editor {
+	$border-color: $nav-tabs-border-color;
 
-    .nav {
-        //justify-content: center;
-        padding: 0 1rem;
-    }
+	background-color: #fff;
+	border: 1px solid $border-color;
+	margin-bottom: 1rem;
+	border-radius: $border-radius;
+
+	.nav-locales > .nav {
+		padding: 0.25rem 0.25rem 0 0.25rem;
+		border-bottom-color: $border-color;
+		background-color: $gray-100;
+		border-top-left-radius: $border-radius;
+		border-top-right-radius: $border-radius;
+
+		.nav-link {
+			color: #777;
+			font-weight: 600;
+			padding-top: 0.75rem;
+			padding-bottom: 0.75rem;
+
+			> img {
+				opacity: 0.8;
+			}
+		}
+
+		.nav-link:hover,
+		.nav-link.active {
+			color: inherit;
+			border-color: transparent;
+
+			> img {
+				opacity: 1;
+			}
+		}
+
+		.nav-link.active {
+			background-color: #fff;
+			border-color: $border-color;
+			border-bottom-color: #fff;
+		}
+	}
 }
 
 

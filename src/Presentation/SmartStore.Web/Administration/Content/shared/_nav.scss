@@ -103,16 +103,17 @@
 		border: 1px solid transparent;
 		border-left-width: 2px;
 		transition: none;
-		padding: 0.625rem 1.25rem 0.625rem 0.5rem;
+		padding: 0.625rem 1.25rem;
 		padding-right: 1.25rem;
 
 		img, .fa {
 			margin-right: 0.75rem;
+			margin-left: -0.5rem;
 		}
 	}
 
 	.nav-link:hover:not(.active) {
-		background-color: rgba(#000, 0.08);
+		background-color: rgba(#000, 0.025);
 	}
 
 	.nav-link.active,
@@ -230,10 +231,10 @@
     .nav-link > img,
     .nav-link > .fa {
 	    vertical-align: baseline;
-	    margin-right: 4px;
+	    margin-right: 0.5rem;
         // TODO: get icon color with color-yic mixin once it supports props
         // TODO: support dark backgrounds
-	    color: lighten($body-color, 18%);
+	    //color: lighten($body-color, 18%);
 		color: $text-muted;
     }
     .nav-link:hover > .fa,

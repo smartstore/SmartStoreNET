@@ -62,8 +62,8 @@ namespace SmartStore.Web.Framework
             {
                 if (helper.ViewData.Model.Locales.Count > 1)
                 {
-                    writer.Write("<div class='well well-small locale-editor'>");
-                    var tabStrip = helper.SmartStore().TabStrip().Name(name).SmartTabSelection(false).Style(TabsStyle.Pills).Items(x =>
+                    writer.Write("<div class='locale-editor'>");
+                    var tabStrip = helper.SmartStore().TabStrip().Name(name).SmartTabSelection(false).Style(TabsStyle.Tabs).AddCssClass("nav-locales").Items(x =>
                     {
 						if (standardTemplate != null)
 						{

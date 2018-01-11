@@ -322,11 +322,11 @@ td.adminData {
 	.sub-title {
 		font-family: $font-family-base;
 		font-size: $font-size-base;
-		font-weight: normal;
+		font-weight: 100;
 	}
 	.title,
 	.head {
-		font-size: $font-size-lg;
+		font-size: $h5-font-size;
 		padding: 12px 0;
 	}
 	.head {
@@ -461,7 +461,7 @@ label.forcheckbox {
     
     .title {
 	    font-family: $headings-font-family;
-	    font-weight: $headings-font-weight;
+	    font-weight: 400;
 	    color: $headings-color;
 	    font-size: $h5-font-size;
 	    line-height: $input-height;

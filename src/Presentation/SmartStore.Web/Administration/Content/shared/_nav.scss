@@ -21,62 +21,62 @@
 }
 
 .nav-tabs-line {
-    .nav-item + .nav-item {
-        margin-left: 0;
-    }
+	.nav-item + .nav-item {
+		margin-left: 0;
+	}
 
-    .nav-item {
-        position: relative;
-    }
+	.nav-item {
+		position: relative;
+	}
 
-    .nav-link {
-        text-transform: uppercase;
-        text-align: center;
-        position: relative;
-        border-width: 0;
-        background-color: transparent;
-        color: $text-muted;
-        transition: color 0.2s ease-in-out;
+	.nav-link {
+		color: $mtab-color;
+		text-transform: $mtab-text-transform;
+		font-weight: $mtab-font-weight;
+		text-align: center;
+		position: relative;
+		border-width: 0;
+		background-color: transparent;
+		transition: color 0.2s ease-in-out;
 
-        &:hover {
-            color: inherit;
-        }
+		&:hover {
+			color: inherit;
+		}
 
-        &.active { 
-            font-weight: $font-weight-medium;
-            color: $nav-tabs-link-active-color; 
-        }
+		&.active {
+			color: $nav-tabs-link-active-color;
+		}
 
-        &.disabled {
-            opacity: 0.4;
-        }
-    }
+		&.disabled {
+			opacity: 0.4;
+		}
+	}
 
-    .nav-link:not(.disabled):before {
-        position: absolute;
-        content: '';
-        bottom: 0;
-        left: 50%;
-        right: 50%;
-        height: 2px;
-        background: #aaa;
-        background: rgba(0,0,0, 0.3);
-        transition: all 0.2s ease-in-out;
-    }
+	.nav-link:not(.disabled):before {
+		position: absolute;
+		content: '';
+		bottom: 0;
+		left: 50%;
+		right: 50%;
+		height: 2px;
+		background: #aaa;
+		background: rgba(0,0,0, 0.3);
+		transition: all 0.2s ease-in-out;
+	}
 
-    .nav-link:hover:before {
-        left: 0;
-        right: 0;
-    }
+	.nav-link:hover:before {
+		left: 0;
+		right: 0;
+	}
 
-    .nav-link.active:before,
-    .nav-link.active:focus:before,
-    .nav-item.open .nav-link:before,
-    .nav-item.open .nav-link:focus:before { 
-        left: 0;
-        right: 0;
-        background: theme-color("warning");
-    }
+	.nav-link.active:before,
+	.nav-link.active:focus:before,
+	.nav-item.open .nav-link:before,
+	.nav-item.open .nav-link:focus:before {
+		left: 0;
+		right: 0;
+		background: theme-color("warning");
+	}
 }
 
 
@@ -85,38 +85,44 @@
 // ==============================================================
 
 .tabs-left .nav-tabs-line {
-    border-bottom: none;
-    border-right: 1px solid $nav-tabs-border-color;
+	border-bottom: none;
+	border-right: 1px solid $nav-tabs-border-color;
 
-    .nav-link:not(.disabled):before {
-        // disable selection animations
-        display: none;
-    }
+	.nav-link:not(.disabled):before {
+		// disable selection animations
+		display: none;
+	}
 
-   .nav-item {
-        margin-bottom: 0;
-        margin-right: -1px;
-    }
+	.nav-item {
+		margin-bottom: 0;
+		margin-right: -1px;
+	}
 
-    .nav-link {
-        text-align: left;
-        border: 1px solid transparent;
-        border-left-width: 2px;
-        transition: none;
-    }
+	.nav-link {
+		text-align: left;
+		border: 1px solid transparent;
+		border-left-width: 2px;
+		transition: none;
+		padding: 0.625rem 1.25rem 0.625rem 0.5rem;
+		padding-right: 1.25rem;
 
-    .nav-link:hover:not(.active) {
-        background-color: rgba(#000, 0.08);
-    }
+		img, .fa {
+			margin-right: 0.75rem;
+		}
+	}
 
-    .nav-link.active,
-    .nav-link.active:focus,
-    .nav-item.open .nav-link,
-    .nav-item.open .nav-link:focus { 
-        border-top-color: $nav-tabs-border-color;
-        border-bottom-color: $nav-tabs-border-color;
-        border-left-color: theme-color("warning");
-    }
+	.nav-link:hover:not(.active) {
+		background-color: rgba(#000, 0.08);
+	}
+
+	.nav-link.active,
+	.nav-link.active:focus,
+	.nav-item.open .nav-link,
+	.nav-item.open .nav-link:focus {
+		border-top-color: $nav-tabs-border-color;
+		border-bottom-color: $nav-tabs-border-color;
+		border-left-color: theme-color("warning");
+	}
 }
 
 
@@ -228,6 +234,7 @@
         // TODO: get icon color with color-yic mixin once it supports props
         // TODO: support dark backgrounds
 	    color: lighten($body-color, 18%);
+		color: $text-muted;
     }
     .nav-link:hover > .fa,
     .nav-link.active > .fa {

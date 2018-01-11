@@ -2,6 +2,18 @@
 Copyright (c) 2003-2014, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or http://ckeditor.com/license
 */
+
+/*
+	TODO BS4 > Colors:
+	==================
+	#f5f5f5 > #f9fafb
+	Tools Bg: #e4e4e4 > #f9fafb
+	Tools Border: #c2c2c2 > #c4cdd4
+	Tools Hover: linear-gradient(to bottom, #f9fafb, #f4f6f8), box-shadow: 0 1px 0 0 rgba(22,29,37, 0.05)
+	Tools Active: linear-gradient(to bottom, #f4f6f8, #f4f6f8), box-shadow: inset 0 1px 1px 0 rgba(99,115,129,0.1), inset 0 1px 4px 0 rgba(99,115,129,0.2)
+	Tools Pressed: linear-gradient(to bottom, #eff2f5, #eff2f5), box-shadow: inset 0 1px 1px 0 rgba(99,115,129,0.1), inset 0 1px 4px 0 rgba(99,115,129,0.2)
+*/
+
 @import "icons.css";
 
 .cke_reset {
@@ -37,7 +49,7 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	-webkit-transition: none;
 	transition: none;
 	border-collapse: collapse;
-	font: normal normal normal 12px Arial,Helvetica,Tahoma,Verdana,Sans-Serif;
+	font: normal normal normal 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	color: #333;
 	text-align: left;
 	white-space: nowrap;
@@ -108,9 +120,8 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	border-bottom: 1px solid #b6b6b6;
 	padding: 6px 8px 2px;
 	white-space: normal;
-	-webkit-box-shadow: 0 1px 0 #fff inset;
 	box-shadow: 0 1px 0 #fff inset;
-	background: #f5f5f5;
+	background: #f9fafb;
 }
 
 .cke_float .cke_top {
@@ -122,9 +133,8 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	padding: 6px 8px 2px;
 	position: relative;
 	border-top: 1px solid #bfbfbf;
-	-webkit-box-shadow: 0 1px 0 #fff inset;
 	box-shadow: 0 1px 0 #fff inset;
-	background: #f5f5f5;
+	background: #f9fafb;
 }
 
 .cke_browser_ios .cke_contents {
@@ -360,19 +370,21 @@ a:hover.cke_colorauto, a:hover.cke_colormore, a:focus.cke_colorauto, a:focus.cke
 	float: right;
 }
 
+.cke_toolgroup,
+.cke_combo_button,
+.cke_toolbox_collapser {
+	border: 1px solid #c4cdd5;
+	/*border-bottom-color: #c2c2c2;*/
+	border-radius: 3px;
+	box-shadow: 0 1px 0 rgba(255,255,255, .5), 0 0 2px rgba(255,255,255, .15) inset, 0 1px 0 rgba(255,255,255, .15) inset;
+	background: #f9fafb;
+	background-image: -webkit-linear-gradient(top, #fff, #f9fafb);
+	background-image: linear-gradient(top, #fff, #f9fafb);
+}
+
 .cke_toolgroup {
 	float: left;
 	margin: 0 6px 5px 0;
-	border: 1px solid #ccc;
-	border-bottom-color: #c2c2c2;
-	border-radius: 3px;
-	-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
-	box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
-	background: #f2f2f2;
-	background-image: -webkit-linear-gradient(top,#fff,#e4e4e4);
-	background-image: -o-linear-gradient(top,#fff,#e4e4e4);
-	background-image: linear-gradient(top,#fff,#f2f2f2);
-	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#ffffff',endColorstr='#e4e4e4');
 }
 
 .cke_hc .cke_toolgroup {
@@ -584,24 +596,12 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 	font-size: 0;
 	cursor: default;
 	text-align: center;
-	border: 1px solid #a6a6a6;
-	border-bottom-color: #979797;
-	border-radius: 3px;
-	-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
-	box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
-	background: #e4e4e4;
-	background-image: -webkit-linear-gradient(top,#fff,#e4e4e4);
-	background-image: -o-linear-gradient(top,#fff,#e4e4e4);
-	background-image: linear-gradient(top,#fff,#e4e4e4);
-	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#ffffff',endColorstr='#e4e4e4');
 }
 
 	.cke_toolbox_collapser:hover {
 		background: #ccc;
-		background-image: -webkit-linear-gradient(top,#f2f2f2,#ccc);
-		background-image: -o-linear-gradient(top,#f2f2f2,#ccc);
-		background-image: linear-gradient(top,#f2f2f2,#ccc);
-		filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#f2f2f2',endColorstr='#cccccc');
+		background-image: -webkit-linear-gradient(top, #f2f2f2, #ccc);
+		background-image: linear-gradient(top, #f2f2f2, #ccc);
 	}
 
 	.cke_toolbox_collapser.cke_toolbox_collapser_min {
@@ -790,16 +790,6 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 	display: inline-block;
 	float: left;
 	margin: 0 6px 5px 0;
-	border: 1px solid #ccc;
-	border-bottom-color: #c2c2c2;
-	border-radius: 3px;
-	-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
-	box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
-	background: #f2f2f2;
-	background-image: -webkit-linear-gradient(top,#fff,#e4e4e4);
-	background-image: -o-linear-gradient(top,#fff,#e4e4e4);
-	background-image: linear-gradient(top,#fff,#e4e4e4);
-	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#ffffff',endColorstr='#e4e4e4');
 }
 
 .cke_rtl .cke_combo_button {

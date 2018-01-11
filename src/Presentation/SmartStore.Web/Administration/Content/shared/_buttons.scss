@@ -55,10 +55,23 @@ $btn-size-sm:           $input-height-sm;
 // -----------------------------------------------------
 
 .btn-secondary {
-    /*color: $gray-800;
+	/*color: $gray-800;
     background-color: #fff;
     border-color: #ddd;*/
-    @include button-variant(#fff, #ddd);
+	
+	
+	//@include button-variant(#fff, #ddd);
+
+
+	background: linear-gradient(to bottom, #fff, #f9fafb);
+	border: 1px solid #c4cdd5;
+	color: #444;
+
+	&:hover {
+		background: linear-gradient(to bottom, #f9fafb, #f4f6f8);
+		box-shadow: 0 1px 0 0 rgba(22,29,37,0.05);
+		color: #222;
+	}
 }
 
 

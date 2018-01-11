@@ -83,6 +83,5 @@
 	});
 	
 	// provide main app namespace
-	_.provide("$.smartstore");
-
+	window.SmartStore = {};
 })( jQuery );

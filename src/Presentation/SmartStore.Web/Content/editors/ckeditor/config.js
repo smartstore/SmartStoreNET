@@ -30,20 +30,19 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'links' },
         { name: 'align' },
         { name: 'paragraph', groups: ['list', 'indent', 'blocks'] },
-        { name: 'insert' },
+		//'/',
+		{ name: 'insert' },
 		{ name: 'forms' },
-		'/',
         { name: 'clipboard' },
-        { name: 'editing', groups: ['find', 'selection', 'spellchecker'] },
 		{ name: 'styles' },
-		{ name: 'about' },
-        { name: 'others' },
-        { name: 'document', groups: ['mode', 'document', 'doctools', 'tools'] },
+		//{ name: 'about' },
+        //{ name: 'others' },
+		{ name: 'document', groups: ['mode', 'document', 'doctools', 'tools', 'spellchecker'] },
 	];
 
 	// Remove some buttons provided by the standard plugins, which are
 	// not needed in the Standard(s) toolbar.
-	config.removeButtons = 'About,placeholder';
+	config.removeButtons = 'About,placeholder,JustifyCenter,Subscript,Superscript,Anchor,FontAwesome,Cut,Copy,Paste,ShowBlocks';
 
 	// Set the most common block elements.
 	config.format_tags = 'p;h1;h2;h3;h4;pre;address;div';
@@ -97,19 +96,19 @@ CKEDITOR.editorConfig = function( config ) {
 	    // Define the language specific mode 'htmlmixed' for html including (css, xml, javascript), 'application/x-httpd-php' for php mode including html, or 'text/javascript' for using java script only
 	    mode: 'htmlmixed',
 	    // Whether or not to show the search Code button on the toolbar
-	    showSearchButton: true,
+		showSearchButton: false,
 	    // Whether or not to show Trailing Spaces
 	    showTrailingSpace: true,
 	    // Whether or not to highlight all matches of current word/selection
 	    highlightMatches: true,
 	    // Whether or not to show the format button on the toolbar
-	    showFormatButton: true,
+	    showFormatButton: false,
 	    // Whether or not to show the comment button on the toolbar
-	    showCommentButton: true,
+		showCommentButton: false,
 	    // Whether or not to show the uncomment button on the toolbar
-	    showUncommentButton: true,
+		showUncommentButton: false,
 	    // Whether or not to show the showAutoCompleteButton button on the toolbar
-	    showAutoCompleteButton: true
+		showAutoCompleteButton: false
 	};
 
 };

@@ -66,7 +66,7 @@ namespace SmartStore.Web.Framework.Localization
 			
 			var sb = new StringBuilder();
 			sb.Append("<script>");
-			sb.Append("jQuery(function () { if ($.smartstore.globalization) { $.smartstore.globalization.culture = ");
+			sb.Append("jQuery(function () { if (SmartStore.globalization) { SmartStore.globalization.culture = ");
 			sb.Append(json);
 			sb.Append("; }; });");
 			sb.Append("</script>");

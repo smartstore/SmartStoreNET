@@ -16,3 +16,5 @@
 * Readonly controls in .adminData: input[type=text][readonly].form-control-plaintext (formerly static labels)
 * Pass "postfix" additional viewdata to relevant numerictextbox instances
 * Refactor control toggling: 'data-toggler-for' instead of redundant toggle[...]() calls in every view
+* .t-grid .t-last with command buttons: add *.HtmlAttributes(new { align = "right" }) to column (see ProductEdit > Promotion tab)
+* Move custom grid action buttons below or above a grid to the grid toolbar (see ProductEdit > Promotion tab > CrossSellingGridCommands(...) etc.)

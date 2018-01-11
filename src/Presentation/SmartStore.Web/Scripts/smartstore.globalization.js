@@ -495,6 +495,5 @@
 		g.formatNumber = formatNumber;
 	}());
 
-	_.provide('$.smartstore.globalization');
-	$.smartstore.globalization = g;
+	SmartStore.globalization = g;
 })( jQuery );

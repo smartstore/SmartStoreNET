@@ -862,12 +862,9 @@ namespace SmartStore.Admin.Controllers
         {
 			Guard.NotNull(model, nameof(model));
 
-				if (defaultPicture != null)
-				{
-				model.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize);
-				model.NoThumb = model.PictureThumbnailUrl.IsEmpty();
-				}
-				}
+			model.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize, true);
+			model.NoThumb = defaultPicture == null;
+		}
 
 		private IQueryable<Product> ApplySorting(IQueryable<Product> query, GridCommand command)
 		{
@@ -1078,11 +1075,8 @@ namespace SmartStore.Admin.Controllers
                     };
 
 					var defaultPicture = pictureInfos.Get(x.MainPictureId.GetValueOrDefault());
-					if (defaultPicture != null)
-					{
-						productModel.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize);
-						productModel.NoThumb = productModel.PictureThumbnailUrl.IsEmpty();
-					}
+					productModel.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize, true);
+					productModel.NoThumb = defaultPicture == null;
 
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 					productModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc, DateTimeKind.Utc);

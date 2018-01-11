@@ -15,16 +15,16 @@
     border-color: $input-border-color; /*#a4abb2*/
     background-color: #fff;
 }
-.t-header, 
-.t-grid-header, 
-.t-toolbar, 
-.t-grouping-header, 
-.t-tooltip, 
+.t-header,
+.t-grid-header,
+.t-toolbar,
+.t-grouping-header,
+.t-tooltip,
 .t-grid-pager {
-    border-color: $gray-700;
-    color: $gray-800;
-    text-shadow: 0 1px 1px rgba(255,255,255, .75);
-    @include gradient-y(#fafafa, #e9e9e9);
+	border-color: $gray-700;
+	color: $gray-800;
+	//@include gradient-y(#fafafa, #e9e9e9);
+	background-color: #f2f2f2;
 }
 .t-menu-vertical,
  .t-editor, 
@@ -68,7 +68,8 @@
     background-color: #fff;
 }
 .t-alt {
-    background-color: $table-accent-bg /* #f1f2f3 */;
+    //background-color: $table-accent-bg /* #f1f2f3 */;
+	background-color: none;
 }
 .t-state-default {
     border-color: #a4abb2;
@@ -123,7 +124,8 @@
     border-color: #a4abb2;
 }
 .t-grid td {
-    border-color: $table-border-color; /* #d3d6da */
+    //border-color: $table-border-color; /* #d3d6da */
+	border-color: #e0e0e0;
 }
 .t-grouping-row td {
     background: url('telrik/sprite.png') repeat-x 0 -48px;
@@ -190,18 +192,6 @@ td.adminData .t-combobox {
 /* Buttons
 -------------------------------------------------------------- */
 
-.t-button {
-    @extend .btn;
-    @extend .btn-secondary;
-
-    &:hover {
-        border-color: #f3d64a;
-        background-color: #fae185;
-        color: #000;
-    }
-}
-
-.t-button, 
 button.t-button.t-state-disabled:hover, 
 a.t-button.t-state-disabled:hover, 
 .t-state-disabled .t-button:hover {
@@ -342,52 +332,94 @@ a.t-button.t-state-disabled:hover,
 -------------------------------------------------------------- */
 
 .t-grid {
-    td, th {
-	    vertical-align: middle;
-	    padding: 8px;
-    }
+	td, th {
+		vertical-align: middle;
+		padding: 8px;
+		border-left-width: 0 !important;
+		border-right-width: 0 !important;
+	}
 
-    .t-filter-options {
-	    padding: 8px;
-    }
+	.t-filter-options {
+		padding: 8px;
+	}
 
-    .t-status-text {
-	    color: #aaa;
-    }
+	.t-status-text {
+		color: #aaa;
+	}
 
-    .table {
-	    margin-bottom: 0;
-        td[align=center] {
-	        text-align: center;
-        }
-    }
+	.table {
+		margin-bottom: 0;
 
-    .btn {
-	    padding: $input-btn-padding-x-sm $input-btn-padding-x-sm;
-        font-size: $font-size-sm;
+		td[align=center] {
+			text-align: center;
+		}
+	}
 
-        .fa { font-size: $font-size-sm;  }
-    }
+	.btn {
+		padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
+		font-size: $font-size-sm;
 
-    *:not(.btn-group) > .btn {
-	    margin: 0.2em;
-    }
+		.fa {
+			font-size: $font-size-sm;
+		}
+	}
 
-    .t-button .fa {
-	    margin-top: 0;
-    }
+	/**:not(.btn-group) > .btn {
+		margin: 0.2em;
+	}*/
 
-    tbody .t-last {
-	    @include text-truncate();
-    }
+	.t-button .fa {
+		margin-top: 0;
+	}
 
-    form.t-grid-actions {
-	    margin: 0;
-    }
+	tbody {
+		.t-last {
+			@include text-truncate();
+		}
 
-    .text-box.single-line {
-        /* ... */
-    }
+		tr:not(.t-grid-edit-row) {
+			.t-last {
+				.t-button {
+					visibility: hidden;
+				}
+			}
+
+			&:hover .t-last {
+				.t-button {
+					visibility: visible;
+				}
+			}
+		}
+
+		.t-button {
+			@extend .btn;
+			@extend .btn-sm;
+			/*&:hover {
+				border-color: #f3d64a;
+				background-color: #fae185;
+				color: #000;
+			}*/
+			&.t-grid-update {
+				@extend .btn-warning;
+			}
+
+			&.t-grid-delete {
+				@extend .btn-danger;
+			}
+
+			&:not(.t-grid-update):not(.t-grid-delete) {
+				@extend .btn-secondary;
+			}
+		}
+	}
+
+	form.t-grid-actions {
+		margin: 0;
+	}
+
+	.text-box.single-line {
+		/* ... */
+	}
 }
 
 
@@ -449,9 +481,6 @@ a.t-button.t-state-disabled:hover,
 }
 
 
-
-.t-grid .t-button,
-.t-edit-form .t-button,
 .t-filter-options {
 	padding: 2px 4px;
 	font-size: $font-size-sm;
@@ -463,10 +492,28 @@ a.t-button.t-state-disabled:hover,
 }
 
 
-.t-grid-toolbar .btn {
-	text-shadow: none;
-	text-decoration: none;
-	font-size: 13px;
+.t-grid-toolbar {
+	padding: 0;
+	background: #626262;
+	position: relative;
+	display: flex;
+
+	.btn, .t-button {
+		display: block;
+		text-shadow: none;
+		text-decoration: none;
+		background-color: #484848;
+		font-weight: 600;
+		color: #fff;
+		padding: 18px;
+		margin: 0;
+		border: 0;
+		border-right: solid 1px #626262;
+
+		&:hover {
+			background-color: #848484;
+		}
+	}
 }
 
 .t-grid-filter {
@@ -480,9 +527,7 @@ a.t-button.t-state-disabled:hover,
 
 
 .t-grid-header .t-header {
-	font-size: 12px;
-	text-transform: uppercase;
-	font-weight: bold !important;
+	font-weight: 600 !important;
 	padding: 0 !important;
 	position: relative;
 }
@@ -490,10 +535,15 @@ a.t-button.t-state-disabled:hover,
 .t-grid-header .t-header .t-link {
 	margin: 0;
 	padding: 0.6em;
+	height: auto;
+	line-height: 2em;
 }
 
-.t-grid-pager,
-.t-grid-toolbar {
+.t-grid-header .t-header a.t-link:hover {
+	background-color: #fff2cf;
+}
+
+.t-grid-pager {
 	background: #f7f7f7;
 	text-shadow: none !important;
 	padding-top: .4em !important;

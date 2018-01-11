@@ -33,8 +33,9 @@
 		},
 		// Telerik
 		function (ctx) {
+			console.log(ctx.find(".t-grid"));
 			Hacks.Telerik.handleButton(ctx.find(".t-button").filter(function (index) {
-				// reject .t-button, that has a .t-group-indicator as parent
+				// reject .t-button that has a .t-group-indicator as parent
 				return !$(this).parent().hasClass("t-group-indicator");
 			}));
 

@@ -3,12 +3,58 @@
 /* SmartStore theme for Telerik MVC Extensions */
 
 
+/* Variables
+-------------------------------------------------------------- */
+
+$grid-header-bg: #f6f8fa;
+$grid-pager-bg: #f9fafa;
+$grid-border-color: #e1e4e8;
+
+
+/* Mixins
+-------------------------------------------------------------- */
+
+@mixin custom-t-icon() {
+	position: relative;
+	background-clip: content-box;
+	box-sizing: content-box;
+	vertical-align: middle;
+	text-align: center;
+	font-size: $font-size-base;
+	line-height: $line-height-base;
+	background-image: none;
+	text-indent: 0;
+	color: transparent;
+	margin: 0;
+	padding: 0;
+
+	&:hover:before {
+		color: $body-color;
+	}
+
+	&:before {
+		position: absolute;
+		display: inline-block;
+		text-indent: 0;
+		@include fontawesome("\f013"); // cog
+		text-align: center;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		color: $gray-700;
+	}
+}
+
+
 /* Common
 -------------------------------------------------------------- */
 
-.t-filter-options input {
-    padding-left: 3px !important;
-    padding-right: 1px !important;
+.t-button {
+	@extend .btn;
+}
+
+.t-no-data {
+	color: $text-muted;
 }
 
 .t-widget, .t-input {
@@ -21,10 +67,10 @@
 .t-grouping-header,
 .t-tooltip,
 .t-grid-pager {
-	border-color: $gray-700;
 	color: $gray-800;
 	//@include gradient-y(#fafafa, #e9e9e9);
-	background-color: #f2f2f2;
+	background-color: $grid-header-bg;
+	border-color: $grid-border-color;
 }
 .t-menu-vertical,
  .t-editor, 
@@ -56,7 +102,13 @@
 }
 .t-group {
     background-color: #f1f2f3;
-    border-color: #a4abb2;
+    border-color: $dropdown-border-color;
+	&.t-popup {
+		background-color: #fff;
+	}
+}
+.t-popup, .t-menu .t-group {
+	box-shadow: $dropdown-box-shadow;
 }
 .t-content, 
 .t-editable-area {
@@ -119,13 +171,6 @@
 }
 .t-widget .t-status {
     background-color: transparent;
-}
-.t-grid-header-wrap, .t-grid-footer-wrap {
-    border-color: #a4abb2;
-}
-.t-grid td {
-    //border-color: $table-border-color; /* #d3d6da */
-	border-color: #e0e0e0;
 }
 .t-grouping-row td {
     background: url('telrik/sprite.png') repeat-x 0 -48px;
@@ -212,99 +257,80 @@ a.t-button.t-state-disabled:hover,
 -------------------------------------------------------------- */
 
 .t-numerictextbox {
-    display: block;
-    overflow: hidden;
+	display: block;
+	overflow: hidden;
 	position: relative;
-    box-sizing: border-box;
-    width: 100%;
+	box-sizing: border-box;
+	width: 100%;
 
-    &:after {
-        // mimic input group addon
-        position: absolute;
-        z-index: 2;
-        content: ' ';
-        display: block;
-        background: $input-group-addon-bg;
-        border-left: 1px solid rgba(#000, 0.08);
-        top: 1px;
-        right: 1px;
-        bottom: 1px;
-        left: auto;
-        width: calc(#{$input-height} + 3px);
-    }
+	&:after {
+		// mimic input group addon
+		position: absolute;
+		z-index: 2;
+		content: ' ';
+		display: block;
+		background: $input-group-addon-bg;
+		border-left: 1px solid rgba(#000, 0.08);
+		top: 1px;
+		right: 1px;
+		bottom: 1px;
+		left: auto;
+		width: calc(#{$input-height} + 3px);
+	}
 
-    .t-input {
-        position: relative;
-        z-index: 1;
-	    padding-right: 50px; // TODO
-    }
+	.t-input {
+		position: relative;
+		z-index: 1;
+		padding-right: 50px; // TODO
+	}
 
-    .t-formatted-value {
-	    position: absolute;
-	    overflow: hidden;
-        z-index: 2;
-        padding: $input-btn-padding-y $input-btn-padding-x;
-        font-size: $font-size-base; // Match inputs
-        font-weight: $font-weight-normal;
-        line-height: $input-btn-line-height;
-        color: $input-color;
+	.t-formatted-value {
+		position: absolute;
+		overflow: hidden;
+		z-index: 2;
+		padding: $input-btn-padding-y $input-btn-padding-x;
+		font-size: $font-size-base; // Match inputs
+		font-weight: $font-weight-normal;
+		line-height: $input-btn-line-height;
+		color: $input-color;
 
-        &.t-state-empty {
-            color: $gray-500 !important;
-        }
-    }
+		&.t-state-empty {
+			color: $gray-500 !important;
+		}
+	}
 
-    .t-icon {
-        position: absolute;
-        display: block;
-        background-clip: content-box;
-        box-sizing: content-box;
-        z-index: 3;
-        margin: 0;
-        padding: 0;
-        top: 0;
-        right: 0;
-        width: calc(#{$input-height} + 3px);
-        height: 50%;
-        vertical-align: middle;
-        text-align: center;
-        font-size: $font-size-base;
-        line-height: $line-height-base;
-        background-image: none;
-        text-indent: 0;
-        color: transparent;
+	.t-icon {
+		@include custom-t-icon();
+		position: absolute;
+		display: block;
+		z-index: 3;
+		top: 0;
+		right: 0;
+		width: calc(#{$input-height} + 3px);
+		height: 50%;
 
-        &:hover {
-            background-color: rgba(#000, 0.05);
-            &:before { color: $body-color; }
-        }
+		&:hover {
+			background-color: rgba(#000, 0.05);
+		}
 
-        &:active {
-            background-color: rgba(#000, 0.08);
-        }
+		&:active {
+			background-color: rgba(#000, 0.08);
+		}
 
-        &:before {
-            position: absolute;
-            display: inline-block;
-            text-indent: 0;
-            @include fontawesome("\f077", 10px); // chevron-up
-            text-align: center;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            color: $gray-700;
-        }
-        &.t-arrow-down:before {
-            content: "\f078"; // chevron-down
-        }       
-        &.t-arrow-up {
-            //border-bottom: 1px solid rgba(#000, 0.1);
-        }
-        &.t-arrow-down {
-            top: auto;
-            bottom: 0;
-        }
-    }
+		&:before {
+			content: "\f077";
+			font-size: 10px;
+		}
+
+		&.t-arrow-down:before {
+			content: "\f078"; // chevron-down
+		}
+
+		&.t-arrow-down {
+			top: auto;
+			bottom: 0;
+		}
+	}
 }
 
 .numerictextbox-group {
@@ -337,10 +363,7 @@ a.t-button.t-state-disabled:hover,
 		padding: 8px;
 		border-left-width: 0 !important;
 		border-right-width: 0 !important;
-	}
-
-	.t-filter-options {
-		padding: 8px;
+		border-color: $grid-border-color;
 	}
 
 	.t-status-text {
@@ -363,13 +386,15 @@ a.t-button.t-state-disabled:hover,
 			font-size: $font-size-sm;
 		}
 	}
-
 	/**:not(.btn-group) > .btn {
 		margin: 0.2em;
 	}*/
-
 	.t-button .fa {
 		margin-top: 0;
+	}
+
+	.t-grid-header-wrap, .t-grid-footer-wrap {
+		border-color: #a4abb2;
 	}
 
 	tbody {
@@ -394,12 +419,9 @@ a.t-button.t-state-disabled:hover,
 		.t-button {
 			@extend .btn;
 			@extend .btn-sm;
-			/*&:hover {
-				border-color: #f3d64a;
-				background-color: #fae185;
-				color: #000;
-			}*/
-			&.t-grid-update {
+			min-width: 92px;
+
+			&.t-grid-update, &.t-grid-insert {
 				@extend .btn-warning;
 			}
 
@@ -407,7 +429,7 @@ a.t-button.t-state-disabled:hover,
 				@extend .btn-danger;
 			}
 
-			&:not(.t-grid-update):not(.t-grid-delete) {
+			&:not(.t-grid-update):not(.t-grid-delete):not(.t-grid-insert) {
 				@extend .btn-secondary;
 			}
 		}
@@ -419,6 +441,32 @@ a.t-button.t-state-disabled:hover,
 
 	.text-box.single-line {
 		/* ... */
+	}
+
+	.t-filter-options {
+		border-radius: $border-radius;
+		padding: 0.5rem;
+		box-sizing: border-box;
+		width: 250px;
+
+		.t-filter-help-text {
+			font-size: 12px;
+			padding: 0.25rem 0;
+		}
+
+		.t-button {
+			@extend .btn-sm;
+			@extend .btn-secondary;
+		}
+
+		.t-filter-button {
+			margin-top: 1rem;
+		}
+
+		input[type=text], .t-filter-operator {
+			@extend .form-control;
+			@extend .form-control-sm;
+		}
 	}
 }
 
@@ -470,25 +518,9 @@ a.t-button.t-state-disabled:hover,
 	padding: 6px;
 }
 
-
-.t-group.t-popup {
-	background-color: #f7f7f7;
-}
-
 .t-grouping-header {
 	text-shadow: none;
 	padding: 0.6em;
-}
-
-
-.t-filter-options {
-	padding: 2px 4px;
-	font-size: $font-size-sm;
-	border-radius: 2px;
-}
-
-.t-filter-options {
-	font-size: $font-size-sm;
 }
 
 
@@ -517,12 +549,22 @@ a.t-button.t-state-disabled:hover,
 }
 
 .t-grid-filter {
-	margin: 0;
-	padding: 0;
 	position: absolute;
-	right: 4px;
-	top: 50%;
-	margin-top: -8px;
+	display: flex;
+	right: 0;
+	top: 0;
+	height: 100%;
+	width: 28px;
+	margin: 0;
+	padding: $gray-100 0;
+
+	.t-icon {
+		@include custom-t-icon();
+
+		&:before {
+			content: "\f0b0";
+		}
+	}
 }
 
 
@@ -544,7 +586,7 @@ a.t-button.t-state-disabled:hover,
 }
 
 .t-grid-pager {
-	background: #f7f7f7;
+	background: $grid-pager-bg;
 	text-shadow: none !important;
 	padding-top: .4em !important;
 	padding-bottom: .4em !important;

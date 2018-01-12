@@ -22,17 +22,8 @@ a:hover {
 	font-size: 14px;
 }
 
-.dropdown-menu {
-	border-radius: 0 !important;
-	text-shadow: none;
-}
-
-.dropdown-item > .fa {
+.dropdown-item:not(:hover):not(:active):not(:visited) > .fa {
 	color: #6d6d6d;
-}
-
-.dropdown-item:hover > .fa {
-	color: inherit;
 }
 
 /* Page
@@ -110,6 +101,8 @@ header {
     }
 
     .dropdown-menu .fa {
+		display: inline-block;
+		margin-left: -10px;
 	    margin-right: 6px;
 	    font-size: 17px;
 	    vertical-align: bottom;

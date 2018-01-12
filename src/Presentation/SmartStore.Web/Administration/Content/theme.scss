@@ -99,17 +99,18 @@ $btn-border-radius:             .125rem;
 $btn-border-radius-lg:          .1875rem;
 $btn-border-radius-sm:          .125rem;
 
-$dropdown-box-shadow:           0 2px 6px rgba(#000, .15); 
+$dropdown-box-shadow:			0 3px 12px rgba(27,31,35,0.15); //0 2px 6px rgba(#000, .15);
+$dropdown-border-color:			rgba(0, 0, 0, 0.08); 
 
-$dropdown-link-color:            $gray-800;
-$dropdown-link-hover-color:      darken($gray-800, 5%);
-$dropdown-link-hover-bg:         $gray-100;
+$dropdown-link-color:			$body-color; //$gray-800;
+$dropdown-link-hover-color:		#fff; //darken($gray-800, 5%);
+$dropdown-link-hover-bg:        $indigo;
 
-$dropdown-link-active-color:     $dropdown-link-hover-color;
-$dropdown-link-active-bg:        darken($dropdown-link-hover-bg, 5%);
+$dropdown-link-active-color:    $dropdown-link-hover-color;
+$dropdown-link-active-bg:       lighten($dropdown-link-hover-bg, 5%);
 
-$dropdown-item-padding-y:        0.5rem;
-$dropdown-item-padding-x:        1.5rem;
+$dropdown-item-padding-y:       0.625rem; // 0.5rem;
+$dropdown-item-padding-x:       1.5rem;
 
 $alert-padding-y:				1rem;
 

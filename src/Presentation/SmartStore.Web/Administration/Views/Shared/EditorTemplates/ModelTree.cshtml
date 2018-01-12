@@ -5,10 +5,9 @@
 
 @helper TokenSelector(TreeNode<ModelTreeMember> root)
 {
-    <div class="btn-group message-token-selector">
-        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+    <div class="dropdown message-token-selector">
+        <a class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" href="#">
             @T("Admin.Common.ChooseToken")
-            <span class="caret"></span>
         </a>
         @TokenList(root)
     </div>
@@ -28,12 +27,14 @@
                     tokens.Insert(0, curNode.Value.Name);
                     curNode = curNode.Parent;
                 }
-                <li><a tabindex="-1" href="#" class="message-token" @Html.Attr("data-token", String.Join(".", tokens), tokens.Count > 0)>@child.Value.Name</a></li>
+                <li>
+					<a tabindex="-1" href="#" class="dropdown-item message-token" @Html.Attr("data-token", String.Join(".", tokens), tokens.Count > 0)>@child.Value.Name</a>
+				</li>
             }
             else
             {
-                <li class="dropdown-submenu">
-                    <a tabindex="-1" href="#" class="message-token">@child.Value.Name</a>
+                <li class="dropdown-group">
+                    <a tabindex="-1" href="#" class="dropdown-item message-token">@child.Value.Name</a>
                     @TokenList(child)
                 </li>
             }

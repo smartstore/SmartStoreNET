@@ -2001,12 +2001,15 @@ namespace SmartStore.Services.Orders
             if (order.OrderTotal == decimal.Zero)
                 return false;
 
-            //uncomment the lines below in order to allow this operation for cancelled orders
-            //if (order.OrderStatus == OrderStatus.Cancelled)
-            //    return false;
+			// Only partial refunds allowed if already refunded.
+			if (order.RefundedAmount > decimal.Zero)
+				return false;
 
-            if (order.PaymentStatus == PaymentStatus.Paid &&
-                _paymentService.SupportRefund(order.PaymentMethodSystemName))
+			// Uncomment the lines below in order to allow this operation for cancelled orders.
+			//if (order.OrderStatus == OrderStatus.Cancelled)
+			//    return false;
+
+			if (order.PaymentStatus == PaymentStatus.Paid && _paymentService.SupportRefund(order.PaymentMethodSystemName))
                 return true;
 
             return false;
@@ -2037,10 +2040,10 @@ namespace SmartStore.Services.Orders
 
                 if (result.Success)
                 {
-                    //total amount refunded
+                    // Total amount refunded.
                     decimal totalAmountRefunded = order.RefundedAmount + request.AmountToRefund;
 
-                    //update order info
+                    // Update order info.
                     order.RefundedAmount = totalAmountRefunded;
                     order.PaymentStatus = result.NewPaymentStatus;
 
@@ -2048,7 +2051,6 @@ namespace SmartStore.Services.Orders
 
 					_orderService.AddOrderNote(order, T("Admin.OrderNotice.OrderRefunded", _priceFormatter.FormatPrice(request.AmountToRefund, true, false)));
 
-                    //check order status
                     CheckOrderStatus(order);
                 }
 
@@ -2081,11 +2083,15 @@ namespace SmartStore.Services.Orders
             if (order.OrderTotal == decimal.Zero)
                 return false;
 
-            //uncomment the lines below in order to allow this operation for cancelled orders
-            //if (order.OrderStatus == OrderStatus.Cancelled)
-            //     return false;
+			// Only partial refunds allowed if already refunded.
+			if (order.RefundedAmount > decimal.Zero)
+				return false;
 
-            if (order.PaymentStatus == PaymentStatus.Paid)
+			// Uncomment the lines below in order to allow this operation for cancelled orders.
+			//if (order.OrderStatus == OrderStatus.Cancelled)
+			//     return false;
+
+			if (order.PaymentStatus == PaymentStatus.Paid)
                 return true;
 
             return false;
@@ -2103,13 +2109,13 @@ namespace SmartStore.Services.Orders
             if (!CanRefundOffline(order))
                 throw new SmartException(T("Order.CannotRefund"));
 
-            //amout to refund
+            // Amout to refund.
             decimal amountToRefund = order.OrderTotal;
 
-            //total amount refunded
+            // Total amount refunded.
             decimal totalAmountRefunded = order.RefundedAmount + amountToRefund;
 
-            //update order info
+            // Update order info.
             order.RefundedAmount = totalAmountRefunded;
             order.PaymentStatus = PaymentStatus.Refunded;
 
@@ -2117,7 +2123,6 @@ namespace SmartStore.Services.Orders
 
 			_orderService.AddOrderNote(order, T("Admin.OrderNotice.OrderMarkedAsRefunded", _priceFormatter.FormatPrice(amountToRefund, true, false)));
 
-            //check order status
             CheckOrderStatus(order);
         }
 

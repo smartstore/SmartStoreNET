@@ -1,0 +1,138 @@
+﻿@model CreateMessageResult
+@using SmartStore.Services.Messages;
+@{
+	Layout = "";
+}
+
+<div class="send-preview-mail-header">
+
+@using (Html.BeginForm("Preview", "MessageTemplate", FormMethod.Post, new { id = "send-preview-mail-form" }))
+{
+	@Html.HiddenFor(model => model.MessageContext.MessageTemplate.Id)
+
+	@Html.HiddenFor(model => model.Email.Priority)
+	@Html.HiddenFor(model => model.Email.From)
+	@Html.HiddenFor(model => model.Email.To)
+	@Html.HiddenFor(model => model.Email.Bcc)
+	@Html.HiddenFor(model => model.Email.ReplyTo)
+	@Html.HiddenFor(model => model.Email.Subject)
+	@Html.HiddenFor(model => model.Email.Body)
+	@Html.HiddenFor(model => model.Email.CreatedOnUtc)
+	@Html.HiddenFor(model => model.Email.EmailAccountId)
+	@Html.HiddenFor(model => model.Email.SendManually)
+
+	<div class="clearfix">
+		<table class="adminContent span12">
+			<tr>
+				<td class="adminTitle">
+					<div class="ctl-label">
+						<label for="Email_To">@T("Admin.MessageTemplate.PreviewHeader.To")</label>
+					</div>
+				</td>
+				<td class="adminData">
+					<div class="input-append">
+						@Html.EditorFor(model => model.Email.To)
+						<span class="add-on send-preview-mail-btn">
+							<i class="fa fa-share"></i>
+						</span>
+					</div>
+					@Html.ValidationMessageFor(model => model.Email.To)
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="collapse" class="collapse clearfix">
+
+		<table class="adminContent span12">
+			<tr>
+				<td class="adminTitle">
+					<div class="ctl-label">
+						<label for="Email_ReplyTo">@T("Admin.MessageTemplate.PreviewHeader.ReplyTo")</label>
+					</div>
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(model => model.Email.ReplyTo, new { disabled = "disabled", @class = "text-box single-line valid" })
+					@Html.ValidationMessageFor(model => model.Email.ReplyTo)
+				</td>
+			</tr>
+
+			<tr>
+				<td class="adminTitle">
+					<div class="ctl-label">
+						<label for="Email_Subject">@T("Admin.MessageTemplate.PreviewHeader.Subject")</label>
+					</div>
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(model => model.Email.Subject, new { disabled = "disabled", @class = "text-box single-line valid" })
+					@Html.ValidationMessageFor(model => model.Email.Subject)
+				</td>
+			</tr>
+
+			@*<tr>
+				<td class="adminTitle"></td>
+				<td class="adminData">
+					<button type="submit" class="btn btn-primary btn-lg" name="btn-send-test-mail" id="btn-send-test-mail">
+						@T("MessageTemplate.Preview.Test")
+					</button>
+				</td>
+			</tr>*@
+		</table>
+	</div>
+
+	<div class="clearfix">
+		<table class="adminContent span12">
+			<tr>
+				<td class="adminTitle"></td>
+				<td class="adminData">
+					<button type="button" class="btn btn-secondary collapsed toggle-mail-info" data-toggle="collapse" data-target="#collapse">
+						<i class="fa fa-angle-down"></i>
+						<span>@T("Admin.MessageTemplate.Preview.More")</span>
+					</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+}
+</div>
+
+<script type="text/javascript">
+
+	$(function () {
+
+		var form = $("#send-preview-mail-form");
+		var sendBtn = $(".send-preview-mail-btn");
+		var moreLessBtn = $(".toggle-mail-info");
+
+		sendBtn.click(function () { form.submit(); });
+
+		moreLessBtn.on("click", function() {
+			
+			if (moreLessBtn.hasClass("collapsed")) {
+				$("span", moreLessBtn).text("@T("Admin.MessageTemplate.Preview.Less")");
+				$("i", moreLessBtn).toggleClass("fa-angle-down");
+				$("i", moreLessBtn).toggleClass("fa-angle-up", true);
+			}
+			else {
+				$("span", moreLessBtn).text("@T("Admin.MessageTemplate.Preview.More")");
+				$("i", moreLessBtn).toggleClass("fa-angle-up");
+				$("i", moreLessBtn).toggleClass("fa-angle-down", true);
+			}
+
+			return;
+		});
+	});
+	
+</script>
+
+<style>
+	.send-preview-mail-header form {
+		margin: 0;
+	}
+	.send-preview-mail-header td.adminTitle {
+		width: 180px;
+	}
+	.send-preview-mail-btn:hover {
+		cursor: pointer;
+	}
+</style>

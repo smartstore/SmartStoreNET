@@ -153,6 +153,21 @@ namespace SmartStore.Data.Migrations
 				"In der Standardsuche können die Felder Name, SKU und Kurzbeschreibung durchsucht werden. Für weitere Felder ist ein Such-Plugin wie etwa das MegaSearch-Plugin aus der <a href='http://www.smartstore.com/de/net#section-pricing' target='_blank'>Premium Edition</a> notwendig.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.FolderName", "Folder path", "Ordnerpfad");
+
+			builder.AddOrUpdate("Admin.MessageTemplate.Preview.More", "More", "Mehr");
+			builder.AddOrUpdate("Admin.MessageTemplate.Preview.Less", "Less", "Weniger");
+			builder.AddOrUpdate("Admin.MessageTemplate.PreviewHeader.To", "To", "An");
+			builder.AddOrUpdate("Admin.MessageTemplate.PreviewHeader.ReplyTo", "From", "Von");
+			builder.AddOrUpdate("Admin.MessageTemplate.PreviewHeader.Subject", "Subject", "Betreff");
+
+			builder.AddOrUpdate("Admin.ContentManagement.MessageTemplates.Preview.SuccessfullySent",
+				"The email has been sent successfully.", 
+				"Die E-Mail wurde erfolgreich versendet.");
+
+			builder.AddOrUpdate("Admin.ContentManagement.MessageTemplates.SuccessfullyCopied",
+				"The message template has been copied successfully.",
+				"Die Nachrichtenvorlage wurde erfolgreich kopiert.");
+			
 		}
 	}
 }

@@ -36,6 +36,7 @@
     <IISExpressUseClassicPipelineMode />
     <UpgradeBackupLocation />
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -276,7 +277,7 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>del "$(TargetDir)MiniProfiler.pdb" /q /s
-</PostBuildEvent>
+del "$(TargetDir)MiniProfiler.EntityFramework6.pdb" /q /s</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -228,6 +228,8 @@ namespace SmartStore.PayPal.Controllers
 
 				if (resp.Ack == AckCodeType.Success)
 				{
+					// Note: If Token is null and an empty page with "No token passed" is displyed, then this is caused by a broken
+					// Web References/PayPalSvc/Reference.cs file. To fix it, check git history of the file and revert changes.
 					processPaymentRequest.PaypalToken = resp.Token;
 					processPaymentRequest.OrderGuid = new Guid();
 					processPaymentRequest.IsShippingMethodSet = ControllerContext.RouteData.IsRouteEqual("ShoppingCart", "Cart");

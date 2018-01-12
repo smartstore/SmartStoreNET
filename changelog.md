@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -60,6 +60,7 @@
 * Prices with discounts limited to categories and customer groups were shown to all users in product lists
 * #1330 MegaSearch: Missing variant facets if the variant value is not unique
 * Back-in-stock subscription form was already submitted when opening the popup dialog
+* Associated products of a grouped product were displayed in the wrong order
 
 
 ## SmartStore.NET 3.0.3

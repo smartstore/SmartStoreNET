@@ -1,6 +1,6 @@
 ﻿@model MessageTemplateModel
 @{
-    ViewBag.Title = T("Admin.ContentManagement.MessageTemplates.EditMessageTemplateDetails").Text;
+	ViewBag.Title = T("Admin.ContentManagement.MessageTemplates.EditMessageTemplateDetails").Text;
 }
 
 @using (Html.BeginForm())
@@ -15,7 +15,7 @@
 			
 			@* CAUTION: saving a template to XML overwrites the original raw content *@
 			@*<button type="submit" name="save-in-file" value="save-in-file" class="btn btn-danger"><i class="fa fa-floppy-o"></i>&nbsp;Save as XML</button>*@
-			<a id="btn-preview-template" class="btn btn-secondary" href="@Url.Action("Preview", new { id = Model.Id })"><i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")</a>
+			<a id="btn-preview-template" class="btn btn-secondary" href="javascript:void(0)"><i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")</a>
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
             <button type="submit" name="message-template-copy" id="message-template-copy" class="btn" value="@T("Admin.ContentManagement.MessageTemplates.Copy")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
@@ -29,16 +29,24 @@
         </div>
     </div>
 
-    Html.RenderPartial("_CreateOrUpdate", Model);
+	Html.RenderPartial("_CreateOrUpdate", Model);
 }
 
 @Html.DeleteConfirmation("message-template-delete")
 
+@using (Html.BeginZoneContent("end", key: "preview-message-template"))
+{
+	Html.RenderAction("Preview", Model.Id);
+}
+
 <script>
 	$(function () {
+
+		$("#message-template-preview").modal({ show: false });
+
 		$('#btn-preview-template').on('click', function (e) {
 			e.preventDefault();
-			openPopup($(this).attr('href'));
+			openModalWindow('message-template-preview');
 			return false;
 		});
 	});

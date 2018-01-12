@@ -1,0 +1,17 @@
+﻿@model CreateMessageResult
+@using SmartStore.Services.Messages;
+@{
+	Layout = "";
+}
+
+<div id="message-template-preview" class="modal modal-flex modal-xlarge hide fade" tabindex="-1">
+	<div class="modal-header">
+		@Html.Partial("PreviewHeader", Model)
+	</div>
+	<div class="modal-body" style="padding: 0">
+		<iframe class="modal-flex-fill-area" frameborder="0" src="data:text/html;charset=utf-8,@Uri.EscapeDataString(Model.Email.Body)"></iframe>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-secondary btn-default" data-dismiss="modal">@T("Common.Close")</button>
+	</div>
+</div>

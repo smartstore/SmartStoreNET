@@ -15,6 +15,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using SmartStore.Templating;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -32,7 +33,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreMappingService _storeMappingService;
         private readonly EmailAccountSettings _emailAccountSettings;
 
-        public MessageTemplateController(
+		public MessageTemplateController(
 			IMessageTemplateService messageTemplateService,
 			IMessageFactory messageFactory,
 			IEmailAccountService emailAccountService, 
@@ -54,7 +55,7 @@ namespace SmartStore.Admin.Controllers
 			_storeService = storeService;
 			_storeMappingService = storeMappingService;
             _emailAccountSettings = emailAccountSettings;
-        }
+		}
 
         [NonAction]
         public void UpdateLocales(MessageTemplate mt, MessageTemplateModel model)
@@ -183,10 +184,10 @@ namespace SmartStore.Admin.Controllers
                 var emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, languageId, false, false);
                 locale.EmailAccountId = emailAccountId > 0 ? emailAccountId : _emailAccountSettings.DefaultEmailAccountId;
             });
-
-            return View(model);
+			
+			return View(model);
         }
-
+		
 		private void PrepareLastModelTree(MessageTemplate template)
 		{
 			ViewBag.LastModelTreeJson = template.LastModelTree;
@@ -269,17 +270,30 @@ namespace SmartStore.Admin.Controllers
 					TestMode = true
 				};
 
-				// TODO: (mc) Liquid > make proper UI for testing (IFrame, Recipient etc.)
 				var result = _messageFactory.CreateMessage(context, false);
 				var messageModel = result.Model;
 
-				return Content(result.Email.Body, "text/html");
+				return View(result);
 			}
 			catch (Exception ex)
 			{
 				NotifyError(ex);
 				return RedirectToAction("Edit", template.Id);
 			}
+		}
+
+		[HttpPost]
+		[ValidateInput(false)]
+		public ActionResult Preview(CreateMessageResult messageResult)
+		{
+			var template = _messageTemplateService.GetMessageTemplateById(messageResult.MessageContext.MessageTemplate.Id);
+			var context = new MessageContext { MessageTemplate = template };
+
+			_messageFactory.QueueMessage(context, messageResult.Email);
+
+			NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Preview.SuccessfullySent"));
+
+			return RedirectToAction("Edit", new { id = messageResult.MessageContext.MessageTemplate.Id });
 		}
 
 		[HttpPost, ActionName("Edit")]
@@ -319,7 +333,7 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				var newMessageTemplate = _messageTemplateService.CopyMessageTemplate(messageTemplate);
-				NotifySuccess("The message template has been copied successfully");
+				NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.SuccessfullyCopied"));
 				return RedirectToAction("Edit", new { id = newMessageTemplate.Id });
 			}
 			catch (Exception exc)

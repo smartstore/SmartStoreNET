@@ -16,7 +16,7 @@
 </p>
 
 <p class="m-t-4 m-b-4 text-center">
-  <a class="btn btn-primary" href="{{ Customer.EditUrl }}">Visit customer profile</a>
+  <a class="btn btn-primary" href="{{ Customer.EditUrl }}">View customer profile</a>
 </p>
 
 {% if Customer.VatNumber %}

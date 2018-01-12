@@ -15,7 +15,7 @@
 </p>
 
 <p class="m-t-4 m-b-4">
-  <a href="{{ ForumTopic.Url }}" class="btn btn-primary">Go to topic</a>
+  <a href="{{ ForumTopic.Url }}" class="btn btn-primary">View topic</a>
 </p>
 
 <table class="w-100 brd bg-light">

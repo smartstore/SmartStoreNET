@@ -12,7 +12,7 @@
 </h1>
 
 <p>
-	you have received a gift card at a value of <b class="text-success text-lg">{{ GiftCard.Amount }}</b> for the online shop <a href="{{ Store.Url }}">{{ Store.Name }}</a>.
+	you have received a gift card in the amount of <b class="text-success text-lg">{{ GiftCard.Amount }}</b> for the online shop <a href="{{ Store.Url }}">{{ Store.Name }}</a>.
 </p>
 
 <p class="bg-success text-white p-3 text-center">

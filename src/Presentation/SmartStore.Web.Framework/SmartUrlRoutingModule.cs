@@ -13,6 +13,7 @@ using System.Reflection;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Web.Framework
 {
@@ -79,6 +80,9 @@ namespace SmartStore.Web.Framework
 
 		public void Init(HttpApplication application)
 		{
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+
 			if (application.Context.Items[_contextKey] == null)
 			{
 				application.Context.Items[_contextKey] = _contextKey;

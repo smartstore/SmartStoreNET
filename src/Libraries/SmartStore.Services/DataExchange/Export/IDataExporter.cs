@@ -63,6 +63,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public IList<int> EntitiesToExport { get; set; }
 
+		public string ActionOrigin { get; set; }
+
 		public IDictionary<string, object> CustomData { get; private set; }
 
 		public IQueryable<Product> ProductQuery { get; set; }

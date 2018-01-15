@@ -41,7 +41,7 @@
 	</tr>
 
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
-	{	
+	{
 		if (Model.Provider.Feature.HasFlag(ExportFeatures.CanProjectAttributeCombinations))
 		{
 			<tr>
@@ -245,7 +245,7 @@
 		}
 	}
 	else if (Model.Provider.EntityType == ExportEntityType.Order)
-	{	
+	{
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Projection.OrderStatusChangeId)
@@ -253,6 +253,18 @@
 			<td class="adminData">
 				@Html.DropDownListFor(x => x.Projection.OrderStatusChangeId, Model.Projection.AvailableOrderStatusChange)
 				@Html.ValidationMessageFor(x => x.Projection.OrderStatusChangeId)
+			</td>
+		</tr>
+	}
+	else if (Model.Provider.EntityType == ExportEntityType.ShoppingCartItem)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Projection.NoBundleProducts)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Projection.NoBundleProducts)
+				@Html.ValidationMessageFor(x => x.Projection.NoBundleProducts)
 			</td>
 		</tr>
 	}

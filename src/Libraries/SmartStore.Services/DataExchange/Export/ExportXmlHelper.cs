@@ -9,14 +9,15 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.DataExchange.Export
 {
 	public class ExportXmlHelper : IDisposable
 	{
-		private XmlWriter _writer;
-		private CultureInfo _culture;
-		private bool _doNotDispose;
+		protected XmlWriter _writer;
+		protected CultureInfo _culture;
+		protected bool _doNotDispose;
 
 		public ExportXmlHelper(XmlWriter writer, bool doNotDispose = false, CultureInfo culture = null)
 		{
@@ -51,10 +52,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public ExportXmlExclude Exclude { get; set; }
 
-		public XmlWriter Writer
-		{
-			get { return _writer; }
-		}
+		public XmlWriter Writer => _writer;
 
 		public void Dispose()
 		{
@@ -950,6 +948,40 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			WriteGenericAttributes(customer);
+
+			if (node.HasValue())
+			{
+				_writer.WriteEndElement();
+			}
+		}
+
+		public void WriteShoppingCartItem(dynamic shoppingCartItem, string node)
+		{
+			if (shoppingCartItem == null)
+				return;
+
+			ShoppingCartItem entity = shoppingCartItem.Entity;
+
+			if (node.HasValue())
+			{
+				_writer.WriteStartElement(node);
+			}
+
+			_writer.Write("Id", entity.Id.ToString());
+			_writer.Write("StoreId", entity.StoreId.ToString());
+			_writer.Write("ParentItemId", entity.ParentItemId.HasValue ? entity.ParentItemId.Value.ToString() : "");
+			_writer.Write("BundleItemId", entity.BundleItemId.HasValue ? entity.BundleItemId.Value.ToString() : "");
+			_writer.Write("ShoppingCartTypeId", entity.ShoppingCartTypeId.ToString());
+			_writer.Write("CustomerId", entity.CustomerId.ToString());
+			_writer.Write("ProductId", entity.ProductId.ToString());
+			_writer.Write("AttributesXml", entity.AttributesXml, null, true);
+			_writer.Write("CustomerEnteredPrice", entity.CustomerEnteredPrice.ToString(_culture));
+			_writer.Write("Quantity", entity.Quantity.ToString());
+			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
+			_writer.Write("UpdatedOnUtc", entity.UpdatedOnUtc.ToString(_culture));
+
+			WriteCustomer(shoppingCartItem.Customer, "Customer");
+			WriteProduct(shoppingCartItem.Product, "Product");
 
 			if (node.HasValue())
 			{

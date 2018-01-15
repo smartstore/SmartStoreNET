@@ -416,7 +416,8 @@ namespace SmartStore.Admin.Controllers
 				AttributeCombinationValueMergingId = projection.AttributeCombinationValueMergingId,
 				NoGroupedProducts = projection.NoGroupedProducts,
 				OnlyIndividuallyVisibleAssociated = projection.OnlyIndividuallyVisibleAssociated,
-				OrderStatusChangeId = projection.OrderStatusChangeId
+				OrderStatusChangeId = projection.OrderStatusChangeId,
+				NoBundleProducts = projection.NoBundleProducts
 			};
 
 			if (profile.Projection.IsEmpty())
@@ -468,7 +469,8 @@ namespace SmartStore.Admin.Controllers
 				PaymentStatusIds = filter.PaymentStatusIds,
 				ShippingStatusIds = filter.ShippingStatusIds,
 				CustomerRoleIds = filter.CustomerRoleIds,
-				IsActiveSubscriber = filter.IsActiveSubscriber
+				IsActiveSubscriber = filter.IsActiveSubscriber,
+				ShoppingCartTypeId = filter.ShoppingCartTypeId
 			};
 
 			model.Filter.AvailableStores = allStores
@@ -555,6 +557,17 @@ namespace SmartStore.Admin.Controllers
 					model.Filter.AvailableOrderStates = OrderStatus.Pending.ToSelectList(false).ToList();
 					model.Filter.AvailablePaymentStates = PaymentStatus.Pending.ToSelectList(false).ToList();
 					model.Filter.AvailableShippingStates = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
+				}
+				else if (model.Provider.EntityType == ExportEntityType.ShoppingCartItem)
+				{
+					var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+
+					model.Filter.AvailableCustomerRoles = allCustomerRoles
+						.OrderBy(x => x.Name)
+						.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+						.ToList();
+
+					model.Filter.AvailableShoppingCartTypes = ShoppingCartType.ShoppingCart.ToSelectList(false).ToList();
 				}
 
 				try
@@ -828,7 +841,8 @@ namespace SmartStore.Admin.Controllers
 					AttributeCombinationValueMergingId = model.Projection.AttributeCombinationValueMergingId,
 					NoGroupedProducts = model.Projection.NoGroupedProducts,
 					OnlyIndividuallyVisibleAssociated = model.Projection.OnlyIndividuallyVisibleAssociated,
-					OrderStatusChangeId = model.Projection.OrderStatusChangeId
+					OrderStatusChangeId = model.Projection.OrderStatusChangeId,
+					NoBundleProducts = model.Projection.NoBundleProducts
 				};
 
 				profile.Projection = XmlHelper.Serialize(projection);
@@ -868,7 +882,8 @@ namespace SmartStore.Admin.Controllers
 					PaymentStatusIds = model.Filter.PaymentStatusIds,
 					ShippingStatusIds = model.Filter.ShippingStatusIds,
 					CustomerRoleIds = model.Filter.CustomerRoleIds,
-					IsActiveSubscriber = model.Filter.IsActiveSubscriber
+					IsActiveSubscriber = model.Filter.IsActiveSubscriber,
+					ShoppingCartTypeId = model.Filter.ShoppingCartTypeId
 				};
 
 				profile.Filtering = XmlHelper.Serialize(filter);
@@ -987,9 +1002,10 @@ namespace SmartStore.Admin.Controllers
 				var manuModel = new List<ExportPreviewManufacturerModel>();
 				var customerModel = new List<ExportPreviewCustomerModel>();
 				var subscriberModel = new List<ExportPreviewNewsLetterSubscriptionModel>();
+				var cartItemModel = new List<ExportPreviewShoppingCartItemModel>();
 
 				object gridData = null;
-				IList<Store> allStores = null;
+				Dictionary<int, Store> allStores = null;
 
 				var request = new DataExportRequest(profile, provider);
 				var normalizedTotal = totalRecords;
@@ -1049,7 +1065,7 @@ namespace SmartStore.Admin.Controllers
 							DisplayOrder = category.DisplayOrder,
 							LimitedToStores = category.LimitedToStores
 						});
-                    }
+					}
 					else if (provider.Value.EntityType == ExportEntityType.Manufacturer)
 					{
 						manuModel.Add(new ExportPreviewManufacturerModel
@@ -1084,9 +1100,9 @@ namespace SmartStore.Admin.Controllers
 						var subscription = item.Entity as NewsLetterSubscription;
 
 						if (allStores == null)
-							allStores = Services.StoreService.GetAllStores();
+							allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
 
-						var store = allStores.FirstOrDefault(x => x.Id == subscription.StoreId);
+						allStores.TryGetValue(subscription.StoreId, out Store store);
 
 						subscriberModel.Add(new ExportPreviewNewsLetterSubscriptionModel
 						{
@@ -1094,34 +1110,66 @@ namespace SmartStore.Admin.Controllers
 							Active = subscription.Active,
 							CreatedOn = _dateTimeHelper.ConvertToUserTime(subscription.CreatedOnUtc, DateTimeKind.Utc),
 							Email = subscription.Email,
-							StoreName = (store == null ? "".NaIfEmpty() : store.Name)
+							StoreName = store == null ? "".NaIfEmpty() : store.Name
 						});
 					}
-                }
+					else if (provider.Value.EntityType == ExportEntityType.ShoppingCartItem)
+					{
+						var cartItem = item.Entity as ShoppingCartItem;
+						var shoppingCartTypeName = cartItem.ShoppingCartType == ShoppingCartType.Wishlist
+							? ShoppingCartType.Wishlist.GetLocalizedEnum(Services.Localization, Services.WorkContext)
+							: ShoppingCartType.ShoppingCart.GetLocalizedEnum(Services.Localization, Services.WorkContext);
 
-				if (provider.Value.EntityType == ExportEntityType.Product)
-				{
-					gridData = new GridModel<ExportPreviewProductModel> { Data = productModel, Total = normalizedTotal };
+						if (allStores == null)
+							allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+
+						allStores.TryGetValue(cartItem.StoreId, out Store store);
+
+						cartItemModel.Add(new ExportPreviewShoppingCartItemModel
+						{
+							Id = cartItem.Id,
+							ShoppingCartTypeId = cartItem.ShoppingCartTypeId,
+							ShoppingCartTypeName = shoppingCartTypeName,
+							CustomerId = cartItem.Customer.Id,
+							CustomerEmail = cartItem.Customer.IsGuest() ? T("Admin.Customers.Guest").Text : cartItem.Customer.Email,
+							ProductTypeId = cartItem.Product.ProductTypeId,
+							ProductTypeName = cartItem.Product.GetProductTypeLabel(Services.Localization),
+							ProductTypeLabelHint = cartItem.Product.ProductTypeLabelHint,
+							Name = cartItem.Product.Name,
+							Sku = cartItem.Product.Sku,
+							Price = cartItem.Product.Price,
+							Published = cartItem.Product.Published,
+							StockQuantity = cartItem.Product.StockQuantity,
+							AdminComment = cartItem.Product.AdminComment,
+							CreatedOn = _dateTimeHelper.ConvertToUserTime(cartItem.CreatedOnUtc, DateTimeKind.Utc),
+							StoreName = store == null ? "".NaIfEmpty() : store.Name
+						});
+					}
 				}
-				else if (provider.Value.EntityType == ExportEntityType.Order)
+
+				switch (provider.Value.EntityType)
 				{
-					gridData = new GridModel<ExportPreviewOrderModel> { Data = orderModel, Total = normalizedTotal };
-				}
-				else if (provider.Value.EntityType == ExportEntityType.Category)
-				{
-					gridData = new GridModel<ExportPreviewCategoryModel> { Data = categoryModel, Total = normalizedTotal };
-				}
-				else if (provider.Value.EntityType == ExportEntityType.Manufacturer)
-				{
-					gridData = new GridModel<ExportPreviewManufacturerModel> { Data = manuModel, Total = normalizedTotal };
-				}
-				else if (provider.Value.EntityType == ExportEntityType.Customer)
-				{
-					gridData = new GridModel<ExportPreviewCustomerModel> { Data = customerModel, Total = normalizedTotal };
-				}
-				else if (provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
-				{
-					gridData = new GridModel<ExportPreviewNewsLetterSubscriptionModel> { Data = subscriberModel, Total = normalizedTotal };
+					case ExportEntityType.Product:
+						gridData = new GridModel<ExportPreviewProductModel> { Data = productModel, Total = normalizedTotal };
+						break;
+					case ExportEntityType.Order:
+						gridData = new GridModel<ExportPreviewOrderModel> { Data = orderModel, Total = normalizedTotal };
+						break;
+					case ExportEntityType.Category:
+						gridData = new GridModel<ExportPreviewCategoryModel> { Data = categoryModel, Total = normalizedTotal };
+						break;
+					case ExportEntityType.Manufacturer:
+						gridData = new GridModel<ExportPreviewManufacturerModel> { Data = manuModel, Total = normalizedTotal };
+						break;
+					case ExportEntityType.Customer:
+						gridData = new GridModel<ExportPreviewCustomerModel> { Data = customerModel, Total = normalizedTotal };
+						break;
+					case ExportEntityType.NewsLetterSubscription:
+						gridData = new GridModel<ExportPreviewNewsLetterSubscriptionModel> { Data = subscriberModel, Total = normalizedTotal };
+						break;
+					case ExportEntityType.ShoppingCartItem:
+						gridData = new GridModel<ExportPreviewShoppingCartItemModel> { Data = cartItemModel, Total = normalizedTotal };
+						break;
 				}
 
 				return new JsonResult { Data = gridData };

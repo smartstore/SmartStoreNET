@@ -94,5 +94,12 @@ namespace SmartStore.Admin.Models.DataExchange
 		public SelectList AvailableOrderStatusChange { get; set; }
 
 		#endregion
+
+		#region Shopping Cart Item
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.NoBundleProducts")]
+		public bool NoBundleProducts { get; set; }
+
+		#endregion
 	}
 }

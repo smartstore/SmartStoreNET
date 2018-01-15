@@ -260,7 +260,8 @@
 	if (Model.Provider.EntityType == ExportEntityType.Product ||
 		Model.Provider.EntityType == ExportEntityType.Customer ||
 		Model.Provider.EntityType == ExportEntityType.Order || 
-		Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription)
+		Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription ||
+		Model.Provider.EntityType == ExportEntityType.ShoppingCartItem)
 	{
 		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))</div>
 		@Html.Partial("_Tab.Filter", Model)
@@ -273,7 +274,9 @@
 
 @helper TabProjection()
 {
-	if (Model.Provider.EntityType == ExportEntityType.Product || Model.Provider.EntityType == ExportEntityType.Order)
+	if (Model.Provider.EntityType == ExportEntityType.Product ||
+		Model.Provider.EntityType == ExportEntityType.Order ||
+		Model.Provider.EntityType == ExportEntityType.ShoppingCartItem)
 	{
 		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Projection.Note"))</div>
 		@Html.Partial("_Tab.Projection", Model)

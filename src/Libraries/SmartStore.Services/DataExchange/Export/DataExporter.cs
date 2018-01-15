@@ -87,6 +87,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<IRepository<Customer>>_customerRepository;
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
 		private readonly Lazy<IRepository<Order>> _orderRepository;
+		private readonly Lazy<IRepository<ShoppingCartItem>> _shoppingCartItemRepository;
 
 		private readonly Lazy<MediaSettings> _mediaSettings;
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
@@ -132,6 +133,7 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<IRepository<Customer>> customerRepository,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Order>> orderRepository,
+			Lazy<IRepository<ShoppingCartItem>> shoppingCartItemRepository,
 			Lazy<MediaSettings> mediaSettings,
 			Lazy<ContactDataSettings> contactDataSettings,
 			Lazy<CustomerSettings> customerSettings,
@@ -176,6 +178,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_customerRepository = customerRepository;
 			_subscriptionRepository = subscriptionRepository;
 			_orderRepository = orderRepository;
+			_shoppingCartItemRepository = shoppingCartItemRepository;
 
 			_mediaSettings = mediaSettings;
 			_contactDataSettings = contactDataSettings;
@@ -227,26 +230,34 @@ namespace SmartStore.Services.DataExchange.Export
 		private bool HasPermission(DataExporterContext ctx)
 		{
 			if (ctx.Request.HasPermission)
+			{
 				return true;
+			}
 
 			var customer = _services.WorkContext.CurrentCustomer;
 
 			if (customer.SystemName == SystemCustomerNames.BackgroundTask)
+			{
 				return true;
+			}
 
-			if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product ||
-				ctx.Request.Provider.Value.EntityType == ExportEntityType.Category ||
-				ctx.Request.Provider.Value.EntityType == ExportEntityType.Manufacturer)
-				return _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog, customer);
+			switch (ctx.Request.Provider.Value.EntityType)
+			{
+				case ExportEntityType.Product:
+				case ExportEntityType.Category:
+				case ExportEntityType.Manufacturer:
+					return _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog, customer);
 
-			if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Customer)
-				return _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomers, customer);
+				case ExportEntityType.Customer:
+					return _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomers, customer);
 
-			if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
-				return _services.Permissions.Authorize(StandardPermissionProvider.ManageOrders, customer);
+				case ExportEntityType.Order:
+				case ExportEntityType.ShoppingCartItem:
+					return _services.Permissions.Authorize(StandardPermissionProvider.ManageOrders, customer);
 
-			if (ctx.Request.Provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
-				return _services.Permissions.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers, customer);
+				case ExportEntityType.NewsLetterSubscription:
+					return _services.Permissions.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers, customer);
+			}
 
 			return true;
 		}
@@ -306,6 +317,14 @@ namespace SmartStore.Services.DataExchange.Export
 					});
 
 					ctx.CustomerExportContext.Clear();
+				}
+
+				if (ctx.Request.Provider.Value.EntityType == ExportEntityType.ShoppingCartItem)
+				{
+					_dbContext.DetachEntities(x =>
+					{
+						return x is ShoppingCartItem || x is Customer || x is Product;
+					});
 				}
 			}
 			catch (Exception ex)
@@ -408,6 +427,16 @@ namespace SmartStore.Services.DataExchange.Export
 					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<NewsLetterSubscription>
 					(
 						skip => GetNewsLetterSubscriptions(ctx, skip),
+						null,
+						entity => Convert(ctx, entity),
+						offset, PageSize, limit, recordsPerSegment, totalCount
+					);
+					break;
+
+				case ExportEntityType.ShoppingCartItem:
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<ShoppingCartItem>
+					(
+						skip => GetShoppingCartItems(ctx, skip),
 						null,
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalCount
@@ -1021,6 +1050,100 @@ namespace SmartStore.Services.DataExchange.Export
 			return subscriptions;
 		}
 
+		private IQueryable<ShoppingCartItem> GetShoppingCartItemQuery(DataExporterContext ctx, int skip, int take)
+		{
+			var storeId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
+
+			var query = _shoppingCartItemRepository.Value.TableUntracked
+				.Expand(x => x.Customer)
+				.Expand(x => x.Customer.CustomerRoles)
+				.Expand(x => x.Product)
+				.Where(x => !x.Customer.Deleted);   //  && !x.Product.Deleted
+
+			if (storeId > 0)
+				query = query.Where(x => x.StoreId == storeId);
+
+			if (ctx.Request.ActionOrigin.IsCaseInsensitiveEqual("CurrentCarts"))
+			{
+				query = query.Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.ShoppingCart);
+			}
+			else if (ctx.Request.ActionOrigin.IsCaseInsensitiveEqual("CurrentWishlists"))
+			{
+				query = query.Where(x => x.ShoppingCartTypeId == (int)ShoppingCartType.Wishlist);
+			}
+			else if (ctx.Filter.ShoppingCartTypeId.HasValue)
+			{
+				query = query.Where(x => x.ShoppingCartTypeId == ctx.Filter.ShoppingCartTypeId.Value);
+			}
+
+			if (ctx.Filter.IsActiveCustomer.HasValue)
+				query = query.Where(x => x.Customer.Active == ctx.Filter.IsActiveCustomer.Value);
+
+			if (ctx.Filter.IsTaxExempt.HasValue)
+				query = query.Where(x => x.Customer.IsTaxExempt == ctx.Filter.IsTaxExempt.Value);
+
+			if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Length > 0)
+				query = query.Where(x => x.Customer.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+
+			if (ctx.Filter.LastActivityFrom.HasValue)
+			{
+				var activityFrom = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.LastActivityFrom.Value, _services.DateTimeHelper.CurrentTimeZone);
+				query = query.Where(x => activityFrom <= x.Customer.LastActivityDateUtc);
+			}
+
+			if (ctx.Filter.LastActivityTo.HasValue)
+			{
+				var activityTo = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.LastActivityTo.Value, _services.DateTimeHelper.CurrentTimeZone);
+				query = query.Where(x => activityTo >= x.Customer.LastActivityDateUtc);
+			}
+
+			if (ctx.Filter.CreatedFrom.HasValue)
+			{
+				var createdFrom = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone);
+				query = query.Where(x => createdFrom <= x.CreatedOnUtc);
+			}
+
+			if (ctx.Filter.CreatedTo.HasValue)
+			{
+				var createdTo = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _services.DateTimeHelper.CurrentTimeZone);
+				query = query.Where(x => createdTo >= x.CreatedOnUtc);
+			}
+
+			if (ctx.Projection.NoBundleProducts)
+			{
+				query = query.Where(x => x.Product.ProductTypeId != (int)ProductType.BundledProduct);
+			}
+			else
+			{
+				query = query.Where(x => x.BundleItemId == null);
+			}
+
+			if (ctx.Request.EntitiesToExport.Any())
+				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+
+			query = query
+				.OrderBy(x => x.ShoppingCartTypeId)
+				.ThenBy(x => x.CustomerId)
+				.ThenByDescending(x => x.CreatedOnUtc);
+
+			if (skip > 0)
+				query = query.Skip(skip);
+
+			if (take != int.MaxValue)
+				query = query.Take(take);
+
+			return query;
+		}
+
+		private List<ShoppingCartItem> GetShoppingCartItems(DataExporterContext ctx, int skip)
+		{
+			var shoppingCartItems = GetShoppingCartItemQuery(ctx, skip, PageSize).ToList();
+
+			SetProgress(ctx, shoppingCartItems.Count);
+
+			return shoppingCartItems;
+		}
+
 		#endregion
 
 		private List<Store> Init(DataExporterContext ctx, int? totalRecords = null)
@@ -1091,6 +1214,9 @@ namespace SmartStore.Services.DataExchange.Export
 							break;
 						case ExportEntityType.NewsLetterSubscription:
 							totalCount = GetNewsLetterSubscriptionQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue).Count();
+							break;
+						case ExportEntityType.ShoppingCartItem:
+							totalCount = GetShoppingCartItemQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue).Count();
 							break;
 					}
 				}
@@ -1393,7 +1519,7 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.IsPreview || ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard)
 				return;
 
-			// post process order entities
+			// Post process order entities.
 			if (ctx.EntityIdsLoaded.Any() && ctx.Request.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
 			{
 				using (var logger = new TraceLogger(logPath))
@@ -1433,15 +1559,9 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <summary>
 		/// The name of the public export folder
 		/// </summary>
-		public static string PublicFolder
-		{
-			get { return "Exchange"; }
-		}
+		public static string PublicFolder => "Exchange";
 
-		public static int PageSize
-		{
-			get { return 100; }
-		}
+		public static int PageSize => 100;
 
 		public DataExportResult Export(DataExportRequest request, CancellationToken cancellationToken)
 		{

@@ -32,6 +32,7 @@
 * Added options to include option names of specification and product attributes in the search index
 * #441 added option to specify that additional shipping surcharges are considered only once.
 * #1295 Sales tracking (tracking pixel) for Billiger.de
+* XML and CSV export of shopping cart and wishlist items
 
 ### Improvements
 * Target .NET Framework changed: 4.5.2 > 4.6.1.

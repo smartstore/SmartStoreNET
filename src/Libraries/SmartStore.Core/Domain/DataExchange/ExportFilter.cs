@@ -171,5 +171,14 @@ namespace SmartStore.Core.Domain.DataExchange
 		public bool? IsActiveSubscriber { get; set; }
 
 		#endregion
+
+		#region Shopping Cart
+
+		/// <summary>
+		/// Filter by shopping cart type identifier
+		/// </summary>
+		public int? ShoppingCartTypeId { get; set; }
+
+		#endregion
 	}
 }

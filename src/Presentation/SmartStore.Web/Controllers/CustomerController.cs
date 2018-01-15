@@ -466,7 +466,7 @@ namespace SmartStore.Web.Controllers
         [CaptchaValidator]
         public ActionResult Login(LoginModel model, string returnUrl, bool captchaValid)
         {
-            // validate CAPTCHA
+            // Validate CAPTCHA.
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage && !captchaValid)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
@@ -481,19 +481,18 @@ namespace SmartStore.Web.Controllers
 
                 if (_customerRegistrationService.ValidateCustomer(_customerSettings.UsernamesEnabled ? model.Username : model.Email, model.Password))
                 {
-                    var customer = _customerSettings.UsernamesEnabled ? _customerService.GetCustomerByUsername(model.Username) : _customerService.GetCustomerByEmail(model.Email);
+                    var customer = _customerSettings.UsernamesEnabled 
+						? _customerService.GetCustomerByUsername(model.Username) 
+						: _customerService.GetCustomerByEmail(model.Email);
 
-                    // migrate shopping cart
                     _shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer);
 
-                    // sign in new customer
                     _authenticationService.SignIn(customer, model.RememberMe);
 
-                    // activity log
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
-					// confusing when login page redirects to itself
-					if (returnUrl.IsEmpty() || returnUrl.Contains(@"/login?"))
+					// Redirect home where redirect to referrer would be confusing.
+					if (returnUrl.IsEmpty() || returnUrl.Contains(@"/login?") || returnUrl.Contains(@"/passwordrecoveryconfirm"))
 					{
 						return RedirectToRoute("HomePage");
 					}
@@ -506,9 +505,10 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
+
             return View(model);
         }
 

@@ -11,10 +11,6 @@
 
 	var primaryActions = Model.ActionItems.Values.Where(x => x.IsPrimary).OrderBy(x => x.Priority).ToList();
 	var actions = Model.ActionItems.Values.Where(x => !x.IsPrimary).OrderBy(x => x.Priority).ToList();
-
-	//actions.Add(actions.First());
-	//actions.Add(actions.First());
-	//actions.Add(actions.First());
 }
 
 <div class="pd-actions-container">

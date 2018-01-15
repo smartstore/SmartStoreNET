@@ -186,6 +186,17 @@ namespace SmartStore.Data.Migrations
 				"Nach Warenkorbtyp filtern.");
 
 			builder.AddOrUpdate("Common.CustomerId", "Customer ID", "Kunden ID");
+
+			builder.AddOrUpdate("Account.AccountActivation.InvalidEmailOrToken",
+				"Unknown email or token. Please register again.",
+				"Unbekannte E-Mail oder Token. Bitte führen Sie die Registrierung erneut durch.");
+
+			builder.AddOrUpdate("Account.PasswordRecoveryConfirm.InvalidEmailOrToken",
+				"Unknown email or token. Please click \"Forgot password\" again, if you want to renew your password.",
+				"Unbekannte E-Mail oder Token. Klicken Sie bitte erneut \"Passwort vergessen\", falls Sie Ihr Passwort erneuern möchten.");
+
+			builder.Delete("Account.PasswordRecoveryConfirm.InvalidEmail");
+			builder.Delete("Account.PasswordRecoveryConfirm.InvalidToken");
 		}
 	}
 }

@@ -19,3 +19,9 @@
 * .t-grid .t-last with command buttons: add *.HtmlAttributes(new { align = "right" }) to column (see ProductEdit > Promotion tab)
 * Move custom grid action buttons below or above a grid to the grid toolbar (see ProductEdit > Promotion tab > CrossSellingGridCommands(...) etc.)
 * Dropdown Groups: mehr als 2 Ebenen gehen nicht, daher bspw. EditorTemplates/ModelTree.cshtml umgestalten
+* window.openPopup > check whether 'fluid = true' should be passed
+
+
+TODOs Frontend:
+================
+* .modal.modal-flex  >>  .modal-dialog.modal-flex

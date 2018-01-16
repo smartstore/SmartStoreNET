@@ -7,7 +7,7 @@ function closeModalWindow() {
 }
 function openModalWindow(modalId) {
     currentModalId = modalId;
-    $('#' + modalId).data('modal').show();
+    $('#' + modalId).modal('show');
 }
 
 // global Admin namespace

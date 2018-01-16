@@ -6,8 +6,8 @@
 	var isProductPicker = Model.EntityType.IsCaseInsensitiveEqual("product");
 }
 
-<div id="entpicker-@(Model.EntityType)-dialog" class="modal modal-flex fade entpicker" role="dialog" aria-hidden="true" tabindex="-1">
-	<div class="modal-dialog" role="document">
+<div id="entpicker-@(Model.EntityType)-dialog" class="modal fade entpicker" role="dialog" aria-hidden="true" tabindex="-1">
+	<div class="modal-dialog modal-flex" role="document">
 		<form class="modal-content" method="POST" action="@Url.Action("Picker", "Entity", new { area = "" })">
 			<div class="modal-header flex-wrap">
 				<h3 class="modal-title">&nbsp;</h3>

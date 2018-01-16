@@ -4,14 +4,21 @@
 	Layout = "";
 }
 
-<div id="message-template-preview" class="modal modal-flex modal-xlarge hide fade" tabindex="-1">
-	<div class="modal-header">
-		@Html.Partial("PreviewHeader", Model)
-	</div>
-	<div class="modal-body" style="padding: 0">
-		<iframe class="modal-flex-fill-area" frameborder="0" src="data:text/html;charset=utf-8,@Uri.EscapeDataString(Model.Email.Body)"></iframe>
-	</div>
-	<div class="modal-footer">
-		<button type="button" class="btn btn-secondary btn-default" data-dismiss="modal">@T("Common.Close")</button>
+<div id="message-template-preview" class="modal modal-flex fade" tabindex="-1">
+	<div class="modal-dialog modal-flex modal-flex-sm" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">@Html.Partial("PreviewHeader", Model)</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" style="padding: 0">
+				<iframe class="modal-flex-fill-area" frameborder="0" src="data:text/html;charset=utf-8,@Uri.EscapeDataString(Model.Email.Body)"></iframe>
+			</div>
+			@*<div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Close")</button>
+			</div>*@
+		</div>
 	</div>
 </div>

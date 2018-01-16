@@ -122,8 +122,6 @@ namespace SmartStore.Web.Framework
 
             var window = helper.SmartStore().Window().Name(modalId)
                 .Title(EngineContext.Current.Resolve<ILocalizationService>().GetResource("Admin.Common.AreYouSure"))
-                .Modal(true)
-                .Visible(false)
                 .Content(helper.Partial("Delete", deleteConfirmationModel).ToHtmlString())
                 .ToHtmlString();
 

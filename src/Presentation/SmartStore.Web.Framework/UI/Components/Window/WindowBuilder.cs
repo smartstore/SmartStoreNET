@@ -11,7 +11,13 @@ namespace SmartStore.Web.Framework.UI
         {
         }
 
-        public WindowBuilder<TModel> Title(string value)
+		public WindowBuilder<TModel> Size(WindowSize value)
+		{
+			base.Component.Size = value;
+			return this;
+		}
+
+		public WindowBuilder<TModel> Title(string value)
         {
             base.Component.Title = value;
             return this;
@@ -55,12 +61,6 @@ namespace SmartStore.Web.Framework.UI
             return this;
         }
 
-        public WindowBuilder<TModel> Modal(bool value)
-        {
-            base.Component.Modal = value;
-            return this;
-        }
-
         public WindowBuilder<TModel> Fade(bool value)
         {
             base.Component.Fade = value;
@@ -73,34 +73,40 @@ namespace SmartStore.Web.Framework.UI
             return this;
         }
 
-        public WindowBuilder<TModel> Visible(bool value)
-        {
-            base.Component.Visible = value;
-            return this;
-        }
-
         public WindowBuilder<TModel> ShowClose(bool value)
         {
             base.Component.ShowClose = value;
             return this;
         }
 
-        public WindowBuilder<TModel> CloseOnEscapePress(bool value)
+		public WindowBuilder<TModel> Focus(bool value)
+		{
+			base.Component.Focus = value;
+			return this;
+		}
+
+		public WindowBuilder<TModel> CenterVertically(bool value)
+		{
+			base.Component.CenterVertically = value;
+			return this;
+		}
+
+		public WindowBuilder<TModel> Show(bool value)
+		{
+			base.Component.Show = value;
+			return this;
+		}
+
+		public WindowBuilder<TModel> CloseOnEscapePress(bool value)
         {
             base.Component.CloseOnEscapePress = value;
             return this;
         }
 
-        public WindowBuilder<TModel> Width(int value)
-        {
-            base.Component.Width = value;
-            return this;
-        }
-
-        public WindowBuilder<TModel> Height(int value)
-        {
-            base.Component.Height = value;
-            return this;
-        }
+		public WindowBuilder<TModel> CloseOnBackdropClick(bool value)
+		{
+			base.Component.CloseOnBackdropClick = value;
+			return this;
+		}
     }
 }

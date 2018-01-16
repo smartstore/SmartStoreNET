@@ -7,7 +7,7 @@
 
 @{Html.SmartStore().Window()
 	.Name("uploadpackage-window")
-	.Title(dialogTitle)
+	.Title(dialogTitle).Size(WindowSize.FlexSmall)
 	.Content(@<text>
 		@using (Html.BeginForm("UploadPackage", "Packaging", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
 		{
@@ -25,10 +25,8 @@
 	</text>)
 	.FooterContent(@<text>
 		<button id="uploadpackagesubmit" type="submit" class="btn btn-primary">@T("Admin.Packaging.Dialog.Upload")</button>
-		<a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
+		<a href="#" class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</a>
 	</text>)
-	.Modal(true)
-	.Visible(false)
 	.Render();
 }
 

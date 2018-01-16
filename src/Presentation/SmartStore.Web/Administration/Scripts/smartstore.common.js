@@ -10,8 +10,8 @@
 		if (modal.length === 0) {
 			// TODO: (mc) Update to BS4 modal html later
 			var html =
-				'<div id="modal-popup-shared" class="modal modal-flex {0} fade" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'.format(!!(fluid) ? 'modal-fluid' : 'modal-xlarge')
-					+ '<div class="modal-dialog" role="document">'
+				'<div id="modal-popup-shared" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'
+					+ '<div class="modal-dialog modal-flex{0}" role="document">'.format(!!(fluid) ? '' : ' modal-flex-sm')
 						+ '<div class="modal-content">'
 							+ '<div class="modal-body" style="padding: 0">'
 								+ '<iframe class="modal-flex-fill-area" frameborder="0" src="' + url + '" />'

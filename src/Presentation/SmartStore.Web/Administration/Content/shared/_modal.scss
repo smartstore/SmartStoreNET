@@ -36,52 +36,57 @@
     font-weight: $font-weight-normal; // $font-weight-medium;
 }
 
-.modal-flex {
-    .modal-dialog {
-        position: fixed;
-        margin: 0;
-        width: auto;
-        height: auto;
-        max-width: none;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        right: 0;
+.modal-dialog.modal-flex {
+	position: fixed;
+	margin: 0;
+	width: auto;
+	height: auto;
+	max-width: none;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	right: 0;
 
-        @include media-breakpoint-up(md) {
-            left: 5%;
-            top: 5%;
-            bottom: 5%;
-            right: 5%;
-        }
-    }
+	@include media-breakpoint-up(md) {
+		left: 3%;
+		right: 3%;
+		top: 2%;
+		bottom: 2%;
+	}
 
-    .modal-content {
-        max-height: none;
-        overflow-y: auto;
-        overflow-x: hidden;
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-    }
+	&.modal-flex-sm {
+		@media (min-width: 800px) {
+			left: calc((100% / 2) - 400px);
+			right: calc((100% / 2) - 400px);
+		}
+	}
 
-    .modal-body {
-        display: flex;
-        flex-basis: 0;
-        flex-grow: 1;
-        flex-direction: column;
-        overflow: auto;
-        max-width: 100%;
-        min-height: 1px;
-    }
+	.modal-content {
+		max-height: none;
+		overflow-y: auto;
+		overflow-x: hidden;
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: column;
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
 
-    .modal-flex-fill-area {
-        min-height: 100%;
-        flex: 1;
-    }
+	.modal-body {
+		display: flex;
+		flex-basis: 0;
+		flex-grow: 1;
+		flex-direction: column;
+		overflow: auto;
+		max-width: 100%;
+		min-height: 1px;
+	}
+
+	.modal-flex-fill-area {
+		min-height: 100%;
+		flex: 1;
+	}
 }

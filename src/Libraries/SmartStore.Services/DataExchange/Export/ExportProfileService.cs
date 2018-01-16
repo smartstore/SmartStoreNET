@@ -6,6 +6,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
@@ -56,15 +57,17 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			Guard.NotEmpty(providerSystemName, nameof(providerSystemName));
 
-			var profileCount = _exportProfileRepository.Table.Count(x => x.ProviderSystemName == providerSystemName);
-
 			if (name.IsEmpty())
+			{
 				name = providerSystemName;
+			}
 
 			if (!isSystemProfile)
-				name = string.Concat(_localizationService.GetResource("Common.My"), " ", name);
+			{
+				var profileCount = _exportProfileRepository.Table.Count(x => x.ProviderSystemName == providerSystemName);
 
-			name = string.Concat(name, " ", profileCount + 1);
+				name = string.Concat(_localizationService.GetResource("Common.My"), " ", name, " ", profileCount + 1);
+			}
 
 			var cloneProfile = GetExportProfileById(cloneFromProfileId);
 
@@ -122,7 +125,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 					var filter = new ExportFilter
 					{
-						IsPublished = true
+						IsPublished = true,
+						ShoppingCartTypeId = (int)ShoppingCartType.ShoppingCart
 					};
 
 					profile.Projection = XmlHelper.Serialize<ExportProjection>(projection);
@@ -152,10 +156,9 @@ namespace SmartStore.Services.DataExchange.Export
 			var path = DataSettings.Current.TenantPath + "/ExportProfiles";
 			profile.FolderName = path + "/" + FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath(path), folderName);
 
-			if (profileSystemName.IsEmpty() && isSystemProfile)
-				profile.SystemName = cleanedSystemName;
-			else
-				profile.SystemName = profileSystemName;
+			profile.SystemName = profileSystemName.IsEmpty() && isSystemProfile
+				? cleanedSystemName
+				: profileSystemName;
 
 			_exportProfileRepository.Insert(profile);
 

@@ -1,9 +1,7 @@
 ﻿@using Telerik.Web.Mvc.UI
-
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     
-    //page title
     ViewBag.Title = T("Admin.CurrentCarts").Text;
 }
 @using (Html.BeginForm())
@@ -14,6 +12,9 @@
             @T("Admin.CurrentCarts")
         </div>
         <div class="options">
+			@{ Html.RenderWidget("admin_button_toolbar_before"); }
+
+			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
     <table class="adminContent">

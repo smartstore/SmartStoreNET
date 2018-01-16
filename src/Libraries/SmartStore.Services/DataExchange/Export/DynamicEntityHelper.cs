@@ -577,6 +577,16 @@ namespace SmartStore.Services.DataExchange.Export
 			result.ProductSpecificationAttributes = null;
 			result.ProductBundleItems = null;
 
+			result._ProductTemplateViewPath = ctx.ProductTemplates.ContainsKey(product.ProductTemplateId)
+				? ctx.ProductTemplates[product.ProductTemplateId]
+				: "";
+
+			result._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
+				_priceCalculationService.Value, ctx.ContextCustomer, ctx.ContextCurrency, decimal.Zero, true);
+
+			ToDeliveryTime(ctx, result, product.DeliveryTimeId);
+			ToQuantityUnit(ctx, result, product.QuantityUnitId);
+
 			result._Localized = GetLocalized(ctx, product,
 				x => x.Name,
 				x => x.ShortDescription,
@@ -666,14 +676,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 			dynObject.Price = CalculatePrice(ctx, product, productContext.Combination, variantAttributeValues);
 
-			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
-				_priceCalculationService.Value, ctx.ContextCustomer, ctx.ContextCurrency, decimal.Zero, true);
-
-			if (ctx.ProductTemplates.ContainsKey(product.ProductTemplateId))
-				dynObject._ProductTemplateViewPath = ctx.ProductTemplates[product.ProductTemplateId];
-			else
-				dynObject._ProductTemplateViewPath = "";
-
 			// Category path
 			{
 				var categoryPath = string.Empty;
@@ -691,15 +693,11 @@ namespace SmartStore.Services.DataExchange.Export
 				dynObject._CategoryPath = categoryPath;
 			}
 
-			ToDeliveryTime(ctx, dynObject, product.DeliveryTimeId);
-			ToQuantityUnit(ctx, dynObject, product.QuantityUnitId);
-
 			if (ctx.Countries != null)
 			{
-				if (product.CountryOfOriginId.HasValue && ctx.Countries.ContainsKey(product.CountryOfOriginId.Value))
-					dynObject.CountryOfOrigin = ToDynamic(ctx, ctx.Countries[product.CountryOfOriginId.Value]);
-				else
-					dynObject.CountryOfOrigin = null;
+				dynObject.CountryOfOrigin = product.CountryOfOriginId.HasValue && ctx.Countries.ContainsKey(product.CountryOfOriginId.Value)
+					? ToDynamic(ctx, ctx.Countries[product.CountryOfOriginId.Value])
+					: null;
 			}
 
 			dynObject.ProductPictures = productPictures
@@ -722,10 +720,9 @@ namespace SmartStore.Services.DataExchange.Export
 
 					dyn.Manufacturer = ToDynamic(ctx, x.Manufacturer);
 
-					if (x.Manufacturer != null && x.Manufacturer.PictureId.HasValue)
-						dyn.Manufacturer.Picture = ToDynamic(ctx, x.Manufacturer.Picture, _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize);
-					else
-						dyn.Manufacturer.Picture = null;
+					dyn.Manufacturer.Picture = x.Manufacturer != null && x.Manufacturer.PictureId.HasValue
+						? ToDynamic(ctx, x.Manufacturer.Picture, _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize)
+						: null;
 
 					return dyn;
 				})
@@ -1083,6 +1080,25 @@ namespace SmartStore.Services.DataExchange.Export
 			return result;
 		}
 
+		private dynamic ToDynamic(DataExporterContext ctx, ShoppingCartItem shoppingCartItem)
+		{
+			if (shoppingCartItem == null)
+				return null;
+
+			dynamic result = new DynamicEntity(shoppingCartItem);
+
+			shoppingCartItem.Product.MergeWithCombination(shoppingCartItem.AttributesXml, _productAttributeParser.Value);
+
+			result.Store = ctx.Stores.ContainsKey(shoppingCartItem.StoreId)
+				? ToDynamic(ctx, ctx.Stores[shoppingCartItem.StoreId])
+				: null;
+
+			result.Customer = ToDynamic(ctx, shoppingCartItem.Customer);
+			result.Product = ToDynamic(ctx, shoppingCartItem.Product);
+
+			return result;
+		}
+
 
 		private List<dynamic> Convert(DataExporterContext ctx, Product product)
 		{
@@ -1164,10 +1180,9 @@ namespace SmartStore.Services.DataExchange.Export
 
 			dynamic dynObject = ToDynamic(ctx, order);
 
-			if (ctx.Stores.ContainsKey(order.StoreId))
-			{
-				dynObject.Store = ToDynamic(ctx, ctx.Stores[order.StoreId]);
-			}
+			dynObject.Store = ctx.Stores.ContainsKey(order.StoreId)
+				? ToDynamic(ctx, ctx.Stores[order.StoreId])
+				: null;
 
 			dynObject.Customer = ToDynamic(ctx, customers.FirstOrDefault(x => x.Id == order.CustomerId));
 
@@ -1201,23 +1216,7 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			dynObject.OrderItems = orderItems
-				.Select(e =>
-				{
-					dynamic dyn = ToDynamic(ctx, e);
-
-					if (ctx.ProductTemplates.ContainsKey(e.Product.ProductTemplateId))
-						dyn.Product._ProductTemplateViewPath = ctx.ProductTemplates[e.Product.ProductTemplateId];
-					else
-						dyn.Product._ProductTemplateViewPath = "";
-
-					dyn.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
-						_priceCalculationService.Value, ctx.ContextCustomer, ctx.ContextCurrency, decimal.Zero, true);
-
-					ToDeliveryTime(ctx, dyn.Product, e.Product.DeliveryTimeId);
-					ToQuantityUnit(ctx, dyn.Product, e.Product.QuantityUnitId);
-
-					return dyn;
-				})
+				.Select(x => ToDynamic(ctx, x))
 				.ToList();
 
 			dynObject.Shipments = shipments
@@ -1334,7 +1333,7 @@ namespace SmartStore.Services.DataExchange.Export
 				.ToList();
 
 			dynObject.CustomerRoles = customer.CustomerRoles
-				.Select(x =>
+				.Select(x => 
 				{
 					dynamic dyn = new DynamicEntity(x);
 
@@ -1403,6 +1402,24 @@ namespace SmartStore.Services.DataExchange.Export
 				ExecuteContext = ctx.ExecuteContext
 			});
 
+
+			return result;
+		}
+
+		private List<dynamic> Convert(DataExporterContext ctx, ShoppingCartItem shoppingCartItem)
+		{
+			var result = new List<dynamic>();
+			dynamic dynObject = ToDynamic(ctx, shoppingCartItem);
+
+			result.Add(dynObject);
+
+			_services.EventPublisher.Publish(new RowExportingEvent
+			{
+				Row = dynObject,
+				EntityType = ExportEntityType.ShoppingCartItem,
+				ExportRequest = ctx.Request,
+				ExecuteContext = ctx.ExecuteContext
+			});
 
 			return result;
 		}

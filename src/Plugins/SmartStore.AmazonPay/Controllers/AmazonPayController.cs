@@ -163,11 +163,11 @@ namespace SmartStore.AmazonPay.Controllers
 				case OpenAuthenticationStatus.AssociateOnLogon:
 					return new RedirectResult(Url.LogOn(returnUrl));
 				case OpenAuthenticationStatus.AutoRegisteredEmailValidation:
-					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.EmailValidation });
+					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.EmailValidation, returnUrl });
 				case OpenAuthenticationStatus.AutoRegisteredAdminApproval:
-					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.AdminApproval });
+					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.AdminApproval, returnUrl });
 				case OpenAuthenticationStatus.AutoRegisteredStandard:
-					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Standard });
+					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Standard, returnUrl });
 				default:
 					if (result.Result != null)
 						return result.Result;

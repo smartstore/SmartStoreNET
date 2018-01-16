@@ -1204,16 +1204,11 @@ namespace SmartStore.Web.Controllers
             model.AddToCart.QuantiyControlType = product.QuantiyControlType;
 
             //'add to cart', 'add to wishlist' buttons
-            model.AddToCart.DisableBuyButton = product.DisableBuyButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
-			model.AddToCart.DisableWishlistButton = product.DisableWishlistButton 
+            model.AddToCart.DisableBuyButton = !displayPrices || product.DisableBuyButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
+			model.AddToCart.DisableWishlistButton = !displayPrices || product.DisableWishlistButton 
 				|| !_services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist)
 				|| product.ProductType == ProductType.GroupedProduct;
 
-			if (!displayPrices)
-			{
-				model.AddToCart.DisableBuyButton = true;
-				model.AddToCart.DisableWishlistButton = true;
-			}
 			//pre-order
 			model.AddToCart.AvailableForPreOrder = product.AvailableForPreOrder;
 

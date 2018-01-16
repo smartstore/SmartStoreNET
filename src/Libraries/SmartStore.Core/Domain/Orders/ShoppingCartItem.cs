@@ -65,10 +65,10 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
 
-        /// <summary>
-        /// Gets the log type
-        /// </summary>
-        public ShoppingCartType ShoppingCartType
+		/// <summary>
+		/// Gets or sets the shopping cart type
+		/// </summary>
+		public ShoppingCartType ShoppingCartType
         {
             get
             {

@@ -168,6 +168,35 @@ namespace SmartStore.Data.Migrations
 				"The message template has been copied successfully.",
 				"Die Nachrichtenvorlage wurde erfolgreich kopiert.");
 			
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.ShoppingCartItem", "Shopping Cart", "Warenkorb");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Orders.ShoppingCartType.ShoppingCart", "Shopping Cart", "Warenkorb");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Orders.ShoppingCartType.Wishlist", "Wishlist", "Wunschliste");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.NoBundleProducts",
+				"Do not export bundled products",
+				"Keine Produkt-Bundle exportieren",
+				"Specifies whether to export bundled products. If this option is activated, then the associated bundle items will be exported.",
+				"Legt fest, ob Produkt-Bundle exportiert werden sollen. Ist diese Option aktiviert, so werden die zum Bundle gehörenden Produkte (Bundle-Bestandteile) exportiert.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.ShoppingCartTypeId",
+				"Shopping cart type",
+				"Warenkorbtyp",
+				"Filter by shopping cart type.",
+				"Nach Warenkorbtyp filtern.");
+
+			builder.AddOrUpdate("Common.CustomerId", "Customer ID", "Kunden ID");
+
+			builder.AddOrUpdate("Account.AccountActivation.InvalidEmailOrToken",
+				"Unknown email or token. Please register again.",
+				"Unbekannte E-Mail oder Token. Bitte führen Sie die Registrierung erneut durch.");
+
+			builder.AddOrUpdate("Account.PasswordRecoveryConfirm.InvalidEmailOrToken",
+				"Unknown email or token. Please click \"Forgot password\" again, if you want to renew your password.",
+				"Unbekannte E-Mail oder Token. Klicken Sie bitte erneut \"Passwort vergessen\", falls Sie Ihr Passwort erneuern möchten.");
+
+			builder.Delete("Account.PasswordRecoveryConfirm.InvalidEmail");
+			builder.Delete("Account.PasswordRecoveryConfirm.InvalidToken");
 		}
 	}
 }

@@ -177,7 +177,7 @@ namespace SmartStore.Data.Utilities
 			}
 
 			var countries = ctx.Set<Country>()
-				.Where(x => string.IsNullOrEmpty(x.AddressFormat))
+				.Where(x => x.AddressFormat == null)
 				.ToList()
 				.ToDictionarySafe(x => x.TwoLetterIsoCode, StringComparer.OrdinalIgnoreCase);
 

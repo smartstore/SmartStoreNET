@@ -376,19 +376,16 @@ a.t-button.t-state-disabled:hover,
 		td[align=center] {
 			text-align: center;
 		}
-	}
 
-	.btn {
-		padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
-		font-size: $font-size-sm;
-
-		.fa {
+		.btn {
+			padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
 			font-size: $font-size-sm;
+
+			.fa {
+				font-size: $font-size-sm;
+			}
 		}
 	}
-	/**:not(.btn-group) > .btn {
-		margin: 0.2em;
-	}*/
 	.t-button .fa {
 		margin-top: 0;
 	}
@@ -417,7 +414,6 @@ a.t-button.t-state-disabled:hover,
 		}
 
 		.t-button {
-			@extend .btn;
 			@extend .btn-sm;
 			min-width: 92px;
 
@@ -529,22 +525,23 @@ a.t-button.t-state-disabled:hover,
 	background: #626262;
 	position: relative;
 	display: flex;
+	margin-left: -1px;
+	margin-right: -1px;
 
-	.btn, .t-button {
+	.btn,
+	.t-button {
 		display: block;
-		text-shadow: none;
-		text-decoration: none;
-		background-color: #484848;
-		font-weight: 600;
-		color: #fff;
-		padding: 18px;
+		border-radius: 0 !important;
+		border: 0 !important;
 		margin: 0;
-		border: 0;
-		border-right: solid 1px #626262;
+		border-right: 1px solid #626262 !important;
+		padding-top: 0.75rem;
+		padding-bottom: 0.75rem;
+	}
 
-		&:hover {
-			background-color: #848484;
-		}
+	.t-button,
+	.btn:not(.btn-primary):not(.btn-warning):not(.btn-danger):not(.btn-secondary) {
+		@include button-variant($warning, $warning);
 	}
 }
 

@@ -72,8 +72,7 @@ body:not(.popup) #page {
 -------------------------------------------------------------- */
 
 header {
-	background-color: theme-color("primary");
-	//height: 70px;
+	@include gradient-bg($primary);
 	padding-bottom: 50px;
 }
 

@@ -108,7 +108,7 @@
 		.Caption(T("Common.AddNew"))
 		.OnSelectionCompleted("PickRelatedProducts_Completed"))
 
-	<button type="button" id="btnCreateMutuallyRelatedProducts" class="btn" data-url="@Url.Action("CreateAllMutuallyRelatedProducts", new { productId = Model.Id })"
+	<button type="button" id="btnCreateMutuallyRelatedProducts" class="btn btn-warning" data-url="@Url.Action("CreateAllMutuallyRelatedProducts", new { productId = Model.Id })"
 			data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
 		<i class="fa fa-random"></i>
 		@T("Admin.Common.CreateMutuallyAssociations")
@@ -123,7 +123,7 @@
 		.Caption(T("Admin.Catalog.Products.CrossSells.AddNew"))
 		.OnSelectionCompleted("PickCrossSellProducts_Completed"))
 
-	<button type="button" id="btnCreateMutuallyCrossSellProducts" class="btn" data-url="@Url.Action("CreateAllMutuallyCrossSellProducts", new { productId = Model.Id })"
+	<button type="button" id="btnCreateMutuallyCrossSellProducts" class="btn btn-warning" data-url="@Url.Action("CreateAllMutuallyCrossSellProducts", new { productId = Model.Id })"
 			data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
 		<i class="fa fa-random"></i>
 		<span>@T("Admin.Common.CreateMutuallyAssociations")</span>

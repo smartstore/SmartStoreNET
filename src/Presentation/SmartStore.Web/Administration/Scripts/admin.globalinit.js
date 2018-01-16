@@ -1,5 +1,4 @@
 /// <reference path="admin.common.js" />
-/// <reference path="admin.catalog.js" />
 
 (function ($, window, document, undefined) {
     
@@ -52,7 +51,7 @@
 				button.click();
 				return false;
 			});
-		},
+		}
 	];
 
 
@@ -64,7 +63,7 @@
 		$.each(_commonPluginFactories, function (i, val) {
 			val.call(this, $(context));
 		});
-	}
+	};
 
     $(document).ready(function () {
 

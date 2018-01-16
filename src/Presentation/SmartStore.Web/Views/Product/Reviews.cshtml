@@ -41,7 +41,7 @@
 				{
 					@Html.AntiForgeryToken()
                     <div class="form-group row">
-                        @Html.LabelFor(model => model.Rating, new { @class = "form-control-label col-md-3" })
+                        @Html.LabelFor(model => model.Rating, new { @class = "form-control-label col-form-label col-md-3" })
                         <div class="col-md-9 star-rating-parent">
                             <div class="review-rating star-rating star-rating-large">
                                 @{
@@ -56,14 +56,14 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        @Html.LabelFor(model => model.Title, new { @class = "form-control-label col-md-3" })
+                        @Html.LabelFor(model => model.Title, new { @class = "form-control-label col-form-label col-md-3" })
 						<div class="col-md-9">
 							@Html.TextBoxFor(model => model.Title, Model.CanCurrentCustomerLeaveReview ? (object)(new { @class = "form-control" }) : (object)(new { @class = "form-control", disabled = "disabled" }))
 							@Html.ValidationMessageFor(model => model.Title, null)
 						</div>
                     </div>
                     <div class="form-group row">
-                        @Html.LabelFor(model => model.ReviewText, new { @class = "form-control-label col-md-3" })
+                        @Html.LabelFor(model => model.ReviewText, new { @class = "form-control-label col-form-label col-md-3" })
 						<div class="col-md-9">
 							@Html.TextAreaFor(model => model.ReviewText, 4, 1, Model.CanCurrentCustomerLeaveReview ? (object)(new { @class = "form-control" }) : (object)(new { @class = "form-control", disabled = "disabled" }))
 							@Html.ValidationMessageFor(model => model.ReviewText, null)

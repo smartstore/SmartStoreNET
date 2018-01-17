@@ -229,7 +229,7 @@ $gray-lightest: $gray-100;
 // --------------------------------------------------
 
 .locale-editor {
-	$border-color: $nav-tabs-border-color;
+	$border-color: $card-border-color;
 
 	background-color: #fff;
 	border: 1px solid $border-color;
@@ -239,7 +239,7 @@ $gray-lightest: $gray-100;
 	.nav-locales > .nav {
 		padding: 0.25rem 0.25rem 0 0.25rem;
 		border-bottom-color: $border-color;
-		background-color: $gray-100;
+		background-color: $card-cap-bg;
 		border-top-left-radius: $border-radius;
 		border-top-right-radius: $border-radius;
 
@@ -307,54 +307,71 @@ $gray-lightest: $gray-100;
 // --------------------------------------------------
 
 .adminContent {
-    //max-width: 1400px;
-    @include make-container();
+	//max-width: 1400px;
+	@include make-container();
+	display: block;
+	border-collapse: initial;
 
-    display: block;
-    border-collapse: initial;
+	> tbody {
+		display: flex;
+		flex-flow: column;
+		border-collapse: initial;
+	}
 
-    > tbody {
-        display: flex;
-        flex-flow: column;
-        border-collapse: initial;
-    }
+	> tbody > tr,
+	> tr {
+		@include make-row();
+		margin: 0.4rem 0;
+	}
 
-    > tbody > tr,
-    > tr {
-        @include make-row();
-        margin: 0.4rem 0;
-    }
+	> tbody > tr > td,
+	> tr > td {
+		@include make-col-ready();
+	}
 
-    > tbody > tr > td,
-    > tr > td {
-        @include make-col-ready();
-    }
+	td.adminTitle {
+		@include make-col(3);
+		text-align: right;
+		margin-bottom: 0;
+		padding-top: $input-btn-padding-y;
+		padding-bottom: $input-btn-padding-y;
+	}
 
-    td.adminTitle {
-        @include make-col(3);
-        text-align: right;
-        margin-bottom: 0;
-        padding-top: $input-btn-padding-y;
-        padding-bottom: $input-btn-padding-y;
-    }
+	td.adminData {
+		@include make-col(6);
 
-    td.adminData {
-        @include make-col(6);
-        &.wide {
-            @include make-col(9);
-        }
+		&.wide {
+			@include make-col(9);
+		}
 
-        > .switch {
-            margin-bottom: 0;
-            padding-top: calc(#{$input-btn-padding-y} - 3px);
-            padding-bottom: calc(#{$input-btn-padding-y} + 2px);
-        }
-    }
+		> .switch {
+			margin-bottom: 0;
+			padding-top: calc(#{$input-btn-padding-y} - 3px);
+			padding-bottom: calc(#{$input-btn-padding-y} + 2px);
+		}
+	}
 
-    > tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
-    > tr > td:only-child:not(.adminData):not(.adminTitle) {
-        @include make-col(12);
-    }
+	> tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
+	> tr > td:only-child:not(.adminData):not(.adminTitle) {
+		@include make-col(12);
+	}
+
+	@include media-breakpoint-up(md) {
+		td.adminTitle {
+			@include make-col(3);
+			text-align: right;
+		}
+
+		td.adminData {
+			@include make-col(9);
+		}
+	}
+
+	@include media-breakpoint-up(xl) {
+		td.adminData {
+			@include make-col(6);
+		}
+	}
 }
 
 .ctl-label {

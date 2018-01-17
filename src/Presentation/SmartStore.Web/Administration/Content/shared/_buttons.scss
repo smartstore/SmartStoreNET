@@ -38,11 +38,12 @@ $btn-size-sm:			$input-height-sm;
 
 .btn-secondary {
 	$shade-color: darken($secondary, 3%);
-	$border-color: darken($secondary, 10%);
+	$border-color: darken($secondary, 15%);
 	background-image: linear-gradient(180deg, #fff, $secondary);
 	border-color: $border-color;
 
-	&:hover {
+	&:not([disabled]):not(.disabled):hover,
+	&:not([disabled]):not(.disabled).hover {
 		background-image: linear-gradient(180deg, $secondary, $shade-color);
 		border-color: $border-color;
 	}
@@ -50,6 +51,12 @@ $btn-size-sm:			$input-height-sm;
 	&:focus,
 	&.focus {
 		box-shadow: $btn-box-shadow, 0 0 0 $btn-focus-width rgba($shade-color, .5);
+	}
+
+	&.disabled,
+	&:disabled {
+		background-image: linear-gradient(180deg, #fff, $secondary);
+		border-color: $border-color;
 	}
 
 	&:not([disabled]):not(.disabled):active,
@@ -372,32 +379,40 @@ $btn-size-sm:			$input-height-sm;
 .btn.btn-to-danger {
 	transition: none;
 
-	&:hover {
+	&:not([disabled]):not(.disabled):hover,
+	&:not([disabled]):not(.disabled).hover {
 		@extend .btn-danger:hover;
 	}
 
-	&:active, &.active {
-		@extend .btn-danger:active;
+	&:focus,
+	&.focus {
+		@extend .btn-danger:focus;
 	}
 
-	&:focus, &.focus {
-		@extend .btn-danger:focus;
+	&:not([disabled]):not(.disabled):active,
+	&:not([disabled]):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		@extend .btn-danger:active;
 	}
 }
 
 .btn.btn-to-primary {
 	transition: none;
 
-	&:hover {
+	&:not([disabled]):not(.disabled):hover,
+	&:not([disabled]):not(.disabled).hover {
 		@extend .btn-primary:hover;
 	}
 
-	&:active, &.active {
-		@extend .btn-primary:active;
+	&:focus,
+	&.focus {
+		@extend .btn-primary:focus;
 	}
 
-	&:focus, &.focus {
-		@extend .btn-primary:focus;
+	&:not([disabled]):not(.disabled):active,
+	&:not([disabled]):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		@extend .btn-primary:active;
 	}
 }
 
@@ -407,60 +422,7 @@ $btn-size-sm:			$input-height-sm;
 	border-color: transparent !important;
 }
 
-// btn-wide
-// --------------------------------------------------
-.btn-wide {
-	@include btn-padding($btn-wide-padding-x);
 
-	&.btn-lg {
-		@include btn-padding($btn-wide-padding-x-lg);
-	}
-
-	&.btn-sm {
-		@include btn-padding($btn-wide-padding-x-sm);
-	}
-}
-
-.btn-wide.btn-animate {
-	@include btn-padding($btn-wide-padding-x * 1.5);
-
-	span > .fa {
-		width: 1.5em;
-	}
-
-	&.btn-lg {
-		@include btn-padding($btn-wide-padding-x-lg * 1.5);
-	}
-
-	&.btn-sm {
-		@include btn-padding($btn-wide-padding-x-sm * 1.5);
-	}
-}
-
-.btn-wide.btn-labeled {
-	padding-left: $btn-wide-padding-x + $btn-size;
-
-	&.btn-lg {
-		padding-left: $btn-wide-padding-x-lg + $btn-size-lg;
-	}
-
-	&.btn-sm {
-		padding-left: $btn-wide-padding-x-sm + $btn-size-sm;
-	}
-
-	&.icon-right {
-		padding-left: $btn-wide-padding-x;
-		padding-right: $btn-wide-padding-x + $btn-size;
-
-		&.btn-lg {
-			padding-right: $btn-wide-padding-x-lg + $btn-size-lg;
-		}
-
-		&.btn-sm {
-			padding-right: $btn-wide-padding-x-sm + $btn-size-sm;
-		}
-	}
-}
 // .mf-dropdown (Mobile Friendly dropdown)
 // --------------------------------------------------
 .mf-dropdown {

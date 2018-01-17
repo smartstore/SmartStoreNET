@@ -109,6 +109,7 @@
 			<td class="adminData">
 				@Html.TextBoxFor(model => Model.Locales[item].Name)
 				@Html.ValidationMessageFor(model => model.Locales[item].Name)
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
 			</td>
 		</tr>
 		<tr>
@@ -127,11 +128,6 @@
 			<td class="adminData wide">
 				@Html.EditorFor(model => model.Locales[item].FullDescription, Html.RichEditorFlavor())
 				@Html.ValidationMessageFor(model => model.Locales[item].FullDescription)
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				@Html.HiddenFor(model => model.Locales[item].LanguageId)
 			</td>
 		</tr>
 	</table>

@@ -20,6 +20,13 @@
 * Move custom grid action buttons below or above a grid to the grid toolbar (see ProductEdit > Promotion tab > CrossSellingGridCommands(...) etc.)
 * Dropdown Groups: mehr als 2 Ebenen gehen nicht, daher bspw. EditorTemplates/ModelTree.cshtml umgestalten
 * window.openPopup > check whether 'fluid = true' should be passed
+* Locale Editors: Move hidden fields from td to another place to avoid space
+
+
+TODOs BS4 Migration:
+====================
+* Split Dropdown Buttons: .btn-dropwdown-split
+* Input Groups: .input-group-append/prepend & .input-group-text
 
 
 TODOs Assets:

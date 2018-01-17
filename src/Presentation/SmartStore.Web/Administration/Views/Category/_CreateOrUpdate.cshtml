@@ -196,24 +196,14 @@
                 @Html.SmartLabelFor(model => model.ParentCategoryId)
             </td>
             <td class="adminData">
-                @*@(Html.HiddenFor(x => x.ParentCategoryId, new
-				{
-					style = "min-width: 700px",
-					placeholder = "[" + T("Common.Unspecified") + "]",
-					data_select = true,
-					data_select_lazy = true,
-					data_select_init_text = Model.ParentCategoryBreadcrumb,
-					data_select_url = Url.Action("Allcategories", "Category")
-				}))*@
-
 				@Html.DropDownListFor(model => model.ParentCategoryId, Enumerable.Empty<SelectListItem>(), new
-		   {
-			   placeholder = "[" + T("Common.Unspecified") + "]",
-			   data_select = true,
-			   data_select_lazy = true,
-			   data_select_init_text = Model.ParentCategoryBreadcrumb,
-			   data_select_url = Url.Action("Allcategories", "Category")
-		   })
+			   {
+				   placeholder = "[" + T("Common.Unspecified") + "]",
+				   data_select = true,
+				   data_select_lazy = true,
+				   data_select_init_text = Model.ParentCategoryBreadcrumb,
+				   data_select_url = Url.Action("Allcategories", "Category")
+			   })
                 @Html.ValidationMessageFor(model => model.ParentCategoryId)
             </td>
         </tr>

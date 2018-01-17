@@ -406,9 +406,10 @@ td.adminData {
 
 
 body {
-    //background-attachment: fixed;
-	//#gradient > .vertical-three-colors(@infoBackground, @infoBackground, 50%, #fff);
 	background-color: #f5f5f5;
+	&.popup {
+		background-color: #fff;
+	}
 }
 hr {
     border-bottom: 1px solid #ccc;

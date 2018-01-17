@@ -59,8 +59,8 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Orders.Fields.ShippingStatus")]
 		public string ShippingStatus { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.CustomerEmail")]
-		public string CustomerEmail { get; set; }
+		[SmartResourceDisplayName("Common.CustomerId")]
+		public int CustomerId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotal")]
 		public decimal OrderTotal { get; set; }

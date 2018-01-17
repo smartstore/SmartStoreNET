@@ -396,7 +396,7 @@
 		$('#ProfileExportButton').click(function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed")'
+				ask: '@(T("Admin.Common.AskToProceed"))'
 			});
 			return false;
 		});

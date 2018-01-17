@@ -44,7 +44,7 @@ using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-    public partial class DataExporter : IDataExporter
+	public partial class DataExporter : IDataExporter
 	{
 		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
@@ -773,7 +773,7 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				else if (product.ProductType == ProductType.GroupedProduct)
 				{
-					if (ctx.Projection.NoGroupedProducts && !ctx.IsPreview)
+					if (ctx.Projection.NoGroupedProducts)
 					{
 						var searchQuery = new CatalogSearchQuery()
 							.HasParentGroupedProduct(product.Id)
@@ -1576,54 +1576,74 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public IList<dynamic> Preview(DataExportRequest request, int pageIndex, int? totalRecords = null)
 		{
-			var resultData = new List<dynamic>();
+			var result = new List<dynamic>();
 			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
-
 			var ctx = new DataExporterContext(request, cancellation.Token, true);
 
 			var unused = Init(ctx, totalRecords);
+			var offset = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * PageSize);
 
 			if (!HasPermission(ctx))
+			{
 				throw new SmartException(T("Admin.AccessDenied"));
+			}
 
-			using (var segmenter = CreateSegmenter(ctx, pageIndex))
+			switch (request.Provider.Value.EntityType)
 			{
-				if (segmenter == null)
-				{
-					throw new SmartException(T("Admin.Common.UnsupportedEntityType", ctx.Request.Provider.Value.EntityType.ToString()));
-				}
-
-				while (segmenter.HasData)
-				{
-					segmenter.RecordPerSegmentCount = 0;
-
-					while (segmenter.ReadNextSegment())
+				case ExportEntityType.Product:
 					{
-						resultData.AddRange(segmenter.CurrentSegment);
+						var items = GetProductQuery(ctx, offset, PageSize).ToList();
+						items.Each(x => result.Add(ToDynamic(ctx, x)));
 					}
-				}
-
-				DetachAllEntitiesAndClear(ctx);
+					break;
+				case ExportEntityType.Order:
+					{
+						var items = GetOrderQuery(ctx, offset, PageSize).ToList();
+						items.Each(x => result.Add(ToDynamic(ctx, x)));
+					}
+					break;
+				case ExportEntityType.Category:
+					{
+						var items = GetCategoryQuery(ctx, offset, PageSize).ToList();
+						items.Each(x => result.Add(ToDynamic(ctx, x)));
+					}
+					break;
+				case ExportEntityType.Manufacturer:
+					{
+						var items = GetManufacturerQuery(ctx, offset, PageSize).ToList();
+						items.Each(x => result.Add(ToDynamic(ctx, x)));
+					}
+					break;
+				case ExportEntityType.Customer:
+					{
+						var items = GetCustomerQuery(ctx, offset, PageSize).ToList();
+						items.Each(x => result.Add(ToDynamic(ctx, x)));
+					}
+					break;
+				case ExportEntityType.NewsLetterSubscription:
+					{
+						var items = GetNewsLetterSubscriptionQuery(ctx, offset, PageSize).ToList();
+						items.Each(x => result.Add(ToDynamic(ctx, x)));
+					}
+					break;
+				case ExportEntityType.ShoppingCartItem:
+					{
+						var items = GetShoppingCartItemQuery(ctx, offset, PageSize).ToList();
+						items.Each(x => result.Add(ToDynamic(ctx, x)));
+					}
+					break;
 			}
 
-			if (ctx.Result.LastError.HasValue())
-			{
-				_services.Notifier.Error(ctx.Result.LastError);
-			}
-
-			return resultData;
+			return result;
 		}
 
 		public int GetDataCount(DataExportRequest request)
 		{
 			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
-
 			var ctx = new DataExporterContext(request, cancellation.Token, true);
-
 			var unused = Init(ctx);
 
 			var totalCount = ctx.RecordsPerStore.First().Value;
-
 			return totalCount;
 		}
 	}

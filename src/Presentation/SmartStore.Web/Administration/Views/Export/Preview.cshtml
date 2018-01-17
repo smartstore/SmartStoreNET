@@ -160,7 +160,8 @@
 					columns.Bound(x => x.OrderStatus);
 					columns.Bound(x => x.PaymentStatus);
 					columns.Bound(x => x.ShippingStatus);
-					columns.Bound(x => x.CustomerEmail);
+					columns.Bound(x => x.CustomerId)
+						.Centered();
 					columns.Bound(x => x.StoreName);
 					columns.Bound(x => x.CreatedOn);
 					columns.Bound(x => x.OrderTotal)

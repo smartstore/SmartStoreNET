@@ -14,37 +14,33 @@
     <div class="options">
 		@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
 
 		@{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<BlogPostModel>()
-                    .Name("blogpost-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Title)
-                            .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
-                        columns.Bound(x => x.LanguageName);
-                        columns.Bound(x => x.Comments)
-                            .Template(
-                            @<div>
-                                    @Html.ActionLink(T("Admin.ContentManagement.Blog.BlogPosts.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByBlogPostId = item.Id })
-                                </div>
-                            )
-                            .ClientTemplate("<div><a href=\"Comments?filterByBlogPostId=<#= Id #>\">" + T("Admin.ContentManagement.Blog.BlogPosts.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
-                        columns.Bound(x => x.StartDate);
-                        columns.Bound(x => x.EndDate);
-                        columns.Bound(x => x.CreatedOn);
-                    })
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Blog"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+<div>
+	@(Html.Telerik().Grid<BlogPostModel>()
+		.Name("blogpost-grid")
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Title)
+				.Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
+			columns.Bound(x => x.LanguageName);
+			columns.Bound(x => x.Comments)
+				.Template(@<div>@Html.ActionLink(T("Admin.ContentManagement.Blog.BlogPosts.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByBlogPostId = item.Id })</div>)
+				.ClientTemplate("<div><a href=\"Comments?filterByBlogPostId=<#= Id #>\">" + T("Admin.ContentManagement.Blog.BlogPosts.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
+			columns.Bound(x => x.StartDate);
+			columns.Bound(x => x.EndDate);
+			columns.Bound(x => x.CreatedOn);
+		})
+		.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Blog"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+</div>
+

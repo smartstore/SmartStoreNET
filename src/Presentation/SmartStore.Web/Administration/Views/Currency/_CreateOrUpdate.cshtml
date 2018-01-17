@@ -17,15 +17,15 @@
 }
 
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("currency-edit").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
+@Html.SmartStore().TabStrip().Name("currency-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.Info").Text)
-		.Icon("fa fa-pencil fa-lg fa-fw")
+		//.Icon("fa fa-pencil fa-lg fa-fw")
 		.Content(TabInfo())
 		.Selected(true);
 
 	x.Add().Text(T("Admin.Common.Stores").Text)
-		.Icon("fa fa-globe fa-lg fa-fw")
+		//.Icon("fa fa-globe fa-lg fa-fw")
 		.Content(TabStores());
 
     //generate an event

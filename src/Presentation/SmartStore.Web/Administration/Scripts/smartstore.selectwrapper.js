@@ -5,7 +5,63 @@
 ;
 (function ($, window, document, undefined) {
 
-    var lists = [];
+	var lists = [];
+
+	function load(url, selectedId) {
+		$.ajax({
+			url: url,
+			dataType: 'json',
+			async: false,
+			data: { selectedId: selectedId || 0 },
+			success: function (data, status, jqXHR) {
+				lists[url] = data;
+			}
+		});
+	};
+
+	$.fn.select2.amd.define('select2/data/lazyAdapter', [
+			'select2/data/array',
+			'select2/utils'
+		],
+		function (ArrayData, Utils) {
+			function LazyAdapter($element, options) {
+				LazyAdapter.__super__.constructor.call(this, $element, options);
+			}
+
+			Utils.Extend(LazyAdapter, ArrayData);
+
+			LazyAdapter.prototype.query = function (params, callback) {
+				var opts = this.options.options;
+
+				if (!opts.selectLazy && !opts.selectUrl) {
+					callback({ results: [] });
+				}
+
+				var url = opts.selectUrl;
+				var selectedId = this.$element.data("select-selected-id");
+				var term = params.term;
+
+				if (!lists[url]) {
+					load(url, selectedId);
+				}
+
+				var list;
+				if (!term) {
+					list = lists[url];
+				}
+				else {
+					list = _.filter(lists[url], function (val) {
+						return new RegExp(term, "i").test(val.text);
+					});
+				}
+
+				var data = { results: list };
+				callback(data);
+			};
+
+			return LazyAdapter;
+		}
+	);
 
     $.fn.selectWrapper = function (options) {
 
@@ -106,9 +162,9 @@
 
             if (url) {
                 // url specified: load data remotely...
-                if (sel.is("input:hidden") || lazy) {
+                if (lazy) {
                     // ...but lazy (on first open)
-                    prepareLazyLoad(opts);
+					opts.dataAdapter = $.fn.select2.amd.require('select2/data/lazyAdapter');
                 }
                 else {
                     // ...immediately
@@ -124,48 +180,12 @@
                 sel.data("select2").$container.addClass("autowidth");
             }
 
-            function load() {
-                $.ajax({
-                    url: url,
-                    dataType: 'json',
-                    async: false,
-                    data: { selectedId: selectedId || 0 },
-                    success: function (data, status, jqXHR) {
-                        lists[url] = data;
-                    }
-                });
-            };
-
-            function prepareLazyLoad(o) {
-                o.query = function(q) {
-                    if (!lists[url]) {
-                        load();
-                    }
-                    var list;
-                    if (!q.term) {
-                        list = lists[url];
-                    }
-                    else {
-                        list = _.filter(lists[url], function (val) {
-                            return new RegExp(q.term, "i").test(val.text);
-                        });
-                    }
-                    var data = { results: list };
-                    q.callback(data);
-                }
-                if (initText) {
-                    o.initSelection = function (element, callback) {
-                        callback({ id: element.val(), text: initText });
-                    }
-                }
-            }
-
             function buildOptions() {
                 if (!lists[url]) {
-                    load();
+					load(url, selectedId);
                 }
 
-                // create options
+                // create option tags
                 if (!loaded) {
                     $.each(lists[url], function () {
                         var o = $(document.createElement('option'))

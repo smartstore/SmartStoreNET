@@ -16,11 +16,11 @@ $s2bs-caret-width-base: 0.35rem !default;
 $s2bs-caret-width-large: 0.35rem !default;
 $s2bs-cursor-disabled: not-allowed !default;
 $s2bs-dropdown-header-color: $dropdown-header-color !default;
-$s2bs-dropdown-link-active-bg: $dropdown-link-hover-bg !default;
-$s2bs-dropdown-link-active-color: $dropdown-link-hover-color !default;
+$s2bs-dropdown-link-active-bg: $gray-100 !default;
+$s2bs-dropdown-link-active-color: $yiq-text-dark !default;
 $s2bs-dropdown-link-disabled-color: $dropdown-link-disabled-color !default;
-$s2bs-dropdown-link-hover-bg: $dropdown-link-hover-bg !default;
-$s2bs-dropdown-link-hover-color: $dropdown-link-hover-color !default;
+$s2bs-dropdown-link-hover-bg: $gray-100 !default;
+$s2bs-dropdown-link-hover-color: $yiq-text-dark !default;
 $s2bs-font-size-base: $font-size-base !default;
 $s2bs-font-size-large: $font-size-lg !default;
 $s2bs-font-size-small: $font-size-sm !default;
@@ -225,7 +225,7 @@ $s2bs-form-control-transition: border-color ease-in-out .15s, box-shadow ease-in
      */
 
     &[aria-selected=true] {
-      background-color: $s2bs-dropdown-link-hover-bg;
+      background-color: darken($s2bs-dropdown-link-hover-bg, 8%);
       color: $s2bs-dropdown-link-hover-color;
       font-weight: $font-weight-medium;
     }

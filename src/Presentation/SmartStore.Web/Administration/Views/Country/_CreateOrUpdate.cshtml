@@ -3,7 +3,7 @@
 @using Telerik.Web.Mvc.UI;
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("country-edit").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
+@Html.SmartStore().TabStrip().Name("country-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
     x.Add().Text(T("Admin.Configuration.Countries.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text("{0} ({1})".FormatInvariant(T("Admin.Configuration.Countries.States"), Model.NumberOfStates)).Content(TabStates());
@@ -123,7 +123,7 @@
 				@Html.SmartLabelFor(model => model.AddressFormat)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(model => model.AddressFormat, new { style = "width: 500px; height: 300px" })
+				@Html.TextAreaFor(model => model.AddressFormat, new { style = "height: 300px" })
 				@Html.ValidationMessageFor(model => model.AddressFormat)
 			</td>
 		</tr>
@@ -162,7 +162,7 @@
 							columns.Bound(x => x.Id)
 								.Centered()
 								.Width(120)
-								.ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:openPopup('" + @Url.Content("~/Admin/Country/StateEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=country-form'); return false;\" class='t-button' />")
+								.ClientTemplate("<button type='button' onclick=\"" + "javascript:openPopup('" + Url.Content("~/Admin/Country/StateEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=country-form'); return false;\" class='btn btn-secondary'>" + T("Admin.Common.Edit").Text + "</button>")
 								.Title("");
 							columns.Command(commands =>
 							{

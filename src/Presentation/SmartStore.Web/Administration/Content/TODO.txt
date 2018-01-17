@@ -22,6 +22,11 @@
 * window.openPopup > check whether 'fluid = true' should be passed
 
 
+TODOs Assets:
+================
+* select2 localization files
+
+
 TODOs Frontend:
 ================
 * .modal.modal-flex  >>  .modal-dialog.modal-flex

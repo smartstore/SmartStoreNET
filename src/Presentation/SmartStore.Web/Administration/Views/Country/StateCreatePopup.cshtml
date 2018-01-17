@@ -1,11 +1,9 @@
-﻿@{
-    Layout = "_AdminPopupLayout";
-}
-@model StateProvinceModel
+﻿@model StateProvinceModel
 @{
-    //page title
-    ViewBag.Title = T("Admin.Configuration.Countries.States.AddNew").Text;
+	Layout = "_AdminPopupLayout";
+	ViewBag.Title = T("Admin.Configuration.Countries.States.AddNew").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -13,7 +11,10 @@
             @T("Admin.Configuration.Countries.States.AddNew")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 

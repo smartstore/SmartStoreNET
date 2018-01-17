@@ -319,31 +319,24 @@ $gray-lightest: $gray-100;
 	}
 
 	> tbody > tr,
-	> tr {
+	> tr,
+	.adminRow {
 		@include make-row();
 		margin: 0.4rem 0;
 	}
 
-	> tbody > tr > td,
-	> tr > td {
+	.adminTitle,
+	.adminData {
 		@include make-col-ready();
 	}
 
-	td.adminTitle {
-		@include make-col(3);
-		text-align: right;
+	.adminTitle {
 		margin-bottom: 0;
 		padding-top: $input-btn-padding-y;
 		padding-bottom: $input-btn-padding-y;
 	}
 
-	td.adminData {
-		@include make-col(6);
-
-		&.wide {
-			@include make-col(9);
-		}
-
+	.adminData {
 		> .switch {
 			margin-bottom: 0;
 			padding-top: calc(#{$input-btn-padding-y} - 3px);
@@ -357,18 +350,36 @@ $gray-lightest: $gray-100;
 	}
 
 	@include media-breakpoint-up(md) {
-		td.adminTitle {
-			@include make-col(3);
+		.adminTitle {
+			@include make-col(4);
 			text-align: right;
 		}
 
-		td.adminData {
+		.adminData {
+			@include make-col(8);
+		}
+	}
+
+	@include media-breakpoint-up(lg) {
+		.adminTitle {
+			@include make-col(3);
+		}
+
+		.adminData {
 			@include make-col(9);
+
+			&.wide {
+				@include make-col(9);
+			}
 		}
 	}
 
 	@include media-breakpoint-up(xl) {
-		td.adminData {
+		.adminTitle {
+			@include make-col(3);
+		}
+
+		.adminData {
 			@include make-col(6);
 		}
 	}
@@ -425,6 +436,6 @@ $gray-lightest: $gray-100;
 
 // Reset BS' check/radio positioning in adminData-columns
 .adminData > .form-check-input {
-    position: relative;
-    margin-left: 0;
+	position: relative;
+	margin-left: 0;
 }

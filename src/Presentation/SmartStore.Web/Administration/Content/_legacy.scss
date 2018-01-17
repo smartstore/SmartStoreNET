@@ -628,14 +628,13 @@ td.adminTitle:hover a.hint {
 }
 
 
-tr.adminSeparator hr,
-td.adminSeparator hr {
+.adminSeparator hr {
 	border: medium none;
     background-color: #ddd;
     color: #ddd;
     height: 1px;
-    margin-top: 12px;
-    margin-bottom: 12px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     padding: 0;
 }
 

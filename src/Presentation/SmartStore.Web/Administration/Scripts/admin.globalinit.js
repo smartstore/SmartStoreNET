@@ -11,7 +11,7 @@
 		},
 		// select2
 		function (ctx) {
-			ctx.find(".adminData select:not(.noskin), .adminData input:hidden[data-select]").selectWrapper();
+			ctx.find(".adminData select:not(.noskin)").selectWrapper();
 		},
 		// tooltips
 		function (ctx) {

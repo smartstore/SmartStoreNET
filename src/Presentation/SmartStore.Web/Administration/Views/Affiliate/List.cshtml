@@ -12,38 +12,37 @@
         @T("Admin.Affiliates")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<AffiliateModel>()
-                    .Name("affiliates-grid")
-                    .Columns(columns =>
-                    {
-						columns.Bound(x => x.Address.Email)
-							.Width(200);
-                        columns.Bound(x => x.Address.FirstName)
-                            .Width(200);
-                        columns.Bound(x => x.Address.LastName)
-                            .Width(200);
-                        columns.Bound(x => x.Active)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.Active))
-                            .ClientTemplate(@Html.SymbolForBool("Active"))
-                            .Centered();
-                        columns.Bound(x => x.Id)
-                            .Width(50)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                    })
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Affiliate"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+<div>
+	@(Html.Telerik().Grid<AffiliateModel>()
+		.Name("affiliates-grid")
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Address.Email)
+				.Width(200);
+			columns.Bound(x => x.Address.FirstName)
+				.Width(200);
+			columns.Bound(x => x.Address.LastName)
+				.Width(200);
+			columns.Bound(x => x.Active)
+				.Width(100)
+				.Template(item => @Html.SymbolForBool(item.Active))
+				.ClientTemplate(@Html.SymbolForBool("Active"))
+				.Centered();
+			columns.Bound(x => x.Id)
+				.Width(50)
+				.Centered()
+				.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a class\"btn btn-warning\" href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+				.Title(T("Admin.Common.Edit").Text);
+		})
+		.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Affiliate"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+</div>

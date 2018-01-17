@@ -454,21 +454,6 @@
     <Compile Include="Validators\Catalog\ProductValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Scripts\underscore.js">
-      <Link>Scripts\Refs\underscore.js</Link>
-    </None>
-    <None Include="..\Scripts\underscore.mixins.js">
-      <Link>Scripts\Refs\underscore.mixins.js</Link>
-    </None>
-    <None Include="..\Scripts\underscore.string.js">
-      <Link>Scripts\Refs\underscore.string.js</Link>
-    </None>
-    <None Include="..\Scripts\modernizr.js">
-      <Link>Scripts\Refs\modernizr.js</Link>
-    </None>
-    <None Include="..\Scripts\smartstore.globalization.js">
-      <Link>Scripts\Refs\smartstore.globalization.js</Link>
-    </None>
     <Content Include="Content\bs4\js\bootstrap.bundle.js" />
     <Content Include="Content\bs4\js\bootstrap.bundle.min.js" />
     <Content Include="Content\bs4\js\bootstrap.js" />

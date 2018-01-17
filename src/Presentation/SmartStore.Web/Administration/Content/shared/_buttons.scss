@@ -4,13 +4,9 @@ $btn-wide-padding-x:    1.8rem;
 $btn-wide-padding-x-lg: 2.5rem;
 $btn-wide-padding-x-sm: 1.2rem;
 
-/*$btn-size:              ($btn-padding-y * 2) + ($font-size-base * $btn-line-height);
-$btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-lg * $btn-line-height);
-$btn-size-sm:           ($btn-padding-y-sm * 2) + ($font-size-sm * $btn-line-height);*/
-
-$btn-size:              $input-height;
-$btn-size-lg:           $input-height-lg;
-$btn-size-sm:           $input-height-sm;
+$btn-size:				$input-height;
+$btn-size-lg:			$input-height-lg;
+$btn-size-sm:			$input-height-sm;
 
 @mixin btn-padding($p) {
     padding-left: $p;
@@ -27,20 +23,6 @@ $btn-size-sm:           $input-height-sm;
 
 // General
 // --------------------------------------------------
-
-.btn {
-    cursor: pointer;
-}
-
-// TODO BS4
-/*.btn-secondary {
-    &:hover,
-    &:active,
-    &.active,
-    .show > &.dropdown-toggle {
-        background-color: #f2f2f2;
-    }
-}*/
 
 .btn-secondary.hover        { @extend .btn-secondary:hover; }
 .btn-primary.hover          { @extend .btn-primary:hover; }
@@ -126,379 +108,439 @@ $btn-size-sm:           $input-height-sm;
 // --------------------------------------------------
 
 .btn-flat {
-    color: inherit;
-    background-color: transparent;
-    border-color: transparent;
-    box-shadow: none;
+	color: $yiq-text-dark;
+	background-image: none;
+	background-color: transparent;
+	border-color: transparent;
+	box-shadow: none;
 
-    &:hover:not(:active):not(:focus),
-    &.hover:not(:active):not(:focus) { 
-        border-color: transparent;  
-    }
+	&.disabled,
+	&:disabled {
+		color: $yiq-text-dark;
+		background-image: none;
+		background-color: transparent;
+		border-color: transparent;
+	}
 }
 
 .btn-flat-light {
-    color: rgba(255,255,255, 0.8);
+	color: rgba(#fff, 0.8);
 
-    &:hover, &.hover, &:active, &.active {
-        border-color: rgba(255,255,255, 1) !important;
-    }
+	&.disabled,
+	&:disabled {
+		color: rgba(#fff, 0.8);
+	}
 
-    &:focus, &.focus {
-        box-shadow:  0 0 0 2px rgba(#fff, .4);
-    }
+	&:not([disabled]):not(.disabled):hover,
+	&:not([disabled]):not(.disabled).hover,
+	&:active,
+	&.active,
+	.show > &.dropdown-toggle {
+		border-color: rgba(#fff, 1);
+	}
+
+	&:focus,
+	&.focus {
+		box-shadow: 0 0 0 2px rgba(#fff, .25);
+	}
 }
-
 
 // btn-clear
 // --------------------------------------------------
-
 .btn-clear {
-    color: rgba(255,255,255, 1) !important;
-    background: rgba(255,255,255, 0);
-    border-color: rgba(255,255,255, 0.6);
-    box-shadow: none;
+	color: #fff;
+	background: rgba(#fff, 0);
+	border-color: rgba(#fff, 0.6);
+	box-shadow: none;
 
-    &:hover, &.hover {
-        background: rgba(255,255,255, 0.15);
-    }
+	&:hover,
+	&.hover {
+		background: rgba(#fff, 0.15);
+	}
 
-    &:active, &.active {
-        border-color: #fff;
-        box-shadow: none;
-    }
+	&:focus,
+	&.focus {
+		border-color: #fff;
+		box-shadow: 0 0 0 2px rgba(#fff, .25);
+	}
 
-    &:focus, &.focus {
-        border-color: #fff;
-        box-shadow:  0 0 0 2px rgba(#fff, .25);
-    }
+	&.disabled,
+	&:disabled {
+		background: rgba(#fff, 0);
+		border-color: rgba(#fff, 0.6);
+	}
+
+	&:not([disabled]):not(.disabled):active,
+	&:not([disabled]):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		border-color: #fff;
+		box-shadow: none;
+	}
 }
 
 .btn-clear-dark {
-    color: rgba(0, 0, 0, 0.7);
-    background: transparent;
-    border-color: rgba(0, 0, 0, 0.15);
-    box-shadow: none;
+	color: $yiq-text-dark;
+	background: transparent;
+	border-color: rgba(#000, 0.15);
+	box-shadow: none;
 
-    &:hover, &.hover {
-        color: rgba(0, 0, 0, 0.85);
-        background: rgba(0, 0, 0, 0.06);
-    }
+	&:hover,
+	&.hover {
+		color: darken($yiq-text-dark, 8%);
+		background: rgba(#000, 0.06);
+		border-color: rgba(#000, 0.2);
+	}
 
-    &:active, &.active {
-        box-shadow: none;
-    }
+	&:focus,
+	&.focus {
+		border-color: rgba(#000, 0.2);
+		box-shadow: 0 0 0 3px rgba(#000, .05);
+	}
 
-    &:focus, &.focus {
-        box-shadow:  0 0 0 2px rgba(#000, .08);
-    }
+	&.disabled,
+	&:disabled {
+		background: transparent;
+		border-color: rgba(#000, 0.15);
+		box-shadow: none;
+	}
+
+	&:not([disabled]):not(.disabled):active,
+	&:not([disabled]):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		box-shadow: inset 0 3px 5px rgba(#000, 0.125) !important;
+	}
 }
-
-
 
 // btn-labeled
 // --------------------------------------------------
-
 .btn-labeled {
-    position: relative;
-    padding-left: $input-btn-padding-x + $btn-size;
+	$w-md: $input-height-inner * 0.85;
+	$w-sm: $input-height-inner-sm * 0.85;
+	$w-lg: $input-height-inner-lg * 0.85;
+	position: relative;
+	padding-left: $w-md + $input-btn-padding-x;
 
-    > b {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        background-color: rgba(0,0,0, .12);
-        display: block;
-        width: $btn-size;
-        line-height: $btn-size;
-        text-align: center;
-        > .fa { vertical-align: middle; }
-    }
-    &.btn-lg {
-        padding-left: $input-btn-padding-x-lg + $btn-size-lg;
-        > b { width: $btn-size-lg; line-height: $btn-size-lg; }
-    }
-    &.btn-sm {
-        padding-left: $input-btn-padding-x-sm + $btn-size-sm;
-        > b { width: $btn-size-sm; line-height: $btn-size-sm; }
-    }
+	> b {
+		position: absolute;
+		display: block;
+		width: $w-md;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		background-color: rgba(0,0,0, .12);
 
-    &.icon-right {
-        padding-left: $input-btn-padding-x;
-        padding-right: $input-btn-padding-x + $btn-size;
+		> i {
+			position: relative;
+			vertical-align: middle;
+			//transform: translate(0, 50%);
+			line-height: $btn-size;
+		}
+	}
 
-        > b {
-            left: auto;
-            right: 0;
-        }
-    }
+	&.btn-lg {
+		padding-left: $w-lg + $input-btn-padding-x-lg;
+
+		> b {
+			width: $w-lg;
+
+			> i {
+				line-height: $btn-size-lg;
+			}
+		}
+	}
+
+	&.btn-sm {
+		padding-left: $w-sm + $input-btn-padding-x-sm;
+
+		> b {
+			width: $w-sm;
+
+			> i {
+				line-height: $btn-size-sm;
+			}
+		}
+	}
+
+	&.icon-right {
+		padding-left: $input-btn-padding-x;
+		padding-right: $w-md + $input-btn-padding-x;
+
+		> b {
+			left: auto;
+			right: 0;
+		}
+	}
 }
-
 
 // btn-animate
 // --------------------------------------------------
 
 .btn-animate {
-    position: relative;
-    overflow: hidden;
-    padding-left: $input-btn-padding-x * 1.5;
-    padding-right: $input-btn-padding-x * 1.5;
-    transition: all 0.2s ease-out;
+	position: relative;
+	overflow: hidden;
+	padding-left: $input-btn-padding-x * 1.5;
+	padding-right: $input-btn-padding-x * 1.5;
+	transition: all 0.2s ease-out;
 
-    > span {
-        display: block;
-        width: 100%;
-        height: 100%;
+	> span {
+		display: block;
+		width: 100%;
+		height: 100%;
+		transition: transform 0.2s ease-out;
+		transform: translateX(0);
 
-        transition: transform 0.2s ease-out;
-        transform: translateX(0);
+		> i {
+			position: absolute;
+			display: inline-block;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			width: 1.4em;
+			text-align: left;
+			opacity: 0;
+			line-height: $line-height-base;
+			transition: opacity 0.2s ease-out;
+			transform: translateX(-100%);
+			&:before {
+				vertical-align: middle;
+			}
+		}
+	}
 
-        > .fa {
-            position: absolute;
-            display: block;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 1.25em;
-            text-align: left;
-            opacity: 0;
-            line-height: $line-height-base;
-            transition: opacity 0.2s ease-out;
-            transform: translateX(-100%);
-        }
-    }
+	&:hover > span {
+		transform: translateX(10px);
 
-    &:hover > span {
-        transform: translateX(10px);
-        > .fa { opacity: 1; }
-    }
+		> i {
+			opacity: 1;
+		}
+	}
 
-    &.btn-lg {
-        padding-left: $input-btn-padding-x-lg * 1.5;
-        padding-right: $input-btn-padding-x-lg * 1.5;
-    }
-    &.btn-sm {
-        padding-left: $input-btn-padding-x-sm * 1.5;
-        padding-right: $input-btn-padding-x-sm * 1.5;
-        > span > .fa { 
-            top: 1px;
-        }
-    }
+	&.btn-lg {
+		padding-left: $input-btn-padding-x-lg * 1.5;
+		padding-right: $input-btn-padding-x-lg * 1.5;
+	}
+
+	&.btn-sm {
+		padding-left: $input-btn-padding-x-sm * 1.5;
+		padding-right: $input-btn-padding-x-sm * 1.5;
+	}
 }
 
 .btn-animate.btn-animate-right {
-    > span > .fa {
-        left: auto;
-        right: 0;
-        text-align: right;
-        transform: translateX(100%);
-    }
+	> span > i {
+		left: auto;
+		right: 0;
+		text-align: right;
+		transform: translateX(100%);
+	}
 
-    &:hover > span {
-        transform: translateX(-10px);
-    }
+	&:hover > span {
+		transform: translateX(-10px);
+	}
 }
 
 .btn-animate.btn-animate-down {
-    > span {
-        text-align: center;
-    }
-    > span > .fa {
-        left: 50%;
-        margin-left: -0.625em;
-        right: 0;
-        top: 0;
-        text-align: center;
-        transform: translateY(-100%);
-    }
+	> span {
+		text-align: center;
+	}
 
-    &:hover > span {
-        transform: translateY(100%);
-    }
+	> span > i {
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		width: 100%;
+		text-align: center;
+		vertical-align: middle;
+		transform: translateY(-150%);
+	}
+
+	&:hover > span {
+		transform: translateY(150%);
+	}
 }
+
 .btn-animate.btn-animate-down.btn-lg {
-    > span > .fa {
-        font-size: 1.5rem;
-        line-height: 1.5rem;
-        transform: translateY(-$btn-size-lg);
-    }
-    &:hover > span {
-        transform: translateY($btn-size-lg);
-    }
+	> span > i {
+		font-size: 1.5rem;
+		line-height: 1.5rem;
+	}
 }
-.btn-animate.btn-animate-down.btn-sm {
-    > span > .fa {
-        transform: translateY(-$btn-size-sm);
-    }
-    &:hover > span {
-        transform: translateY($btn-size-sm);
-    }
-}
-
 
 // btn-to-[danger|primary]
 // --------------------------------------------------
-
 .btn.btn-to-danger {
-    transition: none;
-    &:hover {
-        @extend .btn-danger:hover;
-    }
-    &:active, &.active {
-        @extend .btn-danger:active;
-    }
-    &:focus, &.focus {
-        @extend .btn-danger:focus;
-    }
+	transition: none;
+
+	&:hover {
+		@extend .btn-danger:hover;
+	}
+
+	&:active, &.active {
+		@extend .btn-danger:active;
+	}
+
+	&:focus, &.focus {
+		@extend .btn-danger:focus;
+	}
 }
 
 .btn.btn-to-primary {
-    transition: none;
-    &:hover {
-        @extend .btn-primary:hover;
-    }
-    &:active, &.active {
-        @extend .btn-primary:active;
-    }
-    &:focus, &.focus {
-        @extend .btn-primary:focus;
-    }
-}
+	transition: none;
 
+	&:hover {
+		@extend .btn-primary:hover;
+	}
+
+	&:active, &.active {
+		@extend .btn-primary:active;
+	}
+
+	&:focus, &.focus {
+		@extend .btn-primary:focus;
+	}
+}
 
 // btn-no-border
 // --------------------------------------------------
-
-.btn.btn-no-border {
-    border-color: transparent !important;
-    &:active, &.active {
-        box-shadow: none;
-    }
+.btn-no-border {
+	border-color: transparent !important;
 }
-
 
 // btn-wide
 // --------------------------------------------------
-
 .btn-wide {
-    @include btn-padding($btn-wide-padding-x);
+	@include btn-padding($btn-wide-padding-x);
 
-    &.btn-lg {
-        @include btn-padding($btn-wide-padding-x-lg);
-    }
-    &.btn-sm {
-        @include btn-padding($btn-wide-padding-x-sm);
-    }
+	&.btn-lg {
+		@include btn-padding($btn-wide-padding-x-lg);
+	}
+
+	&.btn-sm {
+		@include btn-padding($btn-wide-padding-x-sm);
+	}
 }
 
 .btn-wide.btn-animate {
-    @include btn-padding($btn-wide-padding-x * 1.5);
-    span > .fa {
-        width: 1.5em;
-    }
+	@include btn-padding($btn-wide-padding-x * 1.5);
 
-    &.btn-lg {
-        @include btn-padding($btn-wide-padding-x-lg * 1.5);
-    }
-    &.btn-sm {
-        @include btn-padding($btn-wide-padding-x-sm * 1.5); 
-    }
+	span > .fa {
+		width: 1.5em;
+	}
+
+	&.btn-lg {
+		@include btn-padding($btn-wide-padding-x-lg * 1.5);
+	}
+
+	&.btn-sm {
+		@include btn-padding($btn-wide-padding-x-sm * 1.5);
+	}
 }
 
 .btn-wide.btn-labeled {
-    padding-left: $btn-wide-padding-x + $btn-size;
+	padding-left: $btn-wide-padding-x + $btn-size;
 
-    &.btn-lg {
-        padding-left: $btn-wide-padding-x-lg + $btn-size-lg;
-    }
-    &.btn-sm {
-        padding-left: $btn-wide-padding-x-sm + $btn-size-sm;
-    }
+	&.btn-lg {
+		padding-left: $btn-wide-padding-x-lg + $btn-size-lg;
+	}
 
-    &.icon-right {
-        padding-left: $btn-wide-padding-x;
-        padding-right: $btn-wide-padding-x + $btn-size;
+	&.btn-sm {
+		padding-left: $btn-wide-padding-x-sm + $btn-size-sm;
+	}
 
-        &.btn-lg {
-            padding-right: $btn-wide-padding-x-lg + $btn-size-lg;
-        }
-        &.btn-sm {
-            padding-right: $btn-wide-padding-x-sm + $btn-size-sm;
-        }
-    }
+	&.icon-right {
+		padding-left: $btn-wide-padding-x;
+		padding-right: $btn-wide-padding-x + $btn-size;
+
+		&.btn-lg {
+			padding-right: $btn-wide-padding-x-lg + $btn-size-lg;
+		}
+
+		&.btn-sm {
+			padding-right: $btn-wide-padding-x-sm + $btn-size-sm;
+		}
+	}
 }
-
-
 // .mf-dropdown (Mobile Friendly dropdown)
 // --------------------------------------------------
-
 .mf-dropdown {
-    display: inline-block;
-    position: relative;
+	display: inline-block;
+	position: relative;
 
-    .btn {
-        border-radius: 0;
-        position: relative;
-    }
+	.btn {
+		border-radius: 0;
+		position: relative;
+	}
 
-    .btn > em {
-        font-style: normal;
-        font-variant: normal;
-        font-weight: normal;
-        color: $text-muted;
-        font-size: $font-size-sm;
-        font-size: 0.85em; // make it smaller
-    }
+	.btn > em {
+		font-style: normal;
+		font-variant: normal;
+		font-weight: normal;
+		color: $text-muted;
+		font-size: $font-size-sm;
+		font-size: 0.85em; // make it smaller
+	}
 
-    .btn > em > span {
-        font-weight: $font-weight-medium;
-        font-size: 1.166666em; // make it regular again
-        color: $body-color;
-    }
+	.btn > em > span {
+		font-weight: $font-weight-medium;
+		font-size: 1.166666em; // make it regular again
+		color: $body-color;
+	}
 
-    .btn.has-caret {
-        text-align: left;
-        padding-right: $input-btn-padding-x * 2;
-        &.btn-sm { padding-right: $input-btn-padding-x-sm * 2; }
-        &.btn-lg { padding-right: $input-btn-padding-x-lg * 2; }
+	.btn.has-caret {
+		text-align: left;
+		padding-right: $input-btn-padding-x * 2;
 
-        > em,
-        > span {
-            display: block;
-            margin-bottom: 1px; // equalizes button heights
-            @include text-truncate();
-        }
-    }
+		&.btn-sm {
+			padding-right: $input-btn-padding-x-sm * 2;
+		}
 
-    .btn.has-caret:after {
-        @include fontawesome("\f0d7");
-        position: absolute;
-        display: block;
-        right: $input-btn-padding-x;
-        line-height: 1;
-        top: 50%;
-        transform: translate3d(50%, -50%, 0);
-    }
-    .btn-sm.has-caret:after { right: $input-btn-padding-x-sm; }
-    .btn-lg.has-caret:after { right: $input-btn-padding-x-lg; }
+		&.btn-lg {
+			padding-right: $input-btn-padding-x-lg * 2;
+		}
 
-    select {
-        position: absolute;
-        opacity: 0;
-        left: 0;
-        width: 100%;
-        top: 0;
-        bottom: 0;
-        cursor: pointer;
-    }
+		> em,
+		> span {
+			display: block;
+			margin-bottom: 1px; // equalizes button heights
+			@include text-truncate();
+		}
+	}
+
+	.btn.has-caret:after {
+		@include fontawesome("\f0d7");
+		position: absolute;
+		display: block;
+		right: $input-btn-padding-x;
+		line-height: 1;
+		top: 50%;
+		transform: translate3d(50%, -50%, 0);
+	}
+
+	.btn-sm.has-caret:after {
+		right: $input-btn-padding-x-sm;
+	}
+
+	.btn-lg.has-caret:after {
+		right: $input-btn-padding-x-lg;
+	}
+
+	select {
+		position: absolute;
+		opacity: 0;
+		left: 0;
+		width: 100%;
+		top: 0;
+		bottom: 0;
+		cursor: pointer;
+	}
 }
 
 
 // Social buttons
 // --------------------------------------------------
-
 // TODO BS4
+
 /*.btn-brand-facebook {
     @include button-variant(#fff, $clr-brand-facebook, $clr-brand-facebook);
 }
@@ -518,8 +560,7 @@ $btn-size-sm:           $input-height-sm;
 .btn-brand-google-plus  {
     @include button-variant(#fff, $clr-brand-googleplus , $clr-brand-googleplus );
 }*/
-
-/*.btn-brand-flickr {
+	/*.btn-brand-flickr {
     @include button-variant(#fff, $clr-brand-flickr, $clr-brand-flickr);
 }
 

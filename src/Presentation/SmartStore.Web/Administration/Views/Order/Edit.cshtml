@@ -1483,7 +1483,7 @@
                                             {
                                                 var returnRequest = item.ReturnRequests[i];
 
-                                                <span class="label label-@(returnRequest.StatusLabel)" style="margin-right: 4px">@returnRequest.StatusString</span>
+                                                <span class="badge badge-@(returnRequest.StatusLabel) mr-1">@returnRequest.StatusString</span>
 
                                                 <a href="@Url.Action("Edit", "ReturnRequest", new { id = returnRequest.Id })">
                                                     @T("Admin.Orders.Products.ReturnRequest") @returnRequest.Id

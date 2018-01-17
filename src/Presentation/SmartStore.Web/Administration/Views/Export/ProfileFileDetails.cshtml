@@ -13,7 +13,7 @@
 			foreach (var file in grp)
 			{
 				<div style="padding: 2px 0;">
-					<span class="label label-smnet label-info">
+					<span class="badge badge-info">
 						@Html.IconForFileExtension(file.FileExtension, false)
 						@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
 					</span>
@@ -39,7 +39,7 @@
 						<button type="button" class="btn btn-small pull-right copy-to-clipboard">
 							<i class="fa fa-clipboard"></i>
 						</button>
-						<span class="label label-smnet label-success">
+						<span class="badge badge-success">
 							@Html.IconForFileExtension(file.FileExtension, false)
 							@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
 						</span>

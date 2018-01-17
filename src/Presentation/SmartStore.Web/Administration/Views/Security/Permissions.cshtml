@@ -54,7 +54,7 @@
                                 {
                                     <tr>
                                         <td>
-											<span class="label label-smnet @pr.CategoryLabel">@Inflector.Titleize(pr.Category).NaIfEmpty()</span>
+											<span class="badge @pr.CategoryLabel">@Inflector.Titleize(pr.Category).NaIfEmpty()</span>
                                             <span>@pr.Name</span>
                                         </td>
                                         @foreach (var cr in Model.AvailableCustomerRoles)

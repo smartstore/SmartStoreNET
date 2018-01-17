@@ -135,7 +135,7 @@
 			@Model.DatabaseSizeString.NaIfEmpty()
 			@if (Model.ShrinkDatabaseEnabled)
 			{
-				<a href='@Url.Action("ShrinkDatabase")' style="margin-left: 10px">@T("Common.Shrink")</a>
+				<a href='@Url.Action("ShrinkDatabase")' class="ml-3">@T("Common.Shrink")</a>
 			}		
         </td>
     </tr>
@@ -145,7 +145,7 @@
 		</td>
 		<td class="adminData">
 			@Model.UsedMemorySizeString.NaIfEmpty()
-			<a href='@Url.Action("GarbageCollect")' style="margin-left: 10px">@T("Admin.System.SystemInfo.GarbageCollect")</a>
+			<a href='@Url.Action("GarbageCollect")' class="ml-3">@T("Admin.System.SystemInfo.GarbageCollect")</a>
 		</td>
 	</tr>
     <tr>

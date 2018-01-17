@@ -28,7 +28,7 @@
 						</span>
 						@if (plugin.Installed)
 						{
-							<span class="label label-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
+							<span class="badge badge-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
 						}
 						<span class="license-label">
 							@Html.Partial("Partials/LicenseLabel", plugin.LicenseLabel)
@@ -137,8 +137,8 @@
             <button id="btn-execute-tasks" type="submit" class="btn" disabled="disabled">
                 <i class="fa fa-cogs"></i>
                 @T("Admin.Configuration.Plugins.ExecuteTasks")
-                <span class="label label-important label-uninstall-count hide">0</span>
-                <span class="label label-warning label-install-count hide">0</span>
+                <span class="badge badge-important label-uninstall-count hide">0</span>
+                <span class="badge badge-warning label-install-count hide">0</span>
             </button>
 			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn" role="button">
 				<i class="fa fa-upload"></i>

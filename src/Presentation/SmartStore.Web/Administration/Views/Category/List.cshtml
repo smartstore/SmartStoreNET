@@ -11,7 +11,10 @@
     <div class="options">
 		@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
 
 		@{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
@@ -47,60 +50,56 @@
 	}
     <tr>
 		<td class="adminTitle">
-			&nbsp;
 		</td>
         <td class="adminData">
-            <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+            <button type="submit" id="btnSearch" class="btn btn-secondary">
+				<i class="fa fa-search"></i>
+				<span>@T("Admin.Common.Search")</span>
+			</button>
         </td>
     </tr>
 </table>
 
-<p></p>
-
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<CategoryModel>()
-					.Name("categories-grid")
-					.ClientEvents(events => events
-						.OnDataBinding("onDataBinding")
-						.OnDataBound("onDataBound"))
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Id)
-							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-							.Title("<input id='mastercheckbox' type='checkbox'/>")
-							.Width(50)
-							.HtmlAttributes(new { style = "text-align:center" })
-							.HeaderHtmlAttributes(new { style = "text-align:center" });
-						columns.Bound(x => x.Breadcrumb)
-							.Title(T("Admin.Catalog.Products.Categories.Fields.Category").Text)
-							.Template(x => Html.ActionLink(x.Breadcrumb, "Edit", new { id = x.Id }))
-							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Breadcrumb #></a>");
-						columns.Bound(x => x.FullName);
-						columns.Bound(x => x.Alias);
-						columns.Bound(x => x.Published)
-							.Width(160)
-							.Template(item => @Html.SymbolForBool(item.Published))
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-						columns.Bound(x => x.DisplayOrder)
-							.Width(160)
-							.Centered();
-						columns.Bound(x => x.LimitedToStores)
-							.Width(160)
-							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-							.Hidden(Model.AvailableStores.Count <= 1)
-							.Centered();
-					})
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Category"))
-					.PreserveGridState()
-					.EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+<div class="mt-5">
+	@(Html.Telerik().Grid<CategoryModel>()
+		.Name("categories-grid")
+		.ClientEvents(events => events
+			.OnDataBinding("onDataBinding")
+			.OnDataBound("onDataBound"))
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Id)
+				.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+				.Title("<input id='mastercheckbox' type='checkbox'/>")
+				.Width(50)
+				.HtmlAttributes(new { style = "text-align:center" })
+				.HeaderHtmlAttributes(new { style = "text-align:center" });
+			columns.Bound(x => x.Breadcrumb)
+				.Title(T("Admin.Catalog.Products.Categories.Fields.Category").Text)
+				.Template(x => Html.ActionLink(x.Breadcrumb, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Breadcrumb #></a>");
+			columns.Bound(x => x.FullName);
+			columns.Bound(x => x.Alias);
+			columns.Bound(x => x.Published)
+				.Width(160)
+				.Template(item => @Html.SymbolForBool(item.Published))
+				.ClientTemplate(@Html.SymbolForBool("Published"))
+				.Centered();
+			columns.Bound(x => x.DisplayOrder)
+				.Width(160)
+				.Centered();
+			columns.Bound(x => x.LimitedToStores)
+				.Width(160)
+				.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+				.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+				.Hidden(Model.AvailableStores.Count <= 1)
+				.Centered();
+		})
+		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Category"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+</div>
 
 <script type="text/javascript">
 	@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@

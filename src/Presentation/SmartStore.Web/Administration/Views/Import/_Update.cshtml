@@ -132,7 +132,7 @@
 			</td>
 			<td class="adminData">
 				@*ListBoxFor is insufficient here because the user cannot influence the stored order*@
-				<select class="control-large" multiple="multiple" name="@Html.FieldNameFor(x => x.KeyFieldNames)" id="@Html.FieldIdFor(x => x.KeyFieldNames)">
+				<select multiple="multiple" name="@Html.FieldNameFor(x => x.KeyFieldNames)" id="@Html.FieldIdFor(x => x.KeyFieldNames)">
 					@foreach (var field in Model.KeyFieldNames)
 					{
 						var availableKey = Model.AvailableKeyFieldNames.FirstOrDefault(x => x.Value == field);

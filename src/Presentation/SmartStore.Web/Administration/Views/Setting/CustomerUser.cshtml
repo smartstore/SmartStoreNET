@@ -663,7 +663,7 @@
 					@Html.SmartLabelFor(model => model.Locales[item].Salutations)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => Model.Locales[item].Salutations, new { @class = "input-xlarge" })
+					@Html.TextBoxFor(model => Model.Locales[item].Salutations)
 					@Html.ValidationMessageFor(model => model.Locales[item].Salutations)
 				</td>
 			</tr>
@@ -680,7 +680,7 @@
                     @Html.SmartLabelFor(model => model.AddressSettings.Salutations)
                 </td>
                 <td class="adminData">
-                    @Html.TextBoxFor(model => model.AddressSettings.Salutations, new { @class = "input-xlarge" })
+                    @Html.TextBoxFor(model => model.AddressSettings.Salutations)
                     @Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
                 </td>
             </tr>

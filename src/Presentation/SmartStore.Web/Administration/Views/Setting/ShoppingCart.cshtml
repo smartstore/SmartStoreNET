@@ -356,7 +356,7 @@
 					@Html.SmartLabelFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
 				</td>
 				<td class="adminData">
-					@Html.TextAreaFor(model => Model.Locales[item].ThirdPartyEmailHandOverLabel, new { @class = "input-large" })
+					@Html.TextAreaFor(model => Model.Locales[item].ThirdPartyEmailHandOverLabel)
 					@Html.ValidationMessageFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
 				</td>
 			</tr>
@@ -373,7 +373,7 @@
 					@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOverLabel)
 				</td>
 				<td class="adminData">
-					@Html.TextAreaFor(model => model.ThirdPartyEmailHandOverLabel, new { @class = "input-large" })
+					@Html.TextAreaFor(model => model.ThirdPartyEmailHandOverLabel)
 					@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOverLabel)
 				</td>
 			</tr>

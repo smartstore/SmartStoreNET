@@ -14,7 +14,7 @@
 						@Html.SmartLabelFor(model => model.ProviderSystemName)
 					</td>
 					<td class="adminData">
-						<select name="@Html.FieldNameFor(x => x.ProviderSystemName)" id="@Html.FieldIdFor(x => x.ProviderSystemName)" class="large-select2 control-large">
+						<select name="@Html.FieldNameFor(x => x.ProviderSystemName)" id="@Html.FieldIdFor(x => x.ProviderSystemName)" class="large-select2">
 							@foreach (var item in Model.AvailableProviders.OrderBy(x => x.FriendlyName))
 							{
 								<option value="@item.SystemName" data-id="@item.Id" data-imageurl="@item.ImageUrl">@item.FriendlyName</option>
@@ -29,7 +29,7 @@
 							@Html.SmartLabelFor(model => model.CloneProfileId)
 						</td>
 						<td class="adminData">
-							<select name="@Html.FieldNameFor(x => x.CloneProfileId)" id="@Html.FieldIdFor(x => x.CloneProfileId)" class="large-select2 control-large" 
+							<select name="@Html.FieldNameFor(x => x.CloneProfileId)" id="@Html.FieldIdFor(x => x.CloneProfileId)" class="large-select2" 
 									data-placeholder="@Model.UnspecifiedString">
 								<option></option>
 								@foreach (var item in Model.AvailableProfiles.OrderBy(x => x.FriendlyName))

@@ -12,7 +12,7 @@
 			@for (int i = 0; i < Model.StoreLicenses.Count; ++i)
 			{
 				var storeLicense = Model.StoreLicenses[i];
-				var keyAttributes = new RouteValueDictionary(new { @class = "input-large", autocomplete = "off" });
+				var keyAttributes = new RouteValueDictionary(new { autocomplete = "off" });
 				if (storeLicense.LicenseLabel.LicenseState == LicensingState.Licensed && string.IsNullOrWhiteSpace(storeLicense.LicenseKey) && !storeLicense.LicenseLabel.HideLabel)
 				{
 					keyAttributes.Add("disabled", "disabled");

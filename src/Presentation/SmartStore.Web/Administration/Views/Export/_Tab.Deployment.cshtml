@@ -9,7 +9,7 @@
 			@Html.SmartLabelFor(x => x.FolderName)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(x => x.FolderName, new { @class = "input-large" })
+			@Html.TextBoxFor(x => x.FolderName)
 			@Html.ValidationMessageFor(x => x.FolderName)
 		</td>
 	</tr>
@@ -21,7 +21,7 @@
 			</td>
 			<td class="adminData">
 				<div>
-					@Html.TextBoxFor(x => x.FileNamePattern, new { @class = "input-large" })
+					@Html.TextBoxFor(x => x.FileNamePattern)
 					@Html.ValidationMessageFor(x => x.FileNamePattern)
 				</div>
 			</td>

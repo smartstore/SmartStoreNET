@@ -99,7 +99,7 @@
                     </td>
                     <td class="adminData">
                         <select id="@Html.FieldIdFor(x => x.AvailableLanguageSetId)" name="@Html.FieldNameFor(x => x.AvailableLanguageSetId)" 
-                                class="large-select2 control-large" data-placeholder="@T("Common.Unspecified")">
+                                class="large-select2" data-placeholder="@T("Common.Unspecified")">
                             <option></option>
                             @foreach (var item in Model.AvailableDownloadLanguages.OrderBy(x => x.DisplayOrder))
                             {

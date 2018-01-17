@@ -200,7 +200,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.ExtraRobotsDisallows)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.SeoSettings.ExtraRobotsDisallows, new { @class = "input-large", style = "height:250px" })
+                @Html.TextAreaFor(model => model.SeoSettings.ExtraRobotsDisallows, new { style = "height:250px" })
                 @Html.ValidationMessageFor(model => model.SeoSettings.ExtraRobotsDisallows)
             </td>
         </tr>
@@ -234,7 +234,7 @@
 				@Html.SmartLabelFor(model => model.SeoSettings.SeoNameCharConversion)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(model => model.SeoSettings.SeoNameCharConversion, new { @class = "input-large", style = "height:250px" })
+				@Html.TextAreaFor(model => model.SeoSettings.SeoNameCharConversion, new { style = "height:250px" })
 				@Html.ValidationMessageFor(model => model.SeoSettings.SeoNameCharConversion)
 			</td>
 		</tr>

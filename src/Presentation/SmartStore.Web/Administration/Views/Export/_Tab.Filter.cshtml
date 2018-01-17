@@ -171,8 +171,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.CustomerRoleIds,
-												new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"),
-												new { multiple = "multiple", @class = "control-xlarge" })
+					new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"),
+					new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.CustomerRoleIds)
 			</td>
 		</tr>
@@ -182,8 +182,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.BillingCountryIds,
-												new MultiSelectList(Model.Filter.AvailableCountries, "Value", "Text"),
-												new { multiple = "multiple", @class = "control-xlarge" })
+					new MultiSelectList(Model.Filter.AvailableCountries, "Value", "Text"),
+					new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.BillingCountryIds)
 			</td>
 		</tr>
@@ -193,8 +193,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.ShippingCountryIds,
-												new MultiSelectList(Model.Filter.AvailableCountries, "Value", "Text"),
-												new { multiple = "multiple", @class = "control-xlarge" })
+					new MultiSelectList(Model.Filter.AvailableCountries, "Value", "Text"),
+					new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.ShippingCountryIds)
 			</td>
 		</tr>
@@ -273,8 +273,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.OrderStatusIds,
-												new MultiSelectList(Model.Filter.AvailableOrderStates, "Value", "Text"),
-												new { multiple = "multiple", @class = "control-xlarge" })
+					new MultiSelectList(Model.Filter.AvailableOrderStates, "Value", "Text"),
+					new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.OrderStatusIds)
 			</td>
 		</tr>
@@ -284,8 +284,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.PaymentStatusIds,
-												new MultiSelectList(Model.Filter.AvailablePaymentStates, "Value", "Text"),
-												new { multiple = "multiple", @class = "control-xlarge" })
+					new MultiSelectList(Model.Filter.AvailablePaymentStates, "Value", "Text"),
+					new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.PaymentStatusIds)
 			</td>
 		</tr>
@@ -295,8 +295,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.ShippingStatusIds,
-												new MultiSelectList(Model.Filter.AvailableShippingStates, "Value", "Text"),
-												new { multiple = "multiple", @class = "control-xlarge" })
+					new MultiSelectList(Model.Filter.AvailableShippingStates, "Value", "Text"),
+					new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.ShippingStatusIds)
 			</td>
 		</tr>
@@ -387,8 +387,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.CustomerRoleIds,
-							  new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"),
-							  new { multiple = "multiple", @class = "control-xlarge" })
+					new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"),
+					new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.CustomerRoleIds)
 			</td>
 		</tr>

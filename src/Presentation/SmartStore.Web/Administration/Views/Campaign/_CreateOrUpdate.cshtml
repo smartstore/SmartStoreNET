@@ -18,8 +18,9 @@
                 @Html.EditorFor(model => model.TestEmail)
                 @Html.ValidationMessageFor(model => model.TestEmail)
 
-                <button type="submit" name="send-test-email" value="send-test-email" class="btn">
-					<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendTestEmail")
+                <button type="submit" name="send-test-email" value="send-test-email" class="btn btn-secondary mt-1">
+					<i class="fa fa-envelope"></i>
+					<span>@T("Admin.Promotions.Campaigns.SendTestEmail")</span>
 				</button>
             </td>
         </tr>
@@ -28,7 +29,8 @@
             </td>
             <td class="adminData">
                 <button type="submit" name="send-mass-email" value="send-mass-email" class="btn btn-warning" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-					<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendMassEmail")
+					<i class="fa fa-envelope"></i>
+					<span>@T("Admin.Promotions.Campaigns.SendMassEmail")</span>
 				</button>
             </td>
         </tr>
@@ -77,7 +79,7 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Body)
 			</td>
-			<td class="adminData">
+			<td class="adminData wide">
 				@Html.EditorFor(model => model.Body, "RichEditor")
 				@Html.ValidationMessageFor(model => model.Body)
 			</td>
@@ -87,46 +89,41 @@
 
 @helper TabStores()
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $('#@Html.FieldIdFor(model => model.LimitedToStores)').change(function () {
-    			$('#pnl-available-stores').toggle($(this).is(':checked'));
-    		}).trigger('change');
-
-        });
-    </script>
-	
     <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LimitedToStores)
-                @Html.ValidationMessageFor(model => model.LimitedToStores)
-            </td>
-        </tr>
-        <tr id="pnl-available-stores">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores)
-            </td>
-            <td class="adminData">
-                @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
-                {
-                    foreach (var store in Model.AvailableStores)
-                    {
-					<label class="checkbox">
-						<input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
-						<span>@store.Name</span>
-					</label>
-                    }
-                }
-                else
-                {
-                    <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.LimitedToStores)
+			</td>
+			<td class="adminData">
+				@Html.CheckBoxFor(model => model.LimitedToStores, new { data_toggler_for = "#pnl-available-stores" })
+				@Html.ValidationMessageFor(model => model.LimitedToStores)
+			</td>
+		</tr>
+		<tbody id="pnl-available-stores">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AvailableStores)
+				</td>
+				<td class="adminData">
+					@if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
+					{
+						foreach (var store in Model.AvailableStores)
+						{
+							<div class="form-check">
+								<input type="checkbox" name="SelectedStoreIds" id="store-@store.Id" class="form-check-input"
+									   value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
+								<label class="form-check-label" for="store-@store.Id">@store.Name</label>
+							</div>
+						}
+					}
+					else
+					{
+						<div>
+							@T("Admin.Configuration.Stores.NoStoresDefined")
+						</div>
+					}
+				</td>
+			</tr>
+		</tbody>
     </table>
 }

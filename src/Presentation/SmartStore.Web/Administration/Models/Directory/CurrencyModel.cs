@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Directory
 {
     [Validator(typeof(CurrencyValidator))]
-    public class CurrencyModel : EntityModelBase, ILocalizedModel<CurrencyLocalizedModel>
+    public class CurrencyModel : EntityModelBase, ILocalizedModel<CurrencyLocalizedModel>, IStoreSelector
     {
         public CurrencyModel()
         {
@@ -71,16 +71,13 @@ namespace SmartStore.Admin.Models.Directory
 
 		public IList<CurrencyLocalizedModel> Locales { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
-        #region Rounding
+		#region Rounding
 
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderItemsEnabled")]
+		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderItemsEnabled")]
         public bool RoundOrderItemsEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundNumDecimals")]

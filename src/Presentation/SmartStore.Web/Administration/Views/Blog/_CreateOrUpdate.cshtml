@@ -3,19 +3,16 @@
 @using Telerik.Web.Mvc.UI;
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("blog-post-edit").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
+@Html.SmartStore().TabStrip().Name("blog-post-edit").Style(TabsStyle.Material).Items(x =>
 {
     x.Add().Text(T("Admin.ContentManagement.Blog.BlogPosts.Info").Text)
-		.Icon("fa fa-pencil fa-lg fa-fw")
 		.Content(TabInfo())
 		.Selected(true);
 
     x.Add().Text(T("Admin.Common.SEO").Text)
-		.Icon("fa fa-search fa-lg fa-fw")
 		.Content(TabSeo());
 
 	x.Add().Text(T("Admin.Common.Stores").Text)
-		.Icon("fa fa-globe fa-lg fa-fw")
 		.Content(TabStores());
 
     //generate an event
@@ -145,41 +142,5 @@
 
 @helper TabStores()
 {
-    <table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.LimitedToStores)
-			</td>
-			<td class="adminData">
-				@Html.CheckBoxFor(model => model.LimitedToStores, new { data_toggler_for = "#pnl-available-stores" })
-				@Html.ValidationMessageFor(model => model.LimitedToStores)
-			</td>
-		</tr>
-		<tbody id="pnl-available-stores">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.AvailableStores)
-				</td>
-				<td class="adminData">
-					@if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
-					{
-						foreach (var store in Model.AvailableStores)
-						{
-							<div class="form-check">
-								<input type="checkbox" name="SelectedStoreIds" id="store-@store.Id" class="form-check-input"
-									   value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
-								<label class="form-check-label" for="store-@store.Id">@store.Name</label>
-							</div>
-						}
-					}
-					else
-					{
-						<div>
-							@T("Admin.Configuration.Stores.NoStoresDefined")
-						</div>
-					}
-				</td>
-			</tr>
-		</tbody>
-    </table>
+	@Html.Partial("StoreSelector", Model)
 }

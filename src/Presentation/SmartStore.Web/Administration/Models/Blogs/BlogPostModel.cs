@@ -11,9 +11,9 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Blogs
 {
     [Validator(typeof(BlogPostValidator))]
-    public class BlogPostModel : EntityModelBase
-    {
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
+    public class BlogPostModel : EntityModelBase, IStoreSelector
+	{
+		[SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
         public int LanguageId { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
@@ -67,10 +67,8 @@ namespace SmartStore.Admin.Models.Blogs
         public DateTime CreatedOn { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
     }
 }

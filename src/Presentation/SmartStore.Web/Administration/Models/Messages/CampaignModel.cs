@@ -12,7 +12,7 @@ using SmartStore.Services.Messages;
 namespace SmartStore.Admin.Models.Messages
 {
     [Validator(typeof(CampaignValidator))]
-    public class CampaignModel : EntityModelBase
+    public class CampaignModel : EntityModelBase, IStoreSelector
     {       
         [SmartResourceDisplayName("Admin.Promotions.Campaigns.Fields.Name")]
         [AllowHtml]
@@ -36,11 +36,8 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string TestEmail { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
     }
 }

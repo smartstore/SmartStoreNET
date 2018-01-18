@@ -12,6 +12,7 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 using SmartStore.Collections;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -37,8 +38,8 @@ namespace SmartStore.Admin.Controllers
       
         private void PrepareCampaignModel(CampaignModel model, Campaign campaign, bool excludeProperties)
 		{
-			model.AvailableStores = Services.StoreService.GetAllStores().Select(s => s.ToModel()).ToList();
-            model.LastModelTree = _messageModelProvider.GetLastModelTree(MessageTemplateNames.SystemCampaign);
+			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
+			model.LastModelTree = _messageModelProvider.GetLastModelTree(MessageTemplateNames.SystemCampaign);
 
 			if (!excludeProperties)
 			{

@@ -118,9 +118,7 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			model.AvailableStores = _services.StoreService.GetAllStores()
-				.Select(s => s.ToModel())
-				.ToList();
+			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 
 			if (!excludeProperties)
 			{

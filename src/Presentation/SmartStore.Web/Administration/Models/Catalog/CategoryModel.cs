@@ -207,5 +207,4 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string SeName { get; set; }
     }
-
 }

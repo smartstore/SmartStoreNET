@@ -10,7 +10,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Directory
 {
     [Validator(typeof(CountryValidator))]
-    public class CountryModel : EntityModelBase, ILocalizedModel<CountryLocalizedModel>
+    public class CountryModel : EntityModelBase, ILocalizedModel<CountryLocalizedModel>, IStoreSelector
     {
         public CountryModel()
         {
@@ -54,14 +54,11 @@ namespace SmartStore.Admin.Models.Directory
 		public string AddressFormat { get; set; }
 
 		public IList<CountryLocalizedModel> Locales { get; set; }
-
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		
 		public bool LimitedToStores { get; set; }
-
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
-    }
+	}
 
     public class CountryLocalizedModel : ILocalizedModelLocal
     {

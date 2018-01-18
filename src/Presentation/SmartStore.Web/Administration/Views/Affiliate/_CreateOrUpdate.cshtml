@@ -4,19 +4,16 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("affiliate-edit").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
+@Html.SmartStore().TabStrip().Name("affiliate-edit").Style(TabsStyle.Material).Items(x =>
 {
     x.Add().Text(T("Admin.Affiliates.Info").Text)
-		.Icon("fa fa-pencil fa-lg fa-fw")
 		.Content(TabInfo()).Selected(true);
 
     if (Model.Id > 0)
     {
         x.Add().Text(T("Admin.Affiliates.Customers").Text)
-			.Icon("fa fa-user fa-lg fa-fw")
 			.Content(TabCustomers());
         x.Add().Text(T("Admin.Affiliates.Orders").Text)
-			.Icon("fa fa-bar-chart-o fa-lg fa-fw")
 			.Content(TabOrders());
     }
     

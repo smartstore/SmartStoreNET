@@ -12,7 +12,7 @@
     </div>
 </div>
 
-@Html.SmartStore().TabStrip().Name("customer-reports").Items(x =>
+@Html.SmartStore().TabStrip().Name("customer-reports").Style(TabsStyle.Material).Items(x =>
 {
     x.Add().Text(T("Admin.Customers.Reports.BestBy.BestByOrderTotal").Text).Content(TabBestByOrderTotal()).Selected(true);
     x.Add().Text(T("Admin.Customers.Reports.BestBy.BestByNumberOfOrders").Text).Content(TabBestByNumberOfOrders());

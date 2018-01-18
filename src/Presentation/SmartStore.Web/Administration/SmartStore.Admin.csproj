@@ -991,6 +991,7 @@
     <Content Include="Views\MessageTemplate\PreviewHeader.cshtml" />
     <Content Include="Views\MessageTemplate\Preview.cshtml" />
     <Content Include="Views\Shared\Partials\StoreSelector.cshtml" />
+    <Content Include="Views\Shared\Partials\AclSelector.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

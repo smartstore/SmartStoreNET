@@ -15,7 +15,7 @@ using Telerik.Web.Mvc;
 namespace SmartStore.Admin.Models.Catalog
 {
     [Validator(typeof(CategoryValidator))]
-    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>, IStoreSelector
+    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>, IStoreSelector, IAclSelector
     {
         public CategoryModel()
         {
@@ -112,11 +112,9 @@ namespace SmartStore.Admin.Models.Catalog
 
         public string Breadcrumb { get; set; }
 
-        //ACL
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.SubjectToAcl")]
+        // ACL
         public bool SubjectToAcl { get; set; }
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.AclCustomerRoles")]
-        public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
+        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
 
 		// Store mapping
@@ -126,7 +124,7 @@ namespace SmartStore.Admin.Models.Catalog
 
         public string ParentCategoryBreadcrumb { get; set; }
 
-        //discounts
+        // discounts
         public List<Discount> AvailableDiscounts { get; set; }
         public int[] SelectedDiscountIds { get; set; }
 

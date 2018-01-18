@@ -605,13 +605,8 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         private void PrepareAclModel(ProductModel model, Product product, bool excludeProperties)
         {
-            if (model == null)
-                throw new ArgumentNullException("model");
+			Guard.NotNull(model, nameof(model));
 
-            model.AvailableCustomerRoles = _customerService
-                .GetAllCustomerRoles(true)
-                .Select(cr => cr.ToModel())
-                .ToList();
             if (!excludeProperties)
             {
                 if (product != null)
@@ -623,7 +618,9 @@ namespace SmartStore.Admin.Controllers
                     model.SelectedCustomerRoleIds = new int[0];
                 }
             }
-        }
+
+			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
+		}
 
 		[NonAction]
 		private void PrepareStoresMappingModel(ProductModel model, Product product, bool excludeProperties)

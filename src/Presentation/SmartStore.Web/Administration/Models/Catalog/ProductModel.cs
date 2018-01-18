@@ -15,8 +15,8 @@ using SmartStore.Core.Domain.Catalog;
 namespace SmartStore.Admin.Models.Catalog
 {
 	[Validator(typeof(ProductValidator))]
-    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>, IStoreSelector
-    {
+    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>, IStoreSelector, IAclSelector
+	{
         public ProductModel()
         {
             Locales = new List<ProductLocalizedModel>();
@@ -337,12 +337,9 @@ namespace SmartStore.Admin.Models.Catalog
 
         public IList<ProductLocalizedModel> Locales { get; set; }
 
-        //ACL (customer roles)
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.SubjectToAcl")]
+        // ACL (customer roles)
         public bool SubjectToAcl { get; set; }
-
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.AclCustomerRoles")]
-        public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
+        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
 
 		// Store mapping

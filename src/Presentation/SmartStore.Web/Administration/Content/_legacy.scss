@@ -291,7 +291,7 @@ header {
 	box-shadow: none;
 }
 
-td.adminData {
+.adminData {
     select, 
     input, 
     textarea,
@@ -579,10 +579,8 @@ table.adminContent {
     vertical-align: middle;
     text-align: left;
 }
-.modal td.adminTitle {
-    width: auto;
-}
-td.adminTitle > .ctl-label {
+
+.adminTitle > .ctl-label {
 	position: relative;
 
 	label {
@@ -623,7 +621,7 @@ tr.adminGroup {
 	}
 }
 
-td.adminTitle:hover a.hint {
+.adminTitle:hover a.hint {
 	opacity: 1;
 }
 

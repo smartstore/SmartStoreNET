@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
@@ -45,6 +46,26 @@ namespace SmartStore.Web.Framework
 					Text = store.Name,
 					Value = store.Id.ToString(),
 					Selected = selectedStoreIds != null && selectedStoreIds.Contains(store.Id)
+				});
+			}
+
+			return list;
+		}
+
+		/// <summary>
+		/// Get a select list of all customer roles
+		/// </summary>
+		public static IList<SelectListItem> ToSelectListItems(this IEnumerable<CustomerRole> roles, params int[] selectedCustomerRoleIds)
+		{
+			var list = new List<SelectListItem>();
+
+			foreach (var role in roles)
+			{
+				list.Add(new SelectListItem
+				{
+					Text = role.Name,
+					Value = role.Id.ToString(),
+					Selected = selectedCustomerRoleIds != null && selectedCustomerRoleIds.Contains(role.Id)
 				});
 			}
 

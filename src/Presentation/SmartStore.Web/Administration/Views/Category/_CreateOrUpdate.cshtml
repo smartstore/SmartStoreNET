@@ -489,54 +489,17 @@
 
 @helper TabAcl()
 {    
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SubjectToAcl)
-            </td>
-            <td class="adminData">
-				@Html.CheckBoxFor(model => model.SubjectToAcl, new { data_toggler_for = "#pnl-acl" })
-                @Html.ValidationMessageFor(model => model.SubjectToAcl)
-            </td>
-        </tr>
-		<tbody id="pnl-acl">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.AvailableCustomerRoles)
-				</td>
-				<td class="adminData">
-					@if (Model.AvailableCustomerRoles != null && Model.AvailableCustomerRoles.Count > 0)
-					{
-						foreach (var customerRole in Model.AvailableCustomerRoles)
-						{
-							<div class="form-check">
-								<input type="checkbox" name="SelectedCustomerRoleIds" class="form-check-input" id="customer-role-@customerRole.Id"
-									   value="@customerRole.Id" checked="@(Model.SelectedCustomerRoleIds != null && Model.SelectedCustomerRoleIds.Contains(customerRole.Id))" />
-								<label class="form-check-label" for="customer-role-@customerRole.Id">@customerRole.Name</label>
-							</div>
-						}
-					}
-					else
-					{
-						<div>
-							@T("Admin.Configuration.Acl.NoRolesDefined")
-						</div>
-					}
-				</td>
-			</tr>
-		</tbody>
-        <tr>
-            <td colspan="2">
-                <div class="alert alert-danger">
-                    @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
-                </div>
-                <a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
-                    <i class="fa fa-bolt"></i>
-					<span>@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")</span>
-                </a>
-            </td>
-        </tr>
-    </table>
+    @Html.Partial("AclSelector", Model)
+	
+	<div class="mt-4">
+		<div class="alert alert-danger">
+			@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
+		</div>
+		<a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
+			<i class="fa fa-bolt"></i>
+			<span>@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")</span>
+		</a>
+	</div>
 }
 
 @helper TabStores()

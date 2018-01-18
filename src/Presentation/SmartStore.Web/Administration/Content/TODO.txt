@@ -18,6 +18,7 @@
 * window.openPopup > check whether 'fluid = true' should be passed
 * Locale Editors: Move hidden fields from td to another place to avoid space
 * Fix color picker control
+* IStoreSelector, IAclSelector > refactor models & views and remove obsolete locale resources.
 
 TODOs BS4 Migration:
 ====================

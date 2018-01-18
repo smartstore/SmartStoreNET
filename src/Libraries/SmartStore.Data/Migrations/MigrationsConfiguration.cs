@@ -197,6 +197,24 @@ namespace SmartStore.Data.Migrations
 
 			builder.Delete("Account.PasswordRecoveryConfirm.InvalidEmail");
 			builder.Delete("Account.PasswordRecoveryConfirm.InvalidToken");
+
+			builder.AddOrUpdate("Admin.Common.Acl.SubjectTo",
+				"Restrict access",
+				"Zugriff einschränken",
+				"Determines whether this entity is subject to access restrictions (no = no restriction, yes = accessible only for selected customer groups)",
+				"Legt fest, ob dieser Datensatz Zugriffsbeschränkungen unterliegt (Nein = keine Beschränkung, Ja = zugänglich nur für gewählte Kundengruppen)");
+
+			builder.AddOrUpdate("Admin.Common.Acl.AvailableFor",
+				"Customer roles",
+				"Kundengruppen",
+				"Select customer roles who can access the entity. For all inactive roles, this record is hidden.",
+				"Wählen Sie Kundengruppen, die auf den Datensatz zugreifen können. Bei allen nicht aktivierten Gruppen wird dieser Datensatz ausgeblendet.");
+
+			builder.Delete(
+				"Admin.Catalog.Categories.Fields.SubjectToAcl",
+				"Admin.Catalog.Categories.Fields.AclCustomerRoles",
+				"Admin.Catalog.Products.Fields.SubjectToAcl",
+				"Admin.Catalog.Products.Fields.AclCustomerRoles");
 		}
 	}
 }

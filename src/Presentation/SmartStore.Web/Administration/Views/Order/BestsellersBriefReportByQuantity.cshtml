@@ -17,7 +17,7 @@
 			</thead>
 			<tbody>
 				@foreach (var x in Model)
-			{
+				{
 					<tr>
 						<td>
 							@Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
@@ -25,7 +25,7 @@
 						<td>@x.TotalQuantity</td>
 						<td>@x.TotalAmount</td>
 					</tr>
-			}
+				}
 			</tbody>
 		</table>
 	</div>

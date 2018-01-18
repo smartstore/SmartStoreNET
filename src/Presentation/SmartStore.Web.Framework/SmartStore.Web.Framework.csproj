@@ -244,6 +244,7 @@
     <Compile Include="Filters\JsonNetAttribute.cs" />
     <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
+    <Compile Include="Modelling\IAclSelector.cs" />
     <Compile Include="Modelling\IStoreSelector.cs" />
     <Compile Include="Modelling\Results\JsonNetResult.cs" />
     <Compile Include="Plugins\PluginRazorHost.cs" />

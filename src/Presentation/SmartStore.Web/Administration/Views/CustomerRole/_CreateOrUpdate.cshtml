@@ -65,10 +65,11 @@
             @Html.SmartLabelFor(model => model.IsSystemRole)
         </td>
         <td class="adminData">
-			@T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")
+			<input class="form-control-plaintext" readonly="readonly" type="text" value="@T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")">
             @Html.HiddenFor(model => model.IsSystemRole)
             @Html.ValidationMessageFor(model => model.IsSystemRole)
         </td>
     </tr>
 </table>
+
 @*Add 'Customers of the role' tab here or allow filtering by customer role on 'Customer list' page*@

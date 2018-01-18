@@ -19,41 +19,48 @@
 {
 	using (Html.BeginForm())
 	{
-		<table>
+		@*<table class="adminContent">
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.SearchStoreId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
+
 				</td>
 			</tr>
-			<tr>
-				<td class="adminTitle">
-					&nbsp;
-				</td>
-				<td class="adminData">
-					<button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-				</td>
-			</tr>
-		</table>
+		</table>*@
+
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="form-group">
+					@Html.SmartLabelFor(model => model.SearchStoreId)
+					<div class="form-row">
+						<div class="col">
+							@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+						</div>
+						<div class="col">
+							<button type="submit" id="btnSearch" class="btn btn-secondary">
+								<i class="fa fa-search"></i>
+								<span>@T("Admin.Common.Search")</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	}
 }
 
 <p></p>
 
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().TreeView()
-                .Name("category-treeview")
-				.ClientEvents(events => events.OnNodeDropped("onNodeDropped").OnDataBinding("onDataBinding"))
-                .DataBinding(dataBinding => dataBinding.Ajax().Enabled(true).Select("TreeLoadChildren", "Category"))
-                .ShowLines(true)
-                .DragAndDrop(true))
-        </td>
-    </tr>
-</table>
+<div class="category-tree-container">
+    @(Html.Telerik().TreeView()
+        .Name("category-treeview")
+		.ClientEvents(events => events.OnNodeDropped("onNodeDropped").OnDataBinding("onDataBinding"))
+        .DataBinding(dataBinding => dataBinding.Ajax().Enabled(true).Select("TreeLoadChildren", "Category"))
+        .ShowLines(true)
+        .DragAndDrop(true))
+</div>
 
 <script type="text/javascript">
 	$(document).ready(function () {

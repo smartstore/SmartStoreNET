@@ -36,4 +36,12 @@
 
 		jQuery.browser = browser;
 	}
+
+	if (!jQuery.fn.live) {
+		jQuery.fn.live = jQuery.fn.on;
+	}
+
+	if (!jQuery.fn.andSelf) {
+		jQuery.fn.andSelf = jQuery.fn.addBack;
+	}
 })( window );

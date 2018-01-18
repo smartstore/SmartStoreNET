@@ -62,7 +62,7 @@ namespace SmartStore.GoogleMerchantCenter.Models
 				switch (ProductType)
 				{
 					case ProductType.SimpleProduct:
-						return "smnet-hide";
+						return "secondary d-none";
 					case ProductType.GroupedProduct:
 						return "success";
 					case ProductType.BundledProduct:

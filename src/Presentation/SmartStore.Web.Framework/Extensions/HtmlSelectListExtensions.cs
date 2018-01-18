@@ -34,7 +34,7 @@ namespace SmartStore.Web.Framework
 		/// <summary>
 		/// Get a select list of all stores
 		/// </summary>
-		public static IList<SelectListItem> ToSelectListItems(this IEnumerable<Store> stores)
+		public static IList<SelectListItem> ToSelectListItems(this IEnumerable<Store> stores, params int[] selectedStoreIds)
 		{
 			var list = new List<SelectListItem>();
 
@@ -43,7 +43,8 @@ namespace SmartStore.Web.Framework
 				list.Add(new SelectListItem
 				{
 					Text = store.Name,
-					Value = store.Id.ToString()
+					Value = store.Id.ToString(),
+					Selected = selectedStoreIds != null && selectedStoreIds.Contains(store.Id)
 				});
 			}
 

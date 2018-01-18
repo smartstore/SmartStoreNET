@@ -96,8 +96,15 @@ namespace SmartStore.Web.Framework
             return DeleteConfirmation<T>(helper, "", buttonsSelector);
         }
 
-        // Adds an action name parameter for using other delete action names
-        public static MvcHtmlString DeleteConfirmation<T>(this HtmlHelper<T> helper, string actionName, string buttonsSelector = null) where T : EntityModelBase
+		/// <summary>
+		/// Adds an action name parameter for using other delete action names		
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="helper"></param>
+		/// <param name="actionName"></param>
+		/// <param name="buttonsSelector"></param>
+		/// <returns></returns>
+		public static MvcHtmlString DeleteConfirmation<T>(this HtmlHelper<T> helper, string actionName, string buttonsSelector = null) where T : EntityModelBase
         {
             if (String.IsNullOrEmpty(actionName))
                 actionName = "Delete";

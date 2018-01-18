@@ -1851,7 +1851,6 @@
     <Content Include="Views\Profile\Partials\Info.cshtml" />
     <Content Include="Views\Profile\Partials\Posts.cshtml" />
     <Content Include="Views\ReturnRequest\ReturnRequest.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\BlockInput.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ButtonType.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Color.cshtml" />

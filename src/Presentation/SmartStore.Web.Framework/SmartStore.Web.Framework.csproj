@@ -372,7 +372,6 @@
     <Compile Include="Extensions\HtmlExtensions.cs" />
     <Compile Include="Modelling\IModelAttribute.cs" />
     <Compile Include="Localization\ILocalizedModel.cs" />
-    <Compile Include="Localization\ILocalizedModelLocal.cs" />
     <Compile Include="Modelling\DeleteConfirmationModel.cs" />
     <Compile Include="Routing\IRouteProvider.cs" />
     <Compile Include="Routing\IRoutePublisher.cs" />

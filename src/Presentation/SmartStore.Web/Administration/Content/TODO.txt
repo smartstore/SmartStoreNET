@@ -19,6 +19,8 @@
 * Locale Editors: Move hidden fields from td to another place to avoid space
 * Fix color picker control
 * IStoreSelector, IAclSelector > refactor models & views and remove obsolete locale resources.
+* Validation styling for form controls
+* Shared\EditorTemplates\ButtonType.cshtml > Type names
 
 TODOs BS4 Migration:
 ====================

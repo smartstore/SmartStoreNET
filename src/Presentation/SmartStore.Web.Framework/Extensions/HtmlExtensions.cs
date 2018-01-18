@@ -76,7 +76,7 @@ namespace SmartStore.Web.Framework
                             var language = EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(locale.LanguageId);
 
  							x.Add().Text(language.Name)
-								.Content(localizedTemplate(i).ToHtmlString())
+								.Content(localizedTemplate(i))
 								.ImageUrl("~/Content/images/flags/" + language.FlagImageFileName)
 								.Selected(i == 0 && standardTemplate == null);
                         }
@@ -574,7 +574,7 @@ namespace SmartStore.Web.Framework
             sb.Append("<div class='input-group colorpicker-component sm-colorbox'>");
 
             sb.AppendFormat(html.TextBox(name, isDefault ? "" : color, new { @class = "form-control", placeholder = defaultColor }).ToHtmlString());
-            sb.AppendFormat("<span class='input-group-addon'><i class='thecolor' style='{0}'></i></span>", defaultColor.HasValue() ? "background-color: " + defaultColor : "");
+            sb.AppendFormat("<div class='input-group-append input-group-addon'><i class='thecolor input-group-text' style='{0}'></i></div>", defaultColor.HasValue() ? "background-color: " + defaultColor : "");
 
             sb.Append("</div>");
 

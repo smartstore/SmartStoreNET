@@ -21,6 +21,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -244,10 +245,6 @@ namespace SmartStore.Admin.Controllers
 			if (model == null)
 				throw new ArgumentNullException("model");
 
-			model.AvailableStores = _storeService
-				.GetAllStores()
-				.Select(s => s.ToModel())
-				.ToList();
 			if (!excludeProperties)
 			{
 				if (category != null)
@@ -259,6 +256,8 @@ namespace SmartStore.Admin.Controllers
 					model.SelectedStoreIds = new int[0];
 				}
 			}
+
+			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
         #endregion

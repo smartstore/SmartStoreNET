@@ -628,13 +628,8 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		private void PrepareStoresMappingModel(ProductModel model, Product product, bool excludeProperties)
 		{
-			if (model == null)
-				throw new ArgumentNullException("model");
+			Guard.NotNull(model, nameof(model));
 
-			model.AvailableStores = _storeService
-				.GetAllStores()
-				.Select(s => s.ToModel())
-				.ToList();
 			if (!excludeProperties)
 			{
 				if (product != null)
@@ -646,6 +641,8 @@ namespace SmartStore.Admin.Controllers
 					model.SelectedStoreIds = new int[0];
 				}
 			}
+
+			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
 		[NonAction]

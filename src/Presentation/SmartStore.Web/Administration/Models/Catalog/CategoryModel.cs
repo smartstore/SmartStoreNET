@@ -15,7 +15,7 @@ using Telerik.Web.Mvc;
 namespace SmartStore.Admin.Models.Catalog
 {
     [Validator(typeof(CategoryValidator))]
-    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>
+    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>, IStoreSelector
     {
         public CategoryModel()
         {
@@ -119,11 +119,9 @@ namespace SmartStore.Admin.Models.Catalog
         public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
 
-		//Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		// Store mapping
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
         public string ParentCategoryBreadcrumb { get; set; }

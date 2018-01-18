@@ -15,7 +15,7 @@ using SmartStore.Core.Domain.Catalog;
 namespace SmartStore.Admin.Models.Catalog
 {
 	[Validator(typeof(ProductValidator))]
-    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>
+    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>, IStoreSelector
     {
         public ProductModel()
         {
@@ -345,12 +345,9 @@ namespace SmartStore.Admin.Models.Catalog
         public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
 
-		//Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		// Store mapping
 		public bool LimitedToStores { get; set; }
-
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
         //categories

@@ -6,7 +6,7 @@
 @Html.HiddenFor(model => model.Id)
 
 
-@Html.SmartStore().TabStrip().Name("template-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
+@Html.SmartStore().TabStrip().Name("template-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
@@ -35,7 +35,7 @@
                 @Html.SmartLabelFor(model => model.Name)
             </td>
             <td class="adminData">
-                @Model.Name
+				<input type="text" readonly class="form-control-plaintext" value="@Model.Name">
                 @Html.HiddenFor(model => model.Name)
             </td>
         </tr>
@@ -136,7 +136,7 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Locales[item].Body)
             </td>
-            <td class="adminData">
+            <td class="adminData wide">
                 @Html.EditorFor(model => Model.Locales[item].Body, "Liquid", new { TemplateName = templateName })
                 @Html.ValidationMessageFor(model => model.Locales[item].Body)
             </td>
@@ -225,7 +225,7 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Body)
             </td>
-            <td class="adminData">
+            <td class="adminData wide">
                 @Html.EditorFor(model => model.Body, "Liquid", new { TemplateName = templateName })
                 @Html.ValidationMessageFor(model => model.Body)
             </td>

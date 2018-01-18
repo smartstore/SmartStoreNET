@@ -242,20 +242,21 @@
 				{
 					columns.Bound(x => x.Quantity)
 						.Centered()
-						.Width(120);
+						.Width(80);
 					columns.Bound(x => x.Price1)
 						.Format("{0:0.00}")
 						.Width(120)
 						.RightAlign();
-					columns.Bound(x => x.CalculationMethod);
-					columns.Bound(x => x.Store);
-					columns.Bound(x => x.CustomerRole);
+					columns.Bound(x => x.CalculationMethod).Width("20%");
+					columns.Bound(x => x.Store).Width("25%");
+					columns.Bound(x => x.CustomerRole).Width("20%");
 					columns.Command(commands =>
 					{
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
 					})
-					.Width(180);
+					//.Width(180)
+					.HtmlAttributes(new { align = "right" });
 				})
 				.ToolBar(commands => commands.Insert())
 				.ClientEvents(events => events.OnEdit("onTierPriceEdit"))

@@ -260,7 +260,6 @@ a.t-button.t-state-disabled:hover,
 	display: block;
 	overflow: hidden;
 	position: relative;
-	box-sizing: border-box;
 	width: 100%;
 
 	&:after {
@@ -276,12 +275,21 @@ a.t-button.t-state-disabled:hover,
 		bottom: 1px;
 		left: auto;
 		width: calc(#{$input-height} + 3px);
+
+		.t-grid-edit-row & {
+			width: 1.5rem;
+		}
 	}
 
 	.t-input {
 		position: relative;
 		z-index: 1;
-		padding-right: 50px; // TODO
+		padding-right: $input-height-inner + 1rem !important;
+
+		.t-grid-edit-row & {
+			padding-left: 0.5rem !important;
+			padding-right: 1.75rem !important;
+		}
 	}
 
 	.t-formatted-value {
@@ -293,6 +301,10 @@ a.t-button.t-state-disabled:hover,
 		font-weight: $font-weight-normal;
 		line-height: $input-btn-line-height;
 		color: $input-color;
+
+		.t-grid-edit-row & {
+			padding-left: 0.5rem !important;
+		}
 
 		&.t-state-empty {
 			color: $gray-500 !important;
@@ -306,8 +318,12 @@ a.t-button.t-state-disabled:hover,
 		z-index: 3;
 		top: 0;
 		right: 0;
-		width: calc(#{$input-height} + 3px);
 		height: 50%;
+		width: calc(#{$input-height} + 3px);
+
+		.t-grid-edit-row & {
+			width: 1.5rem;
+		}
 
 		&:hover {
 			background-color: rgba(#000, 0.05);
@@ -360,10 +376,31 @@ a.t-button.t-state-disabled:hover,
 .t-grid {
 	td, th {
 		vertical-align: middle;
-		padding: 8px;
+		padding-left: 0.4rem;
+		padding-right: 0.4rem;
 		border-left-width: 0 !important;
 		border-right-width: 0 !important;
 		border-color: $grid-border-color;
+		line-height: $line-height-base;
+
+		&:first-child {
+			padding-left: 0.75rem;
+		}
+
+		&:last-child {
+			padding-left: 0.75rem;
+		}
+	}
+
+	.t-grid-edit-row td {
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+
+		.form-check-input {
+			position: relative;
+			margin: 0;
+			padding: 0;
+		}
 	}
 
 	.t-status-text {
@@ -386,6 +423,7 @@ a.t-button.t-state-disabled:hover,
 			}
 		}
 	}
+
 	.t-button .fa {
 		margin-top: 0;
 	}
@@ -469,30 +507,27 @@ a.t-button.t-state-disabled:hover,
 
 
 .t-grid-edit-row {
-	margin-bottom: 0;
+	/*margin-bottom: 0;*/
 
-    select.tri-state {
+    /*select.tri-state {
 	    margin-bottom: 0;
     }
 
     td {
 	    padding-top: 6px;
 	    padding-bottom: 6px;
-    }
+    }*/
 
     .text-box,
-    .t-numerictextbox,
-    .select2-container {
-	    box-sizing: border-box;
+    .t-numerictextbox {
+		// overwrite telerik defaults
 	    width: 100%;
-	    left: 0;
-	    right: 0;
 	    min-width: 100%;
 	    max-width: 100%;
 	    margin: 0;
     }
 
-    .text-box {
+    /*.text-box {
 	    padding: 4px 6px;
 	    height: 28px;
     }
@@ -506,7 +541,7 @@ a.t-button.t-state-disabled:hover,
 
     .t-numerictextbox .t-arrow-up {
         margin-left: -16px;
-    }
+    }*/
 }
 
 
@@ -564,23 +599,32 @@ a.t-button.t-state-disabled:hover,
 	}
 }
 
-
 .t-grid-header .t-header {
 	font-weight: 600 !important;
 	padding: 0 !important;
 	position: relative;
+
+	.t-link {
+		margin: 0;
+		padding: 0.75em 0.4rem;
+		height: auto;
+		line-height: 2em;
+	}
+
+	&:first-child .t-link {
+		padding-left: 0.75em;
+	}
+
+	&:last-child .t-link {
+		padding-right: 0.75em;
+	}
+
+	a.t-link:hover {
+		background-color: #fff2cf;
+	}
 }
 
-.t-grid-header .t-header .t-link {
-	margin: 0;
-	padding: 0.6em;
-	height: auto;
-	line-height: 2em;
-}
 
-.t-grid-header .t-header a.t-link:hover {
-	background-color: #fff2cf;
-}
 
 .t-grid-pager {
 	background: $grid-pager-bg;

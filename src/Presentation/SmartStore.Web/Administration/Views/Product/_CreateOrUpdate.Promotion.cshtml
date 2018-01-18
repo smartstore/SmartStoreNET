@@ -24,15 +24,18 @@
 			{
 				columns.Bound(x => x.Product2Name)
 					.ReadOnly()
-					.Width(520)
+					.Width("60%")
 					.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
 				columns.Bound(x => x.Product2Sku)
+					.Width(150)
 					.ReadOnly();
 				columns.Bound(x => x.Product2Published)
 					.ReadOnly()
+					.Width(100)
 					.ClientTemplate(@Html.SymbolForBool("Product2Published"))
 					.Centered();
 				columns.Bound(x => x.DisplayOrder)
+					.Width(100)
 					.Centered();
 				columns.Command(commands =>
 				{
@@ -76,10 +79,10 @@
 			{
 				columns.Bound(x => x.Product2Name)
 					.ReadOnly()
-					.Width(520)
+					.Width("60%")
 					.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
-				columns.Bound(x => x.Product2Sku);
-				columns.Bound(x => x.Product2Published)
+				columns.Bound(x => x.Product2Sku).Width(150);
+				columns.Bound(x => x.Product2Published).Width(100)
 					.ClientTemplate(@Html.SymbolForBool("Product2Published"))
 					.Centered();
 				columns.Command(commands =>

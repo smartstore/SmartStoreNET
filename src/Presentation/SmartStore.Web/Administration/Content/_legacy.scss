@@ -337,9 +337,9 @@ header {
 /* "select2" ui tweaks for admin
 -------------------------------------------------------------- */
 
-.select2-container:not(.autowidth) {
-    min-width: 314px; /* ensures more clean look & feel */
-}
+/*.select2-container:not(.autowidth) {
+    min-width: 314px; // ensures more clean look & feel
+}*/
 
 .select2-image-item {
 	img {

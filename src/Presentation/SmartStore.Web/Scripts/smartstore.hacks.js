@@ -9,13 +9,13 @@ var Hacks = {
 				var btn = $(this);
 
                 if (btn.hasClass("t-grid-add")) {
-                    btn.addClass("btn-link").prepend('<i class="fa fa-plus"></i>&nbsp;');
+                    btn.addClass("btn-warning").prepend('<i class="fa fa-plus mr-2"></i>');
                 }
                 else if (btn.hasClass("t-grid-save-changes")) {
-                	btn.addClass("btn-primary").prepend('<i class="fa fa-check"></i>&nbsp;');
+                	btn.addClass("btn-primary").prepend('<i class="fa fa-check mr-2"></i>');
                 }
                 else if (btn.hasClass("t-grid-cancel-changes")) {
-                	btn.addClass("btn-link");
+                	btn.addClass("btn-warning");
                 }
             });
 

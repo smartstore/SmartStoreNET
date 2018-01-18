@@ -2,10 +2,6 @@
 * Unify resource files between Flex and Admin (js, css etc.)
 * Merge Flex _core.scss with Admin shared/_utils.scss
 * Remove globalize.js entirely and all moment.js locale files
-* .input-large is obsolete
-* .input-xlarge is obsolete
-* .control-large is obsolete
-* .control-xlarge is obsolete
 * Apply .wide to td.adminData with html editor or any other "wide" control
 * Find replacement for bootstrap-typeahead.js
 * bootstrapper-datetimepicker skinning is missing
@@ -21,7 +17,7 @@
 * Dropdown Groups: mehr als 2 Ebenen gehen nicht, daher bspw. EditorTemplates/ModelTree.cshtml umgestalten
 * window.openPopup > check whether 'fluid = true' should be passed
 * Locale Editors: Move hidden fields from td to another place to avoid space
-
+* Fix color picker control
 
 TODOs BS4 Migration:
 ====================
@@ -37,3 +33,11 @@ TODOs Assets:
 TODOs Frontend:
 ================
 * .modal.modal-flex  >>  .modal-dialog.modal-flex
+
+
+TODOs Search filter masks:
+=========================
+http://localhost:50017/Admin/ActivityLog/ListLogs
+http://localhost:50017/Admin/Customer/List
+http://localhost:50017/Admin/Customer/Reports
+http://localhost:50017/Admin/GiftCard/List

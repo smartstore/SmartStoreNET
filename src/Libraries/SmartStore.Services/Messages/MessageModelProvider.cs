@@ -97,10 +97,6 @@ namespace SmartStore.Services.Messages
 				{ "BaseUrl", messageContext.BaseUri.ToString() }
 			};
 
-			//dynamic email = new ExpandoObject();
-			//email.Email = messageContext.EmailAccount.Email;
-			//email.SenderName = messageContext.EmailAccount.DisplayName;
-
 			model["Email"] = new Dictionary<string, object>
 			{
 				{ "Email", messageContext.EmailAccount.Email },

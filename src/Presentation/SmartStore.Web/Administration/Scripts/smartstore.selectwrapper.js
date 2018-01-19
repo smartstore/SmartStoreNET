@@ -71,7 +71,6 @@
     	}
 
         return this.each(function () {
-
             var sel = $(this);
 
             if (sel.data("select2")) { 
@@ -157,7 +156,8 @@
                 minimumInputLength: _.isNumber(minInputLength) ? minInputLength : 0,
                 templateResult: renderSelectItem,
                 templateSelection: renderSelectItem,
-				theme: 'bootstrap'
+				theme: 'bootstrap',
+				closeOnSelect: false
             };
 
             if (url) {

@@ -8,7 +8,9 @@
     {
         <script>
 			function onProductManufacturerEdit(e) {
-                $(e.form).find('#Manufacturer').select2('val', e.dataItem['ManufacturerId']);
+				_.delay(function () {
+					$('#Manufacturer').val(e.dataItem['ManufacturerId']).trigger('change');
+				}, 0);
 			}
 
 			function onProductManufacturerDataBound(e) {

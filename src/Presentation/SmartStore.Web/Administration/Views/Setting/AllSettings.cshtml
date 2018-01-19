@@ -62,6 +62,8 @@
     }
 
     function grid_onStoreEdit(e) {
-        $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
+		_.delay(function () {
+			$('#Store').val(e.dataItem['StoreId']).trigger('change');
+		}, 0);
     }
 </script>

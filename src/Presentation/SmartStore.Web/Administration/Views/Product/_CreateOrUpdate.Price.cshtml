@@ -218,9 +218,11 @@
         {
             <script>
 				function onTierPriceEdit(e) {
-                    $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
-                    $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
-                    $(e.form).find('#CalculationMethod').select2('val', e.dataItem['CalculationMethodId']);
+					_.delay(function () {
+						$('#Store').val(e.dataItem['StoreId']).trigger('change');
+						$('#CustomerRole').val(e.dataItem['CustomerRoleId']).trigger('change');
+						$('#CalculationMethod').val(e.dataItem['CalculationMethodId']).trigger('change');
+					}, 0);
                 }
             </script>
 			

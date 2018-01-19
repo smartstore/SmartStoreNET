@@ -22,6 +22,7 @@
 * Validation styling for form controls
 * Shared\EditorTemplates\ButtonType.cshtml > Type names
 * Grid inline editing: when a grid is editable, assign width (either px or %) to all columns except the last buttons col (otherwise: disco!)
+* select2: .input-lg & .input-sm styling
 
 TODOs BS4 Migration:
 ====================

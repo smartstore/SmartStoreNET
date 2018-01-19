@@ -215,6 +215,9 @@ namespace SmartStore.Data.Migrations
 				"Admin.Catalog.Categories.Fields.AclCustomerRoles",
 				"Admin.Catalog.Products.Fields.SubjectToAcl",
 				"Admin.Catalog.Products.Fields.AclCustomerRoles");
+
+			builder.AddOrUpdate("Common.Milliseconds", "milliseconds", "Millisekunden");
+			builder.AddOrUpdate("Common.Pixel", "Pixel", "Pixel");
 		}
 	}
 }

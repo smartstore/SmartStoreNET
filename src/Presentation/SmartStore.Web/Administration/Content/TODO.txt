@@ -21,6 +21,7 @@
 * IStoreSelector, IAclSelector > refactor models & views and remove obsolete locale resources.
 * Validation styling for form controls
 * Shared\EditorTemplates\ButtonType.cshtml > Type names
+* Grid inline editing: when a grid is editable, assign width (either px or %) to all columns except the last buttons col (otherwise: disco!)
 
 TODOs BS4 Migration:
 ====================

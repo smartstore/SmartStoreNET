@@ -356,13 +356,11 @@
 					@Html.SmartLabelFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
 				</td>
 				<td class="adminData">
+					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
 					@Html.TextAreaFor(model => Model.Locales[item].ThirdPartyEmailHandOverLabel)
 					@Html.ValidationMessageFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					@Html.HiddenFor(model => model.Locales[item].LanguageId)
 				</td>
 			</tr>
 		</table>

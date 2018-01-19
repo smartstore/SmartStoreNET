@@ -65,6 +65,9 @@
 				@Html.SmartLabelFor(model => model.Locales[item].EmailAccountId)
 			</td>
 			<td class="adminData">
+				@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
 				@Html.DropDownListFor(model => Model.Locales[item].EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName", Model.Locales[item].EmailAccountId))
 				@Html.ValidationMessageFor(model => model.Locales[item].EmailAccountId)
 			</td>
@@ -139,11 +142,6 @@
             <td class="adminData wide">
                 @Html.EditorFor(model => Model.Locales[item].Body, "Liquid", new { TemplateName = templateName })
                 @Html.ValidationMessageFor(model => model.Locales[item].Body)
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                @Html.HiddenFor(model => model.Locales[item].LanguageId)
             </td>
         </tr>
     </table>

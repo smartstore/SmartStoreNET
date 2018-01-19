@@ -181,6 +181,9 @@
 					@Html.SmartLabelFor(model => model.Locales[item].ReturnRequestReasons)
 				</td>
 				<td class="adminData">
+					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
 					@Html.TextBoxFor(model => Model.Locales[item].ReturnRequestReasons)
 					@Html.ValidationMessageFor(model => model.Locales[item].ReturnRequestReasons)
 				</td>
@@ -192,11 +195,6 @@
 				<td class="adminData">
 					@Html.TextBoxFor(model => model.Locales[item].ReturnRequestActions)
 					@Html.ValidationMessageFor(model => model.Locales[item].ReturnRequestActions)
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					@Html.HiddenFor(model => model.Locales[item].LanguageId)
 				</td>
 			</tr>
 		</table>

@@ -13,8 +13,10 @@
 				function onProductVariantAttributeEdit(e) {
 					var id = parseInt(e.dataItem['Id']);
 
-					$(e.form).find('#AttributeControlType').val(e.dataItem['AttributeControlTypeId']);
-					$(e.form).find('#ProductAttribute').val(e.dataItem['ProductAttributeId']);
+					_.delay(function () {
+						$('#AttributeControlType').val(e.dataItem['AttributeControlTypeId']).trigger('change');
+						$('#ProductAttribute').val(e.dataItem['ProductAttributeId']).trigger('change');
+					}, 0);
 
 					if (id === 0) {
 						$(e.form).find('#IsRequired').prop('checked', true);
@@ -56,15 +58,13 @@
 				{
 					columns.Bound(x => x.ProductAttribute)
 						.Width("20%");
+					columns.Bound(x => x.AttributeControlType)
+						.Width(300);
 					columns.Bound(x => x.TextPrompt)
-						.Width("20%")
-						.Centered();
+						.Width("20%");
 					columns.Bound(x => x.IsRequired)
 						.Width(100)
 						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
-						.Centered();
-					columns.Bound(x => x.AttributeControlType)
-						.Width(300)
 						.Centered();
 					columns.Bound(x => x.DisplayOrder1)
 						.Width(100)

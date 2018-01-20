@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.Theming
 
         #region ThemeVars
 
-        public static MvcHtmlString ThemeVarLabel(this HtmlHelper html, ThemeVariableInfo info)
+        public static MvcHtmlString ThemeVarLabel(this HtmlHelper html, ThemeVariableInfo info, string hint = null)
         {
             Guard.NotNull(info, "info");
 
@@ -30,15 +30,14 @@ namespace SmartStore.Web.Framework.Theming
 
             var displayName = locService.GetResource(resKey, langId, false, "", true);
 
-			string hint = null;
-			if (displayName.HasValue())
+			if (displayName.HasValue() && hint.IsEmpty())
 			{
 				hint = locService.GetResource(resKey + ".Hint", langId, false, "", true);
 				hint = "${0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
 			}
 
             result.Append("<div class='ctl-label'>");
-            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name));
+            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name, new { @class = "col-form-label" }));
 			if (hint.HasValue())
 			{
 				result.Append(html.Hint(hint).ToHtmlString());

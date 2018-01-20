@@ -1,3 +1,5 @@
+/// <reference path="../../../theme.scss" />
+
 /*!
  * Bootstrap Colorpicker v2.5.1
  * https://itsjavi.com/bootstrap-colorpicker/
@@ -267,4 +269,27 @@
 
 .colorpicker-inline.colorpicker-visible {
   display: inline-block;
+}
+
+
+
+// SMNET tweaks
+// =================================
+
+.colorpicker-component {
+	.input-group-text {
+		padding-left: $input-padding-y;
+		padding-right: $input-padding-y;
+
+		.thecolor {
+			display: inline-block;
+			height: auto;
+			width: 3rem;
+			outline: 1px solid rgba(0,0,0, 0.2);
+
+			&:hover {
+				outline-color: rgba(0,0,0, 0.4);
+			}
+		}
+	}
 }

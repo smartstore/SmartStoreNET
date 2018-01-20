@@ -58,6 +58,7 @@
 @import "shared/_sortable-grip.scss";
 @import "shared/_offcanvas.scss";
 @import "shared/_animate.scss";
+@import "shared/_utils.scss";
 
 
 //
@@ -76,7 +77,6 @@
 // Main
 // --------------------------------------------------
 
-@import "_core.scss";
 @import "_layout.scss";
 @import "_block.scss";
 @import "_shopbar.scss";

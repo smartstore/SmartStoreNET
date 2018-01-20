@@ -25,9 +25,7 @@
 		<table class="adminContent span12">
 			<tr>
 				<td class="adminTitle">
-					<div class="ctl-label">
-						<label for="Email_To">@T("Admin.MessageTemplate.PreviewHeader.To")</label>
-					</div>
+					@Html.SmartLabel("Email_To", T("Admin.MessageTemplate.PreviewHeader.To"))
 				</td>
 				<td class="adminData">
 					<div class="input-append">
@@ -47,9 +45,7 @@
 		<table class="adminContent span12">
 			<tr>
 				<td class="adminTitle">
-					<div class="ctl-label">
-						<label for="Email_ReplyTo">@T("Admin.MessageTemplate.PreviewHeader.ReplyTo")</label>
-					</div>
+					@Html.SmartLabel("Email_ReplyTo", T("Admin.MessageTemplate.PreviewHeader.ReplyTo"))
 				</td>
 				<td class="adminData">
 					@Html.TextBoxFor(model => model.Email.ReplyTo, new { disabled = "disabled", @class = "text-box single-line valid" })
@@ -59,9 +55,7 @@
 
 			<tr>
 				<td class="adminTitle">
-					<div class="ctl-label">
-						<label for="Email_Subject">@T("Admin.MessageTemplate.PreviewHeader.Subject")</label>
-					</div>
+					@Html.SmartLabel("Email_Subject", T("Admin.MessageTemplate.PreviewHeader.Subject"))
 				</td>
 				<td class="adminData">
 					@Html.TextBoxFor(model => model.Email.Subject, new { disabled = "disabled", @class = "text-box single-line valid" })

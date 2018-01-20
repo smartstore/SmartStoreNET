@@ -155,9 +155,7 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				<div class="ctl-label">
-					@Html.SmartLabelFor(model => model.SqlQuery)
-				</div>
+				@Html.SmartLabelFor(model => model.SqlQuery)
 			</td>
 			<td class="adminData">
 				@Html.TextAreaFor(model => model.SqlQuery, new { style = "width:500px; height:250px;" })

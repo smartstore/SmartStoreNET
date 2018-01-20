@@ -275,11 +275,15 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 		white-space: nowrap;
 	}
 
-	&.select2-container--focus,
+	&.select2-container--focus {
+		.select2-selection {
+			border-color: $input-focus-border-color;
+		}
+	}
+
 	&.select2-container--open {
 		.select2-selection {
 			@include box-shadow($s2bs-form-control-focus-box-shadow);
-			@include transition($s2bs-form-control-transition);
 			border-color: $s2bs-input-border-focus;
 		}
 

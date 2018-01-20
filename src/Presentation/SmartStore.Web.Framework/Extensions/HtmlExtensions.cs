@@ -20,6 +20,7 @@ using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.Theming;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Web.Framework
 {
@@ -139,7 +140,10 @@ namespace SmartStore.Web.Framework
 		{
 			var result = new StringBuilder();
 
-			var label = helper.Label(expression, labelText, htmlAttributes);
+			var labelAttrs = new RouteValueDictionary(htmlAttributes);
+			labelAttrs.AppendCssClass("col-form-label");
+
+			var label = helper.Label(expression, labelText, labelAttrs);
 
 			result.Append("<div class='ctl-label'>");
 			{
@@ -216,7 +220,10 @@ namespace SmartStore.Web.Framework
 				labelText = metadata.PropertyName.SplitPascalCase();
 			}
 
-			var label = helper.LabelFor(expression, labelText, htmlAttributes);
+			var labelAttrs = new RouteValueDictionary(htmlAttributes);
+			labelAttrs.AppendCssClass("col-form-label");
+
+			var label = helper.LabelFor(expression, labelText, labelAttrs);
 
 			if (displayHint)
 			{
@@ -571,16 +578,16 @@ namespace SmartStore.Web.Framework
 			defaultColor = defaultColor.EmptyNull();
 			var isDefault = color.IsCaseInsensitiveEqual(defaultColor);
 
-            sb.Append("<div class='input-group colorpicker-component sm-colorbox'>");
+            sb.Append("<div class='input-group colorpicker-component sm-colorbox' data-fallback-color='{0}'>".FormatInvariant(defaultColor));
 
-            sb.AppendFormat(html.TextBox(name, isDefault ? "" : color, new { @class = "form-control", placeholder = defaultColor }).ToHtmlString());
-            sb.AppendFormat("<div class='input-group-append input-group-addon'><i class='thecolor input-group-text' style='{0}'></i></div>", defaultColor.HasValue() ? "background-color: " + defaultColor : "");
+            sb.AppendFormat(html.TextBox(name, isDefault ? "" : color, new { @class = "form-control colorval", placeholder = defaultColor }).ToHtmlString());
+            sb.AppendFormat("<div class='input-group-append input-group-addon'><div class='input-group-text'><i class='thecolor' style='{0}'>&nbsp;</i></div></div>", defaultColor.HasValue() ? "background-color: " + defaultColor : "");
 
             sb.Append("</div>");
 
-			// TODO: (mc) Change location of scripts (make it common)
-			var scriptRoot = "~/Administration/Content/vendors/bootstrap-colorpicker/js/";
-            html.AppendScriptParts(false,
+			// TODO: (mc) Change location of scripts (make it common), also remove redundant files in ~/Content/bootstrap/js/...
+			var scriptRoot = "~/Administration/Content/vendors/colorpicker/js/";
+            html.AppendScriptParts(true,
                 scriptRoot + "bootstrap-colorpicker.js",
                 scriptRoot + "bootstrap-colorpicker-globalinit.js");
 

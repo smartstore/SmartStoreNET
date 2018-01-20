@@ -218,9 +218,7 @@
 					}
 					<tr>
 						<td class="adminTitle">
-							<div class="ctl-label">
-								<label for="@attribute.AttributeControlId">@attribute.Name</label>
-							</div>
+							@Html.SmartLabel(attribute.AttributeControlId, attribute.Name)
 						</td>
 						<td class="adminData">
 							@Html.DropDownList(attribute.AttributeControlId, attribute.Values, null, new { multiple = "multiple" })
@@ -230,10 +228,7 @@
 					{
 						<tr>
 							<td class="adminTitle">
-								<div class="ctl-label">
-									<label for="@attribute.PreSelectControlId">@T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect")</label>
-									@Html.Hint(T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect.Hint"))
-								</div>
+								@Html.SmartLabel(attribute.PreSelectControlId, T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect"), T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect.Hint"))
 							</td>
 							<td class="adminData">
 								@Html.DropDownList(attribute.PreSelectControlId, attribute.PreSelect)

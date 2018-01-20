@@ -472,6 +472,7 @@ label.forcheckbox {
 		.fa {
 			font-size: 28px;
 			vertical-align: text-top;
+			margin-right: 0.5rem;
 		}
 
 		img {
@@ -543,10 +544,6 @@ label.forcheckbox {
 *.multi-store-scope {
     label.checkbox {
         margin: 4px 0 1px 3px;
-
-        /*.hint {
-            .smaller();
-        }*/
     }
 }
 
@@ -580,36 +577,7 @@ table.adminContent {
     text-align: left;
 }
 
-.adminTitle > .ctl-label {
-	position: relative;
 
-	label {
-		display: inline-block;
-		padding-right: 20px;
-		margin-bottom: 0 !important;
-	}
-
-	a.hint {
-		$hintColor: #999; //#21759b
-		position: absolute;
-		width: 16px;
-		height: 16px;
-		right: 0;
-		top: 50%;
-		margin-top: -8px;
-		text-decoration: none;
-		outline: 0;
-		color: $hintColor;
-		transition: all .1s linear;
-		opacity: 0;
-		&:hover { 
-			color: darken($hintColor, 25%) 
-		}
-		.fa { 
-			font-size: 16px;
-		}
-	}
-}
 tr.adminGroup {
 	> td {
 		padding-top: 18px;
@@ -619,10 +587,6 @@ tr.adminGroup {
 		padding-bottom: 3px;
 		text-decoration: underline;
 	}
-}
-
-.adminTitle:hover a.hint {
-	opacity: 1;
 }
 
 
@@ -1016,21 +980,13 @@ table.payment-method-features td {
 }
 
 .theme-editor {
-	.form-control {
-		width: 400px;
-	}
-
-	.colorpicker-component .form-control {
-		width: 372px;
+	.themevar-chain-info {
+		display: none;
+		color: #bbb;
+		margin-left: 10px;
+		vertical-align: middle;
 	}
 }
-
-.themevar-chain-info {
-	color: #bbb;
-	margin-left: 10px;
-	vertical-align: middle;
-}
-
 
 .slides-title {
 	position: relative;

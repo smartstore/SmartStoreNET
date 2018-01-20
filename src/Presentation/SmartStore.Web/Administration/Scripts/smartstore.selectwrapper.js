@@ -157,7 +157,7 @@
                 templateResult: renderSelectItem,
                 templateSelection: renderSelectItem,
 				theme: 'bootstrap',
-				closeOnSelect: false
+				closeOnSelect: true
             };
 
             if (url) {

@@ -1203,6 +1203,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Scripts\underscore.min.map" />
+    <Content Include="Themes\Flex\Content\shared\_utils.scss" />
     <None Include="Themes\Flex\Content\vendors\photoswipe\LICENSE" />
     <None Include="Themes\Flex\Content\vendors\drift\LICENSE" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\photoswipe-ui-default.js" />
@@ -1967,7 +1968,6 @@
     <Content Include="Views\Shared\Partials\Comment.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Comment.List.cshtml" />
     <Content Include="Views\ShoppingCart\Partials\WishlistItems.cshtml" />
-    <Content Include="Themes\Flex\Content\_core.scss" />
     <Content Include="Themes\Flex\Content\shared\_card.scss" />
     <Content Include="Themes\Flex\Content\_block.scss" />
     <Content Include="Themes\Flex\Content\_choice.scss" />

@@ -5,9 +5,7 @@
     <table class="adminContent">
     <tr>
         <td class="adminTitle">
-			<div class="ctl-label">
-				@T("Admin.Configuration.Settings.StoreScope")
-			</div>
+			@Html.SmartLabel("store-scope-configuration", T("Admin.Configuration.Settings.StoreScope"))
         </td>
         <td class="adminData">
 			@Html.DropDownList("store-scope-configuration", Model.AllStores, new { onchange = "setLocation(this.value);" })

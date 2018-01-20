@@ -223,6 +223,27 @@ $gray-lightest: $gray-100;
 .well {
     background-color: $gray-100;
     padding: 1rem;
+	margin-bottom: $alert-margin-bottom;
+}
+
+pre {
+	background: $gray-100;
+	padding: 1rem;
+	border: 1px solid rgba(#000, 0.1);
+
+	&.prettyprint {
+		padding: 1rem !important;
+		border: 1px solid rgba(#000, 0.1) !important;
+	}
+}
+
+
+//
+// Common
+// --------------------------------------------------
+
+.col-form-label {
+	font-weight: $font-weight-medium;
 }
 
 
@@ -323,19 +344,29 @@ $gray-lightest: $gray-100;
 	> tbody > tr,
 	> tr,
 	.adminRow {
-		@include make-row();
-		margin: 0.4rem 0;
+		display: flex;
+		flex-wrap: wrap;
+		margin-top: 0.4rem;
+		margin-bottom: 0.4rem;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
+
+	div.adminRow {
+		// div type rows do margin collapse, fix it.
+		margin-top: 0.8rem;
+		margin-bottom: 0.8rem;
 	}
 
 	.adminTitle,
 	.adminData {
 		@include make-col-ready();
+		padding-right: 0;
+		padding-left: 0;
 	}
 
 	.adminTitle {
 		margin-bottom: 0;
-		padding-top: $input-btn-padding-y;
-		padding-bottom: $input-btn-padding-y;
 	}
 
 	.adminData {
@@ -388,12 +419,40 @@ $gray-lightest: $gray-100;
 }
 
 .ctl-label {
-    label {
-        font-weight: 600;
-    }
-    .hint {
-        opacity: 0;
-    }
+	position: relative;
+	padding-right: 2rem;
+
+	> label {
+		padding-right: 0;
+		line-height: 1.2;
+	}
+
+	> .hint {
+		$hintColor: #999;
+		position: absolute;
+		width: 1rem;
+		height: 1rem;
+		right: 0.5rem;
+		top: 0;
+		margin-top: calc(#{$input-padding-y} + 0.125rem);
+		text-decoration: none;
+		outline: 0;
+		color: $hintColor;
+		transition: all .1s linear;
+		opacity: 0;
+
+		&:hover {
+			color: darken($hintColor, 25%)
+		}
+
+		.fa {
+			font-size: 1rem;
+		}
+	}
+
+	&:hover > .hint {
+		opacity: 1;
+	}
 }
 
 

@@ -53,11 +53,11 @@
 				</td>
 				<!-- Actions -->
 				<td>
-					<a href='@task.EditUrl' class="btn btn-small" style="margin-bottom: 4px">@T("Common.Edit")</a>
-					<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-small btn-success btn-run-task@(task.IsRunning ? " hide" : "")' style="margin-bottom: 4px">
+					<a href='@task.EditUrl' class="btn btn-sm" style="margin-bottom: 4px">@T("Common.Edit")</a>
+					<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-sm btn-success btn-run-task@(task.IsRunning ? " hide" : "")' style="margin-bottom: 4px">
 						@T("Admin.System.ScheduleTasks.RunNow")
 					</a>
-					<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-small btn-danger btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');" style="margin-bottom: 4px">
+					<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-sm btn-danger btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');" style="margin-bottom: 4px">
 						@T("Common.Cancel")
 					</a>
 				</td>

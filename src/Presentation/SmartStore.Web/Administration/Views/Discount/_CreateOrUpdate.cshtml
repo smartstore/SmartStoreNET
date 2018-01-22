@@ -245,7 +245,7 @@
                 @Html.SmartLabelFor(model => model.LimitationTimes)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.LimitationTimes, new { postfix = @T("Admin.Promotions.Discounts.Fields.LimitationTimes.Times") })
+                @Html.EditorFor(model => model.LimitationTimes, new { postfix = T("Admin.Promotions.Discounts.Fields.LimitationTimes.Times").Text })
                 @Html.ValidationMessageFor(model => model.LimitationTimes) 
             </td>
         </tr>

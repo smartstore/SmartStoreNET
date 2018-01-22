@@ -39,14 +39,10 @@
 			columns.Bound(x => x.IsDefaultEmailAccount)
                 .Centered()
 				.Template(
-				@<a href='@Url.Action("List", new { id = item.Id })' class="btn btn-secondary" @Html.Attr("disabled", "disabled", item.IsDefaultEmailAccount) title='@T("Admin.Configuration.EmailAccounts.Fields.MarkAsDefaultEmail").Text'>
+				@<a href='@Url.Action("List", new { id = item.Id })' class="btn btn-block btn-secondary" @Html.Attr("disabled", "disabled", item.IsDefaultEmailAccount) title='@T("Admin.Configuration.EmailAccounts.Fields.MarkAsDefaultEmail").Text'>
 					@if (item.IsDefaultEmailAccount)
 					{
 						<i class="fa fa-fw fa-check"></i>
-					}
-					else
-					{
-						<i class="fa fa-fw"></i>
 					}
 				 	<span>
 				 		@T("Admin.Telerik.GridLocalization.Select")

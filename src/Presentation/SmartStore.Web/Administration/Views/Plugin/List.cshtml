@@ -77,7 +77,7 @@
 					{
 						<div class="module-actions">
 							<div class="btn-group">
-								<a class="btn btn-small plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
+								<a class="btn btn-sm plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
 									<i class="fa fa-language"></i>
 									@T("Admin.Configuration.Plugins.Resources.Update")
 								</a>
@@ -90,7 +90,7 @@
 								}
 								@if (plugin.LicenseLabel.LicenseUrl.HasValue())
 								{
-									<button class="btn btn-small plugin-licence" type="button" data-url="@plugin.LicenseLabel.LicenseUrl">
+									<button class="btn btn-sm plugin-licence" type="button" data-url="@plugin.LicenseLabel.LicenseUrl">
 										<i class="fa fa-key"></i>
 										@T("Admin.Common.License")
 									</button>

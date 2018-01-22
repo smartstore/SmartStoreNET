@@ -14,7 +14,7 @@
 	<div class='task-progress pull-left text-success@(Model.IsRunning ? "" : " hide")' data-task-id='@Model.Id' data-running='@(Model.IsRunning ? "true" : "false")'></div>
 	@if (cancellable && hasPermission)
 	{
-		<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-small btn-danger btn-cancel-task@(!Model.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+		<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-sm btn-danger btn-cancel-task@(!Model.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');">
 			@T("Common.Cancel")
 		</a>
 	}

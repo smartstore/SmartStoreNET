@@ -115,7 +115,7 @@
                     firstOption = $('<option></option>').prependTo(sel);
                 }
 
-                if (!placeholder && hasOptionLabel && firstOption.text()) {
+				if (!placeholder && hasOptionLabel && firstOption.text() && !sel.data("tags")) {
                     // use first option text as placeholder
                     placeholder = firstOption.text();
                     firstOption.text("");

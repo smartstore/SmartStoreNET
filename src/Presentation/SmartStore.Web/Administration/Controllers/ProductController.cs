@@ -280,7 +280,11 @@ namespace SmartStore.Admin.Controllers
 			Guard.NotNull(product, nameof(product));
 
 			if (rawProductTags == null || rawProductTags.Length == 0)
+			{
+				product.ProductTags.Clear();
+				_productService.UpdateProduct(product);
 				return;
+			}
 
 			var productTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 

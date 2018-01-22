@@ -20,26 +20,6 @@ namespace SmartStore.Admin.Controllers
             _webHelper = webHelper;
         }
 
-        [HttpPost]
-        public ActionResult UploadImage()
-        {
-			var result = this.UploadImageInternal();
-
-			if (result.Success)
-			{
-				ViewData["ResultCode"] = "success";
-				ViewData["Result"] = "success";
-				ViewData["FileName"] = result.Url;
-			}
-			else 
-			{
-				ViewData["ResultCode"] = "failed";
-				ViewData["Result"] = result.Message;
-			}
-			
-            return View();
-        }
-
 		[HttpPost]
 		public ActionResult UploadImageAjax()
 		{

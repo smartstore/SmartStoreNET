@@ -1683,9 +1683,6 @@
     <Content Include="Views\Product\BundleItemEditPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Media\UploadImage.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Home\About.cshtml" />
   </ItemGroup>
   <ItemGroup>

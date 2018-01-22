@@ -127,6 +127,7 @@ namespace SmartStore.AmazonPay.Services
 
 			model.IpnUrl = GetPluginUrl("IPNHandler", true);
 			model.ConfigGroups = T("Plugins.Payments.AmazonPay.ConfigGroups").Text.SplitSafe(";");
+			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
 			model.RegisterUrl = "https://payments-eu.amazon.com/register";
 			model.SoftwareVersion = SmartStoreVersion.CurrentFullVersion;

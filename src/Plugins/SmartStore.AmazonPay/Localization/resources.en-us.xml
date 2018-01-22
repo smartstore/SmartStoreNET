@@ -302,7 +302,7 @@ Text suggestions:<ul>
 		<Value>Specifies that order notes should be created in context of the data exchange with Amazon Payments.</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
-		<Value>Maximal order age (in days)</Value>
+		<Value>Maximal order age</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays.Hint">
 		<Value>Specifies that only orders which are not older than x days to be included in payment data updates.</Value>

@@ -8,7 +8,8 @@
 
 <div class="plugin-actions">
 	<button type="submit" name="save" class="btn btn-primary" value="save">
-		<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+		<i class="fa fa-check"></i>
+		<span>@T("Admin.Common.Save")</span>
 	</button>
 </div>
 
@@ -21,7 +22,7 @@
 	</div>
 	<div>
 		<a href="https://sellercentral-europe.amazon.com" target="_blank">
-			<img src="@Url.Content("~/Plugins/SmartStore.AmazonPay/Content/branding.png")" alt="amazon payments" class="config-logo" />
+			<img src="@Url.Content("~/Plugins/SmartStore.AmazonPay/Content/branding.png")" alt="Amazon Pay" />
 		</a>
 	</div>
 </div>
@@ -45,11 +46,13 @@
 				&nbsp;
 			</td>
 			<td class="adminData">
-				<a href="javascript:void(0)" class="btn btn-info register-now">
-					<i class="fa fa-sign-in"></i>&nbsp;@T("Plugins.Payments.AmazonPay.RegisterNow")
+				<a href="javascript:void(0)" class="btn btn-primary register-now">
+					<i class="fa fa-sign-in"></i>
+					<span>@T("Plugins.Payments.AmazonPay.RegisterNow")</span>
 				</a>
-				<button type="button" class="btn paste-access-data">
-					<i class="fa fa-paste"></i>&nbsp;@T("Plugins.Payments.AmazonPay.PasteAccessData")
+				<button type="button" class="btn btn-secondary paste-access-data">
+					<i class="fa fa-paste"></i>
+					<span>@T("Plugins.Payments.AmazonPay.PasteAccessData")</span>
 				</button>
 			</td>
 		</tr>
@@ -77,7 +80,7 @@
 			</td>
 			<td class="adminData">
 				@Html.SettingOverrideCheckbox(model => model.AccessKey)
-				@Html.TextBoxFor(model => model.AccessKey, new { @class = "input-large" })
+				@Html.TextBoxFor(model => model.AccessKey)
 				@Html.ValidationMessageFor(model => model.AccessKey)
 			</td>
 		</tr>
@@ -96,7 +99,7 @@
 			</td>
 			<td class="adminData">
 				@Html.SettingOverrideCheckbox(model => model.ClientId)
-				@Html.TextBoxFor(model => model.ClientId, new { @class = "input-large" })
+				@Html.TextBoxFor(model => model.ClientId)
 				@Html.ValidationMessageFor(model => model.ClientId)
 			</td>
 		</tr>
@@ -162,7 +165,7 @@
 				@Html.ValidationMessageFor(model => model.TransactionType)
 			</td>
 		</tr>
-		<tr id="TransactionTypeWarning" class="hide">
+		<tr id="TransactionTypeWarning" class="d-none">
 			<td colspan="2">
 				<div class="alert alert-warning">
 					@T("Plugins.Payments.AmazonPay.TransactionType.Warning")
@@ -193,7 +196,8 @@
 				@Html.SmartLabelFor(model => model.InformCustomerAboutErrors)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.InformCustomerAboutErrors)
+				@Html.SettingOverrideCheckbox(model => model.InformCustomerAboutErrors)
+				@Html.CheckBoxFor(model => model.InformCustomerAboutErrors, new { data_toggler_for = "#InformCustomerAddErrorsContainer" })
 				@Html.ValidationMessageFor(model => model.InformCustomerAboutErrors)
 			</td>
 		</tr>
@@ -220,7 +224,7 @@
 				@Html.SmartLabelFor(model => model.IpnUrl)
 			</td>
 			<td class="adminData">
-				@Html.DisplayFor(model => model.IpnUrl)
+				@Html.TextBoxFor(model => model.IpnUrl, new { @readonly = "readonly", @class = "form-control-plaintext" })
 			</td>
 		</tr>
 		<tr class="data-fetching data-fetching-polling">
@@ -228,11 +232,11 @@
 				@Html.SmartLabelFor(model => model.PollingMaxOrderCreationDays)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.PollingMaxOrderCreationDays, null, new { small = true })
+				@Html.EditorFor(model => model.PollingMaxOrderCreationDays, new { postfix = T("Time.Days").Text })
 				@Html.ValidationMessageFor(model => model.PollingMaxOrderCreationDays)
 			</td>
 		</tr>
-		<tr id="DataFetchingWarning" class="hide">
+		<tr id="DataFetchingWarning" class="d-none">
 			<td colspan="2">
 				<div class="alert alert-warning">
 					@T("Plugins.Payments.AmazonPay.DataFetching.Warning")
@@ -355,7 +359,8 @@
 				@Html.SmartLabelFor(model => model.AdditionalFee)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AdditionalFee, null, new { small = true })
+				@Html.SettingOverrideCheckbox(model => model.AdditionalFee)
+				@Html.EditorFor(model => model.AdditionalFee, new { postfix = Model.PrimaryStoreCurrencyCode })
 				@Html.ValidationMessageFor(model => model.AdditionalFee)
 			</td>
 		</tr>
@@ -428,7 +433,7 @@
 
 		// Show/hide transaction type warning
 		$('#@(Html.FieldIdFor(x => x.TransactionType))').change(function () {
-			$('#TransactionTypeWarning').toggle($(this).val() === '2');
+			$('#TransactionTypeWarning').toggleClass('d-none', $(this).val() !== '2');
 		}).trigger('change');
 
 		// Show/hide status fetching warning
@@ -436,19 +441,15 @@
 			var val = $(this).val(),
 				configTable = $('#AmazonPayConfigTable');
 
-			$('#DataFetchingWarning').toggle(val === '1');
+			$('#DataFetchingWarning').toggleClass('d-none', val !== '1');
 
 			configTable.find('.data-fetching').hide();
-			if (val === '1')
+			if (val === '1') {
 				configTable.find('.data-fetching-ipn').show();
-			else if (val === '2')
+			}
+			else if (val === '2') {
 				configTable.find('.data-fetching-polling').show();
-
-		}).trigger('change');
-
-		// Show/hide inform customer add errors option
-		$('#@(Html.FieldIdFor(x => x.InformCustomerAboutErrors))').change(function () {
-			$('#InformCustomerAddErrorsContainer').toggle($(this).is(':checked'));
+			}
 		}).trigger('change');
 
 		// Register now

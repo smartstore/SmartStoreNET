@@ -302,7 +302,7 @@ Textvorschläge:<ul>
 		<Value>Legt fest, dass Auftragsnotizen hinsichtlich des Datenaustausches mit Amazon Payment angelegt werden sollen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
-		<Value>Maximales Auftragsalter (in Tagen)</Value>
+		<Value>Maximales Auftragsalter</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays.Hint">
 		<Value>Legt fest, dass nur Aufträge, die nicht älter als x Tage sind, in die Aktualisierung der Zahlungsdaten einbezogen werden sollen.</Value>

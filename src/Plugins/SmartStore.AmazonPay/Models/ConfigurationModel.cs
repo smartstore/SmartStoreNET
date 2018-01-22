@@ -10,6 +10,7 @@ namespace SmartStore.AmazonPay.Models
 	public class ConfigurationModel : ModelBase
 	{
 		public string[] ConfigGroups { get; set; }
+		public string PrimaryStoreCurrencyCode { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.AmazonPay.UseSandbox")]
 		public bool UseSandbox { get; set; }

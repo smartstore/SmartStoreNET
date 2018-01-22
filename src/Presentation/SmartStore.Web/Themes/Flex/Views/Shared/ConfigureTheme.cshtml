@@ -21,235 +21,219 @@
 
 @helper TabGeneral()
 {
-	<div class="row no-gutters">
-		<div class="col-xl-6">
-			@ThemeVarEditor("gray-dark", "Grayscale")
-			@ThemeVarEditor("gray")
-			@ThemeVarEditor("gray-light")
-			@ThemeVarEditor("gray-lighter")
-			@ThemeVarEditor("gray-lightest")
+	<div class="adminContent">
+		@ThemeVarEditor("gray-dark", "Grayscale")
+		@ThemeVarEditor("gray")
+		@ThemeVarEditor("gray-light")
+		@ThemeVarEditor("gray-lighter")
+		@ThemeVarEditor("gray-lightest")
 
-			@ThemeVarEditor("red", "Colors")
-			@ThemeVarEditor("orange")
-			@ThemeVarEditor("yellow")
-			@ThemeVarEditor("green")
-			@ThemeVarEditor("blue")
-			@ThemeVarEditor("bluegrey")
-			@ThemeVarEditor("indigo")
-			@ThemeVarEditor("teal")
-			@ThemeVarEditor("pink")
-			@ThemeVarEditor("purple")
+		@ThemeVarEditor("red", "Colors")
+		@ThemeVarEditor("orange")
+		@ThemeVarEditor("yellow")
+		@ThemeVarEditor("green")
+		@ThemeVarEditor("blue")
+		@ThemeVarEditor("bluegrey")
+		@ThemeVarEditor("indigo")
+		@ThemeVarEditor("teal")
+		@ThemeVarEditor("pink")
+		@ThemeVarEditor("purple")
 
-			@ThemeVarEditor("brand-primary", "Brand Colors")
-			@ThemeVarEditor("brand-warning")
-			@ThemeVarEditor("brand-danger")
-			@ThemeVarEditor("brand-info")
-			@ThemeVarEditor("brand-success")
+		@ThemeVarEditor("brand-primary", "Brand Colors")
+		@ThemeVarEditor("brand-warning")
+		@ThemeVarEditor("brand-danger")
+		@ThemeVarEditor("brand-info")
+		@ThemeVarEditor("brand-success")
 
-			@ThemeVarEditor("boxed", "Layout", T("Admin.ThemeVar.Boxed"))
+		@ThemeVarEditor("boxed", "Layout", T("Admin.ThemeVar.Boxed"))
 
-			@ThemeVarEditor("body-bg", "Site Colors")
-			@ThemeVarEditor("site-bg")
-			@ThemeVarEditor("body-color")
-			@ThemeVarEditor("text-muted")
-			@ThemeVarEditor("link-color")
-		</div>
+		@ThemeVarEditor("body-bg", "Site Colors")
+		@ThemeVarEditor("site-bg")
+		@ThemeVarEditor("body-color")
+		@ThemeVarEditor("text-muted")
+		@ThemeVarEditor("link-color")
 	</div>
 }
 
 @helper TabFonts()
 {
-	<div class="row no-gutters">
-		<div class="col-xl-6">
-			@ThemeVarEditor("font-family-sans-serif", "Typo")
-			@ThemeVarEditor("font-family-monospace")
-			@ThemeVarEditor("font-size-base")
-			@ThemeVarEditor("font-size-lg")
-			@ThemeVarEditor("font-size-sm")
-			@ThemeVarEditor("font-size-xs")
-			@ThemeVarEditor("font-weight-light")
-			@ThemeVarEditor("font-weight-normal")
-			@ThemeVarEditor("font-weight-medium")
-			@ThemeVarEditor("font-weight-bold")
+	<div class="adminContent">
+		@ThemeVarEditor("font-family-sans-serif", "Typo")
+		@ThemeVarEditor("font-family-monospace")
+		@ThemeVarEditor("font-size-base")
+		@ThemeVarEditor("font-size-lg")
+		@ThemeVarEditor("font-size-sm")
+		@ThemeVarEditor("font-size-xs")
+		@ThemeVarEditor("font-weight-light")
+		@ThemeVarEditor("font-weight-normal")
+		@ThemeVarEditor("font-weight-medium")
+		@ThemeVarEditor("font-weight-bold")
 
-			@ThemeVarEditor("headings-font-family", "Headings")
-			@ThemeVarEditor("headings-font-weight")
-			@ThemeVarEditor("headings-line-height")
-			@ThemeVarEditor("headings-color")
-			@ThemeVarEditor("lead-font-weight")
+		@ThemeVarEditor("headings-font-family", "Headings")
+		@ThemeVarEditor("headings-font-weight")
+		@ThemeVarEditor("headings-line-height")
+		@ThemeVarEditor("headings-color")
+		@ThemeVarEditor("lead-font-weight")
 
-			@ThemeVarEditor("font-size-h1", "Heading Sizes")
-			@ThemeVarEditor("font-size-h2")
-			@ThemeVarEditor("font-size-h3")
-			@ThemeVarEditor("font-size-h4")
-			@ThemeVarEditor("font-size-h5")
-			@ThemeVarEditor("font-size-h6")
+		@ThemeVarEditor("font-size-h1", "Heading Sizes")
+		@ThemeVarEditor("font-size-h2")
+		@ThemeVarEditor("font-size-h3")
+		@ThemeVarEditor("font-size-h4")
+		@ThemeVarEditor("font-size-h5")
+		@ThemeVarEditor("font-size-h6")
 
-			<div class="adminRow no-gutters">
-				<div class="col-12 admin-config-group">
-					<div class="title">Google Fonts</div>
-				</div>
+		<div class="adminRow">
+			<div class="admin-config-group">
+				<div class="title">Google Fonts</div>
 			</div>
-
-			<div class="adminRow no-gutters">
-				<div class="col-12">
-					<div class="alert alert-info">
-						@T("Admin.Theme.GoogleFonts.Hint")
-					</div>
-				</div>
-			</div>
-
-			@ThemeVarEditor("google-font-1")
-			@ThemeVarEditor("google-font-2")
-			@ThemeVarEditor("google-font-3")
 		</div>
+
+		<div class="adminRow">
+			<div class="alert alert-info w-100">
+				@T("Admin.Theme.GoogleFonts.Hint")
+			</div>
+		</div>
+
+		@ThemeVarEditor("google-font-1")
+		@ThemeVarEditor("google-font-2")
+		@ThemeVarEditor("google-font-3")
 	</div>
 }
 
 @helper TabLayout()
 {
-	<div class="row no-gutters">
-		<div class="col-xl-6">
-			@ThemeVarEditor("header-bg", "Header")
-			@ThemeVarEditor("shopbar-label")
+	<div class="adminContent">
+		@ThemeVarEditor("header-bg", "Header")
+		@ThemeVarEditor("shopbar-label")
 
-			@ThemeVarEditor("inverse-menubar", "")
-			@ThemeVarEditor("menubar-bg")
-			@ThemeVarEditor("menubar-color")
-			@ThemeVarEditor("menubar-inverse-color")
+		@ThemeVarEditor("inverse-menubar", "")
+		@ThemeVarEditor("menubar-bg")
+		@ThemeVarEditor("menubar-color")
+		@ThemeVarEditor("menubar-inverse-color")
 
-			@ThemeVarEditor("inverse-shopbar", "")
-			@ThemeVarEditor("shopbar-bg")
-			@ThemeVarEditor("shopbar-color")
-			@ThemeVarEditor("shopbar-inverse-color")
+		@ThemeVarEditor("inverse-shopbar", "")
+		@ThemeVarEditor("shopbar-bg")
+		@ThemeVarEditor("shopbar-color")
+		@ThemeVarEditor("shopbar-inverse-color")
 
-			@ThemeVarEditor("inverse-navbar", "")
-			@ThemeVarEditor("megamenu-bg")
-			@ThemeVarEditor("megamenu-color")
-			@ThemeVarEditor("megamenu-inverse-color")
-			@ThemeVarEditor("megamenu-line-height")
+		@ThemeVarEditor("inverse-navbar", "")
+		@ThemeVarEditor("megamenu-bg")
+		@ThemeVarEditor("megamenu-color")
+		@ThemeVarEditor("megamenu-inverse-color")
+		@ThemeVarEditor("megamenu-line-height")
 
-			@ThemeVarEditor("megamenu-dropdown-bg")
-			@ThemeVarEditor("megamenu-heading-color")
-			@ThemeVarEditor("megamenu-subitem-color")
-			@ThemeVarEditor("megamenu-text-color")
-			@ThemeVarEditor("megamenu-rotator-bg")
+		@ThemeVarEditor("megamenu-dropdown-bg")
+		@ThemeVarEditor("megamenu-heading-color")
+		@ThemeVarEditor("megamenu-subitem-color")
+		@ThemeVarEditor("megamenu-text-color")
+		@ThemeVarEditor("megamenu-rotator-bg")
 
-			@ThemeVarEditor("searchbox-bg", "Searchbox")
-			@ThemeVarEditor("searchbox-focus-bg")
-			@ThemeVarEditor("searchbox-border-color")
-			@ThemeVarEditor("searchbox-border-active-color")
-			@ThemeVarEditor("search-button-style")
-			@ThemeVarEditor("search-button-flat")
-			@ThemeVarEditor("searchbox-hit-tag-color")
+		@ThemeVarEditor("searchbox-bg", "Searchbox")
+		@ThemeVarEditor("searchbox-focus-bg")
+		@ThemeVarEditor("searchbox-border-color")
+		@ThemeVarEditor("searchbox-border-active-color")
+		@ThemeVarEditor("search-button-style")
+		@ThemeVarEditor("search-button-flat")
+		@ThemeVarEditor("searchbox-hit-tag-color")
 
-			@ThemeVarEditor("inverse-footer", "Footer")
-			@ThemeVarEditor("footer-bg")
-			@ThemeVarEditor("footer-color")
-			@ThemeVarEditor("footer-color-muted")
-			@ThemeVarEditor("footer-inverse-color")
-			@ThemeVarEditor("footer-inverse-color-muted")
-			@ThemeVarEditor("footer-social-bg")
-			@ThemeVarEditor("footer-social-color")
-		</div>
+		@ThemeVarEditor("inverse-footer", "Footer")
+		@ThemeVarEditor("footer-bg")
+		@ThemeVarEditor("footer-color")
+		@ThemeVarEditor("footer-color-muted")
+		@ThemeVarEditor("footer-inverse-color")
+		@ThemeVarEditor("footer-inverse-color-muted")
+		@ThemeVarEditor("footer-social-bg")
+		@ThemeVarEditor("footer-social-color")
 	</div>
 }
 
 @helper TabButtons()
 {
-	<div class="row no-gutters">
-		<div class="col-xl-6">
-			@ThemeVarEditor("btn-primary-color", "Primary")
-			@ThemeVarEditor("btn-primary-bg")
-			@ThemeVarEditor("btn-primary-border")
+	<div class="adminContent">
+		@ThemeVarEditor("btn-primary-color", "Primary")
+		@ThemeVarEditor("btn-primary-bg")
+		@ThemeVarEditor("btn-primary-border")
 
-			@ThemeVarEditor("btn-secondary-color", "Secondary")
-			@ThemeVarEditor("btn-secondary-bg")
-			@ThemeVarEditor("btn-secondary-border")
+		@ThemeVarEditor("btn-secondary-color", "Secondary")
+		@ThemeVarEditor("btn-secondary-bg")
+		@ThemeVarEditor("btn-secondary-border")
 
-			@ThemeVarEditor("btn-info-color", "Info")
-			@ThemeVarEditor("btn-info-bg")
-			@ThemeVarEditor("btn-info-border")
+		@ThemeVarEditor("btn-info-color", "Info")
+		@ThemeVarEditor("btn-info-bg")
+		@ThemeVarEditor("btn-info-border")
 
-			@ThemeVarEditor("btn-success-color", "Success")
-			@ThemeVarEditor("btn-success-bg")
-			@ThemeVarEditor("btn-success-border")
+		@ThemeVarEditor("btn-success-color", "Success")
+		@ThemeVarEditor("btn-success-bg")
+		@ThemeVarEditor("btn-success-border")
 
-			@ThemeVarEditor("btn-warning-color", "Warning")
-			@ThemeVarEditor("btn-warning-bg")
-			@ThemeVarEditor("btn-warning-border")
+		@ThemeVarEditor("btn-warning-color", "Warning")
+		@ThemeVarEditor("btn-warning-bg")
+		@ThemeVarEditor("btn-warning-border")
 
-			@ThemeVarEditor("btn-danger-color", "Danger")
-			@ThemeVarEditor("btn-danger-bg")
-			@ThemeVarEditor("btn-danger-border")
-		</div>
+		@ThemeVarEditor("btn-danger-color", "Danger")
+		@ThemeVarEditor("btn-danger-bg")
+		@ThemeVarEditor("btn-danger-border")
 	</div>
 }
 
 @helper TabStates()
 {
-	<div class="row no-gutters">
-		<div class="col-xl-6">
-			@ThemeVarEditor("state-success-text", "Success")
-			@ThemeVarEditor("state-success-bg")
-			@ThemeVarEditor("state-success-border")
+	<div class="adminContent">
+		@ThemeVarEditor("state-success-text", "Success")
+		@ThemeVarEditor("state-success-bg")
+		@ThemeVarEditor("state-success-border")
 
-			@ThemeVarEditor("state-info-text", "Info")
-			@ThemeVarEditor("state-info-bg")
-			@ThemeVarEditor("state-info-border")
+		@ThemeVarEditor("state-info-text", "Info")
+		@ThemeVarEditor("state-info-bg")
+		@ThemeVarEditor("state-info-border")
 
-			@ThemeVarEditor("state-warning-text", "Warning")
-			@ThemeVarEditor("state-warning-bg")
-			@ThemeVarEditor("state-warning-border")
+		@ThemeVarEditor("state-warning-text", "Warning")
+		@ThemeVarEditor("state-warning-bg")
+		@ThemeVarEditor("state-warning-border")
 
-			@ThemeVarEditor("state-danger-text", "Danger")
-			@ThemeVarEditor("state-danger-bg")
-			@ThemeVarEditor("state-danger-border")
-		</div>
+		@ThemeVarEditor("state-danger-text", "Danger")
+		@ThemeVarEditor("state-danger-bg")
+		@ThemeVarEditor("state-danger-border")
 	</div>
 }
 
 @helper TabComponents()
 {
-	<div class="row no-gutters">
-		<div class="col-xl-6">
-			@ThemeVarEditor("card-border-radius", "Cards")
-			@ThemeVarEditor("card-border-color")
-			@ThemeVarEditor("card-cap-bg")
-			@ThemeVarEditor("card-bg")
-			@ThemeVarEditor("card-link-hover-color")
+	<div class="adminContent">
+		@ThemeVarEditor("card-border-radius", "Cards")
+		@ThemeVarEditor("card-border-color")
+		@ThemeVarEditor("card-cap-bg")
+		@ThemeVarEditor("card-bg")
+		@ThemeVarEditor("card-link-hover-color")
 
-			@ThemeVarEditor("dropdown-bg", "Dropdowns")
-			@ThemeVarEditor("dropdown-border-color")
-			@ThemeVarEditor("dropdown-divider-bg")
-			@ThemeVarEditor("dropdown-box-shadow")
-			@ThemeVarEditor("dropdown-link-color")
-			@ThemeVarEditor("dropdown-link-hover-color")
-			@ThemeVarEditor("dropdown-link-hover-bg")
+		@ThemeVarEditor("dropdown-bg", "Dropdowns")
+		@ThemeVarEditor("dropdown-border-color")
+		@ThemeVarEditor("dropdown-divider-bg")
+		@ThemeVarEditor("dropdown-box-shadow")
+		@ThemeVarEditor("dropdown-link-color")
+		@ThemeVarEditor("dropdown-link-hover-color")
+		@ThemeVarEditor("dropdown-link-hover-bg")
 
-			@ThemeVarEditor("table-bg", "Tables")
-			@ThemeVarEditor("table-bg-accent")
-			@ThemeVarEditor("table-bg-hover")
-			@ThemeVarEditor("table-bg-active")
-			@ThemeVarEditor("table-border-color")
-		</div>
+		@ThemeVarEditor("table-bg", "Tables")
+		@ThemeVarEditor("table-bg-accent")
+		@ThemeVarEditor("table-bg-hover")
+		@ThemeVarEditor("table-bg-active")
+		@ThemeVarEditor("table-border-color")
 	</div>
 }
 
 @helper TabMisc()
 {
-	<div class="row no-gutters">
-		<div class="col-xl-6">
-			@ThemeVarEditor("nav-tabs-active-link-color")
-			@ThemeVarEditor("product-price-color")
-			@ThemeVarEditor("product-detail-addtocart-box-bg")
-			@ThemeVarEditor("login-box-bg")
-			@ThemeVarEditor("cart-footer-bg")
-			@ThemeVarEditor("costep-progress-color", null, T("Admin.ThemeVar.CostepPogressColor"))
-			@ThemeVarEditor("offcanvas-cart-footer")
-			@ThemeVarEditor("art-active-bg-color", null, T("Admin.ThemeVar.ArtActiveBgColor"))
-			@ThemeVarEditor("art-active-border-color", null, T("Admin.ThemeVar.ArtActiveBorderColor"))
-		</div>
+	<div class="adminContent">
+		@ThemeVarEditor("nav-tabs-active-link-color")
+		@ThemeVarEditor("product-price-color")
+		@ThemeVarEditor("product-detail-addtocart-box-bg")
+		@ThemeVarEditor("login-box-bg")
+		@ThemeVarEditor("cart-footer-bg")
+		@ThemeVarEditor("costep-progress-color", null, T("Admin.ThemeVar.CostepPogressColor"))
+		@ThemeVarEditor("offcanvas-cart-footer")
+		@ThemeVarEditor("art-active-bg-color", null, T("Admin.ThemeVar.ArtActiveBgColor"))
+		@ThemeVarEditor("art-active-border-color", null, T("Admin.ThemeVar.ArtActiveBorderColor"))
 	</div>
 }
 
@@ -257,19 +241,22 @@
 {
 	if (groupName != null)
 	{
-		<div class="row form-group no-gutters">
-			<div class="col-12 admin-config-group">
+		<div class="adminRow">
+			<div class="admin-config-group">
 				<div class="title">@groupName</div>
 			</div>
 		</div>
 	}
-
-	<div class="row form-group no-gutters">
-		<div class="col-xl-6 text-xl-right">
+	
+	<div class="adminRow">
+		<div class="adminTitle">
 			@Html.ThemeVarLabel(ThemeManifest.Variables[varName], helpText)
 		</div>
-		<div class="col-xl-6">
+		<div class="adminData">
 			@Html.ThemeVarEditor(ThemeManifest.Variables[varName], Model[varName])
+		</div>
+		<div class="d-flex align-items-center">
+			@Html.ThemeVarChainInfo(ThemeManifest.Variables[varName])
 		</div>
 	</div>
 }

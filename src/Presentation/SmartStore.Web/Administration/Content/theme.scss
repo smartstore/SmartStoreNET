@@ -21,7 +21,7 @@ $mtab-color:				inherit !default;
 // --------------------------------------------------
 
 $enable-shadows:	true;
-$enable-gradients:	true;
+$enable-gradients:	false;
 
 $gray-100:  #f8f9fa;
 $gray-200:  #e9ecef;
@@ -46,7 +46,7 @@ $cyan:      #00BCD4; // Cyan 500
 $bluegrey:  #78909c; // Bluegrey 500
 
 $primary:	$indigo;
-$secondary:	#f4f5f7; //$gray-200;
+$secondary:	lighten($gray-200, 2%); //#f4f5f7 //$gray-200;
 $success:	$green;
 $info:		$cyan;
 $warning:	$orange;
@@ -65,7 +65,7 @@ $theme-color-interval:		8%;
 $yiq-contrasted-threshold:	150;
 
 // Customize the light and dark text colors for use in our YIQ color contrast function.
-$yiq-text-dark:				$body-color;
+$yiq-text-dark:				$gray-700;
 $yiq-text-light:			#fff;
 
 $spacer: 1rem;
@@ -108,10 +108,12 @@ $input-border-radius-lg:        0;
 $input-border-radius-sm:        0;
 $input-transition:              none;
 
-$btn-box-shadow:				0 1px 1px rgba(#000, .075);
+//$btn-box-shadow:				0 1px 1px rgba(#000, .075);
+$btn-box-shadow:				none;
 /*$btn-focus-box-shadow:          0 0 0 2px rgba($indigo, .25); //0 0 0 2px rgba(theme-color("primary"), .25);*/
 $btn-active-box-shadow:         inset 0 2px 3px rgba(#000, .125);
-$btn-transition:                box-shadow .12s ease-in-out;
+//$btn-transition:                box-shadow .12s ease-in-out;
+$btn-transition:				box-shadow .12s ease-in-out, background-color .05s ease-in-out, border-color .05s ease-in-out;
 $btn-border-radius:				.125rem;
 $btn-border-radius-lg:          .1875rem;
 $btn-border-radius-sm:          .125rem;
@@ -293,6 +295,16 @@ pre {
 			border-bottom-color: #fff;
 		}
 	}
+
+	.adminContent {
+		.adminTitle {
+			padding-left: 1rem;
+		}
+
+		.adminData {
+			padding-right: 1rem;
+		}
+	}
 }
 
 
@@ -331,8 +343,13 @@ pre {
 
 .adminContent {
 	//max-width: 1400px;
-	@include make-container();
+	//@include make-container();
 	display: block;
+	width: 100%;
+	margin-right: auto;
+	margin-left: auto;
+	padding-left: 0;
+	padding-right: 0;
 	border-collapse: initial;
 
 	> tbody {
@@ -350,6 +367,7 @@ pre {
 		margin-bottom: 0.4rem;
 		margin-left: 0 !important;
 		margin-right: 0 !important;
+		/*@extend .form-group;*/
 	}
 
 	div.adminRow {
@@ -379,41 +397,38 @@ pre {
 
 	> tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
 	> tr > td:only-child:not(.adminData):not(.adminTitle) {
-		@include make-col(12);
+		flex-grow: 1;
+		max-width: 100%;
 	}
 
 	@include media-breakpoint-up(md) {
 		.adminTitle {
-			@include make-col(4);
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
 			text-align: right;
 		}
 
 		.adminData {
-			@include make-col(8);
+			flex: 0 0 66.666667%;
+			max-width: 66.666667%;
 		}
 	}
 
 	@include media-breakpoint-up(lg) {
 		.adminTitle {
-			@include make-col(3);
+			flex-basis: 400px;
+			max-width: 40%;
 		}
 
 		.adminData {
-			@include make-col(9);
+			flex-basis: 600px;
+			max-width: 60%;
 
 			&.wide {
-				@include make-col(9);
+				flex-grow: 1;
+				flex-basis: 0;
+				max-width: 100%;
 			}
-		}
-	}
-
-	@include media-breakpoint-up(xl) {
-		.adminTitle {
-			@include make-col(3);
-		}
-
-		.adminData {
-			@include make-col(6);
 		}
 	}
 }
@@ -434,7 +449,7 @@ pre {
 		height: 1rem;
 		right: 0.5rem;
 		top: 0;
-		margin-top: calc(#{$input-padding-y} + 0.125rem);
+		margin-top: calc(#{$input-padding-y});
 		text-decoration: none;
 		outline: 0;
 		color: $hintColor;

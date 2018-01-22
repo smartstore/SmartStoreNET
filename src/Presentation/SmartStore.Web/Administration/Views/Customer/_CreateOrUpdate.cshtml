@@ -3,7 +3,7 @@
 @using SmartStore.Core.Domain.Orders;
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("customer-edit").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
+@Html.SmartStore().TabStrip().Name("customer-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Customers.Customers.Info").Text)
 		.Content(TabInfo())

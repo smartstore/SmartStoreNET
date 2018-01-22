@@ -72,7 +72,7 @@ body:not(.popup) #page {
 -------------------------------------------------------------- */
 
 header {
-	@include gradient-bg($primary);
+	@include gradient-bg($indigo);
 	padding-bottom: 50px;
 }
 
@@ -303,6 +303,9 @@ header {
 }
 
 .admin-config-group {
+	display: block;
+	width: 100%;
+
 	.title,
 	.small-title,
 	.head {
@@ -508,8 +511,9 @@ label.forcheckbox {
 		right: 30px;
         margin-left: 0;
         margin-right: 0;
-		background: #f7f7f7;
-		border-bottom: 1px solid rgba(0,0,0, 0.1);
+		background: $gray-100;
+		background: #fff;
+		border-bottom: 1px solid rgba(0,0,0, 0.08);
     }
 }
 
@@ -951,6 +955,7 @@ table.payment-method-features td {
 	.theme-thumbnail {
 		height: 220px;
 		background-size: cover;
+		border-bottom: 1px solid rgba(#000, 0.1);
 	}
 	.theme-data h4 {
 		margin-top: 0;
@@ -981,10 +986,8 @@ table.payment-method-features td {
 
 .theme-editor {
 	.themevar-chain-info {
-		display: none;
-		color: #bbb;
-		margin-left: 10px;
-		vertical-align: middle;
+		color: $gray-500;
+		margin-left: 0.75rem;
 	}
 }
 

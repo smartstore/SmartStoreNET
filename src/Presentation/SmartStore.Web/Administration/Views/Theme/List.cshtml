@@ -48,7 +48,7 @@
 		</table>
 	</div>
 
-    @Html.SmartStore().TabStrip().Name("themes-tab").Items(x =>
+    @Html.SmartStore().TabStrip().Name("themes-tab").Style(TabsStyle.Material).Items(x =>
     {
         x.Add().Text(T("Admin.Configuration.Themes")).Content(ThemesTab()).Selected(true);
         x.Add().Text(T("Admin.Common.Settings")).Content(ThemeSettingsTab());
@@ -89,77 +89,79 @@
 	<fieldset class="">
 		<legend style="border: none">@caption</legend>
 
-		<ul id="theme-list" class="unstyled clearfix">
+		<div id="theme-list" class="row">
 			@foreach (var theme in themes)
 			{
 				var isActive = theme.IsActive;
 				var isBroken = theme.State != ThemeManifestState.Active;
 				
-				<li class="theme-item equalized-column@(isActive ? " active" : "")@(isBroken ? " broken" : "")" data-equalized-deep="true" @Html.Attr("title", theme.Description.EmptyNull(), theme.Description.HasValue())>
-					<div class="theme-thumbnail-wrapper">
-						<div class="theme-thumbnail" style="background-image: url('@Url.Content(theme.PreviewImageUrl)')"></div>
-					</div>
+				<div class="col-auto" style="width: 300px">
 
-					<div class="theme-data">
-						<h4 data-equalized-part="title">
-							@(theme.Title ?? theme.Name)
-							@if (theme.BaseTheme.HasValue())
-							{
-								<small title='@T("Admin.Configuration.Themes.IsBasedOn"): @theme.BaseTheme'>
-									<i class="fa fa-@(isBroken ? "chain-broken" : "chain") fa-flip-horizontal"></i>
-									@theme.BaseTheme
-								</small>
-							}
-						</h4>
-						<div data-equalized-part="data" class="theme-info">
-							@if (theme.Author.HasValue())
-							{
-								<span>@T("Admin.Configuration.Themes.Author"): </span><span class="muted">@theme.Author, </span>
-							}
-							<span>@T("Admin.Configuration.Themes.Version"): </span><span class="muted">@theme.Version</span>
-						</div>
-						<div class="theme-buttons clearfix">
-							@if (!theme.IsActive)
-							{
-								<a href="#" class="btn btn-primary set-as-defaulttheme@(isBroken ? " invisible" : "")" data-name="@theme.Name">
-									@T("Admin.Common.Activate")
-								</a>
-							}
-							else
-							{
-								<a href="#" class="btn disabled">
-									<i class="fa fa-check"></i>
-									@T("Common.Active")
-								</a>
-							}
-							
-							@if (!isBroken)
-							{	
-								<div class="btn-group pull-right">
-									<a href='@Url.Action("Preview", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle" title="@T("Admin.Configuration.Themes.Preview")">
-										<i class="fa fa-fw fa-eye"></i>
+					<div class="card card-shadow x-theme-item x-equalized-column@(isActive ? " active" : "")@(isBroken ? " broken" : "")" data-equalized-deep="true" @Html.Attr("title", theme.Description.EmptyNull(), theme.Description.HasValue())>
+						<div class="card-img-top theme-thumbnail" style="background-image: url('@Url.Content(theme.PreviewImageUrl)')"></div>
+
+						<div class="card-body p-2">
+							<h4 class="h5 text-truncate" data-equalized-part="title">
+								@(theme.Title ?? theme.Name)
+								@if (theme.BaseTheme.HasValue())
+								{
+									<small class="fs-sm text-muted" title='@T("Admin.Configuration.Themes.IsBasedOn"): @theme.BaseTheme'>
+										<i class="fa fa-@(isBroken ? "chain-broken" : "chain") fa-flip-horizontal"></i>
+										@theme.BaseTheme
+									</small>
+								}
+							</h4>
+							<div data-equalized-part="data" class="theme-info text-truncate">
+								@if (theme.Author.HasValue())
+								{
+									<span>@T("Admin.Configuration.Themes.Author"): </span><span class="text-muted">@theme.Author, </span>
+								}
+								<span>@T("Admin.Configuration.Themes.Version"): </span><span class="text-muted">@theme.Version</span>
+							</div>
+							<div class="theme-buttons d-flex">
+								@if (!theme.IsActive)
+								{
+									<a href="#" class="btn btn-primary set-as-defaulttheme@(isBroken ? " invisible" : "")" data-name="@theme.Name">
+										@T("Admin.Common.Activate")
 									</a>
-									@if (theme.IsConfigurable)
-									{
-										<a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle" title="@T("Admin.Common.Configure")">
-											<i class="fa fa-fw fa-paint-brush"></i>
+								}
+								else
+								{
+									<a href="#" class="btn btn-secondary disabled">
+										<i class="fa fa-check"></i>
+										@T("Common.Active")
+									</a>
+								}
+
+								@if (!isBroken)
+								{
+									<div class="btn-group ml-auto">
+										<a href='@Url.Action("Preview", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn btn-secondary btn-flat tooltip-toggle" title="@T("Admin.Configuration.Themes.Preview")">
+											<i class="fa fa-fw fa-eye"></i>
 										</a>
-									}
-								</div>									
-							}
+										@if (theme.IsConfigurable)
+										{
+											<a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn btn-secondary btn-flat tooltip-toggle" title="@T("Admin.Common.Configure")">
+												<i class="fa fa-fw fa-paint-brush"></i>
+											</a>
+										}
+									</div>
+								}
 
+							</div>
 						</div>
+
+						@if (isBroken)
+						{
+							<div class="theme-broken-badge" title='@T("Admin.Configuration.Themes.MissingBaseTheme", theme.BaseTheme).Text'>
+								<i class="fa fa-exclamation"></i>
+							</div>
+						}
 					</div>
+				</div>
 
-					@if (isBroken)
-					{
-						<div class="theme-broken-badge" title='@T("Admin.Configuration.Themes.MissingBaseTheme", theme.BaseTheme).Text'>
-							<i class="fa fa-exclamation"></i>
-						</div>
-					}
-				</li>
 			}
-		</ul>
+		</div>
 
 	</fieldset>
 }

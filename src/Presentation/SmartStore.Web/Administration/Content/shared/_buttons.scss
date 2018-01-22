@@ -36,7 +36,7 @@ $btn-size-sm:			$input-height-sm;
 // looks really shitty in BS4 Beta, make it white again.
 // -----------------------------------------------------
 
-.btn-secondary {
+.x-btn-secondary {
 	$shade-color: darken($secondary, 3%);
 	$border-color: darken($secondary, 15%);
 	background-image: linear-gradient(180deg, #fff, $secondary);

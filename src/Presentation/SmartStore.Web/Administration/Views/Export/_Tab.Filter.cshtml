@@ -103,8 +103,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.CategoryIds,
-												new MultiSelectList(Model.Filter.AvailableCategories, "Value", "Text"),
-												new { multiple = "multiple" })
+					new MultiSelectList(Model.Filter.AvailableCategories, "Value", "Text"),
+					new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.CategoryIds)
 			</td>
 		</tr>
@@ -386,9 +386,7 @@
 				@Html.SmartLabelFor(x => x.Filter.CustomerRoleIds)
 			</td>
 			<td class="adminData">
-				@Html.ListBoxFor(x => x.Filter.CustomerRoleIds,
-					new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"),
-					new { multiple = "multiple" })
+				@Html.ListBoxFor(x => x.Filter.CustomerRoleIds, new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"), new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.CustomerRoleIds)
 			</td>
 		</tr>

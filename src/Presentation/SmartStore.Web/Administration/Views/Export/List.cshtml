@@ -20,26 +20,38 @@
     }
 </div>
 
-<div id="export-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
-		<h4 class="caption"></h4>
-	</div>
-	<div class="modal-body"></div>
-	<div class="modal-footer">
-		<button class="btn btn-primary">@T("Common.OK")</button>
-		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+<div id="export-profile-dialog" class="modal fade" tabindex="-1" data-profile="@T("Common.Profile")">
+	<div class="modal-dialog modal-flex modal-flex-sm" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title"></h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<button class="btn btn-primary btn-flat">@T("Common.OK")</button>
+				<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
+			</div>
+		</div>
 	</div>
 </div>
 
-<div id="export-profile-file-dialog" class="modal modal-xlarge hide fade" tabindex="-1">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
-		<h4 class="caption">@T("Admin.DataExchange.Export.ExportFiles")</h4>
-	</div>
-	<div class="modal-body"></div>
-	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+<div id="export-profile-file-dialog" class="modal fade" tabindex="-1">
+	<div class="modal-dialog modal-flex modal-flex-sm" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">@T("Admin.DataExchange.Export.ExportFiles")</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
+			</div>
+		</div>
 	</div>
 </div>
 
@@ -53,7 +65,7 @@
 			e.preventDefault();
 
 			dialog.find('.modal-body').empty();
-			dialog.find('.caption').text(dialog.attr('data-profile') + ' - ' + $.trim($(this).text()));
+			dialog.find('.modal-title').text(dialog.attr('data-profile') + ' - ' + $.trim($(this).text()));
 			showPrimaryButton(false);
 
 			$(this).doAjax({

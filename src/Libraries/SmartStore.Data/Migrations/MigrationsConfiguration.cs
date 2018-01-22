@@ -218,6 +218,9 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Common.Milliseconds", "milliseconds", "Millisekunden");
 			builder.AddOrUpdate("Common.Pixel", "Pixel", "Pixel");
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.ShowPlaceholder", "Show placeholder", "Zeige Platzhalter");
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.HidePlaceholder", "Hide placeholder", "Verberge Platzhalter");
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.UpdateExampleFileName", "Update example", "Aktualisiere Beispiel");
 		}
 	}
 }

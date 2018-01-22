@@ -37,7 +37,7 @@
 			@Html.SmartLabelFor(x => x.Name)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.Name)
+			@Html.TextBoxFor(model => model.Name, new { @readonly = "readonly", @class = "form-control-plaintext" })
 			@Html.ValidationMessageFor(x => x.Name)
 		</td>
 	</tr>

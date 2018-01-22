@@ -21,31 +21,40 @@
 				{
 					if (Model.Id != 0)
 					{
-						<button type="button" id="ProfileExportButton" class="btn btn-default" data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })">
-							<i class="fa fa-gears"></i>&nbsp;@T("Common.Export")
+						<button type="button" id="ProfileExportButton" class="btn btn-primary" data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })">
+							<i class="fa fa-gears"></i>
+							<span>@T("Common.Export")</span>
 						</button>
 					}
 
-					<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn">
-						<i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")
+					<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn btn-secondary">
+						<i class="fa fa-eye"></i>
+						<span>@T("Admin.Common.Preview")</span>
 					</a>
 				}
+				
 				@if (Model.LogFileExists)
 				{
-					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">
-						<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn btn-secondary" target="LogFile">
+						<i class="fa fa-file-text-o"></i>
+						<span>@T("Admin.Configuration.ActivityLog")</span>
 					</a>
 				}
-				<button type="submit" name="save" value="save" class="btn btn-primary">
-					<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+
+				<button type="submit" name="save" value="save" class="btn btn-warning">
+					<i class="fa fa-check"></i>
+					<span>@T("Admin.Common.Save")</span>
 				</button>
-				<button type="submit" name="save" value="save-continue" class="btn">
-					@T("Admin.Common.SaveContinue")
+
+				<button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+					<span>@T("Admin.Common.SaveContinue")</span>
 				</button>
+
 				@if (!Model.IsSystemProfile)
 				{
 					<button type="submit" name="export-profile-delete" id="export-profile-delete" value="export-profile-delete" class="btn btn-danger">
-						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+						<i class="fa fa-trash-o"></i>
+						<span>@T("Admin.Common.Delete")</span>
 					</button>
 				}
 			</div>
@@ -53,7 +62,7 @@
 
 		@Html.ValidationSummary(false)
 
-		@Html.SmartStore().TabStrip().Name("export-profile-edit").Items(x =>
+		@Html.SmartStore().TabStrip().Name("export-profile-edit").Style(TabsStyle.Material).Items(x =>
 		{
 			x.Add().Text(T("Common.General").Text).Content(TabGeneral()).Selected(true);
 
@@ -88,7 +97,7 @@
 				@Html.SmartLabelFor(x => x.SystemName)
 			</td>
 			<td class="adminData">
-				<div class="muted">@(Model.SystemName.NaIfEmpty())</div>
+				<input class="form-control-plaintext" readonly="readonly" type="text" value="@Model.SystemName.NaIfEmpty()">
 			</td>
 		</tr>
 		<tr>
@@ -96,7 +105,7 @@
 				@Html.SmartLabelFor(x => x.IsSystemProfile)
 			</td>
 			<td class="adminData">
-				@T(Model.IsSystemProfile ? "Admin.Common.Yes" : "Admin.Common.No")
+				<input class="form-control-plaintext" readonly="readonly" type="text" value="@T(Model.IsSystemProfile ? "Admin.Common.Yes" : "Admin.Common.No")">
 			</td>
 		</tr>
 		<tr>
@@ -110,7 +119,7 @@
 		</tr>
 		@if (Model.ScheduleTaskId > 0)
 		{
-			<tr>
+			<tr class="mb-5">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(x => x.ScheduleTaskId)
 				</td>
@@ -121,8 +130,6 @@
 		}
 	</table>
 	
-	<p>&nbsp;</p>
-
 	if (Model.HasActiveProvider)
 	{
 		<table class="adminContent">
@@ -131,8 +138,7 @@
 					@Html.SmartLabelFor(x => x.Provider.FriendlyName)
 				</td>
 				<td class="adminData">
-					<div>@Model.Provider.FriendlyName.NaIfEmpty()</div>
-					<div class="muted">@(Model.ProviderSystemName.NaIfEmpty())</div>
+					<input class="form-control-plaintext" readonly="readonly" type="text" value="@(Model.Provider.FriendlyName.NaIfEmpty()) (@(Model.ProviderSystemName.NaIfEmpty()))">
 				</td>
 			</tr>
 			@if (Model.Provider.Description.HasValue())
@@ -142,7 +148,7 @@
 						@Html.SmartLabelFor(x => x.Provider.Description)
 					</td>
 					<td class="adminData">
-						@Html.Raw(Model.Provider.Description)
+						<input class="form-control-plaintext" readonly="readonly" type="text" value="@Html.Raw(Model.Provider.Description)">
 					</td>
 				</tr>
 			}
@@ -153,7 +159,7 @@
 						@Html.SmartLabelFor(x => x.Provider.Url)
 					</td>
 					<td class="adminData">
-						<a href="@Model.Provider.Url" target="PluginWebsiteWnd">@Model.Provider.Url</a>
+						<a href="@Model.Provider.Url" class="form-control-plaintext"  target="PluginWebsiteWnd">@Model.Provider.Url</a>
 					</td>
 				</tr>
 			}
@@ -164,7 +170,7 @@
 						@Html.SmartLabelFor(x => x.Provider.Author)
 					</td>
 					<td class="adminData">
-						@Html.DisplayFor(x => x.Provider.Author)
+						@Html.TextBoxFor(model => model.Provider.Author, new { @readonly = "readonly", @class = "form-control-plaintext" })
 					</td>
 				</tr>
 			}
@@ -175,7 +181,7 @@
 						@Html.SmartLabelFor(x => x.Provider.Version)
 					</td>
 					<td class="adminData">
-						@Html.DisplayFor(x => x.Provider.Version)
+						@Html.TextBoxFor(model => model.Provider.Version, new { @readonly = "readonly", @class = "form-control-plaintext" })
 					</td>
 				</tr>
 			}
@@ -184,7 +190,7 @@
 					@Html.SmartLabelFor(x => x.Provider.EntityTypeName)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(x => x.Provider.EntityTypeName)
+					@Html.TextBoxFor(model => model.Provider.EntityTypeName, new { @readonly = "readonly", @class = "form-control-plaintext" })
 				</td>
 			</tr>
 			@if (Model.Provider.FileExtension.HasValue())
@@ -334,43 +340,18 @@
 
 <script type="text/javascript">
 	jQuery(document).ready(function () {
-
-		$('#@(Html.FieldIdFor(x => x.CompletedEmailAddresses))').select2({ tags: [@(Html.Raw(Model.SerializedCompletedEmailAddresses))] });
-
-		// show/hide store projection
+		
+		// show/hide store projection (cant be done with toggler, because the control is another tab)
 		$('#@(Html.FieldIdFor(x => x.PerStore))').change(function () {
 			$('#ProjectionStoreContainer').toggle(!$(this).is(':checked'));
 		}).trigger('change');
 
-		// show/hide attribute combination note
-		$('#@(Html.FieldIdFor(x => x.Projection.AttributeCombinationAsProduct))').change(function () {
-			$('#AttributeCombinationAsProductNote').toggle($(this).is(':checked'));
-		}).trigger('change');
-
-		// show/hide no grouped products note
-		$('#@(Html.FieldIdFor(x => x.Projection.NoGroupedProducts))').change(function () {
-			$('#NoGroupedProductsNote, #OnlyIndividuallyVisibleAssociatedContainer').toggle($(this).is(':checked'));
-		}).trigger('change');
-
-		$('#@(Html.FieldIdFor(x => x.Projection.AppendDescriptionText))').select2({ tags: [@(Html.Raw(Model.Projection.SerializedAppendDescriptionText))] });
-		$('#@(Html.FieldIdFor(x => x.Projection.CriticalCharacters))').select2({ tags: [@(Html.Raw(Model.Projection.SerializedCriticalCharacters))] });
-
-		// show/hide attribute combination value appending
-		$('#@(Html.FieldIdFor(x => x.Projection.AttributeCombinationAsProduct))').change(function () {
-			$('#AttributeCombinationAddValuesToNameContainer').toggle($(this).is(':checked'));
-		}).trigger('change');
-
-		// show/hide critical characters
-		$('#@(Html.FieldIdFor(x => x.Projection.RemoveCriticalCharacters))').change(function () {
-			$('#CriticalCharactersContainer').toggle($(this).is(':checked'));
-		}).trigger('change');
-
-		// show/hide product category filter
+		// show/hide product category filter (cant be done with toggler, because the control is nullable select)
 		$('#@(Html.FieldIdFor(x => x.Filter.WithoutCategories))').change(function () {
 			$('#FilterCategoryIdsContainer').toggle(_.isEmpty($(this).val()));
 		}).trigger('change');
 
-		// show/hide product manufacturer filter
+		// show/hide product manufacturer filter (cant be done with toggler, because the control is nullable select)
 		$('#@(Html.FieldIdFor(x => x.Filter.WithoutManufacturers))').change(function () {
 			$('#FilterManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
 		}).trigger('change');

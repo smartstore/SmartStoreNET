@@ -389,8 +389,8 @@ namespace SmartStore.Admin.Controllers
 			model.AvailableEmailAccounts = allEmailAccounts
 				.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
 				.ToList();
-
-			model.SerializedCompletedEmailAddresses = string.Join(",", profile.CompletedEmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
+			
+			model.AvailableCompletedEmailAddresses = new MultiSelectList(profile.CompletedEmailAddresses.SplitSafe(","));
 
 			// projection
 			model.Projection = new ExportProjectionModel
@@ -516,9 +516,9 @@ namespace SmartStore.Admin.Controllers
 						.ToSelectList(false)
 						.Where(x => x.Value != ((int)PriceDisplayType.Hide).ToString())
 						.ToList();
-
-					model.Projection.SerializedAppendDescriptionText = string.Join(",", projection.AppendDescriptionText.SplitSafe(",").Select(x => x.EncodeJsString()));
-					model.Projection.SerializedCriticalCharacters = string.Join(",", projection.CriticalCharacters.SplitSafe(",").Select(x => x.EncodeJsString()));
+					
+					model.Projection.AvailableAppendDescriptionTexts = new MultiSelectList(projection.AppendDescriptionText.SplitSafe(","));
+					model.Projection.AvailableCriticalCharacters = new MultiSelectList(projection.CriticalCharacters.SplitSafe(","));
 
 					model.Filter.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
 
@@ -827,9 +827,9 @@ namespace SmartStore.Admin.Controllers
 					NumberOfPictures = model.Projection.NumberOfPictures,
 					DescriptionMergingId = model.Projection.DescriptionMergingId,
 					DescriptionToPlainText = model.Projection.DescriptionToPlainText,
-					AppendDescriptionText = model.Projection.AppendDescriptionText,
+					AppendDescriptionText = string.Join(",", model.Projection.AppendDescriptionText),	
 					RemoveCriticalCharacters = model.Projection.RemoveCriticalCharacters,
-					CriticalCharacters = model.Projection.CriticalCharacters,
+					CriticalCharacters = string.Join(",", model.Projection.CriticalCharacters),
 					PriceType = model.Projection.PriceType,
 					ConvertNetToGrossPrices = model.Projection.ConvertNetToGrossPrices,
 					Brand = model.Projection.Brand,

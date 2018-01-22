@@ -86,27 +86,29 @@
         {
             if (Model.Id == 0 || Model.AllowUsersToChangeUsernames)
             {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Username)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.Username)
-                    @Html.ValidationMessageFor(model => model.Username)
-                </td>
-            </tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.Username)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.Username)
+						@Html.ValidationMessageFor(model => model.Username)
+					</td>
+				</tr>
             }
             else
             {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Username)
-                </td>
-                <td class="adminData">
-                    @Model.Username
-                    @Html.HiddenFor(model => model.Username)
-                </td>
-            </tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.Username)
+					</td>
+					<td class="adminData">
+						<span class="form-control-plaintext">
+							@Model.Username
+						</span>
+						@Html.HiddenFor(model => model.Username)
+					</td>
+				</tr>
             }
         }
         <tr>
@@ -125,10 +127,10 @@
             <td class="adminData">
 
 				<div class="input-group">
-					@Html.EditorFor(model => model.Password)
+					@Html.PasswordFor(model => model.Password, new { @class = "form-control" })
 					@if (Model.Id > 0)
 					{
-						<span class="input-group-btn">
+						<span class="input-group-append">
 							<button type="submit" name="changepassword" value="changepassword" class="btn btn-secondary">
 								<i class="fa fa-gear"></i>
 								<span>@T("Account.ChangePassword")</span>

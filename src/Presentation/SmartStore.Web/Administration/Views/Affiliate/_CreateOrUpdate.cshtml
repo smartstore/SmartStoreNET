@@ -40,7 +40,9 @@
                     @Html.SmartLabelFor(model => model.Url)
                 </td>
                 <td class="adminData">
-					<a href="@Model.Url">@Model.Url</a>
+					<div class="form-control-plaintext">
+						<a href="@Model.Url">@Model.Url</a>
+					</div>
                 </td>
             </tr>
         }

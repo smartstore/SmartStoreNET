@@ -93,7 +93,9 @@ $h6-font-size: 1rem;
 
 $headings-font-weight:			400;
 
-$btn-font-weight:               $font-weight-medium;
+$input-btn-focus-width:			.2rem;
+$input-btn-focus-color:			rgba($primary, .25);
+$input-btn-focus-box-shadow:	0 0 0 $input-btn-focus-width $input-btn-focus-color;
 $input-btn-padding-x:           1rem;
 $input-btn-padding-y:           0.5625rem;
 $input-btn-padding-x-sm:        0.75rem;
@@ -108,12 +110,15 @@ $input-border-radius-lg:        0;
 $input-border-radius-sm:        0;
 $input-transition:              none;
 
+
+$btn-font-weight:				$font-weight-medium;
 //$btn-box-shadow:				0 1px 1px rgba(#000, .075);
-$btn-box-shadow:				none;
-/*$btn-focus-box-shadow:          0 0 0 2px rgba($indigo, .25); //0 0 0 2px rgba(theme-color("primary"), .25);*/
+$btn-focus-width:				$input-btn-focus-width;
+$btn-box-shadow:				0 0 0 transparent;
+$btn-focus-box-shadow:			$input-btn-focus-box-shadow;
 $btn-active-box-shadow:         inset 0 2px 3px rgba(#000, .125);
 //$btn-transition:                box-shadow .12s ease-in-out;
-$btn-transition:				box-shadow .12s ease-in-out, background-color .05s ease-in-out, border-color .05s ease-in-out;
+$btn-transition:				box-shadow .1s ease-in-out, background-color .05s ease-in-out, border-color .05s ease-in-out;
 $btn-border-radius:				.125rem;
 $btn-border-radius-lg:          .1875rem;
 $btn-border-radius-sm:          .125rem;
@@ -237,6 +242,10 @@ pre {
 		padding: 1rem !important;
 		border: 1px solid rgba(#000, 0.1) !important;
 	}
+}
+
+.hide {
+	display: none;
 }
 
 
@@ -390,8 +399,9 @@ pre {
 	.adminData {
 		> .switch {
 			margin-bottom: 0;
-			padding-top: calc(#{$input-btn-padding-y} - 3px);
-			padding-bottom: calc(#{$input-btn-padding-y} + 2px);
+			padding-top: calc(#{$input-padding-y} - 1px);
+			padding-bottom: calc(#{$input-padding-y} + 1px);
+			line-height: $input-line-height;
 		}
 	}
 
@@ -439,7 +449,7 @@ pre {
 
 	> label {
 		padding-right: 0;
-		line-height: 1.2;
+		//line-height: 1.2;
 	}
 
 	> .hint {

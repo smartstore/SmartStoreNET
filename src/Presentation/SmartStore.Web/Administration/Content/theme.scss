@@ -445,33 +445,35 @@ pre {
 
 .ctl-label {
 	position: relative;
-	padding-right: 2rem;
+	padding-right: 2.5rem;
+	display: inline-block;
 
 	> label {
 		padding-right: 0;
-		//line-height: 1.2;
+		position: relative;
 	}
 
 	> .hint {
-		$hintColor: #999;
+		$hintColor: $gray-500;
+		display: block;
 		position: absolute;
-		width: 1rem;
-		height: 1rem;
-		right: 0.5rem;
+		width: 2.5rem;
+		right: 0;
 		top: 0;
-		margin-top: calc(#{$input-padding-y});
 		text-decoration: none;
 		outline: 0;
 		color: $hintColor;
-		transition: all .1s linear;
+		transition: all .1s ease-in-out;
 		opacity: 0;
+		text-align: center;
+		@extend .col-form-label;
 
 		&:hover {
-			color: darken($hintColor, 25%)
+			color: $gray-600;
 		}
 
 		.fa {
-			font-size: 1rem;
+			font-size: 1.25rem;
 		}
 	}
 

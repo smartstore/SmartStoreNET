@@ -216,7 +216,7 @@ namespace SmartStore.Data.Migrations
 				"Admin.Catalog.Products.Fields.SubjectToAcl",
 				"Admin.Catalog.Products.Fields.AclCustomerRoles");
 
-			builder.AddOrUpdate("Common.Milliseconds", "milliseconds", "Millisekunden");
+			builder.AddOrUpdate("Time.Milliseconds", "Milliseconds", "Millisekunden");
 			builder.AddOrUpdate("Common.Pixel", "Pixel", "Pixel");
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.ShowPlaceholder", "Show placeholder", "Zeige Platzhalter");
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.HidePlaceholder", "Hide placeholder", "Verberge Platzhalter");

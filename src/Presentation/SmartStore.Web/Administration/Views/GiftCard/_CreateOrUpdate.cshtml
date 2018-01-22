@@ -111,12 +111,13 @@
 
 				<div class="input-group">
 					@Html.EditorFor(model => model.GiftCardCouponCode)
-					<span class="input-group-btn">
+
+					<div class="input-group-append">
 						<button type="button" name="generateCouponCode" id="generateCouponCode" class="btn btn-secondary">
 							<i class="fa fa-gear"></i>
 							<span>@T("Admin.GiftCards.Fields.GiftCardCouponCode.Generate")</span>
 						</button>
-					</span>
+					</div>
 				</div>
 
                 @Html.ValidationMessageFor(model => model.GiftCardCouponCode)

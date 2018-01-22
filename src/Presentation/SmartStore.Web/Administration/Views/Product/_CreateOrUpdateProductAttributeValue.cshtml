@@ -65,7 +65,7 @@
 
 			<div class="input-group">
 				<input type="text" class="form-control" id="linked-product-name" placeholder="@T("Common.Unspecified")" value="@Model.LinkedProductName" readonly>
-				<span class="input-group-btn">
+				<div class="input-group-append">
 					<button type="button" id="RemoveProductLinkageButton" class="btn btn-secondary">
 						<i class="fa fa-times"></i>
 						<span>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")</span>
@@ -81,7 +81,7 @@
 						.DialogTitle(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew"))
 						.Caption(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct"))
 						.OnSelectionCompleted("PickLinkedProduct_Completed"))
-				</span>
+				</div>
 			</div>
 
             @Html.ValidationMessageFor(model => model.LinkedProductId)

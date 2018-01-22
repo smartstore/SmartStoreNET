@@ -8,7 +8,7 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Klicken Sie unten auf <b>Jetzt registrieren</b>, um sich bei Amazon Payments zu registrieren.</p>
+			<![CDATA[<p>Klicken Sie unten auf <b>Jetzt registrieren</b>, um sich bei Amazon Pay zu registrieren.</p>
 <p>So richten Sie <b>Login und Bezahlen mit Amazon</b> ein:</p><ul>
 <li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein.
 Die Zugangsdaten finden Sie in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto oben links unter <b>Integration > MWS Access Key</b>.</li>
@@ -44,15 +44,15 @@ Textvorschläge:<ul>
 		<Value>Ein Auftrag mit der Zahlungsart "Login und Bezahlen mit Amazon" und der Kennung '{0}' wurde nicht gefunden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationSoftDeclineMessage">
-		<Value>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Payments zurückgewiesen. Bitte wählen Sie eine andere Zahlart.</Value>
+		<Value>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Pay zurückgewiesen. Bitte wählen Sie eine andere Zahlart.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>
-			<![CDATA[<p>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Payments zurückgewiesen. Bitte kontaktieren Sie uns.</p>]]>
+			<![CDATA[<p>Leider wurde die Zahlung zu Ihrer Bestellung in unserem Onlineshop von Amazon Pay zurückgewiesen. Bitte kontaktieren Sie uns.</p>]]>
 		</Value>
 	</LocaleResource>
 	<LocaleResource Name="AmazonPaymentsReports">
-		<Value>Amazon Payments meldet</Value>
+		<Value>Amazon Pay meldet</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShippingToCountryNotAllowed">
 		<Value>Ein Versand in das ausgewählte Land ist leider nicht möglich. Bitte wählen Sie eine andere Versandadresse.</Value>
@@ -263,7 +263,7 @@ Textvorschläge:<ul>
 		<Value>Autorisierung sofort, Abbuchung später</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.Warning">
-		<Value>Bitte benutzen Sie "Sofort abbuchen" nur, wenn Sie Ware am selben Tag der Bestellung verschicken und Sie für diesen Dienst zugelassen sind. Aktivieren Sie diese Option bitte erst nach Rücksprache mit Amazon Payments.</Value>
+		<Value>Bitte benutzen Sie "Sofort abbuchen" nur, wenn Sie Ware am selben Tag der Bestellung verschicken und Sie für diesen Dienst zugelassen sind. Aktivieren Sie diese Option bitte erst nach Rücksprache mit Amazon Pay.</Value>
 	</LocaleResource>
 	<LocaleResource Name="SaveEmailAndPhone">
 		<Value>Kundendaten übernehmen</Value>
@@ -299,7 +299,7 @@ Textvorschläge:<ul>
 		<Value>Auftragsnotizen anlegen</Value>
 	</LocaleResource>
 	<LocaleResource Name="AddOrderNotes.Hint">
-		<Value>Legt fest, dass Auftragsnotizen hinsichtlich des Datenaustausches mit Amazon Payment angelegt werden sollen.</Value>
+		<Value>Legt fest, dass Auftragsnotizen hinsichtlich des Datenaustausches mit Amazon Pay angelegt werden sollen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximales Auftragsalter</Value>

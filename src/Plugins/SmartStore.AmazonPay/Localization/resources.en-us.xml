@@ -8,7 +8,7 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Click <b>Register now</b> below to register at Amazon Payments.</p>
+			<![CDATA[<p>Click <b>Register now</b> below to register at Amazon Pay.</p>
 <p>How to set up <b>Login and Pay with Amazon</b>:</p><ul>
 <li>Enter your Amazon credentials in the fields provided below.
 You can find these credentials in your <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> account at <b>Integration > MWS Access Key</b>.</li>
@@ -44,15 +44,15 @@ Text suggestions:<ul>
 		<Value>Cannot find an order with the payment method "Login and Pay with Amazon" and the identification '{0}'.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationSoftDeclineMessage">
-		<Value>Unfortunately Amazon Payments declined the payment for your order in our online shop. Please choose another payment method.</Value>
+		<Value>Unfortunately Amazon Pay declined the payment for your order in our online shop. Please choose another payment method.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>
-			<![CDATA[<p>Unfortunately Amazon Payments declined the payment for your order in our online shop. Please contact us.</p>]]>
+			<![CDATA[<p>Unfortunately Amazon Pay declined the payment for your order in our online shop. Please contact us.</p>]]>
 		</Value>
 	</LocaleResource>
 	<LocaleResource Name="AmazonPaymentsReports">
-		<Value>Amazon Payments reports</Value>
+		<Value>Amazon Pay reports</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShippingToCountryNotAllowed">
 		<Value>Shipping to the selected country is not allowed. Please choose an other shipping address.</Value>
@@ -263,7 +263,7 @@ Text suggestions:<ul>
 		<Value>Authorize immediately, debit later</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.Warning">
-		<Value>Please use "Immediately debit" method only in the case you are shipping goods on the same day they are ordered and you have been white-listed for this service. Do not activate this option without contacting Amazon Payments first.</Value>
+		<Value>Please use "Immediately debit" method only in the case you are shipping goods on the same day they are ordered and you have been white-listed for this service. Do not activate this option without contacting Amazon Pay first.</Value>
 	</LocaleResource>
 	<LocaleResource Name="SaveEmailAndPhone">
 		<Value>Apply customer data</Value>
@@ -299,7 +299,7 @@ Text suggestions:<ul>
 		<Value>Create order notes</Value>
 	</LocaleResource>
 	<LocaleResource Name="AddOrderNotes.Hint">
-		<Value>Specifies that order notes should be created in context of the data exchange with Amazon Payments.</Value>
+		<Value>Specifies that order notes should be created in context of the data exchange with Amazon Pay.</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximal order age</Value>
@@ -311,7 +311,7 @@ Text suggestions:<ul>
 		<Value>Inform about a refusal of an authorization</Value>
 	</LocaleResource>
 	<LocaleResource Name="InformCustomerAboutErrors.Hint">
-		<Value>Specifies to create order notes in case of a declination of an Amazon payment, which are visible for customers too. In addition the customer is informed by email about the case.</Value>
+		<Value>Specifies to create order notes in case of a declination of an Amazon Pay, which are visible for customers too. In addition the customer is informed by email about the case.</Value>
 	</LocaleResource>
 	<LocaleResource Name="InformCustomerAddErrors">
 		<Value>Append error message</Value>

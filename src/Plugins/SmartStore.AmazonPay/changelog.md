@@ -43,7 +43,7 @@
 
 ##Pay with Amazon 1.17
 ###Improvements
-* Amazon payments review
+* Amazon Pay review
 
 ##Pay with Amazon 1.16
 ###Bugfixes

@@ -11,7 +11,7 @@
 		MiniShoppingCart,
 
 		/// <summary>
-		/// Amazon payment button clicked
+		/// Amazon Pay button clicked
 		/// </summary>
 		PayButtonHandler,
 

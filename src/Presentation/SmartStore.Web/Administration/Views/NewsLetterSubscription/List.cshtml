@@ -11,7 +11,6 @@
     <div class="options">
 		@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-
         @{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
 </div>
@@ -38,60 +37,55 @@
 	}
     <tr>
 		<td class="adminTitle">
-			&nbsp;
 		</td>
 		<td class="adminData">
-            <button type="submit" id="search-newsLetterSubscriptions" value="search-newsLetterSubscriptions"
-                class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+            <button type="submit" id="search-newsLetterSubscriptions" value="search-newsLetterSubscriptions" class="btn btn-secondary">
+				<i class="fa fa-search"></i>
+				<span>@T("Admin.Common.Search")</span>
+			</button>
         </td>
     </tr>
 </table>
 
-<p></p>
+<div>
+	@(Html.Telerik().Grid<NewsLetterSubscriptionModel>(Model.NewsLetterSubscriptions.Data)
+		.Name("newsLetterSubscriptions-grid")
+		.DataKeys(x =>
+		{
+			x.Add(y => y.Id).RouteKey("Id");
+		})
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Email)
+				.Width(500);
+			columns.Bound(x => x.Active)
+				.Template(item => @Html.SymbolForBool(item.Active))
+				.ClientTemplate(@Html.SymbolForBool("Active"))
+				.Centered()
+				.Width(100);
+			columns.Bound(x => x.StoreName)
+				.Hidden(Model.AvailableStores.Count <= 1)
+				.ReadOnly();
+			columns.Bound(x => x.CreatedOn)
+				.ReadOnly()
+				.Width(150);
+			columns.Command(commands =>
+			{
+				commands.Edit().Localize(T);
+				commands.Delete().Localize(T);
+			}).Width(180);
 
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<NewsLetterSubscriptionModel>(Model.NewsLetterSubscriptions.Data)
-                        .Name("newsLetterSubscriptions-grid")
-                        .DataKeys(x =>
-                        {
-                            x.Add(y => y.Id).RouteKey("Id");
-                        })
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.Email)
-                                .Width(500);
-                            columns.Bound(x => x.Active)
-                                .Template(item => @Html.SymbolForBool(item.Active))
-                                .ClientTemplate(@Html.SymbolForBool("Active"))
-								.Centered()
-                                .Width(100);
-							columns.Bound(x => x.StoreName)
-								.Hidden(Model.AvailableStores.Count <= 1)
-								.ReadOnly();
-                            columns.Bound(x => x.CreatedOn)
-                                .ReadOnly()
-                                .Width(150);
-                            columns.Command(commands =>
-                            {
-                                commands.Edit().Localize(T);
-                                commands.Delete().Localize(T);
-                            }).Width(180);
-
-                        })
-                        .Pageable(settings => settings.Total(Model.NewsLetterSubscriptions.Total).PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-                        .DataBinding(dataBinding => dataBinding.Ajax()
-                            .Select("SubscriptionList", "NewsLetterSubscription")
-                            .Update("SubscriptionUpdate", "NewsLetterSubscription")
-                            .Delete("SubscriptionDelete", "NewsLetterSubscription"))
-                            .ClientEvents(events => events.OnDataBinding("onDataBinding"))
-                            .ClientEvents(x => x.OnError("grid_onError"))
-						.PreserveGridState()
-                        .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+		})
+		.Pageable(settings => settings.Total(Model.NewsLetterSubscriptions.Total).PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax()
+			.Select("SubscriptionList", "NewsLetterSubscription")
+			.Update("SubscriptionUpdate", "NewsLetterSubscription")
+			.Delete("SubscriptionDelete", "NewsLetterSubscription"))
+			.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+			.ClientEvents(x => x.OnError("grid_onError"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+</div>
 
 <script type="text/javascript">
     $(document).ready(function () {

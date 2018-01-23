@@ -12,7 +12,6 @@
     <div class="options">
 		@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-
         @{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
 </div>
@@ -34,41 +33,36 @@
 			</td>
 			<td class="adminData">
 				<button type="button" id="search-templates" class="btn">
-					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+					<i class="fa fa-search"></i>
+					<span>@T("Admin.Common.Search")</span>
 				</button>
 			</td>
 		</tr>
 	</table>
 }
 
-<p></p>
-
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<MessageTemplateModel>()
-				.Name("templates-grid")
-				.Columns(columns =>
-				{
-					columns.Bound(x => x.Name)
-						.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-						.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-					columns.Bound(x => x.Subject);
-					columns.Bound(x => x.IsActive)
-						.Template(item => @Html.SymbolForBool(item.IsActive))
-						.ClientTemplate(@Html.SymbolForBool("IsActive"))
-						.Centered();
-					columns.Bound(x => x.SendManually)
-						.Template(item => @Html.SymbolForBool(item.SendManually))
-						.ClientTemplate(@Html.SymbolForBool("SendManually"))
-						.Centered();
-				})
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "MessageTemplate"))
-				.ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowDataBound("onRowDataBound"))
-				.EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+<div>
+	@(Html.Telerik().Grid<MessageTemplateModel>()
+			.Name("templates-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Name)
+					.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+				columns.Bound(x => x.Subject);
+				columns.Bound(x => x.IsActive)
+					.Template(item => @Html.SymbolForBool(item.IsActive))
+					.ClientTemplate(@Html.SymbolForBool("IsActive"))
+					.Centered();
+				columns.Bound(x => x.SendManually)
+					.Template(item => @Html.SymbolForBool(item.SendManually))
+					.ClientTemplate(@Html.SymbolForBool("SendManually"))
+					.Centered();
+			})
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "MessageTemplate"))
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowDataBound("onRowDataBound"))
+			.EnableCustomBinding(true))
+</div>
 
 <script type="text/javascript">
     $(document).ready(function () {

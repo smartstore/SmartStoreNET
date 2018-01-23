@@ -8,13 +8,13 @@
 	<div class="modal-dialog modal-flex modal-flex-sm" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">@Html.Partial("PreviewHeader", Model)</h5>
+				<div class="modal-title">@Html.Partial("PreviewHeader", Model)</div>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body p-0">
-				<iframe class="modal-flex-fill-area" frameborder="0" src="data:text/html;charset=utf-8,@Uri.EscapeDataString(Model.Email.Body)"></iframe>
+				<iframe class="modal-flex-fill-area" frameborder="0" srcdoc="@Model.Email.Body"></iframe>
 			</div>
 			@*<div class="modal-footer">
 				<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Close")</button>

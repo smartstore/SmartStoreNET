@@ -22,7 +22,7 @@
 	@Html.HiddenFor(model => model.Email.SendManually)
 
 	<div class="clearfix">
-		<table class="adminContent span12">
+		<table class="adminContent">
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabel("Email_To", T("Admin.MessageTemplate.PreviewHeader.To"))
@@ -42,7 +42,7 @@
 
 	<div id="collapse" class="collapse clearfix">
 
-		<table class="adminContent span12">
+		<table class="adminContent">
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabel("Email_ReplyTo", T("Admin.MessageTemplate.PreviewHeader.ReplyTo"))
@@ -73,19 +73,15 @@
 			</tr>*@
 		</table>
 	</div>
-
-	<div class="clearfix">
-		<table class="adminContent span12">
-			<tr>
-				<td class="adminTitle"></td>
-				<td class="adminData">
-					<button type="button" class="btn btn-secondary collapsed toggle-mail-info" data-toggle="collapse" data-target="#collapse">
-						<i class="fa fa-angle-down"></i>
-						<span>@T("Admin.MessageTemplate.Preview.More")</span>
-					</button>
-				</td>
-			</tr>
-		</table>
+	
+	<div class="adminContent">
+		<div class="adminTitle"></div>
+		<div class="adminData">
+			<button type="button" class="btn btn-secondary collapsed toggle-mail-info" data-toggle="collapse" data-target="#collapse">
+				<i class="fa fa-angle-down"></i>
+				<span>@T("Admin.MessageTemplate.Preview.More")</span>
+			</button>
+		</div>
 	</div>
 }
 </div>

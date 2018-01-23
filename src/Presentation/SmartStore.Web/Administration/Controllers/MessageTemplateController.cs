@@ -16,6 +16,7 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 using SmartStore.Templating;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -83,13 +84,10 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		private void PrepareStoresMappingModel(MessageTemplateModel model, MessageTemplate messageTemplate, bool excludeProperties)
 		{
-			if (model == null)
-				throw new ArgumentNullException("model");
+			Guard.NotNull(model, nameof(model));
 
-			model.AvailableStores = _storeService
-				.GetAllStores()
-				.Select(s => s.ToModel())
-				.ToList();
+			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
+
 			if (!excludeProperties)
 			{
 				if (messageTemplate != null)
@@ -184,7 +182,14 @@ namespace SmartStore.Admin.Controllers
                 var emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, languageId, false, false);
                 locale.EmailAccountId = emailAccountId > 0 ? emailAccountId : _emailAccountSettings.DefaultEmailAccountId;
             });
-			
+
+			// Preview data
+			model.PreviewResult = _messageFactory.CreateMessage(new MessageContext
+			{
+				MessageTemplate = messageTemplate,
+				TestMode = true
+			}, false);
+
 			return View(model);
         }
 		
@@ -234,7 +239,15 @@ namespace SmartStore.Admin.Controllers
 			
 			// Store
 			PrepareStoresMappingModel(model, messageTemplate, true);
-            return View(model);
+
+			// Preview data
+			model.PreviewResult = _messageFactory.CreateMessage(new MessageContext
+			{
+				MessageTemplate = messageTemplate,
+				TestMode = true
+			}, false);
+
+			return View(model);
         }
 
 		[HttpPost]
@@ -251,35 +264,6 @@ namespace SmartStore.Admin.Controllers
 
 			NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Deleted"));
 			return RedirectToAction("List");
-		}
-
-		public ActionResult Preview(int id)
-		{
-			// TODO: (mc) Liquid > Display info about preview models
-			var template = _messageTemplateService.GetMessageTemplateById(id);
-			if (template == null)
-			{
-				return RedirectToAction("List");
-			}
-
-			try
-			{
-				var context = new MessageContext
-				{
-					MessageTemplate = template,
-					TestMode = true
-				};
-
-				var result = _messageFactory.CreateMessage(context, false);
-				var messageModel = result.Model;
-
-				return View(result);
-			}
-			catch (Exception ex)
-			{
-				NotifyError(ex);
-				return RedirectToAction("Edit", template.Id);
-			}
 		}
 
 		[HttpPost]

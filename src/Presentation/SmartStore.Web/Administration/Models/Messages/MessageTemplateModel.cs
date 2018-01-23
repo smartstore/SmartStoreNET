@@ -9,20 +9,20 @@ using SmartStore.Collections;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Services.Messages;
 
 namespace SmartStore.Admin.Models.Messages
 {
     [Validator(typeof(MessageTemplateValidator))]
-    public class MessageTemplateModel : EntityModelBase, ILocalizedModel<MessageTemplateLocalizedModel>
+    public class MessageTemplateModel : EntityModelBase, ILocalizedModel<MessageTemplateLocalizedModel>, IStoreSelector
     {
         public MessageTemplateModel()
         {
             Locales = new List<MessageTemplateLocalizedModel>();
             AvailableEmailAccounts = new List<EmailAccountModel>();
-			AvailableStores = new List<StoreModel>();
-        }
+		}
 
-        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
         [ScriptIgnore, JsonIgnore]
         public TreeNode<string> TokensTree { get; set; }
 
@@ -73,15 +73,15 @@ namespace SmartStore.Admin.Models.Messages
 		public int? Attachment3FileId { get; set; }
 
 		//Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
-        public IList<MessageTemplateLocalizedModel> Locales { get; set; }
+		public IList<MessageTemplateLocalizedModel> Locales { get; set; }
         public IList<EmailAccountModel> AvailableEmailAccounts { get; set; }
-    }
+
+		public CreateMessageResult PreviewResult { get; set; }
+	}
 
     public class MessageTemplateLocalizedModel : ILocalizedModelLocal
     {

@@ -23,7 +23,6 @@
 	<table class="adminContent">
 		<tr id="ImportFileUploadContainer">
 			<td class="adminTitle">
-				&nbsp;
 			</td>
 			<td class="adminData">
 
@@ -39,7 +38,7 @@
 						<span>@T("Common.Fileuploader.Cancel")</span>
 					</button>
 
-					<div class="span5 fileupload-progress fade">
+					<div class="fileupload-progress fade">
 						<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
 							<div class="bar" style="width:0%;"></div>
 						</div>
@@ -51,7 +50,6 @@
 		</tr>
 		<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "hide")">
 			<td class="adminTitle">
-				&nbsp;
 			</td>
 			<td id="ImportFileList" class="adminData">
 				@foreach (var fileName in Model.ExistingFileNames)
@@ -60,8 +58,9 @@
 						@Html.IconForFileExtension(Path.GetExtension(fileName), false)
 						<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
 
-						<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
-							<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+						<button type="button" class="btn btn-secondary btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
+							<i class="fa fa-trash-o"></i>
+							<span>@T("Admin.Common.Delete")</span>
 						</button>
 					</p>
 				}
@@ -94,11 +93,16 @@
 				@Html.SmartLabelFor(x => x.FolderName)
 			</td>
 			<td class="adminData">
-				@Model.FolderName.NaIfEmpty()
+				<input class="form-control-plaintext" readonly="readonly" type="text" value="@Model.FolderName.NaIfEmpty()">
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">&nbsp;</td>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.EntityTypeName)
+			</td>
+			<td class="adminData">
+				@Html.TextBoxFor(model => model.EntityTypeName, new { @readonly = "readonly", @class = "form-control-plaintext" })
+			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
@@ -107,14 +111,6 @@
 			<td class="adminData">
 				@Html.EditorFor(x => x.Enabled)
 				@Html.ValidationMessageFor(x => x.Enabled)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.EntityTypeName)
-			</td>
-			<td class="adminData">
-				@Html.DisplayFor(x => x.EntityTypeName)
 			</td>
 		</tr>
 		<tr>
@@ -261,6 +257,7 @@
 			return false;
 		});
 
+		// BEGIN: Mapping
 		// reset column mappings
 		$('#ResetColumnMappings').click(function (e) {
 			e.preventDefault();
@@ -509,10 +506,6 @@
 			try {
 				if (item.id.length > 0) {
 					var html = '';
-
-					if (item.element) {
-						html += '<div class="clear"></div>';
-					}
 
 					html += '<div class="mapping-list-item">';
 

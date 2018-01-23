@@ -16,24 +16,28 @@
 			<div class="options">
 				@if (Model.Id != 0)
                 {
-					<button type="button" id="ProfileImportButton" data-url="@Url.Action("Execute", "Import", new { area = "Admin", id = Model.Id })" class="btn btn-default">
-						<i class="fa fa-gears"></i>&nbsp;@T("Common.Import")
+					<button type="button" id="ProfileImportButton" data-url="@Url.Action("Execute", "Import", new { area = "Admin", id = Model.Id })" class="btn btn-secondary">
+						<i class="fa fa-gears"></i>
+						<span>@T("Common.Import")</span>
 					</button>
                 }
 				@if (Model.LogFileExists)
                 {
-					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">
-						<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn btn-secondary" target="LogFile">
+						<i class="fa fa-file-text-o"></i>
+						<span>@T("Admin.Configuration.ActivityLog")</span>
 					</a>
                 }
 				<button type="submit" name="save" value="save" class="btn btn-primary">
-					<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+					<i class="fa fa-check"></i>
+					<span>@T("Admin.Common.Save")</span>
 				</button>
-				<button type="submit" name="save" value="save-continue" class="btn">
-					@T("Admin.Common.SaveContinue")
+				<button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+					<span>@T("Admin.Common.SaveContinue")</span>
 				</button>
 				<button type="submit" name="import-profile-delete" id="import-profile-delete" value="import-profile-delete" class="btn btn-danger">
-					<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+					<i class="fa fa-trash-o"></i>
+					<span>@T("Admin.Common.Delete")</span>
 				</button>
 			</div>
 		</div>

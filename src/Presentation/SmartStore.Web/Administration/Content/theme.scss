@@ -259,6 +259,112 @@ pre {
 
 
 //
+// Apply grid layout to editor tables (.adminContent)
+// --------------------------------------------------
+
+.adminContent {
+	//max-width: 1400px;
+	//@include make-container();
+	display: block;
+	width: 100%;
+	margin-right: auto;
+	margin-left: auto;
+	padding-left: 0;
+	padding-right: 0;
+	border-collapse: initial;
+
+	> tbody {
+		display: flex;
+		flex-flow: column;
+		border-collapse: initial;
+	}
+
+	> tbody > tr,
+	> tr,
+	.adminRow {
+		display: flex;
+		flex-wrap: wrap;
+		margin-top: 0.4rem;
+		margin-bottom: 0.4rem;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
+
+	div.adminRow {
+		// div type rows do margin collapse, fix it.
+		margin-top: 0.8rem;
+		margin-bottom: 0.8rem;
+	}
+
+	.adminTitle,
+	.adminData {
+		@include make-col-ready();
+		padding-right: 0;
+		padding-left: 0;
+	}
+
+	.adminTitle {
+		margin-bottom: 0;
+	}
+
+	.adminData {
+		> .switch {
+			margin-bottom: 0;
+			padding-top: calc(#{$input-padding-y} - 1px);
+			padding-bottom: calc(#{$input-padding-y} + 1px);
+			line-height: $input-line-height;
+		}
+	}
+
+	> tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
+	> tr > td:only-child:not(.adminData):not(.adminTitle) {
+		flex-grow: 1;
+		max-width: 100%;
+	}
+
+	&.adminContent-boxed {
+		.adminTitle, .adminData {
+			padding-left: $grid-gutter-width / 2;
+			padding-right: $grid-gutter-width / 2;
+		}
+	}
+
+	@include media-breakpoint-up(md) {
+		*:not(.wide) > .adminTitle {
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
+			text-align: right;
+			padding-right: 0;
+		}
+
+		*:not(.wide) > .adminData {
+			flex: 0 0 66.666667%;
+			max-width: 66.666667%;
+			padding-left: 0;
+		}
+	}
+
+	@include media-breakpoint-up(lg) {
+		*:not(.wide) > .adminTitle {
+			flex-basis: 400px;
+			max-width: 40%;
+		}
+
+		*:not(.wide) > .adminData {
+			flex-basis: 600px;
+			max-width: 60%;
+
+			&.wide {
+				flex-grow: 1;
+				flex-basis: 0;
+				max-width: 100%;
+			}
+		}
+	}
+}
+
+
+//
 // Locale Editor
 // --------------------------------------------------
 
@@ -305,14 +411,8 @@ pre {
 		}
 	}
 
-	.adminContent {
-		.adminTitle {
-			padding-left: 1rem;
-		}
-
-		.adminData {
-			padding-right: 1rem;
-		}
+	> .nav-locales > .tab-content > .tab-pane > .adminContent {
+		@extend .adminContent-boxed;
 	}
 }
 
@@ -346,103 +446,6 @@ pre {
 }
 
 
-//
-// Apply grid layout to editor tables (.adminContent)
-// --------------------------------------------------
-
-.adminContent {
-	//max-width: 1400px;
-	//@include make-container();
-	display: block;
-	width: 100%;
-	margin-right: auto;
-	margin-left: auto;
-	padding-left: 0;
-	padding-right: 0;
-	border-collapse: initial;
-
-	> tbody {
-		display: flex;
-		flex-flow: column;
-		border-collapse: initial;
-	}
-
-	> tbody > tr,
-	> tr,
-	.adminRow {
-		display: flex;
-		flex-wrap: wrap;
-		margin-top: 0.4rem;
-		margin-bottom: 0.4rem;
-		margin-left: 0 !important;
-		margin-right: 0 !important;
-		/*@extend .form-group;*/
-	}
-
-	div.adminRow {
-		// div type rows do margin collapse, fix it.
-		margin-top: 0.8rem;
-		margin-bottom: 0.8rem;
-	}
-
-	.adminTitle,
-	.adminData {
-		@include make-col-ready();
-		padding-right: 0;
-		padding-left: 0;
-	}
-
-	.adminTitle {
-		margin-bottom: 0;
-	}
-
-	.adminData {
-		> .switch {
-			margin-bottom: 0;
-			padding-top: calc(#{$input-padding-y} - 1px);
-			padding-bottom: calc(#{$input-padding-y} + 1px);
-			line-height: $input-line-height;
-		}
-	}
-
-	> tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
-	> tr > td:only-child:not(.adminData):not(.adminTitle) {
-		flex-grow: 1;
-		max-width: 100%;
-	}
-
-	@include media-breakpoint-up(md) {
-		.adminTitle {
-			flex: 0 0 33.333333%;
-			max-width: 33.333333%;
-			text-align: right;
-		}
-
-		.adminData {
-			flex: 0 0 66.666667%;
-			max-width: 66.666667%;
-		}
-	}
-
-	@include media-breakpoint-up(lg) {
-		.adminTitle {
-			flex-basis: 400px;
-			max-width: 40%;
-		}
-
-		.adminData {
-			flex-basis: 600px;
-			max-width: 60%;
-
-			&.wide {
-				flex-grow: 1;
-				flex-basis: 0;
-				max-width: 100%;
-			}
-		}
-	}
-}
-
 .ctl-label {
 	position: relative;
 	padding-right: 2.5rem;
@@ -457,6 +460,7 @@ pre {
 		$hintColor: $gray-500;
 		display: block;
 		position: absolute;
+		cursor: default;
 		width: 2.5rem;
 		right: 0;
 		top: 0;

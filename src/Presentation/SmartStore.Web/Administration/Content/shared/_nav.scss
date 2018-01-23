@@ -84,6 +84,10 @@
 // TODO: implement right positioning
 // ==============================================================
 
+.tabs-left {
+	flex-wrap: nowrap;
+}
+
 .tabs-left .nav-tabs-line {
 	border-bottom: none;
 	border-right: 1px solid $nav-tabs-border-color;

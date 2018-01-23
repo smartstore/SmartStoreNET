@@ -116,9 +116,14 @@
 	@Html.CustomHead()
 
 	<script src="~/Scripts/smartstore.globalization.adapter.js"></script>
+
+	@{ Html.RenderZone("head"); }
 </head>
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>   
+	@{ Html.RenderZone("start"); }
 	@RenderBody()
+	@{ Html.RenderZone("end"); }
+
 	@RenderSection("foot", required: false)
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
     @Html.SmartScripts(this.Url, ResourceLocation.Foot)

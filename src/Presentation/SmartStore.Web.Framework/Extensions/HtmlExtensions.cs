@@ -112,12 +112,6 @@ namespace SmartStore.Web.Framework
 
             var modalId = MvcHtmlString.Create(helper.ViewData.ModelMetadata.ModelType.Name.ToLower() + "-delete-confirmation").ToHtmlString();
 
-            string script = "";
-            if (!string.IsNullOrEmpty(buttonsSelector))
-            {
-                script = "<script>$(function() { $('#" + modalId + "').modal({show:false}); $('#" + buttonsSelector + "').click( function(e){e.preventDefault();openModalWindow('" + modalId + "');} );  });</script>\n";
-            }
-
             var deleteConfirmationModel = new DeleteConfirmationModel
             {
                 Id = helper.ViewData.Model.Id,
@@ -128,12 +122,24 @@ namespace SmartStore.Web.Framework
                 EntityType = buttonsSelector.Replace("-delete", "")
             };
 
-            var window = helper.SmartStore().Window().Name(modalId)
-                .Title(EngineContext.Current.Resolve<ILocalizationService>().GetResource("Admin.Common.AreYouSure"))
-                .Content(helper.Partial("Delete", deleteConfirmationModel).ToHtmlString())
-                .ToHtmlString();
+			using (helper.BeginZoneContent("end", key: "delete-confirmation-modal"))
+			{
+				var output = ((System.Web.Mvc.WebViewPage)helper.ViewDataContainer).Output;
 
-            return MvcHtmlString.Create(script + window);
+				if (buttonsSelector.HasValue())
+				{
+					var script = "<script>$(function() { $('#" + modalId + "').modal({show:false}); $('#" + buttonsSelector + "').on('click', function(e){e.preventDefault();openModalWindow('" + modalId + "');} );  });</script>\n";
+					output.Write(script);
+				}
+
+				var window = helper.SmartStore().Window().Name(modalId)
+					.Title(EngineContext.Current.Resolve<ILocalizationService>().GetResource("Admin.Common.AreYouSure"))
+					.Content(helper.Partial("Delete", deleteConfirmationModel).ToHtmlString())
+					.ToHtmlString();
+				output.Write(window);
+			}
+
+            return MvcHtmlString.Empty;
         }
 
 		public static MvcHtmlString SmartLabel(this HtmlHelper helper, string expression, string labelText, string hint = null, object htmlAttributes = null)

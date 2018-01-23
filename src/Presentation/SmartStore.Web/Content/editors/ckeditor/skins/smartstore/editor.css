@@ -591,7 +591,6 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 .cke_toolbox_collapser {
 	width: 12px;
 	height: 11px;
-	float: right;
 	margin: 11px 0 0;
 	font-size: 0;
 	cursor: default;

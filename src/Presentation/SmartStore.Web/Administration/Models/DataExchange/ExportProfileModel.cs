@@ -21,6 +21,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool LogFileExists { get; set; }
 		public bool HasActiveProvider { get; set; }
 		public string[] FileNamePatternDescriptions { get; set; }
+		public string PrimaryStoreCurrencyCode { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Name")]
 		public string Name { get; set; }
@@ -68,7 +69,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public List<SelectListItem> AvailableEmailAccounts { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.CompletedEmailAddresses")]
-		public string CompletedEmailAddresses { get; set; }
+		public string[] CompletedEmailAddresses { get; set; }
 		public MultiSelectList AvailableCompletedEmailAddresses { get; set; }
 		
 		[SmartResourceDisplayName("Admin.DataExchange.Export.CreateZipArchive")]

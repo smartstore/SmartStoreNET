@@ -23,11 +23,11 @@
 		<table class="table admin-table export-profile-list profile-list">
 			<thead>
 				<tr>
-					<th class="ac"></th>
+					<th class="text-center"></th>
 					<th>@T("Admin.DataExchange.Export.Name")</th>
 					<th>@T("Admin.DataExchange.Export.EntityType")</th>
-					<th class="ac">@T("Admin.DataExchange.Export.FileExtension")</th>
-					<th class="ac">@T("Admin.DataExchange.Export.ExportFiles")</th>
+					<th class="text-center">@T("Admin.DataExchange.Export.FileExtension")</th>
+					<th class="text-center">@T("Admin.DataExchange.Export.ExportFiles")</th>
 					<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
 					<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
 					<th>@T("Admin.Common.Actions")</th>
@@ -37,7 +37,7 @@
 				@foreach (var profile in Model.OrderBy(x => x.Name))
                 {
 					<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
-						<td class="ac">
+						<td class="text-center">
 							<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" class="@(profile.Enabled ? "" : "o40")" />
 						</td>
 						<td>
@@ -47,7 +47,7 @@
 						<td>
 							@profile.Provider.EntityTypeName.NaIfEmpty()
 						</td>
-						<td class="ac">
+						<td class="text-center">
 							@if (profile.Provider.FileExtension.HasValue())
 							{
 								@Html.IconForFileExtension(profile.Provider.FileExtension, true)
@@ -57,7 +57,7 @@
 								<span class="muted">@("".NaIfEmpty())</span>
 							}
 						</td>
-						<td id="ExportFileCount@(profile.Id)" class="ac">
+						<td id="ExportFileCount@(profile.Id)" class="text-center">
 							@{ Html.RenderPartial("ProfileFileCount", profile.FileCount); }
 						</td>
 						<td>

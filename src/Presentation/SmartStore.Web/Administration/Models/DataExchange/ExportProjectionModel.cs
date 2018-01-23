@@ -37,14 +37,14 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.AppendDescriptionText")]
 		[AllowHtml]
-		public string AppendDescriptionText { get; set; }
+		public string[] AppendDescriptionText { get; set; }
 		public MultiSelectList AvailableAppendDescriptionTexts { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.RemoveCriticalCharacters")]
 		public bool RemoveCriticalCharacters { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.CriticalCharacters")]
-		public string CriticalCharacters { get; set; }
+		public string[] CriticalCharacters { get; set; }
 		public MultiSelectList AvailableCriticalCharacters { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.PriceType")]

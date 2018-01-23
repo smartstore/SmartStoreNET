@@ -54,8 +54,8 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string SubFolder { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.EmailAddresses")]
-		public string EmailAddresses { get; set; }
-		public string SerializedEmailAddresses { get; set; }
+		public string[] EmailAddresses { get; set; }
+		public MultiSelectList AvailableEmailAddresses { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.EmailSubject")]
 		public string EmailSubject { get; set; }

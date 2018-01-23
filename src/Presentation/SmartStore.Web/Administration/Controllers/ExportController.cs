@@ -121,7 +121,7 @@ namespace SmartStore.Admin.Controllers
 			deployment.HttpTransmissionType = model.HttpTransmissionType;
 			deployment.FileSystemPath = model.FileSystemPath;
 			deployment.SubFolder = model.SubFolder;
-			deployment.EmailAddresses = model.EmailAddresses;
+			deployment.EmailAddresses = string.Join(",", model.EmailAddresses ?? new string[0]);
 			deployment.EmailSubject = model.EmailSubject;
 			deployment.EmailAccountId = model.EmailAccountId;
 			deployment.PassiveMode = model.PassiveMode;
@@ -284,7 +284,7 @@ namespace SmartStore.Admin.Controllers
 				HttpTransmissionType = deployment.HttpTransmissionType,
 				FileSystemPath = deployment.FileSystemPath,
 				SubFolder = deployment.SubFolder,
-				EmailAddresses = deployment.EmailAddresses,
+				EmailAddresses = deployment.EmailAddresses.SplitSafe(","),
 				EmailSubject = deployment.EmailSubject,
 				EmailAccountId = deployment.EmailAccountId,
 				PassiveMode = deployment.PassiveMode,
@@ -300,8 +300,7 @@ namespace SmartStore.Admin.Controllers
 				model.CreateZip = profile.CreateZipArchive;
 				model.AvailableDeploymentTypes = ExportDeploymentType.FileSystem.ToSelectList(false).ToList();
 				model.AvailableHttpTransmissionTypes = ExportHttpTransmissionType.SimplePost.ToSelectList(false).ToList();
-
-				model.SerializedEmailAddresses = string.Join(",", deployment.EmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
+				model.AvailableEmailAddresses = new MultiSelectList(model.EmailAddresses);
 
 				model.AvailableEmailAccounts = allEmailAccounts
 					.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
@@ -380,9 +379,10 @@ namespace SmartStore.Admin.Controllers
 			model.BatchSize = (profile.BatchSize == 0 ? (int?)null : profile.BatchSize);
 			model.PerStore = profile.PerStore;
 			model.EmailAccountId = profile.EmailAccountId;
-			model.CompletedEmailAddresses = profile.CompletedEmailAddresses;
+			model.CompletedEmailAddresses = profile.CompletedEmailAddresses.SplitSafe(",");
 			model.CreateZipArchive = profile.CreateZipArchive;
 			model.Cleanup = profile.Cleanup;
+			model.PrimaryStoreCurrencyCode = Services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
 			model.FileNamePatternExample = profile.ResolveFileNamePattern(store, 1, _dataExchangeSettings.MaxFileNameLength);
 
@@ -402,9 +402,9 @@ namespace SmartStore.Admin.Controllers
 				NumberOfPictures = projection.NumberOfPictures,
 				DescriptionMergingId = projection.DescriptionMergingId,
 				DescriptionToPlainText = projection.DescriptionToPlainText,
-				AppendDescriptionText = projection.AppendDescriptionText,
+				AppendDescriptionText = projection.AppendDescriptionText.SplitSafe(","),
 				RemoveCriticalCharacters = projection.RemoveCriticalCharacters,
-				CriticalCharacters = projection.CriticalCharacters,
+				CriticalCharacters = projection.CriticalCharacters.SplitSafe(","),
 				PriceType = projection.PriceType,
 				ConvertNetToGrossPrices = projection.ConvertNetToGrossPrices,
 				Brand = projection.Brand,
@@ -804,7 +804,7 @@ namespace SmartStore.Admin.Controllers
 			profile.Limit = model.Limit ?? 0;
 			profile.BatchSize = model.BatchSize ?? 0;
 			profile.PerStore = model.PerStore;
-			profile.CompletedEmailAddresses = model.CompletedEmailAddresses;
+			profile.CompletedEmailAddresses = string.Join(",", model.CompletedEmailAddresses ?? new string[0]);
 			profile.EmailAccountId = model.EmailAccountId ?? 0;
 			profile.CreateZipArchive = model.CreateZipArchive;
 			profile.Cleanup = model.Cleanup;
@@ -827,9 +827,9 @@ namespace SmartStore.Admin.Controllers
 					NumberOfPictures = model.Projection.NumberOfPictures,
 					DescriptionMergingId = model.Projection.DescriptionMergingId,
 					DescriptionToPlainText = model.Projection.DescriptionToPlainText,
-					AppendDescriptionText = string.Join(",", model.Projection.AppendDescriptionText),	
+					AppendDescriptionText = string.Join(",", model.Projection.AppendDescriptionText ?? new string[0]),	
 					RemoveCriticalCharacters = model.Projection.RemoveCriticalCharacters,
-					CriticalCharacters = string.Join(",", model.Projection.CriticalCharacters),
+					CriticalCharacters = string.Join(",", model.Projection.CriticalCharacters ?? new string[0]),
 					PriceType = model.Projection.PriceType,
 					ConvertNetToGrossPrices = model.Projection.ConvertNetToGrossPrices,
 					Brand = model.Projection.Brand,

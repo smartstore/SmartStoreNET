@@ -221,7 +221,7 @@
 				@Html.SmartLabelFor(x => x.Filter.HasSpentAtLeastAmount)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(x => x.Filter.HasSpentAtLeastAmount)
+				@Html.EditorFor(x => x.Filter.HasSpentAtLeastAmount, new { postfix = Model.PrimaryStoreCurrencyCode })
 				@Html.ValidationMessageFor(x => x.Filter.HasSpentAtLeastAmount)
 			</td>
 		</tr>

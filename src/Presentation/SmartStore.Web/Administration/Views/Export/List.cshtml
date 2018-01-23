@@ -75,7 +75,7 @@
 				callbackSuccess: function (resp) {
 					dialog.find('.modal-body').html(resp);
 
-					$('select[name="ProviderSystemName"]').select2({
+					$('select[name="ProviderSystemName"]').selectWrapper({
 						minimumResultsForSearch: 16,
 						formatResult: providerSelectItemFormatting,
 						formatSelection: providerSelectItemFormatting
@@ -83,7 +83,7 @@
 
 					toggleProviderDescription();
 
-					$('select[name="CloneProfileId"]').select2({
+					$('select[name="CloneProfileId"]').selectWrapper({
 						allowClear: true,
 						minimumResultsForSearch: 16,
 						formatResult: profileSelectItemFormatting,

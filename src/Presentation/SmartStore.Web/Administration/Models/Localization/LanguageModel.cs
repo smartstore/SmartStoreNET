@@ -9,7 +9,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Localization
 {
     [Validator(typeof(LanguageValidator))]
-    public class LanguageModel : EntityModelBase
+    public class LanguageModel : EntityModelBase, IStoreSelector
     {
         public LanguageModel()
         {
@@ -46,10 +46,8 @@ namespace SmartStore.Admin.Models.Localization
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.AvailableLanguageSetId")]

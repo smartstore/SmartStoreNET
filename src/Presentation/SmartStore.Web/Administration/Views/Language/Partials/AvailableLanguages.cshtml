@@ -11,10 +11,10 @@
 		<thead>
 			<tr>
 				<th>@T("Admin.Configuration.Languages.Fields.Name")</th>
-				<th class="ac">@T("Common.Published")</th>
-				<th class="ac">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
-                <th class="ac">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
-                <th class="ac">@T("Common.Translated")</th>
+				<th class="text-center">@T("Common.Published")</th>
+				<th class="text-center">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
+                <th class="text-center">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
+                <th class="text-center">@T("Common.Translated")</th>
                 <th>@T("Admin.Common.Updated")</th>
 				<th>@T("Admin.Common.Actions")</th>
 			</tr>
@@ -24,13 +24,13 @@
 				.OrderByDescending(x => x.Published)
 				.ThenBy(x => x.IsInstalled)
 				.ThenBy(x => x.DisplayOrder))
-            {
+				{
                 <tr class="@(language.Published ? "" : "disabled")" data-id="@language.Id">
                     <td>
                         <div>
                             @if (language.FlagImageFileName.HasValue())
                             {
-                                <img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon" style="margin: 0 4px 2px 0; vertical-align: middle;" />
+                                <img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon mr-1 mb-1" />
                             }
                             @language.Name
                         </div>
@@ -39,16 +39,16 @@
                             <div class="muted">@T("Admin.Configuration.Languages.OfType", language.Type)</div>
                         }
                     </td>
-					<td class="ac">
+					<td class="text-center">
 						@Html.SymbolForBool(language.Published)
 					</td>
-                    <td class="ac">
+                    <td class="text-center">
                         @language.LanguageCulture
                     </td>
-                    <td class="ac">
+                    <td class="text-center">
                         @language.UniqueSeoCode
                     </td>
-                    <td class="ac">
+                    <td class="text-center">
                         @if (Model.ResourceCount == 0)
                         {
                             <div class="muted">0 %</div>
@@ -71,11 +71,12 @@
                         {
                             <a href="@Url.Action("Download", new { setId = language.Id })" 
 							   @Html.Attr("disabled", "disabled", language.IsInstalled)
-                               class="btn btn-block btn-primary download-language@(language.IsDownloadRunning ? " hide" : "")"
+                               class="btn btn-block btn-primary download-language@(language.IsDownloadRunning ? " d-none" : "")"
                                onclick="return confirm('@T("Admin.Common.AskToProceed")');">
-                                <i class="fa fa-download"></i>&nbsp;&nbsp;@T("Common.Download")
+                                <i class="fa fa-download"></i>
+								<span>@T("Common.Download")</span>
                             </a>
-                            <div class="task-progress text-success@(language.IsDownloadRunning ? "" : " hide")" 
+                            <div class="task-progress text-success@(language.IsDownloadRunning ? "" : " d-none")" 
                                 data-task-id="@language.Id" data-running="@(language.IsDownloadRunning ? "true" : "false")"></div>
                         }
                     </td>

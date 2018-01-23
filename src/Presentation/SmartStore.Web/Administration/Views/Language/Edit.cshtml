@@ -11,20 +11,24 @@
             @T("Admin.Configuration.Languages.EditLanguageDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Configuration.Languages.BackToList") + ")", "List")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary">
-                <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+                <i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
             </button>
-            <button type="submit" name="save" value="save-continue" class="btn">
-                @T("Admin.Common.SaveContinue")
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+                <span>@T("Admin.Common.SaveContinue")</span>
             </button>
-            <a href="@Url.Action("ExportXml", new { id = Model.Id })" class="btn" onclick="return confirm('@T("Admin.Common.AskToProceed")');">
-                <i class="fa fa-upload"></i>&nbsp;@T("Admin.Configuration.Languages.Export")
+            <a href="@Url.Action("ExportXml", new { id = Model.Id })" class="btn btn-secondary" onclick="return confirm('@T("Admin.Common.AskToProceed")');">
+                <i class="fa fa-upload"></i>
+				<span>@T("Admin.Configuration.Languages.Export")</span>
             </a>
-            <a href="#importxml-window" data-toggle="modal" class="btn">
-                <i class="fa fa-download"></i>&nbsp;@T("Admin.Configuration.Languages.Import")
+            <a href="#importxml-window" data-toggle="modal" class="btn btn-secondary">
+                <i class="fa fa-download"></i>
+				<span>@T("Admin.Configuration.Languages.Import")</span>
             </a>
             <button type="submit" id="language-delete" class="btn btn-danger">
-                <i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+                <i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
             </button>
         </div>
     </div>
@@ -40,41 +44,42 @@
     .Content(@<text>
     @using (Html.BeginForm("ImportXml", "Language", new { id = Model.Id }, FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
-        @Html.SmartStore().TabStrip().Name("language-import-tab").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
+        @Html.SmartStore().TabStrip().Name("language-import-tab").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
         {
             x.Add().Text(T("Admin.Configuration.Languages.XmlFile").Text).Content(TabImportXmlFile()).Selected(true);
             x.Add().Text(T("Common.Download").Text).Content(TabImportDownload());
             EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "language-import-tab", this.Html, this.Model));
         })
-
-        <div class="mt-3">&nbsp;</div>
-
-        <div>
-            <label class="radio">
-                @Html.RadioButton("mode", "3", true, new { id = "importxmlmode_3" })
-                @T("Admin.Configuration.Languages.Import.InsertUpdate")
-            </label>
-            <label class="radio">
-                @Html.RadioButton("mode", "1", false, new { id = "importxmlmode_1" })
-                @T("Admin.Configuration.Languages.Import.Insert")
-            </label>
-            <label class="radio">
-                @Html.RadioButton("mode", "2", false, new { id = "importxmlmode_2" })
-                @T("Admin.Configuration.Languages.Import.Update")
-            </label>
-            <hr />
-            <label class="checkbox">
-                @Html.CheckBox("updatetouched", false, new { id = "importxmlupdatetouched" })
-                <span class="caption">@T("Admin.Configuration.Languages.Import.UpdateTouched")</span>
-            </label>
+		
+        <div class="mt-3">
+			<div class="form-check">
+				@Html.RadioButton("mode", "3", true, new { id = "importxmlmode_3", @class = "form-check-input" })
+				<label class="form-check-label" for="importxmlmode_3">@T("Admin.Configuration.Languages.Import.InsertUpdate")</label>
+			</div>
+			<div class="form-check">
+				@Html.RadioButton("mode", "1", false, new { id = "importxmlmode_1", @class = "form-check-input" })
+				<label class="form-check-label" for="importxmlmode_1">@T("Admin.Configuration.Languages.Import.Insert")</label>
+			</div>
+			<div class="form-check">
+				@Html.RadioButton("mode", "2", false, new { id = "importxmlmode_2", @class = "form-check-input" })
+				<label class="form-check-label" for="importxmlmode_2">@T("Admin.Configuration.Languages.Import.Update")</label>
+			</div>
+			<hr />
+			<div class="form-check">
+				@Html.CheckBox("updatetouched", false, new { id = "importxmlupdatetouched", @class = "form-check-input" })
+				<label class="form-check-label" for="importxmlupdatetouched">@T("Admin.Configuration.Languages.Import.UpdateTouched")</label>
+			</div>
         </div>
     }
     </text>)
     .FooterContent(@<text>
-        <button id="importxmlsubmit" type="button" class="btn btn-primary">
-            <i class="fa fa-download"></i>&nbsp;@T("Admin.Configuration.Languages.Import")
-        </button>
-        <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
+        <a href="#" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Common.Cancel")</span>
+		</a>
+		<button id="importxmlsubmit" type="button" class="btn btn-primary">
+			<i class="fa fa-download"></i>
+			<span>@T("Admin.Configuration.Languages.Import")</span>
+		</button>
     </text>)
     .Size(WindowSize.Large)
     .Render();

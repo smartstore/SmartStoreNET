@@ -3,7 +3,7 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("language-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
+@Html.SmartStore().TabStrip().Name("language-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
@@ -90,89 +90,45 @@
 
 @helper TabStores()
 {
-    <script type="text/javascript">
-    	$(document).ready(function () {
-
-    		$("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
-
-    	    toggleStoreMapping();
-
-    		// init flags select
-    	    $('#LanguageEditTable').find('select[name=FlagImageFileName]').select2({
-    	    	allowClear: true,
-    	    	minimumResultsForSearch: 16,
-    	    	formatResult: flagSelectItemFormatting,
-    	    	formatSelection: flagSelectItemFormatting
-    	    });
-
-    	    function flagSelectItemFormatting(item) {
-    	    	var flagUrl = '@Url.Content("~/Content/Images/flags/")';
-
-    	    	try {
-    	    		if (item.text.length > 0) {
-    	    			var option = $(item.element),
-    	    				html = '<div class="select2-image-item">';
-
-    	    			// item.element is undefined for selection formatting
-    	    			if (option.length === 0) {
-    	    				option = $('select[name="FlagImageFileName"]').find('option[value="' + item.id + '"]');
-    	    			}
-
-    	    			if (option.length !== 0) {
-    	    				html += '<div class="icon-container"><img alt="" src="' + flagUrl + option.val() + '" /></div>';
-    	    			}
-
-    	    			html += '<span>' + item.text + '</span></div>';
-
-    	    			return html;
-    	    		}
-    	    	}
-    	    	catch (e) { }
-
-    	    	return item.text;
-    	    }
-        });
-
-
-        function toggleStoreMapping() {
-        	if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
-        		$('#pnl-available-stores').show();
-        	}
-        	else {
-        		$('#pnl-available-stores').hide();
-        	}
-        }
-    </script>
-
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LimitedToStores)
-                @Html.ValidationMessageFor(model => model.LimitedToStores)
-            </td>
-        </tr>
-        <tr id="pnl-available-stores">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores)
-            </td>
-            <td class="adminData">
-                @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
-                {
-                    foreach (var store in Model.AvailableStores)
-                    {
-					<label class="checkbox">
-						<input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
-						<span>@store.Name</span>
-					</label>						
-                    }
-                }
-                else
-                {
-                    <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }</td>
-        </tr>
-    </table>
+	@Html.Partial("StoreSelector", Model)
 }
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    	// init flags select
+    	$('#LanguageEditTable').find('select[name=FlagImageFileName]').select2({
+    	    allowClear: true,
+    	    minimumResultsForSearch: 16,
+    	    formatResult: flagSelectItemFormatting,
+    	    formatSelection: flagSelectItemFormatting
+    	});
+
+    	function flagSelectItemFormatting(item) {
+    	    var flagUrl = '@Url.Content("~/Content/Images/flags/")';
+
+    	    try {
+    	    	if (item.text.length > 0) {
+    	    		var option = $(item.element),
+    	    			html = '<div class="select2-image-item">';
+
+    	    		// item.element is undefined for selection formatting
+    	    		if (option.length === 0) {
+    	    			option = $('select[name="FlagImageFileName"]').find('option[value="' + item.id + '"]');
+    	    		}
+
+    	    		if (option.length !== 0) {
+    	    			html += '<div class="icon-container"><img alt="" src="' + flagUrl + option.val() + '" /></div>';
+    	    		}
+
+    	    		html += '<span>' + item.text + '</span></div>';
+
+    	    		return html;
+    	    	}
+    	    }
+    	    catch (e) { }
+
+    	    return item.text;
+    	}
+    });
+</script>

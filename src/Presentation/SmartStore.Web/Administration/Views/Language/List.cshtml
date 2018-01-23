@@ -9,7 +9,10 @@
         @T("Admin.Configuration.Languages")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
     </div>
 </div>
 
@@ -22,11 +25,11 @@
 		<thead>
 			<tr>
 				<th>@T("Admin.Configuration.Languages.Fields.Name")</th>
-				<th class="ac">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
-                <th class="ac">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
-                <th class="ac">@T("Admin.Configuration.Languages.Fields.Published")</th>
-                <th class="ac">@T("Admin.Common.Store.LimitedTo")</th>
-				<th class="ac">@T("Admin.Configuration.Languages.Fields.DisplayOrder")</th>
+				<th class="text-center">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
+                <th class="text-center">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
+                <th class="text-center">@T("Admin.Configuration.Languages.Fields.Published")</th>
+                <th class="text-center">@T("Admin.Common.Store.LimitedTo")</th>
+				<th class="text-center">@T("Admin.Configuration.Languages.Fields.DisplayOrder")</th>
 				<th>@T("Admin.Common.Actions")</th>
 			</tr>
 		</thead>
@@ -37,31 +40,33 @@
                     <td>
                         @if (language.FlagImageFileName.HasValue())
                         {
-                            <img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon" style="margin: 0 4px 2px 0; vertical-align: middle;" />
+                            <img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon mr-1 mb-1" />
                         }
                         <a href="@Url.Action("Edit", new { id = language.Id })">@language.Name</a>
                     </td>
-                    <td class="ac">
+                    <td class="text-center">
                         @language.LanguageCulture
                     </td>
-                    <td class="ac">
+                    <td class="text-center">
                         @language.UniqueSeoCode
                     </td>
-                    <td class="ac">
+                    <td class="text-center">
                         @Html.SymbolForBool(language.Published)
                     </td>
-                    <td class="ac">
+                    <td class="text-center">
                         @Html.SymbolForBool(language.LimitedToStores)
                     </td>
-                    <td class="ac">
+                    <td class="text-center">
                         @language.DisplayOrder
                     </td>
                     <td style="width: 200px;">
-                        <a href="@Url.Action("Edit", new { id = language.Id })" class="btn btn-block btn-success">
-                            <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;@T("Admin.Common.Edit")
+                        <a href="@Url.Action("Edit", new { id = language.Id })" class="btn btn-block btn-warning">
+                            <i class="fa fa-pencil-square-o"></i>
+							<span>@T("Admin.Common.Edit")</span>
                         </a>
-                        <a href="@Url.Action("Resources", new { languageId = language.Id })" class="btn btn-block">
-                            <i class="fa fa-list-alt"></i>&nbsp;&nbsp;@T("Admin.Configuration.Languages.Resources.View")
+                        <a href="@Url.Action("Resources", new { languageId = language.Id })" class="btn btn-secondary btn-block">
+                            <i class="fa fa-list-alt"></i>
+							<span>@T("Admin.Configuration.Languages.Resources.View")</span>
                         </a>
                     </td>
                 </tr>

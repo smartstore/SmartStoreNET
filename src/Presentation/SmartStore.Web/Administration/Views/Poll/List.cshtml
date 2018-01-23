@@ -13,45 +13,45 @@
         @T("Admin.ContentManagement.Polls")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<PollModel>()
-                    .Name("polls-grid")
-                    .BindTo(Model.Data)
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name)
-                            .Width(400)
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-                        columns.Bound(x => x.LanguageName)
-                             .Width(150);
-                        columns.Bound(x => x.DisplayOrder)
-                            .Width(100)
-                            .Centered();
-                        columns.Bound(x => x.Published)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.Published))
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
-                        columns.Bound(x => x.ShowOnHomePage)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.ShowOnHomePage))
-                            .ClientTemplate(@Html.SymbolForBool("ShowOnHomePage"))
-                            .Centered();
-						columns.Bound(x => x.StartDate)
-							.Width(180);
-                        columns.Bound(x => x.EndDate)
-							.Width(180);
-                    })
-                    .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Poll"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+
+<div>
+	@(Html.Telerik().Grid<PollModel>()
+		.Name("polls-grid")
+		.BindTo(Model.Data)
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Name)
+				.Width(400)
+				.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+			columns.Bound(x => x.LanguageName)
+					.Width(150);
+			columns.Bound(x => x.DisplayOrder)
+				.Width(100)
+				.Centered();
+			columns.Bound(x => x.Published)
+				.Width(100)
+				.Template(item => @Html.SymbolForBool(item.Published))
+				.ClientTemplate(@Html.SymbolForBool("Published"))
+				.Centered();
+			columns.Bound(x => x.ShowOnHomePage)
+				.Width(100)
+				.Template(item => @Html.SymbolForBool(item.ShowOnHomePage))
+				.ClientTemplate(@Html.SymbolForBool("ShowOnHomePage"))
+				.Centered();
+			columns.Bound(x => x.StartDate)
+				.Width(180);
+			columns.Bound(x => x.EndDate)
+				.Width(180);
+		})
+		.Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Poll"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+</div>

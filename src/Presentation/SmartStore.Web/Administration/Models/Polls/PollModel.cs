@@ -11,7 +11,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Polls
 {
     [Validator(typeof(PollValidator))]
-    public class PollModel : EntityModelBase
+    public class PollModel : EntityModelBase, IStoreSelector
     {
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.Language")]
         public int LanguageId { get; set; }
@@ -46,12 +46,9 @@ namespace SmartStore.Admin.Models.Polls
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.EndDate")]
         public DateTime? EndDate { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		//Store mapping
 		public bool LimitedToStores { get; set; }
-
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
-
-    }
+	}
 }

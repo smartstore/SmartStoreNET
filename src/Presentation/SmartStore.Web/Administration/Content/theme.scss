@@ -395,10 +395,7 @@ pre {
 			> .adminData {
 				flex: 0 0 66.666667%;
 				max-width: 66.666667%;
-
-				&:not(.wide) {
-					padding-left: 0 !important;
-				}
+				padding-left: 0;
 			}
 		}
 

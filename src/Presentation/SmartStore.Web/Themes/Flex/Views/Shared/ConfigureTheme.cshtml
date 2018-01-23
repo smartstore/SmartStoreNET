@@ -253,9 +253,9 @@
 			@Html.ThemeVarLabel(ThemeManifest.Variables[varName], helpText)
 		</div>
 		<div class="adminData">
-			@Html.ThemeVarEditor(ThemeManifest.Variables[varName], Model[varName])
+			@Html.ThemeVarEditor(ThemeManifest.Variables[varName], Model[varName])	
 		</div>
-		<div class="d-flex align-items-center">
+		<div class="d-none d-lg-flex align-items-center">
 			@Html.ThemeVarChainInfo(ThemeManifest.Variables[varName])
 		</div>
 	</div>

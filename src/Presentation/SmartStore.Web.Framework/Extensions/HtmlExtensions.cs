@@ -147,7 +147,7 @@ namespace SmartStore.Web.Framework
 			var result = new StringBuilder();
 
 			var labelAttrs = new RouteValueDictionary(htmlAttributes);
-			labelAttrs.AppendCssClass("col-form-label");
+			//labelAttrs.AppendCssClass("col-form-label");
 
 			var label = helper.Label(expression, labelText, labelAttrs);
 
@@ -227,7 +227,7 @@ namespace SmartStore.Web.Framework
 			}
 
 			var labelAttrs = new RouteValueDictionary(htmlAttributes);
-			labelAttrs.AppendCssClass("col-form-label");
+			//labelAttrs.AppendCssClass("col-form-label");
 
 			var label = helper.LabelFor(expression, labelText, labelAttrs);
 

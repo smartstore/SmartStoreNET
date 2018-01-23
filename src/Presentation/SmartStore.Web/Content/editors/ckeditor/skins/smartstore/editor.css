@@ -595,6 +595,7 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 	font-size: 0;
 	cursor: default;
 	text-align: center;
+	float: right;
 }
 
 	.cke_toolbox_collapser:hover {

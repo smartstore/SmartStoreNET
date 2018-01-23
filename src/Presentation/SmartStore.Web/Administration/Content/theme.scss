@@ -257,6 +257,48 @@ pre {
 	font-weight: $font-weight-medium;
 }
 
+.ctl-label {
+	position: relative;
+	padding-right: 2.5rem;
+	display: inline-block;
+
+	> label {
+		position: relative;
+		padding-right: 0;
+		margin-bottom: 0.4rem;
+		font-weight: $font-weight-medium;
+	}
+
+	> .hint {
+		$hintColor: $gray-500;
+		display: block;
+		position: absolute;
+		cursor: default;
+		width: 2.5rem;
+		right: 0;
+		top: 0;
+		text-decoration: none;
+		outline: 0;
+		color: $hintColor;
+		transition: all .1s ease-in-out;
+		opacity: 0;
+		text-align: center;
+		/*@extend .col-form-label;*/
+
+		&:hover {
+			color: $gray-600;
+		}
+
+		.fa {
+			font-size: 1.25rem;
+		}
+	}
+
+	&:hover > .hint {
+		opacity: 1;
+	}
+}
+
 
 //
 // Apply grid layout to editor tables (.adminContent)
@@ -329,35 +371,52 @@ pre {
 		}
 	}
 
-	@include media-breakpoint-up(md) {
-		*:not(.wide) > .adminTitle {
-			flex: 0 0 33.333333%;
-			max-width: 33.333333%;
-			text-align: right;
-			padding-right: 0;
+	&:not(.adminContent-vertical) > tbody > tr:not(.wide),
+	&:not(.adminContent-vertical) > tr:not(.wide),
+	&:not(.adminContent-vertical) > .adminRow:not(.wide) {
+		@include media-breakpoint-up(md) {
+			> .adminTitle {
+				flex: 0 0 33.333333%;
+				max-width: 33.333333%;
+				text-align: right;
+				padding-right: 0 !important;
+
+				.ctl-label > label,
+				.ctl-label > .hint {
+					// actually is '.col-form-label', @extend is not possible here.
+					font-size: inherit;
+					line-height: $input-line-height;
+					padding-top: calc(#{$input-padding-y} + #{$input-border-width});
+					padding-bottom: calc(#{$input-padding-y} + #{$input-border-width});
+					margin-bottom: 0;
+				}
+			}
+
+			> .adminData {
+				flex: 0 0 66.666667%;
+				max-width: 66.666667%;
+
+				&:not(.wide) {
+					padding-left: 0 !important;
+				}
+			}
 		}
 
-		*:not(.wide) > .adminData {
-			flex: 0 0 66.666667%;
-			max-width: 66.666667%;
-			padding-left: 0;
-		}
-	}
+		@include media-breakpoint-up(lg) {
+			> .adminTitle {
+				flex-basis: 400px;
+				max-width: 40%;
+			}
 
-	@include media-breakpoint-up(lg) {
-		*:not(.wide) > .adminTitle {
-			flex-basis: 400px;
-			max-width: 40%;
-		}
+			> .adminData {
+				flex-basis: 600px;
+				max-width: 60%;
 
-		*:not(.wide) > .adminData {
-			flex-basis: 600px;
-			max-width: 60%;
-
-			&.wide {
-				flex-grow: 1;
-				flex-basis: 0;
-				max-width: 100%;
+				&.wide {
+					flex-grow: 1;
+					flex-basis: 0;
+					max-width: 100%;
+				}
 			}
 		}
 	}
@@ -443,47 +502,6 @@ pre {
 .zoomable-thumb-clone {
 	border: 1px solid #bbb;
 	background-color: #fff;
-}
-
-
-.ctl-label {
-	position: relative;
-	padding-right: 2.5rem;
-	display: inline-block;
-
-	> label {
-		padding-right: 0;
-		position: relative;
-	}
-
-	> .hint {
-		$hintColor: $gray-500;
-		display: block;
-		position: absolute;
-		cursor: default;
-		width: 2.5rem;
-		right: 0;
-		top: 0;
-		text-decoration: none;
-		outline: 0;
-		color: $hintColor;
-		transition: all .1s ease-in-out;
-		opacity: 0;
-		text-align: center;
-		@extend .col-form-label;
-
-		&:hover {
-			color: $gray-600;
-		}
-
-		.fa {
-			font-size: 1.25rem;
-		}
-	}
-
-	&:hover > .hint {
-		opacity: 1;
-	}
 }
 
 

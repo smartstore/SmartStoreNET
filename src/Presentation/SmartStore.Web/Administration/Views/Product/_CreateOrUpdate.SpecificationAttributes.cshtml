@@ -177,7 +177,13 @@
                                     fn({ id: link.data("value"), text: link.text() });
                                 }
                             }
-                        },
+						},
+						display: function (value, sourceData) {
+							// ABS4: display new value, otherwise always 'empty' is displayed.
+							if (sourceData && sourceData.success) {
+								$(this).html(sourceData.name);
+							}
+						},
                         success: function (response, newValue)
                         {                       	
                         	if (response.success) {

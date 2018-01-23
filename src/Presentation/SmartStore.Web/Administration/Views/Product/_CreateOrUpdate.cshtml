@@ -1,12 +1,9 @@
-﻿@model ProductModel
-
-@using SmartStore.Core.Domain.Catalog;
+﻿@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Framework.UI;
-
+@model ProductModel
 @{
-	// TODO: BS4
-	//Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
-	//Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+	Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
+	Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
 }
 
 @Html.ValidationSummary(false)

@@ -103,8 +103,10 @@
 
 					@if (Model.DisplayCaptcha)
 					{
-						<div class="captcha-box">
-							@Html.Raw(Html.GenerateCaptcha())
+						<div class="form-group row">
+							<div class="captcha-box col-md-9 offset-md-3">
+								@Html.Raw(Html.GenerateCaptcha())
+							</div>
 						</div>
 					}
 				</fieldset>

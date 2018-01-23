@@ -4,7 +4,7 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("manufacturer-edit").Items(x =>
+@Html.SmartStore().TabStrip().Name("manufacturer-edit").Style(TabsStyle.Material).Items(x =>
 {
     x.Add().Text(T("Admin.Catalog.Manufacturers.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
@@ -25,7 +25,7 @@
 					@Html.SmartLabelFor(model => model.Id)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.Id)
+					@Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
 					@Html.ValidationMessageFor(model => model.Id)
 				</td>
 			</tr>
@@ -50,7 +50,7 @@
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.Locales[item].Description)
                 </td>
-                <td class="adminData">
+                <td class="adminData wide">
                     @Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
                     @Html.ValidationMessageFor(model => model.Locales[item].Description)
                 </td>
@@ -71,7 +71,7 @@
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.Description)
                 </td>
-                <td class="adminData">
+                <td class="adminData wide">
                     @Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
                     @Html.ValidationMessageFor(model => model.Description)
                 </td>
@@ -150,7 +150,7 @@
 					@Html.SmartLabelFor(model => model.CreatedOn)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.CreatedOn)
+					@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
 				</td>
 			</tr>
 		}
@@ -161,7 +161,7 @@
 					@Html.SmartLabelFor(model => model.UpdatedOn)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.UpdatedOn)
+					@Html.TextBoxFor(model => model.UpdatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
 				</td>
 			</tr>
 		}
@@ -261,67 +261,64 @@
 {
     if (Model.Id > 0)
     {
-        <table class="adminContent">
-            <tr>
-                <td>
-					@(Html.Telerik().Grid<ManufacturerModel.ManufacturerProductModel>()
-						.Name("products-grid")
-						.DataKeys(keys =>
-						{
-							keys.Add(x => x.Id);
-						})
-						.DataBinding(dataBinding =>
-						{
-							dataBinding.Ajax()
-								.Select("ProductList", "Manufacturer", new { manufacturerId = Model.Id })
-								.Update("ProductUpdate", "Manufacturer")
-								.Delete("ProductDelete", "Manufacturer");
-						})
-						.Columns(columns =>
-						{
-							columns.Bound(x => x.ProductName)
-								.ReadOnly()
-								.Width(520)
-								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-							columns.Bound(x => x.Sku)
-								.ReadOnly();
-							columns.Bound(x => x.Published)
-								.ReadOnly()
-								.ClientTemplate(@Html.SymbolForBool("Published"))
-								.Centered();
-							columns.Bound(x => x.IsFeaturedProduct)
-								.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
-								.Centered();
-							columns.Bound(x => x.DisplayOrder1)
-								.Centered();
-							columns.Command(commands =>
-							{
-								commands.Edit().Localize(T);
-								commands.Delete().Localize(T);
-							})
-							.Width(220);
-						})
-						.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-						.PreserveGridState()
-						.EnableCustomBinding(true))
-                </td>
-            </tr>
-            <tr>
-                <td>
-					@(Html.SmartStore().EntityPicker()
-						.IconCssClass("fa fa-plus")
-						.HtmlAttribute("class", "btn btn-warning")
-						.DialogTitle(T("Admin.Catalog.Manufacturers.Products.AddNew"))
-						.Caption(T("Admin.Catalog.Manufacturers.Products.AddNew"))
-						.OnSelectionCompleted("PickProducts_Completed"))
-                </td>
-            </tr>
-        </table>
+		<div>
+			@(Html.Telerik().Grid<ManufacturerModel.ManufacturerProductModel>()
+				.Name("products-grid")
+				.DataKeys(keys =>
+				{
+					keys.Add(x => x.Id);
+				})
+				.DataBinding(dataBinding =>
+				{
+					dataBinding.Ajax()
+						.Select("ProductList", "Manufacturer", new { manufacturerId = Model.Id })
+						.Update("ProductUpdate", "Manufacturer")
+						.Delete("ProductDelete", "Manufacturer");
+				})
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.ProductName)
+						.ReadOnly()
+						.Width(520)
+						.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+					columns.Bound(x => x.Sku)
+						.ReadOnly();
+					columns.Bound(x => x.Published)
+						.ReadOnly()
+						.ClientTemplate(@Html.SymbolForBool("Published"))
+						.Centered();
+					columns.Bound(x => x.IsFeaturedProduct)
+						.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
+						.Centered();
+					columns.Bound(x => x.DisplayOrder1)
+						.Centered();
+					columns.Command(commands =>
+					{
+						commands.Edit().Localize(T);
+						commands.Delete().Localize(T);
+					})
+					.Width(220);
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.PreserveGridState()
+				.ToolBar(commands => commands.Template(ManufacturerGridCommands))
+				.EnableCustomBinding(true))
+		</div>
     }
     else
     {
-            @T("Admin.Catalog.Manufacturers.Products.SaveBeforeEdit")
+		@T("Admin.Catalog.Manufacturers.Products.SaveBeforeEdit")
     }
+}
+
+@helper ManufacturerGridCommands(Grid<ManufacturerModel.ManufacturerProductModel> grid)
+{
+	@(Html.SmartStore().EntityPicker()
+		.IconCssClass("fa fa-plus")
+		.HtmlAttribute("class", "btn btn-warning")
+		.DialogTitle(T("Admin.Catalog.Manufacturers.Products.AddNew"))
+		.Caption(T("Admin.Catalog.Manufacturers.Products.AddNew"))
+		.OnSelectionCompleted("PickProducts_Completed"))
 }
 
 @helper TabDiscounts()
@@ -330,10 +327,11 @@
 	{
 		foreach (var discount in Model.AvailableDiscounts)
 		{
-			<label class="checkbox">
-				<input type="checkbox" name="SelectedDiscountIds" value="@discount.Id"
-					   @if (Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) { <text> checked="checked" </text>  } />@discount.Name
-				</label>
+			<div class="form-check">
+				<input type="checkbox" name="SelectedDiscountIds" id="discount-@discount.Id" value="@discount.Id"
+					   @Html.Attr("checked", "checked", Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) />
+				<label class="form-check-label" for="discount-@discount.Id">@discount.Name</label>
+			</div>
 		}
 	}
 	else
@@ -346,54 +344,7 @@
 
 @helper TabStores()
 {
-    <script>
-    	$(document).ready(function () {
-    		$("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
-        	toggleStoreMapping();
-        });
-
-        function toggleStoreMapping() {
-        	if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
-        		$('#pnl-available-stores').show();
-        	}
-        	else {
-        		$('#pnl-available-stores').hide();
-        	}
-        }
-    </script>
-
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LimitedToStores)
-                @Html.ValidationMessageFor(model => model.LimitedToStores)
-            </td>
-        </tr>
-        <tr id="pnl-available-stores">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores)
-            </td>
-            <td class="adminData">
-                @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
-                {
-                    foreach (var store in Model.AvailableStores)
-                    {
-					    <label class="checkbox">
-						    <input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
-						    <span>@store.Name</span>
-					    </label>
-                    }
-                }
-                else
-                {
-                    <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }
-            </td>
-        </tr>
-    </table>
+	@Html.Partial("StoreSelector", Model)
 }
 
 <script type="text/javascript">

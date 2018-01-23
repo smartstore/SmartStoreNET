@@ -160,10 +160,7 @@ namespace SmartStore.Admin.Controllers
 
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-			model.AvailableStores = _storeService
-				.GetAllStores()
-				.Select(s => s.ToModel())
-				.ToList();
+			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 
 			if (!excludeProperties)
 			{

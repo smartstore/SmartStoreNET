@@ -4,7 +4,7 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("productattribute-edit").Items(x =>
+@Html.SmartStore().TabStrip().Name("productattribute-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Common.General").Text).Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Catalog.Attributes.OptionsSets").Text).Content(TabOptionsSets());
@@ -22,7 +22,7 @@
 					@Html.SmartLabelFor(model => model.Id)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.Id)
+					@Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
 					@Html.ValidationMessageFor(model => model.Id)
 				</td>
 			</tr>
@@ -56,7 +56,7 @@
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.Locales[item].Description)
 				</td>
-				<td class="adminData">
+				<td class="adminData wide">
 					@Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
 					@Html.ValidationMessageFor(model => model.Locales[item].Description)
 				</td>
@@ -86,7 +86,7 @@
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.Description)
 				</td>
-				<td class="adminData">
+				<td class="adminData wide">
 					@Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
 					@Html.ValidationMessageFor(model => model.Description)
 				</td>
@@ -109,11 +109,11 @@
 				@Html.SmartLabelFor(model => model.AllowFiltering)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.AllowFiltering)
+				@Html.CheckBoxFor(model => model.AllowFiltering, new { data_toggler_for = "#pnlAllowFiltering" })
 				@Html.ValidationMessageFor(model => model.AllowFiltering)
 			</td>
 		</tr>
-		<tr class="allow-filtering">
+		<tr id="pnlAllowFiltering">
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FacetTemplateHint)
 			</td>
@@ -133,100 +133,85 @@
             </td>
         </tr>
 	</table>
-
-	<script type="text/javascript">
-		$(document).ready(function () {
-
-			// Allow filtering changed.
-			$('#@(Html.FieldIdFor(x => x.AllowFiltering))').change(function () {
-				$('#ProductAttributeTable').find('.allow-filtering').toggle($(this).is(':checked'));
-			}).trigger('change');
-
-		});
-	</script>
 }
 
 @helper TabOptionsSets()
 {
 	if (Model.Id > 0)
 	{
-		<table class="adminContent">
-			<tr>
-				<td>
-					@(Html.Telerik().Grid<ProductAttributeOptionsSetModel>()
-						.Name("productattributeoptionsset-grid")
+		<div>
+			@(Html.Telerik().Grid<ProductAttributeOptionsSetModel>()
+				.Name("productattributeoptionsset-grid")
+				.DataKeys(keys =>
+				{
+					keys.Add(x => x.Id);
+					keys.Add(x => x.ProductAttributeId).RouteKey("productAttributeId");
+				})
+				.ToolBar(commands => commands.Insert())
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Name);
+					columns.Command(commands =>
+					{
+						commands.Edit().Localize(T);
+						commands.Delete().Localize(T);
+					})
+					.Width(120);
+				})
+				.DataBinding(dataBinding => dataBinding.Ajax()
+					.Select("OptionsSetList", "ProductAttribute", new { productAttributeId = Model.Id })
+					.Insert("OptionsSetInsert", "ProductAttribute", new { productAttributeId = Model.Id })
+					.Update("OptionsSetUpdate", "ProductAttribute")
+					.Delete("OptionsSetDelete", "ProductAttribute")
+				)
+				.EnableCustomBinding(true)
+				.DetailView(details => details.ClientTemplate(
+					Html.Telerik().Grid<ProductAttributeOptionModel>()
+						.Name("productattributeoptions-grid<#= Id #>")
 						.DataKeys(keys =>
 						{
 							keys.Add(x => x.Id);
-							keys.Add(x => x.ProductAttributeId).RouteKey("productAttributeId");
+							keys.Add(x => x.ProductAttributeOptionsSetId).RouteKey("optionsSetId");
 						})
-						.ToolBar(commands => commands.Insert())
+						.ToolBar(commands => commands.Custom()
+							.Name("insert-option")
+							.HtmlAttributes(new { href = "#", @class = "btn btn-link insert-option" })
+							.Text("<i class='fa fa-plus'></i>&nbsp;" + @T("Common.Options.Add"))
+						)
 						.Columns(columns =>
 						{
-							columns.Bound(x => x.Name);
-							columns.Command(commands =>
-							{
-								commands.Edit().Localize(T);
-								commands.Delete().Localize(T);
-							})
-							.Width(120);
+							columns.Bound(x => x.Name)
+								.ClientTemplate(@Html.VariantAttributeValueName());
+							columns.Bound(x => x.Alias);
+							columns.Bound(x => x.LinkedProductName)
+								.ClientTemplate(@Html.LabeledProductName("LinkedProductId", "LinkedProductName", "LinkedProductTypeName", "LinkedProductTypeLabelHint"));
+							columns.Bound(x => x.PriceAdjustmentString)
+								.Centered();
+							columns.Bound(x => x.WeightAdjustmentString)
+								.Centered();
+							columns.Bound(x => x.IsPreSelected)
+								.ClientTemplate(@Html.SymbolForBool("IsPreSelected"))
+								.Centered();
+							columns.Bound(x => x.DisplayOrder)
+								.Centered();
+							columns.Bound(x => x.Id)
+								.Width(220)
+								.Centered()
+								.Title("")
+								.ClientTemplate(
+									"<a href='" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='t-button edit-option'>" + @T("Admin.Common.Edit") + "</a>" +
+									"<a href='" + @Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='t-button delete-option'>" + @T("Admin.Common.Delete") + "</a>");
 						})
 						.DataBinding(dataBinding => dataBinding.Ajax()
-							.Select("OptionsSetList", "ProductAttribute", new { productAttributeId = Model.Id })
-							.Insert("OptionsSetInsert", "ProductAttribute", new { productAttributeId = Model.Id })
-							.Update("OptionsSetUpdate", "ProductAttribute")
-							.Delete("OptionsSetDelete", "ProductAttribute")
+							.Select("OptionsSetListDetails", "ProductAttribute", new { id = "<#= Id #>" })
 						)
-						.EnableCustomBinding(true)
-						.DetailView(details => details.ClientTemplate(
-							Html.Telerik().Grid<ProductAttributeOptionModel>()
-								.Name("productattributeoptions-grid<#= Id #>")
-								.DataKeys(keys =>
-								{
-									keys.Add(x => x.Id);
-									keys.Add(x => x.ProductAttributeOptionsSetId).RouteKey("optionsSetId");
-								})
-								.ToolBar(commands => commands.Custom()
-									.Name("insert-option")
-									.HtmlAttributes(new { href = "#", @class = "btn btn-link insert-option" })
-									.Text("<i class='fa fa-plus'></i>&nbsp;" + @T("Common.Options.Add"))
-								)
-								.Columns(columns =>
-								{
-									columns.Bound(x => x.Name)
-										.ClientTemplate(@Html.VariantAttributeValueName());
-									columns.Bound(x => x.Alias);
-									columns.Bound(x => x.LinkedProductName)
-										.ClientTemplate(@Html.LabeledProductName("LinkedProductId", "LinkedProductName", "LinkedProductTypeName", "LinkedProductTypeLabelHint"));
-									columns.Bound(x => x.PriceAdjustmentString)
-										.Centered();
-									columns.Bound(x => x.WeightAdjustmentString)
-										.Centered();
-									columns.Bound(x => x.IsPreSelected)
-										.ClientTemplate(@Html.SymbolForBool("IsPreSelected"))
-										.Centered();
-									columns.Bound(x => x.DisplayOrder)
-										.Centered();
-									columns.Bound(x => x.Id)
-										.Width(220)
-										.Centered()
-										.Title("")
-										.ClientTemplate(
-											"<a href='" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='t-button edit-option'>" + @T("Admin.Common.Edit") + "</a>" +
-											"<a href='" + @Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='t-button delete-option'>" + @T("Admin.Common.Delete") + "</a>");
-								})
-								.DataBinding(dataBinding => dataBinding.Ajax()
-									.Select("OptionsSetListDetails", "ProductAttribute", new { id = "<#= Id #>" })
-								)
-								.ClientEvents(events => events.OnDataBound("onDataBoundOptionsGrid"))
-								.ToHtmlString()
-						)))
-				</td>
-			</tr>
-		</table>
+						.ClientEvents(events => events.OnDataBound("onDataBoundOptionsGrid"))
+						.ToHtmlString()
+				)))
+		</div>
 
-		<input type="button" id="btnOption" name="btnOption" style="display: none" />
-		<input type="button" id="btnOptionRefresh" name="btnOptionRefresh" value="" style="display: none" />
+		<input type="button" id="btnOption" name="btnOption" class="d-none" />
+		<input type="button" id="btnOptionRefresh" name="btnOptionRefresh" value="" class="d-none" />
 
 		<script type="text/javascript">
 			$(document).ready(function () {

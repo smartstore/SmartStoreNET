@@ -45,7 +45,7 @@
             @Html.SmartLabelFor(model => model.ReviewText)
         </td>
         <td class="adminData">
-            @Html.TextAreaFor(model => model.ReviewText)
+            @Html.TextAreaFor(model => model.ReviewText, new { style = "height:150px" })
             @Html.ValidationMessageFor(model => model.ReviewText)
         </td>
     </tr>

@@ -67,7 +67,7 @@
 			<td class="adminData">
 				@foreach (var attach in Model.Attachments)
 				{
-					<span style="margin-right: 12px">
+					<span class="mr-3">
 						<i class="fa fa-paperclip"></i>
 						<a href='@Url.Action("DownloadAttachment", new { id = attach.Id })'>@attach.Name</a>
 					</span>
@@ -79,7 +79,7 @@
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Body)
         </td>
-        <td class="adminData">
+        <td class="adminData wide">
             @Html.EditorFor(model => model.Body, Html.RichEditorFlavor())
             @Html.ValidationMessageFor(model => model.Body)
         </td>
@@ -109,11 +109,11 @@
         <td class="adminData">
             @if (Model.SentOn.HasValue)
             {
-                @Html.DisplayFor(model => model.SentOn)
-            }
-            else
-            {
-				@("".NaIfEmpty())
+                @Html.TextBoxFor(model => model.SentOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+			}
+			else
+			{
+				<span class="form-control-plaintext">@("".NaIfEmpty())</span>
             }
         </td>
     </tr>
@@ -122,7 +122,7 @@
             @Html.SmartLabelFor(model => model.EmailAccountName)
         </td>
         <td class="adminData">
-            @Html.DisplayFor(model => model.EmailAccountName)
+            @Html.TextBoxFor(model => model.EmailAccountName, new { @readonly = "readonly", @class = "form-control-plaintext" })
         </td>
     </tr>
     <tr>
@@ -130,7 +130,7 @@
             @Html.SmartLabelFor(model => model.CreatedOn)
         </td>
         <td class="adminData">
-            @Html.DisplayFor(model => model.CreatedOn)
+            @Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
         </td>
     </tr>
 </table>

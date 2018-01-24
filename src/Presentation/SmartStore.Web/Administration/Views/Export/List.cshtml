@@ -12,6 +12,13 @@
 		<i class="fa fa-upload"></i>
 		<span>@T("Common.Export")</span>
     </div>
+
+	<div class="options">
+		<a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-primary export-profile-button">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.DataExchange.AddNewProfile")</span>
+		</a>
+	</div>
 </div>
 
 <div id="ExportProfileListContainer">
@@ -32,8 +39,8 @@
 			</div>
 			<div class="modal-body"></div>
 			<div class="modal-footer">
-				<button class="btn btn-primary btn-flat">@T("Common.OK")</button>
 				<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
+				<button class="btn btn-primary">@T("Common.OK")</button>
 			</div>
 		</div>
 	</div>
@@ -156,7 +163,7 @@
 					option = $('select[name="ProviderSystemName"]').find('option[value="' + item.id + '"]');
 				}
 
-				var html = '<div class="large-select2-item">',
+				var html = '<div class="large-select2-item mr-2">',
 					imageUrl = option.data('imageurl');
 
 				if (imageUrl)

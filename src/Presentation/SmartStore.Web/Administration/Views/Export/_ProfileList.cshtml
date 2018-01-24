@@ -5,9 +5,9 @@
 	var titleResKey = isSystemProfiles ? "Admin.DataExchange.Export.SystemProfilesTitle" : "Admin.DataExchange.Export.UserProfilesTitle";
 }
 
-<div class="mb-3">
+<div class="mb-5">
 	<div class="admin-config-group">
-		<div class="head">@T(titleResKey)</div>
+		<div class="head@(!isSystemProfiles ? " border-0 mb-0" : "")">@T(titleResKey)</div>
 	</div>
 
 	@if (Model.Any())
@@ -100,13 +100,5 @@
 			<button type="button" class="close" data-dismiss="alert">&#215;</button>
 			@T("Admin.DataExchange.Export.NoProfiles")
 		</div>
-	}
-
-	@if (!isSystemProfiles)
-	{
-		<a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-warning export-profile-button">
-			<i class="fa fa-plus"></i>
-			<span>@T("Admin.DataExchange.AddNewProfile")</span>
-		</a>
 	}
 </div>

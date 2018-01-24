@@ -834,3 +834,10 @@ select.is-valid + .select2 {
 .form-inline .select2-container--bootstrap {
   display: inline-block;
 }
+
+.select2 .choice-item-img {
+	max-width: 26px;
+	max-height: 26px;
+	margin-top: -4px;
+	margin-right: 5px;
+}

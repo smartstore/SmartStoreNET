@@ -200,7 +200,9 @@
 						@Html.SmartLabelFor(x => x.Provider.FileExtension)
 					</td>
 					<td class="adminData">
-						@Html.IconForFileExtension(Model.Provider.FileExtension, true)
+						<div class="form-control-plaintext">
+							@Html.IconForFileExtension(Model.Provider.FileExtension, true)
+						</div>
 					</td>
 				</tr>
 			}

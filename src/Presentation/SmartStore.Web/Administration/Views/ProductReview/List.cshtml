@@ -13,11 +13,11 @@
         @T("Admin.Catalog.ProductReviews")
     </div>
     <div class="options">
-        <button type="submit" id="approve-selected" class="btn btn-primary">
+        <button type="submit" id="approve-selected" class="btn btn-warning">
 			<i class="fa fa-check"></i>
 			<span>@T("Admin.Catalog.ProductReviews.ApproveSelected")</span>
 		</button>
-        <button type="submit" id="disapprove-selected" class="btn btn-danger">
+        <button type="submit" id="disapprove-selected" class="btn btn-secondary">
 			<i class="fa fa-times"></i>
 			<span>@T("Admin.Catalog.ProductReviews.DisapproveSelected")</span>
 		</button>
@@ -34,7 +34,7 @@
             @Html.SmartLabelFor(model => model.CreatedOnFrom)
         </td>
         <td class="adminData">
-			@Html.TextBoxFor(model => model.CreatedOnFrom, new { @readonly = "readonly", @class = "form-control-plaintext" })
+			@Html.TextBoxFor(model => model.CreatedOnFrom)
         </td>
     </tr>
     <tr>
@@ -42,7 +42,7 @@
             @Html.SmartLabelFor(model => model.CreatedOnTo)
         </td>
         <td class="adminData">
-			@Html.TextBoxFor(model => model.CreatedOnTo, new { @readonly = "readonly", @class = "form-control-plaintext" })
+			@Html.TextBoxFor(model => model.CreatedOnTo)
         </td>
     </tr>
     <tr>

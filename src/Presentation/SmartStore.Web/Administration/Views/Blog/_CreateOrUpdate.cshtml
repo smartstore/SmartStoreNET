@@ -86,10 +86,11 @@
         </tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CreatedOn)
+				@Html.SmartLabelFor(model => model.CreatedOnUtc)
 			</td>
 			<td class="adminData">
-				@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+                @Html.EditorFor(model => model.CreatedOnUtc)
+                @Html.ValidationMessageFor(model => model.CreatedOnUtc)
 			</td>
 		</tr>
     </table>

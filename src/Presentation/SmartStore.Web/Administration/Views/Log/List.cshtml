@@ -2,7 +2,6 @@
 @using Telerik.Web.Mvc.UI
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
     ViewBag.Title = T("Admin.System.Log").Text;
 }
 @using (Html.BeginForm())
@@ -13,11 +12,13 @@
             @T("Admin.System.Log")
         </div>
         <div class="options">
-            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn">
-                <i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.Log.DeleteSelected")
+            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-secondary">
+                <i class="fa fa-trash-o"></i>
+				<span>@T("Admin.System.Log.DeleteSelected")</span>
             </button>
             <button type="submit" name="clearall" value="clearall" class="btn btn-danger">
-                <i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.Log.ClearLog")
+                <i class="fa fa-trash-o"></i>
+				<span>@T("Admin.System.Log.ClearLog")</span>
             </button>
         </div>
     </div>
@@ -65,48 +66,41 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                &nbsp;
             </td>
             <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn">
+                <button type="submit" id="btnSearch" class="btn btn-secondary">
                     <i class="fa fa-search"></i>
-                    @T("Admin.Common.Search")
+                    <span>@T("Admin.Common.Search")</span>
                 </button>
             </td>
         </tr>
     </table>
-    <p></p>
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<LogModel>()
-						.Name("log-grid")
-						.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
-						.Columns(columns =>
-						{
-							columns.Bound(x => x.Id)
-								.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-								.Title("<input id='mastercheckbox' type='checkbox'/>")
-								.Width(50)
-								.HtmlAttributes(new { style = "text-align:center" })
-								.HeaderHtmlAttributes(new { style = "text-align:center" });
-							columns.Bound(x => x.Logger)
-								.Width(120)
-								.ClientTemplate("<span class='muted text-muted' title='<#= Logger #>'><#= LoggerShort #></span>");
-							columns.Bound(x => x.ShortMessage)
-								.ClientTemplate("<span class='label label-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
-							columns.Bound(x => x.UserName)
-								.Width(120);
-							columns.Bound(x => x.CreatedOn)
-								.Width(160);
-						})
-						.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-						.DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
-						.PreserveGridState()
-						.EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
+
+    @(Html.Telerik().Grid<LogModel>()
+			.Name("log-grid")
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+					.Title("<input id='mastercheckbox' type='checkbox'/>")
+					.Width(50)
+					.HtmlAttributes(new { style = "text-align:center" })
+					.HeaderHtmlAttributes(new { style = "text-align:center" });
+				columns.Bound(x => x.Logger)
+					.Width(120)
+					.ClientTemplate("<span class='muted text-muted' title='<#= Logger #>'><#= LoggerShort #></span>");
+				columns.Bound(x => x.ShortMessage)
+					.ClientTemplate("<span class='badge badge-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
+				columns.Bound(x => x.UserName)
+					.Width(120);
+				columns.Bound(x => x.CreatedOn)
+					.Width(160);
+			})
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
     
     <script type="text/javascript">
 

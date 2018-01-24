@@ -96,7 +96,9 @@ namespace SmartStore.Services.Customers.Importer
 				_genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, _attributeKeyGroup).Select(x => x.Value),
 				StringComparer.OrdinalIgnoreCase);
 
-			var allCustomerRoles = _customerRoleRepository.Table.ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
+			var allCustomerRoles = _customerRoleRepository.Table
+				.Where(x => !string.IsNullOrEmpty(x.SystemName))
+				.ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
 
 			using (var scope = new DbContextScope(ctx: _services.DbContext, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{

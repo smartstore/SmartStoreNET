@@ -12,12 +12,12 @@
     </div>
 </div>
 
-<div>
+<div style="max-width: 800px">
 	@using (Html.BeginForm(null, null, FormMethod.Get))
 	{
 		<div>
-			@Html.TextArea("ua", ua.RawValue, new { style = "width: 800px; display: block" })
-			<button type="submit" class="btn btn-secondary">Test</button>
+			@Html.TextArea("ua", ua.RawValue, new { @class = "form-control" })
+			<button type="submit" class="btn btn-secondary mt-3">Test</button>
 		</div>
 
 		<div class="mt-4">

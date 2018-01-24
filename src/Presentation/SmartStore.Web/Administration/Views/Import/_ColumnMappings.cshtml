@@ -23,7 +23,7 @@
 				</div>
 				@if (Model.ColumnMappings.Any())
 				{
-					<button id="ResetColumnMappings" type="button" class="btn btn-secondary" data-url="@Url.Action("ResetColumnMappings", new { id = Model.Id })">
+					<button id="ResetColumnMappings" type="button" class="btn btn-secondary btn-to-danger" data-url="@Url.Action("ResetColumnMappings", new { id = Model.Id })">
 						<i class="fa fa-refresh"></i>
 						<span>@T("Admin.Common.Clear")</span>
 					</button>

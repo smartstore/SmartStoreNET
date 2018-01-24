@@ -58,7 +58,7 @@
 						@Html.IconForFileExtension(Path.GetExtension(fileName), false)
 						<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
 
-						<button type="button" class="btn btn-secondary btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
+						<button type="button" class="btn btn-secondary btn-to-danger btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
 							<i class="fa fa-trash-o"></i>
 							<span>@T("Admin.Common.Delete")</span>
 						</button>
@@ -259,7 +259,7 @@
 
 		// BEGIN: Mapping
 		// reset column mappings
-		$('#ResetColumnMappings').click(function (e) {
+		$('#ResetColumnMappings').on('click', function (e) {
 			e.preventDefault();
 			if (confirm('@T("Admin.Common.AskToProceed")')) {
 				var form = '<form id="ResetColumnMappingsForm" action="' + $(this).data('url') + '" method="post"></form>';

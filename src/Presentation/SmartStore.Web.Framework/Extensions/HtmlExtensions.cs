@@ -122,24 +122,19 @@ namespace SmartStore.Web.Framework
                 EntityType = buttonsSelector.Replace("-delete", "")
             };
 
-			using (helper.BeginZoneContent("end", key: "delete-confirmation-modal"))
+			var script = string.Empty;
+			if (buttonsSelector.HasValue())
 			{
-				var output = ((System.Web.Mvc.WebViewPage)helper.ViewDataContainer).Output;
-
-				if (buttonsSelector.HasValue())
-				{
-					var script = "<script>$(function() { $('#" + modalId + "').modal({show:false}); $('#" + buttonsSelector + "').on('click', function(e){e.preventDefault();openModalWindow('" + modalId + "');} );  });</script>\n";
-					output.Write(script);
-				}
-
-				var window = helper.SmartStore().Window().Name(modalId)
-					.Title(EngineContext.Current.Resolve<ILocalizationService>().GetResource("Admin.Common.AreYouSure"))
-					.Content(helper.Partial("Delete", deleteConfirmationModel).ToHtmlString())
-					.ToHtmlString();
-				output.Write(window);
+				script = "<script>$(function() { $('#" + modalId + "').modal(); $('#" + buttonsSelector + "').on('click', function(e){e.preventDefault();openModalWindow('" + modalId + "');} );  });</script>\n";
 			}
 
-            return MvcHtmlString.Empty;
+			helper.SmartStore().Window().Name(modalId)
+				.Title(EngineContext.Current.Resolve<ILocalizationService>().GetResource("Admin.Common.AreYouSure"))
+				.Content(helper.Partial("Delete", deleteConfirmationModel).ToHtmlString())
+				.Show(false)
+				.Render();
+
+            return new MvcHtmlString(script);
         }
 
 		public static MvcHtmlString SmartLabel(this HtmlHelper helper, string expression, string labelText, string hint = null, object htmlAttributes = null)

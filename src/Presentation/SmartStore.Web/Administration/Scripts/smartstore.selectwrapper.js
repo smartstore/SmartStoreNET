@@ -157,6 +157,7 @@
                 templateResult: renderSelectItem,
                 templateSelection: renderSelectItem,
 				theme: 'bootstrap',
+				//adaptDropdownCssClass: true,
 				closeOnSelect: true
             };
 

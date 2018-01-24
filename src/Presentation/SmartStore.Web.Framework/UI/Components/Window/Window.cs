@@ -21,6 +21,7 @@ namespace SmartStore.Web.Framework.UI
 			this.Focus = true;
             this.BackDrop = true;
             this.ShowClose = true;
+			this.Show = true;
             this.CloseOnEscapePress = true;
 			this.CloseOnBackdropClick = true;
         }

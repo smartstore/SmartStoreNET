@@ -97,12 +97,12 @@ namespace SmartStore.Services.Messages
 				{ "BaseUrl", messageContext.BaseUri.ToString() }
 			};
 
-			model["Email"] = new Dictionary<string, object>
-			{
-				{ "Email", messageContext.EmailAccount.Email },
-				{ "SenderName", messageContext.EmailAccount.DisplayName },
-				{ "DisplayName", messageContext.EmailAccount.DisplayName } // Alias
-			};
+			dynamic email = new ExpandoObject();
+			email.Email = messageContext.EmailAccount.Email;
+			email.SenderName = messageContext.EmailAccount.DisplayName;
+			email.DisplayName = messageContext.EmailAccount.DisplayName; // Alias
+			model["Email"] = email;
+
 			model["Theme"] = CreateThemeModelPart(messageContext);
 			model["Customer"] = CreateModelPart(messageContext.Customer, messageContext);
 			model["Store"] = CreateModelPart(messageContext.Store, messageContext);

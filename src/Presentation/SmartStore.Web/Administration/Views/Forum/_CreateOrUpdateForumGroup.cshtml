@@ -5,7 +5,7 @@
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 
-@Html.SmartStore().TabStrip().Name("forumgroup-edit").Items(x =>
+@Html.SmartStore().TabStrip().Name("forumgroup-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());

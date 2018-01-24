@@ -2,7 +2,7 @@
 * Unify resource files between Flex and Admin (js, css etc.)
 * Merge Flex _core.scss with Admin shared/_utils.scss
 * Remove globalize.js entirely and all moment.js locale files
-* Apply .wide to td.adminData with html editor or any other "wide" control
+* Apply .wide to parent tr of td.adminData with html editor or any other "wide" control (hide the label also)
 * Find replacement for bootstrap-typeahead.js
 * bootstrapper-datetimepicker skinning is missing
 * Update bootstrap-editable.js
@@ -23,6 +23,8 @@
 * Shared\EditorTemplates\ButtonType.cshtml > Type names
 * Grid inline editing: when a grid is editable, assign width (either px or %) to all columns except the last buttons col (otherwise: disco!)
 * select2: .input-lg & .input-sm styling
+* All tables (.table) must be wrapped in div.table-responsive
+* Apply .omega to all (last) table cells which contain action buttons to enable visibility toggling on hover. Apply .active-row to poarent div to disable toggling, but keep other styling.
 
 TODOs BS4 Migration:
 ====================

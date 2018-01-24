@@ -6,9 +6,7 @@
 /* Variables
 -------------------------------------------------------------- */
 
-$grid-header-bg: #f6f8fa;
 $grid-pager-bg: #f9fafa;
-$grid-border-color: #e1e4e8;
 
 
 /* Mixins
@@ -68,9 +66,8 @@ $grid-border-color: #e1e4e8;
 .t-tooltip,
 .t-grid-pager {
 	color: $gray-800;
-	//@include gradient-y(#fafafa, #e9e9e9);
-	background-color: $grid-header-bg;
-	border-color: $grid-border-color;
+	background-color: $table-head-bg;
+	border-color: $table-border-color;
 }
 .t-menu-vertical,
  .t-editor, 
@@ -141,13 +138,13 @@ $grid-border-color: #e1e4e8;
     border-color: #a4abb2;
 }
 .t-state-selected {
-    background-color: #f4b914;
+	background-color: rgba(#000, 0.05);
 }
 .t-state-focused {
     background-color: #d3d6da;
 }
 .t-state-hover, .t-state-selected {
-    color: #000;
+    color: $gray-900;
 }
 .t-state-error, 
 .t-widget.input-validation-error, 
@@ -380,7 +377,7 @@ a.t-button.t-state-disabled:hover,
 		padding-right: 0.4rem;
 		border-left-width: 0 !important;
 		border-right-width: 0 !important;
-		border-color: $grid-border-color;
+		border-color: $table-border-color;
 		line-height: $line-height-base;
 
 		&:first-child {
@@ -432,40 +429,20 @@ a.t-button.t-state-disabled:hover,
 		border-color: #a4abb2;
 	}
 
-	tbody {
-		.t-last {
-			@include text-truncate();
+	tbody .t-button {
+		@extend .btn-sm;
+		min-width: 92px;
+
+		&.t-grid-update, &.t-grid-insert {
+			@extend .btn-warning;
 		}
 
-		tr:not(.t-grid-edit-row) {
-			> .t-last {
-				.t-button, .btn {
-					visibility: hidden;
-				}
-			}
-
-			&:hover > .t-last {
-				.t-button, .btn {
-					visibility: visible;
-				}
-			}
+		&.t-grid-delete {
+			@extend .btn-danger;
 		}
 
-		.t-button {
-			@extend .btn-sm;
-			min-width: 92px;
-
-			&.t-grid-update, &.t-grid-insert {
-				@extend .btn-warning;
-			}
-
-			&.t-grid-delete {
-				@extend .btn-danger;
-			}
-
-			&:not(.t-grid-update):not(.t-grid-delete):not(.t-grid-insert) {
-				@extend .btn-secondary;
-			}
+		&:not(.t-grid-update):not(.t-grid-delete):not(.t-grid-insert) {
+			@extend .btn-secondary;
 		}
 	}
 
@@ -507,17 +484,6 @@ a.t-button.t-state-disabled:hover,
 
 
 .t-grid-edit-row {
-	/*margin-bottom: 0;*/
-
-    /*select.tri-state {
-	    margin-bottom: 0;
-    }
-
-    td {
-	    padding-top: 6px;
-	    padding-bottom: 6px;
-    }*/
-
     .text-box,
     .t-numerictextbox {
 		// overwrite telerik defaults
@@ -526,22 +492,6 @@ a.t-button.t-state-disabled:hover,
 	    max-width: 100%;
 	    margin: 0;
     }
-
-    /*.text-box {
-	    padding: 4px 6px;
-	    height: 28px;
-    }
-
-    .t-numerictextbox .t-input {
-	    box-sizing: border-box;
-	    width: 99%;
-	    height: 99%;
-	    padding: 4px 18px 4px 3px;
-    }
-
-    .t-numerictextbox .t-arrow-up {
-        margin-left: -16px;
-    }*/
 }
 
 
@@ -613,7 +563,7 @@ a.t-button.t-state-disabled:hover,
 		margin: 0;
 		padding: 0.75em 0.4rem;
 		height: auto;
-		line-height: 2em;
+		line-height: 1.75rem;
 	}
 
 	&:first-child .t-link {

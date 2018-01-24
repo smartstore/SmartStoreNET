@@ -84,6 +84,17 @@ $btn-size-sm:			$input-height-sm;
 }
 
 
+// Button groups
+// -----------------------------------------------------
+
+.btn-group {
+	> .btn:not(:first-child) {
+		border-left-color: rgba(#fff, 0.6);
+	}
+}
+
+
+
 // Input groups
 // Light addon buttons without border look shitty
 // -----------------------------------------------------

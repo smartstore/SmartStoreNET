@@ -630,24 +630,6 @@ tr.adminGroup {
 	}
 }
 
-.admin-table {
-    thead th {
-        text-transform: uppercase;
-    }
-    th, td {
-        padding: 12px;
-    }
-	.disabled {
-		color: $text-muted;
-	}
-	.progress-info {
-		min-width: 260px;
-	}
-	select, input {
-		margin-bottom: 0;
-	}
-}
-
 /* SERVER CONTROLS */
 
 /* MISC. CLASSES */
@@ -851,7 +833,8 @@ table.order-edit td {
 .module-data-cols-4 .module-col { width: 25%; }
 
 .module-name {
-	font-weight: bold;
+	font-weight: $font-weight-medium;
+	font-size: $font-size-lg;
 	margin-right: 5px;
 }
 

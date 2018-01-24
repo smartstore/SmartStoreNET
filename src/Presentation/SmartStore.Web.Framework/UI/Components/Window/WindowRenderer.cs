@@ -6,24 +6,32 @@ namespace SmartStore.Web.Framework.UI
 	// TODO: (mc) make modal window renderer BS4 ready (after backend has been updated to BS4)
 	public class WindowRenderer : ComponentRenderer<Window>
     {
-        protected override void WriteHtmlCore(HtmlTextWriter writer)
+		public override void Render()
+		{
+			using (this.HtmlHelper.BeginZoneContent("end"))
+			{
+				base.Render();
+			}			
+		}
+
+		protected override void WriteHtmlCore(HtmlTextWriter writer)
         {
             var win = base.Component;
 
             win.HtmlAttributes.AppendCssClass("modal");
-            win.HtmlAttributes["role"] = "dialog";
-            win.HtmlAttributes["tabindex"] = "-1";
-			win.HtmlAttributes["aria-hidden"] = "false";
+			win.HtmlAttributes["role"] = "dialog";
+			win.HtmlAttributes["tabindex"] = "-1";
+			win.HtmlAttributes["aria-hidden"] = "true";
 			win.HtmlAttributes["aria-labelledby"] = win.Id + "Label";
 
-            if (win.Fade)
+			if (win.Fade)
             {
                 win.HtmlAttributes.AppendCssClass("fade");
             }
-			
-            // Other options
-            win.HtmlAttributes["data-keyboard"] = win.CloseOnEscapePress.ToString().ToLower();
-            win.HtmlAttributes["data-show"] = win.Show.ToString().ToLower();
+
+			// Other options
+			win.HtmlAttributes["data-keyboard"] = win.CloseOnEscapePress.ToString().ToLower();
+			win.HtmlAttributes["data-show"] = win.Show.ToString().ToLower();
 			win.HtmlAttributes["data-focus"] = win.Focus.ToString().ToLower();
 			win.HtmlAttributes["data-backdrop"] = win.BackDrop
 				? (win.CloseOnBackdropClick ? "true" : "static")

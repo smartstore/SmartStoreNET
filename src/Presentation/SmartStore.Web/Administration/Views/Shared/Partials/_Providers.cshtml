@@ -87,24 +87,30 @@
 								{
 									if (item.IsPaymentMethod)
 									{
-										<a class="btn btn-secondary btn-sm" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
-											<i class="fa fa-pencil-square-o"></i>
-											@T("Admin.Common.Edit")
+										<a class="btn btn-outline-secondary btn-sm btn-animate" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
+											<span>
+												<i class="fa fa-pencil-square-o"></i>
+												@T("Admin.Common.Edit")
+											</span>
 										</a>
 									}
 									else
 									{
-										<a class="btn btn-secondary btn-sm module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
-											<i class="fa fa-pencil-square-o"></i>
-											@T("Admin.Common.Edit")
+										<a class="btn btn-outline-secondary btn-sm btn-animate module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
+											<span>
+												<i class="fa fa-pencil-square-o"></i>
+												@T("Admin.Common.Edit")
+											</span>
 										</a>
 									}
 								}
 								@if (item.IsConfigurable)
 								{
-									<a class="btn btn-secondary btn-sm module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
-										<i class="fa fa-cog"></i>
-										@T("Admin.Common.Configure")
+									<a class="btn btn-outline-secondary btn-sm btn-animate module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
+										<span>
+											<i class="fa fa-cog"></i>
+											@T("Admin.Common.Configure")
+										</span>
 									</a>
 								}
 							</div>

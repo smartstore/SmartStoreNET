@@ -17,9 +17,7 @@
 </div>
 
 <div>
-    <div class="admin-config-group">
-        <div class="head">@T("Admin.Configuration.Languages.InstalledLanguages")</div>
-    </div>
+	<h5 class="mb-3">@T("Admin.Configuration.Languages.InstalledLanguages")</h5>
 
     <table class="table admin-table installed-languages-list language-list">
 		<thead>
@@ -30,7 +28,7 @@
                 <th class="text-center">@T("Admin.Configuration.Languages.Fields.Published")</th>
                 <th class="text-center">@T("Admin.Common.Store.LimitedTo")</th>
 				<th class="text-center">@T("Admin.Configuration.Languages.Fields.DisplayOrder")</th>
-				<th>@T("Admin.Common.Actions")</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -59,13 +57,13 @@
                     <td class="text-center">
                         @language.DisplayOrder
                     </td>
-                    <td style="width: 200px;">
-                        <a href="@Url.Action("Edit", new { id = language.Id })" class="btn btn-block btn-warning">
-                            <i class="fa fa-pencil-square-o"></i>
+                    <td class="omega text-truncate" style="width: 200px;">
+                        <a href="@Url.Action("Edit", new { id = language.Id })" class="btn btn-warning btn-sm">
+                            @*<i class="fa fa-pencil-square-o"></i>*@
 							<span>@T("Admin.Common.Edit")</span>
                         </a>
-                        <a href="@Url.Action("Resources", new { languageId = language.Id })" class="btn btn-secondary btn-block">
-                            <i class="fa fa-list-alt"></i>
+                        <a href="@Url.Action("Resources", new { languageId = language.Id })" class="btn btn-secondary btn-sm">
+                            @*<i class="fa fa-list-alt"></i>*@
 							<span>@T("Admin.Configuration.Languages.Resources.View")</span>
                         </a>
                     </td>
@@ -75,10 +73,8 @@
     </table>
 </div>
 
-<div>
-    <div class="admin-config-group">
-        <div class="head">@T("Admin.Configuration.Languages.AvailableLanguages")</div>
-    </div>
+<div class="mt-5">
+	<h5 class="mb-3">@T("Admin.Configuration.Languages.AvailableLanguages")</h5>
     <div id="AvailableLanguages"></div>
 </div>
 

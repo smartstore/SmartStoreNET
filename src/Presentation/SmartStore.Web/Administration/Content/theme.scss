@@ -93,6 +93,12 @@ $h6-font-size: 1rem;
 
 $headings-font-weight:			400;
 
+$table-cell-padding:			.75rem;
+$table-cell-padding-sm:			.3rem;
+$table-border-color:			$gray-400;
+$table-head-bg:					#f6f8fa;
+$table-head-color:				$gray-700;
+
 $input-btn-focus-width:			.2rem;
 $input-btn-focus-color:			rgba($primary, .25);
 $input-btn-focus-box-shadow:	0 0 0 $input-btn-focus-width $input-btn-focus-color;
@@ -248,6 +254,15 @@ pre {
 	display: none;
 }
 
+.muted {
+	@extend .text-muted;
+}
+
+.badge-secondary {
+	background-color: $gray-600;
+	color: $yiq-text-light;
+}
+
 
 //
 // Common
@@ -395,7 +410,7 @@ pre {
 			> .adminData {
 				flex: 0 0 66.666667%;
 				max-width: 66.666667%;
-				padding-left: 0;
+				padding-left: 0 !important;
 			}
 		}
 
@@ -414,6 +429,67 @@ pre {
 					flex-basis: 0;
 					max-width: 100%;
 				}
+			}
+		}
+	}
+}
+
+
+//
+// Tables
+// --------------------------------------------------
+
+.admin-table {
+	border: 1px solid $table-border-color;
+
+	thead {
+		background-color: $table-head-bg;
+	}
+
+	thead th {
+		line-height: 1.75rem;
+		border-bottom-width: 1px;
+	}
+
+	td, th {
+		vertical-align: middle;
+	}
+
+	.disabled {
+		color: $text-muted;
+	}
+
+	.progress-info {
+		min-width: 260px;
+	}
+
+	select, input {
+		margin-bottom: 0;
+	}
+}
+
+// Handle action button toggling in tables & grids (INFO: .t-grid is .table)
+.table tbody {
+	.t-last {
+		@include text-truncate();
+	}
+
+	.omega {
+		text-align: right;
+	}
+
+	tr:not(.t-grid-edit-row):not(.active-row) {
+		> .t-last,
+		> .omega {
+			.t-button, .btn {
+				visibility: hidden;
+			}
+		}
+
+		&:hover > .t-last,
+		&:hover > .omega {
+			.t-button, .btn {
+				visibility: visible;
 			}
 		}
 	}

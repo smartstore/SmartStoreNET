@@ -66,24 +66,22 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual void Render()
         {
-            using (HtmlTextWriter htmlTextWriter = new HtmlTextWriter(this.ViewContext.Writer))
-            {
-                this.WriteHtml(htmlTextWriter);
-            }
-        }
+			var output = ((System.Web.Mvc.WebViewPage)this.HtmlHelper.ViewDataContainer).Output;
+			var str = ToHtmlString();
+			output.Write(str);
+		}
 
         public virtual string ToHtmlString()
         {
-            string str;
             using (var stringWriter = new StringWriter())
             {
 				using (var htmlWriter = new HtmlTextWriter(stringWriter))
 				{
 					this.WriteHtml(htmlWriter);
-					str = stringWriter.ToString();
+					var str = stringWriter.ToString();
+					return str;
 				}
             }
-            return str;
         }
 
 

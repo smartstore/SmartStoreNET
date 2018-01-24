@@ -5,6 +5,20 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
+<script>
+	$(function () {
+		$("#template-edit").on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+			// Refresh/repaint hidden CodeMirror instance
+			var a = $(e.target);
+			var el = a.closest('.nav').next().find(a.attr('href') + ' .CodeMirror');
+			if (el.length) {
+				el[0].CodeMirror.refresh();
+			}
+			
+		});
+	});
+</script>
+
 @Html.SmartStore().TabStrip().Name("template-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);

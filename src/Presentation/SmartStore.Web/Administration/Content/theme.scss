@@ -225,8 +225,27 @@ $gray-lightest: $gray-100;
 // --------------------------------------------------
 
 @import "skinning/_select2.scss";
-@import "telerik/_telerik.scss"; 
+@import "telerik/_telerik.scss";
 
+
+//
+// Common
+// --------------------------------------------------
+
+a img {
+	border: 0;
+}
+
+legend {
+	font-family: $headings-font-family;
+	font-weight: $headings-font-weight;
+	font-size: 1.25rem;
+}
+
+h6, .h6 {
+	// Small headings don't look good with 400.
+	font-weight: $font-weight-medium;
+} 
 
 
 //
@@ -617,4 +636,35 @@ pre {
 .adminData > .form-check-input {
 	position: relative;
 	margin-left: 0;
+}
+
+
+//
+// Themes
+// --------------------------------------------------
+
+#theme-list {
+	.theme-thumbnail {
+		height: 220px;
+		background-size: cover;
+		background-repeat: no-repeat;
+		border-bottom: 1px solid rgba(#000, 0.1);
+	}
+
+	.theme-broken-badge {
+		position: absolute;
+		background-color: $danger;
+		color: #fff;
+		right: 0;
+		bottom: 0;
+		padding: 0.25rem 0.75rem;
+		font-size: 1rem;
+	}
+}
+
+.theme-editor {
+	.themevar-chain-info {
+		color: $gray-500;
+		margin-left: 0.75rem;
+	}
 }

@@ -221,6 +221,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.ShowPlaceholder", "Show placeholder", "Zeige Platzhalter");
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.HidePlaceholder", "Hide placeholder", "Verberge Platzhalter");
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.UpdateExampleFileName", "Update example", "Aktualisiere Beispiel");
+
+			builder.AddOrUpdate("Admin.Configuration.Themes.AvailableDesktopThemes", "Installed themes", "Installierte Themes");
 		}
 	}
 }

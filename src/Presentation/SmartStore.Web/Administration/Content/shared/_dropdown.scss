@@ -22,12 +22,8 @@
 	}
 
 	&.show > .dropdown-item {
-		color: $dropdown-link-hover-color !important;
+		color: $dropdown-link-hover-color;
 		background-color: $dropdown-link-hover-bg;
-
-		> .fa {
-			color: $dropdown-link-hover-color !important;
-		}
 	}
 
 	.dropdown-menu {
@@ -37,5 +33,25 @@
 		left: 100% !important;
 		bottom: auto;
 		transform: translateX(-2px);
+	}
+}
+
+
+// Lighter dropdown icon colors
+// ==============================================================
+
+.dropdown-item {
+	> .fa {
+		color: #6d6d6d;
+	}
+
+	.dropdown-group.show > & > .fa,
+	&:hover > .fa {
+		color: $dropdown-link-hover-color;
+	}
+
+	&:active > .fa,
+	&:focus > .fa {
+		color: $dropdown-link-active-color;
 	}
 }

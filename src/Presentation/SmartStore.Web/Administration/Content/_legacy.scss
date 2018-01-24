@@ -4,9 +4,7 @@
 /* Variabe shims
 -------------------------------------------------------------- */
 
-$dropdownLinkBackgroundHover:           #f5f5f5;
-$btnWarningBackground:                  #7986cb;   
-$navbarInverseBackground:               theme-color("primary");            
+$btnWarningBackground:                  #7986cb;             
 
 
 /* General
@@ -17,14 +15,6 @@ a:hover {
 	outline: 0;
 }
 
-.dropdown-menu .fa,
-.btn > .fa {
-	font-size: 14px;
-}
-
-.dropdown-item:not(:hover):not(:active):not(:visited) > .fa {
-	color: #6d6d6d;
-}
 
 /* Page
 -------------------------------------------------------------- */
@@ -169,28 +159,6 @@ header {
 }
 
 
-/* Navbar overrides
--------------------------------------------------------------- */
-.navbar .nav {
-	font-family: Tahoma, $font-family-base;
-}
-
-.navbar.navbar-inverse .navbar-inner {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	background: $navbarInverseBackground;
-	//background-image: none;
-	box-shadow: none;
-	border-radius: 0;
-}
-
-.navbar.navbar-inverse .navbar-inner .brand {
-	margin: 0;
-	padding-left: 30px;
-}
-
-
 /* SM additions
 -------------------------------------------------------------- */
 
@@ -276,19 +244,22 @@ header {
 }
 
 #content {
-    position: relative;
-    height: auto;
-    margin: 0 30px;
+	position: relative;
+	height: auto;
+	margin: 0 30px;
 	margin-top: -50px;
-    background-color: #fff;
-    padding: 15px 30px 60px 30px;
-    box-shadow: 0 0 6px rgba(0,0,0, 0.2);
+	background-color: #fff;
+	padding: 15px 30px 60px 30px;
+	box-shadow: 0 0 6px rgba(0,0,0, 0.2);
+	border-top-left-radius: $border-radius;
+	border-top-right-radius: $border-radius;
 }
 
 .popup #content {
     margin: 0;
     border: 0;
 	box-shadow: none;
+	border-radius: 0;
 }
 
 .adminData {
@@ -339,10 +310,6 @@ header {
 
 /* "select2" ui tweaks for admin
 -------------------------------------------------------------- */
-
-/*.select2-container:not(.autowidth) {
-    min-width: 314px; // ensures more clean look & feel
-}*/
 
 .select2-image-item {
 	img {
@@ -666,16 +633,6 @@ tr.adminGroup {
     }
 }
 
-a img {
-    border: 0;
-}
-
-legend {
-    font-family: $headings-font-family;
-    font-weight: $headings-font-weight;
-    font-size: 18px;
-}
-
 /* MASTER CONTENT */
 .cph {
    padding-top: 55px;
@@ -913,61 +870,6 @@ table.payment-method-features td {
 		font-weight: bold;
 		padding: 1px 0 1px 0;
 		vertical-align: top;
-	}
-}
-
-/* Themes */
-#theme-list {
-	min-width: 820px; // 3 items in a row
-	max-width: 1360px; // 5 items
-
-	.theme-item {
-		position: relative; 
-		float: left; 
-		width: 250px; 
-		margin: 0 20px 20px 0; 
-		border: 1px solid #ccc;
-	}
-	.theme-thumbnail-wrapper,
-	.theme-data {
-		padding: 8px;
-	}
-	.theme-thumbnail {
-		height: 220px;
-		background-size: cover;
-		border-bottom: 1px solid rgba(#000, 0.1);
-	}
-	.theme-data h4 {
-		margin-top: 0;
-		color: #333;
-	}
-	.theme-data h4 > small {
-		/*.smaller();*/
-        font-size: $font-size-sm;
-		font-weight: normal;
-	}
-	.theme-info {
-		font-size: 12px;
-		line-height: 16px;
-	}
-	.theme-buttons {
-		margin-top: 15px;
-	}
-	.theme-broken-badge {
-		position: absolute;
-		background-color: $red;
-		color: #fff;
-		right: 0;
-		bottom: 0;
-		padding: 8px 12px;
-		font-size: 20px;
-	}
-}
-
-.theme-editor {
-	.themevar-chain-info {
-		color: $gray-500;
-		margin-left: 0.75rem;
 	}
 }
 

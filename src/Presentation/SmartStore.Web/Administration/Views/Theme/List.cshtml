@@ -66,9 +66,6 @@
     
     <script>
 		$(function () {
-
-			$('#theme-list').find(".equalized-column").equalizeColumns({ /*deep: true,*/ responsive: true });
-
             $("#themes-tab").on("click", ".set-as-defaulttheme", function (e) {
                 var el = $(this);
                 var name = el.data("name");
@@ -86,22 +83,22 @@
 
 @helper ThemeList(IList<ThemeManifestModel> themes, string caption)
 {
-	<fieldset class="">
-		<legend style="border: none">@caption</legend>
+	<fieldset>
+		<legend class="mb-3">@caption</legend>
 
-		<div id="theme-list" class="row">
+		<div id="theme-list" class="row sm-gutters">
 			@foreach (var theme in themes)
 			{
 				var isActive = theme.IsActive;
 				var isBroken = theme.State != ThemeManifestState.Active;
 				
-				<div class="col-auto" style="width: 300px">
+				<div class="col-auto" style="width: 280px">
 
-					<div class="card card-shadow x-theme-item x-equalized-column@(isActive ? " active" : "")@(isBroken ? " broken" : "")" data-equalized-deep="true" @Html.Attr("title", theme.Description.EmptyNull(), theme.Description.HasValue())>
+					<div class="card card-shadow theme-item@(isActive ? " active" : "")@(isBroken ? " broken" : "")" @Html.Attr("title", theme.Description.EmptyNull(), theme.Description.HasValue())>
 						<div class="card-img-top theme-thumbnail" style="background-image: url('@Url.Content(theme.PreviewImageUrl)')"></div>
 
-						<div class="card-body p-2">
-							<h4 class="h5 text-truncate" data-equalized-part="title">
+						<div class="card-body p-3">
+							<h4 class="h5 text-truncate">
 								@(theme.Title ?? theme.Name)
 								@if (theme.BaseTheme.HasValue())
 								{
@@ -111,23 +108,23 @@
 									</small>
 								}
 							</h4>
-							<div data-equalized-part="data" class="theme-info text-truncate">
+							<div class="theme-info fs-xs text-truncate">
 								@if (theme.Author.HasValue())
 								{
 									<span>@T("Admin.Configuration.Themes.Author"): </span><span class="text-muted">@theme.Author, </span>
 								}
 								<span>@T("Admin.Configuration.Themes.Version"): </span><span class="text-muted">@theme.Version</span>
 							</div>
-							<div class="theme-buttons d-flex">
+							<div class="theme-buttons d-flex mt-3">
 								@if (!theme.IsActive)
 								{
-									<a href="#" class="btn btn-primary set-as-defaulttheme@(isBroken ? " invisible" : "")" data-name="@theme.Name">
+									<a href="#" class="btn btn-primary btn-sm set-as-defaulttheme@(isBroken ? " invisible" : "")" data-name="@theme.Name">
 										@T("Admin.Common.Activate")
 									</a>
 								}
 								else
 								{
-									<a href="#" class="btn btn-secondary disabled">
+									<a href="#" class="btn btn-secondary btn-sm disabled">
 										<i class="fa fa-check"></i>
 										@T("Common.Active")
 									</a>
@@ -136,12 +133,12 @@
 								@if (!isBroken)
 								{
 									<div class="btn-group ml-auto">
-										<a href='@Url.Action("Preview", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn btn-secondary btn-flat tooltip-toggle" title="@T("Admin.Configuration.Themes.Preview")">
+										<a class="btn btn-outline-secondary btn-sm tooltip-toggle" href='@Url.Action("Preview", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' title="@T("Admin.Configuration.Themes.Preview")">
 											<i class="fa fa-fw fa-eye"></i>
 										</a>
 										@if (theme.IsConfigurable)
 										{
-											<a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn btn-secondary btn-flat tooltip-toggle" title="@T("Admin.Common.Configure")">
+											<a class="btn btn-outline-secondary btn-sm tooltip-toggle" href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' title="@T("Admin.Common.Configure")">
 												<i class="fa fa-fw fa-paint-brush"></i>
 											</a>
 										}

@@ -131,7 +131,7 @@
 					@if (Model.Id > 0)
 					{
 						<span class="input-group-append">
-							<button type="submit" name="changepassword" value="changepassword" class="btn btn-secondary">
+							<button type="submit" name="changepassword" value="changepassword" class="btn btn-outline-secondary">
 								<i class="fa fa-gear"></i>
 								<span>@T("Account.ChangePassword")</span>
 							</button>
@@ -445,7 +445,9 @@
                     @Html.SmartLabelFor(model => model.LastVisitedPage)
                 </td>
                 <td class="adminData">
-					<a href="@Model.LastVisitedPage">@Model.LastVisitedPage.Truncate(128, "...")</a>
+					<div class="form-control-plaintext">
+						<a href="@Model.LastVisitedPage">@Model.LastVisitedPage.Truncate(128, "...")</a>
+					</div>
                 </td>
             </tr>
         }

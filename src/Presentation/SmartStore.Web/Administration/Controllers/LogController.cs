@@ -30,8 +30,8 @@ namespace SmartStore.Admin.Controllers
 
 		private static readonly Dictionary<LogLevel, string> s_logLevelHintMap = new Dictionary<LogLevel, string> 
         { 
-            { LogLevel.Fatal, "inverse" },
-            { LogLevel.Error, "dark" },
+            { LogLevel.Fatal, "dark" },
+            { LogLevel.Error, "danger" },
             { LogLevel.Warning, "warning" },
             { LogLevel.Information, "info" },
             { LogLevel.Debug, "default" }

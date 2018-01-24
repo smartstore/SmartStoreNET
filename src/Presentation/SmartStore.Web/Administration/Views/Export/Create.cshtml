@@ -40,13 +40,15 @@
 					</tr>
 				}
 				<tr>
-					<td class="adminTitle">
-						&nbsp;
+					<td class="adminTitle">	
 					</td>
-					<td class="adminData" style="width: 510px; max-width: 510px;">
+					<td class="adminData" colspan="2">
 						@foreach (var item in Model.AvailableProviders)
 						{
-							<span id="ExportProviderDescription@(item.Id)" class="export-provider-description">@item.Description</span>
+							if (item.Description.HasValue())
+							{
+								<div id="ExportProviderDescription@(item.Id)" class="export-provider-description alert alert-info">@item.Description</div>
+							}
 						}
 					</td>
 				</tr>

@@ -97,7 +97,9 @@
 				@Html.SmartLabelFor(x => x.SystemName)
 			</td>
 			<td class="adminData">
-				<input class="form-control-plaintext" readonly="readonly" type="text" value="@Model.SystemName.NaIfEmpty()">
+				<div class="form-control-plaintext">
+					@Model.SystemName.NaIfEmpty()
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -105,7 +107,9 @@
 				@Html.SmartLabelFor(x => x.IsSystemProfile)
 			</td>
 			<td class="adminData">
-				<input class="form-control-plaintext" readonly="readonly" type="text" value="@T(Model.IsSystemProfile ? "Admin.Common.Yes" : "Admin.Common.No")">
+				<div class="form-control-plaintext">
+					@T(Model.IsSystemProfile ? "Admin.Common.Yes" : "Admin.Common.No")
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -138,7 +142,9 @@
 					@Html.SmartLabelFor(x => x.Provider.FriendlyName)
 				</td>
 				<td class="adminData">
-					<input class="form-control-plaintext" readonly="readonly" type="text" value="@(Model.Provider.FriendlyName.NaIfEmpty()) (@(Model.ProviderSystemName.NaIfEmpty()))">
+					<div class="form-control-plaintext">
+						@(Model.Provider.FriendlyName.NaIfEmpty()) (@(Model.ProviderSystemName.NaIfEmpty()))
+					</div>
 				</td>
 			</tr>
 			@if (Model.Provider.Description.HasValue())
@@ -148,7 +154,9 @@
 						@Html.SmartLabelFor(x => x.Provider.Description)
 					</td>
 					<td class="adminData">
-						<input class="form-control-plaintext" readonly="readonly" type="text" value="@Html.Raw(Model.Provider.Description)">
+						<div class="form-control-plaintext">
+							@Html.Raw(Model.Provider.Description)
+						</div>
 					</td>
 				</tr>
 			}
@@ -159,7 +167,9 @@
 						@Html.SmartLabelFor(x => x.Provider.Url)
 					</td>
 					<td class="adminData">
-						<a href="@Model.Provider.Url" class="form-control-plaintext"  target="PluginWebsiteWnd">@Model.Provider.Url</a>
+						<div class="form-control-plaintext">
+							<a href="@Model.Provider.Url" target="PluginWebsiteWnd">@Model.Provider.Url</a>
+						</div>
 					</td>
 				</tr>
 			}

@@ -123,7 +123,9 @@
 				}
 				else
 				{
-					<input class="form-control-plaintext" readonly="readonly" type="text" value="@T("Admin.Promotions.Discounts.NoObjectsAssigned")">
+					<div class="form-control-plaintext">
+						@T("Admin.Promotions.Discounts.NoObjectsAssigned")
+					</div>
                 }
             </td>
         </tr>
@@ -134,7 +136,9 @@
 			<td class="adminData">
 				@if (!Model.AppliedToManufacturerModels.Any())
 				{
-					<input class="form-control-plaintext" readonly="readonly" type="text" value="@T("Admin.Promotions.Discounts.NoObjectsAssigned")">
+					<div class="form-control-plaintext">
+						@T("Admin.Promotions.Discounts.NoObjectsAssigned")
+					</div>
 				}
 				@foreach (var manu in Model.AppliedToManufacturerModels)
 				{
@@ -164,7 +168,9 @@
 				}
 				else
 				{
-					<input class="form-control-plaintext" readonly="readonly" type="text" value="@T("Admin.Promotions.Discounts.NoObjectsAssigned")">
+					<div class="form-control-plaintext">
+						@T("Admin.Promotions.Discounts.NoObjectsAssigned")
+					</div>
 				}
             </td>
         </tr>

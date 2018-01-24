@@ -34,7 +34,9 @@
                 @Html.SmartLabelFor(model => model.Name)
             </td>
             <td class="adminData">
-				<input type="text" readonly class="form-control-plaintext" value="@Model.Name">
+				<div class="form-control-plaintext">
+					@Model.Name
+				</div>
                 @Html.HiddenFor(model => model.Name)
             </td>
         </tr>

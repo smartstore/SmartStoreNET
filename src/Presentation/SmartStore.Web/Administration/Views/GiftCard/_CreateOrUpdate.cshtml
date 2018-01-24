@@ -70,7 +70,9 @@
                     @Html.SmartLabelFor(model => model.PurchasedWithOrderId)
                 </td>
                 <td class="adminData">
-                    <a href="@Url.Action("Edit", "Order", new { Id = Model.PurchasedWithOrderId.Value })" class="form-control-plaintext">@Model.PurchasedWithOrderId.Value</a>
+					<div class="form-control-plaintext">
+						<a href="@Url.Action("Edit", "Order", new { Id = Model.PurchasedWithOrderId.Value })">@Model.PurchasedWithOrderId.Value</a>
+					</div>
                 </td>
             </tr>
         }
@@ -113,7 +115,7 @@
 					@Html.EditorFor(model => model.GiftCardCouponCode)
 
 					<div class="input-group-append">
-						<button type="button" name="generateCouponCode" id="generateCouponCode" class="btn btn-secondary">
+						<button type="button" name="generateCouponCode" id="generateCouponCode" class="btn btn-outline-secondary">
 							<i class="fa fa-gear"></i>
 							<span>@T("Admin.GiftCards.Fields.GiftCardCouponCode.Generate")</span>
 						</button>

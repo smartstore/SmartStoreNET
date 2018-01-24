@@ -13,15 +13,15 @@
 
             @if (Model.IconUrl.HasValue())
             {
-                <img src="@Url.Content(Model.IconUrl)" class="img-responsive" style="max-height: 32px; margin-right: 3px" alt="@Model.FriendlyName" />
+                <img src="@Url.Content(Model.IconUrl)" class="img-responsive" alt="@Model.FriendlyName" />
             }
 			
 			@ViewBag.Title
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary">
+            <button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-save"></i>
-				@T("Admin.Common.Save")
+				<span>@T("Admin.Common.Save")</span>
 			</button>
         </div>
     </div>

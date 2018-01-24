@@ -93,7 +93,9 @@
 				@Html.SmartLabelFor(x => x.FolderName)
 			</td>
 			<td class="adminData">
-				<input class="form-control-plaintext" readonly="readonly" type="text" value="@Model.FolderName.NaIfEmpty()">
+				<div class="form-control-plaintext">
+					@Model.FolderName.NaIfEmpty()
+				</div>
 			</td>
 		</tr>
 		<tr>

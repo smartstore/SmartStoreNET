@@ -65,7 +65,11 @@
             @Html.SmartLabelFor(model => model.IsSystemRole)
         </td>
         <td class="adminData">
-			<input class="form-control-plaintext" readonly="readonly" type="text" value="@T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")">
+			
+			<div class="form-control-plaintext">
+				@T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")
+			</div>
+
             @Html.HiddenFor(model => model.IsSystemRole)
             @Html.ValidationMessageFor(model => model.IsSystemRole)
         </td>

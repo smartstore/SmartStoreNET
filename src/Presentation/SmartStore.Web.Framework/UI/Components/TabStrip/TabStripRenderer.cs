@@ -87,7 +87,7 @@ namespace SmartStore.Web.Framework.UI
 
 				if (isStacked)
 				{
-					writer.AddAttribute("class", "col-auto nav-aside");
+					writer.AddAttribute("class", "col-lg-auto nav-aside");
 					writer.RenderBeginTag("aside"); // opening left/right tabs col
 				}
 
@@ -110,7 +110,7 @@ namespace SmartStore.Web.Framework.UI
 
 				if (isStacked)
 				{
-					ulAttrs.AppendCssClass("flex-column");
+					ulAttrs.AppendCssClass("flex-row flex-lg-column");
 				}
 				writer.AddAttributes(ulAttrs);
 
@@ -148,7 +148,7 @@ namespace SmartStore.Web.Framework.UI
 				{
 					if (isStacked)
 					{
-						writer.AddAttribute("class", "col");
+						writer.AddAttribute("class", "col-lg nav-content");
 						writer.RenderBeginTag("div"); // opening left/right content col
 					}
 

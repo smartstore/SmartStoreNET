@@ -50,6 +50,16 @@
 		&.disabled {
 			opacity: 0.4;
 		}
+
+		> i, > img {
+			display: none;
+		}
+
+		@include media-breakpoint-up(lg) {
+			> i, > img {
+				display: inline-block;
+			}
+		}
 	}
 
 	.nav-link:not(.disabled):before {
@@ -84,50 +94,66 @@
 // TODO: implement right positioning
 // ==============================================================
 
-.tabs-left {
-	flex-wrap: nowrap;
-}
-
-.tabs-left .nav-tabs-line {
-	border-bottom: none;
-	border-right: 1px solid $nav-tabs-border-color;
-
-	.nav-link:not(.disabled):before {
-		// disable selection animations
-		display: none;
+@include media-breakpoint-up(lg) {
+	.tabs-left {
+		flex-wrap: nowrap;
 	}
 
-	.nav-item {
-		margin-bottom: 0;
-		margin-right: -1px;
-	}
+	.tabs-left .nav-tabs-line {
+		border-bottom: none;
+		border-right: 1px solid $nav-tabs-border-color;
 
-	.nav-link {
-		text-align: left;
-		border: 1px solid transparent;
-		border-left-width: 2px;
-		transition: none;
-		padding: 0.625rem 1.25rem;
-		padding-right: 1.25rem;
+		.nav-link:not(.disabled):before {
+			// disable selection animations
+			display: none;
+		}
 
-		img, .fa {
-			margin-right: 0.75rem;
-			margin-left: -0.5rem;
+		.nav-item {
+			margin-bottom: 0;
+			margin-right: -1px;
+		}
+
+		.nav-link {
+			text-align: left;
+			border: 1px solid transparent;
+			border-left-width: 2px;
+			transition: none;
+			padding: 0.625rem 1.25rem;
+			padding-right: 1.25rem;
+
+			img, .fa {
+				margin-right: 0.75rem;
+				margin-left: -0.5rem;
+			}
+		}
+
+		.nav-link:hover:not(.active) {
+			background-color: rgba(#000, 0.025);
+		}
+
+		.nav-link.active,
+		.nav-link.active:focus,
+		.nav-item.open .nav-link,
+		.nav-item.open .nav-link:focus {
+			border-top-color: $nav-tabs-border-color;
+			border-bottom-color: $nav-tabs-border-color;
+			border-left-color: theme-color("warning");
 		}
 	}
+}
 
-	.nav-link:hover:not(.active) {
-		background-color: rgba(#000, 0.025);
+@include media-breakpoint-up(lg) {
+	/*.nav-aside {
+		flex: 0 0 auto;
+		width: auto;
+		max-width: none;
 	}
 
-	.nav-link.active,
-	.nav-link.active:focus,
-	.nav-item.open .nav-link,
-	.nav-item.open .nav-link:focus {
-		border-top-color: $nav-tabs-border-color;
-		border-bottom-color: $nav-tabs-border-color;
-		border-left-color: theme-color("warning");
-	}
+	.nav-content {
+		flex-basis: 0;
+		flex-grow: 1;
+		max-width: 100%;
+	}*/
 }
 
 

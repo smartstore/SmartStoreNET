@@ -407,7 +407,7 @@ pre {
 
 	&:not(.adminContent-vertical) > tbody > tr:not(.wide),
 	&:not(.adminContent-vertical) > tr:not(.wide),
-	&:not(.adminContent-vertical) > .adminRow:not(.wide) {
+	&:not(.adminContent-vertical) .adminRow:not(.wide) {
 		@include media-breakpoint-up(md) {
 			> .adminTitle {
 				flex: 0 0 33.333333%;

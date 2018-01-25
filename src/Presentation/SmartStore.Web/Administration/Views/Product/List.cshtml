@@ -12,119 +12,90 @@
             <i class="fa fa-cube"></i>
             @T("Admin.Catalog.Products.Manage")
         </div>
-        <div class="options btn-toolbar">
+        <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
+			<div class="input-group d-inline-flex mr-3" style="width: 350px">
+				@Html.TextBoxFor(model => Model.GoDirectlyToSku, new { @class = "form-control", placeholder = T("Admin.Catalog.Products.List.GoDirectlyToSku") })
+				<div class="input-group-append">
+					<button type="submit" class="btn btn-secondary" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" title="@T("Admin.Catalog.Products.List.GoDirectlyToSku.Hint")">
+						<i class="fa fa-search"></i>
+					</button>
+					<button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
+						<i class="fa fa-filter"></i>
+						<span>@T("Common.Filter")</span>
+						<i class="fa fa-angle-double-down"></i>
+					</button>
+				</div>
+			</div>		
+
             <a href="@Url.Action("Create")" class="btn btn-primary">
-                <i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")
+                <i class="fa fa-plus"></i>
+				<span>@T("Admin.Common.AddNew")</span>
             </a>
 
-			<button type="submit" id="delete-selected" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")
+			<button type="submit" id="delete-selected" class="btn btn-secondary btn-to-danger">
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete.Selected")</span>
 			</button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
 
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchProductName)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchProductName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchProductTypeId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.SearchProductTypeId, Model.AvailableProductTypes, allString)
-			</td>
-		</tr>
+	<div class="row mt-3 grid-filter" style="display: none">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchProductName)
+			@Html.TextBoxFor(model => Model.SearchProductName, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchProductTypeId)
+			@Html.DropDownListFor(model => model.SearchProductTypeId, Model.AvailableProductTypes, allString, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchIsPublished)
+			@Html.EditorFor(model => model.SearchIsPublished)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchHomePageProducts)
+			@Html.EditorFor(model => model.SearchHomePageProducts)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchWithoutCategories)
+			@Html.EditorFor(model => model.SearchWithoutCategories)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchCategoryId)
+			@Html.DropDownListFor(model => model.SearchCategoryId, Model.AvailableCategories, allString, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchWithoutManufacturers)
+			@Html.EditorFor(model => model.SearchWithoutManufacturers)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchManufacturerId)
+			@Html.DropDownListFor(model => model.SearchManufacturerId, Model.AvailableManufacturers, allString, new { @class = "form-control" })
+		</div>
 		@if (Model.AvailableStores.Count > 1)
 		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SearchStoreId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, allString)
-				</td>
-			</tr>
+			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+				@Html.SmartLabelFor(model => model.SearchStoreId)
+				@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, allString, new { @class = "form-control" })
+			</div>
 		}
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchWithoutCategories)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SearchWithoutCategories)
-			</td>
-		</tr>
-		<tr id="SearchCategoryIdContainer">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchCategoryId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.SearchCategoryId, Model.AvailableCategories, allString)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchWithoutManufacturers)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SearchWithoutManufacturers)
-			</td>
-		</tr>
-		<tr id="SearchManufacturerIdContainer">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchManufacturerId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.SearchManufacturerId, Model.AvailableManufacturers, allString)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchIsPublished)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SearchIsPublished)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchHomePageProducts)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SearchHomePageProducts)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.GoDirectlyToSku)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.GoDirectlyToSku)
-				<button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="btn">
-					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
-				</button>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-			</td>
-		</tr>
-	</table>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
+			<label>&nbsp;</label>
+			<button type="submit" id="search-products" value="search-products" class="btn btn-warning btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
 
-    <p></p>
+		<div class="col-12 form-group grid-filter-actions d-none">
+			<button type="submit" id="search-products" value="search-products" class="btn btn-warning">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
 	
     <table class="adminContent">
         <tr>
@@ -194,9 +165,14 @@
 		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
 		var selectedIds = [];
 
-		$(document).ready(function () {
+		$(function () {
 
 			$("#products-grid").thumbZoomer();
+
+			// Filter toggler
+			$('.btn-toggle-filter').on('click', function (e) {
+				$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
+			});
 
 			//search button
 			$('#search-products').click(function () {
@@ -225,13 +201,23 @@
 			});
 
 			// show/hide category filter
-			$('#SearchWithoutCategories').change(function () {
-				$('#SearchCategoryIdContainer').toggle(_.isEmpty($(this).val()));
+			$('#SearchWithoutCategories').on('change', function () {
+				if (_.isEmpty($(this).val())) {
+					$('#@Html.IdFor(x => x.SearchCategoryId)').removeAttr('disabled');
+				}
+				else {
+					$('#@Html.IdFor(x => x.SearchCategoryId)').attr('disabled', 'disabled');
+				}
 			}).trigger('change');
 
 			// show/hide manufacturer filter
-			$('#SearchWithoutManufacturers').change(function () {
-				$('#SearchManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
+			$('#SearchWithoutManufacturers').on('change', function () {
+				if (_.isEmpty($(this).val())) {
+					$('#@Html.IdFor(x => x.SearchManufacturerId)').removeAttr('disabled');
+				}
+				else {
+					$('#@Html.IdFor(x => x.SearchManufacturerId)').attr('disabled', 'disabled');
+				}
 			}).trigger('change');
 
 			$('#mastercheckbox').click(function () {

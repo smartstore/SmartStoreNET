@@ -469,7 +469,7 @@ label.forcheckbox {
         max-width: none; // Reset earlier grid tiers
         padding-left: 5px;
         padding-right: 0;
-
+		> * { vertical-align: middle; }
 	    &.btn-toolbar { margin: 0; }
 	}
     

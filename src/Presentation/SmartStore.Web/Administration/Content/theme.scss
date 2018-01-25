@@ -95,7 +95,7 @@ $headings-font-weight:			400;
 
 $table-cell-padding:			.75rem;
 $table-cell-padding-sm:			.3rem;
-$table-border-color:			$gray-400;
+$table-border-color:			$gray-300;
 $table-head-bg:					#f6f8fa;
 $table-head-color:				$gray-700;
 
@@ -459,7 +459,8 @@ pre {
 // --------------------------------------------------
 
 .admin-table {
-	border: 1px solid $table-border-color;
+	$tbcolor: darken($table-border-color, 5%);
+	border: 1px solid $tbcolor;
 
 	thead {
 		background-color: $table-head-bg;
@@ -468,6 +469,7 @@ pre {
 	thead th {
 		line-height: 1.75rem;
 		border-bottom-width: 1px;
+		border-top-color: $tbcolor;
 	}
 
 	td, th {

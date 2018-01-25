@@ -216,6 +216,7 @@ namespace SmartStore.Data.Migrations
 				"Admin.Catalog.Products.Fields.SubjectToAcl",
 				"Admin.Catalog.Products.Fields.AclCustomerRoles");
 
+			builder.AddOrUpdate("Admin.Common.ApplyFilter", "Apply filter", "Filter anwenden");
 			builder.AddOrUpdate("Time.Milliseconds", "Milliseconds", "Millisekunden");
 			builder.AddOrUpdate("Common.Pixel", "Pixel", "Pixel");
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.ShowPlaceholder", "Show placeholder", "Zeige Platzhalter");
@@ -223,6 +224,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.UpdateExampleFileName", "Update example", "Aktualisiere Beispiel");
 
 			builder.AddOrUpdate("Admin.Configuration.Themes.AvailableDesktopThemes", "Installed themes", "Installierte Themes");
+			builder.AddOrUpdate("Admin.Catalog.Products.List.GoDirectlyToSku", "Find by SKU", "Nach SKU suchen");
 		}
 	}
 }

@@ -434,6 +434,7 @@ a.t-button.t-state-disabled:hover,
 		min-width: 92px;
 
 		&.t-grid-update, &.t-grid-insert {
+			text-transform: capitalize;
 			@extend .btn-warning;
 		}
 

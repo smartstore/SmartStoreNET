@@ -60,6 +60,7 @@
 	to newly created html.
 	*/
 	window.applyCommonPlugins = function (/* jQuery */ context) {
+		console.log(context);
 		$.each(_commonPluginFactories, function (i, val) {
 			val.call(this, $(context));
 		});

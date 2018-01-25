@@ -106,12 +106,12 @@
 {
 	@(Html.SmartStore().EntityPicker()
 		.IconCssClass("fa fa-plus")
-		.HtmlAttribute("class", "btn btn-warning")
+		.HtmlAttribute("class", "btn btn-warning btn-flat")
 		.DialogTitle(T("Admin.Catalog.Products.RelatedProducts.AddNew"))
 		.Caption(T("Common.AddNew"))
 		.OnSelectionCompleted("PickRelatedProducts_Completed"))
 
-	<button type="button" id="btnCreateMutuallyRelatedProducts" class="btn btn-warning" data-url="@Url.Action("CreateAllMutuallyRelatedProducts", new { productId = Model.Id })"
+	<button type="button" id="btnCreateMutuallyRelatedProducts" class="btn btn-warning btn-flat" data-url="@Url.Action("CreateAllMutuallyRelatedProducts", new { productId = Model.Id })"
 			data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
 		<i class="fa fa-random"></i>
 		@T("Admin.Common.CreateMutuallyAssociations")

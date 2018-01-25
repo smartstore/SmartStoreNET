@@ -3,7 +3,8 @@
 @using Telerik.Web.Mvc.UI;
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("category-edit").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x => {
+
+@Html.SmartStore().TabStrip().Name("category-edit").OnAjaxSuccess("categoryEditTab_onAjaxSuccess").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x => {
 	x.Add().Text(T("Admin.Catalog.Categories.Info").Text)
 		.Icon("fa fa-pencil fa-lg fa-fw")
 		.Content(TabInfo())
@@ -32,6 +33,7 @@
 	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
 })
+
 @helper TabInfo()
 {
 	if (Model.Id != 0)
@@ -504,6 +506,10 @@
 }
 
 <script>
+	function categoryEditTab_onAjaxSuccess(tab, pane) {
+		applyCommonPlugins(pane);
+	}
+
 	$(function () {
 	    $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
 	    togglePageSize();

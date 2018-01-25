@@ -15,8 +15,8 @@ namespace SmartStore.GoogleMerchantCenter
 				displayText = "<#= {0} #>".FormatInvariant(fieldName);
 
 			string skeleton =
-				"<a href=\"#\" title=\"<#= {0} #>\" class=\"edit-link-{1}\"" +
-				" data-pk=\"<#= ProductId #>\" data-name=\"{0}\" data-value=\"<#= {0} #>\" data-inputclass=\"edit-{1}\" data-type=\"{2}\">" +
+				"<a href=\"#\" class=\"edit-link-{1}\"" +
+				" data-pk=\"<#= ProductId #>\" data-name=\"{0}\" data-value=\"<#= {0} #>\" data-inputclass=\"form-control-sm edit-{1}\" data-type=\"{2}\">" +
 				"{3}</a>";
 
 			return skeleton.FormatInvariant(fieldName, fieldName.ToLower(), type, displayText);

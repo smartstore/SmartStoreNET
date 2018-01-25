@@ -3,16 +3,28 @@
 * http://github.com/vitalets/x-editable
 * Copyright (c) 2018 Vitaliy Potapov; Licensed MIT */
 
-/* ABS4 begin
+/* ABS4 select2 begin
 -------------------------------------------------------------- */
-.editable-input .select2-container:not(.autowidth) {
+.editable-input .select2-container:not(.autowidth),
+.editable-input input[type=text]:not(.autowidth) {
 	min-width: 314px; /* ensures more clean look & feel */
 }
-/* ABS4 end
+
+.editable-input .select2-container--bootstrap .select2-selection--single {
+	height: 33px;
+	line-height: 32px;
+	padding-top: 0;
+}
+
+.editable-input .select2-container .select2-selection--single {
+	height: 33px;
+}
+/* ABS4 select2 end
 -------------------------------------------------------------- */
 
+
 .editableform {
-    margin-bottom: 0; /* overwrites bootstrap margin */
+	margin-bottom: 0; /* overwrites bootstrap margin */
 }
 
 .editableform .control-group {
@@ -121,6 +133,11 @@
 .editable-checklist label span {
     vertical-align: middle;
     margin: 0;
+}
+
+.editable-checklist label span {
+	font-weight: normal;
+	margin-left: 6px;
 }
 
 .editable-checklist label {

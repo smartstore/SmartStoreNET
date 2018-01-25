@@ -1,11 +1,10 @@
-﻿@model FeedGoogleMerchantCenterModel
-@using SmartStore.GoogleMerchantCenter;
+﻿@using SmartStore.GoogleMerchantCenter;
 @using SmartStore.GoogleMerchantCenter.Models;
 @using SmartStore.GoogleMerchantCenter.Providers;
 @using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
-
+@model FeedGoogleMerchantCenterModel
 @{
     Layout = "";
 
@@ -52,7 +51,7 @@
 							@Html.SmartLabelFor(m => m.SearchIsTouched)
 						</td>
 						<td class="adminData">
-							@Html.DropDownList("SearchIsTouched", new List<SelectListItem>
+							@Html.DropDownListFor(m => m.SearchIsTouched, new List<SelectListItem>
 							{
 								new SelectListItem { Text = T("Common.Unspecified"), Value = "" },
 								new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Touched"), Value = "touched" },
@@ -64,7 +63,8 @@
 						<td class="adminTitle">&nbsp;</td>
 						<td class="adminData">
 							<button type="submit" id="search-products" value="search-product" class="btn">
-								<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+								<i class="fa fa-search"></i>
+								<span>@T("Admin.Common.Search")</span>
 							</button>
 						</td>
 					</tr>
@@ -95,7 +95,9 @@
 						c.Bound(x => x.Export2)
 							.ClientTemplate(Html.XEditableLink("Export2", "select2"));
 						c.Bound(x => x.Taxonomy)
-							.ClientTemplate(Html.XEditableLink("Taxonomy", "typeahead"));
+							.ClientTemplate("<#= Taxonomy #>");
+							//TODO
+							//.ClientTemplate(Html.XEditableLink("Taxonomy", "typeahead"));
 						c.Bound(x => x.Gender)
 							.ClientTemplate(Html.XEditableLink("Gender", "select2"));
 						c.Bound(x => x.AgeGroup)

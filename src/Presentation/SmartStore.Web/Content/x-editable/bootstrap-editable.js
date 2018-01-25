@@ -3292,7 +3292,7 @@ $(function(){
                                            value: this.sourceData[i].value 
                                      }));
                 var $option = $('<span>');
-                $option[this.options.escape ? 'text' : 'html'](' '+this.sourceData[i].text);
+                $option[this.options.escape ? 'text' : 'html'](this.sourceData[i].text);
                 $label.append($option);
 
                 $('<div>').append($label).appendTo(this.$tpl);
@@ -4752,7 +4752,7 @@ Editableform based on Twitter Bootstrap 3
     
     //buttons
     $.fn.editableform.buttons = 
-      '<button type="submit" class="btn btn-primary btn-sm editable-submit">'+
+      '<button type="submit" class="btn btn-warning btn-sm editable-submit">'+
         '<i class="fa fa-check" aria-hidden="true"></i>'+
       '</button>'+
       '<button type="button" class="btn btn-secondary btn-sm editable-cancel">'+
@@ -4774,12 +4774,12 @@ Editableform based on Twitter Bootstrap 3
     "use strict";
     
     //extend methods
-    $.extend($.fn.editableContainer.Popup.prototype, {
-        containerName: 'popover',
-        containerDataName: 'bs.popover',
-        innerCss: '.popover-body',
-        defaults: $.fn.popover.Constructor.DEFAULTS,
-        
+	$.extend($.fn.editableContainer.Popup.prototype, {
+		containerName: 'popover',
+		containerDataName: 'bs.popover',
+		innerCss: '.popover-body',
+		defaults: $.fn.popover.Constructor.DEFAULTS,
+
 		initContainer: function () {
             $.extend(this.containerOptions, {
                 trigger: 'manual',

@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
-using Newtonsoft.Json;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -13,15 +11,6 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		public int GridPageSize { get; set; }
 
 		public string[] AvailableGoogleCategories { get; set; }
-		public string AvailableGoogleCategoriesAsJson
-		{
-			get
-			{
-				if (AvailableGoogleCategories != null && AvailableGoogleCategories.Length > 0)
-					return JsonConvert.SerializeObject(AvailableGoogleCategories);
-				return "[ ]";
-			}
-		}
 
 		public string[] EnergyEfficiencyClasses { get; set; }
 
@@ -36,7 +25,7 @@ namespace SmartStore.GoogleMerchantCenter.Models
 	{
 		public int TotalCount { get; set; }
 
-		//this attribute is required to disable editing
+		// This attribute is required to disable editing.
 		[ScaffoldColumn(false)]
 		public int ProductId 
 		{ 
@@ -45,7 +34,7 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		}
 		public int Id { get; set; }
 
-		//this attribute is required to disable editing
+		// This attribute is required to disable editing.
 		[ReadOnly(true)]
 		[ScaffoldColumn(false)]
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.ProductName")]

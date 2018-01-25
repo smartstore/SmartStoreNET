@@ -6,7 +6,16 @@
 <div class="section-header">
     <div class="title">
         <i class="fa fa-sitemap"></i>
-        @T("Admin.Catalog.Categories.Manage") @Html.ActionLink("(" + T("Admin.Catalog.Categories.SwitchToTreeView") + ")", "Tree")
+        @T("Admin.Catalog.Categories.Manage") 
+
+		<div class="btn-group ml-2" style="vertical-align: text-top">
+			<a class="btn btn-outline-secondary btn-sm tooltip-toggle active" style="cursor:default" href="javascript:void(0)">
+				<i class="fa fa-bars"></i>
+			</a>
+			<a class="btn btn-outline-secondary btn-sm tooltip-toggle" href="@Url.Action("Tree")" title="@T("Admin.Catalog.Categories.SwitchToTreeView")">
+				<i class="fa fa-sitemap"></i>
+			</a>
+		</div>
     </div>
     <div class="options">
 		@{ Html.RenderWidget("admin_button_toolbar_before"); }

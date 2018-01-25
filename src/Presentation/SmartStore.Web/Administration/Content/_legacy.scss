@@ -441,20 +441,20 @@ label.forcheckbox {
         flex-grow: 1;
         max-width: 100%;
 	    
-		.fa {
+		> .fa {
 			font-size: 28px;
 			vertical-align: text-top;
 			margin-right: 0.5rem;
 		}
 
-		img {
+		> img {
 		    max-height: $input-height;
 			max-width: 120px;
 			margin-right: 5px;
 		    vertical-align: top;
 		}
 		
-		a {
+		a:not(.btn) {
 			text-decoration: none;
 			font-family: $font-family-sans-serif;
 			font-size: 12px;

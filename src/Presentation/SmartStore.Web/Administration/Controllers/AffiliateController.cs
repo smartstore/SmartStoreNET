@@ -21,6 +21,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using SmartStore.Services.Common;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -42,19 +43,19 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
 		private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly CustomerSettings _customerSettings;
+		private readonly IAddressService _addressService;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public AffiliateController(ILocalizationService localizationService,
+		public AffiliateController(ILocalizationService localizationService,
             IWorkContext workContext, IDateTimeHelper dateTimeHelper, IWebHelper webHelper,
             ICountryService countryService, IStateProvinceService stateProvinceService,
             IPriceFormatter priceFormatter, IAffiliateService affiliateService,
             ICustomerService customerService, IOrderService orderService,
-            IPermissionService permissionService,
-			AdminAreaSettings adminAreaSettings,
-			CustomerSettings customerSettings)
+            IPermissionService permissionService, AdminAreaSettings adminAreaSettings,
+			CustomerSettings customerSettings, IAddressService addressService)
         {
             this._localizationService = localizationService;
             this._workContext = workContext;
@@ -69,7 +70,8 @@ namespace SmartStore.Admin.Controllers
             this._permissionService = permissionService;
 			this._adminAreaSettings = adminAreaSettings;
 			this._customerSettings = customerSettings;
-        }
+			this._addressService = addressService;
+		}
 
         #endregion
 
@@ -88,7 +90,7 @@ namespace SmartStore.Admin.Controllers
                 if (!excludeProperties)
                 {
                     model.Active = affiliate.Active;
-                    model.Address = affiliate.Address.ToModel();
+                    model.Address = affiliate.Address.ToModel(_addressService);
                 }
             }
 

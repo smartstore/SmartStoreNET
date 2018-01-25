@@ -432,7 +432,7 @@ namespace SmartStore.Admin.Controllers
 
             #region Billing & shipping info
 
-            model.BillingAddress = order.BillingAddress.ToModel();
+            model.BillingAddress = order.BillingAddress.ToModel(_addressService);
             model.BillingAddress.FirstNameEnabled = true;
             model.BillingAddress.FirstNameRequired = true;
             model.BillingAddress.LastNameEnabled = true;
@@ -464,7 +464,7 @@ namespace SmartStore.Admin.Controllers
             {
                 model.IsShippable = true;
 
-                model.ShippingAddress = order.ShippingAddress.ToModel();
+                model.ShippingAddress = order.ShippingAddress.ToModel(_addressService);
                 model.ShippingAddress.FirstNameEnabled = true;
                 model.ShippingAddress.FirstNameRequired = true;
                 model.ShippingAddress.LastNameEnabled = true;
@@ -788,7 +788,7 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareOrderAddressModel(OrderAddressModel model, Address address)
 		{
-			model.Address = address.ToModel();
+			model.Address = address.ToModel(_addressService);
 
 			model.Address.FirstNameEnabled = true;
 			model.Address.FirstNameRequired = true;

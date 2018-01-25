@@ -347,7 +347,7 @@ namespace SmartStore.Admin.Controllers
 									 ? _addressService.GetAddressById(shippingSettings.ShippingOriginAddressId)
 									 : null;
 			if (originAddress != null)
-				model.ShippingOriginAddress = originAddress.ToModel();
+				model.ShippingOriginAddress = originAddress.ToModel(_addressService);
 			else
 				model.ShippingOriginAddress = new AddressModel();
 
@@ -460,7 +460,7 @@ namespace SmartStore.Admin.Controllers
             var defaultAddress = (taxSettings.DefaultTaxAddressId > 0 ? _addressService.GetAddressById(taxSettings.DefaultTaxAddressId) : null);
 
 			if (defaultAddress != null)
-				model.DefaultTaxAddress = defaultAddress.ToModel();
+				model.DefaultTaxAddress = defaultAddress.ToModel(_addressService);
 			else
 				model.DefaultTaxAddress = new AddressModel();
 

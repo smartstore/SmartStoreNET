@@ -82,7 +82,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IEventPublisher _eventPublisher;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
-
 		#endregion
 
 		#region Constructors
@@ -1258,7 +1257,7 @@ namespace SmartStore.Admin.Controllers
             {
                 Data = addresses.Select(x =>
                 {
-                    var model = x.ToModel();
+                    var model = x.ToModel(_addressService);
                     var addressHtmlSb = new StringBuilder("<div>");
                     if (_addressSettings.CompanyEnabled && !String.IsNullOrEmpty(model.Company))
                         addressHtmlSb.AppendFormat("{0}<br />", Server.HtmlEncode(model.Company));
@@ -1412,7 +1411,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = new CustomerAddressModel();
             model.CustomerId = customerId;
-            model.Address = address.ToModel();
+            model.Address = address.ToModel(_addressService);
             model.Address.FirstNameEnabled = true;
             model.Address.FirstNameRequired = true;
             model.Address.LastNameEnabled = true;
@@ -1477,7 +1476,7 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             model.CustomerId = customer.Id;
-            model.Address = address.ToModel();
+            model.Address = address.ToModel(_addressService);
             model.Address.FirstNameEnabled = true;
             model.Address.FirstNameRequired = true;
             model.Address.LastNameEnabled = true;

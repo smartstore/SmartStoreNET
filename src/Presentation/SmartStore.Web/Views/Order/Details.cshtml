@@ -381,42 +381,8 @@
 
 @helper RenderAddress(AddressModel address)
 {
-	var cityStateZip = address.GetFormattedCityStateZip();
-
 	<div class="mb-2">
-		@if (address.CompanyEnabled && address.Company.HasValue())
-		{
-			<div class="company">
-				@address.Company
-			</div>
-		}
-		<div class="name">
-			@address.GetFormattedName()
-		</div>
-		@if (address.StreetAddressEnabled && address.Address1.HasValue())
-		{
-			<div class="address1">
-				@address.Address1
-			</div>
-		}
-		@if (address.StreetAddress2Enabled && address.Address2.HasValue())
-		{
-			<div class="address2">
-				@address.Address2
-			</div>
-		}
-		@if (cityStateZip.HasValue())
-		{
-			<div class="city-state-zip">
-				@Html.Raw(cityStateZip)
-			</div>
-		}
-		@if (address.CountryEnabled && address.CountryName.HasValue())
-		{
-			<div class="country">
-				@address.CountryName
-			</div>
-		}
+		@Html.Raw(address.FormattedAddress)
 	</div>
 
 	<div class="email">

@@ -1006,10 +1006,7 @@
     <Content Include="Content\samples\wayfarer_havana_black.png" />
     <Content Include="Content\samples\wayfarer_rayban-black.png" />
     <Content Include="Content\x-editable\bootstrap-editable.css" />
-    <Content Include="Content\x-editable\img\clear.png" />
-    <Content Include="Content\x-editable\img\loading.gif" />
     <Content Include="Content\x-editable\bootstrap-editable.js" />
-    <Content Include="Content\x-editable\bootstrap-editable.min.js" />
     <Content Include="favicon.ico" />
     <Content Include="Content\install\install.less" />
     <Content Include="Content\install\variables.custom.less" />

@@ -3745,7 +3745,8 @@ $(function(){
         } 
 
         //overriding objects in config (as by default jQuery extend() is not recursive)
-        this.options.select2 = $.extend({}, Constructor.defaults.select2, options.select2);
+		this.options.select2 = $.extend({}, Constructor.defaults.select2, options.select2);
+		this.options.select2.theme = 'bootstrap';
 
         //detect whether it is multi-valued
         this.isMultiple = this.options.select2.tags || this.options.select2.multiple;
@@ -4754,7 +4755,7 @@ Editableform based on Twitter Bootstrap 3
       '<button type="submit" class="btn btn-primary btn-sm editable-submit">'+
         '<i class="fa fa-check" aria-hidden="true"></i>'+
       '</button>'+
-      '<button type="button" class="btn btn-default btn-sm editable-cancel">'+
+      '<button type="button" class="btn btn-secondary btn-sm editable-cancel">'+
         '<i class="fa fa-times" aria-hidden="true"></i>'+
       '</button>';         
     
@@ -4779,13 +4780,14 @@ Editableform based on Twitter Bootstrap 3
         innerCss: '.popover-body',
         defaults: $.fn.popover.Constructor.DEFAULTS,
         
-        initContainer: function(){
+		initContainer: function () {
             $.extend(this.containerOptions, {
                 trigger: 'manual',
                 selector: false,
                 content: ' ',
-                template: this.defaults.template
-            });
+				template: this.defaults.template,
+				title: this.options.title
+			});
             
             //as template property is used in inputs, hide it from popover
             var t;

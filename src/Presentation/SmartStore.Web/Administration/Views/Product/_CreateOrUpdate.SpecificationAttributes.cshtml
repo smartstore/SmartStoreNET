@@ -138,7 +138,7 @@
             <script type="text/javascript">
                 $(function() {
                 	if ($.fn.editable)
-                		$.fn.editable.defaults.mode = 'inline';
+                		$.fn.editable.defaults.mode = 'popup';
                 });
 
                 function OnCommand(e) {
@@ -168,11 +168,11 @@
                         unsavedclass: null,
                         placement: "center",
                         autotext: 'auto',
-                        select2: {
+						select2: {
                             minimumResultsForSearch: 8,
                             data: link.data("options") || [],
-                            initSelection: function (el, fn) {
-                                var id = $(el).val();
+							initSelection: function (el, fn) {
+								var id = $(el).val();
                                 if (id !== "") {
                                     fn({ id: link.data("value"), text: link.text() });
                                 }

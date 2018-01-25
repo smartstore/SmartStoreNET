@@ -57,6 +57,10 @@ namespace SmartStore.Web.Framework.Localization
 			if (!(filterContext.Result is ViewResult))
 				return;
 
+			// TODO: (mc) ABS4 > remove after consolidation
+			if (!filterContext.HttpContext.Request.IsAdminArea())
+				return;
+
 			var culture = Thread.CurrentThread.CurrentUICulture;
 			if (culture.Name == "en-US")
 				return;

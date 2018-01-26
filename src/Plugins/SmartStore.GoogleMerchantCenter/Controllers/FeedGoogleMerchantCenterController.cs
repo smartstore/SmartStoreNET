@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
@@ -18,13 +19,13 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 	public class FeedGoogleMerchantCenterController : PluginControllerBase
 	{
 		private readonly IGoogleFeedService _googleFeedService;
-		private readonly AdminAreaSettings _adminAreaSettings;
-		private readonly IExportProfileService _exportService;
+		private readonly Lazy<AdminAreaSettings> _adminAreaSettings;
+		private readonly Lazy<IExportProfileService> _exportService;
 
 		public FeedGoogleMerchantCenterController(
 			IGoogleFeedService googleFeedService,
-			AdminAreaSettings adminAreaSettings,
-			IExportProfileService exportService)
+			Lazy<AdminAreaSettings> adminAreaSettings,
+			Lazy<IExportProfileService> exportService)
 		{
 			_googleFeedService = googleFeedService;
 			_adminAreaSettings = adminAreaSettings;
@@ -77,7 +78,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			ViewBag.DefaultCustomLabel = "";
 
 			// we do not have export profile context here, so we simply use the first profile
-			var profile = _exportService.GetExportProfilesBySystemName(GmcXmlExportProvider.SystemName).FirstOrDefault();
+			var profile = _exportService.Value.GetExportProfilesBySystemName(GmcXmlExportProvider.SystemName).FirstOrDefault();
 			if (profile != null)
 			{
 				var config = XmlHelper.Deserialize(profile.ProviderConfigData, typeof(ProfileConfigurationModel)) as ProfileConfigurationModel;
@@ -134,7 +135,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 		{
 			var model = new FeedGoogleMerchantCenterModel();
 
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
+			model.GridPageSize = _adminAreaSettings.Value.GridPageSize;
 			model.AvailableGoogleCategories = _googleFeedService.GetTaxonomyList();
 			model.EnergyEfficiencyClasses = T("Plugins.Feed.Froogle.EnergyEfficiencyClasses").Text.SplitSafe(",");
 
@@ -155,6 +156,44 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			return new JsonResult
 			{
 				Data = _googleFeedService.GetGridModel(command, searchProductName, touched)
+			};
+		}
+
+		public JsonResult GetGoogleCategories(string search, int? page)
+		{
+			page = page ?? 1;
+			const int take = 100;
+			var skip = (page.Value - 1) * take;
+			var categories = _googleFeedService.GetTaxonomyList();
+
+			if (search.HasValue())
+			{
+				categories = categories
+					.Where(x => x.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+					.ToArray();
+			}
+
+			var hasMoreItems = (page.Value * take) < categories.Length;
+			//$"{skip}\\{categories.Length} {hasMoreItems}: {search.NaIfEmpty()}".Dump();
+
+			var items = categories.Select(x => new
+				{
+					id = x,
+					text = x
+				})
+				.Skip(skip)
+				.Take(take)
+				.ToArray();
+
+			return new JsonResult
+			{
+				Data = new
+				{
+					hasMoreItems,
+					results = items
+				},
+				MaxJsonLength = int.MaxValue,
+				JsonRequestBehavior = JsonRequestBehavior.AllowGet
 			};
 		}
 	}

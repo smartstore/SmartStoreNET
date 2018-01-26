@@ -302,18 +302,20 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				var path = Path.Combine(fileDir, fileName);
 
 				if (!File.Exists(path))
+				{
 					path = Path.Combine(fileDir, "taxonomy.en-US.txt");
+				}
 
 				string[] lines = File.ReadAllLines(path, Encoding.UTF8);
 
-				return lines;
+				return lines.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 			}
 			catch (Exception exc)
 			{
 				exc.Dump();
 			}
 
-			return new string[] { };
+			return new string[0];
 		}
     }
 }

@@ -183,12 +183,11 @@
 
 	function OnGridDataBound(e) {
 		var grid = $('#gmc-products-grid'),
-			emptyCell = '@T("Plugins.Feed.Froogle.EmptyGridCell")',
-			url = '@Url.Action("GoogleProductEdit", "FeedGoogleMerchantCenter", new { Namespaces = "SmartStore.GoogleMerchantCenter.Controllers", area = GoogleMerchantCenterFeedPlugin.SystemName })';
+			emptyCell = '@T("Plugins.Feed.Froogle.EmptyGridCell")';
 
 		var options = {
 			emptytext: emptyCell,
-			url: url
+			url: '@Url.Action("GoogleProductEdit", "FeedGoogleMerchantCenter", new { Namespaces = "SmartStore.GoogleMerchantCenter.Controllers", area = GoogleMerchantCenterFeedPlugin.SystemName })'
 		};
 		var select2Options = {
 			placeholder: emptyCell,
@@ -273,9 +272,52 @@
 		grid.find('a.edit-link-customlabel3').editable(options);
 		grid.find('a.edit-link-customlabel4').editable(options);
 
+
+
+
+
 		grid.find('a.edit-link-taxonomy').editable($.extend({}, options, {
+			tpl: '<select></select>',
+			type: 'select2',
+			unsavedclass: null,
+			display: function (value, sourceData) {
+				$(this).text(value);
+			},
 			select2: {
-				//ajax:	...// not working
+				placeholder: emptyCell,
+				dropdownAutoWidth: true,
+				allowClear: true,
+				minimumResultsForSearch: 20,
+				ajax: {
+					delay: 300,
+					cache: true,
+					dataType: 'json',
+					type: 'GET',
+					url: '@Url.Action("GetGoogleCategories", "FeedGoogleMerchantCenter", new { Namespaces = "SmartStore.GoogleMerchantCenter.Controllers", area = GoogleMerchantCenterFeedPlugin.SystemName })',
+					data: function (params) {
+						var query = {
+							search: params.term,
+							page: params.page || 1
+						}
+						return query;
+					},
+					processResults: function (data, params) {
+						params.page = params.page || 1;
+
+						return {
+							results: data.results,
+							pagination: {
+								more: data.hasMoreItems
+							}
+						};
+					}
+				}
+			}
+		}));
+
+
+		@*grid.find('a.edit-link-taxonomy').editable($.extend({}, options, {
+			select2: {
 				placeholder: emptyCell,
 				dropdownAutoWidth: true,
 				allowClear: true
@@ -289,7 +331,7 @@
 						}
 					}
 			]
-		}));
+		}));*@
 
 	}
 	</script>

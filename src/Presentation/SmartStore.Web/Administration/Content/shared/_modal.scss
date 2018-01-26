@@ -25,6 +25,10 @@
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
     border-radius: 0;
     border: none;
+
+	iframe {
+		width: 100%;
+	}
 }
 
 .modal-header {
@@ -34,6 +38,10 @@
 
 .modal-title {
     font-weight: $font-weight-normal; // $font-weight-medium;
+}
+
+.modal-dialog:not(.modal-flex) iframe {
+	min-height: 300px;
 }
 
 .modal-dialog.modal-flex {

@@ -4,14 +4,26 @@
 		window.location.href = url;
 	}
 
-	window.openPopup = function (url, fluid) {
+	window.openPopup = function (url, large, flex) {
 		var modal = $('#modal-popup-shared');
+		var sizeClass = "";
+
+		if (flex === undefined) flex = true;
+
+		if (flex) {
+			sizeClass = "modal-flex";
+		}
+
+		if (large && !flex)
+			sizeClass = "modal-lg";
+		else if (!large && flex)
+			sizeClass += " modal-flex-sm";
 
 		if (modal.length === 0) {
 			// TODO: (mc) Update to BS4 modal html later
 			var html =
 				'<div id="modal-popup-shared" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'
-					+ '<div class="modal-dialog modal-flex{0}" role="document">'.format(!!(fluid) ? '' : ' modal-flex-sm')
+					+ '<div class="modal-dialog{0}" role="document">'.format(!!(sizeClass) ? " " + sizeClass : "")
 						+ '<div class="modal-content">'
 							+ '<div class="modal-body" style="padding: 0">'
 								+ '<iframe class="modal-flex-fill-area" frameborder="0" src="' + url + '" />'
@@ -28,7 +40,7 @@
 			});
 		}
 		else {
-			var iframe = modal.find('> .modal-body > iframe');
+			var iframe = modal.find('.modal-body > iframe');
 			iframe.attr('src', url);
 		}
 

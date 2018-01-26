@@ -115,9 +115,9 @@
 			setControlFeedback($(el), false);
 		},
 		unhighlight: function (el, errorClass, validClass) {
-			//if ($(el).is(".is-invalid")) {
+			if ($(el).is(".is-invalid")) {
 				setControlFeedback($(el), true);
-			//}
+			}
 		}
 	});
 

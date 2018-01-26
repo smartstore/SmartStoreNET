@@ -729,6 +729,10 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
  * @see http://getbootstrap.com/css/#forms-control-validation
  */
 
+/*select.is-valid + .select2:not(.select2-container--open) {
+	@include validation-state-focus($form-feedback-valid-color);
+}*/
+
 /*.has-warning {
   @include validation-state-focus(theme-color-level("warning", 1));
 }*/
@@ -737,9 +741,6 @@ select.is-invalid + .select2:not(.select2-container--open) {
 	@include validation-state-focus($form-feedback-invalid-color);
 }
 
-select.is-valid + .select2:not(.select2-container--open) {
-	@include validation-state-focus($form-feedback-valid-color);
-}
 
 /**
  * Select2 widgets in Bootstrap Input Groups

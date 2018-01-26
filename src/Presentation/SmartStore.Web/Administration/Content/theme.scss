@@ -615,7 +615,11 @@ pre {
 // Adapt class-less form elements to bs4
 // --------------------------------------------------
 
-input:not(.form-control-plaintext):not([type=hidden]):not([type=button]):not([type=submit]):not([type=reset]):not([type=checkbox]):not([type=radio]):not([type=file]):not([type=image]),
+input[type=text]:not(.form-control-plaintext),
+input[type=password],
+input[type=email],
+input[type=number],
+input[type=tel],
 .t-numerictextbox > .t-input,
 select,
 textarea {

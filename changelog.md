@@ -28,7 +28,10 @@
 * #1117 Added an option to display a dropdown menu for manufacturers 
 * #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
 * #1100 Customer can register in frontend via "Login with Amazon" button
-* #1292 Web API: Add a method to get an order in PDF format
+* **Web API**:
+	* #1292 Added endpoint to get order in PDF format
+	* Added endpoint to complete an order
+	* #1364 Added endpoints for MeasureWeight and MeasureDimension
 * Added options to include option names of specification and product attributes in the search index
 * #441 added option to specify that additional shipping surcharges are considered only once.
 * #1295 Sales tracking (tracking pixel) for Billiger.de

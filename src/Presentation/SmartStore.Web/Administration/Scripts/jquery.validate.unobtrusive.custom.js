@@ -85,35 +85,39 @@
 		}
 
 		if (success) {
-			ctl.addClass('is-valid').removeClass('is-invalid');
+			ctl.addClass('is-valid')
+				.removeClass('is-invalid')
+				.find('+ span[data-valmsg-for]')
+				.addClass('valid-feedback');
 		}
 		else {
-			ctl.removeClass('is-valid').addClass('is-invalid');
+			ctl.removeClass('is-valid')
+				.addClass('is-invalid')
+				.find('+ span[data-valmsg-for]')
+				.addClass('invalid-feedback');
 		}
 	}
 
 	$.validator.setDefaults({
 		onfocusout: function (el, e) {
-			if ($(el).closest(".form-group, .adminData").is(".has-danger, .has-success")) {
+			if ($(el).is(".is-valid, .is-invalid")) {
 				$(el).valid();
 			}
 		},
 		onkeyup: function (el, e) {
-			if ($(el).closest(".form-group, .adminData").is(".has-danger, .has-success")) {
+			if ($(el).is(".is-valid, .is-invalid")) {
 				$(el).valid();
 			}
 		},
 		onclick: false,
 		highlight: function (el, errorClass, validClass) {
-			$(el).closest('.form-group, .adminData').addClass('has-danger').removeClass('has-success');
+			//$(el).addClass('is-invalid').removeClass('is-valid');
 			setControlFeedback($(el), false);
 		},
 		unhighlight: function (el, errorClass, validClass) {
-			var formGroup = $(el).closest(".form-group, .adminData");
-			if (formGroup.is(".has-danger")) {
-				formGroup.removeClass('has-danger').addClass('has-success');
+			//if ($(el).is(".is-invalid")) {
 				setControlFeedback($(el), true);
-			}
+			//}
 		}
 	});
 

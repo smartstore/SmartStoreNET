@@ -151,18 +151,14 @@ fieldset.content-group {
 }
 
 .field-validation-error {
-    display: block;
-    color: $form-feedback-invalid-color;
-    font-size: $font-size-sm;
-    margin-top: 0.25rem;
+	@extend .invalid-feedback;
+	font-size: $font-size-sm;
 }
 
-
-//
-// Some BS 4 fixes
-// ------------------------------------------------------
-
-.input-group .form-control {
-    // Inputs too wide on FF otherwise
-    flex-basis: auto;
+.is-valid,
+.is-invalid {
+	&:focus {
+		box-shadow: none !important;
+	}
 }
+

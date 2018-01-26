@@ -220,14 +220,6 @@ $gray-lightest: $gray-100;
 
 
 //
-// Skinning
-// --------------------------------------------------
-
-@import "skinning/_select2.scss";
-@import "telerik/_telerik.scss";
-
-
-//
 // Common
 // --------------------------------------------------
 
@@ -429,6 +421,10 @@ pre {
 				flex: 0 0 66.666667%;
 				max-width: 66.666667%;
 				padding-left: 0 !important;
+
+				&:not(.wide) {
+					padding-right: 0 !important;
+				}
 			}
 		}
 
@@ -662,3 +658,14 @@ textarea {
 		margin-left: 0.75rem;
 	}
 }
+
+
+
+
+
+//
+// Skinning
+// --------------------------------------------------
+
+@import "skinning/_select2.scss";
+@import "telerik/_telerik.scss";

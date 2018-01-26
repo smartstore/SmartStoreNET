@@ -57,63 +57,71 @@ fieldset.content-group {
 // ------------------------------------------------------
 
 .has-icon {
-    position: relative;
-    display: flex;
-}
+	position: relative;
+	display: flex;
 
-.has-icon .form-control {
-    position: relative;
-    z-index: 2;
-}
+	.form-control {
+		position: relative;
+		z-index: 2;
+	}
 
-.has-icon .input-group-icon {
-    position: absolute;
-    left: 0;
-    z-index: 10;
-    width: $input-height;
-    height: $input-height;
-    line-height: $input-height;
-    text-align: center;
-    vertical-align: middle;
-}
+	.input-group-icon {
+		position: absolute;
+		left: 0;
+		z-index: 10;
+		width: $input-height;
+		height: $input-height;
+		line-height: $input-height;
+		text-align: center;
+		vertical-align: middle;
+	}
 
-.has-icon.has-icon-right .input-group-icon { 
-    left: auto;
-    right: 0;
-}
+	&.has-icon-right .input-group-icon {
+		left: auto;
+		right: 0;
+	}
 
-.has-icon.input-group-lg .input-group-icon {
-    width: $input-height-lg;
-    height: $input-height-lg;
-    line-height: $input-height-lg;
-    font-size: $font-size-lg;
-}
+	&.input-group-lg .input-group-icon {
+		width: $input-height-lg;
+		height: $input-height-lg;
+		line-height: $input-height-lg;
+		font-size: $font-size-lg;
+	}
 
-.has-icon.input-group-sm .input-group-icon {
-    width: $input-height-sm;
-    height: $input-height-sm;
-    line-height: $input-height-sm;
-    font-size: $font-size-sm;
-}
+	&.input-group-sm .input-group-icon {
+		width: $input-height-sm;
+		height: $input-height-sm;
+		line-height: $input-height-sm;
+		font-size: $font-size-sm;
+	}
 
-.has-icon:not(.has-icon-right) .form-control { 
-    padding-left: $input-height;
-}
-.has-icon:not(.has-icon-right).input-group-lg .form-control {
-    padding-left: $input-height-lg;
-}
-.has-icon:not(.has-icon-right).input-group-sm .form-control {
-    padding-left: $input-height-sm;
-}
+	&:not(.has-icon-right) {
+		.form-control {
+			padding-left: $input-height;
+		}
 
-.has-icon-right .form-control { 
-    padding-right: $input-height;
-}
-.has-icon-right.input-group-lg .form-control {
-    padding-right: $input-height-lg;
-}
-.has-icon-right.input-group-sm .form-control {
-    padding-right: $input-height-sm;
+		&.input-group-lg .form-control {
+			padding-left: $input-height-lg;
+		}
+
+		&.input-group-sm .form-control {
+			padding-left: $input-height-sm;
+		}
+	}
+
+	&.has-icon-right {
+		.form-control {
+			padding-right: $input-height;
+		}
+
+		&.input-group-lg .form-control {
+			padding-right: $input-height-lg;
+		}
+
+		&.input-group-sm .form-control {
+			padding-right: $input-height-sm;
+		}
+	}
 }
 
 
@@ -151,8 +159,11 @@ fieldset.content-group {
 }
 
 .field-validation-error {
-	@extend .invalid-feedback;
+	display: block;
+	color: $form-feedback-invalid-color;
 	font-size: $font-size-sm;
+	margin-top: 0.25rem;
+	width: 100%;
 }
 
 .is-valid,

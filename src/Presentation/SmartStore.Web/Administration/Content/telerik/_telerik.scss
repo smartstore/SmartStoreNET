@@ -479,8 +479,12 @@ a.t-button.t-state-disabled:hover,
 		}
 
 		input[type=text], .t-filter-operator {
-			@extend .form-control;
-			@extend .form-control-sm;
+			width: 100%;
+			padding: $input-padding-y-sm $input-padding-x-sm !important;
+			font-size: $font-size-sm !important;
+			line-height: $input-line-height-sm !important;
+			height: $input-height-sm !important;
+			@include border-radius($input-border-radius-sm);
 		}
 	}
 }

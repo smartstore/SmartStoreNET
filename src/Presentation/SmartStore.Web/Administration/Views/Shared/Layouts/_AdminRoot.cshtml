@@ -18,22 +18,22 @@
 	var vendorsRoot = "~/Administration/Content/vendors/";
 	var flexJsRoot = "~/Themes/Flex/Scripts/";
 	var flexCssRoot = "~/Themes/Flex/Content/css/";
+	var contentRoot = "~/Content/";
+	var scriptsRoot = "~/Scripts/";
 
 	// add css assets
-	var telerikCssRootPath = "~/Content/2012.2.607/";
+	var telerikCssRoot = "~/Content/2012.2.607/";
 	Html.AppendCssFileParts(
 		flexCssRoot + "fontastic.css",
-		"~/Content/font-awesome.css",
-		telerikCssRootPath + "telerik.common.css",
-		"~/Content/jquery.pnotify.default.css",
-		"~/Content/jquery.pnotify.default.icons.css",
-		"~/Content/smartstore.entitypicker.css",
-		//"~/Administration/Content/theme.less"
+		contentRoot + "font-awesome.css",
+		telerikCssRoot + "telerik.common.css",
+		contentRoot + "jquery.pnotify.default.css",
+		contentRoot + "jquery.pnotify.default.icons.css",
 		"~/Administration/Content/theme.scss");
 
 	// add js assets (Head)
 	Html.AppendScriptParts(ResourceLocation.Head,
-		"~/Scripts/modernizr.js",
+		scriptsRoot + "modernizr.js",
 		// Telerik doesn't like jQuery 1.9+, a shame!
 		//"~/Administration/Scripts/jquery-1.8.3.js",
 		volatileJsRoot + "jquery-3.2.1.js",
@@ -41,56 +41,51 @@
 		volatileJsRoot + "jquery-shims.js");
 
 	// add js assets (Foot)
-	var bootstrapJsRoot = "~/Content/bootstrap/js/";
 	var bootstrap4JsRoot = "~/Administration/Content/bs4/js/";
 
 	Html.AppendScriptParts(ResourceLocation.Foot,
 		// jQuery UI Core
-		"~/Scripts/jquery-ui/effect.js",
-		"~/Scripts/jquery-ui/effect-transfer.js",
-		"~/Scripts/jquery-ui/effect-shake.js",
-		"~/Scripts/jquery-ui/position.js",
+		scriptsRoot + "jquery-ui/effect.js",
+		scriptsRoot + "jquery-ui/effect-transfer.js",
+		scriptsRoot + "jquery-ui/effect-shake.js",
+		scriptsRoot + "jquery-ui/position.js",
 		// jQuery Validation
-		"~/Scripts/jquery.unobtrusive-ajax.js",
-		"~/Scripts/jquery.validate.js",
-		"~/Scripts/jquery.validate.unobtrusive.js",
-		flexJsRoot + "jquery.validate.unobtrusive.custom.js",
+		volatileJsRoot + "jquery.unobtrusive-ajax.js",
+		volatileJsRoot + "jquery.validate.js",
+		volatileJsRoot + "jquery.validate.unobtrusive.js",
+		volatileJsRoot + "jquery.validate.unobtrusive.custom.js",
 		// SmartStore system
-		"~/Scripts/underscore.js",
-		"~/Scripts/underscore.string.js",
-		"~/Scripts/underscore.mixins.js",
-		"~/Scripts/smartstore.system.js",
-		"~/Scripts/smartstore.jquery.utils.js",
+		scriptsRoot + "underscore.js",
+		scriptsRoot + "underscore.string.js",
+		scriptsRoot + "underscore.mixins.js",
+		scriptsRoot + "smartstore.system.js",
+		scriptsRoot + "smartstore.jquery.utils.js",
 		vendorsRoot + "moment/moment.js",
-		"~/Scripts/smartstore.globalization.js",
+		scriptsRoot + "smartstore.globalization.js",
 		// Common
-		"~/Scripts/jquery.ba-outside-events.js",
-		"~/Scripts/jquery.preload.js",
-		"~/Scripts/jquery.menu-aim.js",
-		"~/Scripts/smartstore.doAjax.js",
-		"~/Scripts/smartstore.entitypicker.js",
-		"~/Scripts/jquery.addeasing.js",
-		"~/Scripts/smartstore.eventbroker.js",
-		"~/Scripts/smartstore.hacks.js",
+		scriptsRoot + "jquery.ba-outside-events.js",
+		scriptsRoot + "jquery.preload.js",
+		scriptsRoot + "jquery.menu-aim.js",
+		scriptsRoot + "smartstore.doAjax.js",
+		scriptsRoot + "smartstore.entitypicker.js",
+		scriptsRoot + "jquery.addeasing.js",
+		scriptsRoot + "smartstore.eventbroker.js",
+		scriptsRoot + "smartstore.hacks.js",
 		volatileJsRoot + "smartstore.common.js",
 		// Bootstrap
-		//volatileJsRoot + "popper.js",
-		bootstrap4JsRoot + "bootstrap.bundle.js",
-		//bootstrapJsRoot + "bootstrap-typeahead.js",
+		contentRoot + "bs4/js/bootstrap.bundle.js",
 		// Vendors
 		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
 		vendorsRoot + "select2/js/select2.js",
 		// Shared UI
-		"~/Scripts/smartstore.placeholder.js",
 		volatileJsRoot + "smartstore.selectwrapper.js",
-		"~/Scripts/smartstore.throbber.js",
-		//"~/Scripts/smartstore.navbar.js",
-		"~/Scripts/smartstore.thumbzoomer.js",
-		"~/Scripts/smartstore.shrinkmenu.js",
-		"~/Scripts/smartstore.scrollbutton.js",
-		"~/Scripts/jquery.pnotify.js",
-		"~/Scripts/jquery.scrollTo.js",
-		"~/Scripts/jquery.sortable.js",
+		scriptsRoot + "smartstore.throbber.js",
+		scriptsRoot + "smartstore.thumbzoomer.js",
+		scriptsRoot + "smartstore.shrinkmenu.js",
+		scriptsRoot + "smartstore.scrollbutton.js",
+		scriptsRoot + "jquery.pnotify.js",
+		scriptsRoot + "jquery.scrollTo.js",
+		scriptsRoot + "jquery.sortable.js",
 		// Admin
 		"~/Administration/Scripts/admin.common.js",
 		"~/Administration/Scripts/admin.globalinit.js");

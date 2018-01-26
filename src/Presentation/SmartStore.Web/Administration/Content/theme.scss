@@ -1,4 +1,4 @@
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../../Content/bs4/scss/bootstrap.scss" />
 
 /* Theme: SmartStore.NET ADMIN 
 ======================================== */
@@ -23,15 +23,15 @@ $mtab-color:				inherit !default;
 $enable-shadows:	true;
 $enable-gradients:	false;
 
-$gray-100:  #f8f9fa;
-$gray-200:  #e9ecef;
-$gray-300:  #dee2e6;
-$gray-400:  #ced4da;
-$gray-500:  #adb5bd;
-$gray-600:  #868e96;
-$gray-700:  #495057;
-$gray-800:  #343a40;
-$gray-900:  #212529;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
 
 $blue:      #5677fc; // Blue 500
 $indigo:    #3f51b5; // Indigo 500
@@ -54,6 +54,10 @@ $danger:	$red;
 $light:		$gray-100;
 $dark:		$gray-800;
 
+$theme-colors: ( 
+	"gray": $gray-600 
+);
+
 $body-color:	$gray-800;
 $body-bg:		#fff;
 $link-color:	#0277bb;
@@ -70,11 +74,6 @@ $yiq-text-light:			#fff;
 
 $spacer: 1rem;
 $spacers: (
-    0: 0,
-    1: ($spacer * .25),
-    2: ($spacer * .5),
-    3: $spacer,
-    4: ($spacer * 1.5),
     5: ($spacer * 2.25),
     6: ($spacer * 3)
 );
@@ -156,8 +155,8 @@ $table-accent-bg:				rgba(#000, .015);
 // Variables shims (TODO: remove later)
 // --------------------------------------------------
 $gray-dark:		$gray-900;
-$gray:          $gray-700;
-$gray-light:    $gray-600;
+$gray:          $gray-600;
+$gray-light:    $gray-500;
 $gray-lighter:  $gray-200;
 $gray-lightest: $gray-100;
 
@@ -180,7 +179,7 @@ $gray-lightest: $gray-100;
 // Bootstrap 4
 // --------------------------------------------------
 
-@import "bs4/scss/bootstrap.scss"; 
+@import "../../Content/bs4/scss/bootstrap.scss"; 
 
 
 //

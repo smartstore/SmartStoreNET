@@ -1,9 +1,8 @@
-﻿
-using SmartStore.Core.Configuration;
+﻿using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Domain.Customers
 {
-    public class CustomerSettings : ISettings
+	public class CustomerSettings : ISettings
     {
 		public CustomerSettings()
 		{
@@ -24,7 +23,8 @@ namespace SmartStore.Core.Domain.Customers
 			NewsletterEnabled = true;
 			OnlineCustomerMinutes = 20;
 			StoreLastVisitedPage = true;
-            DisplayPrivacyAgreementOnContactUs = false;
+			StoreLastIpAddress = true;
+			DisplayPrivacyAgreementOnContactUs = false;
 		}
 		
 		/// <summary>
@@ -152,10 +152,15 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public bool StoreLastVisitedPage { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to display a checkbox to the customer where he can agree to privacy terms
-        /// </summary>
-        public bool DisplayPrivacyAgreementOnContactUs { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether to store last IP address for each customer
+		/// </summary>
+		public bool StoreLastIpAddress { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to display a checkbox to the customer where he can agree to privacy terms
+		/// </summary>
+		public bool DisplayPrivacyAgreementOnContactUs { get; set; }
         
         #region Form fields
 

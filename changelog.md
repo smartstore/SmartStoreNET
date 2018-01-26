@@ -36,6 +36,7 @@
 * #441 added option to specify that additional shipping surcharges are considered only once.
 * #1295 Sales tracking (tracking pixel) for Billiger.de
 * XML and CSV export of shopping cart and wishlist items
+* #1363 Make storing of IP addresses optional
 
 ### Improvements
 * Target .NET Framework changed: 4.5.2 > 4.6.1.

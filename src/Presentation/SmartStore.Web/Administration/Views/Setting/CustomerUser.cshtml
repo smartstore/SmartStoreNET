@@ -13,7 +13,10 @@
             @T("Admin.Configuration.Settings.CustomerUser")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 
@@ -22,16 +25,15 @@
     @Html.ValidationSummary(false)
 
 
-    @Html.SmartStore().TabStrip().Name("customersettings-edit").Items(x =>
+    @Html.SmartStore().TabStrip().Name("customersettings-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
     {
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerSettings").Text).Content(TabCustomerSettings()).Selected(true);
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields").Text).Content(TabCustomerFormFields().ToHtmlString());
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.AddressFormFields").Text).Content(TabAddressFormFields().ToHtmlString());
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.DateTimeSettings").Text).Content(TabDateTimeSettings());
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerSettings").Text).Content(TabCustomerSettings()).Selected(true);
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields").Text).Content(TabCustomerFormFields().ToHtmlString());
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.AddressFormFields").Text).Content(TabAddressFormFields().ToHtmlString());
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.DateTimeSettings").Text).Content(TabDateTimeSettings());
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
 
-    //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
+		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
 	})
 }
 
@@ -70,7 +72,6 @@
                 $('#pnlCheckUsernameAvailability').hide();
             }
         }
-
     </script>
     <table class="adminContent">
         <tr>
@@ -259,6 +260,15 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.CustomerSettings.StoreLastVisitedPage)
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StoreLastVisitedPage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.StoreLastIpAddress)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.StoreLastIpAddress)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.StoreLastIpAddress)
             </td>
         </tr>
         <tr>

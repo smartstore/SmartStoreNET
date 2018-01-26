@@ -686,18 +686,14 @@ tr.adminGroup {
 
 
 /* ORDER EDITING */
-table.order-edit {
-    width: 100%;
-    border: solid 1px #ccc;
-    margin-top: 4px;
+.order-edit-cnt .edit-label {
+	font-size: $font-size-sm;
 }
-table.order-edit td {
-    padding: 5px 5px;
-    border: medium none;
-    font-size: $font-size-sm;
-	/*.smaller();*/
+.order-edit-cnt .edit-value {
+	max-width: 100%;
 }
 
+/* BUNDLES */
 .bundle-items-container {
 	padding: 10px 0 0 60px;
 
@@ -711,7 +707,6 @@ table.order-edit td {
 		margin-top: 2px;
 	}
 }
-
 
 /* WARNINGS */
 .system-warnings {

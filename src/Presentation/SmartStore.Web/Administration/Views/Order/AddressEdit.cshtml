@@ -1,6 +1,5 @@
 ﻿@model OrderAddressModel
 @{  
-    //page title
     ViewBag.Title = T("Admin.Orders.Address.EditAddress").Text;
 }
 @using (Html.BeginForm())
@@ -10,9 +9,12 @@
             @T("Admin.Orders.Address.EditAddress") @Html.ActionLink("(" + T("Admin.Orders.Address.BackToOrder") + ")", "Edit", new { id = Model.OrderId })
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 
-    Html.RenderPartial("_CreateOrUpdateAddress", Model);
+    @Html.EditorFor(model => model.Address, "Address")
 }

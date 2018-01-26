@@ -1,0 +1,92 @@
+﻿@model OrderModel
+
+<div>
+	@(Html.Telerik().Grid<OrderModel.OrderNote>().Name("ordernotes-grid")
+			.DataKeys(keys =>
+			{
+				keys.Add(x => x.Id).RouteKey("orderNoteId");
+				keys.Add(x => x.OrderId).RouteKey("orderId");
+			})
+			.DataBinding(binding =>
+			{
+				binding.Ajax().Select("OrderNotesSelect", "Order", new { orderId = Model.Id })
+					.Delete("OrderNoteDelete", "Order");
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.CreatedOn).Width(140);
+				columns.Bound(x => x.Note).Encoded(false);
+				columns.Bound(x => x.DisplayToCustomer)
+					.Template(item => @Html.SymbolForBool(item.DisplayToCustomer))
+					.ClientTemplate(@Html.SymbolForBool("DisplayToCustomer"))
+					.Centered()
+					.Width(140);
+				columns.Command(commands =>
+				{
+					commands.Delete().Localize(T);
+				}).Width(140).HtmlAttributes(new { align = "right" });
+			})
+			.EnableCustomBinding(true))
+</div>
+
+<table class="adminContent">
+	<tr>
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="title">@T("Admin.Orders.OrderNotes.AddTitle")</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AddOrderNoteMessage)
+		</td>
+		<td class="adminData">
+			@Html.TextAreaFor(model => model.AddOrderNoteMessage, new { style = "height: 120px;" })
+			@Html.ValidationMessageFor(model => model.AddOrderNoteMessage)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AddOrderNoteDisplayToCustomer)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.AddOrderNoteDisplayToCustomer)
+			@Html.ValidationMessageFor(model => model.AddOrderNoteDisplayToCustomer)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle"></td>
+		<td class="adminData">
+			<button type="button" name="addOrderNote" id="addOrderNote" class="btn btn-primary">
+				<i class="fa fa-plus"></i>
+				<span>@T("Admin.Orders.OrderNotes.AddButton")</span>
+			</button>
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#addOrderNote').click(function () {
+            var orderNoteMessage = $("#@Html.FieldIdFor(model => model.AddOrderNoteMessage)").val();
+            var orderNoteDisplayToCustomer = $("#@Html.FieldIdFor(model => model.AddOrderNoteDisplayToCustomer)").is(':checked');
+            $('#addOrderNote').attr('disabled', true);
+            $.ajax({
+                cache:false,
+                type: "POST",
+                url: "@(Url.Action("OrderNoteAdd", "Order"))",
+                data: { "DisplayToCustomer": orderNoteDisplayToCustomer, "message": orderNoteMessage, "orderId": @Model.Id },
+                success: function (data) {
+                        var ordernotesGrid = $("#ordernotes-grid");
+                        ordernotesGrid.data('tGrid').ajaxRequest();
+                        $('#addOrderNote').attr('disabled', false);
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('Failed to add order note.')
+                    $('#addOrderNote').attr('disabled', false);
+                }
+            });
+        });
+    });
+</script>

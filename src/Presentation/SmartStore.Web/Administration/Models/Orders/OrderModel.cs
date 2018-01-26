@@ -443,7 +443,10 @@ namespace SmartStore.Admin.Models.Orders
 					if (Status == ReturnRequestStatus.Received)
 						return "info";
 
-					return "";
+					if (Status == ReturnRequestStatus.Pending)
+						return "danger";
+
+					return "light";
 				}
 			}
 		}

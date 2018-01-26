@@ -1,10 +1,10 @@
-﻿@model OrderModel.AddOrderProductModel
+﻿@using Telerik.Web.Mvc.UI;
+@model OrderModel.AddOrderProductModel
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     
     ViewBag.Title = string.Format(T("Admin.Orders.Products.AddNew.Title1").Text, Model.OrderId);
 }
-@using Telerik.Web.Mvc.UI;
 <div class="section-header">
     <div class="title">
         @string.Format(T("Admin.Orders.Products.AddNew.Title1").Text, Model.OrderId) @Html.ActionLink("(" + T("Admin.Orders.Products.AddNew.BackToOrder") + ")", "Edit", new { id = Model.OrderId })
@@ -53,46 +53,38 @@
     </tr>
     <tr>
 		<td class="adminTitle">
-			&nbsp;
 		</td>
 		<td class="adminData">
             <button type="submit" id="search-products" value="search-products" class="btn btn-above">
-				<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+				<i class="fa fa-search"></i>
+				<span>@T("Admin.Common.Search")</span>
 			</button>
         </td>
     </tr>
 </table>
 
-<p></p>
-
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<OrderModel.AddOrderProductModel.ProductModel>()
-                    .Name("products-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(p => p.Id)
-							.Width(80);
-                        columns.Bound(p => p.Name)
-							.Template(p => @Html.LabeledProductName(0, p.Name, p.ProductTypeName, p.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName(null, "Name"));
-                        columns.Bound(p => p.Sku);
-                    })
-                    .Selectable()
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("AddProductToOrder", "Order"))
-                    .ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowSelect("onRowSelected"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
-
-<div id="productdetails">
+<div>
+	@(Html.Telerik().Grid<OrderModel.AddOrderProductModel.ProductModel>()
+			.Name("products-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(p => p.Id)
+					.Width(80);
+				columns.Bound(p => p.Name)
+					.Template(p => @Html.LabeledProductName(0, p.Name, p.ProductTypeName, p.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName(null, "Name"));
+				columns.Bound(p => p.Sku);
+			})
+			.Selectable()
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("AddProductToOrder", "Order"))
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowSelect("onRowSelected"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
 </div>
 
 @Html.HiddenFor(model => Model.OrderId)
+
 <script type="text/javascript">
     $(document).ready(function () {
         $('#search-products').click(function () {

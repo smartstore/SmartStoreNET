@@ -224,6 +224,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.UpdateExampleFileName", "Update example", "Aktualisiere Beispiel");
 
 			builder.AddOrUpdate("Admin.Configuration.Themes.AvailableDesktopThemes", "Installed themes", "Installierte Themes");
+
 			builder.AddOrUpdate("Admin.Catalog.Products.List.GoDirectlyToSku", "Find by SKU", "Nach SKU suchen");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StoreLastIpAddress",
@@ -231,6 +232,10 @@ namespace SmartStore.Data.Migrations
 				"IP-Adresse speichern",
 				"Specifies whether to store the IP address in the customer data set.",
 				"Legt fest, ob die IP-Adresse im Kundendatensatz gespeichert werden soll.");
+
+			builder.AddOrUpdate("Admin.Orders.Info", "General", "Allgemein");
+			builder.AddOrUpdate("Admin.Orders.BillingAndShipment", "Billing & Shipping Infos", "Rechnungs- & Versandinfos");
+			builder.AddOrUpdate("Admin.Orders.Fields.ShippingAddress.ViewOnGoogleMaps", "View on Google Maps", "Auf Google Maps ansehen");
 		}
 	}
 }

@@ -736,7 +736,6 @@
     <Content Include="Content\filemanager\third-party.txt" />
     <Content Include="Content\images\ajax_loader_small.gif" />
     <Content Include="Content\images\checkmark.png" />
-    <Content Include="Content\images\google-maps.gif" />
     <Content Include="Content\images\ico-content-negative.png" />
     <Content Include="Content\images\ico-content-o60.png" />
     <Content Include="Content\images\ico-content.png" />
@@ -993,6 +992,10 @@
     <Content Include="Views\Shared\Partials\StoreSelector.cshtml" />
     <Content Include="Views\Shared\Partials\AclSelector.cshtml" />
     <Content Include="Views\Shared\AclSelector.cshtml" />
+    <Content Include="Views\Order\_Edit.Products.cshtml" />
+    <Content Include="Views\Order\_Edit.BillingAndShipment.cshtml" />
+    <Content Include="Views\Order\_Edit.Info.cshtml" />
+    <Content Include="Views\Order\_Edit.OrderNotes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -1349,7 +1352,6 @@
     <Content Include="Views\Order\Edit.cshtml" />
     <Content Include="Views\Order\List.cshtml" />
     <Content Include="Views\Order\PartiallyRefundOrderPopup.cshtml" />
-    <Content Include="Views\Order\_CreateOrUpdateAddress.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Blog\_CreateOrUpdate.cshtml" />

@@ -49,38 +49,34 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                &nbsp;
             </td>
             <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.SalesReport.Bestsellers.RunReport")</button>
+                <button type="submit" id="btnSearch" class="btn btn-secondary">
+					<i class="fa fa-search"></i>
+					@T("Admin.SalesReport.Bestsellers.RunReport")
+				</button>
             </td>
         </tr>
     </table>
     
-	<p></p>
-
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<BestsellersReportLineModel>()
-                        .Name("salesreport-grid")
-                        .ClientEvents(events => events.OnDataBinding("onDataBinding"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.ProductName)
-								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-                            columns.Bound(x => x.TotalQuantity)
-								.Centered()
-								.Width(200);
-                            columns.Bound(x => x.TotalAmount)
-								.RightAlign()
-								.Width(200);
-                        })
-                        .DataBinding(dataBinding => dataBinding.Ajax().Select("BestsellersReportList", "Order"))
-                        .EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
+    <div>
+		@(Html.Telerik().Grid<BestsellersReportLineModel>()
+			.Name("salesreport-grid")
+			.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.ProductName)
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				columns.Bound(x => x.TotalQuantity)
+					.Centered()
+					.Width(200);
+				columns.Bound(x => x.TotalAmount)
+					.RightAlign()
+					.Width(200);
+			})
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("BestsellersReportList", "Order"))
+			.EnableCustomBinding(true))
+	</div>
     
     <script type="text/javascript">
 

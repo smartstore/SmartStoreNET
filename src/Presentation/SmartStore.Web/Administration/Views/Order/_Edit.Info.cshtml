@@ -1,0 +1,933 @@
+﻿@model OrderModel
+@using SmartStore.Core.Domain.Tax;
+@using SmartStore.Core.Domain.Catalog;
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        toggleOrderTotals(false);
+        toggleCC(false);
+        toggleDD(false);
+    });
+
+    function toggleOrderTotals(editmode) {
+        if (editmode) {
+            $('#trEditOrderTotals').show();
+            $('#btnEditOrderTotals').hide();
+            $('#btnSaveOrderTotals').show();
+            $('#btnCancelOrderTotals').show();
+        }
+        else {
+            $('#trEditOrderTotals').hide();
+            $('#btnEditOrderTotals').show();
+            $('#btnSaveOrderTotals').hide();
+            $('#btnCancelOrderTotals').hide();
+        }
+    }
+
+    function toggleCC(editmode) {
+        if (editmode) {
+            $('#lblCardType').hide();
+            $('#@Html.FieldIdFor(model => model.CardType)').show();
+            $('#lblCardName').hide();
+            $('#@Html.FieldIdFor(model => model.CardName)').show();
+            $('#lblCardNumber').hide();
+            $('#@Html.FieldIdFor(model => model.CardNumber)').show();
+            $('#lblCardCvv2').hide();
+            $('#@Html.FieldIdFor(model => model.CardCvv2)').show();
+            $('#lblCardExpirationMonth').hide();
+            $('#@Html.FieldIdFor(model => model.CardExpirationMonth)').show();
+            $('#lblCardExpirationYear').hide();
+            $('#@Html.FieldIdFor(model => model.CardExpirationYear)').show();
+            $('#btnEditCC').hide();
+            $('#btnSaveCC').show();
+            $('#btnCancelCC').show();
+        }
+        else {
+            $('#lblCardType').show();
+            $('#@Html.FieldIdFor(model => model.CardType)').hide();
+            $('#lblCardName').show();
+            $('#@Html.FieldIdFor(model => model.CardName)').hide();
+            $('#lblCardNumber').show();
+            $('#@Html.FieldIdFor(model => model.CardNumber)').hide();
+            $('#lblCardCvv2').show();
+            $('#@Html.FieldIdFor(model => model.CardCvv2)').hide();
+            $('#lblCardExpirationMonth').show();
+            $('#@Html.FieldIdFor(model => model.CardExpirationMonth)').hide();
+            $('#lblCardExpirationYear').show();
+            $('#@Html.FieldIdFor(model => model.CardExpirationYear)').hide();
+            $('#btnEditCC').show();
+            $('#btnSaveCC').hide();
+            $('#btnCancelCC').hide();
+        }
+    }
+
+    function toggleDD(editmode) {
+        if (editmode) {
+            $('#lblDirectDebitAccountHolder').hide();
+            $('#@Html.FieldIdFor(model => model.DirectDebitAccountHolder)').show();
+            $('#lblDirectDebitAccountNumber').hide();
+            $('#@Html.FieldIdFor(model => model.DirectDebitAccountNumber)').show();
+            $('#lblDirectDebitBankCode').hide();
+            $('#@Html.FieldIdFor(model => model.DirectDebitBankCode)').show();
+            $('#lblDirectDebitBankName').hide();
+            $('#@Html.FieldIdFor(model => model.DirectDebitBankName)').show();
+            $('#lblDirectDebitBIC').hide();
+            $('#@Html.FieldIdFor(model => model.DirectDebitBIC)').show();
+            $('#lblDirectDebitCountry').hide();
+            $('#@Html.FieldIdFor(model => model.DirectDebitCountry)').show();
+            $('#lblDirectDebitIban').hide();
+            $('#@Html.FieldIdFor(model => model.DirectDebitIban)').show();
+
+            $('#btnEditDD').hide();
+            $('#btnSaveDD').show();
+            $('#btnCancelDD').show();
+        }
+        else {
+            $('#lblDirectDebitAccountHolder').show();
+            $('#@Html.FieldIdFor(model => model.DirectDebitAccountHolder)').hide();
+            $('#lblDirectDebitAccountNumber').show();
+            $('#@Html.FieldIdFor(model => model.DirectDebitAccountNumber)').hide();
+            $('#lblDirectDebitBankCode').show();
+            $('#@Html.FieldIdFor(model => model.DirectDebitBankCode)').hide();
+            $('#lblDirectDebitBankName').show();
+            $('#@Html.FieldIdFor(model => model.DirectDebitBankName)').hide();
+            $('#lblDirectDebitBIC').show();
+            $('#@Html.FieldIdFor(model => model.DirectDebitBIC)').hide();
+            $('#lblDirectDebitCountry').show();
+            $('#@Html.FieldIdFor(model => model.DirectDebitCountry)').hide();
+            $('#lblDirectDebitIban').show();
+            $('#@Html.FieldIdFor(model => model.DirectDebitIban)').hide();
+
+            $('#btnEditDD').show();
+            $('#btnSaveDD').hide();
+            $('#btnCancelDD').hide();
+        }
+    }
+</script>
+
+@Html.Widget("order_edit_top")
+
+<table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.OrderStatus)
+		</td>
+		<td class="adminData">
+			<div class="form-control-plaintext">
+				<b class="pr-3 align-top">@Model.OrderStatus</b>
+
+				@if (Model.CanCancelOrder)
+				{
+					<button type="submit" name="cancelorder" id="cancelorder" class="btn btn-sm btn-danger" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="fa fa-times"></i>
+						<span>@T("Admin.Orders.Fields.OrderStatus.Cancel")</span>
+					</button>
+				}
+
+				@if (Model.CanCompleteOrder)
+				{
+					<button type="submit" name="completeorder" id="completeorder" class="btn btn-sm btn-warning" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="fa fa-check"></i>
+						<span>@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</span>
+					</button>
+				}
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.OrderNumber)
+		</td>
+		<td class="adminData">
+			<div class="form-control-plaintext">
+				@Model.OrderNumber
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.OrderGuid)
+		</td>
+		<td class="adminData">
+			<div class="form-control-plaintext">
+				@Model.OrderGuid
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.StoreName)
+		</td>
+		<td class="adminData">
+			<div class="form-control-plaintext">
+				@Model.StoreName
+			</div>
+		</td>
+	</tr>
+	@if (Model.AffiliateId != 0)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AffiliateId)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<a href="@Url.Action("Edit", "Affiliate", new { id = Model.AffiliateId })">@Model.AffiliateFullName</a>
+				</div>>
+			</td>
+		</tr>
+	}
+	<tr class="adminSeparator">
+		<td colspan="2">
+			<hr />
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.CustomerId)
+		</td>
+		<td class="adminData">
+			<div class="form-control-plaintext">
+				<a href="@Url.Action("Edit", "Customer", new { id = Model.CustomerId })">@Model.CustomerName</a>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.CustomerIp)
+		</td>
+		<td class="adminData">
+			<div class="form-control-plaintext">
+				@Model.CustomerIp
+			</div>
+		</td>
+	</tr>
+	@if (Model.RecurringPaymentId > 0)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.RecurringPaymentId)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<a href="@Url.Action("Edit", "RecurringPayment", new { id = Model.RecurringPaymentId })">@T("Admin.Common.View")</a>
+				</div>
+			</td>
+		</tr>
+	}
+	@if (!String.IsNullOrEmpty(Model.VatNumber))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.VatNumber)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.VatNumber
+				</div>
+			</td>
+		</tr>
+	}
+	@if (Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.IncludingTax)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderSubtotalInclTax)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.OrderSubtotalInclTax
+				</div>
+			</td>
+		</tr>
+	}
+	@if (Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.ExcludingTax)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderSubtotalExclTax)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.OrderSubtotalExclTax
+				</div>
+			</td>
+		</tr>
+	}
+	@if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.IncludingTax) && !String.IsNullOrEmpty(Model.OrderSubTotalDiscountInclTax))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderSubTotalDiscountInclTax)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.OrderSubTotalDiscountInclTax
+				</div>
+			</td>
+		</tr>
+	}
+	@if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.ExcludingTax) && !String.IsNullOrEmpty(Model.OrderSubTotalDiscountExclTax))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderSubTotalDiscountExclTax)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.OrderSubTotalDiscountExclTax
+				</div>
+			</td>
+		</tr>
+	}
+	@if (Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.IncludingTax)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderShippingInclTax)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.OrderShippingInclTax
+				</div>
+			</td>
+		</tr>
+	}
+	@if (Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.ExcludingTax)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderShippingExclTax)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.OrderShippingExclTax
+				</div>
+			</td>
+		</tr>
+	}
+	@if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.IncludingTax) && !String.IsNullOrEmpty(Model.PaymentMethodAdditionalFeeInclTax))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeInclTax)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.PaymentMethodAdditionalFeeInclTax
+				</div>
+			</td>
+		</tr>
+	}
+	@if ((Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.ExcludingTax) && !String.IsNullOrEmpty(Model.PaymentMethodAdditionalFeeExclTax))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeExclTax)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.PaymentMethodAdditionalFeeExclTax
+				</div>
+			</td>
+		</tr>
+	}
+	@if (Model.DisplayTaxRates)
+	{
+		foreach (var tr in Model.TaxRates)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Tax)
+				</td>
+				<td class="adminData">
+					<div class="form-control-plaintext">
+						@tr.Rate% - @tr.Value
+					</div>
+				</td>
+			</tr>
+		}
+	}
+	@if (Model.DisplayTax)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Tax)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.Tax
+				</div>
+			</td>
+		</tr>
+	}
+	@if (!String.IsNullOrEmpty(Model.OrderTotalDiscount))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderTotalDiscount)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.OrderTotalDiscount
+				</div>
+			</td>
+		</tr>
+	}
+	@foreach (var gc in Model.GiftCards)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.GiftCards[0].CouponCode) (@(gc.CouponCode))
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@gc.Amount
+				</div>
+			</td>
+		</tr>
+	}
+	@if (Model.RedeemedRewardPoints > 0)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.RedeemedRewardPoints)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.RedeemedRewardPoints @T("Admin.Orders.Fields.RedeemedRewardPoints.Points")
+					/
+					@Model.RedeemedRewardPointsAmount
+				</div>
+			</td>
+		</tr>
+	}
+	@if (Model.OrderTotalRounding.HasValue())
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderTotalRounding)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.OrderTotalRounding
+				</div>
+			</td>
+		</tr>
+	}
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.OrderTotal)
+		</td>
+		<td class="adminData">
+			<div class="form-control-plaintext">
+				@Model.OrderTotal
+			</div>
+		</td>
+	</tr>
+	@if (!String.IsNullOrEmpty(Model.RefundedAmount))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.RefundedAmount)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.RefundedAmount
+				</div>
+			</td>
+		</tr>
+	}
+
+	<tr id="trEditOrderTotals">
+		<td>
+			<div class="card">
+				<table class="adminContent card-body">
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.OrderSubtotalInclTaxValue)
+						</td>
+						<td class="adminData form-horizontal">
+							@Html.EditorFor(model => model.OrderSubtotalInclTaxValue, new { postfix = T("Admin.Orders.Fields.Edit.InclTax").Text })
+							<div class="mt-3">
+								@Html.EditorFor(model => model.OrderSubtotalExclTaxValue, new { postfix = T("Admin.Orders.Fields.Edit.ExclTax").Text })
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.OrderSubTotalDiscountInclTaxValue)
+						</td>
+						<td class="adminData form-horizontal">
+							@Html.EditorFor(model => model.OrderSubTotalDiscountInclTaxValue, new { postfix = T("Admin.Orders.Fields.Edit.InclTax").Text })
+							<div class="mt-3">
+								@Html.EditorFor(model => model.OrderSubTotalDiscountExclTaxValue, new { postfix = T("Admin.Orders.Fields.Edit.ExclTax").Text })
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.OrderShippingInclTaxValue)
+						</td>
+						<td class="adminData form-horizontal">
+							@Html.EditorFor(model => model.OrderShippingInclTaxValue, new { postfix = T("Admin.Orders.Fields.Edit.InclTax").Text })
+							<div class="mt-3">
+								@Html.EditorFor(model => model.OrderShippingExclTaxValue, new { postfix = T("Admin.Orders.Fields.Edit.ExclTax").Text })
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeInclTaxValue)
+						</td>
+						<td class="adminData form-horizontal">
+							@Html.EditorFor(model => model.PaymentMethodAdditionalFeeInclTaxValue, new { postfix = T("Admin.Orders.Fields.Edit.InclTax").Text })
+							<div class="mt-3">
+								@Html.EditorFor(model => model.PaymentMethodAdditionalFeeExclTaxValue, new { postfix = T("Admin.Orders.Fields.Edit.ExclTax").Text })
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.TaxRatesValue)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.TaxRatesValue)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.TaxValue)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.TaxValue)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.OrderTotalDiscountValue)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.OrderTotalDiscountValue)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.OrderTotalRoundingValue)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.OrderTotalRoundingValue)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.OrderTotalValue)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.OrderTotalValue)
+						</td>
+					</tr>
+				</table>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<button type="submit" name="btnEditOrderTotals" onclick="toggleOrderTotals(true);return false;" id="btnEditOrderTotals" class="btn btn-secondary mt-1">
+				<i class="fa fa-pencil-square-o"></i>
+				<span>@T("Admin.Orders.Fields.EditOrderTotals")</span>
+			</button>
+			<button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-warning" value="@T("Admin.Orders.Fields.SaveOrderTotals")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Orders.Fields.SaveOrderTotals")</span>
+			</button>
+			<button type="submit" name="btnCancelOrderTotals" onclick="toggleOrderTotals(false);return false;" id="btnCancelOrderTotals" class="btn btn-secondary">
+				<i class="fa fa-times"></i>
+				<span>@T("Admin.Common.Cancel")</span>
+			</button>
+		</td>
+	</tr>
+
+	<tr class="adminSeparator">
+		<td colspan="2">
+			<hr />
+		</td>
+	</tr>
+
+	@if (Model.AllowStoringCreditCardNumber)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CardType)
+			</td>
+			<td class="adminData">
+				<span id="lblCardType">@Model.CardType</span>
+				@Html.EditorFor(model => model.CardType)
+			</td>
+		</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CardName)
+				</td>
+				<td class="adminData">
+					<span id="lblCardName">@Model.CardName</span>
+					@Html.EditorFor(model => model.CardName)
+				</td>
+			</tr>
+	}
+	@if (Model.AllowStoringCreditCardNumber || !String.IsNullOrEmpty(Model.CardNumber))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CardNumber)
+			</td>
+			<td class="adminData">
+				<span id="lblCardNumber">@Model.CardNumber</span>
+				@Html.EditorFor(model => model.CardNumber)
+			</td>
+		</tr>
+	}
+	@if (Model.AllowStoringCreditCardNumber)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CardCvv2)
+			</td>
+			<td class="adminData">
+				<span id="lblCardCvv2">@Model.CardCvv2</span>
+				@Html.EditorFor(model => model.CardCvv2)
+			</td>
+		</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CardExpirationMonth)
+				</td>
+				<td class="adminData">
+					<span id="lblCardExpirationMonth">@Model.CardExpirationMonth</span>
+					@Html.EditorFor(model => model.CardExpirationMonth)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CardExpirationYear)
+				</td>
+				<td class="adminData">
+					<span id="lblCardExpirationYear">@Model.CardExpirationYear</span>
+					@Html.EditorFor(model => model.CardExpirationYear)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<button type="submit" name="btnEditCC" value="@T("Admin.Orders.Fields.EditCC")" onclick="toggleCC(true);return false;" id="btnEditCC" class="btn btn-secondary">
+						<i class="fa fa-pencil-square-o"></i>
+						<span>@T("Admin.Orders.Fields.EditCC")</span>
+					</button>
+					<button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn btn-secondary" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="fa fa-check"></i>
+						<span>@T("Admin.Orders.Fields.SaveCC")</span>
+					</button>
+					<button type="submit" name="btnCancelCC" value="@T("Admin.Orders.Fields.CancelCC")" onclick="toggleCC(false);return false;" id="btnCancelCC" class="btn btn-secondary">
+						<i class="fa fa-times"></i>
+						<span>@T("Admin.Orders.Fields.CancelCC")</span>
+					</button>
+				</td>
+			</tr>
+			<tr class="adminSeparator">
+				<td colspan="2">
+					<hr />
+				</td>
+			</tr>
+	}
+
+	@if (Model.AllowStoringDirectDebit)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DirectDebitAccountHolder)
+			</td>
+			<td class="adminData">
+				<span id="lblDirectDebitAccountHolder">@Model.DirectDebitAccountHolder</span>
+				@Html.EditorFor(model => model.DirectDebitAccountHolder)
+			</td>
+		</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DirectDebitAccountNumber)
+				</td>
+				<td class="adminData">
+					<span id="lblDirectDebitAccountNumber">@Model.DirectDebitAccountNumber</span>
+					@Html.EditorFor(model => model.DirectDebitAccountNumber)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DirectDebitBankCode)
+				</td>
+				<td class="adminData">
+					<span id="lblDirectDebitBankCode">@Model.DirectDebitBankCode</span>
+					@Html.EditorFor(model => model.DirectDebitBankCode)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DirectDebitBankName)
+				</td>
+				<td class="adminData">
+					<span id="lblDirectDebitBankName">@Model.DirectDebitBankName</span>
+					@Html.EditorFor(model => model.DirectDebitBankName)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DirectDebitBIC)
+				</td>
+				<td class="adminData">
+					<span id="lblDirectDebitBIC">@Model.DirectDebitBIC</span>
+					@Html.EditorFor(model => model.DirectDebitBIC)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DirectDebitCountry)
+				</td>
+				<td class="adminData">
+					<span id="lblDirectDebitCountry">@Model.DirectDebitCountry</span>
+					@Html.EditorFor(model => model.DirectDebitCountry)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DirectDebitIban)
+				</td>
+				<td class="adminData">
+					<span id="lblDirectDebitIban">@Model.DirectDebitIban</span>
+					@Html.EditorFor(model => model.DirectDebitIban)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<button type="submit" name="btnEditDD" value="@T("Admin.Orders.Fields.EditDD")" onclick="toggleDD(true);return false;" id="btnEditDD" class="btn btn-secondary">
+						<i class="fa fa-pencil-square-o"></i>
+						<span>@T("Admin.Orders.Fields.EditDD")</span>
+					</button>
+					<button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn btn-secondary" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="fa fa-check"></i>
+						<span>@T("Admin.Orders.Fields.SaveDD")</span>
+					</button>
+					<button type="submit" name="btnCancelDD" value="@T("Admin.Orders.Fields.CancelDD")" onclick="toggleDD(false);return false;" id="btnCancelDD" class="btn btn-secondary">
+						<i class="fa fa-times"></i>
+						<span>@T("Admin.Orders.Fields.CancelDD")</span>
+					</button>
+				</td>
+			</tr>
+			<tr class="adminSeparator">
+				<td colspan="2">
+					<hr />
+				</td>
+			</tr>
+	}
+
+	@if (Model.DisplayCompletePaymentNote)
+	{
+		<tr>
+			<td colspan="2">
+				<div class="alert alert-warning">
+					@Html.Raw(T("Order.CompletePayment.AdminNote", Url.Action("Details", "Order", new { id = Model.Id, area = "" })))
+				</div>
+			</td>
+		</tr>
+	}
+	@if (Model.DisplayPurchaseOrderNumber)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PurchaseOrderNumber)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.PurchaseOrderNumber
+				</div>
+			</td>
+		</tr>
+	}
+	@if (!String.IsNullOrEmpty(Model.AuthorizationTransactionId))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AuthorizationTransactionId)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.AuthorizationTransactionId
+				</div>
+			</td>
+		</tr>
+	}
+	@if (!String.IsNullOrEmpty(Model.AuthorizationTransactionResult))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AuthorizationTransactionResult)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.AuthorizationTransactionResult
+				</div>
+			</td>
+		</tr>
+	}
+	@if (!String.IsNullOrEmpty(Model.CaptureTransactionId))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CaptureTransactionId)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.CaptureTransactionId
+				</div>
+			</td>
+		</tr>
+	}
+	@if (!String.IsNullOrEmpty(Model.CaptureTransactionResult))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CaptureTransactionResult)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.CaptureTransactionResult
+				</div>
+			</td>
+		</tr>
+	}
+	@if (!String.IsNullOrEmpty(Model.SubscriptionTransactionId))
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SubscriptionTransactionId)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.SubscriptionTransactionId
+				</div>
+			</td>
+		</tr>
+	}
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PaymentMethod)
+		</td>
+		<td class="adminData">
+			<div class="form-control-plaintext">
+				@Model.PaymentMethod
+				@if (Model.PaymentMethodSystemName.HasValue())
+				{
+					<span class="muted">(@Model.PaymentMethodSystemName)</span>
+				}
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PaymentStatus)
+		</td>
+		<td class="adminData">
+			<b class="pr-1">@Model.PaymentStatus</b>
+
+			@if (Model.CanMarkOrderAsPaid)
+			{
+				<input type="submit" name="markorderaspaid" value="@T("Admin.Orders.Fields.MarkAsPaid")" id="markorderaspaid" class="btn btn-secondary"
+					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.MarkAsPaid.Hint")" />
+			}
+			@if (Model.CanCapture)
+			{
+				<input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn btn-primary"
+					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Capture.Hint")" />
+			}
+			@if (Model.CanRefund)
+			{
+				<input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn btn-primary"
+					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Refund.Hint")" />
+			}
+			@if (Model.CanRefundOffline)
+			{
+				<input type="submit" name="refundorderoffline" value="@T("Admin.Orders.Fields.RefundOffline")" id="refundorderoffline" class="btn btn-secondary"
+					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.RefundOffline.Hint")" />
+			}
+			@if (Model.CanPartiallyRefund)
+			{
+				<input type="submit" id="partiallyrefundorder" name="partiallyrefundorder" value="@T("Admin.Orders.Fields.PartialRefund")" class="btn btn-primary"
+					   onclick="javascript:openPopup('@(Url.Action("PartiallyRefundOrderPopup", "Order", new { id = Model.Id, online = true, btnId = "btnRefreshPage", formId = "order-form" }))'); return false;"
+					   title="@T("Admin.Orders.Fields.PartialRefund.Hint")" />
+			}
+			@if (Model.CanPartiallyRefundOffline)
+			{
+				<input type="submit" id="partiallyrefundorderoffline" name="partiallyrefundorderoffline" value="@T("Admin.Orders.Fields.PartialRefundOffline")" class="btn btn-secondary"
+					   onclick="javascript:openPopup('@(Url.Action("PartiallyRefundOrderPopup", "Order", new { id = Model.Id, online = false, btnId = "btnRefreshPage", formId = "order-form" }))'); return false;"
+					   title="@T("Admin.Orders.Fields.PartialRefundOffline.Hint")" />
+			}
+			@if (Model.CanVoid)
+			{
+				<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn btn-primary"
+					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Void.Hint")" />
+			}
+			@if (Model.CanVoidOffline)
+			{
+				<input type="submit" name="voidorderoffline" value="@T("Admin.Orders.Fields.VoidOffline")" id="voidorderoffline" class="btn btn-secondary"
+					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.VoidOffline.Hint")" />
+			}
+
+			<script type="text/javascript">
+				$(document).ready(function () {
+					$('#btnRefreshPage').click(function () {
+						location.reload();
+					});
+				});
+			</script>
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.CreatedOn)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.UpdatedOn)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(model => model.UpdatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+		</td>
+	</tr>
+	<tr class="adminSeparator">
+		<td colspan="2">
+			<hr />
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AcceptThirdPartyEmailHandOver)
+		</td>
+		<td class="adminData">
+			<div class="form-control-plaintext">
+				@(Model.AcceptThirdPartyEmailHandOver ? T("Common.Yes") : T("Common.No"))
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			@if (Model.CustomerComment.HasValue())
+			{
+				<h4>@T("Admin.Order.CustomerComment.Heading")</h4>
+				<div class="alert alert-info">
+					@Model.CustomerComment
+				</div>
+			}
+		</td>
+	</tr>
+</table>

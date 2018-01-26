@@ -371,6 +371,8 @@ a.t-button.t-state-disabled:hover,
 -------------------------------------------------------------- */
 
 .t-grid {
+	box-shadow: 1px 1px 3px rgba(#000, 0.1);
+
 	td, th {
 		vertical-align: middle;
 		padding-left: 0.4rem;
@@ -512,29 +514,75 @@ a.t-button.t-state-disabled:hover,
 	background: $grid-pager-bg;
 	position: relative;
 	display: flex;
-	margin-left: -1px;
-	margin-right: -1px;
 
 	.btn,
 	.t-button {
 		display: block;
 		border-radius: 0 !important;
-		border: 0 !important;
 		margin: 0;
-		//border-right: 1px solid #626262 !important;
-		padding-top: 0.75rem;
-		padding-bottom: 0.75rem;
-		margin-right: 1px;
+		border: 0;
+		border-left: 1px solid rgba(#000, 0.1);
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+		background-color: transparent;
+		color: #515151;
+		font-size: $font-size-sm;
+		transition: $btn-transition;
+		box-shadow: none;
 
-		&:last-child {
-			margin-right: 0;
+		&:first-child {
+			border-left-width: 0;
+		}
+
+		&:hover {
+			background-color: $gray-200;
+		}
+
+		&:active {
+			background-color: $gray-300;
+			box-shadow: $btn-active-box-shadow !important;
+		}
+
+		&.t-grid-add {
+			&:hover {
+				background-color: darken($primary, 7.5%);
+				color: #fff;
+			}
+
+			&:active {
+				background-color: darken($primary, 10%);
+				color: #fff;
+			}
+		}
+
+		&.t-grid-save-changes {
+			&:hover {
+				background-color: darken($warning, 7.5%);
+				color: #fff;
+			}
+
+			&:active {
+				background-color: darken($warning, 10%);
+				color: #fff;
+			}
+		}
+
+		&.t-grid-cancel-changes {
+			&:hover {
+				background-color: $danger;
+				color: #fff;
+			}
+
+			&:active {
+				background-color: darken($danger, 10%);
+				color: #fff;
+			}
 		}
 	}
-
-	.t-button,
+	/*.t-button,
 	.btn:not(.btn-primary):not(.btn-warning):not(.btn-danger):not(.btn-secondary) {
 		@include button-variant($warning, $warning);
-	}
+	}*/
 }
 
 .t-grid-filter {
@@ -579,6 +627,11 @@ a.t-button.t-state-disabled:hover,
 	a.t-link:hover {
 		background-color: #fff2cf;
 	}
+
+	.t-arrow-up,
+	.t-arrow-down {
+		margin-left: 0.25rem;
+	}
 }
 
 
@@ -601,6 +654,7 @@ a.t-button.t-state-disabled:hover,
 		padding: 0;
 		padding-right: 0.6em;
 		padding-bottom: 7px;
+		padding-top: 3px;
 		height: auto;
 	}
 
@@ -616,8 +670,8 @@ a.t-button.t-state-disabled:hover,
 	.t-link,
 	.t-status-text,
 	.t-state-active {
-		padding-top: 0.3rem;
-		padding-bottom: 0.3rem;
+		padding-top: 0.4rem;
+		padding-bottom: 0.4rem;
 		font-size: $font-size-sm;
 		line-height: $line-height-base;
 		background-color: transparent;
@@ -658,6 +712,6 @@ a.t-button.t-state-disabled:hover,
 		color: #fff;*/
 		background-color: #fff;
 		border-color: rgba(#000, 0.15);
-		box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.06);
+		//box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.06);
 	}
 }

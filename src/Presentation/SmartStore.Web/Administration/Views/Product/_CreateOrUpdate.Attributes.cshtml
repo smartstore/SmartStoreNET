@@ -191,7 +191,7 @@
 							.Centered();
 						columns.Bound(x => x.AllowOutOfStockOrders)
 							.Width(60)
-							.HeaderTemplate("<i class=\"fa fa-sort-numeric-desc\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i>")
+							.HeaderTemplate("<span class='t-link'><i class=\"fa fa-sort-numeric-desc\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i></span>")
 							.Template(item => @Html.SymbolForBool(item.AllowOutOfStockOrders))
 							.ClientTemplate(@Html.SymbolForBool("AllowOutOfStockOrders"))
 							.Centered();
@@ -235,18 +235,17 @@
 
 @helper AttributeCombinationsGridCommands(Grid<ProductVariantAttributeCombinationModel> grid)
 {
-	<button class="btn btn-warning add-new-combination">
-		<i class="fa fa-plus"></i>
-		<span>@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")</span>
+	<button class="t-button t-grid-add add-new-combination">
+		@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
 	</button>
 
-	<button type="button" id="btnCreateAllCombinations" class="btn btn-warning ml-auto" data-url='@Url.Action("CreateAllAttributeCombinations", new { productId = Model.Id })'
+	<button type="button" id="btnCreateAllCombinations" class="t-button ml-auto" data-url='@Url.Action("CreateAllAttributeCombinations", new { productId = Model.Id })'
 			data-ask="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToCombineAll")">
 		<i class="fa fa-tasks"></i>
 		<span>@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CreateAllCombinations")</span>
 	</button>
 
-	<button type="button" id="btnDeleteAllCombinations" class="btn btn-danger" data-url='@Url.Action("DeleteAllAttributeCombinations", new { productId = Model.Id })'
+	<button type="button" id="btnDeleteAllCombinations" class="t-button t-grid-cancel-changes" data-url='@Url.Action("DeleteAllAttributeCombinations", new { productId = Model.Id })'
 			data-ask="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToDeleteAll")">
 		<i class="fa fa-trash-o"></i>
 		<span>@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.DeleteAllCombinations")</span>

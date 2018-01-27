@@ -773,6 +773,13 @@
     <Content Include="Content\telerik\sprite.png" />
     <Content Include="Content\vendors\moment\moment.min.js" />
     <Content Include="Content\vendors\moment\moment.js" />
+    <Content Include="Content\vendors\pnotify\css\pnotify.buttons.css" />
+    <Content Include="Content\vendors\pnotify\css\pnotify.css" />
+    <Content Include="Content\vendors\pnotify\css\pnotify.mobile.css" />
+    <Content Include="Content\vendors\pnotify\js\pnotify.animate.js" />
+    <Content Include="Content\vendors\pnotify\js\pnotify.buttons.js" />
+    <Content Include="Content\vendors\pnotify\js\pnotify.js" />
+    <Content Include="Content\vendors\pnotify\js\pnotify.mobile.js" />
     <Content Include="Content\vendors\select2\js\select2.js" />
     <Content Include="Content\vendors\select2\js\select2.min.js" />
     <Content Include="favicon.ico" />
@@ -899,6 +906,8 @@
     <Content Include="Content\bs4\scss\mixins\_text-truncate.scss" />
     <Content Include="Content\bs4\scss\mixins\_transition.scss" />
     <Content Include="Content\bs4\scss\mixins\_visibility.scss" />
+    <Content Include="Content\skinning\_pnotify.scss" />
+    <Content Include="Content\shared\_animate.scss" />
     <None Include="Content\telerik\_telerik.scss" />
     <Content Include="Content\_legacy.scss" />
     <Content Include="Content\vendors\select2\scss\_dropdown.scss" />

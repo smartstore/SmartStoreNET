@@ -1,8 +1,9 @@
-/// <reference path="../theme.scss" />
-/// <reference path="../vendors/pnotify/css/pnotify.css" />
-/// <reference path="../vendors/pnotify/css/pnotify.buttons.css" />
-/// <reference path="../vendors/pnotify/css/pnotify.mobile.css" />
-/// <reference path="../vendors/pnotify/css/pnotify.history.css" />
+/// <reference path="../shared/_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+/// <reference path="../pnotify/css/pnotify.css" />
+/// <reference path="../pnotify/css/pnotify.buttons.css" />
+/// <reference path="../pnotify/css/pnotify.mobile.css" />
+/// <reference path="../pnotify/css/pnotify.history.css" />
 
 
 /* PNOTIFY
@@ -26,10 +27,10 @@
     color: #fff;
     z-index: 10;
 
-    .alert-info &       { @include bubble('right', 'center', 8, $brand-info, $brand-info); }
-    .alert-success &    { @include bubble('right', 'center', 8, $brand-success, $brand-success); }
-    .alert-warning &    { @include bubble('right', 'center', 8, $brand-warning, $brand-warning); }
-    .alert-danger &     { @include bubble('right', 'center', 8, $brand-danger, $brand-danger); }
+    .alert-info &       { @include bubble('right', 'center', 8, $info, $info); }
+    .alert-success &    { @include bubble('right', 'center', 8, $success, $success); }
+    .alert-warning &    { @include bubble('right', 'center', 8, $warning, $warning); }
+    .alert-danger &     { @include bubble('right', 'center', 8, $danger, $danger); }
 
     > span {
         position: absolute;
@@ -120,10 +121,10 @@
     color: #fff !important;
     box-shadow: none !important; 
 
-    &.alert-info       { background-color: $brand-info !important }
-    &.alert-success    { background-color: $brand-success !important }
-    &.alert-warning    { background-color: $brand-warning !important }
-    &.alert-danger     { background-color: $brand-danger !important }
+    &.alert-info       { background-color: $info !important }
+    &.alert-success    { background-color: $success !important }
+    &.alert-warning    { background-color: $warning !important }
+    &.alert-danger     { background-color: $danger !important }
 }
 
 .ui-pnotify-dark .ui-pnotify-icon {

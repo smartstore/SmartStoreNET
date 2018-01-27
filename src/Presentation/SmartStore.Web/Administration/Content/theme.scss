@@ -207,9 +207,17 @@ $gray-lightest: $gray-100;
 @import 'shared/_dropdown.scss';
 @import "shared/_throbber.scss";
 @import "shared/_spinner.scss";
+@import 'shared/_animate.scss';
 @import "shared/_sortable-grip.scss";
 @import "shared/_entity-picker.scss";
 @import "shared/_utils.scss";
+
+//
+// Skinning
+// --------------------------------------------------
+
+@import "skinning/_select2.scss";
+@import "skinning/_pnotify.scss";
 
 
 //
@@ -400,6 +408,8 @@ pre {
 	&:not(.adminContent-vertical) > tr:not(.wide),
 	&:not(.adminContent-vertical) .adminRow:not(.wide) {
 		@include media-breakpoint-up(md) {
+			flex-wrap: nowrap;
+
 			> .adminTitle {
 				flex: 0 0 33.333333%;
 				max-width: 33.333333%;
@@ -665,11 +675,8 @@ textarea {
 
 
 
-
-
 //
-// Skinning
+// Telerik adaptation
 // --------------------------------------------------
 
-@import "skinning/_select2.scss";
 @import "telerik/_telerik.scss";

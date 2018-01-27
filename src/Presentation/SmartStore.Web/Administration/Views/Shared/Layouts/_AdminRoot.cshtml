@@ -27,8 +27,9 @@
 		flexCssRoot + "fontastic.css",
 		contentRoot + "font-awesome.css",
 		telerikCssRoot + "telerik.common.css",
-		contentRoot + "jquery.pnotify.default.css",
-		contentRoot + "jquery.pnotify.default.icons.css",
+		vendorsRoot + "pnotify/css/pnotify.css",
+		vendorsRoot + "pnotify/css/pnotify.mobile.css",
+		vendorsRoot + "pnotify/css/pnotify.buttons.css",
 		"~/Administration/Content/theme.scss");
 
 	// add js assets (Head)
@@ -83,7 +84,10 @@
 		scriptsRoot + "smartstore.thumbzoomer.js",
 		scriptsRoot + "smartstore.shrinkmenu.js",
 		scriptsRoot + "smartstore.scrollbutton.js",
-		scriptsRoot + "jquery.pnotify.js",
+		vendorsRoot + "pnotify/js/pnotify.js",
+		vendorsRoot + "pnotify/js/pnotify.mobile.js",
+		vendorsRoot + "pnotify/js/pnotify.buttons.js",
+		vendorsRoot + "pnotify/js/pnotify.animate.js",
 		scriptsRoot + "jquery.scrollTo.js",
 		scriptsRoot + "jquery.sortable.js",
 		// Admin
@@ -91,7 +95,7 @@
 		"~/Administration/Scripts/admin.globalinit.js");
 }
 <!DOCTYPE html>
-<html class="no-js not-ready loading">
+<html class="no-js not-ready loading" data-pnotify-firstpos1="140">
 <head>
     <title>@adminPageTitle</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />

@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 // Animation Default Settings                          //
 /////////////////////////////////////////////////////////
 
@@ -119,17 +119,15 @@ body {
 
 @if $use-fadeIn == true {
 	@keyframes fadeIn {
-		0% {
-			opacity: 0;
+		0% { 
+			opacity: 0; 
 		}
-
-		100% {
-			opacity: 1;
+		100% { 
+			opacity: 1; 
 		}
 	}
-
-	.fadeIn {
-		animation-name: fadeIn;
+	.fadeIn { 
+		animation-name: fadeIn; 
 	}
 }
 

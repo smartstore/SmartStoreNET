@@ -28,9 +28,9 @@
 
         _getProgressInfo: function (data) {
             return _.formatBitrate(data.bitrate) + ' | ' +
-                _.formatTime(
-                    (data.total - data.loaded) * 8 / data.bitrate
-                ) + ' | ' +
+                //_.formatTime(
+                //    (data.total - data.loaded) * 8 / data.bitrate
+                //) + ' | ' +
                 _.formatPercentage(
                     data.loaded / data.total
                 ) + ' | ' +
@@ -135,9 +135,9 @@
             	        // Iframe Transport does not support progress events.
             	        // In lack of an indeterminate progress bar, we set
             	        // the progress to 100%, showing the full animated bar:
-            	        el.find('.progress').addClass(!$.support.transition && 'progress-animated')
+            	        el.find('.progress-bar').addClass(!$.support.transition && 'progress-animated')
 	                       .attr('aria-valuenow', 100)
-	                       .find('.bar').css('width', '100%');
+	                       .css('width', '100%');
             	    }
             	})
             	.on(pre + 'fail.' + ns, function (e, data) {
@@ -152,8 +152,8 @@
 		                function () {
 		                    toggleButtons(false);
 		                    elProgress
-			                	.find('.progress').attr('aria-valuenow', 0)
-			                  	.find(".bar").css("width", "0%");
+			                	.find('.progress-bar').attr('aria-valuenow', 0)
+			                  	.css("width", "0%");
 		                    elProgress
 			                	.find('.progress-extended').html('&nbsp;');
 		                }
@@ -169,9 +169,9 @@
 			        }
 
 			        elProgress
-	                    .find('.progress')
+	                    .find('.progress-bar')
 	                    .attr('aria-valuenow', progress)
-	                    .find('.bar').css('width', progress + '%');
+	                    .css('width', progress + '%');
 			    })
             // cancel button
                 .on('click.' + ns, 'button.cancel', eventData, function (e) {

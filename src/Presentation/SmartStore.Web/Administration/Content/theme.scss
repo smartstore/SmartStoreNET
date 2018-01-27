@@ -151,6 +151,8 @@ $alert-border-radius:			0;
 
 $table-accent-bg:				rgba(#000, .015);
 
+//$thumbnail-border-radius:		0;
+
 //
 // Variables shims (TODO: remove later)
 // --------------------------------------------------
@@ -601,6 +603,7 @@ pre {
 .zoomable-thumb-clone {
 	border: 1px solid #bbb;
 	background-color: #fff;
+	z-index: 100;
 }
 
 

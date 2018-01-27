@@ -16,7 +16,7 @@
                 columns.Bound(x => x.PictureUrl)
                     .Width(400)
                     .Centered()
-                    .ClientTemplate("<a href='<#= PictureUrl #>' target='_blank'><img alt='<#= PictureId #>' src='<#= PictureUrl #>' class='img-polaroid' style='max-height: 100px' /><a/>")
+                    .ClientTemplate("<a href='<#= PictureUrl #>' target='_blank'><img alt='<#= PictureId #>' src='<#= PictureUrl #>' class='img-thumbnail' style='max-height: 100px' /><a/>")
                     .ReadOnly();
                 columns.Bound(x => x.DisplayOrder).Width(100);
                 columns.Command(commands =>

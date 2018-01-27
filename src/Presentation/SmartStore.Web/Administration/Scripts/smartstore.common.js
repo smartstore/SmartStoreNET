@@ -1,4 +1,14 @@
 ﻿(function ($, window, document, undefined) {
+	var viewport = ResponsiveBootstrapToolkit;
+
+	// TODO: (mc) ABS4 > delete viewport specific stuff from ~/Scripts/public.common.js, it's shared now.'
+	window.getPageWidth = function () {
+		return parseFloat($("#page").css("width"));
+	}
+
+	window.getViewport = function () {
+		return viewport;
+	}
 
 	window.setLocation = function (url) {
 		window.location.href = url;
@@ -265,6 +275,19 @@
 			EventBroker.subscribe("message", function (message, data) {
 				var opts = _.isString(data) ? { text: data } : data;
 				new PNotify(opts);
+			});
+		}
+
+		// Notify subscribers about page/content width change
+		if (window.EventBroker) {
+			var currentContentWidth = $('#content').width();
+			$(window).on('resize', function () {
+				var contentWidth = $('#content').width();
+				if (contentWidth !== currentContentWidth) {
+					currentContentWidth = contentWidth;
+					console.debug("Grid tier changed: " + viewport.current());
+					EventBroker.publish("page.resized", viewport);
+				}
 			});
 		}
 

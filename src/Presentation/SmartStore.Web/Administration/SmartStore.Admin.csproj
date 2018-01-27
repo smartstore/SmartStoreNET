@@ -940,6 +940,7 @@
     <Content Include="Scripts\smartstore.discountrules.js" />
     <Content Include="Scripts\smartstore.selectwrapper.js" />
     <None Include="Scripts\_references.js" />
+    <Content Include="Scripts\smartstore.viewport.js" />
     <Content Include="sitemap.config">
       <SubType>Designer</SubType>
     </Content>

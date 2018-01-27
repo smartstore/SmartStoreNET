@@ -415,6 +415,7 @@ label.forcheckbox {
 	transition: background-color 0.1s ease-in-out, padding 0.1s ease-in-out;
 
     @include make-row();
+	flex-wrap: nowrap;
     margin-left: 0;
     margin-right: 0;
 	
@@ -471,6 +472,13 @@ label.forcheckbox {
         padding-right: 0;
 		> * { vertical-align: middle; }
 	    &.btn-toolbar { margin: 0; }
+
+		@include media-breakpoint-down(md) {
+			// hide action button labels on small screens
+			.btn > span:not(:only-child) {
+				display: none;
+			}
+		}
 	}
     
     &.sticky {

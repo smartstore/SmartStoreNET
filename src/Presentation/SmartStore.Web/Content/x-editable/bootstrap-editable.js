@@ -1137,7 +1137,7 @@ Applied as jQuery method.
             }
             
             //if form is saving value, schedule hide
-            if(this.$form.data('editableform').isSaving) {
+			if (this.$form && this.$form.data && this.$form.data('editableform').isSaving) {
                 this.delayedHide = {reason: reason};
                 return;    
             } else {
@@ -4784,9 +4784,10 @@ Editableform based on Twitter Bootstrap 3
             $.extend(this.containerOptions, {
                 trigger: 'manual',
                 selector: false,
-                content: ' ',
+				content: ' ',
 				template: this.defaults.template,
-				title: this.options.title
+				title: this.options.title,
+				placement: this.options.placement || 'right'
 			});
             
             //as template property is used in inputs, hide it from popover
@@ -4806,7 +4807,12 @@ Editableform based on Twitter Bootstrap 3
         
         /* show */
         innerShow: function () {
-            this.call('show');
+			this.call('show');
+			// Avoid the need to scroll to show the popover completely.
+			_.delay(function () {
+				$('html, body').scrollLeft($(window).scrollLeft() + 1);
+			}, 50);
+			//$('html, body').animate({ scrollLeft: ($(window).scrollLeft() + 1) });
         },
         
         /* hide */

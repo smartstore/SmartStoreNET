@@ -9,9 +9,7 @@ namespace SmartStore.GoogleMerchantCenter.Models
 	public class FeedGoogleMerchantCenterModel
 	{
 		public int GridPageSize { get; set; }
-
-		public string[] AvailableGoogleCategories { get; set; }
-
+		public string LanguageSeoCode { get; set; }
 		public string[] EnergyEfficiencyClasses { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchProductName")]

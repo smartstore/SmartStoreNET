@@ -317,8 +317,8 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        // Ajax
-        public ActionResult AllCategories(string label, int selectedId)
+		// Ajax
+		public ActionResult AllCategories(string label, int selectedId)
         {
 			var categoryTree = _categoryService.GetCategoryTree(includeHidden: true);
 			var categories = categoryTree.Flatten(false);
@@ -343,17 +343,8 @@ namespace SmartStore.Admin.Controllers
 			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
 				_catalogSettings.MostRecentlyUsedCategoriesMaxSize);
 
-			// TODO: insert disabled option separator (select2 v.3.4.2 or higher required)
-			//if (mru.Count > 0)
-			//{
-			//	data.Insert(0, new
-			//	{
-			//		id = "",
-			//		text = "----------------------",
-			//		selected = false,
-			//		disabled = true
-			//	});
-			//}
+			// TODO: return two option groups... new JsonResult { Data = new object[] { new { text = "Last used", children = mruItems }, new { text = "All Categories", children = items } } };
+			// and load them through select2.ajax option.
 
 			for (int i = mru.Count - 1; i >= 0; --i)
 			{

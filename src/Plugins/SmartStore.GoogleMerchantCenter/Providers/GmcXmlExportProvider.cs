@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Mvc;
 using System.Xml;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
@@ -10,6 +11,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.GoogleMerchantCenter.Models;
 using SmartStore.GoogleMerchantCenter.Services;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
@@ -35,15 +37,18 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 		private readonly IGoogleFeedService _googleFeedService;
 		private readonly IMeasureService _measureService;
+		private readonly ICommonServices _services;
 		private readonly MeasureSettings _measureSettings;
 
 		public GmcXmlExportProvider(
 			IGoogleFeedService googleFeedService,
 			IMeasureService measureService,
+			ICommonServices services,
 			MeasureSettings measureSettings)
 		{
 			_googleFeedService = googleFeedService;
 			_measureService = measureService;
+			_services = services;
 			_measureSettings = measureSettings;
 
 			T = NullLocalizer.Instance;
@@ -137,15 +142,14 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			string fieldName,
 			string value)
 		{
-			// TODO
 			if (mappedValues == null)
 			{
-				// regular product
+				// Regular product.
 				WriteString(writer, fieldName, value);
 			}
 			else
 			{
-				// export attribute combination
+				// Export attribute combination.
 				if (mappedValues.ContainsKey(fieldName))
 				{
 					WriteString(writer, fieldName, mappedValues[fieldName].EmptyNull());
@@ -157,15 +161,9 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			}
 		}
 
-		public static string SystemName
-		{
-			get { return "Feeds.GoogleMerchantCenterProductXml"; }
-		}
+		public static string SystemName => "Feeds.GoogleMerchantCenterProductXml";
 
-		public static string Unspecified
-		{
-			get { return "__nospec__"; }
-		}
+		public static string Unspecified => "__nospec__";
 
 		public override ExportConfigurationInfo ConfigurationInfo
 		{
@@ -179,16 +177,17 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 					{
 						var model = (obj as ProfileConfigurationModel);
 
-						model.AvailableGoogleCategories = _googleFeedService.GetTaxonomyList();
+						model.LanguageSeoCode = _services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
+
+						model.AvailableCategories = model.DefaultGoogleCategory.HasValue()
+							? new List<SelectListItem> { new SelectListItem { Text = model.DefaultGoogleCategory, Value = model.DefaultGoogleCategory, Selected = true } }
+							: new List<SelectListItem>();
 					}
 				};
 			}
 		}
 
-		public override string FileExtension
-		{
-			get { return "XML"; }
-		}
+		public override string FileExtension => "XML";
 
 		protected override void Export(ExportExecuteContext context)
 		{

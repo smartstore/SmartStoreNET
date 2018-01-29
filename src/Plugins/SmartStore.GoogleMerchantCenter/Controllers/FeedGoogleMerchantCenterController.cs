@@ -76,8 +76,9 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			ViewBag.DefaultIsBundle = "";
 			ViewBag.DefaultEnergyEfficiencyClass = notSpecified;
 			ViewBag.DefaultCustomLabel = "";
+			ViewBag.LanguageSeoCode = Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
 
-			// we do not have export profile context here, so we simply use the first profile
+			// We do not have export profile context here, so we simply use the first profile.
 			var profile = _exportService.Value.GetExportProfilesBySystemName(GmcXmlExportProvider.SystemName).FirstOrDefault();
 			if (profile != null)
 			{
@@ -100,7 +101,11 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 						ViewBag.DefaultAgeGroup = T("Plugins.Feed.Froogle.AgeGroup" + culture.TextInfo.ToTitleCase(config.AgeGroup));
 					}
 				}
-			}		
+			}
+
+			ViewBag.AvailableCategories = model.Taxonomy.HasValue()
+				? new List<SelectListItem> { new SelectListItem { Text = model.Taxonomy, Value = model.Taxonomy, Selected = true } }
+				: new List<SelectListItem>();
 
 			ViewBag.AvailableGenders = new List<SelectListItem>
 			{ 
@@ -125,29 +130,15 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			return result;
 		}
 
-		public ActionResult GoogleCategories()
-		{
-			var categories = _googleFeedService.GetTaxonomyList();
-			return Json(categories, JsonRequestBehavior.AllowGet);
-		}
-
 		public ActionResult Configure()
 		{
 			var model = new FeedGoogleMerchantCenterModel();
 
 			model.GridPageSize = _adminAreaSettings.Value.GridPageSize;
-			model.AvailableGoogleCategories = _googleFeedService.GetTaxonomyList();
+			model.LanguageSeoCode = Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
 			model.EnergyEfficiencyClasses = T("Plugins.Feed.Froogle.EnergyEfficiencyClasses").Text.SplitSafe(",");
 
 			return View(model);
-		}
-
-		[HttpPost]
-		public ActionResult GoogleProductEdit(int pk, string name, string value)
-		{
-			_googleFeedService.Upsert(pk, name, value);
-
-			return this.Content("");
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
@@ -159,21 +150,21 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			};
 		}
 
+		[HttpPost]
+		public ActionResult GoogleProductEdit(int pk, string name, string value)
+		{
+			_googleFeedService.Upsert(pk, name, value);
+
+			return new EmptyResult();
+		}
+
 		public JsonResult GetGoogleCategories(string search, int? page)
 		{
 			page = page ?? 1;
 			const int take = 100;
 			var skip = (page.Value - 1) * take;
-			var categories = _googleFeedService.GetTaxonomyList();
-
-			if (search.HasValue())
-			{
-				categories = categories
-					.Where(x => x.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-					.ToArray();
-			}
-
-			var hasMoreItems = (page.Value * take) < categories.Length;
+			var categories = _googleFeedService.GetTaxonomyList(search);
+			var hasMoreItems = (page.Value * take) < categories.Count;
 			//$"{skip}\\{categories.Length} {hasMoreItems}: {search.NaIfEmpty()}".Dump();
 
 			var items = categories.Select(x => new
@@ -183,7 +174,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 				})
 				.Skip(skip)
 				.Take(take)
-				.ToArray();
+				.ToList();
 
 			return new JsonResult
 			{

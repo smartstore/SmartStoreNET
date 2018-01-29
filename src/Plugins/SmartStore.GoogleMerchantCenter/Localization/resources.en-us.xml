@@ -164,7 +164,7 @@
 		<Value>Not edited yet</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExpirationDays">
-		<Value>Expires in days</Value>
+		<Value>Expires in</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExpirationDays.Hint">
 		<Value>Number of days after products should expire or no longer appear. A value of 0 causes that no expiry date will be exported.</Value>

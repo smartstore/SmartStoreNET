@@ -136,11 +136,6 @@
 	
         <div>
             <script type="text/javascript">
-                $(function() {
-                	if ($.fn.editable)
-                		$.fn.editable.defaults.mode = 'popup';
-                });
-
                 function OnCommand(e) {
                     var link = $(e.row).find(".spec-attr-opt");
                     if(e.name == "edit") {
@@ -165,8 +160,9 @@
                     link.editable({
                         type: 'select2',
                         url: '@Url.Action("SetAttributeValue", "SpecificationAttribute")',
-                        unsavedclass: null,
-                        placement: "center",
+						unsavedclass: null,
+						mode: 'popup',
+                        placement: 'right',
                         autotext: 'auto',
 						select2: {
                             minimumResultsForSearch: 8,

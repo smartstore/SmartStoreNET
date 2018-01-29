@@ -204,17 +204,8 @@ namespace SmartStore.Admin.Controllers
 			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
 				_catalogSettings.MostRecentlyUsedManufacturersMaxSize);
 
-			// TODO: insert disabled option separator (select2 v.3.4.2 or higher required)
-			//if (mru.Count > 0)
-			//{
-			//	data.Insert(0, new
-			//	{
-			//		id = "",
-			//		text = "----------------------",
-			//		selected = false,
-			//		disabled = true
-			//	});
-			//}
+			// TODO: return two option groups... new JsonResult { Data = new object[] { new { text = "Last used", children = mruItems }, new { text = "All Manufacturers", children = items } } };
+			// and load them through select2.ajax option.
 
 			for (int i = mru.Count - 1; i >= 0; --i)
 			{

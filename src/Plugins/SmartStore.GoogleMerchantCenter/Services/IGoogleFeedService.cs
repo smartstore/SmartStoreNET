@@ -5,7 +5,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.GoogleMerchantCenter.Services
 {
-    public partial interface IGoogleFeedService
+	public partial interface IGoogleFeedService
     {
 		GoogleProductRecord GetGoogleProductRecord(int productId);
 
@@ -21,6 +21,6 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 		GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null, string touched = null);
 
-		string[] GetTaxonomyList();
+		List<string> GetTaxonomyList(string searchTerm);
     }
 }

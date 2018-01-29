@@ -157,10 +157,7 @@
 	   data-type="@type">@displayText</a>
 }
 
-	<script type="text/javascript">
-	$(document).ready(function () {
-		$.fn.editable.defaults.mode = 'popup';
-	});
+<script type="text/javascript">
 
 	$('#search-products').click(function () {
 		var grid = $('#gmc-products-grid').data('tGrid');
@@ -186,13 +183,19 @@
 			emptyCell = '@T("Plugins.Feed.Froogle.EmptyGridCell")';
 
 		var options = {
+			mode: 'popup',
+			placement: 'right',
 			emptytext: emptyCell,
 			url: '@Url.Action("GoogleProductEdit", "FeedGoogleMerchantCenter", new { Namespaces = "SmartStore.GoogleMerchantCenter.Controllers", area = GoogleMerchantCenterFeedPlugin.SystemName })'
 		};
+		var rightOptions = $.extend({}, options, {
+			placement: 'left'
+		});
 		var select2Options = {
 			placeholder: emptyCell,
 			minimumResultsForSearch: 20,
-			allowClear: true
+			allowClear: true,
+			language: '@Model.LanguageSeoCode'
 		};
 		var boolSource = [
 			{ id: 'true', text: '@T("Admin.Common.Yes")' },
@@ -229,13 +232,9 @@
 		}));
 
 		grid.find('a.edit-link-color').editable(options);
-
 		grid.find('a.edit-link-size').editable(options);
-
 		grid.find('a.edit-link-material').editable(options);
-
 		grid.find('a.edit-link-pattern').editable(options);
-
 		grid.find('a.edit-link-multipack2').editable($.extend({}, options, {
 			validate: function(value) {
 				if (value.length !== 0) {
@@ -257,24 +256,20 @@
 			select2: select2Options,
 			source: [
 				@if (Model.EnergyEfficiencyClasses != null && Model.EnergyEfficiencyClasses.Any())
+				{
+					foreach (var str in Model.EnergyEfficiencyClasses.Select(x => x.Replace("'", "\"")))
 					{
-						foreach (var str in Model.EnergyEfficiencyClasses.Select(x => x.Replace("'", "\"")))
-						{
-							<text>{ id: '@Html.Raw(str)', text: '@Html.Raw(str)' },</text>
-						}
+						<text>{ id: '@Html.Raw(str)', text: '@Html.Raw(str)' },</text>
 					}
+				}
 			]
 		}));
 
-		grid.find('a.edit-link-customlabel0').editable(options);
-		grid.find('a.edit-link-customlabel1').editable(options);
-		grid.find('a.edit-link-customlabel2').editable(options);
-		grid.find('a.edit-link-customlabel3').editable(options);
-		grid.find('a.edit-link-customlabel4').editable(options);
-
-
-
-
+		grid.find('a.edit-link-customlabel0').editable(rightOptions);
+		grid.find('a.edit-link-customlabel1').editable(rightOptions);
+		grid.find('a.edit-link-customlabel2').editable(rightOptions);
+		grid.find('a.edit-link-customlabel3').editable(rightOptions);
+		grid.find('a.edit-link-customlabel4').editable(rightOptions);
 
 		grid.find('a.edit-link-taxonomy').editable($.extend({}, options, {
 			tpl: '<select></select>',
@@ -287,7 +282,7 @@
 				placeholder: emptyCell,
 				dropdownAutoWidth: true,
 				allowClear: true,
-				minimumResultsForSearch: 20,
+				language: '@Model.LanguageSeoCode',
 				ajax: {
 					delay: 300,
 					cache: true,
@@ -315,23 +310,5 @@
 			}
 		}));
 
-
-		@*grid.find('a.edit-link-taxonomy').editable($.extend({}, options, {
-			select2: {
-				placeholder: emptyCell,
-				dropdownAutoWidth: true,
-				allowClear: true
-			},
-			source: [
-				@if (Model.AvailableGoogleCategories != null && Model.AvailableGoogleCategories.Any())
-					{
-						foreach (var str in Model.AvailableGoogleCategories.Select(x => x.Replace("'", "\"")))
-						{
-							<text>{ id: '@Html.Raw(str)', text: '@Html.Raw(str)' },</text>
-						}
-					}
-			]
-		}));*@
-
 	}
-	</script>
+</script>

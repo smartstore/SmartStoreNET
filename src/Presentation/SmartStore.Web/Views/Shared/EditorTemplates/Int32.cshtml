@@ -24,13 +24,14 @@
 }
 
 @{
-    string additionalClass = string.Empty;
-    if (ViewData.ContainsKey("small")) {
-        additionalClass = ViewData["small"].Convert<bool>() ? "small" : "";   
-    }
+	string additionalClass = string.Empty;
+	//if (ViewData.ContainsKey("stretch"))
+	//{
+	//	additionalClass = ViewData["stretch"].Convert<bool>() ? "flex-grow-1" : "";
+	//}
 }
 
-<div class="numerictextbox-group">
+<div class="numerictextbox-group flex-grow-1">
 	@(Html.Telerik().IntegerTextBox()
 			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
 			.EmptyMessage(T("Common.EnterValue"))

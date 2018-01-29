@@ -624,10 +624,10 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
 
     //loading div
     $.fn.editableform.loading = '<div class="editableform-loading"></div>';
-
+	
     //buttons
-    $.fn.editableform.buttons = '<button type="submit" class="editable-submit">ok</button>'+
-    '<button type="button" class="editable-cancel">cancel</button>';      
+	$.fn.editableform.buttons = '<button type="submit" class="editable-submit">' + Res['Common.OK'] + '</button>'+
+    '<button type="button" class="editable-cancel">' + Res['Common.Cancel'] +  '</button>';      
 
     //error class attached to control-group
     $.fn.editableform.errorGroupClass = null;  
@@ -3557,7 +3557,7 @@ Number
         }        
     });     
     NumberInput.defaults = $.extend({}, $.fn.editabletypes.text.defaults, {
-        tpl: '<input type="number">',
+        tpl: '<input type="number" class="form-control">',
         inputclass: 'input-mini',
         min: null,
         max: null,
@@ -4644,7 +4644,7 @@ $(function(){
         @property tpl 
         @default <input type="text">
         **/         
-        tpl:'<input type="text">',
+		tpl:'<input type="text" class="form-control">',
         /**
         @property inputclass 
         @default null
@@ -4720,19 +4720,19 @@ Editableform based on Twitter Bootstrap 3
         initInput: function() {  
             pInitInput.apply(this);
 
-            var emptyInputClass = this.input.options.inputclass === null || this.input.options.inputclass === false;
-            var defaultClass = 'form-control-sm';
-            
+            var emptyInputClass = !!(this.input.options.inputclass);
+            var defaultClass = 'form-control form-control-sm';
+
             //bs3 add `form-control` class to standard inputs
             var stdtypes = 'text,select,textarea,password,email,url,tel,number,range,time,typeaheadjs'.split(','); 
             if(~$.inArray(this.input.type, stdtypes)) {
-                this.input.$input.addClass('form-control');
+				this.input.$input.addClass('form-control form-control-sm');
                 if(emptyInputClass) {
                     this.input.options.inputclass = defaultClass;
                     this.input.$input.addClass(defaultClass);
                 }
             }             
-        
+
             //apply size class also to buttons (to fit size of control)
             var $btn = this.$form.find('.editable-buttons');
             var classes = emptyInputClass ? [defaultClass] : this.input.options.inputclass.split(' ');
@@ -6387,7 +6387,7 @@ Automatically shown in inline mode.
         /**
         @property tpl
         **/
-        tpl:'<div class="input-append date"><input type="text"/><span class="add-on"><i class="icon-th"></i></span></div>',
+		tpl:'<div class="input-append date"><input type="text" class="form-control"/><span class="add-on"><i class="icon-th"></i></span></div>',
         /**
         @property inputclass
         @default 'input-small'

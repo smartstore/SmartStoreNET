@@ -908,6 +908,7 @@
     <Content Include="Content\bs4\scss\mixins\_visibility.scss" />
     <Content Include="Content\skinning\_pnotify.scss" />
     <Content Include="Content\shared\_animate.scss" />
+    <Content Include="Content\skinning\_fileupload.scss" />
     <None Include="Content\telerik\_telerik.scss" />
     <Content Include="Content\_legacy.scss" />
     <Content Include="Content\vendors\select2\scss\_dropdown.scss" />

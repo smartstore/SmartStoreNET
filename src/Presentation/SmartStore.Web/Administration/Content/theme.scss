@@ -130,16 +130,16 @@ $btn-border-radius-sm:          .125rem;
 
 $dropdown-box-shadow:			0 3px 12px rgba(27,31,35, 0.15); //0 2px 6px rgba(#000, .15);
 $dropdown-border-color:			rgba(0, 0, 0, 0.08); 
-
 $dropdown-link-color:			$body-color; //$gray-800;
 $dropdown-link-hover-color:		#fff; //darken($gray-800, 5%);
 $dropdown-link-hover-bg:        $indigo;
-
 $dropdown-link-active-color:    $dropdown-link-hover-color;
 $dropdown-link-active-bg:       lighten($dropdown-link-hover-bg, 5%);
-
 $dropdown-item-padding-y:       0.625rem; // 0.5rem;
 $dropdown-item-padding-x:       1.5rem;
+
+$popover-box-shadow:			$dropdown-box-shadow;
+$popover-border-color:			$dropdown-border-color;
 
 $alert-padding-y:				1rem;
 
@@ -220,6 +220,7 @@ $gray-lightest: $gray-100;
 
 @import "skinning/_select2.scss";
 @import "skinning/_pnotify.scss";
+@import "skinning/_fileupload.scss";
 
 
 //
@@ -628,14 +629,14 @@ pre {
 // Adapt class-less form elements to bs4
 // --------------------------------------------------
 
-input[type=text]:not(.form-control-plaintext),
-input[type=password],
-input[type=email],
-input[type=number],
-input[type=tel],
+input[type=text]:not([class~="form-control"]),
+input[type=password]:not([class~="form-control"]),
+input[type=email]:not([class~="form-control"]),
+input[type=number]:not([class~="form-control"]),
+input[type=tel]:not([class~="form-control"]),
 .t-numerictextbox > .t-input,
-select,
-textarea {
+select:not([class~="form-control"]),
+textarea:not([class~="form-control"]) {
 	@extend .form-control;
 }
 

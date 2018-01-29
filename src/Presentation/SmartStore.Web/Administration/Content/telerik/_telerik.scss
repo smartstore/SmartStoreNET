@@ -658,7 +658,7 @@ a.t-button.t-state-disabled:hover,
 		padding: 0;
 		padding-right: 0.6em;
 		padding-bottom: 7px;
-		padding-top: 3px;
+		padding-top: 9px;
 		height: auto;
 	}
 
@@ -674,8 +674,8 @@ a.t-button.t-state-disabled:hover,
 	.t-link,
 	.t-status-text,
 	.t-state-active {
-		padding-top: 0.4rem;
-		padding-bottom: 0.4rem;
+		padding-top: 0.6rem;
+		padding-bottom: 0.6rem;
 		font-size: $font-size-sm;
 		line-height: $line-height-base;
 		background-color: transparent;
@@ -717,5 +717,9 @@ a.t-button.t-state-disabled:hover,
 		background-color: #fff;
 		border-color: rgba(#000, 0.15);
 		//box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.06);
+	}
+
+	.t-status-text {
+		padding-right: 0.75rem;
 	}
 }

@@ -59,8 +59,8 @@
 
         var itemUrl = GetNodeLink(node);
 
-        <li data-id="@item.Id" class="nav-item@(node.HasChildren ? " dropdown dropdown-hoverdrop" : "")">
-			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl">
+        <li data-id="@item.Id" class="nav-item@(node.HasChildren ? " dropdown x-dropdown-hoverdrop" : "")">
+			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl" @Html.Attr("data-toggle", "dropdown", node.HasChildren)>
 				@if (item.Icon.HasValue())
 				{
 					<i class="icm icm-@item.Icon navbar-icon"></i>

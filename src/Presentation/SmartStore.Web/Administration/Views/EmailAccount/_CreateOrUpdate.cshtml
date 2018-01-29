@@ -104,7 +104,8 @@
             </td>
             <td class="adminData">
                 <button type="submit" name="sendtestemail" value="sendtestemail" class="btn btn-secondary">
-					<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Configuration.EmailAccounts.SendTestEmail.Button")
+					<i class="fa fa-envelope"></i>
+					<span>@T("Admin.Configuration.EmailAccounts.SendTestEmail.Button")</span>
 				</button>
             </td>
         </tr>
@@ -114,7 +115,7 @@
 @if (Model.TestEmailShortErrorMessage.HasValue())
 {
 	<p>
-		<div class="alert alert-error">@Model.TestEmailShortErrorMessage</div>
+		<div class="alert alert-danger">@Model.TestEmailShortErrorMessage</div>
 		<pre>@Model.TestEmailFullErrorMessage</pre>
 	</p>
 }

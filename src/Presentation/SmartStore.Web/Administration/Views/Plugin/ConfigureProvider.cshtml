@@ -19,9 +19,9 @@
 	@if (Model.PluginDescriptor != null)
 	{
 		<div class="options">
-			<a class="btn" href='@Url.Action("UpdateStringResources", "Plugin", new { systemName = Model.PluginDescriptor.SystemName, returnUrl = Request.RawUrl })'>
+			<a class="btn btn-secondary" href='@Url.Action("UpdateStringResources", "Plugin", new { systemName = Model.PluginDescriptor.SystemName, returnUrl = Request.RawUrl })'>
 				<i class="fa fa-refresh"></i>
-				@T("Admin.Configuration.Plugins.Resources.Update")
+				<span>@T("Admin.Configuration.Plugins.Resources.Update")</span>
 			</a>
 		</div>		
 	}

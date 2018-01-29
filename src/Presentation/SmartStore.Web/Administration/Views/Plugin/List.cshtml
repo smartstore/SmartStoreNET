@@ -124,50 +124,45 @@
 
 @using (Html.BeginForm("ExecuteTasks", null, FormMethod.Post, new { id = "plugins-form" }))
 {
-    @Html.DropDownList("pluginsToInstall", allPluginsSelectList, new { @class = "hide", multiple = "multiple" })
-    @Html.DropDownList("pluginsToUninstall", allPluginsSelectList, new { @class = "hide", multiple = "multiple" })
+    @Html.DropDownList("pluginsToInstall", allPluginsSelectList, new { @class = "d-none noskin", multiple = "multiple" })
+    @Html.DropDownList("pluginsToUninstall", allPluginsSelectList, new { @class = "d-none noskin", multiple = "multiple" })
 
     <div class="section-header">
         <div class="title">
             <i class="fa fa-puzzle-piece"></i>
             @T("Admin.Configuration.Plugins")
         </div>
-        <div class="options">
-            @Html.TextBox("filter-query", "", new { style = "margin: 0", placeholder = T("Common.Search").Text })
-            <button id="btn-execute-tasks" type="submit" class="btn" disabled="disabled">
+        <div class="options form-inline">
+            @Html.TextBox("filter-query", "", new { @class= "form-control my-0 mr-1", style = "width:350px", placeholder = T("Common.Search").Text })
+            <button id="btn-execute-tasks" type="submit" class="btn btn-secondary mr-1" disabled="disabled">
                 <i class="fa fa-cogs"></i>
-                @T("Admin.Configuration.Plugins.ExecuteTasks")
+                <span>@T("Admin.Configuration.Plugins.ExecuteTasks")</span>
                 <span class="badge badge-dark label-uninstall-count hide">0</span>
                 <span class="badge badge-warning label-install-count hide">0</span>
             </button>
-			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn" role="button">
+			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn btn-secondary mr-1" role="button">
 				<i class="fa fa-upload"></i>
-				@T("Admin.Packaging.UploadPlugin")
+				<span>@T("Admin.Packaging.UploadPlugin")</span>
 			</a>
-            <div class="btn-group" style="vertical-align: middle">
-                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            <div class="dropdown">
+                <a class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" href="#">
                     @T("Admin.Common.Edit")
-					<span class="fa fa-caret-down"></span>
                 </a>
-                <ul class="dropdown-menu pull-right">
-                    <li>
-                        <a href="@Url.Action("ReloadList")">
-                            <i class="fa fa-refresh"></i>
-							@T("Admin.Configuration.Plugins.ReloadList")
-                        </a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("UpdateAllStringResources")" class="plugin-update-allresources" >
-                            <i class="fa fa-refresh"></i>
-							@T("Admin.Configuration.Plugins.Resources.UpdateAll")
-                        </a>
-                    </li>
-                </ul>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a href="@Url.Action("ReloadList")" class="dropdown-item" >
+                        <i class="fa fa-refresh"></i>
+						@T("Admin.Configuration.Plugins.ReloadList")
+                    </a>                    
+                    <a href="@Url.Action("UpdateAllStringResources")" class="plugin-update-allresources dropdown-item">
+                        <i class="fa fa-refresh"></i>
+						@T("Admin.Configuration.Plugins.Resources.UpdateAll")
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="alert alert-info fade in">
+    <div class="alert alert-info">
         <button class="close" data-dismiss="alert">x</button>
         <h4>@T("Admin.Configuration.Plugins.Description")</h4>
         <ol>
@@ -190,29 +185,29 @@
 					</div>
                 }
 
-                <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
+                <input type="submit" id="btnRefresh" name="btnRefresh" class="d-none" />
             </td>
         </tr>
     </table>
 }
 
-<div id="plugin-licence-modal">	
-	<div class="modal modal-large hide fade" tabindex="-1">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
-			<h4 class="caption">
-				@T("Admin.Common.License")
-			</h4>
-		</div>
-		<div class="modal-body"></div>
-		<div class="modal-footer">
-			<button class="btn pull-left licensing-reset-status-check" data-dismiss="modal">@T("Admin.Plugins.LicensingResetStatusCheck")</button>
-			<button class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
-			<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-		</div>
-	</div>
-</div>
-
+@{Html.SmartStore().Window()
+    .Name("plugin-licence-modal")
+	.Size(WindowSize.Large)
+    .Title(T("Admin.Common.License").Text)
+    .FooterContent(@<text>
+		<button class="btn btn-flat btn-secondary" data-dismiss="modal">
+			<span>@T("Common.Cancel")</span>
+		</button>
+		<button class="btn btn-secondary pull-left licensing-reset-status-check" data-dismiss="modal">
+			<span>@T("Admin.Plugins.LicensingResetStatusCheck")</span>
+		</button>
+		<button class="btn btn-primary" data-dismiss="modal">
+			<span>@T("Common.OK")</span>
+		</button>
+    </text>)
+    .Render();
+}
 
 <script type="text/javascript">
 	$(document).ready(function () {
@@ -422,6 +417,8 @@
     		var dialog = $('#plugin-licence-modal'),
 				url = $(this).attr('data-url');
 
+			console.log(dialog);
+
     		dialog.find('.modal-body').empty();
 
     		$(this).doAjax({
@@ -430,6 +427,8 @@
     			callbackSuccess: function (resp) {
     				dialog = $('#plugin-licence-modal');
     				dialog.find('.modal-body').html(resp);
+
+					console.log(resp);
 
     				setTimeout(function() {
     					dialog.find('[name="Licenses[0].LicenseKey"]').focus();
@@ -445,7 +444,7 @@
     			}
     		});
 
-    		dialog.find('.modal').modal('show');
+    		dialog.modal('show');
     		return false;
     	});
 

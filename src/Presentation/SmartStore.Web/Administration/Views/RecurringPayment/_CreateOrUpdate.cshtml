@@ -5,24 +5,27 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("recurringpayment-edit").Items(x =>
+
+@Html.SmartStore().TabStrip().Name("recurringpayment-edit").Style(TabsStyle.Material).Items(x =>
 {
-    var tabInfo = x.Add().Text(T("Admin.RecurringPayments.Info").Text).Content(TabInfo()).Selected(true);
-    var tabHistory = x.Add().Text(T("Admin.RecurringPayments.History").Text).Content(TabHistory());
+    x.Add().Text(T("Admin.RecurringPayments.Info").Text).Content(TabInfo()).Selected(true);
+    x.Add().Text(T("Admin.RecurringPayments.History").Text).Content(TabHistory());
     
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "recurringpayment-edit", this.Html, this.Model));
 })
+
 @helper TabInfo()
-    {
-        
+{        
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.InitialOrderId)
             </td>
             <td class="adminData">
-                @Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = Model.InitialOrderId }, new { })
+				<div class="form-control-plaintext">
+					@Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = Model.InitialOrderId }, new { })
+				</div>
             </td>
         </tr>
         <tr>
@@ -30,15 +33,17 @@
                 @Html.SmartLabelFor(model => model.CustomerEmail)
             </td>
             <td class="adminData">
-                @Html.ActionLink(Model.CustomerEmail, "Edit", "Customer", new { id = Model.CustomerId }, new { })
-            </td>
+				<div class="form-control-plaintext">
+					@Html.ActionLink(Model.CustomerEmail, "Edit", "Customer", new { id = Model.CustomerId }, new { })
+				</div>
+			</td>
         </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CycleLength)
             </td>
             <td class="adminData">
-                @Html.Telerik().IntegerTextBoxFor(model => model.CycleLength).MinValue(1)
+				@Html.EditorFor(model => model.CycleLength)
                 @Html.ValidationMessageFor(model => model.CycleLength)
             </td>
         </tr>
@@ -56,7 +61,7 @@
                 @Html.SmartLabelFor(model => model.TotalCycles)
             </td>
             <td class="adminData">
-                @Html.Telerik().IntegerTextBoxFor(model => model.TotalCycles).MinValue(1)
+				@Html.EditorFor(model => model.TotalCycles)
                 @Html.ValidationMessageFor(model => model.TotalCycles)
             </td>
         </tr>
@@ -65,15 +70,19 @@
                 @Html.SmartLabelFor(model => model.CyclesRemaining)
             </td>
             <td class="adminData">
-                @Model.CyclesRemaining
-            </td>
+				<div class="form-control-plaintext">
+					@Model.CyclesRemaining
+				</div>
+			</td>
         </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PaymentType)
             </td>
             <td class="adminData">
-                @Model.PaymentType
+				<div class="form-control-plaintext">
+					@Model.PaymentType
+				</div>
             </td>
         </tr>
         <tr>
@@ -81,7 +90,9 @@
                 @Html.SmartLabelFor(model => model.StartDate)
             </td>
             <td class="adminData">
-                @Model.StartDate
+				<div class="form-control-plaintext">
+					@Model.StartDate
+				</div>
             </td>
         </tr>
         <tr>
@@ -95,28 +106,35 @@
         </tr>
     </table>
 }
+
 @helper TabHistory()
-    { 
-    
+{ 
+   
     <table class="adminContent">
         <tr>
-            <td style="padding-bottom:10px">
-                @if (!String.IsNullOrEmpty(Model.NextPaymentDate))
-                {
-                    @T("Admin.RecurringPayments.History.NextPaymentDate")
-                    
-                    <text>:</text> <strong>@Model.NextPaymentDate</strong>
-                    
-                    <button type="submit" name="processnextpayment" value="processnextpayment" class="btn pull-right">
-                        @T("Admin.RecurringPayments.History.ProcessNextPayment")
-                    </button>
-                }
-                @if (Model.CanCancelRecurringPayment)
-                {
-                    <button type="submit" name="cancelpayment" value="cancelpayment" class="btn pull-right" style="margin-right:3px">
-                        @T("Admin.RecurringPayments.History.CancelPayment")
-                    </button>
-                }
+            <td class="pb-3">
+				<div class="row">
+					@if (!String.IsNullOrEmpty(Model.NextPaymentDate))
+					{
+						<div class="col">
+							@T("Admin.RecurringPayments.History.NextPaymentDate"): <strong>@Model.NextPaymentDate</strong>
+						</div>
+
+						<div class="col-ml-auto">
+							<button type="submit" name="processnextpayment" value="processnextpayment" class="btn btn-secondary">
+								<span>@T("Admin.RecurringPayments.History.ProcessNextPayment")</span>
+							</button>
+						</div>
+					}
+					@if (Model.CanCancelRecurringPayment)
+					{
+						<div class="col col-auto pl-1">
+							<button type="submit" name="cancelpayment" value="cancelpayment" class="btn btn-secondary">
+								<span>@T("Admin.RecurringPayments.History.CancelPayment")</span>
+							</button>
+						</div>
+					}
+				</div>
             </td>
         </tr>
 

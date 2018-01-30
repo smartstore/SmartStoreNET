@@ -11,13 +11,12 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Topics
 {
 	[Validator(typeof(TopicValidator))]
-    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>
+    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>, IStoreSelector
     {       
         public TopicModel()
         {
 			WidgetWrapContent = true;
 			Locales = new List<TopicLocalizedModel>();
-			AvailableStores = new List<StoreModel>();
             AvailableTitleTags = new List<SelectListItem>(); 
             AvailableTitleTags.Add(new SelectListItem { Text = "h1", Value = "h1" });
             AvailableTitleTags.Add(new SelectListItem { Text = "h2", Value = "h2" });
@@ -29,14 +28,12 @@ namespace SmartStore.Admin.Models.Topics
             AvailableTitleTags.Add(new SelectListItem { Text = "span", Value = "span" });
         }
 
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		// Store mapping
 		public bool LimitedToStores { get; set; }
-
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]
         public string SystemName { get; set; }
 

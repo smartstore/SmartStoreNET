@@ -13,7 +13,6 @@
 */
 
 (function ($) {
-
     var parentWidget = ($.blueimpFP || $.blueimp).fileupload;
     $.widget('blueimpUI.fileupload', parentWidget, {
 
@@ -229,5 +228,57 @@
             parentWidget.prototype.disable.call(this);
         }
 
-    });
+	});
+
+	// Wrapper & global init
+	$.fn.fileUploadWrapper = function (options) {
+		return this.each(function () {
+			var el = $(this),
+				img = el.find('.img-thumbnail'),
+				elHidden = el.find('.hidden'),
+				elRemove = el.find('.remove'),
+				elCancel = el.find('.cancel')
+				elFile = el.find('.fileinput-button');
+
+			var opts = {
+				url: el.data('upload-url'),
+				dataType: 'json',
+				//acceptFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
+				acceptFileTypes: new RegExp('(\.|\/)(' + (el.data('accept') || 'gif|jpe?g|png') + ')$', 'i'),
+				pasteZone: null,
+				done: function (e, data) {
+					var result = data.result;
+					if (result.success) {
+						img.attr('src', result.imageUrl);
+						elHidden.val(result.pictureId);
+						elRemove.removeClass("hide");
+
+						elCancel.addClass("hide");
+						elFile.removeClass("hide");
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					if (errorThrown === 'abort') {
+						//alert('File Upload has been canceled');
+					}
+				}
+			};
+
+			options = $.extend({}, opts, options)
+
+			el.fileupload(options);
+
+			elRemove.on('click', function (e) {
+				img.attr('src', el.data('fallback-url'));
+				elHidden.val(0);
+				$(this).addClass("hide");
+				e.preventDefault();
+			});
+
+			// TODO: work out better solution for external buttons
+			$("#add-product-picture").on("click", function () {
+				elRemove.trigger("click");
+			});
+		});
+	};
 })(jQuery);

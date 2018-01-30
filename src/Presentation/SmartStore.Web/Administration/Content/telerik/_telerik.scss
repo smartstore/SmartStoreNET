@@ -271,7 +271,7 @@ a.t-button.t-state-disabled:hover,
 		right: 1px;
 		bottom: 1px;
 		left: auto;
-		width: calc(#{$input-height} + 3px);
+		width: calc(#{$input-height});
 
 		.t-grid-edit-row & {
 			width: 1.5rem;
@@ -316,7 +316,7 @@ a.t-button.t-state-disabled:hover,
 		top: 0;
 		right: 0;
 		height: 50%;
-		width: calc(#{$input-height} + 3px);
+		width: calc(#{$input-height});
 
 		.t-grid-edit-row & {
 			width: 1.5rem;

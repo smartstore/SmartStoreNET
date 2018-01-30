@@ -629,14 +629,14 @@ pre {
 // Adapt class-less form elements to bs4
 // --------------------------------------------------
 
-input[type=text]:not([class~="form-control"]),
-input[type=password]:not([class~="form-control"]),
-input[type=email]:not([class~="form-control"]),
-input[type=number]:not([class~="form-control"]),
-input[type=tel]:not([class~="form-control"]),
+input[type=text]:not([class*="form-control"]),
+input[type=password]:not([class*="form-control"]),
+input[type=email]:not([class*="form-control"]),
+input[type=number]:not([class*="form-control"]),
+input[type=tel]:not([class*="form-control"]),
 .t-numerictextbox > .t-input,
-select:not([class~="form-control"]),
-textarea:not([class~="form-control"]) {
+select:not([class*="form-control"]),
+textarea:not([class*="form-control"]) {
 	@extend .form-control;
 }
 
@@ -677,6 +677,30 @@ textarea:not([class~="form-control"]) {
 	}
 }
 
+
+//
+// Datetimepicker
+// --------------------------------------------------
+
+.datetimepicker-group {
+	.input-group-text {
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+		width: $input-height;
+
+		> i {
+			width: 100%;
+		}
+	}
+
+	&.input-group-sm .input-group-text {
+		width: $input-height-sm;
+	}
+
+	&.input-group-lg .input-group-text {
+		width: $input-height-lg;
+	}
+}
 
 
 //

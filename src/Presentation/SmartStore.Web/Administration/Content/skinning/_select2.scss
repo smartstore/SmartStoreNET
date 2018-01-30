@@ -65,9 +65,9 @@ $s2sm-inner-border-color: rgba(#000, 0.08);
 $s2sm-option-padding-vertical: 0.5rem;
 $s2sm-option-font-size: 0.75rem;
 $s2sm-shade-bg: $gray-100;
-$s2sm-caret-width: calc(#{$input-height} + 3px);
-$s2sm-caret-width-lg: calc(#{$input-height-lg} + 3px);
-$s2sm-caret-width-sm: calc(#{$input-height-sm} + 3px);
+$s2sm-caret-width: $input-height;
+$s2sm-caret-width-lg: $input-height-lg;
+$s2sm-caret-width-sm: $input-height-sm;
 
 
 // Bootstrap defaults not available as pre-defined variables
@@ -567,7 +567,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 		padding: $s2bs-padding-large-vertical $s2bs-padding-large-horizontal + $s2bs-caret-width-large*3 $s2bs-padding-large-vertical $s2bs-padding-large-horizontal;
 		/* 1 */
 		.select2-selection__arrow {
-			width: calc(#{$input-height-lg} + 3px);
+			width: $input-height-lg;
 		}
 	}
 

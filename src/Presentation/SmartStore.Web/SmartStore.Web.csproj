@@ -1347,12 +1347,10 @@
     <Content Include="Content\fileupload\images\loading.gif" />
     <Content Include="Content\fileupload\images\progressbar.gif" />
     <Content Include="Content\fileupload\jquery.fileupload-fp.js" />
-    <Content Include="Content\fileupload\jquery.fileupload-ui.css" />
     <Content Include="Content\fileupload\jquery.fileupload-ui.js" />
     <Content Include="Content\fileupload\jquery.fileupload.js" />
     <Content Include="Content\fileupload\jquery.iframe-transport.js" />
     <Content Include="Content\fileupload\jquery.fileupload-single-ui.js" />
-    <Content Include="Content\fileupload\jquery.fileupload-single-ui.css" />
     <Content Include="Content\fileupload\locale.js" />
     <Content Include="Content\editors\BBEditor\ed.js" />
     <Content Include="Content\bootstrap\media.less" />

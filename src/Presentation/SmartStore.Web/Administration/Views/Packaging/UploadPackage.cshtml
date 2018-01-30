@@ -9,8 +9,7 @@
 		.Name("uploadpackage-window")
 		.Title(dialogTitle).Size(WindowSize.Large)
 		.Content(@<text>
-		@using (Html.BeginForm("UploadPackage", "Packaging", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
-		{
+		<form enctype="multipart/form-data" method="POST" action="@Url.Action("UploadPackage", "Packaging")">
 			<div class="alert alert-info">
 				@dialogInfo
 			</div>
@@ -26,7 +25,7 @@
 					</div>
 				</div>
 			</div>
-		}
+		</form>
 		</text>)
 		.FooterContent(@<text>
 			<a href="#" class="btn btn-secondary btn-flat" data-dismiss="modal">

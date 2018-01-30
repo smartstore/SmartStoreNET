@@ -473,7 +473,7 @@ label.forcheckbox {
 		> * { vertical-align: middle; }
 	    &.btn-toolbar { margin: 0; }
 
-		@include media-breakpoint-down(md) {
+		@media (max-width: 768px) {
 			// hide action button labels on small screens
 			.btn > span:not(:only-child) {
 				display: none;

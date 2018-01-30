@@ -165,22 +165,6 @@
 
 @helper ThemeSettingsTab()
 {
-	<script>
-		$(function () {
-			$("#@Html.FieldIdFor(model => model.AllowCustomerToSelectTheme)").on('click', toggleThemeChooser);
-			toggleThemeChooser();
-		});
-
-		function toggleThemeChooser() {
-			if ($('#@Html.FieldIdFor(model => model.AllowCustomerToSelectTheme)').is(':checked')) {
-				$('#pnlSaveThemeChoiceInCookie').show();
-			}
-			else {
-				$('#pnlSaveThemeChoiceInCookie').hide();
-			}
-		}
-	</script>
-
     @Html.HiddenFor(x => x.DefaultTheme)
     
     @Html.ValidationSummary(false)
@@ -190,7 +174,7 @@
 				@Html.SmartLabelFor(model => model.AllowCustomerToSelectTheme)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => model.AllowCustomerToSelectTheme)
+				@Html.CheckBoxFor(model => model.AllowCustomerToSelectTheme, new { data_toggler_for = "#pnlSaveThemeChoiceInCookie" })
 				@Html.ValidationMessageFor(model => model.AllowCustomerToSelectTheme)
 			</td>
 		</tr>
@@ -241,7 +225,7 @@
 			</td>
 			<td class="adminData">
 				<a href="@Url.Action("ClearAssetCache")" class="btn btn-danger">
-					@T("Admin.Configuration.Themes.ClearAssetCache")
+					<span>@T("Admin.Configuration.Themes.ClearAssetCache")</span>
 				</a>
 			</td>
 		</tr>

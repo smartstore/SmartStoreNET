@@ -4,7 +4,7 @@
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 
-@Html.SmartStore().TabStrip().Name("shipping-method-edit").Items(x =>
+@Html.SmartStore().TabStrip().Name("shipping-method-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
 	x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
@@ -32,7 +32,7 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Locales[item].Description)
 			</td>
-			<td class="adminData">
+			<td class="adminData wide">
 				@Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
 				@Html.ValidationMessageFor(model => model.Locales[item].Description)
 			</td>
@@ -53,7 +53,7 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Description)
 			</td>
-			<td class="adminData">
+			<td class="adminData wide">
 				@Html.EditorFor(model => model.Description, Html.RichEditorFlavor())
 				@Html.ValidationMessageFor(model => model.Description)
 			</td>

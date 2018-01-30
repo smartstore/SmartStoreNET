@@ -4720,7 +4720,7 @@ Editableform based on Twitter Bootstrap 3
         initInput: function() {  
             pInitInput.apply(this);
 
-            var emptyInputClass = !!(this.input.options.inputclass);
+			var emptyInputClass = this.input.options.inputclass === null || this.input.options.inputclass === false;
             var defaultClass = 'form-control form-control-sm';
 
             //bs3 add `form-control` class to standard inputs
@@ -4734,7 +4734,7 @@ Editableform based on Twitter Bootstrap 3
             }             
 
             //apply size class also to buttons (to fit size of control)
-            var $btn = this.$form.find('.editable-buttons');
+			var $btn = this.$form.find('.editable-buttons');
             var classes = emptyInputClass ? [defaultClass] : this.input.options.inputclass.split(' ');
             for(var i=0; i<classes.length; i++) {
                 // `btn-sm` is default now

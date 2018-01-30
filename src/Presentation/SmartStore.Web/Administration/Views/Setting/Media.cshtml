@@ -11,7 +11,10 @@
             @T("Admin.Configuration.Settings.Media")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 
@@ -163,10 +166,13 @@
 					</div>
 				</div>
 				<div class="alert alert-warning">
-					@T("Admin.Configuration.Settings.Media.MoveMediaNote")
-					<p></p>
-					@(T("Admin.Configuration.Settings.Media.CurrentStorageLocation")): 
-					<strong>@Model.StorageProvider</strong>
+					<p>
+						@T("Admin.Configuration.Settings.Media.MoveMediaNote")
+					</p>
+					<p>
+						@(T("Admin.Configuration.Settings.Media.CurrentStorageLocation")):
+						<strong>@Model.StorageProvider</strong>
+					</p>
 				</div>
 			</td>
 		</tr>
@@ -177,7 +183,7 @@
 			<td class="adminData">
 				@Html.DropDownListFor(model => model.StorageProvider, Model.AvailableStorageProvider)
 
-				<button type="button" id="MoveMediaButton" class="btn btn-info" data-url="@Url.Action("ChangeMediaStorage")">
+				<button type="button" id="MoveMediaButton" class="btn btn-danger mt-3" data-url="@Url.Action("ChangeMediaStorage")">
 					<i class="fa fa-fw fa-gears"></i>
 					@(T("Admin.Common.MoveNow"))!
 				</button>
@@ -203,7 +209,6 @@
     			$(this).doPostData({
     				data: { targetProvider: $('#@Html.FieldIdFor(model => model.StorageProvider)').val() }
     			});
-
     		}
     	});
     });

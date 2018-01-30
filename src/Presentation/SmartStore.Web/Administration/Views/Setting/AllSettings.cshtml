@@ -1,7 +1,5 @@
 ﻿@{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.AllSettings").Text;
 }
 @using Telerik.Web.Mvc.UI;
@@ -17,42 +15,43 @@
     @T("Admin.Configuration.Settings.AllSettings.Description")
 </div>
 
-
-@(Html.Telerik().Grid<SettingModel>()
-        .Name("settings-grid")
-        .DataKeys(x =>
-        {
-            x.Add(y => y.Id).RouteKey("Id");
-        })
-        .Columns(columns =>
-        {
+<div>
+	@(Html.Telerik().Grid<SettingModel>()
+		.Name("settings-grid")
+		.DataKeys(x =>
+		{
+			x.Add(y => y.Id).RouteKey("Id");
+		})
+		.Columns(columns =>
+		{
 			columns.Bound(x => x.Name).Width("25%");
 			columns.Bound(x => x.Value).Width("55%").EditorTemplateName("MultilineText");
 			columns.Bound(x => x.Store).EditorTemplateName("Store").Width("15%");
-            columns.Command(commands =>
-            {
-                commands.Edit().Localize(T);
-                commands.Delete().Localize(T);
-            });
+			columns.Command(commands =>
+			{
+				commands.Edit().Localize(T);
+				commands.Delete().Localize(T);
+			});
 
-        })
-        .ToolBar(x => x.Insert())
-        .Editable(x =>
-        {
-            x.Mode(GridEditMode.InLine);
-        })
-        .Filterable()
-        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-        .DataBinding(dataBinding =>
-        {
-            dataBinding.Ajax().Select("AllSettings", "Setting")
-                .Update("SettingUpdate", "Setting")
-                .Delete("SettingDelete", "Setting")
-                .Insert("SettingAdd", "Setting");
-        })
-        .ClientEvents(x => x.OnError("grid_onError").OnEdit("grid_onStoreEdit"))
+		})
+		.ToolBar(x => x.Insert())
+		.Editable(x =>
+		{
+			x.Mode(GridEditMode.InLine);
+		})
+		.Filterable()
+		.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding =>
+		{
+			dataBinding.Ajax().Select("AllSettings", "Setting")
+				.Update("SettingUpdate", "Setting")
+				.Delete("SettingDelete", "Setting")
+				.Insert("SettingAdd", "Setting");
+		})
+		.ClientEvents(x => x.OnError("grid_onError").OnEdit("grid_onStoreEdit"))
 		.PreserveGridState()
-        .EnableCustomBinding(true))
+		.EnableCustomBinding(true))
+</div>
 
 <script>
     function grid_onError(e) {

@@ -1,7 +1,4 @@
 ﻿@model OrderSettingsModel
-@using Telerik.Web.Mvc.UI;
-@using SmartStore.Core.Domain.Orders;
-
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Order").Text;
 }
@@ -14,7 +11,10 @@
             @T("Admin.Configuration.Settings.Order")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 
@@ -22,13 +22,13 @@
 
     @Html.ValidationSummary(false)
 
-    @Html.SmartStore().TabStrip().Name("ordersettings-edit").Items(x =>
+    @Html.SmartStore().TabStrip().Name("ordersettings-edit").Style(TabsStyle.Material).Items(x =>
     {
-    x.Add().Text(T("Admin.Configuration.Settings.Order.OrderSettings").Text).Content(TabOrderSettings()).Selected(true);
-    x.Add().Text(T("Admin.Configuration.Settings.Order.ReturnRequestSettings").Text).Content(TabReturnRequestSettings());
+		x.Add().Text(T("Admin.Configuration.Settings.Order.OrderSettings").Text).Content(TabOrderSettings()).Selected(true);
+		x.Add().Text(T("Admin.Configuration.Settings.Order.ReturnRequestSettings").Text).Content(TabReturnRequestSettings());
 
-    //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "ordersettings-edit", this.Html, this.Model));
+		//generate an event
+		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "ordersettings-edit", this.Html, this.Model));
     })
 }
 
@@ -49,8 +49,8 @@
                 @Html.SmartLabelFor(model => model.MinOrderSubtotalAmount)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.MinOrderSubtotalAmount)
-                @Html.ValidationMessageFor(model => model.MinOrderSubtotalAmount) @Model.PrimaryStoreCurrencyCode
+				@Html.EditorFor(model => model.MinOrderSubtotalAmount, new { postfix = Model.PrimaryStoreCurrencyCode })
+                @Html.ValidationMessageFor(model => model.MinOrderSubtotalAmount)
             </td>
         </tr>
         <tr>
@@ -58,8 +58,8 @@
                 @Html.SmartLabelFor(model => model.MinOrderTotalAmount)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.MinOrderTotalAmount)
-                @Html.ValidationMessageFor(model => model.MinOrderTotalAmount) @Model.PrimaryStoreCurrencyCode
+                @Html.EditorFor(model => model.MinOrderTotalAmount, new { postfix = Model.PrimaryStoreCurrencyCode })
+                @Html.ValidationMessageFor(model => model.MinOrderTotalAmount)
             </td>
         </tr>
         <tr>
@@ -171,8 +171,6 @@
             </td>
         </tr>
     </table>
-	
-	<p></p>
 	
 	@(Html.LocalizedEditor<OrderSettingsModel, OrderSettingsLocalizedModel>("setting-order-localized",
 		@<table class="adminContent">

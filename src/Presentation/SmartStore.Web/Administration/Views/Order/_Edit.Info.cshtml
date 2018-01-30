@@ -1,6 +1,5 @@
 ﻿@model OrderModel
 @using SmartStore.Core.Domain.Tax;
-@using SmartStore.Core.Domain.Catalog;
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -25,36 +24,16 @@
     }
 
     function toggleCC(editmode) {
-        if (editmode) {
-            $('#lblCardType').hide();
-            $('#@Html.FieldIdFor(model => model.CardType)').show();
-            $('#lblCardName').hide();
-            $('#@Html.FieldIdFor(model => model.CardName)').show();
-            $('#lblCardNumber').hide();
-            $('#@Html.FieldIdFor(model => model.CardNumber)').show();
-            $('#lblCardCvv2').hide();
-            $('#@Html.FieldIdFor(model => model.CardCvv2)').show();
-            $('#lblCardExpirationMonth').hide();
-            $('#@Html.FieldIdFor(model => model.CardExpirationMonth)').show();
-            $('#lblCardExpirationYear').hide();
-            $('#@Html.FieldIdFor(model => model.CardExpirationYear)').show();
+		if (editmode) {
+			$('.cc-control').parent().hide();
+			$('.cc-control').closest(".adminData").find("input").show();
             $('#btnEditCC').hide();
             $('#btnSaveCC').show();
             $('#btnCancelCC').show();
         }
         else {
-            $('#lblCardType').show();
-            $('#@Html.FieldIdFor(model => model.CardType)').hide();
-            $('#lblCardName').show();
-            $('#@Html.FieldIdFor(model => model.CardName)').hide();
-            $('#lblCardNumber').show();
-            $('#@Html.FieldIdFor(model => model.CardNumber)').hide();
-            $('#lblCardCvv2').show();
-            $('#@Html.FieldIdFor(model => model.CardCvv2)').hide();
-            $('#lblCardExpirationMonth').show();
-            $('#@Html.FieldIdFor(model => model.CardExpirationMonth)').hide();
-            $('#lblCardExpirationYear').show();
-            $('#@Html.FieldIdFor(model => model.CardExpirationYear)').hide();
+			$('.cc-control').parent().show();
+			$('.cc-control').closest(".adminData").find("input").hide();
             $('#btnEditCC').show();
             $('#btnSaveCC').hide();
             $('#btnCancelCC').hide();
@@ -62,42 +41,16 @@
     }
 
     function toggleDD(editmode) {
-        if (editmode) {
-            $('#lblDirectDebitAccountHolder').hide();
-            $('#@Html.FieldIdFor(model => model.DirectDebitAccountHolder)').show();
-            $('#lblDirectDebitAccountNumber').hide();
-            $('#@Html.FieldIdFor(model => model.DirectDebitAccountNumber)').show();
-            $('#lblDirectDebitBankCode').hide();
-            $('#@Html.FieldIdFor(model => model.DirectDebitBankCode)').show();
-            $('#lblDirectDebitBankName').hide();
-            $('#@Html.FieldIdFor(model => model.DirectDebitBankName)').show();
-            $('#lblDirectDebitBIC').hide();
-            $('#@Html.FieldIdFor(model => model.DirectDebitBIC)').show();
-            $('#lblDirectDebitCountry').hide();
-            $('#@Html.FieldIdFor(model => model.DirectDebitCountry)').show();
-            $('#lblDirectDebitIban').hide();
-            $('#@Html.FieldIdFor(model => model.DirectDebitIban)').show();
-
+		if (editmode) {
+			$('.dd-control').parent().hide();
+			$('.dd-control').closest(".adminData").find("input").show();
             $('#btnEditDD').hide();
             $('#btnSaveDD').show();
             $('#btnCancelDD').show();
         }
         else {
-            $('#lblDirectDebitAccountHolder').show();
-            $('#@Html.FieldIdFor(model => model.DirectDebitAccountHolder)').hide();
-            $('#lblDirectDebitAccountNumber').show();
-            $('#@Html.FieldIdFor(model => model.DirectDebitAccountNumber)').hide();
-            $('#lblDirectDebitBankCode').show();
-            $('#@Html.FieldIdFor(model => model.DirectDebitBankCode)').hide();
-            $('#lblDirectDebitBankName').show();
-            $('#@Html.FieldIdFor(model => model.DirectDebitBankName)').hide();
-            $('#lblDirectDebitBIC').show();
-            $('#@Html.FieldIdFor(model => model.DirectDebitBIC)').hide();
-            $('#lblDirectDebitCountry').show();
-            $('#@Html.FieldIdFor(model => model.DirectDebitCountry)').hide();
-            $('#lblDirectDebitIban').show();
-            $('#@Html.FieldIdFor(model => model.DirectDebitIban)').hide();
-
+			$('.dd-control').parent().show();
+			$('.dd-control').closest(".adminData").find("input").hide();
             $('#btnEditDD').show();
             $('#btnSaveDD').hide();
             $('#btnCancelDD').hide();
@@ -561,19 +514,23 @@
 				@Html.SmartLabelFor(model => model.CardType)
 			</td>
 			<td class="adminData">
-				<span id="lblCardType">@Model.CardType</span>
+				<div class="form-control-plaintext">
+					<span id="lblCardType" class="cc-control">@Model.CardType</span>
+				</div>
 				@Html.EditorFor(model => model.CardType)
 			</td>
 		</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CardName)
-				</td>
-				<td class="adminData">
-					<span id="lblCardName">@Model.CardName</span>
-					@Html.EditorFor(model => model.CardName)
-				</td>
-			</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CardName)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblCardName" class="cc-control">@Model.CardName</span>
+				</div>
+				@Html.EditorFor(model => model.CardName)
+			</td>
+		</tr>
 	}
 	@if (Model.AllowStoringCreditCardNumber || !String.IsNullOrEmpty(Model.CardNumber))
 	{
@@ -582,7 +539,9 @@
 				@Html.SmartLabelFor(model => model.CardNumber)
 			</td>
 			<td class="adminData">
-				<span id="lblCardNumber">@Model.CardNumber</span>
+				<div class="form-control-plaintext">
+					<span id="lblCardNumber" class="cc-control">@Model.CardNumber</span>
+				</div>
 				@Html.EditorFor(model => model.CardNumber)
 			</td>
 		</tr>
@@ -594,7 +553,9 @@
 				@Html.SmartLabelFor(model => model.CardCvv2)
 			</td>
 			<td class="adminData">
-				<span id="lblCardCvv2">@Model.CardCvv2</span>
+				<div class="form-control-plaintext">
+					<span id="lblCardCvv2" class="cc-control">@Model.CardCvv2</span>
+				</div>
 				@Html.EditorFor(model => model.CardCvv2)
 			</td>
 		</tr>
@@ -603,7 +564,9 @@
 					@Html.SmartLabelFor(model => model.CardExpirationMonth)
 				</td>
 				<td class="adminData">
-					<span id="lblCardExpirationMonth">@Model.CardExpirationMonth</span>
+					<div class="form-control-plaintext">
+						<span id="lblCardExpirationMonth" class="cc-control">@Model.CardExpirationMonth</span>
+					</div>
 					@Html.EditorFor(model => model.CardExpirationMonth)
 				</td>
 			</tr>
@@ -612,7 +575,9 @@
 					@Html.SmartLabelFor(model => model.CardExpirationYear)
 				</td>
 				<td class="adminData">
-					<span id="lblCardExpirationYear">@Model.CardExpirationYear</span>
+					<div class="form-control-plaintext">
+						<span id="lblCardExpirationYear" class="cc-control">@Model.CardExpirationYear</span>
+					</div>
 					@Html.EditorFor(model => model.CardExpirationYear)
 				</td>
 			</tr>
@@ -646,85 +611,99 @@
 				@Html.SmartLabelFor(model => model.DirectDebitAccountHolder)
 			</td>
 			<td class="adminData">
-				<span id="lblDirectDebitAccountHolder">@Model.DirectDebitAccountHolder</span>
+				<div class="form-control-plaintext">
+					<span id="lblDirectDebitAccountHolder" class="dd-control">@Model.DirectDebitAccountHolder</span>
+				</div>
 				@Html.EditorFor(model => model.DirectDebitAccountHolder)
 			</td>
 		</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DirectDebitAccountNumber)
-				</td>
-				<td class="adminData">
-					<span id="lblDirectDebitAccountNumber">@Model.DirectDebitAccountNumber</span>
-					@Html.EditorFor(model => model.DirectDebitAccountNumber)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DirectDebitBankCode)
-				</td>
-				<td class="adminData">
-					<span id="lblDirectDebitBankCode">@Model.DirectDebitBankCode</span>
-					@Html.EditorFor(model => model.DirectDebitBankCode)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DirectDebitBankName)
-				</td>
-				<td class="adminData">
-					<span id="lblDirectDebitBankName">@Model.DirectDebitBankName</span>
-					@Html.EditorFor(model => model.DirectDebitBankName)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DirectDebitBIC)
-				</td>
-				<td class="adminData">
-					<span id="lblDirectDebitBIC">@Model.DirectDebitBIC</span>
-					@Html.EditorFor(model => model.DirectDebitBIC)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DirectDebitCountry)
-				</td>
-				<td class="adminData">
-					<span id="lblDirectDebitCountry">@Model.DirectDebitCountry</span>
-					@Html.EditorFor(model => model.DirectDebitCountry)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DirectDebitIban)
-				</td>
-				<td class="adminData">
-					<span id="lblDirectDebitIban">@Model.DirectDebitIban</span>
-					@Html.EditorFor(model => model.DirectDebitIban)
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<button type="submit" name="btnEditDD" value="@T("Admin.Orders.Fields.EditDD")" onclick="toggleDD(true);return false;" id="btnEditDD" class="btn btn-secondary">
-						<i class="fa fa-pencil-square-o"></i>
-						<span>@T("Admin.Orders.Fields.EditDD")</span>
-					</button>
-					<button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn btn-secondary" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-						<i class="fa fa-check"></i>
-						<span>@T("Admin.Orders.Fields.SaveDD")</span>
-					</button>
-					<button type="submit" name="btnCancelDD" value="@T("Admin.Orders.Fields.CancelDD")" onclick="toggleDD(false);return false;" id="btnCancelDD" class="btn btn-secondary">
-						<i class="fa fa-times"></i>
-						<span>@T("Admin.Orders.Fields.CancelDD")</span>
-					</button>
-				</td>
-			</tr>
-			<tr class="adminSeparator">
-				<td colspan="2">
-					<hr />
-				</td>
-			</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DirectDebitAccountNumber)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblDirectDebitAccountNumber" class="dd-control">@Model.DirectDebitAccountNumber</span>
+				</div>
+				@Html.EditorFor(model => model.DirectDebitAccountNumber)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DirectDebitBankCode)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblDirectDebitBankCode" class="dd-control">@Model.DirectDebitBankCode</span>
+				</div>
+				@Html.EditorFor(model => model.DirectDebitBankCode)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DirectDebitBankName)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblDirectDebitBankName" class="dd-control">@Model.DirectDebitBankName</span>
+				</div>
+				@Html.EditorFor(model => model.DirectDebitBankName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DirectDebitBIC)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblDirectDebitBIC" class="dd-control">@Model.DirectDebitBIC</span>
+				</div>
+				@Html.EditorFor(model => model.DirectDebitBIC)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DirectDebitCountry)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblDirectDebitCountry" class="dd-control">@Model.DirectDebitCountry</span>
+				</div>
+				@Html.EditorFor(model => model.DirectDebitCountry)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DirectDebitIban)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblDirectDebitIban" class="dd-control">@Model.DirectDebitIban</span>
+				</div>
+				@Html.EditorFor(model => model.DirectDebitIban)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<button type="submit" name="btnEditDD" value="@T("Admin.Orders.Fields.EditDD")" onclick="toggleDD(true);return false;" id="btnEditDD" class="btn btn-secondary">
+					<i class="fa fa-pencil-square-o"></i>
+					<span>@T("Admin.Orders.Fields.EditDD")</span>
+				</button>
+				<button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn btn-secondary" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+					<i class="fa fa-check"></i>
+					<span>@T("Admin.Orders.Fields.SaveDD")</span>
+				</button>
+				<button type="submit" name="btnCancelDD" value="@T("Admin.Orders.Fields.CancelDD")" onclick="toggleDD(false);return false;" id="btnCancelDD" class="btn btn-secondary">
+					<i class="fa fa-times"></i>
+					<span>@T("Admin.Orders.Fields.CancelDD")</span>
+				</button>
+			</td>
+		</tr>
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<hr />
+			</td>
+		</tr>
 	}
 
 	@if (Model.DisplayCompletePaymentNote)

@@ -184,8 +184,8 @@ namespace SmartStore.OfflinePayment.Controllers
 					paymentInfo.CreditCardType = form["CreditCardType"];
 					paymentInfo.CreditCardName = form["CardholderName"];
 					paymentInfo.CreditCardNumber = form["CardNumber"];
-					paymentInfo.CreditCardExpireMonth = int.Parse(form["ExpireMonth"]);
-					paymentInfo.CreditCardExpireYear = int.Parse(form["ExpireYear"]);
+					paymentInfo.CreditCardExpireMonth = int.Parse(form["ExpireMonth"].SplitSafe(",")[0]);
+					paymentInfo.CreditCardExpireYear = int.Parse(form["ExpireYear"].SplitSafe(",")[0]);
 					paymentInfo.CreditCardCvv2 = form["CardCode"];
 				}
 				else if (type == "DirectDebit")

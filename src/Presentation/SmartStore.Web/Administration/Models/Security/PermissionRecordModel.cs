@@ -19,7 +19,7 @@ namespace SmartStore.Admin.Models.Security
 						return "badge-success";
 
 					case "Plugin":
-						return "";
+						return "badge-warning";
 
 					default:
 						return "badge-info";

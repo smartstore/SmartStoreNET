@@ -187,7 +187,7 @@
 				<div class="adminData">
 					<div class="form-row">
 						<div class="col">
-							@Html.EditorFor(model => model.BasePriceBaseAmount, new { small = true })
+							@Html.EditorFor(model => model.BasePriceBaseAmount)
 						</div>
 						<div class="col-auto" style="width: 120px">
 							@Html.DropDownListFor(model => model.BasePriceMeasureUnit, Model.AvailableMeasureUnits)
@@ -200,7 +200,7 @@
 					@Html.SmartLabelFor(model => model.BasePriceAmount)
 				</div>
 				<div class="adminData">
-					@Html.EditorFor(model => model.BasePriceAmount, new { small = true })
+					@Html.EditorFor(model => model.BasePriceAmount)
 					<span id="BasePriceAmountInfo" class="d-inline-block text-muted pt-2">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
 				</div>
 			</div>

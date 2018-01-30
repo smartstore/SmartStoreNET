@@ -134,31 +134,20 @@
                 @Html.SmartLabelFor(model => model.MiniShoppingCartEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.MiniShoppingCartEnabled, new { data_toggler_for = "#pnlMiniShoppingCart" })
+				@Html.CheckBoxFor(model => model.MiniShoppingCartEnabled, new { data_toggler_for = "#pnlShowProductImagesInMiniShoppingCart" })
                 @Html.ValidationMessageFor(model => model.MiniShoppingCartEnabled)
             </td>
         </tr>
-		<tbody id="pnlMiniShoppingCart">
-			<tr id="pnlMiniShoppingCartProductNumber">
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.MiniShoppingCartProductNumber)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.MiniShoppingCartProductNumber)
-					@Html.ValidationMessageFor(model => model.MiniShoppingCartProductNumber)
-				</td>
-			</tr>
-			<tr id="pnlShowProductImagesInMiniShoppingCart">
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.ShowProductImagesInMiniShoppingCart)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.ShowProductImagesInMiniShoppingCart)
-					@Html.ValidationMessageFor(model => model.ShowProductImagesInMiniShoppingCart)
-				</td>
-			</tr>
-		</tbody>
-
+		<tr id="pnlShowProductImagesInMiniShoppingCart">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowProductImagesInMiniShoppingCart)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowProductImagesInMiniShoppingCart)
+				@Html.ValidationMessageFor(model => model.ShowProductImagesInMiniShoppingCart)
+			</td>
+		</tr>
+	
         <tr>
 			<td class="adminSeparator" colspan="2">
 				<hr />

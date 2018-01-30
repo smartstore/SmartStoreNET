@@ -60,10 +60,7 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesInMiniShoppingCart")]
         public bool ShowProductImagesInMiniShoppingCart { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber")]
-        public int MiniShoppingCartProductNumber { get; set; }
-
+		
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint")]
         public bool ShowConfirmOrderLegalHint { get; set; }
 

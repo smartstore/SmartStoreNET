@@ -237,7 +237,7 @@ namespace SmartStore.Admin.Models.Settings
     {
         public int LanguageId { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Salutations")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations")]
         public string Salutations { get; set; }
     }
 

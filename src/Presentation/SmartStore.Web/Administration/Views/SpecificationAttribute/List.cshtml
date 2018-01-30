@@ -10,59 +10,57 @@
 			@T("Admin.Catalog.Attributes.SpecificationAttributes")
 		</div>
 		<div class="options">
-			<a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
-
+			<a href="@Url.Action("Create")" class="btn btn-primary">
+				<i class="fa fa-plus"></i>
+				<span>@T("Admin.Common.AddNew")</span>
+			</a>
 			<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.DeleteSelected")
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.DeleteSelected")</span>
 			</button>
 		</div>
 	</div>
-
-	<table class="adminContent">
-		<tr>
-			<td>
-				@(Html.Telerik().Grid<SpecificationAttributeModel>()
-					.Name("specificationattributes-grid")
-					.ClientEvents(events => events.OnDataBound("onDataBound"))
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Id)
-							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-							.Title("<input id='mastercheckbox' type='checkbox'/>")
-							.Width(50)
-							.Filterable(false)
-							.HtmlAttributes(new { style = "text-align:center" })
-							.HeaderHtmlAttributes(new { style = "text-align:center" });
-						columns.Bound(x => x.Name)
-							.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-						columns.Bound(x => x.Alias);
-						columns.Bound(x => x.OptionCount)
-							.Filterable(false)
-							.Width(200)
-							.Centered();
-						columns.Bound(x => x.AllowFiltering)
-							.Filterable(false)
-							.Width(200)
-							.Centered()
-							.ClientTemplate(@Html.SymbolForBool("AllowFiltering"));
-						columns.Bound(x => x.ShowOnProductPage)
-							.Filterable(false)
-							.Width(240)
-							.Centered()
-							.ClientTemplate(@Html.SymbolForBool("ShowOnProductPage"));
-						columns.Bound(x => x.DisplayOrder)
-							.Filterable(false)
-							.Width(200)
-							.Centered();
-					})
-					.Filterable()
-					.Pageable(settings => settings.PageSize((int)ViewData["GridPageSize"]).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "SpecificationAttribute"))
-					.PreserveGridState()
-					.EnableCustomBinding(true))
-			</td>
-		</tr>
-	</table>
+	<div>
+		@(Html.Telerik().Grid<SpecificationAttributeModel>()
+				.Name("specificationattributes-grid")
+				.ClientEvents(events => events.OnDataBound("onDataBound"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Id)
+						.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+						.Title("<input id='mastercheckbox' type='checkbox'/>")
+						.Width(50)
+						.Filterable(false)
+						.HtmlAttributes(new { style = "text-align:center" })
+						.HeaderHtmlAttributes(new { style = "text-align:center" });
+					columns.Bound(x => x.Name)
+						.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+					columns.Bound(x => x.Alias);
+					columns.Bound(x => x.OptionCount)
+						.Filterable(false)
+						.Width(200)
+						.Centered();
+					columns.Bound(x => x.AllowFiltering)
+						.Filterable(false)
+						.Width(200)
+						.Centered()
+						.ClientTemplate(@Html.SymbolForBool("AllowFiltering"));
+					columns.Bound(x => x.ShowOnProductPage)
+						.Filterable(false)
+						.Width(240)
+						.Centered()
+						.ClientTemplate(@Html.SymbolForBool("ShowOnProductPage"));
+					columns.Bound(x => x.DisplayOrder)
+						.Filterable(false)
+						.Width(200)
+						.Centered();
+				})
+				.Filterable()
+				.Pageable(settings => settings.PageSize((int)ViewData["GridPageSize"]).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "SpecificationAttribute"))
+				.PreserveGridState()
+				.EnableCustomBinding(true))
+	</div>
 }
 
 <script type="text/javascript">

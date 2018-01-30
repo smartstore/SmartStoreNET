@@ -63,7 +63,7 @@
 						 $('#add-product-picture').attr('disabled', false);
                     },
                     error:function (xhr, ajaxOptions, thrownError){
-                    	alert('@T("Admin.Catalog.Products.Pictures.AddFailed")')
+                    	alert('@T("Admin.Catalog.Products.Pictures.AddFailed").JsText')
 						$('#add-product-picture').attr('disabled', false);
                     }
                 });

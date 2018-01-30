@@ -71,7 +71,7 @@
 
 				@if (Model.CanCancelOrder)
 				{
-					<button type="submit" name="cancelorder" id="cancelorder" class="btn btn-sm btn-danger" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+					<button type="submit" name="cancelorder" id="cancelorder" class="btn btn-sm btn-danger" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")" onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');">
 						<i class="fa fa-times"></i>
 						<span>@T("Admin.Orders.Fields.OrderStatus.Cancel")</span>
 					</button>
@@ -79,7 +79,7 @@
 
 				@if (Model.CanCompleteOrder)
 				{
-					<button type="submit" name="completeorder" id="completeorder" class="btn btn-sm btn-warning" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+					<button type="submit" name="completeorder" id="completeorder" class="btn btn-sm btn-warning" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")" onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');">
 						<i class="fa fa-check"></i>
 						<span>@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</span>
 					</button>
@@ -490,7 +490,7 @@
 				<i class="fa fa-pencil-square-o"></i>
 				<span>@T("Admin.Orders.Fields.EditOrderTotals")</span>
 			</button>
-			<button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-warning" value="@T("Admin.Orders.Fields.SaveOrderTotals")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+			<button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-warning" value="@T("Admin.Orders.Fields.SaveOrderTotals")" onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Orders.Fields.SaveOrderTotals")</span>
 			</button>
@@ -587,7 +587,7 @@
 						<i class="fa fa-pencil-square-o"></i>
 						<span>@T("Admin.Orders.Fields.EditCC")</span>
 					</button>
-					<button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn btn-secondary" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+					<button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn btn-secondary" onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');">
 						<i class="fa fa-check"></i>
 						<span>@T("Admin.Orders.Fields.SaveCC")</span>
 					</button>
@@ -689,7 +689,7 @@
 					<i class="fa fa-pencil-square-o"></i>
 					<span>@T("Admin.Orders.Fields.EditDD")</span>
 				</button>
-				<button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn btn-secondary" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+				<button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn btn-secondary" onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');">
 					<i class="fa fa-check"></i>
 					<span>@T("Admin.Orders.Fields.SaveDD")</span>
 				</button>
@@ -818,22 +818,22 @@
 			@if (Model.CanMarkOrderAsPaid)
 			{
 				<input type="submit" name="markorderaspaid" value="@T("Admin.Orders.Fields.MarkAsPaid")" id="markorderaspaid" class="btn btn-secondary"
-					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.MarkAsPaid.Hint")" />
+					   onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');" title="@T("Admin.Orders.Fields.MarkAsPaid.Hint")" />
 			}
 			@if (Model.CanCapture)
 			{
 				<input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn btn-primary"
-					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Capture.Hint")" />
+					   onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');" title="@T("Admin.Orders.Fields.Capture.Hint")" />
 			}
 			@if (Model.CanRefund)
 			{
 				<input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn btn-primary"
-					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Refund.Hint")" />
+					   onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');" title="@T("Admin.Orders.Fields.Refund.Hint")" />
 			}
 			@if (Model.CanRefundOffline)
 			{
 				<input type="submit" name="refundorderoffline" value="@T("Admin.Orders.Fields.RefundOffline")" id="refundorderoffline" class="btn btn-secondary"
-					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.RefundOffline.Hint")" />
+					   onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');" title="@T("Admin.Orders.Fields.RefundOffline.Hint")" />
 			}
 			@if (Model.CanPartiallyRefund)
 			{
@@ -850,12 +850,12 @@
 			@if (Model.CanVoid)
 			{
 				<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn btn-primary"
-					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Void.Hint")" />
+					   onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');" title="@T("Admin.Orders.Fields.Void.Hint")" />
 			}
 			@if (Model.CanVoidOffline)
 			{
 				<input type="submit" name="voidorderoffline" value="@T("Admin.Orders.Fields.VoidOffline")" id="voidorderoffline" class="btn btn-secondary"
-					   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.VoidOffline.Hint")" />
+					   onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');" title="@T("Admin.Orders.Fields.VoidOffline.Hint")" />
 			}
 
 			<script type="text/javascript">

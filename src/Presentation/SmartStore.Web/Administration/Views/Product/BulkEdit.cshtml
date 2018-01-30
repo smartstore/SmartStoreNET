@@ -179,7 +179,7 @@
                         var loadData = true;
                         var grid = $(this).data('tGrid');
                         if (grid.hasChanges()) {
-                            if (!confirm('@T("Admin.Common.LoseUnsavedChanges")')) {
+                            if (!confirm('@T("Admin.Common.LoseUnsavedChanges").JsText')) {
                                 e.preventDefault();
                                 loadData = false;
                             }

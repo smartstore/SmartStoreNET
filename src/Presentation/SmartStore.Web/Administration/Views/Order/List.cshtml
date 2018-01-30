@@ -233,7 +233,7 @@
 			$('a.pdf-export-button').click(function (e) {
 				e.preventDefault();
 
-				if (confirm('@T("Admin.Common.AskToProceed")')) {
+				if (confirm('@T("Admin.Common.AskToProceed").JsText')) {
 					var form = '<form id="PdfExportForm" action="' + $(this).data('url') + '" method="post">';
 					form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
 					form += '</form>';

@@ -44,7 +44,12 @@ namespace SmartStore.Core.Localization
             get { return _localized; }
         }
 
-        public static implicit operator string(LocalizedString obj)
+		public string JsText
+		{
+			get { return _localized.EncodeJsString(); }
+		}
+
+		public static implicit operator string(LocalizedString obj)
         {
             return obj.Text;
         }

@@ -263,7 +263,7 @@
 		// reset column mappings
 		$('#ResetColumnMappings').on('click', function (e) {
 			e.preventDefault();
-			if (confirm('@T("Admin.Common.AskToProceed")')) {
+			if (confirm('@T("Admin.Common.AskToProceed").JsText')) {
 				var form = '<form id="ResetColumnMappingsForm" action="' + $(this).data('url') + '" method="post"></form>';
 				$('body').append(form);
 				$('#ResetColumnMappingsForm').submit();

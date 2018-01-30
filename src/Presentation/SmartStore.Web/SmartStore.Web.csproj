@@ -677,7 +677,6 @@
     <Content Include="Content\editors\ckeditor\styles.js" />
     <Content Include="Content\editors\CodeMirror\addon\display\fullscreen.css" />
     <Content Include="Content\editors\CodeMirror\addon\fold\xml-fold.min.js" />
-    <Content Include="Content\editors\CodeMirror\addon\mode\colorize.js" />
     <Content Include="Content\editors\CodeMirror\addon\selection\active-line.min.js" />
     <Content Include="Content\editors\CodeMirror\addon\edit\closebrackets.min.js" />
     <Content Include="Content\editors\CodeMirror\addon\edit\closetag.min.js" />
@@ -685,7 +684,6 @@
     <Content Include="Content\editors\CodeMirror\codemirror.min.js" />
     <Content Include="Content\editors\CodeMirror\addon\hint\css-hint.min.js" />
     <Content Include="Content\editors\CodeMirror\addon\display\fullscreen.min.js" />
-    <Content Include="Content\editors\CodeMirror\mode\clike\clike.js" />
     <Content Include="Content\editors\CodeMirror\mode\css\css.min.js" />
     <Content Include="Content\editors\CodeMirror\codemirror.min.css" />
     <Content Include="Content\editors\CodeMirror\theme\eclipse.min.css" />

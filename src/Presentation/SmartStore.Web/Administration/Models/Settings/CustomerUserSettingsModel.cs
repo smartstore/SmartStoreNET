@@ -240,5 +240,4 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations")]
         public string Salutations { get; set; }
     }
-
 }

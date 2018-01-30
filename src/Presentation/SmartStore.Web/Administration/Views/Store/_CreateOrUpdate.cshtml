@@ -3,24 +3,6 @@
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 
-<script type="text/javascript">
-    $(document).ready(function () {
-
-        $("#@Html.FieldIdFor(model => model.SslEnabled)").click(toggleSslEnabled);
-        
-        toggleSslEnabled();
-    });
-
-    function toggleSslEnabled() {
-        if ($('#@Html.FieldIdFor(model => model.SslEnabled)').is(':checked')) {
-            $('#pnlSecureUrl').show();
-        }
-        else {
-            $('#pnlSecureUrl').hide();
-        }
-    }
-</script>
-
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -90,7 +72,7 @@
 			@Html.SmartLabelFor(model => model.SslEnabled)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(model => model.SslEnabled)
+			@Html.CheckBoxFor(model => model.SslEnabled, new { data_toggler_for = "#pnlSecureUrl" })
 			@Html.ValidationMessageFor(model => model.SslEnabled)
 		</td>
 	</tr>
@@ -128,7 +110,7 @@
                 @Html.SmartLabelFor(model => model.Id)
             </td>
             <td class="adminData">
-                <span>@Model.Id</span>
+                @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
             </td>
         </tr>
     }

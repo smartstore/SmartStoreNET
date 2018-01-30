@@ -8,37 +8,38 @@
         @T("Admin.Common.Stores")
     </div>
     <div class="options">
-		<a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+		<a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<StoreModel>()
-                    .Name("stores-grid")
-                    .Columns(columns =>
-                    {
-						columns.Bound(x => x.Name)
-							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-						columns.Bound(x => x.Url)
-							.ClientTemplate("<a href=\"<#= Url #>\" target=\"_blank\"><#= Url #></a>");
-						columns.Bound(x => x.Hosts)
-							.Encoded(false);
-						columns.Bound(x => x.PrimaryStoreCurrencyName);
-						columns.Bound(x => x.PrimaryExchangeRateCurrencyName);
-						columns.Bound(x => x.ContentDeliveryNetwork)
-							.ClientTemplate("<a href=\"<#= ContentDeliveryNetwork #>\" target=\"_blank\"><#= ContentDeliveryNetwork #></a>");
-						columns.Bound(x => x.SslEnabled)
-							.Template(item => @Html.SymbolForBool(item.SslEnabled))
-							.ClientTemplate(@Html.SymbolForBool("SslEnabled"))
-							.Centered()
-							.Width(80);
-						columns.Bound(x => x.DisplayOrder)
-							.Centered();
-                    })
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Store"))
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+
+<div>
+	@(Html.Telerik().Grid<StoreModel>()
+		.Name("stores-grid")
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Name)
+				.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+			columns.Bound(x => x.Url)
+				.ClientTemplate("<a href=\"<#= Url #>\" target=\"_blank\"><#= Url #></a>");
+			columns.Bound(x => x.Hosts)
+				.Encoded(false);
+			columns.Bound(x => x.PrimaryStoreCurrencyName);
+			columns.Bound(x => x.PrimaryExchangeRateCurrencyName);
+			columns.Bound(x => x.ContentDeliveryNetwork)
+				.ClientTemplate("<a href=\"<#= ContentDeliveryNetwork #>\" target=\"_blank\"><#= ContentDeliveryNetwork #></a>");
+			columns.Bound(x => x.SslEnabled)
+				.Template(item => @Html.SymbolForBool(item.SslEnabled))
+				.ClientTemplate(@Html.SymbolForBool("SslEnabled"))
+				.Centered()
+				.Width(80);
+			columns.Bound(x => x.DisplayOrder)
+				.Centered();
+		})
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Store"))
+		.EnableCustomBinding(true))
+</div>
+

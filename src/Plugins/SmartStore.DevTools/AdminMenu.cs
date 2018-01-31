@@ -9,7 +9,7 @@ namespace SmartStore.DevTools
 		{
 			var menuItem = new MenuItem().ToBuilder()
 				.Text("Developer Tools")
-				.Icon("code")
+				.Icon("terminal")
 				.Action("ConfigurePlugin", "Plugin", new { systemName = "SmartStore.DevTools", area = "Admin" })
 				.ToItem();
 			

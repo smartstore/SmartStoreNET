@@ -121,7 +121,6 @@
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>   
 	@{ Html.RenderZone("start"); }
 	@RenderBody()
-	@{ Html.RenderZone("end"); }
 
 	@RenderSection("foot", required: false)
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
@@ -133,6 +132,7 @@
 		.jQueryValidation(false)
 		.Globalization(true)
 	)
+	@{ Html.RenderZone("end"); }
 </body>
 </html>
 

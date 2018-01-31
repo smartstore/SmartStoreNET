@@ -105,3 +105,20 @@
 }
 
 
+// Functions
+// ===============================================
+
+@function color-yiq-ex($color, $text-dark: $yiq-text-dark, $text-light: $yiq-text-light) {
+	$r: red($color);
+	$g: green($color);
+	$b: blue($color);
+
+	$yiq: (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+
+	@if ($yiq >= $yiq-contrasted-threshold) {
+		@return $text-dark;
+	}
+	@else {
+		@return $text-light;
+	}
+}

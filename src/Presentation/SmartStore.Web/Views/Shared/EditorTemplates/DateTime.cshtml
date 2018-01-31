@@ -48,10 +48,11 @@
 	</div>
 </div>
 
-<script>
-	$(function () {
-		$("#@(id)-parent").datetimepicker({ format: '@(format)' });
-    });
-</script>
-
-
+@using (Html.BeginZoneContent("end"))
+{
+	<script data-origin="DateTime">
+		$(function () {
+			$("#@(id)-parent").datetimepicker({ format: '@(format)' });
+		});
+	</script>
+}

@@ -121,7 +121,7 @@
 			padding: 0.625rem 1.25rem;
 			padding-right: 1.25rem;
 
-			img, .fa {
+			> img, > i {
 				margin-right: 0.75rem;
 				margin-left: -0.5rem;
 			}
@@ -258,26 +258,24 @@
 // ==============================================================
 
 .nav {
-    .nav-link > img,
-    .nav-link > .fa {
-	    vertical-align: baseline;
-	    margin-right: 0.5rem;
-        // TODO: get icon color with color-yic mixin once it supports props
-        // TODO: support dark backgrounds
-	    //color: lighten($body-color, 18%);
+	.nav-link > img,
+	.nav-link > i {
+		vertical-align: baseline;
+		font-size: inherit;
+		margin-right: 0.5rem;
 		color: $text-muted;
-    }
-    .nav-link:hover > .fa,
-    .nav-link.active > .fa {
-        // TODO: get icon color with color-yic mixin once it supports props
-	    color: $body-color;
-    }
+	}
 
-    .nav-link > .chevron {
-	    margin-left: 3px;
-    }
+	.nav-link:hover > i,
+	.nav-link.active > i {
+		color: inherit;
+	}
 
-    .tabs-left .nav-link > .fa {
-        min-width: 1rem;
-    }
+	.nav-link > .chevron {
+		margin-left: 3px;
+	}
+
+	.tabs-left .nav-link > i {
+		min-width: 1rem;
+	}
 }

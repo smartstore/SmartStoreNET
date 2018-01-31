@@ -1,56 +1,74 @@
 /// <reference path="../theme.scss" />
 
-$btn-wide-padding-x:    1.8rem;
+$btn-wide-padding-x: 1.8rem;
 $btn-wide-padding-x-lg: 2.5rem;
 $btn-wide-padding-x-sm: 1.2rem;
 
-$btn-size:				$input-height;
-$btn-size-lg:			$input-height-lg;
-$btn-size-sm:			$input-height-sm;
+$btn-size: $input-height;
+$btn-size-lg: $input-height-lg;
+$btn-size-sm: $input-height-sm;
 
 @mixin btn-padding($p) {
-    padding-left: $p;
-    padding-right: $p;
+	padding-left: $p;
+	padding-right: $p;
 }
 
 @mixin btn-square($size) {
-    $bw: $border-width * 2;
-    width: calc(#{$size} + #{$bw});
-    height: calc(#{$size} + #{$bw});
-    line-height: $size;
+	$bw: $border-width * 2;
+	width: calc(#{$size} + #{$bw});
+	height: calc(#{$size} + #{$bw});
+	line-height: $size;
 }
 
 
 // General
 // --------------------------------------------------
 
-.btn-secondary.hover        { @extend .btn-secondary:hover; }
-.btn-primary.hover          { @extend .btn-primary:hover; }
-.btn-warning.hover          { @extend .btn-warning:hover; }
-.btn-danger.hover           { @extend .btn-danger:hover; }
-.btn-info.hover             { @extend .btn-info:hover; }
-.btn-success.hover          { @extend .btn-success:hover; }
+.btn-secondary.hover {
+	@extend .btn-secondary:hover;
+}
+
+.btn-primary.hover {
+	@extend .btn-primary:hover;
+}
+
+.btn-warning.hover {
+	@extend .btn-warning:hover;
+}
+
+.btn-danger.hover {
+	@extend .btn-danger:hover;
+}
+
+.btn-info.hover {
+	@extend .btn-info:hover;
+}
+
+.btn-success.hover {
+	@extend .btn-success:hover;
+}
 
 
-// btn-(outline-)secondary
-// looks really shitty in BS4 Beta, style it decently.
+// Light button icons lighter (looks nice)
 // -----------------------------------------------------
 
 .btn-secondary,
 .btn-light {
-	// Light buttons without a subtle border look really shitty
-	// in active/focus state because of the focus outer shadow
-	&:focus,
-	&.focus {
-		border-color: rgba(#000, 0.12);
+	> i {
+		transition: opacity .05s ease-in-out;
 	}
 
-	&:not([disabled]):not(.disabled):active,
-	&:not([disabled]):not(.disabled).active,
-	.show > &.dropdown-toggle {
-		border-color: rgba(#000, 0.2);
+	&:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus) {
+		> i {
+			opacity: 0.6;
+		}
 	}
 }
+
+
+// btn-(outline-)(secondary|light)
+// looks really shitty in BS4, style it decently.
+// -----------------------------------------------------
 
 .btn-outline-secondary,
 .btn-outline-light {
@@ -112,36 +130,36 @@ $btn-size-sm:			$input-height-sm;
 
 .btn-icon,
 .btn-circle {
-    padding: 0;
-    text-align: center;
-    vertical-align: middle;
-    position: relative;
-    @include btn-square($btn-size);
+	padding: 0;
+	text-align: center;
+	vertical-align: middle;
+	position: relative;
+	@include btn-square($btn-size);
 
-    &.btn-lg {
-        @include btn-square($btn-size-lg);
-    }
-    &.btn-sm {
-        @include btn-square($btn-size-sm);
-    }
+	&.btn-lg {
+		@include btn-square($btn-size-lg);
+	}
 
-    > i {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate3d(-50%, -50%, 0);
-    }
+	&.btn-sm {
+		@include btn-square($btn-size-sm);
+	}
 
-    // Move caret to bottom right corner
-    &.dropdown-toggle:after {
-        position: absolute;
-        right: 0.3rem;
-        bottom: 0.5em;
-    }
+	> i {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate3d(-50%, -50%, 0);
+	}
+	// Move caret to bottom right corner
+	&.dropdown-toggle:after {
+		position: absolute;
+		right: 0.3rem;
+		bottom: 0.5em;
+	}
 }
 
 .btn-circle {
-    border-radius: 50%;
+	border-radius: 50%;
 }
 
 
@@ -342,6 +360,7 @@ $btn-size-sm:			$input-height-sm;
 			line-height: $line-height-base;
 			transition: opacity 0.2s ease-out;
 			transform: translateX(-100%);
+
 			&:before {
 				vertical-align: middle;
 			}
@@ -416,17 +435,20 @@ $btn-size-sm:			$input-height-sm;
 	&:not([disabled]):not(.disabled):hover,
 	&:not([disabled]):not(.disabled).hover {
 		@extend .btn-danger:hover;
+		> i { opacity: 1; }
 	}
 
 	&:focus,
 	&.focus {
 		@extend .btn-danger:focus;
+		> i { opacity: 1; }
 	}
 
 	&:not([disabled]):not(.disabled):active,
 	&:not([disabled]):not(.disabled).active,
 	.show > &.dropdown-toggle {
 		@extend .btn-danger:active;
+		> i { opacity: 1; }
 	}
 }
 
@@ -556,7 +578,7 @@ $btn-size-sm:			$input-height-sm;
 .btn-brand-google-plus  {
     @include button-variant(#fff, $clr-brand-googleplus , $clr-brand-googleplus );
 }*/
-	/*.btn-brand-flickr {
+/*.btn-brand-flickr {
     @include button-variant(#fff, $clr-brand-flickr, $clr-brand-flickr);
 }
 

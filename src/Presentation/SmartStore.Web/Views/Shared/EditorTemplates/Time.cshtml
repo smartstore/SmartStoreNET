@@ -29,10 +29,12 @@
 	</div>
 </div>
 
-<script>
-	$(function () {
-		$("#@(id)-parent").datetimepicker({ format: 'LT' });
-	});
-</script>
-
+@using (Html.BeginZoneContent("end"))
+{
+	<script data-origin="Time">
+		$(function () {
+			$("#@(id)-parent").datetimepicker({ format: 'LT' });
+		});
+	</script>
+}
 

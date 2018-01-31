@@ -86,7 +86,7 @@
 					@Html.SmartLabelFor(model => model.LastError)
 				</td>
 				<td class="adminData">
-					<span class="text-error">@Html.DisplayFor(model => model.LastError)</span>
+					<span class="text-danger">@Html.DisplayFor(model => model.LastError)</span>
 				</td>
 			</tr>
 			if (Model.LastSuccess.HasValue && Model.LastSuccess != Model.LastEnd)

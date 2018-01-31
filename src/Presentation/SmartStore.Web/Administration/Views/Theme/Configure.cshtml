@@ -55,8 +55,8 @@
 
 	if (parsingError.HasValue())
 	{
-		<div style="margin-bottom: 20px">
-			<h4 class="text-error">@T("Admin.Configuration.Themes.Validation.ErrorReportTitle")</h4>
+		<div class="mb-5">
+			<h4 class="text-danger">@T("Admin.Configuration.Themes.Validation.ErrorReportTitle")</h4>
 			<pre>@parsingError</pre>
 			<a class="btn" href='@Url.Action("Configure", new { theme = Model.ThemeName, storeId = Model.StoreId })'>
 				@T("Admin.Configuration.Themes.Validation.RestorePrevValues")

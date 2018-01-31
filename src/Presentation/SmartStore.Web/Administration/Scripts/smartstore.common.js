@@ -362,7 +362,7 @@
 					getFunction(tabbable.data("ajax-onsuccess"), ["tab", "pane", "data", "status", "xhr"]).apply(this, [newTab, pane, data, status, xhr]);
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
-					pane.html('<div class="text-error">Error while loading resource: ' + thrownError + '</div>');
+					pane.html('<div class="text-danger">Error while loading resource: ' + thrownError + '</div>');
 					getFunction(tabbable.data("ajax-onfailure"), ["tab", "pane", "xhr", "ajaxOptions", "thrownError"]).apply(this, [newTab, pane, xhr, ajaxOptions, thrownError]);
 				},
 				complete: function (xhr, status) {

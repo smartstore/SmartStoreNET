@@ -169,7 +169,7 @@ namespace SmartStore.Admin.Models.Orders
 				switch (StatusPayment)
 				{
 					case Core.Domain.Payments.PaymentStatus.Pending:
-						return "fa fa-fw fa-circle text-error";
+						return "fa fa-fw fa-circle text-danger";
 					case Core.Domain.Payments.PaymentStatus.Authorized:
 						return "fa fa-fw fa-circle text-warning";
 					case Core.Domain.Payments.PaymentStatus.Paid:
@@ -283,7 +283,7 @@ namespace SmartStore.Admin.Models.Orders
 					case Core.Domain.Shipping.ShippingStatus.ShippingNotRequired:
 						return "fa fa-fw fa-download muted";
 					case Core.Domain.Shipping.ShippingStatus.NotYetShipped:
-						return "fa fa-fw fa-circle text-error";
+						return "fa fa-fw fa-circle text-danger";
 					case Core.Domain.Shipping.ShippingStatus.PartiallyShipped:
 						return "fa fa-fw fa-truck fa-flip-horizontal text-warning";
 					case Core.Domain.Shipping.ShippingStatus.Shipped:

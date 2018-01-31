@@ -6452,17 +6452,15 @@ $(function(){
 
 			// Overriding datetimepicker config (as by default jQuery extend() is not recursive).
 			// Internally uses viewformat instead of format. Format is for submit only.
-			//this.options.datetimepicker = $.extend({}, defaults.datetimepicker, options.datetimepicker, {
-			//	// TODO: default is 'L'
-			//	format: this.options.viewformat || 'L LT'
-			//});
-
-			this.options.datetimepicker = $.extend({}, defaults.datetimepicker, options.datetimepicker);
+			this.options.datetimepicker = $.extend({}, defaults.datetimepicker, options.datetimepicker, {
+				format: this.options.viewformat || 'L'
+			});
 
 			//this.options.datetimepicker.language = this.options.datetimepicker.language || 'en'; 
 
 			//store DPglobal
 			//this.dpg = $.fn.datetimepicker.DPGlobal; 
+			// should be this.dpg = $.fn.bdatepicker.DPGlobal
 
 			//store parsed formats
 			//this.parsedFormat = this.dpg.parseFormat(this.options.format, this.options.formatType);
@@ -6470,8 +6468,6 @@ $(function(){
         },
 
 		render: function () {
-			this.options.datetimepicker.format = 'L LT';	//TEST!
-
 			var opt = this.options.datetimepicker,
 				id = Math.random().toString(36).substr(2, 10),
 				parentId = id + '-parent';
@@ -6480,7 +6476,7 @@ $(function(){
 				'<div class="input-group date datetimepicker-group" id="' + parentId + '" data-date="" data-target-input="nearest">' +
 				'<input type="text" id="' + id + '" name="' + id + '" value="" class="form-control form-control-sm datetimepicker-input" data-target="#' + parentId + '" data-format="' + opt.format + '" />' +
 				'<div class="input-group-append input-group-addon" data-target="#' + parentId + '" data-toggle="datetimepicker">' +
-				'<span class="input-group-text"><i class="fa fa-calendar"></i></span>' +
+				'<span class="input-group-text"><i class="fa fa-calendar-alt"></i></span>' +
 				'</div></div>'
 			);
 
@@ -6518,18 +6514,18 @@ $(function(){
 			//    return text;
 			//}
 
+			var text = '';
 			if (value) {
 				var m = moment(value);
-				var text = m.format(this.options.datetimepicker.format);
-
-				if (element) {
-					DateTime.superclass.value2html.call(this, text, element);
-				}
-
-				return text;
+				text = m.format(this.options.datetimepicker.format);
 			}
 
-			return '';
+			if (element) {
+				DateTime.superclass.value2html.call(this, text, element);
+			}
+			else {
+				return text;
+			}
         },
 
 		html2value: function (html) {
@@ -6538,7 +6534,7 @@ $(function(){
             //return value ? this.fromUTC(value) : null;
 
 			if (html) {
-				// We cannot return moment object. x-editable does not know it.
+				// We cannot return moment object. it's unknown to x-editable.
 				var m = moment(html);
 				return m.local().toDate();
 			}
@@ -6553,7 +6549,7 @@ $(function(){
 			if (value) {
 				var m = moment(value);
 				return m.utc().format(this.options.format);
-			}			
+			}
 
 			return '';
        },
@@ -6571,7 +6567,7 @@ $(function(){
 			return null;
        },
 
-       value2submit: function(value) {
+		value2submit: function (value) {
 			return this.value2str(value);
        },
 
@@ -6586,14 +6582,22 @@ $(function(){
 			}
        },
 
-       input2value: function() { 
+	   input2value: function () {
            //date may be cleared, in that case getDate() triggers error
            //var dt = this.$input.data('datetimepicker');
            //return dt.date ? dt.getDate() : null;
 
 		   var picker = this.$input.find('.datetimepicker-group');
-		   var m = picker.datetimepicker('date');
-		   return m.toDate();
+
+		   if (picker.datetimepicker('date')) {
+			   // Use 'viewDate' (not 'date') to get current date from input (!) control.
+			   var m = picker.datetimepicker('viewDate');
+			   if (m != null) {
+				   return m.toDate();
+			   }
+		   }
+
+		   return null;
        },
 
        activate: function() {
@@ -6605,6 +6609,11 @@ $(function(){
           //if(!this.options.showbuttons) {
           //   this.$input.closest('form').submit(); 
           //}
+
+		   if (!this.options.showbuttons) {
+			   var picker = this.$input.find('.datetimepicker-group');
+			   picker.datetimepicker('clear');
+		   }
        },
 
        autosubmit: function() {
@@ -6651,7 +6660,6 @@ $(function(){
 
 		   return null;
        }
-
     });
 
     DateTime.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
@@ -6696,7 +6704,18 @@ $(function(){
 			locale: 'glob',
 			keepOpen: false,
 			collapse: true,
-			format: 'L'
+			format: 'L',
+			icons: {
+				time: 'fa fa-clock',
+				date: 'fa fa-calendar-alt',
+				up: 'fa fa-arrow-up',
+				down: 'fa fa-arrow-down',
+				previous: 'fa fa-chevron-left',
+				next: 'fa fa-chevron-right',
+				today: 'fa fa-calendar-check',
+				clear: 'fa fa-eraser',
+				close: 'fa fa-times'
+			}
         },
         /**
         Text shown as clear date button. 

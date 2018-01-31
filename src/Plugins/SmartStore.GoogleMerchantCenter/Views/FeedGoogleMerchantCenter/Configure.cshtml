@@ -157,7 +157,7 @@
 	   data-type="@type">@displayText</a>
 }
 
-<script type="text/javascript">
+	<script type="text/javascript">
 
 	$('#search-products').click(function () {
 		var grid = $('#gmc-products-grid').data('tGrid');
@@ -265,7 +265,19 @@
 			]
 		}));
 
-		grid.find('a.edit-link-customlabel0').editable(rightOptions);
+		grid.find('a.edit-link-customlabel0').editable($.extend({}, rightOptions, {
+			viewformat: 'L LT',
+			display: function (value, sourceData) {
+				if (value) {
+					// 'value' is object of type date.
+					var m = moment(value);
+					var text = m.format('L LT');
+					$(this).text(text);
+				}
+			}
+		}));
+
+		//grid.find('a.edit-link-customlabel0').editable(rightOptions);
 		grid.find('a.edit-link-customlabel1').editable(rightOptions);
 		grid.find('a.edit-link-customlabel2').editable(rightOptions);
 		grid.find('a.edit-link-customlabel3').editable(rightOptions);
@@ -311,4 +323,4 @@
 		}));
 
 	}
-</script>
+	</script>

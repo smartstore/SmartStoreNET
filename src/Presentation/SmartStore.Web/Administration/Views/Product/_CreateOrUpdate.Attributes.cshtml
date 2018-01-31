@@ -9,14 +9,16 @@
 	{
 		if (Model.NumberOfAvailableProductAttributes > 0)
 		{
-			<script type="text/javascript">
+			<script>
 				function onProductVariantAttributeEdit(e) {
 					var id = parseInt(e.dataItem['Id']);
 
-					_.delay(function () {
-						$('#AttributeControlType').val(e.dataItem['AttributeControlTypeId']).trigger('change');
-						$('#ProductAttribute').val(e.dataItem['ProductAttributeId']).trigger('change');
-					}, 0);
+					if (e.mode == "edit") {
+						_.delay(function () {
+							$('#AttributeControlType').val(e.dataItem['AttributeControlTypeId']).trigger('change');
+							$('#ProductAttribute').val(e.dataItem['ProductAttributeId']).trigger('change');
+						}, 0);
+					}
 
 					if (id === 0) {
 						$(e.form).find('#IsRequired').prop('checked', true);

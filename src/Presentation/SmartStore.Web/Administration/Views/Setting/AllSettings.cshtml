@@ -60,9 +60,11 @@
         e.preventDefault();
     }
 
-    function grid_onStoreEdit(e) {
-		_.delay(function () {
-			$('#Store').val(e.dataItem['StoreId']).trigger('change');
-		}, 0);
+	function grid_onStoreEdit(e) {
+		if (e.mode == "edit") {
+			_.delay(function () {
+				$('#Store').val(e.dataItem['StoreId']).trigger('change');
+			}, 0);
+		}
     }
 </script>

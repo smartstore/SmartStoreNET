@@ -1,10 +1,7 @@
 SmartStore.NET
-Copyright 1999-2014 SmartStore AG
+Copyright 1999-2018 SmartStore AG
 http://www.smartstore.com | https://github.com/smartstoreag/SmartStoreNET
 
-
-SmartStore.NET is a fork of the ASP.NET open source e-commerce solution 
-nopCommerce (http://www.nopcommerce.com).
 
 SmartStore.NET includes works distributed under the licenses listed below. 
 Please refer to the specific resources for more detailed information about the authors, 

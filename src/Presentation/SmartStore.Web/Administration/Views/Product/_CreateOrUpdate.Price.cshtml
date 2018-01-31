@@ -224,11 +224,13 @@
         {
             <script>
 				function onTierPriceEdit(e) {
-					_.delay(function () {
-						$('#Store').val(e.dataItem['StoreId']).trigger('change');
-						$('#CustomerRole').val(e.dataItem['CustomerRoleId']).trigger('change');
-						$('#CalculationMethod').val(e.dataItem['CalculationMethodId']).trigger('change');
-					}, 0);
+					if (e.mode == "edit") {
+						_.delay(function () {
+							$('#Store').val(e.dataItem['StoreId']).trigger('change');
+							$('#CustomerRole').val(e.dataItem['CustomerRoleId']).trigger('change');
+							$('#CalculationMethod').val(e.dataItem['CalculationMethodId']).trigger('change');
+						}, 0);
+					}
                 }
             </script>
 			

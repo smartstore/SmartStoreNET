@@ -438,6 +438,7 @@ label.forcheckbox {
 	    @include text-truncate();
         padding-left: 0;
         padding-right: 5px;
+		color: $text-muted;
 
         // mimic .col
         flex-basis: 0;

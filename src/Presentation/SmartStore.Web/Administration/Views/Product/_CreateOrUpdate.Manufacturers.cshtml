@@ -8,9 +8,11 @@
     {
         <script>
 			function onProductManufacturerEdit(e) {
-				_.delay(function () {
-					$('#Manufacturer').val(e.dataItem['ManufacturerId']).trigger('change');
-				}, 0);
+				if (e.mode == "edit") {
+					_.delay(function () {
+						$('#Manufacturer').val(e.dataItem['ManufacturerId']).trigger('change');
+					}, 0);
+				}
 			}
 
 			function onProductManufacturerDataBound(e) {

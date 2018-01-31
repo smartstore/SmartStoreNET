@@ -32,25 +32,44 @@ $btn-size-sm:			$input-height-sm;
 .btn-success.hover          { @extend .btn-success:hover; }
 
 
-// btn-(outline-)secondary
-// looks really shitty in BS4 Beta, style it decently.
+// Icons (slightly bigger)
+// --------------------------------------------------
+
+.btn > i,
+.dropdown-item > i {
+	font-size: 16px;
+	vertical-align: -0.08em;
+}
+
+.btn-lg > i {
+	vertical-align: baseline;
+}
+
+.btn-sm > i {
+	vertical-align: baseline;
+}
+
+
+// Nicer light buttons
 // -----------------------------------------------------
 
 .btn-secondary,
 .btn-light {
-	// Light buttons without a subtle border look really shitty
-	// in active/focus state because of the focus outer shadow
-	&:focus,
-	&.focus {
-		border-color: rgba(#000, 0.12);
-	}
-
-	&:not([disabled]):not(.disabled):active,
-	&:not([disabled]):not(.disabled).active,
-	.show > &.dropdown-toggle {
-		border-color: rgba(#000, 0.2);
-	}
+	> i { opacity: 0.5; }
 }
+
+.btn-secondary {
+	@include button-variant($secondary, $secondary, $secondary, rgba(#000, 0.15), darken($secondary, 10%), rgba(#000, 0.2));
+}
+
+.btn-light {
+	@include button-variant($light, $light, $light, rgba(#000, 0.15), darken($light, 10%), rgba(#000, 0.2));
+}
+
+
+// btn-(outline-)(secondary|light)
+// looks really shitty in BS4, style it decently.
+// -----------------------------------------------------
 
 .btn-outline-secondary,
 .btn-outline-light {

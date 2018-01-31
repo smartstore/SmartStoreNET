@@ -59,7 +59,7 @@
 						<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
 
 						<button type="button" class="btn btn-secondary btn-to-danger btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
-							<i class="fa fa-trash-o"></i>
+							<i class="fa fa-trash"></i>
 							<span>@T("Admin.Common.Delete")</span>
 						</button>
 					</p>
@@ -408,7 +408,7 @@
 				leftLabel.attr('title', '');
 			}
 
-			context.find('i').removeClass('fa-globe fa-chain-broken').addClass(isLocalized ? 'fa-globe' : 'fa-chain-broken');
+			context.find('i').removeClass('fa-globe fa-unlink').addClass(isLocalized ? 'fa-globe' : 'fa-unlink');
 		}
 
 		function initSelectBox(element, isProperty) {
@@ -457,7 +457,7 @@
 					if (option.length === 0) {
 						html += '<div class="mapping-list-item">';
 						html += '<span style="display: inline-block; margin-right: 0;">';
-						html += '<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
+						html += '<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-unlink') + ' text-success" />';
 						html += '</span>';
 					}
 					else {
@@ -480,7 +480,7 @@
 
 						html += '<span style="display: inline-block; margin-right: 0;">';
 						html += '<i class="fa fa-fw ';
-						html += (isLocalized ? 'fa-globe' : (mappingIndex === -1 ? 'fa-chain-broken' : 'fa-link'));
+						html += (isLocalized ? 'fa-globe' : (mappingIndex === -1 ? 'fa-unlink' : 'fa-link'));
 						html += (mappingIndex === -1 ? ' text-success" />' : ' text-warning" />');
 						html += '</span>';
 					}

@@ -27,11 +27,13 @@ $gray-100: #f8f9fa;
 $gray-200: #e9ecef;
 $gray-300: #dee2e6;
 $gray-400: #ced4da;
-$gray-500: #adb5bd;
+$gray-500: #999; // #adb5bd;
 $gray-600: #6c757d;
 $gray-700: #495057;
 $gray-800: #343a40;
 $gray-900: #212529;
+
+$text-muted: $gray-500;
 
 $blue:      #5677fc; // Blue 500
 $indigo:    #3f51b5; // Indigo 500
@@ -124,9 +126,9 @@ $btn-focus-box-shadow:			$input-btn-focus-box-shadow;
 $btn-active-box-shadow:         inset 0 2px 3px rgba(#000, .125);
 //$btn-transition:                box-shadow .12s ease-in-out;
 $btn-transition:				box-shadow .1s ease-in-out, background-color .05s ease-in-out, border-color .05s ease-in-out;
-$btn-border-radius:				.125rem;
-$btn-border-radius-lg:          .1875rem;
-$btn-border-radius-sm:          .125rem;
+$btn-border-radius:				0; //.125rem;
+$btn-border-radius-lg:          0; //.1875rem;
+$btn-border-radius-sm:          0; //.125rem;
 
 $dropdown-box-shadow:			0 3px 12px rgba(27,31,35, 0.15); //0 2px 6px rgba(#000, .15);
 $dropdown-border-color:			rgba(0, 0, 0, 0.08); 
@@ -137,6 +139,14 @@ $dropdown-link-active-color:    $dropdown-link-hover-color;
 $dropdown-link-active-bg:       lighten($dropdown-link-hover-bg, 5%);
 $dropdown-item-padding-y:       0.625rem; // 0.5rem;
 $dropdown-item-padding-x:       1.5rem;
+$dropdown-header-color:			$text-muted;
+
+// TEST
+$dropdown-link-hover-color:		darken($dropdown-link-color, 5%);
+$dropdown-link-hover-bg:		#f5f5f5;
+$dropdown-link-active-color:	$dropdown-link-hover-color;
+$dropdown-link-active-bg:		darken($dropdown-link-hover-bg, 5%);
+// TEST
 
 $popover-box-shadow:			$dropdown-box-shadow;
 $popover-border-color:			$dropdown-border-color;
@@ -325,7 +335,7 @@ pre {
 			color: $gray-600;
 		}
 
-		.fa {
+		> i {
 			font-size: 1.25rem;
 		}
 	}

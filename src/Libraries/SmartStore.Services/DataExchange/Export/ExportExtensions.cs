@@ -241,13 +241,13 @@ namespace SmartStore.Services.DataExchange.Export
 			switch (type)
 			{
 				case ExportDeploymentType.FileSystem:
-					return "fa-folder-open-o";
+					return "fa-folder-open";
 				case ExportDeploymentType.Email:
-					return "fa-envelope-o";
+					return "fa-envelope";
 				case ExportDeploymentType.Http:
 					return "fa-globe";
 				case ExportDeploymentType.Ftp:
-					return "fa-files-o";
+					return "fa-copy";
 				case ExportDeploymentType.PublicFolder:
 					return "fa-unlock";
 				default:

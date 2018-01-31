@@ -34,7 +34,7 @@ $grid-pager-bg: #f9fafa;
 		position: absolute;
 		display: inline-block;
 		text-indent: 0;
-		@include fontawesome("\f013"); // cog
+		@include fontawesome("\f013", $weight: 900); // cog
 		text-align: center;
 		left: 50%;
 		top: 50%;
@@ -316,7 +316,7 @@ a.t-button.t-state-disabled:hover,
 		top: 0;
 		right: 0;
 		height: 50%;
-		width: calc(#{$input-height});
+		width: $input-height;
 
 		.t-grid-edit-row & {
 			width: 1.5rem;

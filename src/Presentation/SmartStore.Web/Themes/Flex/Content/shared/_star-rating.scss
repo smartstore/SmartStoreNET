@@ -43,8 +43,9 @@
 	font-size: 14px;
 	line-height: 14px;
 }
-	
+
 .star-rating:not(:checked) > label:before {
+	// TODO: ABS4 > fa5
 	font-family: FontAwesome;
 	font-weight: normal;
 	font-style: normal;

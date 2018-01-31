@@ -23,15 +23,31 @@
 }
 
 <div class="input-group date datetimepicker-group" id="@id-parent" data-date="@value" data-target-input="nearest">
-	<span class="input-group-addon" data-target="#@(id)-parent" data-toggle="datetimepicker">
-		<i class="fa fa-clock-o"></i>
-	</span>
 	@Html.TextBox("", value, new { @class = "form-control datetimepicker-input", data_target = "#" + id + "-parent", data_format = "LT" })
+	<div class="input-group-append input-group-addon" data-target="#@(id)-parent" data-toggle="datetimepicker">
+		<span class="input-group-text"><i class="fa fa-clock"></i></span>
+	</div>
 </div>
 
 <script>
 	$(function () {
-		$("#@(id)-parent").datetimepicker({ locale: 'glob', format: 'LT', keepOpen: false, collapse: true });
+		$("#@(id)-parent").datetimepicker({ 
+			locale: 'glob', 
+			format: 'LT', 
+			keepOpen: false, 
+			collapse: true,
+			icons: {
+				time: 'fa fa-clock',
+				date: 'fa fa-calendar-alt',
+				up: 'fa fa-arrow-up',
+				down: 'fa fa-arrow-down',
+				previous: 'fa fa-chevron-left',
+				next: 'fa fa-chevron-right',
+				today: 'fa fa-calendar-check',
+				clear: 'fa fa-eraser',
+				close: 'fa fa-times'
+			} 
+		});
 	});
 </script>
 

@@ -12,7 +12,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="fa fa-picture-o"></i>
+            <i class="fa fa-image"></i>
             @T("Admin.Configuration.Themes")
         </div>
         <div class="options">
@@ -23,7 +23,7 @@
                 <span>@T("Admin.Common.Save")</span>
             </button>
 			<a href='@Url.Action("ReloadThemes", new { storeId = Model.StoreId })' class="btn btn-secondary">
-				<i class="fa fa-refresh"></i>
+				<i class="fa fa-sync"></i>
 				<span>@T("Admin.Configuration.Themes.Reload")</span>
 			</a>
 			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn btn-secondary" role="button">
@@ -103,7 +103,7 @@
 								@if (theme.BaseTheme.HasValue())
 								{
 									<small class="fs-sm text-muted" title='@T("Admin.Configuration.Themes.IsBasedOn"): @theme.BaseTheme'>
-										<i class="fa fa-@(isBroken ? "chain-broken" : "chain") fa-flip-horizontal"></i>
+										<i class="fa fa-@(isBroken ? "unlink" : "chain") fa-flip-horizontal"></i>
 										@theme.BaseTheme
 									</small>
 								}

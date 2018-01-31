@@ -107,7 +107,7 @@ namespace SmartStore.Web.Framework.Theming
 			if (currentTheme != info.Manifest)
 			{
 				// the variable is inherited from a base theme: display an info badge
-				var chainInfo = "<span class='themevar-chain-info'><i class='fa fa-chain fa-flip-horizontal'></i>&nbsp;{0}</span>".FormatCurrent(info.Manifest.ThemeName);
+				var chainInfo = "<span class='themevar-chain-info'><i class='fa fa-link fa-flip-horizontal'></i>&nbsp;{0}</span>".FormatCurrent(info.Manifest.ThemeName);
 				return MvcHtmlString.Create(chainInfo);
 			}
 

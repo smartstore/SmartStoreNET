@@ -63,7 +63,7 @@
 			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl" @Html.Attr("data-toggle", "dropdown", node.HasChildren)>
 				@if (item.Icon.HasValue())
 				{
-					<i class="icm icm-@item.Icon navbar-icon"></i>
+					<i class="@item.Icon navbar-icon"></i>
 				}
 				else
 				{
@@ -121,7 +121,7 @@
 					var iconClass = "fa fa-fw";
 					if (node.Value.Icon.HasValue())
 					{
-						iconClass += " fa-" + node.Value.Icon;
+						iconClass = node.Value.Icon + " fa-fw";
 					}
 					<i class='@iconClass'></i>
 				}

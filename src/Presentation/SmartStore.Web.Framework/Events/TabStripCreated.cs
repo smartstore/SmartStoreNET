@@ -53,7 +53,7 @@ namespace SmartStore.Web.Framework.Events
             return ItemFactory.Add()
                 .Text(EngineContext.Current.Resolve<IText>().Get("Admin.Plugins"))
                 .Name("tab-special-plugin-widgets")
-                .Icon("fa fa-puzzle-piece fa-fw")
+                .Icon("fa fa-puzzle-piece fa-lg fa-fw")
                 .LinkHtmlAttributes(new { data_tab_name = "PLUGIN_WIDGETS" })
                 .Content("TabWidgets", "Widget", new { area = "", model = this.Model, viewDataKey = "Tab.{0}.Widgets".FormatInvariant(this.TabStripName) })
                 .Ajax(false)

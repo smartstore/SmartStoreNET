@@ -712,7 +712,7 @@ namespace SmartStore.Web.Framework
 			Guard.NotNull(helper, nameof(helper));
 			Guard.NotEmpty(fileExtension, nameof(fileExtension));
 
-			var icon = "file";
+			var icon = "file-o";
 			var ext = fileExtension;
 
 			if (ext != null && ext.StartsWith("."))
@@ -725,7 +725,7 @@ namespace SmartStore.Web.Framework
 				switch (ext.ToLowerInvariant())
 				{
 					case "pdf":
-						icon = "file-pdf";
+						icon = "file-pdf-o";
 						break;
 					case "doc":
 					case "docx":
@@ -734,14 +734,14 @@ namespace SmartStore.Web.Framework
 					case "dot":
 					case "dotx":
 					case "dotm":
-						icon = "file-word";
+						icon = "file-word-o";
 						break;
 					case "xls":
 					case "xlsx":
 					case "xlsm":
 					case "xlsb":
 					case "ods":
-						icon = "file-excel";
+						icon = "file-excel-o";
 						break;
 					case "csv":
 					case "tab":
@@ -757,25 +757,25 @@ namespace SmartStore.Web.Framework
 					case "potm":
 					case "pps":
 					case "ppsm":
-						icon = "file-powerpoint";
+						icon = "file-powerpoint-o";
 						break;
 					case "zip":
 					case "rar":
 					case "7z":
-						icon = "file-archive";
+						icon = "file-archive-o";
 						break;
 					case "png":
 					case "jpg":
 					case "jpeg":
 					case "bmp":
 					case "psd":
-						icon = "file-image";
+						icon = "file-image-o";
 						break;
 					case "mp3":
 					case "wav":
 					case "ogg":
 					case "wma":
-						icon = "file-audio";
+						icon = "file-audio-o";
 						break;
 					case "mp4":
 					case "mkv":
@@ -784,18 +784,18 @@ namespace SmartStore.Web.Framework
 					case "asf":
 					case "mpg":
 					case "mpeg":
-						icon = "file-video";
+						icon = "file-video-o";
 						break;
 					case "txt":
-						icon = "file";
+						icon = "file-text-o";
 						break;
 					case "exe":
-						icon = "cog";
+						icon = "gear";
 						break;
 					case "xml":
 					case "html":
 					case "htm":
-						icon = "file-code";
+						icon = "file-code-o";
 						break;
 				}
 			}

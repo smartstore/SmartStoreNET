@@ -111,8 +111,8 @@
 					else
 					{
 						<a class="btn btn-success plugin-install" data-toggle="button" href="#">
-							<i class="fa fa-arrow-alt-circle-down"></i>
-							<span>@T("Admin.Configuration.Plugins.Fields.Install")</span>
+							<i class="fa fa-arrow-circle-o-down"></i>
+							@T("Admin.Configuration.Plugins.Fields.Install")
 						</a>
 					}
 				</div>
@@ -150,11 +150,11 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <a href="@Url.Action("ReloadList")" class="dropdown-item" >
-                        <i class="fa fa-sync"></i>
+                        <i class="fa fa-refresh"></i>
 						@T("Admin.Configuration.Plugins.ReloadList")
                     </a>                    
                     <a href="@Url.Action("UpdateAllStringResources")" class="plugin-update-allresources dropdown-item">
-                        <i class="fa fa-sync"></i>
+                        <i class="fa fa-refresh"></i>
 						@T("Admin.Configuration.Plugins.Resources.UpdateAll")
                     </a>
                 </div>

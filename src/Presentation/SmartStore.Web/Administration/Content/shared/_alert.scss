@@ -25,12 +25,10 @@
         display: block; 
         position: absolute;
         color: #fff;
-        font-family: 'Font Awesome 5 Pro';
-		font-weight: 300;
+        font-family: FontAwesome; 
         left: 0;
         top: 50%;
-        //font-size: 1.25em;
-		font-size: 20px;
+        font-size: 1.25em;
         width: 3rem;
         text-align: center;
         transform: translateY(-50%);
@@ -39,7 +37,7 @@
     &.alert-danger:after   { content: "\f071"; } // exclamation-triangle
     &.alert-info:after     { content: "\f129"; } // info
     &.alert-success:after  { content: "\f00c"; } // check
-    &.alert-warning:after  { content: "\f12a"; } // exclamation
+    &.alert-warning:after  { content: "\f06a"; } // exclamation-circle
 }
 
 .alert > ul {

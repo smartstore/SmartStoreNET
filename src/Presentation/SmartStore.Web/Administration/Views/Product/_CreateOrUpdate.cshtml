@@ -18,7 +18,7 @@
 @Html.SmartStore().TabStrip().Name("product-edit").OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
 {
 	x.Add().Text(T("Admin.Catalog.Products.Info").Text)
-		.Icon("fa fa-pencil fa-fw")
+		.Icon("fa fa-pencil fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Info" })
 		.Content(Html.Partial("_CreateOrUpdate.Info", Model).ToHtmlString())
 		.Selected(true);
@@ -26,7 +26,7 @@
 	x.Add().Text(T("Admin.Catalog.Products.Inventory").Text)
 		.Name("tab-inventory")
 		.Visible(Model.ProductTypeId == (int)ProductType.SimpleProduct || (Model.ProductTypeId == (int)ProductType.BundledProduct && !Model.BundlePerItemShoppingCart))
-		.Icon("fa fa-archive fa-fw")
+		.Icon("fa fa-archive fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Inventory" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Inventory" })
 		.Ajax();
@@ -36,7 +36,7 @@
 		if (Model.ProductTypeId == (int)ProductType.GroupedProduct)
 		{
 			x.Add().Text(T("Admin.Catalog.Products.AssociatedProducts").Text)
-				.Icon("fa fa-link fa-fw")
+				.Icon("fa fa-link fa-lg fa-fw")
 				.LinkHtmlAttributes(new { data_tab_name = "AssociatedProducts" })
 				.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "AssociatedProducts" })
 				.Ajax();
@@ -44,7 +44,7 @@
 		else if (Model.ProductTypeId == (int)ProductType.BundledProduct)
 		{
 			x.Add().Text(T("Admin.Catalog.Products.BundleItems").Text)
-				.Icon("fa fa-link fa-fw")
+				.Icon("fa fa-link fa-lg fa-fw")
 				.LinkHtmlAttributes(new { data_tab_name = "BundleItems" })
 				.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "BundleItems" })
 				.Ajax();
@@ -54,7 +54,7 @@
 	if (Model.ProductTypeId != (int)ProductType.GroupedProduct)
 	{
 		x.Add().Text(T("Admin.Catalog.Products.Price").Text)
-			.Icon("fa fa-euro-sign fa-fw")
+			.Icon("fa fa-euro fa-lg fa-fw")
 			.LinkHtmlAttributes(new { data_tab_name = "Price" })
 			.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Price" })
 			.Ajax();
@@ -63,29 +63,29 @@
 	x.Add().Text(T("Admin.Catalog.Products.Discounts").Text)
 		.Name("tab-discounts")
 		.Visible(!(Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemPricing))
-		.Icon("fa fa-percent fa-fw")
+		.Icon("fa fa-signal fa-lg fa-flip-horizontal fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Discounts" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Discounts" })
 		.Ajax();
 
 	x.Add().Text(T("Admin.Catalog.Products.Pictures").Text)
-		.Icon("fa fa-image fa-fw")
+		.Icon("fa fa-picture-o fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Pictures" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Pictures" })
 		.Ajax();
 	x.Add().Text(T("Admin.Catalog.Products.Categories").Text)
-		.Icon("fa fa-sitemap fa-fw")
+		.Icon("fa fa-sitemap fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Categories" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Categories" })
 		.Ajax();
 	x.Add().Text(T("Admin.Catalog.Products.Manufacturers").Text)
-		.Icon("fa fa-industry fa-fw")
+		.Icon("fa fa-building-o fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Manufacturers" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Manufacturers" })
 		.Ajax();
 
 	x.Add().Text(T("Admin.Catalog.Products.Promotion").Text)
-		.Icon("fa fa-bullhorn fa-fw")
+		.Icon("fa fa-bullhorn fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Promotion" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Promotion" })
 		.Ajax();
@@ -93,34 +93,34 @@
 	if (Model.ProductTypeId != (int)ProductType.BundledProduct)
 	{
 		x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes").Text)
-			.Icon("fa fa-list-alt fa-fw")
+			.Icon("fa fa-list-alt fa-lg fa-fw")
 			.LinkHtmlAttributes(new { data_tab_name = "Attributes" })
 			.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Attributes" })
 			.Ajax();
 	}
 
 	x.Add().Text(T("Admin.Catalog.Products.SpecificationAttributes").Text)
-		.Icon("fa fa-bars fa-fw")
+		.Icon("fa fa-bars fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "SpecificationAttributes" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "SpecificationAttributes" })
 		.Ajax();
 
 	x.Add().Text(T("Admin.Common.SEO").Text)
-		.Icon("fa fa-search fa-fw")
+		.Icon("fa fa-search fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "SEO" })
 		.Content(Html.Partial("_CreateOrUpdate.SEO", Model).ToHtmlString());	
 	//x.Add().Text(T("Admin.Common.SEO").Text)
-	//	.Icon("fa fa-search fa-fw")
+	//	.Icon("fa fa-search fa-lg fa-fw")
 	//	.LinkHtmlAttributes(new { data_tab_name = "SEO" })
 	//	.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "SEO" })
 	//	.Ajax();
 	x.Add().Text(T("Admin.Catalog.Products.Acl").Text)
-		.Icon("fa fa-users fa-fw")
+		.Icon("fa fa-users fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Acl" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Acl" })
 		.Ajax();
 	x.Add().Text(T("Admin.Common.Stores").Text)
-		.Icon("fa fa-globe fa-fw")
+		.Icon("fa fa-globe fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Stores" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Stores" })
 		.Ajax();

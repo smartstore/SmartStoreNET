@@ -11,7 +11,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="fa fa-chart-bar"></i>
+            <i class="fa fa-bar-chart-o"></i>
             @T("Admin.Orders")
         </div>
         <div class="options d-flex">
@@ -23,10 +23,10 @@
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
 					<a href="javascript:void(0)" class="pdf-export-button dropdown-item" data-url="@Url.Action("ExportPdf", new { all = false })">
-						<i class="fa fa-fw fa-file-pdf"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
+						<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
 					</a>
 					<a href="javascript:void(0)" class="pdf-export-button dropdown-item" data-url="@Url.Action("ExportPdf", new { all = true })">
-						<i class="fa fa-fw fa-file-pdf"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
+						<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
 					</a>
 				</div>
 			</div>
@@ -126,7 +126,7 @@
 			<td class="adminData">
 				@Html.EditorFor(model => Model.GoDirectlyToNumber)
 				<button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn btn-secondary">
-					<i class="fa fa-play-circle"></i>
+					<i class="fa fa-play-circle-o"></i>
 					<span>@T("Admin.Common.Go")</span>
 				</button>
 			</td>

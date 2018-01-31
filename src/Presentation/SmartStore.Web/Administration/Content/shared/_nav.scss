@@ -121,7 +121,7 @@
 			padding: 0.625rem 1.25rem;
 			padding-right: 1.25rem;
 
-			> img, > i {
+			img, .fa {
 				margin-right: 0.75rem;
 				margin-left: -0.5rem;
 			}
@@ -205,8 +205,7 @@
             }
 
             &:not(.disabled):after {
-                font-family: 'Font Awesome 5 Pro';
-				font-weight: 300;
+                font-family: FontAwesome;
                 content: "\f105"; // angle-right
                 //color: #ccc;
                 font-size: 1.5rem;
@@ -260,17 +259,16 @@
 
 .nav {
     .nav-link > img,
-    .nav-link > i {
-		font-size: 16px;
-	    vertical-align: -0.08em;
+    .nav-link > .fa {
+	    vertical-align: baseline;
 	    margin-right: 0.5rem;
         // TODO: get icon color with color-yic mixin once it supports props
         // TODO: support dark backgrounds
 	    //color: lighten($body-color, 18%);
 		color: $text-muted;
     }
-    .nav-link:hover > i,
-    .nav-link.active > i {
+    .nav-link:hover > .fa,
+    .nav-link.active > .fa {
         // TODO: get icon color with color-yic mixin once it supports props
 	    color: $body-color;
     }
@@ -279,7 +277,7 @@
 	    margin-left: 3px;
     }
 
-    .tabs-left .nav-link > i {
+    .tabs-left .nav-link > .fa {
         min-width: 1rem;
     }
 }

@@ -37,29 +37,21 @@
 }
 
 
-// Dropdown toggle
-// ==============================================================
-
-.dropdown-toggle:after {
-	// better centering
-	vertical-align: 0.175em;
-}
-
-
 // Lighter dropdown icon colors
 // ==============================================================
+
 .dropdown-item {
-	> i {
-		color: $gray-500;
+	> .fa {
+		color: #6d6d6d;
 	}
 
-	.dropdown-group.show > & > i,
-	&:hover > i {
+	.dropdown-group.show > & > .fa,
+	&:hover > .fa {
 		color: $dropdown-link-hover-color;
 	}
 
-	&:active > i,
-	&:focus > i {
+	&:active > .fa,
+	&:focus > .fa {
 		color: $dropdown-link-active-color;
 	}
 }

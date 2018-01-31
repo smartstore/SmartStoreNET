@@ -44,29 +44,13 @@
 <div class="input-group date datetimepicker-group" id="@id-parent" data-date="@value" data-target-input="nearest">
     @Html.TextBox("", value, new { @class = "form-control datetimepicker-input", data_target = "#" + id + "-parent", data_format = format })
 	<div class="input-group-append input-group-addon" data-target="#@(id)-parent" data-toggle="datetimepicker">
-		<span class="input-group-text"><i class="fa fa-calendar-alt"></i></span>
+		<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 	</div>
 </div>
 
 <script>
 	$(function () {
-		$("#@(id)-parent").datetimepicker({ 
-			locale: 'glob', 
-			format: '@(format)', 
-			keepOpen: false, 
-			collapse: true,
-			icons: {
-				time: 'fa fa-clock',
-				date: 'fa fa-calendar-alt',
-				up: 'fa fa-arrow-up',
-				down: 'fa fa-arrow-down',
-				previous: 'fa fa-chevron-left',
-				next: 'fa fa-chevron-right',
-				today: 'fa fa-calendar-check',
-				clear: 'fa fa-eraser',
-				close: 'fa fa-times'
-			} 
-		});
+		$("#@(id)-parent").datetimepicker({ locale: 'glob', format: '@(format)', keepOpen: false, collapse: true });
     });
 </script>
 

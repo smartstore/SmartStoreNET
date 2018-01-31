@@ -35,7 +35,7 @@
 
 			<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title='@T("Admin.Common.Actions")' data-toggle="dropdown">
-					<i class="fa fa-cog navbar-icon"></i>
+					<i class="icm icm-cog navbar-icon"></i>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
 					@foreach (var store in stores)
@@ -51,7 +51,7 @@
 					</a>
 					<div class="dropdown-divider"></div>
 					<a class="dropdown-item" href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-						<i class="fa fa-fw fa-trash"></i>
+						<i class="fa fa-fw fa-trash-o"></i>
 						@T("Admin.Header.ClearCache")
 					</a>
 					<a class="dropdown-item" href="@Url.Action("ClearDatabaseCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
@@ -70,7 +70,7 @@
 
 			<li id="navtool-help" class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title='@T("Admin.Help")' data-toggle="dropdown">
-					<i class="fa fa-question-circle navbar-icon"></i>
+					<i class="icm icm-bubble-question navbar-icon"></i>
 					@if (checkUpdateResult != null && checkUpdateResult.UpdateAvailable)
 					{
 						<span class="reddot" style="top: 5px; right: 7px"></span>
@@ -90,7 +90,7 @@
 						@T("Admin.Help.Documentation")
 					</a>
 					<a class="dropdown-item" href="@communityUrl" data-lang="@currentLanguageCode" target="help">
-						<i class="fa fa-fw fa-comments"></i>
+						<i class="fa fa-fw fa-comment"></i>
 						@T("Admin.Help.Forums")
 					</a>
 					<div class="dropdown-divider"></div>
@@ -107,9 +107,9 @@
 					<a id="current-user" class="nav-link dropdown-toggle navbar-tool" data-toggle="dropdown" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
 						@*<em class="fa-stack fa-lg">
 							<i class="fa fa-circle fa-stack-2x"></i>
-							<i class="fa fa-user navbar-icon" style="color: #3b50ce"></i>
+							<i class="icm icm-user navbar-icon" style="color: #3b50ce"></i>
 						</em>*@
-						<i class="fa fa-user-alt navbar-icon"></i>
+						<i class="icm icm-user navbar-icon"></i>
 					</a>
 					<div class="dropdown-menu dropdown-menu-right">
 						<a class="dropdown-item" href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
@@ -117,7 +117,7 @@
 							@T("Admin.Header.Account")
 						</a>
 						<a class="dropdown-item" href="@Url.Action("Logout", "Customer", new { area = "" })">
-							<i class="fa fa-fw fa-sign-out-alt"></i>
+							<i class="fa fa-fw fa-sign-out"></i>
 							@T("Admin.Header.Logout")
 						</a>
 					</div>

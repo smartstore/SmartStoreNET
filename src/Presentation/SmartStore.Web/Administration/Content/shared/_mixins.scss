@@ -70,18 +70,13 @@
     content: $content;
 }
 
-@mixin fontawesome($content, $size: inherit, $weight: 300) {
-	display: inline-block;
-	font-family: 'Font Awesome 5 Pro';
-	font-size: $size;
-	font-weight: $weight;
-	font-style: normal;
-	font-variant: normal;
-	text-rendering: auto;
-	line-height: 1;
-	-moz-osx-font-smoothing: grayscale;
-	-webkit-font-smoothing: antialiased;
-	content: $content;
+@mixin fontawesome($content, $size: inherit) {
+    display: inline-block;
+    font: normal normal normal 16px/1 'FontAwesome';
+    font-size: $size;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    content: $content;
 }
 
 @mixin active-list-item($size: 4px, $color: theme-color("warning")) {

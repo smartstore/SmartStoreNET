@@ -27,7 +27,7 @@ namespace SmartStore.GoogleMerchantCenter
 
                 eventMessage.ItemFactory.Add().Text("GMC")
                     .Name("tab-gmc")
-                    .Icon("fab fa-google fa-fw")
+                    .Icon("fa fa-google fa-lg fa-fw")
                     .LinkHtmlAttributes(new { data_tab_name = "GMC" })
                     .Route("SmartStore.GoogleMerchantCenter", new { action = "ProductEditTab", productId = productId })
                     .Ajax();

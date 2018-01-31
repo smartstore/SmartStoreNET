@@ -213,29 +213,28 @@ $facet-selection-color:             darken($brand-success, 15%);
 }
 
 .facet-toggle {
-	&:after {
-		// TODO: ABS4 > fa5
-		display: block;
-		position: absolute;
-		font-family: FontAwesome;
-		font-size: 1.2rem;
-		line-height: 1;
-		content: "\f106";
-		color: $body-color;
-		//content: "\f077";
-		right: 0;
-		top: 50%;
-		margin-top: -7px;
-		transition: transform 0.3s ease-in-out;
-	}
+    &:after {
+	    display: block;
+	    position: absolute;
+	    font-family: FontAwesome;
+	    font-size: 1.2rem;
+	    line-height: 1;
+	    content: "\f106";
+        color: $body-color;
+	    //content: "\f077";
+        right: 0;
+	    top: 50%;
+	    margin-top: -7px;
+	    transition: transform 0.3s ease-in-out;
+    }
 
-	&.collapsed:after {
-		transform: rotate(180deg);
-	}
+    &.collapsed:after {
+	    transform: rotate(180deg);
+    }
 
-	.facet-selection {
-		display: none;
-	}
+    .facet-selection {
+        display: none;
+    }
 }
 
 .facet-body {

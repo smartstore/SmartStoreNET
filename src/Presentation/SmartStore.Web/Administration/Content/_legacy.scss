@@ -70,87 +70,86 @@ header {
 -------------------------------------------------------------- */
 
 #navbar {
-	padding: 0 30px;
+    padding: 0 30px;
 
-	.dropdown-toggle:after {
-		display: none;
-	}
+    .dropdown-toggle:after {
+        display: none;
+    }
 
-	.dropdown-menu {
-		margin-top: -2px;
-	}
+    .dropdown-menu {
+	    margin-top: -2px;
+    }
 
-	#navbar-menu .nav-item > .dropdown-menu {
-		@include bubble("top", "near", 8, #fff, $dropdown-border-color, 10px);
-	}
+    #navbar-menu .nav-item > .dropdown-menu {
+        @include bubble("top", "near", 8, #fff, $dropdown-border-color, 10px);
+    }
 
-	.dropdown-item > i,
-	.dropdown-item > img {
+    .dropdown-menu .fa {
 		display: inline-block;
-		margin-left: -8px;
-		margin-right: 0.6rem;
-	}
+		margin-left: -10px;
+	    margin-right: 6px;
+	    font-size: 17px;
+	    vertical-align: bottom;
+    }
 
-	.dropdown-header {
-		font-size: $font-size-xs;
-		text-transform: uppercase;
-	}
+    .dropdown-header {
+        font-size: $font-size-xs;
+        text-transform: uppercase;
+    }
 
-	.nav-item {
-		.nav-link {
-			max-width: 100px;
-			padding: 14px 8px !important;
-			text-align: center;
-			color: #fff;
-			background: rgba(#fff, 0);
-			opacity: 0.8;
-			transition: opacity 0.1s linear, background-color 0.1s linear;
-		}
+    .nav-item {
+        .nav-link {
+	        max-width: 100px;
+	        padding: 14px 8px !important;
+	        text-align: center;
+            color: #fff;
+	        background: rgba(#fff, 0);
+	        opacity: 0.8;
+	        transition: opacity 0.1s linear, background-color 0.1s linear;
+        }
 
-		.nav-link:hover,
-		&.show .nav-link {
-			background: rgba(#fff, .15);
-			opacity: 1;
-		}
+        .nav-link:hover,
+        &.show .nav-link
+        {
+	        background: rgba(#fff, .15);
+	        opacity: 1;
+        }
 
-		.navbar-icon {
-			position: relative;
-			text-align: center;
-			vertical-align: middle;
-			font-size: 20px;
-			height: 22px;
-			line-height: 22px;
-			color: #fff;
-		}
+	    .navbar-icon {
+		    position: relative;
+		    text-align: center;
+		    vertical-align: middle;
+		    font-size: 20px;
+            height: 22px;
+		    line-height: 22px;
+		    color: #fff;
+	    }
 
-		.navbar-label {
-			@include text-truncate();
-			text-align: center;
-			font-size: 11px;
-			padding: 0;
-			padding-top: 0.25rem;
-		}
+	    .navbar-label {
+            @include text-truncate();
+		    text-align: center;	
+		    font-size: 11px;
+            padding: 0;
+            padding-top: 0.25rem;
+	    }
 
-		.navbar-tool {
-			padding-left: 0.625rem !important;
-			padding-right: 0.625rem !important;
-			height: 72px;
-			display: flex;
+        .navbar-tool {
+            padding-left: 0.625rem !important;
+            padding-right: 0.625rem !important;
+            height: 72px;
+            display: flex;
+            > * { align-self: center; }
+	    }
+    }
 
-			> * {
-				align-self: center;
-			}
-		}
-	}
-
-	.reddot {
-		position: absolute;
-		width: 10px;
-		height: 10px;
-		border-radius: 50%;
-		background-color: $red;
-		color: #fff;
-	}
+    .reddot {
+	    position: absolute;
+	    width: 10px;
+	    height: 10px;
+	    border-radius: 50%;
+	    background-color: $red;
+	    color: #fff;
+    }
 }
 
 
@@ -422,7 +421,6 @@ label.forcheckbox {
 	
     .title, .options {
         @include make-col-ready();
-		position: static;
         /*padding-left: 0;
         padding-right: 0;*/
     }
@@ -445,11 +443,10 @@ label.forcheckbox {
         flex-grow: 1;
         max-width: 100%;
 	    
-		> i {
+		> .fa {
 			font-size: 28px;
 			vertical-align: text-top;
 			margin-right: 0.5rem;
-			color: $text-muted;
 		}
 
 		> img {
@@ -682,7 +679,7 @@ tr.adminGroup {
 	text-transform: uppercase; 
 	font-size: 18px; 
 	margin-bottom: 30px;
-	i { font-size: 20px; }
+	.fa { font-size: 20px; }
 }
 
 .marketplace-feed-item {

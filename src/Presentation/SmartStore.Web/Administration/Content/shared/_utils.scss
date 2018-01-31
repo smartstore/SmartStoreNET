@@ -67,11 +67,11 @@
 .menubar-link,
 .nav-link,
 .dropdown-item {
-	> i + span, > i + em {
+	.fa + span, .fa + em, .icm + span, .icm + em {
 		padding-left: 0.4em;
 	}
 
-	> span + i, > em + i {
+	span + .fa, em + .fa, span + .icm, em + .icm {
 		margin-left: 0.4em;
 	}
 }

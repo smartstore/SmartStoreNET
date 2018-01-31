@@ -480,7 +480,8 @@ namespace SmartStore.Web.Controllers
             model.TwitterLink = _socialSettings.Value.TwitterLink;
             model.PinterestLink = _socialSettings.Value.PinterestLink;
             model.YoutubeLink = _socialSettings.Value.YoutubeLink;
-
+			model.InstagramLink = _socialSettings.Value.InstagramLink;
+			
 			model.SmartStoreHint = "<a href='http://www.smartstore.com/' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}"
 				.FormatCurrent(hint, DateTime.Now.Year);
 

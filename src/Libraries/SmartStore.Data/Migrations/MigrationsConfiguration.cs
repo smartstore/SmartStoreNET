@@ -236,6 +236,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Orders.Info", "General", "Allgemein");
 			builder.AddOrUpdate("Admin.Orders.BillingAndShipment", "Billing & Shipping Infos", "Rechnungs- & Versandinfos");
 			builder.AddOrUpdate("Admin.Orders.Fields.ShippingAddress.ViewOnGoogleMaps", "View on Google Maps", "Auf Google Maps ansehen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.SocialSettings.InstagramLink",
+				"Instagram Link",
+				"Instagram Link",
+				"Leave this field empty if the Instagram link should not be shown",
+				"Lassen Sie dieses Feld leer, wenn der Instagram Link nicht angezeigt werden soll");
 		}
 	}
 }

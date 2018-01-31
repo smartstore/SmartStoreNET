@@ -495,14 +495,13 @@ $btn-gray-bg:       $gray-lightest;
     @include button-variant(#fff, $clr-brand-googleplus , $clr-brand-googleplus );
 }
 
-/*.btn-brand-flickr {
-    @include button-variant(#fff, $clr-brand-flickr, $clr-brand-flickr);
-}
-
 .btn-brand-instagram {
     @include button-variant(#fff, $clr-brand-instagram, $clr-brand-instagram);
 }
 
+/*.btn-brand-flickr {
+    @include button-variant(#fff, $clr-brand-flickr, $clr-brand-flickr);
+}
 .btn-brand-linkedin {
     @include button-variant(#fff, $clr-brand-linkedin, $clr-brand-linkedin);
 }

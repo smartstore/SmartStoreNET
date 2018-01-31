@@ -2,31 +2,36 @@
 @using SmartStore.Web.Models.Common;
 
 @{ 
-    var socialLinks = new List<Tuple<string, string>>();
-    if (Model.FacebookLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
-    }
+	var socialLinks = new List<Tuple<string, string>>();
+	if (Model.FacebookLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
+	}
 
-    if (Model.GooglePlusLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
-    }
+	if (Model.GooglePlusLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
+	}
 
-    if (Model.TwitterLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.TwitterLink, "twitter"));
-    }
+	if (Model.TwitterLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.TwitterLink, "twitter"));
+	}
 
-    if (Model.PinterestLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
-    }
+	if (Model.PinterestLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
+	}
 
-    if (Model.YoutubeLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "youtube"));
-    }
+	if (Model.YoutubeLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "youtube"));
+	}
+
+	if (Model.InstagramLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.InstagramLink, "instagram"));
+	}
 
 	var invserseFooter = GetThemeVariable<bool>("inverse-footer");
 }

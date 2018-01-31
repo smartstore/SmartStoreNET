@@ -881,6 +881,15 @@
 					@Html.ValidationMessageFor(model => model.SocialSettings.YoutubeLink)
 				</td>
 			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SocialSettings.InstagramLink)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.SocialSettings.InstagramLink)
+					@Html.ValidationMessageFor(model => model.SocialSettings.InstagramLink)
+				</td>
+			</tr>
 		</tbody>
     </table>
 }

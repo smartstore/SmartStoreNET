@@ -328,7 +328,10 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.YoutubeLink")]
             public string YoutubeLink { get; set; }
-        }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.InstagramLink")]
+			public string InstagramLink { get; set; }
+		}
 
         #endregion
     }

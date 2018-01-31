@@ -460,7 +460,6 @@
     <Content Include="Content\bs4\js\bootstrap.min.js" />
     <Content Include="Content\vendors\colorpicker\js\bootstrap-colorpicker-globalinit.js" />
     <Content Include="Content\vendors\colorpicker\js\bootstrap-colorpicker.js" />
-    <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.min.js" />
     <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.js" />
     <Content Include="Content\filemanager\css\images\animated-overlay.gif" />
     <Content Include="Content\filemanager\css\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -771,6 +770,7 @@
     <Content Include="Content\telerik\slider-v.gif" />
     <Content Include="Content\telerik\sprite-vertical.png" />
     <Content Include="Content\telerik\sprite.png" />
+    <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.min.js" />
     <Content Include="Content\vendors\moment\moment.min.js" />
     <Content Include="Content\vendors\moment\moment.js" />
     <Content Include="Content\vendors\pnotify\css\pnotify.buttons.css" />

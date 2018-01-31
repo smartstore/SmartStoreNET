@@ -269,6 +269,31 @@
 			});
 		}
 
+		// Adjust datetimepicker global defaults
+		var dtp = $.fn.datetimepicker;
+		if (typeof dtp !== 'undefined' && dtp.Constructor && dtp.Constructor.Default) {
+			dtp.Constructor.Default = $.extend({}, dtp.Constructor.Default, {
+				locale: 'glob',
+				keepOpen: false,
+				collapse: true,
+				widgetPositioning: {
+					horizontal: 'right',
+					vertical: 'auto'
+				},
+				icons: {
+					time: 'fa fa-clock-o',
+					date: 'fa fa-calendar',
+					up: 'fa fa-arrow-up',
+					down: 'fa fa-arrow-down',
+					previous: 'fa fa-chevron-left',
+					next: 'fa fa-chevron-right',
+					today: 'fa fa-calendar-check-o',
+					clear: 'fa fa-delete',
+					close: 'fa fa-times'
+				}
+			});
+		}
+
 		// Global notification subscriber
 		if (window.EventBroker && window._ && typeof PNotify !== 'undefined') {
 			var stack_bottomcenter = { "dir1": "up", "dir2": "right", "firstpos1": 100, "firstpos2": 10 };

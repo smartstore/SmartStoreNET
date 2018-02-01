@@ -16,13 +16,13 @@
 {
 	foreach (var plugin in plugins)
 	{
-		<div class="module-item@(!plugin.Installed ? " inactive" : "") clearfix" data-system-name="@plugin.SystemName" data-friendly-name="@plugin.FriendlyName">
+		<div class="module-item@(!plugin.Installed ? " inactive" : "")" data-system-name="@plugin.SystemName" data-friendly-name="@plugin.FriendlyName">
 			<div class="module-icon">
 				<img class="icon img-responsive" src="@Url.Content(plugin.IconUrl)" />
 			</div>
-			<div class="module-data module-data-cols-2 clearfix@(!plugin.Installed ? " inactive" : "")">
+			<div class="module-data row@(!plugin.Installed ? " inactive" : "")">
 				<!-- General -->
-				<div class="module-col">
+				<div class="module-col col-6">
 					<div>
 						<span class="module-name">
 							@plugin.FriendlyName
@@ -102,18 +102,18 @@
 				</div>
 
 				<!-- Buttons -->
-				<div class="module-col">
+				<div class="module-col col-6">
 					@if (plugin.Installed)
 					{
-						<a class="btn btn-secondary btn-to-danger plugin-uninstall" data-toggle="button" href="#">
+						<a class="btn btn-secondary btn-to-danger plugin-uninstall" data-toggle="button" href="#" style="min-width: 180px">
 							@T("Admin.Configuration.Plugins.Fields.Uninstall")
 						</a>
 					}
 					else
 					{
-						<a class="btn btn-success plugin-install" data-toggle="button" href="#">
+						<a class="btn btn-success plugin-install" data-toggle="button" href="#" style="min-width: 180px">
 							<i class="fa fa-arrow-circle-o-down"></i>
-							@T("Admin.Configuration.Plugins.Fields.Install")
+							<span>@T("Admin.Configuration.Plugins.Fields.Install")</span>
 						</a>
 					}
 				</div>
@@ -152,11 +152,11 @@
                 <div class="dropdown-menu dropdown-menu-right">
                     <a href="@Url.Action("ReloadList")" class="dropdown-item" >
                         <i class="fa fa-refresh"></i>
-						@T("Admin.Configuration.Plugins.ReloadList")
+						<span>@T("Admin.Configuration.Plugins.ReloadList")</span>
                     </a>                    
                     <a href="@Url.Action("UpdateAllStringResources")" class="plugin-update-allresources dropdown-item">
                         <i class="fa fa-refresh"></i>
-						@T("Admin.Configuration.Plugins.Resources.UpdateAll")
+						<span>@T("Admin.Configuration.Plugins.Resources.UpdateAll")</span>
                     </a>
                 </div>
             </div>
@@ -197,10 +197,10 @@
 	.Size(WindowSize.Large)
     .Title(T("Admin.Common.License").Text)
     .FooterContent(@<text>
-		<button class="btn btn-flat btn-secondary" data-dismiss="modal">
+		<button class="btn btn-secondary btn-flat" data-dismiss="modal">
 			<span>@T("Common.Cancel")</span>
 		</button>
-		<button class="btn btn-secondary pull-left licensing-reset-status-check" data-dismiss="modal">
+		<button class="btn btn-secondary licensing-reset-status-check" data-dismiss="modal">
 			<span>@T("Admin.Plugins.LicensingResetStatusCheck")</span>
 		</button>
 		<button class="btn btn-primary" data-dismiss="modal">

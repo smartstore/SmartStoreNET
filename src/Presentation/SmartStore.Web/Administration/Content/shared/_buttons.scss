@@ -58,7 +58,7 @@ $btn-size-sm: $input-height-sm;
 		transition: opacity .05s ease-in-out;
 	}
 
-	&:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus) {
+	&:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus):not(:disabled):not(.disabled) {
 		> i {
 			opacity: 0.6;
 		}
@@ -128,8 +128,8 @@ $btn-size-sm: $input-height-sm;
 // btn-icon, btn-circle
 // --------------------------------------------------
 
-.btn-icon,
-.btn-circle {
+.btn.btn-icon,
+.btn.btn-circle {
 	padding: 0;
 	text-align: center;
 	vertical-align: middle;
@@ -158,7 +158,7 @@ $btn-size-sm: $input-height-sm;
 	}
 }
 
-.btn-circle {
+.btn.btn-circle {
 	border-radius: 50%;
 }
 
@@ -166,7 +166,7 @@ $btn-size-sm: $input-height-sm;
 // btn-flat
 // --------------------------------------------------
 
-.btn-flat {
+.btn.btn-flat {
 	color: $yiq-text-dark;
 	background-image: none;
 	background-color: transparent;
@@ -182,7 +182,7 @@ $btn-size-sm: $input-height-sm;
 	}
 }
 
-.btn-flat-light {
+.btn.btn-flat-light {
 	color: rgba(#fff, 0.8);
 
 	&.disabled,
@@ -206,7 +206,7 @@ $btn-size-sm: $input-height-sm;
 
 // btn-clear
 // --------------------------------------------------
-.btn-clear {
+.btn.btn-clear {
 	color: #fff;
 	background: rgba(#fff, 0);
 	border-color: rgba(#fff, 0.6);
@@ -237,7 +237,7 @@ $btn-size-sm: $input-height-sm;
 	}
 }
 
-.btn-clear-dark {
+.btn.btn-clear-dark {
 	color: $yiq-text-dark;
 	background: transparent;
 	border-color: rgba(#000, 0.15);
@@ -272,7 +272,7 @@ $btn-size-sm: $input-height-sm;
 
 // btn-labeled
 // --------------------------------------------------
-.btn-labeled {
+.btn.btn-labeled {
 	$w-md: $input-height-inner * 0.85;
 	$w-sm: $input-height-inner-sm * 0.85;
 	$w-lg: $input-height-inner-lg * 0.85;
@@ -334,7 +334,7 @@ $btn-size-sm: $input-height-sm;
 // btn-animate
 // --------------------------------------------------
 
-.btn-animate {
+.btn.btn-animate {
 	position: relative;
 	overflow: hidden;
 	padding-left: $input-btn-padding-x * 1.5;
@@ -474,7 +474,7 @@ $btn-size-sm: $input-height-sm;
 
 // btn-no-border
 // --------------------------------------------------
-.btn-no-border {
+.btn.btn-no-border {
 	border-color: transparent !important;
 }
 

@@ -82,7 +82,7 @@ header {
 		transform: translateY(10px);
 		display: block;
 		visibility: hidden;
-		transition: opacity 0.25s ease, transform 0.25s ease-out;
+		transition: opacity 0.2s ease, transform 0.2s ease-out;
 
 		&.show {
 			visibility: visible;
@@ -435,7 +435,6 @@ label.forcheckbox {
 	
     .title, .options {
         @include make-col-ready();
-		position: static;
         /*padding-left: 0;
         padding-right: 0;*/
     }
@@ -696,113 +695,6 @@ tr.adminGroup {
 
 .system-warnings li {
 	margin-bottom: 0.8em;
-}
-
-
-/* Plugins & Providers
--------------------------------------------------------------- */
-
-.sortable-grip {
-	left: 67px;
-	width: 9px;
-}
-
-.module-list, .module-item {
-	position: relative;
-}
-
-.module-list > h3 {
-    /*font-family: @headingsFontFamily;
-    font-weight: @headingsFontWeight;*/
-    color: inherit; 
-    font-size: 18px;
-	margin-top: 30px;
-}
-
-.module-item {
-	padding: 12px 0;
-	border-top: 1px solid #ddd;
-}
-.module-item.inactive {
-	background-color: #fafafa;
-}
-.module-item.inactive .module-icon {
-	opacity: 0.5;
-}
-
-.module-icon {
-	float: left;
-	width: 48px;
-	margin-left: 10px;
-	text-align: center;
-
-	.icon, .fa {
-		max-width: 48px;
-	}
-}
-
-.module-data {
-	box-sizing: border-box;
-	margin-left: 90px;
-}
-.module-item:last-child .module-data {
-	border-bottom: none;
-}
-
-.module-col {
-	float: left;
-	display: block;
-	box-sizing: border-box;
-	min-height: 1px;
-	position: relative;
-	padding: 0 15px;
-
-	&:first-child {
-		padding-left: 0;
-	}
-}
-
-.module-data-cols-1 .module-col { width: 100%; }
-.module-data-cols-2 .module-col { width: 50%; }
-.module-data-cols-3 .module-col { width: 33.3332%; }
-.module-data-cols-4 .module-col { width: 25%; }
-
-.module-name {
-	font-weight: $font-weight-medium;
-	font-size: $font-size-lg;
-	margin-right: 5px;
-}
-
-.module-info {
-	margin-top: 3px;
-}
-.module-info .attr:after {
-	display: inline-block;
-	content: '\00b7';
-	padding: 0 5px;
-}
-.module-info .attr:last-child:after {
-	display: none;
-}
-.module-info .attr-value {
-	color: #aaa;
-}
-
-.module-description {
-	margin: 4px 0;
-}
-
-.module-actions {
-	margin-top: 8px;
-}
-
-.module-actions .btn {
-	text-transform: none;
-}
-
-table.payment-method-features td {
-	padding: 2px 4px;
-	font-size: 12px;
 }
 
 

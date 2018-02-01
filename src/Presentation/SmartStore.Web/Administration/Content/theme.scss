@@ -120,13 +120,11 @@ $input-group-addon-bg:			$gray-100;
 
 
 $btn-font-weight:				$font-weight-medium;
-//$btn-box-shadow:				0 1px 1px rgba(#000, .075);
 $btn-focus-width:				$input-btn-focus-width;
-$btn-box-shadow:				0 0 0 transparent;
+$btn-box-shadow:				inset 0 0 0 rgba(#fff, 0.15), 0 0 0 rgba(#000, 0.075);
 $btn-focus-box-shadow:			$input-btn-focus-box-shadow;
-$btn-active-box-shadow:         inset 0 2px 3px rgba(#000, .125);
-//$btn-transition:                box-shadow .12s ease-in-out;
-$btn-transition:				box-shadow .1s ease-in-out, background-color .05s ease-in-out, border-color .05s ease-in-out;
+//$btn-active-box-shadow:         inset 0 2px 3px rgba(#000, .125);
+$btn-transition:				background-color .05s ease-in-out, border-color .05s ease-in-out, box-shadow .15s ease-in-out;
 $btn-border-radius:				0; //.125rem;
 $btn-border-radius-lg:          0; //.1875rem;
 $btn-border-radius-sm:          0; //.125rem;
@@ -796,6 +794,128 @@ textarea:not([class*="form-control"]) {
 	.marketplace-feed-item-title {
 		margin-bottom: 4px;
 	}
+}
+
+
+// Plugins & Providers
+// --------------------------------------------------------------
+
+.sortable-grip {
+	left: 67px;
+	width: 9px;
+}
+
+.module-list, .module-item {
+	position: relative;
+}
+
+.module-list {
+	margin-bottom: 2rem;
+}
+
+.module-list > h3 {
+	color: $text-muted;
+	font-size: $h5-font-size;
+	margin-bottom: 1rem;
+}
+
+.module-item {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 1rem 0;
+	border-top: 1px solid rgba(#000, 0.1);
+}
+
+.module-item.inactive {
+	background-color: $gray-100;
+}
+
+.module-item.inactive .module-icon {
+	opacity: 0.5;
+}
+
+.module-icon {
+	width: 78px;
+	text-align: center;
+	flex: 0 0 auto;
+	max-width: none;
+	padding: 15px;
+
+	.icon, i {
+		max-width: 48px;
+	}
+}
+
+.module-data {
+	flex-basis: 0;
+	flex-grow: 1;
+	max-width: 100%;
+	padding: 0 15px;
+}
+
+.module-item:last-child .module-data {
+	border-bottom: none;
+}
+
+.module-col {
+	
+}
+
+/*.module-data-cols-1 .module-col {
+	width: 100%;
+}
+
+.module-data-cols-2 .module-col {
+	width: 50%;
+}
+
+.module-data-cols-3 .module-col {
+	width: 33.3332%;
+}
+
+.module-data-cols-4 .module-col {
+	width: 25%;
+}*/
+
+.module-name {
+	font-weight: $font-weight-medium;
+	font-size: $font-size-lg;
+	margin-right: 5px;
+}
+
+.module-info {
+	margin-top: 3px;
+}
+
+.module-info .attr:after {
+	display: inline-block;
+	content: '\00b7';
+	padding: 0 5px;
+}
+
+.module-info .attr:last-child:after {
+	display: none;
+}
+
+.module-info .attr-value {
+	color: #aaa;
+}
+
+.module-description {
+	margin: 4px 0;
+}
+
+.module-actions {
+	margin-top: 8px;
+}
+
+.module-actions .btn {
+	text-transform: none;
+}
+
+table.payment-method-features td {
+	padding: 2px 4px;
+	font-size: 12px;
 }
 
 

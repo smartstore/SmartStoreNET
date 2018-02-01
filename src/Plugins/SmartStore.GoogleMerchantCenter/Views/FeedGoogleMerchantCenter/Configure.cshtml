@@ -269,10 +269,14 @@
 			viewformat: 'L LT',
 			display: function (value, sourceData) {
 				if (value) {
-					// 'value' is object of type date.
+					// 'value' is an object of type date.
+					// $.fn.editabletypes.datetime.prototype.value2str(value);
 					var m = moment(value);
 					var text = m.format('L LT');
 					$(this).text(text);
+				}
+				else {
+					$(this).text(null);
 				}
 			}
 		}));

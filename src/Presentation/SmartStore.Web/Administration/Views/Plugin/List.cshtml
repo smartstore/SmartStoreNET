@@ -23,23 +23,51 @@
 			<div class="module-data row@(!plugin.Installed ? " inactive" : "")">
 				<!-- General -->
 				<div class="module-col col-6">
-					<div>
-						<span class="module-name">
+					<div class="module-title">
+						<div class="module-name">
 							@plugin.FriendlyName
-						</span>
+						</div>
+						<div class="module-badges">
+							@if (plugin.Installed)
+							{
+								<span class="badge badge-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
+							}
+							@Html.Partial("LicenseLabel", plugin.LicenseLabel)
+						</div>
 						@if (plugin.Installed)
 						{
-							<span class="badge badge-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
+							<div class="module-actions dropdown">
+								<button class="btn btn-light btn-icon dropdown-toggle no-chevron" type="button" data-toggle="dropdown">
+									<i class="fa fa-cog"></i>
+								</button>
+								<div class="dropdown-menu">
+									<a class="dropdown-item plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
+										<i class="fa fa-language"></i>
+										<span>@T("Admin.Configuration.Plugins.Resources.Update")</span>
+									</a>
+									@if (plugin.LicenseLabel.LicenseUrl.HasValue())
+									{
+										<a class="dropdown-item plugin-licence" href="@plugin.LicenseLabel.LicenseUrl">
+											<i class="fa fa-key"></i>
+											<span>@T("Admin.Common.License")</span>
+										</a>
+									}
+									@if (plugin.ConfigurationUrl.HasValue())
+									{
+										<a class="dropdown-item plugin-configure" href="@plugin.ConfigurationUrl">
+											<i class="fa fa-cog"></i>
+											<span>@T("Admin.Configuration.Plugins.Fields.Configure")</span>
+										</a>
+									}
+								</div>
+							</div>
 						}
-						<span class="license-label">
-							@Html.Partial("Partials/LicenseLabel", plugin.LicenseLabel)
-						</span>
 					</div>
 					<div class="module-info">
 						@if (plugin.Url.HasValue())
 						{
 							<span class="attr">
-								<i class="fa fa-external-link"></i>
+								<i class="fa fa-external-link mr-1"></i>
 								<a href="@plugin.Url" target="PluginWebsiteWnd">@T("Common.Website")</a>
 							</span>
 						}
@@ -73,31 +101,6 @@
 								<!-- AJAX -->
 							</a>
 						</div>
-					}
-					@if (plugin.Installed)
-					{
-						<div class="module-actions">
-							<div class="btn-group">
-								<a class="btn btn-outline-secondary btn-sm plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
-									<i class="fa fa-language"></i>
-									@T("Admin.Configuration.Plugins.Resources.Update")
-								</a>
-								@if (plugin.ConfigurationUrl.HasValue())
-								{
-									<a class="btn btn-outline-secondary btn-sm plugin-configure" href="@plugin.ConfigurationUrl">
-										<i class="fa fa-cog"></i>
-										@T("Admin.Configuration.Plugins.Fields.Configure")
-									</a>
-								}
-								@if (plugin.LicenseLabel.LicenseUrl.HasValue())
-								{
-									<button class="btn btn-outline-secondary btn-sm plugin-licence" type="button" data-url="@plugin.LicenseLabel.LicenseUrl">
-										<i class="fa fa-key"></i>
-										@T("Admin.Common.License")
-									</button>
-								}
-							</div>
-						</div>	
 					}
 				</div>
 
@@ -414,11 +417,11 @@
         });
 
     	// licence plugin
-    	$(document).on('click', 'button.plugin-licence', function (e) {
-    		var dialog = $('#plugin-licence-modal'),
-				url = $(this).attr('data-url');
+		$(document).on('click', '.plugin-licence', function (e) {
+			e.preventDefault();
 
-			console.log(dialog);
+    		var dialog = $('#plugin-licence-modal'),
+				url = $(this).attr('href');
 
     		dialog.find('.modal-body').empty();
 
@@ -428,8 +431,6 @@
     			callbackSuccess: function (resp) {
     				dialog = $('#plugin-licence-modal');
     				dialog.find('.modal-body').html(resp);
-
-					console.log(resp);
 
     				setTimeout(function() {
     					dialog.find('[name="Licenses[0].LicenseKey"]').focus();
@@ -445,7 +446,8 @@
     			}
     		});
 
-    		dialog.modal('show');
+			dialog.modal('show');
+
     		return false;
     	});
 

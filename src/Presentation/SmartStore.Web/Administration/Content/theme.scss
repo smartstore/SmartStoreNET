@@ -39,8 +39,8 @@ $blue:      #5677fc; // Blue 500
 $indigo:    #3f51b5; // Indigo 500
 $purple:    #9c27b0; // Purple 500
 $pink:      #e91e63; // Pink 500
-$red:       #e51c23; // Red 500
-$orange:    #f57c00; // Orange 700
+$red:		#f44336; // Red 500
+$orange:	#fb8c00; // Orange 600
 $yellow:    #fdd835; // Yellow 600
 $green:     #259b24; // Green 500
 $teal:      #009688; // Teal 500
@@ -68,7 +68,7 @@ $link-color:	#0277bb;
 $theme-color-interval:		8%;
 
 // The yiq lightness value that determines when the lightness of color changes from "dark" to "light". Acceptable values are between 0 and 255.
-$yiq-contrasted-threshold:	150;
+$yiq-contrasted-threshold:	164;
 
 // Customize the light and dark text colors for use in our YIQ color contrast function.
 $yiq-text-dark:				$gray-700;
@@ -120,7 +120,7 @@ $input-group-addon-bg:			$gray-100;
 
 
 $btn-font-weight:				$font-weight-medium;
-$btn-focus-width:				$input-btn-focus-width;
+$btn-focus-width:				0; //$input-btn-focus-width;
 $btn-box-shadow:				inset 0 0 0 rgba(#fff, 0.15), 0 0 0 rgba(#000, 0.075);
 $btn-focus-box-shadow:			$input-btn-focus-box-shadow;
 //$btn-active-box-shadow:         inset 0 2px 3px rgba(#000, .125);
@@ -167,6 +167,14 @@ $gray:          $gray-600;
 $gray-light:    $gray-500;
 $gray-lighter:  $gray-200;
 $gray-lightest: $gray-100;
+
+
+//
+// Backend specific variables
+// --------------------------------------------------
+
+$content-padding-x:			30px;
+$content-padding-y:			15px;
 
 
 //
@@ -291,8 +299,23 @@ pre {
 }
 
 
-// Nicer light buttons
+// Button tweaks
 // -----------------------------------------------------
+
+@each $color, $value in $theme-colors {
+	.btn-#{$color},
+	.btn-outline-#{$color} {
+		&:not(:disabled):not(.disabled):focus,
+		&:not(:disabled):not(.disabled).focus {
+			@if $color == "secondary" or $color == "light" {
+				box-shadow: 0 0 0 0.125rem rgba($primary, .2);
+			}
+			@else {
+				box-shadow: 0 0 0 0.125rem rgba($value, .4);
+			}
+		}
+	}
+}
 
 .btn-secondary {
 	@include button-variant($secondary, $secondary, $secondary, rgba(#000, 0.15), darken($secondary, 10%), rgba(#000, 0.2));
@@ -315,6 +338,37 @@ pre {
 
 .text-light {
 	color: $gray-400 !important;
+}
+
+
+// Layout
+// -----------------------------------------------------
+
+#content {
+	position: relative;
+	height: auto;
+	margin: 0 15px;
+	margin-top: -50px;
+	background-color: #fff;
+	padding: $content-padding-y ($content-padding-x / 2);
+	padding-bottom: $content-padding-x * 2;
+	box-shadow: 0 0 6px rgba(0,0,0, 0.2);
+	border-top-left-radius: $border-radius;
+	border-top-right-radius: $border-radius;
+
+	@include media-breakpoint-up(lg) {
+		margin-left: 30px;
+		margin-right: 30px;
+		padding-left: $content-padding-x;
+		padding-right: $content-padding-x;
+	}
+}
+
+.popup #content {
+	margin: 0;
+	border: 0;
+	box-shadow: none;
+	border-radius: 0;
 }
 
 
@@ -805,18 +859,21 @@ textarea:not([class*="form-control"]) {
 	width: 9px;
 }
 
-.module-list, .module-item {
-	position: relative;
-}
-
 .module-list {
 	margin-bottom: 2rem;
+	margin-left: -$content-padding-x;
+	margin-right: -$content-padding-x;
+}
+
+.module-list, .module-item {
+	position: relative;
 }
 
 .module-list > h3 {
 	color: $text-muted;
 	font-size: $h5-font-size;
 	margin-bottom: 1rem;
+	padding: 0 $content-padding-x;
 }
 
 .module-item {
@@ -835,11 +892,12 @@ textarea:not([class*="form-control"]) {
 }
 
 .module-icon {
-	width: 78px;
+	width: 93px;
 	text-align: center;
 	flex: 0 0 auto;
 	max-width: none;
 	padding: 15px;
+	padding-left: $content-padding-x;
 
 	.icon, i {
 		max-width: 48px;
@@ -877,14 +935,37 @@ textarea:not([class*="form-control"]) {
 	width: 25%;
 }*/
 
+.module-title {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+}
+
 .module-name {
 	font-weight: $font-weight-medium;
 	font-size: $font-size-lg;
-	margin-right: 5px;
+}
+
+.module-badges {
+	margin-left: 0.4rem;
 }
 
 .module-info {
-	margin-top: 3px;
+	margin-top: 0.2rem;
+	font-size: $font-size-sm;
+}
+
+.module-actions {
+	margin-left: auto;
+	transition: opacity 0.1s ease-in-out;
+
+	&:not(.show) {
+		opacity: 0;
+	}
+
+	.module-item:hover & {
+		opacity: 1;
+	}
 }
 
 .module-info .attr:after {
@@ -898,19 +979,18 @@ textarea:not([class*="form-control"]) {
 }
 
 .module-info .attr-value {
-	color: #aaa;
+	display: inline-block;
+	color: $text-muted;
+	padding-left: 0.15rem
 }
 
 .module-description {
-	margin: 4px 0;
-}
-
-.module-actions {
-	margin-top: 8px;
-}
-
-.module-actions .btn {
-	text-transform: none;
+	margin: 0.2rem 0;
+	//color: $text-muted;
+	//font-size: $font-size-sm;
+	font-weight: 300;
+	//font-size: 1rem;
+	color: $gray-600;
 }
 
 table.payment-method-features td {

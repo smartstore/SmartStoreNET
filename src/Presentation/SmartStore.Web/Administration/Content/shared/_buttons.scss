@@ -14,10 +14,17 @@ $btn-size-sm: $input-height-sm;
 }
 
 @mixin btn-square($size) {
-	$bw: $border-width * 2;
-	width: calc(#{$size} + #{$bw});
-	height: calc(#{$size} + #{$bw});
+	width: $size;
+	height: $size;
 	line-height: $size;
+
+	> i {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate3d(-50%, -50%, 0);
+		vertical-align: middle;
+	}
 }
 
 
@@ -144,12 +151,6 @@ $btn-size-sm: $input-height-sm;
 		@include btn-square($btn-size-sm);
 	}
 
-	> i {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate3d(-50%, -50%, 0);
-	}
 	// Move caret to bottom right corner
 	&.dropdown-toggle:after {
 		position: absolute;
@@ -429,9 +430,12 @@ $btn-size-sm: $input-height-sm;
 
 // btn-to-[danger|primary]
 // --------------------------------------------------
-.btn.btn-to-danger {
-	transition: none;
+.btn.btn-to-danger,
+.btn.btn-to-primary {
+	transition: box-shadow .15s ease-in-out;
+}
 
+.btn.btn-to-danger {
 	&:not([disabled]):not(.disabled):hover,
 	&:not([disabled]):not(.disabled).hover {
 		@extend .btn-danger:hover;
@@ -453,8 +457,6 @@ $btn-size-sm: $input-height-sm;
 }
 
 .btn.btn-to-primary {
-	transition: none;
-
 	&:not([disabled]):not(.disabled):hover,
 	&:not([disabled]):not(.disabled).hover {
 		@extend .btn-primary:hover;

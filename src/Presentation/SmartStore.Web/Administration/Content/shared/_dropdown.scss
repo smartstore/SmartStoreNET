@@ -45,6 +45,10 @@
 	vertical-align: 0.175em;
 }
 
+.dropdown-toggle.no-chevron:after {
+	display: none !important;
+}
+
 
 // Lighter dropdown icon colors
 // ==============================================================

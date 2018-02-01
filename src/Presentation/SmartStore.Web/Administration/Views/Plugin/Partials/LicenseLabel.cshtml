@@ -1,8 +1,10 @@
 ﻿@using SmartStore.Licensing
 @model LicenseLabelModel
+
 @{
 	Layout = null;
 }
+
 @if (Model.IsLicensable && !Model.HideLabel)
 {
 	if (Model.LicenseState == LicensingState.Licensed)
@@ -11,7 +13,7 @@
 	}
 	else if (Model.LicenseState == LicensingState.Unlicensed && Model.TruncatedLicenseKey.HasValue())
 	{
-		<span class="badge badge-dark">@T("Admin.Common.Unlicensed")</span>
+		<span class="badge badge-danger">@T("Admin.Common.Unlicensed")</span>
 	}
 	else
 	{

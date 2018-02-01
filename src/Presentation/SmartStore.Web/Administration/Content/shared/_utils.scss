@@ -226,3 +226,14 @@ table th {
 		display: none !important;
 	}
 }
+
+
+// JQUERY UI STUFF
+// -------------------------
+
+.ui-effects-transfer,
+.transfer {
+	border: 2px dotted $gray-700 !important;
+	background: transparent;
+	z-index: 100000;
+}

@@ -293,7 +293,7 @@ pre {
 }
 
 
-// Nicer light button
+// Nicer light buttons
 // -----------------------------------------------------
 
 .btn-secondary {
@@ -309,6 +309,14 @@ pre {
 	&:focus, &.focus {
 		border-color: rgba(#000, 0.2);
 	}
+}
+
+
+// Typo
+// -----------------------------------------------------
+
+.text-light {
+	color: $gray-400 !important;
 }
 
 
@@ -726,6 +734,67 @@ textarea:not([class*="form-control"]) {
 
 	&.input-group-lg .input-group-text {
 		width: $input-height-lg;
+	}
+}
+
+
+//
+// Dashboard
+// --------------------------------------------------
+
+.stats-today {
+	.stats-today-item {
+		padding: 0 1.5rem;
+		text-align: left;
+		border-right: 1px solid $gray-300;
+
+		&:last-child {
+			padding-right: $grid-gutter-width/2;
+			border-right: none
+		}
+	}
+
+	.stats-today-item-label {
+		font-weight: 400;
+		font-size: $font-size-xs;
+		margin-bottom: 0.75rem;
+		color: $gray-500;
+	}
+
+	.stats-today-item-value {
+		font-size: 2rem;
+		font-weight: 600;
+		line-height: 2rem;
+	}
+
+	.stats-today-title {
+		line-height: 1;
+	}
+}
+
+.marketplace-feed {
+	.marketplace-feed-title {
+		text-transform: uppercase;
+		font-size: 18px;
+		margin-bottom: 30px;
+
+		i {
+			font-size: 20px;
+		}
+	}
+
+	.marketplace-feed-item {
+		margin-bottom: 15px;
+		padding-bottom: 15px;
+		border-bottom: 1px solid #ddd;
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.marketplace-feed-item-title {
+		margin-bottom: 4px;
 	}
 }
 

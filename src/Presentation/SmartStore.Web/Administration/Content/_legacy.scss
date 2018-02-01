@@ -666,50 +666,6 @@ tr.adminGroup {
 }
 
 
-/* DASHBOARD */
-
-.stats-today-item-value {
-	font-size: 1.75rem;
-	line-height: 2rem;
-}
-
-.stats-today-title {
-	line-height: 1;
-}
-
-.stats-today-item {
-	padding: 0 1.5rem;
-	text-align: center;
-	border-right: 1px solid $gray-300;
-	&:last-child { padding-right: $grid-gutter-width/2; border-right: none }
-}
-
-.stats-today-item-label {
-	font-weight: bold;
-	font-size: $font-size-xs;
-	margin-bottom: 0.75rem;
-	color: $gray-500;
-}
-
-.marketplace-feed-title {
-	text-transform: uppercase; 
-	font-size: 18px; 
-	margin-bottom: 30px;
-	i { font-size: 20px; }
-}
-
-.marketplace-feed-item {
-	margin-bottom: 15px; 
-	padding-bottom: 15px; 
-	border-bottom: 1px solid #ddd;
-	&:last-child { border-bottom: none; }
-}
-
-.marketplace-feed-item-title {
-	margin-bottom: 4px;
-}
-
-
 /* ORDER EDITING */
 .order-edit-cnt .edit-label {
 	font-size: $font-size-sm;

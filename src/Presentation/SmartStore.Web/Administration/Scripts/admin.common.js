@@ -65,7 +65,7 @@ var Admin = {
 				var form = $('.plugin-config-container form').first();
 				if (form) {
 					// ...but first add a hidden input to the form with button's name and value to mimic button click WITHIN the form.
-					var btn = $(e.srcElement);
+					var btn = $(e.currentTarget);
 					form.prepend($('<input type="hidden" name="' + btn.attr('name') + '" value="' + btn.attr('value') + '" />'));
 					form.submit();
 				}

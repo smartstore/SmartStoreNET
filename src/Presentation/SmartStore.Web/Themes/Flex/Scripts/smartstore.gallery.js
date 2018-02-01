@@ -430,7 +430,7 @@
 				}
 
 				if (e.type === 'mousedown') {
-					var btn = $(e.srcElement);
+					var btn = $(e.srcElement || e.currentTarget);
 					if ((idx === 0 && btn.hasClass('pswp__button--arrow--left')) || (idx === len - 1 && btn.hasClass('pswp__button--arrow--right'))) {
 						noTransition = true;
 					}

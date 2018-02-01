@@ -113,7 +113,7 @@
 						c.Bound(x => x.EnergyEfficiencyClass)
 							.ClientTemplate(XEditableLink("EnergyEfficiencyClass", "select2").ToHtmlString());
 						c.Bound(x => x.CustomLabel0)
-							.ClientTemplate(XEditableLink("CustomLabel0", "datetime").ToHtmlString());	// TEST!
+							.ClientTemplate(XEditableLink("CustomLabel0", "text").ToHtmlString());
 						c.Bound(x => x.CustomLabel1)
 							.ClientTemplate(XEditableLink("CustomLabel1", "text").ToHtmlString());
 						c.Bound(x => x.CustomLabel2)
@@ -265,23 +265,24 @@
 			]
 		}));
 
-		grid.find('a.edit-link-customlabel0').editable($.extend({}, rightOptions, {
-			viewformat: 'L LT',
-			display: function (value, sourceData) {
-				if (value) {
-					// 'value' is an object of type date.
-					// $.fn.editabletypes.datetime.prototype.value2str(value);
-					var m = moment(value);
-					var text = m.format('L LT');
-					$(this).text(text);
-				}
-				else {
-					$(this).text(null);
-				}
-			}
-		}));
+		// Test date inline editing. Set 'datetime' type for XEditableLink.
+		//grid.find('a.edit-link-customlabel0').editable($.extend({}, rightOptions, {
+		//	viewformat: 'L LT',
+		//	display: function (value, sourceData) {
+		//		if (value) {
+		//			// 'value' is an object of type date.
+		//			// $.fn.editabletypes.datetime.prototype.value2str(value);
+		//			var m = moment(value);
+		//			var text = m.format('L LT');
+		//			$(this).text(text);
+		//		}
+		//		else {
+		//			$(this).text(null);
+		//		}
+		//	}
+		//}));
 
-		//grid.find('a.edit-link-customlabel0').editable(rightOptions);
+		grid.find('a.edit-link-customlabel0').editable(rightOptions);
 		grid.find('a.edit-link-customlabel1').editable(rightOptions);
 		grid.find('a.edit-link-customlabel2').editable(rightOptions);
 		grid.find('a.edit-link-customlabel3').editable(rightOptions);

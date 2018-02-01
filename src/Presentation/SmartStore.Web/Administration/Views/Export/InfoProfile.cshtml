@@ -21,9 +21,11 @@
                 @Html.SmartLabelFor(m => m.Profiles)
             </td>
             <td class="adminData">
-                <a href="@Url.Action("Edit", "Export", new { id = profile.Id, area = "Admin" })">
-                    @profile.Name
-                </a>
+				<div class="form-control-plaintext">
+					<a href="@Url.Action("Edit", "Export", new { id = profile.Id, area = "Admin" })">
+						@profile.Name
+					</a>
+				</div>
             </td>
 		</tr>
 		if (profile.ScheduleTaskId.HasValue)

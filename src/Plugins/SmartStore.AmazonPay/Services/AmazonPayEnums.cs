@@ -28,6 +28,13 @@
 		AuthorizeAndCapture
 	}
 
+	public enum AmazonPayAuthorizeMethod
+	{
+		Omnichronous = 0,
+		Asynchronous,
+		Synchronous
+	}
+
 	public enum AmazonPaySaveDataType
 	{
 		None = 0,

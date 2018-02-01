@@ -10,6 +10,7 @@ namespace SmartStore.AmazonPay
 			Marketplace = "de";
 			DataFetching = AmazonPayDataFetchingType.Ipn;
 			TransactionType = AmazonPayTransactionType.Authorize;
+			AuthorizeMethod = AmazonPayAuthorizeMethod.Omnichronous;
 			SaveEmailAndPhone = AmazonPaySaveDataType.OnlyIfEmpty;
 			AddOrderNotes = true;
 			InformCustomerAboutErrors = true;
@@ -33,6 +34,7 @@ namespace SmartStore.AmazonPay
 		
 		public AmazonPayDataFetchingType DataFetching { get; set; }
 		public AmazonPayTransactionType TransactionType { get; set; }
+		public AmazonPayAuthorizeMethod AuthorizeMethod { get; set; }
 
 		public AmazonPaySaveDataType? SaveEmailAndPhone { get; set; }
 		public bool ShowPayButtonForAdminOnly { get; set; }

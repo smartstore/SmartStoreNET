@@ -157,6 +157,16 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AuthorizeMethod)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.AuthorizeMethod)
+				@Html.DropDownListFor(model => model.AuthorizeMethod, Model.AuthorizeMethods)
+				@Html.ValidationMessageFor(model => model.AuthorizeMethod)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.TransactionType)
 			</td>
 			<td class="adminData">

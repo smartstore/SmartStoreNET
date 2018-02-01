@@ -265,6 +265,21 @@ Text suggestions:<ul>
 	<LocaleResource Name="TransactionType.Warning">
 		<Value>Please use "Immediately debit" method only in the case you are shipping goods on the same day they are ordered and you have been white-listed for this service. Do not activate this option without contacting Amazon Pay first.</Value>
 	</LocaleResource>
+	<LocaleResource Name="AuthorizeMethod">
+		<Value>Authorize method</Value>
+	</LocaleResource>
+	<LocaleResource Name="AuthorizeMethod.Hint">
+		<Value>Specifies the method by which payments are to be authorized.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.AmazonPay.Services.AmazonPayAuthorizeMethod.Omnichronous" AppendRootKey="false">
+		<Value>Standard (Omnichronous)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.AmazonPay.Services.AmazonPayAuthorizeMethod.Asynchronous" AppendRootKey="false">
+		<Value>Asynchronous</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.AmazonPay.Services.AmazonPayAuthorizeMethod.Synchronous" AppendRootKey="false">
+		<Value>Synchronous</Value>
+	</LocaleResource>
 	<LocaleResource Name="SaveEmailAndPhone">
 		<Value>Apply customer data</Value>
 	</LocaleResource>

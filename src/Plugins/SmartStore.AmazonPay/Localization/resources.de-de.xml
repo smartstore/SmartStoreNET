@@ -265,6 +265,21 @@ Textvorschläge:<ul>
 	<LocaleResource Name="TransactionType.Warning">
 		<Value>Bitte benutzen Sie "Sofort abbuchen" nur, wenn Sie Ware am selben Tag der Bestellung verschicken und Sie für diesen Dienst zugelassen sind. Aktivieren Sie diese Option bitte erst nach Rücksprache mit Amazon Pay.</Value>
 	</LocaleResource>
+	<LocaleResource Name="AuthorizeMethod">
+		<Value>Autorisierungsmethode</Value>
+	</LocaleResource>
+	<LocaleResource Name="AuthorizeMethod.Hint">
+		<Value>Legt die Methode fest, mit der Zahlungen autorisiert werden sollen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.AmazonPay.Services.AmazonPayAuthorizeMethod.Omnichronous" AppendRootKey="false">
+		<Value>Standard (Omnichron)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.AmazonPay.Services.AmazonPayAuthorizeMethod.Asynchronous" AppendRootKey="false">
+		<Value>Asynchron</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.AmazonPay.Services.AmazonPayAuthorizeMethod.Synchronous" AppendRootKey="false">
+		<Value>Synchron</Value>
+	</LocaleResource>
 	<LocaleResource Name="SaveEmailAndPhone">
 		<Value>Kundendaten übernehmen</Value>
 	</LocaleResource>

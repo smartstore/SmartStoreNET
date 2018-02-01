@@ -6141,12 +6141,14 @@ $(function(){
 
 		render: function () {
 			var opt = this.options.datetimepicker,
+				ph = this.options.placeholder || '',
 				id = Math.random().toString(36).substr(2, 10),
 				parentId = id + '-parent';
 
 			this.$input.append(
 				'<div class="input-group date datetimepicker-group" id="' + parentId + '" data-date="" data-target-input="nearest">' +
-				'<input type="text" id="' + id + '" name="' + id + '" value="" class="form-control form-control-sm datetimepicker-input" data-target="#' + parentId + '" data-format="' + opt.format + '" />' +
+				'<input placeholder="' + ph + '" type="text" id="' + id + '" name="' + id + '" value="" class="form-control form-control-sm datetimepicker-input"' +
+				' data-target="#' + parentId + '" data-format="' + opt.format + '" />' +
 				'<div class="input-group-append input-group-addon" data-target="#' + parentId + '" data-toggle="datetimepicker">' +
 				'<span class="input-group-text"><i class="fa fa-calendar"></i></span>' +
 				'</div></div>'
@@ -6296,9 +6298,9 @@ $(function(){
     DateTime.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
         /**
         @property tpl 
-        @default <div></div>
+        @default <div class="editable-date well"></div>
         **/         
-        tpl:'<div class="editable-date well"></div>',
+        tpl: '<div class="editable-date well"></div>',
         /**
         @property inputclass 
         @default null
@@ -6329,7 +6331,7 @@ $(function(){
 
         @property datetimepicker 
         @type object
-        @default { }
+        @default { ... }
         **/
 		datetimepicker: {
 			locale: 'glob',
@@ -6343,9 +6345,17 @@ $(function(){
 
         @property clear 
         @type boolean|string
-        @default 'x clear'
+        @default false
         **/
-		clear: false
+		clear: false,
+        /**
+        Placeholder attribute
+
+        @property placeholder 
+        @type string
+        @default null
+        **/
+		placeholder: null
     });
 
     $.fn.editabletypes.datetime = DateTime;

@@ -10,7 +10,7 @@
 
 <div>
 	@Html.ProviderList(Model,
-	@<a href='@Url.Action("Providers", new { systemName = item.SystemName })' class="btn@(item.IsPrimaryTaxProvider ? " btn-success" : " btn-secondary")" @Html.Attr("disabled", "disabled", item.IsPrimaryTaxProvider)>
+	@<a style="min-width: 250px" href='@Url.Action("Providers", new { systemName = item.SystemName })' class="btn@(item.IsPrimaryTaxProvider ? " btn-success" : " btn-secondary btn-to-danger")" @Html.Attr("disabled", "disabled", item.IsPrimaryTaxProvider)>
 		@if (item.IsPrimaryTaxProvider)
 		{
 			<i class="fa fa-check"></i>

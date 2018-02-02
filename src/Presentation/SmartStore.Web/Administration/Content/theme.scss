@@ -855,8 +855,9 @@ textarea:not([class*="form-control"]) {
 // --------------------------------------------------------------
 
 .sortable-grip {
-	left: 67px;
+	left: 0;
 	width: 9px;
+	z-index: 1000;
 }
 
 .module-list {
@@ -865,7 +866,8 @@ textarea:not([class*="form-control"]) {
 	margin-right: -$content-padding-x;
 }
 
-.module-list, .module-item {
+.module-list, 
+.module-item {
 	position: relative;
 }
 
@@ -916,29 +918,16 @@ textarea:not([class*="form-control"]) {
 }
 
 .module-col {
-	
 }
 
-/*.module-data-cols-1 .module-col {
-	width: 100%;
+.module-heading {
+	display: flex;
+	flex-wrap: nowrap;
 }
-
-.module-data-cols-2 .module-col {
-	width: 50%;
-}
-
-.module-data-cols-3 .module-col {
-	width: 33.3332%;
-}
-
-.module-data-cols-4 .module-col {
-	width: 25%;
-}*/
 
 .module-title {
 	display: flex;
 	flex-wrap: nowrap;
-	align-items: center;
 }
 
 .module-name {
@@ -985,17 +974,13 @@ textarea:not([class*="form-control"]) {
 }
 
 .module-description {
-	margin: 0.2rem 0;
-	//color: $text-muted;
-	//font-size: $font-size-sm;
-	font-weight: 300;
-	//font-size: 1rem;
+	margin-bottom: 0.25rem;
 	color: $gray-600;
 }
 
 table.payment-method-features td {
 	padding: 2px 4px;
-	font-size: 12px;
+	font-size: $font-size-sm;
 }
 
 

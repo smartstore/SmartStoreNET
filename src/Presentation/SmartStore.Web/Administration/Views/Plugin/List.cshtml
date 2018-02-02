@@ -20,20 +20,29 @@
 			<div class="module-icon">
 				<img class="icon img-responsive" src="@Url.Content(plugin.IconUrl)" />
 			</div>
-			<div class="module-data row@(!plugin.Installed ? " inactive" : "")">
+			<div class="module-data row">
 				<!-- General -->
 				<div class="module-col col-6">
-					<div class="module-title">
-						<div class="module-name">
-							@plugin.FriendlyName
-						</div>
-						<div class="module-badges">
-							@if (plugin.Installed)
+					<div class="module-heading">
+						<div>
+							<div class="module-title">
+								<div class="module-name">@plugin.FriendlyName</div>
+								<div class="module-badges">
+									@if (plugin.Installed)
+									{
+										<span class="badge badge-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
+									}
+									@Html.Partial("LicenseLabel", plugin.LicenseLabel)
+								</div>
+							</div>
+							@if (plugin.Description.HasValue())
 							{
-								<span class="badge badge-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
+								<div class="module-description w-100">
+									@plugin.Description
+								</div>
 							}
-							@Html.Partial("LicenseLabel", plugin.LicenseLabel)
 						</div>
+
 						@if (plugin.Installed)
 						{
 							<div class="module-actions dropdown">
@@ -64,13 +73,10 @@
 						}
 					</div>
 					<div class="module-info">
-						@if (plugin.Url.HasValue())
-						{
-							<span class="attr">
-								<i class="fa fa-external-link mr-1"></i>
-								<a href="@plugin.Url" target="PluginWebsiteWnd">@T("Common.Website")</a>
-							</span>
-						}
+						<span class="attr">
+							<span class="attr-name">@T("Admin.Configuration.Plugins.Fields.Version"):</span>
+							<span class="attr-value">@plugin.Version</span>
+						</span>
 						@if (plugin.Author.HasValue())
 						{
 							<span class="attr">
@@ -78,25 +84,22 @@
 								<span class="attr-value">@plugin.Author</span>
 							</span>
 						}
-						<span class="attr">
-							<span class="attr-name">@T("Admin.Configuration.Plugins.Fields.Version"):</span>
-							<span class="attr-value">@plugin.Version</span>
-						</span>
+						@if (plugin.Url.HasValue())
+						{
+							<span class="attr">
+								<i class="fa fa-external-link mr-1"></i>
+								<a href="@plugin.Url" target="PluginWebsiteWnd">@T("Common.Website")</a>
+							</span>
+						}
 						<span class="attr">
 							<span class="attr-name">@T("Admin.Configuration.Plugins.Fields.SystemName"):</span>
 							<span class="attr-value">@plugin.SystemName</span>
 						</span>
 					</div>
-					@if (plugin.Description.HasValue())
-					{
-						<div class="module-description">
-							@plugin.Description
-						</div>
-					}
 					@if (@Model.AvailableStores.Count > 1)
 					{
-						<div style="margin: 4px 0;">
-							<span>@T("Admin.Common.Store.LimitedTo"): </span>
+						<div class="fs-sm">
+							<span class="pr-2">@T("Admin.Common.Store.LimitedTo"):</span>
 							<a href="#" data-pk='@plugin.SystemName' data-value='[@String.Join(",", plugin.SelectedStoreIds)]' class="editable editable-click store-limiter">
 								<!-- AJAX -->
 							</a>

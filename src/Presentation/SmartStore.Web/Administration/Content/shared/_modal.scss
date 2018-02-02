@@ -37,7 +37,8 @@
 }
 
 .modal-title {
-    font-weight: $font-weight-normal; // $font-weight-medium;
+    font-weight: $font-weight-medium;
+	color: $gray-500;
 }
 
 .modal-dialog:not(.modal-flex) iframe {

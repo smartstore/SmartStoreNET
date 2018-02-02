@@ -18,17 +18,18 @@
 				<div>
 					<div class="input-group">
 						@Html.TextBoxFor(model => model.Products, new { data_routeparam = "productIds" })
-						<span class="input-group-btn">
+						<div class="input-group-append">
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.Products)
+								.HtmlAttribute("class", "btn btn-outline-secondary")
 								.DialogTitle(T("lugins.DiscountRules.HasAllProducts.Fields.Products"))
 								.Caption(T("Admin.Common.Search")))
-						</span>
+						</div>
 					</div>
 
-					<button type="button" class="btn btn-primary btn-save-discount-rule">
+					<button type="button" class="btn @(Model.RequirementId == 0 ? "btn-primary" : "btn-warning") btn-save-discount-rule mt-3">
 						<i class="fa fa-check"></i>
-						@T("Admin.Common.Save")
+						<span>@T("Admin.Common.Save")</span>
 					</button>
 				</div>
 			</div>

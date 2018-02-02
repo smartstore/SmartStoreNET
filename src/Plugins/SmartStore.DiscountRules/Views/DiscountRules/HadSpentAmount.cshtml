@@ -18,6 +18,8 @@
 		$('#@Html.FieldIdFor(model => model.SpentAmount)').on('input', function (e) {
 			$('#' + prefix + '_SpentAmountVal').val($(this).val());
 		});
+
+		applyCommonPlugins(".discount-rule-wrapper");
 	});
 </script>
 
@@ -51,9 +53,9 @@
 			&nbsp;
 		</td>
 		<td class="adminData">
-			<button type="button" class="btn btn-save-discount-rule">
+			<button type="button" class="btn @(Model.RequirementId == 0 ? "btn-primary" : "btn-warning") btn-save-discount-rule">
 				<i class="fa fa-check"></i>
-				@T("Admin.Common.Save")
+				<span>@T("Admin.Common.Save")</span>
 			</button>
 		</td>
 	</tr>

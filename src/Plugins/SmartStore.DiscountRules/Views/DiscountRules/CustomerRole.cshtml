@@ -18,9 +18,9 @@
 				 data-success-msg='@T("Admin.Promotions.Discounts.Requirements.Saved").Text.EncodeJsString()'>
 				<div>
 					@Html.DropDownListFor(model => model.CustomerRoleId, Model.AvailableCustomerRoles, new { data_routeparam = "customerRoleId" })
-					<button type="button" class="btn btn-save-discount-rule">
+					<button type="button" class="btn @(Model.RequirementId == 0 ? "btn-primary" : "btn-warning") btn-save-discount-rule mt-3">
 						<i class="fa fa-check"></i>
-						@T("Admin.Common.Save")
+						<span>@T("Admin.Common.Save")</span>
 					</button>
 				</div>
 			</div>

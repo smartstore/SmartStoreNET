@@ -49,51 +49,50 @@
 		.Name("copyproduct-window")
 		.Title(T("Admin.Catalog.Products.Copy").Text)
 		.Content(@<text>
-    @using (Html.BeginForm("CopyProduct", "Product", FormMethod.Post, new { style = "margin:0;" }))
-    {
-        @Html.HiddenFor(model => Model.CopyProductModel.Id)
-		<table class="adminContent">
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.CopyProductModel.NumberOfCopies)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => Model.CopyProductModel.NumberOfCopies)
-                </td>
-            </tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CopyProductModel.Name)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => Model.CopyProductModel.Name)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CopyProductModel.Published)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => Model.CopyProductModel.Published)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CopyProductModel.CopyImages)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => Model.CopyProductModel.CopyImages)
-				</td>
-			</tr>
-		</table>
-    }
-    </text>)
-    .FooterContent(@<text>
-        <button id="copyproduct" type="button" class="btn btn-primary">
-            <i class="fa fa-files-o"></i>
-            @T("Admin.Catalog.Products.Copy")
-        </button>
-    </text>)
+			<form method="POST" action="@Url.Action("CopyProduct", "Product")">
+				@Html.HiddenFor(model => Model.CopyProductModel.Id)
+				<table class="adminContent">
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CopyProductModel.NumberOfCopies)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => Model.CopyProductModel.NumberOfCopies)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CopyProductModel.Name)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => Model.CopyProductModel.Name)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CopyProductModel.Published)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => Model.CopyProductModel.Published)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CopyProductModel.CopyImages)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => Model.CopyProductModel.CopyImages)
+						</td>
+					</tr>
+				</table>
+			</form>
+		</text>)
+	.FooterContent(@<text>
+			<button id="copyproduct" type="button" class="btn btn-primary">
+				<i class="fa fa-files-o"></i>
+				@T("Admin.Catalog.Products.Copy")
+			</button>
+	</text>)
 		.Render();
 }
 <script type="text/javascript">

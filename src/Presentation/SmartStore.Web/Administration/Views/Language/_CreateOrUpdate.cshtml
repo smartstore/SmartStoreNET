@@ -14,78 +14,78 @@
 
 @helper TabInfo()
 {
-<table id="LanguageEditTable" class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Name)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Name)
-            @Html.ValidationMessageFor(model => model.Name)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.LanguageCulture)
-        </td>
-        <td class="adminData">
-            @Html.DropDownListFor(x => x.LanguageCulture, Model.AvailableCultures)
-            @Html.ValidationMessageFor(model => model.LanguageCulture)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.UniqueSeoCode)
-        </td>
-        <td class="adminData">
-			@Html.DropDownListFor(x => x.UniqueSeoCode, Model.AvailableTwoLetterLanguageCodes)
-            @Html.ValidationMessageFor(model => model.UniqueSeoCode)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.FlagImageFileName)
-        </td>
-        <td class="adminData">
-			<select name="FlagImageFileName" data-placeholder="@T("Common.Unspecified")">
-				<option></option>
-				@foreach (var item in Model.AvailableFlags)
-				{
-					var select = item.Value.IsCaseInsensitiveEqual(Model.FlagImageFileName);
-					<option value="@item.Value" @(select ? "selected='selected'" : "")>@item.Text</option>
-				}
-			</select>
-            @Html.ValidationMessageFor(model => model.FlagImageFileName)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Rtl)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Rtl)
-            @Html.ValidationMessageFor(model => model.Rtl)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Published)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Published)
-            @Html.ValidationMessageFor(model => model.Published)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayOrder)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayOrder)
-            @Html.ValidationMessageFor(model => model.DisplayOrder)
-        </td>
-    </tr>
-</table>
+	<table id="LanguageEditTable" class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Name)
+				@Html.ValidationMessageFor(model => model.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.LanguageCulture)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.LanguageCulture, Model.AvailableCultures)
+				@Html.ValidationMessageFor(model => model.LanguageCulture)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.UniqueSeoCode)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.UniqueSeoCode, Model.AvailableTwoLetterLanguageCodes, new { value = "es" })
+				@Html.ValidationMessageFor(model => model.UniqueSeoCode)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FlagImageFileName)
+			</td>
+			<td class="adminData">
+				<select name="FlagImageFileName" data-placeholder="@T("Common.Unspecified")">
+					<option></option>
+					@foreach (var item in Model.AvailableFlags)
+					{
+						var select = item.Value.IsCaseInsensitiveEqual(Model.FlagImageFileName);
+						<option value="@item.Value" @(select ? "selected='selected'" : "")>@item.Text</option>
+					}
+				</select>
+				@Html.ValidationMessageFor(model => model.FlagImageFileName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Rtl)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Rtl)
+				@Html.ValidationMessageFor(model => model.Rtl)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Published)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Published)
+				@Html.ValidationMessageFor(model => model.Published)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DisplayOrder)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.DisplayOrder)
+				@Html.ValidationMessageFor(model => model.DisplayOrder)
+			</td>
+		</tr>
+	</table>
 }
 
 @helper TabStores()

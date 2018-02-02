@@ -42,8 +42,9 @@
     .Name("importxml-window")
     .Title(T("Admin.Configuration.Languages.Import").Text)
     .Content(@<text>
-    @using (Html.BeginForm("ImportXml", "Language", new { id = Model.Id }, FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
+
+	<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportXml", "Language", new { id = Model.Id })">
+
         @Html.SmartStore().TabStrip().Name("language-import-tab").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
         {
             x.Add().Text(T("Admin.Configuration.Languages.XmlFile").Text).Content(TabImportXmlFile()).Selected(true);
@@ -70,7 +71,7 @@
 				<label class="form-check-label" for="importxmlupdatetouched">@T("Admin.Configuration.Languages.Import.UpdateTouched")</label>
 			</div>
         </div>
-    }
+    </form>
     </text>)
     .FooterContent(@<text>
         <a href="#" class="btn btn-secondary btn-flat" data-dismiss="modal">

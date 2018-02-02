@@ -75,15 +75,14 @@
     .Title(T("Admin.Configuration.Themes.ImportVars"))
     .Content(
     @<text>
-        @using (Html.BeginForm("ImportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId }, FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
+		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
             <div class="alert alert-info">
                 @T("Admin.Configuration.Themes.ImportVars.Note")
             </div>
             <div>
                 @T("Admin.Configuration.Themes.ImportVars.XmlFile"): <input type="file" id="importxmlfile" name="importxmlfile" />
             </div>
-        }
+        </form>
     </text>)
     .FooterContent(
     @<text>
@@ -99,15 +98,14 @@
     .Title(T("Admin.Configuration.Themes.ExportVars"))
     .Content(
     @<text>
-        @using (Html.BeginForm("ExportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId }, FormMethod.Post))
-        {
+		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ExportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
             <div class="alert alert-info">
                 @T("Admin.Configuration.Themes.ExportVars.Note")
             </div>
             <div>
                 @T("Admin.Configuration.Themes.ExportVars.ProfileName"): @Html.TextBox("exportprofilename", "", new { placeholder = T("Common.Optional") })
             </div>
-        }
+        </form>
     </text>)
     .FooterContent(
     @<text>

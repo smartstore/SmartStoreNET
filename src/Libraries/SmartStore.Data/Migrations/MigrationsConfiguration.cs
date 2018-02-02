@@ -234,7 +234,7 @@ namespace SmartStore.Data.Migrations
 				"Legt fest, ob die IP-Adresse im Kundendatensatz gespeichert werden soll.");
 
 			builder.AddOrUpdate("Admin.Orders.Info", "General", "Allgemein");
-			builder.AddOrUpdate("Admin.Orders.BillingAndShipment", "Billing & Shipping Infos", "Rechnungs- & Versandinfos");
+			builder.AddOrUpdate("Admin.Orders.BillingAndShipment", "Billing & Shipping", "Rechnung & Versand");
 			builder.AddOrUpdate("Admin.Orders.Fields.ShippingAddress.ViewOnGoogleMaps", "View on Google Maps", "Auf Google Maps ansehen");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.SocialSettings.InstagramLink",

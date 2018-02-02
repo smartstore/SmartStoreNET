@@ -379,7 +379,7 @@
 				global: false,
 				url: url,
 				beforeSend: function (xhr) {
-					pane.html(createCircularSpinner(48, true, 2));
+					pane.html($("<div class='text-center mt-6'></div>").append(createCircularSpinner(48, true, 2)));
 					getFunction(tabbable.data("ajax-onbegin"), ["tab", "pane", "xhr"]).apply(this, [newTab, pane, xhr]);
 				},
 				success: function (data, status, xhr) {

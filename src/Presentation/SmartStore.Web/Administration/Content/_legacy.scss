@@ -79,10 +79,10 @@ header {
 	.dropdown-menu {
 		margin-top: -2px;
 		opacity: 0;
-		transform: translateY(10px);
+		transform: translateY(-10px);
 		display: block;
 		visibility: hidden;
-		transition: opacity 0.3s ease, transform 0.3s ease-out;
+		transition: opacity 0.28s ease, transform 0.28s ease-out;
 
 		&.show {
 			visibility: visible;

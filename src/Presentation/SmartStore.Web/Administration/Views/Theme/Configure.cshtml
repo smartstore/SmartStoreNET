@@ -76,9 +76,9 @@
     .Content(
     @<text>
 		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
-            <div class="alert alert-info">
+            <p class="text-muted">
                 @T("Admin.Configuration.Themes.ImportVars.Note")
-            </div>
+            </p>
             <div>
                 @T("Admin.Configuration.Themes.ImportVars.XmlFile"): <input type="file" id="importxmlfile" name="importxmlfile" />
             </div>
@@ -103,11 +103,12 @@
     .Content(
     @<text>
 		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ExportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
-            <div class="alert alert-info">
+            <p class="text-muted">
                 @T("Admin.Configuration.Themes.ExportVars.Note")
-            </div>
-            <div>
-                @T("Admin.Configuration.Themes.ExportVars.ProfileName"): @Html.TextBox("exportprofilename", "", new { placeholder = T("Common.Optional") })
+            </p>
+            <div class="form-group">
+                <label>@T("Admin.Configuration.Themes.ExportVars.ProfileName") </label>
+				@Html.TextBox("exportprofilename", "", new { placeholder = T("Common.Optional") })
             </div>
         </form>
     </text>)

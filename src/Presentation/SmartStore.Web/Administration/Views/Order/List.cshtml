@@ -192,13 +192,13 @@
 					.Width(200)
 					.RightAlign()
 					.ClientTemplate(
-						"<div><big style='font-weight:600'><#= OrderTotal #></big> <i class='<#= PaymentStatusLabelClass #>' title='<#= PaymentStatus #>'></i></div>" +
-						"<# if(HasPaymentMethod){ #><div class='muted'><#= WithPaymentMethod #></div><# } #>")
+						"<div class='pr-2'><big style='font-weight:600'><#= OrderTotal #></big> <i class='<#= PaymentStatusLabelClass #>' title='<#= PaymentStatus #>'></i></div>" +
+						"<# if(HasPaymentMethod){ #><div class='muted pr-2'><#= WithPaymentMethod #></div><# } #>")
 					.FooterTemplate(
-						string.Format("<div><b>{0}:</b></div>" +
+						string.Format("<div class='pr-2'><div class='font-weight-medium mb-2'>{0}:</div>" +
 						(hideProfitReport ? "{1}" : "<div>{1}: <span id=\"aggregator-profit-block\" class=\"pull-right\"></span></div>") +
 						"<div>{2}: <span id=\"aggregator-tax-block\" class=\"pull-right\"></span></div>" +
-						"<div>{3}: <span id=\"aggregator-total-block\" class=\"pull-right\"></span></div>",
+						"<div>{3}: <span id=\"aggregator-total-block\" class=\"pull-right\"></span></div></div>",
 						@T("Admin.Orders.Report.Summary").Text,
 						(hideProfitReport ? "" : @T("Admin.Orders.Report.Profit").Text),
 						@T("Admin.Orders.Report.Tax").Text,

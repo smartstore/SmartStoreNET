@@ -167,7 +167,7 @@ $btn-size-sm: $input-height-sm;
 // btn-flat
 // --------------------------------------------------
 
-.btn.btn-flat {
+.btn-flat {
 	color: $yiq-text-dark;
 	background-image: none;
 	background-color: transparent;
@@ -183,7 +183,7 @@ $btn-size-sm: $input-height-sm;
 	}
 }
 
-.btn.btn-flat-light {
+.btn-flat-light {
 	color: rgba(#fff, 0.8);
 
 	&.disabled,
@@ -207,7 +207,7 @@ $btn-size-sm: $input-height-sm;
 
 // btn-clear
 // --------------------------------------------------
-.btn.btn-clear {
+.btn-clear {
 	color: #fff;
 	background: rgba(#fff, 0);
 	border-color: rgba(#fff, 0.6);
@@ -238,7 +238,7 @@ $btn-size-sm: $input-height-sm;
 	}
 }
 
-.btn.btn-clear-dark {
+.btn-clear-dark {
 	color: $yiq-text-dark;
 	background: transparent;
 	border-color: rgba(#000, 0.15);
@@ -476,7 +476,7 @@ $btn-size-sm: $input-height-sm;
 
 // btn-no-border
 // --------------------------------------------------
-.btn.btn-no-border {
+.btn-no-border {
 	border-color: transparent !important;
 }
 

@@ -49,7 +49,7 @@
 		})
 
 		$(".sm-colorbox").on("colorpickerUpdate colorpickerChange colorpickerInvalid", function (e) {
-			console.log(e);
+			//console.log(e);
 		})
 	});
 }(jQuery));

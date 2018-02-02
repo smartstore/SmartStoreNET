@@ -164,6 +164,20 @@ namespace SmartStore.Services.Orders
 
 		#region Utilities
 
+		protected string FormatTaxRates(SortedDictionary<decimal, decimal> taxRates)
+		{
+			var result = string.Empty;
+
+			foreach (var rate in taxRates)
+			{
+				result += "{0}:{1};   ".FormatInvariant(
+					rate.Key.ToString(CultureInfo.InvariantCulture),
+					rate.Value.ToString(CultureInfo.InvariantCulture));
+			}
+			
+			return result;
+		}
+
 		private void ProcessErrors(Order order, IList<string> errors, string messageKey)
 		{
 			if (errors.Any())
@@ -697,13 +711,7 @@ namespace SmartStore.Services.Orders
 						vatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
 					}
 
-                    //tax rates
-                    foreach (var kvp in taxRatesDictionary)
-                    {
-                        var taxRate = kvp.Key;
-                        var taxValue = kvp.Value;
-                        taxRates += string.Format("{0}:{1};   ", taxRate.ToString(CultureInfo.InvariantCulture), taxValue.ToString(CultureInfo.InvariantCulture));
-                    }
+					taxRates = FormatTaxRates(taxRatesDictionary);
                 }
                 else
                 {
@@ -1759,6 +1767,19 @@ namespace SmartStore.Services.Orders
 
 				oi.Order.OrderTotal = total.RoundIfEnabledFor(currency);
 				oi.Order.OrderTax = tax.RoundIfEnabledFor(currency);
+
+				// Update tax rate value.
+				var deltaTax = deltaPriceInclTax - deltaPriceExclTax;
+				if (deltaTax != decimal.Zero)
+				{
+					var taxRates = oi.Order.TaxRatesDictionary;
+
+					taxRates[oi.TaxRate] = taxRates.ContainsKey(oi.TaxRate)
+						? Math.Max(taxRates[oi.TaxRate] + deltaTax, 0)
+						: Math.Max(deltaTax, 0);
+
+					oi.Order.TaxRates = FormatTaxRates(taxRates);
+				}
 
 				_orderService.UpdateOrder(oi.Order);
 			}

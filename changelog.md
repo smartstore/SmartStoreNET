@@ -66,6 +66,8 @@
 * #1330 MegaSearch: Missing variant facets if the variant value is not unique
 * Back-in-stock subscription form was already submitted when opening the popup dialog
 * Associated products of a grouped product were displayed in the wrong order
+* Payment-Filter: Fixed "The cast to value type 'System.Decimal' failed because the materialized value is null"
+* The tax value per tax rate was not updated when adding\removing a product to\from the order.
 
 
 ## SmartStore.NET 3.0.3

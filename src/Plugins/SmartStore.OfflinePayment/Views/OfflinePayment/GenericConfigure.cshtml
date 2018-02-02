@@ -16,7 +16,7 @@
 			</td>
 			<td class="adminData">
 				@Html.SettingOverrideCheckbox(model => model.DescriptionText)
-				@Html.TextAreaFor(model => model.DescriptionText, new { style = "width: 550px; height: 100px;" })
+				@Html.TextAreaFor(model => model.DescriptionText, new { style = "height: 100px;" })
 				@Html.ValidationMessageFor(model => model.DescriptionText)
 			</td>
 		</tr>
@@ -41,9 +41,9 @@
 		<tr>
 			<td class="adminTitle">&nbsp;</td>
 			<td class="adminData">
-				<button type="submit" name="save" class="btn btn-primary" value="save">
+				<button type="submit" name="save" class="btn btn-secondary" value="save">
 					<i class="fa fa-check"></i>
-					@T("Admin.Common.Save")
+					<span>@T("Admin.Common.Save")</span>
 				</button>
 			</td>
 		</tr>

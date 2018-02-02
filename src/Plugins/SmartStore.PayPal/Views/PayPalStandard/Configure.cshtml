@@ -6,8 +6,9 @@
 }
 
 <div class="plugin-actions">
-	<button type="submit" name="save" class="btn btn-primary" value="save">
-		<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+	<button type="submit" name="save" class="btn btn-warning" value="save">
+		<i class="fa fa-check"></i>
+		<span>@T("Admin.Common.Save")</span>
 	</button>
 </div>
 
@@ -63,7 +64,7 @@
             </td>
             <td class="adminData">
 				@Html.SettingOverrideCheckbox(model => model.PdtToken)
-				@Html.TextBoxFor(model => model.PdtToken, new { @class = "input-large" })
+				@Html.TextBoxFor(model => model.PdtToken)
                 @Html.ValidationMessageFor(model => model.PdtToken)
             </td>
         </tr>
@@ -154,7 +155,7 @@
             </td>
             <td class="adminData">
 				@Html.SettingOverrideCheckbox(model => model.IpnUrl)
-				@Html.TextBoxFor(model => model.IpnUrl, new { @class = "input-large" })
+				@Html.TextBoxFor(model => model.IpnUrl)
                 @Html.ValidationMessageFor(model => model.IpnUrl)
             </td>
         </tr>

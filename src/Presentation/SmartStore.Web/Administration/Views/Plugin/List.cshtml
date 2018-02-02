@@ -224,12 +224,12 @@
 		// Multistore
 		$(".store-limiter").editable({
 			type: 'checklist',
-			title: '@T("Admin.Common.Store.AvailableFor")',
+			title: '@T("Admin.Common.Store.AvailableFor").JsText',
 			url: '@Url.Action("SetSelectedStores")',
 			source: stores,
 			unsavedclass: null,
 			placement: "right",
-			emptytext: '@T("Common.No")',
+			emptytext: '@T("Common.No").JsText',
 			autotext: 'always',
 			display: function (value, sourceData) {
 				//display checklist as comma-separated values
@@ -305,7 +305,7 @@
 				var text = '';
 
 				if (dropdownUninstall.val()) {
-					text = '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Uninstall"):</b></div>';
+					text = '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Uninstall").JsText:</b></div>';
 					_.each(dropdownUninstall.val(), function (val, i) {
 						text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownUninstall, val));
 					});
@@ -313,7 +313,7 @@
 
 				if (dropdownInstall.val()) {
 					if (text) text += '<div style="height: 6px"></div>';
-					text += '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Install"):</b></div>';
+					text += '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Install").JsText:</b></div>';
 					_.each(dropdownInstall.val(), function (val, i) {
 						text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownInstall, val));
 					});
@@ -374,8 +374,8 @@
 
 		// Execute the install actions
 		btnExecuteTasks.on('click', function (e) {
-			var confirmText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Confirm").Text';
-			var progressText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Progress").Text';
+			var confirmText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Confirm").JsText';
+			var progressText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Progress").JsText';
 
 			if (!confirm(_.str.unescapeHTML(confirmText))) {
 				e.preventDefault();
@@ -392,9 +392,9 @@
 			e.preventDefault();
 			var el = $(this);
 
-			var confirmText = '@T("Admin.Configuration.Plugins.Resources.UpdateConfirm").Text',
-                confirmAllText = '@T("Admin.Configuration.Plugins.Resources.UpdateAllConfirm").Text',
-                progressText = '@T("Admin.Configuration.Plugins.Resources.UpdateProgress")';
+			var confirmText = '@T("Admin.Configuration.Plugins.Resources.UpdateConfirm").JsText',
+                confirmAllText = '@T("Admin.Configuration.Plugins.Resources.UpdateAllConfirm").JsText',
+                progressText = '@T("Admin.Configuration.Plugins.Resources.UpdateProgress").JsText';
 
 			if (!confirm(_.str.unescapeHTML(el.hasClass('plugin-update-allresources') ? confirmAllText : confirmText))) {
 				return false;

@@ -245,7 +245,7 @@
 		$('#ImportFileList').on('click', '.import-file-delete', function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed")'
+				ask: '@T("Admin.Common.AskToProceed").JsText'
 			});
 			return false;
 		});
@@ -254,7 +254,7 @@
 		$('#ProfileImportButton').click(function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed")'
+				ask: '@T("Admin.Common.AskToProceed").JsText'
 			});
 			return false;
 		});
@@ -321,7 +321,7 @@
 			}
 			else {
 				if (_.isEmpty(val)) {
-					val = '<span class="muted">@T("Admin.Common.Ignore")</span>';
+					val = '<span class="muted">@T("Admin.Common.Ignore").JsText</span>';
 				}
 				item.find('.left-label').html(val);
 			}

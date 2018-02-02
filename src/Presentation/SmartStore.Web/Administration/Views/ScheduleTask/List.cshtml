@@ -71,7 +71,7 @@
 		Admin.TaskWatcher.startWatching({
 			context: $('#schedule-tasks-grid'),
 			elementsSelector: '.task-progress',
-			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText',
 			pollUrl: '@Url.Action("GetRunningTasks")',
 			onTaskStarted: function (task, el) {
 				var tr = el.closest('tr');

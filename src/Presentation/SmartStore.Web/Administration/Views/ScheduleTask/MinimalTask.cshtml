@@ -25,7 +25,7 @@
 		Admin.TaskWatcher.startWatching({
 			context: $('#@widgetId'),
 			elementsSelector: '.task-progress',
-			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText',
 			pollUrl: '@Url.Action("GetRunningTasks")',
 			onTaskStarted: function (task, el) {
 				el.prev().addClass('hide'); // .task-info

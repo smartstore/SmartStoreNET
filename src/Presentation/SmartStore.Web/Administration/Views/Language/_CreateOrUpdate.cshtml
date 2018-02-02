@@ -38,7 +38,7 @@
 				@Html.SmartLabelFor(model => model.UniqueSeoCode)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(x => x.UniqueSeoCode, Model.AvailableTwoLetterLanguageCodes, new { value = "es" })
+				@Html.DropDownListFor(x => x.UniqueSeoCode, Model.AvailableTwoLetterLanguageCodes)
 				@Html.ValidationMessageFor(model => model.UniqueSeoCode)
 			</td>
 		</tr>

@@ -213,7 +213,7 @@ else
 		$(document).on('click', '.btn-run-task', function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed")'
+				ask: '@T("Admin.Common.AskToProceed").JsText'
 			});
 			return false;
 		});
@@ -221,7 +221,7 @@ else
 		Admin.TaskWatcher.startWatching({
 			context: $('#import-profile-list'),
 			elementsSelector: '.task-progress',
-			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText',
 			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',
 			onTaskStarted: function (task, el) {
 				var tr = el.closest('tr');

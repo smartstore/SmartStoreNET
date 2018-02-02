@@ -70,18 +70,18 @@ else
 		$('button.copy-to-clipboard').tooltip({
 			placement: 'bottom',
 			trigger: 'hover',
-			title: '@T("Common.CopyToClipboard")'
+			title: '@T("Common.CopyToClipboard").JsText'
 		}).click(function () {
 			var self = $(this),
 				url = self.parent().find('a').attr('href');
 
 			var succeeded = window.copyTextToClipboard(url);
 
-			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded")' : '@T("Common.CopyToClipboard.Failed")')
+			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded").JsText' : '@T("Common.CopyToClipboard.Failed").JsText')
 				.tooltip('show');
 
 			setTimeout(function () {
-				self.attr('data-original-title', '@T("Common.CopyToClipboard")')
+				self.attr('data-original-title', '@T("Common.CopyToClipboard").JsText')
 					.tooltip('hide');
 			}, 2000);
 		});

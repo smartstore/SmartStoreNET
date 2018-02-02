@@ -47,7 +47,7 @@
                 var displayOrder = $("#@Html.FieldIdFor(model => model.AddPictureModel.DisplayOrder)").val();
 
                 if (pictureId == 0) {
-                	alert('@T("Admin.Catalog.Products.Pictures.UploadFirst")');
+                	alert('@T("Admin.Catalog.Products.Pictures.UploadFirst").JsText');
                     return;
                 }
 

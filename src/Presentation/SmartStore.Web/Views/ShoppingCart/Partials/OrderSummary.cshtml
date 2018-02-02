@@ -256,7 +256,7 @@
                 success: function (response) {
 
                     if (response.cartItemCount == 0) {
-                        orderSummary.html('<div class="alert alert-warning fade show">@T("ShoppingCart.CartIsEmpty")</div>');
+                        orderSummary.html('<div class="alert alert-warning fade show">@T("ShoppingCart.CartIsEmpty").JsText</div>');
                     }
 
                     var cartBody = $(".cart-body");

@@ -269,14 +269,14 @@ else
 		// show/hide file name pattern descriptions
 		$('#FileNamePatternDescriptionLink').click(function () {
 			var descriptions = $('#FileNamePatternDescription');
-			$('#FileNamePatternDescriptionLink').html((descriptions.is(':visible') ? '@T("Admin.DataExchange.Export.Deployment.ShowPlaceholder")' : '@T("Admin.DataExchange.Export.Deployment.HidePlaceholder")') + '…');
+			$('#FileNamePatternDescriptionLink').html((descriptions.is(':visible') ? '@T("Admin.DataExchange.Export.Deployment.ShowPlaceholder").JsText' : '@T("Admin.DataExchange.Export.Deployment.HidePlaceholder").JsText') + '…');
 			descriptions.toggleClass("d-none");
 		});
 
 		// delete deployment
 		$('#export-deployment-list').find('.delete-depoyment').click(function () {
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed")'
+				ask: '@T("Admin.Common.AskToProceed").JsText'
 			});
 		});
 

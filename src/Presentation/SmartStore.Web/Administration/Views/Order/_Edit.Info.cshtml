@@ -5,7 +5,11 @@
     $(document).ready(function () {
         toggleOrderTotals(false);
         toggleCC(false);
-        toggleDD(false);
+		toggleDD(false);
+
+		$('#btnRefreshPage').click(function () {
+			location.reload();
+		});
     });
 
     function toggleOrderTotals(editmode) {
@@ -857,14 +861,6 @@
 				<input type="submit" name="voidorderoffline" value="@T("Admin.Orders.Fields.VoidOffline")" id="voidorderoffline" class="btn btn-secondary"
 					   onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');" title="@T("Admin.Orders.Fields.VoidOffline.Hint")" />
 			}
-
-			<script type="text/javascript">
-				$(document).ready(function () {
-					$('#btnRefreshPage').click(function () {
-						location.reload();
-					});
-				});
-			</script>
 		</td>
 	</tr>
 	<tr>

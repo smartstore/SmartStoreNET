@@ -335,8 +335,8 @@
 						<span class="input-group-btn">
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.RequiredProductIds)
-								.DialogTitle(T("Admin.Catalog.Products.Fields.RequireOtherProducts"))
-								.Caption(T("Admin.Common.Search")))
+								.DialogTitle(T("Admin.Catalog.Products.Fields.RequireOtherProducts").JsText)
+								.Caption(T("Admin.Common.Search").JsText))
 						</span>
 					</div>
 					@Html.ValidationMessageFor(model => model.RequiredProductIds)

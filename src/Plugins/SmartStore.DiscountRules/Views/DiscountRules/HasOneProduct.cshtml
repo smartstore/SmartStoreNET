@@ -22,8 +22,8 @@
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.Products)
 								.HtmlAttribute("class", "btn btn-outline-secondary")
-								.DialogTitle(T("Plugins.DiscountRules.HasOneProduct.Fields.Products"))
-								.Caption(T("Admin.Common.Search")))
+								.DialogTitle(T("Plugins.DiscountRules.HasOneProduct.Fields.Products").JsText)
+								.Caption(T("Admin.Common.Search").JsText))
 						</div>
 					</div>
 

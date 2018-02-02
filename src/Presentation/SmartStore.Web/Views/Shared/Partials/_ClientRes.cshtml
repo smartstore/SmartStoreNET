@@ -32,7 +32,7 @@
 	window.Res = {
 		@foreach (var key in clientResKeys)
 		{
-			@Html.Raw("\"{0}\": {1},\n".FormatCurrentUI(key, T(key).JsText))
+			@Html.Raw("\"{0}\": \"{1}\",\n".FormatCurrentUI(key, T(key).JsText))
 		}
 	};
 </script>

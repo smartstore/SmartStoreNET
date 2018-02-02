@@ -86,8 +86,12 @@
     </text>)
     .FooterContent(
     @<text>
-        <button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Admin.Common.Cancel")</button>
-        <button id="importxmlsubmit" type="button" class="btn btn-primary">@T("Common.Import")</button>
+        <button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Admin.Common.Cancel")</span>
+		</button>
+        <button id="importxmlsubmit" type="button" class="btn btn-primary">
+			<span>@T("Common.Import")</span>
+		</button>
     </text>)
     .Render();
 }
@@ -109,8 +113,12 @@
     </text>)
     .FooterContent(
     @<text>
-        <button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Admin.Common.Cancel")</button>
-        <button id="exportxmlsubmit" type="button" class="btn btn-primary">@T("Common.Export")</button>
+        <button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Admin.Common.Cancel")</span>
+		</button>
+        <button id="exportxmlsubmit" type="button" class="btn btn-primary">
+			<span>@T("Common.Export")</span>
+		</button>
     </text>)
     .Render();
 }

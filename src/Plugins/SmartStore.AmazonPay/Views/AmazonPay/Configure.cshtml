@@ -414,29 +414,26 @@
 	<input type="hidden" name="source" value="SPPL" />
 </form>
 
-<form id="access-data-form" method="POST" action="@Url.Action("SaveAccessData", "AmazonPay", new { area = AmazonPayPlugin.SystemName })">
-	<div id="register-now-dialog">
-		<div class="modal modal-large hide fade" tabindex="-1">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
-				<h4 class="caption">
-					@T("Plugins.Payments.AmazonPay.PasteAccessData")
-				</h4>
-			</div>
-			<div class="modal-body">
-				<div class="form-group">
-					<textarea id="amazon-access-data" name="accessData" rows="12" class="form-control" style="width: 98%;" placeholder="@T("Plugins.Payments.AmazonPay.PasteAccessData.Hint")"></textarea>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button id="amazon-save-access-data" type="submit" class="btn btn-primary" disabled="disabled">
-					@T("Plugins.Payments.AmazonPay.SaveAccessData")
-				</button>
-				<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-			</div>
-		</div>
-	</div>
-</form>
+@{Html.SmartStore().Window()
+	.Name("register-now-dialog")
+	.Title(T("Plugins.Payments.AmazonPay.PasteAccessData").JsText)
+	.Content(
+	@<text>
+		<form id="access-data-form" method="POST" action="@Url.Action("SaveAccessData", "AmazonPay", new { area = AmazonPayPlugin.SystemName })">
+			<textarea id="amazon-access-data" name="accessData" rows="12" class="form-control" style="width: 98%;" placeholder="@T("Plugins.Payments.AmazonPay.PasteAccessData.Hint")"></textarea>
+		</form>
+	</text>)
+	.FooterContent(
+	@<text>
+		<button class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Common.Cancel")</span>
+		</button>
+		<button id="amazon-save-access-data" type="submit" class="btn btn-primary" disabled="disabled">
+			<span>@T("Plugins.Payments.AmazonPay.SaveAccessData")</span>
+		</button>
+	</text>)
+	.Render();
+}
 
 <script type="text/javascript">
 	jQuery(document).ready(function () {
@@ -463,8 +460,8 @@
 		}).trigger('change');
 
 		// Register now
-		$('a.register-now').click(function () {
-			$('button.paste-access-data').trigger('click');
+		$('.register-now').click(function () {
+			$('.paste-access-data').trigger('click');
 			$('#register-now-form').submit();
 		});
 
@@ -474,10 +471,10 @@
 		});
 
 		// Paste access data
-		$('button.paste-access-data').click(function () {
+		$('.paste-access-data').click(function () {
 			//$('#amazon-access-data').trigger('change');
-			$('#register-now-dialog').find('.modal').modal('show');
-
+			$('#register-now-dialog').modal('show');
+			
 			setTimeout(function () {
 				$('#amazon-access-data').focus();
 			}, 800);

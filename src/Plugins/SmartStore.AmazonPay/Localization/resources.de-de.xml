@@ -8,8 +8,7 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Klicken Sie unten auf <b>Jetzt registrieren</b>, um sich bei Amazon Pay zu registrieren.</p>
-<p>So richten Sie <b>Login und Bezahlen mit Amazon</b> ein:</p><ul>
+			<![CDATA[<p>So richten Sie <b>Login und Bezahlen mit Amazon</b> ein:</p><ul>
 <li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein.
 Die Zugangsdaten finden Sie in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto oben links unter <b>Integration > MWS Access Key</b>.</li>
 <li>Falls Sie Sofortbenachrichtigungen (IPN) erhalten möchten (SSL zwingend erforderlich!), so tragen Sie die unten aufgeführte IPN URL unter <b>Einstellungen > Integrationseinstellungen > Sofortbenachrichtigungs-Einstellungen > Händler-URL</b> ein.</li>
@@ -22,7 +21,7 @@ Textvorschläge:<ul>
 </ul></p>]]>
 		</Value>
 	</LocaleResource>
-  <LocaleResource Name="BillingAddressMessageNote">
+	<LocaleResource Name="BillingAddressMessageNote">
     <Value>Bitte beachten Sie, dass es sich bei dieser Rechnungsadresse unter Umständen nicht um die für diese Bestellung gültige handelt!</Value>
   </LocaleResource>
 	<LocaleResource Name="MissingOrderReferenceId">
@@ -69,7 +68,12 @@ Textvorschläge:<ul>
   <LocaleResource Name="RegisterNow">
     <Value>Jetzt registrieren</Value>
   </LocaleResource>
-  <LocaleResource Name="SaveAccessData">
+	<LocaleResource Name="RegisterNote">
+		<Value>
+			<![CDATA[Klicken Sie auf <b>Jetzt registrieren</b>, falls Sie noch über keine Zugangsdaten verfügen. Sie erhalten durch Amazon Pay einen Satz neuer Zugangsdaten, die Sie bitte im Dialog <b>Zugangsdaten einfügen</b> eintragen.]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="SaveAccessData">
     <Value>Zugangsdaten speichern</Value>
   </LocaleResource>
   <LocaleResource Name="PasteAccessData">

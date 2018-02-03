@@ -8,8 +8,7 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Click <b>Register now</b> below to register at Amazon Pay.</p>
-<p>How to set up <b>Login and Pay with Amazon</b>:</p><ul>
+			<![CDATA[<p>How to set up <b>Login and Pay with Amazon</b>:</p><ul>
 <li>Enter your Amazon credentials in the fields provided below.
 You can find these credentials in your <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> account at <b>Integration > MWS Access Key</b>.</li>
 <li>If you would like to receive instant payment notifications (SSL required!) enter the IPN URL listed bewlow under <b>Settings > Integration Settings > Instant Notification Settings > Merchant URL</b>.</li>
@@ -69,6 +68,11 @@ Text suggestions:<ul>
   <LocaleResource Name="RegisterNow">
     <Value>Register now</Value>
   </LocaleResource>
+	<LocaleResource Name="RegisterNote">
+		<Value>
+			<![CDATA[Click <b>Register now</b> if you don't have an account yet. Amazon Pay will provide you with a set of new access data, which you can enter in the <b>Paste access data</b> dialog.]]>
+		</Value>
+	</LocaleResource>
   <LocaleResource Name="SaveAccessData">
     <Value>Save access data</Value>
   </LocaleResource>

@@ -577,17 +577,17 @@ namespace SmartStore.AmazonPay.Services
 				authRequest = authRequest.WithTransactionTimeout(0);
 			}
 
-			if (settings.UseSandbox)
-			{
-				var authNote = _services.Settings.GetSettingByKey<string>("SmartStore.AmazonPay.SellerAuthorizationNote");
-				if (authNote.HasValue())
-				{
-					// See https://pay.amazon.com/de/developer/documentation/lpwa/201956480
-					//{"SandboxSimulation": {"State":"Declined", "ReasonCode":"InvalidPaymentMethod", "PaymentMethodUpdateTimeInMins":5}}
-					//{"SandboxSimulation": {"State":"Declined", "ReasonCode":"AmazonRejected"}}
-					authRequest = authRequest.WithSellerAuthorizationNote(authNote);
-				}
-			}
+			// See https://pay.amazon.com/de/developer/documentation/lpwa/201956480
+			//{"SandboxSimulation": {"State":"Declined", "ReasonCode":"InvalidPaymentMethod", "PaymentMethodUpdateTimeInMins":5}}
+			//{"SandboxSimulation": {"State":"Declined", "ReasonCode":"AmazonRejected"}}
+			//if (settings.UseSandbox)
+			//{
+			//	var authNote = _services.Settings.GetSettingByKey<string>("SmartStore.AmazonPay.SellerAuthorizationNote");
+			//	if (authNote.HasValue())
+			//	{
+			//		authRequest = authRequest.WithSellerAuthorizationNote(authNote);
+			//	}
+			//}
 
 			var authResponse = client.Authorize(authRequest);
 			return authResponse;

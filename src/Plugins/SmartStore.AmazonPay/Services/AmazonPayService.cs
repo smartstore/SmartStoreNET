@@ -500,6 +500,10 @@ namespace SmartStore.AmazonPay.Services
 					{
 						_services.Notifier.Warning(new LocalizedString(T("Payment.PayingFailed")));
 					}
+					else if (failedPaymentReason.IsCaseInsensitiveEqual("PaymentMethodNotAllowed"))
+					{
+						_services.Notifier.Warning(new LocalizedString(T("Plugins.Payments.AmazonPay.AuthorizationSoftDeclineMessage")));
+					}
 					else
 					{
 						decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart);
@@ -940,6 +944,17 @@ namespace SmartStore.AmazonPay.Services
 						.WithSellerOrderId(orderGuid)
 						.WithStoreName(store.Name);
 
+					// See https://pay.amazon.com/de/developer/documentation/lpwa/201956480
+					//{"SandboxSimulation":{"Constraint":"PaymentMethodNotAllowed"}}
+					//if (settings.UseSandbox)
+					//{
+					//	var orderReferenceNote = _services.Settings.GetSettingByKey<string>("SmartStore.AmazonPay.SellerOrderReferenceNote");
+					//	if (orderReferenceNote.HasValue())
+					//	{
+					//		setOrderRequest = setOrderRequest.WithSellerNote(orderReferenceNote);
+					//	}
+					//}
+
 					var setOrderResponse = client.SetOrderReferenceDetails(setOrderRequest);
 					if (setOrderResponse.GetSuccess())
 					{
@@ -954,6 +969,13 @@ namespace SmartStore.AmazonPay.Services
 								if (idx < descriptions.Count)
 								{
 									result.Errors.Add($"{descriptions[idx]} ({id})");
+								}
+
+								if (id.IsCaseInsensitiveEqual("PaymentMethodNotAllowed"))
+								{
+									// Must be redirected to checkout payment page.
+									_httpContext.Session["AmazonPayFailedPaymentReason"] = id;
+									_httpContext.Response.RedirectToRoute(new { Controller = "Checkout", Action = "PaymentMethod", Area = "" });
 								}
 							}
 						}
@@ -1083,14 +1105,12 @@ namespace SmartStore.AmazonPay.Services
 						{
 							// Must be logged out and redirected to shopping cart.
 							_httpContext.Session["AmazonPayFailedPaymentReason"] = reason;
-
 							_httpContext.Response.RedirectToRoute("ShoppingCart");
 						}
 						else if (reason.IsCaseInsensitiveEqual("InvalidPaymentMethod"))
 						{
 							// Must be redirected to checkout payment page.
 							_httpContext.Session["AmazonPayFailedPaymentReason"] = reason;
-
 							_httpContext.Response.RedirectToRoute(new { Controller = "Checkout", Action = "PaymentMethod", Area = "" });
 						}
 					}

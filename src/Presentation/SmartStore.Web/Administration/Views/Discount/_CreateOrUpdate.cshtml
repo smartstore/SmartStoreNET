@@ -445,8 +445,10 @@
 	}
 	else
 	{
-		<div class="alert alert-info">
-			<button class="close" data-dismiss="alert">×</button>
+		<div class="alert alert-info alert-dismissable">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
 			@T("Admin.Promotions.Discounts.Requirements.SaveBeforeEdit")
 		</div>	
 	}

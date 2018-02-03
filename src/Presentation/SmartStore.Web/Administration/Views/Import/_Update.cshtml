@@ -22,30 +22,17 @@
 <div>
 	<table class="adminContent">
 		<tr id="ImportFileUploadContainer">
-			<td class="adminTitle">
-			</td>
+			<td class="adminTitle"></td>
 			<td class="adminData">
-
-				<div id="ImportFileUploader" class="fileupload">
-					<span class="btn btn-primary fileinput-button">
-						<i class="fa fa-upload"></i>
-						<span>@T(Model.ExistingFileNames.Any() ? "Admin.DataExchange.Import.AddAnotherFile" : "Admin.DataExchange.Import.FileUpload")</span>
-						<input id="ImportFileUpload" type="file" name="importfile" />
-					</span>
-
-					<button class="btn btn-warning cancel">
-						<i class="fa fa-times"></i>
-						<span>@T("Common.Fileuploader.Cancel")</span>
-					</button>
-
-					<div class="fileupload-progress fade">
-						<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-							<div class="bar" style="width:0%;"></div>
-						</div>
-						<div class="progress-extended">&nbsp;</div>
-					</div>
-				</div>
-
+				@(Html.SmartStore().FileUploader()
+					.Name("ImportFileUploader")
+					.UploadUrl(Url.Action("FileUpload", new { id = Model.Id }))
+					.AcceptedFileTypes("csv|xlsx|txt|tab")
+					.ShowRemoveButton(false)
+					.ShowRemoveButtonAfterUpload(false)
+					.UploadText(T(Model.ExistingFileNames.Any() ? "Admin.DataExchange.Import.AddAnotherFile" : "Admin.DataExchange.Import.FileUpload").Text)
+					.OnUploadCompletedHandlerName("onUploadCompleted")
+				)
 			</td>
 		</tr>
 		<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "hide")">
@@ -214,32 +201,24 @@
     Html.RenderPartial("_ColumnMappings");
 }
 
-<script type="text/javascript">
+<script>
 	var mappedProperties = [];
+
+	window['onUploadCompleted'] = function (e, el, data) {
+		$('#ImportFileListContainer').show();
+
+		if (!_.isEmpty(data.result.tempFile)) {
+			$('input[name=TempFileName]').val(data.result.tempFile);
+			$('#ImportFileList').html(data.result.tempFile);
+			$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
+		}
+		else {
+			location.href = '@Url.Action("Edit", new { id = Model.Id })';
+		}
+	}
 
 	jQuery(document).ready(function () {
 		var maxMappingLableLength = @(Model.MaxMappingLabelTextLength);
-
-		// upload import file
-		$('#ImportFileUploader').fileupload({
-			url: '@Url.Action("FileUpload", new { id = Model.Id })',
-			dataType: 'json',
-			acceptFileTypes: /(\.|\/)(csv|xlsx|txt|tab)$/i,
-			done: function (e, data) {
-				if (data.result.success) {
-					$('#ImportFileListContainer').show();
-
-					if (!_.isEmpty(data.result.tempFile)) {
-						$('input[name=TempFileName]').val(data.result.tempFile);
-						$('#ImportFileList').html(data.result.tempFile);
-						$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
-					}
-					else {
-						location.href = '@Url.Action("Edit", new { id = Model.Id })';
-					}
-				}
-			}
-		});
 
 		// delete import file
 		$('#ImportFileList').on('click', '.import-file-delete', function (e) {

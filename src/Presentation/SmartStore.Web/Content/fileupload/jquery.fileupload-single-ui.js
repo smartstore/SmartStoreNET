@@ -234,8 +234,6 @@
 	$.fn.fileUploadWrapper = function (options) {
 		return this.each(function () {
 			var el = $(this),
-				img = el.find('.img-thumbnail'),
-				elHidden = el.find('.hidden'),
 				elRemove = el.find('.remove'),
 				elCancel = el.find('.cancel')
 				elFile = el.find('.fileinput-button');
@@ -243,23 +241,31 @@
 			var opts = {
 				url: el.data('upload-url'),
 				dataType: 'json',
-				//acceptFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
 				acceptFileTypes: new RegExp('(\.|\/)(' + (el.data('accept') || 'gif|jpe?g|png') + ')$', 'i'),
 				pasteZone: null,
 				done: function (e, data) {
 					var result = data.result;
 					if (result.success) {
-						img.attr('src', result.imageUrl);
-						elHidden.val(result.pictureId);
-						elRemove.removeClass("hide");
+
+						if (el.data('show-remove-after-upload')) {
+							elRemove.removeClass("hide");
+						}
+
+						el.closest('.fileupload-container').find('.img-thumbnail').attr('src', data.result.imageUrl);
+						el.closest('.fileupload-container').find('.hidden').val(data.result.pictureId);
 
 						elCancel.addClass("hide");
 						elFile.removeClass("hide");
+
+						if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [e, el, data]);
 					}
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 					if (errorThrown === 'abort') {
-						//alert('File Upload has been canceled');
+						if (options.onAborted) options.onAborted.apply(this, el);
+					}
+					else {
+						if (options.onError) options.onError.apply(this, [el, textStatus, errorThrown]);
 					}
 				}
 			};
@@ -269,10 +275,12 @@
 			el.fileupload(options);
 
 			elRemove.on('click', function (e) {
-				img.attr('src', el.data('fallback-url'));
-				elHidden.val(0);
-				$(this).addClass("hide");
 				e.preventDefault();
+
+				el.closest('.fileupload-container').find('.img-thumbnail').attr('src', el.data('fallback-url'));
+				el.closest('.fileupload-container').find('.hidden').val(0);
+				$(this).addClass("hide");
+				if (options.onFileRemove) options.onFileRemove.apply(this, [e, el]);
 			});
 
 			// TODO: work out better solution for external buttons

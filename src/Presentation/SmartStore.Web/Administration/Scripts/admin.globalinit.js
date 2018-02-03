@@ -82,11 +82,11 @@
             selector: "a[rel=tooltip], .tooltip-toggle"
         });
 
-        //// Temp only
-        //$(".options button[value=save-continue]").on('click', function () {
-        //    var btn = $(this);
-        //    btn.closest("form").append('<input type="hidden" name="save-continue" value="true" />');
-        //});
+        // Temp only
+        $(".options button[value=save-continue]").on('click', function () {
+            var btn = $(this);
+            btn.closest("form").append('<input type="hidden" name="save-continue" value="true" />');
+        });
 
         // Ajax activity indicator bound to ajax start/stop document events
         $(document).ajaxStart(function () {

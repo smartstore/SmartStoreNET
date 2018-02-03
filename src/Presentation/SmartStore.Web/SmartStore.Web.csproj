@@ -1987,6 +1987,8 @@
     <Content Include="Themes\Flex\Views\Shared\EmailTemplates\footer.liquid" />
     <Content Include="Themes\Flex\Views\Shared\EmailTemplates\header.liquid" />
     <Content Include="Themes\Flex\Views\Shared\EmailTemplates\master.liquid" />
+    <Content Include="Views\Shared\Components\EntityPicker.cshtml" />
+    <Content Include="Views\Shared\Components\FileUploader.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

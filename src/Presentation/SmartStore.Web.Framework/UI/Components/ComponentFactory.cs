@@ -65,6 +65,11 @@ namespace SmartStore.Web.Framework.UI
 			return new EntityPickerBuilder<TModel>(new EntityPicker(), this.HtmlHelper);
 		}
 
+		public virtual FileUploaderBuilder<TModel> FileUploader()
+		{
+			return new FileUploaderBuilder<TModel>(new FileUploader(), this.HtmlHelper);
+		}
+
 		#endregion
 	}
 }

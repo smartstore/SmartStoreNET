@@ -31,9 +31,12 @@ namespace SmartStore.Admin.Controllers
                 return Json(new { success = false, error = T("Admin.AccessDenied.Description") });
 
 			var postedFile = Request.ToPostedFileResult();
+			if (postedFile == null)
+			{
+				return Json(new { success = false });
+			}
 
 			var picture = _pictureService.InsertPicture(postedFile.Buffer, postedFile.ContentType, null, true, isTransient, validate);
-			
             return Json(
                 new { 
                     success = true, 

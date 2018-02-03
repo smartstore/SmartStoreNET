@@ -67,11 +67,13 @@
 .menubar-link,
 .nav-link,
 .dropdown-item {
-	> i + span, > i + em {
+	> i + span:not(:empty), 
+	> i + em:not(:empty) {
 		padding-left: 0.4em;
 	}
 
-	> span + i, > em + i {
+	> span:not(:empty) + i, 
+	> em:not(:empty) + i {
 		margin-left: 0.4em;
 	}
 }

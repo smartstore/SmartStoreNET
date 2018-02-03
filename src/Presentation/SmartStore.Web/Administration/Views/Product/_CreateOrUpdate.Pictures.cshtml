@@ -41,7 +41,6 @@
 
     <script type="text/javascript">
 		$(document).ready(function () {
-
             $('#add-product-picture').on('click', function () {
                 var pictureId = $("#@Html.FieldIdFor(model => model.AddPictureModel.PictureId)").val();
                 var displayOrder = $("#@Html.FieldIdFor(model => model.AddPictureModel.DisplayOrder)").val();
@@ -51,7 +50,6 @@
                     return;
                 }
 
-				$('#add-product-picture').attr('disabled', true);
                 $.ajax({
                     cache:false,
                     type: "POST",
@@ -60,11 +58,11 @@
                     success: function (data) {
                          var productpicturesGrid = $("#productpictures-grid");
                          productpicturesGrid.data('tGrid').ajaxRequest();
-						 $('#add-product-picture').attr('disabled', false);
+						 $('#add-product-picture').attr('disabled', 'disabled');
                     },
                     error:function (xhr, ajaxOptions, thrownError){
                     	alert('@T("Admin.Catalog.Products.Pictures.AddFailed").JsText')
-						$('#add-product-picture').attr('disabled', false);
+						//$('#add-product-picture').removeAttr('disabled');
                     }
                 });
             });
@@ -102,7 +100,7 @@
 				&nbsp;
 			</td>
 			<td class="adminData">
-				<button type="button" name="add-product-picture" id="add-product-picture" class="btn btn-warning">
+				<button type="button" name="add-product-picture" id="add-product-picture" class="btn btn-primary" disabled>
 					<i class="fa fa-plus"></i>
 					<span>@T("Admin.Catalog.Products.Pictures.AddButton")</span>
 				</button>

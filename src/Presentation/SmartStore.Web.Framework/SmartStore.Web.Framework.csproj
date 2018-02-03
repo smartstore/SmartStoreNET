@@ -317,6 +317,8 @@
     <Compile Include="UI\Choices\ChoiceModel.cs" />
     <Compile Include="UI\Components\EntityPicker\EntityPicker.cs" />
     <Compile Include="UI\Components\EntityPicker\EntityPickerBuilder.cs" />
+    <Compile Include="UI\Components\FileUploader\FileUploaderBuilder.cs" />
+    <Compile Include="UI\Components\FileUploader\FileUploader.cs" />
     <Compile Include="UI\Components\Menu\CatalogMenuProvider.cs" />
     <Compile Include="UI\Components\ViewBasedComponentRenderer.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />

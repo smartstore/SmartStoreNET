@@ -1251,7 +1251,7 @@ namespace SmartStore.AmazonPay.Services
 
 		public RefundPaymentResult Refund(RefundPaymentRequest request)
 		{
-			var result = new RefundPaymentResult()
+			var result = new RefundPaymentResult
 			{
 				NewPaymentStatus = request.Order.PaymentStatus
 			};
@@ -1272,6 +1272,8 @@ namespace SmartStore.AmazonPay.Services
 				var refundResponse = client.Refund(refundRequest);
 				if (refundResponse.GetSuccess())
 				{
+					result.NewPaymentStatus = request.IsPartialRefund ? PaymentStatus.PartiallyRefunded : PaymentStatus.Refunded;
+
 					var refundId = refundResponse.GetAmazonRefundId();
 					if (refundId.HasValue() && request.Order.Id != 0)
 					{
@@ -1336,7 +1338,11 @@ namespace SmartStore.AmazonPay.Services
 						.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
 
 					var cancelResponse = client.CancelOrderReference(cancelRequest);
-					if (!cancelResponse.GetSuccess())
+					if (cancelResponse.GetSuccess())
+					{
+						result.NewPaymentStatus = PaymentStatus.Voided;
+					}
+					else
 					{
 						var message = LogError(cancelResponse);
 						result.AddError(message);

@@ -11,7 +11,8 @@
     }
 }
 
-<input type="hidden" id="@id" name="@name" class="widgetzone-chooser autowidth" value="@Model" data-available-zones="@availableZones" style="min-width: 600px;" />
+<select id="@id" name="@name" class="widgetzone-chooser form-control noskin" value="@Model" data-available-zones="@availableZones">
+</select>
 
 <script>
     $(function () {
@@ -24,7 +25,7 @@
         else {
         	var optGroups = [
                 {
-                    text: "@T("Admin.ContentManagement.Homepage").JsText", children: [
+                    text: @T("Admin.ContentManagement.Homepage").JsText, children: [
                         'home_page_top',
                         'home_page_after_intro',
                         'home_page_after_categories',
@@ -54,7 +55,7 @@
                 	]
                 },
                 {
-                    text: "@T("Admin.ContentManagement.Blog").JsText", children: [
+                    text: @T("Admin.ContentManagement.Blog").JsText, children: [
                         'blogpost_page_before_body',
                         'blogpost_page_before_comments',
                         'blogpost_page_after_comments',
@@ -73,7 +74,7 @@
                     ]
                 },
                 {
-                	text: "@T("Admin.Catalog.Categories").JsText", children: [
+                	text: @T("Admin.Catalog.Categories").JsText, children: [
 						'categorydetails_top',
 						'categorydetails_before_subcategories',
 						'categorydetails_before_featured_products',
@@ -82,7 +83,7 @@
                     ]
                 },
                 {
-                    text: "@T("Admin.Catalog.Products").JsText", children: [
+                    text: @T("Admin.Catalog.Products").JsText, children: [
 					  'productbox_add_info',
 					  'productreviews_page_inside_review',
 					  'productsbytag_top',
@@ -154,7 +155,7 @@
                     ]
                 },
                 {
-                    text: "@T("Admin.Catalog.Manufacturers").JsText", children: [
+                    text: @T("Admin.Catalog.Manufacturers").JsText, children: [
                         'manufacturers_all_top',
                         'manufacturers_all_bottom',
                         'manufacturerdetails_top',
@@ -175,7 +176,7 @@
                     ]
                 },
                 {
-                    text: "@T("Common.Misc").JsText", children: [
+                    text: @T("Common.Misc").JsText, children: [
                         'compareproducts_row',
                         'contactus_top',
                         'contactus_bottom',
@@ -202,7 +203,7 @@
                     ]
                 },
                 {
-                    text: "@T("Admin.ContentManagement.News").JsText", children: [
+                    text: @T("Admin.ContentManagement.News").JsText, children: [
                         'newslist_page_before_items',
                         'newslist_page_inside_item',
                         'newslist_page_after_items',
@@ -213,7 +214,7 @@
                     ]
                 },
                 {
-                    text: "@T("Admin.Orders").JsText", children: [
+                    text: @T("Admin.Orders").JsText, children: [
                         'orderdetails_page_top',
                         'orderdetails_page_overview',
                         'orderdetails_page_beforeproducts',
@@ -223,7 +224,7 @@
                     ]
                 },
                 {
-                    text: "@T("Admin.Configuration.Settings.ShoppingCart.Checkout").JsText", children: [
+                    text: @T("Admin.Configuration.Settings.ShoppingCart.Checkout").JsText, children: [
                         'checkout_billing_address_top',
                         'checkout_billing_address_middle',
                         'checkout_billing_address_bottom',
@@ -244,7 +245,7 @@
         	        ]
                 },
                 {
-                    text: "@T("Shoppingcart").JsText", children: [
+                    text: @T("Shoppingcart").JsText, children: [
                         'offcanvas_cart_summary',
                         'offcanvas_cart_items_after',
                         'offcanvas_cart_footer_after',
@@ -272,13 +273,8 @@
     	zoneChooser.select2({
 			multiple: true,
 			data: zones,
-			initSelection: function (el, fn) {
-				var data = [];
-				$(el.val().split(",")).each(function () {
-					data.push({ id: this, text: this });
-				});
-				fn(data);
-			}
+			containerCssClass: "form-control",
+			theme: "bootstrap"
         });
     });
 </script>

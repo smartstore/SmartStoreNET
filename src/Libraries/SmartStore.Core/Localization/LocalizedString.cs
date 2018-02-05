@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using System.Web;
 
 namespace SmartStore.Core.Localization
@@ -46,11 +45,12 @@ namespace SmartStore.Core.Localization
         }
 
 		/// <summary>
-		/// returns a js encoded string which already contains delimters
+		/// Returns a js encoded string which already contains delimiters.
 		/// </summary>
 		public IHtmlString JsText
 		{
-			get {
+			get
+			{
 				return System.Web.Mvc.MvcHtmlString.Create(_localized.EncodeJsString());
 			}
 		}

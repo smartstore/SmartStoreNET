@@ -108,5 +108,11 @@ namespace SmartStore.Web.Framework.UI
 			base.Component.CloseOnBackdropClick = value;
 			return this;
 		}
-    }
+
+		public WindowBuilder<TModel> RenderAtPageEnd(bool value)
+		{
+			base.Component.RenderAtPageEnd = value;
+			return this;
+		}
+	}
 }

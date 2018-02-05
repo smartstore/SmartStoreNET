@@ -8,10 +8,17 @@ namespace SmartStore.Web.Framework.UI
     {
 		public override void Render()
 		{
-			using (this.HtmlHelper.BeginZoneContent("end"))
+			if (Component.RenderAtPageEnd)
+			{
+				using (this.HtmlHelper.BeginZoneContent("end"))
+				{
+					base.Render();
+				}
+			}
+			else
 			{
 				base.Render();
-			}			
+			}
 		}
 
 		protected override void WriteHtmlCore(HtmlTextWriter writer)

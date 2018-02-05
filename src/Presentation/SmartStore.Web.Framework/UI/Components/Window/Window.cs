@@ -24,6 +24,7 @@ namespace SmartStore.Web.Framework.UI
 			this.Show = true;
             this.CloseOnEscapePress = true;
 			this.CloseOnBackdropClick = true;
+			this.RenderAtPageEnd = true;
         }
 
         public override bool NameIsRequired
@@ -56,5 +57,7 @@ namespace SmartStore.Web.Framework.UI
 		public bool CloseOnEscapePress { get; set; }
 
 		public bool CloseOnBackdropClick { get; set; }
-    }
+
+		public bool RenderAtPageEnd { get; set; }
+	}
 }

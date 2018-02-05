@@ -208,6 +208,40 @@ $content-padding-y:			15px;
 @import "vendors/datetimepicker/scss/_tempusdominus.scss";
 
 
+// Button tweaks
+// -----------------------------------------------------
+
+@each $color, $value in $theme-colors {
+	.btn-#{$color},
+	.btn-outline-#{$color} {
+		&:not(:disabled):not(.disabled):focus,
+		&:not(:disabled):not(.disabled).focus {
+			@if $color == "secondary" or $color == "light" {
+				box-shadow: 0 0 0 0.125rem rgba($primary, .2);
+			}
+			@else {
+				box-shadow: 0 0 0 0.125rem rgba($value, .4);
+			}
+		}
+	}
+}
+
+.btn-secondary {
+	@include button-variant($secondary, $secondary, $secondary, rgba(#000, 0.15), darken($secondary, 10%), rgba(#000, 0.2));
+}
+
+.btn-light {
+	@include button-variant($light, $light, $light, rgba(#000, 0.15), darken($light, 10%), rgba(#000, 0.2));
+}
+
+.btn-secondary,
+.btn-light {
+	&:focus, &.focus {
+		border-color: rgba(#000, 0.2);
+	}
+}
+
+
 //
 // Global / Shared (unify later with Flex' resources)
 // --------------------------------------------------
@@ -297,40 +331,6 @@ pre {
 .badge-secondary {
 	background-color: $gray-600;
 	color: $yiq-text-light;
-}
-
-
-// Button tweaks
-// -----------------------------------------------------
-
-@each $color, $value in $theme-colors {
-	.btn-#{$color},
-	.btn-outline-#{$color} {
-		&:not(:disabled):not(.disabled):focus,
-		&:not(:disabled):not(.disabled).focus {
-			@if $color == "secondary" or $color == "light" {
-				box-shadow: 0 0 0 0.125rem rgba($primary, .2);
-			}
-			@else {
-				box-shadow: 0 0 0 0.125rem rgba($value, .4);
-			}
-		}
-	}
-}
-
-.btn-secondary {
-	@include button-variant($secondary, $secondary, $secondary, rgba(#000, 0.15), darken($secondary, 10%), rgba(#000, 0.2));
-}
-
-.btn-light {
-	@include button-variant($light, $light, $light, rgba(#000, 0.15), darken($light, 10%), rgba(#000, 0.2));
-}
-
-.btn-secondary,
-.btn-light {
-	&:focus, &.focus {
-		border-color: rgba(#000, 0.2);
-	}
 }
 
 

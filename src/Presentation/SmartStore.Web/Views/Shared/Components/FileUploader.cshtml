@@ -3,9 +3,14 @@
 @{ 
 	Html.AddScriptParts("~/bundles/fileupload");
 
+	if (!Model.Name.HasValue())
+	{
+		Model.Name = "upload-" + CommonHelper.GenerateRandomInteger();
+	}
+
 	if (!Model.HtmlAttributes.ContainsKey("id"))
 	{
-		Model.Id = "upload-" + CommonHelper.GenerateRandomInteger();
+		Model.Id = Model.Name;
 	}
 }
 

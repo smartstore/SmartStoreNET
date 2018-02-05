@@ -1201,7 +1201,9 @@ namespace SmartStore.Services.DataExchange.Export
 
 			dynamic dynObject = ToDynamic(ctx, order);
 
-			// we do not export all customer generic attributes because otherwise the export file gets too large
+			dynObject.Customer = ToDynamic(ctx, customers.FirstOrDefault(x => x.Id == order.CustomerId));
+
+			// We do not export all customer generic attributes because otherwise the export file gets too large.
 			dynObject.Customer._GenericAttributes = genericAttributes
 				.Where(x => x.Value.HasValue() && _orderCustomerAttributes.Contains(x.Key))
 				.Select(x => ToDynamic(ctx, x))

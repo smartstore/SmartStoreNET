@@ -1,4 +1,6 @@
-﻿@using SmartStore.Admin.Models.DataExchange;
+﻿@model ImportProfileModel
+
+@using SmartStore.Admin.Models.DataExchange;
 @using SmartStore.Core.Domain.DataExchange;
 
 @Html.ValidationSummary(false)
@@ -30,7 +32,7 @@
 				)
 			</td>
 		</tr>
-		<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "hide")">
+		<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "d-none")">
 			<td class="adminTitle">
 			</td>
 			<td id="ImportFileList" class="adminData">

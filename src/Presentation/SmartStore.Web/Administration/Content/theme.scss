@@ -262,7 +262,11 @@ legend {
 h6, .h6 {
 	// Small headings don't look good with 400.
 	font-weight: $font-weight-medium;
-} 
+}
+
+.input-height {
+	min-height: 41px;
+}
 
 
 //
@@ -982,6 +986,27 @@ textarea:not([class*="form-control"]) {
 table.payment-method-features td {
 	padding: 2px 4px;
 	font-size: $font-size-sm;
+}
+
+
+/* Scheduled tasks
+-------------------------------------------------------------- */
+
+.minimal-task-widget {
+	/*min-height: 26px;
+
+	.task-progress {
+		width: 400px;
+	}
+
+	.btn-cancel-task {
+		margin-left: 10px
+	}
+
+	.btn-actions {
+		display: inline-block;
+		margin-left: 10px;
+	}*/
 }
 
 

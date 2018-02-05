@@ -22,7 +22,7 @@
 * select2: .input-lg & .input-sm styling
 * All tables (.table) must be wrapped in div.table-responsive
 * Apply .omega to all (last) table cells which contain action buttons to enable visibility toggling on hover. Apply .active-row to poarent div to disable toggling, but keep other styling.
-* Add .alert-dismissable with &times closer to all .alert elements
+* Add .alert-dismissable with &times; closer to all .alert elements
 
 
 TODOs Telerik grid:

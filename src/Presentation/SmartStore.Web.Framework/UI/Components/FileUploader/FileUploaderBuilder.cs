@@ -43,7 +43,7 @@ namespace SmartStore.Web.Framework.UI
 
 		public FileUploaderBuilder<TModel> ShowRemoveButtonAfterUpload(bool value)
 		{
-			base.Component.HtmlAttributes["data-show-remove-after-upload"] = value;
+			base.Component.HtmlAttributes["data-show-remove-after-upload"] = value.ToString().ToLower();
 			return this;
 		}
 

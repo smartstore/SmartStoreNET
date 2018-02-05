@@ -87,7 +87,7 @@
   <LocaleResource Name="Fields.SmallQuantityThreshold.Hint">
     <Value>Subtotal up to which a "small quantity surcharge" should be added. The surcharge will be ignored if no shipping fee is applied. Use "0" if no fee will be charged.</Value>
   </LocaleResource>
-  <LocaleResource Name="SmallQuantitySurchargeNotReachedt">
+  <LocaleResource Name="SmallQuantitySurchargeNotReached">
     <Value>
       <![CDATA[<br>You're charged with a surcharge of <b class=\"text-success\">{0}</b> because the total of your order hasn't reached <b class=\"text-warning\">{1}</b>.]]>
     </Value>

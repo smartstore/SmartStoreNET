@@ -68,6 +68,7 @@
 * Associated products of a grouped product were displayed in the wrong order
 * Payment-Filter: Fixed "The cast to value type 'System.Decimal' failed because the materialized value is null"
 * The tax value per tax rate was not updated when adding\removing a product to\from the order.
+* The option to send manually was ignored when sending e-mails
 
 
 ## SmartStore.NET 3.0.3

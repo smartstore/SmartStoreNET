@@ -64,7 +64,7 @@ namespace SmartStore.Admin.Controllers
         {
             try
             {
-                string feedUrl = string.Format("http://www.smartstore.com/NewsRSS.aspx?Version={0}&Localhost={1}&HideAdvertisements={2}&StoreURL={3}",
+                string feedUrl = string.Format("https://www.smartstore.com/NewsRSS.aspx?Version={0}&Localhost={1}&HideAdvertisements={2}&StoreURL={3}",
                     SmartStoreVersion.CurrentVersion,
                     Request.Url.IsLoopback,
                     _commonSettings.HideAdvertisementsOnAdminArea,
@@ -92,7 +92,7 @@ namespace SmartStore.Admin.Controllers
 			var result = _services.Cache.Get("admin:marketplacefeed", () => {
 				try
 				{
-					string url = "http://community.smartstore.com/index.php?/rss/downloads/";
+					string url = "https://community.smartstore.com/index.php?/rss/downloads/";
 					var request = (HttpWebRequest)WebRequest.Create(url);
 					request.Timeout = 3000;
 					request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);

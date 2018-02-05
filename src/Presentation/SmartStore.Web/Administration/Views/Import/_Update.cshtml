@@ -1,10 +1,5 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @using SmartStore.Core.Domain.DataExchange;
-@model ImportProfileModel
-@{
-	Html.AddScriptParts("~/bundles/fileupload");
-	Html.AddCssFileParts("~/css/fileupload");
-}
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)

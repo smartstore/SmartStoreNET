@@ -175,7 +175,7 @@ namespace SmartStore.Admin.Controllers
 
 				try
 				{
-					string url = "http://dlm.smartstore.com/api/v1/apprelease/CheckUpdate?app=SMNET&version={0}&language={1}".FormatInvariant(curVersion, lang);
+					string url = "https://dlm.smartstore.com/api/v1/apprelease/CheckUpdate?app=SMNET&version={0}&language={1}".FormatInvariant(curVersion, lang);
 
 					using (var client = new HttpClient())
 					{

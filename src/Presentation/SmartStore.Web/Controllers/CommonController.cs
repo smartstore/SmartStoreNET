@@ -482,7 +482,7 @@ namespace SmartStore.Web.Controllers
             model.YoutubeLink = _socialSettings.Value.YoutubeLink;
 			model.InstagramLink = _socialSettings.Value.InstagramLink;
 			
-			model.SmartStoreHint = "<a href='http://www.smartstore.com/' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}"
+			model.SmartStoreHint = "<a href='https://www.smartstore.com/' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}"
 				.FormatCurrent(hint, DateTime.Now.Year);
 
             return PartialView(model);

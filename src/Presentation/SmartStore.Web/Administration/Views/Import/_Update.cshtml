@@ -38,15 +38,18 @@
 			<td id="ImportFileList" class="adminData">
 				@foreach (var fileName in Model.ExistingFileNames)
 				{
-					<p>
-						@Html.IconForFileExtension(Path.GetExtension(fileName), false)
-						<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
-
-						<button type="button" class="btn btn-secondary btn-to-danger btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
-							<i class="fa fa-trash-o"></i>
-							<span>@T("Admin.Common.Delete")</span>
-						</button>
-					</p>
+					<div class="py-2 border-bottom form-row">
+						<div class="col d-flex align-items-center">
+							@Html.IconForFileExtension(Path.GetExtension(fileName), false)
+							<a class="pl-1" href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
+						</div>
+						<div class="col-auto">
+							<button type="button" class="btn btn-secondary btn-to-danger btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
+								<i class="fa fa-trash-o"></i>
+								<span>@T("Admin.Common.Delete")</span>
+							</button>
+						</div>
+					</div>
 				}
 			</td>
 		</tr>

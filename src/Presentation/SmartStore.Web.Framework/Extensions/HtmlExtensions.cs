@@ -811,11 +811,11 @@ namespace SmartStore.Web.Framework
 			{
 				if (ext.IsEmpty())
 				{
-					result = "<span class='muted'>{0}</span>".FormatInvariant("".NaIfEmpty());
+					result = "<span class='text-muted'>{0}</span>".FormatInvariant("".NaIfEmpty());
 				}
 				else
 				{
-					result = result + "<span class='ml4'>{0}</span>".FormatInvariant(label);
+					result = result + "<span class='ml-4'>{0}</span>".FormatInvariant(label);
 				}	
 			}
 

@@ -99,12 +99,12 @@
 		moreLessBtn.on("click", function() {
 			
 			if (moreLessBtn.hasClass("collapsed")) {
-				$("span", moreLessBtn).text("@T("Admin.MessageTemplate.Preview.Less").JsText");
+				$("span", moreLessBtn).text(@T("Admin.MessageTemplate.Preview.Less").JsText);
 				$("i", moreLessBtn).toggleClass("fa-angle-down");
 				$("i", moreLessBtn).toggleClass("fa-angle-up", true);
 			}
 			else {
-				$("span", moreLessBtn).text("@T("Admin.MessageTemplate.Preview.More").JsText");
+				$("span", moreLessBtn).text(@T("Admin.MessageTemplate.Preview.More").JsText);
 				$("i", moreLessBtn).toggleClass("fa-angle-up");
 				$("i", moreLessBtn).toggleClass("fa-angle-down", true);
 			}

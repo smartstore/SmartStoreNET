@@ -145,10 +145,10 @@
             <td>
 				@(Html.SmartStore().EntityPicker()
 					.HtmlAttribute("class", "btn btn-warning")
-					.DialogTitle(T("Admin.Catalog.Products.BundleItems.AddNew").JsText)
+					.DialogTitle(T("Admin.Catalog.Products.BundleItems.AddNew").Text.EncodeJsString('\'', false))
+					.Caption(T("Common.AddNew").Text.EncodeJsString('\'', false))
 					.DisableBundleProducts(true)
 					.DisableGroupedProducts(true)
-					.Caption(T("Common.AddNew").JsText)
 					.IconCssClass("fa fa-plus")
 					.OnSelectionCompleted("EntPicker_Completed"))
 

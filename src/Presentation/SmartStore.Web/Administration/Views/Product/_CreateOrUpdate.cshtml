@@ -17,7 +17,7 @@
 
 @Html.SmartStore().TabStrip().Name("product-edit").OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
 {
-	x.Add().Text(T("Admin.Catalog.Products.Info").Text)
+	x.Add().Text(T("Admin.Catalog.Products.Info"))
 		.Icon("fa fa-pencil fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Info" })
 		.Content(Html.Partial("_CreateOrUpdate.Info", Model).ToHtmlString())

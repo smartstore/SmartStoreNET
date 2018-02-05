@@ -251,7 +251,7 @@
 					var grid = $(this).closest('.t-grid').data('tGrid');
 					$(this).doAjax({
 						type: 'POST',
-						ask: '@T("Admin.Common.AskToProceed").JsText',
+						ask: @T("Admin.Common.AskToProceed").JsText,
 						callbackSuccess: function () {
 							grid.ajaxRequest();
 						}

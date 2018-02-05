@@ -13,8 +13,8 @@
 				 data-discount-id='@Model.DiscountId'
 				 data-requirement-id='@Model.RequirementId'
 				 data-action-url='@Url.Action("HasAllProducts")'
-				 data-fail-msg='@T("Admin.Promotions.Discounts.Requirements.FailedToSave").Text.EncodeJsString()'
-				 data-success-msg='@T("Admin.Promotions.Discounts.Requirements.Saved").Text.EncodeJsString()'>
+				 data-fail-msg=@T("Admin.Promotions.Discounts.Requirements.FailedToSave").JsText
+				 data-success-msg=@T("Admin.Promotions.Discounts.Requirements.Saved").JsText>
 				<div>
 					<div class="input-group">
 						@Html.TextBoxFor(model => model.Products, new { data_routeparam = "productIds" })
@@ -22,8 +22,8 @@
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.Products)
 								.HtmlAttribute("class", "btn btn-outline-secondary")
-								.DialogTitle(T("lugins.DiscountRules.HasAllProducts.Fields.Products").JsText)
-								.Caption(T("Admin.Common.Search").JsText))
+								.DialogTitle(T("Plugins.DiscountRules.HasAllProducts.Fields.Products").Text.EncodeJsString('\'', false))
+								.Caption(T("Admin.Common.Search").Text.EncodeJsString('\'', false)))
 						</div>
 					</div>
 

@@ -180,7 +180,7 @@
 
 	function OnGridDataBound(e) {
 		var grid = $('#gmc-products-grid'),
-			emptyCell = '@T("Plugins.Feed.Froogle.EmptyGridCell").JsText';
+			emptyCell = @T("Plugins.Feed.Froogle.EmptyGridCell").JsText;
 
 		var options = {
 			mode: 'popup',
@@ -198,8 +198,8 @@
 			language: '@Model.LanguageSeoCode'
 		};
 		var boolSource = [
-			{ id: 'true', text: '@T("Admin.Common.Yes").JsText' },
-			{ id: 'false', text: '@T("Admin.Common.No").JsText' }
+			{ id: 'true', text: @T("Admin.Common.Yes").JsText },
+			{ id: 'false', text: @T("Admin.Common.No").JsText }
 		];
 
 		grid.find('a.edit-link-export2').editable($.extend({}, options, {
@@ -212,17 +212,17 @@
 		grid.find('a.edit-link-gender').editable($.extend({}, options, {
 			select2: select2Options,
 			source: [
-				{ id: 'male', text: '@T("Plugins.Feed.Froogle.GenderMale").JsText' },
-				{ id: 'female', text: '@T("Plugins.Feed.Froogle.GenderFemale").JsText' },
-				{ id: 'unisex', text: '@T("Plugins.Feed.Froogle.GenderUnisex").JsText' }
+				{ id: 'male', text: @T("Plugins.Feed.Froogle.GenderMale").JsText },
+				{ id: 'female', text: @T("Plugins.Feed.Froogle.GenderFemale").JsText },
+				{ id: 'unisex', text: @T("Plugins.Feed.Froogle.GenderUnisex").JsText }
 			]
 		}));
 
 		grid.find('a.edit-link-agegroup').editable($.extend({}, options, {
 			select2: select2Options,
 			source: [
-				{ id: 'adult', text: '@T("Plugins.Feed.Froogle.AgeGroupAdult").JsText' },
-				{ id: 'kids', text: '@T("Plugins.Feed.Froogle.AgeGroupKids").JsText' }
+				{ id: 'adult', text: @T("Plugins.Feed.Froogle.AgeGroupAdult").JsText },
+				{ id: 'kids', text: @T("Plugins.Feed.Froogle.AgeGroupKids").JsText }
 			]
 		}));
 
@@ -240,7 +240,7 @@
 				if (value.length !== 0) {
 					var regex = /^[0-9]+$/;
 					if (!regex.test(value)) {
-						return '@T("Admin.System.Warnings.DigitsOnly").JsText';
+						return @T("Admin.System.Warnings.DigitsOnly").JsText;
 					}
 				}
 				return null;

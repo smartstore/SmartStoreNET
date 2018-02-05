@@ -33,7 +33,7 @@
 			}
             @if (Model.IsCustomerAllowedToDeleteTopic)
 			{
-				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow" onclick='@(String.Format("return confirm('{0}');", T("Common.AreYouSure").JsText))'>
+				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow" onclick='@(String.Format("return confirm({0});", T("Common.AreYouSure").JsText))'>
 					<i class="fa fa-trash-o"></i>
 					<span>@T("Forum.DeleteTopic")</span>
 				</a>

@@ -70,14 +70,14 @@ else
 		$('button.copy-to-clipboard').tooltip({
 			placement: 'bottom',
 			trigger: 'hover',
-			title: '@T("Common.CopyToClipboard").JsText'
+			title: @T("Common.CopyToClipboard").JsText
 		}).click(function () {
 			var self = $(this),
 				url = self.parent().find('a').attr('href');
 
 			var succeeded = window.copyTextToClipboard(url);
 
-			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded").JsText' : '@T("Common.CopyToClipboard.Failed").JsText')
+			self.attr('data-original-title', succeeded ? @T("Common.CopyToClipboard.Succeeded").JsText : @T("Common.CopyToClipboard.Failed").JsText)
 				.tooltip('show');
 
 			setTimeout(function () {

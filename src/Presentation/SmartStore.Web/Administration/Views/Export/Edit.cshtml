@@ -389,7 +389,7 @@
 		$('#ProfileExportButton').click(function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: '@(T("Admin.Common.AskToProceed").JsText)'
+				ask: @(T("Admin.Common.AskToProceed").JsText)
 			});
 			return false;
 		});

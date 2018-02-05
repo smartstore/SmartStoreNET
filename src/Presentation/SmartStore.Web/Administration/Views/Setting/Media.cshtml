@@ -199,11 +199,11 @@
 
     	// move media
     	$('#MoveMediaButton').click(function () {
-    		if (confirm('@T("Admin.Common.AskToProceed").JsText')) {
+    		if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
 
     			$.throbber.show({
     				speed: 0,
-    				message: '@T("Admin.Common.WaitProcessingMessage").JsText'
+    				message: @T("Admin.Common.WaitProcessingMessage").JsText
     			});
 
     			$(this).doPostData({

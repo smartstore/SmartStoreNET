@@ -28,10 +28,10 @@
 			var btn = $(this);
 			var panel = btn.parent().next();
 			if (panel.hasClass('d-none')) {
-				btn.html('@T("Admin.Common.Show").JsText');
+				btn.html(@T("Admin.Common.Show").JsText);
 			}
 			else {
-				btn.html('@T("Admin.Common.Hide").JsText');
+				btn.html(@T("Admin.Common.Hide").JsText);
 			}
 			panel.toggleClass('d-none');
 		});

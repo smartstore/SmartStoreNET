@@ -137,7 +137,7 @@
         $("#restart-application").on('click', function (e) {
             e.preventDefault();
             $.throbber.show({
-                message: '@T("Admin.Header.RestartApplication.Progress").JsText',
+                message: @T("Admin.Header.RestartApplication.Progress").JsText,
                 callback: function () {
                     setLocation($(e.target).data("url"));
                     

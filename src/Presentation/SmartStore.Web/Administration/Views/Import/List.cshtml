@@ -85,7 +85,7 @@
 						</button>
 
 						<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-block btn-secondary btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
-						   data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure").JsText');">
+						   data-task-id="@profile.ScheduleTaskId" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
 							<span>@T("Common.Cancel")</span>
 						</a>
 
@@ -213,7 +213,7 @@ else
 		$(document).on('click', '.btn-run-task', function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed").JsText'
+				ask: @T("Admin.Common.AskToProceed").JsText
 			});
 			return false;
 		});
@@ -221,7 +221,7 @@ else
 		Admin.TaskWatcher.startWatching({
 			context: $('#import-profile-list'),
 			elementsSelector: '.task-progress',
-			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText',
+			defaultProgressMessage: @T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText,
 			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',
 			onTaskStarted: function (task, el) {
 				var tr = el.closest('tr');

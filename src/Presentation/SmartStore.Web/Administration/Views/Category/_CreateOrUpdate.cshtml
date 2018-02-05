@@ -452,7 +452,7 @@
 			@(Html.SmartStore().EntityPicker()
 				.IconCssClass("fa fa-plus")
 				.HtmlAttribute("class", "btn btn-warning")
-				.Caption(T("Admin.Catalog.Categories.Products.AddNew").JsText)
+				.Caption(T("Admin.Catalog.Categories.Products.AddNew").Text.EncodeJsString('\'', false))
 				.OnSelectionCompleted("PickProducts_Completed"))
 		</div>
 	}

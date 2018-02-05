@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace SmartStore.Core.Localization
@@ -44,9 +45,14 @@ namespace SmartStore.Core.Localization
             get { return _localized; }
         }
 
-		public string JsText
+		/// <summary>
+		/// returns a js encoded string which already contains delimters
+		/// </summary>
+		public IHtmlString JsText
 		{
-			get { return _localized.EncodeJsString('"', false); }
+			get {
+				return System.Web.Mvc.MvcHtmlString.Create(_localized.EncodeJsString());
+			}
 		}
 
 		public static implicit operator string(LocalizedString obj)

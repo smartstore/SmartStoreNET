@@ -47,7 +47,7 @@
 @*copy product form*@
 @{Html.SmartStore().Window()
 		.Name("copyproduct-window")
-		.Title(T("Admin.Catalog.Products.Copy").Text)
+		.Title(T("Admin.Catalog.Products.Copy").Text.EncodeJsString('\'', false))
 		.Content(@<text>
 			<form method="POST" action="@Url.Action("CopyProduct", "Product")">
 				@Html.HiddenFor(model => Model.CopyProductModel.Id)

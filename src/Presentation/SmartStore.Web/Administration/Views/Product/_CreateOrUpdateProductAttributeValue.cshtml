@@ -78,8 +78,8 @@
 						.MaxItems(1)
 						.AppendMode(false)
 						.DisabledEntityIds(Model.ProductId)
-						.DialogTitle(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew").JsText)
-						.Caption(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct").JsText)
+						.DialogTitle(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew").Text.EncodeJsString('\'', false))
+						.Caption(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct").Text.EncodeJsString('\'', false))
 						.OnSelectionCompleted("PickLinkedProduct_Completed"))
 				</div>
 			</div>

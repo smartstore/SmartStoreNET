@@ -107,8 +107,8 @@
 	@(Html.SmartStore().EntityPicker()
 		.IconCssClass("fa fa-plus")
 		.HtmlAttribute("class", "t-button t-grid-add")
-		.DialogTitle(T("Admin.Catalog.Products.RelatedProducts.AddNew").JsText)
-		.Caption(T("Common.AddNew").JsText)
+		.DialogTitle(T("Admin.Catalog.Products.RelatedProducts.AddNew").Text.EncodeJsString('\'', false))
+		.Caption(T("Common.AddNew").Text.EncodeJsString('\'', false))
 		.OnSelectionCompleted("PickRelatedProducts_Completed"))
 
 	<button type="button" id="btnCreateMutuallyRelatedProducts" class="t-button" data-url="@Url.Action("CreateAllMutuallyRelatedProducts", new { productId = Model.Id })"
@@ -122,8 +122,8 @@
 	@(Html.SmartStore().EntityPicker()
 		.IconCssClass("fa fa-plus")
 		.HtmlAttribute("class", "t-button t-grid-add")
-		.DialogTitle(T("Common.AddNew").JsText)
-		.Caption(T("Admin.Catalog.Products.CrossSells.AddNew").JsText)
+		.DialogTitle(T("Common.AddNew").Text.EncodeJsString('\'', false))
+		.Caption(T("Admin.Catalog.Products.CrossSells.AddNew").Text.EncodeJsString('\'', false))
 		.OnSelectionCompleted("PickCrossSellProducts_Completed"))
 
 	<button type="button" id="btnCreateMutuallyCrossSellProducts" class="t-button" data-url="@Url.Action("CreateAllMutuallyCrossSellProducts", new { productId = Model.Id })"

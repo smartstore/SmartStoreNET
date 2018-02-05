@@ -269,7 +269,7 @@ else
 		// show/hide file name pattern descriptions
 		$('#FileNamePatternDescriptionLink').click(function () {
 			var descriptions = $('#FileNamePatternDescription');
-			$('#FileNamePatternDescriptionLink').html((descriptions.is(':visible') ? '@T("Admin.DataExchange.Export.Deployment.ShowPlaceholder").JsText' : '@T("Admin.DataExchange.Export.Deployment.HidePlaceholder").JsText') + '…');
+			$('#FileNamePatternDescriptionLink').html((descriptions.is(':visible') ? @T("Admin.DataExchange.Export.Deployment.ShowPlaceholder").JsText : @T("Admin.DataExchange.Export.Deployment.HidePlaceholder").JsText) + '…');
 			descriptions.toggleClass("d-none");
 		});
 

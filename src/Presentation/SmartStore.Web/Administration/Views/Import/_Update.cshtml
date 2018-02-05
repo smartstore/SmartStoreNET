@@ -224,7 +224,7 @@
 		$('#ImportFileList').on('click', '.import-file-delete', function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed").JsText'
+				ask: @T("Admin.Common.AskToProceed").JsText
 			});
 			return false;
 		});
@@ -233,7 +233,7 @@
 		$('#ProfileImportButton').click(function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed").JsText'
+				ask: @T("Admin.Common.AskToProceed").JsText
 			});
 			return false;
 		});
@@ -242,7 +242,7 @@
 		// reset column mappings
 		$('#ResetColumnMappings').on('click', function (e) {
 			e.preventDefault();
-			if (confirm('@T("Admin.Common.AskToProceed").JsText')) {
+			if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
 				var form = '<form id="ResetColumnMappingsForm" action="' + $(this).data('url') + '" method="post"></form>';
 				$('body').append(form);
 				$('#ResetColumnMappingsForm').submit();
@@ -300,7 +300,7 @@
 			}
 			else {
 				if (_.isEmpty(val)) {
-					val = '<span class="muted">@T("Admin.Common.Ignore").JsText</span>';
+					val = '<span class="muted">' + @T("Admin.Common.Ignore").JsText + '</span>';
 				}
 				item.find('.left-label').html(val);
 			}

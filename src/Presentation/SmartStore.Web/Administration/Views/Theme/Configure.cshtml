@@ -72,7 +72,7 @@
 @*import variables window*@
 @{Html.SmartStore().Window()
     .Name("importvariables-window")
-    .Title(T("Admin.Configuration.Themes.ImportVars"))
+    .Title(T("Admin.Configuration.Themes.ImportVars").Text.EncodeJsString('\'', false))
     .Content(
     @<text>
 		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
@@ -99,7 +99,7 @@
 @*export variables window*@
 @{Html.SmartStore().Window()
     .Name("exportvariables-window")
-    .Title(T("Admin.Configuration.Themes.ExportVars"))
+    .Title(T("Admin.Configuration.Themes.ExportVars").Text.EncodeJsString('\'', false))
     .Content(
     @<text>
 		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ExportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">

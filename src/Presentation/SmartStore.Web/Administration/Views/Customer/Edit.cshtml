@@ -46,7 +46,7 @@
 
 @{Html.SmartStore().Window()
     .Name("sendemail-window")
-    .Title(T("Admin.Customers.Customers.SendEmail").Text)
+    .Title(T("Admin.Customers.Customers.SendEmail").Text.EncodeJsString('\'', false))
     .Content(@<text>
 		<form method="POST" action="@Url.Action("SendEmail", "Customer", new { id = Model.Id })">
 			<table class="adminContent p-0">
@@ -85,7 +85,7 @@
 @*send PM form*@
 @{Html.SmartStore().Window()
         .Name("sendprivatemessage-window")
-        .Title(T("Admin.Customers.Customers.SendPM").Text)
+        .Title(T("Admin.Customers.Customers.SendPM").Text.EncodeJsString('\'', false))
         .Content(@<text>
 			<form method="POST" action="@Url.Action("SendPm", "Customer", new { id = Model.Id })">
 				<table class="adminContent p-0">

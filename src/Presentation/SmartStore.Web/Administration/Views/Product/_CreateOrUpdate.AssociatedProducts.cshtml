@@ -58,8 +58,8 @@
 					.IconCssClass("fa fa-plus")
 					.DisableGroupedProducts(true)
 					.HtmlAttribute("class", "btn btn-warning")
-					.DialogTitle(T("Admin.Catalog.Products.AssociatedProducts.AddNew").JsText)
-					.Caption(T("Admin.Catalog.Products.AssociatedProducts.AddNew").JsText)
+					.DialogTitle(T("Admin.Catalog.Products.AssociatedProducts.AddNew").Text.EncodeJsString('\'', false))
+					.Caption(T("Admin.Catalog.Products.AssociatedProducts.AddNew").Text.EncodeJsString('\'', false))
 					.OnSelectionCompleted("AssociatedProducts_Selected"))
 
                 <script>

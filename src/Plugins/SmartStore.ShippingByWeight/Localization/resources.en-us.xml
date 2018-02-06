@@ -92,11 +92,13 @@
       <![CDATA[<br>You're charged with a surcharge of <b class=\"text-success\">{0}</b> because the total of your order hasn't reached <b class=\"text-warning\">{1}</b>.]]>
     </Value>
   </LocaleResource>
-
-    <LocaleResource Name="AddNewRecordTitle">
+  <LocaleResource Name="AddNewRecordTitle">
     <Value>Add new record</Value>
   </LocaleResource>
-  <LocaleResource Name="SettingsTitle">
-    <Value>Settings</Value>
+  <LocaleResource Name="TabTitleSettings">
+	<Value>Options</Value>
+  </LocaleResource>
+  <LocaleResource Name="TabTitleGrid">
+	<Value>Shipping records</Value>
   </LocaleResource>
 </Language>

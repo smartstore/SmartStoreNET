@@ -236,13 +236,17 @@
 			var el = $(this),
 				elRemove = el.find('.remove'),
 				elCancel = el.find('.cancel')
-				elFile = el.find('.fileinput-button');
+				elFile = el.find('.fileinput-button'),
+				accept = _.isString(el.data('accept')) ? new RegExp('(\.|\/)(' + el.data('accept') + ')$', 'i') : undefined;
 
 			var opts = {
 				url: el.data('upload-url'),
 				dataType: 'json',
-				acceptFileTypes: new RegExp('(\.|\/)(' + (el.data('accept') || 'gif|jpe?g|png') + ')$', 'i'),
+				acceptFileTypes: accept,
 				pasteZone: null,
+				send: function (e, data) {
+					if (options.onUploading) options.onUploading.apply(this, [e, el, data]);
+				},
 				done: function (e, data) {
 					var result = data.result;
 					if (result.success) {
@@ -267,6 +271,9 @@
 					else {
 						if (options.onError) options.onError.apply(this, [el, textStatus, errorThrown]);
 					}
+				},
+				always: function (e, data) {
+					if (options.onCompleted) options.onCompleted.apply(this, [e, el, data]);
 				}
 			};
 

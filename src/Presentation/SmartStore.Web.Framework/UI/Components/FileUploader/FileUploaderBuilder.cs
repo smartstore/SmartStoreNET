@@ -35,6 +35,12 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
+		public FileUploaderBuilder<TModel> ButtonOutlineStyle(bool value)
+		{
+			base.Component.ButtonOutlineStyle = value;
+			return this;
+		}
+
 		public FileUploaderBuilder<TModel> ShowRemoveButton(bool value)
 		{
 			base.Component.ShowRemoveButton = value;
@@ -49,7 +55,16 @@ namespace SmartStore.Web.Framework.UI
 
 		public FileUploaderBuilder<TModel> AcceptedFileTypes(string value)
 		{
-			base.Component.HtmlAttributes["data-accept"] = value;
+			if (value.IsEmpty())
+			{
+				if (base.Component.HtmlAttributes.ContainsKey("data-accept"))
+					base.Component.HtmlAttributes.Remove("data-accept");
+			}
+			else
+			{
+				base.Component.HtmlAttributes["data-accept"] = value;
+			}
+			
 			return this;
 		}
 
@@ -68,6 +83,12 @@ namespace SmartStore.Web.Framework.UI
 		public FileUploaderBuilder<TModel> UploadText(string value)
 		{
 			base.Component.UploadText = value;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> OnUploadingHandlerName(string handlerName)
+		{
+			base.Component.OnUploadingHandlerName = handlerName;
 			return this;
 		}
 
@@ -92,6 +113,12 @@ namespace SmartStore.Web.Framework.UI
 		public FileUploaderBuilder<TModel> OnAbortedHandlerName(string handlerName)
 		{
 			base.Component.OnAbortedHandlerName = handlerName;
+			return this;
+		}
+
+		public FileUploaderBuilder<TModel> OnCompletedHandlerName(string handlerName)
+		{
+			base.Component.OnCompletedHandlerName = handlerName;
 			return this;
 		}
 	}

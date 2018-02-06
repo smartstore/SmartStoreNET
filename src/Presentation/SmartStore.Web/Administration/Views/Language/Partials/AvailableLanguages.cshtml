@@ -76,7 +76,7 @@
                                 <i class="fa fa-download"></i>
 								<span>@T("Common.Download")</span>
                             </a>
-                            <div class="task-progress text-success@(language.IsDownloadRunning ? "" : " d-none")" 
+                            <div class="task-progress text-muted@(language.IsDownloadRunning ? "" : " d-none")" 
                                 data-task-id="@language.Id" data-running="@(language.IsDownloadRunning ? "true" : "false")"></div>
                         }
                     </td>

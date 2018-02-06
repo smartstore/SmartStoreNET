@@ -35,15 +35,18 @@ namespace SmartStore.Web.Framework.UI
 
 		public string IconCssClass { get; set; }
 		public ButtonStyle ButtonStyle { get; set; }
+		public bool ButtonOutlineStyle { get; set; }
 		public bool ShowRemoveButton { get; set; }
 
 		public string CancelText { get; set; }
 		public string RemoveText { get; set; }
 		public string UploadText { get; set; }
 
+		public string OnUploadingHandlerName { get; set; }
 		public string OnUploadCompletedHandlerName { get; set; }
 		public string OnErrorHandlerName { get; set; }
 		public string OnFileRemoveHandlerName { get; set; }
 		public string OnAbortedHandlerName { get; set; }
+		public string OnCompletedHandlerName { get; set; }
 	}
 }

@@ -49,7 +49,7 @@
 					<div class="next-run-info">
 						@{ Html.RenderPartial("_NextRun", task); }
 					</div>
-					<div class='task-progress text-success@(task.IsRunning ? "" : " hide")' data-task-id='@task.Id' data-running='@(task.IsRunning ? "true" : "false")'></div>
+					<div class='task-progress text-muted@(task.IsRunning ? "" : " hide")' data-task-id='@task.Id' data-running='@(task.IsRunning ? "true" : "false")'></div>
 				</td>
 				<!-- Actions -->
 				<td class="omega text-truncate">

@@ -843,17 +843,17 @@ tr.adminGroup {
 
 .download-editor {
 	.panel-switcher-icon { 
-		width: 13px; 
+		//width: 13px; 
 	}
 
 	.filename {
-		line-height: 32px; 
+		/*line-height: 32px; 
 		vertical-align: middle; 
 		padding-right: 10px; 
 		font-weight: bold;
 		max-width: 300px;
 		display: inline-block;
-		@include text-truncate();
+		@include text-truncate();*/
 	}
 }
 

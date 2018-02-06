@@ -65,7 +65,7 @@ $btn-size-sm: $input-height-sm;
 		transition: opacity .05s ease-in-out;
 	}
 
-	&:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus):not(:disabled):not(.disabled) {
+	&:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus):not([disabled]):not(.disabled) {
 		> i {
 			opacity: 0.6;
 		}
@@ -88,7 +88,8 @@ $btn-size-sm: $input-height-sm;
 	}
 
 	&.disabled,
-	&:disabled {
+	&[disabled] {
+		color: $yiq-text-dark;
 		border-color: $input-border-color;
 	}
 
@@ -154,8 +155,8 @@ $btn-size-sm: $input-height-sm;
 	// Move caret to bottom right corner
 	&.dropdown-toggle:after {
 		position: absolute;
-		right: 0.3rem;
-		bottom: 0.5em;
+		right: 2px;
+		bottom: 0.4em;
 	}
 }
 
@@ -175,7 +176,7 @@ $btn-size-sm: $input-height-sm;
 	box-shadow: none;
 
 	&.disabled,
-	&:disabled {
+	&[disabled] {
 		color: $yiq-text-dark;
 		background-image: none;
 		background-color: transparent;
@@ -187,7 +188,7 @@ $btn-size-sm: $input-height-sm;
 	color: rgba(#fff, 0.8);
 
 	&.disabled,
-	&:disabled {
+	&[disabled] {
 		color: rgba(#fff, 0.8);
 	}
 
@@ -225,7 +226,7 @@ $btn-size-sm: $input-height-sm;
 	}
 
 	&.disabled,
-	&:disabled {
+	&[disabled] {
 		background: rgba(#fff, 0);
 		border-color: rgba(#fff, 0.6);
 	}
@@ -258,7 +259,7 @@ $btn-size-sm: $input-height-sm;
 	}
 
 	&.disabled,
-	&:disabled {
+	&[disabled] {
 		background: transparent;
 		border-color: rgba(#000, 0.15);
 		box-shadow: none;

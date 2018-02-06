@@ -71,7 +71,7 @@
 							<div class="next-run-info">
 								@{ Html.RenderPartial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel); }
 							</div>
-							<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
+							<div class="task-progress text-muted@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 						</td>
 						<td class="omega" style="width: 200px;">
 							<button type="button" class="btn btn-block btn-sm btn-warning btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"

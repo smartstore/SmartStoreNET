@@ -100,7 +100,7 @@ $table-border-color:			$gray-300;
 $table-head-bg:					#f6f8fa;
 $table-head-color:				$gray-700;
 
-$input-btn-focus-width:			.2rem;
+$input-btn-focus-width:			.25rem;
 $input-btn-focus-color:			rgba($primary, .25);
 $input-btn-focus-box-shadow:	0 0 0 $input-btn-focus-width $input-btn-focus-color;
 $input-btn-padding-x:           1rem;
@@ -140,6 +140,7 @@ $dropdown-link-active-bg:       lighten($dropdown-link-hover-bg, 5%);
 $dropdown-item-padding-y:       0.625rem; // 0.5rem;
 $dropdown-item-padding-x:       1.5rem;
 $dropdown-header-color:			$text-muted;
+$dropdown-link-disabled-color:	$gray-500;
 
 // TEST
 /*$dropdown-link-hover-color:		darken($dropdown-link-color, 5%);
@@ -214,8 +215,8 @@ $content-padding-y:			15px;
 @each $color, $value in $theme-colors {
 	.btn-#{$color},
 	.btn-outline-#{$color} {
-		&:not(:disabled):not(.disabled):focus,
-		&:not(:disabled):not(.disabled).focus {
+		&:not([disabled]):not(.disabled):focus,
+		&:not([disabled]):not(.disabled).focus {
 			@if $color == "secondary" or $color == "light" {
 				box-shadow: 0 0 0 0.125rem rgba($primary, .2);
 			}

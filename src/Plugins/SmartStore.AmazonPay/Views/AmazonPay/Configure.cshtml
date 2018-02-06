@@ -423,7 +423,7 @@
 
 @{Html.SmartStore().Window()
 	.Name("register-now-dialog")
-	.Title(T("Plugins.Payments.AmazonPay.PasteAccessData").Text.EncodeJsString('\'', false))
+	.Title(T("Plugins.Payments.AmazonPay.PasteAccessData"))
 	.Content(
 	@<text>
 		<form id="access-data-form" method="POST" action="@Url.Action("SaveAccessData", "AmazonPay", new { area = AmazonPayPlugin.SystemName })">

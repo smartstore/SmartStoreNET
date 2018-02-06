@@ -72,7 +72,7 @@
 @*import variables window*@
 @{Html.SmartStore().Window()
     .Name("importvariables-window")
-    .Title(T("Admin.Configuration.Themes.ImportVars").Text.EncodeJsString('\'', false))
+    .Title(T("Admin.Configuration.Themes.ImportVars"))
     .Content(
     @<text>
 		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
@@ -99,7 +99,7 @@
 @*export variables window*@
 @{Html.SmartStore().Window()
     .Name("exportvariables-window")
-    .Title(T("Admin.Configuration.Themes.ExportVars").Text.EncodeJsString('\'', false))
+    .Title(T("Admin.Configuration.Themes.ExportVars"))
     .Content(
     @<text>
 		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ExportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
@@ -137,7 +137,7 @@
         $('#exportxmlsubmit').on('click', function (e) {
             e.preventDefault();
             $('#exportvariables-window').find("form").submit();
-            $('#exportvariables-window').data('modal').hide();
+			$('#exportvariables-window').modal('hide');
         });
 
     });

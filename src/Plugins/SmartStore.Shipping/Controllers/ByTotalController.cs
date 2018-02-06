@@ -9,6 +9,7 @@ using SmartStore.Shipping.Services;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Shipping.Controllers
 {
@@ -154,16 +155,17 @@ namespace SmartStore.Shipping.Controllers
         }
 
         [HttpPost]
-        public ActionResult SaveGeneralSettings(ByTotalListModel model)
+        public ActionResult Configure(ByTotalListModel model)
         {
-            //save settings
             _shippingByTotalSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;
             _shippingByTotalSettings.SmallQuantityThreshold = model.SmallQuantityThreshold;
             _shippingByTotalSettings.SmallQuantitySurcharge = model.SmallQuantitySurcharge;
 
             _services.Settings.SaveSetting(_shippingByTotalSettings);
 
-            return Json(new { Result = true });
-        }
+			NotifySuccess(T("Admin.Configuration.Updated"));
+
+			return Configure();
+		}
     }
 }

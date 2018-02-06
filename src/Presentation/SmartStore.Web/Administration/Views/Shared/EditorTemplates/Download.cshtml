@@ -34,7 +34,7 @@
 }
 
 @{
-	var random = CommonHelper.GenerateRandomDigitCode(5);
+	var random = CommonHelper.GenerateRandomInteger();
 	var clientId = "download-editor-" + random;
 	var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
 	var download = downloadService.GetDownloadById(Model.GetValueOrDefault());

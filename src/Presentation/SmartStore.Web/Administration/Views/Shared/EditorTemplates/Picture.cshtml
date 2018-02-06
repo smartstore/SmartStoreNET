@@ -26,7 +26,7 @@
 }
 
 @{
-	var random = CommonHelper.GenerateRandomDigitCode(5);
+	var random = CommonHelper.GenerateRandomInteger();
 	var pictureService = this.CommonServices.PictureService;
 	var mediaSettings = this.CommonServices.Resolve<SmartStore.Core.Domain.Media.MediaSettings>();
 	int pictureId = Model.HasValue ? Model.Value : 0;

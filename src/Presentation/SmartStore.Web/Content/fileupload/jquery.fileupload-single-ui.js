@@ -255,8 +255,9 @@
 							elRemove.removeClass("hide");
 						}
 
-						el.closest('.fileupload-container').find('.img-thumbnail').attr('src', data.result.imageUrl);
-						el.closest('.fileupload-container').find('.hidden').val(data.result.pictureId);
+						var cnt = el.closest('.fileupload-container');
+						cnt.find('.img-thumbnail').attr('src', data.result.imageUrl);
+						cnt.find('.hidden').val(data.result.pictureId);
 
 						elCancel.addClass("hide");
 						elFile.removeClass("hide");
@@ -284,8 +285,9 @@
 			elRemove.on('click', function (e) {
 				e.preventDefault();
 
-				el.closest('.fileupload-container').find('.img-thumbnail').attr('src', el.data('fallback-url'));
-				el.closest('.fileupload-container').find('.hidden').val(0);
+				var cnt = el.closest('.fileupload-container');
+				cnt.find('.img-thumbnail').attr('src', el.data('fallback-url'));
+				cnt.find('.hidden').val(0);
 				$(this).addClass("hide");
 				if (options.onFileRemove) options.onFileRemove.apply(this, [e, el]);
 			});

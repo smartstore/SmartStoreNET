@@ -46,6 +46,8 @@
 			var elRemove = el.find('.remove-download'),
 				elSaveUrl = el.find('.save-download-url');
 
+			//console.log(el);
+
 			// handle panel switcher buttons
 			el.find('.toggle-file, .toggle-url').on('click', function (e) {
 				e.preventDefault();
@@ -62,8 +64,6 @@
 					btn.addClass('disabled');
 
 			});
-
-			console.log(elRemove);
 
 			// Download removal (transient)
 			elRemove.on('click', function (e) {

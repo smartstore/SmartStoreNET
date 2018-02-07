@@ -8,6 +8,7 @@ namespace SmartStore.Data.Migrations
 	using SmartStore.Utilities;
 	using SmartStore.Core.Domain.Media;
 	using Core.Domain.Configuration;
+	using SmartStore.Core.Domain.Customers;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -37,6 +38,22 @@ namespace SmartStore.Data.Migrations
 			if (setting != null && setting.Value.Convert<int>() < 2048)
 			{
 				setting.Value = "2048";
+			}
+
+			// Change MediaSettings.AvatarPictureSize to 250
+			name = TypeHelper.NameOf<MediaSettings>(y => y.AvatarPictureSize, true);
+			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == name);
+			if (setting != null && setting.Value.Convert<int>() < 250)
+			{
+				setting.Value = "250";
+			}
+
+			// Change MediaSettings.AvatarMaximumSizeBytes to 512000 (500 KB)
+			name = TypeHelper.NameOf<CustomerSettings>(y => y.AvatarMaximumSizeBytes, true);
+			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == name);
+			if (setting != null && setting.Value.Convert<int>() < 512000)
+			{
+				setting.Value = "512000";
 			}
 		}
 

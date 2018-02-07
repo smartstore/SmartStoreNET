@@ -1538,7 +1538,7 @@ namespace SmartStore.Web.Controllers
 			var model = new CustomerAvatarModel();
 			model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
             model.AvatarUrl = _pictureService.GetUrl(avatarId, _mediaSettings.AvatarPictureSize, FallbackPictureType.NoFallback);
-			model.PictureFallbackUrl = _pictureService.GetFallbackUrl();
+			model.PictureFallbackUrl = _pictureService.GetFallbackUrl(0, FallbackPictureType.Avatar);
 
 			return View(model);
         }

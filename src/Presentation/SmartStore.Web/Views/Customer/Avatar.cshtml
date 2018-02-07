@@ -21,7 +21,7 @@
 	}
 
 	<div class="mb-2">
-		<img src="@Model.AvatarUrl" class="img-thumbnail @(Model.AvatarUrl.HasValue() ? "" : "d-none")" alt="Avatar" style="max-width: 120px;" />
+		<img src="@Model.AvatarUrl" class="img-thumbnail @(Model.AvatarUrl.HasValue() ? "" : "hide")" alt="Avatar" style="max-width: 120px;" />
 	</div>
 
 	@(Html.SmartStore().FileUploader()
@@ -44,16 +44,16 @@
 		window['onAvatarUploaded'] = function (e, el, data) {
 			var result = data.result;
 			if (result.success) {
-				img.removeClass("d-none");
+				img.show();
 				img.attr('src', result.avatarUrl);
-				elRemove.removeClass("d-none");
+				elRemove.show();
 			}
 		};
 
         elRemove.click(function (e) {
 			$.post('@Url.Action("RemoveAvatar", "Customer")');
 			img.attr('src', '@Html.Raw(Model.PictureFallbackUrl)');
-			$(this).addClass("d-none");
+			$(this).hide();
             e.preventDefault();
         });
     });

@@ -56,6 +56,9 @@
       <LocaleResource Name="AddRecord.Hint">
         <Value>Neuen Steuersatz hinzufügen</Value>
       </LocaleResource>
+	  <LocaleResource Name="AddNewRecord.Success">
+		<Value>Der neue Steuersatz wurde erfolgreich zugefügt.</Value>
+	  </LocaleResource>
     </Children>
   </LocaleResource>
 

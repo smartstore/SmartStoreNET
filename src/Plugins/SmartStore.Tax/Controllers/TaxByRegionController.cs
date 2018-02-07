@@ -137,9 +137,14 @@ namespace SmartStore.Tax.Controllers
             return RatesList(command);
         }
 
-        [HttpPost, ActionName("Configure")]
-        [FormValueRequired("addtaxrate")]
-		public ActionResult AddTaxRate(ByRegionTaxRateListModel model)
+		[HttpPost]
+		public ActionResult Configure(ByRegionTaxRateListModel model)
+		{
+			return Configure();
+		}
+
+		[HttpPost]
+		public ActionResult AddTaxByRegionRecord(ByRegionTaxRateListModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -154,10 +159,12 @@ namespace SmartStore.Tax.Controllers
                 Zip = model.AddZip,
                 Percentage = model.AddPercentage
             };
+
             _taxRateService.InsertTaxRate(taxRate);
 
-            return Configure();
-        }
+			NotifySuccess(T("Plugins.Tax.CountryStateZip.AddNewRecord.Success"));
 
+			return Json(new { Result = true });
+		}
     }
 }

@@ -17,10 +17,11 @@
 		</tr>
 		<tr>
 			<td>
-				<div class="alert alert-info">
-					<button type="button" class="close" data-dismiss="alert">&#215;</button>
+				<div class="alert alert-info alert-dismissible">
 					@Html.Raw(T("Admin.DataExchange.ColumnMapping.Note"))
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
 				</div>
+
 				@if (Model.ColumnMappings.Any())
 				{
 					<button id="ResetColumnMappings" type="button" class="btn btn-secondary btn-to-danger" data-url="@Url.Action("ResetColumnMappings", new { id = Model.Id })">

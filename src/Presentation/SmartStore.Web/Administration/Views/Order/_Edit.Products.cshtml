@@ -62,8 +62,8 @@
 
 @if (Model.AutoUpdateOrderItemInfo.HasValue())
 {
-	<div class="alert alert-info">
-		<button class="close" data-dismiss="alert">&#215;</button>
+	<div class="alert alert-info alert-dismissible">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
 		@Html.Raw(Model.AutoUpdateOrderItemInfo)
 	</div>
 }

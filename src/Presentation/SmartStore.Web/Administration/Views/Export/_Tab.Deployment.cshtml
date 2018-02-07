@@ -96,16 +96,16 @@
 		<div class="head">@T("Admin.DataExchange.Export.Deployment.ProfilesTitle")</div>
 	</div>
 
-	<div class="alert alert-info">
-		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+	<div class="alert alert-info alert-dismissible">
 		@Html.Raw(T("Admin.DataExchange.Export.Deployment.Note"))
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
 	</div>
 
 	if (!Model.Deployments.Any())
 	{
-		<div class="alert alert-info">
-			<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		<div class="alert alert-info alert-dismissible">
 			@T("Admin.DataExchange.Export.Deployment.NoProfiles")
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
 		</div>
 	}
 

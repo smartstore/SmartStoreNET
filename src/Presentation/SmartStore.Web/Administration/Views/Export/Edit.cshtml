@@ -228,9 +228,9 @@
 
 @helper TabPartition()
 {
-	<div class="alert alert-info">
-		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+	<div class="alert alert-info alert-dismissible">
 		@Html.Raw(T("Admin.DataExchange.Export.Partition.Note"))
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
 	</div>
 
 	<table class="adminContent">
@@ -311,9 +311,9 @@
 		<fieldset>
 			@if (Model.Provider.ConfigPartialViewName.HasValue())
 			{
-				<div class="alert alert-info">
-					<button type="button" class="close" data-dismiss="alert">&#215;</button>
+				<div class="alert alert-info alert-dismissible">
 					@Html.Raw(T("Admin.DataExchange.Export.Configuration.Note"))
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
 				</div>
 				
 				var viewData = new ViewDataDictionary();

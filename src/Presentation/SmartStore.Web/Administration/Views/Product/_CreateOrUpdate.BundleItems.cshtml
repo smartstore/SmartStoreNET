@@ -12,8 +12,7 @@
 		}
 	</script>
 
-	<div class="alert alert-info">
-		<button class="close" data-dismiss="alert">&#215;</button>
+	<div class="alert alert-info alert-dismissible">
 		<div>
 			@T("Admin.Catalog.Products.BundleItems.NotesOnProductBundles"):
 			<a id="ProductBundleInfoLink" href="javascript:void(0)" data-in="@T("Common.Show")" data-out="@T("Common.Hide")">@T("Common.Show")</a>
@@ -28,6 +27,7 @@
 				@Html.Raw(T("Admin.Catalog.Products.BundleItems.AdminNotePerItemShipping"))
 			}
 		</div>
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
 	</div>
 
 	<div>

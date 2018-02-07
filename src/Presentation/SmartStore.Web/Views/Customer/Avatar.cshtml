@@ -32,29 +32,22 @@
 		.ShowRemoveButtonAfterUpload(true)
 		.UploadText(T("Common.FileUploader.Upload"))
 		.OnUploadCompletedHandlerName("onAvatarUploaded")
+		.OnFileRemoveHandlerName("onAvatarRemoved")
 	)
 </div>
 
 <script type="text/javascript">
     $(function () {
-        var el = $('#AvatarUploadContainer'),
-            img = el.find('img'),
-            elRemove = el.find('.remove');
-
 		window['onAvatarUploaded'] = function (e, el, data) {
 			var result = data.result;
 			if (result.success) {
-				img.show();
-				img.attr('src', result.avatarUrl);
-				elRemove.show();
+				$('#AvatarUploadContainer img').attr('src', result.avatarUrl).show();
 			}
 		};
 
-        elRemove.click(function (e) {
+		window['onAvatarRemoved'] = function (e, el) {
 			$.post('@Url.Action("RemoveAvatar", "Customer")');
-			img.attr('src', '@Html.Raw(Model.PictureFallbackUrl)');
-			$(this).hide();
-            e.preventDefault();
-        });
+			$('#AvatarUploadContainer img').attr('src', '@Html.Raw(Model.PictureFallbackUrl)');
+		}
     });
 </script>

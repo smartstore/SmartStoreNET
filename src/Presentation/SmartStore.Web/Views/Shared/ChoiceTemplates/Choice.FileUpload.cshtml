@@ -19,10 +19,11 @@
 		.Name(clientId)
 		.UploadUrl(Model.GetFileUploadUrl(Url))
 		.AcceptedFileTypes(allowedFileExtensions)
-		.ShowRemoveButton(false)
-		.ShowRemoveButtonAfterUpload(false)
+		.ShowRemoveButton(Model.UploadedFileGuid.HasValue())
+		.ShowRemoveButtonAfterUpload(true)
 		.UploadText(T("Common.FileUploader.Upload"))
 		.OnUploadCompletedHandlerName("onFileUploaded" + clientId)
+		.OnFileRemoveHandlerName("onFileRemoved" + clientId)
 	)
 
 	<div class="uploaded-file mt-2 hide"></div>
@@ -30,11 +31,6 @@
 
 <script type="text/javascript">
     $(function () {
-        var el = $('#@containerId'),
-            elHidden = el.find('.hidden'),
-            elRemove = el.find('.remove'),
-			elFile = el.find('.uploaded-file');
-
 		window['onFileUploaded@(clientId)'] = function (e, el, data) {
 			var result = data.result;
 
@@ -47,24 +43,21 @@
 			}
 		};
 
-        elRemove.click(function (e) {
-			elHidden.val('');
-			elFile.html("").hide();
-			$(this).hide();
-            e.preventDefault();
-        });
+		window['onFileRemoved@(clientId)'] = function (e, el) {
+			$('#@containerId .hidden').val('');
+			$('#@containerId .uploaded-file').empty().hide();
+		}
 
         setUploadedFile('@Model.UploadedFileGuid', '@Model.UploadedFileName');
 
         function setUploadedFile(downloadGuid, fileName) {
         	if (!_.isEmpty(downloadGuid) && downloadGuid !== '0') {
-        		elHidden.val(downloadGuid);
+        		$('#@containerId .hidden').val(downloadGuid);
 
         		var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + downloadGuid;
         		var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
 
-        		elFile.html(fileLink).show();
-				elRemove.show();
+				$('#@containerId .uploaded-file').html(fileLink).show();
         	}
         }
     });

@@ -96,6 +96,9 @@
   <LocaleResource Name="AddNewRecordTitle">
     <Value>Neue Versandbedingung hinzufügen</Value>
   </LocaleResource>
+  <LocaleResource Name="AddNewRecord.Success">
+	<Value>Die neue Versandbedingung wurde erfolgreich zugefügt.</Value>
+  </LocaleResource>
   <LocaleResource Name="TabTitleSettings">
     <Value>Optionen</Value>
   </LocaleResource>

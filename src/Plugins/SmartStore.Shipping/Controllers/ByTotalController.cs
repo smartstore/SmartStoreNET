@@ -9,7 +9,6 @@ using SmartStore.Shipping.Services;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
-using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Shipping.Controllers
 {
@@ -149,9 +148,12 @@ namespace SmartStore.Shipping.Controllers
                 BaseCharge = model.AddBaseCharge,
                 MaxCharge = model.AddMaxCharge
             };
+
             _shippingByTotalService.InsertShippingByTotalRecord(shippingByTotalRecord);
 
-            return Json(new { Result = true });
+			NotifySuccess(T("Plugins.Shipping.ByTotal.AddNewRecord.Success"));
+
+			return Json(new { Result = true });
         }
 
         [HttpPost]

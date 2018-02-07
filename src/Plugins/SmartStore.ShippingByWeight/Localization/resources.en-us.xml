@@ -95,6 +95,9 @@
   <LocaleResource Name="AddNewRecordTitle">
     <Value>Add new record</Value>
   </LocaleResource>
+  <LocaleResource Name="AddNewRecord.Success">
+	<Value>The new record was successfully added.</Value>
+  </LocaleResource>
   <LocaleResource Name="TabTitleSettings">
 	<Value>Options</Value>
   </LocaleResource>

@@ -150,6 +150,8 @@ namespace SmartStore.ShippingByWeight.Controllers
 
             _shippingByWeightService.InsertShippingByWeightRecord(sbw);
 
+			NotifySuccess(T("Plugins.Shipping.ByWeight.AddNewRecord.Success"));
+
 			return Json(new { Result = true });
 		}
 

@@ -16,7 +16,7 @@
 
 <div @Html.Attrs(Model.HtmlAttributes)>
 	<div class="col-auto">
-		<button class="btn btn-danger remove@(Model.ShowRemoveButton ? "" : " d-none")">
+		<button class="btn btn-danger remove@(Model.ShowRemoveButton ? "" : " hide")">
 			<span>@Model.RemoveText</span>
 		</button>
 
@@ -29,7 +29,7 @@
 			<input type="file" id="@(Model.Id)-file" name="@(Model.Id)-file" />
 		</span>
 
-		<button class="btn btn-outline-secondary cancel d-none">
+		<button class="btn btn-outline-secondary cancel hide">
 			<span>@Model.CancelText</span>
 		</button>
 	</div>

@@ -1548,7 +1548,6 @@ namespace SmartStore.Web.Controllers
 		{
 			var success = false;
 			string avatarUrl = null;
-			string randomAvatarUrl = null;
 
 			if (IsCurrentUserRegistered() && _customerSettings.AllowCustomersToUploadAvatars)
 			{
@@ -1574,12 +1573,11 @@ namespace SmartStore.Web.Controllers
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatar.Id);
 
 					avatarUrl = _pictureService.GetUrl(customerAvatar.Id, _mediaSettings.AvatarPictureSize, false);
-					randomAvatarUrl = string.Concat(avatarUrl, avatarUrl.Contains("?") ? "&rnd=" : "?rnd=", CommonHelper.GenerateRandomInteger());
 					success = avatarUrl.HasValue();
 				}
 			}
 
-			return Json(new { success, avatarUrl, randomAvatarUrl });
+			return Json(new { success, avatarUrl });
 		}
 
 		[HttpPost]

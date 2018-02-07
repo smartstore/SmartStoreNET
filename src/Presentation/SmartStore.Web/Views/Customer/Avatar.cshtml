@@ -21,7 +21,7 @@
 	}
 
 	<div class="mb-2">
-		<img src="@Model.RandomAvatarUrl" class="img-thumbnail @(Model.AvatarUrl.HasValue() ? "" : "d-none")" alt="Avatar" style="max-width: 120px;" />
+		<img src="@Model.AvatarUrl" class="img-thumbnail @(Model.AvatarUrl.HasValue() ? "" : "d-none")" alt="Avatar" style="max-width: 120px;" />
 	</div>
 
 	@(Html.SmartStore().FileUploader()
@@ -45,7 +45,7 @@
 			var result = data.result;
 			if (result.success) {
 				img.removeClass("d-none");
-				img.attr('src', result.randomAvatarUrl);
+				img.attr('src', result.avatarUrl);
 				elRemove.removeClass("d-none");
 			}
 		};

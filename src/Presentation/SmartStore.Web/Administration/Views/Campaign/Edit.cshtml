@@ -1,8 +1,9 @@
 ﻿@model CampaignModel
+
 @{
-    //page title
     ViewBag.Title = T("Admin.Promotions.Campaigns.EditCampaignDetails").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -10,10 +11,10 @@
             @T("Admin.Promotions.Campaigns.EditCampaignDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Promotions.Campaigns.BackToList") + ")", "List")
         </div>
         <div class="options">
-			<button type="button" id="btn-preview-template" class="btn btn-secondary" href="@Url.Action("Preview", new { id = Model.Id })">
+			<a id="btn-preview-template" class="btn btn-secondary" href="@Url.Action("Preview", new { id = Model.Id })">
 				<i class="fa fa-eye"></i>
 				<span>@T("Admin.Common.Preview")</span>
-			</button>
+			</a>
             <button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Common.Save")</span>

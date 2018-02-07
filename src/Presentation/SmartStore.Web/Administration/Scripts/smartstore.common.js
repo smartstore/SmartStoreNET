@@ -30,7 +30,6 @@
 			sizeClass += " modal-flex-sm";
 
 		if (modal.length === 0) {
-			// TODO: (mc) Update to BS4 modal html later
 			var html =
 				'<div id="modal-popup-shared" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'
 					+ '<div class="modal-dialog{0}" role="document">'.format(!!(sizeClass) ? " " + sizeClass : "")
@@ -46,11 +45,20 @@
 				+ '</div>';
 
 			modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
-				//modal.remove();
+				modal.remove();
+			});
+
+			// Create spinner
+			var spinner = $('<div class="spinner-container w-100 h-100 active" style="position:absolute; background:#fff"></div>').append(createCircularSpinner(64, true, 2));
+			modal.find('.modal-body').append(spinner);
+
+			modal.find('.modal-body > iframe').on('load', function (e) {
+				modal.find('.modal-body > .spinner-container').removeClass('active');
 			});
 		}
 		else {
 			var iframe = modal.find('.modal-body > iframe');
+			modal.find('.modal-body > .spinner-container').addClass('active');
 			iframe.attr('src', url);
 		}
 

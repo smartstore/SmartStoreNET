@@ -50,7 +50,7 @@ namespace SmartStore.Services.Messages
 
 		internal Language Language { get; set; }
 		internal Store Store { get; set; }
-		internal EmailAccount EmailAccount { get; set; }
+		public EmailAccount EmailAccount { get; internal set; }
 
 		public bool TestMode { get; set; }
 

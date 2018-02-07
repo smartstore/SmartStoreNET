@@ -547,7 +547,8 @@ a.t-button.t-state-disabled:hover,
 			box-shadow: $btn-active-box-shadow !important;
 		}
 
-		&.t-grid-add {
+		&.t-grid-add,
+		&.t-button-primary {
 			&:hover {
 				background-color: darken($primary, 7.5%);
 				color: #fff;

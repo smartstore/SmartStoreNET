@@ -1,24 +1,84 @@
-﻿@model CreateMessageResult
-@using SmartStore.Services.Messages;
+﻿@model MessageTemplatePreviewModel
+
+@using SmartStore.Admin.Models.Messages;
+@using System.Net.Mail;
+
 @{
-	Layout = "";
+	Layout = "_AdminBareLayout";
 }
 
-<div id="message-template-preview" class="modal modal-flex fade" tabindex="-1">
-	<div class="modal-dialog modal-flex modal-flex-sm" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<div class="modal-title">@Html.Partial("PreviewHeader", Model)</div>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
+@if (Model.Error.HasValue())
+{
+	<div class="alert alert-danger">
+		@Model.Error
+	</div>
+	return;
+}
+
+@{ 
+	var from = new MailAddress(Model.From);
+	var to = new MailAddress(Model.To);
+}
+
+<script>
+	function onTestMailSent() {
+		$('.testmail-message').removeClass('d-none');
+		$('.testmail-form').addClass('d-none');
+	}
+
+	$(function () {
+		$('.testmail-toggle').on('click', function (e) {
+			$('.testmail-message').addClass('d-none');
+			$('.testmail-form').removeClass('d-none');
+		});
+	});
+</script>
+
+<div class="d-flex flex-column h-100">
+	<!-- Header -->
+	<div class="d-flex border-bottom py-3 align-items-center" style="background: #777">
+		<div class="col">
+			<div class="text-white">
+				<div class="form-row flex-nowrap">
+					<div class="col font-weight-medium" style="max-width: 100px">Von:</div>
+					<div class="col text-truncate"><span title="@Model.From">@from.Address</span></div>
+				</div>
+				<div class="form-row flex-nowrap">
+					<div class="col font-weight-medium" style="max-width: 100px">An:</div>
+					<div class="col text-truncate"><span title="@Model.To">@to.Address</span></div>
+				</div>
+				<h6 class="mb-0 mt-2">@Model.Subject</h6>
+			</div>
+		</div>
+		<div class="col-auto">
+			<div class="dropdown">
+				<button type="button" class="btn btn-lg btn-gray btn-flat btn-flat-light dropdown-toggle" data-toggle="dropdown">
+					<span>Testmail senden</span>
 				</button>
+				<div class="dropdown-menu dropdown-menu-right" style="width: 500px">
+					@using (Ajax.BeginForm("SendTestMail", "MessageTemplate", null, new AjaxOptions { HttpMethod = "POST", OnComplete = "onTestMailSent();" }, new { @class = "px-4 py-3" }))
+					{
+						<div class="input-group testmail-form">
+							<input type="hidden" name="token" value="@Model.Token" />
+							<input type="email" class="form-control" name="to" placeholder="E-Mail" value="@Model.AccountEmail">
+							<div class="input-group-append">
+								<button type="submit" class="btn btn-secondary">
+									<i class="fa fa-send"></i>
+									<span>Senden</span>
+								</button>
+							</div>
+						</div>
+						<div class="form-control-plaintext text-success testmail-message d-none">
+							<i class="fa fa-check pr-2"></i>
+							<span>Testmail erfolgreich gesendet.</span>
+							<a href="#" class="testmail-toggle pl-1">Noch eine Mail senden</a>
+						</div>
+					}
+				</div>
 			</div>
-			<div class="modal-body p-0">
-				<iframe class="modal-flex-fill-area" frameborder="0" srcdoc="@Model.Email.Body"></iframe>
-			</div>
-			@*<div class="modal-footer">
-				<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Close")</button>
-			</div>*@
 		</div>
 	</div>
+
+	<!-- Content -->
+	<iframe class="flex-grow-1 border-0" src="@Model.BodyUrl"></iframe>
 </div>

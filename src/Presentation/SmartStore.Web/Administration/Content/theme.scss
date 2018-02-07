@@ -42,7 +42,7 @@ $pink:      #e91e63; // Pink 500
 $red:		#f44336; // Red 500
 $orange:	#fb8c00; // Orange 600
 $yellow:    #fdd835; // Yellow 600
-$green:     #259b24; // Green 500
+$green:		#388e3c; // Green 700
 $teal:      #009688; // Teal 500
 $cyan:      #00BCD4; // Cyan 500
 $bluegrey:  #78909c; // Bluegrey 500
@@ -212,13 +212,21 @@ $content-padding-y:			15px;
 // Button tweaks
 // -----------------------------------------------------
 
+.btn-secondary {
+	@include button-variant($secondary, $secondary, $secondary, rgba(#000, 0.15), darken($secondary, 10%), rgba(#000, 0.2));
+}
+
+.btn-light {
+	@include button-variant($light, $light, $light, rgba(#000, 0.15), darken($light, 10%), rgba(#000, 0.2));
+}
+
 @each $color, $value in $theme-colors {
-	.btn-#{$color},
-	.btn-outline-#{$color} {
+	*:not(.show) > .btn-#{$color},
+	*:not(.show) > .btn-outline-#{$color} {
 		&:not([disabled]):not(.disabled):focus,
 		&:not([disabled]):not(.disabled).focus {
 			@if $color == "secondary" or $color == "light" {
-				box-shadow: 0 0 0 0.125rem rgba($primary, .2);
+				box-shadow: 0 0 0 0.125rem rgba($primary, .15);
 			}
 			@else {
 				box-shadow: 0 0 0 0.125rem rgba($value, .4);
@@ -227,13 +235,7 @@ $content-padding-y:			15px;
 	}
 }
 
-.btn-secondary {
-	@include button-variant($secondary, $secondary, $secondary, rgba(#000, 0.15), darken($secondary, 10%), rgba(#000, 0.2));
-}
 
-.btn-light {
-	@include button-variant($light, $light, $light, rgba(#000, 0.15), darken($light, 10%), rgba(#000, 0.2));
-}
 
 .btn-secondary,
 .btn-light {
@@ -346,6 +348,10 @@ pre {
 // Layout
 // -----------------------------------------------------
 
+html {
+	height: 100%;
+}
+
 #content {
 	position: relative;
 	height: auto;
@@ -373,6 +379,17 @@ pre {
 	border-radius: 0;
 }
 
+.popup.bare {
+	height: 100%;
+	overflow-y: hidden;
+
+	#page,
+	#content,
+	.cph {
+		height: 100%;
+		padding: 0;
+	}
+}
 
 //
 // Common

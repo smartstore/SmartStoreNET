@@ -79,8 +79,6 @@ namespace SmartStore.Admin.Models.Messages
 
 		public IList<MessageTemplateLocalizedModel> Locales { get; set; }
         public IList<EmailAccountModel> AvailableEmailAccounts { get; set; }
-
-		public CreateMessageResult PreviewResult { get; set; }
 	}
 
     public class MessageTemplateLocalizedModel : ILocalizedModelLocal

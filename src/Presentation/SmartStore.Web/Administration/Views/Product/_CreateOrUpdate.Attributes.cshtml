@@ -120,14 +120,12 @@
             </div>
 
             <div class="clearfix" style="margin-bottom: 15px">
-
-
 				<div class="pull-right">
 
 				</div>
 
                 <input type="submit" id="btnRefreshCombinations" name="btnRefreshCombinations" class="d-none" />
-                <script type="text/javascript">
+                <script>
                     $(document).ready(function () {
                         $('.add-new-combination').on('click', function (e) {
                         	openPopup('@(Url.Action("AttributeCombinationCreatePopup", "Product", new { productId = Model.Id }))&btnId=btnRefreshCombinations&formId=product-form');

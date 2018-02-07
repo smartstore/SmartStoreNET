@@ -164,9 +164,12 @@
 
         		content.css("min-height", Math.max(initialHeight, winHeight - offset - top) + "px");
 
-        	};
-        	fitContentToWindow(true);
-        	$(window).on("resize", fitContentToWindow);
+			};
+
+			if (!$('body').is('.popup.bare')) {
+				fitContentToWindow(true);
+				$(window).on("resize", fitContentToWindow);
+			}
 
         });
 

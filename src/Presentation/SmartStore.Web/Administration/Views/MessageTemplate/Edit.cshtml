@@ -15,8 +15,14 @@
 			
 			@* CAUTION: saving a template to XML overwrites the original raw content *@
 			@*<button type="submit" name="save-in-file" value="save-in-file" class="btn btn-danger"><i class="fa fa-floppy-o"></i>&nbsp;Save as XML</button>*@
-			<a id="btn-preview-template" class="btn btn-secondary" href="javascript:void(0)"><i class="fa fa-eye"></i><span>@T("Admin.Common.Preview")</span></a>
-            <button type="submit" name="save" value="save" class="btn btn-warning"><i class="fa fa-check"></i><span>@T("Admin.Common.Save")</span></button>
+			<a id="btn-preview-template" class="btn btn-secondary" href="@Url.Action("Preview", new { id = Model.Id })">
+				<i class="fa fa-eye"></i>
+				<span>@T("Admin.Common.Preview")</span>
+			</a>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
             <button type="submit" name="save" value="save-continue" class="btn btn-secondary">@T("Admin.Common.SaveContinue")</button>
             <button type="submit" name="message-template-copy" id="message-template-copy" class="btn btn-secondary" value="@T("Admin.ContentManagement.MessageTemplates.Copy")" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
                 <i class="fa fa-files-o"></i>
@@ -36,18 +42,12 @@
 
 @Html.DeleteConfirmation("message-template-delete")
 
-@using (Html.BeginZoneContent("end", key: "preview-message-template"))
-{
-	//Html.RenderAction("Preview", Model.Id);
-}
-
 <script>
 	$(function () {
-		$("#message-template-preview").modal({ show: false });
-
 		$('#btn-preview-template').on('click', function (e) {
 			e.preventDefault();
-			openModalWindow('message-template-preview');
+			//openModalWindow('message-template-preview');
+			openPopup($(this).attr('href'), false /* large */, true /* flex */);
 			return false;
 		});
 	});

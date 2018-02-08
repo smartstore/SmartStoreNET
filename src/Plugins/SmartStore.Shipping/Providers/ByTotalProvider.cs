@@ -198,7 +198,7 @@ namespace SmartStore.Shipping
 			decimal sqThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
             decimal sqSurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
 
-            var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest);
+            var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest, storeId);
             foreach (var shippingMethod in shippingMethods)
             {
                 decimal? rate = GetRate(subTotal, shippingMethod.Id, storeId, countryId, stateProvinceId, zip);

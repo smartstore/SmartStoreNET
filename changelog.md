@@ -51,6 +51,7 @@
 * #1285 Copy product: Add option to add more than one copy
 * (Perf) Many improvements in hooking framework
 * #1294 Swiss PostFinance: External payment page too small on mobile devices. Added setting for mobile device template URL, pre-configured with PostFinance template.
+* #1143 Make shipping methods suitable for multi-stores
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing

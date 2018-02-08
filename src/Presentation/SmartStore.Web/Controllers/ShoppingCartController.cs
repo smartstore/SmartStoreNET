@@ -1877,7 +1877,7 @@ namespace SmartStore.Web.Controllers
                 {
                     if (getShippingOptionResponse.ShippingOptions.Count > 0)
                     {
-						var shippingMethods = _shippingService.GetAllShippingMethods();
+						var shippingMethods = _shippingService.GetAllShippingMethods(null, store.Id);
 
                         foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
                         {

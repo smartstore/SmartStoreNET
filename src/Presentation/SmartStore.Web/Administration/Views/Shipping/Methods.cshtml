@@ -1,6 +1,6 @@
-﻿@model Telerik.Web.Mvc.GridModel<ShippingMethodModel>
-@using Telerik.Web.Mvc.UI;
+﻿@using Telerik.Web.Mvc.UI;
 @using System.Linq;
+@model Telerik.Web.Mvc.GridModel<ShippingMethodModel>
 @{    
     ViewBag.Title = T("Admin.Configuration.Shipping.Methods").Text;
 }
@@ -31,13 +31,18 @@
 					.Template(x => Html.ActionLink(x.Name, "EditMethod", new { id = x.Id }))
 					.ClientTemplate("<a href=\"EditMethod/<#= Id #>\"><#= Name #></a>");
 				columns.Bound(x => x.Description);
+				columns.Bound(x => x.LimitedToStores)
+					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+					.Width(180)
+					.Centered();
 				columns.Bound(x => x.IgnoreCharges)
 					.Template(item => @Html.SymbolForBool(item.IgnoreCharges))
 					.ClientTemplate(@Html.SymbolForBool("IgnoreCharges"))
 					.Width(250)
 					.Centered();
 				columns.Bound(x => x.DisplayOrder)
-					.Width(160)
+					.Width(180)
 					.Centered();
 			})
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("Methods", "Shipping"))

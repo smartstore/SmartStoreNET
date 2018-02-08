@@ -205,7 +205,7 @@ namespace SmartStore.Services.Orders
 			if (shippingOption != null)
 			{
 				// use last shipping option (get from cache)
-				var shippingMethods = _shippingService.GetAllShippingMethods();
+				var shippingMethods = _shippingService.GetAllShippingMethods(null, storeId);
 				shippingTotal = AdjustShippingRate(shippingOption.Rate, cart, shippingOption.Name, shippingMethods, out appliedDiscount);
 			}
 			else

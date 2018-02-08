@@ -31,7 +31,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
 {
-    [TestFixture]
+	[TestFixture]
     public class OrderTotalCalculationServiceTests : ServiceTest
     {
         IWorkContext _workContext;
@@ -57,7 +57,8 @@ namespace SmartStore.Services.Tests.Orders
         IAddressService _addressService;
         ShippingSettings _shippingSettings;
         IRepository<ShippingMethod> _shippingMethodRepository;
-        ShoppingCartSettings _shoppingCartSettings;
+		IRepository<StoreMapping> _storeMappingRepository;
+		ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;
         IEventPublisher _eventPublisher;
 		ISettingService _settingService;
@@ -110,9 +111,11 @@ namespace SmartStore.Services.Tests.Orders
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames = new List<string>();
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
+			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 
-            _shippingService = new ShippingService(
+			_shippingService = new ShippingService(
                 _shippingMethodRepository,
+				_storeMappingRepository,
                 _productAttributeParser,
 				_productService,
                 _checkoutAttributeParser,

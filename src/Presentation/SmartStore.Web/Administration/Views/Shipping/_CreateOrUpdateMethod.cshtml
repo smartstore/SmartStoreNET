@@ -8,6 +8,7 @@
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
 	x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "shipping-method-edit", this.Html, this.Model));
 })
@@ -101,6 +102,11 @@
 	<div>
 		<div id="FilterOutShippingMethodContainer"></div>
 	</div>
+}
+
+@helper TabStores()
+{
+	@Html.Partial("StoreSelector", Model)
 }
 
 <script type="text/javascript">

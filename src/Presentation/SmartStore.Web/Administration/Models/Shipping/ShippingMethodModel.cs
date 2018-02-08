@@ -9,8 +9,8 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Shipping
 {
 	[Validator(typeof(ShippingMethodValidator))]
-    public class ShippingMethodModel : TabbableModel, ILocalizedModel<ShippingMethodLocalizedModel>
-    {
+    public class ShippingMethodModel : TabbableModel, ILocalizedModel<ShippingMethodLocalizedModel>, IStoreSelector
+	{
         public ShippingMethodModel()
         {
             Locales = new List<ShippingMethodLocalizedModel>();
@@ -34,9 +34,15 @@ namespace SmartStore.Admin.Models.Shipping
 		public bool IgnoreCharges { get; set; }
 
         public IList<ShippingMethodLocalizedModel> Locales { get; set; }
-    }
 
-    public class ShippingMethodLocalizedModel : ILocalizedModelLocal
+		// Store mapping
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		public bool LimitedToStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
+	}
+
+	public class ShippingMethodLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 

@@ -167,7 +167,7 @@ namespace SmartStore.ShippingByWeight
             }
 
 			var weight = _shippingService.GetShoppingCartTotalWeight(request.Items, _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts);
-            var shippingMethods = _shippingService.GetAllShippingMethods(request);
+            var shippingMethods = _shippingService.GetAllShippingMethods(request, storeId);
             currentSubTotal = _services.WorkContext.TaxDisplayType == TaxDisplayType.ExcludingTax ? subTotalExclTax : subTotalInclTax;
 
             foreach (var shippingMethod in shippingMethods)

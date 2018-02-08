@@ -64,7 +64,8 @@ namespace SmartStore.Services.Tests.Orders
         ShippingSettings _shippingSettings;
         ILogger _logger;
         IRepository<ShippingMethod> _shippingMethodRepository;
-        IOrderService _orderService;
+		IRepository<StoreMapping> _storeMappingRepository;
+		IOrderService _orderService;
         IWebHelper _webHelper;
         ILocalizationService _localizationService;
         ILanguageService _languageService;
@@ -130,10 +131,12 @@ namespace SmartStore.Services.Tests.Orders
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames = new List<string>();
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
+			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
             _logger = new NullLogger();
 
             _shippingService = new ShippingService(
                 _shippingMethodRepository,
+				_storeMappingRepository,
                 _productAttributeParser,
 				_productService,
                 _checkoutAttributeParser,

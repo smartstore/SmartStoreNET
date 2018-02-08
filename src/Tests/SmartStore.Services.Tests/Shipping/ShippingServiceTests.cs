@@ -6,9 +6,9 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -22,7 +22,8 @@ namespace SmartStore.Services.Tests.Shipping
     public class ShippingServiceTests : ServiceTest
     {
         IRepository<ShippingMethod> _shippingMethodRepository;
-        IProductAttributeParser _productAttributeParser;
+		IRepository<StoreMapping> _storeMappingRepository;
+		IProductAttributeParser _productAttributeParser;
 		IProductService _productService;
         ICheckoutAttributeParser _checkoutAttributeParser;
 		ICommonServices _services;
@@ -42,7 +43,8 @@ namespace SmartStore.Services.Tests.Shipping
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
 
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
-            _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
+			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
+			_productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
 			_productService = MockRepository.GenerateMock<IProductService>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
@@ -56,8 +58,9 @@ namespace SmartStore.Services.Tests.Shipping
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _shippingService = new ShippingService(
-                _shippingMethodRepository, 
-                _productAttributeParser,
+                _shippingMethodRepository,
+				_storeMappingRepository,
+				_productAttributeParser,
 				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,

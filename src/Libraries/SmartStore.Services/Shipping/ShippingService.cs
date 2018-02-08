@@ -1,9 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
@@ -13,9 +17,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Orders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SmartStore.Services.Shipping
 {
@@ -25,7 +26,8 @@ namespace SmartStore.Services.Shipping
 		private static IList<Type> _shippingMethodFilterTypes = null;
 
 		private readonly IRepository<ShippingMethod> _shippingMethodRepository;
-        private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
+		private readonly IProductAttributeParser _productAttributeParser;
 		private readonly IProductService _productService;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
 		private readonly IGenericAttributeService _genericAttributeService;
@@ -39,7 +41,8 @@ namespace SmartStore.Services.Shipping
 
         public ShippingService(
             IRepository<ShippingMethod> shippingMethodRepository,
-            IProductAttributeParser productAttributeParser,
+			IRepository<StoreMapping> storeMappingRepository,
+			IProductAttributeParser productAttributeParser,
 			IProductService productService,
             ICheckoutAttributeParser checkoutAttributeParser,
 			IGenericAttributeService genericAttributeService,
@@ -52,6 +55,7 @@ namespace SmartStore.Services.Shipping
 			ICommonServices services)
         {
             _shippingMethodRepository = shippingMethodRepository;
+			_storeMappingRepository = storeMappingRepository;
             _productAttributeParser = productAttributeParser;
 			_productService = productService;
             _checkoutAttributeParser = checkoutAttributeParser;
@@ -66,10 +70,12 @@ namespace SmartStore.Services.Shipping
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
+			QuerySettings = DbQuerySettings.Default;
 		}
 
 		public Localizer T { get; set; }
 		public ILogger Logger { get; set; }
+		public DbQuerySettings QuerySettings { get; set; }
 
 		#region Shipping rate computation methods
 
@@ -160,24 +166,42 @@ namespace SmartStore.Services.Shipping
             return _shippingMethodRepository.GetById(shippingMethodId);
         }
 
-		public virtual IList<ShippingMethod> GetAllShippingMethods(GetShippingOptionRequest request = null)
+		public virtual IList<ShippingMethod> GetAllShippingMethods(GetShippingOptionRequest request = null, int storeId = 0)
         {
 			var query =
 				from sm in _shippingMethodRepository.Table
-				orderby sm.DisplayOrder
 				select sm;
 
-			var allMethods = query.ToList();
+			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
+			{
+				query = 
+					from x in query
+					join sm in _storeMappingRepository.Table
+					on new { c1 = x.Id, c2 = "ShippingMethod" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into x_sm
+					from sm in x_sm.DefaultIfEmpty()
+					where !x.LimitedToStores || storeId == sm.StoreId
+					select x;
+
+				query = 
+					from x in query
+					group x by x.Id into grp
+					orderby grp.Key
+					select grp.FirstOrDefault();
+			}
+
+			var allMethods = query.OrderBy(x => x.DisplayOrder).ToList();
 
 			if (request == null)
+			{
 				return allMethods;
+			}
 
 			IList<IShippingMethodFilter> allFilters = null;
 			var filterRequest = new ShippingFilterRequest {	Option = request };
 
 			var activeShippingMethods = allMethods.Where(s =>
 			{
-				// shipping method filtering
+				// Shipping method filtering.
 				if (allFilters == null)
 					allFilters = GetAllShippingMethodFilters();
 

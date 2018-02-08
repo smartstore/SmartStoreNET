@@ -62,8 +62,8 @@
 	<div class="control-group mr-2">
 		<div class="form-inline">
 			<div class="input-group">
-				@Html.TextBoxFor(model => model.ProductName, new { @class = "form-control entpicker-searchterm", placeholder = Html.NameFor(m => m.ProductName) })
-				<span class="input-group-btn">
+				@Html.TextBoxFor(model => model.ProductName, new { @class = "form-control entpicker-searchterm", placeholder = Html.DisplayNameFor(m => m.ProductName) })
+				<span class="input-group-append">
 					<button type="button" class="btn btn-warning" name="SearchEntities" data-loading-text="@(T("Common.Loading"))&hellip;" title="@T("Admin.Common.Search")">
 						<i class="fa fa-search"></i>
 					</button>

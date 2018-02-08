@@ -428,7 +428,7 @@
 					@Html.SmartLabelFor(model => model.AddDiscountRequirement)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(model => model.AddDiscountRequirement, Model.AvailableDiscountRequirementRules, new { style = "width:480px", data_select_min_results_for_search = 999 })
+					@Html.DropDownListFor(model => model.AddDiscountRequirement, Model.AvailableDiscountRequirementRules, new { data_select_min_results_for_search = 999 })
 					@Html.ValidationMessageFor(model => model.AddDiscountRequirement)
 				</td>
 			</tr>

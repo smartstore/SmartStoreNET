@@ -162,7 +162,11 @@
 				theme: 'bootstrap',
 				//adaptDropdownCssClass: true,
 				closeOnSelect: true
-            };
+			};
+
+			if ($.isPlainObject(options)) {
+				opts = $.extend({}, opts, options);
+			}
 
             if (url) {
                 // url specified: load data remotely...

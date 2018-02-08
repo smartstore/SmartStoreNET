@@ -52,7 +52,7 @@
 					@foreach (var item in Model.AvailableFlags)
 					{
 						var select = item.Value.IsCaseInsensitiveEqual(Model.FlagImageFileName);
-						<option value="@item.Value" @(select ? "selected='selected'" : "")>@item.Text</option>
+						<option data-imageurl='@Url.Content("~/Content/Images/flags/")@item.Value' value="@item.Value" @(select ? "selected='selected'" : "")>@item.Text</option>
 					}
 				</select>
 				@Html.ValidationMessageFor(model => model.FlagImageFileName)

@@ -99,13 +99,13 @@
         @if (Model.AvailableDownloadLanguages.Any())
         {
             <table class="adminContent">
-                <tr>
+                <tr class="wide">
                     <td class="adminTitle">
                         @Html.SmartLabelFor(model => model.AvailableLanguageSetId)
                     </td>
                     <td class="adminData">
                         <select id="@Html.FieldIdFor(x => x.AvailableLanguageSetId)" name="@Html.FieldNameFor(x => x.AvailableLanguageSetId)" 
-                                class="large-select2" data-placeholder="@T("Common.Unspecified")">
+                                class="form-control form-control-lg no-padding" data-placeholder="@T("Common.Unspecified")">
                             <option></option>
                             @foreach (var item in Model.AvailableDownloadLanguages.OrderBy(x => x.DisplayOrder))
                             {
@@ -159,8 +159,8 @@
         $('#@Html.FieldIdFor(x => x.AvailableLanguageSetId)').selectWrapper({
             allowClear: true,
             minimumResultsForSearch: 16,
-            formatResult: availableLanguagesSelectItemFormatting,
-            formatSelection: availableLanguagesSelectItemFormatting
+            templateResult: availableLanguagesSelectItemFormatting,
+            templateSelection: availableLanguagesSelectItemFormatting
         });
 
         function availableLanguagesSelectItemFormatting(item) {
@@ -171,19 +171,21 @@
                     option = $('#@Html.FieldIdFor(x => x.AvailableLanguageSetId)').find('option[value="' + item.id + '"]');
                 }
 
-                var html = '<div class="large-select2-item">',
+				var html = '<div class="form-row flex-nowrap align-items-center">',
                     imageName = option.attr('data-imagename');
 
-                html += '<div>';
                 if (imageName.length > 0) {
-                    html += '<img src="@Url.Content("~/Content/Images/flags/")' + imageName + '" style="float: left; margin-top: 3px;" />';
-                }
-                html += '<span>' + item.text + '</span>';
-                html += '<span class="muted mt-1">' + option.attr('data-translated') + '</span>';
+					//html += '<img src="@Url.Content("~/Content/Images/flags/")' + imageName + '" style="float: left; margin-top: 3px;" />';
+					html += '<div class="col" style="max-width:48px; width:48px"><div class="img-center-container"><img class="img-fluid" src="@Url.Content("~/Content/Images/flags/")' + imageName + '" /></div></div>';
+				}
+
+				html += '<div class="col">';
+				html += '<div class="fs-xs font-weight-medium">' + item.text + '</div>';
+				html += '<div class="text-muted fs-xs">' + option.attr('data-translated') + '</div>';
                 html += '</div>';
                 html += '</div>';
 
-                return html;
+                return $(html);
             }
             catch (e) { }
 

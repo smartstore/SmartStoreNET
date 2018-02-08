@@ -29,7 +29,7 @@
 </div>
 
 <div id="export-profile-dialog" class="modal fade" tabindex="-1" data-profile="@T("Common.Profile")">
-	<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title"></h5>
@@ -84,8 +84,8 @@
 
 					$('select[name="ProviderSystemName"]').selectWrapper({
 						minimumResultsForSearch: 16,
-						formatResult: providerSelectItemFormatting,
-						formatSelection: providerSelectItemFormatting
+						templateResult: providerSelectItemFormatting,
+						templateSelection: providerSelectItemFormatting
 					});
 
 					toggleProviderDescription();
@@ -93,8 +93,8 @@
 					$('select[name="CloneProfileId"]').selectWrapper({
 						allowClear: true,
 						minimumResultsForSearch: 16,
-						formatResult: profileSelectItemFormatting,
-						formatSelection: profileSelectItemFormatting
+						templateResult: profileSelectItemFormatting,
+						templateSelection: profileSelectItemFormatting
 					});
 				},
 				callbackComplete: function () {
@@ -163,19 +163,19 @@
 					option = $('select[name="ProviderSystemName"]').find('option[value="' + item.id + '"]');
 				}
 
-				var html = '<div class="large-select2-item mr-2">',
+				var html = '<div class="form-row flex-nowrap align-items-center">',
 					imageUrl = option.data('imageurl');
 
 				if (imageUrl)
-					html += '<img src="' + imageUrl + '" />';
+					html += '<div class="col" style="max-width:48px; width:48px"><div class="img-center-container"><img class="img-fluid" src="' + imageUrl + '" /></div></div>';
 
-				html += '<div>';
-				html += '<span>' + item.text + '</span>';
-				html += '<span class="muted">' + option.attr('value') + '</span>';
+				html += '<div class="col">';
+				html += '<div class="fs-xs font-weight-medium" style="line-height:1.2">' + item.text + '</div>';
+				html += '<div class="text-muted fs-xs">' + option.attr('value') + '</div>';
 				html += '</div>';
 				html += '</div>';
 
-				return html;
+				return $(html);
 			}
 			catch (e) { }
 
@@ -191,19 +191,22 @@
 					option = $('select[name="CloneProfileId"]').find('option[value="' + item.id + '"]');
 				}
 
-				var html = '<div class="large-select2-item">',
+				var html = '<div class="form-row flex-nowrap align-items-center h-100">',
 					imageUrl = option.data('imageurl');
 
 				if (imageUrl)
-					html += '<img src="' + imageUrl + '" />';
+					html += '<div class="col" style="max-width:48px; width:48px"><div class="img-center-container"><img class="img-fluid" src="' + imageUrl + '" /></div></div>';
 
-				html += '<div>';
-				html += '<span>' + item.text + '</span>';
-				html += '<span class="muted">' + option.attr('data-systemname') + '</span>';
+				html += '<div class="col">';
+				html += '<div class="fs-xs font-weight-medium" style="line-height:1.2">' + item.text + '</div>';
+				if (option.attr('data-systemname')) {
+					html += '<div class="text-muted fs-xs">' + option.attr('data-systemname') + '</div>';
+				}
+				
 				html += '</div>';
 				html += '</div>';
 
-				return html;
+				return $(html);
 			}
 			catch (e) { }
 

@@ -196,7 +196,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 	}
 	/**
    * Adjust Select2's choices hover and selected styles to match
-   * Bootstrap 3's default dropdown styles.
+   * Bootstrap 4's default dropdown styles.
    *
    * @see http://getbootstrap.com/components/#dropdowns
    */
@@ -379,7 +379,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
    * Limit the dropdown height.
    */
 	.select2-results > .select2-results__options {
-		max-height: 250px;
+		max-height: 350px;
 		overflow-y: auto;
 	}
 	/*------------------------------------*\
@@ -565,11 +565,21 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 		font-size: $s2bs-font-size-large;
 		height: $s2bs-input-height-large;
 		line-height: $s2bs-line-height-large;
-		padding: $s2bs-padding-large-vertical $s2bs-padding-large-horizontal + $s2bs-caret-width-large*3 $s2bs-padding-large-vertical $s2bs-padding-large-horizontal;
+		//padding: $s2bs-padding-large-vertical $s2bs-padding-large-horizontal + $s2bs-caret-width-large*3 $s2bs-padding-large-vertical $s2bs-padding-large-horizontal;
+		padding-top: $s2bs-padding-large-vertical;
+		padding-right: calc(#{$s2bs-input-height-large} + #{$s2bs-caret-width-large*2});
+		padding-bottom: $s2bs-padding-large-vertical;
+		padding-left: $s2bs-padding-large-horizontal;
 		/* 1 */
 		.select2-selection__arrow {
 			width: $input-height-lg;
 		}
+	}
+
+	.form-control.no-padding + & .select2-selection--single {
+		padding-left: 0.5rem;
+		padding-top: 0.25rem;
+		padding-bottom: 0.25rem;
 	}
 
 	.select2-selection--multiple.input-lg,
@@ -636,7 +646,6 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 		&[aria-selected=true] .select2-option:before {
 			visibility: visible;
 		}
-
 		/*&:before {
 			@include fontawesome("\f00c");
 			color: $success;
@@ -842,9 +851,10 @@ select.is-invalid + .select2:not(.select2-container--open) {
   display: inline-block;
 }
 
-.select2 .choice-item-img {
+.select2 .choice-item-img,
+.select2-results .choice-item-img {
 	max-width: 26px;
 	max-height: 26px;
 	margin-top: -4px;
-	margin-right: 5px;
+	margin-right: 0.5rem;
 }

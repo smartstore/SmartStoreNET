@@ -38,7 +38,7 @@
   </p>
 {% endif %}
 
-<p class="m-t-4 m-b-4">
+<p class="mt-4 mb-4">
   <a href="{{ Product.Url }}" class="btn btn-primary">Zum Produkt</a>
 </p>
 

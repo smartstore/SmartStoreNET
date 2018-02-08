@@ -14,14 +14,14 @@
   in the forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> a new topic was created by <strong>{{ ForumTopic.Author }}</strong>:
 </p>
 
-<p class="m-t-4 m-b-4">
+<p class="mt-4 mb-4">
   <a href="{{ ForumTopic.Url }}" class="btn btn-primary">View topic</a>
 </p>
 
 <table class="w-100 brd bg-light">
 	<tr>
   	<td class="p-3">
-      <h3 class="m-b-3">
+      <h3 class="mb-3">
         {{ ForumTopic.Subject }}
       </h3>
       <p class="message">

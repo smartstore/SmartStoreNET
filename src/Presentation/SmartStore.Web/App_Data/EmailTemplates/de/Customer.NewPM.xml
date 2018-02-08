@@ -13,14 +13,14 @@
   Sie haben eine neue private Nachricht von <b>{{ PrivateMessage.FromName }}</b> erhalten.
 </p>
 
-<p class="m-t-4 m-b-4">
+<p class="mt-4 mb-4">
   <a href="{{ PrivateMessage.Url }}" class="btn btn-primary">Zur Nachricht</a>
 </p>
 
 <table class="w-100 brd bg-light">
 	<tr>
   	<td class="p-3">
-      <h3 class="m-b-3">
+      <h3 class="mb-3">
         {{ PrivateMessage.Subject }}
       </h3>
       <p class="message">

@@ -14,7 +14,7 @@
   <b>{{ Customer.FullName }}</b> hat eine Retouren-Anfrage geschickt.
 </p>
 
-<p class="m-t-4 m-b-4 text-center">
+<p class="mt-4 mb-4 text-center">
   <a class="btn btn-primary" href="{{ ReturnRequest.Url }}">Anfrage bearbeiten</a>
 </p>
 

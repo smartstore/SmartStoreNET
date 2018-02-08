@@ -14,7 +14,7 @@
   um sich von unserem Newsletter abzumelden, klicken Sie bitte auf den folgenden Link:
 </p>
 
-<p class="text-center m-t-4 m-b-4">
+<p class="text-center mt-4 mb-4">
   <a class="btn btn-danger" href="{{ NewsLetterSubscription.DeactivationUrl }}">Abmeldung bestätigen</a>
 </p>
 

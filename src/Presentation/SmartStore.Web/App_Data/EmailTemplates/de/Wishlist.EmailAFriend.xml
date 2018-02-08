@@ -12,12 +12,12 @@
   <b>{{ Customer.FullName }}</b> hat seine Wunschliste mit dir geteilt. Wirf doch mal einen Blick hinein:
 </p>
 
-<p class="text-center m-t-4 m-b-4">
+<p class="text-center mt-4 mb-4">
 	<a class="btn btn-primary" href="{{ Customer.WishlistUrl }}">Zur Wunschliste</a>
 </p>
 
 {% if Wishlist.PersonalMessage %}
-<table class="w-100 brd bg-light m-t-4">
+<table class="w-100 brd bg-light mt-4">
   <tbody>
     <tr>
     	<td class="p-3">

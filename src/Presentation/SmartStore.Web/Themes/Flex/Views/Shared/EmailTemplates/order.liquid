@@ -23,7 +23,7 @@
 					{% endif %}				
 				</td>
 				<td style="border-top: 1px solid #eceeef; padding-right: 0; line-height: 1.3em" width="70%">
-					<div class="m-b-2">
+					<div class="mb-2">
 						<a class="order-item-link text-sm" href="{{ item.Product.Url }}">
 							{{ product.Name }}
 						</a>
@@ -42,7 +42,7 @@
 						</div>
 					{% endif %}
 					{% if item.AttributeDescription %}
-						<div class="text-xs text-muted m-t-2" style="line-height: 1.3">
+						<div class="text-xs text-muted mt-2" style="line-height: 1.3">
 							{{ item.AttributeDescription }}
 						</div>
 					{% endif %}		
@@ -67,7 +67,7 @@
 <!-- Order Summary -->
 {% zone 'order_summary_before' %}
 {% assign totals = Order.Totals %}
-<table class="w-100 brd bg-light order-summary m-b-4" cellpadding="10" style="border-top: 0">
+<table class="w-100 brd bg-light order-summary mb-4" cellpadding="10" style="border-top: 0">
 	<tr>
 		<!-- Checkout Attributes -->
 		<td class="text-sm" width="50%">

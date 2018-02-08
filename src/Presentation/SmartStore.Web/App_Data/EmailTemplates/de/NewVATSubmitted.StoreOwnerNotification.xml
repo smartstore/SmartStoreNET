@@ -15,7 +15,7 @@
   <b>{{ Customer.FullName }}</b> (<a mailto:{{ Customer.Email }}>{{ Customer.Email }}</a>) hat eine neue Umsatzsteuer-ID übermittelt.
 </p>
 
-<p class="m-t-4 m-b-4 text-center">
+<p class="mt-4 mb-4 text-center">
   <a class="btn btn-primary" href="{{ Customer.EditUrl }}">Zum Kundenprofil</a>
 </p>
 

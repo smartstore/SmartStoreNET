@@ -21,7 +21,7 @@
         {{ OrderNote.Text }}
       </p>
       {% if Order.Url %}
-        <p class="text-center m-t-4">
+        <p class="text-center mt-4">
           <a href="{{ Order.Url }}" class="btn btn-primary">Order details</a>
         </p>
       {% endif %}

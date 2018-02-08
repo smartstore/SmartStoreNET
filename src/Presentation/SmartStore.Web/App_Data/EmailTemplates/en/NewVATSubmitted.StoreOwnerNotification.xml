@@ -15,7 +15,7 @@
   <b>{{ Customer.FullName }}</b> (<a mailto:{{ Customer.Email }}>{{ Customer.Email }}</a>) has submitted a new VAT number.
 </p>
 
-<p class="m-t-4 m-b-4 text-center">
+<p class="mt-4 mb-4 text-center">
   <a class="btn btn-primary" href="{{ Customer.EditUrl }}">View customer profile</a>
 </p>
 

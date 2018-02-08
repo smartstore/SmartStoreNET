@@ -22,7 +22,7 @@
   <a href="mailto:{{ Customer.Email }}">{{ Customer.Email }}</span>
 </p>
 
-<p class="m-t-4 m-b-4 text-center">
+<p class="mt-4 mb-4 text-center">
 	<a class="btn btn-primary" href="{{ Customer.EditUrl }}">Zum Profil</a>  
 </p>
 {% endblock %}]]></Body>

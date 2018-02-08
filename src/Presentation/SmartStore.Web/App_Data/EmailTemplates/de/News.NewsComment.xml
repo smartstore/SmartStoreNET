@@ -18,7 +18,7 @@
 <table class="w-100 brd bg-light">
 	<tr>
   	<td class="p-3">
-      <h3 class="m-b-3">
+      <h3 class="mb-3">
         {{ NewsComment.Title }}
       </h3>
       <p class="message">

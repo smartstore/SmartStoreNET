@@ -13,7 +13,7 @@
 <p>
   the blog post <a href="{{ BlogComment.PostUrl }}">{{ BlogComment.PostTitle }}</a> was commented by <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a>:
 </p>
-<table class="w-100 brd bg-light m-t-4">
+<table class="w-100 brd bg-light mt-4">
   <tbody>
     <tr>
     	<td class="p-3"><i>"{{ BlogComment.Text | Truncate: 400 }}"</i></td>

@@ -1,9 +1,9 @@
-<p class="m-b-2 text-sm">
+<p class="mb-2 text-sm">
 {{ address | FormatAddress | NewlineToBr }}
 </p>
 
 {% if address.Email or address.Phone or address.Fax %}
-<div class="m-b-2 text-sm">
+<div class="mb-2 text-sm">
 	{% if address.Email  %}
 		<div>{{ address.Email }}</div>
 	{% endif %}

@@ -13,7 +13,7 @@
   please activate your account by clicking on the following link:
 </p>
 
-<p class="text-center m-t-4 m-b-4">
+<p class="text-center mt-4 mb-4">
   <a class="btn btn-primary" href="{{ Customer.AccountActivationURL }}">Activate account</a>
 </p>
 

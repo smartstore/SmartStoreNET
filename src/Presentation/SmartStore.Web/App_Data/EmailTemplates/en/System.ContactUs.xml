@@ -36,7 +36,7 @@
 </table>
 
 {% if Customer.IsRegistered %}
-  <p class="m-t-4 m-b-4 text-center">
+  <p class="mt-4 mb-4 text-center">
     <a class="btn btn-primary" href="{{ Customer.Url }}">View customer profile</a>
   </p>
 {% endif %}

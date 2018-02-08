@@ -417,5 +417,16 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("Edit", new { id = model.Id });
 			}
 		}
+
+		public ActionResult ImportAllTemplates()
+		{
+			// Hidden action for admins
+			var converter = new MessageTemplateConverter(Services.DbContext);
+			converter.ImportAll(Services.WorkContext.WorkingLanguage);
+
+			NotifySuccess("All file based message templates imported successfully.");
+
+			return RedirectToAction("List");
+		}
     }
 }

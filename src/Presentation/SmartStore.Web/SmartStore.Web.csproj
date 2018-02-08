@@ -1291,6 +1291,7 @@
     </Content>
     <Content Include="Scripts\underscore.min.map" />
     <Content Include="Themes\Flex\Content\shared\_utils.scss" />
+    <Content Include="Themes\Flex\Content\skinning\_fileupload.scss" />
     <None Include="Themes\Flex\Content\vendors\photoswipe\LICENSE" />
     <None Include="Themes\Flex\Content\vendors\drift\LICENSE" />
     <Content Include="Themes\Flex\Content\vendors\photoswipe\photoswipe-ui-default.js" />

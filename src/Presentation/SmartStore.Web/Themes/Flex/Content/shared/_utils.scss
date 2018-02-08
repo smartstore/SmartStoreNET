@@ -219,6 +219,18 @@ table th {
 
 
 //
+// Some shims
+// ------------------------------------------------------
+
+.hide {
+	display: none;
+}
+
+.muted {
+	@extend .text-muted;
+}
+
+//
 // Profiler sucks on small screens
 // ------------------------------------------------------
 

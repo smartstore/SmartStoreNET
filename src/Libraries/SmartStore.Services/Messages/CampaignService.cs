@@ -119,26 +119,6 @@ namespace SmartStore.Services.Messages
             return totalEmailsQueued;
         }
 
-        public virtual void SendCampaign(Campaign campaign, string email)
-        {
-			Guard.NotNull(campaign, nameof(campaign));
-			Guard.NotEmpty(email, nameof(email));
-
-			var customer = _customerService.GetCustomerByEmail(email);
-			var subscription = new NewsLetterSubscription { Email = email };
-			var messageContext = new MessageContext
-			{
-				MessageTemplate = GetCampaignTemplate(),
-				Customer = customer
-			};
-
-			var msg = _services.MessageFactory.CreateMessage(messageContext, false /* do NOT queue */, subscription, campaign);
-			var qe = msg.Email;
-			var emailMessage = new EmailMessage(qe.To, qe.Subject, qe.Body, qe.From);
-
-			_emailSender.SendEmail(new SmtpContext(msg.MessageContext.EmailAccount), emailMessage);
-		}
-
 		public virtual CreateMessageResult Preview(Campaign campaign)
 		{
 			Guard.NotNull(campaign, nameof(campaign));

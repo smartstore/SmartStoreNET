@@ -21,7 +21,7 @@
 	}
 
 	<div class="mb-2">
-		<img src="@Model.AvatarUrl" class="img-thumbnail @(Model.AvatarUrl.HasValue() ? "" : "hide")" alt="Avatar" style="max-width: 120px;" />
+		<img src="@(Model.AvatarUrl.NullEmpty() ?? Model.PictureFallbackUrl)" class="img-thumbnail@(Model.AvatarUrl.HasValue() ? "" : " xd-none")" alt="Avatar" style="max-width: 120px;" />
 	</div>
 
 	@(Html.SmartStore().FileUploader()

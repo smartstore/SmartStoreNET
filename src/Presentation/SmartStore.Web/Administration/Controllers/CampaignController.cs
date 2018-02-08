@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
@@ -11,7 +10,6 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
-using SmartStore.Collections;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
@@ -177,71 +175,6 @@ namespace SmartStore.Admin.Controllers
 			PrepareCampaignModel(model, campaign, true);
 
             return View(model);
-		}
-
-		[HttpPost, ActionName("Edit")]
-		[FormValueRequired("send-test-email")]
-		public ActionResult SendTestEmail(CampaignModel model)
-		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-				return AccessDeniedView();
-
-			var campaign = _campaignService.GetCampaignById(model.Id);
-			if (campaign == null)
-				return RedirectToAction("List");
-
-			PrepareCampaignModel(model, campaign, false);
-			
-			try
-			{
-				var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.TestEmail);
-				if (subscription != null)
-				{
-					// There's a subscription. let's use it
-					var subscriptions = new List<NewsLetterSubscription>();
-					subscriptions.Add(subscription);
-					_campaignService.SendCampaign(campaign, subscriptions);
-				}
-				else
-				{
-					// No subscription found
-					_campaignService.SendCampaign(campaign, model.TestEmail);
-				}
-
-				NotifySuccess(T("Admin.Promotions.Campaigns.TestEmailSentToCustomers"), false);
-
-				return View(model);
-			}
-			catch (Exception exc)
-			{
-				NotifyError(exc, false);
-			}
-
-			// If we got this far, something failed, redisplay form
-			return View(model);
-		}
-
-		public ActionResult Preview(int id)
-		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageCampaigns))
-				return AccessDeniedView();
-
-			var campaign = _campaignService.GetCampaignById(id);
-			if (campaign == null)
-				return RedirectToAction("List");
-
-			try
-			{
-				var previewResult = _campaignService.Preview(campaign);
-
-				// TODO: (mc) Liquid > make proper UI for campaign preview
-				return Content(previewResult.Email.Body, "text/html");
-			}
-			catch (Exception ex)
-			{
-				NotifyError(ex);
-				return RedirectToAction("Edit", id);
-			}
 		}
 
 		[HttpPost, ActionName("Edit")]

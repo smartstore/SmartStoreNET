@@ -28,6 +28,8 @@ namespace SmartStore.Data.Migrations
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
+
+			context.SaveChanges();
         }
 
 		public void MigrateSettings(SmartObjectContext context)
@@ -171,11 +173,14 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.FolderName", "Folder path", "Ordnerpfad");
 
-			builder.AddOrUpdate("Admin.MessageTemplate.Preview.More", "More", "Mehr");
-			builder.AddOrUpdate("Admin.MessageTemplate.Preview.Less", "Less", "Weniger");
-			builder.AddOrUpdate("Admin.MessageTemplate.PreviewHeader.To", "To", "An");
-			builder.AddOrUpdate("Admin.MessageTemplate.PreviewHeader.ReplyTo", "From", "Von");
-			builder.AddOrUpdate("Admin.MessageTemplate.PreviewHeader.Subject", "Subject", "Betreff");
+			builder.AddOrUpdate("Admin.MessageTemplate.Preview.From", "From", "Von");
+			builder.AddOrUpdate("Admin.MessageTemplate.Preview.To", "To", "An");
+			builder.AddOrUpdate("Admin.MessageTemplate.Preview.ReplyTo", "Reply To", "Antwort an");
+			builder.AddOrUpdate("Admin.MessageTemplate.Preview.SendTestMail", "Test-E-mail to...", "Test E-Mail an...");
+			builder.AddOrUpdate("Admin.MessageTemplate.Preview.TestMailSent", "E-mail has been sent.", "E-Mail gesendet.");
+			builder.AddOrUpdate("Admin.MessageTemplate.Preview.NoBody",
+				"The generated preview file seems to have expired. Please reload the page.", 
+				"Die generierte Vorschaudatei scheint abgelaufen zu sein. Laden Sie die Seite bitte neu.");
 
 			builder.AddOrUpdate("Admin.ContentManagement.MessageTemplates.Preview.SuccessfullySent",
 				"The email has been sent successfully.", 

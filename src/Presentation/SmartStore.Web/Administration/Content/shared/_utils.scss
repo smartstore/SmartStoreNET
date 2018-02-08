@@ -9,7 +9,8 @@
 	margin-right: $gw * -1;
 	margin-left: $gw * -1;
 
-	> .col, > [class*="col-"] {
+	> .col, 
+	> [class*="col-"] {
 		padding-right: $gw;
 		padding-left: $gw;
 	}
@@ -20,7 +21,8 @@
 	margin-right: $gw * -1;
 	margin-left: $gw * -1;
 
-	> .col, > [class*="col-"] {
+	> .col, 
+	> [class*="col-"] {
 		padding-right: $gw;
 		padding-left: $gw;
 	}
@@ -218,6 +220,18 @@ table th {
 	}
 }
 
+
+//
+// Some shims
+// ------------------------------------------------------
+
+.hide {
+	display: none;
+}
+
+.muted {
+	@extend .text-muted;
+}
 
 //
 // Profiler sucks on small screens

@@ -150,11 +150,8 @@
 				@Html.ValidationMessageFor(model => model.Locales[item].Attachment3FileId)
 			</td>
 		</tr>
-        <tr class="xwide">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Locales[item].Body)
-            </td>
-            <td class="adminData wide">
+        <tr class="wide">
+            <td class="adminData">
                 @Html.EditorFor(model => Model.Locales[item].Body, "Liquid", new { TemplateName = templateName })
                 @Html.ValidationMessageFor(model => model.Locales[item].Body)
             </td>

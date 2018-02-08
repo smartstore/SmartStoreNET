@@ -124,9 +124,10 @@
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>
 	@{ Html.RenderZone("start"); }
     @RenderBody()	
-	@{ Html.RenderZone("end"); }
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
     @Html.SmartScripts(this.Url, ResourceLocation.Foot)
+
+	@{ Html.RenderZone("end"); }
 </body>
 </html>

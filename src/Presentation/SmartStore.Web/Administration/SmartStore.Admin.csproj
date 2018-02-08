@@ -1006,7 +1006,6 @@
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
     <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
-    <Content Include="Views\MessageTemplate\PreviewHeader.cshtml" />
     <Content Include="Views\MessageTemplate\Preview.cshtml" />
     <Content Include="Views\Shared\Partials\StoreSelector.cshtml" />
     <Content Include="Views\Shared\Partials\AclSelector.cshtml" />

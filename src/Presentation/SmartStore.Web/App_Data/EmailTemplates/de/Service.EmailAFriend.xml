@@ -34,7 +34,8 @@
 </table>
 
 {% if Message.Body %}
-<table class="w-100 brd bg-light mt-4">
+<p>&nbsp;</p>
+<table class="w-100 brd bg-light">
   <tbody>
     <tr>
     	<td class="p-3">

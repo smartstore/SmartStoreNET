@@ -14,7 +14,7 @@
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 			
 			@* CAUTION: saving a template to XML overwrites the original raw content *@
-			@*<button type="submit" name="save-in-file" value="save-in-file" class="btn btn-danger"><i class="fa fa-floppy-o"></i><span>Save as XML</span></button>*@
+			<button type="submit" name="save-in-file" value="save-in-file" class="btn btn-danger"><i class="fa fa-floppy-o"></i><span>Save as XML</span></button>
 			<a id="btn-preview-template" class="btn btn-secondary" href="@Url.Action("Preview", new { id = Model.Id, isCampaign = false })">
 				<i class="fa fa-eye"></i>
 				<span>@T("Admin.Common.Preview")</span>

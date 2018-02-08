@@ -10,10 +10,10 @@
 <h1>
   Neuer Blog Kommentar,
 </h1>
-<p>
+<p class="mb-4">
   der Blog-Eintrag <a href="{{ BlogComment.PostUrl }}">{{ BlogComment.PostTitle }}</a> wurde von <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> kommentiert:
 </p>
-<table class="w-100 brd bg-light mt-4">
+<table class="w-100 brd bg-light">
   <tbody>
     <tr>
     	<td class="p-3"><i>"{{ BlogComment.Text | Truncate: 400 }}"</i></td>

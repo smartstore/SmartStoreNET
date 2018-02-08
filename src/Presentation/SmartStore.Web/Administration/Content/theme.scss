@@ -218,10 +218,10 @@ $content-padding-y:			15px;
 		&:not(:active):not(.active):focus,
 		&:not(:active):not(.active).focus {
 			@if $color == "secondary" or $color == "light" {
-				box-shadow: 0 0 0 0.25em rgba($primary, .15);
+				box-shadow: 0 0 0 0.2em rgba($primary, .15);
 			}
 			@else {
-				box-shadow: 0 0 0 0.25em rgba($value, .4);
+				box-shadow: 0 0 0 0.2em rgba($value, .4);
 			}
 		}
 	}

@@ -15,10 +15,15 @@
 	Sie haben einen Geschenkgutschein in Höhe von <b class="text-success text-lg">{{ GiftCard.Amount }}</b> für den Online-Shop <a href="{{ Store.Url }}">{{ Store.Name }}</a> erhalten.
 </p>
 
-<p class="bg-success text-white p-3 text-center">
-  <b>Ihr Gutschein Code:</b><br />
-  <b class="text-xl">{{ GiftCard.CouponCode }}</b>
-</p>
+<table class="w-100">
+	<tr>
+  	<td class="bg-success text-white p-3 text-center">
+        <b>Ihr Gutschein Code:</b><br />
+  			<b class="text-xl">{{ GiftCard.CouponCode }}</b>
+    </td>
+  </tr> 
+</table>
+<p>&nbsp;</p>
 
 <table class="w-100 brd bg-light">
 	<tr>

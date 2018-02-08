@@ -264,6 +264,8 @@ namespace SmartStore.Data.Migrations
 				"Instagram Link",
 				"Leave this field empty if the Instagram link should not be shown",
 				"Lassen Sie dieses Feld leer, wenn der Instagram Link nicht angezeigt werden soll");
+
+			builder.AddOrUpdate("Common.License", "License", "Lizenz");
 		}
 	}
 }

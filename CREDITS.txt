@@ -33,9 +33,8 @@ License:      MICROSOFT ASP.NET MODEL VIEW CONTROLLER 3 EULA
 
 Autofac
 ---------------------------------------------
-Website:      http://code.google.com/p/autofac/
+Website:      https://autofac.org/
 Copyright:    Copyright (c) 2007-2018 Autofac Contributors
-              http://code.google.com/p/autofac/wiki/Contributing
 License:      MIT
 
 
@@ -101,11 +100,11 @@ Copyright:    Copyright (C) 2014  Glimpse contributors (http://getglimpse.com/Co
 License:      Apache License 2.0 (Apache)
 
 
-ImageResizer.NET
+ImageProcessor
 ---------------------------------------------
-Website:      https://imageresizing.net/
-Copyright:    Copyright (c) 2012 Imazen
-License:      Freedom License
+Website:      http://imageprocessor.org/
+Copyright:    Copyright (c) 2018 James Jackson-South
+License:      Apache License 2.0 (Apache)
 
 
 JavaScriptEngineSwitcher
@@ -129,16 +128,9 @@ Copyright:    Copyright (c) 2007-2009 Ariel Flesler
 License:      MIT
 
 
-jQuery UI (Core)
+Json.NET
 ---------------------------------------------
-Website:      http://docs.jquery.com/UI
-Copyright:    Copyright (c) 2010 lib/jquery.ui/AUTHORS.txt (http://jqueryui.com/about)
-License:      MIT
-
-
-JSON.NET
----------------------------------------------
-Website:      http://james.newtonking.com/
+Website:      https://www.newtonsoft.com/json
 Copyright:    Copyright (c) 2007 James Newton-King
 License:      MIT
 

@@ -140,7 +140,10 @@
             		}
             		else if (color) {
             			return $('<span><span class="choice-item-color" style="background-color: ' + color + '"></span>' + item.text + '</span>');
-            		}
+					}
+					else {
+						return $('<span class="select2-option">' + item.text + '</span>');
+					}
             	}
             	catch (e) { }
 

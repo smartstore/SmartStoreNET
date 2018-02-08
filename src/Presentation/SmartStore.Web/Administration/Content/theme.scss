@@ -23,46 +23,71 @@ $mtab-color:				inherit !default;
 $enable-shadows:	true;
 $enable-gradients:	false;
 
+// SmartStore CI colors
+$sm-orange1: #ee9B00;
+$sm-orange2: #e77c00;
+$sm-green1: #53b498;
+$sm-bluegreen: #2c8d8a;
+$sm-red1: #e15900;
+$sm-red2: #dc3000;
+$sm-red3: #db004f;
+$sm-blue: #37a0e6;
+$sm-blue2: #1b50a1;
+$sm-violet: #55237d;
+$sm-gray1: #dadada;
+$sm-gray2: #bcbcbc;
+$sm-gray3: #878787;
+$sm-gray4: #4a4a49;
+
 $gray-100: #f8f9fa;
 $gray-200: #e9ecef;
 $gray-300: #dee2e6;
 $gray-400: #ced4da;
-$gray-500: #999; //#9ca5af; // #adb5bd;
-$gray-600: #6c757d;
-$gray-700: #495057;
-$gray-800: #343a40;
-$gray-900: #212529;
+$gray-500: #b0bac3;
+$gray-600: #8d9ba9;
+$gray-700: #596167;
+$gray-800: #393f46;
+$gray-900: #22262a;
 
-$text-muted: $gray-500;
+//
+// Variables shims (TODO: remove later)
+// --------------------------------------------------
+$gray-lightest: $gray-100;
+$gray-lighter:	$gray-300;
+$gray-light:	$gray-500;
+$gray:			$gray-700;
+$gray-dark:		$gray-900;
 
-$blue:      #5677fc; // Blue 500
-$indigo:    #3f51b5; // Indigo 500
-$purple:    #9c27b0; // Purple 500
-$pink:      #e91e63; // Pink 500
-$red:		#f44336; // Red 500
-$orange:	#fb8c00; // Orange 600
-$yellow:    #fdd835; // Yellow 600
+$text-muted: $gray-600;
+
+$blue:		$sm-blue;
+$indigo:	$sm-blue2;
+$purple:	$sm-violet;
+$pink:		#e91e63; // Pink 500
+$red:		$sm-red2;
+$orange:	$sm-orange1;
+$yellow:	#fdd835; // Yellow 600
 $green:		#388e3c; // Green 700
-$teal:      #009688; // Teal 500
-$cyan:      #00BCD4; // Cyan 500
-$bluegrey:  #78909c; // Bluegrey 500
+$teal:		#009688; // Teal 500
+$cyan:		#00BCD4; // Cyan 500
+$bluegrey:	#78909c; // Bluegrey 500
 
-$primary:	$indigo;
-$secondary:	lighten($gray-200, 2%); //#f4f5f7 //$gray-200;
+$primary:	$blue;
+$secondary: lighten($gray-200, 2%);
 $success:	$green;
-$info:		$cyan;
+$info:		$sm-bluegreen;
 $warning:	$orange;
 $danger:	$red;
 $light:		$gray-100;
-$dark:		$gray-800;
+$dark:		$sm-red3;
 
 $theme-colors: ( 
-	"gray": $gray-600 
+	"gray": $gray-700 
 );
 
 $body-color:	$gray-800;
 $body-bg:		#fff;
-$link-color:	#0277bb;
+$link-color:	desaturate(darken($primary, 6%), 12%); //#0277bb;
 
 // Set a specific jump point for requesting color jumps
 $theme-color-interval:		8%;
@@ -161,15 +186,6 @@ $table-accent-bg:				rgba(#000, .015);
 
 //$thumbnail-border-radius:		0;
 
-//
-// Variables shims (TODO: remove later)
-// --------------------------------------------------
-$gray-dark:		$gray-900;
-$gray:          $gray-600;
-$gray-light:    $gray-500;
-$gray-lighter:  $gray-200;
-$gray-lightest: $gray-100;
-
 
 //
 // Backend specific variables
@@ -241,7 +257,6 @@ $content-padding-y:			15px;
 		border-color: rgba(#000, 0.2);
 	}
 }
-
 
 //
 // Global / Shared (unify later with Flex' resources)
@@ -402,7 +417,7 @@ html {
 	}
 
 	> .hint {
-		$hintColor: $gray-500;
+		$hintColor: $gray-600;
 		display: block;
 		position: absolute;
 		cursor: default;
@@ -768,7 +783,7 @@ textarea:not([class*="form-control"]) {
 
 .theme-editor {
 	.themevar-chain-info {
-		color: $gray-500;
+		color: $gray-600;
 		margin-left: 0.75rem;
 	}
 }
@@ -819,7 +834,7 @@ textarea:not([class*="form-control"]) {
 		font-weight: 400;
 		font-size: $font-size-xs;
 		margin-bottom: 0.75rem;
-		color: $gray-500;
+		color: $gray-600;
 	}
 
 	.stats-today-item-value {

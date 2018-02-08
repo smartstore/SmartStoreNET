@@ -91,19 +91,12 @@ namespace SmartStore.Admin.Controllers
 		{
 			Guard.NotNull(model, nameof(model));
 
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-
 			if (!excludeProperties)
 			{
-				if (topic != null)
-				{
-					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(topic);
-				}
-				else
-				{
-					model.SelectedStoreIds = new int[0];
-				}
+				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(topic);
 			}
+
+			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
         #endregion

@@ -140,17 +140,16 @@ namespace SmartStore.Admin.Controllers
 				model.AvailableFlags.Add(new SelectListItem { Text = countryDescription, Value = Path.GetFileName(path) });
 			}
 
-			model.AvailableFlags = model.AvailableFlags.OrderBy(x => x.Text).ToList();
-			
-			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-
 			if (!excludeProperties)
 			{
 				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(language);
 			}
+
+			model.AvailableFlags = model.AvailableFlags.OrderBy(x => x.Text).ToList();
+			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
-        private void PrepareAvailableLanguageModel(
+		private void PrepareAvailableLanguageModel(
             AvailableLanguageModel model,
             AvailableResourcesModel resources,
             Dictionary<int , GenericAttribute> translatedPercentageAtLastImport,

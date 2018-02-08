@@ -36,24 +36,21 @@ namespace SmartStore.Admin.Controllers
       
         private void PrepareCampaignModel(CampaignModel model, Campaign campaign, bool excludeProperties)
 		{
-			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-			model.LastModelTree = _messageModelProvider.GetLastModelTree(MessageTemplateNames.SystemCampaign);
-
 			if (!excludeProperties)
 			{
-				if (campaign != null)
-					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(campaign);
-				else
-					model.SelectedStoreIds = new int[0];
+				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(campaign);
 			}
 
 			if (campaign != null)
 			{
 				model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(campaign.CreatedOnUtc, DateTimeKind.Utc);
 			}
+
+			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
+			model.LastModelTree = _messageModelProvider.GetLastModelTree(MessageTemplateNames.SystemCampaign);
 		}
-        
-        public ActionResult Index()
+
+		public ActionResult Index()
         {
             return RedirectToAction("List");
         }

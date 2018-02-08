@@ -88,8 +88,6 @@ namespace SmartStore.Admin.Controllers
             var paymentMethods = _paymentService.GetAllPaymentMethods();
             var paymentProviders = _paymentService.LoadAllPaymentMethods().ToDictionarySafe(x => x.Metadata.SystemName);
 
-			model.AvailableStores = allStores.ToSelectListItems(model.SelectedStoreIds);
-
 			foreach (var paymentMethod in paymentMethods.Where(x => x.RoundOrderTotalEnabled))
             {
                 string friendlyName = null;
@@ -125,8 +123,10 @@ namespace SmartStore.Admin.Controllers
 
 			if (!excludeProperties)
 			{
-				model.SelectedStoreIds = (currency == null ? new int[0] : _storeMappingService.GetStoresIdsWithAccess(currency));
+				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(currency);
 			}
+
+			model.AvailableStores = allStores.ToSelectListItems(model.SelectedStoreIds);
 		}
 
 		private CurrencyModel CreateCurrencyListModel(Currency currency)

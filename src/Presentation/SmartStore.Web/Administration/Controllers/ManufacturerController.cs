@@ -158,13 +158,9 @@ namespace SmartStore.Admin.Controllers
 			if (model == null)
 				throw new ArgumentNullException("model");
 
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
-
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-
 			if (!excludeProperties)
 			{
-				model.SelectedStoreIds = (manufacturer != null ? _storeMappingService.GetStoresIdsWithAccess(manufacturer) : new int[0]);
+				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(manufacturer);
 				model.SelectedDiscountIds = (manufacturer != null ? manufacturer.AppliedDiscounts.Select(d => d.Id).ToArray() : new int[0]);
 			}
 
@@ -174,6 +170,8 @@ namespace SmartStore.Admin.Controllers
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.UpdatedOnUtc, DateTimeKind.Utc);
 			}
 
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
+			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 			model.AvailableDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true).ToList();
 		}
 

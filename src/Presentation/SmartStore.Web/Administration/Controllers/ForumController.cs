@@ -54,8 +54,6 @@ namespace SmartStore.Admin.Controllers
 
 			var allStores = _services.StoreService.GetAllStores();
 
-			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-
 			if (forumGroup != null)
 			{
 				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(forumGroup.CreatedOnUtc, DateTimeKind.Utc);
@@ -63,12 +61,10 @@ namespace SmartStore.Admin.Controllers
 
 			if (!excludeProperties)
 			{
-				if (forumGroup != null)
-					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(forumGroup);
-				else
-					model.SelectedStoreIds = new int[0];
+				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(forumGroup);
 			}
 
+			model.AvailableStores = allStores.ToSelectListItems(model.SelectedStoreIds);
 			ViewBag.StoreCount = allStores.Count;
 		}
 

@@ -145,6 +145,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 			public BundleItemModel BundleItem { get; set; }
 			public IList<ShoppingCartItemModel> ChildItems { get; set; }
 
+			public bool DisableWishlistButton { get; set; }
+
 			public DateTime CreatedOnUtc { get; set; }
         }
 

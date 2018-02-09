@@ -272,7 +272,8 @@ namespace SmartStore.Web.Controllers
 				IsDownload = product.IsDownload,
 				HasUserAgreement = product.HasUserAgreement,
 				IsEsd = product.IsEsd,
-				CreatedOnUtc = item.UpdatedOnUtc
+				CreatedOnUtc = item.UpdatedOnUtc,
+				DisableWishlistButton = product.DisableWishlistButton
 			};
 
 			model.BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, customer, currency);
@@ -476,7 +477,8 @@ namespace SmartStore.Web.Controllers
                 ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
 				VisibleIndividually = product.VisibleIndividually,
-				CreatedOnUtc = item.UpdatedOnUtc
+				CreatedOnUtc = item.UpdatedOnUtc,
+				DisableBuyButton = product.DisableBuyButton
 			};
 
 			model.ProductUrl = _productUrlHelper.GetProductUrl(model.ProductSeName, sci);

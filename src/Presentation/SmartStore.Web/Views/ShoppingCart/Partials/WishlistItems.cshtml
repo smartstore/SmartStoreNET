@@ -74,7 +74,7 @@
                                data-action="remove">
                                 <i class="fa fa-2x">×</i>
                             </a>
-                            @if (Model.DisplayAddToCart)
+                            @if (Model.DisplayAddToCart && !item.DisableBuyButton)
                             {
                                 <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.AddToCart")"
                                    href="#"

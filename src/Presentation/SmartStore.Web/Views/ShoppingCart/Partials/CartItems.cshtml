@@ -122,7 +122,7 @@
 							   data-action="remove">
 								<i class="fa fa-2x">×</i>
 							</a>
-                            @if (Model.DisplayMoveToWishlistButton)
+                            @if (Model.DisplayMoveToWishlistButton && !item.DisableWishlistButton)
                             {
                                 <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
                                    href="#"

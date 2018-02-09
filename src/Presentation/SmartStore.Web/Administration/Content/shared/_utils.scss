@@ -253,3 +253,11 @@ table th {
 	background: transparent;
 	z-index: 100000;
 }
+
+
+// Misc utils
+// -------------------------
+
+.last-mb-0:last-child {
+	margin-bottom: 0 !important;
+}

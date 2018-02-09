@@ -2,17 +2,20 @@
 
 @if (Model.AvailableDiscounts != null && Model.AvailableDiscounts.Count > 0)
 {
-    foreach (var discount in Model.AvailableDiscounts)
-    {
-        <label class="checkbox">
-        <input type="checkbox" name="SelectedDiscountIds" value="@discount.Id"
-                @if (Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) { <text> checked="checked" </text> } />@discount.Name
-        </label>
-    }
+	foreach (var discount in Model.AvailableDiscounts)
+	{
+		<div class="custom-control custom-checkbox mb-1">
+			<input type="checkbox" class="custom-control-input" name="SelectedDiscountIds" id="discount-@discount.Id" value="@discount.Id"
+				   @Html.Attr("checked", "checked", Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) />
+			<label class="custom-control-label" for="discount-@discount.Id">
+				@discount.Name
+			</label>
+		</div>
+	}
 }
 else
 {
-	<div class="alert alert-info">
+	<div class="alert alert-warning">
 		@T("Admin.Promotions.Discounts.NoDiscountsAvailable")
 	</div>
 }

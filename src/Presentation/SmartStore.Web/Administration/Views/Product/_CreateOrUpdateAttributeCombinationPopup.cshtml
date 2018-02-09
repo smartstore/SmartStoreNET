@@ -3,12 +3,10 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)@*otherwise we get a model state error*@
 
-<div class="well" style="margin-bottom:8px;">
+<div class="well">
 	@if (ViewBag.IsEdit)
     {
-		<div>
-			@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
-		</div>
+		@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
     }
     else
     {

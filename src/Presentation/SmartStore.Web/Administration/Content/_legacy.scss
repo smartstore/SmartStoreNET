@@ -560,13 +560,14 @@ tr.adminGroup {
 /* Table formatted variant attributes */
 .product-attribute-table {
 	.column-name {
-		width: 140px;
-		padding: 1px 10px 1px 0;
+		min-width: 80px;
+		padding: 2px 10px 2px 0;
 		vertical-align: top;
+		font-weight: $font-weight-medium;
 	}
+
 	.column-value {
-		font-weight: bold;
-		padding: 1px 0 1px 0;
+		padding: 2px 0 2px 0;
 		vertical-align: top;
 	}
 }

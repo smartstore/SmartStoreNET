@@ -124,9 +124,9 @@
 					&nbsp;
 				</td>
 				<td class="adminData">
-					<button type="button" name="addProductSpec" id="addProductSpec" class="btn btn-warning">
+					<button type="button" name="addProductSpec" id="addProductSpec" class="btn btn-primary">
 						<i class="fa fa-plus"></i>
-						@T("Admin.Catalog.Products.SpecificationAttributes.AddButton")
+						<span>@T("Admin.Catalog.Products.SpecificationAttributes.AddButton")</span>
 					</button>
 				</td>
             </tr>
@@ -237,7 +237,7 @@
 					{
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
-					}).Width(180);
+					}).Width(180).HtmlAttributes(new { align = "right" });
 				})
 				.ClientEvents(e =>
 				{

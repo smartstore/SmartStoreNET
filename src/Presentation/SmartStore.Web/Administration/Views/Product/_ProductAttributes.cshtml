@@ -1,44 +1,39 @@
 ﻿@using SmartStore.Web.Framework;
 @using SmartStore.Core.Domain.Catalog;
+
 @model ProductVariantAttributeCombinationModel
 
 @if (Model.ProductVariantAttributes.Count > 0)
 {
-<div class="attributes clearfix form-horizontal">
-	@foreach (var attribute in Model.ProductVariantAttributes)
+	foreach (var attribute in Model.ProductVariantAttributes)
 	{
 		var controlId = attribute.GetControlId(Model.ProductId, 0);
-	<div class="control-group">
-		<label class="control-label" for="@controlId">
-			@if (attribute.IsRequired)
-            {
-			<span>*</span>
-			}
-			<span style="font-weight: bold;">@(attribute.TextPrompt.HasValue() ? attribute.TextPrompt : attribute.Name)</span>
-		</label>
-		<div class="controls">
-			@if (attribute.AttributeControlType == AttributeControlType.Checkboxes || attribute.AttributeControlType == AttributeControlType.RadioList || attribute.AttributeControlType == AttributeControlType.Boxes)
-            {
-				@ControlsCheckboxesAndRadios(attribute, controlId, attribute.AttributeControlType == AttributeControlType.Checkboxes ? "checkbox" : "radio")
-			}
-			else
-            {
-				@ControlsOthers(attribute, controlId)
-			}
+		<div class="form-group last-mb-0@(attribute.IsRequired ? " required" : "")">
+			<label for="@controlId">
+				@(attribute.TextPrompt.HasValue() ? attribute.TextPrompt : attribute.Name)
+			</label>
+			<div class="controls">
+				@if (attribute.AttributeControlType == AttributeControlType.Checkboxes || attribute.AttributeControlType == AttributeControlType.RadioList || attribute.AttributeControlType == AttributeControlType.Boxes)
+				{
+					@ControlsCheckboxesAndRadios(attribute, controlId, attribute.AttributeControlType == AttributeControlType.Checkboxes ? "checkbox" : "radio")
+				}
+				else
+				{
+					@ControlsOthers(attribute, controlId)
+				}
+			</div>
 		</div>
-	</div>
 	}
-</div>
 }
 
 @helper ControlsCheckboxesAndRadios(ProductVariantAttributeCombinationModel.ProductVariantAttributeModel attribute, string controlId, string type)
 {
 	foreach (var pvaValue in attribute.Values)
     {
-		<label class="@type">
-			<input type="@type" name="@controlId" value="@pvaValue.Id" @(pvaValue.IsPreSelected ? Html.Raw(" checked=\"checked\"") : null) />
-			@pvaValue.Name
-		</label>
+		<div class="custom-control custom-@type custom-control-inline">
+			<input type="@type" id="@controlId-@pvaValue.Id" name="@controlId" class="custom-control-input" value="@pvaValue.Id" @(pvaValue.IsPreSelected ? Html.Raw(" checked=\"checked\"") : null) />
+			<label class="custom-control-label" for="@controlId-@pvaValue.Id">@pvaValue.Name</label>
+		</div>
 	}
 }
 
@@ -46,24 +41,24 @@
 {
 	if(attribute.AttributeControlType == AttributeControlType.DropdownList)
     {
-		<select name="@controlId" id="@controlId">
+		<select name="@controlId" id="@controlId" class="form-control">
 			@if (!attribute.IsRequired)
             {
-			<option value="0">---</option>
+				<option value="0">---</option>
 			}
 			@foreach (var pvaValue in attribute.Values)
             {
-			<option @(pvaValue.IsPreSelected ? Html.Raw(" selected=\"selected\"") : null) value="@pvaValue.Id">@pvaValue.Name</option>
+				<option @(pvaValue.IsPreSelected ? Html.Raw(" selected=\"selected\"") : null) value="@pvaValue.Id">@pvaValue.Name</option>
 			}
 		</select>
 	}
 	else if(attribute.AttributeControlType == AttributeControlType.TextBox)
     {
-		<input type="text" id="@controlId" name="@controlId" />
+		<input type="text" class="form-control" id="@controlId" name="@controlId" />
 	}
 	else if (attribute.AttributeControlType == AttributeControlType.MultilineTextbox)
     {
-		<textarea id="@controlId" name="@controlId" rows="2"></textarea>
+		<textarea class="form-control" id="@controlId" name="@controlId" rows="2"></textarea>
 	}
 	else if (attribute.AttributeControlType == AttributeControlType.Datepicker)
     {

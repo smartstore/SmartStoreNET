@@ -379,7 +379,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
    * Limit the dropdown height.
    */
 	.select2-results > .select2-results__options {
-		max-height: 350px;
+		max-height: 320px;
 		overflow-y: auto;
 	}
 	/*------------------------------------*\
@@ -850,11 +850,3 @@ select.is-invalid + .select2:not(.select2-container--open) {
 .form-inline .select2-container--bootstrap {
   display: inline-block;
 }
-
-/*.select2 .choice-item-img,
-.select2-results .choice-item-img {
-	max-width: 26px;
-	max-height: 26px;
-	margin-top: -4px;
-	margin-right: 0.5rem;
-}*/

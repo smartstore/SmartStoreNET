@@ -35,8 +35,8 @@ fieldset.content-group {
     }
 }
 
-.form-group label:not(.form-check-label) {
-    font-weight: $font-weight-medium;
+.form-group label:not(.form-check-label):not(.custom-control-label) {
+	font-weight: $font-weight-medium;
 }
 
 .form-group.required > label:after {

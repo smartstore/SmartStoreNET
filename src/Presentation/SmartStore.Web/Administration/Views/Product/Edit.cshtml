@@ -48,6 +48,7 @@
 @{Html.SmartStore().Window()
 		.Name("copyproduct-window")
 		.Title(T("Admin.Catalog.Products.Copy"))
+		.Size(WindowSize.Large)
 		.Content(@<text>
 			<form method="POST" action="@Url.Action("CopyProduct", "Product")">
 				@Html.HiddenFor(model => Model.CopyProductModel.Id)

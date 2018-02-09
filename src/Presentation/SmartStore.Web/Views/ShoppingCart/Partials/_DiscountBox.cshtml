@@ -28,7 +28,7 @@
         <div class="coupon-code form-group">
             <div class="input-group@(Model.CurrentCode.HasValue() ? " has-success" : "")">
                 <input name="discountcouponcode" type="text" class="form-control form-control-success discount-coupon-code" value="@Model.CurrentCode" placeholder="@T("ShoppingCart.DiscountCouponCode.Tooltip")" />
-				<span class="input-group-btn">
+				<span class="input-group-btn input-group-append">
 					@if (Model.CurrentCode.HasValue())
 					{
 						<button type="submit"

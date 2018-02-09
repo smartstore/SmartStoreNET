@@ -332,7 +332,7 @@
 				<td class="adminData">
 					<div class="input-group">
 						@Html.EditorFor(model => model.RequiredProductIds)
-						<span class="input-group-btn">
+						<span class="input-group-append">
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.RequiredProductIds)
 								.DialogTitle(T("Admin.Catalog.Products.Fields.RequireOtherProducts").Text.EncodeJsString('\'', false))

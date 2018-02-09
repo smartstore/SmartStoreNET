@@ -126,7 +126,7 @@ $table-head-bg:					#f6f8fa;
 $table-head-color:				$gray-700;
 
 $input-btn-focus-width:			.25rem;
-$input-btn-focus-color:			rgba($primary, .25);
+$input-btn-focus-color:			rgba($sm-blue2, .25);
 $input-btn-focus-box-shadow:	0 0 0 $input-btn-focus-width $input-btn-focus-color;
 $input-btn-padding-x:           1rem;
 $input-btn-padding-y:           0.5625rem;
@@ -136,6 +136,7 @@ $input-btn-padding-x-lg:        1.5rem;
 $input-btn-padding-y-lg:        0.75rem;
 $input-btn-line-height:         1.5;
 $input-box-shadow:              none;
+$input-focus-border-color:		lighten($sm-blue2, 25%);
 $input-focus-box-shadow:        none;
 $input-border-radius:           0;
 $input-border-radius-lg:        0;
@@ -278,6 +279,7 @@ $content-padding-y:			15px;
 @import "shared/_sortable-grip.scss";
 @import "shared/_entity-picker.scss";
 @import 'shared/_choice.scss';
+@import 'shared/_switch.scss';
 @import "shared/_utils.scss";
 
 //
@@ -575,9 +577,19 @@ html {
 
 
 //
-// Apply grid layout to editor tables (.adminContent)
+// Multi-store settings
 // --------------------------------------------------
 
+.multi-store-setting-control > input[type=checkbox] {
+	position: relative;
+	margin: 0;
+	margin-top: $input-padding-y;
+}
+
+
+//
+// Apply grid layout to editor tables (.adminContent)
+// --------------------------------------------------
 .adminContent {
 	//max-width: 1400px;
 	//@include make-container();
@@ -624,10 +636,14 @@ html {
 	}
 
 	.adminData {
+		> .switch,
+		.multi-store-setting-control > .switch {
+			padding-top: calc(#{$input-padding-y} + #{$input-border-width});
+			padding-bottom: calc(#{$input-padding-y} + #{$input-border-width});
+		}
+
 		> .switch {
 			margin-bottom: 0;
-			padding-top: calc(#{$input-padding-y} - 1px);
-			padding-bottom: calc(#{$input-padding-y} + 1px);
 			line-height: $input-line-height;
 		}
 	}

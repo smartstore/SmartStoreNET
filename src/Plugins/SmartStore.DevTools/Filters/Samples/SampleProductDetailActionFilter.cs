@@ -56,7 +56,7 @@ namespace SmartStore.DevTools.Filters
                 CssClass = "action-dev x-ajax-cart-link",
                 IconCssClass = "icm icm-code",
                 //Href = _urlHelper.Action("MyOwnAction", "MyPlugin", new { id = model.Id })
-                Href = "http://www.smartstore.com"
+                Href = "https://www.smartstore.com"
             }; ;
         }
 	}

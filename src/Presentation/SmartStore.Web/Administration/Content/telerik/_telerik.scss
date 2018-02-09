@@ -308,40 +308,48 @@ a.t-button.t-state-disabled:hover,
 		}
 	}
 
-	.t-icon {
-		@include custom-t-icon();
-		position: absolute;
-		display: block;
-		z-index: 3;
-		top: 0;
-		right: 0;
-		height: 50%;
-		width: calc(#{$input-height});
+	.t-input {
+		~ .t-icon {
+			@include custom-t-icon();
+			position: absolute;
+			display: block;
+			z-index: 3;
+			top: 0;
+			right: 0;
+			height: 50%;
+			width: calc(#{$input-height});
 
-		.t-grid-edit-row & {
-			width: 1.5rem;
+			.t-grid-edit-row & {
+				width: 1.5rem;
+			}
+
+			&:before {
+				content: "\f077";
+				font-size: 10px;
+			}
+
+			&.t-arrow-down:before {
+				content: "\f078"; // chevron-down
+			}
+
+			&.t-arrow-down {
+				top: auto;
+				bottom: 0;
+			}
 		}
 
-		&:hover {
-			background-color: rgba(#000, 0.05);
+		&:disabled ~ .t-icon {
+			opacity: 0.5;
 		}
 
-		&:active {
-			background-color: rgba(#000, 0.08);
-		}
+		&:not(:disabled) ~ .t-icon {
+			&:hover {
+				background-color: rgba(#000, 0.05);
+			}
 
-		&:before {
-			content: "\f077";
-			font-size: 10px;
-		}
-
-		&.t-arrow-down:before {
-			content: "\f078"; // chevron-down
-		}
-
-		&.t-arrow-down {
-			top: auto;
-			bottom: 0;
+			&:active {
+				background-color: rgba(#000, 0.08);
+			}
 		}
 	}
 }

@@ -24,7 +24,7 @@
 		},
 		// switch
 		function (ctx) {
-			ctx.find(".adminData > input[type=checkbox]").each(function (i, el) {
+			ctx.find(".adminData > input[type=checkbox], .multi-store-setting-control > input[type=checkbox]").each(function (i, el) {
 				var wrap = $(el)
 					.wrap('<label class="switch"></label>')
 					.after('<span class="switch-toggle" data-on="' + window.Res['Common.On'] + '" data-off="' + window.Res['Common.Off'] + '"></span>');
@@ -98,9 +98,9 @@
         });
 
 		// check overridden store settings
-        $('input.multi-store-override-option').each(function (index, elem) {
-        	Admin.checkOverriddenStoreValue(elem);
-        });
+        $('.multi-store-override-option').each(function (i, el) {
+        	Admin.checkOverriddenStoreValue(el);
+		});
 
         // publish entity commit messages
         $('.entity-commit-trigger').on('click', function (e) {

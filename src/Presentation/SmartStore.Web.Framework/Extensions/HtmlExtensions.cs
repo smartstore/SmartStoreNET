@@ -621,16 +621,111 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(sb.ToString());
 		}
 
+		//public static MvcHtmlString SettingEditorFor<TModel, TValue>(
+		//	this HtmlHelper<TModel> helper,
+		//	Expression<Func<TModel, TValue>> expression,
+		//	string parentSelector = null,
+		//	object additionalViewData = null)
+		//{
+		//	var editor = helper.EditorFor(expression, additionalViewData);
+
+		//	var data = helper.ViewData[StoreDependingSettingHelper.ViewDataKey] as StoreDependingSettingData;
+		//	if (data == null || data.ActiveStoreScopeConfiguration <= 0)
+		//		return editor; // CONTROL
+
+		//	var sb = new StringBuilder("<div class='form-row flex-nowrap multi-store-setting-group'>");
+		//	sb.Append("<div class='col-auto'><div class='form-control-plaintext'>");
+		//	sb.Append(helper.SettingOverrideCheckboxInternal(expression, data, parentSelector)); // CHECK
+		//	sb.Append("</div></div>");
+		//	sb.Append("<div class='col multi-store-setting-control'>");
+		//	sb.Append(editor); // CONTROL
+		//	sb.Append("</div></div>");
+
+		//	return MvcHtmlString.Create(sb.ToString());
+		//}
+
+		public static MvcHtmlString SettingEditorFor<TModel, TValue>(
+			this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression,
+			string parentSelector = null,
+			object additionalViewData = null)
+		{
+			return SettingEditorFor(
+				helper, 
+				expression, 
+				helper.EditorFor(expression, additionalViewData), 
+				parentSelector);
+		}
+
+		public static MvcHtmlString SettingEditorFor<TModel, TValue>(
+			this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression,
+			Func<TModel, HelperResult> editor,
+			string parentSelector = null)
+		{
+			return SettingEditorFor(
+				helper,
+				expression,
+				new MvcHtmlString(editor(helper.ViewData.Model).ToHtmlString()),
+				parentSelector);
+		}
+
+		public static MvcHtmlString EnumSettingEditorFor<TModel, TValue>(
+			this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression,
+			string parentSelector = null,
+			object htmlAttributes = null,
+			string optionLabel = null) where TValue : struct
+		{
+			return SettingEditorFor(
+				helper,
+				expression,
+				helper.DropDownListForEnum(expression, htmlAttributes, optionLabel),
+				parentSelector);
+		}
+
+		public static MvcHtmlString SettingEditorFor<TModel, TValue>(
+			this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression,
+			MvcHtmlString editor,
+			string parentSelector = null)
+		{
+			Guard.NotNull(expression, nameof(expression));
+			Guard.NotNull(editor, nameof(editor));
+
+			var data = helper.ViewData[StoreDependingSettingHelper.ViewDataKey] as StoreDependingSettingData;
+			if (data == null || data.ActiveStoreScopeConfiguration <= 0)
+				return editor; // CONTROL
+
+			var sb = new StringBuilder("<div class='form-row flex-nowrap multi-store-setting-group'>");
+			sb.Append("<div class='col-auto'><div class='form-control-plaintext'>");
+			sb.Append(helper.SettingOverrideCheckboxInternal(expression, data, parentSelector)); // CHECK
+			sb.Append("</div></div>");
+			sb.Append("<div class='col multi-store-setting-control'>");
+			sb.Append(editor.ToHtmlString()); // CONTROL
+			sb.Append("</div></div>");
+
+			return MvcHtmlString.Create(sb.ToString());
+		}
+
 		public static MvcHtmlString SettingOverrideCheckbox<TModel, TValue>(
 			this HtmlHelper<TModel> helper,
 			Expression<Func<TModel, TValue>> expression,
 			string parentSelector = null)
 		{
 			var data = helper.ViewData[StoreDependingSettingHelper.ViewDataKey] as StoreDependingSettingData;
-
 			if (data == null || data.ActiveStoreScopeConfiguration <= 0)
 				return MvcHtmlString.Empty;
 
+			return helper.SettingOverrideCheckboxInternal(expression, data, parentSelector);
+		}
+
+		private static MvcHtmlString SettingOverrideCheckboxInternal<TModel, TValue>(
+			this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression,
+			StoreDependingSettingData data,
+			string parentSelector = null)
+		{
 			var fieldPrefix = helper.ViewData.TemplateInfo.HtmlFieldPrefix;
 			var settingKey = ExpressionHelper.GetExpressionText(expression);
 			var localizeService = EngineContext.Current.Resolve<ILocalizationService>();
@@ -644,45 +739,20 @@ namespace SmartStore.Web.Framework
 			var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
 
 			var sb = new StringBuilder();
-			sb.Append("<label class='switch multi-store-override-switch'>");
+			sb.Append("<label class='switch switch-blue multi-store-override-switch'>");
 
-			sb.AppendFormat("<input type=\"checkbox\" id=\"{0}\" name=\"{0}\" class=\"multi-store-override-option\"", fieldId);
-			sb.AppendFormat(" onclick=\"Admin.checkOverriddenStoreValue(this)\" data-parent-selector=\"{0}\"{1} />",
-				parentSelector.EmptyNull(), overrideForStore ? " checked=\"checked\"" : "");
+			sb.AppendFormat("<input type='checkbox' id='{0}' name='{0}' class='multi-store-override-option'", fieldId);
+			sb.AppendFormat(" onclick='Admin.checkOverriddenStoreValue(this)' data-parent-selector='{0}'{1} />",
+				parentSelector.EmptyNull(), overrideForStore ? " checked" : "");
 
-			sb.AppendFormat("<span class=\"switch-toggle\" data-on='{0}' data-off='{1}'></span>", 
-				localizeService.GetResource("Common.On").Truncate(3), 
+			sb.AppendFormat("<span class='switch-toggle' data-on='{0}' data-off='{1}'></span>",
+				localizeService.GetResource("Common.On").Truncate(3),
 				localizeService.GetResource("Common.Off").Truncate(3));
-			sb.Append("</label>");
+			//sb.Append("</label>");
 			// Controls are not floating, so line-break prevents different distances between them.
 			sb.Append("</label>\r\n");
 
 			return MvcHtmlString.Create(sb.ToString());
-		}
-
-		public static MvcHtmlString SettingEditorFor<TModel, TValue>(
-			this HtmlHelper<TModel> helper, 
-			Expression<Func<TModel, TValue>> expression, 
-			string parentSelector = null,
-			object additionalViewData = null)
-		{
-			var checkbox = helper.SettingOverrideCheckbox(expression, parentSelector);
-			var editor = helper.EditorFor(expression, additionalViewData);	
-			
-			return MvcHtmlString.Create(checkbox.ToString() + editor.ToString());
-		}
-
-		public static MvcHtmlString EnumSettingEditorFor<TModel, TValue>(
-			this HtmlHelper<TModel> helper,
-			Expression<Func<TModel, TValue>> expression,
-			string parentSelector = null,
-			object htmlAttributes = null,
-			string optionLabel = null) where TValue : struct
-		{
-			var checkbox = helper.SettingOverrideCheckbox(expression, parentSelector);
-			var editor = helper.DropDownListForEnum(expression, htmlAttributes, optionLabel);
-
-			return MvcHtmlString.Create(checkbox.ToString() + editor.ToString());
 		}
 
 		public static MvcHtmlString CollapsedText(this HtmlHelper helper, string text)

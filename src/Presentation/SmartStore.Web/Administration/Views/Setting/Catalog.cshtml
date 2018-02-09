@@ -156,8 +156,7 @@
 				@Html.SmartLabelFor(model => model.DeliveryTimeIdForEmptyStock)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.DeliveryTimeIdForEmptyStock)
-				@Html.DropDownListFor(model => model.DeliveryTimeIdForEmptyStock, Model.AvailableDeliveryTimes, T("Common.Unspecified"))
+				@Html.SettingEditorFor(model => model.DeliveryTimeIdForEmptyStock, @Html.DropDownListFor(model => model.DeliveryTimeIdForEmptyStock, Model.AvailableDeliveryTimes, T("Common.Unspecified")))
 				@Html.ValidationMessageFor(model => model.DeliveryTimeIdForEmptyStock)
 			</td>
 		</tr>
@@ -355,8 +354,7 @@
                 @Html.SmartLabelFor(model => model.SubCategoryDisplayType)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.SubCategoryDisplayType)
-                @Html.DropDownListFor(model => model.SubCategoryDisplayType, Model.AvailableSubCategoryDisplayTypes)
+				@Html.SettingEditorFor(model => model.SubCategoryDisplayType, @Html.DropDownListFor(model => model.SubCategoryDisplayType, Model.AvailableSubCategoryDisplayTypes))
                 @Html.ValidationMessageFor(model => model.SubCategoryDisplayType)
             </td>
         </tr>
@@ -384,8 +382,7 @@
                 @Html.SmartLabelFor(model => model.DefaultViewMode)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.DefaultViewMode)
-                @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes)
+				@Html.SettingEditorFor(model => model.DefaultViewMode, @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes))
                 @Html.ValidationMessageFor(model => model.DefaultViewMode)
             </td>
         </tr>
@@ -403,8 +400,7 @@
                 @Html.SmartLabelFor(model => model.DefaultSortOrder)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.DefaultSortOrder)
-                @Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes)
+				@Html.SettingEditorFor(model => model.DefaultSortOrder, @Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes))
                 @Html.ValidationMessageFor(model => model.DefaultSortOrder)
             </td>
         </tr>
@@ -440,8 +436,7 @@
                 @Html.SmartLabelFor(model => model.PriceDisplayType)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.PriceDisplayType)
-                @Html.DropDownListFor(model => model.PriceDisplayType, Model.AvailablePriceDisplayTypes)
+				@Html.SettingEditorFor(model => model.PriceDisplayType, @Html.DropDownListFor(model => model.PriceDisplayType, Model.AvailablePriceDisplayTypes))
                 @Html.ValidationMessageFor(model => model.PriceDisplayType)
             </td>
         </tr>

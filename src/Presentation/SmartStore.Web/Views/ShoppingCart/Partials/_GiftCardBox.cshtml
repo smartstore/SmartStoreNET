@@ -21,7 +21,7 @@
         @if (Model.Message.HasValue())
         {
             <div class="alert @(Model.IsWarning ? "alert-danger" : "alert-success") fade show">
-                <button type="button" class="close" data-dismiss="alert">×</button>
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
                 @Model.Message
             </div>
         }

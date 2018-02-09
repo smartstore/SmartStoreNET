@@ -125,8 +125,10 @@
 				dataType: 'html',
 				success: function (html) {
 					container.append(html);
-					if (++i < configUrls.length)
+					if (++i < configUrls.length) {
 						getFilterConfiguration(configUrls[i], container);
+					}
+					applyCommonPlugins(container);
 				}
 			});
 		}

@@ -12,7 +12,7 @@ namespace SmartStore.Admin.Models.Catalog
         public ProductVariantAttributeCombinationModel()
         {
             ProductVariantAttributes = new List<ProductVariantAttributeModel>();
-            AssignedPictureIds = new int[] { }; // init as empty array
+            AssignedPictureIds = new int[0];
             AssignablePictures = new List<PictureSelectItemModel>();
 			AvailableDeliveryTimes = new List<SelectListItem>();
             Warnings = new List<string>();
@@ -78,10 +78,12 @@ namespace SmartStore.Admin.Models.Catalog
         public IList<string> Warnings { get; set; }
 
         public int ProductId { get; set; }
+		public string PrimaryStoreCurrencyCode { get; set; }
+		public string BaseDimensionIn { get; set; }
 
-        #region Nested classes
+		#region Nested classes
 
-        public class PictureSelectItemModel : EntityModelBase
+		public class PictureSelectItemModel : EntityModelBase
         {
             public string PictureUrl { get; set; }
             public bool IsAssigned { get; set; }

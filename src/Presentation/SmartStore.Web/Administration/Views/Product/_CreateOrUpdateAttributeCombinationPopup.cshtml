@@ -97,7 +97,7 @@
                 @Html.SmartLabelFor(model => model.Price)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Price)
+                @Html.EditorFor(model => model.Price, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.Price)
             </td>
         </tr>
@@ -136,7 +136,7 @@
                 @Html.SmartLabelFor(model => model.Length)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Length)
+                @Html.EditorFor(model => model.Length, new { postfix = Model.BaseDimensionIn })
                 @Html.ValidationMessageFor(model => model.Length)
             </td>
         </tr>
@@ -145,7 +145,7 @@
                 @Html.SmartLabelFor(model => model.Width)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Width)
+                @Html.EditorFor(model => model.Width, new { postfix = Model.BaseDimensionIn })
                 @Html.ValidationMessageFor(model => model.Width)
             </td>
         </tr>
@@ -154,7 +154,7 @@
                 @Html.SmartLabelFor(model => model.Height)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Height)
+                @Html.EditorFor(model => model.Height, new { postfix = Model.BaseDimensionIn })
                 @Html.ValidationMessageFor(model => model.Height)
             </td>
         </tr>

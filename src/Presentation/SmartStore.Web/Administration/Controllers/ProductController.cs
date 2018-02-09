@@ -3544,10 +3544,12 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentNullException("variant");
 
 			model.ProductId = product.Id;
+			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
+			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId)?.Name;
 
 			if (entity == null)
 			{
-				// is a new entity, so initialize it properly
+				// It's a new entity, so initialize it properly.
 				model.StockQuantity = 10000;
 				model.IsActive = true;
 				model.AllowOutOfStockOrders = true;

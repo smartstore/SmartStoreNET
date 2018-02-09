@@ -6,9 +6,11 @@ using Rhino.Mocks;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Stores;
 using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Payments
@@ -17,7 +19,9 @@ namespace SmartStore.Services.Tests.Payments
     public class PaymentServiceTests : ServiceTest
     {
 		IRepository<PaymentMethod> _paymentMethodRepository;
-        PaymentSettings _paymentSettings;
+		IRepository<StoreMapping> _storeMappingRepository;
+		IStoreMappingService _storeMappingService;
+		PaymentSettings _paymentSettings;
         ShoppingCartSettings _shoppingCartSettings;
         IPaymentService _paymentService;
 		ICommonServices _services;
@@ -32,6 +36,8 @@ namespace SmartStore.Services.Tests.Payments
 
             _shoppingCartSettings = new ShoppingCartSettings();
 			_paymentMethodRepository = MockRepository.GenerateMock<IRepository<PaymentMethod>>();
+			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
+			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
 
 			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
@@ -40,7 +46,7 @@ namespace SmartStore.Services.Tests.Payments
 			var localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			localizationService.Expect(ls => ls.GetResource(null)).IgnoreArguments().Return("NotSupported").Repeat.Any();
 
-			_paymentService = new PaymentService(_paymentMethodRepository, _paymentSettings, _shoppingCartSettings, 
+			_paymentService = new PaymentService(_paymentMethodRepository, _storeMappingRepository, _storeMappingService, _paymentSettings, _shoppingCartSettings, 
 				this.ProviderManager, _services, _typeFinder);
         }
 

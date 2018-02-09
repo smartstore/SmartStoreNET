@@ -553,9 +553,9 @@
     <Compile Include="Migrations\201712290151517_AddressFormat.Designer.cs">
       <DependentUpon>201712290151517_AddressFormat.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802081135066_ShippingMethodMultistore.cs" />
-    <Compile Include="Migrations\201802081135066_ShippingMethodMultistore.Designer.cs">
-      <DependentUpon>201802081135066_ShippingMethodMultistore.cs</DependentUpon>
+    <Compile Include="Migrations\201802081830029_ShippingMethodMultistore.cs" />
+    <Compile Include="Migrations\201802081830029_ShippingMethodMultistore.Designer.cs">
+      <DependentUpon>201802081830029_ShippingMethodMultistore.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1006,8 +1006,8 @@
     <EmbeddedResource Include="Migrations\201712290151517_AddressFormat.resx">
       <DependentUpon>201712290151517_AddressFormat.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802081135066_ShippingMethodMultistore.resx">
-      <DependentUpon>201802081135066_ShippingMethodMultistore.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201802081830029_ShippingMethodMultistore.resx">
+      <DependentUpon>201802081830029_ShippingMethodMultistore.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

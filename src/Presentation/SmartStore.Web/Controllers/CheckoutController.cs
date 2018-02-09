@@ -264,10 +264,12 @@ namespace SmartStore.Web.Controllers
         [NonAction]
 		protected CheckoutPaymentMethodModel PreparePaymentMethodModel(IList<OrganizedShoppingCartItem> cart)
         {
-            var model = new CheckoutPaymentMethodModel();
+			var store = _storeContext.CurrentStore;
+			var customer = _workContext.CurrentCustomer;
+			var model = new CheckoutPaymentMethodModel();
 
-            // was shipping skipped 
-            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
+            // Was shipping skipped.
+            var shippingOptions = _shippingService.GetShippingOptions(cart, customer.ShippingAddress, "", store.Id).ShippingOptions;
 
             if (!cart.RequiresShipping() || (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption))
             {
@@ -277,10 +279,10 @@ namespace SmartStore.Web.Controllers
 			var paymentTypes = new PaymentMethodType[] { PaymentMethodType.Standard, PaymentMethodType.Redirection, PaymentMethodType.StandardAndRedirection };
 
             var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(_workContext.CurrentCustomer, cart, _storeContext.CurrentStore.Id, paymentTypes)
+				.LoadActivePaymentMethods(customer, cart, store.Id, paymentTypes)
                 .ToList();
 
-			var allPaymentMethods = _paymentService.GetAllPaymentMethods();
+			var allPaymentMethods = _paymentService.GetAllPaymentMethods(store.Id);
 
             foreach (var pm in boundPaymentMethods)
             {
@@ -305,9 +307,9 @@ namespace SmartStore.Web.Controllers
 				
 				pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);
 
-                // payment method additional fee
+                // Payment method additional fee.
 				decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, pm.Metadata.SystemName);
-                decimal rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
+                decimal rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, customer);
                 decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
                 
 				if (rate != decimal.Zero)
@@ -315,12 +317,10 @@ namespace SmartStore.Web.Controllers
 
                 model.PaymentMethods.Add(pmModel);
             }
-            
-            // find a selected (previously) payment method
-			var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-				 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
 
-			bool selected = false;
+			// Find a selected (previously) payment method.
+			var selected = false;
+			var selectedPaymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
 			if (selectedPaymentMethodSystemName.HasValue())
             {
                 var paymentMethodToSelect = model.PaymentMethods.Find(pm => pm.PaymentMethodSystemName.IsCaseInsensitiveEqual(selectedPaymentMethodSystemName));
@@ -331,7 +331,7 @@ namespace SmartStore.Web.Controllers
 				}
             }
 
-            // if no option has been selected, let's do it for the first one
+            // If no option has been selected, let's do it for the first one.
 			if (!selected)
             {
                 var paymentMethodToSelect = model.PaymentMethods.FirstOrDefault();

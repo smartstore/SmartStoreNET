@@ -2,19 +2,17 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Directory
 {
-    /// <summary>
-    /// Represents a country
-    /// </summary>
+	/// <summary>
+	/// Represents a country
+	/// </summary>
 	[DataContract]
 	public partial class Country : BaseEntity, ILocalizedEntity, IStoreMappingSupported
     {
         private ICollection<StateProvince> _stateProvinces;
-        private ICollection<ShippingMethod> _restrictedShippingMethods;
 
         /// <summary>
         /// Gets or sets the name
@@ -90,15 +88,5 @@ namespace SmartStore.Core.Domain.Directory
 			get { return _stateProvinces ?? (_stateProvinces = new HashSet<StateProvince>()); }
             protected set { _stateProvinces = value; }
         }
-
-        /// <summary>
-        /// Gets or sets the restricted shipping methods
-        /// </summary>
-        public virtual ICollection<ShippingMethod> RestrictedShippingMethods
-        {
-			get { return _restrictedShippingMethods ?? (_restrictedShippingMethods = new HashSet<ShippingMethod>()); }
-            protected set { _restrictedShippingMethods = value; }
-        }
     }
-
 }

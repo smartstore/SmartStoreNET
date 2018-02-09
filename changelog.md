@@ -70,6 +70,7 @@
 * Payment-Filter: Fixed "The cast to value type 'System.Decimal' failed because the materialized value is null"
 * The tax value per tax rate was not updated when adding\removing a product to\from the order.
 * The option to send manually was ignored when sending e-mails
+* #528 LimitedToStores is required on payment provider rather than plugin level
 
 
 ## SmartStore.NET 3.0.3

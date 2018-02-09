@@ -117,8 +117,7 @@ namespace SmartStore.Admin.Infrastructure
 
 			//countries
 			CreateMap<CountryModel, Country>()
-				.ForMember(dest => dest.StateProvinces, mo => mo.Ignore())
-				.ForMember(dest => dest.RestrictedShippingMethods, mo => mo.Ignore());
+				.ForMember(dest => dest.StateProvinces, mo => mo.Ignore());
 			CreateMap<Country, CountryModel>()
 				.ForMember(dest => dest.NumberOfStates, mo => mo.MapFrom(src => src.StateProvinces != null ? src.StateProvinces.Count : 0))
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
@@ -402,8 +401,7 @@ namespace SmartStore.Admin.Infrastructure
 			CreateMap<ShippingMethod, ShippingMethodModel>()
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.FilterConfigurationUrls, mo => mo.Ignore());
-			CreateMap<ShippingMethodModel, ShippingMethod>()
-				.ForMember(dest => dest.RestrictedCountries, mo => mo.Ignore());
+			CreateMap<ShippingMethodModel, ShippingMethod>();
 			//plugins
 			CreateMap<PluginDescriptor, PluginModel>()
 				.ForMember(dest => dest.ConfigurationUrl, mo => mo.Ignore())

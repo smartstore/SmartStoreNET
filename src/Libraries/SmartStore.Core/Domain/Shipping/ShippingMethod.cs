@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 
@@ -12,8 +10,6 @@ namespace SmartStore.Core.Domain.Shipping
 	[DataContract]
 	public partial class ShippingMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported
 	{
-        private ICollection<Country> _restrictedCountries;
-
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -43,15 +39,5 @@ namespace SmartStore.Core.Domain.Shipping
 		/// </summary>
 		[DataMember]
 		public bool LimitedToStores { get; set; }
-
-		/// <summary>
-		/// Gets or sets the restricted countries
-		/// </summary>
-		[DataMember]
-		public virtual ICollection<Country> RestrictedCountries
-        {
-			get { return _restrictedCountries ?? (_restrictedCountries = new HashSet<Country>()); }
-            protected set { _restrictedCountries = value; }
-        }
     }
 }

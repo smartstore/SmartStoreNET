@@ -1,6 +1,6 @@
 ﻿@model PaymentMethodEditModel
 @{
-	ViewBag.Title = T("Common.Edit").Text + " - " + Model.FriendlyName;
+	ViewBag.Title = string.Concat(T("Common.Edit"), " - ", (ViewBag.Title as string) ?? Model.SystemName);
 
 	Html.AddScriptParts(true, "~/Scripts/2012.2.607/telerik.common.min.js");
 }
@@ -10,7 +10,7 @@
 	<div class="section-header">
 		<div class="title">
 			<img src="@Url.Content(Model.IconUrl)" alt="@Model.FriendlyName" />
-			@ViewBag.Title <span class="subtitle muted">(@(Model.SystemName))</span>
+			@ViewBag.Title
 			<a href="@Url.Action("Providers", "Payment")">(@T("Admin.Common.BackToList"))</a>
 		</div>
 		<div class="options">
@@ -35,6 +35,7 @@
 	{
 		x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
 		x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
+		x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
 		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "payment-method-edit", this.Html, this.Model));
 	})
@@ -132,6 +133,11 @@
 	<div>
 		<div id="FilterOutPaymentMethodContainer"></div>
 	</div>
+}
+
+@helper TabStores()
+{
+	@Html.Partial("StoreSelector", Model)
 }
 
 <script type="text/javascript">

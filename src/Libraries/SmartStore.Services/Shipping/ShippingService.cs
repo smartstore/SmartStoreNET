@@ -176,7 +176,7 @@ namespace SmartStore.Services.Shipping
 			{
 				query = 
 					from x in query
-					join sm in _storeMappingRepository.Table
+					join sm in _storeMappingRepository.TableUntracked
 					on new { c1 = x.Id, c2 = "ShippingMethod" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into x_sm
 					from sm in x_sm.DefaultIfEmpty()
 					where !x.LimitedToStores || storeId == sm.StoreId

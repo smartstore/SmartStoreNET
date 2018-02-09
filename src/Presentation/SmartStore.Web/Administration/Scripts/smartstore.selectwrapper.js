@@ -135,7 +135,7 @@
 						imageUrl = option.data('imageurl'),
             			color = option.data('color');
 
-            		if (imageUrl) {
+					if (imageUrl) {
             			return $('<span><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
             		}
             		else if (color) {

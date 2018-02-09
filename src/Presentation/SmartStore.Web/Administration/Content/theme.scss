@@ -277,6 +277,7 @@ $content-padding-y:			15px;
 @import 'shared/_animate.scss';
 @import "shared/_sortable-grip.scss";
 @import "shared/_entity-picker.scss";
+@import 'shared/_choice.scss';
 @import "shared/_utils.scss";
 
 //
@@ -394,6 +395,132 @@ html {
 		height: 100%;
 		padding: 0;
 	}
+}
+
+.section-title {
+	border-bottom: solid 3px $gray-300;
+	padding-bottom: 1px;
+	margin-bottom: 10px;
+	color: #009FFF;
+	font-size: 14px;
+	font-weight: 700;
+	vertical-align: bottom;
+}
+
+.section-title img {
+	vertical-align: middle;
+	padding-bottom: 2px;
+}
+
+.section-header {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	padding: 0.75rem ($content-padding-x / 2);
+	transition: background-color 0.1s ease-in-out, padding 0.1s ease-in-out;
+
+	@include make-row();
+	flex-wrap: nowrap;
+	margin-left: 0;
+	margin-right: 0;
+
+	.title, .options {
+		@include make-col-ready();
+		/*padding-left: 0;
+        padding-right: 0;*/
+	}
+
+	.title {
+		font-family: $headings-font-family;
+		font-weight: 400;
+		color: $headings-color;
+		font-size: $h5-font-size;
+		line-height: $input-height;
+		min-height: $input-height;
+		vertical-align: middle;
+		@include text-truncate();
+		padding-left: 0;
+		padding-right: 5px;
+		color: $text-muted;
+		// mimic .col
+		flex-basis: 0;
+		flex-grow: 1;
+		max-width: 100%;
+
+		> i {
+			font-size: 28px;
+			vertical-align: text-top;
+			margin-right: 0.5rem;
+			color: $text-muted;
+		}
+
+		> img {
+			max-height: $input-height;
+			max-width: 120px;
+			margin-right: 5px;
+			vertical-align: top;
+		}
+
+		a:not(.btn) {
+			text-decoration: none;
+			font-family: $font-family-sans-serif;
+			font-size: 12px;
+			font-weight: normal;
+		}
+	}
+	// .title
+	.options {
+		// mimic .col-auto
+		flex: 0 0 auto;
+		width: auto;
+		max-width: none; // Reset earlier grid tiers
+		padding-left: 5px;
+		padding-right: 0;
+
+		> * {
+			vertical-align: middle;
+		}
+
+		&.btn-toolbar {
+			margin: 0;
+		}
+
+		@media (max-width: 768px) {
+			// hide action button labels on small screens
+			.btn > span:not(:only-child) {
+				display: none;
+			}
+		}
+	}
+
+	&.sticky {
+		position: fixed;
+		z-index: 10;
+		left: $content-padding-x / 2;
+		right: $content-padding-x / 2;
+		margin-left: 0;
+		margin-right: 0;
+		background: $gray-100;
+		background: #fff;
+		border-bottom: 1px solid rgba(0,0,0, 0.08);
+	}
+
+	@include media-breakpoint-up(lg) {
+		padding-left: $content-padding-x;
+		padding-right: $content-padding-x;
+
+		&.sticky {
+			left: $content-padding-x;
+			right: $content-padding-x;
+		}
+	}
+}
+
+.popup .section-header.sticky {
+	left: 0;
+	right: 0;
+	top: 0;
 }
 
 //

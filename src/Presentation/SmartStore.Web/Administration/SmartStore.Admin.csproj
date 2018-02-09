@@ -910,6 +910,7 @@
     <Content Include="Content\skinning\_pnotify.scss" />
     <Content Include="Content\shared\_animate.scss" />
     <Content Include="Content\skinning\_fileupload.scss" />
+    <Content Include="Content\shared\_choice.scss" />
     <None Include="Content\telerik\_telerik.scss" />
     <Content Include="Content\_legacy.scss" />
     <Content Include="Content\vendors\select2\scss\_dropdown.scss" />

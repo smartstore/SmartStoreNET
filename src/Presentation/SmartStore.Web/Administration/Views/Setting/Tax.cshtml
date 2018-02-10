@@ -67,11 +67,10 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TaxDisplayType)
             </td>
-            <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.TaxDisplayType)
-                @Html.DropDownListForEnum(model => model.TaxDisplayType)
-                @Html.ValidationMessageFor(model => model.TaxDisplayType)
-            </td>
+			<td class="adminData">
+				@Html.EnumSettingEditorFor(model => model.TaxDisplayType)
+				@Html.ValidationMessageFor(model => model.TaxDisplayType)
+			</td>
         </tr>
         <tr>
             <td class="adminTitle">
@@ -145,24 +144,20 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TaxBasedOn)
             </td>
-            <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.TaxBasedOn)
-                @Html.DropDownListForEnum(model => model.TaxBasedOn)
-                @Html.ValidationMessageFor(model => model.TaxBasedOn)
-            </td>
+			<td class="adminData">
+				@Html.EnumSettingEditorFor(model => model.TaxBasedOn)
+				@Html.ValidationMessageFor(model => model.TaxBasedOn)
+			</td>
         </tr>
-        <tr class="adminGroup">
+        <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.DefaultTaxAddress)
             </td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.DefaultTaxAddress, "#pnlDefaultTaxAddress")
+				@Html.SettingEditorFor(model => Model.DefaultTaxAddress, @<div>
+					@Html.EditorFor(x => x.DefaultTaxAddress, "Address")
+				</div>)
 			</td>
-        </tr>
-        <tr>
-            <td id="pnlDefaultTaxAddress" colspan="2">
-                @Html.EditorFor(x => x.DefaultTaxAddress, "Address")
-            </td>
         </tr>
         <tr>
             <td class="adminSeparator" colspan="2">
@@ -174,8 +169,7 @@
 				@Html.SmartLabelFor(model => model.AuxiliaryServicesTaxingType)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.AuxiliaryServicesTaxingType)
-				@Html.DropDownListFor(model => model.AuxiliaryServicesTaxingType, Model.AvailableAuxiliaryServicesTaxTypes)
+				@Html.EnumSettingEditorFor(model => model.AuxiliaryServicesTaxingType)
 				@Html.ValidationMessageFor(model => model.AuxiliaryServicesTaxingType)
 			</td>
 		</tr>
@@ -203,8 +197,7 @@
 					@Html.SmartLabelFor(model => model.ShippingTaxClassId)
 				</td>
 				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.ShippingTaxClassId)
-					@Html.DropDownListFor(model => model.ShippingTaxClassId, Model.ShippingTaxCategories, T("Common.PleaseSelect").Text)
+					@Html.SettingEditorFor(model => model.ShippingTaxClassId, Html.DropDownListFor(model => model.ShippingTaxClassId, Model.ShippingTaxCategories, T("Common.PleaseSelect")))
 					@Html.ValidationMessageFor(model => model.ShippingTaxClassId)
 				</td>
 			</tr>
@@ -233,8 +226,7 @@
 					@Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
 				</td>
 				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.PaymentMethodAdditionalFeeTaxClassId)
-					@Html.DropDownListFor(model => model.PaymentMethodAdditionalFeeTaxClassId, Model.PaymentMethodAdditionalFeeTaxCategories, T("Common.PleaseSelect").Text)
+					@Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeTaxClassId, Html.DropDownListFor(model => model.PaymentMethodAdditionalFeeTaxClassId, Model.PaymentMethodAdditionalFeeTaxCategories, T("Common.PleaseSelect")))
 					@Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
 				</td>
 			</tr>
@@ -259,8 +251,7 @@
 					@Html.SmartLabelFor(model => model.EuVatShopCountryId)
 				</td>
 				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.EuVatShopCountryId)
-					@Html.DropDownListFor(model => model.EuVatShopCountryId, Model.EuVatShopCountries, T("Admin.Address.SelectCountry").Text)
+					@Html.SettingEditorFor(model => model.EuVatShopCountryId, Html.DropDownListFor(model => model.EuVatShopCountryId, Model.EuVatShopCountries, T("Admin.Address.SelectCountry")))
 					@Html.ValidationMessageFor(model => model.EuVatShopCountryId)
 				</td>
 			</tr>

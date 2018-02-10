@@ -277,8 +277,7 @@
 				@Html.SmartLabelFor(model => model.NewsLetterSubscription)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.NewsLetterSubscription)
-				@Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscriptions)
+				@Html.SettingEditorFor(model => model.NewsLetterSubscription, Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscriptions))
 				@Html.ValidationMessageFor(model => model.NewsLetterSubscription)
 			</td>
 		</tr>
@@ -305,8 +304,7 @@
 				@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOver)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.ThirdPartyEmailHandOver)
-				@Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver)
+				@Html.SettingEditorFor(model => model.ThirdPartyEmailHandOver, Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver))
 				@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOver)
 			</td>
 		</tr>

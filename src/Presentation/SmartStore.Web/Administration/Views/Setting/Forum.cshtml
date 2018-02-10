@@ -23,13 +23,15 @@
     @Html.ValidationSummary(false)
 
     <div class="adminContent">
-        <div class="adminTitle">
-            @Html.SmartLabelFor(model => model.ForumsEnabled)
-        </div>
-        <div class="adminData">
-			@Html.CheckBoxFor(model => model.ForumsEnabled, new { data_toggler_for = "#pnlForumsEnabled" })
-            @Html.ValidationMessageFor(model => model.ForumsEnabled)
-        </div>
+		<div class="adminRow">
+			<div class="adminTitle">
+				@Html.SmartLabelFor(model => model.ForumsEnabled)
+			</div>
+			<div class="adminData">
+				@Html.CheckBoxFor(model => model.ForumsEnabled, new { data_toggler_for = "#pnlForumsEnabled" })
+				@Html.ValidationMessageFor(model => model.ForumsEnabled)
+			</div>
+		</div>
 	</div>
 
 	<table id="pnlForumsEnabled" class="adminContent">
@@ -128,8 +130,7 @@
                 @Html.SmartLabelFor(model => model.ForumEditor)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.ForumEditor)
-                @Html.DropDownListForEnum(model => model.ForumEditor)
+				@Html.EnumSettingEditorFor(model => model.ForumEditor)
                 @Html.ValidationMessageFor(model => model.ForumEditor)
             </td>
         </tr>

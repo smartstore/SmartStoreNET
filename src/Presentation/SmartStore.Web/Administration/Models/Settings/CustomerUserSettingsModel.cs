@@ -7,7 +7,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
-    public partial class CustomerUserSettingsModel : ModelBase, ILocalizedModel<AddressSettingsLocalizedModel>
+	public partial class CustomerUserSettingsModel : ModelBase, ILocalizedModel<AddressSettingsLocalizedModel>
     {
         public CustomerUserSettingsModel()
         {
@@ -28,17 +28,16 @@ namespace SmartStore.Admin.Models.Settings
 
         public partial class CustomerSettingsModel
         {
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.UsernamesEnabled")]
+			public IList<SelectListItem> AvailableRegisterCustomerRoles { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.UsernamesEnabled")]
             public bool UsernamesEnabled { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNumberMethod")]
             public CustomerNumberMethod CustomerNumberMethod { get; set; }
-            public SelectList AvailableCustomerNumberMethods { get; set; }
-			public IList<SelectListItem> AvailableRegisterCustomerRoles { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNumberVisibility")]
             public CustomerNumberVisibility CustomerNumberVisibility { get; set; }
-            public SelectList AvailableCustomerNumberVisibilities { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowUsersToChangeUsernames")]
             public bool AllowUsersToChangeUsernames { get; set; }
@@ -47,7 +46,7 @@ namespace SmartStore.Admin.Models.Settings
             public bool CheckUsernameAvailabilityEnabled { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.UserRegistrationType")]
-            public int UserRegistrationType { get; set; }
+            public UserRegistrationType UserRegistrationType { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.RegisterCustomerRole")]
 			public int RegisterCustomerRoleId { get; set; }
@@ -77,7 +76,7 @@ namespace SmartStore.Admin.Models.Settings
             public bool HideBackInStockSubscriptionsTab { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNameFormat")]
-            public int CustomerNameFormat { get; set; }
+            public CustomerNameFormat CustomerNameFormat { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNameFormatMaxLength")]
 			public int CustomerNameFormatMaxLength { get; set; }

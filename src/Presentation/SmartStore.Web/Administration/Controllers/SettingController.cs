@@ -287,8 +287,6 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var model = forumSettings.ToModel();
-
-			model.ForumEditorValues = forumSettings.ForumEditor.ToSelectList();
 			
 			return View(model);
         }
@@ -430,14 +428,8 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            //load settings for a chosen store scope
 			var model = taxSettings.ToModel();
 
-            model.TaxBasedOnValues = taxSettings.TaxBasedOn.ToSelectList();
-            model.TaxDisplayTypeValues = taxSettings.TaxDisplayType.ToSelectList();
-			model.AvailableAuxiliaryServicesTaxTypes = taxSettings.AuxiliaryServicesTaxingType.ToSelectList();
-
-            //tax categories
             var taxCategories = _taxCategoryService.GetAllTaxCategories();
 			foreach (var tc in taxCategories)
 			{
@@ -450,13 +442,13 @@ namespace SmartStore.Admin.Controllers
 					Selected = tc.Id == taxSettings.PaymentMethodAdditionalFeeTaxClassId });
 			}
 
-            //EU VAT countries
+            // EU VAT countries.
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
 				model.EuVatShopCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString(), Selected = c.Id == taxSettings.EuVatShopCountryId });
 			}
 
-            //default tax address
+            // Default tax address.
             var defaultAddress = (taxSettings.DefaultTaxAddressId > 0 ? _addressService.GetAddressById(taxSettings.DefaultTaxAddressId) : null);
 
 			if (defaultAddress != null)
@@ -618,11 +610,11 @@ namespace SmartStore.Admin.Controllers
 
 			var model = rewardPointsSettings.ToModel();
 
-			if (storeScope > 0 && (_services.Settings.SettingExists(rewardPointsSettings, x => x.PointsForPurchases_Amount, storeScope) ||
-				_services.Settings.SettingExists(rewardPointsSettings, x => x.PointsForPurchases_Points, storeScope)))
-			{
-				StoreDependingSettings.AddOverrideKey(rewardPointsSettings, "PointsForPurchases_OverrideForStore");
-			}
+			//if (storeScope > 0 && (_services.Settings.SettingExists(rewardPointsSettings, x => x.PointsForPurchases_Amount, storeScope) ||
+			//	_services.Settings.SettingExists(rewardPointsSettings, x => x.PointsForPurchases_Points, storeScope)))
+			//{
+			//	StoreDependingSettings.AddOverrideKey(rewardPointsSettings, "PointsForPurchases_OverrideForStore");
+			//}
 
 			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 			
@@ -920,9 +912,6 @@ namespace SmartStore.Admin.Controllers
             model.ExternalAuthenticationSettings.AutoRegisterEnabled = externalAuthenticationSettings.AutoRegisterEnabled;
 
 			StoreDependingSettings.GetOverrideKeys(externalAuthenticationSettings, model.ExternalAuthenticationSettings, storeScope, _services.Settings, false);
-
-            model.CustomerSettings.AvailableCustomerNumberMethods = customerSettings.CustomerNumberMethod.ToSelectList(false);
-            model.CustomerSettings.AvailableCustomerNumberVisibilities = customerSettings.CustomerNumberVisibility.ToSelectList(false);
 
 			model.CustomerSettings.AvailableRegisterCustomerRoles = allCustomerRoles
 				.Where(x => x.SystemName != SystemCustomerRoleNames.Registered && x.SystemName != SystemCustomerRoleNames.Guests)

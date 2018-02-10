@@ -28,8 +28,7 @@
 				@Html.SmartLabelFor(model => model.SearchMode)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.SearchMode)
-				@Html.DropDownListFor(model => model.SearchMode, Model.AvailableSearchModes)
+				@Html.SettingEditorFor(model => model.SearchMode, Html.DropDownListFor(model => model.SearchMode, Model.AvailableSearchModes))
 				@Html.ValidationMessageFor(model => model.SearchMode)
 			</td>
 		</tr>
@@ -94,7 +93,7 @@
 					@Html.SmartLabelFor(model => model.InstantSearchNumberOfProducts)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.InstantSearchNumberOfProducts, null)
+					@Html.SettingEditorFor(model => model.InstantSearchNumberOfProducts)
 					@Html.ValidationMessageFor(model => model.InstantSearchNumberOfProducts)
 				</td>
 			</tr>
@@ -103,7 +102,7 @@
 					@Html.SmartLabelFor(model => model.InstantSearchTermMinLength)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.InstantSearchTermMinLength, null)
+					@Html.SettingEditorFor(model => model.InstantSearchTermMinLength)
 					@Html.ValidationMessageFor(model => model.InstantSearchTermMinLength)
 				</td>
 			</tr>
@@ -113,8 +112,7 @@
                 @Html.SmartLabelFor(model => model.DefaultSortOrder)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.DefaultSortOrder)
-                @Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes)
+				@Html.SettingEditorFor(model => model.DefaultSortOrder, Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes))
                 @Html.ValidationMessageFor(model => model.DefaultSortOrder)
             </td>
         </tr>
@@ -135,7 +133,7 @@
 					@Html.SmartLabelFor(model => model.FilterMinHitCount)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.FilterMinHitCount, null)
+					@Html.SettingEditorFor(model => model.FilterMinHitCount)
 					@Html.ValidationMessageFor(model => model.FilterMinHitCount)
 				</td>
 			</tr>
@@ -145,7 +143,7 @@
 				@Html.SmartLabelFor(model => model.FilterMaxChoicesCount)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.FilterMaxChoicesCount, null)
+				@Html.SettingEditorFor(model => model.FilterMaxChoicesCount)
 				@Html.ValidationMessageFor(model => model.FilterMaxChoicesCount)
 			</td>
 		</tr>

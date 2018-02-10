@@ -103,8 +103,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.PageTitleSeoAdjustment)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.SeoSettings.PageTitleSeoAdjustment)
-                @Html.DropDownListForEnum(model => model.SeoSettings.PageTitleSeoAdjustment )
+				@Html.EnumSettingEditorFor(model => model.SeoSettings.PageTitleSeoAdjustment)
                 @Html.ValidationMessageFor(model => model.SeoSettings.PageTitleSeoAdjustment)
             </td>
         </tr>
@@ -140,16 +139,17 @@
 				@Html.SmartLabelFor(model => model.SeoSettings.MetaRobotsContent)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.SeoSettings.MetaRobotsContent)
-				@Html.DropDownListFor(model => model.SeoSettings.MetaRobotsContent, new List<SelectListItem>
-				{
-					new SelectListItem { Text = "index", Value = "index" },
-					new SelectListItem { Text = "noindex", Value = "noindex" },
-					new SelectListItem { Text = "index, follow", Value = "index, follow" },
-					new SelectListItem { Text = "index, nofollow", Value = "index, nofollow" },
-					new SelectListItem { Text = "noindex, follow", Value = "noindex, follow" },
-					new SelectListItem { Text = "noindex, nofollow", Value = "noindex, nofollow" }
-				}, T("Common.Unspecified"))
+				@Html.SettingEditorFor(model => model.SeoSettings.MetaRobotsContent, Html.DropDownListFor(model => model.SeoSettings.MetaRobotsContent,
+					new List<SelectListItem>
+					{
+						new SelectListItem { Text = "index", Value = "index" },
+						new SelectListItem { Text = "noindex", Value = "noindex" },
+						new SelectListItem { Text = "index, follow", Value = "index, follow" },
+						new SelectListItem { Text = "index, nofollow", Value = "index, nofollow" },
+						new SelectListItem { Text = "noindex, follow", Value = "noindex, follow" },
+						new SelectListItem { Text = "noindex, nofollow", Value = "noindex, nofollow" }
+					},
+					T("Common.Unspecified")))
 				@Html.ValidationMessageFor(model => model.SeoSettings.MetaRobotsContent)
 			</td>
 		</tr>
@@ -167,8 +167,7 @@
 				@Html.SmartLabelFor(model => model.SeoSettings.CanonicalHostNameRule)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.SeoSettings.CanonicalHostNameRule)
-				@Html.DropDownListForEnum(model => model.SeoSettings.CanonicalHostNameRule)
+				@Html.EnumSettingEditorFor(model => model.SeoSettings.CanonicalHostNameRule)
 				@Html.ValidationMessageFor(model => model.SeoSettings.CanonicalHostNameRule)
 			</td>
 		</tr>
@@ -537,8 +536,8 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.Salutation)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.CompanyInformationSettings.Salutation)
-                @Html.DropDownListFor(model => model.CompanyInformationSettings.Salutation, Model.CompanyInformationSettings.Salutations)
+				@Html.SettingEditorFor(model => model.CompanyInformationSettings.Salutation, 
+					Html.DropDownListFor(model => model.CompanyInformationSettings.Salutation, Model.CompanyInformationSettings.Salutations))
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Salutation)
             </td>
         </tr>
@@ -574,8 +573,8 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.CompanyManagementDescription)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.CompanyInformationSettings.CompanyManagementDescription)
-                @Html.DropDownListFor(model => model.CompanyInformationSettings.CompanyManagementDescription, Model.CompanyInformationSettings.ManagementDescriptions)
+				@Html.SettingEditorFor(model => model.CompanyInformationSettings.CompanyManagementDescription, 
+					Html.DropDownListFor(model => model.CompanyInformationSettings.CompanyManagementDescription, Model.CompanyInformationSettings.ManagementDescriptions))
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CompanyManagementDescription)
             </td>
         </tr>
@@ -631,8 +630,8 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.CountryId)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.CompanyInformationSettings.CountryId)
-                @Html.DropDownListFor(model => model.CompanyInformationSettings.CountryId, Model.CompanyInformationSettings.AvailableCountries, new { style = "min-width:289px" } )
+				@Html.SettingEditorFor(model => model.CompanyInformationSettings.CountryId, 
+					Html.DropDownListFor(model => model.CompanyInformationSettings.CountryId, Model.CompanyInformationSettings.AvailableCountries))
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CountryId)
             </td>
         </tr>

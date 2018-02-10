@@ -87,18 +87,15 @@
                 @Html.ValidationMessageFor(model => model.ChargeOnlyHighestProductShippingSurcharge)
             </td>
         </tr>
-		<tr class="adminGroup">
+		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.ShippingOriginAddress)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.ShippingOriginAddress, "#pnlShippingOriginAddress")
+				@Html.SettingEditorFor(model => Model.ShippingOriginAddress, @<div>
+					@Html.EditorFor(model => model.ShippingOriginAddress, "Address")
+				</div>)
 			</td>
 		</tr>
-        <tr>
-            <td id="pnlShippingOriginAddress" colspan="2">
-                @Html.EditorFor(model => model.ShippingOriginAddress, "Address")
-            </td>
-        </tr>        
     </table>
 }

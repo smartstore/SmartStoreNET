@@ -79,8 +79,7 @@
 				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormat)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.UserRegistrationType)
-				@Html.DropDownListFor(model => model.CustomerSettings.CustomerNameFormat, ((CustomerNameFormat)Model.CustomerSettings.CustomerNameFormat).ToSelectList())
+				@Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNameFormat)
 				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormat)
 			</td>
 		</tr>
@@ -99,8 +98,7 @@
 				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberMethod)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberMethod)
-				@Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberMethod, Model.CustomerSettings.AvailableCustomerNumberMethods)
+				@Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNumberMethod)
 				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberMethod)
 			</td>
 		</tr>
@@ -109,8 +107,7 @@
 				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberVisibility)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberVisibility)
-				@Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberVisibility, Model.CustomerSettings.AvailableCustomerNumberVisibilities)
+				@Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNumberVisibility)
 				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberVisibility)
 			</td>
 		</tr>
@@ -120,8 +117,7 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.UserRegistrationType)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.UserRegistrationType)
-                @Html.DropDownListFor(model => model.CustomerSettings.UserRegistrationType, ((UserRegistrationType)Model.CustomerSettings.UserRegistrationType).ToSelectList())
+				@Html.EnumSettingEditorFor(model => model.CustomerSettings.UserRegistrationType)
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UserRegistrationType)
             </td>
         </tr>
@@ -139,8 +135,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.RegisterCustomerRoleId)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.RegisterCustomerRoleId)
-                @Html.DropDownListFor(model => model.CustomerSettings.RegisterCustomerRoleId, Model.CustomerSettings.AvailableRegisterCustomerRoles, T("Common.Unspecified"))
+				@Html.SettingEditorFor(model => model.CustomerSettings.RegisterCustomerRoleId,
+					Html.DropDownListFor(model => model.CustomerSettings.RegisterCustomerRoleId, Model.CustomerSettings.AvailableRegisterCustomerRoles, T("Common.Unspecified")))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.RegisterCustomerRoleId)
             </td>
         </tr>
@@ -680,8 +676,8 @@
                 @Html.SmartLabelFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
-                @Html.DropDownListFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId, Model.DateTimeSettings.AvailableTimeZones)
+				@Html.SettingEditorFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId, 
+					Html.DropDownListFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId, Model.DateTimeSettings.AvailableTimeZones))
                 @Html.ValidationMessageFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
             </td>
         </tr>

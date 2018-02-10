@@ -262,28 +262,25 @@
 {
     if (Model.Id > 0)
     {
-		<script type="text/javascript">
-            
-				$(document).ready(function () {
-            
-					$("#@Html.FieldIdFor(model => model.AddDiscountRequirement)").change(loadNewRequirementBox);
-
-					//load add requirement box
+		<script>
+				$(function () {
+					// load add requirement box
 					loadNewRequirementBox();
 
-					//load existing requirements
+					// load existing requirements
 					loadExistingRequirements();
-                           
+
+					$('#discountRequirementContainer').on('change', "#@Html.FieldIdFor(model => model.AddDiscountRequirement)", loadNewRequirementBox);
+
 				   //adding requirement event
-				   $("#discountRequirementContainer").bind('smnewdiscountruleadded', function(event, newRequirementId) {
-  
+				   $("#discountRequirementContainer").on('smnewdiscountruleadded', function(e, newRequirementId) {
 						var discountId = @Model.Id;
 						$.ajax({
 							cache:false,
 							type: "POST",
 							url: "@(Url.Action("GetDiscountRequirementMetaInfo", "Discount"))",
 							data: { "discountRequirementId": newRequirementId, "discountId": discountId },
-							success: function (result) {                            
+							success: function (result) {
 								discountRequirements.push({ discountRequirementId: newRequirementId, ruleName : result.ruleName, url : result.url });
 								loadExistingRequirements();
 							},
@@ -294,8 +291,8 @@
 
 				   });
 				});
-			
-				//load requirement HTML
+
+				// load requirement HTML
 				function loadRequirement(configureRuleUrl, placeholderName) {
 					$.ajax({
 						cache:false,
@@ -311,12 +308,12 @@
 					});
 				}
 
-				//load HTML for adding requirement
+				// load HTML for adding requirement
 				function loadNewRequirementBox() {
 					//load URL
 					var ruleSystemName = $("#@Html.FieldIdFor(model => model.AddDiscountRequirement)").val();
 					var discountId = @Model.Id;
-					if (ruleSystemName != '') {
+					if (ruleSystemName) {
 						$.ajax({
 							cache:false,
 							url: "@(Url.Action("GetDiscountRequirementConfigurationUrl", "Discount"))",
@@ -328,7 +325,7 @@
 							},
 							error:function (xhr, ajaxOptions, thrownError){
 								$('#addrequirementplaceholder').html('Failed to load requirement URL');
-							}  
+							}
 						});
 					}
 					else {
@@ -336,7 +333,7 @@
 					}
 				}
 
-			   //array of exisiting discount requirements
+			   // array of exisiting discount requirements
 			   var discountRequirements = [
 						@for (int i = 0; i < Model.DiscountRequirementMetaInfos.Count; i++)
 						{
@@ -346,25 +343,30 @@
 
 						}
 				   ];
-           
-			   //load HTML for exisiting requirements
+
+			   // load HTML for exisiting requirements
 			   function loadExistingRequirements() {
 				   $("#discountRequirementContainer").html('');
-				   $("#discountRequirementTemplate").tmpl(discountRequirements).appendTo("#discountRequirementContainer");
+				   $("#newDiscountRequirementTemplate").tmpl({}).appendTo("#discountRequirementContainer");
+				   $("#discountRequirementTemplate").tmpl(discountRequirements).prependTo("#discountRequirementContainer");
 
 				   var discountRequirementsLen = discountRequirements.length;
 				   for (var i=0; i<discountRequirementsLen; i++) {
 					   var url = discountRequirements[i].url;
 					   var discountRequirementId = discountRequirements[i].discountRequirementId;
 					   var placeholderName = '#editrequirementplaceholder' + discountRequirementId;
-					   $(placeholderName).html('<i class="fa fa-circle-o-notch fa-spin"></i>');
+
+					   $(placeholderName)
+						   .html('')
+						   .append($('<div class="spinner-container active text-center"></div>').append(createCircularSpinner(48, true, 2)));
+
 					   loadRequirement(url, placeholderName);
 				   }
 			   }
 
 			   //delete requirement rule
-			   function deleteRequirement(discountRequirementId) {           
-					var discountId = @Model.Id;                
+			   function deleteRequirement(discountRequirementId) {
+					var discountId = @Model.Id;
 					$.ajax({
 						cache:false,
 						type: "POST",
@@ -376,10 +378,10 @@
 						},
 						error:function (xhr, ajaxOptions, thrownError){
 							alert('Failed to delete requirement.')
-						}  
+						}
 					});
 
-                
+
 				function removeRequirementByElement(arrayName,discountRequirementId) {
 					for(var i=0; i<arrayName.length; i++) {
 						if(arrayName[i].discountRequirementId==discountRequirementId) {
@@ -392,60 +394,66 @@
 		</script>
     
 		<!-- Template container -->
-		<div id="discountRequirementContainer">
+		<div id="discountRequirementContainer" class="card-deck card-cols-sm-1 card-cols-lg-2 card-cols-xl-3 discountreq-list mt-5">
 		</div>
 
 		<!-- Discount requirement template -->
 		<script id="discountRequirementTemplate" type="text/html">
-			<div id="editrequirement{{= discountRequirementId }}">
-				<div>@T("Admin.Promotions.Discounts.Requirements.DiscountRequirementType"): <b>{{= ruleName }}</b></div>
-				<div id="editrequirementplaceholder{{= discountRequirementId }}"></div>
-				<div class="adminContent">
-					<div class="adminRow mt-2">
-						<div class="adminTitle">&nbsp;</div>
-						<div class="adminData">
-							<button type="button" name="deleterequirement{{= discountRequirementId }}" id="deleterequirement{{= discountRequirementId }}" onclick="deleteRequirement({{= discountRequirementId }})" class="btn btn-danger">
-								<i class="fa fa-trash-o"></i>
-								<span>@T("Common.Remove")</span>
-							</button>
-						</div>
+			<div id="editrequirement{{= discountRequirementId }}" class="card card-shadow discountreq-item">
+				<div class="card-header text-truncate font-weight-medium d-flex align-items-center py-0 pr-0" title="{{= ruleName }}">
+					<div>{{= ruleName }}</div>
+					<div class="ml-auto">
+						<button type="button" class="btn btn-danger btn-flat btn-icon btn-lg rounded-right"
+								style="border-bottom-right-radius: 0 !important"
+								title="@T("Common.Remove")"
+								name="deleterequirement{{= discountRequirementId }}" 
+								id="deleterequirement{{= discountRequirementId }}" 
+								onclick="deleteRequirement({{= discountRequirementId }})">
+							<i class="fa fa-trash-o"></i>
+						</button>
 					</div>
-					<div class="adminRow">
-						<div class="adminSeparator"><hr/></div>
+				</div>
+				<div class="card-body">
+					<div id="editrequirementplaceholder{{= discountRequirementId }}"></div>
+				</div>
+			</div>
+		</script>
+
+		<script id="newDiscountRequirementTemplate" type="text/html">
+			<div id="newrequirement" class="card bg-light card-shadow card x-border-gray discountreq-add">
+				<div class="card-body">
+					<h4 class="mb-5 font-weight-medium text-primary">@T("Admin.Promotions.Discounts.Requirements.AddNew")</h4>
+					<div class="form-group">
+						@Html.SmartLabelFor(model => model.AddDiscountRequirement)
+						@Html.DropDownListFor(model => model.AddDiscountRequirement, Model.AvailableDiscountRequirementRules, new { data_select_min_results_for_search = 999 })
+						@Html.ValidationMessageFor(model => model.AddDiscountRequirement)
+					</div>
+					<div id="addrequirementplaceholder">
+						<!-- Placeholder -->
 					</div>
 				</div>
 			</div>
 		</script>
-            
-		<table class="adminContent">
-			<tr>
-				<td colspan="2">
-					<b>@T("Admin.Promotions.Discounts.Requirements.AddNew")</b>
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.AddDiscountRequirement)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.AddDiscountRequirement, Model.AvailableDiscountRequirementRules, new { data_select_min_results_for_search = 999 })
-					@Html.ValidationMessageFor(model => model.AddDiscountRequirement)
-				</td>
-			</tr>
-		</table>
-		<table class="adminContent">
-			<tr>
-				<td colspan="2">
-					<div id="addrequirementplaceholder">
+
+		@*<div class="well">
+			<div class="row">
+				<div class="col-6">
+					<h5>@T("Admin.Promotions.Discounts.Requirements.AddNew")</h5>
+					<div class="form-group">
+						@Html.SmartLabelFor(model => model.AddDiscountRequirement)
+						@Html.DropDownListFor(model => model.AddDiscountRequirement, Model.AvailableDiscountRequirementRules, new { data_select_min_results_for_search = 999 })
+						@Html.ValidationMessageFor(model => model.AddDiscountRequirement)
 					</div>
-				</td>
-			</tr>
-		</table>
-	
+				</div>
+				<div class="col-6">
+
+				</div>
+			</div>
+		</div>*@
 	}
 	else
 	{
-		<div class="alert alert-info alert-dismissable">
+		<div class="alert alert-warning alert-dismissable">
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>

@@ -222,7 +222,7 @@
 	    if (white) spinner.addClass('white');
 	    
 	    if (!_.isNumber(strokeWidth)) {
-	        strokeWidth = 6;
+	        strokeWidth = 4;
 	    }
 
 	    var svg = '<svg style="width:{0}px; height:{0}px" viewBox="0 0 64 64"><circle cx="32" cy="32" r="{1}" fill="none" stroke-width="{2}" stroke-miterlimit="10"></circle></svg>'.format(size, 32 - strokeWidth, strokeWidth);

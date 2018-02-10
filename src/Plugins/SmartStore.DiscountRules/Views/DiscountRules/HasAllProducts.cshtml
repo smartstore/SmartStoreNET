@@ -4,7 +4,7 @@
     Layout = "";
 } 
 <table class="adminContent">
-    <tr>
+    <tr class="wide">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Products)
         </td>
@@ -27,9 +27,9 @@
 						</div>
 					</div>
 
-					<button type="button" class="btn @(Model.RequirementId == 0 ? "btn-primary" : "btn-warning") btn-save-discount-rule mt-3">
-						<i class="fa fa-check"></i>
-						<span>@T("Admin.Common.Save")</span>
+					<button type="button" class="btn @(Model.RequirementId == 0 ? "btn-primary btn-block btn-lg" : "btn-warning") btn-save-discount-rule mt-3">
+						<i class="fa fa-@(Model.RequirementId == 0 ? "plus" : "check")"></i>
+						<span>@T(Model.RequirementId == 0 ? "Common.AddNew" : "Admin.Common.Save")</span>
 					</button>
 				</div>
 			</div>

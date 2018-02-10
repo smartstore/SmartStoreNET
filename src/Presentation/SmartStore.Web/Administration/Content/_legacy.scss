@@ -581,12 +581,15 @@ tr.adminGroup {
 }
 
 .color-container {
+	display: inline-block;
 	background-color: transparent;
-	padding-right: 6px;
+	padding-right: 0.5rem;
+	line-height: 1;
+
 	.color {
-		width: 10px;
-		height: 10px;
-		line-height: 10px;
+		width: $font-size-base;
+		height: $font-size-base;
+		vertical-align: bottom;
 		display: inline-block;
 		border: 1px solid #646464;
 	}

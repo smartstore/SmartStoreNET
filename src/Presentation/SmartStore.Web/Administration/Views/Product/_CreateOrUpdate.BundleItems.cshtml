@@ -128,12 +128,9 @@
 							.Centered();
 						columns.Bound(x => x.DisplayOrder)
 							.Centered();
-						columns.Bound(x => x.Id)
-							.Centered()
-							.ClientTemplate("<button onclick=\"" + "openPopup('" + @Url.Content("~/Admin/Product/BundleItemEditPopup/") + "<#= Id #>?btnId=btnRefreshBundleItems&formId=product-form'); return false;\" class='btn btn-secondary'>" + @T("Admin.Common.Edit").Text + "</button>")
-							.Title("");
 						columns.Command(commands =>
 						{
+							commands.Custom("edit-bundle-part").Text(T("Common.Edit"));
 							commands.Delete().Localize(T);
 						}).HtmlAttributes(new { align = "right" });
 					})
@@ -158,7 +155,7 @@
 		};
 
 		$(function() {
-			$('#btnRefreshBundleItems').click(function () {
+			$('#btnRefreshBundleItems').on('click', function () {
 				$("#bundleitems-grid").data('tGrid').ajaxRequest();
 				return false;
 			});
@@ -168,7 +165,19 @@
 				var info = $('#ProductBundleInfoContainer');
 				$(this).text($(this).attr(info.is(':visible') ? 'data-in' : 'data-out'));
 				info.slideToggle(200);
-			});	
+			});
+
+			$('#bundleitems-grid').on('click', '.t-grid-edit-bundle-part', function (e) {
+				e.preventDefault();
+				var grid = $('#bundleitems-grid').data('tGrid');
+				var tr = $(this).closest('tr');
+				var id = grid.dataItem(tr).Id;
+				var href = '@Url.Content("~/Admin/Product/BundleItemEditPopup/")' + id + '?btnId=btnRefreshBundleItems&formId=product-form';
+
+				openPopup(href);
+
+				return false;
+			});
 		});
     </script>
 }

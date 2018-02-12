@@ -38,7 +38,11 @@
                 @Html.SmartLabelFor(model => model.TransactMode)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.TransactMode, Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues))
+				@Html.SettingEditorFor(model => model.TransactMode, Html.DropDownListFor(model => model.TransactMode, new List<SelectListItem>
+				{
+					new SelectListItem { Text = T("Plugins.Payments.PayPalDirect.ModeAuth"), Value = TransactMode.Authorize.ToString(), Selected = Model.TransactMode == TransactMode.Authorize },
+					new SelectListItem { Text = T("Plugins.Payments.PayPalDirect.ModeAuthAndCapture"), Value = TransactMode.AuthorizeAndCapture.ToString(), Selected = Model.TransactMode == TransactMode.AuthorizeAndCapture }
+				}))
             </td>
         </tr>
 		<tr>

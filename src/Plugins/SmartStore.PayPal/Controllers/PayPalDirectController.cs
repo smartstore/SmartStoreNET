@@ -9,7 +9,6 @@ using SmartStore.PayPal.Settings;
 using SmartStore.PayPal.Validators;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
@@ -33,22 +32,11 @@ namespace SmartStore.PayPal.Controllers
 			_httpContext = httpContext;
 		}
 
-		private SelectList TransactModeValues(TransactMode selected)
-		{
-			return new SelectList(new List<object>
-			{
-				new { ID = (int)TransactMode.Authorize, Name = T("Plugins.Payments.PayPalDirect.ModeAuth") },
-				new { ID = (int)TransactMode.AuthorizeAndCapture, Name = T("Plugins.Payments.PayPalDirect.ModeAuthAndCapture") }
-			},
-			"ID", "Name", (int)selected);
-		}
-
 		[LoadSetting, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(PayPalDirectPaymentSettings settings, int storeScope)
 		{
             var model = new PayPalDirectConfigurationModel();
             model.Copy(settings, true);
-			model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
 			PrepareConfigurationModel(model, storeScope);
 

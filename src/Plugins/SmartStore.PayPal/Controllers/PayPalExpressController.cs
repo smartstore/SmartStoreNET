@@ -16,7 +16,6 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
@@ -51,16 +50,6 @@ namespace SmartStore.PayPal.Controllers
 			_genericAttributeService = genericAttributeService;
 		}
 
-		private SelectList TransactModeValues(TransactMode selected)
-		{
-			return new SelectList(new List<object>
-			{
-				new { ID = (int)TransactMode.Authorize, Name = T("Plugins.Payments.PayPalExpress.ModeAuth") },
-				new { ID = (int)TransactMode.AuthorizeAndCapture, Name = T("Plugins.Payments.PayPalExpress.ModeAuthAndCapture") }
-			},
-			"ID", "Name", (int)selected);
-		}
-
 		private string GetCheckoutButtonUrl(PayPalExpressPaymentSettings settings)
 		{
 			var expressCheckoutButton = "~/Plugins/SmartStore.PayPal/Content/checkout-button-default.png";
@@ -84,7 +73,6 @@ namespace SmartStore.PayPal.Controllers
 		{
             var model = new PayPalExpressConfigurationModel();
             model.Copy(settings, true);
-			model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
 			PrepareConfigurationModel(model, storeScope);
 

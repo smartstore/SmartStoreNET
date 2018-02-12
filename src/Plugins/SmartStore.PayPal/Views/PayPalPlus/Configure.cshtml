@@ -37,6 +37,8 @@
 
 @using (Html.BeginForm())
 {
+	@Html.HiddenFor(model => model.TransactMode)
+
     <table class="adminContent configure-paypal-plus">
 		<tr>
 			<td colspan="2">

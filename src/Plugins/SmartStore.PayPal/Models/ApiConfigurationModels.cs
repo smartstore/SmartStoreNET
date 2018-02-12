@@ -21,8 +21,7 @@ namespace SmartStore.PayPal.Models
 		public bool IpnChangesPaymentStatus { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.TransactMode")]
-		public int TransactMode { get; set; }
-		public SelectList TransactModeValues { get; set; }
+		public TransactMode TransactMode { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.SecurityProtocol")]
 		public SecurityProtocolType? SecurityProtocol { get; set; }
@@ -97,6 +96,11 @@ namespace SmartStore.PayPal.Models
 
 	public class PayPalPlusConfigurationModel : ApiConfigurationModel
 	{
+		public PayPalPlusConfigurationModel()
+		{
+			TransactMode = TransactMode.AuthorizeAndCapture;
+		}
+
 		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.ThirdPartyPaymentMethods")]
 		public List<string> ThirdPartyPaymentMethods { get; set; }
 		public List<SelectListItem> AvailableThirdPartyPaymentMethods { get; set; }
@@ -113,12 +117,10 @@ namespace SmartStore.PayPal.Models
 			if (fromSettings)
 			{
 				MiniMapper.Map(settings, this);
-				TransactMode = (int)Settings.TransactMode.AuthorizeAndCapture;
 			}
 			else
 			{
 				MiniMapper.Map(this, settings);
-				settings.TransactMode = Settings.TransactMode.AuthorizeAndCapture;
 			}
 		}
 	}

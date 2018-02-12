@@ -74,7 +74,7 @@
 				@Html.SmartLabelFor(model => model.InstantSearchEnabled)
 			</td>
 			<td class="adminData">
-				@Html.CheckBoxFor(model => model.InstantSearchEnabled, new { data_toggler_for = "#pnlInstantSearch" })
+				@Html.SettingEditorFor(model => model.InstantSearchEnabled, Html.CheckBoxFor(model => model.InstantSearchEnabled, new { data_toggler_for = "#pnlInstantSearch" }))
 				@Html.ValidationMessageFor(model => model.InstantSearchEnabled)
 			</td>
 		</tr>
@@ -181,11 +181,7 @@
 				.Text(T("Search.Facet.NewArrivals").Text)
 				.Content(Html.Partial("Partials/CommonFacet", Model.NewArrivalsFacet, CreateFacetViewData("NewArrivalsFacet")).ToHtmlString());
 		})
-
-
 	</div>
-
-
 }
 
 @functions

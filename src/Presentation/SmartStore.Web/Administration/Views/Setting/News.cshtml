@@ -1,5 +1,4 @@
 ﻿@model NewsSettingsModel
-@using Telerik.Web.Mvc.UI;
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.News").Text;
 }
@@ -28,7 +27,7 @@
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlNewsEnabled" })
+				@Html.SettingEditorFor(model => model.Enabled, Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlNewsEnabled" }))
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
         </tr>
@@ -83,7 +82,7 @@
 					@Html.SmartLabelFor(model => model.MaxAgeInDays)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.MaxAgeInDays)
+					@Html.SettingEditorFor(model => model.MaxAgeInDays, null, new { postfix = T("Time.Days").Text })
 					@Html.ValidationMessageFor(model => model.MaxAgeInDays)
 				</td>
 			</tr>

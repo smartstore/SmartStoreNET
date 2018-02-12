@@ -333,21 +333,25 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
+			var store = storeScope == 0 ? _services.StoreContext.CurrentStore : _services.StoreService.GetStoreById(storeScope);
 			var model = shippingSettings.ToModel();
+			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 
 			StoreDependingSettings.GetOverrideKeys(shippingSettings, model, storeScope, _services.Settings);
 
 			// Shipping origin
 			if (storeScope > 0 && _services.Settings.SettingExists(shippingSettings, x => x.ShippingOriginAddressId, storeScope))
+			{
 				StoreDependingSettings.AddOverrideKey(shippingSettings, "ShippingOriginAddress");
+			}
 
 			var originAddress = shippingSettings.ShippingOriginAddressId > 0
-									 ? _addressService.GetAddressById(shippingSettings.ShippingOriginAddressId)
-									 : null;
-			if (originAddress != null)
-				model.ShippingOriginAddress = originAddress.ToModel(_addressService);
-			else
-				model.ShippingOriginAddress = new AddressModel();
+				? _addressService.GetAddressById(shippingSettings.ShippingOriginAddressId)
+				: null;
+
+			model.ShippingOriginAddress = originAddress != null
+				? originAddress.ToModel(_addressService)
+				: new AddressModel();
 
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
@@ -362,14 +366,14 @@ namespace SmartStore.Admin.Controllers
 				foreach (var s in states)
 				{
 					model.ShippingOriginAddress.AvailableStates.Add(
-						new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == originAddress.StateProvinceId) }
+						new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == originAddress.StateProvinceId) }
 					);
 				}
 			}
 			else
 			{
 				model.ShippingOriginAddress.AvailableStates.Add(
-					new SelectListItem() { Text = _services.Localization.GetResource("Admin.Address.OtherNonUS"), Value = "0" }
+					new SelectListItem { Text = _services.Localization.GetResource("Admin.Address.OtherNonUS"), Value = "0" }
 				);
 			}
 

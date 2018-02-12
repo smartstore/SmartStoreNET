@@ -1,5 +1,4 @@
 ﻿@model ForumSettingsModel
-@using Telerik.Web.Mvc.UI;
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Forums").Text;
 }
@@ -28,7 +27,7 @@
 				@Html.SmartLabelFor(model => model.ForumsEnabled)
 			</div>
 			<div class="adminData">
-				@Html.CheckBoxFor(model => model.ForumsEnabled, new { data_toggler_for = "#pnlForumsEnabled" })
+				@Html.SettingEditorFor(model => model.ForumsEnabled, Html.CheckBoxFor(model => model.ForumsEnabled, new { data_toggler_for = "#pnlForumsEnabled" }))
 				@Html.ValidationMessageFor(model => model.ForumsEnabled)
 			</div>
 		</div>
@@ -153,7 +152,7 @@
                 @Html.SmartLabelFor(model => model.AllowPrivateMessages)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AllowPrivateMessages, new { data_toggler_for = "#pnlPrivateMessages" })
+				@Html.SettingEditorFor(model => model.AllowPrivateMessages, Html.CheckBoxFor(model => model.AllowPrivateMessages, new { data_toggler_for = "#pnlPrivateMessages" }))
                 @Html.ValidationMessageFor(model => model.AllowPrivateMessages)
             </td>
         </tr>
@@ -187,7 +186,7 @@
                 @Html.SmartLabelFor(model => model.ForumFeedsEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.ForumFeedsEnabled, new { data_toggler_for = "#pnlForumFeeds" })
+				@Html.SettingEditorFor(model => model.ForumFeedsEnabled, Html.CheckBoxFor(model => model.ForumFeedsEnabled, new { data_toggler_for = "#pnlForumFeeds" }))
                 @Html.ValidationMessageFor(model => model.ForumFeedsEnabled)
             </td>
         </tr>

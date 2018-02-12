@@ -27,7 +27,7 @@
                 @Html.SmartLabelFor(model => model.FreeShippingOverXEnabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.FreeShippingOverXEnabled, new { data_toggler_for = "#pnlFreeShipping" })
+				@Html.SettingEditorFor(model => model.FreeShippingOverXEnabled, Html.CheckBoxFor(model => model.FreeShippingOverXEnabled, new { data_toggler_for = "#pnlFreeShipping" }))
                 @Html.ValidationMessageFor(model => model.FreeShippingOverXEnabled)
             </td>
         </tr>
@@ -37,7 +37,7 @@
 					@Html.SmartLabelFor(model => model.FreeShippingOverXValue)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.FreeShippingOverXValue)
+					@Html.SettingEditorFor(model => model.FreeShippingOverXValue, null, new { postfix = Model.PrimaryStoreCurrencyCode })
 					@Html.ValidationMessageFor(model => model.FreeShippingOverXValue)
 				</td>
 			</tr>

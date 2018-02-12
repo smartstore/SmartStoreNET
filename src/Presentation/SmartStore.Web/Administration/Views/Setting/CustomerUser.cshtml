@@ -1,5 +1,4 @@
 ﻿@model CustomerUserSettingsModel
-@using Telerik.Web.Mvc.UI;
 @using SmartStore.Core.Domain.Customers;
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.CustomerUser").Text;
@@ -50,7 +49,7 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.UsernamesEnabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.CustomerSettings.UsernamesEnabled, new { data_toggler_for = "#pnlUsernamesEnabled" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.UsernamesEnabled, Html.CheckBoxFor(model => model.CustomerSettings.UsernamesEnabled, new { data_toggler_for = "#pnlUsernamesEnabled" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UsernamesEnabled)
             </td>
         </tr>
@@ -146,7 +145,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars, new { data_toggler_for = "#pnlDefaultAvatarEnabled" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars, 
+					Html.CheckBoxFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars, new { data_toggler_for = "#pnlDefaultAvatarEnabled" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)
             </td>
         </tr>
@@ -292,7 +292,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CompanyEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.CustomerSettings.CompanyEnabled, new { data_toggler_for = "#pnlCompanyRequired" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.CompanyEnabled, 
+					Html.CheckBoxFor(model => model.CustomerSettings.CompanyEnabled, new { data_toggler_for = "#pnlCompanyRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CompanyEnabled)
             </td>
         </tr>
@@ -310,7 +311,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.StreetAddressEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.CustomerSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlStreetAddressRequired" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.StreetAddressEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlStreetAddressRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StreetAddressEnabled)
             </td>
         </tr>
@@ -328,7 +330,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.StreetAddress2Enabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.CustomerSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlStreetAddress2Required" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.StreetAddress2Enabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlStreetAddress2Required" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StreetAddress2Enabled)
             </td>
         </tr>
@@ -346,7 +349,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.ZipPostalCodeEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.CustomerSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlZipPostalCodeRequired" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.ZipPostalCodeEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlZipPostalCodeRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.ZipPostalCodeEnabled)
             </td>
         </tr>
@@ -364,7 +368,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CityEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.CustomerSettings.CityEnabled, new { data_toggler_for = "#pnlCityRequired" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.CityEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.CityEnabled, new { data_toggler_for = "#pnlCityRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CityEnabled)
             </td>
         </tr>
@@ -382,7 +387,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CountryEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.CustomerSettings.CountryEnabled, new { data_toggler_for = "#pnlStateProvincEnabled" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.CountryEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.CountryEnabled, new { data_toggler_for = "#pnlStateProvincEnabled" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CountryEnabled)
             </td>
         </tr>
@@ -400,7 +406,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.PhoneEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.CustomerSettings.PhoneEnabled, new { data_toggler_for = "#pnlPhoneRequired" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.PhoneEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.PhoneEnabled, new { data_toggler_for = "#pnlPhoneRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.PhoneEnabled)
             </td>
         </tr>
@@ -418,7 +425,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.FaxEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.CustomerSettings.FaxEnabled, new { data_toggler_for = "#pnlFaxRequired" })
+				@Html.SettingEditorFor(model => model.CustomerSettings.FaxEnabled, 
+					Html.CheckBoxFor(model => model.CustomerSettings.FaxEnabled, new { data_toggler_for = "#pnlFaxRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.FaxEnabled)
             </td>
         </tr>
@@ -465,7 +473,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.SalutationEnabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.AddressSettings.SalutationEnabled, new { data_toggler_for = "#pnlAddressSettingsSalutations" })
+				@Html.SettingEditorFor(model => model.AddressSettings.SalutationEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.SalutationEnabled, new { data_toggler_for = "#pnlAddressSettingsSalutations" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.SalutationEnabled)
             </td>
         </tr>
@@ -517,7 +526,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.CompanyEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AddressSettings.CompanyEnabled, new { data_toggler_for = "#pnlAddressCompanyRequired" })
+				@Html.SettingEditorFor(model => model.AddressSettings.CompanyEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.CompanyEnabled, new { data_toggler_for = "#pnlAddressCompanyRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.CompanyEnabled)
             </td>
         </tr>
@@ -535,7 +545,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.StreetAddressEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AddressSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlAddressStreetAddressRequired" })
+				@Html.SettingEditorFor(model => model.AddressSettings.StreetAddressEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlAddressStreetAddressRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.StreetAddressEnabled)
             </td>
         </tr>
@@ -553,7 +564,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.StreetAddress2Enabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AddressSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlAddressStreetAddress2Required" })
+				@Html.SettingEditorFor(model => model.AddressSettings.StreetAddress2Enabled,
+					Html.CheckBoxFor(model => model.AddressSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlAddressStreetAddress2Required" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.StreetAddress2Enabled)
             </td>
         </tr>
@@ -571,7 +583,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.ZipPostalCodeEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AddressSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlAddressZipPostalCodeRequired" })
+				@Html.SettingEditorFor(model => model.AddressSettings.ZipPostalCodeEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlAddressZipPostalCodeRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.ZipPostalCodeEnabled)
             </td>
         </tr>
@@ -589,7 +602,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.CityEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AddressSettings.CityEnabled, new { data_toggler_for = "#pnlAddressCityRequired" })
+				@Html.SettingEditorFor(model => model.AddressSettings.CityEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.CityEnabled, new { data_toggler_for = "#pnlAddressCityRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.CityEnabled)
             </td>
         </tr>
@@ -607,7 +621,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.CountryEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AddressSettings.CountryEnabled, new { data_toggler_for = "#pnlAddressStateProvinceEnabled" })
+				@Html.SettingEditorFor(model => model.AddressSettings.CountryEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.CountryEnabled, new { data_toggler_for = "#pnlAddressStateProvinceEnabled" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.CountryEnabled)
             </td>
         </tr>
@@ -625,7 +640,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.PhoneEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AddressSettings.PhoneEnabled, new { data_toggler_for = "#pnlAddressPhoneRequired" })
+				@Html.SettingEditorFor(model => model.AddressSettings.PhoneEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.PhoneEnabled, new { data_toggler_for = "#pnlAddressPhoneRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.PhoneEnabled)
             </td>
         </tr>
@@ -643,7 +659,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.FaxEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AddressSettings.FaxEnabled, new { data_toggler_for = "#pnlAddressFaxRequired" })
+				@Html.SettingEditorFor(model => model.AddressSettings.FaxEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.FaxEnabled, new { data_toggler_for = "#pnlAddressFaxRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.FaxEnabled)
             </td>
         </tr>

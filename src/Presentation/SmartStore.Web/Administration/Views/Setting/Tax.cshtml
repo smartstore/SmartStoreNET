@@ -1,6 +1,4 @@
-﻿@using Telerik.Web.Mvc.UI
-@using SmartStore.Core.Domain.Tax
-
+﻿@using SmartStore.Core.Domain.Tax
 @model TaxSettingsModel
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Tax").Text;
@@ -178,7 +176,7 @@
                 @Html.SmartLabelFor(model => model.ShippingIsTaxable)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.ShippingIsTaxable, new { data_toggler_for = "#pnlShippingIsTaxable" })
+				@Html.SettingEditorFor(model => model.ShippingIsTaxable, Html.CheckBoxFor(model => model.ShippingIsTaxable, new { data_toggler_for = "#pnlShippingIsTaxable" }))
                 @Html.ValidationMessageFor(model => model.ShippingIsTaxable)
             </td>
         </tr>
@@ -207,7 +205,8 @@
                 @Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeIsTaxable)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.PaymentMethodAdditionalFeeIsTaxable, new { data_toggler_for = "#pnlPaymentMethodAdditionalFeeIsTaxable" })
+				@Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeIsTaxable,
+					Html.CheckBoxFor(model => model.PaymentMethodAdditionalFeeIsTaxable, new { data_toggler_for = "#pnlPaymentMethodAdditionalFeeIsTaxable" }))
                 @Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeIsTaxable)
             </td>
         </tr>
@@ -226,7 +225,8 @@
 					@Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
 				</td>
 				<td class="adminData">
-					@Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeTaxClassId, Html.DropDownListFor(model => model.PaymentMethodAdditionalFeeTaxClassId, Model.PaymentMethodAdditionalFeeTaxCategories, T("Common.PleaseSelect")))
+					@Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeTaxClassId, 
+						Html.DropDownListFor(model => model.PaymentMethodAdditionalFeeTaxClassId, Model.PaymentMethodAdditionalFeeTaxCategories, T("Common.PleaseSelect")))
 					@Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
 				</td>
 			</tr>
@@ -241,7 +241,7 @@
                 @Html.SmartLabelFor(model => model.EuVatEnabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.EuVatEnabled, new { data_toggler_for = "#pnlEuVat" })
+				@Html.SettingEditorFor(model => model.EuVatEnabled, Html.CheckBoxFor(model => model.EuVatEnabled, new { data_toggler_for = "#pnlEuVat" }))
                 @Html.ValidationMessageFor(model => model.EuVatEnabled)
             </td>
         </tr>

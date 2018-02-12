@@ -52,7 +52,7 @@
 				@Html.SmartLabelFor(model => model.ImageDownloadTimeout)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ImageDownloadTimeout)
+				@Html.SettingEditorFor(model => model.ImageDownloadTimeout, null, new { postfix = T("Time.Minutes").Text })
 				@Html.ValidationMessageFor(model => model.ImageDownloadTimeout)
 			</td>
 		</tr>

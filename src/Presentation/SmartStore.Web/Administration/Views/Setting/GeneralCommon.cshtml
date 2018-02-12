@@ -1,8 +1,5 @@
-﻿@model GeneralCommonSettingsModel
-           
-@using Telerik.Web.Mvc.UI;
-@using SmartStore.Web.Framework.UI;
-
+﻿@using SmartStore.Web.Framework.UI;
+@model GeneralCommonSettingsModel
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.GeneralCommon").Text;
 }
@@ -24,12 +21,8 @@
     
 <script type="text/javascript">
 	$(document).ready(function () {
-
-		$("#@Html.FieldIdFor(model => model.CaptchaSettings.Enabled)").change(function () {
-			$('#SecuritySettingTable').find('.captcha-setting').toggle($(this).is(':checked'));
-		}).trigger('change');
 		
-		// test creation of SEO names
+		// Test creation of SEO names.
 		$('#TestSeoNameCreationButton').click(function () {
 			$(this).closest('form').doAjax({
 				type: 'POST',
@@ -41,8 +34,6 @@
 			});
 		});
 	});
-
-
 </script>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
@@ -70,7 +61,8 @@
                 @Html.SmartLabelFor(model => model.StoreInformationSettings.StoreClosed)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.StoreInformationSettings.StoreClosed, new { data_toggler_for = "#pnlStoreClosedAllowForAdmins" })
+				@Html.SettingEditorFor(model => model.StoreInformationSettings.StoreClosed,
+					Html.CheckBoxFor(model => model.StoreInformationSettings.StoreClosed, new { data_toggler_for = "#pnlStoreClosedAllowForAdmins" }))
                 @Html.ValidationMessageFor(model => model.StoreInformationSettings.StoreClosed)
             </td>
         </tr>
@@ -233,7 +225,7 @@
 				&nbsp;
 			</td>
 			<td id="TestSeoNameCreationResult" class="adminData">
-				
+
 			</td>
 		</tr>
     </table>
@@ -298,7 +290,8 @@
 				@Html.SmartLabelFor(model => model.CaptchaSettings.Enabled)
 			</td>
 			<td class="adminData">
-				@Html.CheckBoxFor(model => model.CaptchaSettings.Enabled, new { data_toggler_for = "#pnlCaptchaSettings" })
+				@Html.SettingEditorFor(model => model.CaptchaSettings.Enabled,
+					Html.CheckBoxFor(model => model.CaptchaSettings.Enabled, new { data_toggler_for = "#pnlCaptchaSettings" }))
 				@Html.ValidationMessageFor(model => model.CaptchaSettings.Enabled)
 			</td>
 		</tr>
@@ -470,7 +463,8 @@
                 @Html.SmartLabelFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled, new { data_toggler_for = "#pnlSeoFriendlyUrlsForLanguages" })
+				@Html.SettingEditorFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled,
+					Html.CheckBoxFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled, new { data_toggler_for = "#pnlSeoFriendlyUrlsForLanguages" }))
                 @Html.ValidationMessageFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             </td>
         </tr>
@@ -830,7 +824,8 @@
                 @Html.SmartLabelFor(model => model.SocialSettings.ShowSocialLinksInFooter)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.SocialSettings.ShowSocialLinksInFooter, new { data_toggler_for = "#pnlSocialLinks" })
+				@Html.SettingEditorFor(model => model.SocialSettings.ShowSocialLinksInFooter,
+					Html.CheckBoxFor(model => model.SocialSettings.ShowSocialLinksInFooter, new { data_toggler_for = "#pnlSocialLinks" }))
                 @Html.ValidationMessageFor(model => model.SocialSettings.ShowSocialLinksInFooter)
             </td>
         </tr>

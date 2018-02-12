@@ -1,5 +1,4 @@
 ﻿@model RewardPointsSettingsModel
-@using SmartStore.Core.Domain.Orders;
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.RewardPoints").Text;
 }
@@ -34,7 +33,7 @@
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlRewardPointSettings" })
+				@Html.SettingEditorFor(model => model.Enabled, Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlRewardPointSettings" }))
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
         </tr>
@@ -48,7 +47,7 @@
 						<div class="input-group-prepend">
 							<span class="input-group-text" id="basic-addon1">@T("Admin.Configuration.Settings.RewardPoints.ExchangeRate.Hint2")</span>
 						</div>
-						@Html.EditorFor(model => model.ExchangeRate, new { postfix = Model.PrimaryStoreCurrencyCode })   
+						@Html.SettingEditorFor(model => model.ExchangeRate, null, new { postfix = Model.PrimaryStoreCurrencyCode })   
 					</div>)
 					@Html.ValidationMessageFor(model => model.ExchangeRate)
 				</td>

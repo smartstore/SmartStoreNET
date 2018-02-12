@@ -98,12 +98,6 @@
       <LocaleResource Name="TransactMode.Hint">
         <Value>Specify the payment transaction mode.</Value>
       </LocaleResource>
-      <LocaleResource Name="SecurityProtocol">
-        <Value>Security protocol</Value>
-      </LocaleResource>
-      <LocaleResource Name="SecurityProtocol.Hint">
-        <Value>Specifies the security protocol to use with the PayPal API.</Value>
-      </LocaleResource>
       <LocaleResource Name="ApiAccountName">
         <Value>API Account Name</Value>
       </LocaleResource>

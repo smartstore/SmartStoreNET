@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 using System.Web.Mvc;
 using SmartStore.ComponentModel;
 using SmartStore.PayPal.Settings;
@@ -22,10 +21,6 @@ namespace SmartStore.PayPal.Models
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.TransactMode")]
 		public TransactMode TransactMode { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.PayPal.SecurityProtocol")]
-		public SecurityProtocolType? SecurityProtocol { get; set; }
-		public List<SelectListItem> AvailableSecurityProtocols { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.ApiAccountName")]
 		public string ApiAccountName { get; set; }

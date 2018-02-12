@@ -52,9 +52,13 @@ namespace SmartStore.OfflinePayment.Controllers
 		{
 			var model = new TModel();
 
-			int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
+			var store = storeScope == 0
+				? Services.StoreContext.CurrentStore
+				: Services.StoreService.GetStoreById(storeScope);
 
+			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 			model.DescriptionText = settings.DescriptionText;
 			model.AdditionalFee = settings.AdditionalFee;
 			model.AdditionalFeePercentage = settings.AdditionalFeePercentage;

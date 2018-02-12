@@ -12,7 +12,6 @@ using Newtonsoft.Json.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
@@ -277,37 +276,6 @@ namespace SmartStore.PayPal.Services
 		public static string GetApiUrl(bool sandbox)
 		{
 			return sandbox ? "https://api.sandbox.paypal.com" : "https://api.paypal.com";
-		}
-
-		public static Dictionary<SecurityProtocolType, string> GetSecurityProtocols()
-		{
-			var dic = new Dictionary<SecurityProtocolType, string>();
-
-			foreach (SecurityProtocolType protocol in Enum.GetValues(typeof(SecurityProtocolType)))
-			{
-				string friendlyName = null;
-				switch (protocol)
-				{
-					case SecurityProtocolType.Ssl3:
-						friendlyName = "SSL 3.0";
-						break;
-					case SecurityProtocolType.Tls:
-						friendlyName = "TLS 1.0";
-						break;
-					case SecurityProtocolType.Tls11:
-						friendlyName = "TLS 1.1";
-						break;
-					case SecurityProtocolType.Tls12:
-						friendlyName = "TLS 1.2";
-						break;
-					default:
-						friendlyName = protocol.ToString().ToUpper();
-						break;
-				}
-
-				dic.Add(protocol, friendlyName);
-			}
-			return dic;
 		}
 
 		public void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false)

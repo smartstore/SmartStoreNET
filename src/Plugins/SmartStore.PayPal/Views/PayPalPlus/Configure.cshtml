@@ -61,8 +61,7 @@
                 @Html.SmartLabelFor(model => model.ClientId)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.ClientId)
-                @Html.TextBoxFor(model => model.ClientId)
+                @Html.SettingEditorFor(model => model.ClientId)
                 @Html.ValidationMessageFor(model => model.ClientId)
             </td>
         </tr>
@@ -71,8 +70,7 @@
                 @Html.SmartLabelFor(model => model.Secret)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.Secret)
-                @Html.TextBoxFor(model => model.Secret)
+                @Html.SettingEditorFor(model => model.Secret)
                 @Html.ValidationMessageFor(model => model.Secret)
             </td>
         </tr>
@@ -164,10 +162,8 @@
 				@Html.SmartLabelFor(model => model.ThirdPartyPaymentMethods)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.ThirdPartyPaymentMethods)
-				@Html.ListBoxFor(x => x.ThirdPartyPaymentMethods,
-					 new MultiSelectList(Model.AvailableThirdPartyPaymentMethods, "Value", "Text"),
-					 new { multiple = "multiple" })
+				@Html.SettingEditorFor(model => model.ThirdPartyPaymentMethods, 
+					Html.ListBoxFor(model => model.ThirdPartyPaymentMethods, new MultiSelectList(Model.AvailableThirdPartyPaymentMethods, "Value", "Text"), new { multiple = "multiple", data_tags = "true" }))
 				@Html.ValidationMessageFor(model => model.ThirdPartyPaymentMethods)
 			</td>
 		</tr>
@@ -194,7 +190,7 @@
 				@Html.SmartLabelFor(model => model.AdditionalFee)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AdditionalFee)
+				@Html.SettingEditorFor(model => model.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
 				@Html.ValidationMessageFor(model => model.AdditionalFee)
 			</td>
 		</tr>

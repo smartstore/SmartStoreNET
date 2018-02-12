@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -10,6 +11,7 @@ using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Logging;
+using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -17,7 +19,53 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public abstract class PayPalControllerBase<TSetting> : PaymentControllerBase where TSetting : PayPalSettingsBase, ISettings, new()
+	public abstract class PayPalPaymentControllerBase : PaymentControllerBase
+	{
+		protected void PrepareConfigurationModel(ApiConfigurationModel model, int storeScope)
+		{
+			var store = storeScope == 0
+				? Services.StoreContext.CurrentStore
+				: Services.StoreService.GetStoreById(storeScope);
+
+			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
+			model.AvailableSecurityProtocols = new List<SelectListItem>();
+
+			foreach (SecurityProtocolType protocol in Enum.GetValues(typeof(SecurityProtocolType)))
+			{
+				string friendlyName = null;
+				switch (protocol)
+				{
+					case SecurityProtocolType.Ssl3:
+						friendlyName = "SSL 3.0";
+						break;
+					case SecurityProtocolType.Tls:
+						friendlyName = "TLS 1.0";
+						break;
+					case SecurityProtocolType.Tls11:
+						friendlyName = "TLS 1.1";
+						break;
+					case SecurityProtocolType.Tls12:
+						friendlyName = "TLS 1.2";
+						break;
+					default:
+						friendlyName = protocol.ToString().ToUpper();
+						if (friendlyName.IsCaseInsensitiveEqual("SystemDefault"))
+						{
+							friendlyName = T("Admin.Common.Standard");
+						}
+						break;
+				}
+
+				model.AvailableSecurityProtocols.Add(new SelectListItem
+				{
+					Value = ((int)protocol).ToString(),
+					Text = friendlyName
+				});
+			}
+		}
+	}
+
+	public abstract class PayPalControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalSettingsBase, ISettings, new()
 	{
 		public PayPalControllerBase(
 			string systemName,

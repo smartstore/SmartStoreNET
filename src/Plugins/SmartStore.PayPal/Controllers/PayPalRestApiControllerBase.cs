@@ -11,7 +11,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public abstract class PayPalRestApiControllerBase<TSetting> : PaymentControllerBase where TSetting : PayPalApiSettingsBase, ISettings, new()
+	public abstract class PayPalRestApiControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalApiSettingsBase, ISettings, new()
 	{
 		public PayPalRestApiControllerBase(
 			string systemName,

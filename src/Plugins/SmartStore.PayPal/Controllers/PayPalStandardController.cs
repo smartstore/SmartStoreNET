@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
@@ -31,33 +28,31 @@ namespace SmartStore.PayPal.Controllers
 		}
 
 		[LoadSetting, AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure(PayPalStandardPaymentSettings settings)
+		public ActionResult Configure(PayPalStandardPaymentSettings settings, int storeScope)
 		{
             var model = new PayPalStandardConfigurationModel();
             model.Copy(settings, true);
 
-			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
-				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
-				.ToList();
+			PrepareConfigurationModel(model, storeScope);
 
             return View(model);
 		}
 
 		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
-        public ActionResult Configure(PayPalStandardPaymentSettings settings, PayPalStandardConfigurationModel model, FormCollection form)
+        public ActionResult Configure(PayPalStandardPaymentSettings settings, PayPalStandardConfigurationModel model, FormCollection form, int storeScope)
 		{
-            if (!ModelState.IsValid)
-                return Configure(settings);
+			if (ModelState.IsValid)
+			{
+				ModelState.Clear();
+				model.Copy(settings, false);
 
-			ModelState.Clear();
-            model.Copy(settings, false);
+				// Multistore context not possible, see IPN handling.
+				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 
-			// multistore context not possible, see IPN handling
-			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			}
 
-            NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-
-            return Configure(settings);
+            return Configure(settings, storeScope);
 		}
 
 		public ActionResult PaymentInfo()

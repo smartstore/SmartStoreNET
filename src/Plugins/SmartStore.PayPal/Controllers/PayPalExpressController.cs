@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.PayPalSvc;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.PayPal.Validators;
 using SmartStore.Services.Common;
@@ -20,7 +16,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
@@ -84,37 +80,32 @@ namespace SmartStore.PayPal.Controllers
         }
 
 		[LoadSetting, AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure(PayPalExpressPaymentSettings settings)
+		public ActionResult Configure(PayPalExpressPaymentSettings settings, int storeScope)
 		{
             var model = new PayPalExpressConfigurationModel();
-
             model.Copy(settings, true);
+			model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
-            model.TransactModeValues = TransactModeValues(settings.TransactMode);
-
-			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
-				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
-				.ToList();
+			PrepareConfigurationModel(model, storeScope);
 
 			return View(model);
 		}
 
 		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure(PayPalExpressPaymentSettings settings, PayPalExpressConfigurationModel model)
+		public ActionResult Configure(PayPalExpressPaymentSettings settings, PayPalExpressConfigurationModel model, int storeScope)
 		{
-			if (!ModelState.IsValid)
-				return Configure(settings);
+			if (ModelState.IsValid)
+			{
+				ModelState.Clear();
+				model.Copy(settings, false);
 
-			ModelState.Clear();
+				// Multistore context not possible, see IPN handling.
+				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 
-            model.Copy(settings, false);
+				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			}
 
-			// multistore context not possible, see IPN handling
-			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
-
-            NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-
-			return Configure(settings);
+			return Configure(settings, storeScope);
 		}
 
 		public ActionResult PaymentInfo()

@@ -22,8 +22,8 @@
 				@Html.SmartLabelFor(model => model.DescriptionText)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.DescriptionText)
-				@Html.TextAreaFor(model => model.DescriptionText, new { style = "height: 100px;" })
+				@Html.SettingEditorFor(model => model.DescriptionText,
+					Html.TextAreaFor(model => model.DescriptionText, new { style = "height: 100px;" }))
 				@Html.ValidationMessageFor(model => model.DescriptionText)
 			</td>
 		</tr>
@@ -32,7 +32,7 @@
 				@Html.SmartLabelFor(model => model.AdditionalFee)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AdditionalFee)
+				@Html.SettingEditorFor(model => model.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
 				@Html.ValidationMessageFor(model => model.AdditionalFee)
 			</td>
 		</tr>

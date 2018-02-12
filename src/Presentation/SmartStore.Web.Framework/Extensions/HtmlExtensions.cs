@@ -19,8 +19,6 @@ using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.Theming;
-using SmartStore.ComponentModel;
 
 namespace SmartStore.Web.Framework
 {
@@ -706,18 +704,6 @@ namespace SmartStore.Web.Framework
 			sb.Append("</div></div>");
 
 			return MvcHtmlString.Create(sb.ToString());
-		}
-
-		public static MvcHtmlString SettingOverrideCheckbox<TModel, TValue>(
-			this HtmlHelper<TModel> helper,
-			Expression<Func<TModel, TValue>> expression,
-			string parentSelector = null)
-		{
-			var data = helper.ViewData[StoreDependingSettingHelper.ViewDataKey] as StoreDependingSettingData;
-			if (data == null || data.ActiveStoreScopeConfiguration <= 0)
-				return MvcHtmlString.Empty;
-
-			return helper.SettingOverrideCheckboxInternal(expression, data, parentSelector);
 		}
 
 		private static MvcHtmlString SettingOverrideCheckboxInternal<TModel, TValue>(

@@ -20,6 +20,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Tax;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
@@ -161,11 +162,7 @@ namespace SmartStore.PayPal.Controllers
 				ConfigGroups = T("Plugins.SmartStore.PayPal.ConfigGroups").Text.SplitSafe(";")
 			};
 
-			model.AvailableSecurityProtocols = PayPal.Services.PayPalService.GetSecurityProtocols()
-				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
-				.ToList();
-
-			// it's better to also offer inactive methods here but filter them out in frontend
+			// It's better to also offer inactive methods here but filter them out in frontend.
 			var methods = _paymentService.LoadAllPaymentMethods(storeScope);
 
 			model.AvailableThirdPartyPaymentMethods = methods
@@ -176,8 +173,8 @@ namespace SmartStore.PayPal.Controllers
 				.Select(x => new SelectListItem { Value = x.Metadata.SystemName, Text = GetPaymentMethodName(x) })
 				.ToList();
 
-
 			model.Copy(settings, true);
+			PrepareConfigurationModel(model, storeScope);
 
 			return View(model);
 		}

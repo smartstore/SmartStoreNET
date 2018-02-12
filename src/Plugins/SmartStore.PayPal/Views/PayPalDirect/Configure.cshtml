@@ -1,4 +1,5 @@
-﻿@using SmartStore.PayPal.Models;
+﻿@using SmartStore.PayPal.Settings;
+@using SmartStore.PayPal.Models;
 @using SmartStore.Web.Framework;
 @model PayPalDirectConfigurationModel
 @{
@@ -37,8 +38,7 @@
                 @Html.SmartLabelFor(model => model.TransactMode)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.TransactMode)
-                @Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues)
+				@Html.SettingEditorFor(model => model.TransactMode, Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues))
             </td>
         </tr>
 		<tr>
@@ -100,7 +100,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFee)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AdditionalFee)
+                @Html.SettingEditorFor(model => model.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
             </td>
         </tr>

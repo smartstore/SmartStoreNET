@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
@@ -793,6 +794,37 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(T("Admin.Configuration.Updated"));
             return RedirectToAction("ShoppingCart");
         }
+
+
+		[LoadSetting]
+		public ActionResult Payment(PaymentSettings settings)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+			{
+				return AccessDeniedView();
+			}
+
+			var model = settings.ToModel();
+			model.AvailableCapturePaymentReasons = CapturePaymentReason.OrderShipped.ToSelectList(false).ToList();
+
+			return View(model);
+		}
+
+		[SaveSetting, HttpPost]
+		public ActionResult Payment(PaymentSettings settings, PaymentSettingsModel model)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+			{
+				return AccessDeniedView();
+			}
+
+			settings = model.ToEntity(settings);
+
+			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
+			NotifySuccess(T("Admin.Configuration.Updated"));
+
+			return RedirectToAction("Payment");
+		}
 
 
 		[LoadSetting]

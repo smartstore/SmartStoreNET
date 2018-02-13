@@ -31,5 +31,10 @@ namespace SmartStore.Core.Domain.Payments
 		/// Gets or sets a value indicating whether we should bypass the payment method info page
 		/// </summary>
 		public bool BypassPaymentMethodInfo { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets the reason for automatic payment capturing
+		/// </summary>
+		public CapturePaymentReason? CapturePaymentReason { get; set; }
+	}
 }

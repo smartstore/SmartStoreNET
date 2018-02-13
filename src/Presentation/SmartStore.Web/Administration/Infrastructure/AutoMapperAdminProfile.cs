@@ -36,6 +36,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
@@ -667,6 +668,9 @@ namespace SmartStore.Admin.Infrastructure
 			CreateMap<OrderSettingsModel, OrderSettings>()
 				.ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore())
 				.ForMember(dest => dest.Id, mo => mo.Ignore());
+			CreateMap<PaymentSettings, PaymentSettingsModel>()
+				.ForMember(dest => dest.AvailableCapturePaymentReasons, mo => mo.Ignore());
+			CreateMap<PaymentSettingsModel, PaymentSettings>();
 			CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>()
 				.ForMember(dest => dest.AvailableNewsLetterSubscriptions, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableThirdPartyEmailHandOver, mo => mo.Ignore())

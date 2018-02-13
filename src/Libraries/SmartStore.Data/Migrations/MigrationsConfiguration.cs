@@ -266,6 +266,20 @@ namespace SmartStore.Data.Migrations
 				"Lassen Sie dieses Feld leer, wenn der Instagram Link nicht angezeigt werden soll");
 
 			builder.AddOrUpdate("Common.License", "License", "Lizenz");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Payments.CapturePaymentReason.OrderShipped",
+				"The order has been marked as shipped",
+				"Der Auftrag wurde als versendet markiert");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Payments.CapturePaymentReason.OrderDelivered",
+				"The order has been marked as delivered",
+				"Der Auftrag wurde als ausgeliefert markiert");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Payment.CapturePaymentReason",
+				"Capture payment amount when…",
+				"Zahlungsbetrag einziehen, wenn…",
+				"Specifies the event when the payment amount is automatically captured. The selected payment method must support capturing for this.",
+				"Legt das Ereignis fest, zu dem der Zahlunsgbetrag automatisch eingezogen wird. Die gewählte Zahlart muss hierfür Buchungen unterstützen.");
 		}
 	}
 }

@@ -248,7 +248,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Themes.AvailableDesktopThemes", "Installed themes", "Installierte Themes");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.List.GoDirectlyToSku", "Find by SKU", "Nach SKU suchen");
-
+			builder.AddOrUpdate("Admin.Orders.List.GoDirectlyToNumber", "Find by order id", "Nach Auftragsnummer suchen");
+			
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StoreLastIpAddress",
 				"Store IP address",
 				"IP-Adresse speichern",

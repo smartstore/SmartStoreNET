@@ -66,7 +66,6 @@
 	};
 
     $(document).ready(function () {
-
         var html = $("html");
 
         html.removeClass("not-ready").addClass("ready");
@@ -112,7 +111,11 @@
                     id: el.data('commit-id')
                 });
             }
-        });
+		});
+
+		// Because we restyled the grid, the filter dropdown does not position
+		// correctly anymore. We have to reposition it.
+		Hacks.Telerik.handleGridFilter();
 
         // sticky section-header
         var navbar = $("#navbar");

@@ -23,7 +23,7 @@
 * All tables (.table) must be wrapped in div.table-responsive
 * Apply .omega to all (last) table cells which contain action buttons to enable visibility toggling on hover. Apply .active-row to poarent div to disable toggling, but keep other styling.
 * Add .alert-dismissable with &times; closer to all .alert elements
-* Replace Html.SettingOverrideCheckbox () with new Html.SettingEditorFor()
+* OK	Replace Html.SettingOverrideCheckbox () with new Html.SettingEditorFor()
 
 
 TODOs Telerik grid:
@@ -32,6 +32,7 @@ TODOs Telerik grid:
 * Grid inline editing: when a grid is editable, assign width (either px or %) to all columns except the last buttons col (otherwise: disco!)
 * .t-grid .t-last with command buttons: add *.HtmlAttributes(new { align = "right" }) to column (see ProductEdit > Promotion tab)
 * Move custom grid action buttons below or above a grid to the grid toolbar (see ProductEdit > Promotion tab > CrossSellingGridCommands(...) etc.)
+* .omega for last tds in Non-AJAX grids
 
 
 TODOs BS4 Migration:

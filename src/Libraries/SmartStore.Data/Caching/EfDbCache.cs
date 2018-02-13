@@ -361,8 +361,14 @@ namespace SmartStore.Data.Caching
 
 			using (var sha = new SHA1CryptoServiceProvider())
 			{
-				key = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(key)));
-				return KEYPREFIX + "data:" + key;
+				try
+				{
+					return KEYPREFIX + "data:" + Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(key)));
+				}
+				catch
+				{
+					return KEYPREFIX + "data:" + key;
+				}
 			}
 		}
 	}

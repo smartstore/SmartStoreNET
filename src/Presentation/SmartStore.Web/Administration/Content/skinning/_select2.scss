@@ -576,12 +576,6 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 		}
 	}
 
-	.form-control.no-padding + & .select2-selection--single {
-		padding-left: 0.5rem;
-		padding-top: 0.25rem;
-		padding-bottom: 0.25rem;
-	}
-
 	.select2-selection--multiple.input-lg,
 	.form-control-sm + & .select2-selection--multiple,
 	.input-group-lg & .select2-selection--multiple,
@@ -681,6 +675,25 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 	.select2-dropdown--above .select2-search--dropdown {
 		padding-bottom: 0.5rem;
 		padding-top: 0.5rem;
+	}
+
+	.select2-selection--single.select-customtemplate,
+	.drop-customtemplate .select2-results__option {
+		padding-left: 0.5rem;
+		padding-top: 0.25rem;
+		padding-bottom: 0.25rem;
+	}
+
+	.select2-selection--single.select-customtemplate {
+		display: flex;
+		align-items: center;
+
+		> .select2-selection__rendered {
+			width: 100%;
+			> .select2-selection__clear {
+				margin-top: 5px;
+			}
+		}
 	}
 	/*------------------------------------*\
     #RTL SUPPORT

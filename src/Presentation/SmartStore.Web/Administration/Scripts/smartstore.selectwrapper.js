@@ -160,8 +160,19 @@
                 templateResult: renderSelectItem,
                 templateSelection: renderSelectItem,
 				theme: 'bootstrap',
-				//adaptDropdownCssClass: true,
-				closeOnSelect: true
+				closeOnSelect: !(sel.prop('multiple') || sel.data("tags")),
+				adaptContainerCssClass: function (c) {
+					if (c.startsWith("select-"))
+						return c;
+					else
+						return null;
+				},
+				adaptDropdownCssClass: function (c) {
+					if (c.startsWith("drop-"))
+						return c;
+					else
+						return null;
+				}
 			};
 
 			if ($.isPlainObject(options)) {

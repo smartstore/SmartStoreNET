@@ -105,7 +105,7 @@
                     </td>
                     <td class="adminData">
                         <select id="@Html.FieldIdFor(x => x.AvailableLanguageSetId)" name="@Html.FieldNameFor(x => x.AvailableLanguageSetId)" 
-                                class="form-control form-control-lg no-padding" data-placeholder="@T("Common.Unspecified")">
+                                class="form-control form-control-lg select-customtemplate drop-customtemplate" data-placeholder="@T("Common.Unspecified")">
                             <option></option>
                             @foreach (var item in Model.AvailableDownloadLanguages.OrderBy(x => x.DisplayOrder))
                             {

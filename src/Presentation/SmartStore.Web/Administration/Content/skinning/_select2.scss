@@ -481,7 +481,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 			.select2-search__field {
 				background: transparent;
 				padding: 0 $s2bs-padding-base-horizontal;
-				height: $s2bs-input-height-base;
+				height: calc(#{$s2bs-input-height-base} - #{$border-width * 2});
 				line-height: $s2bs-line-height-base;
 				margin-top: 0;
 				min-width: 5em;

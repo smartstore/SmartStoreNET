@@ -15,10 +15,16 @@
 	you have received a gift card in the amount of <b class="text-success text-lg">{{ GiftCard.Amount }}</b> for the online shop <a href="{{ Store.Url }}">{{ Store.Name }}</a>.
 </p>
 
-<p class="bg-success text-white p-3 text-center">
-  <b>Your gift card code is:</b><br />
-  <b class="text-xl">{{ GiftCard.CouponCode }}</b>
-</p>
+<table class="w-100">
+	<tr>
+  	<td class="bg-success text-white p-3 text-center">
+        <b>Your gift card code is:</b><br />
+  		<b class="text-xl">{{ GiftCard.CouponCode }}</b>
+    </td>
+  </tr> 
+</table>
+
+<p>&nbsp;</p>
 
 <table class="w-100 brd bg-light">
 	<tr>

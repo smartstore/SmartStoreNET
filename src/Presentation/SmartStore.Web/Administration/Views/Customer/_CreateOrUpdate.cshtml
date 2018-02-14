@@ -1,8 +1,12 @@
-﻿@model CustomerModel
-@using Telerik.Web.Mvc.UI;
-@using SmartStore.Core.Domain.Orders;
+﻿@using SmartStore.Core.Domain.Orders;
+@model CustomerModel
 @Html.ValidationSummary(false)
-@Html.HiddenFor(model => model.Id)
+
+@if (Model.Id == 0)
+{
+	@Html.HiddenFor(model => model.Id)
+}
+
 @Html.SmartStore().TabStrip().Name("customer-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Customers.Customers.Info").Text)
@@ -173,13 +177,13 @@
                 <td class="adminData">
                     <div class="form-check form-check-inline">
 						<label class="form-check-label">
-							@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class="form-check-input" })
+							@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class="form-check-input", id = "gender-male" })
 							@T("Admin.Customers.Customers.Fields.Gender.Male")
 						</label>
 					</div>
 					<div class="form-check form-check-inline">
 						<label class="form-check-label">
-							@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input" })
+							@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input", id = "gender-female" })
 							@T("Admin.Customers.Customers.Fields.Gender.Female")
 						</label>
 					</div>

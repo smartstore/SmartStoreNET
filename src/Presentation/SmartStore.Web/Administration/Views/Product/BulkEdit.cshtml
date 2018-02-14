@@ -99,27 +99,27 @@
 						columns.Bound(p => p.Name)
 							.ReadOnly()
 							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.Width("35%")
 							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
 						columns.Bound(p => p.Sku)
-							.Width(150);
+							.Width(200);
 						columns.Bound(p => p.Price)
 							.Format("{0:0.00}")
-							.RightAlign()
 							.Width(120);
 						columns.Bound(p => p.OldPrice)
 							.Format("{0:0.00}")
-							.RightAlign()
 							.Width(120);
 						columns.Bound(p => p.ManageInventoryMethod)
+							.Width(200)
+							.HtmlAttributes(new { nowrap = "nowrap" })
 							.ReadOnly();
 						columns.Bound(p => p.StockQuantity)
-							.Centered()
 							.Width(80);
 						columns.Bound(p => p.Published)
 							.Width(80)
 							.Template(item => @Html.SymbolForBool(item.Published))
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
+							.Centered()
+							.ClientTemplate(@Html.SymbolForBool("Published"));
 						columns.Bound(x => x.Id)
 							.ReadOnly()
 							.Sortable(false)

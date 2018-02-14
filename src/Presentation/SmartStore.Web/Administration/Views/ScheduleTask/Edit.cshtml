@@ -20,11 +20,19 @@
 			<a href='@(returnUrl ?? Url.Action("List"))'>(@T("Common.Back"))</a>
 		</div>
 		<div class="options">
-			<button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-			<button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+			<button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+			<button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+				<span>@T("Admin.Common.SaveContinue")</span>
+			</button>
 			@if (!Model.IsRunning)
 			{
-				<a href="@Model.ExecuteUrl" class="btn"><i class='fa fa-play'></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")</a>
+				<a href="@Model.ExecuteUrl" class="btn btn-secondary btn-to-danger">
+					<i class='fa fa-play'></i>
+					<span>@T("Admin.System.ScheduleTasks.RunNow")</span>
+				</a>
 			}
 		</div>
 	</div>
@@ -64,8 +72,9 @@
 				@Html.SmartLabelFor(model => model.LastStart)
 			</td>
 			<td class="adminData">
-
-				@(Model.LastStart.HasValue ? Model.LastStart.Value.ToString("g") : T("Common.Never").Text)
+				<div class="form-control-plaintext">
+					@(Model.LastStart.HasValue ? Model.LastStart.Value.ToString("g") : T("Common.Never").Text)
+				</div>
 			</td>
 		</tr>
 		@if (Model.Duration.HasValue())
@@ -75,7 +84,9 @@
 					@Html.SmartLabelFor(model => model.Duration)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.Duration)
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.Duration)
+					</div>
 				</td>
 			</tr>
 		}
@@ -86,7 +97,9 @@
 					@Html.SmartLabelFor(model => model.LastError)
 				</td>
 				<td class="adminData">
-					<span class="text-danger">@Html.DisplayFor(model => model.LastError)</span>
+					<div class="form-control-plaintext">
+						<span class="text-danger">@Html.DisplayFor(model => model.LastError)</span>
+					</div>
 				</td>
 			</tr>
 			if (Model.LastSuccess.HasValue && Model.LastSuccess != Model.LastEnd)
@@ -96,7 +109,9 @@
 						@Html.SmartLabelFor(model => model.LastSuccess)
 					</td>
 					<td class="adminData">
-						@Model.LastSuccess.Value.ToString("g")
+						<div class="form-control-plaintext">
+							@Model.LastSuccess.Value.ToString("g")
+						</div>
 					</td>
 				</tr>
 			}
@@ -108,7 +123,9 @@
 					@Html.SmartLabelFor(model => model.NextRun)
 				</td>
 				<td class="adminData">
-					@Model.NextRun.Value.ToString("g")
+					<div class="form-control-plaintext">
+						@Model.NextRun.Value.ToString("g")
+					</div>
 				</td>
 			</tr>
 		}

@@ -16,6 +16,12 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
+			<button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
+				<i class="fa fa-filter"></i>
+				<span>@T("Common.Filter")</span>
+				<i class="fa fa-angle-double-down"></i>
+			</button>
+
 			<a href="@Url.Action("Create")" class="btn btn-primary">
 				<i class="fa fa-plus"></i> 
 				<span>@T("Admin.Common.AddNew")</span>
@@ -25,7 +31,7 @@
         </div>
     </div>
 
-	<div class="row mt-3 grid-filter" style="x-display: none">
+	<div class="row mt-3 grid-filter" style="display: none">
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchEmail)
 			@Html.TextBoxFor(model => Model.SearchEmail, new { @class = "form-control" })
@@ -155,6 +161,11 @@
 		var selectedIds = [];
 
 		$(document).ready(function () {
+
+			// Filter toggler
+			$('.btn-toggle-filter').on('click', function (e) {
+				$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
+			});
 
 			//search button
 			$('#search-customers').click(function () {

@@ -24,7 +24,7 @@ namespace SmartStore.Core
 			new Version("3.0")
 		};
 
-		private const string HELP_BASEURL = "http://docs.smartstore.com/display/";
+		private const string HELP_BASEURL = "https://docs.smartstore.com/display/";
 
 		static SmartStoreVersion()
         {

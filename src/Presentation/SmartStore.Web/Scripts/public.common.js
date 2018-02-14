@@ -95,22 +95,8 @@
                 }
             });
         }
-
-        // create navbar
-        if ($.fn.navbar)
-        {
-            $('.navbar ul.nav-smart > li.dropdown').navbar();
-        }
-
-        // shrink menu
-        if ($.fn.shrinkMenu) {
-            $(".shrink-menu").shrinkMenu({ responsive: true });
-        }
-
         
         applyCommonPlugins($("body"));
-
-        //$("select:not(.noskin), input:hidden[data-select]").selectWrapper();
 
     });
 

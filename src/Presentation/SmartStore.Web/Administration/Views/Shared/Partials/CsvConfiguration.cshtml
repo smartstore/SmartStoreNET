@@ -44,7 +44,7 @@
 			@Html.SmartLabelFor(x => x.Delimiter)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(x => x.Delimiter, new { style = "width: 30px;", maxlength = "2" })
+			@Html.TextBoxFor(x => x.Delimiter, new { maxlength = "2" })
 			@Html.ValidationMessageFor(x => x.Delimiter)
 		</td>
 	</tr>
@@ -53,7 +53,7 @@
 			@Html.SmartLabelFor(x => x.Quote)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(x => x.Quote, new { style = "width: 30px;", maxlength = "2" })
+			@Html.TextBoxFor(x => x.Quote, new { maxlength = "2" })
 			@Html.ValidationMessageFor(x => x.Quote)
 		</td>
 	</tr>
@@ -62,7 +62,7 @@
 			@Html.SmartLabelFor(x => x.Escape)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(x => x.Escape, new { style = "width: 30px;", maxlength = "2" })
+			@Html.TextBoxFor(x => x.Escape, new { maxlength = "2" })
 			@Html.ValidationMessageFor(x => x.Escape)
 		</td>
 	</tr>

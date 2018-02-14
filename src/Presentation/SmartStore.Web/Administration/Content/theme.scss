@@ -998,8 +998,13 @@ textarea:not([class*="form-control"]) {
 
 	.stats-today-item-value {
 		font-size: 2rem;
-		font-weight: 600;
+		//font-weight: 600;
 		line-height: 2rem;
+		color: $gray-500;
+
+		&.active {
+			color: $gray-700;
+		}
 	}
 
 	.stats-today-title {

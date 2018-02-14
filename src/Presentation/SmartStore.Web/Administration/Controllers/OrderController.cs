@@ -2726,6 +2726,11 @@ namespace SmartStore.Admin.Controllers
                     SumThisMonthOrders = _priceFormatter.FormatPrice(x.SumThisMonthOrders, true, false),
                     SumThisYearOrders = _priceFormatter.FormatPrice(x.SumThisYearOrders, true, false),
                     SumAllTimeOrders = _priceFormatter.FormatPrice(x.SumAllTimeOrders, true, false),
+					SumTodayOrdersRaw = x.SumTodayOrders,
+					SumThisWeekOrdersRaw = x.SumThisWeekOrders,
+					SumThisMonthOrdersRaw = x.SumThisMonthOrders,
+					SumThisYearOrdersRaw = x.SumThisYearOrders,
+					SumAllTimeOrdersRaw = x.SumAllTimeOrders,
 					Url = urlHelper.Action("List", "Order", new { OrderStatusIds = (int)x.OrderStatus })
                 };
             }).ToList();

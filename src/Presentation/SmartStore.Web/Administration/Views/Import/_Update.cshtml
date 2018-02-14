@@ -392,19 +392,35 @@
 
 		function initSelectBox(element, isProperty) {
 			return element.select2({
-				allowClear: true,
+				allowClear: !isProperty,
 				minimumResultsForSearch: 16,
-				matcher: function (term, text, opt) {
-					var searchFor = term.toUpperCase();
+				containerCssClass: 'form-control',
+				theme: 'bootstrap',
+				placeholder: function () {
+					$(this).data('placeholder');
+				},
+				matcher: function (params, data) {
+					// If there are no search terms, return all of the data
+					if ($.trim(params.term) === '') {
+						return data;
+					}
 
-					if (text.toUpperCase().indexOf(searchFor) >= 0)
-						return true;
+					// Do not display the item if there is no 'text' property
+					if (typeof data.text === 'undefined') {
+						return null;
+					}
+					var searchFor = params.term.toUpperCase();
 
-					var val = $(opt).val();
-					if (val && val.toUpperCase().indexOf(searchFor) >= 0)
-						return true;
+					if (data.text.toUpperCase().indexOf(searchFor) > -1) {
+						return data;
+					}
 
-					return false;
+					var val = $(data.element).val();
+					if (val && val.toUpperCase().indexOf(searchFor) > -1) {
+						return data;
+					}
+
+					return null;
 				},
 				formatResult: (isProperty ? selectPropertyFormatting : selectColumnFormatting),
 				formatSelection: (isProperty ? selectPropertyFormatting : selectColumnFormatting)

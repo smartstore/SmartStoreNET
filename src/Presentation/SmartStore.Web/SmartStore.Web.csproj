@@ -1068,6 +1068,10 @@
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />
     <Content Include="Content\samples\Stone_of_the_wise_preview.pdf" />
+    <Content Include="Scripts\jquery-3.2.1.js" />
+    <Content Include="Scripts\jquery-3.2.1.min.js" />
+    <Content Include="Scripts\jquery-migrate-3.0.0.js" />
+    <Content Include="Scripts\jquery-migrate-3.0.0.min.js" />
     <Content Include="Scripts\jquery-ui\core.js" />
     <Content Include="Scripts\jquery-ui\effect-shake.js" />
     <Content Include="Scripts\jquery-ui\effect-transfer.js" />
@@ -1197,11 +1201,13 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.custom.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\smartstore.globalization.adapter.js" />
     <Content Include="Scripts\smartstore.globalization.js" />
+    <Content Include="Scripts\smartstore.viewport.js" />
     <Content Include="Scripts\underscore.min.js" />
     <Content Include="Scripts\underscore.js" />
     <Content Include="Themes\FlexBlue\preview.png" />

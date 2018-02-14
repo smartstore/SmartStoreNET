@@ -784,31 +784,12 @@
     <None Include="Content\telerik\_telerik.scss" />
     <Content Include="Content\_variables.scss" />
     <Content Include="Content\_admin.scss" />
-    <None Include="Scripts\jquery-1.8.3.intellisense.js" />
-    <Content Include="Scripts\jquery-1.8.3.js" />
-    <Content Include="Scripts\jquery-1.8.3.min.js" />
-    <Content Include="Scripts\jquery-3.2.1.js" />
-    <Content Include="Scripts\jquery-3.2.1.min.js" />
-    <Content Include="Scripts\jquery-migrate-3.0.0.js" />
-    <Content Include="Scripts\jquery-migrate-3.0.0.min.js" />
     <Content Include="Scripts\jquery-shims.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.custom.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\popper.js" />
-    <Content Include="Scripts\popper.min.js" />
-    <Content Include="Scripts\smartstore.common.js" />
     <Content Include="Scripts\smartstore.download.js" />
     <Content Include="Scripts\smartstore.discountrules.js" />
-    <Content Include="Scripts\smartstore.selectwrapper.js" />
     <None Include="Scripts\_references.js" />
-    <Content Include="Scripts\smartstore.viewport.js" />
     <Content Include="sitemap.config">
       <SubType>Designer</SubType>
     </Content>

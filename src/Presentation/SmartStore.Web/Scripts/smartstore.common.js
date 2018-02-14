@@ -1,30 +1,64 @@
 ﻿(function ($, window, document, undefined) {
+	var viewport = ResponsiveBootstrapToolkit;
+
+	// TODO: (mc) ABS4 > delete viewport specific stuff from ~/Scripts/public.common.js, it's shared now.'
+	window.getPageWidth = function () {
+		return parseFloat($("#page").css("width"));
+	}
+
+	window.getViewport = function () {
+		return viewport;
+	}
 
 	window.setLocation = function (url) {
 		window.location.href = url;
 	}
 
-	window.openPopup = function (url, fluid) {
+	window.openPopup = function (url, large, flex) {
 		var modal = $('#modal-popup-shared');
+		var sizeClass = "";
+
+		if (flex === undefined) flex = true;
+
+		if (flex) {
+			sizeClass = "modal-flex";
+		}
+
+		if (large && !flex)
+			sizeClass = "modal-lg";
+		else if (!large && flex)
+			sizeClass += " modal-flex-sm";
 
 		if (modal.length === 0) {
-			// TODO: (mc) Update to BS4 modal html later
 			var html =
-				'<div id="modal-popup-shared" class="modal modal-flex {0} fade" tabindex="-1" style="border-radius: 0">'.format(!!(fluid) ? 'modal-fluid' : 'modal-xlarge')
-					+ '<div class="modal-body" style="padding: 0">'
-						+ '<iframe class="modal-flex-fill-area" frameborder="0" src="' + url + '" />'
-					+ '</div>'
-					+ '<div class="modal-footer">'
-						+ '<button type="button" class="btn btn-secondary btn-default" data-dismiss="modal">' + window.Res['Common.Close'] + '</button>'
+				'<div id="modal-popup-shared" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'
+					+ '<div class="modal-dialog{0}" role="document">'.format(!!(sizeClass) ? " " + sizeClass : "")
+						+ '<div class="modal-content">'
+							+ '<div class="modal-body" style="padding: 0">'
+								+ '<iframe class="modal-flex-fill-area" frameborder="0" src="' + url + '" />'
+							+ '</div>'
+							+ '<div class="modal-footer">'
+								+ '<button type="button" class="btn btn-secondary btn-default" data-dismiss="modal">' + window.Res['Common.Close'] + '</button>'
+							+ '</div>'
+						+ '</div>'
 					+ '</div>'
 				+ '</div>';
 
 			modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
-				//modal.remove();
+				modal.remove();
+			});
+
+			// Create spinner
+			var spinner = $('<div class="spinner-container w-100 h-100 active" style="position:absolute; background:#fff"></div>').append(createCircularSpinner(64, true, 2));
+			modal.find('.modal-body').append(spinner);
+
+			modal.find('.modal-body > iframe').on('load', function (e) {
+				modal.find('.modal-body > .spinner-container').removeClass('active');
 			});
 		}
 		else {
-			var iframe = modal.find('> .modal-body > iframe');
+			var iframe = modal.find('.modal-body > iframe');
+			modal.find('.modal-body > .spinner-container').addClass('active');
 			iframe.attr('src', url);
 		}
 
@@ -49,6 +83,58 @@
 		winprops = 'resizable=0, height=' + h + ',width=' + w + ',top=' + t + ',left=' + l + 'w';
 		if (scroll) winprops += ',scrollbars=1';
 		var f = window.open(url, "_blank", winprops);
+	}
+
+	window.modifyUrl = function (url, qsName, qsValue) {
+		var search = null;
+
+		if (!url) {
+			url = window.location.protocol + "//" +
+				window.location.host +
+				window.location.pathname;
+		}
+		else {
+			// strip query from url
+			var idx = url.indexOf('?', 0);
+			if (idx > -1) {
+				search = url.substring(idx);
+				url = url.substring(0, idx);
+			}
+		}
+
+		var qs = getQueryStrings(search);
+
+		// Add new params to the querystring dictionary
+		qs[qsName] = qsValue;
+
+		return url + createQueryString(qs);
+
+		// http://stackoverflow.com/questions/2907482
+		// Gets Querystring from window.location and converts all keys to lowercase
+		function getQueryStrings(search) {
+			var assoc = { };
+			var decode = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); };
+			var queryString = (search || location.search).substring(1);
+			var keyValues = queryString.split('&');
+
+			for (var i in keyValues) {
+				var key = keyValues[i].split('=');
+				if (key.length > 1)
+					assoc[decode(key[0]).toLowerCase()] = decode(key[1]);
+			}
+
+			return assoc;
+		}
+
+		function createQueryString(dict) {
+			var bits = [];
+			for (var key in dict) {
+				if (dict.hasOwnProperty(key) && dict[key]) {
+					bits.push(key + "=" + dict[key]);
+				}
+			}
+			return bits.length > 0 ? "?" + bits.join("&") : "";
+		}
 	}
 
 	window.htmlEncode = function (value) {
@@ -86,6 +172,49 @@
 		}
 	}
 
+	window.Prefixer = (function () {
+		var TransitionEndEvent = {
+			WebkitTransition: 'webkitTransitionEnd',
+			MozTransition: 'transitionend',
+			OTransition: 'oTransitionEnd otransitionend',
+			transition: 'transitionend'
+		};
+
+		var AnimationEndEvent = {
+			WebkitAnimation: 'webkitAnimationEnd',
+			MozAnimation: 'animationend',
+			OAnimation: 'webkitAnimationEnd oAnimationEnd',
+			animation: 'animationend'
+		};
+
+		var cssProps = {},
+			cssValues = {},
+			domProps = {};
+
+		function prefixCss(prop) {
+			return cssProps[prop] || (cssProps[prop] = Modernizr.prefixedCSS(prop));
+		}
+		
+		function prefixCssValue(prop, value) {
+			var key = prop + '.' + value;
+			return cssValues[key] || (cssValues[key] = Modernizr.prefixedCSSValue(prop, value));
+		}
+
+		function prefixDom(prop) {
+			return domProps[prop] || (domProps[prop] = Modernizr.prefixed(prop));
+		}
+
+		return {
+			css: prefixCss,
+			cssValue: prefixCssValue,
+			dom: prefixDom,
+			event: {
+				transitionEnd: TransitionEndEvent[prefixDom('transition')],
+				animationEnd: AnimationEndEvent[prefixDom('animation')]
+			}
+		}
+	})();
+
 	window.createCircularSpinner = function (size, active, strokeWidth, boxed, white) {
 	    var spinner = $('<div class="spinner"></div>');
 	    if (active) spinner.addClass('active');
@@ -93,7 +222,7 @@
 	    if (white) spinner.addClass('white');
 	    
 	    if (!_.isNumber(strokeWidth)) {
-	        strokeWidth = 6;
+	        strokeWidth = 4;
 	    }
 
 	    var svg = '<svg style="width:{0}px; height:{0}px" viewBox="0 0 64 64"><circle cx="32" cy="32" r="{1}" fill="none" stroke-width="{2}" stroke-miterlimit="10"></circle></svg>'.format(size, 32 - strokeWidth, strokeWidth);
@@ -102,42 +231,13 @@
 	    return spinner;
 	}
 
-	window.copyTextToClipboard = function (text) {
-		var result = false;
-
-		if (window.clipboardData && window.clipboardData.setData) {
-			result = clipboardData.setData('Text', text);
-		}
-		else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
-			var textarea = document.createElement('textarea'),
-				elFocus = document.activeElement,
-				elContext = elFocus || document.body;
-
-			textarea.textContent = text;
-			textarea.style.position = 'fixed';
-			textarea.style.width = '10px';
-			textarea.style.height = '10px';
-
-			elContext.appendChild(textarea);
-
-			textarea.focus();
-			textarea.setSelectionRange(0, textarea.value.length);
-
-			try {
-				result = document.execCommand('copy');
-			}
-			catch (e) {
-			}
-			finally {
-				elContext.removeChild(textarea);
-				if (elFocus) {
-					elFocus.focus();
-				}
-			}
-		}
-		return result;
+	window.getImageSize = function (url, callback) {
+		var img = new Image();
+		img.src = url;
+		img.onload = function () {
+			callback.apply(this, [img.naturalWidth, img.naturalHeight]);
+		};
 	}
-
 
     // on document ready
 	$(function () {
@@ -165,31 +265,67 @@
 			return str;
 		}
 
-		// adjust pnotify global defaults
-		if ($.pnotify) {
-			$.extend($.pnotify.defaults, {
-				history: false,
-				animate_speed: "normal",
-				shadow: true,
-				width: "400px",
-				icon: true
+		// Adjust initPNotify global defaults
+		if (typeof PNotify !== 'undefined') {
+			PNotify.prototype.options = $.extend(PNotify.prototype.options, {
+				styling: "fontawesome",
+				stack: { "dir1": "down", "dir2": "left", "push": "bottom", "firstpos1": $('html').data('pnotify-firstpos1') || 80, "spacing1": 0, "spacing2": 25, "context": $("body") },
+				addclass: 'stack-topright',
+				width: "450px",
+				mobile: { swipe_dismiss: true, styling: true },
+				animate: { animate: true, in_class: "fadeInDown", out_class: "fadeOutRight" }
 			});
 		}
 
-		// global notification subscriber
-		if (window.EventBroker && window._ && $.pnotify) {
-			//var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
+		// Adjust datetimepicker global defaults
+		var dtp = $.fn.datetimepicker;
+		if (typeof dtp !== 'undefined' && dtp.Constructor && dtp.Constructor.Default) {
+			dtp.Constructor.Default = $.extend({}, dtp.Constructor.Default, {
+				locale: 'glob',
+				keepOpen: false,
+				collapse: true,
+				widgetPositioning: {
+					horizontal: 'right',
+					vertical: 'auto'
+				},
+				icons: {
+					time: 'fa fa-clock-o',
+					date: 'fa fa-calendar',
+					up: 'fa fa-arrow-up',
+					down: 'fa fa-arrow-down',
+					previous: 'fa fa-chevron-left',
+					next: 'fa fa-chevron-right',
+					today: 'fa fa-calendar-check-o',
+					clear: 'fa fa-delete',
+					close: 'fa fa-times'
+				}
+			});
+		}
+
+		// Global notification subscriber
+		if (window.EventBroker && window._ && typeof PNotify !== 'undefined') {
 			var stack_bottomcenter = { "dir1": "up", "dir2": "right", "firstpos1": 100, "firstpos2": 10 };
 			EventBroker.subscribe("message", function (message, data) {
 				var opts = _.isString(data) ? { text: data } : data;
-				opts.stack = stack_bottomcenter;
-				opts.addclass = "stack-bottomcenter";
-				$.pnotify(opts);
+				new PNotify(opts);
+			});
+		}
+
+		// Notify subscribers about page/content width change
+		if (window.EventBroker) {
+			var currentContentWidth = $('#content').width();
+			$(window).on('resize', function () {
+				var contentWidth = $('#content').width();
+				if (contentWidth !== currentContentWidth) {
+					currentContentWidth = contentWidth;
+					console.debug("Grid tier changed: " + viewport.current());
+					EventBroker.publish("page.resized", viewport);
+				}
 			});
 		}
 
 		// tab strip smart auto selection
-		$('.tabs-autoselect > ul.nav a[data-toggle=tab]').on('shown', function(e) {
+		$('.tabs-autoselect ul.nav a[data-toggle=tab]').on('shown.bs.tab', function (e) {
 			var tab = $(e.target),
 				strip = tab.closest('.tabbable'),
 				href = strip.data("tabselector-href"),
@@ -235,7 +371,7 @@
 		});
 
 		// AJAX tabs
-		$('.nav a[data-ajax-url]').on('show', function (e) {
+		$('.nav a[data-ajax-url]').on('show.bs.tab', function (e) {
 			var newTab = $(e.target),
 				tabbable = newTab.closest('.tabbable'),
 				pane = tabbable.find(newTab.attr("href")),
@@ -247,10 +383,11 @@
 			$.ajax({
 				cache: false,
 				type: "GET",
-				async: false,
+				async: true,
 				global: false,
 				url: url,
 				beforeSend: function (xhr) {
+					pane.html($("<div class='text-center mt-6'></div>").append(createCircularSpinner(48, true, 2)));
 					getFunction(tabbable.data("ajax-onbegin"), ["tab", "pane", "xhr"]).apply(this, [newTab, pane, xhr]);
 				},
 				success: function (data, status, xhr) {
@@ -258,7 +395,7 @@
 					getFunction(tabbable.data("ajax-onsuccess"), ["tab", "pane", "data", "status", "xhr"]).apply(this, [newTab, pane, data, status, xhr]);
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
-					pane.html('<div class="text-error">Error while loading resource: ' + thrownError + '</div>');
+					pane.html('<div class="text-danger">Error while loading resource: ' + thrownError + '</div>');
 					getFunction(tabbable.data("ajax-onfailure"), ["tab", "pane", "xhr", "ajaxOptions", "thrownError"]).apply(this, [newTab, pane, xhr, ajaxOptions, thrownError]);
 				},
 				complete: function (xhr, status) {
@@ -298,14 +435,127 @@
 			}
 		);
 
+		// .mf-dropdown (mobile friendly dropdown)
+		(function () {
+			$('.mf-dropdown').each(function (i, el) {
+				var elLabel = $('> .btn [data-bind]', el);
+				if (elLabel.length == 0 || elLabel.text().length > 0)
+					return;
+
+				var sel = $('select > option:selected', el).text() || $('select > option', el).first().text();
+				elLabel.text(sel);
+			});
+
+			$('body').on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
+				var btn = $(this).parent().find('> .btn');
+				if (e.type == "mouseenter") {
+					btn.addClass('hover');
+				}
+				else if (e.type == "mousedown") {
+					btn.addClass('active focus').removeClass('hover');
+					_.delay(function () {
+						$('body').one('mousedown touch', function (e) { btn.removeClass('active focus'); });
+					}, 50);
+				}
+				else if (e.type == "mouseleave") {
+					btn.removeClass('hover');
+				}
+				else if (e.type == "change") {
+					btn.removeClass('hover active focus');
+					var elLabel = btn.find('[data-bind]');
+					elLabel.text(elLabel.data('bind') == 'value' ? $(this).val() : $('option:selected', this).text());
+				}
+			});
+		})();
+		
+
+		(function () {
+			var currentDrop,
+				currentSubDrop,
+				closeTimeout,
+				closeTimeoutSub;
+
+			function closeDrop(drop, fn) {
+				drop.removeClass('show').find('> .dropdown-menu').removeClass('show');
+				if (_.isFunction(fn)) fn();
+			}
+
+			// drop dropdown menus on hover
+			$(document).on('mouseenter mouseleave', '.dropdown-hoverdrop', function (e) {
+				var li = $(this),
+					a = $('> .dropdown-toggle', this);
+
+				if (a.data("toggle") === 'dropdown')
+					return;
+
+				var afterClose = function () { currentDrop = null; };
+
+				if (e.type == 'mouseenter') {
+					if (currentDrop) {
+						clearTimeout(closeTimeout);
+						closeDrop(currentDrop, afterClose);
+					}
+					li.addClass('show').find('> .dropdown-menu').addClass('show');
+					currentDrop = li;
+				}
+				else {
+					li.removeClass('show');
+					closeTimeout = window.setTimeout(function () { closeDrop(li, afterClose); }, 250);
+				}
+			});
+
+			// handle nested dropdown menus
+			$(document).on('mouseenter mouseleave', '.dropdown-group', function (e) {
+				var li = $(this);
+
+				if (e.type == 'mouseenter') {
+					if (currentSubDrop) {
+						clearTimeout(closeTimeoutSub);
+						closeDrop(currentSubDrop);
+					}
+					li.addClass('show').find('> .dropdown-menu').addClass('show');
+					currentSubDrop = li;
+				}
+				else {
+					li.removeClass('show');
+					closeTimeoutSub = window.setTimeout(function () { closeDrop(li); }, 250);
+				}
+			});
+		})();
+
+
 		// html text collapser
-		if ($({}).moreLess) {
+		if ($.fn.moreLess) {
 			$('.more-less').moreLess();
 		}
-		
-		// fixes bootstrap 2 bug: non functional links on mobile devices
-	    // https://github.com/twbs/bootstrap/issues/4550
-		$('body').on('touchstart.dropdown', '.dropdown-menu a', function (e) { e.stopPropagation(); });
+
+		// scroll top
+		(function () {
+			$('#scroll-top').click(function (e) {
+				e.preventDefault();
+				$(window).scrollTo(0, 600);
+				return false;
+			});
+
+			var prevY;
+
+			var throttledScroll = _.throttle(function (e) {
+				var y = $(window).scrollTop();
+				if (_.isNumber(prevY)) {
+					// Show scroll button only when scrolled up
+					if (y < prevY && y > 500) {
+						$('#scroll-top').addClass("in");
+					}
+					else {
+						$('#scroll-top').removeClass("in");
+					}
+				}
+
+				prevY = y;
+			}, 100);
+
+			$(window).on("scroll", throttledScroll);
+		})();
     });
 
 })( jQuery, this, document );

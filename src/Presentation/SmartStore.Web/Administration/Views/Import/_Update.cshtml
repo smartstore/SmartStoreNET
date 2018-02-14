@@ -422,8 +422,8 @@
 
 					return null;
 				},
-				formatResult: (isProperty ? selectPropertyFormatting : selectColumnFormatting),
-				formatSelection: (isProperty ? selectPropertyFormatting : selectColumnFormatting)
+				templateResult: (isProperty ? selectPropertyFormatting : selectColumnFormatting),
+				templateSelection: (isProperty ? selectPropertyFormatting : selectColumnFormatting)
 			});
 		}
 
@@ -482,7 +482,7 @@
 
 					html += '<span class="muted right-label">' + item.id + '</span>';
 
-					html += '<span class="ml4" style="display: inline-block;"';
+					html += '<span class="ml-1" style="display: inline-block;"';
 					if (item.text.length > maxMappingLableLength) {
 						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
 					}
@@ -491,7 +491,7 @@
 					}
 					html += '</span>';
 					html += '</div>';
-					return html;
+					return $(html);
 				}
 			}
 			catch (e) { }
@@ -520,7 +520,7 @@
 					html += '<span>' + item.id + '</span>';
 
 					html += '</div>';
-					return html;
+					return $(html);
 				}
 			}
 			catch (e) { }

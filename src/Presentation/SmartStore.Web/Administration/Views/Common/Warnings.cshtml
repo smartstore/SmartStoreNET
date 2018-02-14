@@ -10,11 +10,11 @@
     </div>
 </div>
 
-<div class="system-warnings">
+<div class="system-warnings fs-h6">
     <ul class="fa-ul">
         @foreach (var warning in Model)
         {
-            <li>
+            <li class="pb-2">
                 @switch (warning.Level)
                 {
                     case SystemWarningLevel.Pass:

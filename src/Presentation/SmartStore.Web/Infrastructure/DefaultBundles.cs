@@ -25,9 +25,9 @@ namespace SmartStore.Web.Infrastructure
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/fileupload").Include(
 				"~/Scripts/jquery-ui/widget.js",
-				"~/Content/fileupload/jquery.iframe-transport.js",
-				"~/Content/fileupload/jquery.fileupload.js",
-				"~/Content/fileupload/jquery.fileupload-single-ui.js"));
+				"~/Content/vendors/fileuploader/jquery.iframe-transport.js",
+				"~/Content/vendors/fileuploader/jquery.fileupload.js",
+				"~/Content/vendors/fileuploader/jquery.fileupload-single-ui.js"));
 
 
 			/* CodeMirror (V 5.3.3)

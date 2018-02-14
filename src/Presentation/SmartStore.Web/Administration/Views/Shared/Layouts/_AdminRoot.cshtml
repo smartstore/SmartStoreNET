@@ -15,17 +15,15 @@
 	adminPageTitle += T("Admin.PageTitle").Text;
 
 	var volatileJsRoot = "~/Administration/Scripts/";
-	var vendorsRoot = "~/Administration/Content/vendors/";
-	var flexJsRoot = "~/Themes/Flex/Scripts/";
-	var flexCssRoot = "~/Themes/Flex/Content/css/";
+	var vendorsRoot = "~/Content/vendors/";
 	var contentRoot = "~/Content/";
 	var scriptsRoot = "~/Scripts/";
 
 	// add css assets
 	var telerikCssRoot = "~/Content/2012.2.607/";
 	Html.AppendCssFileParts(
-		flexCssRoot + "fontastic.css",
-		contentRoot + "font-awesome.css",
+		contentRoot + "fontastic/fontastic.css",
+		vendorsRoot + "font-awesome/font-awesome.css",
 		telerikCssRoot + "telerik.common.css",
 		vendorsRoot + "pnotify/css/pnotify.css",
 		vendorsRoot + "pnotify/css/pnotify.mobile.css",
@@ -40,9 +38,6 @@
 		volatileJsRoot + "jquery-3.2.1.js",
 		volatileJsRoot + "jquery-migrate-3.2.1.js",
 		volatileJsRoot + "jquery-shims.js");
-
-	// add js assets (Foot)
-	var bootstrap4JsRoot = "~/Administration/Content/bs4/js/";
 
 	Html.AppendScriptParts(ResourceLocation.Foot,
 		// jQuery UI Core

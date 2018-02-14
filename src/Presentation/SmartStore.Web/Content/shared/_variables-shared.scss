@@ -1,0 +1,29 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+//
+// Typo
+// --------------------------------------------------
+
+$font-size-xs:				0.75rem !default;
+$font-weight-medium:        600 !default;
+$headings-lg-font-weight:   400 !default;
+$headings-sm-font-weight:   $font-weight-medium !default;
+
+
+// Material tabs
+// ==============================================================
+
+$mtab-text-transform:		none !default;
+$mtab-font-weight:			$font-weight-medium !default;
+$mtab-color:				inherit !default;
+
+
+//
+// Gray color shims
+// --------------------------------------------------
+
+$gray-lightest: $gray-100;
+$gray-lighter:	$gray-300;
+$gray-light:	$gray-500;
+$gray:			$gray-700;
+$gray-dark:		$gray-900;

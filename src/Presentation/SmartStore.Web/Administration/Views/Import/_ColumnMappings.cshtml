@@ -36,28 +36,28 @@
 
 <div id="PropertyMappingTemplate" class="d-none">
 	<div class="mapping-edit">
-		<select class="select-property noskin">
+		<select class="form-control select-property noskin">
 			@foreach (var property in Model.AvailableEntityProperties)
 			{
 				<option value="@property.Property" data-defaultdisabled="@(property.IsDefaultDisabled ? "1" : "0")">@property.PropertyDescription</option>
 			}
 		</select>
-		<button type="button" class="btn btn-primary mapping-apply"><i class="fa fa-check"></i></button>
-		<button type="button" class="btn mapping-cancel"><i class="fa fa-times"></i></button>
+		<button type="button" class="btn btn-warning mapping-apply btn-icon"><i class="fa fa-check"></i></button>
+		<button type="button" class="btn btn-outline-secondary btn-to-danger mapping-cancel btn-icon"><i class="fa fa-times"></i></button>
 	</div>
 </div>
 
 <div id="ColumnMappingTemplate" class="d-none">
 	<div class="mapping-edit">
-		<select class="select-column noskin" data-placeholder="@ignore">
+		<select class="form-control select-column noskin" data-placeholder="@ignore">
 			<option></option>
 			@foreach (var column in Model.AvailableSourceColumns)
 			{
 				<option value="@column.Column">@column.PropertyDescription</option>
 			}
 		</select>
-		<button type="button" class="btn btn-primary mapping-apply"><i class="fa fa-check"></i></button>
-		<button type="button" class="btn mapping-cancel"><i class="fa fa-times"></i></button>
+		<button type="button" class="btn btn-warning mapping-apply btn-icon"><i class="fa fa-check"></i></button>
+		<button type="button" class="btn btn-outline-secondary btn-to-danger mapping-cancel btn-icon"><i class="fa fa-times"></i></button>
 	</div>
 </div>
 
@@ -76,7 +76,7 @@
 							<span class="left-label"></span>
 							<span class="muted right-label"></span>
 						</div>
-						<select class="select-property noskin" data-placeholder="@selectTargetProperty">
+						<select class="form-control select-property noskin" data-placeholder="@selectTargetProperty">
 							<option></option>
 							@foreach (var property in Model.AvailableEntityProperties)
 							{
@@ -91,7 +91,7 @@
 						<div class="item-inner hide">
 							<span class="left-label"></span>
 						</div>
-						<select class="select-column noskin" data-placeholder="@ignore">
+						<select class="form-control select-column noskin" data-placeholder="@ignore">
 							<option></option>
 							@foreach (var column in Model.AvailableSourceColumns)
 							{
@@ -101,10 +101,10 @@
 					</div>
 				</td>
 				<td>
-					<input type="text" class="input-default text-box single-line" value="" disabled="disabled" />
+					<input type="text" class="form-control input-default" value="" disabled="disabled" />
 				</td>
-				<td>
-					<button type="button" class="btn btn-block btn-warning mapping-add" disabled="disabled" title="@T("Common.AddNew")">
+				<td class="omega">
+					<button type="button" class="btn btn-block btn-primary mapping-add" disabled="disabled" title="@T("Common.AddNew")">
 						<i class="fa fa-plus"></i>
 						<span class="mapping-button-label">
 							@T("Common.AddNew")
@@ -174,12 +174,11 @@
 						</div>
 					</td>
 					<td>
-						<input type="text" name="ColumnMapping.Default.@(index)" class="input-default text-box single-line" value="@mapping.Default" 
+						<input type="text" name="ColumnMapping.Default.@(index)" class="form-control input-default" value="@mapping.Default" 
 							   @Html.Attr("disabled", "disabled", mapping.IsDefaultDisabled || !mapping.Column.HasValue()) />
 					</td>
-					<td>
+					<td class="omega">
 						<button type="button" class="btn btn-block btn-danger mapping-delete" title="@delete">
-							<i class="fa fa-trash"></i>
 							<span class="mapping-button-label">@delete</span>
 						</button>
 					</td>

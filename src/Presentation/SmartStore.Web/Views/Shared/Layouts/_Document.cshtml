@@ -6,15 +6,17 @@
 	//var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
 
 	//var contentRoot = "~/Themes/Flex/Content/";
-	var cssRoot = "~/Themes/Flex/Content/css/";
 	var jsRoot = "~/Themes/Flex/Scripts/";
 	var bootstrapJsRoot = "~/Themes/Flex/Content/bs4/js/";
-	var vendorsRoot = "~/Themes/Flex/Content/vendors/";
+	var vendorsRoot = "~/Content/vendors/";
+	var contentRoot = "~/Content/";
+
+	var themeVendorsRoot = "~/Themes/Flex/Content/vendors/";
 
 	// add css assets
 	Html.AppendCssFileParts(
 		vendorsRoot + "font-awesome/font-awesome.css",
-		cssRoot + "fontastic.css",
+		contentRoot + "fontastic/fontastic.css",
 		vendorsRoot + "pnotify/css/pnotify.css",
 		vendorsRoot + "pnotify/css/pnotify.mobile.css",
 		vendorsRoot + "pnotify/css/pnotify.buttons.css");
@@ -59,7 +61,7 @@
 		// Shared UI
 		jsRoot + "smartstore.viewport.js",
 		vendorsRoot + "select2/js/select2.js",
-		vendorsRoot + "slick/slick.js",
+		themeVendorsRoot + "slick/slick.js",
 		jsRoot + "smartstore.selectwrapper.js",
 		jsRoot + "smartstore.throbber.js",
 		jsRoot + "smartstore.thumbzoomer.js",

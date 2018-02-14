@@ -8,8 +8,8 @@
     var allPluginsSelectList = Model.AllPlugins.Select(x => new SelectListItem { Value = x.SystemName, Text = x.FriendlyName });
     var availableStores = JsonConvert.SerializeObject(Model.AvailableStores.Select(x => new { value = x.Id, text = x.Name }).ToArray());
 
-    Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
-    Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+    Html.AddCssFileParts(true, "~/Content/vendors/x-editable/bootstrap-editable.css");
+    Html.AppendScriptParts(true, "~/Content/vendors/x-editable/bootstrap-editable.js");
 }
 
 @helper PluginList(IEnumerable<PluginModel> plugins)

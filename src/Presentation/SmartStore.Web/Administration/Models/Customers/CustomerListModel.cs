@@ -8,16 +8,18 @@ namespace SmartStore.Admin.Models.Customers
 {
     public class CustomerListModel : ModelBase
     {
-        public GridModel<CustomerModel> Customers { get; set; }
+		public CustomerListModel ()
+		{
+			AvailableCustomerRoles = new List<SelectListItem>();
+		}
 
+		public GridModel<CustomerModel> Customers { get; set; }
+		
         [SmartResourceDisplayName("Admin.Customers.Customers.List.CustomerRoles")]
-        [AllowHtml]
-        public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
+        public string SearchCustomerRoleIds { get; set; }
+		public IList<SelectListItem> AvailableCustomerRoles { get; set; }
 
-        [SmartResourceDisplayName("Admin.Customers.Customers.List.CustomerRoles")]
-        public int[] SearchCustomerRoleIds { get; set; }
-
-        [SmartResourceDisplayName("Admin.Customers.Customers.List.SearchEmail")]
+		[SmartResourceDisplayName("Admin.Customers.Customers.List.SearchEmail")]
         [AllowHtml]
         public string SearchEmail { get; set; }
 

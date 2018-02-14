@@ -378,12 +378,17 @@ namespace SmartStore.Admin.Controllers
                 CompanyEnabled = _customerSettings.CompanyEnabled,
                 PhoneEnabled = _customerSettings.PhoneEnabled,
                 ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled,
-                AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).Select(cr => cr.ToModel()).ToList(),
-                SearchCustomerRoleIds = defaultRoleIds,
+				AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true)
+					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+					.ToList(),
+
+				SearchCustomerRoleIds = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered).Id.ToString(),
             };
+
             var customers = _customerService.GetAllCustomers(null, null, defaultRoleIds, null,
                 null, null, null, 0, 0, null, null, null,
                 false, null, 0, _adminAreaSettings.GridPageSize);
+
             //customer list
             listModel.Customers = new GridModel<CustomerModel>
             {
@@ -394,7 +399,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult CustomerList(GridCommand command, CustomerListModel model, [ModelBinderAttribute(typeof(CommaSeparatedModelBinder))] int[] searchCustomerRoleIds)
+        public ActionResult CustomerList(GridCommand command, CustomerListModel model)
         {
 			// we use own own binder for searchCustomerRoleIds property 
 			var gridModel = new GridModel<CustomerModel>();
@@ -411,7 +416,7 @@ namespace SmartStore.Admin.Controllers
 					searchMonthOfBirth = Convert.ToInt32(model.SearchMonthOfBirth);
 
 				var customers = _customerService.GetAllCustomers(null, null,
-					searchCustomerRoleIds, model.SearchEmail, model.SearchUsername,
+					model.SearchCustomerRoleIds.ToIntArray(), model.SearchEmail, model.SearchUsername,
 					model.SearchFirstName, model.SearchLastName,
 					searchDayOfBirth, searchMonthOfBirth,
 					model.SearchCompany, model.SearchPhone, model.SearchZipPostalCode,

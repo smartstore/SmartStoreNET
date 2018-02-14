@@ -26,11 +26,11 @@
 	<div class="row mt-3 grid-filter">
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.CreatedOnFrom)
-			@Html.TextBoxFor(model => Model.CreatedOnFrom, new { @class = "form-control" })
+			@Html.EditorFor(model => Model.CreatedOnFrom, new { @class = "form-control" })
 		</div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.CreatedOnTo)
-			@Html.TextBoxFor(model => model.CreatedOnTo, new { @class = "form-control" })
+			@Html.EditorFor(model => model.CreatedOnTo, new { @class = "form-control" })
 		</div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.ActivityLogTypeId)
@@ -45,9 +45,9 @@
 			@Html.TextBoxFor(model => model.CustomerSystemAccount, new { @class = "form-control" })
 		</div>
 
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			<label>&nbsp;</label>
-			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-warning btn-block">
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>
 		</div>

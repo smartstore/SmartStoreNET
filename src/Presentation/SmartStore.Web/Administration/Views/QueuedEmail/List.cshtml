@@ -56,10 +56,6 @@
 			@Html.EditorFor(model => Model.SearchToEmail)
 		</div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.SearchLoadNotSent)
-			@Html.EditorFor(model => Model.SearchLoadNotSent)
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchSendManually)
 			@Html.EditorFor(model => Model.SearchSendManually)
 		</div>
@@ -67,10 +63,19 @@
 			@Html.SmartLabelFor(model => model.SearchMaxSentTries)
 			@Html.EditorFor(model => Model.SearchMaxSentTries)
 		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchLoadNotSent)
+			<div class="mt-2">
+				<label class="switch">
+					@Html.EditorFor(model => Model.SearchLoadNotSent)
+					<span class="switch-toggle" data-on="An" data-off="Aus"></span>
+				</label>
+			</div>
+		</div>
 
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			<label>&nbsp;</label>
-			<button type="submit" id="search-products" value="search-products" class="btn btn-warning btn-block">
+			<button type="submit" id="search-products" value="search-products" class="btn btn-secondary btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>
 		</div>

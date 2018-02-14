@@ -15,15 +15,15 @@
     <div class="options">
 		@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
+		<a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
+
 		<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
 			<i class="fa fa-trash-o"></i>
 			<span>@T("Admin.Common.Delete.Selected")</span>
 		</button>
-
-        <a href="@Url.Action("Create")" class="btn btn-primary">
-			<i class="fa fa-plus"></i>
-			<span>@T("Admin.Common.AddNew")</span>
-		</a>
 
 		@{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
@@ -31,26 +31,18 @@
 
 @if (Model.AvailableStores.Count > 1)
 {
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchStoreId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-			</td>
-			<td class="adminData">
-				<button type="button" id="search-newsitem" class="btn btn-secondary">
-					<i class="fa fa-search"></i>
-					<span>@T("Admin.Common.Search")</span>
-				</button>
-			</td>
-		</tr>
-	</table>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchStoreId)
+			@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
 }
 
 <div>

@@ -21,15 +21,15 @@
 	<div class="row mt-3 grid-filter">
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.ActivatedId)
-			@Html.TextBoxFor(model => Model.ActivatedId, new { @class = "form-control" })
+			@Html.DropDownListFor(model => model.ActivatedId, Model.ActivatedList, T("Admin.Common.All"))
 		</div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.CouponCode)
 			@Html.TextBoxFor(model => model.CouponCode, new { @class = "form-control" })
 		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			<label>&nbsp;</label>
-			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-warning btn-block">
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
 				<span>@T("Admin.Common.Search")</span>
 			</button>
 		</div>

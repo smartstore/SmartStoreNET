@@ -67,12 +67,12 @@
 			@Html.EditorFor(model => Model.CustomerEmail)
 		</div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.OrderStatusIds)
-			@Html.DropDownList("OrderStatusIds", Model.AvailableOrderStatuses, null, new { multiple = "multiple", @class = "form-control" })
+			@Html.SmartLabelFor(model => model.OrderGuid)
+			@Html.EditorFor(model => Model.OrderGuid)
 		</div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.PaymentStatusIds)
-			@Html.DropDownList("PaymentStatusIds", Model.AvailablePaymentStatuses, null, new { multiple = "multiple", @class = "form-control" })
+			@Html.SmartLabelFor(model => model.OrderNumber)
+			@Html.EditorFor(model => Model.OrderNumber)
 		</div>
 		@if (Model.AvailableStores.Count > 1)
 		{
@@ -81,17 +81,22 @@
 				@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores, allString, new { @class = "form-control" })
 			</div>
 		}
+		else
+		{
+			<div class="col-xl-3"></div>
+		}
+		<div class="col-xl-3"></div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.OrderGuid)
-			@Html.EditorFor(model => Model.OrderGuid)
+			@Html.SmartLabelFor(model => model.OrderStatusIds)
+			@Html.DropDownList("OrderStatusIds", Model.AvailableOrderStatuses, null, new { multiple = "multiple", @class = "form-control" })
 		</div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.OrderNumber)
-			@Html.EditorFor(model => Model.OrderNumber)
+			@Html.SmartLabelFor(model => model.PaymentStatusIds)
+			@Html.DropDownList("PaymentStatusIds", Model.AvailablePaymentStatuses, null, new { multiple = "multiple", @class = "form-control" })
 		</div>
 
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
-			<label>&nbsp;</label>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label class="d-none d-lg-block">&nbsp;</label>
 			<button type="submit" id="search-products" value="search-products" class="btn btn-warning btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>

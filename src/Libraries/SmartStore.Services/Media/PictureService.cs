@@ -461,16 +461,27 @@ namespace SmartStore.Services.Media
 
 			if (picture.IsNew)
 			{
-				_imageCache.DeleteCachedImages(picture);		
+				_imageCache.DeleteCachedImages(picture);
 
 				// we do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
-				UpdatePicture(
-					picture,
-					LoadPictureBinary(picture),
-					picture.MimeType,
-					picture.SeoFilename,
-					false,
-					false);
+				try
+				{
+					UpdatePicture(
+						picture,
+						LoadPictureBinary(picture),
+						picture.MimeType,
+						picture.SeoFilename,
+						false,
+						false);
+				}
+				catch (InvalidOperationException ioe)
+				{
+					// Ignore exception for pictures that already have been processed.
+					if (!ioe.IsAlreadyAttachedEntityException())
+					{
+						throw;
+					}
+				}
 			}
 
 			return string.Empty;

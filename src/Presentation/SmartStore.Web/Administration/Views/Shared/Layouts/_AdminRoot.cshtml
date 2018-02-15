@@ -4,8 +4,6 @@
 @using System.Web.Hosting;
 
 @{
-	var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
-
 	// page title
 	string adminPageTitle = "";
 	if (!string.IsNullOrWhiteSpace(ViewBag.Title))
@@ -34,7 +32,7 @@
 	Html.AppendScriptParts(ResourceLocation.Head,
 		jsRoot + "modernizr.js",
 		jsRoot + "jquery-3.2.1.js",
-		jsRoot + "jquery-migrate-3.2.1.js",
+		jsRoot + "jquery-migrate-3.0.0.js",
 		adminJsRoot + "jquery-shims.js");
 
 	Html.AppendScriptParts(ResourceLocation.Foot,
@@ -69,14 +67,14 @@
 		// Vendors
 		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
 		vendorsRoot + "select2/js/select2.js",
-		// Shared UI
-		jsRoot + "smartstore.selectwrapper.js",
-		jsRoot + "smartstore.throbber.js",
-		jsRoot + "smartstore.thumbzoomer.js",
 		vendorsRoot + "pnotify/js/pnotify.js",
 		vendorsRoot + "pnotify/js/pnotify.mobile.js",
 		vendorsRoot + "pnotify/js/pnotify.buttons.js",
 		vendorsRoot + "pnotify/js/pnotify.animate.js",
+		// Shared UI
+		jsRoot + "smartstore.selectwrapper.js",
+		jsRoot + "smartstore.throbber.js",
+		jsRoot + "smartstore.thumbzoomer.js",
 		jsRoot + "jquery.scrollTo.js",
 		jsRoot + "jquery.sortable.js",
 		// Admin
@@ -109,6 +107,7 @@
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>   
 	@{ Html.RenderZone("start"); }
 	@RenderBody()
+	@{ Html.RenderZone("aftercontent"); }
 
 	@RenderSection("foot", required: false)
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)

@@ -12,8 +12,6 @@
 	Html.AddMetaDescriptionParts(Model.MetaDescription);
 	Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	Html.AddScriptParts("~/Themes/Flex/Scripts/public.product.js");
-
 	var canonicalUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
 	if (Model.CanonicalUrlsEnabled)
 	{

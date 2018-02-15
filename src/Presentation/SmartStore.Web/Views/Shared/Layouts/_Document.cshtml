@@ -1,53 +1,45 @@
 ﻿@using SmartStore.Core;
 
 @{
-	var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
-
 	//var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
 
-	//var contentRoot = "~/Themes/Flex/Content/";
-	var jsRoot = "~/Themes/Flex/Scripts/";
-	var bootstrapJsRoot = "~/Themes/Flex/Content/bs4/js/";
+	var jsRoot = "~/Scripts/";
 	var vendorsRoot = "~/Content/vendors/";
 	var contentRoot = "~/Content/";
 
-	var themeVendorsRoot = "~/Themes/Flex/Content/vendors/";
-
 	// add css assets
 	Html.AppendCssFileParts(
-		vendorsRoot + "font-awesome/font-awesome.css",
 		contentRoot + "fontastic/fontastic.css",
+		vendorsRoot + "font-awesome/font-awesome.css",
 		vendorsRoot + "pnotify/css/pnotify.css",
 		vendorsRoot + "pnotify/css/pnotify.mobile.css",
 		vendorsRoot + "pnotify/css/pnotify.buttons.css");
 
 	Html.AppendScriptParts(ResourceLocation.Head,
-		"~/Scripts/modernizr.js",
+		jsRoot + "modernizr.js",
 		jsRoot + "jquery-3.2.1.js",
-		jsRoot + "jquery-migrate-3.0.0.js",
-		"~/Scripts/globalize/globalize.js");
-
-	Html.AddScriptParts(ResourceLocation.Head, true,
-		"~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
-
+		jsRoot + "jquery-migrate-3.0.0.js");
 
 	Html.AppendScriptParts(ResourceLocation.Foot,
 		// jQuery UI Core
-		"~/Scripts/jquery-ui/effect.js",
-		"~/Scripts/jquery-ui/effect-shake.js",
+		jsRoot + "jquery-ui/effect.js",
+		jsRoot + "jquery-ui/effect-shake.js",
 		// jQuery Validation
-		"~/Scripts/jquery.unobtrusive-ajax.js",
-		"~/Scripts/jquery.validate.js",
-		"~/Scripts/jquery.validate.unobtrusive.js",
+		jsRoot + "jquery.unobtrusive-ajax.js",
+		jsRoot + "jquery.validate.js",
+		jsRoot + "jquery.validate.unobtrusive.js",
 		jsRoot + "jquery.validate.unobtrusive.custom.js",
 		// SmartStore system
-		"~/Scripts/underscore.js",
-		"~/Scripts/underscore.string.js",
-		"~/Scripts/underscore.mixins.js",
+		jsRoot + "underscore.js",
+		jsRoot + "underscore.string.js",
+		jsRoot + "underscore.mixins.js",
 		jsRoot + "smartstore.system.js",
-		//"~/Scripts/smartstore.globalization.js",
 		jsRoot + "smartstore.touchevents.js",
 		jsRoot + "smartstore.jquery.utils.js",
+		vendorsRoot + "moment/moment.js",
+		jsRoot + "smartstore.globalization.js",
+		// Common
+		jsRoot + "smartstore.viewport.js",
 		jsRoot + "jquery.ba-outside-events.js",
 		jsRoot + "smartstore.doajax.js",
 		jsRoot + "jquery.addeasing.js",
@@ -55,36 +47,34 @@
 		jsRoot + "smartstore.hacks.js",
 		jsRoot + "smartstore.common.js",
 		// Bootstrap
-		jsRoot + "tether.js",
-		bootstrapJsRoot + "bootstrap.js",
-		bootstrapJsRoot + "bootstrap-datetimepicker.js",
-		// Shared UI
-		jsRoot + "smartstore.viewport.js",
+		contentRoot + "bs4/js/bootstrap.bundle.js",
+		// Vendors
+		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
 		vendorsRoot + "select2/js/select2.js",
-		themeVendorsRoot + "slick/slick.js",
+		vendorsRoot + "pnotify/js/pnotify.js",
+		vendorsRoot + "pnotify/js/pnotify.mobile.js",
+		vendorsRoot + "pnotify/js/pnotify.buttons.js",
+		vendorsRoot + "pnotify/js/pnotify.animate.js",
+		vendorsRoot + "slick/slick.js",
+		// Shared UI
 		jsRoot + "smartstore.selectwrapper.js",
 		jsRoot + "smartstore.throbber.js",
 		jsRoot + "smartstore.thumbzoomer.js",
 		jsRoot + "smartstore.responsiveNav.js",
 		jsRoot + "smartstore.keynav.js",
 		jsRoot + "smartstore.articlelist.js",
-		jsRoot + "smartstore.product.js",
-		vendorsRoot + "pnotify/js/pnotify.js",
-		vendorsRoot + "pnotify/js/pnotify.mobile.js",
-		vendorsRoot + "pnotify/js/pnotify.buttons.js",
-		vendorsRoot + "pnotify/js/pnotify.animate.js",
+		jsRoot + "smartstore.megamenu.js",
 		jsRoot + "jquery.bootstrap-touchspin.js",
 		jsRoot + "jquery.scrollTo.js",
-		jsRoot + "smartstore.globalize.adapter.js",
 		jsRoot + "offcanvas.js",
 
 		// Shop
 		jsRoot + "public.common.js",
 		jsRoot + "public.search.js",
-        jsRoot + "smartstore.megamenu.js",
 		jsRoot + "public.offcanvas-cart.js",
-		jsRoot + "public.offcanvas-menu.js");
-	
+		jsRoot + "public.offcanvas-menu.js",
+		jsRoot + "public.product.js");
+
 	Html.AddBodyCssClass(this.WorkContext.WorkingLanguage.Rtl ? "rtl" : "");
 }
 <!DOCTYPE html>
@@ -119,13 +109,18 @@
 	}
     @*Favicon - upload favicon.ico or favicon-[StoreId].ico file either to the root web or your theme directory*@
 	@{ Html.RenderAction("Favicon", "Common", new { area = "" }); }
+	
 	@Html.CustomHead()
+
+	<script src="~/Scripts/smartstore.globalization.adapter.js"></script>
+
 	@{ Html.RenderZone("head"); }
-    <!--Powered by SmartStore.net - https://www.smartstore.com-->
+    <!--Powered by SmartStore.NET - https://www.smartstore.com-->
 </head>
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>
 	@{ Html.RenderZone("start"); }
-    @RenderBody()	
+    @RenderBody()
+	@{ Html.RenderZone("aftercontent"); }
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
     @Html.SmartScripts(this.Url, ResourceLocation.Foot)

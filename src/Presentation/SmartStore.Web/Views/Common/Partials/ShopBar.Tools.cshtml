@@ -105,7 +105,7 @@
 
 </div>
 
-@using (Html.BeginZoneContent("end", key: "offcanvas-menu"))
+@using (Html.BeginZoneContent("aftercontent", key: "offcanvas-menu"))
 {
 	<aside id="offcanvas-menu" class="offcanvas offcanvas-overlay offcanvas-@(isRtl ? "right" : "left") offcanvas-shadow" data-blocker="true" data-overlay="true">
         <div class="offcanvas-content">
@@ -119,7 +119,7 @@
 	</aside>
 }
 
-@using (Html.BeginZoneContent("end", key: "offcanvas-cart"))
+@using (Html.BeginZoneContent("aftercontent", key: "offcanvas-cart"))
 {
 	<aside id="offcanvas-cart" class="offcanvas offcanvas-lg offcanvas-overlay offcanvas-@(isRtl ? "left" : "right") offcanvas-shadow" data-lg="true" data-blocker="true" data-overlay="true">
 		<div class="offcanvas-content">

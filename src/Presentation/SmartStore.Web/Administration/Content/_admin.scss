@@ -171,7 +171,7 @@ header {
 		}
 
 		> img {
-			max-height: 100%;
+			max-height: $input-height;
 			max-width: 120px;
 			margin-right: 5px;
 			vertical-align: top;

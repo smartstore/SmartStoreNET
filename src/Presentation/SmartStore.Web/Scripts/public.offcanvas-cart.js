@@ -293,7 +293,8 @@ var ShopBar = (function($) {
         },
 
         showThrobber: function () {
-        	var cnt = $(".tab-content", offcanvasCart);
+			var cnt = $(".tab-content", offcanvasCart);
+			console.log(offcanvasCart);
         	var throbber = cnt.data('throbber');
         	if (!throbber) {
         		throbber = cnt.throbber({ white: true, small: true, message: '', show: false, speed: 0 }).data('throbber');

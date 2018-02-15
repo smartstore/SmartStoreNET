@@ -53,6 +53,7 @@
 * (Perf) Many improvements in hooking framework
 * #1294 Swiss PostFinance: External payment page too small on mobile devices. Added setting for mobile device template URL, pre-configured with PostFinance template.
 * #1143 Make shipping methods suitable for multi-stores
+* #1320 Image import: Find out the content type of image URLs by response header rather than file extension (which is sometimes missing)
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing

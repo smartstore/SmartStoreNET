@@ -26,121 +26,123 @@
 	</div>
 </div>
 
-<div>
-	@{ Html.RenderAction("InfoProfile", "Export", new { systemName = GmcXmlExportProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" }); }
 
-	<table class="adminContent">
-		<tr>
-			<td>
+@Html.SmartStore().TabStrip().Name("gmc-config").Style(TabsStyle.Material).Items(x =>
+{
+	x.Add().Text(T("Plugins.Feed.Froogle.TabTitleGrid").Text).Content(TabGrid()).Selected(true);
+	x.Add().Text(T("Plugins.Feed.Froogle.TabTitleProfiles").Text).Content(TabProfiles());
+})
 
-				<table class="adminContent gmc-product-search">
-					<tr>
-						<td class="adminTitle">
-							@Html.SmartLabelFor(m => m.SearchProductName)
-						</td>
-						<td class="adminData">
-							@Html.EditorFor(m => m.SearchProductName)
-						</td>
-					</tr>
-					<tr>
-						<td class="adminTitle">
-							@Html.SmartLabelFor(m => m.SearchIsTouched)
-						</td>
-						<td class="adminData">
-							@Html.DropDownListFor(m => m.SearchIsTouched, new List<SelectListItem>
-							{
-								new SelectListItem { Text = T("Common.Unspecified"), Value = "" },
-								new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Touched"), Value = "touched" },
-								new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Untouched"), Value = "untouched" }
-							})
-						</td>
-					</tr>
-					<tr>
-						<td class="adminTitle">&nbsp;</td>
-						<td class="adminData">
-							<button type="submit" id="search-products" value="search-product" class="btn">
-								<i class="fa fa-search"></i>
-								<span>@T("Admin.Common.Search")</span>
-							</button>
-						</td>
-					</tr>
-				</table>
 
-			</td>
-		</tr>
-		<tr>
-			<td>
-				@(Html.Telerik().Grid<GoogleProductModel>()
-					.Name("gmc-products-grid")
-					.DataKeys(keys =>
-					{
-						keys.Add(x => x.ProductId).RouteKey("ProductId");
-					})
-					.Columns(c =>
-					{
-						c.Bound(x => x.ProductId)
-							.ReadOnly()
-							.Visible(false);
-						c.Bound(x => x.Name)
-							.ReadOnly().Visible(true)
-							.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
-						c.Bound(x => x.SKU)
-							.ReadOnly()
-							.Visible(true);
-						c.Bound(x => x.Export2)
-							.ClientTemplate(XEditableLink("Export2", "select2").ToHtmlString());
-						c.Bound(x => x.Taxonomy)
-							.ClientTemplate(XEditableLink("Taxonomy", "select2").ToHtmlString());
-						c.Bound(x => x.Gender)
-							.ClientTemplate(XEditableLink("Gender", "select2").ToHtmlString());
-						c.Bound(x => x.AgeGroup)
-							.ClientTemplate(XEditableLink("AgeGroup", "select2").ToHtmlString());
-						c.Bound(x => x.IsAdult)
-							.ClientTemplate(XEditableLink("IsAdult", "select2").ToHtmlString());
-						c.Bound(x => x.Color)
-							.ClientTemplate(XEditableLink("Color", "text").ToHtmlString());
-						c.Bound(x => x.Size)
-							.ClientTemplate(XEditableLink("Size", "text").ToHtmlString());
-						c.Bound(x => x.Material)
-							.ClientTemplate(XEditableLink("Material", "text").ToHtmlString());
-						c.Bound(x => x.Pattern)
-							.ClientTemplate(XEditableLink("Pattern", "text").ToHtmlString());
-						c.Bound(x => x.Multipack2)
-							.ClientTemplate(XEditableLink("Multipack2", "text").ToHtmlString());
-						c.Bound(x => x.IsBundle)
-							.ClientTemplate(XEditableLink("IsBundle", "select2").ToHtmlString());
-						c.Bound(x => x.EnergyEfficiencyClass)
-							.ClientTemplate(XEditableLink("EnergyEfficiencyClass", "select2").ToHtmlString());
-						c.Bound(x => x.CustomLabel0)
-							.ClientTemplate(XEditableLink("CustomLabel0", "text").ToHtmlString());
-						c.Bound(x => x.CustomLabel1)
-							.ClientTemplate(XEditableLink("CustomLabel1", "text").ToHtmlString());
-						c.Bound(x => x.CustomLabel2)
-							.ClientTemplate(XEditableLink("CustomLabel2", "text").ToHtmlString());
-						c.Bound(x => x.CustomLabel3)
-							.ClientTemplate(XEditableLink("CustomLabel3", "text").ToHtmlString());
-						c.Bound(x => x.CustomLabel4)
-							.ClientTemplate(XEditableLink("CustomLabel4", "text").ToHtmlString());
-					})
-					.ClientEvents(e =>
-					{
-						e.OnDataBound("OnGridDataBound");
-						e.OnDataBinding("OnGridDataBinding");
-						e.OnError("OnGridError");
-					})
-					.DataBinding(dataBinding =>
-					{
-						dataBinding.Ajax().Select("GoogleProductList", "FeedGoogleMerchantCenter");
-					})
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.PreserveGridState()
-					.EnableCustomBinding(true)
-				)
-			</td>
-		</tr>
-	</table>
-</div>
+@helper TabGrid()
+{
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchProductName)
+			@Html.EditorFor(model => Model.SearchProductName, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(m => m.SearchIsTouched)
+			@Html.DropDownListFor(m => m.SearchIsTouched, new List<SelectListItem>
+				{
+					new SelectListItem { Text = T("Common.Unspecified"), Value = "" },
+					new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Touched"), Value = "touched" },
+					new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Untouched"), Value = "untouched" }
+				})
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="search-products" value="search-product" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
+	
+	<div>
+		@(Html.Telerik().Grid<GoogleProductModel>()
+			.Name("gmc-products-grid")
+			.DataKeys(keys =>
+			{
+				keys.Add(x => x.ProductId).RouteKey("ProductId");
+			})
+			.Columns(c =>
+			{
+				c.Bound(x => x.ProductId)
+					.ReadOnly()
+					.Visible(false);
+				c.Bound(x => x.Name)
+					.ReadOnly().Visible(true)
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
+				c.Bound(x => x.SKU)
+					.ReadOnly()
+					.Visible(true);
+				c.Bound(x => x.Export2)
+					.ClientTemplate(XEditableLink("Export2", "select2").ToHtmlString());
+				c.Bound(x => x.Taxonomy)
+					.ClientTemplate(XEditableLink("Taxonomy", "select2").ToHtmlString());
+				c.Bound(x => x.Gender)
+					.ClientTemplate(XEditableLink("Gender", "select2").ToHtmlString());
+				c.Bound(x => x.AgeGroup)
+					.ClientTemplate(XEditableLink("AgeGroup", "select2").ToHtmlString());
+				c.Bound(x => x.IsAdult)
+					.ClientTemplate(XEditableLink("IsAdult", "select2").ToHtmlString());
+				c.Bound(x => x.Color)
+					.ClientTemplate(XEditableLink("Color", "text").ToHtmlString());
+				c.Bound(x => x.Size)
+					.ClientTemplate(XEditableLink("Size", "text").ToHtmlString());
+				c.Bound(x => x.Material)
+					.ClientTemplate(XEditableLink("Material", "text").ToHtmlString());
+				c.Bound(x => x.Pattern)
+					.ClientTemplate(XEditableLink("Pattern", "text").ToHtmlString());
+				c.Bound(x => x.Multipack2)
+					.ClientTemplate(XEditableLink("Multipack2", "text").ToHtmlString());
+				c.Bound(x => x.IsBundle)
+					.ClientTemplate(XEditableLink("IsBundle", "select2").ToHtmlString());
+				c.Bound(x => x.EnergyEfficiencyClass)
+					.ClientTemplate(XEditableLink("EnergyEfficiencyClass", "select2").ToHtmlString());
+				c.Bound(x => x.CustomLabel0)
+					.ClientTemplate(XEditableLink("CustomLabel0", "text").ToHtmlString());
+				c.Bound(x => x.CustomLabel1)
+					.ClientTemplate(XEditableLink("CustomLabel1", "text").ToHtmlString());
+				c.Bound(x => x.CustomLabel2)
+					.ClientTemplate(XEditableLink("CustomLabel2", "text").ToHtmlString());
+				c.Bound(x => x.CustomLabel3)
+					.ClientTemplate(XEditableLink("CustomLabel3", "text").ToHtmlString());
+				c.Bound(x => x.CustomLabel4)
+					.ClientTemplate(XEditableLink("CustomLabel4", "text").ToHtmlString());
+			})
+			.ClientEvents(e =>
+			{
+				e.OnDataBound("OnGridDataBound");
+				e.OnDataBinding("OnGridDataBinding");
+				e.OnError("OnGridError");
+			})
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax().Select("GoogleProductList", "FeedGoogleMerchantCenter");
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.PreserveGridState()
+			.EnableCustomBinding(true)
+		)
+
+	</div>
+}
+
+@helper TabProfiles()
+{	
+	<style>
+		.info-profile:not(:first-child) {
+			border-top: 1px solid #e1e4e8;
+			margin-top: 1.25rem;
+			padding-top: 1.25rem;
+		}
+	</style>
+
+	@Html.Action("InfoProfile", "Export", new { systemName = GmcXmlExportProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" })
+}
 
 @helper XEditableLink(string fieldName, string type)
 {
@@ -328,4 +330,4 @@
 		}));
 
 	}
-	</script>
+</script>

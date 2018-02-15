@@ -175,16 +175,16 @@
                     @Html.SmartLabelFor(model => model.Gender)
                 </td>
                 <td class="adminData">
-			<div class="form-control-plaintext">
-				<div class="form-check form-check-inline">
-					@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input" })
-					<label class="form-check-label">@T("Admin.Customers.Customers.Fields.Gender.Male")</label>
-				</div>
-				<div class="form-check form-check-inline">
-					@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input" })
-					<label class="form-check-label">@T("Admin.Customers.Customers.Fields.Gender.Female")</label>
-				</div>
-			</div>
+					<div class="form-control-plaintext">
+						<div class="form-check form-check-inline">
+							@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input" })
+							<label class="form-check-label">@T("Admin.Customers.Customers.Fields.Gender.Male")</label>
+						</div>
+						<div class="form-check form-check-inline">
+							@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input" })
+							<label class="form-check-label">@T("Admin.Customers.Customers.Fields.Gender.Female")</label>
+						</div>
+					</div>
                 </td>
             </tr>
         }

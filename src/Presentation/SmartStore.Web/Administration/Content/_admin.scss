@@ -1227,6 +1227,7 @@ table.payment-method-features td {
 .mapping-list-item .right-label {
 	float: right;
 	font-size: 0.9em;
+	padding-top: 2px;
 }
 .mapping-list-item {
 	@include text-truncate();
@@ -1272,6 +1273,9 @@ table.payment-method-features td {
 			.right-label {
 				margin-right: 20px;
 			}
+		}
+		.select2-selection__clear {
+			margin: 0 0 0 3px;
 		}
 	}
 }

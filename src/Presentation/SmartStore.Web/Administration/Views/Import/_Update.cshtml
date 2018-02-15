@@ -375,8 +375,8 @@
 			context.find('.right-label').text(val);
 
 			var leftLabel = context.find('.left-label');
-			isLocalized = (val.indexOf(']', val.length - 1) !== -1),
-			text = context.find('select').find('option:selected').text();
+				isLocalized = (val.indexOf(']', val.length - 1) !== -1),
+				text = context.find('select').find('option:selected').text();
 
 			if (text.length > maxMappingLableLength) {
 				leftLabel.text(text.substring(0, maxMappingLableLength) + '…');
@@ -422,6 +422,9 @@
 
 					return null;
 				},
+				escapeMarkup: function (m) {
+					return m;
+				},
 				templateResult: (isProperty ? selectPropertyFormatting : selectColumnFormatting),
 				templateSelection: (isProperty ? selectPropertyFormatting : selectColumnFormatting)
 			});
@@ -442,7 +445,7 @@
 			initSelectBox(row.find('.select-column'), false);
 		}
 
-		function selectPropertyFormatting(item, container, query) {
+		function selectPropertyFormatting(item, container) {
 			try {
 				if (item.text.length > 0) {
 					var option = $(item.element),
@@ -456,7 +459,7 @@
 						html += '</span>';
 					}
 					else {
-						// update mapped properties when first popup list item is about to be rendered.
+						// Update mapped properties when first popup list item is about to be rendered.
 						if (option.index() === 1) {
 							mappedProperties = [];
 
@@ -499,14 +502,14 @@
 			return item.text;
 		}
 
-		function selectColumnFormatting(item, container, query) {
+		function selectColumnFormatting(item, container) {
 			try {
 				if (item.id.length > 0) {
 					var html = '';
 
 					html += '<div class="mapping-list-item">';
 
-					if (query && item.text !== item.id) {
+					if (item.text !== item.id) {
 						html += '<span class="muted right-label"'
 						if (item.text.length > maxMappingLableLength) {
 							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';

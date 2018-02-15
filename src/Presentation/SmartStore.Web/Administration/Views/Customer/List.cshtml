@@ -64,15 +64,19 @@
 			{
 				dayOfBirthValues.Add(new SelectListItem { Text = i.ToString(CultureInfo.InvariantCulture), Value = i.ToString(CultureInfo.InvariantCulture) });
 			}
-			
-			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-				@Html.SmartLabelFor(model => model.SearchMonthOfBirth)
-				@Html.DropDownListFor(model => Model.SearchMonthOfBirth, monthOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Month").Text)
 
-			</div>
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-				@Html.SmartLabelFor(model => model.SearchDayOfBirth)
-				@Html.DropDownListFor(model => Model.SearchMonthOfBirth, dayOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Month").Text)
+				<div>
+					@Html.SmartLabelFor(model => model.SearchMonthOfBirth)
+				</div>
+				<div class="form-row">
+					<div class="col">
+						@Html.DropDownListFor(model => Model.SearchMonthOfBirth, monthOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Month").Text)
+					</div>
+					<div class="col">
+						@Html.DropDownListFor(model => Model.SearchMonthOfBirth, dayOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Month").Text)
+					</div>
+				</div>
 			</div>
 		}
 		@if (Model.CompanyEnabled)

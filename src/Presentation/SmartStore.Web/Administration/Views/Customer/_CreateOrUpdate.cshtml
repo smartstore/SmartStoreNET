@@ -1,5 +1,5 @@
-﻿@using SmartStore.Core.Domain.Orders;
-@model CustomerModel
+﻿@model CustomerModel
+@using SmartStore.Core.Domain.Orders;
 @Html.ValidationSummary(false)
 
 @if (Model.Id == 0)
@@ -9,40 +9,28 @@
 
 @Html.SmartStore().TabStrip().Name("customer-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
-	x.Add().Text(T("Admin.Customers.Customers.Info").Text)
-		.Content(TabInfo())
-		.Selected(true);
-
-	x.Add().Text(T("Admin.Customers.Customers.CustomerRoles").Text)
-		.Content(TabCustomerRoles());
+	x.Add().Text(T("Admin.Customers.Customers.Info").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Customers.Customers.CustomerRoles").Text).Content(TabCustomerRoles());
 
 	if (Model.Id > 0)
 	{
-		x.Add().Text(T("Admin.Customers.Customers.Orders").Text)
-			.Content(TabOrders());
+		x.Add().Text(T("Admin.Customers.Customers.Orders").Text).Content(TabOrders());
 
 		if (Model.DisplayRewardPointsHistory)
 		{
-			x.Add().Text(T("Admin.Customers.Customers.RewardPoints").Text)
-			.Content(TabRewardPoints());
+			x.Add().Text(T("Admin.Customers.Customers.RewardPoints").Text).Content(TabRewardPoints());
 		}
 		
-		x.Add().Text(T("Admin.Customers.Customers.Addresses").Text)
-			.Content(TabAddresses());
-		
-		x.Add().Text(T("Admin.Customers.Customers.CurrentShoppingCart").Text)
-			.Content(TabCurrentShoppingCart());
-		
-		x.Add().Text(T("Admin.Customers.Customers.CurrentWishlist").Text)
-			.Content(TabCurrentWishlist());
-		
-		x.Add().Text(T("Admin.Customers.Customers.Impersonate").Text)
-			.Content(TabImpersonate());
+		x.Add().Text(T("Admin.Customers.Customers.Addresses").Text).Content(TabAddresses());
+		x.Add().Text(T("Admin.Customers.Customers.CurrentShoppingCart").Text).Content(TabCurrentShoppingCart());
+		x.Add().Text(T("Admin.Customers.Customers.CurrentWishlist").Text).Content(TabCurrentWishlist());
+		x.Add().Text(T("Admin.Customers.Customers.Impersonate").Text).Content(TabImpersonate());
 	}
 
 	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-edit", this.Html, this.Model));
 })
+
 @helper TabInfo()
 { 
     if (Model.CountryEnabled && Model.StateProvinceEnabled)
@@ -72,6 +60,7 @@
                 });
         </script>
     }
+
     <table class="adminContent">
 		@if (Model.Id != 0)
 		{
@@ -528,6 +517,7 @@
 		{
 			binding.Ajax().Select("RewardPointsHistorySelect", "Customer", new { customerId = Model.Id });
 		})
+		.ToolBar(commands => commands.Template(RewardPointsGridCommands))
 		.Columns(columns =>
 		{
 			columns.Bound(x => x.Points);
@@ -536,50 +526,14 @@
 			columns.Bound(x => x.CreatedOn).ReadOnly();
 		}))
     
-    <table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Admin.Customers.Customers.RewardPoints.AddTitle")</div>
-				</div>
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddRewardPointsValue)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AddRewardPointsValue)
-                @Html.ValidationMessageFor(model => model.AddRewardPointsValue)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddRewardPointsMessage)
-            </td>
-            <td class="adminData">
-                @Html.TextAreaFor(model => model.AddRewardPointsMessage)
-                @Html.ValidationMessageFor(model => model.AddRewardPointsMessage)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-            </td>
-            <td class="adminData">
-                <button type="button" name="addRewardPoints" id="addRewardPoints" class="btn btn-secondary">
-                    <i class="fa fa-plus"></i>
-					<span>@T("Admin.Customers.Customers.RewardPoints.AddButton")</span>
-				</button>
-            </td>
-        </tr>
-    </table>
-    
     <script type="text/javascript">
         $(document).ready(function () {
             $('#addRewardPoints').click(function () {
                 var rewardPointsValue = $("#@Html.FieldIdFor(model => model.AddRewardPointsValue)").val();
                 var rewardPointsMessage = $("#@Html.FieldIdFor(model => model.AddRewardPointsMessage)").val();
-                $('#addRewardPoints').attr('disabled', true);
+
+				$('#addRewardPoints').attr('disabled', true);
+
                 $.ajax({
                     cache:false,
                     type: "POST",
@@ -588,16 +542,66 @@
                     success: function (data) {
                          var rewardPointsGrid = $("#customer-rewardpoints-grid");
                          rewardPointsGrid.data('tGrid').ajaxRequest();
-                         $('#addRewardPoints').attr('disabled', false);
+						 $('#addRewardPoints').attr('disabled', false);
+						 $("#add-reward-points-window").modal("hide");
                     },
                     error:function (xhr, ajaxOptions, thrownError){
                         alert('Failed to add reward points.')
-                        $('#addRewardPoints').attr('disabled', false);
+						$('#addRewardPoints').attr('disabled', false);
+						$("#add-reward-points-window").modal("hide");
                     }  
                 });
             });
         });
     </script>
+}
+
+@helper RewardPointsGridCommands(Grid<CustomerModel.RewardPointsHistoryModel> grid)
+{
+	<a href="#add-reward-points-window" id="addrecord-button" data-toggle="modal" class="t-button t-button-primary">
+		<i class="fa fa-plus"></i>
+		<span>@T("Admin.Customers.Customers.RewardPoints.AddButton")</span>
+	</a>
+}
+
+@{Html.SmartStore().Window()
+	.Name("add-reward-points-window")
+	.Size(WindowSize.Large)
+	.Title(T("Admin.Customers.Customers.RewardPoints.AddTitle"))
+	.Content(
+	@<text>
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AddRewardPointsValue)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.AddRewardPointsValue)
+					@Html.ValidationMessageFor(model => model.AddRewardPointsValue)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AddRewardPointsMessage)
+				</td>
+				<td class="adminData">
+					@Html.TextAreaFor(model => model.AddRewardPointsMessage)
+					@Html.ValidationMessageFor(model => model.AddRewardPointsMessage)
+				</td>
+			</tr>
+		</table>
+
+	</text>)
+	.FooterContent(@<text>
+			<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+				<span>@T("Admin.Common.Cancel")</span>
+			</button>
+			<button type="button" name="addRewardPoints" id="addRewardPoints" class="btn btn-primary">
+				<i class="fa fa-plus"></i>
+				<span>@T("Admin.Customers.Customers.RewardPoints.AddButton")</span>
+			</button>
+	</text>)
+	.Render();
 }
 
 @helper TabAddresses()

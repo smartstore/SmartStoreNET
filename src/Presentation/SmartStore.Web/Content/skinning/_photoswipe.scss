@@ -1,5 +1,5 @@
+/// <reference path="../shared/_mixins.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
-/// <reference path="../_variables.scss" />
 /// <reference path="../vendors/photoswipe/_main-settings.scss" />
 
 
@@ -107,7 +107,7 @@ $pswp__background-color:            #fff;
 	&:focus,
 	&:hover,
     &:active {
-        background: $brand-danger;
+        background: $danger;
 	}
 }
 

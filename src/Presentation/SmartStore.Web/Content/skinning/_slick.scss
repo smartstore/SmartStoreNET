@@ -1,3 +1,4 @@
+/// <reference path="../shared/_mixins.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 /// <reference path="../vendors/slick/slick.scss" />
 
@@ -64,8 +65,8 @@ img.slick-loading {
         opacity: 0;
 
         &:hover, &:focus, &:active, &:active:focus {
-            background: $btn-secondary-bg;
-            border-color: $btn-secondary-border;
+            background: $secondary;
+            border-color: $secondary;
         }
 
         &:active, &:active:focus {
@@ -100,7 +101,7 @@ img.slick-loading {
         color: $gray-lighter !important;
         cursor: default;
         box-shadow: none !important;
-        border-color: $btn-secondary-border !important;
+        border-color: $secondary !important;
     }
 }
 

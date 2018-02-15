@@ -12,8 +12,6 @@
 	var tabGeneral = x.Add().Text(T("Common.General").Text).Content(@TabGeneral()).Selected(true);
 	var tabFonts = x.Add().Text(T("Admin.Themes.Fonts").Text).Content(@TabFonts());
 	var tabLayout = x.Add().Text(T("Admin.Themes.Sections").Text).Content(@TabLayout());
-	var tabButtons = x.Add().Text(T("Admin.Themes.Buttons").Text).Content(@TabButtons());
-	var tabStates = x.Add().Text(T("Admin.Themes.States").Text).Content(@TabStates());
 	var tabComponents = x.Add().Text(T("Admin.Themes.Components").Text).Content(@TabComponents());
 	var tabMisc = x.Add().Text(T("Admin.Themes.Misc").Text).Content(@TabMisc());
 
@@ -22,11 +20,15 @@
 @helper TabGeneral()
 {
 	<div class="adminContent">
-		@ThemeVarEditor("gray-dark", "Grayscale")
-		@ThemeVarEditor("gray")
-		@ThemeVarEditor("gray-light")
-		@ThemeVarEditor("gray-lighter")
-		@ThemeVarEditor("gray-lightest")
+		@ThemeVarEditor("gray-100", "Grayscale")
+		@ThemeVarEditor("gray-200")
+		@ThemeVarEditor("gray-300")
+		@ThemeVarEditor("gray-400")
+		@ThemeVarEditor("gray-500")
+		@ThemeVarEditor("gray-600")
+		@ThemeVarEditor("gray-700")
+		@ThemeVarEditor("gray-800")
+		@ThemeVarEditor("gray-900")
 
 		@ThemeVarEditor("red", "Colors")
 		@ThemeVarEditor("orange")
@@ -36,14 +38,18 @@
 		@ThemeVarEditor("bluegrey")
 		@ThemeVarEditor("indigo")
 		@ThemeVarEditor("teal")
+		@ThemeVarEditor("cyan")
 		@ThemeVarEditor("pink")
 		@ThemeVarEditor("purple")
 
-		@ThemeVarEditor("brand-primary", "Brand Colors")
-		@ThemeVarEditor("brand-warning")
-		@ThemeVarEditor("brand-danger")
-		@ThemeVarEditor("brand-info")
-		@ThemeVarEditor("brand-success")
+		@ThemeVarEditor("primary", "Brand Colors")
+		@ThemeVarEditor("secondary")
+		@ThemeVarEditor("warning")
+		@ThemeVarEditor("danger")
+		@ThemeVarEditor("info")
+		@ThemeVarEditor("success")
+		@ThemeVarEditor("light")
+		@ThemeVarEditor("dark")
 
 		@ThemeVarEditor("boxed", "Layout", T("Admin.ThemeVar.Boxed"))
 
@@ -147,56 +153,6 @@
 	</div>
 }
 
-@helper TabButtons()
-{
-	<div class="adminContent">
-		@ThemeVarEditor("btn-primary-color", "Primary")
-		@ThemeVarEditor("btn-primary-bg")
-		@ThemeVarEditor("btn-primary-border")
-
-		@ThemeVarEditor("btn-secondary-color", "Secondary")
-		@ThemeVarEditor("btn-secondary-bg")
-		@ThemeVarEditor("btn-secondary-border")
-
-		@ThemeVarEditor("btn-info-color", "Info")
-		@ThemeVarEditor("btn-info-bg")
-		@ThemeVarEditor("btn-info-border")
-
-		@ThemeVarEditor("btn-success-color", "Success")
-		@ThemeVarEditor("btn-success-bg")
-		@ThemeVarEditor("btn-success-border")
-
-		@ThemeVarEditor("btn-warning-color", "Warning")
-		@ThemeVarEditor("btn-warning-bg")
-		@ThemeVarEditor("btn-warning-border")
-
-		@ThemeVarEditor("btn-danger-color", "Danger")
-		@ThemeVarEditor("btn-danger-bg")
-		@ThemeVarEditor("btn-danger-border")
-	</div>
-}
-
-@helper TabStates()
-{
-	<div class="adminContent">
-		@ThemeVarEditor("state-success-text", "Success")
-		@ThemeVarEditor("state-success-bg")
-		@ThemeVarEditor("state-success-border")
-
-		@ThemeVarEditor("state-info-text", "Info")
-		@ThemeVarEditor("state-info-bg")
-		@ThemeVarEditor("state-info-border")
-
-		@ThemeVarEditor("state-warning-text", "Warning")
-		@ThemeVarEditor("state-warning-bg")
-		@ThemeVarEditor("state-warning-border")
-
-		@ThemeVarEditor("state-danger-text", "Danger")
-		@ThemeVarEditor("state-danger-bg")
-		@ThemeVarEditor("state-danger-border")
-	</div>
-}
-
 @helper TabComponents()
 {
 	<div class="adminContent">
@@ -204,10 +160,10 @@
 		@ThemeVarEditor("card-border-color")
 		@ThemeVarEditor("card-cap-bg")
 		@ThemeVarEditor("card-bg")
-		@ThemeVarEditor("card-link-hover-color")
 
 		@ThemeVarEditor("dropdown-bg", "Dropdowns")
 		@ThemeVarEditor("dropdown-border-color")
+		@ThemeVarEditor("dropdown-border-radius")
 		@ThemeVarEditor("dropdown-divider-bg")
 		@ThemeVarEditor("dropdown-box-shadow")
 		@ThemeVarEditor("dropdown-link-color")
@@ -215,9 +171,9 @@
 		@ThemeVarEditor("dropdown-link-hover-bg")
 
 		@ThemeVarEditor("table-bg", "Tables")
-		@ThemeVarEditor("table-bg-accent")
-		@ThemeVarEditor("table-bg-hover")
-		@ThemeVarEditor("table-bg-active")
+		@ThemeVarEditor("table-accent-bg")
+		@ThemeVarEditor("table-hover-bg")
+		@ThemeVarEditor("table-active-bg")
 		@ThemeVarEditor("table-border-color")
 	</div>
 }

@@ -1,6 +1,7 @@
-﻿/// <reference path="_variables.scss" />
-/// <reference path="shared/_mixins.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
+﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
+/// <reference path="_variables.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 //
 // Checkout Steps
@@ -188,7 +189,7 @@ $costep-active-label-color:     $costep-label-color;
 
 	.opt-name { 
         display: block;
-        font-size: $font-size-h5;
+        font-size: $h5-font-size;
 		font-weight: $font-weight-medium;
 		margin-left: 4px;
         line-height: 1.3;

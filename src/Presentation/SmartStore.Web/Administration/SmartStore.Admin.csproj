@@ -751,6 +751,7 @@
     <Content Include="Content\images\icon-plugin-shipping.png" />
     <Content Include="Content\images\icon-plugin-social.png" />
     <Content Include="Content\images\icon-plugin-tax.png" />
+    <Content Include="Content\images\loading.gif" />
     <Content Include="Content\images\smnet.png" />
     <Content Include="Content\telerik\editor.png" />
     <Content Include="Content\telerik\gradient.png" />

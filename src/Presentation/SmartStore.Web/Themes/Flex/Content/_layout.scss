@@ -1,5 +1,7 @@
+/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
 /// <reference path="_variables.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 
 // Responsive Typo
@@ -62,8 +64,8 @@ body.popup {
     }
 
     .page-main .container {
-        padding-left: $grid-gutter-width-base / 2;
-        padding-right: $grid-gutter-width-base / 2;
+        padding-left: $grid-gutter-width / 2;
+        padding-right: $grid-gutter-width / 2;
     }
 
     @include media-breakpoint-up(sm) {
@@ -73,8 +75,8 @@ body.popup {
             border-bottom-width: 0;
 
             .container {
-                padding-left: $grid-gutter-width-base;
-                padding-right: $grid-gutter-width-base;
+                padding-left: $grid-gutter-width;
+                padding-right: $grid-gutter-width;
             }
         }
     }

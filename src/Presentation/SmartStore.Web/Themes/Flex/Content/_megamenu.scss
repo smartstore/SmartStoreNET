@@ -202,6 +202,10 @@ $mixed-megamenu-bg:             $megamenu-bg;
 .megamenu-container {
     position: relative;
 
+	.show .mega-menu-dropdown {
+		display: block;
+	}
+
     .nav-link {
         padding: 1em .6em;
     }

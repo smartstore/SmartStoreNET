@@ -14,7 +14,7 @@
 	@foreach (var item in Model.Items)
 	{
 		<div class="card card-shadow return-request-item">
-			<div class="card-block">
+			<div class="card-body">
 				<h4 class="card-title mb-4">@string.Format(T("Account.CustomerReturnRequests.Title").Text, item.Id, item.ReturnRequestStatus)</h4>
 				<dl class="row mb-0">
 					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Item")</dt>

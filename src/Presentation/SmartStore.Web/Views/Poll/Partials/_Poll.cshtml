@@ -8,7 +8,7 @@
     <div class="card-header">@Model.Name</div>
     @if (Model.AlreadyVoted)
     {
-        <div class="poll-results card-block">
+        <div class="poll-results card-body">
             @foreach (var item in Model.Answers)
             {
                 <div class="answer">
@@ -28,7 +28,7 @@
     }
     else
     {
-        <div class="poll-take-poll card-block">
+        <div class="poll-take-poll card-body">
             
             @foreach (var item in Model.Answers)
             {

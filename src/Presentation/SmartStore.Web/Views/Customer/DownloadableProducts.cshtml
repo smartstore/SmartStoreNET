@@ -22,7 +22,7 @@
 	@foreach (var item in Model.Items)
 	{
 		<div class="card card-shadow esd-item">
-			<div class="card-block">
+			<div class="card-body">
 				<h4 class="card-title mb-4">@item.ProductName.Truncate(50, "...")</h4>
 				<dl class="row mb-0">
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.Order#")</dt>

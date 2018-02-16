@@ -30,7 +30,7 @@
 	{
 		x.Add().Text(@T("Reviews"))
 				.Content(TabReviews())
-				.Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning : BadgeStyle.Default, true)
+				.Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning : BadgeStyle.Secondary, true)
 				.Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
 	}
 

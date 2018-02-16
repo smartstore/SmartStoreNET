@@ -26,7 +26,7 @@
                 <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 address-list">
                     @foreach (var item in Model.ExistingAddresses)
                     {
-                        <div class="card card-block address-list-item">
+                        <div class="card card-body address-list-item">
                             <div class="address-item">
                                 <button class="btn btn-warning btn-block select-shipping-address-button" onclick="setLocation('@Url.Action("SelectShippingAddress", new { addressId = item.Id })')">
                                     <span>@T("Checkout.ShipToThisAddress")</span>

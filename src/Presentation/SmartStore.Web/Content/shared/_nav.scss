@@ -61,6 +61,10 @@
 			display: none;
 		}
 
+        .badge {
+			vertical-align: text-top;
+        }
+
 		@include media-breakpoint-up(lg) {
 			> i, > img {
 				display: inline-block;

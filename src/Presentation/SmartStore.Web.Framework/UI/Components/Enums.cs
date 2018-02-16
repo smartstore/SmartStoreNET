@@ -4,13 +4,15 @@ namespace SmartStore.Web.Framework.UI
 {   
     public enum BadgeStyle
     {
-		Default,
+		Secondary,
 		Primary,
 		Success,
 		Info,
 		Warning,
-        Danger  
-    }
+        Danger,
+		Light,
+		Dark
+	}
 
 	public enum ButtonStyle
 	{

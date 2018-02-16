@@ -49,16 +49,29 @@
 }
 
 .alert-info {
-	// info should have primary color
-	@include alert-variant(theme-color-level(primary, $alert-bg-level), theme-color-level(primary, $alert-border-level), theme-color-level(primary, $alert-color-level));
+    @if $alert-info-is-primary {
+		// info should have primary color
+		@include alert-variant(theme-color-level(primary, $alert-bg-level), theme-color-level(primary, $alert-border-level), theme-color-level(primary, $alert-color-level));
+    }
 
 	&:before {
-		background-color: $primary;
+		
+		@if $alert-info-is-primary {
+			background-color: $primary;
+		}
+		@else {
+			background-color: $info;
+		}
 	}
 
 	&:after {
 		content: "\f129"; // info
-		color: theme-color-level(primary, $alert-bg-level);
+		@if $alert-info-is-primary {
+			color: theme-color-level(primary, $alert-bg-level);
+		}
+		@else {
+			color: theme-color-level(info, $alert-bg-level);
+		}
 	}
 }
 

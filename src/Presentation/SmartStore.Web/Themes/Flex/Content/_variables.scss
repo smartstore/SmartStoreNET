@@ -8,7 +8,8 @@
 $boxed:                         false !default;
 $site-bg:                       $gray-100 !default;
 
-$font-weight-light:             300 !default;
+$btn-secondary-bg:				#fff !default;
+$btn-secondary-border:			$gray-400 !default;
 
 $header-bg:                     transparent !default;
 $header-color:                  $body-color !default;
@@ -112,7 +113,7 @@ $enable-grid-classes:           true;
 
 $theme-color-interval:		8%;
 $yiq-contrasted-threshold:	164;
-$yiq-text-dark:				$gray-700;
+$yiq-text-dark:				$gray-900;
 $yiq-text-light:			#fff;
 
 $theme-colors: ( 
@@ -154,6 +155,9 @@ $input-border-radius-lg:        $btn-border-radius-lg;
 $input-border-radius-sm:        $btn-border-radius-sm;
 
 // Equalize input vertical paddings with button paddings
+$input-btn-focus-width:			.25rem;
+$input-btn-focus-color:			rgba($primary, .25);
+$input-btn-focus-box-shadow:	0 0 0 $input-btn-focus-width $input-btn-focus-color;
 $input-btn-padding-x:			1rem;
 $input-btn-padding-y:			0.625rem;
 $input-btn-padding-x-sm:		0.75rem;
@@ -163,13 +167,18 @@ $input-btn-padding-y-lg:		0.875rem;
 $input-btn-line-height:			1.5;
 $input-box-shadow:				none;
 $input-focus-box-shadow:		none;
+$input-focus-border-color:		lighten($primary, 30%);
+$input-transition:              none;
+$input-group-addon-bg:			$gray-100;
+
 
 $btn-font-weight:				$font-weight-medium;
-
-$btn-box-shadow:				inset 0 1px 0 rgba(#fff, .15);
-$btn-focus-box-shadow:			0 0 0 2px rgba($primary, .25);
+$btn-focus-width:				0;
+$btn-box-shadow:				inset 0 0 0 rgba(#fff, 0.15), 0 0 0 rgba(#000, 0.075);
+$btn-focus-box-shadow:			$input-btn-focus-box-shadow;
 $btn-active-box-shadow:			inset 0 3px 5px rgba(#000, .125);
-$btn-transition:				box-shadow .12s ease-in-out;
+$btn-transition:				background-color .05s ease-in-out, border-color .05s ease-in-out, box-shadow .05s ease-in-out;
+$btn-disabled-opacity:			0.5;
 
 
 // Dropdown

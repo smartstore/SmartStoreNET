@@ -1,0 +1,39 @@
+/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+// Button tweaks:
+// Must come BEFORE custom button import because of
+// css specificity.
+// -----------------------------------------------------
+
+@each $color, $value in $theme-colors {
+	*:not(.show) > .btn-#{$color},
+	*:not(.show) > .btn-outline-#{$color} {
+		&:not(:active):not(.active):focus,
+		&:not(:active):not(.active).focus {
+			@if $color == "secondary" or $color == "light" {
+				box-shadow: 0 0 0 0.2rem rgba($primary, .15);
+			}
+			@else {
+				box-shadow: 0 0 0 0.2rem rgba($value, .4);
+			}
+		}
+	}
+}
+
+.btn-secondary {
+	$bg: $btn-secondary-bg;
+	$border: $btn-secondary-border;
+	@include button-variant($bg, $border, darken($bg, 8%), darken($border, 10%), darken($bg, 10%), darken($border, 12%));
+}
+
+.btn-light {
+	@include button-variant($light, $light, $light, rgba(#000, 0.15), darken($light, 10%), rgba(#000, 0.2));
+}
+
+.btn-secondary,
+.btn-light {
+	&:focus, &.focus {
+		border-color: rgba(#000, 0.2);
+	}
+}

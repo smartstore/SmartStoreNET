@@ -56,6 +56,22 @@
 	}
 }
 
+// Light button icons lighter (looks nice)
+// -----------------------------------------------------
+
+.btn-secondary,
+.btn-light {
+	> i {
+		transition: opacity .05s ease-in-out;
+	}
+
+	&:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus):not([disabled]):not(.disabled) {
+		> i {
+			opacity: 0.6;
+		}
+	}
+}
+
 //
 // Global / Shared
 // --------------------------------------------------

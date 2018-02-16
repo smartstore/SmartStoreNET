@@ -1879,6 +1879,7 @@
     <Content Include="Themes\Flex\Views\Shared\EmailTemplates\master.liquid" />
     <Content Include="Views\Shared\Components\EntityPicker.cshtml" />
     <Content Include="Views\Shared\Components\FileUploader.cshtml" />
+    <Content Include="Themes\Flex\Content\_buttons.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

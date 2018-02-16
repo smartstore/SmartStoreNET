@@ -1,34 +1,18 @@
 ﻿@model CategoryModel
 
 @using Telerik.Web.Mvc.UI;
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
 @Html.SmartStore().TabStrip().Name("category-edit").OnAjaxSuccess("categoryEditTab_onAjaxSuccess").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x => {
-	x.Add().Text(T("Admin.Catalog.Categories.Info").Text)
-		.Icon("fa fa-pencil fa-lg fa-fw")
-		.Content(TabInfo())
-		.Selected(true);
 
-	x.Add().Text(T("Admin.Common.SEO").Text)
-		.Icon("fa fa-search fa-lg fa-fw")
-		.Content(TabSeo());
-
-	x.Add().Text(T("Admin.Catalog.Categories.Products").Text)
-		.Icon("fa fa-cube fa-lg fa-fw")
-		.Content(TabProducts());
-
-	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text)
-		.Icon("fa fa-percent fa-lg fa-fw")
-		.Content(TabDiscounts());
-
-	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text)
-		.Icon("fa fa-users fa-lg fa-fw")
-		.Content(TabAcl());
-
-	x.Add().Text(T("Admin.Common.Stores").Text)
-		.Icon("fa fa-globe fa-lg fa-fw")
-		.Content(TabStores());
+	x.Add().Text(T("Admin.Catalog.Categories.Info").Text).Icon("fa fa-pencil fa-lg fa-fw").Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Common.SEO").Text).Icon("fa fa-search fa-lg fa-fw").Content(TabSeo());
+	x.Add().Text(T("Admin.Catalog.Categories.Products").Text).Icon("fa fa-cube fa-lg fa-fw").Content(TabProducts());
+	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text).Icon("fa fa-percent fa-lg fa-fw").Content(TabDiscounts());
+	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Icon("fa fa-users fa-lg fa-fw").Content(TabAcl());
+	x.Add().Text(T("Admin.Common.Stores").Text).Icon("fa fa-globe fa-lg fa-fw").Content(TabStores());
 
 	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
@@ -409,10 +393,7 @@
 		<div>
 			@(Html.Telerik().Grid<CategoryModel.CategoryProductModel>()
 					.Name("products-grid")
-					.DataKeys(keys =>
-					{
-						keys.Add(x => x.Id);
-					})
+					.DataKeys(keys => { keys.Add(x => x.Id); })
 					.DataBinding(dataBinding =>
 					{
 						dataBinding.Ajax()
@@ -424,36 +405,35 @@
 					{
 						columns.Bound(x => x.ProductName)
 							.ReadOnly()
-							.Width(520)
+							.Width("50%")
 							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 						columns.Bound(x => x.Sku)
+							.Width("20%")
 							.ReadOnly();
 						columns.Bound(x => x.Published)
 							.ReadOnly()
+							.Width("5%")
 							.ClientTemplate(@Html.SymbolForBool("Published"))
 							.Centered();
 						columns.Bound(x => x.IsFeaturedProduct)
 							.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
+							.Width("5%")
 							.Centered();
 						columns.Bound(x => x.DisplayOrder1)
+							.Width("5%")
 							.Centered();
 						columns.Command(commands =>
 						{
 							commands.Edit().Localize(T);
 							commands.Delete().Localize(T);
 						})
-						.Width(220);
+						.HtmlAttributes(new { align = "right" })
+						.Width("15%");
 					})
+					.ToolBar(commands => commands.Template(CategoryProductsGridCommands))
 					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 					.PreserveGridState()
 					.EnableCustomBinding(true))
-		</div>
-		<div class="mt-3">
-			@(Html.SmartStore().EntityPicker()
-				.IconCssClass("fa fa-plus")
-				.HtmlAttribute("class", "btn btn-warning")
-				.Caption(T("Admin.Catalog.Categories.Products.AddNew").Text.EncodeJsString('\'', false))
-				.OnSelectionCompleted("PickProducts_Completed"))
 		</div>
 	}
 	else
@@ -462,6 +442,15 @@
 			@T("Admin.SaveBeforeEdit")
 		</p>
 	}
+}
+
+@helper CategoryProductsGridCommands(Grid<CategoryModel.CategoryProductModel> grid)
+{
+	@(Html.SmartStore().EntityPicker()
+		.IconCssClass("fa fa-plus")
+		.HtmlAttribute("class", "t-button t-grid-add")
+		.Caption(T("Admin.Catalog.Categories.Products.AddNew").Text.EncodeJsString('\'', false))
+		.OnSelectionCompleted("PickProducts_Completed"))
 }
 
 @helper TabDiscounts()

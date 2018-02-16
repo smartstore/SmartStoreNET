@@ -117,48 +117,49 @@
 
 
     @(Html.Telerik().Grid<CustomerModel>(Model.Customers.Data)
-        .Name("customers-grid")
-        .ClientEvents(events => events
-            .OnDataBinding("onDataBinding")
-            .OnDataBound("onDataBound"))
-        .Columns(columns =>
-        {
-            columns.Bound(x => x.Id)
+		.Name("customers-grid")
+		.ClientEvents(events => events
+			.OnDataBinding("onDataBinding")
+			.OnDataBound("onDataBound"))
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Id)
 				.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
 				.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
 				.Title("<input id='mastercheckbox' type='checkbox'/>")
 				.HtmlAttributes(new { style = "text-align:center" })
 				.HeaderHtmlAttributes(new { style = "text-align:center" });
-            columns.Bound(x => x.Id);
-            columns.Bound(x => x.Email)
-                .Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.Id }, new { }))
-                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
-            columns.Bound(x => x.Username)
-                .Visible(Model.UsernamesEnabled);
-            columns.Bound(x => x.FullName);
+			columns.Bound(x => x.Id);
+			columns.Bound(x => x.Email)
+				.Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.Id }, new { }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
+			columns.Bound(x => x.Username)
+				.Visible(Model.UsernamesEnabled);
+			columns.Bound(x => x.FullName);
 			columns.Bound(x => x.CustomerRoleNames);
-            columns.Bound(x => x.Company)
-                .Visible(Model.CompanyEnabled);
-            columns.Bound(x => x.Phone)
-                .Visible(Model.PhoneEnabled);
-            columns.Bound(x => x.ZipPostalCode)
-                .Visible(Model.ZipPostalCodeEnabled);
-            columns.Bound(x => x.Active)
-                    .Template(item => @Html.SymbolForBool(item.Active))
-                    .ClientTemplate(@Html.SymbolForBool("Active"))
-                    .Centered();
-            columns.Bound(x => x.CreatedOn);
-            columns.Bound(x => x.LastActivityDate);
-            columns.Bound(x => x.Id)
-                .Centered()
-                .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                .Title(T("Admin.Common.Edit").Text);
-        })
-        .Pageable(settings => settings.Total(Model.Customers.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
-        .DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerList", "Customer"))
+			columns.Bound(x => x.Company)
+				.Visible(Model.CompanyEnabled);
+			columns.Bound(x => x.Phone)
+				.Visible(Model.PhoneEnabled);
+			columns.Bound(x => x.ZipPostalCode)
+				.Visible(Model.ZipPostalCodeEnabled);
+			columns.Bound(x => x.Active)
+					.Template(item => @Html.SymbolForBool(item.Active))
+					.ClientTemplate(@Html.SymbolForBool("Active"))
+					.Centered();
+			columns.Bound(x => x.CreatedOn);
+			columns.Bound(x => x.LastActivityDate);
+			columns.Bound(x => x.Id)
+				.Centered()
+				.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+				.Title(String.Empty)
+				.HtmlAttributes(new { align = "right", @class = "omega" });
+		})
+		.Pageable(settings => settings.Total(Model.Customers.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerList", "Customer"))
 		.PreserveGridState()
-        .EnableCustomBinding(true))
+		.EnableCustomBinding(true))
 
     <script type="text/javascript">
 		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@

@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = T("Admin.Customers.CustomerRoles").Text;
 }
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-users"></i>
@@ -16,7 +17,8 @@
     </div>
 </div>
 
-@(Html.Telerik().Grid<CustomerRoleModel>()
+<div>
+	@(Html.Telerik().Grid<CustomerRoleModel>()
 		.Name("customerroles-grid")
 		.BindTo(Model.Data)
 		.Columns(columns =>
@@ -45,10 +47,12 @@
 				.ClientTemplate(@Html.SymbolForBool("IsSystemRole"))
 				.Centered();
 			columns.Bound(x => x.Id)
-				.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "btn btn-secondary" }))
+				.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
 				.Width(50)
 				.Filterable(false)
-				.HtmlAttributes(new { align = "right" });
+				.Title(String.Empty)
+				.HtmlAttributes(new { align = "right", @class = "omega" });
 		})
 		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "CustomerRole"))
 		.EnableCustomBinding(true))
+</div>

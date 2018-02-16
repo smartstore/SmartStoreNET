@@ -1,49 +1,50 @@
 ﻿@model CountryModel
-
 @using Telerik.Web.Mvc.UI;
+
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
+
 @Html.SmartStore().TabStrip().Name("country-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
     x.Add().Text(T("Admin.Configuration.Countries.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text("{0} ({1})".FormatInvariant(T("Admin.Configuration.Countries.States"), Model.NumberOfStates)).Content(TabStates());
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
     
-    //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "country-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
 {        
     @(Html.LocalizedEditor<CountryModel, CountryLocalizedModel>("country-info-localized",
-            @<table class="adminContent">
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.Locales[item].Name)
-                    </td>
-                    <td class="adminData">
-						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-						@Html.HiddenFor(model => model.Locales[item].LanguageId)
+        @<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].Name)
+                </td>
+                <td class="adminData">
+					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-                        @Html.EditorFor(model => Model.Locales[item].Name)
-                        @Html.ValidationMessageFor(model => model.Locales[item].Name)
-                    </td>
-                </tr>
-            </table>
-            ,
-            @<table class="adminContent">
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.Name)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.Name)
-                        @Html.ValidationMessageFor(model => model.Name)
-                    </td>
-                </tr>
-            </table>
-        ))
-		<table class="adminContent">
+                    @Html.EditorFor(model => Model.Locales[item].Name)
+                    @Html.ValidationMessageFor(model => model.Locales[item].Name)
+                </td>
+            </tr>
+        </table>
+        ,
+        @<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Name)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.Name)
+                    @Html.ValidationMessageFor(model => model.Name)
+                </td>
+            </tr>
+        </table>
+    ))
+
+	<table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AllowsBilling)
@@ -134,75 +135,85 @@
 	{
 		<div>
 			@(Html.Telerik().Grid<StateProvinceModel>()
-						.Name("states-grid")
-						.DataKeys(x =>
+					.Name("states-grid")
+					.DataKeys(x =>
+					{
+						x.Add(y => y.Id).RouteKey("Id");
+					})
+					.DataBinding(dataBinding =>
+					{
+						dataBinding.Ajax()
+							.Select("States", "Country", new { countryId = Model.Id })
+							.Delete("StateDelete", "Country");
+					})
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Name);
+						columns.Bound(x => x.Abbreviation)
+							.Centered();
+						columns.Bound(x => x.Published)
+							.Template(item => @Html.SymbolForBool(item.Published))
+							.ClientTemplate(@Html.SymbolForBool("Published"))
+							.Centered();
+						columns.Bound(x => x.DisplayOrder1)
+							.Centered();
+						columns.Command(commands =>
 						{
-							x.Add(y => y.Id).RouteKey("Id");
-						})
-						.DataBinding(dataBinding =>
-						{
-							dataBinding.Ajax()
-								.Select("States", "Country", new { countryId = Model.Id })
-								.Delete("StateDelete", "Country");
-						})
-						.Columns(columns =>
-						{
-							columns.Bound(x => x.Name);
-							//TODO display localized values here
-							columns.Bound(x => x.Abbreviation)
-								.Centered();
-							columns.Bound(x => x.Published)
-								.Template(item => @Html.SymbolForBool(item.Published))
-								.ClientTemplate(@Html.SymbolForBool("Published"))
-								.Centered();
-							columns.Bound(x => x.DisplayOrder1)
-								.Centered();
-							columns.Bound(x => x.Id)
-								.Centered()
-								.Width(120)
-								.ClientTemplate("<button type='button' onclick=\"" + "javascript:openPopup('" + Url.Content("~/Admin/Country/StateEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=country-form'); return false;\" class='btn btn-secondary'>" + T("Admin.Common.Edit").Text + "</button>")
-								.Title("");
-							columns.Command(commands =>
-							{
-								commands.Delete().Localize(T);
-							}).Width(120);
-						})
-						.ClientEvents(x => x.OnError("grid_onError"))
-						.EnableCustomBinding(true))
-			</div>
-			<div>
-			<button type="button" id="btnAddNewState" name="btnAddNewState" class="btn btn-secondary mt-3">
-				<i class="fa fa-plus"></i>
-				<span>@T("Admin.Configuration.Countries.States.AddNew")</span>
-			</button>
-			<script type="text/javascript">
-				$(document).ready(function () {
+							commands.Custom("edit-region").Text(T("Common.Edit"));
+							commands.Delete().Localize(T);
+						}).HtmlAttributes(new { align = "right" });
+					})
+					.ToolBar(commands => commands.Template(StateProvinceGridCommands))
+					.ClientEvents(x => x.OnError("grid_onError"))
+					.EnableCustomBinding(true))
+		</div>
 
-					$("#btnAddNewState").on("click", function (e) {
-						openPopup('@(Url.Action("StateCreatePopup", "Country", new { countryId = Model.Id, btnId = "btnRefresh", formId = "country-form" }))');
-						return false;
-					});
+		<script type="text/javascript">
+			$(document).ready(function () {
 
-					$('#btnRefresh').click(function () {
-						//refresh grid
-						var optionsGrid = $("#states-grid");
-						optionsGrid.data('tGrid').ajaxRequest();
-
-						return false;
-					});
+				$("#btnAddNewState").on("click", function (e) {
+					openPopup('@(Url.Action("StateCreatePopup", "Country", new { countryId = Model.Id, btnId = "btnRefresh", formId = "country-form" }))');
+					return false;
 				});
 
-				function grid_onError(e) {
-					alert(e.XMLHttpRequest.responseText);
+				$('#btnRefresh').click(function () {
+					//refresh grid
+					var optionsGrid = $("#states-grid");
+					optionsGrid.data('tGrid').ajaxRequest();
+					return false;
+				});
+
+				$('#states-grid').on('click', '.t-grid-edit-region', function (e) {
 					e.preventDefault();
-				}
-			</script>
-		</div>
+					var grid = $('#states-grid').data('tGrid');
+					var tr = $(this).closest('tr');
+					var id = grid.dataItem(tr).Id;
+					var href = '@Url.Content("~/Admin/Country/StateEditPopup/")' + id + '?btnId=btnRefresh&formId=country-form';
+
+					openPopup(href);
+
+					return false;
+				});
+			});
+
+			function grid_onError(e) {
+				alert(e.XMLHttpRequest.responseText);
+				e.preventDefault();
+			}
+		</script>
 	}
 	else
 	{
 		@T("Admin.Configuration.Countries.States.SaveBeforeEdit")
 	}
+}
+
+@helper StateProvinceGridCommands(Grid<StateProvinceModel> grid)
+{
+	<button type="button" id="btnAddNewState" name="btnAddNewState" class="t-button t-grid-add">
+		<i class="fa fa-plus"></i>
+		<span>@T("Admin.Configuration.Countries.States.AddNew")</span>
+	</button>
 }
 
 @helper TabStores()

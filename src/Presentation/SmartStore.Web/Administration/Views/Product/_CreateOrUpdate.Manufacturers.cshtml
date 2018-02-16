@@ -22,10 +22,7 @@
 	
 		@(Html.Telerik().Grid<ProductModel.ProductManufacturerModel>()
 			.Name("productmanufacturers-grid")
-			.DataKeys(keys =>
-			{
-				keys.Add(x => x.Id);
-			})
+			.DataKeys(keys => { keys.Add(x => x.Id); })
 			.DataBinding(dataBinding =>
 			{
 				dataBinding.Ajax()

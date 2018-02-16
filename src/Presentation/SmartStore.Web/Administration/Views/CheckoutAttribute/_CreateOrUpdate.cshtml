@@ -1,22 +1,16 @@
-﻿@using SmartStore.Core.Domain.Catalog;
+﻿@model CheckoutAttributeModel
+@using SmartStore.Core.Domain.Catalog;
 @using Telerik.Web.Mvc.UI;
-@model CheckoutAttributeModel
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
+
 @Html.SmartStore().TabStrip().Name("checkoutattribute-edit").Style(TabsStyle.Material).Items(x =>
 {
-	x.Add().Text(T("Admin.Catalog.Attributes.CheckoutAttributes.Info").Text)
-		.Content(TabInfo())
-		.Selected(true);
+	x.Add().Text(T("Admin.Catalog.Attributes.CheckoutAttributes.Info").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Catalog.Attributes.CheckoutAttributes.Values").Text).Content(TabValues());
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
-	x.Add().Text(T("Admin.Catalog.Attributes.CheckoutAttributes.Values").Text)
-		.Content(TabValues());
-
-	x.Add().Text(T("Admin.Common.Stores").Text)
-		.Content(TabStores());
-
-	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "checkoutattribute-edit", this.Html, this.Model));
 })
 
@@ -140,11 +134,13 @@
 
 @helper TabValues()
 {
-if (Model.Id > 0)
-{
-	/*TODO display the following warning if values are not supported by selected attribute control type
-		'Values are not required for this attribute control type'
+	if (Model.Id > 0)
+	{
+		/*
+		 * TODO: display the following warning if values are not supported by selected attribute control type
+		 * Values are not required for this attribute control type'
 		*/
+
 		<div>
 			@(Html.Telerik().Grid<CheckoutAttributeValueModel>()
 				.Name("checkoutattributevalues-grid")
@@ -172,28 +168,19 @@ if (Model.Id > 0)
 						columns.Bound(x => x.DisplayOrder)
 							.Width(140)
 							.Centered();
-						columns.Bound(x => x.Id)
-							.Width(120)
-							.Centered()
-							.ClientTemplate("<input type='button' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:openPopup('" + @Url.Content("~/Admin/CheckoutAttribute/ValueEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=checkoutattribute-form'); return false;\" class='t-button' />")
-							.Title(T("Admin.Common.Edit").Text);
 						columns.Command(commands =>
 						{
+							commands.Custom("edit-attr-value").Text(T("Common.Edit"));
 							commands.Delete().Localize(T);
 						})
-						.Width(120)
-						.Title(T("Admin.Common.Delete").Text);
+						.HtmlAttributes(new { align = "right" })
+						.Width(120);
 					})
+					.ToolBar(commands => commands.Template(CheckoutAttributeGridCommands))
 					.DataBinding(dataBinding =>
 						dataBinding.Ajax().Select("ValueList", "CheckoutAttribute", new { checkoutAttributeId = Model.Id })
 						.Delete("ValueDelete", "CheckoutAttribute"))
 					.EnableCustomBinding(true))
-		</div>
-		<div class="mt-3">
-            <button type="button" id="btnAddNewValue" name="btnAddNewValue" class="btn btn-secondary">
-				<i class="fa fa-plus"></i>
-				<span>@T("Admin.Catalog.Attributes.CheckoutAttributes.Values.AddNew")</span>
-			</button>
 		</div>
 
 		<script type="text/javascript">
@@ -205,9 +192,19 @@ if (Model.Id > 0)
 				});
 
 				$('#btnRefresh').on("click", function () {
-					//refresh grid
 					var valuesGrid = $("#checkoutattributevalues-grid");
 					valuesGrid.data('tGrid').ajaxRequest();
+					return false;
+				});
+
+				$('#checkoutattributevalues-grid').on('click', '.t-grid-edit-attr-value', function (e) {
+					e.preventDefault();
+					var grid = $('#checkoutattributevalues-grid').data('tGrid');
+					var tr = $(this).closest('tr');
+					var id = grid.dataItem(tr).Id;
+					var href = '@Url.Content("~/Admin/CheckoutAttribute/ValueEditPopup/")' + id + '?btnId=btnRefresh&formId=checkoutattribute-form';
+
+					openPopup(href);
 
 					return false;
 				});
@@ -218,6 +215,14 @@ if (Model.Id > 0)
 	{
         @T("Admin.Catalog.Attributes.CheckoutAttributes.Values.SaveBeforeEdit")
     }
+}
+
+@helper CheckoutAttributeGridCommands(Grid<CheckoutAttributeValueModel> grid)
+{
+	<button type="button" id="btnAddNewValue" name="btnAddNewValue" class="t-button t-grid-add">
+		<i class="fa fa-plus"></i>
+		<span>@T("Admin.Catalog.Attributes.CheckoutAttributes.Values.AddNew")</span>
+	</button>
 }
 
 @helper TabStores()

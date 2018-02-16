@@ -141,7 +141,7 @@
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.AssociatedExternalAuthRecords)
                 </td>
-                <td class="adminData">
+                <td class="adminData wide">
                     @(Html.Telerik().Grid<CustomerModel.AssociatedExternalAuthModel>(Model.AssociatedExternalAuthRecords)
                     .Name("externalauthrecords-grid")
                     .Columns(columns =>
@@ -493,7 +493,7 @@
 				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.Id }, new { @class = "btn btn-secondary" }))
 				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= Id #>\" class=\"btn btn-secondary\">" + T("Admin.Common.View").Text + "</a>")
 				.HtmlAttributes(new { align = "right" })
-				.Title(T("Admin.Common.View").Text);
+				.Title(String.Empty);
 
 		})
 		.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
@@ -619,24 +619,36 @@
 		})
 		.Columns(columns =>
 		{
-			columns.Bound(x => x.FirstName);
-			columns.Bound(x => x.LastName);
-			columns.Bound(x => x.Email);
-			columns.Bound(x => x.PhoneNumber);
-			columns.Bound(x => x.FaxNumber);
-			columns.Bound(x => x.AddressHtml)
+			columns.Bound(x => x.FirstName).Width("10%");
+			columns.Bound(x => x.LastName).Width("10%");
+			columns.Bound(x => x.Email).Width("10%");
+			columns.Bound(x => x.PhoneNumber).Width("10%");
+			columns.Bound(x => x.FaxNumber).Width("10%");
+			columns.Bound(x => x.AddressHtml).Width("30%")
 				.Encoded(false);
-			columns.Bound(x => x.Id)
-				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/AddressEdit?customerId=") + @Model.Id + "&addressid=<#= Id #>\" class\"btn btn-secondary\">" + T("Admin.Common.Edit").Text + "</a>")
-				.HtmlAttributes(new { align = "right" })
-				.Title("");
 			columns.Command(commands =>
 			{
+				commands.Custom("edit-address").Text(T("Common.Edit"));
 				commands.Delete().Localize(T);
 			}).HtmlAttributes(new { align = "right" });
 		})
 		.ToolBar(commands => commands.Template(AddressEditGridCommands)))
     
+	<script>
+		$(function() {
+			$('#customer-addresses-grid').on('click', '.t-grid-edit-address', function (e) {
+				e.preventDefault();
+				var grid = $('#customer-addresses-grid').data('tGrid');
+				var tr = $(this).closest('tr');
+				var id = grid.dataItem(tr).Id;
+				var href = '@Url.Content("~/Admin/Customer/AddressEdit?customerId=")' + @Model.Id + '&addressid=' + id;
+				
+				location.replace(href);
+
+				return false;
+			});
+		});
+	</script>
 }
 
 @helper AddressEditGridCommands(Grid<AddressModel> grid)

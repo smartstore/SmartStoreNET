@@ -149,7 +149,8 @@
 						.HeaderTemplate(headerTemplate(T("Admin.Configuration.Currencies.ApplyRate")))
 						.Template(x => Html.ActionLink(T("Admin.Configuration.Currencies.ApplyRate").Text, "ApplyRate",
 							new { rate = x.Rate, currencyCode = x.CurrencyCode },
-							new { @class = x.IsStoreCurrency ? "" : "hide" }));
+							new { @class = x.IsStoreCurrency ? "t-button t-grid-edit" : "hide" }))
+						.HtmlAttributes(new { align = "right", @class = "omega" });
 				})
 				.EnableCustomBinding(true)
 			)

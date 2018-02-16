@@ -173,7 +173,7 @@ body.canvas-blocking .canvas-blocker {
 .offcanvas-tabs {
     position: relative;
     flex-grow: 0;
-    padding: 0 5%;
+    padding: 0;
 
     .offcanvas-closer {
         border-radius: 0;
@@ -196,22 +196,21 @@ body.canvas-blocking .canvas-blocker {
     }
 
     .nav-link {
-        background: transparent !important;
+		border-radius: 0;
         max-width: 100%;
         padding-top: 1rem;
         padding-bottom: 1rem;
-        color: $body-color;
-        font-size: inherit;
+		color: $gray-600;
 
         &.active {
-            color: $warning !important;
+			font-weight: $font-weight-medium;
         }
 
         .badge {
             position: relative;
             right: 0;
             top: 0;
-            vertical-align: super;
+			vertical-align: text-top;
         }
     }
 

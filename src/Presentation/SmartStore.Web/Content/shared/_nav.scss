@@ -23,31 +23,30 @@
 
 	.nav-item {
 		position: relative;
-		margin: 0 1rem;
-
-		&:first-child {
-			margin-left: 0;
-		}
-
-		&:last-child {
-			margin-right: 0;
-		}
 	}
 
 	.nav-link {
 		color: $mtab-color;
 		text-transform: $mtab-text-transform;
-		font-size: 0.9375rem;
 		font-weight: $mtab-font-weight;
+		font-size: 0.9375rem;
 		text-align: center;
 		position: relative;
 		border-width: 0;
 		background-color: transparent;
-		padding: 0.75rem 0;
-		transition: color 0.2s ease-in-out;
+		padding: 0.825rem 1rem;
+		transition: color 0.05s ease-in-out, background-color 0.05s ease-in-out;
 
 		&:hover {
-			color: inherit;
+			color: $nav-tabs-link-active-color;
+		}
+
+		&:hover:not(.active) {
+			background-color: rgba(#000, 0.025);
+		}
+
+		&:active:not(.active) {
+			background-color: rgba(#000, 0.05);
 		}
 
 		&.active {
@@ -76,9 +75,8 @@
 		left: 50%;
 		right: 50%;
 		height: 2px;
-		background: #aaa;
-		background: rgba(0,0,0, 0.3);
-		transition: all 0.2s ease-in-out;
+		background: rgba(#000, 0.2);
+		transition: all 0.12s ease-out;
 	}
 
 	.nav-link:hover:before {
@@ -133,10 +131,6 @@
 				margin-right: 0.75rem;
 				margin-left: -0.5rem;
 			}
-		}
-
-		.nav-link:hover:not(.active) {
-			background-color: rgba(#000, 0.025);
 		}
 
 		.nav-link.active,

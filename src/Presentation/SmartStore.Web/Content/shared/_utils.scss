@@ -186,8 +186,11 @@
 }
 
 .badge {
-	border-radius: $border-radius-sm;
 	border: 1px solid #fff;
+}
+
+.badge:not(.badge-pill) {
+	border-radius: $border-radius-sm;
 }
 
 table th {

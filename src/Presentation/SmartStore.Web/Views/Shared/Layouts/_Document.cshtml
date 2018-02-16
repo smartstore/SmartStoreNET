@@ -16,39 +16,23 @@
 		vendorsRoot + "pnotify/css/pnotify.buttons.css");
 
 	Html.AppendScriptParts(ResourceLocation.Head,
-		jsRoot + "modernizr.js",
-		jsRoot + "jquery-3.2.1.js",
-		jsRoot + "jquery-migrate-3.0.0.js");
+		vendorsRoot + "modernizr/modernizr.js",
+		vendorsRoot + "jquery/jquery-3.2.1.js"/*,
+		vendorsRoot + "jquery/jquery-migrate-3.0.0.js"*/);
 
 	Html.AppendScriptParts(ResourceLocation.Foot,
-		// jQuery UI Core
-		jsRoot + "jquery-ui/effect.js",
-		jsRoot + "jquery-ui/effect-shake.js",
-		// jQuery Validation
-		jsRoot + "jquery.unobtrusive-ajax.js",
-		jsRoot + "jquery.validate.js",
-		jsRoot + "jquery.validate.unobtrusive.js",
-		jsRoot + "jquery.validate.unobtrusive.custom.js",
-		// SmartStore system
-		jsRoot + "underscore.js",
-		jsRoot + "underscore.string.js",
-		jsRoot + "underscore.mixins.js",
-		jsRoot + "smartstore.system.js",
-		jsRoot + "smartstore.touchevents.js",
-		jsRoot + "smartstore.jquery.utils.js",
-		vendorsRoot + "moment/moment.js",
-		jsRoot + "smartstore.globalization.js",
-		// Common
-		jsRoot + "smartstore.viewport.js",
-		jsRoot + "jquery.ba-outside-events.js",
-		jsRoot + "smartstore.doajax.js",
-		jsRoot + "jquery.addeasing.js",
-		jsRoot + "smartstore.eventbroker.js",
-		jsRoot + "smartstore.hacks.js",
-		jsRoot + "smartstore.common.js",
-		// Bootstrap
-		contentRoot + "bs4/js/bootstrap.bundle.js",
 		// Vendors
+		vendorsRoot + "underscore/underscore.js",
+		vendorsRoot + "underscore/underscore.string.js",
+		vendorsRoot + "jquery/jquery.addeasing.js",
+		vendorsRoot + "jquery-ui/effect.js",
+		vendorsRoot + "jquery-ui/effect-shake.js",
+		vendorsRoot + "jquery/jquery.unobtrusive-ajax.js",
+		vendorsRoot + "jquery/jquery.validate.js",
+		vendorsRoot + "jquery/jquery.validate.unobtrusive.js",
+		vendorsRoot + "jquery/jquery.ba-outside-events.js",
+		vendorsRoot + "jquery/jquery.scrollTo.js",
+		vendorsRoot + "moment/moment.js",
 		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
 		vendorsRoot + "select2/js/select2.js",
 		vendorsRoot + "pnotify/js/pnotify.js",
@@ -56,7 +40,20 @@
 		vendorsRoot + "pnotify/js/pnotify.buttons.js",
 		vendorsRoot + "pnotify/js/pnotify.animate.js",
 		vendorsRoot + "slick/slick.js",
-		// Shared UI
+		vendorsRoot + "touchspin/jquery.bootstrap-touchspin.js",
+		contentRoot + "bs4/js/bootstrap.bundle.js",
+		// Common
+		jsRoot + "underscore.mixins.js",
+		jsRoot + "smartstore.system.js",
+		jsRoot + "smartstore.touchevents.js",
+		jsRoot + "smartstore.jquery.utils.js",
+		jsRoot + "smartstore.globalization.js",
+		jsRoot + "jquery.validate.unobtrusive.custom.js",
+		jsRoot + "smartstore.viewport.js",
+		jsRoot + "smartstore.doajax.js",
+		jsRoot + "smartstore.eventbroker.js",
+		jsRoot + "smartstore.hacks.js",
+		jsRoot + "smartstore.common.js",
 		jsRoot + "smartstore.selectwrapper.js",
 		jsRoot + "smartstore.throbber.js",
 		jsRoot + "smartstore.thumbzoomer.js",
@@ -64,10 +61,7 @@
 		jsRoot + "smartstore.keynav.js",
 		jsRoot + "smartstore.articlelist.js",
 		jsRoot + "smartstore.megamenu.js",
-		jsRoot + "jquery.bootstrap-touchspin.js",
-		jsRoot + "jquery.scrollTo.js",
-		jsRoot + "offcanvas.js",
-
+		jsRoot + "smartstore.offcanvas.js",
 		// Shop
 		jsRoot + "public.common.js",
 		jsRoot + "public.search.js",

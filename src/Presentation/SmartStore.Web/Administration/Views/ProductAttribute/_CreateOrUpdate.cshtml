@@ -176,7 +176,7 @@
 						.ToolBar(commands => commands.Custom()
 							.Name("insert-option")
 							.HtmlAttributes(new { href = "#", @class = "btn btn-link insert-option" })
-							.Text("<i class='fa fa-plus'></i>&nbsp;" + @T("Common.Options.Add"))
+							.Text("<i class='fa fa-plus'></i><span>" + @T("Common.Options.Add") + "</span>")
 						)
 						.Columns(columns =>
 						{

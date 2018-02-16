@@ -115,6 +115,10 @@ $yiq-contrasted-threshold:	164;
 $yiq-text-dark:				$gray-700;
 $yiq-text-light:			#fff;
 
+$theme-colors: ( 
+	"gray": $gray-700 
+);
+
 $spacer: 1rem;
 $spacers: (
     5: ($spacer * 2.25),
@@ -149,27 +153,23 @@ $input-border-radius:           $btn-border-radius;
 $input-border-radius-lg:        $btn-border-radius-lg;
 $input-border-radius-sm:        $btn-border-radius-sm;
 
-$btn-font-weight:               $font-weight-medium;
-$btn-line-height:               1.5;
-$btn-padding-x:                 1rem;
-$btn-padding-y:                 0.625rem;
-$btn-padding-x-sm:              0.75rem;
-$btn-padding-y-sm:              0.5rem;
-$btn-padding-x-lg:              1.5rem;
-$btn-padding-y-lg:              0.875rem;
-
-$btn-box-shadow:                inset 0 1px 0 rgba(#fff, .15);
-$btn-focus-box-shadow:          0 0 0 2px rgba($primary, .25);
-$btn-active-box-shadow:         inset 0 3px 5px rgba(#000, .125);
-$btn-transition:                box-shadow .12s ease-in-out;
-
 // Equalize input vertical paddings with button paddings
-$input-line-height:             $btn-line-height;
-$input-padding-y:               $btn-padding-y;
-$input-padding-y-sm:            $btn-padding-y-sm;
-$input-padding-y-lg:            $btn-padding-y-lg;
-$input-box-shadow:              none;
-$input-focus-box-shadow:        none;
+$input-btn-padding-x:			1rem;
+$input-btn-padding-y:			0.625rem;
+$input-btn-padding-x-sm:		0.75rem;
+$input-btn-padding-y-sm:		0.5rem;
+$input-btn-padding-x-lg:		1.5rem;
+$input-btn-padding-y-lg:		0.875rem;
+$input-btn-line-height:			1.5;
+$input-box-shadow:				none;
+$input-focus-box-shadow:		none;
+
+$btn-font-weight:				$font-weight-medium;
+
+$btn-box-shadow:				inset 0 1px 0 rgba(#fff, .15);
+$btn-focus-box-shadow:			0 0 0 2px rgba($primary, .25);
+$btn-active-box-shadow:			inset 0 3px 5px rgba(#000, .125);
+$btn-transition:				box-shadow .12s ease-in-out;
 
 
 // Dropdown

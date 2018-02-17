@@ -73,7 +73,7 @@ body.rtl {
 		padding-left: 1rem;
 	}
 
-	.form-control + .input-group-addon:not(:first-child) {
+	.form-control + .input-group-append:not(:first-child) {
 		border-right: initial;
 		border-left: 1px solid rgba(0,0,0,0.15);
 	}

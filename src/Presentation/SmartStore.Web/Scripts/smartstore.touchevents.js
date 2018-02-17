@@ -79,10 +79,9 @@
 	// tapstart Event:
 	$.event.special.tapstart = {
 		setup: function () {
-
 			var thisObject = this,
                 $this = $(thisObject);
-
+			
 			$this.on(settings.startevent, function tapStartFunc(e) {
 
 				$this.data('callee', tapStartFunc);

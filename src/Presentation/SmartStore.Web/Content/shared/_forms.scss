@@ -45,11 +45,6 @@ fieldset.content-group {
     content: ' *';
 }
 
-.input-group-addon {
-    // fixes Flex wrong alignment with input-groups
-    line-height: inherit;
-}
-
 .form-text {
     line-height: 1.3;
 }

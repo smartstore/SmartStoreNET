@@ -125,7 +125,7 @@
 										@Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = "Optional" })
 										@if (Model.VatNumberStatusNote.HasValue())
 										{
-											<span class="input-group-addon" id="basic-addon2">@Model.VatNumberStatusNote</span>
+											<div class="input-group-append"><span class="input-group-text">@Model.VatNumberStatusNote</span></div>
 										}
 									</div>
 									<div class="form-text text-muted vat-note">@T("Account.Fields.VatNumber.Note")</div>

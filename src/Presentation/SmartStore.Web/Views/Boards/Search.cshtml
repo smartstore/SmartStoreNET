@@ -38,7 +38,9 @@
                 
                 <div class="input-group d-flex">
                     @Html.TextBox("searchterms", null, new { @class = "forum-search-text form-control" })
-                    <input type="submit" class="btn btn-primary input-group-addon" value="@T("Forum.SearchButton")" />
+					<div class="input-group-append">
+						<input type="submit" class="btn btn-primary" value="@T("Forum.SearchButton")" />
+					</div>
                 </div>
 
                 <div class="form-check mt-2">

@@ -23,8 +23,8 @@
                 @if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
                 {
                     <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="checkbox" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+						<input type="checkbox" id="SubscribeToNewsLetter" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+                        <label class="form-check-label" for="SubscribeToNewsLetter">
                             <span>@T("Checkout.SubscribeToNewsLetter")</span>
                         </label>
                     </div>
@@ -32,8 +32,8 @@
                 @if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
                 {
                     <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="checkbox" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+						<input type="checkbox" id="AcceptThirdPartyEmailHandOver" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+                        <label class="form-check-label" for="AcceptThirdPartyEmailHandOver">
                             <span>@Model.ThirdPartyEmailHandOverLabel</span>
                         </label>
                     </div>

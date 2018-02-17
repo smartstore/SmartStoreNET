@@ -48,11 +48,9 @@
                             });
                         });
                     </script>
-                    <div class="checkbox">
-                        <label class="mb-0 form-check-label">
-                            <input id="termsofservice" type="checkbox" name="termsofservice" class="form-check-input" />
-                            @Html.Raw(terms)
-                        </label>
+                    <div class="form-check">
+						<input id="termsofservice" type="checkbox" name="termsofservice" class="form-check-input" />
+                        <label class="mb-0 form-check-label" for="termsofservice">@Html.Raw(terms)</label>
                     </div>
 
                     <!-- Terms of service -->

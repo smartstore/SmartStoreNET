@@ -30,13 +30,13 @@
 						<li class="list-group-item opt-list-item payment-method-item@(paymentMethod.Selected ? " active" : "")">
 							<div class="opt-data">
 								<div class="form-check opt-control option-name radio">
-									<label class="form-check-label">
-										<input id="paymentmethod_@(i)" type="radio" name="paymentmethod"
-											   @Html.Attr("checked", "checked", paymentMethod.Selected)
-											   data-has-info='@(infoRoute != null ? "true" : "false")'
-											   data-lazy-info='@(paymentMethod.RequiresInteraction ? "true" : "false")'
-											   class="opt-radio form-check-input"
-											   value="@(paymentMethod.PaymentMethodSystemName)" />
+									<input id="paymentmethod_@(i)" type="radio" name="paymentmethod"
+										   @Html.Attr("checked", "checked", paymentMethod.Selected)
+										   data-has-info='@(infoRoute != null ? "true" : "false")'
+										   data-lazy-info='@(paymentMethod.RequiresInteraction ? "true" : "false")'
+										   class="opt-radio form-check-input"
+										   value="@(paymentMethod.PaymentMethodSystemName)" />
+									<label class="form-check-label" for="paymentmethod_@(i)">
 										<span class="opt-name">@paymentMethod.Name</span>
 									</label>
 								</div>

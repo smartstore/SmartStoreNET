@@ -40,11 +40,11 @@
         @if (Model.IsCustomerAllowedToSubscribe)
         {
             <div class="row justify-content-end">
-                <div class="col-sm-9 mt-3 checkbox">
-                    <label class="form-check-label">
-                        @Html.CheckBox("Subscribed", @Model.Subscribed, new { @class = "check-box form-check-input" })
-                        @T("Forum.NotifyWhenSomeonePostsInThisTopic")
-                    </label>
+                <div class="col-sm-9">
+					<div class="form-check">
+						@Html.CheckBox("Subscribed", @Model.Subscribed, new { @class = "form-check-input" })
+						<label class="form-check-label" for="Subscribed">@T("Forum.NotifyWhenSomeonePostsInThisTopic")</label>
+					</div>
                 </div>
             </div>
         }

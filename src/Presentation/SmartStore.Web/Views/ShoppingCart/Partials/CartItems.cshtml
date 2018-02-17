@@ -81,8 +81,8 @@
 							@if (item.IsDownload && item.HasUserAgreement)
 							{
 								<div class="download-agreement form-check">
-									<label class="form-check-label">
-										<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)" class="form-check-input" />
+									<input type="checkbox" id="AgreeUserAgreement@(item.ProductId)" name="AgreeUserAgreement@(item.ProductId)" class="form-check-input" />
+									<label class="form-check-label" for="AgreeUserAgreement@(item.ProductId)">
 										<span>@T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)</span>
 									</label>
 								</div>
@@ -90,8 +90,8 @@
 							@if (Model.DisplayEsdRevocationWaiverBox && item.IsEsd)
 							{
 								<div class="esd-revocation-waiver form-check">
-									<label class="form-check-label">
-										<input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)" class="form-check-input" />
+									<input type="checkbox" id="AgreeEsdRevocationWaiver@(item.ProductId)" name="AgreeEsdRevocationWaiver@(item.ProductId)" class="form-check-input" />
+									<label class="form-check-label" for="AgreeEsdRevocationWaiver@(item.ProductId)">
 										<span>@T("Checkout.EsdRevocationWaiverConfirmation")</span>
 									</label>
 								</div>

@@ -26,18 +26,14 @@
         {
             <div class="form-group row">
                 <label class="col-lg-3 col-form-label">@T("Account.Fields.Gender")</label>
-                <div class="col-lg-9">
-					<div class="form-check form-check-inline">
-						<label class="form-check-label">
-							@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input", id = "gender-male" })
-							<span>@T("Account.Fields.Gender.Male")</span>
-						</label>
+                <div class="col-lg-9 form-inline">
+					<div class="form-check mr-sm-3">
+						@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input", id = "gender-male" })
+						<label class="form-check-label" for="gender-male">@T("Account.Fields.Gender.Male")</label>
 					</div>
-					<div class="form-check form-check-inline">
-						<label class="form-check-label">
-							@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input", id = "gender-female" })
-							<span>@T("Account.Fields.Gender.Female")</span>
-						</label>
+					<div class="form-check">
+						@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input", id = "gender-female" })
+						<label class="form-check-label" for="gender-female">@T("Account.Fields.Gender.Female")</label>
 					</div>
                 </div>
             </div>

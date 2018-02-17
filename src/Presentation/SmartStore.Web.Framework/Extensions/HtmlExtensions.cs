@@ -504,7 +504,8 @@ namespace SmartStore.Web.Framework
 
 			string inputHtml = "";
 			var htmlAttributes = new RouteValueDictionary();
-			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
+			var metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
+			var dataTypeName = metadata.DataTypeName.EmptyNull();
             var groupClass = "form-group row";
             var labelClass = "col-{0}-3 col-form-label".FormatInvariant(breakpoint.NullEmpty() ?? "md");
             var controlsClass = "col-{0}-9".FormatInvariant(breakpoint.NullEmpty() ?? "md");
@@ -539,9 +540,11 @@ namespace SmartStore.Web.Framework
             switch (editorType)
             {
                 case InputEditorType.Checkbox:
-                    inputHtml = string.Format("<div class='form-check'><label class='form-check-label'>{0} {1}</label></div>",
-                        html.EditorFor(expression).ToString(),
-                        ModelMetadata.FromLambdaExpression(expression, html.ViewData).DisplayName); // TBD: ist das OK so?
+					CommonHelper.TryConvert<bool>(metadata.Model, out var isChecked);
+                    inputHtml = string.Format("<div class='form-check'>{0}<label class='form-check-label' for='{1}'>{2}</label></div>",
+                        html.CheckBox(ExpressionHelper.GetExpressionText(expression), isChecked, new { @class = "form-check-input" }).ToString(),
+						html.IdFor(expression),
+						metadata.DisplayName);
                     break;
                 case InputEditorType.Password:
                     inputHtml = html.PasswordFor(expression, htmlAttributes).ToString();

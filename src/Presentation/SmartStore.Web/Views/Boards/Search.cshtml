@@ -41,11 +41,9 @@
                     <input type="submit" class="btn btn-primary input-group-addon" value="@T("Forum.SearchButton")" />
                 </div>
 
-                <div class="checkbox mt-2">
-                    <label class="form-check-label">
-                        @Html.CheckBox("adv", Model.ShowAdvancedSearch, new { @class = "check-box form-check-input" })
-                        @T("Forum.Search.AdvancedSearch")
-                    </label>
+                <div class="form-check mt-2">
+					@Html.CheckBox("adv", Model.ShowAdvancedSearch, new { @class = "form-check-input" })
+                    <label class="form-check-label" for="adv">@T("Forum.Search.AdvancedSearch")</label>
                 </div>
                 
                 <div id="advanced-search-block" style="display: none;">

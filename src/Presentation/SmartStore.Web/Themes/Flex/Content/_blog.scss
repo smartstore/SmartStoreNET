@@ -28,7 +28,7 @@
 		position: absolute;
 		font-size: 50px;
 		line-height: 50px;
-		color: $gray-lighter;
+		color: $gray-300;
 	}
 	
 	.blogpost-comments .blogpost-comments-count {
@@ -38,20 +38,20 @@
 		line-height: 16px;
 		width: 38px;
 		text-align: center;
-		color: $gray-light;
+		color: $gray-500;
 	}
 	
     
 	.blogpost-comments.vivid {
-		.blogpost-comments-icon { color: $gray }
+		.blogpost-comments-icon { color: $gray-700 }
 		.blogpost-comments-count { color: $white }
 	}
 	
 	.blogpost-tags {
         border-radius: $border-radius;
-        border: 1px solid $gray-lighter;
+        border: 1px solid $gray-300;
         font-size: $font-size-sm;
-        background-color: $gray-lightest;
+        background-color: $gray-100;
 	}
 }
 

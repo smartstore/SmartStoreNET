@@ -466,7 +466,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 		.select2-selection__choice {
 			color: $s2bs-input-color;
 			background: $s2bs-btn-default-bg;
-			background: $gray-lightest;
+			background: $gray-100;
 			border: 1px solid $s2bs-btn-default-border;
 			border-radius: 2px; // $s2bs-selection-choice-border-radius;
 			cursor: default;

@@ -98,7 +98,7 @@ img.slick-loading {
     }
 
     .slick-arrow.slick-disabled {
-        color: $gray-lighter !important;
+        color: $gray-300 !important;
         cursor: default;
         box-shadow: none !important;
         border-color: $secondary !important;
@@ -147,12 +147,12 @@ img.slick-loading {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: $gray-lighter;
-    border: 1px solid $gray-light;
+    background: $gray-300;
+    border: 1px solid $gray-500;
 }
 
 .slick-dots li.slick-active button {
-    background: $gray-light;
+    background: $gray-500;
 }
 
 .slick-dots li button:hover,

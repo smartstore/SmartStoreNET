@@ -49,8 +49,8 @@ namespace SmartStore.Data.Setup
 		{
 			this._ctx = context;
 
-			this._sampleImagesPath = CommonHelper.MapPath("~/content/samples/");
-			this._sampleDownloadsPath = CommonHelper.MapPath("~/content/samples/");
+			this._sampleImagesPath = CommonHelper.MapPath("~/App_Data/Samples/");
+			this._sampleDownloadsPath = CommonHelper.MapPath("~/App_Data/Samples/");
 		}
 
 		#region Mandatory data creators

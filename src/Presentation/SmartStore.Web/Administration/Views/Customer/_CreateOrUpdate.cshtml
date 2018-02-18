@@ -452,7 +452,7 @@
 		foreach (var customerRole in Model.AvailableCustomerRoles)
 		{
 			<div class="form-check">
-				<input type="checkbox" name="SelectedCustomerRoleIds" value="@customerRole.Id" id="customer-role-@customerRole.Id"
+				<input type="checkbox" class="form-check-input" name="SelectedCustomerRoleIds" value="@customerRole.Id" id="customer-role-@customerRole.Id"
 						checked="@(Model.SelectedCustomerRoleIds != null && Model.SelectedCustomerRoleIds.Contains(customerRole.Id))"
 						disabled="@(!Model.AllowManagingCustomerRoles)" />
 				<label class="form-check-label" for="customer-role-@customerRole.Id">@customerRole.Name</label>

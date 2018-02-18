@@ -183,15 +183,15 @@
 
 				<div>
 					<p>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AskExistingValues")</p>
-					<div class="radio">
-						<label>
-							<input type="radio" name="deleteExistingValues" value="false" checked="checked" />
+					<div class="form-check">
+						<input type="radio" class="form-check-input" name="deleteExistingValues" id="deleteExistingValues_1" value="false" checked="checked" />
+						<label class="form-check-label" for="deleteExistingValues_1">
 							@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.MergeExistingValues")
 						</label>
 					</div>
-					<div class="radio">
-						<label>
-							<input type="radio" name="deleteExistingValues" value="true" />
+					<div class="form-check">
+						<input type="radio" class="form-check-input" name="deleteExistingValues" id="deleteExistingValues_2" value="true" />
+						<label class="form-check-label" for="deleteExistingValues_2">
 							@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.DeleteExistingValues")
 						</label>
 					</div>

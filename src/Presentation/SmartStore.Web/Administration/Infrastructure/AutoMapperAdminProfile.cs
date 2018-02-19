@@ -677,13 +677,6 @@ namespace SmartStore.Admin.Infrastructure
 			CreateMap<OrderSettingsModel, OrderSettings>()
 				.ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore())
 				.ForMember(dest => dest.Id, mo => mo.Ignore());
-			CreateMap<PaymentSettings, PaymentSettingsModel>()
-				.ForMember(dest => dest.AvailableCapturePaymentReasons, mo => mo.Ignore());
-			CreateMap<PaymentSettingsModel, PaymentSettings>()
-				.ForMember(dest => dest.ActivePaymentMethodSystemNames, mo => mo.Ignore())
-				.ForMember(dest => dest.AllowRePostingPayments, mo => mo.Ignore())
-				.ForMember(dest => dest.BypassPaymentMethodSelectionIfOnlyOne, mo => mo.Ignore())
-				.ForMember(dest => dest.BypassPaymentMethodInfo, mo => mo.Ignore());
 			CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>()
 				.ForMember(dest => dest.AvailableNewsLetterSubscriptions, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableThirdPartyEmailHandOver, mo => mo.Ignore())

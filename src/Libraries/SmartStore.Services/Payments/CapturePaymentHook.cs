@@ -7,20 +7,20 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Services.Orders;
 
-namespace SmartStore.Services.Hooks
+namespace SmartStore.Services.Payments
 {
 	public class CapturePaymentHook : DbSaveHook<Order>
 	{
+		private readonly Lazy<ICommonServices> _services;
 		private readonly Lazy<IOrderProcessingService> _orderProcessingService;
-		private readonly Lazy<PaymentSettings> _paymentSettings;
 		private readonly HashSet<Order> _toCapture = new HashSet<Order>();
 
 		public CapturePaymentHook(
-			Lazy<IOrderProcessingService> orderProcessingService,
-			Lazy<PaymentSettings> paymentSettings)
+			Lazy<ICommonServices> services,
+			Lazy<IOrderProcessingService> orderProcessingService)
 		{
+			_services = services;
 			_orderProcessingService = orderProcessingService;
-			_paymentSettings = paymentSettings;
 		}
 
 		private bool IsStatusPropertyModifiedTo(IHookedEntity entry, string propertyName, int statusId)
@@ -42,19 +42,22 @@ namespace SmartStore.Services.Hooks
 		{
 			if (entry.State == Core.Data.EntityState.Modified)
 			{
-				if (IsStatusPropertyModifiedTo(entry, nameof(entity.ShippingStatusId), (int)ShippingStatus.Shipped))
-				{
-					if (_paymentSettings.Value.CapturePaymentReason.HasValue && _paymentSettings.Value.CapturePaymentReason.Value == CapturePaymentReason.OrderShipped)
-					{
-						_toCapture.Add(entity);
-					}
-				}
+				var isShipped = IsStatusPropertyModifiedTo(entry, nameof(entity.ShippingStatusId), (int)ShippingStatus.Shipped);
+				var isDelivered = IsStatusPropertyModifiedTo(entry, nameof(entity.ShippingStatusId), (int)ShippingStatus.Delivered);
 
-				if (IsStatusPropertyModifiedTo(entry, nameof(entity.ShippingStatusId), (int)ShippingStatus.Delivered))
+				if (isShipped || isDelivered)
 				{
-					if (_paymentSettings.Value.CapturePaymentReason.HasValue && _paymentSettings.Value.CapturePaymentReason.Value == CapturePaymentReason.OrderDelivered)
+					var settings = _services.Value.Settings.LoadSetting<PaymentSettings>(entity.StoreId);
+					if (settings.CapturePaymentReason.HasValue)
 					{
-						_toCapture.Add(entity);
+						if (isShipped && settings.CapturePaymentReason.Value == CapturePaymentReason.OrderShipped)
+						{
+							_toCapture.Add(entity);
+						}
+						else if (isDelivered && settings.CapturePaymentReason.Value == CapturePaymentReason.OrderDelivered)
+						{
+							_toCapture.Add(entity);
+						}
 					}
 				}
 

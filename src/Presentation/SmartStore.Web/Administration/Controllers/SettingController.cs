@@ -817,23 +817,27 @@ namespace SmartStore.Admin.Controllers
 		public ActionResult Payment(PaymentSettings settings)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
-			{
 				return AccessDeniedView();
-			}
 
-			var model = settings.ToModel();
+			var model = new PaymentSettingsModel();
 			model.AvailableCapturePaymentReasons = CapturePaymentReason.OrderShipped.ToSelectList(false).ToList();
-
+			MiniMapper.Map(settings, model);
+			
 			return View(model);
 		}
 
 		[HttpPost, SaveSetting]
-		public ActionResult Payment(PaymentSettings settings, PaymentSettingsModel model)
+		public ActionResult Payment(PaymentSettings settings, PaymentSettingsModel model, FormCollection form)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
 				return AccessDeniedView();
 
-			settings = model.ToEntity(settings);
+			if (!ModelState.IsValid)
+				return Payment(settings);
+
+			ModelState.Clear();
+
+			MiniMapper.Map(model, settings);
 
 			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 			NotifySuccess(T("Admin.Configuration.Updated"));
@@ -1340,7 +1344,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[SaveSetting, HttpPost]
+		[HttpPost, SaveSetting]
 		public ActionResult DataExchange(DataExchangeSettings settings, DataExchangeSettingsModel model, FormCollection form)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))

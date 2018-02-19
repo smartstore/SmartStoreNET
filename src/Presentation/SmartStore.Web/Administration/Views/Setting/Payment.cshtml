@@ -27,7 +27,8 @@
 				@Html.SmartLabelFor(model => model.CapturePaymentReason)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(model => model.CapturePaymentReason, Model.AvailableCapturePaymentReasons, T("Common.PleaseSelect").Text)
+				@Html.SettingEditorFor(model => model.CapturePaymentReason,
+					Html.DropDownListFor(model => model.CapturePaymentReason, Model.AvailableCapturePaymentReasons, T("Common.Unspecified")))
 				@Html.ValidationMessageFor(model => model.CapturePaymentReason)
 			</td>
 		</tr>

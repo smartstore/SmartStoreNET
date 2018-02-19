@@ -915,20 +915,6 @@ namespace SmartStore.Admin
         }
 
 
-		public static PaymentSettingsModel ToModel(this PaymentSettings entity)
-		{
-			return Mapper.Map<PaymentSettings, PaymentSettingsModel>(entity);
-		}
-		public static PaymentSettings ToEntity(this PaymentSettingsModel model)
-		{
-			return Mapper.Map<PaymentSettingsModel, PaymentSettings>(model);
-		}
-		public static PaymentSettings ToEntity(this PaymentSettingsModel model, PaymentSettings destination)
-		{
-			return Mapper.Map(model, destination);
-		}
-
-
 
 		public static MediaSettingsModel ToModel(this MediaSettings entity)
         {

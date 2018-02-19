@@ -2,7 +2,7 @@
 @{
 	ViewBag.Title = string.Concat(T("Common.Edit"), " - ", (ViewBag.Title as string) ?? Model.SystemName);
 
-	Html.AddScriptParts(true, "~/Scripts/2012.2.607/telerik.common.min.js");
+	Html.AddScriptParts(true, "~/Administration/Content/telerik/js/2012.2.607/telerik.common.min.js");
 }
 
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "payment-method-form" }))

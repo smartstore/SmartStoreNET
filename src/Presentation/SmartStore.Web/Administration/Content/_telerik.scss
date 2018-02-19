@@ -76,18 +76,17 @@ $grid-pager-bg: #f9fafa;
     background-position: 0 -48px;
 }
 .t-icon {
-    background-image: url('telerik/sprite.png');
+    background-image: url('telerik/img/sprite.png');
 }
 .t-editor .t-tool-icon {
-    background-image: url('telerik/editor.png');
+	background-image: url('telerik/img/editor.png');
 }
 .t-picker-wrap {
     padding-right: 23px;
 }
-.t-loading, 
-.t-widget 
-.t-loading {
-    background: transparent url('telerik/loading.gif') no-repeat 0 0;
+.t-loading,
+.t-widget .t-loading {
+	background: transparent url('telerik/img/loading.gif') no-repeat 0 0;
 }
 .t-widget, 
 .t-link:link, 
@@ -170,13 +169,13 @@ $grid-pager-bg: #f9fafa;
     background-color: transparent;
 }
 .t-grouping-row td {
-    background: url('telrik/sprite.png') repeat-x 0 -48px;
+	background: url('telerik/img/sprite.png') repeat-x 0 -48px;
 }
 .t-grouping-header .t-group-indicator {
     border-color: #a4abb2;
 }
 .t-grouping-dropclue {
-    background: url('sprite.png') no-repeat -48px -288px;
+	background: url('telerik/img/sprite.png') no-repeat -48px -288px;
 }
 .t-grouping-row .t-group-cell, 
 .t-grouping-row p {
@@ -185,8 +184,8 @@ $grid-pager-bg: #f9fafa;
     color: $gray-700;
 }
 .t-treeview .t-drop-clue {
-    background-image: url('telerik/sprite.png');
-    background-position: 0 -358px;
+	background-image: url('telerik/img/sprite.png');
+	background-position: 0 -358px;
 }
 .t-treeview .t-state-selected {
     border-color: #f4b914;

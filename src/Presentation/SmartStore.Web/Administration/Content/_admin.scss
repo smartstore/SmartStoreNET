@@ -1346,12 +1346,3 @@ table.payment-method-features td {
     border-color: $input-focus-border-color;
     box-shadow: none;
 }
-
-
-//
-// Telerik adaptation:
-// Must come latest because of css
-// specificity.
-// --------------------------------------------------
-
-@import "telerik/_telerik.scss";

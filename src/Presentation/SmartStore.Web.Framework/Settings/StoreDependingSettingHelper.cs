@@ -95,25 +95,31 @@ namespace SmartStore.Web.Framework.Settings
 					continue;
 				}
 
-                var key = string.Empty;
-                var setting = string.Empty;
+				string key = null;
 
-                if (localized == null)
-                {
-                    key = settingName + "." + name;
-                    setting = settingService.GetSettingByKey<string>(key, storeId: storeId);
-                }
-                else
-                {
-					key = string.Concat("Locales[", index.ToString(), "].", name);
-                    setting = localizedEntityService.GetLocalizedValue(localized.LanguageId, 0, settingName, name);
-                }
+				if (localized == null)
+				{
+					key = settingName + "." + name;
 
-				if (!string.IsNullOrEmpty(setting))
+					if (settingService.GetSettingByKey<string>(key, storeId: storeId) == null)
+					{
+						key = null;
+					}
+				}
+				else
+				{
+					var value = localizedEntityService.GetLocalizedValue(localized.LanguageId, 0, settingName, name);
+					if (!string.IsNullOrEmpty(value))
+					{
+						key = string.Concat("Locales[", index.ToString(), "].", name);
+					}
+				}
+
+				if (key != null)
 				{
 					data.OverrideSettingKeys.Add(key);
 				}
-            }
+			}
 
             if (isRootModel)
             {
@@ -139,13 +145,14 @@ namespace SmartStore.Web.Framework.Settings
 				return;
 			}
 
-			var data = Data ?? new StoreDependingSettingData();
-			var setting = string.Empty;
+			var key = formKey;
 
 			if (localized == null)
 			{
-				var key = string.Concat(settings.GetType().Name, ".", settingName);
-				setting = settingService.GetSettingByKey<string>(key, storeId: storeId);
+				if (settingService.GetSettingByKey<string>(string.Concat(settings.GetType().Name, ".", settingName), storeId: storeId) == null)
+				{
+					key = null;
+				}
 			}
 			else
 			{
@@ -153,9 +160,10 @@ namespace SmartStore.Web.Framework.Settings
 				throw new ArgumentException("Localized override key not supported yet.");
 			}
 
-			if (!string.IsNullOrEmpty(setting))
+			if (key != null)
 			{
-				data.OverrideSettingKeys.Add(formKey);
+				var data = Data ?? new StoreDependingSettingData();
+				data.OverrideSettingKeys.Add(key);
 			}
 		}
 

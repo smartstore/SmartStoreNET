@@ -149,7 +149,10 @@ namespace SmartStore.Admin.Controllers
 			get
 			{
 				if (_storeDependingSettings == null)
-					_storeDependingSettings = new StoreDependingSettingHelper(this.ViewData);
+				{
+					_storeDependingSettings = new StoreDependingSettingHelper(ViewData);
+				}
+
 				return _storeDependingSettings;
 			}
 		}
@@ -1429,6 +1432,7 @@ namespace SmartStore.Admin.Controllers
 			model.NewArrivalsFacet.Disabled = settings.NewArrivalsDisabled;
 			model.NewArrivalsFacet.DisplayOrder = settings.NewArrivalsDisplayOrder;
 
+			// Localized facet settings (CommonFacetSettingsLocalizedModel).
 			foreach (var language in _languageService.GetAllLanguages(true))
 			{
 				model.CategoryFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
@@ -1468,6 +1472,7 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
+			// Facet settings (CommonFacetSettingsModel).
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);
 
 			var keyPrefixes = new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" };
@@ -1476,6 +1481,9 @@ namespace SmartStore.Admin.Controllers
 				StoreDependingSettings.GetOverrideKey(prefix + "Facet.Disabled", prefix + "Disabled", settings, storeScope, Services.Settings);
 				StoreDependingSettings.GetOverrideKey(prefix + "Facet.DisplayOrder", prefix + "DisplayOrder", settings, storeScope, Services.Settings);
 			}
+
+			// Facet settings with a non-prefixed name.
+			StoreDependingSettings.GetOverrideKey("AvailabilityFacet.IncludeNotAvailable", "IncludeNotAvailable", settings, storeScope, Services.Settings);
 
 			return View(model);
 		}
@@ -1486,13 +1494,12 @@ namespace SmartStore.Admin.Controllers
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
 				return AccessDeniedView();
 
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
 
 			var validator = new SearchSettingValidator(Services.Localization, x =>
 			{
-				return storeScope == 0 || storeDependingSettingHelper.IsOverrideChecked(settings, x, form);
+				return storeScope == 0 || StoreDependingSettings.IsOverrideChecked(settings, x, form);
 			});
 
 			validator.Validate(model, ModelState);
@@ -1504,7 +1511,7 @@ namespace SmartStore.Admin.Controllers
 
 			MiniMapper.Map(model, settings);
 
-			// Common facets
+			// Common facets.
 			settings.BrandDisabled = model.BrandFacet.Disabled;
 			settings.BrandDisplayOrder = model.BrandFacet.DisplayOrder;
 			settings.PriceDisabled = model.PriceFacet.Disabled;
@@ -1521,16 +1528,23 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
 
+			_services.Settings.SaveSetting(settings, x => x.SearchFields, 0, false);
+
 			var clearCache = false;
 			using (Services.Settings.BeginScope())
 			{
+				// Facet settings (CommonFacetSettingsModel).
 				var keyPrefixes = new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" };
 				foreach (var prefix in keyPrefixes)
 				{
-					storeDependingSettingHelper.UpdateSetting(prefix + "Facet.Disabled", prefix + "Disabled", settings, form, storeScope, Services.Settings);
-					storeDependingSettingHelper.UpdateSetting(prefix + "Facet.DisplayOrder", prefix + "DisplayOrder", settings, form, storeScope, Services.Settings);
+					StoreDependingSettings.UpdateSetting(prefix + "Facet.Disabled", prefix + "Disabled", settings, form, storeScope, Services.Settings);
+					StoreDependingSettings.UpdateSetting(prefix + "Facet.DisplayOrder", prefix + "DisplayOrder", settings, form, storeScope, Services.Settings);
 				}
 
+				// Facet settings with a non-prefixed name.
+				StoreDependingSettings.UpdateSetting("AvailabilityFacet.IncludeNotAvailable", "IncludeNotAvailable", settings, form, storeScope, Services.Settings);
+
+				// Localized facet settings (CommonFacetSettingsLocalizedModel).
 				UpdateLocalizedFacetSetting(model.CategoryFacet, FacetGroupKind.Category, ref clearCache);
 				UpdateLocalizedFacetSetting(model.BrandFacet, FacetGroupKind.Brand, ref clearCache);
 				UpdateLocalizedFacetSetting(model.PriceFacet, FacetGroupKind.Price, ref clearCache);

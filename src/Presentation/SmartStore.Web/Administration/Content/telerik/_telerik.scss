@@ -381,55 +381,9 @@ a.t-button.t-state-disabled:hover,
 .t-grid {
 	box-shadow: 1px 1px 3px rgba(#000, 0.1);
 
-	td, th {
-		vertical-align: middle;
-		padding-left: 0.4rem;
-		padding-right: 0.4rem;
-		border-left-width: 0 !important;
-		border-right-width: 0 !important;
-		border-color: $table-border-color;
-		line-height: $line-height-base;
-
-		&:first-child {
-			padding-left: 0.75rem;
-		}
-
-		&:last-child {
-			padding-left: 0.75rem;
-		}
-	}
-
-	.t-grid-edit-row td {
-		padding-top: 0.5rem;
-		padding-bottom: 0.5rem;
-
-		.form-check-input {
-			position: relative;
-			margin: 0;
-			padding: 0;
-		}
-	}
-
 	.t-status-text {
 		color: $gray-600;
 		font-size: $font-size-sm;
-	}
-
-	.table {
-		margin-bottom: 0;
-
-		td[align=center] {
-			text-align: center;
-		}
-
-		.btn {
-			padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
-			font-size: $font-size-sm;
-
-			.fa {
-				font-size: $font-size-sm;
-			}
-		}
 	}
 
 	.t-button .fa {
@@ -498,6 +452,53 @@ a.t-button.t-state-disabled:hover,
 	}
 }
 
+.t-grid > table,
+.t-grid > form > table {
+	@extend .table;
+	margin-bottom: 0;
+
+	td[align=center] {
+		text-align: center;
+	}
+
+	.btn {
+		padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
+		font-size: $font-size-sm;
+
+		.fa {
+			font-size: $font-size-sm;
+		}
+	}
+
+	td, th {
+		vertical-align: middle;
+		padding-left: 0.4rem;
+		padding-right: 0.4rem;
+		border-left-width: 0 !important;
+		border-right-width: 0 !important;
+		border-color: $table-border-color;
+		line-height: $line-height-base;
+
+		&:first-child {
+			padding-left: 0.75rem;
+		}
+
+		&:last-child {
+			padding-left: 0.75rem;
+		}
+	}
+
+	.t-grid-edit-row td {
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+
+		.form-check-input {
+			position: relative;
+			margin: 0;
+			padding: 0;
+		}
+	}
+}
 
 
 .t-grid-edit-row {

@@ -37,8 +37,8 @@
 				return !$(this).parent().hasClass("t-group-indicator");
 			}));
 
-			// skin telerik grids with bootstrap table
-			ctx.find(".t-grid > table").addClass("table");
+			//// skin telerik grids with bootstrap table (obsolete: styled per Sass @extend now)
+			//ctx.find(".t-grid > table").addClass("table");
 		},
 		// btn-trigger
 		function (ctx) {

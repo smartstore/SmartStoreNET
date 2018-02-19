@@ -706,8 +706,10 @@ legend {
 	}
 }
 
-// Handle action button toggling in tables & grids (INFO: .t-grid is .table)
-.table tbody {
+// Handle action button toggling in tables & grids
+.table tbody,
+.t-grid > table tbody,
+.t-grid > form > table tbody {
 	.t-last {
 		@include text-truncate();
 	}

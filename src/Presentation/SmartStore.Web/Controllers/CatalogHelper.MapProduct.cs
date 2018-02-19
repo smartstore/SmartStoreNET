@@ -719,7 +719,8 @@ namespace SmartStore.Web.Controllers
                             priceModel.HasDiscount = true;
                             oldPrice = _priceCalculationService.GetFinalPrice(product, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
                             oldPrice = _taxService.GetProductPrice(product, oldPrice, out taxRate);
-                        }
+							oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPrice, ctx.Currency);
+						}
                         
                         if (displayFromMessage)
 						{

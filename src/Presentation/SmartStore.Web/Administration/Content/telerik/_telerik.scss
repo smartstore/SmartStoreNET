@@ -528,6 +528,10 @@ a.t-button.t-state-disabled:hover,
 	position: relative;
 	display: flex;
 
+	&:empty {
+		border-width: 0 !important;
+	}
+
 	.btn,
 	.t-button {
 		display: block;

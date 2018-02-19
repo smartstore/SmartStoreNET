@@ -11,10 +11,8 @@
         </ul>
     </div>
 
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ProductModel.AssociatedProductModel>()
+	<div>
+		@(Html.Telerik().Grid<ProductModel.AssociatedProductModel>()
 					.Name("associatedproducts-grid")
 					.DataKeys(keys =>
 					{
@@ -49,9 +47,8 @@
 					})
 					.ToolBar(commands => commands.Template(GridCommands))
 					.EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
+	</div>
+
 }
 else
 {

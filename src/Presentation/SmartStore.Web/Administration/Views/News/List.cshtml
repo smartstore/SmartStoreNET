@@ -47,44 +47,44 @@
 
 <div>
 	@(Html.Telerik().Grid<NewsItemModel>()
-					.Name("newsitem-grid")
-					.Columns(columns =>
-					{
-					columns.Bound(x => x.Id)
-						.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-						.Title("<input id='mastercheckbox' type='checkbox'/>")
-						.HtmlAttributes(new { style = "text-align:center" })
-						.HeaderHtmlAttributes(new { style = "text-align:center" });
-					columns.Bound(x => x.Title)
-						.Width(450)
-						.Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
-						.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
-					columns.Bound(x => x.Published)
-						.Template(item => @Html.SymbolForBool(item.Published))
-						.ClientTemplate(@Html.SymbolForBool("Published"))
-						.Centered();
-					columns.Bound(x => x.LanguageName);
-					columns.Bound(x => x.Comments)
-						.Template(
-						@<div>
-							@Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
-						</div>
-							)
-							.ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
-						columns.Bound(x => x.StartDate);
-						columns.Bound(x => x.EndDate);
-						columns.Bound(x => x.LimitedToStores)
-							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-							.Hidden(Model.AvailableStores.Count <= 1)
-							.Centered();
-						columns.Bound(x => x.CreatedOn);
-					})
-					.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
-					.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
-					.PreserveGridState()
-					.EnableCustomBinding(true))
+			.Name("newsitem-grid")
+			.Columns(columns =>
+			{
+			columns.Bound(x => x.Id)
+				.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+				.Title("<input id='mastercheckbox' type='checkbox'/>")
+				.HtmlAttributes(new { style = "text-align:center" })
+				.HeaderHtmlAttributes(new { style = "text-align:center" });
+			columns.Bound(x => x.Title)
+				.Width(450)
+				.Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
+			columns.Bound(x => x.Published)
+				.Template(item => @Html.SymbolForBool(item.Published))
+				.ClientTemplate(@Html.SymbolForBool("Published"))
+				.Centered();
+			columns.Bound(x => x.LanguageName);
+			columns.Bound(x => x.Comments)
+				.Template(
+				@<div>
+					@Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
+				</div>
+					)
+					.ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
+				columns.Bound(x => x.StartDate);
+				columns.Bound(x => x.EndDate);
+				columns.Bound(x => x.LimitedToStores)
+					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+					.Hidden(Model.AvailableStores.Count <= 1)
+					.Centered();
+				columns.Bound(x => x.CreatedOn);
+			})
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
 </div>
 
 

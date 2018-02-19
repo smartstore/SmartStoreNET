@@ -61,8 +61,9 @@
 			{
 				commands.Edit().Localize(T);
 				commands.Delete().Localize(T);
-			}).Width(180);
-
+			})
+			.HtmlAttributes(new { align = "right", @class = "omega" })
+			.Width(220);
 		})
 		.Pageable(settings => settings.Total(Model.NewsLetterSubscriptions.Total).PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 		.DataBinding(dataBinding => dataBinding.Ajax()

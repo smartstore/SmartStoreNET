@@ -97,6 +97,7 @@
         </tr>
     </table>
 }
+
 @helper TabAnswers()
 {
     if (Model.Id > 0)
@@ -112,17 +113,19 @@
 					.Columns(columns =>
 					{
 						columns.Bound(x => x.Name)
-							.Width(250);
+							.Width("60%");
 						columns.Bound(x => x.NumberOfVotes)
 							.ReadOnly()
-							.Width(100);
-						columns.Bound(x => x.DisplayOrder1).Width(100);
+							.Width("10%");
+						columns.Bound(x => x.DisplayOrder1)
+							.Width("10%");
 						columns.Command(commands =>
 						{
 							commands.Edit().Localize(T);
 							commands.Delete().Localize(T);
-						}).Width(180);
-
+						})
+						.Width("20%")
+						.HtmlAttributes(new { align = "right" }); ;
 					})
 					.ToolBar(x => x.Insert())
 					.Editable(x =>

@@ -36,7 +36,7 @@
 	</div>
 	
 	<div>
-	@(Html.Telerik().Grid<GiftCardModel>()
+		@(Html.Telerik().Grid<GiftCardModel>()
 			.Name("giftcards-grid")
 			.ClientEvents(events => events.OnDataBinding("onDataBinding"))
 			.Columns(columns =>
@@ -53,12 +53,11 @@
 					.Width(100);
 				columns.Bound(x => x.CreatedOn);
 				columns.Bound(x => x.Id)
-					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-					.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
 					.Width(50)
-					.Centered()
-					.HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.Edit").Text))
-					.Filterable(false);
+					.Title(String.Empty)
+					.HtmlAttributes(new { align = "right", @class = "omega" });
 			})
 			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("GiftCardList", "GiftCard", Model))

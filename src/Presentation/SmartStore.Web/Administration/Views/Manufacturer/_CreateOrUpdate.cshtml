@@ -279,25 +279,30 @@
 				{
 					columns.Bound(x => x.ProductName)
 						.ReadOnly()
-						.Width(520)
+						.Width("40%")
 						.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 					columns.Bound(x => x.Sku)
-						.ReadOnly();
+						.ReadOnly()
+						.Width("15%");
 					columns.Bound(x => x.Published)
 						.ReadOnly()
+						.Width("10%")
 						.ClientTemplate(@Html.SymbolForBool("Published"))
 						.Centered();
 					columns.Bound(x => x.IsFeaturedProduct)
+						.Width("10%")
 						.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
 						.Centered();
 					columns.Bound(x => x.DisplayOrder1)
+						.Width("10%")
 						.Centered();
 					columns.Command(commands =>
 					{
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
 					})
-					.Width(220);
+					.HtmlAttributes(new { align = "right" })
+					.Width("15%");
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 				.PreserveGridState()

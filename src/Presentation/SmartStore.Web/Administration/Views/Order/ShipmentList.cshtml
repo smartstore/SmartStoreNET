@@ -76,11 +76,11 @@
 			columns.Bound(x => x.ShippedDate);
 			columns.Bound(x => x.DeliveryDate);
 			columns.Bound(x => x.Id)
-				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "ShipmentDetails", "Order", new { id = x.Id }, new { }))
-				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
+				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "ShipmentDetails", "Order", new { id = x.Id }, new { @class = "t-button" }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\" class=\"t-button\">" + T("Admin.Common.View").Text + "</a>")
 				.Width(50)
 				.Centered()
-				.HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.View").Text));
+				.Title(String.Empty);
 		})
 		.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
 		.DataBinding(dataBinding => dataBinding.Ajax().Select("ShipmentListSelect", "Order"))

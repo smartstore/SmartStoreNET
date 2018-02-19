@@ -637,8 +637,6 @@ namespace SmartStore.Web.Controllers
             var disallowPaths = new List<string>()
             {
                 "/bin/",
-                "/Content/files/",
-                "/Content/files/ExportImport/",
 				"/Exchange/",
                 "/Country/GetStatesByCountryId",
                 "/Install",

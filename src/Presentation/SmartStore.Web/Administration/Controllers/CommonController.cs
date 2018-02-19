@@ -831,7 +831,6 @@ namespace SmartStore.Admin.Controllers
 
 			string[] paths = new string[]
 			{
-				appPath + @"Content\files\exportimport\",
 				appPath + @"Exchange\",
 				appPath + @"App_Data\Tenants\{0}\ExportProfiles\".FormatInvariant(DataSettings.Current.TenantName)
 			};

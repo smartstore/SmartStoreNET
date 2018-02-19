@@ -54,7 +54,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public partial class SettingController : AdminControllerBase
 	{
 		#region Fields
@@ -357,7 +357,7 @@ namespace SmartStore.Admin.Controllers
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
 				model.ShippingOriginAddress.AvailableCountries.Add(
-					new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (originAddress != null && c.Id == originAddress.CountryId) }
+					new SelectListItem { Text = c.Name, Value = c.Id.ToString(), Selected = (originAddress != null && c.Id == originAddress.CountryId) }
 				);
 			}
 
@@ -386,32 +386,39 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, SaveSetting]
-		public ActionResult Shipping(ShippingSettings shippingSettings, ShippingSettingsModel model, FormCollection form, int storeScope)
+        [HttpPost]
+		public ActionResult Shipping(ShippingSettingsModel model, FormCollection form)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
+			// Note, model state invalid here due to ShippingOriginAddress validation.
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var shippingSettings = _services.Settings.LoadSetting<ShippingSettings>(storeScope);
 			shippingSettings = model.ToEntity(shippingSettings);
 
-			bool shippingOriginAddressOverride = StoreDependingSettings.IsOverrideChecked(shippingSettings, "ShippingOriginAddress", form);
+			StoreDependingSettings.UpdateSettings(shippingSettings, form, storeScope, _services.Settings);
 
+			var shippingOriginAddressOverride = StoreDependingSettings.IsOverrideChecked(shippingSettings, "ShippingOriginAddress", form);
 			if (shippingOriginAddressOverride || storeScope == 0)
 			{
 				var addressId = _services.Settings.SettingExists(shippingSettings, x => x.ShippingOriginAddressId, storeScope) ? shippingSettings.ShippingOriginAddressId : 0;
-				var originAddress = _addressService.GetAddressById(addressId) ?? new Core.Domain.Common.Address() { CreatedOnUtc = DateTime.UtcNow };
+				var originAddress = _addressService.GetAddressById(addressId) ?? new Address { CreatedOnUtc = DateTime.UtcNow };
 
-				// update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one)
+				// Update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one).
 				model.ShippingOriginAddress.Id = addressId;
 				originAddress = model.ShippingOriginAddress.ToEntity(originAddress);
 
 				if (originAddress.Id > 0)
+				{
 					_addressService.UpdateAddress(originAddress);
+				}
 				else
+				{
 					_addressService.InsertAddress(originAddress);
+				}
 
 				shippingSettings.ShippingOriginAddressId = originAddress.Id;
-
 				_services.Settings.SaveSetting(shippingSettings, x => x.ShippingOriginAddressId, storeScope, false);
 			}
 			else
@@ -420,9 +427,9 @@ namespace SmartStore.Admin.Controllers
 				_services.Settings.DeleteSetting(shippingSettings, x => x.ShippingOriginAddressId, storeScope);
 			}
 
-            _customerActivityService.InsertActivity("EditSettings",T("ActivityLog.EditSettings"));
-
+            _customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
             NotifySuccess(T("Admin.Configuration.Updated"));
+
             return RedirectToAction("Shipping");
         }
 
@@ -493,37 +500,44 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, SaveSetting]
-        public ActionResult Tax(TaxSettings taxSettings, TaxSettingsModel model, FormCollection form, int storeScope)
+        [HttpPost]
+        public ActionResult Tax(TaxSettingsModel model, FormCollection form)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
+			// Note, model state invalid here due to DefaultTaxAddress validation.
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var taxSettings = _services.Settings.LoadSetting<TaxSettings>(storeScope);
 			taxSettings = model.ToEntity(taxSettings);
 
-			bool defaultTaxAddressOverride = StoreDependingSettings.IsOverrideChecked(taxSettings, "DefaultTaxAddress", form);
+			StoreDependingSettings.UpdateSettings(taxSettings, form, storeScope, _services.Settings);
+
+			var defaultTaxAddressOverride = StoreDependingSettings.IsOverrideChecked(taxSettings, "DefaultTaxAddress", form);
 
 			taxSettings.AllowCustomersToSelectTaxDisplayType = false;
 			_services.Settings.UpdateSetting(taxSettings, x => x.AllowCustomersToSelectTaxDisplayType, false, storeScope);
 
 			if (defaultTaxAddressOverride || storeScope == 0)
 			{
-				//update address
+				// Update address.
 				var addressId = _services.Settings.SettingExists(taxSettings, x => x.DefaultTaxAddressId, storeScope) ? taxSettings.DefaultTaxAddressId : 0;
+				var originAddress = _addressService.GetAddressById(addressId) ?? new Address { CreatedOnUtc = DateTime.UtcNow };
 
-				var originAddress = _addressService.GetAddressById(addressId) ?? new Core.Domain.Common.Address() { CreatedOnUtc = DateTime.UtcNow };
-
-				//update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one)
+				// Update ID manually (in case we're in multi-store configuration mode it'll be set to the shared one).
 				model.DefaultTaxAddress.Id = addressId;
 				originAddress = model.DefaultTaxAddress.ToEntity(originAddress);
 
 				if (originAddress.Id > 0)
+				{
 					_addressService.UpdateAddress(originAddress);
+				}
 				else
+				{
 					_addressService.InsertAddress(originAddress);
+				}
 
 				taxSettings.DefaultTaxAddressId = originAddress.Id;
-
 				_services.Settings.SaveSetting(taxSettings, x => x.DefaultTaxAddressId, storeScope, false);
 			}
 			else if (storeScope > 0)
@@ -533,8 +547,8 @@ namespace SmartStore.Admin.Controllers
 			}
 
             _customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
-
             NotifySuccess(T("Admin.Configuration.Updated"));
+
             return RedirectToAction("Tax");
         }
 
@@ -626,28 +640,31 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
         }
 
-        [HttpPost, SaveSetting]
-        public ActionResult RewardPoints(RewardPointsSettings rewardPointsSettings, RewardPointsSettingsModel model, FormCollection form, int storeScope)
+        [HttpPost]
+        public ActionResult RewardPoints(RewardPointsSettingsModel model, FormCollection form)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
+
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var rewardPointsSettings = _services.Settings.LoadSetting<RewardPointsSettings>(storeScope);
 
 			if (!ModelState.IsValid)
 				return RewardPoints(rewardPointsSettings, storeScope);
 
 			ModelState.Clear();
 
-			//load settings for a chosen store scope
 			rewardPointsSettings = model.ToEntity(rewardPointsSettings);
 
-			bool pointsForPurchases = StoreDependingSettings.IsOverrideChecked(rewardPointsSettings, "PointsForPurchases", form);
+			StoreDependingSettings.UpdateSettings(rewardPointsSettings, form, storeScope, _services.Settings);
+
+			var pointsForPurchases = StoreDependingSettings.IsOverrideChecked(rewardPointsSettings, "PointsForPurchases", form);
 
 			_services.Settings.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Amount, pointsForPurchases, storeScope);
 			_services.Settings.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Points, pointsForPurchases, storeScope);
 
 			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
-
-			NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
+			NotifySuccess(T("Admin.Configuration.Updated"));
 
 			return RedirectToAction("RewardPoints");
         }
@@ -810,13 +827,11 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[SaveSetting, HttpPost]
+		[HttpPost, SaveSetting]
 		public ActionResult Payment(PaymentSettings settings, PaymentSettingsModel model)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
-			{
 				return AccessDeniedView();
-			}
 
 			settings = model.ToEntity(settings);
 
@@ -868,7 +883,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
         }
 
-        [SaveSetting, HttpPost]
+        [HttpPost, SaveSetting]
         [FormValueRequired("save")]
         public ActionResult Media(MediaSettings mediaSettings, MediaSettingsModel model)
         {
@@ -969,7 +984,6 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-
 			var customerSettings = _services.Settings.LoadSetting<CustomerSettings>(storeScope);
             customerSettings = model.CustomerSettings.ToEntity(customerSettings);
 
@@ -1341,6 +1355,7 @@ namespace SmartStore.Admin.Controllers
 
 			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 			NotifySuccess(T("Admin.Configuration.Updated"));
+
 			return RedirectToAction("DataExchange");
 		}
 

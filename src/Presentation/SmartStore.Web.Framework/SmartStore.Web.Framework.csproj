@@ -92,10 +92,6 @@
       <HintPath>..\..\packages\BundleTransformer.Core.1.9.152\lib\net40\BundleTransformer.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="BundleTransformer.Less, Version=1.9.143.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\BundleTransformer.Less.1.9.143\lib\net40\BundleTransformer.Less.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="BundleTransformer.SassAndScss, Version=1.9.154.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\BundleTransformer.SassAndScss.1.9.154\lib\net40\BundleTransformer.SassAndScss.dll</HintPath>
       <Private>True</Private>

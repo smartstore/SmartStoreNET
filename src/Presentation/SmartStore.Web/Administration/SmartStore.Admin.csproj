@@ -799,7 +799,7 @@
     <Content Include="Content\filemanager\lang\sk.json" />
     <Content Include="Content\filemanager\lang\tr.json" />
     <Content Include="Content\theme.scss" />
-    <None Include="Content\_telerik.scss" />
+    <Content Include="Content\_telerik.scss" />
     <Content Include="Content\_variables.scss" />
     <Content Include="Content\_admin.scss" />
     <Content Include="Scripts\jquery-shims.js" />

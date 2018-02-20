@@ -188,4 +188,14 @@
     <Value>Options</Value>
   </LocaleResource>
 
+  <LocaleResource Name="Database">
+	<Value>Database</Value>
+  </LocaleResource>
+  <LocaleResource Name="Connection">
+	<Value>Connection</Value>
+  </LocaleResource>
+  <LocaleResource Name="Authentication">
+	<Value>Authentication</Value>
+  </LocaleResource>
+
 </Language>

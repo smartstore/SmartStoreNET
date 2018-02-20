@@ -187,5 +187,15 @@
   <LocaleResource Name="InstallOptions">
     <Value>Optionen</Value>
   </LocaleResource>
+
+  <LocaleResource Name="Database">
+	<Value>Datenbank</Value>
+  </LocaleResource>
+  <LocaleResource Name="Connection">
+	<Value>Verbindung</Value>
+  </LocaleResource>
+  <LocaleResource Name="Authentication">
+	<Value>Authentifizierung</Value>
+  </LocaleResource>
   
 </Language>

@@ -15,6 +15,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Packaging;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
+using SmartStore.Core.Data;
 
 // Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
 // SEE THIS POST for full details of what this does
@@ -185,7 +186,7 @@ namespace SmartStore.Core.Plugins
 					}
 				}
 
-				if (dirty)
+				if (dirty && DataSettings.DatabaseIsInstalled())
 				{
 					// Save current hash of all deployed plugins to disk
 					var hash = ComputePluginsHash(_referencedPlugins.Values.OrderBy(x => x.FolderName).ToArray());

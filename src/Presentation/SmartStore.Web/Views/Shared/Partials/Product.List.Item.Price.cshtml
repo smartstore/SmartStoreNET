@@ -35,10 +35,13 @@
 						<span>@T("Products.Price.OldPrice"):</span>
 						<span class="art-oldprice">@Model.Price.RegularPrice</span>
 					</div>
-					<div>
-						<span>@T("ShoppingCart.ItemYouSave"):</span>
-						<span>@Model.Price.SavingAmount (@Model.Price.SavingPercent.ToString("N0") %)</span>
-					</div>
+					@if (Model.Price.SavingAmount.HasValue())
+					{
+						<div>
+							<span>@T("ShoppingCart.ItemYouSave"):</span>
+							<span>@Model.Price.SavingAmount (@Model.Price.SavingPercent.ToString("N0") %)</span>
+						</div>
+					}
 				</div>
 			}
 			else

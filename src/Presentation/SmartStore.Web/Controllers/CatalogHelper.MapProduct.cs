@@ -543,10 +543,15 @@ namespace SmartStore.Web.Controllers
 			model.Items.Add(item);
 		}
 
+		/// <param name="contextProduct">The product or the first associated product of a group.</param>
 		private decimal MapSummaryItemPrice(Product product, ref Product contextProduct, ProductSummaryModel.SummaryItem item, MapProductSummaryItemContext ctx)
 		{
 			// Returns the final price
+			var displayFromMessage = false;
+			var taxRate = decimal.Zero;
+			var oldPrice = decimal.Zero;
 			var finalPrice = decimal.Zero;
+			var displayPrice = decimal.Zero;
 			var model = ctx.Model;
 
 			var priceModel = new ProductSummaryModel.PriceModel();
@@ -587,73 +592,58 @@ namespace SmartStore.Web.Controllers
 				priceModel.DisableWishlistButton = true;
 				priceModel.AvailableForPreOrder = false;
 
-				if (associatedProducts.Count > 0)
+				if (associatedProducts.Any())
 				{
 					contextProduct = associatedProducts.OrderBy(x => x.DisplayOrder).First();
 
 					_services.DisplayControl.Announce(contextProduct);
 
-					if (ctx.AllowPrices && _catalogSettings.PriceDisplayType != PriceDisplayType.Hide)
+					if (ctx.AllowPrices && _catalogSettings.PriceDisplayType != PriceDisplayType.Hide && contextProduct != null && !contextProduct.CustomerEntersPrice)
 					{
-						decimal? displayPrice = null;
-						bool displayFromMessage = false;
-
-						if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
+						if (contextProduct.CallForPrice)
 						{
-							displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, ctx.Customer, ctx.Currency, ctx.BatchContext);
-						}
-						else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
-						{
-							displayPrice = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
+							priceModel.RegularPriceValue = null;
+							priceModel.PriceValue = 0;
+							priceModel.RegularPrice = null;
+							priceModel.Price = ctx.Resources["Products.CallForPrice"];
 						}
 						else
 						{
-							displayFromMessage = true;
-							displayPrice = _priceCalculationService.GetLowestPrice(product, ctx.Customer, ctx.BatchContext, associatedProducts, out contextProduct);
-						}
-
-						if (contextProduct != null && !contextProduct.CustomerEntersPrice)
-						{
-							if (contextProduct.CallForPrice)
+							if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 							{
-								priceModel.RegularPriceValue = null;
-								priceModel.PriceValue = 0;
-								priceModel.RegularPrice = null;
-								priceModel.Price = ctx.Resources["Products.CallForPrice"];
+								displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, ctx.Customer, ctx.Currency, ctx.BatchContext);
 							}
-							else if (displayPrice.HasValue)
+							else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 							{
-								// Calculate prices
-								decimal taxRate = decimal.Zero;
-								decimal oldPriceBase = _taxService.GetProductPrice(contextProduct, contextProduct.OldPrice, out taxRate);
-								decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice.Value, out taxRate);
-								finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, ctx.Currency);
-
-								priceModel.RegularPriceValue = null;
-								priceModel.PriceValue = finalPrice;
-								priceModel.RegularPrice = null;
-
-								if (displayFromMessage)
-								{
-									priceModel.Price = String.Format(ctx.Resources["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
-								}
-								else
-								{
-									priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
-								}
-
-								if (oldPriceBase > 0)
-								{
-									priceModel.RegularPriceValue = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, ctx.Currency);
-								}
-
-								priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
+								displayPrice = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
 							}
 							else
 							{
-								// Actually it's not possible (we presume that displayPrice always has a value). We never should get here
-								Debug.WriteLine(string.Format("Cannot calculate displayPrice for product #{0}", product.Id));
+								displayFromMessage = true;
+								displayPrice = _priceCalculationService.GetLowestPrice(product, ctx.Customer, ctx.BatchContext, associatedProducts, out contextProduct) ?? decimal.Zero;
 							}
+
+							// Calculate prices.
+							decimal oldPriceBase = _taxService.GetProductPrice(contextProduct, contextProduct.OldPrice, out taxRate);
+							decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice, out taxRate);
+
+							oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, ctx.Currency);
+							finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, ctx.Currency);
+
+							priceModel.RegularPriceValue = oldPrice > 0 ? oldPrice : (decimal?)null;
+							priceModel.PriceValue = finalPrice;
+							priceModel.RegularPrice = null;
+
+							if (displayFromMessage)
+							{
+								priceModel.Price = String.Format(ctx.Resources["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
+							}
+							else
+							{
+								priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
+							}
+
+							priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 						}
 					}
 				}
@@ -678,7 +668,6 @@ namespace SmartStore.Web.Controllers
 				{
 					if (product.CallForPrice)
 					{
-						// call for price
 						priceModel.RegularPriceValue = null;
 						priceModel.PriceValue = 0;
 						priceModel.RegularPrice = null;
@@ -686,10 +675,7 @@ namespace SmartStore.Web.Controllers
 					}
 					else
 					{
-						//calculate prices
-						bool displayFromMessage = false;
-						decimal displayPrice = decimal.Zero;
-
+						// Calculate prices.
 						if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 						{
 							displayPrice = _priceCalculationService.GetPreselectedPrice(product, ctx.Customer, ctx.Currency, ctx.BatchContext);
@@ -703,26 +689,15 @@ namespace SmartStore.Web.Controllers
 							displayPrice = _priceCalculationService.GetLowestPrice(product, ctx.Customer, ctx.BatchContext, out displayFromMessage);
 						}
 
-						decimal taxRate = decimal.Zero;
 						decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
 						decimal finalPriceBase = _taxService.GetProductPrice(product, displayPrice, out taxRate);
 
-						decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, ctx.Currency);
+						oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, ctx.Currency);
 						finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, ctx.Currency);
 
 						priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 
-                        // product was discounted by a discount plugin
-                        var hasDiscount = _priceCalculationService.GetDiscountAmount(product, _services.WorkContext.CurrentCustomer) > 0;
-                        if (hasDiscount)
-                        {
-                            priceModel.HasDiscount = true;
-                            oldPrice = _priceCalculationService.GetFinalPrice(product, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
-                            oldPrice = _taxService.GetProductPrice(product, oldPrice, out taxRate);
-							oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPrice, ctx.Currency);
-						}
-                        
-                        if (displayFromMessage)
+						if (displayFromMessage)
 						{
 							priceModel.RegularPriceValue = null;
 							priceModel.RegularPrice = null;
@@ -750,19 +725,37 @@ namespace SmartStore.Web.Controllers
 				#endregion
 			}
 
-			var regularPriceValue = priceModel.RegularPriceValue.GetValueOrDefault();
-			if (priceModel.HasDiscount && regularPriceValue > 0 && regularPriceValue > priceModel.PriceValue)
+			// Calculate saving.
+			if (finalPrice > 0 && !displayFromMessage)
 			{
-				priceModel.SavingPercent = (float)((priceModel.RegularPriceValue - priceModel.PriceValue) / priceModel.RegularPriceValue) * 100;
-				priceModel.SavingAmount = _priceFormatter.FormatPrice(regularPriceValue - priceModel.PriceValue, true, false);
+				var finalPriceWithDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, true, 1, null, ctx.BatchContext);
+				finalPriceWithDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithDiscount, out taxRate);
+				finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscount, ctx.Currency);
 
-				if (model.ShowDiscountBadge)
+				var finalPriceWithoutDiscount = finalPrice;
+				if (_catalogSettings.PriceDisplayType != PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 				{
-					item.Badges.Add(new ProductSummaryModel.Badge
+					finalPriceWithoutDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
+					finalPriceWithoutDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithoutDiscount, out taxRate);
+					finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscount, ctx.Currency);
+				}
+
+				finalPriceWithoutDiscount = Math.Max(finalPriceWithoutDiscount, oldPrice);
+
+				if (finalPriceWithoutDiscount > 0 && finalPriceWithoutDiscount > finalPriceWithDiscount)
+				{
+					priceModel.HasDiscount = true;
+					priceModel.SavingPercent = (float)((finalPriceWithoutDiscount - finalPriceWithDiscount) / finalPriceWithoutDiscount) * 100;
+					priceModel.SavingAmount = _priceFormatter.FormatPrice(finalPriceWithoutDiscount - finalPriceWithDiscount, true, false);
+
+					if (model.ShowDiscountBadge)
 					{
-						Label = T("Products.SavingBadgeLabel", priceModel.SavingPercent.ToString("N0")),
-						Style = BadgeStyle.Danger
-					});
+						item.Badges.Add(new ProductSummaryModel.Badge
+						{
+							Label = T("Products.SavingBadgeLabel", priceModel.SavingPercent.ToString("N0")),
+							Style = BadgeStyle.Danger
+						});
+					}
 				}
 			}
 

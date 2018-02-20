@@ -1904,6 +1904,9 @@
     <Content Include="Views\Shared\Components\EntityPicker.cshtml" />
     <Content Include="Views\Shared\Components\FileUploader.cshtml" />
     <Content Include="Themes\Flex\Content\_buttons.scss" />
+    <Content Include="Themes\Flex\Views\Shared\EmailTemplates\address.liquid" />
+    <Content Include="Themes\Flex\Views\Shared\EmailTemplates\order.liquid" />
+    <Content Include="Themes\Flex\Views\Shared\EmailTemplates\shipment.liquid" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

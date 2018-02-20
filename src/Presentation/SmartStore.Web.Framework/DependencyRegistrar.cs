@@ -407,7 +407,19 @@ namespace SmartStore.Web.Framework
 			}
 			else
 			{
-				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
+				builder.Register<IDbContext>(c =>
+					{
+						try
+						{
+							return new SmartObjectContext(DataSettings.Current.DataConnectionString);
+						}
+						catch (Exception ex)
+						{
+							//return new SmartObjectContext();
+							return null;
+						}
+
+					})
 					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
 					.InstancePerRequest();
 			}

@@ -4,14 +4,6 @@
 
 @if (Model.Id > 0)
 {
-    <script>
-		function onRowDataBound_bundleItems(e) {
-			if (!e.dataItem.Published) {
-				$(e.row).find('td').wrapInner('<span class="text-muted" />');
-			}
-		}
-	</script>
-
 	<div class="alert alert-info alert-dismissible">
 		<div>
 			@T("Admin.Catalog.Products.BundleItems.NotesOnProductBundles"):
@@ -91,56 +83,48 @@
         </table>
     </div>    
     
-	<p></p>
 
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ProductModel.BundleItemModel>()
-					.Name("bundleitems-grid")
-					.DataKeys(keys =>
-					{
-						keys.Add(x => x.Id);
-					})
-					.DataBinding(dataBinding =>
-					{
-						dataBinding.Ajax()
-							.Select("BundleItemList", "Product", new { productId = Model.Id })
-							.Delete("BundleItemDelete", "Product");
-					})
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.ProductName)
-							.ReadOnly()
-							.Width(520)
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-						columns.Bound(x => x.Sku)
-							.ReadOnly();
-						columns.Bound(x => x.Quantity)
-							.Centered();
-						columns.Bound(x => x.Discount)
-							.Centered();
-						columns.Bound(x => x.Visible)
-							.ClientTemplate(@Html.SymbolForBool("Visible"))
-							.Centered();
-						columns.Bound(x => x.Published)
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-						columns.Bound(x => x.DisplayOrder)
-							.Centered();
-						columns.Command(commands =>
-						{
-							commands.Custom("edit-bundle-part").Text(T("Common.Edit"));
-							commands.Delete().Localize(T);
-						}).HtmlAttributes(new { align = "right" });
-					})
-					.ClientEvents(events => events.OnRowDataBound("onRowDataBound_bundleItems"))
-					.ToolBar(commands => commands.Template(GridCommands))
-					.EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
-    
+	<div>
+		@(Html.Telerik().Grid<ProductModel.BundleItemModel>()
+			.Name("bundleitems-grid")
+			.DataKeys(keys => { keys.Add(x => x.Id); })
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax()
+					.Select("BundleItemList", "Product", new { productId = Model.Id })
+					.Delete("BundleItemDelete", "Product");
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.ProductName)
+					.ReadOnly()
+					.Width(520)
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				columns.Bound(x => x.Sku)
+					.ReadOnly();
+				columns.Bound(x => x.Quantity)
+					.Centered();
+				columns.Bound(x => x.Discount)
+					.Centered();
+				columns.Bound(x => x.Visible)
+					.ClientTemplate(@Html.SymbolForBool("Visible"))
+					.Centered();
+				columns.Bound(x => x.Published)
+					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.Centered();
+				columns.Bound(x => x.DisplayOrder)
+					.Centered();
+				columns.Command(commands =>
+				{
+					commands.Custom("edit-bundle-part").Text(T("Common.Edit"));
+					commands.Delete().Localize(T);
+				}).HtmlAttributes(new { align = "right" });
+			})
+			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_bundleItems"))
+			.ToolBar(commands => commands.Template(GridCommands))
+			.EnableCustomBinding(true))
+	</div>
+
     <script>
 		function EntPicker_Completed(ids) {
 			$({}).doAjax({
@@ -153,6 +137,12 @@
 			});
 			return true;
 		};
+
+		function onRowDataBound_bundleItems(e) {
+			if (!e.dataItem.Published) {
+				$(e.row).find('td').wrapInner('<span class="text-muted" />');
+			}
+		}
 
 		$(function () {
 			$('#btnRefreshBundleItems').on('click', function () {

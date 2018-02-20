@@ -62,7 +62,7 @@
 				</td>
 			</tr>
 		</table>
-			,
+		,
 		@<table class="adminContent">
 			<tr>
 				<td class="adminTitle">
@@ -156,6 +156,7 @@
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
 					})
+					.HtmlAttributes(new { align = "right" })
 					.Width(120);
 				})
 				.DataBinding(dataBinding => dataBinding.Ajax()
@@ -173,11 +174,7 @@
 							keys.Add(x => x.Id);
 							keys.Add(x => x.ProductAttributeOptionsSetId).RouteKey("optionsSetId");
 						})
-						.ToolBar(commands => commands.Custom()
-							.Name("insert-option")
-							.HtmlAttributes(new { href = "#", @class = "btn btn-link insert-option" })
-							.Text("<i class='fa fa-plus'></i><span>" + @T("Common.Options.Add") + "</span>")
-						)
+						.ToolBar(commands => commands.Template(OptionGridCommands))
 						.Columns(columns =>
 						{
 							columns.Bound(x => x.Name)
@@ -199,8 +196,9 @@
 								.Centered()
 								.Title("")
 								.ClientTemplate(
-									"<a href='" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='t-button edit-option'>" + @T("Admin.Common.Edit") + "</a>" +
-									"<a href='" + @Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='t-button delete-option'>" + @T("Admin.Common.Delete") + "</a>");
+									"<a href='" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='t-button t-grid-edit'>" + @T("Admin.Common.Edit") + "</a>" +
+									"<a href='" + @Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='t-button t-grid-delete'>" + @T("Admin.Common.Delete") + "</a>")
+								.HtmlAttributes(new { align = "right" });
 						})
 						.DataBinding(dataBinding => dataBinding.Ajax()
 							.Select("OptionsSetListDetails", "ProductAttribute", new { id = "<#= Id #>" })
@@ -215,20 +213,23 @@
 
 		<script type="text/javascript">
 			$(document).ready(function () {
+
+				var mainGrid = $('#productattributeoptionsset-grid');
+
 				// refresh options set grid
                 $('#btnRefresh').click(function () {
-                	$('#productattributeoptionsset-grid').data('tGrid').ajaxRequest();
+					mainGrid.data('tGrid').ajaxRequest();
                     return false;
                 });
-
+				
 				// refresh options set child grid
-                $(document).on('click', 'input[id=btnOptionRefresh]', function () {
+				$(mainGrid).on('click', 'input[id=btnOptionRefresh]', function () {
                 	$('#productattributeoptions-grid' + $(this).val()).data('tGrid').ajaxRequest();
                 	return false;
                 });
 
 				// add option
-                $(document).on('click', 'a.insert-option', function (e) {
+				$(mainGrid).on('click', '.t-grid-insert-option', function (e) {
                 	e.preventDefault();
                 	var id = $(this).closest('.t-grid').attr('id').replace('productattributeoptions-grid', '');
 					$('#btnOptionRefresh').val(id);
@@ -237,7 +238,7 @@
                 });
 
 				// edit option
-				$(document).on('click', 'a.edit-option', function (e) {
+				$(mainGrid).on('click', 'a.edit-option', function (e) {
 					e.preventDefault();
 					var id = $(this).closest('.t-grid').attr('id').replace('productattributeoptions-grid', '');
 					$('#btnOptionRefresh').val(id);
@@ -246,7 +247,7 @@
 				});
 
 				// delete option
-				$(document).on('click', 'a.delete-option', function (e) {
+				$(mainGrid).on('click', 'a.delete-option', function (e) {
 					e.preventDefault();
 					var grid = $(this).closest('.t-grid').data('tGrid');
 					$(this).doAjax({
@@ -262,6 +263,7 @@
 
 			function onDataBoundOptionsGrid() {
 				$('div[id^=productattributeoptions-grid]').find('.btn-link').removeClass('t-button');
+				$(this).data('tGrid').ajaxRequest();
 			}
 		</script>
 	}
@@ -271,4 +273,12 @@
 			@T("Admin.SaveBeforeEdit")
 		</div>
 	}
+}
+
+@helper OptionGridCommands(Grid<ProductAttributeOptionModel> grid)
+{
+	<button type="button" class="btn btn-below btn-warning t-grid-insert-option">
+		<i class="fa fa-plus"></i>
+		<span>@T("Common.Options.Add")</span>
+	</button>
 }

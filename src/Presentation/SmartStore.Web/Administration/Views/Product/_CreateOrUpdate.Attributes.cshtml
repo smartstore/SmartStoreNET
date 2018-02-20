@@ -59,20 +59,20 @@
 				.Columns(columns =>
 				{
 					columns.Bound(x => x.ProductAttribute)
-						.Width("20%");
+						.Width("16%");
 					columns.Bound(x => x.AttributeControlType)
-						.Width(300);
+						.Width("16%");
 					columns.Bound(x => x.TextPrompt)
-						.Width("20%");
+						.Width("16%");
 					columns.Bound(x => x.IsRequired)
-						.Width(100)
+						.Width("10%")
 						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
 						.Centered();
 					columns.Bound(x => x.DisplayOrder1)
-						.Width(100)
+						.Width("10%")
 						.Centered();
 					columns.Bound(x => x.ViewEditUrl)
-						.Width(200)
+						.Width("16%")
 						.ClientTemplate(
 							"<a id='EditOptionsLink<#= Id #>' href='<#= ViewEditUrl #>' class='text-truncate'><#= ViewEditText #></a>" +
 							"<div id='OptionsSetsContainer<#= Id #>' style='display:none'><select class='form-control' id='OptionsSetsChoice<#= Id #>' data-valcount='<#= ValueCount #>'><#= OptionsSets #></select></div>"
@@ -83,7 +83,9 @@
 					{
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
-					}).HtmlAttributes(new { align = "right" });
+					})
+					.Width("20%")
+					.HtmlAttributes(new { align = "right" });
 				})
 				.ToolBar(commands => commands.Insert() )
 				.ClientEvents(events =>
@@ -204,6 +206,7 @@
 						{
 							commands.Delete().Localize(T);
 						})
+						.HtmlAttributes(new { align = "right" })
 						.Width(90);
 					})
 					.Pageable(settings => settings.PageSize(100).Position(GridPagerPosition.Both))

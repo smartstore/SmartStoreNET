@@ -91,69 +91,65 @@
 		</div>
 	</div>
 	
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ProductModel>()
-					.Name("products-grid")
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Id)
-							.Filterable(false)
-							.Sortable(false)
-							.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
-							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-							.Title("<input id='mastercheckbox' type='checkbox'/>")
-							.Width(50)
-							.HtmlAttributes(new { style = "text-align:center" })
-							.HeaderHtmlAttributes(new { style = "text-align:center" });
+	<div>
+		@(Html.Telerik().Grid<ProductModel>()
+			.Name("products-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.Filterable(false)
+					.Sortable(false)
+					.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
+					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+					.Title("<input id='mastercheckbox' type='checkbox'/>")
+					.Width(50)
+					.HtmlAttributes(new { style = "text-align:center" })
+					.HeaderHtmlAttributes(new { style = "text-align:center" });
 
-						if (Model.DisplayProductPictures)
-						{
-							columns.Bound(x => x.PictureThumbnailUrl)
-								.Sortable(false)
-								.Width(50)
-								.Template(
-                                    @<text>
-                                        <img alt="@item.Id" src="@item.PictureThumbnailUrl" @Html.Attr("class", "zoomable-thumb", !item.NoThumb) />
-                                    </text>
-								)
-								.ClientTemplate("<div class='zoomable-thumb-container'><img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> /></div>");
-						}
-						columns.Bound(x => x.Name)
-							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
-						columns.Bound(x => x.Sku);
-						columns.Bound(x => x.Price)
-							.Format("{0:0.00}")
-							.RightAlign();
-						columns.Bound(x => x.StockQuantity)
-							.Centered();
-						columns.Bound(x => x.LimitedToStores)
-							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-							.Hidden(Model.AvailableStores.Count <= 1)
-							.Centered();
-						columns.Bound(x => x.CreatedOn);
-						columns.Bound(x => x.UpdatedOn);
-						columns.Bound(x => x.Published)
-							.Template(item => @Html.SymbolForBool(item.Published))
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-					})
-					.Sortable(x =>
-					{
-						x.AllowUnsort(true);
-						x.SortMode(GridSortMode.SingleColumn);
-					})
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
-					.ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
-					.EnableCustomBinding(true)
-					.PreserveGridState())
-            </td>
-        </tr>
-    </table>
+				if (Model.DisplayProductPictures)
+				{
+					columns.Bound(x => x.PictureThumbnailUrl)
+						.Sortable(false)
+						.Width(50)
+						.Template(
+						@<text>
+							<img alt="@item.Id" src="@item.PictureThumbnailUrl" @Html.Attr("class", "zoomable-thumb", !item.NoThumb) />
+						</text>
+						)
+						.ClientTemplate("<div class='zoomable-thumb-container'><img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> /></div>");
+				}
+				columns.Bound(x => x.Name)
+					.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
+				columns.Bound(x => x.Sku);
+				columns.Bound(x => x.Price)
+					.Format("{0:0.00}")
+					.RightAlign();
+				columns.Bound(x => x.StockQuantity)
+					.Centered();
+				columns.Bound(x => x.LimitedToStores)
+					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+					.Hidden(Model.AvailableStores.Count <= 1)
+					.Centered();
+				columns.Bound(x => x.CreatedOn);
+				columns.Bound(x => x.UpdatedOn);
+				columns.Bound(x => x.Published)
+					.Template(item => @Html.SymbolForBool(item.Published))
+					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.Centered();
+			})
+			.Sortable(x =>
+			{
+				x.AllowUnsort(true);
+				x.SortMode(GridSortMode.SingleColumn);
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
+			.ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
+			.EnableCustomBinding(true)
+			.PreserveGridState())
+	</div>
     
     <script type="text/javascript">
 		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@

@@ -31,8 +31,8 @@
 			{
 				commands.Edit().Localize(T);
 				commands.Delete().Localize(T);
-			});
-
+			})
+			.HtmlAttributes(new { align = "right" });
 		})
 		.ToolBar(x => x.Insert())
 		.Editable(x =>

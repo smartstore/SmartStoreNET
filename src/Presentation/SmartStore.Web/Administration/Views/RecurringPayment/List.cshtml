@@ -36,8 +36,7 @@
 				.ClientTemplate(@Html.SymbolForBool("IsActive"))
 				.Centered();
 			columns.Bound(x => x.StartDate)
-				.Width(100)
-				.Centered();
+				.Width(100);
 			columns.Bound(x => x.NextPaymentDate)
 				.Width(100);
 			columns.Bound(x => x.TotalCycles)
@@ -45,11 +44,11 @@
 			columns.Bound(x => x.CyclesRemaining)
 				.Width(50);
 			columns.Bound(x => x.Id)
-				.Width(50)
-				.Centered()
-				.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-				.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-				.Title(T("Admin.Common.Edit").Text);
+				.Width(100)
+				.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+				.Title(String.Empty)
+				.HtmlAttributes(new { align = "right" });
 		})
 		.Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
 		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "RecurringPayment"))

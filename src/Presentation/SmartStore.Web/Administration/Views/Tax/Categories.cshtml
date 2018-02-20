@@ -18,21 +18,18 @@
 			})
 			.Columns(columns =>
 			{
-				columns.Bound(x => x.Name);
+				columns.Bound(x => x.Name)
+					.Width("70%");
 				columns.Bound(x => x.DisplayOrder)
 					.Centered()
-					.Width(120);
+					.Width("10%");
 				columns.Command(commands =>
 				{
 					commands.Edit().Localize(T);
 					commands.Delete().Localize(T);
-				}).Width(240);
-
-			})
-			.ToolBar(x => x.Insert())
-			.Editable(x =>
-			{
-				x.Mode(GridEditMode.InLine);
+				})
+				.HtmlAttributes(new { align = "right",  @class= "omega" })
+				.Width("20%");
 			})
 			.DataBinding(dataBinding =>
 			{
@@ -41,6 +38,8 @@
 					.Delete("CategoryDelete", "Tax")
 					.Insert("CategoryAdd", "Tax");
 			})
+			.ToolBar(x => x.Insert())
+			.Editable(x => { x.Mode(GridEditMode.InLine); })
 			.ClientEvents(x => x.OnError("grid_onError"))
 			.EnableCustomBinding(true))
 </div>

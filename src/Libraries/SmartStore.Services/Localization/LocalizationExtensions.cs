@@ -153,54 +153,47 @@ namespace SmartStore.Services.Localization
 			TPropType result = default(TPropType);
 			string resultStr = string.Empty;
 
-			if (entityId > 0)
+			var member = keySelector.Body as MemberExpression;
+			if (member == null)
 			{
-				var member = keySelector.Body as MemberExpression;
-				if (member == null)
+				throw new ArgumentException($"Expression '{keySelector}' refers to a method, not a property.");
+			}
+
+			var propInfo = member.Member as PropertyInfo;
+			if (propInfo == null)
+			{
+				throw new ArgumentException($"Expression '{keySelector}' refers to a field, not a property.");
+			}
+
+			// Load localized value
+			string localeKey = propInfo.Name;
+
+			if (languageId > 0)
+			{
+				// Ensure that we have at least two published languages
+				bool loadLocalizedValue = true;
+				if (ensureTwoPublishedLanguages)
 				{
-					throw new ArgumentException(string.Format(
-						"Expression '{0}' refers to a method, not a property.",
-						keySelector));
+					var lService = EngineContext.Current.Resolve<ILanguageService>();
+					var totalPublishedLanguages = lService.GetLanguagesCount(false);
+					loadLocalizedValue = totalPublishedLanguages >= 2;
 				}
 
-				var propInfo = member.Member as PropertyInfo;
-				if (propInfo == null)
+				// Localized value
+				if (loadLocalizedValue)
 				{
-					throw new ArgumentException(string.Format(
-						   "Expression '{0}' refers to a field, not a property.",
-						   keySelector));
-				}
-
-				// Load localized value
-				string localeKey = propInfo.Name;
-
-				if (languageId > 0)
-				{
-					// Ensure that we have at least two published languages
-					bool loadLocalizedValue = true;
-					if (ensureTwoPublishedLanguages)
-					{
-						var lService = EngineContext.Current.Resolve<ILanguageService>();
-						var totalPublishedLanguages = lService.GetLanguagesCount(false);
-						loadLocalizedValue = totalPublishedLanguages >= 2;
-					}
-
-					// Localized value
-					if (loadLocalizedValue)
-					{
-						var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
-						resultStr = leService.GetLocalizedValue(languageId, entityId, localeKeyGroup, localeKey);
+					var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
+					resultStr = leService.GetLocalizedValue(languageId, entityId, localeKeyGroup, localeKey);
 						
-						if (detectEmptyHtml && resultStr.HasValue() && resultStr.RemoveHtml().IsEmpty())
-						{
-							resultStr = string.Empty;
-						}
-
-						if (resultStr.HasValue())
-						{
-							result = (TPropType)resultStr.Convert(typeof(TPropType), CultureInfo.InvariantCulture);
-						}	
+					if (detectEmptyHtml && resultStr.HasValue() && resultStr.RemoveHtml().IsEmpty())
+					{
+						resultStr = string.Empty;
 					}
+
+					if (resultStr.HasValue())
+					{
+						result = (TPropType)resultStr.Convert(typeof(TPropType), CultureInfo.InvariantCulture);
+					}	
 				}
 			}
 			

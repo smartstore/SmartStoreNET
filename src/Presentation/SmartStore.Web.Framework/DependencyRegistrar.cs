@@ -413,7 +413,7 @@ namespace SmartStore.Web.Framework
 						{
 							return new SmartObjectContext(DataSettings.Current.DataConnectionString);
 						}
-						catch (Exception ex)
+						catch
 						{
 							//return new SmartObjectContext();
 							return null;

@@ -23,14 +23,6 @@ namespace SmartStore.Web.Framework.Theming
 		}
 	}
 
-	public class LessCssHttpHandler : CssHttpHandlerBase
-	{
-		protected override IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode)
-		{
-			return InnerTranslateAsset<LessTranslator>("LessTranslator", asset, transformer, isDebugMode);
-		}
-	}
-
 	public abstract class CssHttpHandlerBase : BundleTransformer.Core.HttpHandlers.StyleAssetHandlerBase
 	{
 		protected CssHttpHandlerBase()

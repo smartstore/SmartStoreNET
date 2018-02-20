@@ -87,7 +87,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					// invalidate the cache when variables change
 					cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(theme.ThemeName, storeId);
 
-					if ((styleResult.IsSass || styleResult.IsLess) && (ThemeHelper.IsStyleValidationRequest()))
+					if (styleResult.IsSass && (ThemeHelper.IsStyleValidationRequest()))
 					{
 						// Special case: ensure that cached validation result gets nuked in a while,
 						// when ThemeVariableService publishes the entity changed messages.

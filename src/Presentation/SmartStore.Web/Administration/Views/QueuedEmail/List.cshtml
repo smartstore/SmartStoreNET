@@ -75,7 +75,7 @@
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			<label>&nbsp;</label>
-			<button type="submit" id="search-products" value="search-products" class="btn btn-secondary btn-block">
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>
 		</div>
@@ -196,39 +196,40 @@
             });
         });
 
-    function onDataBinding(e) {
-        var searchModel = {
-			SearchStartDate: $('#@Html.FieldIdFor(model => model.SearchStartDate)').val(),
-			SearchEndDate: $('#@Html.FieldIdFor(model => model.SearchEndDate)').val(),
-			SearchFromEmail: $('#@Html.FieldIdFor(model => model.SearchFromEmail)').val(),
-			SearchToEmail: $('#@Html.FieldIdFor(model => model.SearchToEmail)').val(),
-			SearchLoadNotSent: $('#@Html.FieldIdFor(model => model.SearchLoadNotSent)').is(':checked'),
-        	SearchSendManually: $('#@Html.FieldIdFor(model => model.SearchSendManually)').val(),
-			SearchMaxSentTries: $('#@Html.FieldIdFor(model => model.SearchMaxSentTries)').val()
-		};
-        e.data = searchModel;
-    }
+		function onDataBinding(e) {
 
-    function onDataBound(e) {
-        $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
-            var currentId = $(this).val();
-            var checked = jQuery.inArray(currentId, selectedIds);
-            //set checked based on if current checkbox's value is in selectedIds.  
-            $(this).attr('checked', checked > -1);
-        });
+			var searchModel = {
+				SearchStartDate: $('#@Html.FieldIdFor(model => model.SearchStartDate)').val(),
+				SearchEndDate: $('#@Html.FieldIdFor(model => model.SearchEndDate)').val(),
+				SearchFromEmail: $('#@Html.FieldIdFor(model => model.SearchFromEmail)').val(),
+				SearchToEmail: $('#@Html.FieldIdFor(model => model.SearchToEmail)').val(),
+				SearchLoadNotSent: $('#@Html.FieldIdFor(model => model.SearchLoadNotSent)').is(':checked'),
+        		SearchSendManually: $('#@Html.FieldIdFor(model => model.SearchSendManually)').val(),
+				SearchMaxSentTries: $('#@Html.FieldIdFor(model => model.SearchMaxSentTries)').val()
+			};
+			e.data = searchModel;
+		}
 
-        updateMasterCheckbox();
-    }
+		function onDataBound(e) {
+			$('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+				var currentId = $(this).val();
+				var checked = jQuery.inArray(currentId, selectedIds);
+				//set checked based on if current checkbox's value is in selectedIds.  
+				$(this).attr('checked', checked > -1);
+			});
 
-    function onRowDataBound(e) {
-    	if (e.dataItem.SentOn)
-    		$(e.row).find('td').wrapInner('<span class="muted" />');
-    }
+			updateMasterCheckbox();
+		}
+
+		function onRowDataBound(e) {
+    		if (e.dataItem.SentOn)
+    			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
     
-    function updateMasterCheckbox() {
-        var numChkBoxes = $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').length;
-        var numChkBoxesChecked = $('#queuedEmails-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
-        $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
-    }
+		function updateMasterCheckbox() {
+			var numChkBoxes = $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').length;
+			var numChkBoxesChecked = $('#queuedEmails-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+		}
     </script>   
 }

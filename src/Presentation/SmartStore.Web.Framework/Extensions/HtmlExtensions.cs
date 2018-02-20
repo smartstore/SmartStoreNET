@@ -587,8 +587,7 @@ namespace SmartStore.Web.Framework
 
             sb.Append("</div>");
 
-			// TODO: (mc) Change location of scripts (make it common), also remove redundant files in ~/Content/bootstrap/js/...
-			var scriptRoot = "~/Administration/Content/vendors/colorpicker/js/";
+			var scriptRoot = "~/Content/vendors/colorpicker/js/";
             html.AppendScriptParts(true,
                 scriptRoot + "bootstrap-colorpicker.js",
                 scriptRoot + "bootstrap-colorpicker-globalinit.js");

@@ -1170,11 +1170,7 @@ namespace SmartStore.Web.Controllers
 						}
 
 						// Calculate saving.
-						// Discounted price has priority over the old price (avoids differing percentage discount in product lists and detail page).
-						//var regularPrice = Math.Max(finalPriceWithoutDiscount, oldPrice);
-						var regularPrice = finalPriceWithDiscount < finalPriceWithoutDiscount
-							? finalPriceWithoutDiscount
-							: oldPrice;
+						var regularPrice = Math.Max(finalPriceWithoutDiscount, oldPrice);
 
 						if (regularPrice > 0 && regularPrice > finalPriceWithDiscount)
 						{

@@ -660,17 +660,15 @@ namespace SmartStore.Web.Controllers
 				? string.Format(ctx.Resources["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice))
 				: _priceFormatter.FormatPrice(finalPrice);
 
-			priceModel.HasDiscount = finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero;
+			priceModel.HasDiscount = finalPriceBase != oldPriceBase && oldPriceBase > decimal.Zero;
 			if (priceModel.HasDiscount)
 			{
 				priceModel.RegularPriceValue = oldPrice;
 				priceModel.RegularPrice = _priceFormatter.FormatPrice(oldPrice);
 			}
 
-
 			// Calculate saving.
-			// Do not display discount badge if list shows a lowest price (displayFromMessage case). Avoids differing percentage discount in product lists and detail page.
-			if (finalPrice > 0 && !displayFromMessage)
+			if (finalPrice > 0)
 			{
 				var finalPriceWithDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, true, 1, null, ctx.BatchContext);
 				finalPriceWithDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithDiscount, out taxRate);
@@ -684,17 +682,19 @@ namespace SmartStore.Web.Controllers
 					finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscount, ctx.Currency);
 				}
 
-				// Discounted price has priority over the old price (avoids differing percentage discount in product lists and detail page).
-				//var regularPrice = Math.Max(finalPriceWithoutDiscount, oldPrice);
-				var regularPrice = finalPriceWithDiscount < finalPriceWithoutDiscount
-					? finalPriceWithoutDiscount
-					: oldPrice;
+				var regularPrice = Math.Max(finalPriceWithoutDiscount, oldPrice);
 
 				if (regularPrice > 0 && regularPrice > finalPriceWithDiscount)
 				{
 					priceModel.HasDiscount = true;
 					priceModel.SavingPercent = (float)((regularPrice - finalPriceWithDiscount) / regularPrice) * 100;
 					priceModel.SavingAmount = _priceFormatter.FormatPrice(regularPrice - finalPriceWithDiscount, true, false);
+
+					if (!priceModel.RegularPriceValue.HasValue)
+					{
+						priceModel.RegularPriceValue = regularPrice;
+						priceModel.RegularPrice = _priceFormatter.FormatPrice(regularPrice);
+					}
 
 					if (ctx.Model.ShowDiscountBadge)
 					{
@@ -707,7 +707,6 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			item.Price = priceModel;
 			return finalPrice;
 		}
 

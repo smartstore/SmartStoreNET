@@ -1,13 +1,13 @@
-﻿@using SmartStore.Web.Framework;
+﻿@model ConfigurationModel
+@using SmartStore.Web.Framework;
 @using SmartStore.AmazonPay.Models;
 @using SmartStore.AmazonPay;
-@model ConfigurationModel
 @{
     Layout = "";
 }
 
 <div class="plugin-actions">
-	<button type="submit" name="save" class="btn btn-primary" value="save">
+	<button type="submit" name="save" class="btn btn-warning" value="save">
 		<i class="fa fa-check"></i>
 		<span>@T("Admin.Common.Save")</span>
 	</button>

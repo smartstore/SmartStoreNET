@@ -1,9 +1,6 @@
-﻿@{
-    Layout = "_AdminPopupLayout";
-}
-@model ProductTagModel
+﻿@model ProductTagModel
 @{
-    //page title
+    Layout = "_AdminPopupLayout";
     ViewBag.Title = T("Admin.Catalog.ProductTags.EditTagDetails").Text;
 }
 @using (Html.BeginForm())
@@ -13,7 +10,10 @@
             @T("Admin.Catalog.ProductTags.EditTagDetails")- @Model.Name
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 

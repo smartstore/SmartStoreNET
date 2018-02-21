@@ -1,11 +1,9 @@
-﻿@{
+﻿@model ProductModel.ProductVariantAttributeValueModel
+@{
     Layout = "_AdminPopupLayout";
-}
-@model ProductModel.ProductVariantAttributeValueModel
-@{    
-    //page title
     ViewBag.Title = T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AddNew").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -15,7 +13,7 @@
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
                 <i class="fa fa-check"></i>
-                @T("Admin.Common.Save")
+                <span>@T("Admin.Common.Save")</span>
             </button>
         </div>
     </div>

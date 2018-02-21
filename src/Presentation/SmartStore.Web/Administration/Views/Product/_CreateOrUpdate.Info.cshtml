@@ -85,7 +85,9 @@
 					@Html.SmartLabelFor(model => model.AssociatedToProductId)
 				</td>
 				<td class="adminData">
-					@Html.ActionLink(Model.AssociatedToProductName, "Edit", "Product", new { id = Model.AssociatedToProductId }, new { })
+					<div class="form-control-plaintext">
+						@Html.ActionLink(Model.AssociatedToProductName, "Edit", "Product", new { id = Model.AssociatedToProductId }, new { })
+					</div>
 				</td>
 			</tr>
 		}

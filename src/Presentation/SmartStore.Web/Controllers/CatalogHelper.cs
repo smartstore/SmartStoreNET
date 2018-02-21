@@ -1169,14 +1169,17 @@ namespace SmartStore.Web.Controllers
                                 (product.Price - finalPriceWithDiscount) * (-1));
 						}
 
-						// Calculate saving
-						var regularPriceValue = Math.Max(finalPriceWithoutDiscount, oldPrice);
-						var currentPriceValue = finalPriceWithDiscount;
+						// Calculate saving.
+						// Discounted price has priority over the old price (avoids differing percentage discount in product lists and detail page).
+						//var regularPrice = Math.Max(finalPriceWithoutDiscount, oldPrice);
+						var regularPrice = finalPriceWithDiscount < finalPriceWithoutDiscount
+							? finalPriceWithoutDiscount
+							: oldPrice;
 
-						if (regularPriceValue > 0 && regularPriceValue > currentPriceValue)
+						if (regularPrice > 0 && regularPrice > finalPriceWithDiscount)
 						{
-							model.ProductPrice.SavingPercent = (float)((regularPriceValue - currentPriceValue) / regularPriceValue) * 100;
-							model.ProductPrice.SavingAmount = _priceFormatter.FormatPrice(regularPriceValue - currentPriceValue, true, false);
+							model.ProductPrice.SavingPercent = (float)((regularPrice - finalPriceWithDiscount) / regularPrice) * 100;
+							model.ProductPrice.SavingAmount = _priceFormatter.FormatPrice(regularPrice - finalPriceWithDiscount, true, false);
 						}
 					}
 				}

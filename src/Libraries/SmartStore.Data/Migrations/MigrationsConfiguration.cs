@@ -281,6 +281,39 @@ namespace SmartStore.Data.Migrations
 				"Zahlungsbetrag einziehen, wenn…",
 				"Specifies the event when the payment amount is automatically captured. The selected payment method must support capturing for this.",
 				"Legt das Ereignis fest, zu dem der Zahlunsgbetrag automatisch eingezogen wird. Die gewählte Zahlart muss hierfür Buchungen unterstützen.");
+			
+
+			#region taken from V22Final, because they were never added yet
+
+			builder.AddOrUpdate("Common.Next",
+				"Next",
+				"Weiter");
+			builder.AddOrUpdate("Admin.Common.BackToConfiguration",
+				"Back to configuration",
+				"Zurück zur Konfiguration");
+			builder.AddOrUpdate("Admin.Common.UploadFileSucceeded",
+				"The file has been successfully uploaded.",
+				"Die Datei wurde erfolgreich hochgeladen.");
+			builder.AddOrUpdate("Admin.Common.UploadFileFailed",
+				"The upload has failed.",
+				"Der Upload ist leider fehlgeschlagen.");
+			builder.AddOrUpdate("Admin.Common.ImportAll",
+				"Import all",
+				"Alle importieren");
+			builder.AddOrUpdate("Admin.Common.ImportSelected",
+				"Import selected",
+				"Ausgewählte importieren");
+			builder.AddOrUpdate("Admin.Common.UnknownError",
+				"An unknown error has occurred.",
+				"Es ist ein unbekannter Fehler aufgetreten.");
+			builder.AddOrUpdate("Plugins.Feed.FreeShippingThreshold",
+				"Free shipping threshold",
+				"Kostenloser Versand ab",
+				"Amount as from shipping is free.",
+				"Betrag, ab dem keine Versandkosten anfallen.");
+
+			#endregion
+
 		}
 	}
 }

@@ -25,7 +25,9 @@
         lang = "en";
     }
 
-    Html.AddScriptParts(true, "~/Content/editors/ckeditor/ckeditor.js");
+    Html.AddScriptParts(true, 
+		"~/Content/editors/ckeditor/ckeditor.js", 
+		"~/Content/editors/ckeditor/ckeditor-custom.js");
     
     var themeCssPath = Url.ThemeAwareContent("Content/theme.scss");
 }
@@ -44,7 +46,7 @@
 			entities: false,
 			removePlugins: 'divarea',
 			contentsCss: [
-                "@themeCssPath",
+				"@themeCssPath",
                 "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
                 "@Url.Content("~/Content/editors/ckeditor/contents.css")"
 			],

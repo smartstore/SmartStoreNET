@@ -18,7 +18,6 @@ CKEDITOR.editorConfig = function( config ) {
 
 	config.toolbarCanCollapse = true;
 	config.toolbarStartupExpanded = true;
-	//config.skin = "moono";
 	config.skin = "smartstore";
 	config.fillEmptyBlocks = false;
 

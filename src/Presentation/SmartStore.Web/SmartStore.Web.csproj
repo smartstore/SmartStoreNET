@@ -818,6 +818,7 @@
     <Content Include="Content\bs4\js\bootstrap.min.js" />
     <Content Include="Content\editors\ckeditor\adapters\jquery.js" />
     <Content Include="Content\editors\ckeditor\build-config.js" />
+    <Content Include="Content\editors\ckeditor\ckeditor-custom.js" />
     <Content Include="Content\editors\ckeditor\ckeditor.js" />
     <Content Include="Content\editors\ckeditor\config.js" />
     <Content Include="Content\editors\ckeditor\contents.css" />
@@ -934,8 +935,11 @@
     <Content Include="Content\editors\ckeditor\skins\moono\images\lock-open.png" />
     <Content Include="Content\editors\ckeditor\skins\moono\images\lock.png" />
     <Content Include="Content\editors\ckeditor\skins\moono\images\refresh.png" />
+    <None Include="Content\editors\ckeditor\skins\smartstore\dialog.scss" />
     <Content Include="Content\editors\ckeditor\skins\smartstore\dialog.css" />
+    <Content Include="Content\editors\ckeditor\skins\smartstore\editor.scss" />
     <Content Include="Content\editors\ckeditor\skins\smartstore\editor.css" />
+    <None Include="Content\editors\ckeditor\skins\smartstore\icons.scss" />
     <Content Include="Content\editors\ckeditor\skins\smartstore\icons.css" />
     <Content Include="Content\editors\ckeditor\skins\smartstore\icons\bgcolor.png" />
     <Content Include="Content\editors\ckeditor\skins\smartstore\icons\codemirror\autocomplete.png" />

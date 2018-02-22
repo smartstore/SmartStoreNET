@@ -82,18 +82,20 @@ namespace SmartStore.PayPal.Controllers
 		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(PayPalExpressPaymentSettings settings, PayPalExpressConfigurationModel model, int storeScope)
 		{
-			if (ModelState.IsValid)
+			if (!ModelState.IsValid)
 			{
-				ModelState.Clear();
-				model.Copy(settings, false);
-
-				// Multistore context not possible, see IPN handling.
-				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
-
-				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+				return Configure(settings, storeScope);
 			}
 
-			return Configure(settings, storeScope);
+			ModelState.Clear();
+			model.Copy(settings, false);
+
+			// Multistore context not possible, see IPN handling.
+			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+
+			return RedirectToConfiguration(PayPalExpressProvider.SystemName, false);
 		}
 
 		public ActionResult PaymentInfo()

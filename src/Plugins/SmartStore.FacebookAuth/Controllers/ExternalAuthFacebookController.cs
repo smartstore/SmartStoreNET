@@ -35,7 +35,7 @@ namespace SmartStore.FacebookAuth.Controllers
 
 		private bool HasPermission(bool notify = true)
 		{
-			bool hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods);
+			var hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods);
 
 			if (notify && !hasPermission)
 				NotifyError(_services.Localization.GetResource("Admin.AccessDenied.Description"));
@@ -51,6 +51,7 @@ namespace SmartStore.FacebookAuth.Controllers
 
             var model = new ConfigurationModel();
 			MiniMapper.Map(settings, model);
+
             return View(model);
         }
 
@@ -66,7 +67,7 @@ namespace SmartStore.FacebookAuth.Controllers
 			MiniMapper.Map(model, settings);
 			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
 
-			return Configure(settings);
+			return RedirectToConfiguration(FacebookExternalAuthMethod.SystemName, true);
         }
 
         [ChildActionOnly]
@@ -93,7 +94,7 @@ namespace SmartStore.FacebookAuth.Controllers
 		[NonAction]
 		private ActionResult LoginInternal(string returnUrl, bool verifyResponse)
 		{
-			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(Provider.SystemName, _services.StoreContext.CurrentStore.Id);
+			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(FacebookExternalAuthMethod.SystemName, _services.StoreContext.CurrentStore.Id);
 			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings))
 			{
 				throw new SmartException("Facebook module cannot be loaded");

@@ -69,7 +69,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
 
 			_settingService.SaveSetting(settings, x => x.WidgetZone, 0, false);
 
-            return Configure(settings);
+			return RedirectToConfiguration("SmartStore.GoogleAnalytics");
         }
 
         [ChildActionOnly]

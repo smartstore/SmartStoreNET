@@ -177,6 +177,28 @@ namespace SmartStore.Web.Framework.Controllers
 		}
 
 		/// <summary>
+		/// Redirects to the configuration page of a plugin or a provider.
+		/// </summary>
+		/// <param name="systemName">The system name of the plugin or the provider.</param>
+		/// <param name="isPlugin"><c>true</c> plugin configuration, <c>false</c> provider configuration.</param>
+		protected virtual ActionResult RedirectToConfiguration(string systemName, bool isPlugin = true)
+		{
+			Guard.NotEmpty(systemName, nameof(systemName));
+
+			var actionName = isPlugin ? "ConfigurePlugin" : "ConfigureProvider";
+
+			if (ControllerContext.IsChildAction)
+			{
+				var url = Url.Action(actionName, "Plugin", new { systemName, area = "Admin" });
+				Response.Redirect(url);
+
+				return new EmptyResult();
+			}
+
+			return RedirectToAction(actionName, "Plugin", new { systemName, area = "Admin" });
+		}
+
+		/// <summary>
 		/// On exception
 		/// </summary>
 		/// <param name="filterContext">Filter context</param>

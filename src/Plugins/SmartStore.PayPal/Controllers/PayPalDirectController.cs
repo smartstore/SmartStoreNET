@@ -46,25 +46,27 @@ namespace SmartStore.PayPal.Controllers
 		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(PayPalDirectPaymentSettings settings, PayPalDirectConfigurationModel model, int storeScope)
 		{
-			if (ModelState.IsValid)
+			if (!ModelState.IsValid)
 			{
-				ModelState.Clear();
-				model.Copy(settings, false);
-
-				// Multistore context not possible, see IPN handling.
-				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
-
-				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+				return Configure(settings, storeScope);
 			}
 
-            return Configure(settings, storeScope);
+			ModelState.Clear();
+			model.Copy(settings, false);
+
+			// Multistore context not possible, see IPN handling.
+			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+
+			return RedirectToConfiguration(PayPalDirectProvider.SystemName, false);
 		}
 
 		public ActionResult PaymentInfo()
 		{
 			var model = new PayPalDirectPaymentInfoModel();
 
-			//CC types
+			// Credit card types.
 			model.CreditCardTypes.Add(new SelectListItem
 			{
 				Text = "Visa",
@@ -86,7 +88,7 @@ namespace SmartStore.PayPal.Controllers
 				Value = "Amex",
 			});
 
-			//years
+			// Years.
 			for (int i = 0; i < 15; i++)
 			{
 				string year = Convert.ToString(DateTime.Now.Year + i);
@@ -97,7 +99,7 @@ namespace SmartStore.PayPal.Controllers
 				});
 			}
 
-			//months
+			// Months.
 			for (int i = 1; i <= 12; i++)
 			{
 				string text = (i < 10) ? "0" + i.ToString() : i.ToString();
@@ -108,7 +110,7 @@ namespace SmartStore.PayPal.Controllers
 				});
 			}
 
-			//set postback values
+			// Set postback values.
 			var paymentData = _httpContext.GetCheckoutState().PaymentData;
 			model.CardholderName = (string)paymentData.Get("CardholderName");
 			model.CardNumber = (string)paymentData.Get("CardNumber");

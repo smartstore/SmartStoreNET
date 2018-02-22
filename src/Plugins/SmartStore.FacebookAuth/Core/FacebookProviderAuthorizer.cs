@@ -76,7 +76,7 @@ namespace SmartStore.FacebookAuth.Core
 				if (!authResult.ExtraData.ContainsKey("accesstoken"))
 					throw new Exception("Authentication result does not contain accesstoken data");
 
-				var parameters = new OAuthAuthenticationParameters(Provider.SystemName)
+				var parameters = new OAuthAuthenticationParameters(FacebookExternalAuthMethod.SystemName)
 				{
 					ExternalIdentifier = authResult.ProviderUserId,
 					OAuthToken = authResult.ExtraData["accesstoken"],

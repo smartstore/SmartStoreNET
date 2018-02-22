@@ -81,7 +81,7 @@ namespace SmartStore.AmazonPay.Controllers
 
 			NotifySuccess(T("Plugins.Payments.AmazonPay.ConfigSaveNote"));
 
-			return Configure(settings);
+			return RedirectToConfiguration(AmazonPayPlugin.SystemName);
 		}
 
 		[HttpPost, AdminAuthorize]
@@ -99,7 +99,7 @@ namespace SmartStore.AmazonPay.Controllers
 				NotifyError(exception.Message);
 			}
 
-			return RedirectToAction("ConfigurePlugin", "Plugin", new { area = "admin", systemName = AmazonPayPlugin.SystemName });
+			return RedirectToConfiguration(AmazonPayPlugin.SystemName);
 		}
 
 		[ValidateInput(false)]

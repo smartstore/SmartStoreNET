@@ -27,7 +27,7 @@ namespace SmartStore.DevTools.Controllers
         [SaveSetting(false), HttpPost, ChildActionOnly, ActionName("Configure")]
         public ActionResult ConfigurePost(ProfilerSettings settings)
         {
-			return Configure(settings);
+			return RedirectToConfiguration("SmartStore.DevTools");
         }
 
         public ActionResult MiniProfiler()

@@ -30,22 +30,25 @@ namespace SmartStore.Clickatell.Controllers
 		{
 			var model = new SmsClickatellModel();
 			MiniMapper.Map(settings, model);
+
 			return View(model);
         }
 
         [HttpPost, SaveSetting, FormValueRequired("save")]
         public ActionResult Configure(ClickatellSettings settings, SmsClickatellModel model, FormCollection form)
         {
-			if (ModelState.IsValid)
+			if (!ModelState.IsValid)
 			{
-				MiniMapper.Map(model, settings);
-				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+				return Configure(settings);
 			}
 
-			return Configure(settings);
+			MiniMapper.Map(model, settings);
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+
+			return RedirectToConfiguration(ClickatellSmsProvider.SystemName);
 		}
 
-        [HttpPost, ActionName("Configure"), FormValueRequired("test-sms")]
+		[HttpPost, ActionName("Configure"), FormValueRequired("test-sms")]
         public ActionResult TestSms(SmsClickatellModel model)
         {
             try
@@ -57,7 +60,7 @@ namespace SmartStore.Clickatell.Controllers
                 }
                 else
                 {
-                    var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.Clickatell");
+                    var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName(ClickatellSmsProvider.SystemName);
                     var plugin = pluginDescriptor.Instance() as ClickatellSmsProvider;
 
 					plugin.SendSms(model.TestMessage);

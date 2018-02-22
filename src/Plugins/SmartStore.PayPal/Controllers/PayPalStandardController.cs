@@ -27,7 +27,7 @@ namespace SmartStore.PayPal.Controllers
 		{
 		}
 
-		[LoadSetting, AdminAuthorize, ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly, LoadSetting]
 		public ActionResult Configure(PayPalStandardPaymentSettings settings, int storeScope)
 		{
             var model = new PayPalStandardConfigurationModel();
@@ -39,20 +39,22 @@ namespace SmartStore.PayPal.Controllers
 		}
 
 		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
-        public ActionResult Configure(PayPalStandardPaymentSettings settings, PayPalStandardConfigurationModel model, FormCollection form, int storeScope)
+		public ActionResult Configure(PayPalStandardPaymentSettings settings, PayPalStandardConfigurationModel model, FormCollection form, int storeScope)
 		{
-			if (ModelState.IsValid)
+			if (!ModelState.IsValid)
 			{
-				ModelState.Clear();
-				model.Copy(settings, false);
-
-				// Multistore context not possible, see IPN handling.
-				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
-
-				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+				return Configure(settings, storeScope);
 			}
 
-            return Configure(settings, storeScope);
+			ModelState.Clear();
+			model.Copy(settings, false);
+
+			// Multistore context not possible, see IPN handling.
+			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+
+			return RedirectToConfiguration(PayPalStandardProvider.SystemName, false);
 		}
 
 		public ActionResult PaymentInfo()

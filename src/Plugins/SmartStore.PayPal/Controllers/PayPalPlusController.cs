@@ -195,10 +195,11 @@ namespace SmartStore.PayPal.Controllers
 			validator.Validate(model, ModelState);
 
 			if (!ModelState.IsValid)
+			{
 				return Configure(settings, storeScope);
+			}
 
 			ModelState.Clear();
-
 			model.Copy(settings, false);
 
 			// credentials changed: reset profile and webhook id to avoid errors
@@ -214,7 +215,7 @@ namespace SmartStore.PayPal.Controllers
 
 			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
-			return Configure(settings, storeScope);
+			return RedirectToConfiguration(PayPalPlusProvider.SystemName, false);
 		}
 
 		public ActionResult PaymentInfo()

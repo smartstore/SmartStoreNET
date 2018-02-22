@@ -27,11 +27,11 @@
             <div class="form-group row">
                 <label class="col-lg-3 col-form-label">@T("Account.Fields.Gender")</label>
                 <div class="col-lg-9 form-inline">
-					<div class="form-check mr-sm-3">
+					<div class="form-check form-check-inline">
 						@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input", id = "gender-male" })
 						<label class="form-check-label" for="gender-male">@T("Account.Fields.Gender.Male")</label>
 					</div>
-					<div class="form-check">
+					<div class="form-check form-check-inline">
 						@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input", id = "gender-female" })
 						<label class="form-check-label" for="gender-female">@T("Account.Fields.Gender.Female")</label>
 					</div>
@@ -112,74 +112,39 @@
             <legend><span>@T("Account.AssociatedExternalAuth")</span></legend>
 
 			<div class="table-responsive">
-				<table class="table">
+				<table class="table table-hover border-top-0">
 					<thead>
 						<tr>
-							<th style="width: 30px">
-								<input type="checkbox" id="selectall" />
+							<th class="border-top-0">
+								@T("Account.AssociatedExternalAuth.AuthMethodName")
 							</th>
-							<th>
-								@T("Account.ForumSubscriptions.InfoColumn")
+							<th class="border-top-0">
+								@T("Account.AssociatedExternalAuth.Email")
+							</th>
+							<th class="border-top-0">
+								@T("Account.AssociatedExternalAuth.ExternalIdentifier")
 							</th>
 						</tr>
 					</thead>
 					<tbody>
-						@for (int i = 0; i < Model.ForumSubscriptions.Count; i++)
+						@foreach (var item in Model.AssociatedExternalAuthRecords)
 						{
-							var item = Model.ForumSubscriptions[i];
 							<tr>
-								<td style="width: 30px">
-									<input type="checkbox" name="fs@(item.Id)" class="rowcheckbox" />
+								<td>
+									@item.AuthMethodName
 								</td>
 								<td>
-									@if (item.TopicSubscription)
-									{
-										@Html.RouteLink(item.Title, "TopicSlug", new { Id = item.ForumTopicId, slug = item.Slug })
-									}
-									else
-									{
-										@Html.RouteLink(item.Title, "ForumSlug", new { Id = item.ForumId, slug = item.Slug })
-									}
+									@item.Email
+								</td>
+								<td>
+									@item.ExternalIdentifier
 								</td>
 							</tr>
 						}
 					</tbody>
 				</table>
-
 			</div>
-
-            <table class="table table-hover border-top-0">
-                <thead>
-                    <tr>
-                        <th class="border-top-0">
-                            @T("Account.AssociatedExternalAuth.AuthMethodName")
-                        </th>
-                        <th class="border-top-0">
-                            @T("Account.AssociatedExternalAuth.Email")
-                        </th>
-                        <th class="border-top-0">
-                            @T("Account.AssociatedExternalAuth.ExternalIdentifier")
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.AssociatedExternalAuthRecords)
-                    {
-                        <tr>
-                            <td>
-                                @item.AuthMethodName
-                            </td>
-                            <td>
-                                @item.Email
-                            </td>
-                            <td>
-                                @item.ExternalIdentifier
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </fieldset>
+		</fieldset>
     }
 
     if (Model.CompanyEnabled || Model.DisplayVatNumber)

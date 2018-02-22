@@ -165,11 +165,11 @@
                 </td>
                 <td class="adminData">
 					<div class="form-control-plaintext form-inline">
-						<div class="form-check">
+						<div class="form-check form-check-inline">
 							@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input", id = "gender-male" })
 							<label class="form-check-label" for="gender-male">@T("Admin.Customers.Customers.Fields.Gender.Male")</label>
 						</div>
-						<div class="form-check">
+						<div class="form-check form-check-inline">
 							@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input", id = "gender-female" })
 							<label class="form-check-label" for="gender-female">@T("Admin.Customers.Customers.Fields.Gender.Female")</label>
 						</div>

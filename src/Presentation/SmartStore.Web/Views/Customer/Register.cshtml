@@ -32,11 +32,11 @@
 						<div class="form-group row">
 							<label class="col-md-3 col-form-label">@T("Account.Fields.Gender")</label>
 							<div class="col-md-9 form-inline">
-								<div class="form-check mr-sm-3">
+								<div class="form-check form-check-inline">
 									@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input", id = "gender-male" })
 									<label class="form-check-label" for="gender-male">@T("Account.Fields.Gender.Male")</label>
 								</div>
-								<div class="form-check">
+								<div class="form-check form-check-inline">
 									@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input", id = "gender-female" })
 									<label class="form-check-label" for="gender-female">@T("Account.Fields.Gender.Female")</label>
 								</div>

@@ -91,46 +91,48 @@
 
 	<h5>@T("Admin.Orders.Shipments.Products")</h5>
 	
-	<table class="table admin-table">
-		<thead>
-			<tr>
-				<th>
-					@T("Admin.Orders.Shipments.Products.ProductName")
-				</th>
-				<th>
-					@T("Admin.Orders.Shipments.Products.SKU")
-				</th>
-				<th>
-					@T("Admin.Orders.Shipments.Products.QtyShipped")
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var item in Model.Items)
-			{
+	<div class="table-responsive">
+		<table class="table admin-table">
+			<thead>
 				<tr>
-					<td style="width: 70%;">
-						<div>
-							@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
-
-							@if (!String.IsNullOrEmpty(item.AttributeInfo))
-							{
-								<br />
-								@Html.Raw(item.AttributeInfo)
-							}
-						</div>
-					</td>
-					<td style="width: 15%;">
-						<div>
-							@item.Sku
-						</div>
-					</td>
-					<td align="center" style="width: 15%;">
-						@item.QuantityInThisShipment
-					</td>
+					<th>
+						@T("Admin.Orders.Shipments.Products.ProductName")
+					</th>
+					<th>
+						@T("Admin.Orders.Shipments.Products.SKU")
+					</th>
+					<th>
+						@T("Admin.Orders.Shipments.Products.QtyShipped")
+					</th>
 				</tr>
-			}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				@foreach (var item in Model.Items)
+				{
+					<tr>
+						<td style="width: 70%;">
+							<div>
+								@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
+
+								@if (!String.IsNullOrEmpty(item.AttributeInfo))
+								{
+									<br />
+									@Html.Raw(item.AttributeInfo)
+								}
+							</div>
+						</td>
+						<td style="width: 15%;">
+							<div>
+								@item.Sku
+							</div>
+						</td>
+						<td align="center" style="width: 15%;">
+							@item.QuantityInThisShipment
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
 }
 @Html.DeleteConfirmation("DeleteShipment", "shipment-delete")

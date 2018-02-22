@@ -87,29 +87,30 @@
 
             <h3 style="margin-top: 100px">@T("PDFPackagingSlip.ProductListHeadline")</h3>
 
-            <table class="table order-summary">
-                <thead>
-                    <tr>
-                        <th class="text-left" style="width: @(colWidths[0])%">@T("PDFPackagingSlip.ProductName")</th>
-                        <th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.SKU")</th>
-                        @if (showGtin)
-                        {
-                            <th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.Gtin")</th>
-                        }
-                        <th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.QTY")</th>
-                        <th class="text-right" style="width: @(colWidths[1])%">@T("PDFPackagingSlip.Weight")</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < shipment.Items.Count; i++)
-                    {
-                        var item = shipment.Items[i];
-                        @ShipmentLine(item, showGtin)
-                    }
-                </tbody>
-            </table>
+			<div class="table-responsive">
+				<table class="table order-summary">
+					<thead>
+						<tr>
+							<th class="text-left" style="width: @(colWidths[0])%">@T("PDFPackagingSlip.ProductName")</th>
+							<th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.SKU")</th>
+							@if (showGtin)
+							{
+								<th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.Gtin")</th>
+							}
+							<th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.QTY")</th>
+							<th class="text-right" style="width: @(colWidths[1])%">@T("PDFPackagingSlip.Weight")</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (int i = 0; i < shipment.Items.Count; i++)
+						{
+							var item = shipment.Items[i];
+							@ShipmentLine(item, showGtin)
+						}
+					</tbody>
+				</table>
+			</div>
         </div>
-
     }
 </div>
 

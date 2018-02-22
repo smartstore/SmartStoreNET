@@ -20,59 +20,61 @@
     {
         using (Html.BeginForm("InboxUpdate", (string)null))
         {
-            <table class="table table-responsive" cellspacing="0" cellpadding="4" id="pm-inbox-table">
-                <colgroup>
-                    <col width="5%" />
-                    <col width="20%" />
-                    <col width="50%" />
-                    <col width="25%" />
-                </colgroup>
-                <thead>
-                    <tr class="pm-grid-header-style">
-                        <th class="a-center">
-                            <input type="checkbox" id="select-all-inbox" />
-                        </th>
-                        <th class="a-center">
-                            @T("PrivateMessages.Inbox.FromColumn")
-                        </th>
-                        <th class="a-center">
-                            @T("PrivateMessages.Inbox.SubjectColumn")
-                        </th>
-                        <th class="a-center">
-                            @T("Common.Date")
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Model.Messages.Count; i++)
-                    {
-                        var item = Model.Messages[i];
+			<div class="table-responsive">
+				<table id="pm-inbox-table" class="table" cellspacing="0" cellpadding="4">
+					<colgroup>
+						<col width="5%" />
+						<col width="20%" />
+						<col width="50%" />
+						<col width="25%" />
+					</colgroup>
+					<thead>
+						<tr class="pm-grid-header-style">
+							<th class="a-center">
+								<input type="checkbox" id="select-all-inbox" />
+							</th>
+							<th class="a-center">
+								@T("PrivateMessages.Inbox.FromColumn")
+							</th>
+							<th class="a-center">
+								@T("PrivateMessages.Inbox.SubjectColumn")
+							</th>
+							<th class="a-center">
+								@T("Common.Date")
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (int i = 0; i < Model.Messages.Count; i++)
+						{
+							var item = Model.Messages[i];
 
-                        <tr class="@((item.IsRead) ? "pm-read" : "pm-unread")">
-                            <td class="a-center">
-                                <input type="checkbox" name="pm@(item.Id)" class="rowcheckbox" />
-                            </td>
-                            <td class="a-left">
-                                @if (item.AllowViewingFromProfile)
-                                {
-                                    @Html.RouteLink(item.CustomerFromName, "CustomerProfile", new { Id = item.FromCustomerId })
-                                }
-                                else
-                                {
-                                    @item.CustomerFromName
-                                }
-                            </td>
-                            <td class="a-left">
-                                @Html.ActionLink(item.Subject, "View", new { id = item.Id }, new { @class = (item.IsRead) ? "pm-read" : "pm-unread" })
-                            </td>
-                            <td class="a-left">
-                                @item.CreatedOn
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
+							<tr class="@((item.IsRead) ? "pm-read" : "pm-unread")">
+								<td class="a-center">
+									<input type="checkbox" name="pm@(item.Id)" class="rowcheckbox" />
+								</td>
+								<td class="a-left">
+									@if (item.AllowViewingFromProfile)
+									{
+										@Html.RouteLink(item.CustomerFromName, "CustomerProfile", new { Id = item.FromCustomerId })
+									}
+									else
+									{
+										@item.CustomerFromName
+									}
+								</td>
+								<td class="a-left">
+									@Html.ActionLink(item.Subject, "View", new { id = item.Id }, new { @class = (item.IsRead) ? "pm-read" : "pm-unread" })
+								</td>
+								<td class="a-left">
+									@item.CreatedOn
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+            
             if (Model.TotalPages > 1)
             {
                 @Html.SmartStore().Pager(Model).Name("paginator").Route("PrivateMessages", ViewData["PagerRouteValues"])

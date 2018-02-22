@@ -111,7 +111,7 @@
 
 	if (Model.Deployments.Count > 0)
 	{
-		<div>
+		<div class="table-responsive">
 			<table id="export-deployment-list" class="table admin-table profile-list">
 				<thead>
 					<tr>
@@ -219,48 +219,50 @@ else
 
 @helper FileNamePatternDescription()
 {
-	<table class="table admin-table">
-		<thead>
-			<tr>
-				<th>@T("Admin.Common.Placeholder")</th>
-				<th>@T("Common.Description")</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>%Profile.Id%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(0)</td>
-			</tr>
-			<tr>
-				<td>%Profile.FolderName%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(1)</td>
-			</tr>
-			<tr>
-				<td>%Profile.SeoName%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(2)</td>
-			</tr>
-			<tr>
-				<td>%Store.Id%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(3)</td>
-			</tr>
-			<tr>
-				<td>%Store.SeoName%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(4)</td>
-			</tr>
-			<tr>
-				<td>%File.Index%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(5)</td>
-			</tr>
-			<tr>
-				<td>%Random.Number%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(6)</td>
-			</tr>
-			<tr>
-				<td>%Timestamp%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(7)</td>
-			</tr>
-		</tbody>
-	</table>
+	<div class="table-responsive">
+		<table class="table admin-table">
+			<thead>
+				<tr>
+					<th>@T("Admin.Common.Placeholder")</th>
+					<th>@T("Common.Description")</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>%Profile.Id%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(0)</td>
+				</tr>
+				<tr>
+					<td>%Profile.FolderName%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(1)</td>
+				</tr>
+				<tr>
+					<td>%Profile.SeoName%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(2)</td>
+				</tr>
+				<tr>
+					<td>%Store.Id%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(3)</td>
+				</tr>
+				<tr>
+					<td>%Store.SeoName%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(4)</td>
+				</tr>
+				<tr>
+					<td>%File.Index%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(5)</td>
+				</tr>
+				<tr>
+					<td>%Random.Number%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(6)</td>
+				</tr>
+				<tr>
+					<td>%Timestamp%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(7)</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 }
 
 <script type="text/javascript">

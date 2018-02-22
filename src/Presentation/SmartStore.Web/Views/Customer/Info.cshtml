@@ -110,6 +110,44 @@
 	{
         <fieldset class="content-group">
             <legend><span>@T("Account.AssociatedExternalAuth")</span></legend>
+
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th style="width: 30px">
+								<input type="checkbox" id="selectall" />
+							</th>
+							<th>
+								@T("Account.ForumSubscriptions.InfoColumn")
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (int i = 0; i < Model.ForumSubscriptions.Count; i++)
+						{
+							var item = Model.ForumSubscriptions[i];
+							<tr>
+								<td style="width: 30px">
+									<input type="checkbox" name="fs@(item.Id)" class="rowcheckbox" />
+								</td>
+								<td>
+									@if (item.TopicSubscription)
+									{
+										@Html.RouteLink(item.Title, "TopicSlug", new { Id = item.ForumTopicId, slug = item.Slug })
+									}
+									else
+									{
+										@Html.RouteLink(item.Title, "ForumSlug", new { Id = item.ForumId, slug = item.Slug })
+									}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+
+			</div>
+
             <table class="table table-hover border-top-0">
                 <thead>
                     <tr>

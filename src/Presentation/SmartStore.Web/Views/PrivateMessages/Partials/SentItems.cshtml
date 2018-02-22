@@ -23,57 +23,58 @@
     {
         using (Html.BeginForm("SentUpdate", (string)null))
         {
-
-            <table class="table" cellspacing="0" cellpadding="4" id="pm-sent-table">
-                <col width="5%" />
-                <col width="20%" />
-                <col width="50%" />
-                <col width="25%" />
-                <thead>
-                    <tr class="pm-grid-header-style">
-                        <th class="a-center">
-                            <input type="checkbox" id="selectall-sent" />
-                        </th>
-                        <th class="a-center">
-                            @T("PrivateMessages.Inbox.ToColumn")
-                        </th>
-                        <th class="a-center">
-                            @T("PrivateMessages.Inbox.SubjectColumn")
-                        </th>
-                        <th class="a-center">
-                            @T("Common.Date")
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Model.Messages.Count; i++)
-                    {
-                        var item = Model.Messages[i];
-                        <tr>
-                            <td class="a-center">
-                                <input type="checkbox" name="si@(item.Id)" class="rowcheckbox" />
-                            </td>
-                            <td class="a-left">
-                                @if (item.AllowViewingToProfile)
-                                {
-                                    @Html.RouteLink(item.CustomerToName, "CustomerProfile", new { Id = item.ToCustomerId })
-                                }
-                                else
-                                {
-                                    @item.CustomerToName
-                                }
-                            </td>
-                            <td class="a-left">
-                                @Html.ActionLink(item.Subject, "View", new { id = item.Id }, new { @class = "pm-read" })
-                            </td>
-                            <td class="a-left">
-                                @item.CreatedOn
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
+			<div class="table-responsive">
+				<table class="table" cellspacing="0" cellpadding="4" id="pm-sent-table">
+					<col width="5%" />
+					<col width="20%" />
+					<col width="50%" />
+					<col width="25%" />
+					<thead>
+						<tr class="pm-grid-header-style">
+							<th class="a-center">
+								<input type="checkbox" id="selectall-sent" />
+							</th>
+							<th class="a-center">
+								@T("PrivateMessages.Inbox.ToColumn")
+							</th>
+							<th class="a-center">
+								@T("PrivateMessages.Inbox.SubjectColumn")
+							</th>
+							<th class="a-center">
+								@T("Common.Date")
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (int i = 0; i < Model.Messages.Count; i++)
+						{
+							var item = Model.Messages[i];
+							<tr>
+								<td class="a-center">
+									<input type="checkbox" name="si@(item.Id)" class="rowcheckbox" />
+								</td>
+								<td class="a-left">
+									@if (item.AllowViewingToProfile)
+									{
+										@Html.RouteLink(item.CustomerToName, "CustomerProfile", new { Id = item.ToCustomerId })
+									}
+									else
+									{
+										@item.CustomerToName
+									}
+								</td>
+								<td class="a-left">
+									@Html.ActionLink(item.Subject, "View", new { id = item.Id }, new { @class = "pm-read" })
+								</td>
+								<td class="a-left">
+									@item.CreatedOn
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+            
             if (Model.TotalPages > 1)
             {
                 @Html.SmartStore().Pager(Model).Name("paginator").Route("PrivateMessages", ViewData["PagerRouteValues"])

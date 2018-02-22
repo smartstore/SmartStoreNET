@@ -20,28 +20,30 @@
 	<h6 class="font-weight-medium mb-2">
 		@T("Products.TierPrices")
 	</h6>
-	<table class="table table-bordered table-sm table-responsive table-tierprices@(Model.Count > 5 ? " d-block" : "")">
-		<thead>
-			<tr>
-				<th>@T("Products.TierPrices.Quantity")</th>
-				@foreach (var tierPrice in Model.Take(200))
-				{
-					<th class="pd-tierprice-qty text-center">
-						@(tierPrice.Quantity)+
-					</th>
-				}
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<th>@T("Products.TierPrices.Price")</th>
-				@foreach (var tierPrice in Model.Take(200))
-				{
-					<td class="pd-tierprice-price text-nowrap text-center">
-						@tierPrice.Price
-					</td>
-				}
-			</tr>
-		</tbody>
-	</table>
+	<div class="table-responsive">
+		<table class="table table-bordered table-sm table-tierprices@(Model.Count > 5 ? " d-block" : "")">
+			<thead>
+				<tr>
+					<th>@T("Products.TierPrices.Quantity")</th>
+					@foreach (var tierPrice in Model.Take(200))
+					{
+						<th class="pd-tierprice-qty text-center">
+							@(tierPrice.Quantity)+
+						</th>
+					}
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th>@T("Products.TierPrices.Price")</th>
+					@foreach (var tierPrice in Model.Take(200))
+					{
+						<td class="pd-tierprice-price text-nowrap text-center">
+							@tierPrice.Price
+						</td>
+					}
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>

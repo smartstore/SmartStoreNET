@@ -314,6 +314,9 @@ namespace SmartStore.Data.Migrations
 
 			#endregion
 
+			builder.AddOrUpdate("Admin.Product.Picture.Added",
+				"The picture has successfully been added",
+				"Das Bild wurde erfolgreich zugefügt");
 		}
 	}
 }

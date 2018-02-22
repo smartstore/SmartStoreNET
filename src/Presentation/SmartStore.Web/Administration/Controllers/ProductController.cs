@@ -2325,7 +2325,7 @@ namespace SmartStore.Admin.Controllers
 
             _pictureService.SetSeoFilename(pictureId, _pictureService.GetPictureSeName(product.Name));
 
-            return Json(new { Result = true }, JsonRequestBehavior.AllowGet);
+            return Json(new { Result = true, message = T("Admin.Product.Picture.Added").JsText.ToString() }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]

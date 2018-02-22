@@ -23,6 +23,8 @@
                          var productpicturesGrid = $("#productpictures-grid");
                          productpicturesGrid.data('tGrid').ajaxRequest();
 						 $('#add-product-picture').attr('disabled', 'disabled');
+
+						 window.displayNotification(data.message, "success");
                     },
                     error:function (xhr, ajaxOptions, thrownError){
                     	alert(@T("Admin.Catalog.Products.Pictures.AddFailed").JsText)

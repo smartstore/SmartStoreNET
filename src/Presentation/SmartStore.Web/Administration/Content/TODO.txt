@@ -38,7 +38,7 @@ TODOs Telerik grid:
 
 TODOs BS4 Migration:
 ====================
-* Split Dropdown Buttons: .btn-dropwdown-split
+* OK	Split Dropdown Buttons: .btn-dropwdown-split
 * OK	Input Groups: .input-group-append/prepend & .input-group-text
 
 

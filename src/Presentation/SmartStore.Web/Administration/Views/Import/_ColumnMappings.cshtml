@@ -177,7 +177,7 @@
 						<input type="text" name="ColumnMapping.Default.@(index)" class="form-control input-default" value="@mapping.Default" 
 							   @Html.Attr("disabled", "disabled", mapping.IsDefaultDisabled || !mapping.Column.HasValue()) />
 					</td>
-					<td class="omega">
+					<td align="right" class="omega">
 						<button type="button" class="btn btn-block btn-danger mapping-delete" title="@delete">
 							<span class="mapping-button-label">@delete</span>
 						</button>

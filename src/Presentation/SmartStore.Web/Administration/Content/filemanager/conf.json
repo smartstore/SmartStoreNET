@@ -8,7 +8,7 @@
     "PREVIEW_THUMB_HEIGHT": "200",
     "MAX_IMAGE_WIDTH": "0",
     "MAX_IMAGE_HEIGHT": "0",
-    "INTEGRATION": "ckeditor",
+    "INTEGRATION": "custom",
     "DIRLIST": "../../../Admin/RoxyFileManager/ProcessRequest?a=DIRLIST",
     "CREATEDIR": "../../../Admin/RoxyFileManager/ProcessRequest?a=CREATEDIR",
     "DELETEDIR": "../../../Admin/RoxyFileManager/ProcessRequest?a=DELETEDIR",

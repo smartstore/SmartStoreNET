@@ -32,6 +32,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IImageCache _imageCache;
 		private readonly IUserAgent _userAgent;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly IMediaFileSystem _mediaFileSystem;
 		private readonly MediaSettings _mediaSettings;
 
 		public MediaController(
@@ -40,6 +41,7 @@ namespace SmartStore.Web.Controllers
 			IImageCache imageCache,
 			IUserAgent userAgent,
 			IEventPublisher eventPublisher,
+			IMediaFileSystem mediaFileSystem,
 			MediaSettings mediaSettings)
         {
 			_pictureService = pictureService;
@@ -47,6 +49,7 @@ namespace SmartStore.Web.Controllers
 			_imageCache = imageCache;
 			_userAgent = userAgent;
 			_eventPublisher = eventPublisher;
+			_mediaFileSystem = mediaFileSystem;
 			_mediaSettings = mediaSettings;
 
 			Logger = NullLogger.Instance;
@@ -217,6 +220,100 @@ namespace SmartStore.Web.Controllers
 				if (!isFaulted)
 				{
 					var lastModifiedUtc = cachedImage.LastModifiedUtc.GetValueOrDefault();
+					etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
+					ApplyResponseHeaders(lastModifiedUtc);
+					ApplyETagHeader(etag);
+				}
+			}
+		}
+
+		public ActionResult Uploaded(string path)
+		{
+			string name = null;
+			string nameWithoutExtension = null;
+			string mime = null;
+			string extension = null;
+			string etag;
+
+			if (path.IsEmpty())
+			{
+				return NotFound(null);
+			}
+
+			name = Path.GetFileName(path);
+
+			// Requested file name was passed with the URL: fetch all required data without harassing DB.
+			name.SplitToPair(out nameWithoutExtension, out extension, ".");
+			mime = MimeTypes.MapNameToMimeType(name);
+
+			if (nameWithoutExtension.IsEmpty() || extension.IsEmpty())
+			{
+				return NotFound(mime ?? "text/html");
+			}
+
+			extension = extension.ToLower();
+
+			var file = _mediaFileSystem.GetFile(path);
+
+			if (!file.Exists)
+			{
+				return NotFound(mime);
+			}
+
+			var ifNoneMatch = Request.Headers["If-None-Match"];
+			if (ifNoneMatch.HasValue())
+			{
+				etag = GetFileETag(nameWithoutExtension, mime, file.LastUpdated);
+
+				if (etag == ifNoneMatch)
+				{
+					// File hasn't changed, so return HTTP 304 without retrieving the data
+					Response.StatusCode = 304;
+					Response.StatusDescription = "Not Modified";
+
+					// Explicitly set the Content-Length header so the client doesn't wait for
+					// content but keeps the connection open for other requests
+					Response.AddHeader("Content-Length", "0");
+
+					ApplyResponseHeaders();
+
+					return Content(null);
+				}
+			}
+
+			var isFaulted = false;
+			
+			try
+			{
+				if (Request.HttpMethod == "HEAD")
+				{
+					return new HttpStatusCodeResult(200);
+				}
+				
+				if (_mediaFileSystem.IsCloudStorage && !_streamRemoteMedia)
+				{
+					// Redirect to existing remote file
+					Response.ContentType = mime;
+					return Redirect(_mediaFileSystem.GetPublicUrl(path));
+				}
+				else
+				{
+					// Open existing stream
+					return File(file.OpenRead(), mime);
+				}
+			}
+			catch (Exception ex)
+			{
+				isFaulted = true;
+				// ProcessImageException is logged already in ImageProcessor
+				Logger.ErrorFormat(ex, "Error processing media file '{0}'.", path);
+				return new HttpStatusCodeResult(500, ex.Message);
+			}
+			finally
+			{
+				if (!isFaulted)
+				{
+					var lastModifiedUtc = file.LastUpdated;
 					etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
 					ApplyResponseHeaders(lastModifiedUtc);
 					ApplyETagHeader(etag);

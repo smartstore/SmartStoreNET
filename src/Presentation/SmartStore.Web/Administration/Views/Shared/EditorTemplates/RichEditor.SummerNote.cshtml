@@ -1,46 +1,37 @@
 ﻿@model String
 @using SmartStore.Web.Framework.UI;
 @{
-    var availableLangs = new string[] { "de-DE", "en-US" };
-    var lang = WorkContext.WorkingLanguage.LanguageCulture;
-    if (!availableLangs.Contains(lang))
-    {
-        lang = "en-US";
-    }
+	var availableLangs = new string[] { "de-DE", "en-US", "es-ES", "fr-FR", "it-IT", "pt-BR", "pt-PT", "ru-RU", "tr-TR", "uk-UA" };
+	var lang = WorkContext.WorkingLanguage.LanguageCulture;
+	if (!availableLangs.Contains(lang))
+	{
+		lang = "en-US";
+	}
 
-    Html.AddScriptParts(true,
-        "//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.min.js",
-        "//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/xml/xml.min.js",
-        "//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/formatting.min.js",
-        "~/Content/editors/summernote/summernote.js",
+	Html.AddScriptParts("~/bundles/codemirror");
+	Html.AddCssFileParts("~/css/codemirror");
+
+	Html.AddScriptParts(true,
+		"~/Content/editors/summernote/summernote-bs4.min.js",
+		"~/Content/editors/summernote/plugin/media/smartstore.summernote.media.js",
 		"~/Content/editors/summernote/globalinit.js");
-		
-    if (lang != "en-US")
-    {
-        Html.AddScriptParts(true, "~/Content/editors/summernote/langs/summernote-{0}.js".FormatInvariant(lang));
-    }
-        
-    Html.AppendCssFileParts(true,
-        "//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.min.css",
-        "~/Content/editors/summernote/summernote.css");
-}
 
-<script type="text/javascript">
-    $(function () {
-    	summernote_image_upload_url = '@Url.Action("UploadImageAjax", "Media")';
-    	$('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)').summernote(
-			$.extend(
-				true,
-				{},
-				summernote_global_config, {
-					lang: '@lang'
-				}
-			)
-		);
-    });
-</script>
+	Html.AppendCssFileParts(true, "~/Content/editors/summernote/summernote-bs4.css");
+
+	if (lang != "en-US")
+	{
+		Html.AddScriptParts(true, "~/Content/editors/summernote/lang/summernote-{0}.js".FormatInvariant(lang));
+	}
+}
 
 @Html.TextArea(string.Empty, /* Name suffix */
                (string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */
-               new { @class = "summernote-editor", data_upload_url = Url.Action("UploadImageAjax", "Media") }
+               new { @class = "summernote-editor", data_file_browser_url = Url.Content("~/Administration/Content/filemanager/index.html?type=image") }
 )
+
+<script>
+    $(function () {
+    	summernote_image_upload_url = '@Url.Action("UploadImageAjax", "Media")';
+		$('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)').summernote({ lang: '@lang' });
+    });
+</script>

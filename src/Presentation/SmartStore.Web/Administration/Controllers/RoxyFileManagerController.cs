@@ -406,7 +406,8 @@ namespace SmartStore.Admin.Controllers
 				else
 					Response.Write(",");
 
-				var url = _fileSystem.GetPublicUrl(file.Path);
+				//var url = _fileSystem.GetPublicUrl(file.Path);
+				var url = "/Media/" + file.Path.Replace('\\', '/');
 
 				Response.Write("{");
 				Response.Write("\"p\":\"" + url + "\"");

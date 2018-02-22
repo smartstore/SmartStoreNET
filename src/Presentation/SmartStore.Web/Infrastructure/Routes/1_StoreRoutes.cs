@@ -22,11 +22,18 @@ namespace SmartStore.Web.Infrastructure
 			// Within this controller we gonna find the actual file and stream it back to the client, 
 			// or - in case of blob storage - redirect the client to the computed public url.
 			SmartUrlRoutingModule.RegisterRoutablePath(@"/media/image/([1-9]\d*|0)/.*?$", "GET|HEAD");
+			SmartUrlRoutingModule.RegisterRoutablePath(@"/media/.*?$", "GET|HEAD");
 
 			routes.MapRoute("Image",
 				"media/image/{id}/{*name}",
 				new { controller = "Media", action = "Image" },
 				//new { id = new MinRouteConstraint(0) }, // Don't bother with this, the Regex matches this already
+				new[] { "SmartStore.Web.Controllers" });
+
+
+			routes.MapRoute("MediaUploaded",
+				"media/{*path}",
+				new { controller = "Media", action = "Uploaded" },
 				new[] { "SmartStore.Web.Controllers" });
 
 

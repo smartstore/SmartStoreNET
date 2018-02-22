@@ -31,5 +31,10 @@ namespace SmartStore.Services.Media
 
 			return path;
 		}
+
+		protected override string MapPublic(string path)
+		{
+			return base.MapPublic(path);
+		}
 	}
 }

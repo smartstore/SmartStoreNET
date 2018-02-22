@@ -12,7 +12,7 @@ namespace SmartStore.Services.Media
 	public class MediaFileSystem : LocalFileSystem, IMediaFileSystem
 	{
 		public MediaFileSystem()
-			: base(GetMediaBasePath(), CommonHelper.GetAppSetting<string>("sm:MediaPublicPath"))
+			: base(GetMediaBasePath(), GetMediaPublicPath())
 		{
 			this.TryCreateFolder("Storage");
 			this.TryCreateFolder("Thumbs");
@@ -32,9 +32,15 @@ namespace SmartStore.Services.Media
 			return path;
 		}
 
-		protected override string MapPublic(string path)
+		private static string GetMediaPublicPath()
 		{
-			return base.MapPublic(path);
+			var path = CommonHelper.GetAppSetting<string>("sm:MediaPublicPath")?.Trim().NullEmpty();
+			if (path == null)
+			{
+				path = "~/Media";
+			}
+
+			return path;
 		}
 	}
 }

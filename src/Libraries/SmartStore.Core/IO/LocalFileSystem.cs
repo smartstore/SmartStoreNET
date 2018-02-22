@@ -201,12 +201,12 @@ namespace SmartStore.Core.IO
 			return new LocalFolder(Fix(folderPath), fileInfo.Directory);
 		}
 
-		public IEnumerable<string> SearchFiles(string path, string pattern)
+		public IEnumerable<string> SearchFiles(string path, string pattern, bool deep = true)
 		{
 			// get relative from absolute path
 			var index = _storagePath.EmptyNull().Length;
 
-			return Directory.EnumerateFiles(MapStorage(path), pattern, SearchOption.AllDirectories)
+			return Directory.EnumerateFiles(MapStorage(path), pattern, deep ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
 				.Select(x => x.Substring(index));
 		}
 
@@ -479,9 +479,19 @@ namespace SmartStore.Core.IO
 				get { return _path; }
 			}
 
+			public string Directory
+			{
+				get { return _path.Substring(0, _path.Length - Name.Length); }
+			}
+
 			public string Name
 			{
 				get { return _fileInfo.Name; }
+			}
+
+			public string Title
+			{
+				get { return System.IO.Path.GetFileNameWithoutExtension(_fileInfo.Name); }
 			}
 
 			public long Size
@@ -494,7 +504,7 @@ namespace SmartStore.Core.IO
 				get { return _fileInfo.LastWriteTime; }
 			}
 
-			public string FileType
+			public string Extension
 			{
 				get { return _fileInfo.Extension; }
 			}

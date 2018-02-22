@@ -740,18 +740,27 @@ namespace SmartStore
 		/// <returns>true: success, false: failure</returns>
 		[DebuggerStepThrough]
         [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
-		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter)
+		public static bool SplitToPair(this string value, out string leftPart, out string rightPart, string delimiter, bool splitAfterLast = false)
 		{
-			int idx = -1;
-			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(delimiter) || (idx = value.IndexOf(delimiter)) == -1)
+			leftPart = value;
+			rightPart = "";
+
+			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(delimiter))
 			{
-				strLeft = value;
-				strRight = "";
 				return false;
 			}
 
-			strLeft = value.Substring(0, idx);
-			strRight = value.Substring(idx + delimiter.Length);
+			var idx = splitAfterLast
+				? value.LastIndexOf(delimiter)
+				: value.IndexOf(delimiter);
+
+			if (idx == -1)
+			{
+				return false;
+			}
+
+			leftPart = value.Substring(0, idx);
+			rightPart = value.Substring(idx + delimiter.Length);
 
 			return true;
 		}

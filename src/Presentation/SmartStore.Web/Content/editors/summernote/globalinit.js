@@ -61,12 +61,12 @@ var summernote_image_upload_url;
 			'alignJustify': 'fa fa-align-justify',
 			'alignLeft': 'fa fa-align-left',
 			'alignRight': 'fa fa-align-right',
-			'rowBelow': 'note-icon-row-below',
-			'colBefore': 'note-icon-col-before',
-			'colAfter': 'note-icon-col-after',
-			'rowAbove': 'note-icon-row-above',
-			'rowRemove': 'note-icon-row-remove',
-			'colRemove': 'note-icon-col-remove',
+			//'rowBelow': 'note-icon-row-below',
+			//'colBefore': 'note-icon-col-before',
+			//'colAfter': 'note-icon-col-after',
+			//'rowAbove': 'note-icon-row-above',
+			//'rowRemove': 'note-icon-row-remove',
+			//'colRemove': 'note-icon-col-remove',
 			'indent': 'fa fa-indent',
 			'outdent': 'fa fa-outdent',
 			'arrowsAlt': 'fa fa-arrows-alt',
@@ -77,7 +77,7 @@ var summernote_image_upload_url;
 			'code': 'fa fa-code',
 			'eraser': 'fa fa-eraser',
 			'font': 'fa fa-font',
-			'frame': 'note-icon-frame',
+			//'frame': 'note-icon-frame',
 			'italic': 'fa fa-italic',
 			'link': 'fa fa-link',
 			'unlink': 'fa fa-unlink',
@@ -106,6 +106,9 @@ var summernote_image_upload_url;
 	function sendFile(file, editor, welEditable) {
 		data = new FormData();
 		data.append("file", file);
+		data.append("a", "UPLOAD");
+		data.append("d", "Uploaded");
+		data.append("ext", true);
 		$.ajax({
 			data: data,
 			type: "POST",
@@ -114,9 +117,7 @@ var summernote_image_upload_url;
 			contentType: false,
 			processData: false,
 			success: function (result) {
-				console.log(result);
 				if (result.Success) {
-					//editor.insertImage(welEditable, result.Url);
 					$(editor).summernote('insertImage', result.Url);
 				}
 				else {
@@ -125,12 +126,12 @@ var summernote_image_upload_url;
 						text: result.Message,
 						type: 'error',
 						hide: false
-					})
+					});
 				}
 			}
 		});
 	}
 
-	$.summernote.options = $.extend($.summernote.options, summernote_global_config);
+	//$.summernote.options = $.extend(true, {}, $.summernote.options, summernote_global_config);
 
 })();

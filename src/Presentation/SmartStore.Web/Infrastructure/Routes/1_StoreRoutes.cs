@@ -33,7 +33,7 @@ namespace SmartStore.Web.Infrastructure
 
 			routes.MapRoute("MediaUploaded",
 				"media/{*path}",
-				new { controller = "Media", action = "Uploaded" },
+				new { controller = "Media", action = "File" },
 				new[] { "SmartStore.Web.Controllers" });
 
 

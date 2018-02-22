@@ -51,6 +51,7 @@ function GetSelectedValue(){
 	* This function is called to retrieve selected value when custom integration is used.
 	* Url parameter selected will override this value.
 	*/
-  
-	return "";
+
+	var fieldId = RoxyUtils.GetUrlParam('field');
+	return opener.window.jQuery('#' + fieldId).val();
 }

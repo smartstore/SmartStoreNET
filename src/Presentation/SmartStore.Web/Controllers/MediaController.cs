@@ -69,7 +69,7 @@ namespace SmartStore.Web.Controllers
 			if (name.HasValue())
 			{
 				// Requested file name was passed with the URL: fetch all required data without harassing DB.
-				name.SplitToPair(out nameWithoutExtension, out extension, ".");
+				name.SplitToPair(out nameWithoutExtension, out extension, ".", true);
 				mime = MimeTypes.MapNameToMimeType(name);
 			}
 
@@ -227,12 +227,10 @@ namespace SmartStore.Web.Controllers
 			}
 		}
 
-		public ActionResult Uploaded(string path)
+		public ActionResult File(string path)
 		{
 			string name = null;
-			string nameWithoutExtension = null;
 			string mime = null;
-			string extension = null;
 			string etag;
 
 			if (path.IsEmpty())
@@ -243,7 +241,7 @@ namespace SmartStore.Web.Controllers
 			name = Path.GetFileName(path);
 
 			// Requested file name was passed with the URL: fetch all required data without harassing DB.
-			name.SplitToPair(out nameWithoutExtension, out extension, ".");
+			name.SplitToPair(out var nameWithoutExtension, out var extension, ".", true);
 			mime = MimeTypes.MapNameToMimeType(name);
 
 			if (nameWithoutExtension.IsEmpty() || extension.IsEmpty())

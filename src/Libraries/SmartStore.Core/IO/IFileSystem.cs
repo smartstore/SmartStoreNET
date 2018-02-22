@@ -73,8 +73,9 @@ namespace SmartStore.Core.IO
 		/// Performs a deep search for files within a path.
 		/// </summary>
 		/// <param name="path">The relative path to the folder in which to process file search.</param>
+		/// <param name="deep">Whether to search in all subfolders also</param>
 		/// <returns>Matching file names</returns>
-		IEnumerable<string> SearchFiles(string path, string pattern);
+		IEnumerable<string> SearchFiles(string path, string pattern, bool deep = true);
 
 		/// <summary>
 		/// Lists the files within a storage provider's path.

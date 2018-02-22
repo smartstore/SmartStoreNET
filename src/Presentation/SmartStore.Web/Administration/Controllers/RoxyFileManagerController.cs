@@ -7,6 +7,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Web.Mvc;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Events;
 using SmartStore.Core.IO;
@@ -234,12 +236,19 @@ namespace SmartStore.Admin.Controllers
 
 		private string GetResultString(string message = null, string type = "ok")
 		{
-			return "{\"res\":\"" + type + "\",\"msg\":\"" + message.EmptyNull().Replace("\"", "\\\"") + "\"}";
+			var result = new
+			{
+				res = type,
+				msg = message
+			};
+
+			return JsonConvert.SerializeObject(result);
+			//return "{\"res\":\"" + type + "\",\"msg\":\"" + message.EmptyNull().Replace("\"", "\\\"") + "\"}";
 		}
 
 		private bool IsAjaxUpload()
 		{
-			return (Request["method"] != null && Request["method"].ToString() == "ajax");
+			return Request.IsAjaxRequest() || (Request["method"] != null && Request["method"].ToString() == "ajax");
 		}
 
 		internal class RoxyFolder
@@ -289,36 +298,6 @@ namespace SmartStore.Admin.Controllers
 			return path.TrimStart('/', '\\');
 		}
 
-		private string GetUniqueFileName(string folder, string fileName)
-		{
-			var result = fileName;
-			var copy = T("Admin.Common.Copy");
-			string name = null;
-			string extension = null;
-
-			for (var i = 1; i < 999999; ++i)
-			{
-				var path = _fileSystem.Combine(folder, result);
-
-				if (!_fileSystem.FileExists(path))
-				{
-					return result;
-				}
-
-				if (name == null || extension == null)
-				{
-					var file = _fileSystem.GetFile(path);
-					extension = file.FileType;
-					// this assumes that a storage file name always ends with its file type
-					name = file.Name.EmptyNull().Substring(0, file.Name.EmptyNull().Length - extension.Length);
-				}				
-
-				result = "{0} - {1} {2}{3}".FormatInvariant(name, copy, i, extension);
-			}
-
-			return result;
-		}
-
 		private List<IFile> GetFiles(string path, string type)
 		{
 			var files = _fileSystem.ListFiles(path);
@@ -327,7 +306,7 @@ namespace SmartStore.Admin.Controllers
 				return files.ToList();
 
 			return files
-				.Where(x => GetFileContentType(x.FileType).IsCaseInsensitiveEqual(type))
+				.Where(x => GetFileContentType(x.Extension).IsCaseInsensitiveEqual(type))
 				.ToList();
 		}
 
@@ -406,8 +385,8 @@ namespace SmartStore.Admin.Controllers
 				else
 					Response.Write(",");
 
-				//var url = _fileSystem.GetPublicUrl(file.Path);
-				var url = "/Media/" + file.Path.Replace('\\', '/');
+				var url = _fileSystem.GetPublicUrl(file.Path);
+				//var url = "/Media/" + file.Path.Replace('\\', '/');
 
 				Response.Write("{");
 				Response.Write("\"p\":\"" + url + "\"");
@@ -696,19 +675,23 @@ namespace SmartStore.Admin.Controllers
 		private void CopyFile(string path, string newPath)
 		{
 			path = GetRelativePath(path);
-			newPath = GetRelativePath(newPath);
 
-			if (!_fileSystem.FileExists(path))
+			var file = _fileSystem.GetFile(path);
+
+			if (!file.Exists)
 			{
 				throw new Exception(LangRes("E_CopyFileInvalisPath"));
 			}
 
 			try
 			{
-				var file = _fileSystem.GetFile(path);
-				var newName = GetUniqueFileName(newPath, file.Name);
+				newPath = _fileSystem.Combine(GetRelativePath(newPath), file.Name);
+				if (_fileSystem.CheckFileUniqueness(newPath, out var newFile))
+				{
+					newPath = newFile.Path;
+				}
 
-				_fileSystem.CopyFile(path, _fileSystem.Combine(newPath, newName));
+				_fileSystem.CopyFile(path, newPath);
 
 				Response.Write(GetResultString());
 			}
@@ -845,7 +828,7 @@ namespace SmartStore.Admin.Controllers
 			Response.Write(GetResultString());
 		}
 
-		private void Upload(string path)
+		private void Upload(string path, bool external = false)
 		{
 			path = GetRelativePath(path);
 
@@ -853,6 +836,7 @@ namespace SmartStore.Admin.Controllers
 			var hasError = false;
 			var width = 0;
 			var height = 0;
+			string url = null;
 
 			int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out width);
 			int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out height);
@@ -883,15 +867,20 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 
-				// copy files to file storage
+				// Copy files to file storage
 				foreach (var tempPath in Directory.EnumerateFiles(tempDir, "*", SearchOption.TopDirectoryOnly))
 				{
 					using (var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read))
 					{
-						var name = GetUniqueFileName(path, Path.GetFileName(tempPath));
+						var name = Path.GetFileName(tempPath);
 						var newPath = _fileSystem.Combine(path, name);
+						if (_fileSystem.CheckFileUniqueness(newPath, out var file))
+						{
+							newPath = file.Path;
+						}
 
 						_fileSystem.SaveStream(newPath, stream);
+						url = _fileSystem.GetPublicUrl(newPath);
 					}
 				}
 			}
@@ -907,9 +896,23 @@ namespace SmartStore.Admin.Controllers
 
 			if (IsAjaxUpload())
 			{
-				if (message.HasValue())
+				if (external)
 				{
-					Response.Write(GetResultString(message, hasError ? "error" : "ok"));
+					var result = new
+					{
+						Success = !hasError,
+						Url = url,
+						Message = message
+					};
+					Response.ContentType = "text/json";
+					Response.Write(JsonConvert.SerializeObject(result));
+				}
+				else
+				{
+					if (message.HasValue())
+					{
+						Response.Write(GetResultString(message, hasError ? "error" : "ok"));
+					}
 				}
 			}
 			else
@@ -922,7 +925,7 @@ namespace SmartStore.Admin.Controllers
 
 		#endregion
 
-		public void ProcessRequest()
+		public void ProcessRequest(string a = null, string d = null)
 		{
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.UploadPictures))
 			{
@@ -930,7 +933,7 @@ namespace SmartStore.Admin.Controllers
 				return;
 			}
 
-			var action = "DIRLIST";
+			var action = Request["a"] ?? a ?? "DIRLIST";
 
 			try
 			{
@@ -987,7 +990,7 @@ namespace SmartStore.Admin.Controllers
 						ShowThumbnail(Request["f"], w, h);
 						break;
 					case "UPLOAD":
-						Upload(Request["d"]);
+						Upload(Request["d"] ?? d, Request["ext"].ToBool());
 						break;
 					default:
 						Response.Write(GetResultString("This action is not implemented.", "error"));

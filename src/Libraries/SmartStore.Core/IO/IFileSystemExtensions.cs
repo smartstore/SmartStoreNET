@@ -222,5 +222,45 @@ namespace SmartStore.Core.IO
 			return true;
 		}
 
+		/// <summary>
+		/// Checks whether the name of the file is unique within its directory.
+		/// When given file exists, this method appends [1...n] to the file title until
+		/// the check returns false.
+		/// </summary>
+		/// <param name="path">The path of file to check</param>
+		/// <param name="uniqueFile">An <see cref="IFile"/> object containing the unique file's info, or <c>null</c> if method returns <c>false</c></param>
+		/// <returns>
+		/// <c>false</c> when <paramref name="path"/> does not exist yet. <c>true</c> otherwise.
+		/// </returns>
+		public static bool CheckFileUniqueness(this IFileSystem fileSystem, string path, out IFile uniqueFile)
+		{
+			Guard.NotEmpty(path, nameof(path));
+
+			uniqueFile = null;
+
+			var file = fileSystem.GetFile(path);
+			if (!file.Exists)
+			{
+				return false;
+			}
+
+			var pattern = string.Concat(file.Title, "-*", file.Extension);
+			var dir = file.Directory;
+			var files = new HashSet<string>(fileSystem.SearchFiles(dir, pattern, false).Select(x => Path.GetFileName(x)));
+
+			int i = 1;
+			while (true)
+			{
+				var newFileName = string.Concat(file.Title, "-", i, file.Extension);
+				if (!files.Contains(newFileName))
+				{
+					// Found our gap
+					uniqueFile = fileSystem.GetFile(string.Concat(dir, newFileName));
+					return true;
+				}
+
+				i++;
+			}
+		}
 	}
 }

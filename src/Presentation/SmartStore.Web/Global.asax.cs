@@ -177,9 +177,6 @@ namespace SmartStore.Web
 
 				// register virtual path provider for theming (file inheritance handling etc.)
 				HostingEnvironment.RegisterVirtualPathProvider(vppTheme);
-
-				//// register virtual path provider for bundling (Sass & variables handling)
-				//BundleTable.VirtualPathProvider = new BundlingVirtualPathProvider(vppSystem);
 			}
 		}
 

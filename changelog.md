@@ -74,6 +74,7 @@
 * The tax value per tax rate was not updated when adding\removing a product to\from the order.
 * The option to send manually was ignored when sending e-mails
 * #528 LimitedToStores is required on payment provider rather than plugin level
+* #1318 Disabled preselected attribute combination permanently hides the shopping cart button, even if another combination is selected.
 
 
 ## SmartStore.NET 3.0.3

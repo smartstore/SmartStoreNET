@@ -41,9 +41,11 @@
 		Html.RenderPartial("Product.Variants", Model.ProductVariantAttributes, dataDictVariants);
 	}
 
+	<div class="pd-offer-actions-container" data-partial="OfferActions">
 	@{ 
 		var dataDictAddToCart = new ViewDataDictionary();
 		dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
 		Html.RenderPartial("Product.Offer.Actions", Model, dataDictAddToCart);
 	}
+	</div>
 </div>

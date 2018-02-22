@@ -1,3 +1,4 @@
+/// <reference path="_variables.scss" />
 /// <reference path="../../Content/bs4/scss/bootstrap.scss" />
 
 //
@@ -670,6 +671,16 @@ legend {
 	width: 100%;
 }
 
+.ie11 {
+	.adminContent,
+	.adminTitle,
+	.adminData {
+		display: table;
+	}
+	.adminTitle {
+		width: 25%;
+	}
+}
 
 //
 // Tables

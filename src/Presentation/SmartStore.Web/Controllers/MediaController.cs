@@ -88,7 +88,7 @@ namespace SmartStore.Web.Controllers
 			var query = CreateImageQuery(mime, extension);
 			var cachedImage = _imageCache.Get(id, nameWithoutExtension, extension, query);
 
-			return await ImageInternal(
+			return await HandleImage(
 				query, 
 				cachedImage,
 				nameWithoutExtension,
@@ -173,11 +173,11 @@ namespace SmartStore.Web.Controllers
 			}
 
 			var query = CreateImageQuery(mime, extension);
-			var isProcessableImage = query.NeedsProcessing() && _imageProcessor.IsSupportedImage(file.Name);
+			var isProcessableImage = query.NeedsProcessing(true) && _imageProcessor.IsSupportedImage(file.Name);
 			if (isProcessableImage)
 			{
 				var cachedImage = _imageCache.Get(file, query);
-				return await ImageInternal(
+				return await HandleImage(
 					query,
 					cachedImage,
 					nameWithoutExtension,
@@ -236,7 +236,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[NonAction]
-		private async Task<ActionResult> ImageInternal(
+		private async Task<ActionResult> HandleImage(
 			ProcessImageQuery query,
 			CachedImageResult cachedImage,
 			string nameWithoutExtension,

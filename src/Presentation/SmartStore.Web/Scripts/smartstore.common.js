@@ -22,7 +22,8 @@
 			flex: flex
 		};
 
-		var modal = $('#' + (opts.id || "modal-popup-shared"));
+		var id = (opts.id || "modal-popup-shared");
+		var modal = $('#' + id);
 		var sizeClass = "";
 
 		if (opts.flex === undefined) opts.flex = true;
@@ -36,7 +37,7 @@
 
 		if (modal.length === 0) {
 			var html =
-				'<div id="modal-popup-shared" class="modal fade" data-backdrop="' + opts.backdrop + '" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'
+				'<div id="' + id + '" class="modal fade" data-backdrop="' + opts.backdrop + '" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'
 					+ '<div class="modal-dialog{0}" role="document">'.format(!!(sizeClass) ? " " + sizeClass : "")
 						+ '<div class="modal-content">'
 							+ '<div class="modal-body" style="padding: 0">'
@@ -73,7 +74,7 @@
 	window.closePopup = function (id) {
 		var modal = $('#' + (id || "modal-popup-shared"));
 		if (modal.length > 0) {
-			modal.remove();
+			modal.modal('hide');
 		}
 	}
 

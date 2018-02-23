@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Collections.Specialized;
 using System.Text;
-using System.Web.Routing;
 using SmartStore.Collections;
 using System.Drawing;
 using ImageProcessor.Imaging.Formats;
@@ -13,6 +12,8 @@ namespace SmartStore.Services.Media
 {
 	public class ProcessImageQuery : QueryString
 	{
+		private readonly static HashSet<string> _supportedTokens = new HashSet<string> { "w", "h", "q", "m", "size" };
+
 		public ProcessImageQuery()
 			: this(null, new NameValueCollection())
 		{
@@ -39,7 +40,7 @@ namespace SmartStore.Services.Media
 		}
 
 		public ProcessImageQuery(object source, NameValueCollection query)
-			: base(query)
+			: base(SanitizeCollection(query))
 		{
 			Guard.NotNull(query, nameof(query));
 
@@ -48,13 +49,34 @@ namespace SmartStore.Services.Media
 		}
 
 		public ProcessImageQuery(ProcessImageQuery query)
-			: base(query)
+			: base(SanitizeCollection(query))
 		{
 			Guard.NotNull(query, nameof(query));
 
 			Source = query.Source;
 			Format = query.Format;
 			DisposeSource = query.DisposeSource;
+		}
+
+		private static NameValueCollection SanitizeCollection(NameValueCollection query)
+		{
+			// We just need the supported flags
+			var sanitizable = query.AllKeys.Any(x => !_supportedTokens.Contains(x));
+			if (sanitizable)
+			{
+				var copy = new NameValueCollection(query);
+				foreach (var key in copy.AllKeys)
+				{
+					if (!_supportedTokens.Contains(key))
+					{
+						copy.Remove(key);
+					}
+				}
+
+				return copy;
+			}
+
+			return query;
 		}
 
 		/// <summary>
@@ -125,9 +147,18 @@ namespace SmartStore.Services.Media
 		}
 
 
-		public bool NeedsProcessing()
+		public bool NeedsProcessing(bool ignoreQualityFlag = false)
 		{
-			return base.Count > 0;
+			if (base.Count == 0)
+				return false;
+			
+			if (ignoreQualityFlag && base.Count == 1 && base["q"] != null)
+			{
+				// Return false if ignoreQualityFlag is true and "q" is the only flag.
+				return false;
+			}
+
+			return true;
 		}
 
 		public string CreateHash()

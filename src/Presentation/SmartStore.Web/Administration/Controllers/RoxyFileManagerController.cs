@@ -180,15 +180,6 @@ namespace SmartStore.Admin.Controllers
 			return result;
 		}
 
-		private void GetImageSize(string path, out int width, out int height)
-		{
-			width = height = 0;
-
-			var size = _pictureService.Value.GetPictureSize(_fileSystem.ReadAllBytes(path));
-			width = size.Width;
-			height = size.Height;
-		}
-
 		private void ImageResize(string path, string dest, int maxWidth, int maxHeight)
 		{
 			if (dest.IsEmpty())
@@ -201,7 +192,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			var buffer = System.IO.File.ReadAllBytes(path);
-			var originalSize = _pictureService.Value.GetPictureSize(buffer);
 
 			var query = new ProcessImageQuery(buffer)
 			{
@@ -209,6 +199,8 @@ namespace SmartStore.Admin.Controllers
 				Format = Path.GetExtension(path).Trim('.').ToLower(),
 				IsValidationMode = true
 			};
+
+			var originalSize = ImageHeader.GetDimensions(buffer, MimeTypes.MapNameToMimeType(path));
 
 			if (originalSize.IsEmpty || (originalSize.Height <= maxHeight && originalSize.Width <= maxWidth))
 			{
@@ -368,8 +360,7 @@ namespace SmartStore.Admin.Controllers
 		private void ListFiles(string path, string type)
 		{
 			var isFirstItem = true;
-			var width = 0;
-			var height = 0;
+			var size = Size.Empty;
 			var files = GetFiles(GetRelativePath(path), type);
 
 			Response.Write("[");
@@ -378,7 +369,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				try
 				{
-					GetImageSize(file.Path, out width, out height);
+					var mime = MimeTypes.MapNameToMimeType(file.Name);
+					size = ImageHeader.GetDimensions(file.OpenRead(), mime, false);
 				}
 				catch {	}
 
@@ -393,8 +385,8 @@ namespace SmartStore.Admin.Controllers
 				Response.Write("\"p\":\"" + url + "\"");
 				Response.Write(",\"t\":\"" + file.LastUpdated.ToUnixTime().ToString() + "\"");
 				Response.Write(",\"s\":\"" + file.Size.ToString() + "\"");
-				Response.Write(",\"w\":\"" + width.ToString() + "\"");
-				Response.Write(",\"h\":\"" + height.ToString() + "\"");
+				Response.Write(",\"w\":\"" + size.Width.ToString() + "\"");
+				Response.Write(",\"h\":\"" + size.Height.ToString() + "\"");
 				Response.Write("}");
 			}
 
@@ -476,80 +468,6 @@ namespace SmartStore.Admin.Controllers
 			FileSystemHelper.ClearDirectory(tempDir, true);
 
 			Response.End();
-		}
-
-		private void ShowThumbnail(string path, int width, int height)
-		{
-			path = GetRelativePath(path);
-			if (!_fileSystem.FileExists(path))
-				return;
-
-			Bitmap image = null;
-			var file = _fileSystem.GetFile(path);
-			using (var stream = file.OpenRead())
-			{
-				try
-				{
-					image = new Bitmap(Image.FromStream(stream));
-				}
-				catch {	}
-
-				stream.Close();
-			}
-
-			if (image == null)
-				return;
-
-			int cropWidth = image.Width, cropHeight = image.Height;
-			int cropX = 0, cropY = 0;
-			double imgRatio = (double)image.Width / (double)image.Height;
-
-			if (height == 0)
-				height = Convert.ToInt32(Math.Floor((double)width / imgRatio));
-
-			if (width > image.Width)
-				width = image.Width;
-			if (height > image.Height)
-				height = image.Height;
-
-			double cropRatio = (double)width / (double)height;
-
-			cropWidth = Convert.ToInt32(Math.Floor((double)image.Height * cropRatio));
-			cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
-			if (cropWidth > image.Width)
-			{
-				cropWidth = image.Width;
-				cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
-			}
-			if (cropHeight > image.Height)
-			{
-				cropHeight = image.Height;
-				cropWidth = Convert.ToInt32(Math.Floor((double)cropHeight * cropRatio));
-			}
-			if (cropWidth < image.Width)
-			{
-				cropX = Convert.ToInt32(Math.Floor((double)(image.Width - cropWidth) / 2));
-			}
-			if (cropHeight < image.Height)
-			{
-				cropY = Convert.ToInt32(Math.Floor((double)(image.Height - cropHeight) / 2));
-			}
-
-			var area = new Rectangle(cropX, cropY, cropWidth, cropHeight);
-
-			using (var cropImg = image.Clone(area, PixelFormat.DontCare))
-			{
-				image.Dispose();
-				var imgCallback = new Image.GetThumbnailImageAbort(() => false);
-
-				Response.AddHeader("Content-Type", "image/png");
-
-				cropImg
-					.GetThumbnailImage(width, height, imgCallback, IntPtr.Zero)
-					.Save(Response.OutputStream, ImageFormat.Png);
-
-				Response.OutputStream.Close();
-			}
 		}
 
 		private void RenameFile(string oldPath, string name)
@@ -983,12 +901,6 @@ namespace SmartStore.Admin.Controllers
 						break;
 					case "RENAMEFILE":
 						RenameFile(Request["f"], Request["n"]);
-						break;
-					case "GENERATETHUMB":
-						int w = 140, h = 0;
-						int.TryParse(Request["width"].Replace("px", ""), out w);
-						int.TryParse(Request["height"].Replace("px", ""), out h);
-						ShowThumbnail(Request["f"], w, h);
 						break;
 					case "UPLOAD":
 						Upload(Request["d"] ?? d, Request["ext"].ToBool());

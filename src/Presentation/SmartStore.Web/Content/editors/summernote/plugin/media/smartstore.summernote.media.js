@@ -105,8 +105,17 @@
 							e.preventDefault();
 							var url = context.$note.data('file-browser-url');
 							if (url) {
+								var modalId = "modal-browse-files";
 								url = modifyUrl(url, "field", "note-image-url");
-								openWindow(url, 900);
+								url = modifyUrl(url, "mid", modalId);
+								//openWindow(url);
+								openPopup({
+									id: modalId,
+									url: url,
+									flex: true,
+									large: true,
+									backdrop: false
+								});
 							}
 						});
 						ui.toggleBtn($imageBtn, false);

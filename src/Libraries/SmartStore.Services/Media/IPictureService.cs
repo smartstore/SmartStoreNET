@@ -78,8 +78,9 @@ namespace SmartStore.Services.Media
 		/// Gets the size of a picture
 		/// </summary>
 		/// <param name="pictureBinary">The buffer</param>
+		/// <param name="mimeType">Passing MIME type can slightly speed things up</param>
 		/// <returns>Size</returns>
-		Size GetPictureSize(byte[] pictureBinary);
+		Size GetPictureSize(byte[] pictureBinary, string mimeType = null);
 
 		/// <summary>
 		/// TODO: (mc)
@@ -267,8 +268,7 @@ namespace SmartStore.Services.Media
 
 		public static Size GetPictureSize(this IPictureService pictureService, Picture picture)
 		{
-			var pictureBinary = pictureService.LoadPictureBinary(picture);
-			return pictureService.GetPictureSize(pictureBinary);
+			return ImageHeader.GetDimensions(pictureService.OpenPictureStream(picture), picture.MimeType, false);
 		}
 
 		/// <summary>

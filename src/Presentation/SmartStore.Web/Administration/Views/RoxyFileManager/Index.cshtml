@@ -29,13 +29,16 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Roxy File Manager</title>
 	<script>
-		var roxy_root = '@Url.Content("~/Administration/Content/filemanager/")';
+		var roxy_root = '@Url.Content("~/Admin/RoxyFileManager/")';
+		var roxy_assets_root = '@Url.Content("~/Administration/Content/filemanager/")';
 	</script>
-	<link href="@Url.Content("~/Administration/Content/filemanager/css/jquery-ui-1.10.4.custom.min.css")" rel="stylesheet" type="text/css" />
-	<link href="@Url.Content("~/Administration/Content/filemanager/css/main.css")" rel="stylesheet" type="text/css" />
-	@*@Styles.Render("~/Administration/Content/filemanager/css/roxy")*@
+
+	@Styles.Render("~/css/roxyfm")
 	@*<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>*@
-	@Scripts.Render("~/Administration/Content/filemanager/js/roxy")
+	@Scripts.Render("~/bundles/roxyfm")
+
+	@*<link href="@Url.Content("~/Administration/Content/filemanager/css/jquery-ui-1.10.4.custom.min.css")" rel="stylesheet" type="text/css" />
+		<link href="@Url.Content("~/Administration/Content/filemanager/css/main.css")" rel="stylesheet" type="text/css" />*@
 	@*<script type="text/javascript" src="js/jquery-ui-1.10.4.custom.min.js"></script>
 	<script type="text/javascript" src="js/filetypes.js"></script>
 	<script type="text/javascript" src="js/custom.js"></script>
@@ -56,7 +59,7 @@
     </div>
     <div id="pnlLoadingDirs">
        <span>Loading directories...</span><br>
-       <img src="images/loading.gif" title="Loading directory tree, please wait...">
+       <img src="~/Administration/Content/filemanager/images/loading.gif" title="Loading directory tree, please wait...">
     </div>
     <div class="scrollPane">
       <ul id="pnlDirList"></ul>
@@ -90,7 +93,7 @@
        <div class="scrollPane">
          <div id="pnlLoading">
           <span data-lang="LoadingFiles">Loading files...</span><br>
-          <img src="images/loading.gif" title="Loading files, please wait...">
+          <img src="~/Administration/Content/filemanager/images/loading.gif" title="Loading files, please wait...">
           </div>
           <div id="pnlEmptyDir" data-lang="DirIsEmpty">
           This folder is empty

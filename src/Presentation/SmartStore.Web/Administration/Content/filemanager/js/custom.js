@@ -19,39 +19,48 @@
 
   Contact: Lyubomir Arsov, liubo (at) web-lobby.com
 */
-function FileSelected(file){
-	/**
-	* file is an object containing following properties:
-	* 
-	* fullPath - path to the file - absolute from your site root
-	* path - directory in which the file is located - absolute from your site root
-	* size - size of the file in bytes
-	* time - timestamp of last modification
-	* name - file name
-	* ext - file extension
-	* width - if the file is image, this will be the width of the original image, 0 otherwise
-	* height - if the file is image, this will be the height of the original image, 0 otherwise
-	* 
-	*/
+function FileSelected(file) {
+    /**
+     * file is an object containing following properties:
+     * 
+     * fullPath - path to the file - absolute from your site root
+     * path - directory in which the file is located - absolute from your site root
+     * size - size of the file in bytes
+     * time - timestamp of last modification
+     * name - file name
+     * ext - file extension
+     * width - if the file is image, this will be the width of the original image, 0 otherwise
+     * height - if the file is image, this will be the height of the original image, 0 otherwise
+     * 
+     */
+
+	var p = (window.opener || window.parent);
 
 	// Set the value of field sent to Fileman via URL param "field".
 	var fieldId = RoxyUtils.GetUrlParam('field');
 	//opener.document.getElementById(fieldId).value = file.fullPath;
-	opener.window.jQuery('#' + fieldId).val(file.fullPath).trigger('change');
-	
+	p.window.jQuery('#' + fieldId).val(file.fullPath).trigger('change');
 
 	//// Set the source of an image which id is sent to Fileman via URL param "img".
 	// opener.document.getElementById(RoxyUtils.GetUrlParam('img')).src = file.fullPath;
 
 	// Close file manager if it's opened in separate window. 
-	self.close();
+	if (window.opener) {
+		self.close();
+	}
+	else {
+		// We put the modal dialog's ID in "mid"
+		p.window.closePopup(RoxyUtils.GetUrlParam('mid'));
+	}
 }
-function GetSelectedValue(){
-	/**
-	* This function is called to retrieve selected value when custom integration is used.
-	* Url parameter selected will override this value.
-	*/
 
+function GetSelectedValue() {
+    /**
+     * This function is called to retrieve selected value when custom integration is used.
+     * Url parameter selected will override this value.
+     */
+
+	var p = (window.opener || window.parent);
 	var fieldId = RoxyUtils.GetUrlParam('field');
-	return opener.window.jQuery('#' + fieldId).val();
+	return p.window.jQuery('#' + fieldId).val();
 }

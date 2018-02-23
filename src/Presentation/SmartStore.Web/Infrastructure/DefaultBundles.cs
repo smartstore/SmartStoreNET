@@ -63,8 +63,8 @@ namespace SmartStore.Web.Infrastructure
 			/* Roxy File Manager
 			-----------------------------------------------------*/
 			var roxy = "~/Administration/Content/filemanager/";
-			var scriptBundle = new CustomScriptBundle("~/Administration/Content/filemanager/js/roxy").Include(
-				roxy + "js/jquery-1.11.1.min.js",
+			var scriptBundle = new CustomScriptBundle("~/bundles/roxyfm").Include(
+				roxy + "js/jquery-2.1.1.min.js",
 				roxy + "js/jquery-ui-1.10.4.custom.min.js",
 				roxy + "js/filetypes.js",
 				roxy + "js/custom.js",
@@ -76,7 +76,7 @@ namespace SmartStore.Web.Infrastructure
 			scriptBundle.Orderer = new NullOrderer();
 			bundles.Add(scriptBundle);
 
-			var styleBundle = new CustomStyleBundle("~/Administration/Content/filemanager/css/roxy").Include(
+			var styleBundle = new CustomStyleBundle("~/css/roxyfm").Include(
 				roxy + "css/jquery-ui-1.10.4.custom.min.css",
 				roxy + "css/main.css");
 			styleBundle.Orderer = new NullOrderer();

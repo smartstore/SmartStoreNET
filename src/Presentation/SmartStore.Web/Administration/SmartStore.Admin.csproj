@@ -207,7 +207,6 @@
     <Compile Include="Controllers\ForumController.cs" />
     <Compile Include="Controllers\GiftCardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\MediaController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\ManufacturerController.cs" />
@@ -473,7 +472,6 @@
     <Content Include="Content\filemanager\css\jquery-ui-1.10.4.custom.css" />
     <Content Include="Content\filemanager\css\jquery-ui-1.10.4.custom.min.css" />
     <Content Include="Content\filemanager\css\main.css" />
-    <Content Include="Content\filemanager\css\main.min.css" />
     <Content Include="Content\filemanager\dev.html" />
     <Content Include="Content\filemanager\images\action-folder-paste.png" />
     <Content Include="Content\filemanager\images\action-folder-rename.png" />
@@ -724,7 +722,6 @@
     <Content Include="Content\filemanager\js\main.js" />
     <Content Include="Content\filemanager\js\main.min.js" />
     <Content Include="Content\filemanager\js\mini-main.js" />
-    <Content Include="Content\filemanager\js\tiny_mce_popup.js" />
     <Content Include="Content\filemanager\js\utils.js" />
     <Content Include="Content\filemanager\LICENSE.txt" />
     <Content Include="Content\filemanager\third-party.txt" />
@@ -814,6 +811,7 @@
     <Content Include="Views\Product\_CreateOrUpdate.Inventory.cshtml" />
     <Content Include="Views\Product\_Create.SaveFirst.cshtml" />
     <Content Include="Views\Plugin\ConfigureProvider.cshtml" />
+    <None Include="Views\RoxyFileManager\Index.cshtml" />
     <Content Include="Views\Shared\Partials\_Providers.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\RichEditor.cshtml" />
     <Content Include="Views\Plugin\EditProviderPopup.cshtml" />

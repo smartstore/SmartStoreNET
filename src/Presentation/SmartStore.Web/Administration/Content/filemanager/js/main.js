@@ -427,14 +427,18 @@ function tooltipContent(){
   if($('#hdViewType').val() == 'thumb' && f.IsImage()){
     html = f.fullPath+'<br><span class="filesize">'+t('Size')+': '+RoxyUtils.FormatFileSize(f.size) + ' '+t('Dimensions')+': '+f.width+'x'+f.height+'</span>';
   }
-  else if(f.IsImage()){
+  else if (f.IsImage()) {
+	  var imgUrl = f.fullPath;
     if(RoxyFilemanConf.GENERATETHUMB){
-      imgUrl = RoxyUtils.AddParam(RoxyFilemanConf.GENERATETHUMB, 'f', f.fullPath);
-      imgUrl = RoxyUtils.AddParam(imgUrl, 'width', RoxyFilemanConf.PREVIEW_THUMB_WIDTH);
-      imgUrl = RoxyUtils.AddParam(imgUrl, 'height', RoxyFilemanConf.PREVIEW_THUMB_HEIGHT);
+   //   imgUrl = RoxyUtils.AddParam(RoxyFilemanConf.GENERATETHUMB, 'f', f.fullPath);
+   //   imgUrl = RoxyUtils.AddParam(imgUrl, 'width', RoxyFilemanConf.PREVIEW_THUMB_WIDTH);
+	  //imgUrl = RoxyUtils.AddParam(imgUrl, 'height', RoxyFilemanConf.PREVIEW_THUMB_HEIGHT);
+	  // Let the SMNET MediaController do the image resizing per ImageProcessor
+		imgUrl = RoxyUtils.AddParam(imgUrl, 'w', RoxyFilemanConf.PREVIEW_THUMB_WIDTH);
+		imgUrl = RoxyUtils.AddParam(imgUrl, 'h', RoxyFilemanConf.PREVIEW_THUMB_HEIGHT);
     }
-    else
-      imgUrl = f.fullPath;
+    //else
+    //  imgUrl = f.fullPath;
     html = '<img src="'+imgUrl+'" class="imgPreview"><br>'+f.name+' <br><span class="filesize">'+t('Size')+': '+RoxyUtils.FormatFileSize(f.size) + ' '+t('Dimensions')+': '+f.width+'x'+f.height+'</span>';
   }
   else
@@ -480,7 +484,7 @@ function switchView(t){
     t = $('#hdViewType').val();
   $('.btnView').removeClass('selected');
   if(t == 'thumb'){
-    $('#pnlFileList .icon').attr('src', 'images/blank.gif');
+    $('#pnlFileList .icon').attr('src', roxy_root + 'images/blank.gif');
     $('#pnlFileList').addClass('thumbView');
     if($('#dynStyle').length == 0){
       $('head').append('<style id="dynStyle" />');
@@ -498,11 +502,14 @@ function switchView(t){
       //$('ul#pnlFileList.thumbView .icon').css('height', RoxyFilemanConf.THUMBS_VIEW_HEIGHT + 'px');
       var imgUrl = $(this).attr('data-icon-big');
       if(RoxyFilemanConf.GENERATETHUMB && RoxyUtils.IsImage($(this).attr('data-path'))){
-        imgUrl = RoxyUtils.AddParam(RoxyFilemanConf.GENERATETHUMB, 'f', imgUrl);
-        imgUrl = RoxyUtils.AddParam(imgUrl, 'width', RoxyFilemanConf.THUMBS_VIEW_WIDTH);
-        imgUrl = RoxyUtils.AddParam(imgUrl, 'height', RoxyFilemanConf.THUMBS_VIEW_HEIGHT);
+        //imgUrl = RoxyUtils.AddParam(RoxyFilemanConf.GENERATETHUMB, 'f', imgUrl);
+        //imgUrl = RoxyUtils.AddParam(imgUrl, 'width', RoxyFilemanConf.THUMBS_VIEW_WIDTH);
+        //imgUrl = RoxyUtils.AddParam(imgUrl, 'height', RoxyFilemanConf.THUMBS_VIEW_HEIGHT);
+		  // Let the SMNET MediaController do the image resizing per ImageProcessor
+		  imgUrl = RoxyUtils.AddParam(imgUrl, 'w', RoxyFilemanConf.THUMBS_VIEW_WIDTH);
+		  imgUrl = RoxyUtils.AddParam(imgUrl, 'h', RoxyFilemanConf.THUMBS_VIEW_HEIGHT);
       }
-      $(this).children('.icon').css('background-image', 'url('+imgUrl+')');
+      $(this).children('.icon').css('background-image', 'url(' + imgUrl + ')');
       $(this).tooltip('option', 'show', {delay:50});
     });
     $('#btnThumbView').addClass('selected');

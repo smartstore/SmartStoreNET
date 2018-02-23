@@ -61,9 +61,7 @@ namespace SmartStore.Web.Controllers
 		{
 			string nameWithoutExtension = null;
 			string mime = null;
-			string prevMime = null;
 			string extension = null;
-			string etag;
 			Picture picture = null;
 
 			if (name.HasValue())
@@ -90,6 +88,164 @@ namespace SmartStore.Web.Controllers
 			var query = CreateImageQuery(mime, extension);
 			var cachedImage = _imageCache.Get(id, nameWithoutExtension, extension, query);
 
+			return await ImageInternal(
+				query, 
+				cachedImage,
+				nameWithoutExtension,
+				mime,
+				extension,
+				getSourceBuffer);
+
+			async Task<byte[]> getSourceBuffer(string prevMime)
+			{
+				byte[] source;
+
+				if (picture != null)
+				{
+					source = await _pictureService.LoadPictureBinaryAsync(picture);
+				}
+				else
+				{
+					if (id == 0)
+					{
+						// This is most likely a request for a default placeholder image
+						var mappedPath = CommonHelper.MapPath(Path.Combine(PictureService.FallbackImagesRootPath, name), false);
+						if (!System.IO.File.Exists(mappedPath))
+							return null;
+
+						source = System.IO.File.ReadAllBytes(mappedPath);
+					}
+					else
+					{
+						// Get metadata from DB
+						picture = _pictureService.GetPictureById(id);
+
+						// Picture must exist
+						if (picture == null)
+							return null;
+
+						// Picture's mime must match requested mime
+						if (!picture.MimeType.IsCaseInsensitiveEqual(prevMime ?? mime))
+							return null;
+
+						// When Picture has SeoFileName, it must match requested name
+						// When Picture has NO SeoFileName, requested name must match Id
+						if (picture.SeoFilename.HasValue() && !picture.SeoFilename.IsCaseInsensitiveEqual(nameWithoutExtension))
+							return null;
+						else if (picture.SeoFilename.IsEmpty() && picture.Id.ToString(ImageCache.IdFormatString) != nameWithoutExtension)
+							return null;
+
+						source = await _pictureService.LoadPictureBinaryAsync(picture);
+					}
+				}
+
+				return source;
+			}
+		}
+
+		public async Task<ActionResult> File(string path)
+		{
+			string name = null;
+			string mime = null;
+
+			if (path.IsEmpty())
+			{
+				return NotFound(null);
+			}
+
+			name = Path.GetFileName(path);
+
+			name.SplitToPair(out var nameWithoutExtension, out var extension, ".", true);
+			mime = MimeTypes.MapNameToMimeType(name);
+
+			if (nameWithoutExtension.IsEmpty() || extension.IsEmpty())
+			{
+				return NotFound(mime ?? "text/html");
+			}
+
+			extension = extension.ToLower();
+
+			var file = _mediaFileSystem.GetFile(path);
+
+			if (!file.Exists)
+			{
+				return NotFound(mime);
+			}
+
+			var query = CreateImageQuery(mime, extension);
+			var isProcessableImage = query.NeedsProcessing() && _imageProcessor.IsSupportedImage(file.Name);
+			if (isProcessableImage)
+			{
+				var cachedImage = _imageCache.Get(file, query);
+				return await ImageInternal(
+					query,
+					cachedImage,
+					nameWithoutExtension,
+					mime,
+					extension,
+					getSourceBuffer);
+			}
+
+
+			// It's no image... proceed with standard stuff...
+
+			if (ETagMatches(nameWithoutExtension, mime, file.LastUpdated))
+			{
+				return Content(null);
+			}
+
+			var isFaulted = false;
+
+			try
+			{
+				if (Request.HttpMethod == "HEAD")
+				{
+					return new HttpStatusCodeResult(200);
+				}
+				
+				if (_mediaFileSystem.IsCloudStorage && !_streamRemoteMedia)
+				{
+					// Redirect to existing remote file
+					Response.ContentType = mime;
+					return Redirect(_mediaFileSystem.GetPublicUrl(path));
+				}
+				else
+				{
+					// Open existing stream
+					return File(file.OpenRead(), mime);
+				}
+			}
+			catch (Exception ex)
+			{
+				isFaulted = true;
+				Logger.ErrorFormat(ex, "Error processing media file '{0}'.", path);
+				return new HttpStatusCodeResult(500, ex.Message);
+			}
+			finally
+			{
+				if (!isFaulted)
+				{
+					FinalizeRequest(nameWithoutExtension, mime, file.LastUpdated);
+				}
+			}
+
+			async Task<byte[]> getSourceBuffer(string prevMime)
+			{
+				return await file.OpenRead().ToByteArrayAsync();
+			}
+		}
+
+		[NonAction]
+		private async Task<ActionResult> ImageInternal(
+			ProcessImageQuery query,
+			CachedImageResult cachedImage,
+			string nameWithoutExtension,
+			string mime,
+			string extension,
+			Func<string, Task<byte[]>> getSourceBuffer)
+		{
+			string prevMime = null;
+
 			if (extension != cachedImage.Extension)
 			{
 				// The query requests another format. 
@@ -101,25 +257,9 @@ namespace SmartStore.Web.Controllers
 
 			if (cachedImage.Exists)
 			{
-				var ifNoneMatch = Request.Headers["If-None-Match"];
-				if (ifNoneMatch.HasValue())
+				if (ETagMatches(nameWithoutExtension, mime, cachedImage.LastModifiedUtc.Value))
 				{
-					etag = GetFileETag(nameWithoutExtension, mime, cachedImage.LastModifiedUtc.Value);
-
-					if (etag == ifNoneMatch)
-					{
-						// File hasn't changed, so return HTTP 304 without retrieving the data
-						Response.StatusCode = 304;
-						Response.StatusDescription = "Not Modified";
-
-						// Explicitly set the Content-Length header so the client doesn't wait for
-						// content but keeps the connection open for other requests
-						Response.AddHeader("Content-Length", "0");
-
-						ApplyResponseHeaders();
-
-						return Content(null);
-					}
+					return Content(null);
 				}
 			}
 
@@ -140,45 +280,11 @@ namespace SmartStore.Web.Controllers
 						// File could have been processed by another request in the meantime, check again.
 						if (!cachedImage.Exists)
 						{
-							byte[] source;
-
-							if (picture == null)
+							// Call inner function
+							byte[] source = await getSourceBuffer(prevMime);
+							if (source == null)
 							{
-								if (id == 0)
-								{
-									// This is most likely a request for a default placeholder image
-									var mappedPath = CommonHelper.MapPath(Path.Combine(PictureService.FallbackImagesRootPath, name), false);
-									if (!System.IO.File.Exists(mappedPath))
-										return NotFound(mime);
-
-									source = System.IO.File.ReadAllBytes(mappedPath);
-								}
-								else
-								{
-									// Get metadata from DB
-									picture = _pictureService.GetPictureById(id);
-
-									// Picture must exist
-									if (picture == null)
-										return NotFound(mime);
-
-									// Picture's mime must match requested mime
-									if (!picture.MimeType.IsCaseInsensitiveEqual(prevMime ?? mime))
-										return NotFound(mime);
-
-									// When Picture has SeoFileName, it must match requested name
-									// When Picture has NO SeoFileName, requested name must match Id
-									if (picture.SeoFilename.HasValue() && !picture.SeoFilename.IsCaseInsensitiveEqual(nameWithoutExtension))
-										return NotFound(mime);
-									else if (picture.SeoFilename.IsEmpty() && picture.Id.ToString(ImageCache.IdFormatString) != nameWithoutExtension)
-										return NotFound(mime);
-
-									source = await _pictureService.LoadPictureBinaryAsync(picture);
-								}
-							}
-							else
-							{
-								source = await _pictureService.LoadPictureBinaryAsync(picture);
+								return NotFound(mime);
 							}
 
 							source = await ProcessAndPutToCacheAsync(cachedImage, source, query);
@@ -219,49 +325,19 @@ namespace SmartStore.Web.Controllers
 			{
 				if (!isFaulted)
 				{
-					var lastModifiedUtc = cachedImage.LastModifiedUtc.GetValueOrDefault();
-					etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
-					ApplyResponseHeaders(lastModifiedUtc);
-					ApplyETagHeader(etag);
+					FinalizeRequest(nameWithoutExtension, mime, cachedImage.LastModifiedUtc.GetValueOrDefault());
 				}
 			}
 		}
 
-		public ActionResult File(string path)
+		private bool ETagMatches(string nameWithoutExtension, string mime, DateTime lastModifiedUtc)
 		{
-			string name = null;
-			string mime = null;
 			string etag;
-
-			if (path.IsEmpty())
-			{
-				return NotFound(null);
-			}
-
-			name = Path.GetFileName(path);
-
-			// Requested file name was passed with the URL: fetch all required data without harassing DB.
-			name.SplitToPair(out var nameWithoutExtension, out var extension, ".", true);
-			mime = MimeTypes.MapNameToMimeType(name);
-
-			if (nameWithoutExtension.IsEmpty() || extension.IsEmpty())
-			{
-				return NotFound(mime ?? "text/html");
-			}
-
-			extension = extension.ToLower();
-
-			var file = _mediaFileSystem.GetFile(path);
-
-			if (!file.Exists)
-			{
-				return NotFound(mime);
-			}
 
 			var ifNoneMatch = Request.Headers["If-None-Match"];
 			if (ifNoneMatch.HasValue())
 			{
-				etag = GetFileETag(nameWithoutExtension, mime, file.LastUpdated);
+				etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
 
 				if (etag == ifNoneMatch)
 				{
@@ -275,48 +351,18 @@ namespace SmartStore.Web.Controllers
 
 					ApplyResponseHeaders();
 
-					return Content(null);
+					return true;
 				}
 			}
 
-			var isFaulted = false;
-			
-			try
-			{
-				if (Request.HttpMethod == "HEAD")
-				{
-					return new HttpStatusCodeResult(200);
-				}
-				
-				if (_mediaFileSystem.IsCloudStorage && !_streamRemoteMedia)
-				{
-					// Redirect to existing remote file
-					Response.ContentType = mime;
-					return Redirect(_mediaFileSystem.GetPublicUrl(path));
-				}
-				else
-				{
-					// Open existing stream
-					return File(file.OpenRead(), mime);
-				}
-			}
-			catch (Exception ex)
-			{
-				isFaulted = true;
-				// ProcessImageException is logged already in ImageProcessor
-				Logger.ErrorFormat(ex, "Error processing media file '{0}'.", path);
-				return new HttpStatusCodeResult(500, ex.Message);
-			}
-			finally
-			{
-				if (!isFaulted)
-				{
-					var lastModifiedUtc = file.LastUpdated;
-					etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
-					ApplyResponseHeaders(lastModifiedUtc);
-					ApplyETagHeader(etag);
-				}
-			}
+			return false;
+		}
+
+		private void FinalizeRequest(string nameWithoutExtension, string mime, DateTime lastModifiedUtc)
+		{
+			var etag = GetFileETag(nameWithoutExtension, mime, lastModifiedUtc);
+			ApplyResponseHeaders(lastModifiedUtc);
+			ApplyETagHeader(etag);
 		}
 
 		private async Task<byte[]> ProcessAndPutToCacheAsync(CachedImageResult cachedImage, byte[] buffer, ProcessImageQuery query)
@@ -391,7 +437,7 @@ namespace SmartStore.Web.Controllers
 		protected virtual ProcessImageQuery CreateImageQuery(string mimeType, string extension)
 		{
 			var query = new ProcessImageQuery(null, Request.QueryString);
-
+			
 			if (query.MaxWidth == null && query.MaxHeight == null && query.Contains("size"))
 			{
 				int size = query["size"].Convert<int>();

@@ -194,7 +194,7 @@ RoxyUtils.SelectText = function(field_id, start, end) {
 function RoxyFilemanConf(){}
 RoxyUtils.LoadConfig = function(){
   $.ajax({
-      url: 'conf.json',
+      url: roxy_root + 'conf.json',
       dataType: 'json',
       async:false,
       success: function(data){
@@ -210,24 +210,24 @@ RoxyUtils.LoadLang = function(){
   var langUrl = '';
   if(RoxyFilemanConf.LANG && RoxyFilemanConf.LANG.toLowerCase() == 'auto'){
     if(RoxyUtils.GetUrlParam('langCode')){
-      langUrl = 'lang/' + RoxyUtils.GetUrlParam('langCode').substr(0, 2).toLowerCase() + '.json';
+		langUrl = roxy_root + 'lang/' + RoxyUtils.GetUrlParam('langCode').substr(0, 2).toLowerCase() + '.json';
     }
     else {
       var language = window.navigator.userLanguage || window.navigator.language;
-      langUrl = 'lang/' + language.substr(0, 2) + '.json';
+	  langUrl = roxy_root + '..lang/' + language.substr(0, 2) + '.json';
     }
     if(!RoxyUtils.FileExists(langUrl))
       langUrl = '';
   }
   else{
     if(RoxyFilemanConf.LANG){
-      langUrl = 'lang/' + RoxyFilemanConf.LANG.substr(0, 2).toLowerCase() + '.json';
+		langUrl = roxy_root + 'lang/' + RoxyFilemanConf.LANG.substr(0, 2).toLowerCase() + '.json';
       if(!RoxyUtils.FileExists(langUrl))
         langUrl = '';
       }
   }
   if(!langUrl)
-    langUrl = 'lang/en.json';
+	  langUrl = roxy_root + 'lang/en.json';
 
   $.ajax({
       url: langUrl,

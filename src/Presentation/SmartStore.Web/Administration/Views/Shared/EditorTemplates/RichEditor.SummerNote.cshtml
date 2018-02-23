@@ -25,8 +25,8 @@
 }
 
 @Html.TextArea(string.Empty, /* Name suffix */
-               (string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */
-               new { @class = "summernote-editor", data_file_browser_url = Url.Content("~/Administration/Content/filemanager/index.html?type=image") }
+			   (string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */
+			   new { @class = "summernote-editor", data_file_browser_url = Url.Action("Index", "RoxyFileManager", new { type = "image", area = "admin" }) }
 )
 
 <script>

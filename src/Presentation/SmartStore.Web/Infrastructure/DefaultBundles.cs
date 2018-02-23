@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Optimization;
 using BundleTransformer.Core.Bundles;
+using BundleTransformer.Core.Orderers;
 using SmartStore.Web.Framework.Bundling;
 
 namespace SmartStore.Web.Infrastructure
@@ -61,6 +59,28 @@ namespace SmartStore.Web.Infrastructure
 				cm + "addon/display/fullscreen.css",
 				cm + "theme/eclipse.min.css",
 				cm + "mode/liquid/liquid.css"));
+
+			/* Roxy File Manager
+			-----------------------------------------------------*/
+			var roxy = "~/Administration/Content/filemanager/";
+			var scriptBundle = new CustomScriptBundle("~/Administration/Content/filemanager/js/roxy").Include(
+				roxy + "js/jquery-1.11.1.min.js",
+				roxy + "js/jquery-ui-1.10.4.custom.min.js",
+				roxy + "js/filetypes.js",
+				roxy + "js/custom.js",
+				roxy + "js/main.js",
+				roxy + "js/utils.js",
+				roxy + "js/file.js",
+				roxy + "js/directory.js",
+				roxy + "js/jquery-dateFormat.min.js");
+			scriptBundle.Orderer = new NullOrderer();
+			bundles.Add(scriptBundle);
+
+			var styleBundle = new CustomStyleBundle("~/Administration/Content/filemanager/css/roxy").Include(
+				roxy + "css/jquery-ui-1.10.4.custom.min.css",
+				roxy + "css/main.css");
+			styleBundle.Orderer = new NullOrderer();
+			bundles.Add(styleBundle);
 		}
 
 		public int Priority

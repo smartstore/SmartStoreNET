@@ -259,6 +259,15 @@ namespace SmartStore.Admin.Controllers
 
 		#endregion
 
+		#region Views
+
+		public ActionResult Index(string type)
+		{
+			return View();
+		}
+
+		#endregion
+
 		#region File system
 
 		private string FileRoot
@@ -288,14 +297,7 @@ namespace SmartStore.Admin.Controllers
 				path = uri.PathAndQuery;
 			}
 
-			var root = HttpContext.GetContentUrl(_fileSystem.Root);
-
-			if (path.StartsWith(root, StringComparison.OrdinalIgnoreCase))
-			{
-				path = path.Substring(root.Length);
-			}
-
-			return path.TrimStart('/', '\\');
+			return _fileSystem.GetStoragePath(path) ?? path;
 		}
 
 		private List<IFile> GetFiles(string path, string type)
@@ -386,7 +388,6 @@ namespace SmartStore.Admin.Controllers
 					Response.Write(",");
 
 				var url = _fileSystem.GetPublicUrl(file.Path);
-				//var url = "/Media/" + file.Path.Replace('\\', '/');
 
 				Response.Write("{");
 				Response.Write("\"p\":\"" + url + "\"");
@@ -709,7 +710,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				throw new Exception(LangRes("E_DeleteFileInvalidPath"));
 			}
-
+			
 			try
 			{
 				_fileSystem.DeleteFile(path);

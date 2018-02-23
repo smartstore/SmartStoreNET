@@ -10,6 +10,15 @@
 		$('#btnRefreshPage').click(function () {
 			location.reload();
 		});
+
+		$('input.ask-to-proceed, button.ask-to-proceed').click(function (e) {
+			if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
+				return true;
+			}
+
+			e.preventDefault();
+			return false;
+		});
     });
 
     function toggleOrderTotals(editmode) {
@@ -821,23 +830,19 @@
 
 			@if (Model.CanMarkOrderAsPaid)
 			{
-				<input type="submit" name="markorderaspaid" value="@T("Admin.Orders.Fields.MarkAsPaid")" id="markorderaspaid" class="btn btn-secondary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.MarkAsPaid.Hint")" />
+				<input type="submit" name="markorderaspaid" value="@T("Admin.Orders.Fields.MarkAsPaid")" id="markorderaspaid" class="btn btn-secondary ask-to-proceed" title="@T("Admin.Orders.Fields.MarkAsPaid.Hint")" />
 			}
 			@if (Model.CanCapture)
 			{
-				<input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn btn-primary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.Capture.Hint")" />
+				<input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn btn-primary ask-to-proceed" title="@T("Admin.Orders.Fields.Capture.Hint")" />
 			}
 			@if (Model.CanRefund)
 			{
-				<input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn btn-primary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.Refund.Hint")" />
+				<input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn btn-primary ask-to-proceed" title="@T("Admin.Orders.Fields.Refund.Hint")" />
 			}
 			@if (Model.CanRefundOffline)
 			{
-				<input type="submit" name="refundorderoffline" value="@T("Admin.Orders.Fields.RefundOffline")" id="refundorderoffline" class="btn btn-secondary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.RefundOffline.Hint")" />
+				<input type="submit" name="refundorderoffline" value="@T("Admin.Orders.Fields.RefundOffline")" id="refundorderoffline" class="btn btn-secondary ask-to-proceed" title="@T("Admin.Orders.Fields.RefundOffline.Hint")" />
 			}
 			@if (Model.CanPartiallyRefund)
 			{
@@ -853,13 +858,11 @@
 			}
 			@if (Model.CanVoid)
 			{
-				<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn btn-primary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.Void.Hint")" />
+				<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn btn-primary ask-to-proceed" title="@T("Admin.Orders.Fields.Void.Hint")" />
 			}
 			@if (Model.CanVoidOffline)
 			{
-				<input type="submit" name="voidorderoffline" value="@T("Admin.Orders.Fields.VoidOffline")" id="voidorderoffline" class="btn btn-secondary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.VoidOffline.Hint")" />
+				<input type="submit" name="voidorderoffline" value="@T("Admin.Orders.Fields.VoidOffline")" id="voidorderoffline" class="btn btn-secondary ask-to-proceed" title="@T("Admin.Orders.Fields.VoidOffline.Hint")" />
 			}
 		</td>
 	</tr>

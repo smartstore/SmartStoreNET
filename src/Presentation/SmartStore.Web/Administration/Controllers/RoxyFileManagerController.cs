@@ -68,33 +68,8 @@ namespace SmartStore.Admin.Controllers
 				exception.Dump();
 			}
 
-			json = json.Trim();
-			if (json != "")
-			{
-				if (json.StartsWith("{"))
-				{
-					json = json.Substring(1, json.Length - 2);
-				}
-
-				json = json.Trim();
-				json = json.Substring(1, json.Length - 2);
-
-				var lines = Regex.Split(json, "\"\\s*,\\s*\"");
-
-				foreach (var line in lines)
-				{
-					var tmp = Regex.Split(line, "\"\\s*:\\s*\"");
-					try
-					{
-						if (tmp[0] != "" && !result.ContainsKey(tmp[0]))
-						{
-							result.Add(tmp[0], tmp[1]);
-						}
-					}
-					catch { }
-				}
-			}
-			return result;
+			var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+			return dict;
 		}
 
 		private string LangRes(string name)

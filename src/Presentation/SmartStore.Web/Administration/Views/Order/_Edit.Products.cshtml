@@ -364,7 +364,7 @@
 							@if (item.IsReturnRequestPossible)
 							{
 								<input type="submit" name="btnAddReturnRequest@(item.Id)" value="@T("Admin.Orders.Products.ReturnRequest.Create")" id="btnAddReturnRequest@(item.Id)"
-									   class="btn btn-secondary" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" />
+									   class="btn btn-secondary" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);' />
 							}
 
 							<input type="submit" name="btnEditOrderItem@(item.Id)" value="@T("Admin.Common.Edit")" id="btnEditOrderItem@(item.Id)"

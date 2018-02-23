@@ -58,7 +58,7 @@
 						<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-success btn-sm mb-1 btn-run-task@(task.IsRunning ? " hide" : "")'>
 							@T("Admin.System.ScheduleTasks.RunNow")
 						</a>
-						<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-danger btn-sm mb-1 btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+						<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-danger btn-sm mb-1 btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
 							@T("Common.Cancel")
 						</a>
 					</td>

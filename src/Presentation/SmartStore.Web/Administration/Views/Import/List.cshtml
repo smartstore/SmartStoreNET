@@ -89,7 +89,7 @@
 							</button>
 
 							<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-block btn-sm btn-secondary btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
-							   data-task-id="@profile.ScheduleTaskId" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+							   data-task-id="@profile.ScheduleTaskId" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
 								<span>@T("Common.Cancel")</span>
 							</a>
 

@@ -15,7 +15,7 @@
 	@if (cancellable && hasPermission)
 	{
 		<div class="col-auto">
-			<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-sm btn-danger btn-cancel-task@(!Model.IsRunning ? " hide" : "")' onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+			<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-sm btn-danger btn-cancel-task@(!Model.IsRunning ? " hide" : "")' onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
 				@T("Common.Cancel")
 			</a>
 		</div>

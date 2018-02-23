@@ -73,7 +73,7 @@
 								<a href="@Url.Action("Download", new { setId = language.Id })"
 								   @Html.Attr("disabled", "disabled", language.IsInstalled)
 								   class="btn btn-sm btn-primary download-language@(language.IsDownloadRunning ? " d-none" : "")"
-								   onclick="return confirm(@T("Admin.Common.AskToProceed").JsText);">
+								   onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
 									<i class="fa fa-download"></i>
 									<span>@T("Common.Download")</span>
 								</a>

@@ -84,7 +84,7 @@
 
 				@if (Model.CanCancelOrder)
 				{
-					<button type="submit" name="cancelorder" id="cancelorder" class="btn btn-sm btn-danger" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+					<button type="submit" name="cancelorder" id="cancelorder" class="btn btn-sm btn-danger ask-to-proceed" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")">
 						<i class="fa fa-times"></i>
 						<span>@T("Admin.Orders.Fields.OrderStatus.Cancel")</span>
 					</button>
@@ -92,7 +92,7 @@
 
 				@if (Model.CanCompleteOrder)
 				{
-					<button type="submit" name="completeorder" id="completeorder" class="btn btn-sm btn-warning" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+					<button type="submit" name="completeorder" id="completeorder" class="btn btn-sm btn-warning ask-to-proceed" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")">
 						<i class="fa fa-check"></i>
 						<span>@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</span>
 					</button>
@@ -503,7 +503,7 @@
 				<i class="fa fa-pencil-square-o"></i>
 				<span>@T("Admin.Orders.Fields.EditOrderTotals")</span>
 			</button>
-			<button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-warning" value="@T("Admin.Orders.Fields.SaveOrderTotals")" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+			<button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-warning ask-to-proceed" value="@T("Admin.Orders.Fields.SaveOrderTotals")">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Orders.Fields.SaveOrderTotals")</span>
 			</button>
@@ -600,7 +600,7 @@
 						<i class="fa fa-pencil-square-o"></i>
 						<span>@T("Admin.Orders.Fields.EditCC")</span>
 					</button>
-					<button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn btn-secondary" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+					<button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn btn-secondary ask-to-proceed">
 						<i class="fa fa-check"></i>
 						<span>@T("Admin.Orders.Fields.SaveCC")</span>
 					</button>
@@ -702,7 +702,7 @@
 					<i class="fa fa-pencil-square-o"></i>
 					<span>@T("Admin.Orders.Fields.EditDD")</span>
 				</button>
-				<button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn btn-secondary" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+				<button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn btn-secondary ask-to-proceed">
 					<i class="fa fa-check"></i>
 					<span>@T("Admin.Orders.Fields.SaveDD")</span>
 				</button>

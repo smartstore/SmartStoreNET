@@ -18,7 +18,7 @@
             <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
                 <span>@T("Admin.Common.SaveContinue")</span>
             </button>
-            <a href="@Url.Action("ExportXml", new { id = Model.Id })" class="btn btn-secondary" onclick="return confirm(@T("Admin.Common.AskToProceed").JsText);">
+            <a href="@Url.Action("ExportXml", new { id = Model.Id })" class="btn btn-secondary" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
                 <i class="fa fa-upload"></i>
 				<span>@T("Admin.Configuration.Languages.Export")</span>
             </a>

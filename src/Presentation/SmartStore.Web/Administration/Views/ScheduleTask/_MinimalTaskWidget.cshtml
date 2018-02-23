@@ -43,7 +43,7 @@
 						<span>@T("Admin.System.ScheduleTasks.ScheduleExecution")</span>
 					}
 				</a>
-				<a class="dropdown-item" href="@Model.ExecuteUrl" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+				<a class="dropdown-item" href="@Model.ExecuteUrl" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
 					<i class="fa fa-fw fa-play"></i>
 					<span>@T("Admin.System.ScheduleTasks.RunNow")</span>
 				</a>

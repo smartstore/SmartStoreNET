@@ -15,27 +15,32 @@
 	}
 
 	window.openPopup = function (url, large, flex) {
-		var modal = $('#modal-popup-shared');
+		var opts = $.isPlainObject(url) ? url : {
+			/* id, backdrop */
+			url: url,
+			large: large,
+			flex: flex
+		};
+
+		var modal = $('#' + (opts.id || "modal-popup-shared"));
 		var sizeClass = "";
 
-		if (flex === undefined) flex = true;
+		if (opts.flex === undefined) opts.flex = true;
+		if (opts.flex) sizeClass = "modal-flex";
+		if (opts.backdrop === undefined) opts.backdrop = true;
 
-		if (flex) {
-			sizeClass = "modal-flex";
-		}
-
-		if (large && !flex)
+		if (opts.large && !opts.flex)
 			sizeClass = "modal-lg";
-		else if (!large && flex)
+		else if (!opts.large && opts.flex)
 			sizeClass += " modal-flex-sm";
 
 		if (modal.length === 0) {
 			var html =
-				'<div id="modal-popup-shared" class="modal fade" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'
+				'<div id="modal-popup-shared" class="modal fade" data-backdrop="' + opts.backdrop + '" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">'
 					+ '<div class="modal-dialog{0}" role="document">'.format(!!(sizeClass) ? " " + sizeClass : "")
 						+ '<div class="modal-content">'
 							+ '<div class="modal-body" style="padding: 0">'
-								+ '<iframe class="modal-flex-fill-area" frameborder="0" src="' + url + '" />'
+								+ '<iframe class="modal-flex-fill-area" frameborder="0" src="' + opts.url + '" />'
 							+ '</div>'
 							+ '<div class="modal-footer">'
 								+ '<button type="button" class="btn btn-secondary btn-default" data-dismiss="modal">' + window.Res['Common.Close'] + '</button>'
@@ -59,28 +64,27 @@
 		else {
 			var iframe = modal.find('.modal-body > iframe');
 			modal.find('.modal-body > .spinner-container').addClass('active');
-			iframe.attr('src', url);
+			iframe.attr('src', opts.url);
 		}
 
 		modal.modal('show');
 	}
 
-	window.closePopup = function () {
-		var modal = $('#modal-popup-shared');
+	window.closePopup = function (id) {
+		var modal = $('#' + (id || "modal-popup-shared"));
 		if (modal.length > 0) {
-			modal.modal('hide');
+			modal.remove();
 		}
 	}
 
 	window.openWindow = function (url, w, h, scroll) {
-		var l = (screen.width - w) / 2;
-		var t = (screen.height - h) / 2;
+		w = w || (screen.availWidth - (screen.availWidth * 0.25));
+		h = h || (screen.availHeight - (screen.availHeight * 0.25));
 
-		// TODO: (MC) temp only. Global viewport is larger now.
-		// But add this value to the callers later.
-		h += 100;
+		var l = (screen.availLeft + (screen.availWidth / 2)) - (w / 2);
+		var t = (screen.availTop + (screen.availHeight / 2)) - (h / 2);
 
-		winprops = 'resizable=0, height=' + h + ',width=' + w + ',top=' + t + ',left=' + l + 'w';
+		winprops = 'dependent=1,resizable=0,height=' + h + ',width=' + w + ',top=' + t + ',left=' + l;
 		if (scroll) winprops += ',scrollbars=1';
 		var f = window.open(url, "_blank", winprops);
 	}

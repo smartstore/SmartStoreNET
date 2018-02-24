@@ -63,14 +63,11 @@ else
 				if (!token)
 					return false;
 
-				var id = $("#messagetemplate-localized .tab-pane.active .cke").siblings("textarea").attr("id");
-
-				if (id != null) {
-					CKEDITOR.instances[id].insertHtml('{{ ' + token + ' }}');
-				}
-				else {
-					CKEDITOR.instances.Body.insertHtml('{{ ' + token + ' }}');
-				}
+				var summernote = $("#messagetemplate-localized .tab-pane.active .summernote-editor").data('summernote');
+				var note = summernote
+					? summernote.$note
+					: $('.summernote-editor').first();
+				note.summernote('editor.insertText', '{{ ' + token + ' }}');
 
 				return false;
 			});

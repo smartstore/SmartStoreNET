@@ -255,7 +255,7 @@
 
 @helper TabCheckoutSettings()
 {
-    <table class="adminContent">
+    <table class="adminContent mb-3">
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -311,8 +311,6 @@
     </table>
 
 	<div id="ThirdPartyEmailHandOverTextLocalized">
-		<p></p>
-
 		@(Html.LocalizedEditor<ShoppingCartSettingsModel, ShoppingCartSettingsLocalizedModel>("setting-shopping-cart-localized",
 		@<table class="adminContent">
 			<tr>

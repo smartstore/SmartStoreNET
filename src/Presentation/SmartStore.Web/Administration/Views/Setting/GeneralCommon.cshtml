@@ -474,7 +474,8 @@
 					@Html.SmartLabelFor(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListForEnum(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour)
+					@Html.SettingEditorFor(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour,
+						Html.DropDownListForEnum(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour))
 					@Html.ValidationMessageFor(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour)
 				</td>
 			</tr>
@@ -483,7 +484,8 @@
 					@Html.SmartLabelFor(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListForEnum(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour)
+					@Html.SettingEditorFor(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour,
+						Html.DropDownListForEnum(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour))
 					@Html.ValidationMessageFor(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour)
 				</td>
 			</tr>

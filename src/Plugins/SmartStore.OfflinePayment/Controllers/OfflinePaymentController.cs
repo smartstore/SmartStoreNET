@@ -94,9 +94,12 @@ namespace SmartStore.OfflinePayment.Controllers
 				fn(settings);
 			}
 
-			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+			using (Services.Settings.BeginScope())
+			{
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+			}
 
-			NotifySuccess(Services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 		}
 
 		[NonAction]

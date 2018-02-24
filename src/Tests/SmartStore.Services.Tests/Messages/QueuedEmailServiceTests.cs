@@ -39,7 +39,7 @@ namespace SmartStore.Services.Tests.Messages
 			_services = MockRepository.GenerateMock<ICommonServices>();
 			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
 
-			_settingService = new ConfigFileSettingService(null, null, null);
+			_settingService = new ConfigFileSettingService(null, null);
 			_services.Expect(x => x.Settings).Return(_settingService);
 
 			_downloadService = new DownloadService(_downloadRepository, _eventPublisher, _settingService, ProviderManager);

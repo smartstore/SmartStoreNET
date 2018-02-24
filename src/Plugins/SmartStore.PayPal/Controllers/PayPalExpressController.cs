@@ -16,6 +16,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
@@ -68,7 +69,7 @@ namespace SmartStore.PayPal.Controllers
 
         }
 
-		[LoadSetting, AdminAuthorize, ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly, LoadSetting]
 		public ActionResult Configure(PayPalExpressPaymentSettings settings, int storeScope)
 		{
             var model = new PayPalExpressConfigurationModel();
@@ -79,9 +80,13 @@ namespace SmartStore.PayPal.Controllers
 			return View(model);
 		}
 
-		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure(PayPalExpressPaymentSettings settings, PayPalExpressConfigurationModel model, int storeScope)
+		[HttpPost, AdminAuthorize, ChildActionOnly]
+		public ActionResult Configure(PayPalExpressConfigurationModel model, FormCollection form)
 		{
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<PayPalExpressPaymentSettings>(storeScope);
+
 			if (!ModelState.IsValid)
 			{
 				return Configure(settings, storeScope);
@@ -90,8 +95,16 @@ namespace SmartStore.PayPal.Controllers
 			ModelState.Clear();
 			model.Copy(settings, false);
 
-			// Multistore context not possible, see IPN handling.
-			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+			using (Services.Settings.BeginScope())
+			{
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+			}
+
+			using (Services.Settings.BeginScope())
+			{
+				// Multistore context not possible, see IPN handling.
+				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+			}
 
 			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 

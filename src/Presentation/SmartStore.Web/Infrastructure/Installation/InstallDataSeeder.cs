@@ -500,7 +500,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rs = new EfRepository<Setting>(_ctx);
 					rs.AutoCommitEnabled = false;
 
-					_settingService = new SettingService(NullCache.Instance, NullEventPublisher.Instance, rs);
+					_settingService = new SettingService(NullCache.Instance, rs);
 				}
 
 				return _settingService;

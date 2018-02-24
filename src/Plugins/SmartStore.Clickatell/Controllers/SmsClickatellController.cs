@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using SmartStore.Clickatell.Models;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Plugins;
-using SmartStore.Services;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -14,14 +13,10 @@ namespace SmartStore.Clickatell.Controllers
 	[AdminAuthorize]
     public class SmsClickatellController : PluginControllerBase
     {
-		private readonly ICommonServices _services;
-        private readonly IPluginFinder _pluginFinder;
+		private readonly IPluginFinder _pluginFinder;
 
-        public SmsClickatellController(
-			ICommonServices services,
-			IPluginFinder pluginFinder)
+        public SmsClickatellController(IPluginFinder pluginFinder)
         {
-			_services = services;
             _pluginFinder = pluginFinder;
         }
 
@@ -35,7 +30,7 @@ namespace SmartStore.Clickatell.Controllers
         }
 
         [HttpPost, SaveSetting, FormValueRequired("save")]
-        public ActionResult Configure(ClickatellSettings settings, SmsClickatellModel model, FormCollection form)
+        public ActionResult Configure(ClickatellSettings settings, SmsClickatellModel model)
         {
 			if (!ModelState.IsValid)
 			{

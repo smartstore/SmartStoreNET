@@ -42,8 +42,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
             this._categoryService = categoryService;
         }
 
-        [AdminAuthorize]
-        [LoadSetting, ChildActionOnly]
+        [AdminAuthorize, ChildActionOnly, LoadSetting]
         public ActionResult Configure(GoogleAnalyticsSettings settings)
         {
             var model = new ConfigurationModel();
@@ -56,18 +55,27 @@ namespace SmartStore.GoogleAnalytics.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [AdminAuthorize]
-        [SaveSetting, ChildActionOnly]
-		[ValidateInput(false)]
-        public ActionResult Configure(GoogleAnalyticsSettings settings, ConfigurationModel model)
+        [HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
+        public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<GoogleAnalyticsSettings>(storeScope);
+
 			ModelState.Clear();
 
 			MiniMapper.Map(model, settings);
 			settings.WidgetZone = model.ZoneId;
 
-			_settingService.SaveSetting(settings, x => x.WidgetZone, 0, false);
+			using (Services.Settings.BeginScope())
+			{
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+			}
+
+			using (Services.Settings.BeginScope())
+			{
+				_settingService.SaveSetting(settings, x => x.WidgetZone, 0, false);
+			}
 
 			return RedirectToConfiguration("SmartStore.GoogleAnalytics");
         }

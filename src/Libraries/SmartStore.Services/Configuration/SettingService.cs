@@ -1,32 +1,29 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Newtonsoft.Json;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Configuration;
-using SmartStore.Core.Events;
-using System.Linq.Expressions;
-using System.Reflection;
-using SmartStore.ComponentModel;
-using System.Collections;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Configuration
 {
-    public partial class SettingService : ScopedServiceBase, ISettingService
+	public partial class SettingService : ScopedServiceBase, ISettingService
     {
         private const string SETTINGS_ALL_KEY = "setting:all";
 
         private readonly IRepository<Setting> _settingRepository;
-        private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
 
-        public SettingService(ICacheManager cacheManager, IEventPublisher eventPublisher, IRepository<Setting> settingRepository)
+        public SettingService(ICacheManager cacheManager, IRepository<Setting> settingRepository)
         {
             _cacheManager = cacheManager;
-            _eventPublisher = eventPublisher;
             _settingRepository = settingRepository;
 
 			Logger = NullLogger.Instance;
@@ -61,6 +58,23 @@ namespace SmartStore.Services.Configuration
 
 				return dictionary;
 			});
+		}
+
+		protected virtual PropertyInfo GetPropertyInfo<T, TPropType>(Expression<Func<T, TPropType>> keySelector)
+		{
+			var member = keySelector.Body as MemberExpression;
+			if (member == null)
+			{
+				throw new ArgumentException($"Expression '{keySelector}' refers to a method, not a property.");
+			}
+
+			var propInfo = member.Member as PropertyInfo;
+			if (propInfo == null)
+			{
+				throw new ArgumentException($"Expression '{keySelector}' refers to a field, not a property.");
+			}
+
+			return propInfo;
 		}
 
 		public virtual void InsertSetting(Setting setting, bool clearCache = true)
@@ -183,23 +197,8 @@ namespace SmartStore.Services.Configuration
 			int storeId = 0)
 			where T : ISettings, new()
 		{
-			var member = keySelector.Body as MemberExpression;
-			if (member == null)
-			{
-				throw new ArgumentException(string.Format(
-					"Expression '{0}' refers to a method, not a property.",
-					keySelector));
-			}
-
-			var propInfo = member.Member as PropertyInfo;
-			if (propInfo == null)
-			{
-				throw new ArgumentException(string.Format(
-					   "Expression '{0}' refers to a field, not a property.",
-					   keySelector));
-			}
-
-			string key = typeof(T).Name + "." + propInfo.Name;
+			var propInfo = GetPropertyInfo(keySelector);
+			var key = string.Concat(typeof(T).Name, ".", propInfo.Name);
 
 			string setting = GetSettingByKey<string>(key, storeId: storeId);
 			return setting != null;
@@ -405,24 +404,10 @@ namespace SmartStore.Services.Configuration
 			int storeId = 0, 
 			bool clearCache = true) where T : ISettings, new()
 		{
-			var member = keySelector.Body as MemberExpression;
-			if (member == null)
-			{
-				throw new ArgumentException(string.Format(
-					"Expression '{0}' refers to a method, not a property.",
-					keySelector));
-			}
+			var propInfo = GetPropertyInfo(keySelector);
+			var key = string.Concat(typeof(T).Name, ".", propInfo.Name);
 
-			var propInfo = member.Member as PropertyInfo;
-			if (propInfo == null)
-			{
-				throw new ArgumentException(string.Format(
-					   "Expression '{0}' refers to a field, not a property.",
-					   keySelector));
-			}
-
-			string key = typeof(T).Name + "." + propInfo.Name;
-			// Duck typing is not supported in C#. That's why we're using dynamic type
+			// Duck typing is not supported in C#. That's why we're using dynamic type.
 			var fastProp = FastProperty.GetProperty(propInfo, PropertyCachingStrategy.EagerCached);
 			dynamic value = fastProp.GetValue(settings);
 
@@ -436,9 +421,13 @@ namespace SmartStore.Services.Configuration
 			int storeId = 0)  where T : ISettings, new()
 		{
 			if (overrideForStore || storeId == 0)
-				SaveSetting(settings, keySelector, storeId, true);
+			{
+				SaveSetting(settings, keySelector, storeId, false);
+			}
 			else if (storeId > 0)
+			{
 				DeleteSetting(settings, keySelector, storeId);
+			}
 		}
 
 		public virtual void DeleteSetting(Setting setting)
@@ -483,23 +472,8 @@ namespace SmartStore.Services.Configuration
 			Expression<Func<T, TPropType>> keySelector, 
 			int storeId = 0) where T : ISettings, new()
 		{
-			var member = keySelector.Body as MemberExpression;
-			if (member == null)
-			{
-				throw new ArgumentException(string.Format(
-					"Expression '{0}' refers to a method, not a property.",
-					keySelector));
-			}
-
-			var propInfo = member.Member as PropertyInfo;
-			if (propInfo == null)
-			{
-				throw new ArgumentException(string.Format(
-					   "Expression '{0}' refers to a field, not a property.",
-					   keySelector));
-			}
-
-			string key = typeof(T).Name + "." + propInfo.Name;
+			var propInfo = GetPropertyInfo(keySelector);
+			var key = string.Concat(typeof(T).Name, ".", propInfo.Name);
 
 			DeleteSetting(key, storeId);
 		}

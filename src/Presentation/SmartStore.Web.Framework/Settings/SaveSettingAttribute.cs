@@ -41,34 +41,36 @@ namespace SmartStore.Web.Framework.Settings
 
 		public override void OnActionExecuted(ActionExecutedContext filterContext)
 		{
+			if (filterContext.Controller.ViewData.ModelState.IsValid)
+			{
+				var updateSettings = true;
+				var redirectResult = filterContext.Result as RedirectToRouteResult;
+				if (redirectResult != null)
+				{
+					var controllerName = redirectResult.RouteValues["controller"] as string;
+					var areaName = redirectResult.RouteValues["area"] as string;
+					if (controllerName.IsCaseInsensitiveEqual("security") && areaName.IsCaseInsensitiveEqual("admin"))
+					{
+						// Insufficient permission. We must not save because the action did not run.
+						updateSettings = false;
+					}
+				}
+
+				if (updateSettings)
+				{
+					var settingHelper = new StoreDependingSettingHelper(filterContext.Controller.ViewData);
+
+					foreach (var param in _settingParams)
+					{
+						settingHelper.UpdateSettings(param.Instance, _form, _storeId, Services.Settings);
+					}
+				}
+			}
+
 			if (_settingsWriteBatch != null)
 			{
 				_settingsWriteBatch.Dispose();
 				_settingsWriteBatch = null;
-			}
-
-			if (!filterContext.Controller.ViewData.ModelState.IsValid)
-			{
-				return;
-			}
-
-			var redirectResult = filterContext.Result as RedirectToRouteResult;
-			if (redirectResult != null)
-			{
-				var controllerName = redirectResult.RouteValues["controller"] as string;
-				var areaName = redirectResult.RouteValues["area"] as string;
-				if (controllerName.IsCaseInsensitiveEqual("security") && areaName.IsCaseInsensitiveEqual("admin"))
-				{
-					// Insufficient permission. Get outta here, because the action did not run. We must not save.
-					return;
-				}
-			}
-
-			var settingHelper = new StoreDependingSettingHelper(filterContext.Controller.ViewData);
-
-			foreach (var param in _settingParams)
-			{
-				settingHelper.UpdateSettings(param.Instance, _form, _storeId, Services.Settings);
 			}
 
 			base.OnActionExecuted(filterContext);

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.ComponentModel;
-using SmartStore.Core.Configuration;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -19,7 +18,7 @@ namespace SmartStore.Web.Framework.Settings
 			_viewData = viewData;
 		}
 
-		public static string ViewDataKey { get { return "StoreDependingSettingData"; } }
+		public static string ViewDataKey => "StoreDependingSettingData";
 
 		public StoreDependingSettingData Data
 		{
@@ -49,6 +48,11 @@ namespace SmartStore.Web.Framework.Settings
 
 		public void AddOverrideKey(object settings, string name)
 		{
+			if (Data == null)
+			{
+				throw new SmartException("You must call GetOverrideKeys or CreateViewDataObject before AddOverrideKey.");
+			}
+
 			var key = settings.GetType().Name + "." + name;
 			Data.OverrideSettingKeys.Add(key);
 		}
@@ -167,27 +171,29 @@ namespace SmartStore.Web.Framework.Settings
 			}
 		}
 
-		public void UpdateSettings(object settings, FormCollection form, int storeId, ISettingService settingService, ILocalizedModelLocal localized = null)
+		public void UpdateSettings(
+			object settings,
+			FormCollection form,
+			int storeId,
+			ISettingService settingService,
+			ILocalizedModelLocal localized = null)
         {
             var settingName = settings.GetType().Name;
             var properties = FastProperty.GetProperties(localized == null ? settings.GetType() : localized.GetType()).Values;
 
-			using (settingService.BeginScope())
+			foreach (var prop in properties)
 			{
-				foreach (var prop in properties)
-				{
-					var name = prop.Name;
-					var key = settingName + "." + name;
+				var name = prop.Name;
+				var key = string.Concat(settingName, ".", name);
 
-					if (storeId == 0 || IsOverrideChecked(key, form))
-					{
-						dynamic value = prop.GetValue(localized == null ? settings : localized);
-						settingService.SetSetting(key, value == null ? "" : value, storeId, false);
-					}
-					else if (storeId > 0)
-					{
-						settingService.DeleteSetting(key, storeId);
-					}
+				if (storeId == 0 || IsOverrideChecked(key, form))
+				{
+					dynamic value = prop.GetValue(localized == null ? settings : localized);
+					settingService.SetSetting(key, value == null ? "" : value, storeId, false);
+				}
+				else if (storeId > 0)
+				{
+					settingService.DeleteSetting(key, storeId);
 				}
 			}
         }

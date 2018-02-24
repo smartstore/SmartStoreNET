@@ -317,6 +317,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Product.Picture.Added",
 				"The picture has successfully been added",
 				"Das Bild wurde erfolgreich zugefügt");
+
+			builder.AddOrUpdate("HtmlEditor.ClickToEdit", "Click to edit HTML...", "Hier klicken, um HTML zu editieren...");
 		}
 	}
 }

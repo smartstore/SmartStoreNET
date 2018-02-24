@@ -23,7 +23,11 @@
 			context.memo('button.media', function () {
 				return ui.button({
 					contents: '<i class="fa fa-picture-o">',
-					//tooltip: lang.image.image,
+					callback: function (btn) {
+						btn.data("placement", "bottom");
+						btn.attr("title", lang.image.image);
+						btn.tooltip();
+					},
 					click: function () {
 						self.show();
 					}

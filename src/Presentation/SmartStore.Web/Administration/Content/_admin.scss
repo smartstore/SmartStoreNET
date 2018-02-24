@@ -1363,6 +1363,21 @@ table.payment-method-features td {
     box-shadow: none;
 }
 
+.note-editor-preview {
+	border: 1px solid $input-border-color;
+	min-height: 100px;
+	max-height: 350px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: $input-padding-y $input-padding-x;
+	cursor: default;
+
+	&.empty {
+		min-height: initial;
+		//color: $text-muted;
+	}
+}
+
 .note-editor {
 	border-color: $input-border-color !important;
 	border-radius: $input-border-radius !important;
@@ -1400,7 +1415,20 @@ table.payment-method-features td {
 		}
 
 		.note-para > .btn-group:last-child .dropdown-menu.show {
+			// Fix: the para popover button groups should not wrap
 			display: flex !important;
+		}
+
+		.dropdown-style > .dropdown-item > * {
+			// Fix: Summernote does not remove the BS4 bottom margin of para style dropdown items
+			margin-bottom: 0;
+		}
+
+		.note-color + .btn-group > .btn {
+			// Fix: the fontsize button width should not change (toolbar flickers)
+			padding-left: 0.5rem;
+			padding-right: 0.5rem;
+			min-width: 50px;
 		}
 	}
 }

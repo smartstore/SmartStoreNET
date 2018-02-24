@@ -159,7 +159,7 @@
                         @Html.SmartLabelFor(model => model.Locales[item].Body)
                     </td>
                     <td class="adminData wide">
-                        @Html.EditorFor(model => model.Locales[item].Body, Html.RichEditorFlavor(), new { ForceRootBlock = false })
+                        @Html.EditorFor(model => model.Locales[item].Body, "Html", new { ForceRootBlock = false })
                         @Html.ValidationMessageFor(model => model.Locales[item].Body)
                     </td>
                 </tr>
@@ -180,7 +180,7 @@
                         @Html.SmartLabelFor(model => model.Body)
                     </td>
                     <td class="adminData wide">
-                        @Html.EditorFor(x => x.Body, Html.RichEditorFlavor(), new { ForceRootBlock = false })
+                        @Html.EditorFor(x => x.Body, "Html", new { ForceRootBlock = false })
                         @Html.ValidationMessageFor(model => model.Body)
                     </td>
                 </tr>

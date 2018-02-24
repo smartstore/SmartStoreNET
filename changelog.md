@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -22,6 +22,7 @@
 
 ### New Features
 * 1203 MegaMenu shrinker and *Brands* virtual menu item
+* [Summernote](https://summernote.org/) is now the primary HTML editor
 * #431 Added option to randomize the display order for slides on each request
 * #1258 Add option to filter shipping and payment methods by a specific customer role
 * #1247 Allow to import non system customer roles in customer import

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Web.Mvc;
 using System.Web.WebPages;
 using SmartStore.Core.Domain.Common;
@@ -96,9 +97,10 @@ namespace SmartStore.Web.Framework.UI
 			return new HelperResult(writer => writer.Write(sb.ToString()));
 		}
 
+		[Obsolete]
         public static string RichEditorFlavor(this HtmlHelper helper)
         {
-            return EngineContext.Current.Resolve<AdminAreaSettings>().RichEditorFlavor.NullEmpty() ?? "RichEditor";
+            return "Html";
         }
 
         public static GridEditActionCommandBuilder Localize(this GridEditActionCommandBuilder builder, Localizer T)

@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Mvc.Routing.Constraints;
 using System.Web.Routing;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Routing;
@@ -21,6 +22,9 @@ namespace SmartStore.Web.Infrastructure
 			// Registering this pattern ensures that MVC catches this request and passes it to our media controller.
 			// Within this controller we gonna find the actual file and stream it back to the client, 
 			// or - in case of blob storage - redirect the client to the computed public url.
+
+			//var mediaPublicPath = CommonHelper.GetAppSetting<string>("sm:MediaPublicPath").NullEmpty() ?? "~/Media";
+
 			SmartUrlRoutingModule.RegisterRoutablePath(@"/media/image/([1-9]\d*|0)/.*?$", "GET|HEAD");
 			SmartUrlRoutingModule.RegisterRoutablePath(@"/media/.*?$", "GET|HEAD");
 

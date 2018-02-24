@@ -1505,7 +1505,7 @@
     <Content Include="Views\Common\GenericAttributes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\RichEditor.SummerNote.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Html.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\EditorTemplates\AttributeControlType.cshtml" />

@@ -1,0 +1,66 @@
+﻿@model String
+@using SmartStore.Web.Framework.UI;
+@{
+	var availableLangs = new string[] { "de-DE", "en-US", "es-ES", "fr-FR", "it-IT", "pt-BR", "pt-PT", "ru-RU", "tr-TR", "uk-UA" };
+	var lang = WorkContext.WorkingLanguage.LanguageCulture;
+	if (!availableLangs.Contains(lang))
+	{
+		lang = "en-US";
+	}
+
+	Html.AddScriptParts("~/bundles/codemirror");
+	Html.AddCssFileParts("~/css/codemirror");
+
+	Html.AddScriptParts(true,
+		"~/Content/editors/summernote/summernote-bs4.min.js",
+		"~/Content/editors/summernote/plugin/media/smartstore.summernote.media.js",
+		"~/Content/editors/summernote/globalinit.js");
+
+	Html.AppendCssFileParts(true, "~/Content/editors/summernote/summernote-bs4.css");
+
+	if (lang != "en-US")
+	{
+		Html.AddScriptParts(true, "~/Content/editors/summernote/lang/summernote-{0}.js".FormatInvariant(lang));
+	}
+
+	var lazy = ViewData["lazy"].Convert<bool?>() ?? true;
+	var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+	var html = ((string)ViewData.TemplateInfo.FormattedModelValue);
+	var htmlIsEmpty = !html.HasValue() || html == "<p></p>" || html == "<p>&nbsp;</p>" || html == "<p><br></p>";
+}
+
+@if (lazy)
+{
+	<div class="note-editor-preview@(htmlIsEmpty ? " empty" : "")" data-target="#@id" data-lang="@lang">
+		@if (htmlIsEmpty)
+		{
+			<div>
+				<i class="fa fa-html5 mr-1"></i>
+				<span class="text-muted">Hier klicken, um HTML zu editieren...</span>
+			</div>
+		}
+		else
+		{
+			@Html.Raw(html)
+		}
+	</div>
+}
+
+
+@Html.TextArea(string.Empty, /* Name suffix */
+	html, /* Initial value */
+	new { @class = "summernote-editor" + (lazy ? " d-none" : ""), data_file_browser_url = Url.Action("Index", "RoxyFileManager", new { type = "image", area = "admin" }) }
+)
+
+<script>
+	summernote_image_upload_url = '@Html.Raw(Url.Action("ProcessRequest", "RoxyFileManager"))';
+	@if (!lazy)
+	{
+		<text>
+			$(function () {
+				$('#@id').summernote($.extend(true, {}, summernote_global_config, { lang: '@lang' }));
+			});
+		</text>
+	}
+
+</script>

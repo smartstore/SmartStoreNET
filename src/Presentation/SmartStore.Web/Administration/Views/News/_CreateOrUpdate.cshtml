@@ -50,7 +50,7 @@
                 @Html.SmartLabelFor(model => model.Full)
             </td>
             <td class="adminData wide">
-                @Html.EditorFor(x => x.Full, Html.RichEditorFlavor())
+                @Html.EditorFor(x => x.Full, "Html")
                 @Html.ValidationMessageFor(model => model.Full)
             </td>
         </tr>

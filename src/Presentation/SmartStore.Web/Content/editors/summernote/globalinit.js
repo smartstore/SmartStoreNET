@@ -4,6 +4,19 @@ var summernote_global_config;
 var summernote_image_upload_url;
 
 (function () {
+	// Editor toggling
+	$(document).on('click', '.note-editor-preview', function (e) {
+		var div = $(this);
+		var textarea = $(div.data("target"));
+		var lang = div.data("lang");
+
+		div.remove();
+		textarea
+			.removeClass('d-none')
+			.summernote($.extend(true, {}, summernote_global_config, { lang: lang, focus: true }));
+
+	});
+
 	summernote_global_config = {
 		codemirror: {
 			mode: "htmlmixed",
@@ -49,10 +62,10 @@ var summernote_image_upload_url;
 		},
 		toolbar: [
 			
-			['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
-			['fontname', ['fontname', 'color', 'fontsize']],
+			['text', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+			['font', ['fontname', 'color', 'fontsize']],
 			['para', ['style', 'ul', 'ol', 'paragraph']],
-			['insert', ['link', 'picture', 'media',  'table', 'hr', 'video']],
+			['insert', ['link', 'media',  'table', 'hr', 'video']],
 			['view', ['fullscreen', 'codeview', 'help']]
 		],
 		icons: {
@@ -131,7 +144,4 @@ var summernote_image_upload_url;
 			}
 		});
 	}
-
-	//$.summernote.options = $.extend(true, {}, $.summernote.options, summernote_global_config);
-
 })();

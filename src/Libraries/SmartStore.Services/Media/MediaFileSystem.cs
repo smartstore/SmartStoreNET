@@ -11,8 +11,10 @@ namespace SmartStore.Services.Media
 
 	public class MediaFileSystem : LocalFileSystem, IMediaFileSystem
 	{
+		private static string _mediaPublicPath;
+
 		public MediaFileSystem()
-			: base(GetMediaBasePath(), GetMediaPublicPath())
+			: base(GetMediaBasePath(), "~/" + GetMediaPublicPath())
 		{
 			this.TryCreateFolder("Storage");
 			this.TryCreateFolder("Thumbs");
@@ -21,7 +23,7 @@ namespace SmartStore.Services.Media
 			this.TryCreateFolder("Downloads");
 		}
 
-		private static string GetMediaBasePath()
+		public static string GetMediaBasePath()
 		{
 			var path = CommonHelper.GetAppSetting<string>("sm:MediaStoragePath")?.Trim().NullEmpty();
 			if (path == null)
@@ -32,15 +34,22 @@ namespace SmartStore.Services.Media
 			return path;
 		}
 
-		private static string GetMediaPublicPath()
+		public static string GetMediaPublicPath()
 		{
-			var path = CommonHelper.GetAppSetting<string>("sm:MediaPublicPath")?.Trim().NullEmpty();
-			if (path == null)
+			if (_mediaPublicPath == null)
 			{
-				path = "~/Media";
+				var path = CommonHelper.GetAppSetting<string>("sm:MediaPublicPath")?.Trim().NullEmpty() ?? "media";
+
+				if (path.IsWebUrl())
+				{
+					throw new NotSupportedException("Fully qualified URLs are not supported for the 'sm:MediaPublicPath' setting.");
+				}
+
+				_mediaPublicPath = path.TrimStart('~', '/').Replace('\\', '/').ToLower().EnsureEndsWith("/");
 			}
 
-			return path;
+			
+			return _mediaPublicPath;
 		}
 	}
 }

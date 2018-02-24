@@ -65,8 +65,7 @@ namespace SmartStore.Services.Media
 
 		static PictureService()
 		{
-			// TODO: (mc) make this configurable per web.config
-			_processedImagesRootPath = "media/image/";
+			_processedImagesRootPath = MediaFileSystem.GetMediaPublicPath() + "image/";
 			_fallbackImagesRootPath = "content/images/";
 		}
 
@@ -113,7 +112,7 @@ namespace SmartStore.Services.Media
 				else if (mediaSettings.AutoGenerateAbsoluteUrls)
 				{
 					var uri = httpContext.Request.Url;
-					_host = "{0}://{1}/{2}".FormatInvariant(uri.Scheme, uri.Authority, appPath);
+					_host = "{0}://{1}{2}".FormatInvariant(uri.Scheme, uri.Authority, appPath);
 				}
 				else
 				{

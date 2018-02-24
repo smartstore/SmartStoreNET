@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Mvc.Routing.Constraints;
 using System.Web.Routing;
+using SmartStore.Services.Media;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -17,26 +18,25 @@ namespace SmartStore.Web.Infrastructure
 			/* Media
 			----------------------------------------*/
 
-			// Match URL pattern /media/image/{id}/{path}[?{query}]. 
-			// By default IIS handles these types of requests (through its static file handler), but we don't want that. 
-			// Registering this pattern ensures that MVC catches this request and passes it to our media controller.
+			// By default IIS handles requests for static files (through its static file handler, even if they don't exist physically), but we don't want that. 
+			// Registering the following patterns ensures that MVC catches this requests and passes them to our media controller.
 			// Within this controller we gonna find the actual file and stream it back to the client, 
 			// or - in case of blob storage - redirect the client to the computed public url.
 
-			//var mediaPublicPath = CommonHelper.GetAppSetting<string>("sm:MediaPublicPath").NullEmpty() ?? "~/Media";
+			var mediaPublicPath = MediaFileSystem.GetMediaPublicPath();
 
-			SmartUrlRoutingModule.RegisterRoutablePath(@"/media/image/([1-9]\d*|0)/.*?$", "GET|HEAD");
-			SmartUrlRoutingModule.RegisterRoutablePath(@"/media/.*?$", "GET|HEAD");
-
+			// Match URL pattern /{pub}/image/{id}/{path}[?{query}], e.g. '/media/image/234/myproduct.png?size=250' 
+			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}image/([1-9]\d*|0)/.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
 			routes.MapRoute("Image",
-				"media/image/{id}/{*name}",
+				mediaPublicPath + "image/{id}/{*name}",
 				new { controller = "Media", action = "Image" },
 				//new { id = new MinRouteConstraint(0) }, // Don't bother with this, the Regex matches this already
 				new[] { "SmartStore.Web.Controllers" });
 
-
+			// Match URL pattern /{pub}/{folder}/{*storageRelativePath}[?{query}], e.g. '/media/uploaded/subfolder/image.png' 
+			SmartUrlRoutingModule.RegisterRoutablePath(@"/{0}.*?$".FormatInvariant(mediaPublicPath), "GET|HEAD");
 			routes.MapRoute("MediaUploaded",
-				"media/{*path}",
+				mediaPublicPath + "{*path}",
 				new { controller = "Media", action = "File" },
 				new[] { "SmartStore.Web.Controllers" });
 

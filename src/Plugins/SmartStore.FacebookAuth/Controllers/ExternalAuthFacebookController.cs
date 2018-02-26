@@ -13,7 +13,7 @@ using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.FacebookAuth.Controllers
 {
-    //[UnitOfWork]
+	//[UnitOfWork]
 	public class ExternalAuthFacebookController : PluginControllerBase
     {
         private readonly IOAuthProviderFacebookAuthorizer _oAuthProviderFacebookAuthorizer;
@@ -52,7 +52,10 @@ namespace SmartStore.FacebookAuth.Controllers
             var model = new ConfigurationModel();
 			MiniMapper.Map(settings, model);
 
-            return View(model);
+			var host = _services.StoreContext.CurrentStore.GetHost(true);
+			model.RedirectUrl = $"{host}Plugins/SmartStore.FacebookAuth/logincallback/";
+
+			return View(model);
         }
 
 		[SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
@@ -109,8 +112,9 @@ namespace SmartStore.FacebookAuth.Controllers
 				case OpenAuthenticationStatus.Error:
 					{
 						if (!result.Success)
-							foreach (var error in result.Errors)
-								NotifyError(error);
+						{
+							result.Errors.Each(x => NotifyError(x));
+						}
 
 						return new RedirectResult(Url.LogOn(returnUrl));
 					}

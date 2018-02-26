@@ -16,7 +16,7 @@
 @{Html.SmartStore().Window()
 	.Name("addtoken-window")
 	.Size(WindowSize.FlexSmall)
-	.Title(T("TBD"))
+	.Title(T("Admin.Common.ChooseToken"))
 	.Content(
 	@<text>
 		@(Html.Telerik().TreeView()
@@ -34,7 +34,7 @@
 				<span>@T("Admin.Common.Cancel")</span>
 			</button>
 			<button id="addtoken-btn" type="submit" class="btn btn-primary disabled">
-				<i class="fa fa-ok"></i>
+				<i class="fa fa-check"></i>
 				<span>@T("Common.AddNew")</span>
 			</button>
 	</text>)

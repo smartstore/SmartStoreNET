@@ -171,12 +171,22 @@ namespace SmartStore.Web.Framework.Settings
 			}
 		}
 
+		/// <summary>
+		/// Updates settings for a store.
+		/// </summary>
+		/// <param name="settings">Settings class instance.</param>
+		/// <param name="form">Form value collection.</param>
+		/// <param name="storeId">Store identifier.</param>
+		/// <param name="settingService">Setting service.</param>
+		/// <param name="localized">Localized model.</param>
+		/// <param name="propertyNameMapper">Function to map property names. Return <c>null</c> to skip a property.</param>
 		public void UpdateSettings(
 			object settings,
 			FormCollection form,
 			int storeId,
 			ISettingService settingService,
-			ILocalizedModelLocal localized = null)
+			ILocalizedModelLocal localized = null,
+			Func<string, string> propertyNameMapper = null)
         {
             var settingName = settings.GetType().Name;
             var properties = FastProperty.GetProperties(localized == null ? settings.GetType() : localized.GetType()).Values;
@@ -184,6 +194,17 @@ namespace SmartStore.Web.Framework.Settings
 			foreach (var prop in properties)
 			{
 				var name = prop.Name;
+
+				if (propertyNameMapper != null)
+				{
+					name = propertyNameMapper(name);
+				}
+
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					continue;
+				}
+
 				var key = string.Concat(settingName, ".", name);
 
 				if (storeId == 0 || IsOverrideChecked(key, form))

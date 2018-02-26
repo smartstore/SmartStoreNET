@@ -307,13 +307,15 @@ namespace SmartStore.Admin.Controllers
         }
 
 	
-		[LoadSetting]
-        public ActionResult Shipping(ShippingSettings shippingSettings, int storeScope)
+        public ActionResult Shipping()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var shippingSettings = _services.Settings.LoadSetting<ShippingSettings>(storeScope);
 			var store = storeScope == 0 ? _services.StoreContext.CurrentStore : _services.StoreService.GetStoreById(storeScope);
+
 			var model = shippingSettings.ToModel();
 			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 
@@ -340,7 +342,10 @@ namespace SmartStore.Admin.Controllers
 				);
 			}
 
-            var states = originAddress != null && originAddress.Country != null ? _stateProvinceService.GetStateProvincesByCountryId(originAddress.Country.Id, true).ToList() : new List<StateProvince>();
+            var states = originAddress != null && originAddress.Country != null 
+				? _stateProvinceService.GetStateProvincesByCountryId(originAddress.Country.Id, true).ToList() 
+				: new List<StateProvince>();
+
 			if (states.Count > 0)
 			{
 				foreach (var s in states)
@@ -352,9 +357,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			else
 			{
-				model.ShippingOriginAddress.AvailableStates.Add(
-					new SelectListItem { Text = _services.Localization.GetResource("Admin.Address.OtherNonUS"), Value = "0" }
-				);
+				model.ShippingOriginAddress.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
 			}
 
             model.ShippingOriginAddress.CountryEnabled = true;
@@ -376,15 +379,18 @@ namespace SmartStore.Admin.Controllers
 			var shippingSettings = _services.Settings.LoadSetting<ShippingSettings>(storeScope);
 			shippingSettings = model.ToEntity(shippingSettings);
 
-			// Scope to avoid duplicate ShippingSettings.ShippingOriginAddressId records.
 			using (Services.Settings.BeginScope())
 			{
-				StoreDependingSettings.UpdateSettings(shippingSettings, form, storeScope, _services.Settings);
-			}
+				StoreDependingSettings.UpdateSettings(shippingSettings, form, storeScope, _services.Settings, null, propertyName =>
+				{
+					// Skip to prevent the address from being recreated every time you save.
+					if (propertyName.IsCaseInsensitiveEqual("ShippingOriginAddressId"))
+						return null;
 
-			// Scope because ShippingSettings.ShippingOriginAddressId is updated.
-			using (Services.Settings.BeginScope())
-			{
+					return propertyName;
+				});
+
+				// Special case ShippingOriginAddressId\ShippingOriginAddress.
 				if (storeScope == 0 || StoreDependingSettings.IsOverrideChecked(shippingSettings, "ShippingOriginAddress", form))
 				{
 					var addressId = _services.Settings.SettingExists(shippingSettings, x => x.ShippingOriginAddressId, storeScope) ? shippingSettings.ShippingOriginAddressId : 0;
@@ -417,11 +423,13 @@ namespace SmartStore.Admin.Controllers
         }
 
 
-		[LoadSetting]
-        public ActionResult Tax(TaxSettings taxSettings, int storeScope)
+        public ActionResult Tax()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
+
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var taxSettings = _services.Settings.LoadSetting<TaxSettings>(storeScope);
 
 			var model = taxSettings.ToModel();
 
@@ -497,18 +505,21 @@ namespace SmartStore.Admin.Controllers
 			var taxSettings = _services.Settings.LoadSetting<TaxSettings>(storeScope);
 			taxSettings = model.ToEntity(taxSettings);
 
-			// Scope to avoid duplicate TaxSettings.DefaultTaxAddressId records.
 			using (Services.Settings.BeginScope())
 			{
-				StoreDependingSettings.UpdateSettings(taxSettings, form, storeScope, _services.Settings);
-			}
+				StoreDependingSettings.UpdateSettings(taxSettings, form, storeScope, _services.Settings, null, propertyName =>
+				{
+					// Skip to prevent the address from being recreated every time you save.
+					if (propertyName.IsCaseInsensitiveEqual("DefaultTaxAddressId"))
+						return null;
 
-			// Scope because tax settings are updated.
-			using (Services.Settings.BeginScope())
-			{
+					return propertyName;
+				});
+
 				taxSettings.AllowCustomersToSelectTaxDisplayType = false;
 				_services.Settings.UpdateSetting(taxSettings, x => x.AllowCustomersToSelectTaxDisplayType, false, storeScope);
 
+				// Special case DefaultTaxAddressId\DefaultTaxAddress.
 				if (storeScope == 0 || StoreDependingSettings.IsOverrideChecked(taxSettings, "DefaultTaxAddress", form))
 				{
 					var addressId = _services.Settings.SettingExists(taxSettings, x => x.DefaultTaxAddressId, storeScope) ? taxSettings.DefaultTaxAddressId : 0;

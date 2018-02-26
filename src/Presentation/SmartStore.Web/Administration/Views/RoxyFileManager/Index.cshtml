@@ -35,7 +35,7 @@
 	@Styles.Render("~/css/roxyfm") 
 	@Scripts.Render("~/bundles/roxyfm")
 
-	<script src="~/Administration/Content/filemanager/lang/de.js"></script>
+	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, "~/Administration/Content/filemanager/lang/", "*.js")
 
 </head>
 <body>

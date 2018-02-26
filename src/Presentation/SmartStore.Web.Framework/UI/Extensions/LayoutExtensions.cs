@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -136,6 +137,21 @@ namespace SmartStore.Web.Framework.UI
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             return MvcHtmlString.Create(pageAssetsBuilder.GenerateScripts(urlHelper, location, enableBundling));
         }
+
+		public static MvcHtmlString LocalizationScript(this HtmlHelper html, string culture, string virtualPath, string pattern, string fallbackCulture = "en")
+		{
+			var fileResolver = EngineContext.Current.Resolve<ILocalizationFileResolver>();
+			var result = fileResolver.Resolve(culture, virtualPath, pattern, true, fallbackCulture);
+
+			if (result != null)
+			{
+				return MvcHtmlString.Create("<script src='{0}'></script>".FormatInvariant(result.VirtualPath));
+			}
+			else
+			{
+				return MvcHtmlString.Empty;
+			}
+		}
 
         #endregion
 

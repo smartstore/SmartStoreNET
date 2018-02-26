@@ -39,6 +39,7 @@
 * XML and CSV export of shopping cart and wishlist items
 * #1363 Make storing of IP addresses optional
 * #729 Option for automatic order amount capturing when the shipping status changed to "shipped"
+* (Dev) ILocalizationFileResolver: responsible for finding localization files for client scripts
 
 ### Improvements
 * Target .NET Framework changed: 4.5.2 > 4.6.1.

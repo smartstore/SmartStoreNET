@@ -943,6 +943,7 @@
     <Content Include="Content\editors\summernote\font\summernote.eot" />
     <Content Include="Content\editors\summernote\font\summernote.ttf" />
     <Content Include="Content\editors\summernote\font\summernote.woff" />
+    <Content Include="Content\skinning\_datetimepicker.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />

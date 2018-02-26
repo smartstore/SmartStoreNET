@@ -35,6 +35,7 @@ namespace SmartStore.Web.Framework.Theming
 		}
 
 		public Localizer T { get; set; }
+		public ILocalizationFileResolver LocalizationFileResolver { get; set; }
 		public ICommonServices Services { get; set; }
 		public IThemeRegistry ThemeRegistry { get; set; }
 		public IThemeContext ThemeContext { get; set; }

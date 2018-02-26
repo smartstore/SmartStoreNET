@@ -138,6 +138,23 @@ namespace SmartStore.Web.Framework.UI
             return MvcHtmlString.Create(pageAssetsBuilder.GenerateScripts(urlHelper, location, enableBundling));
         }
 
+		/// <summary>
+		/// Tries to find a matching localization file for a given culture in the following order 
+		/// (assuming <paramref name="culture"/> is 'de-DE', <paramref name="pattern"/> is 'lang-*.js' and <paramref name="fallbackCulture"/> is 'en-US'):
+		/// <list type="number">
+		///		<item>Exact match > lang-de-DE.js</item>
+		///		<item>Neutral culture > lang-de.js</item>
+		///		<item>Any region for language > lang-de-CH.js</item>
+		///		<item>Exact match for fallback culture > lang-en-US.js</item>
+		///		<item>Neutral fallback culture > lang-en.js</item>
+		///		<item>Any region for fallback language > lang-en-GB.js</item>
+		/// </list>
+		/// </summary>
+		/// <param name="culture">The ISO culture code to get a localization file for, e.g. 'de-DE'</param>
+		/// <param name="virtualPath">The virtual path to search in</param>
+		/// <param name="pattern">The pattern to match, e.g. 'lang-*.js'. The wildcard char MUST exist.</param>
+		/// <param name="fallbackCulture">Optional.</param>
+		/// <returns></returns>
 		public static MvcHtmlString LocalizationScript(this HtmlHelper html, string culture, string virtualPath, string pattern, string fallbackCulture = "en")
 		{
 			var fileResolver = EngineContext.Current.Resolve<ILocalizationFileResolver>();

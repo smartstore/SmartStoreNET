@@ -26,7 +26,7 @@ namespace SmartStore.Core.Localization
 		/// Whether caching should be enabled. If <c>false</c>, no attempt is made to read from cache, nor writing the result to the cache.
 		/// Cache duration is 24 hours. Automatic eviction on file change is NOT performed.
 		/// </param>
-		/// <param name="fallbackCulture">Optional,</param>
+		/// <param name="fallbackCulture">Optional.</param>
 		/// <returns>Result</returns>
 		LocalizationFileResolveResult Resolve(
 			string culture,

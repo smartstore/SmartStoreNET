@@ -1,13 +1,6 @@
 ﻿@model String
 @using SmartStore.Web.Framework.UI;
 @{
-	var availableLangs = new string[] { "de-DE", "en-US", "es-ES", "fr-FR", "it-IT", "pt-BR", "pt-PT", "ru-RU", "tr-TR", "uk-UA" };
-	var lang = WorkContext.WorkingLanguage.LanguageCulture;
-	if (!availableLangs.Contains(lang))
-	{
-		lang = "en-US";
-	}
-
 	Html.AddScriptParts("~/bundles/codemirror");
 	Html.AddCssFileParts("~/css/codemirror");
 
@@ -18,20 +11,22 @@
 
 	Html.AppendCssFileParts(true, "~/Content/editors/summernote/summernote-bs4.css");
 
-	if (lang != "en-US")
-	{
-		Html.AddScriptParts(true, "~/Content/editors/summernote/lang/summernote-{0}.js".FormatInvariant(lang));
-	}
-
 	var lazy = ViewData["lazy"].Convert<bool?>() ?? true;
 	var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
 	var html = ((string)ViewData.TemplateInfo.FormattedModelValue);
 	var htmlIsEmpty = !html.HasValue() || html == "<p></p>" || html == "<p>&nbsp;</p>" || html == "<p><br></p>";
+	string culture = null;
+	var locFile = base.ResolveLocalizationFile(WorkContext.WorkingLanguage.LanguageCulture, "~/Content/editors/summernote/lang", "summernote-*.js", null);
+	if (locFile != null)
+	{
+		culture = locFile.Culture;
+		Html.AddScriptParts(true, locFile.VirtualPath);
+	}
 }
 
 @if (lazy)
 {
-	<div class="note-editor-preview@(htmlIsEmpty ? " empty" : "")" data-target="#@id" data-lang="@lang">
+	<div class="note-editor-preview@(htmlIsEmpty ? " empty" : "")" data-target="#@id" @Html.Attr("data-lang", culture, culture != null)>
 		@if (htmlIsEmpty)
 		{
 			<div>
@@ -58,7 +53,7 @@
 	{
 		<text>
 			$(function () {
-				$('#@id').summernote($.extend(true, {}, summernote_global_config, { lang: '@lang' }));
+				$('#@id').summernote($.extend(true, {}, summernote_global_config, { lang: @(culture != null ? "' + culture + '" : "null") }));
 			});
 		</text>
 	}

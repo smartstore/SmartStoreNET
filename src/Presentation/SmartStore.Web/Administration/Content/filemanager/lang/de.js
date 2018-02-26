@@ -1,4 +1,4 @@
-{
+RoxyLang = {
     "CreateDir": "Erstellen",
     "RenameDir": "Umbenennen",
     "DeleteDir": "Löschen",

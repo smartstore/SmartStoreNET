@@ -1,4 +1,4 @@
-{
+RoxyLang = {
 "CreateDir":"Opret",
 "RenameDir":"Omdøb",
 "DeleteDir":"Slet",

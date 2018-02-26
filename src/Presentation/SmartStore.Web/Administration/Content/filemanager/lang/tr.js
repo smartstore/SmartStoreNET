@@ -1,4 +1,4 @@
-{
+RoxyLang = {
 "CreateDir":"Klasör Oluştur",
 "RenameDir":"Klasörü Yeniden Adlandır",
 "DeleteDir":"Sil",

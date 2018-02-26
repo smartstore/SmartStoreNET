@@ -1,4 +1,4 @@
-{
+RoxyLang = {
 "CreateDir":"Vytvořit",
 "RenameDir":"Přejmenovat",
 "DeleteDir":"Smazat",

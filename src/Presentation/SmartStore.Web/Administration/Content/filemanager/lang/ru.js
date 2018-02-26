@@ -1,4 +1,4 @@
-﻿{
+﻿RoxyLang = {
 "CreateDir":"Создать",
 "RenameDir":"Переименовать",
 "DeleteDir":"Удалить",

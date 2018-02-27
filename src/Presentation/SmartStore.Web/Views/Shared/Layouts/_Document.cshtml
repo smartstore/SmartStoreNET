@@ -1,8 +1,6 @@
 ﻿@using SmartStore.Core;
 
 @{
-	//var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
-
 	var jsRoot = "~/Scripts/";
 	var vendorsRoot = "~/Content/vendors/";
 	var contentRoot = "~/Content/";
@@ -92,6 +90,8 @@
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)
+
+	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, vendorsRoot + "select2/js/i18n", "*.js", null)
 
     @{ Html.RenderWidget("head_html_tag"); }
 

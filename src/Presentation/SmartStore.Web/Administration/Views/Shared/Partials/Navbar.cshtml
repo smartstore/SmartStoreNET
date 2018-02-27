@@ -19,8 +19,10 @@
 <nav id="navbar" class="navbar navbar-dark navbar-expand-sm">
     
     <a class="navbar-brand" href="@Url.Action("Index", "Home", new { area = "Admin" })">
-        <img src="~/Administration/Content/images/smnet.png" alt="smartstore.NET" />
-    </a>
+        @*<img src="~/Administration/Content/images/smnet2.png" alt="smartstore.NET" />*@
+		<img class="navbar-img d-none d-lg-block" src="~/Administration/Content/images/smartstore.svg" alt="smartstore.NET" />
+		<img class="navbar-img d-lg-none" src="~/Administration/Content/images/smartstore-icon.svg" alt="smartstore.NET" />
+	</a>
 
 	<div id="navbar-menu" class="collapse navbar-collapse mr-auto">
 		@{

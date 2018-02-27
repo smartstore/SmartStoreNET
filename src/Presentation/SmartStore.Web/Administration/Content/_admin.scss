@@ -1,4 +1,6 @@
 /// <reference path="_variables.scss" />
+/// <reference path="../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../Content/shared/_mixins.scss" />
 /// <reference path="../../Content/bs4/scss/bootstrap.scss" />
 
 //
@@ -289,6 +291,15 @@ header {
 
 	.dropdown-toggle:after {
 		display: none;
+	}
+
+	.navbar-brand {
+		margin-right: 1.75rem;
+
+		> .navbar-img {
+			height: 28px;
+			width: auto;
+		}
 	}
 
 	.dropdown-menu {

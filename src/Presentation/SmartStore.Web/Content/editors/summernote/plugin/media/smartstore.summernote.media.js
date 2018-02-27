@@ -38,10 +38,6 @@
 				var $container = options.dialogsInBody ? $body : $editor;
 
 				var body = [
-					//'<div class="form-group note-form-group note-group-select-from-files">',
-					//	'<label class="note-form-label">' + lang.image.selectFromFiles + '</label>',
-					//	'<input class="note-image-input form-control note-form-control note-input" type="file" name="files" accept="image/*" multiple="multiple" />',
-					//'</div>',
 					'<div class="form-group note-group-image-url" style="overflow:auto;">',
 						'<label class="note-form-label">' + lang.image.url + '</label>',
 						'<div class="input-group">',

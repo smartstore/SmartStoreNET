@@ -8,9 +8,9 @@
 
 		// Adapt to moment.js
 		if (typeof moment !== undefined) {
-			var mlocale = moment().locale(moment.locale())._locale._config;
 			var dtf = g.culture.dateTimeFormat;
 			moment.defineLocale('glob', {
+				parentLocale: moment.locale(),
 				months: dtf.months.names,
 				monthsShort: dtf.months.namesAbbr,
 				weekdays: dtf.days.names,
@@ -27,14 +27,7 @@
 				week: {
 					dow: dtf.firstDay, // Monday is the first day of the week.
 					doy: 4  // The week that contains Jan 4th is the first week of the year.
-				},
-				calendar: mlocale.calendar,
-				relativeTime: mlocale.relativeTime,
-				dayOfMonthOrdinalParse: mlocale.dayOfMonthOrdinalParse,
-				meridiemParse: mlocale.meridiemParse,
-				ordinal: mlocale.ordinal,
-				invalidDate: mlocale.invalidDate,
-				monthsParseExact: mlocale.monthsParseExact
+				}
 			});
 		}
 

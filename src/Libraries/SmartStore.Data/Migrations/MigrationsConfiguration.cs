@@ -236,7 +236,8 @@ namespace SmartStore.Data.Migrations
 				"Admin.Catalog.Categories.Fields.SubjectToAcl",
 				"Admin.Catalog.Categories.Fields.AclCustomerRoles",
 				"Admin.Catalog.Products.Fields.SubjectToAcl",
-				"Admin.Catalog.Products.Fields.AclCustomerRoles");
+				"Admin.Catalog.Products.Fields.AclCustomerRoles",
+				"Common.Options.Count");
 
 			builder.AddOrUpdate("Admin.Common.ApplyFilter", "Apply filter", "Filter anwenden");
 			builder.AddOrUpdate("Time.Milliseconds", "Milliseconds", "Millisekunden");

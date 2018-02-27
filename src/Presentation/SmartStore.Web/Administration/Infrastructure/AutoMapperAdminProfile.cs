@@ -511,8 +511,7 @@ namespace SmartStore.Admin.Infrastructure
 
 			//product attributes
 			CreateMap<ProductAttribute, ProductAttributeModel>()
-				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.OptionCount, mo => mo.Ignore());
+				.ForMember(dest => dest.Locales, mo => mo.Ignore());
 			CreateMap<ProductAttributeModel, ProductAttribute>()
 				.ForMember(dest => dest.ProductAttributeOptionsSets, mo => mo.Ignore());
 

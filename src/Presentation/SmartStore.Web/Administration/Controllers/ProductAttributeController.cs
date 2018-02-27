@@ -138,8 +138,6 @@ namespace SmartStore.Admin.Controllers
 					.Select(x =>
 					{
 						var model = x.ToModel();
-						//model.OptionCount = x.ProductAttributeOptions.Count;
-
 						return model;
 					})
 					.ToList();

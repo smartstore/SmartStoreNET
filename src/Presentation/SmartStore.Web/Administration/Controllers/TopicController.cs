@@ -253,7 +253,8 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 topic = model.ToEntity(topic);
-                _topicService.UpdateTopic(topic);
+				topic.WidgetZone = form["WidgetZone"];
+				_topicService.UpdateTopic(topic);
 				
 				//Stores
 				_storeMappingService.SaveStoreMappings<Topic>(topic, model.SelectedStoreIds);

@@ -261,21 +261,55 @@
                 }
             ];
 
-        	zones = [];
+			zones = [];
+
+			var foreignZones = zoneChooser.attr("value").split(",");
+			
         	_.each(optGroups, function (val, i) {
         		zones.push({
         			text: val.text,
-        			children: _.map(val.children, function (val) { return { id: val, text: val } })
+					children: _.map(val.children, function (val) {
+						var selected = false;
+						var selectedZones = zoneChooser.attr("value");
+
+						if (selectedZones)
+						{
+							if (selectedZones.indexOf(val) !== -1) {
+
+								foreignZones = $.grep(foreignZones, function (a) {
+									return a != val;
+								});
+								
+								selected = true;
+							}
+						}
+						
+						return { id: val, text: val, selected: selected }
+					})
         		});
-        	});
+			});
+			
+			zones.push({
+				text: "Custom",
+				children: _.map(foreignZones, function (val) {
+					return { id: val, text: val, selected: true }
+				})
+			});
         }
 
     	zoneChooser.select2({
 			multiple: true,
+			tags: true,
+			closeOnSelect: false,
 			data: zones,
 			containerCssClass: "form-control",
 			theme: "bootstrap"
-        });
+		});
+
+		zoneChooser.on('select2:select', function (e) {
+			var data = e.params.data;
+			zoneChooser.attr("value", zoneChooser.val())
+		});
     });
 </script>
 

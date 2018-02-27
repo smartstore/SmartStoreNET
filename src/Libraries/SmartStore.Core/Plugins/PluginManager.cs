@@ -260,6 +260,8 @@ namespace SmartStore.Core.Plugins
 				throw new SmartException("The plugin descriptor '{0}' does not define a plugin assembly file name. Try assigning the plugin a file name and recompile.".FormatInvariant(descriptionFile.FullName));
 			}
 
+			descriptor.VirtualPath = _pluginsPath + "/" + descriptor.FolderName;
+
 			// Set 'Installed' property
 			descriptor.Installed = installedPluginSystemNames.Contains(descriptor.SystemName);
 

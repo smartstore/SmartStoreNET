@@ -162,7 +162,7 @@ namespace SmartStore.Web.Framework.UI
 
 			if (result != null)
 			{
-				return MvcHtmlString.Create("<script src='{0}'></script>".FormatInvariant(result.VirtualPath));
+				return MvcHtmlString.Create("<script src='{0}' charset='UTF-8'></script>".FormatInvariant(result.VirtualPath));
 			}
 			else
 			{

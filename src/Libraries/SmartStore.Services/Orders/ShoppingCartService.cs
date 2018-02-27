@@ -143,7 +143,7 @@ namespace SmartStore.Services.Orders
 			return result;
 		}
 
-		protected List<OrganizedShoppingCartItem> OrganizeCartItems(IEnumerable<ShoppingCartItem> cart)
+		protected virtual List<OrganizedShoppingCartItem> OrganizeCartItems(IEnumerable<ShoppingCartItem> cart)
 		{
 			var result = new List<OrganizedShoppingCartItem>();
 			

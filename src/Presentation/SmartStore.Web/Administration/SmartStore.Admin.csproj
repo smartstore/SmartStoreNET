@@ -719,6 +719,9 @@
     <Content Include="Content\filemanager\LICENSE.txt" />
     <Content Include="Content\filemanager\third-party.txt" />
     <Content Include="Content\images\ajax_loader_small.gif" />
+    <Content Include="Content\images\ico-content-negative.png" />
+    <Content Include="Content\images\ico-content-o60.png" />
+    <Content Include="Content\images\ico-content.png" />
     <Content Include="Content\images\icon-plugin-admin.png" />
     <Content Include="Content\images\icon-plugin-analytics.png" />
     <Content Include="Content\images\icon-plugin-api.png" />
@@ -742,7 +745,8 @@
     <Content Include="Content\images\icon-plugin-social.png" />
     <Content Include="Content\images\icon-plugin-tax.png" />
     <Content Include="Content\images\loading.gif" />
-    <Content Include="Content\images\smnet.png" />
+    <Content Include="Content\images\smartstore-icon.svg" />
+    <Content Include="Content\images\smartstore.svg" />
     <Content Include="Content\telerik\css\2012.2.607\telerik.common.css" />
     <Content Include="Content\telerik\css\2012.2.607\telerik.rtl.css" />
     <Content Include="Content\telerik\js\jquery.validate.js" />

@@ -43,7 +43,7 @@
 						'<div class="input-group">',
 							'<input id="note-image-url" class="note-image-url form-control note-form-control note-input" type="text" />',
 								'<div class="input-group-append">',
-									'<button class="btn btn-secondary btn-browse" type="button">' + lang.image.selectFromFiles +  '...</button>',
+									'<button class="btn btn-outline-secondary btn-browse" type="button">' + lang.image.selectFromFiles +  '...</button>',
 								'</div>',
 							'</div>',
 						'</div>'
@@ -106,9 +106,9 @@
 							var url = context.$note.data('file-browser-url');
 							if (url) {
 								var modalId = "modal-browse-files";
+								url = modifyUrl(url, "type", "image");
 								url = modifyUrl(url, "field", "note-image-url");
 								url = modifyUrl(url, "mid", modalId);
-								//openWindow(url);
 								openPopup({
 									id: modalId,
 									url: url,

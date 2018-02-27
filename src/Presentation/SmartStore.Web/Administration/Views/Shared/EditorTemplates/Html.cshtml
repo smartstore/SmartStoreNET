@@ -4,10 +4,7 @@
 	Html.AddScriptParts("~/bundles/codemirror");
 	Html.AddCssFileParts("~/css/codemirror");
 
-	Html.AddScriptParts(true,
-		"~/Content/editors/summernote/summernote-bs4.min.js",
-		"~/Content/editors/summernote/plugin/media/smartstore.summernote.media.js",
-		"~/Content/editors/summernote/globalinit.js");
+	Html.AddScriptParts("~/bundles/summernote");
 
 	Html.AppendCssFileParts(true, "~/Content/editors/summernote/summernote-bs4.css");
 
@@ -53,7 +50,7 @@
 	{
 		<text>
 			$(function () {
-				$('#@id').summernote($.extend(true, {}, summernote_global_config, { lang: @(culture != null ? "' + culture + '" : "null") }));
+				$('#@id').summernote($.extend(true, {}, summernote_global_config, { lang: @Html.Raw(culture != null ? "'" + culture + "'" : "null") }));
 			});
 		</text>
 	}

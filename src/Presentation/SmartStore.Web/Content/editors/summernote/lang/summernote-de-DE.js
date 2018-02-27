@@ -28,7 +28,7 @@
         shapeNone: 'Kein Rahmen',
         dragImageHere: 'Ziehen Sie ein Bild mit der Maus hierher',
         dropImage: 'Drop image or Text',
-        selectFromFiles: 'Wählen Sie eine Datei aus',
+        selectFromFiles: 'Datei auswählen',
         maximumFileSize: 'Maximale Dateigröße',
         maximumFileSizeError: 'Maximale Dateigröße überschritten',
         url: 'Grafik URL',

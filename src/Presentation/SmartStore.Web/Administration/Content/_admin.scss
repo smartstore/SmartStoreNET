@@ -1441,5 +1441,10 @@ table.payment-method-features td {
 			padding-right: 0.5rem;
 			min-width: 50px;
 		}
+
+		.note-current-fontname,
+		.note-current-fontsize {
+			font-weight: $font-weight-normal;
+		}
 	}
 }

@@ -49,6 +49,14 @@ var summernote_image_upload_url;
 		dialogsInBody: false,
 		dialogsFade: true,
 		height: 300,
+		onCreateLink: function (url) {
+			// Prevents that summernote prepends "http://" to our links (WTF!!!)
+			if (url[0] == "/" || url[0] == "~" || url[0] == "\\" || url[0] == ".") {
+				return url;
+			}
+
+			return "http://" + url;
+		},
 		callbacks: {
 			onFocus: function () {
 				$(this).next().addClass('focus');
@@ -94,7 +102,7 @@ var summernote_image_upload_url;
 			'italic': 'fa fa-italic',
 			'link': 'fa fa-link',
 			'unlink': 'fa fa-unlink',
-			'magic': 'fa fa-paragraph', // magic
+			'magic': 'fa fa-magic', // magic
 			'menuCheck': 'fa fa-check',
 			'minus': 'fa fa-minus',
 			'orderedlist': 'fa fa-list-ol',

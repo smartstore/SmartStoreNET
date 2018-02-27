@@ -862,7 +862,8 @@
     <Content Include="Content\editors\summernote\lang\summernote-uk-UA.js" />
     <Content Include="Content\editors\summernote\lang\summernote-zh-CN.js" />
     <Content Include="Content\editors\summernote\lang\summernote-zh-TW.js" />
-    <Content Include="Content\editors\summernote\plugin\media\smartstore.summernote.media.js" />
+    <Content Include="Content\editors\summernote\plugin\link\smartstore.link.js" />
+    <Content Include="Content\editors\summernote\plugin\media\smartstore.media.js" />
     <Content Include="Content\editors\summernote\summernote-bs4.css" />
     <Content Include="Content\editors\summernote\summernote-bs4.js" />
     <Content Include="Content\editors\summernote\summernote-bs4.min.js" />

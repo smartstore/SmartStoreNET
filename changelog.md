@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -40,6 +40,7 @@
 * #1363 Make storing of IP addresses optional
 * #729 Option for automatic order amount capturing when the shipping status changed to "shipped"
 * (Dev) ILocalizationFileResolver: responsible for finding localization files for client scripts
+* #998 GMC: Find a way to map attribute combination values to feed export values
 
 ### Improvements
 * Target .NET Framework changed: 4.5.2 > 4.6.1.

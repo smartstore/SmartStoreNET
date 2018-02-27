@@ -58,10 +58,16 @@ namespace SmartStore.Core.Domain.Catalog
         [DataMember]
         public bool IndexOptionNames { get; set; }
 
-        /// <summary>
-        /// Gets or sets the prooduct attribute option sets
-        /// </summary>
-        [DataMember]
+		/// <summary>
+		/// Gets or sets export mappings.
+		/// </summary>
+		[DataMember]
+		public string ExportMappings { get; set; }
+
+		/// <summary>
+		/// Gets or sets the prooduct attribute option sets
+		/// </summary>
+		[DataMember]
 		public virtual ICollection<ProductAttributeOptionsSet> ProductAttributeOptionsSets
 		{
 			get { return _productAttributeOptionsSets ?? (_productAttributeOptionsSets = new HashSet<ProductAttributeOptionsSet>()); }

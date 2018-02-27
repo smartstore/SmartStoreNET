@@ -40,6 +40,9 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.IndexOptionNames")]
         public bool IndexOptionNames { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings")]
+		public string ExportMappings { get; set; }
+
 		[SmartResourceDisplayName("Common.Options.Count")]
 		public int OptionCount { get; set; }
 

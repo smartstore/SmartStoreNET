@@ -319,6 +319,16 @@ namespace SmartStore.Data.Migrations
 				"Das Bild wurde erfolgreich zugefügt");
 
 			builder.AddOrUpdate("HtmlEditor.ClickToEdit", "Click to edit HTML...", "Hier klicken, um HTML zu editieren...");
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings.Note",
+				"Define mappings of attribute values to export fields according to the pattern <b>&lt;Format prefix&gt;:&lt;Export field name&gt;</b>. Example: <b>gmc:color</b> exports the attribute values for colors to the field <b>color</b> during the Google Merchant Center Export. The mappings are only effective when exporting attribute combinations.",
+				"Legen Sie Zuordnungen von Attributwerten zu Exportfeldern nach dem Muster <b>&lt;Formatpräfix&gt;:&lt;Export-Feldname&gt;</b> fest. Beispiel: <b>gmc:color</b> exportiert beim Google Merchant Center Export die Attributwerte für Farben in das Feld <b>color</b>. Die Zuordnungen sind nur beim Export von Attributkombinationen wirksam.");
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings",
+				"Mappings to export fields",
+				"Zuordnungen zu Exportfeldern",
+				"Allows to map attribute values to export fields. Each entry has to be entered in a new line.",
+				"Ermöglicht die Zuordnung von Attributwerten zu Exportfeldern. Jeder Eintrag muss in einer neuen Zeile erfolgen.");
 		}
 	}
 }

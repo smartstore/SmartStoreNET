@@ -42,13 +42,6 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">
-				<div class="alert alert-info">
-					@T("Plugins.Payments.AmazonPay.RegisterNote")
-				</div>
-			</td>
-		</tr>
-		<tr>
 			<td class="adminTitle">
 				&nbsp;
 			</td>
@@ -61,6 +54,14 @@
 					<i class="fa fa-paste"></i>
 					<span>@T("Plugins.Payments.AmazonPay.PasteAccessData")</span>
 				</button>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle"></td>
+			<td class="adminData">
+				<div class="alert alert-info">
+					@Html.Raw(T("Plugins.Payments.AmazonPay.RegisterNote"))
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -178,9 +179,10 @@
 			</td>
 		</tr>
 		<tr id="TransactionTypeWarning" class="d-none">
-			<td colspan="2">
+			<td class="adminTitle"></td>
+			<td class="adminData">
 				<div class="alert alert-warning">
-					@T("Plugins.Payments.AmazonPay.TransactionType.Warning")
+					@Html.Raw(T("Plugins.Payments.AmazonPay.TransactionType.Warning"))
 				</div>
 			</td>
 		</tr>
@@ -248,9 +250,10 @@
 			</td>
 		</tr>
 		<tr id="DataFetchingWarning" class="d-none">
-			<td colspan="2">
+			<td class="adminTitle"></td>
+			<td class="adminData">
 				<div class="alert alert-warning">
-					@T("Plugins.Payments.AmazonPay.DataFetching.Warning")
+					@Html.Raw(T("Plugins.Payments.AmazonPay.DataFetching.Warning"))
 				</div>
 			</td>
 		</tr>

@@ -145,6 +145,44 @@ namespace SmartStore.Services.Catalog
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
         }
 
+		public virtual Multimap<string, int> GetExportFieldMappings(string fieldPrefix)
+		{
+			Guard.NotEmpty(fieldPrefix, nameof(fieldPrefix));
+
+			var result = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
+
+			if (!fieldPrefix.EndsWith(":"))
+			{
+				fieldPrefix = fieldPrefix + ":";
+			}
+
+			var mappings = _productAttributeRepository.TableUntracked
+				.Where(x => !string.IsNullOrEmpty(x.ExportMappings))
+				.Select(x => new
+				{
+					x.Id,
+					x.ExportMappings
+				})
+				.ToList();
+
+			foreach (var mapping in mappings)
+			{
+				var rows = mapping.ExportMappings.SplitSafe(Environment.NewLine)
+					.Where(x => x.StartsWith(fieldPrefix, StringComparison.InvariantCultureIgnoreCase));
+
+				foreach (var row in rows)
+				{
+					var exportFieldName = row.Substring(fieldPrefix.Length).TrimEnd();
+					if (exportFieldName.HasValue())
+					{
+						result.Add(exportFieldName, mapping.Id);
+					}
+				}
+			}
+
+			return result;
+		}
+
 		#endregion
 
 		#region Product attribute options

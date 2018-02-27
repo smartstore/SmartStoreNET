@@ -557,6 +557,10 @@
     <Compile Include="Migrations\201802081830029_ShippingMethodMultistore.Designer.cs">
       <DependentUpon>201802081830029_ShippingMethodMultistore.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802270844034_ExportAttributeMappings.cs" />
+    <Compile Include="Migrations\201802270844034_ExportAttributeMappings.Designer.cs">
+      <DependentUpon>201802270844034_ExportAttributeMappings.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1008,6 +1012,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802081830029_ShippingMethodMultistore.resx">
       <DependentUpon>201802081830029_ShippingMethodMultistore.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802270844034_ExportAttributeMappings.resx">
+      <DependentUpon>201802270844034_ExportAttributeMappings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

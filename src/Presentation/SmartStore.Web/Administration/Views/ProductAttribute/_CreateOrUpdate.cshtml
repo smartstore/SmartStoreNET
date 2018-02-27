@@ -132,6 +132,23 @@
                 @Html.ValidationMessageFor(model => model.IndexOptionNames)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ExportMappings)
+            </td>
+            <td class="adminData">
+				@Html.TextAreaFor(model => model.ExportMappings, new { style = "min-height: 120px;" })
+                @Html.ValidationMessageFor(model => model.ExportMappings)
+            </td>
+        </tr>
+		<tr>
+			<td class="adminTitle"></td>
+			<td class="adminData">
+				<div class="alert alert-info">
+					@Html.Raw(T("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings.Note"))
+				</div>
+			</td>
+		</tr>
 	</table>
 }
 

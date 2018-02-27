@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Xml;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
@@ -15,6 +16,7 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.GoogleMerchantCenter.Providers
 {
@@ -38,23 +40,40 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 		private readonly IGoogleFeedService _googleFeedService;
 		private readonly IMeasureService _measureService;
 		private readonly ICommonServices _services;
+		private readonly IProductAttributeService _productAttributeService;
 		private readonly MeasureSettings _measureSettings;
+		private Multimap<string, int> _attributeMappings;
 
 		public GmcXmlExportProvider(
 			IGoogleFeedService googleFeedService,
 			IMeasureService measureService,
 			ICommonServices services,
+			IProductAttributeService productAttributeService,
 			MeasureSettings measureSettings)
 		{
 			_googleFeedService = googleFeedService;
 			_measureService = measureService;
 			_services = services;
+			_productAttributeService = productAttributeService;
 			_measureSettings = measureSettings;
 
 			T = NullLocalizer.Instance;
 		}
 
 		public Localizer T { get; set; }
+
+		private Multimap<string, int> AttributeMappings
+		{
+			get
+			{
+				if (_attributeMappings == null)
+				{
+					_attributeMappings = _productAttributeService.GetExportFieldMappings("gmc");
+				}
+
+				return _attributeMappings;
+			}
+		}
 
 		private string BasePriceUnits(string value)
 		{
@@ -136,28 +155,67 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			}
 		}
 
-		private void WriteString(
-			XmlWriter writer,
-			Dictionary<string, string> mappedValues,
+		private string GetAttributeValue(
+			Multimap<int, ProductVariantAttributeValue> attributeValues,
 			string fieldName,
-			string value)
+			int languageId,
+			string productEditTabValue,
+			string defaultValue)
 		{
-			if (mappedValues == null)
+			// 1. attribute export mapping.
+			if (attributeValues != null && AttributeMappings.ContainsKey(fieldName))
 			{
-				// Regular product.
-				WriteString(writer, fieldName, value);
+				foreach (var attributeId in AttributeMappings[fieldName])
+				{
+					if (attributeValues.ContainsKey(attributeId))
+					{
+						var attributeValue = attributeValues[attributeId].FirstOrDefault(x => x.ProductVariantAttribute.ProductAttributeId == attributeId);
+						if (attributeValue != null)
+						{
+							return attributeValue.GetLocalized(x => x.Name, languageId, true, false).EmptyNull();
+						}
+					}
+				}
 			}
-			else
+
+			// 2. explicit set to unspecified.
+			if (defaultValue.IsCaseInsensitiveEqual(Unspecified))
 			{
-				// Export attribute combination.
-				if (mappedValues.ContainsKey(fieldName))
-				{
-					WriteString(writer, fieldName, mappedValues[fieldName].EmptyNull());
-				}
-				else
-				{
-					WriteString(writer, fieldName, value);
-				}
+				return string.Empty;
+			}
+
+			// 3. product edit tab value.
+			if (productEditTabValue.HasValue())
+			{
+				return productEditTabValue;
+			}
+
+			return defaultValue.EmptyNull();
+		}
+
+		private string GetBaseMeasureWeight()
+		{
+			var measureWeightEntity = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
+			var measureWeight = measureWeightEntity != null
+				? measureWeightEntity.SystemKeyword.EmptyNull().ToLower()
+				: string.Empty;
+
+			switch (measureWeight)
+			{
+				case "gram":
+				case "gramme":
+					return "g";
+				case "mg":
+				case "milligramme":
+				case "milligram":
+					return "mg";
+				case "lb":
+					return "lb";
+				case "ounce":
+				case "oz":
+					return "oz";
+				default:
+					return "kg";
 			}
 		}
 
@@ -192,16 +250,32 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 		protected override void Export(ExportExecuteContext context)
 		{
 			Currency currency = context.Currency.Entity;
-			var languageId = (int)context.Language.Id;
-			var measureWeightSystemKey = "";
+			var languageId = context.Projection.LanguageId ?? 0;
 			var dateFormat = "yyyy-MM-ddTHH:mmZ";
-
-			var measureWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
-
-			if (measureWeight != null)
-				measureWeightSystemKey = measureWeight.SystemKeyword;
+			var defaultCondition = "new";
+			var defaultAvailability = "in stock";
+			var measureWeight = GetBaseMeasureWeight();
 
 			var config = (context.ConfigurationData as ProfileConfigurationModel) ?? new ProfileConfigurationModel();
+
+			if (config.Condition.IsCaseInsensitiveEqual(Unspecified))
+			{
+				defaultCondition = string.Empty;
+			}
+			else if (config.Condition.HasValue())
+			{
+				defaultCondition = config.Condition;
+			}
+
+			if (config.Availability.IsCaseInsensitiveEqual(Unspecified))
+			{
+				defaultAvailability = string.Empty;
+			}
+			else if (config.Availability.HasValue())
+			{
+				defaultAvailability = config.Availability;
+			}
+
 
 			using (var writer = XmlWriter.Create(context.DataStream, ExportXmlHelper.DefaultSettings))
 			{
@@ -241,14 +315,15 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							string mainImageUrl = product._MainPictureUrl;
 							var price = (decimal)product.Price;
 							var uniqueId = (string)product._UniqueId;
+							var isParent = (bool)product._IsParent;
 							string brand = product._Brand;
 							string gtin = product.Gtin;
 							string mpn = product.ManufacturerPartNumber;
-							string condition = "new";
-							string availability = "in stock";
+							var availability = defaultAvailability;
 
-							var combinationValues = product._AttributeCombinationValues as ICollection<ProductVariantAttributeValue>;
-							var mappedValues = (combinationValues != null ? combinationValues.GetMappedValuesFromAlias("gmc", languageId) : null);								
+							var attributeValues = !isParent && product._AttributeCombinationValues != null
+								? ((ICollection<ProductVariantAttributeValue>)product._AttributeCombinationValues).ToMultimap(x => x.ProductVariantAttribute.ProductAttributeId, x => x)
+								: new Multimap<int, ProductVariantAttributeValue>();
 
 							var specialPrice = product._FutureSpecialPrice as decimal?;
 							if (!specialPrice.HasValue)
@@ -260,32 +335,12 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							if (category.IsEmpty())
 								context.Log.Error(T("Plugins.Feed.Froogle.MissingDefaultCategory"));
 
-							if (config.Condition.IsCaseInsensitiveEqual(Unspecified))
+							if (entity.ManageInventoryMethod == ManageInventoryMethod.ManageStock && entity.StockQuantity <= 0)
 							{
-								condition = "";
-							}
-							else if (config.Condition.HasValue())
-							{
-								condition = config.Condition;
-							}
-
-							if (config.Availability.IsCaseInsensitiveEqual(Unspecified))
-							{
-								availability = "";
-							}
-							else if (config.Availability.HasValue())
-							{
-								availability = config.Availability;
-							}
-							else
-							{
-								if (entity.ManageInventoryMethod == ManageInventoryMethod.ManageStock && entity.StockQuantity <= 0)
-								{
-									if (entity.BackorderMode == BackorderMode.NoBackorders)
-										availability = "out of stock";
-									else if (entity.BackorderMode == BackorderMode.AllowQtyBelow0 || entity.BackorderMode == BackorderMode.AllowQtyBelow0AndNotifyCustomer)
-										availability = (entity.AvailableForPreOrder ? "preorder" : "out of stock");
-								}
+								if (entity.BackorderMode == BackorderMode.NoBackorders)
+									availability = "out of stock";
+								else if (entity.BackorderMode == BackorderMode.AllowQtyBelow0 || entity.BackorderMode == BackorderMode.AllowQtyBelow0AndNotifyCustomer)
+									availability = entity.AvailableForPreOrder ? "preorder" : "out of stock";
 							}
 
 							WriteString(writer, "id", uniqueId);
@@ -329,7 +384,9 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								}
 							}
 
+							var condition = GetAttributeValue(attributeValues, "condition", languageId, null, defaultCondition);
 							WriteString(writer, "condition", condition);
+
 							WriteString(writer, "availability", availability);
 
 							if (availability == "preorder" && entity.AvailableStartDateTimeUtc.HasValue && entity.AvailableStartDateTimeUtc.Value > DateTime.UtcNow)
@@ -363,21 +420,29 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							var identifierExists = brand.HasValue() && (gtin.HasValue() || mpn.HasValue());
 							WriteString(writer, "identifier_exists", identifierExists ? "yes" : "no");
 
-							if (config.Gender.IsCaseInsensitiveEqual(Unspecified))
-								WriteString(writer, "gender", "");
-							else
-								WriteString(writer, "gender", gmc != null && gmc.Gender.HasValue() ? gmc.Gender : config.Gender);
+							var gender = GetAttributeValue(attributeValues, "gender", languageId, gmc?.Gender, config.Gender);
+							WriteString(writer, "gender", gender);
 
-							if (config.AgeGroup.IsCaseInsensitiveEqual(Unspecified))
-								WriteString(writer, "age_group", "");
-							else
-								WriteString(writer, "age_group", gmc != null && gmc.AgeGroup.HasValue() ? gmc.AgeGroup : config.AgeGroup);
+							var ageGroup = GetAttributeValue(attributeValues, "age_group", languageId, gmc?.AgeGroup, config.AgeGroup);
+							WriteString(writer, "age_group", ageGroup);
 
-							WriteString(writer, "color", gmc != null && gmc.Color.HasValue() ? gmc.Color : config.Color);
-							WriteString(writer, "size", gmc != null && gmc.Size.HasValue() ? gmc.Size : config.Size);
-							WriteString(writer, "material", gmc != null && gmc.Material.HasValue() ? gmc.Material : config.Material);
-							WriteString(writer, "pattern", gmc != null && gmc.Pattern.HasValue() ? gmc.Pattern : config.Pattern);
-							WriteString(writer, "item_group_id", gmc != null && gmc.ItemGroupId.HasValue() ? gmc.ItemGroupId : "");
+							var color = GetAttributeValue(attributeValues, "color", languageId, gmc?.Color, config.Color);
+							WriteString(writer, "color", color);
+
+							var size = GetAttributeValue(attributeValues, "size", languageId, gmc?.Size, config.Size);
+							WriteString(writer, "size", size);
+
+							var material = GetAttributeValue(attributeValues, "material", languageId, gmc?.Material, config.Material);
+							WriteString(writer, "material", material);
+
+							var pattern = GetAttributeValue(attributeValues, "pattern", languageId, gmc?.Pattern, config.Pattern);
+							WriteString(writer, "pattern", pattern);
+
+							var itemGroupId = gmc != null && gmc.ItemGroupId.HasValue() ? gmc.ItemGroupId : string.Empty;
+							if (itemGroupId.HasValue())
+							{
+								WriteString(writer, "item_group_id", itemGroupId);
+							}
 
 							if (config.ExpirationDays > 0)
 							{
@@ -386,19 +451,8 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 							if (config.ExportShipping)
 							{
-								string weightInfo;
-								var weight = ((decimal)product.Weight).FormatInvariant();
-
-								if (measureWeightSystemKey.IsCaseInsensitiveEqual("gram"))
-									weightInfo = weight + " g";
-								else if (measureWeightSystemKey.IsCaseInsensitiveEqual("lb"))
-									weightInfo = weight + " lb";
-								else if (measureWeightSystemKey.IsCaseInsensitiveEqual("ounce"))
-									weightInfo = weight + " oz";
-								else
-									weightInfo = weight + " kg";
-
-								WriteString(writer, "shipping_weight", weightInfo);
+								var weight = string.Concat(((decimal)product.Weight).FormatInvariant(), " ", measureWeight);
+								WriteString(writer, "shipping_weight", weight);
 							}
 
 							if (config.ExportBasePrice && entity.BasePriceHasValue)
@@ -421,13 +475,13 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								WriteString(writer, "is_bundle", gmc.IsBundle.HasValue ? (gmc.IsBundle.Value ? "yes" : "no") : null);
 								WriteString(writer, "adult", gmc.IsAdult.HasValue ? (gmc.IsAdult.Value ? "yes" : "no") : null);
 								WriteString(writer, "energy_efficiency_class", gmc.EnergyEfficiencyClass.HasValue() ? gmc.EnergyEfficiencyClass : null);
-
-								WriteString(writer, "custom_label_0", gmc.CustomLabel0.HasValue() ? gmc.CustomLabel0 : null);
-								WriteString(writer, "custom_label_1", gmc.CustomLabel1.HasValue() ? gmc.CustomLabel1 : null);
-								WriteString(writer, "custom_label_2", gmc.CustomLabel2.HasValue() ? gmc.CustomLabel2 : null);
-								WriteString(writer, "custom_label_3", gmc.CustomLabel3.HasValue() ? gmc.CustomLabel3 : null);
-								WriteString(writer, "custom_label_4", gmc.CustomLabel4.HasValue() ? gmc.CustomLabel4 : null);
 							}
+
+							var customLabel0 = GetAttributeValue(attributeValues, "custom_label_0", languageId, gmc?.CustomLabel0, null);
+							var customLabel1 = GetAttributeValue(attributeValues, "custom_label_1", languageId, gmc?.CustomLabel1, null);
+							var customLabel2 = GetAttributeValue(attributeValues, "custom_label_2", languageId, gmc?.CustomLabel2, null);
+							var customLabel3 = GetAttributeValue(attributeValues, "custom_label_3", languageId, gmc?.CustomLabel3, null);
+							var customLabel4 = GetAttributeValue(attributeValues, "custom_label_4", languageId, gmc?.CustomLabel4, null);
 
 							++context.RecordsSucceeded;
 						}

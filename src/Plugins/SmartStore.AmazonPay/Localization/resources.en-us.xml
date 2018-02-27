@@ -8,17 +8,17 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>How to set up <b>Login and Pay with Amazon</b>:</p><ul>
+			<![CDATA[<div class="mb-1">How to set up <b>Login and Pay with Amazon</b>:</div><ul>
 <li>Enter your Amazon credentials in the fields provided below.
 You can find these credentials in your <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> account at <b>Integration > MWS Access Key</b>.</li>
 <li>If you would like to receive instant payment notifications (SSL required!) enter the IPN URL listed bewlow under <b>Settings > Integration Settings > Instant Notification Settings > Merchant URL</b>.</li>
 </ul>
-<p>Please add information about <b>Login and Pay with Amazon</b> on your payment page (see <b>CMS > Topics</b>). You will find picture material <a href="https://payments.amazon.de/resources#marks">here</a>.
-Text suggestions:<ul>
+<div class="mb-1">Please add information about <b>Login and Pay with Amazon</b> on your payment page (see <b>CMS > Topics</b>). You will find picture material <a href="https://payments.amazon.de/resources#marks">here</a>.
+Text suggestions:</div><ul>
 <li>Option 1: Amazon Pay: Pay now with the payment and shipping information from your Amazon account.</li>
 <li>Option 2: Already Amazon customer? Pay now with the payment and shipping information from your Amazon account.</li>
 <li>Option 3: Already Amazon customer? Pay now with the data from your Amazon account.</li>
-</ul></p>]]>
+</ul>]]>
 		</Value>
 	</LocaleResource>
   <LocaleResource Name="BillingAddressMessageNote">
@@ -240,7 +240,9 @@ Text suggestions:<ul>
 		<Value>Specifies the method used to update the payment status.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Warning">
-		<Value>The URL for IPN (Instant Payment Notification) must be entered separately for Sandbox and Live Mode in Amazon Seller Central. Live mode requires a valid SSL certificate issued by a trusted certificate authority, self-signed certificates are not permitted. The sandbox does not require an SSL certificate. In this case, the IPN URL must be specified with http.</Value>
+		<Value>
+			<![CDATA[The URL for IPN (Instant Payment Notification) must be entered separately for Sandbox and Live Mode in Amazon Seller Central. Live mode requires a valid SSL certificate issued by a trusted certificate authority, self-signed certificates are not permitted. The sandbox does not require an SSL certificate. In this case, the IPN URL must be specified with HTTP.]]>
+		</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Ipn">
 		<Value>IPN (Instant Payment Notification)</Value>
@@ -267,7 +269,9 @@ Text suggestions:<ul>
 		<Value>Authorize immediately, debit later</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.Warning">
-		<Value>Please use "Immediately debit" method only in the case you are shipping goods on the same day they are ordered and you have been white-listed for this service. Do not activate this option without contacting Amazon Pay first.</Value>
+		<Value>
+			<![CDATA[Please use <b>Immediately debit</b> method only in the case you are shipping goods on the same day they are ordered and you have been white-listed for this service. Do not activate this option without contacting Amazon Pay first.]]>
+		</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizeMethod">
 		<Value>Authorize method</Value>

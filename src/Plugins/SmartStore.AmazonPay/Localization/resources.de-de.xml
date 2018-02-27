@@ -8,17 +8,17 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>So richten Sie <b>Login und Bezahlen mit Amazon</b> ein:</p><ul>
+			<![CDATA[<div class="mb-1">So richten Sie <b>Login und Bezahlen mit Amazon</b> ein:</div><ul>
 <li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein.
 Die Zugangsdaten finden Sie in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto oben links unter <b>Integration > MWS Access Key</b>.</li>
 <li>Falls Sie Sofortbenachrichtigungen (IPN) erhalten möchten (SSL zwingend erforderlich!), so tragen Sie die unten aufgeführte IPN URL unter <b>Einstellungen > Integrationseinstellungen > Sofortbenachrichtigungs-Einstellungen > Händler-URL</b> ein.</li>
 </ul>
-<p>Bitte fügen Sie Informationen zu <b>Login und Bezahlen mit Amazon</b> auf Ihrer Seite der Zahlungsarten ein (siehe <b>CMS > Seiten</b>). Bildmaterial finden Sie <a href="https://payments.amazon.de/resources#marks">hier</a>.
-Textvorschläge:<ul>
+<div class="mb-1">Bitte fügen Sie Informationen zu <b>Login und Bezahlen mit Amazon</b> auf Ihrer Seite der Zahlungsarten ein (siehe <b>CMS > Seiten</b>). Bildmaterial finden Sie <a href="https://payments.amazon.de/resources#marks">hier</a>.
+Textvorschläge:</div><ul>
 <li>Option 1: Amazon Pay: Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
 <li>Option 2: Sie sind Amazon-Kunde? Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
 <li>Option 3: Sie sind Amazon-Kunde? Zahlen Sie jetzt mit den Daten aus Ihrem Amazon-Konto.</li>
-</ul></p>]]>
+</ul>]]>
 		</Value>
 	</LocaleResource>
 	<LocaleResource Name="BillingAddressMessageNote">
@@ -63,7 +63,7 @@ Textvorschläge:<ul>
     <Value>Amazon Authentifizierung ist nicht aktiv!</Value>
   </LocaleResource>
   <LocaleResource Name="AsyncPaymentAuthrizationNote">
-    <Value>Ihre Zahlung mit Amazon Pay ist derzeit noch in Prüfung. Bitte beachten Sie, dass wir uns mit Ihnen in Kürze per Email in Verbindung setzen werden, falls noch Unklarheiten bestehen sollten.</Value>
+    <Value>Ihre Zahlung mit Amazon Pay ist derzeit noch in Prüfung. Bitte beachten Sie, dass wir uns mit Ihnen in Kürze per E-Mail in Verbindung setzen werden, falls noch Unklarheiten bestehen sollten.</Value>
   </LocaleResource>
   <LocaleResource Name="RegisterNow">
     <Value>Jetzt registrieren</Value>
@@ -240,7 +240,9 @@ Textvorschläge:<ul>
 		<Value>Legt die Methode fest, mit deren Hilfe der Zahlungsstatus aktualisiert werden soll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Warning">
-		<Value>Die URL für IPN (Sofortbenachrichtigungen) muss in Amazon Seller Central separat für Sandbox und Live-Modus eingetragen werden. Für den Live-Modus ist ein gültiges, von einer vertrauenswürdigen Zertifizierungsstelle ausgegebenes SSL-Zertifikat erforderlich, selbstsignierte Zertifikate sind nicht zulässig. Für die Sandbox ist kein SSL-Zertifikat erforderlich. Die IPN-URL muss in diesem Fall mit http angegeben werden.</Value>
+		<Value>
+			<![CDATA[Die URL für IPN (Sofortbenachrichtigungen) muss in Amazon Seller Central separat für Sandbox und Live-Modus eingetragen werden. Für den Live-Modus ist ein gültiges, von einer vertrauenswürdigen Zertifizierungsstelle ausgegebenes SSL-Zertifikat erforderlich, selbstsignierte Zertifikate sind nicht zulässig. Für die Sandbox ist kein SSL-Zertifikat erforderlich. Die IPN-URL muss in diesem Fall mit HTTP angegeben werden.]]>
+		</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Ipn">
 		<Value>IPN (Instant Payment Notification)</Value>
@@ -252,7 +254,7 @@ Textvorschläge:<ul>
 		<Value>IPN URL</Value>
 	</LocaleResource>
 	<LocaleResource Name="IpnUrl.Hint">
-		<Value>Bitte geben Sie diese URL bei Amazon Seller Central unter Integrationseinstellungen - Sofortbenachrichtigungs-Einstellungen - Händler-URL ein.</Value>
+		<Value>Bitte geben Sie diese URL bei Amazon Seller Central unter <b>Integrationseinstellungen - Sofortbenachrichtigungs-Einstellungen - Händler-URL</b> ein.</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType">
 		<Value>Zahlungsaktion</Value>
@@ -267,7 +269,9 @@ Textvorschläge:<ul>
 		<Value>Autorisierung sofort, Abbuchung später</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.Warning">
-		<Value>Bitte benutzen Sie "Sofort abbuchen" nur, wenn Sie Ware am selben Tag der Bestellung verschicken und Sie für diesen Dienst zugelassen sind. Aktivieren Sie diese Option bitte erst nach Rücksprache mit Amazon Pay.</Value>
+		<Value>
+			<![CDATA[Bitte benutzen Sie <b>Sofort abbuchen</b> nur, wenn Sie Ware am selben Tag der Bestellung verschicken und Sie für diesen Dienst zugelassen sind. Aktivieren Sie diese Option bitte erst nach Rücksprache mit Amazon Pay.]]>
+		</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizeMethod">
 		<Value>Autorisierungsmethode</Value>
@@ -330,12 +334,12 @@ Textvorschläge:<ul>
 		<Value>Über Ablehnung einer Autorisierung informieren</Value>
 	</LocaleResource>
 	<LocaleResource Name="InformCustomerAboutErrors.Hint">
-		<Value>Legt fest, dass Auftragsnotizen im Fall einer Ablehnung einer Autorisierung durch Amazon angelegt werden, die auch für den Kunden einsehbar sind. Zusätzlich wir der Kunde per Email über den Sachverhalt informiert.</Value>
+		<Value>Legt fest, dass Auftragsnotizen im Fall einer Ablehnung einer Autorisierung durch Amazon angelegt werden, die auch für den Kunden einsehbar sind. Zusätzlich wird der Kunde per E-Mail über den Sachverhalt informiert.</Value>
 	</LocaleResource>
 	<LocaleResource Name="InformCustomerAddErrors">
 		<Value>Fehlermeldung anhängen</Value>
 	</LocaleResource>
 	<LocaleResource Name="InformCustomerAddErrors.Hint">
-		<Value>Legt fest, ob der genaue Wortlaut der Fehlermeldung der Auftragsnotiz bzw. Email angehängt werden soll.</Value>
+		<Value>Legt fest, ob der genaue Wortlaut der Fehlermeldung der Auftragsnotiz bzw. E-Mail angehängt werden soll.</Value>
 	</LocaleResource>
 </Language>

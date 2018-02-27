@@ -213,14 +213,13 @@
 								.Centered()
 								.Title("")
 								.ClientTemplate(
-									"<a href='" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='t-button t-grid-edit'>" + @T("Admin.Common.Edit") + "</a>" +
-									"<a href='" + @Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='t-button t-grid-delete'>" + @T("Admin.Common.Delete") + "</a>")
+									"<a href='" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='btn btn-secondary edit-option'>" + @T("Admin.Common.Edit") + "</a>" +
+									"<a href='" + @Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='btn btn-danger ml-1 delete-option'>" + @T("Admin.Common.Delete") + "</a>")
 								.HtmlAttributes(new { align = "right" });
 						})
 						.DataBinding(dataBinding => dataBinding.Ajax()
 							.Select("OptionsSetListDetails", "ProductAttribute", new { id = "<#= Id #>" })
 						)
-						.ClientEvents(events => events.OnDataBound("onDataBoundOptionsGrid"))
 						.ToHtmlString()
 				)))
 		</div>
@@ -240,7 +239,7 @@
                 });
 				
 				// refresh options set child grid
-				$(mainGrid).on('click', 'input[id=btnOptionRefresh]', function () {
+				$(document).on('click', 'input[id=btnOptionRefresh]', function () {
                 	$('#productattributeoptions-grid' + $(this).val()).data('tGrid').ajaxRequest();
                 	return false;
                 });
@@ -277,11 +276,6 @@
 					return false;
 				});
 			});
-
-			function onDataBoundOptionsGrid() {
-				$('div[id^=productattributeoptions-grid]').find('.btn-link').removeClass('t-button');
-				$(this).data('tGrid').ajaxRequest();
-			}
 		</script>
 	}
 	else

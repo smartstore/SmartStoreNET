@@ -103,8 +103,8 @@
 			.DataBinding(dataBinding =>
 			{
 				dataBinding.Ajax().Select("ProductPictureList", "Product", new { productId = Model.Id })
-					.Update("ProductPictureUpdate", "Product")
-					.Delete("ProductPictureDelete", "Product");
+					.Update("ProductPictureUpdate", "Product", new { productId = Model.Id })
+					.Delete("ProductPictureDelete", "Product", new { productId = Model.Id });
 			})
 			.EnableCustomBinding(true))
     </div>

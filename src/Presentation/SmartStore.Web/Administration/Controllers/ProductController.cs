@@ -2369,29 +2369,36 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult ProductPictureUpdate(ProductModel.ProductPictureModel model, GridCommand command)
         {
-			var productPicture = _productService.GetProductPictureById(model.Id);
-
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				productPicture.DisplayOrder = model.DisplayOrder;
-				_productService.UpdateProductPicture(productPicture);
+				var productPicture = _productService.GetProductPictureById(model.Id);
+				if (productPicture != null)
+				{
+					productPicture.DisplayOrder = model.DisplayOrder;
+
+					_productService.UpdateProductPicture(productPicture);
+				}
 			}
 
-            return ProductPictureList(command, productPicture.ProductId);
+            return ProductPictureList(command, model.ProductId);
         }
 
         [GridAction(EnableCustomBinding = true)]
-        public ActionResult ProductPictureDelete(int id, GridCommand command)
+        public ActionResult ProductPictureDelete(int id, int productId, GridCommand command)
         {
-			var productPicture = _productService.GetProductPictureById(id);
-			var productId = productPicture.ProductId;
-
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				_productService.DeleteProductPicture(productPicture);
+				var productPicture = _productService.GetProductPictureById(id);
+				if (productPicture != null)
+				{
+					_productService.DeleteProductPicture(productPicture);
+				}
 
 				var picture = _pictureService.GetPictureById(productPicture.PictureId);
-				_pictureService.DeletePicture(picture);
+				if (picture != null)
+				{
+					_pictureService.DeletePicture(picture);
+				}
 			}
             
             return ProductPictureList(command, productId);

@@ -801,7 +801,7 @@
     <Content Include="Views\Product\_CreateOrUpdate.Inventory.cshtml" />
     <Content Include="Views\Product\_Create.SaveFirst.cshtml" />
     <Content Include="Views\Plugin\ConfigureProvider.cshtml" />
-    <None Include="Views\RoxyFileManager\Index.cshtml" />
+    <Content Include="Views\RoxyFileManager\Index.cshtml" />
     <Content Include="Views\Shared\Partials\_Providers.cshtml" />
     <Content Include="Views\Plugin\EditProviderPopup.cshtml" />
     <Content Include="Views\Theme\PreviewTool.cshtml" />

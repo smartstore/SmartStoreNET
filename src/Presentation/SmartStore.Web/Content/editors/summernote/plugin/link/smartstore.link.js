@@ -26,7 +26,7 @@
 				return ui.button({
 					contents: ui.icon(options.icons.link),
 					callback: function (btn) {
-						btn.data("placement", "top");
+						btn.data("placement", "bottom");
 						btn.attr("title", lang.link.link + buttons.representShortcut('linkDialog.show'));
 						btn.tooltip();
 					},

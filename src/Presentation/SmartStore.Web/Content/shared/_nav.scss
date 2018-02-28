@@ -108,7 +108,7 @@
 		flex-wrap: nowrap;
 	}
 
-	.tabs-left .nav-tabs-line {
+	.tabs-left > .nav-aside > .nav-tabs-line {
 		border-bottom: none;
 		border-right: 1px solid $nav-tabs-border-color;
 

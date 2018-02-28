@@ -314,8 +314,14 @@ RoxyUtils.Translate = function () {
 		}	
 	});
 	$('[data-lang]').each(function () {
-		var key = $(this).attr('data-lang');
-		$(this).html(t(key));
+		var el = $(this);
+		var key = el.attr('data-lang');
+		if (el.is('.dropdown-item')) {
+			el.find('> span').text(t(key));
+		}
+		else {
+			el.html(t(key));
+		}
 	});
 };
 RoxyUtils.GetCookies = function () {

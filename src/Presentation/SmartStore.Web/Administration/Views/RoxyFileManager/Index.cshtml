@@ -117,19 +117,20 @@
 							<span>Select</span>
 						</button>
 					</div>
-				</div>
-				<div class="sort-filter p-3">
-					<span data-lang="OrderBy">Order by</span>:
-					<select id="ddlOrder" class="form-control form-control-sm" onchange="sortFiles()">
-						<option value="name" data-lang="Name_asc">&uarr;&nbsp;&nbsp;Name</option>
-						<option value="size" data-lang="Size_asc">&uarr;&nbsp;&nbsp;Size</option>
-						<option value="time" data-lang="Date_asc">&uarr;&nbsp;&nbsp;Date</option>
-						<option value="name_desc" data-lang="Name_desc">&darr;&nbsp;&nbsp;Name</option>
-						<option value="size_desc" data-lang="Size_desc">&darr;&nbsp;&nbsp;Size</option>
-						<option value="time_desc" data-lang="Date_desc">&darr;&nbsp;&nbsp;Date</option>
-					</select>
 
-					<input type="text" id="txtSearch" onkeyup="filterFiles()" onchange="filterFiles()" />
+					<div class="sort-filter form-inline btn-group">
+						<span data-lang="OrderBy">Order by</span>:
+						<select id="ddlOrder" class="form-control form-control-sm" onchange="sortFiles()">
+							<option value="name" data-lang="Name_asc">&uarr;&nbsp;&nbsp;Name</option>
+							<option value="size" data-lang="Size_asc">&uarr;&nbsp;&nbsp;Size</option>
+							<option value="time" data-lang="Date_asc">&uarr;&nbsp;&nbsp;Date</option>
+							<option value="name_desc" data-lang="Name_desc">&darr;&nbsp;&nbsp;Name</option>
+							<option value="size_desc" data-lang="Size_desc">&darr;&nbsp;&nbsp;Size</option>
+							<option value="time_desc" data-lang="Date_desc">&darr;&nbsp;&nbsp;Date</option>
+						</select>
+
+						<input type="text" class="form-control form-control-sm" id="txtSearch" onkeyup="filterFiles()" onchange="filterFiles()" />
+					</div>
 				</div>
 				<div class="pnlFiles">
 					<div class="scrollPane">
@@ -172,39 +173,73 @@
 			</div>
 		</form>
 	</div>
-	<div id="menuFile" class="contextMenu">
-		<a href="#" onclick="setFile()" data-lang="SelectFile" id="mnuSelectFile">Select</a>
-		<hr>
-		<a href="#" onclick="previewFile()" data-lang="Preview" id="mnuPreview">Preview</a>
-		<hr>
-		<a href="#" onclick="downloadFile()" data-lang="DownloadFile" id="mnuDownload">Download</a>
-		<hr>
-		<a href="#" onclick="return pasteToFiles(event, this)" data-lang="Paste" class="paste pale" id="mnuFilePaste">Paste</a>
-		<hr>
-		<a href="#" onclick="cutFile()" data-lang="Cut" id="mnuFileCut">Cut</a>
-		<hr>
-		<a href="#" onclick="copyFile()" data-lang="Copy" id="mnuFileCopy">Copy</a>
-		<hr>
-		<a href="#" onclick="renameFile()" data-lang="RenameFile" id="mnuRenameFile">Rename</a>
-		<hr>
-		<a href="#" onclick="deleteFile()" data-lang="DeleteFile" id="mnuDeleteFile">Delete</a>
-		<!-- hr>
-			<a href="#" onclick="fileProperties()" id="mnuProp">Properties</a -->
+	<div id="menuFile" class="dropdown-menu">
+		<a href="#" class="dropdown-item" onclick="setFile()" data-lang="SelectFile" id="mnuSelectFile">
+			<i class="fa fa-fw fa-check"></i>
+			<span>Select</span>
+		</a>
+		<a href="#" class="dropdown-item" onclick="previewFile()" data-lang="Preview" id="mnuPreview">
+			<i class="fa fa-fw fa-eye"></i>
+			<span>Preview</span>
+		</a>
+		<a href="#" class="dropdown-item" onclick="downloadFile()" data-lang="DownloadFile" id="mnuDownload">
+			<i class="fa fa-fw fa-download"></i>
+			<span>Download</span>
+		</a>
+		<div class="dropdown-divider"></div>
+		<a href="#" class="dropdown-item" onclick="cutFile()" data-lang="Cut" id="mnuFileCut">
+			<i class="fa fa-fw fa-cut"></i>
+			<span>Cut</span>
+		</a>
+		<a href="#" class="dropdown-item" onclick="copyFile()" data-lang="Copy" id="mnuFileCopy">
+			<i class="fa fa-fw fa-copy"></i>
+			<span>Copy</span>
+		</a>
+		<a href="#" class="dropdown-item paste disabled" onclick="return pasteToFiles(event, this)" data-lang="Paste" id="mnuFilePaste">
+			<i class="fa fa-fw fa-paste"></i>
+			<span>Paste</span>
+		</a>
+		<div class="dropdown-divider"></div>
+		<a href="#" class="dropdown-item" onclick="renameFile()" data-lang="RenameFile" id="mnuRenameFile">
+			<i class="fa fa-fw fa-pencil"></i>
+			<span>Rename</span>
+		</a>
+		<a href="#" class="dropdown-item" onclick="deleteFile()" data-lang="DeleteFile" id="mnuDeleteFile">
+			<i class="fa fa-fw fa-trash"></i>
+			<span>Delete</span>
+		</a>
 	</div>
-	<div id="menuDir" class="contextMenu">
-		<a href="#" onclick="downloadDir()" data-lang="Download" id="mnuDownloadDir">Download</a>
-		<hr>
-		<a href="#" onclick="addDir()" data-lang="T_CreateDir" id="mnuCreateDir">Create new</a>
-		<hr>
-		<a href="#" onclick="return pasteToDirs(event, this)" data-lang="Paste" class="paste pale" id="mnuDirPaste">Paste</a>
-		<hr>
-		<a href="#" onclick="cutDir()" data-lang="Cut" id="mnuDirCut">Cut</a>
-		<hr>
-		<a href="#" onclick="copyDir()" data-lang="Copy" id="mnuDirCopy">Copy</a>
-		<hr>
-		<a href="#" onclick="renameDir()" data-lang="RenameDir" id="mnuRenameDir">Rename</a>
-		<hr>
-		<a href="#" onclick="deleteDir()" data-lang="DeleteDir" id="mnuDeleteDir">Delete</a>
+	<div id="menuDir" class="dropdown-menu">
+		<a href="#" class="dropdown-item" onclick="addDir()" data-lang="T_CreateDir" id="mnuCreateDir">
+			<i class="fa fa-fw fa-plus"></i>
+			<span>Create new</span>
+		</a>
+		<a href="#" class="dropdown-item" onclick="downloadDir()" data-lang="Download" id="mnuDownloadDir">
+			<i class="fa fa-fw fa-download"></i>
+			<span>Download</span>
+		</a>
+		<div class="dropdown-divider"></div>
+		<a href="#" class="dropdown-item" onclick="cutDir()" data-lang="Cut" id="mnuDirCut">
+			<i class="fa fa-fw fa-cut"></i>
+			<span>Cut</span>
+		</a>
+		<a href="#" class="dropdown-item" onclick="copyDir()" data-lang="Copy" id="mnuDirCopy">
+			<i class="fa fa-fw fa-copy"></i>
+			<span>Copy</span>
+		</a>
+		<a href="#" class="dropdown-item paste disabled" onclick="return pasteToDirs(event, this)" data-lang="Paste" id="mnuDirPaste">
+			<i class="fa fa-fw fa-paste"></i>
+			<span>Paste</span>
+		</a>
+		<div class="dropdown-divider"></div>
+		<a href="#" class="dropdown-item" onclick="renameDir()" data-lang="RenameDir" id="mnuRenameDir">
+			<i class="fa fa-fw fa-pencil"></i>
+			<span>Rename</span>
+		</a>
+		<a href="#" class="dropdown-item" onclick="deleteDir()" data-lang="DeleteDir" id="mnuDeleteDir">
+			<i class="fa fa-fw fa-trash"></i>
+			<span>Delete</span>
+		</a>
 	</div>
 	<div id="pnlRenameFile" class="dialog">
 		<span class="name"></span><br>

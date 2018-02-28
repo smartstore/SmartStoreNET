@@ -862,6 +862,15 @@
     <Content Include="Content\editors\summernote\lang\summernote-uk-UA.js" />
     <Content Include="Content\editors\summernote\lang\summernote-zh-CN.js" />
     <Content Include="Content\editors\summernote\lang\summernote-zh-TW.js" />
+    <Content Include="Content\editors\summernote\plugin\image\lang\de-DE.js" />
+    <Content Include="Content\editors\summernote\plugin\image\lang\es-ES.js" />
+    <Content Include="Content\editors\summernote\plugin\image\lang\fr-FR.js" />
+    <Content Include="Content\editors\summernote\plugin\image\lang\it-IT.js" />
+    <Content Include="Content\editors\summernote\plugin\image\lang\pt-BR.js" />
+    <Content Include="Content\editors\summernote\plugin\image\lang\ru-RU.js" />
+    <Content Include="Content\editors\summernote\plugin\image\lang\tr-TR.js" />
+    <Content Include="Content\editors\summernote\plugin\image\lang\zh-TW.js" />
+    <Content Include="Content\editors\summernote\plugin\image\summernote-image-attributes.js" />
     <Content Include="Content\editors\summernote\plugin\link\smartstore.link.js" />
     <Content Include="Content\editors\summernote\plugin\media\smartstore.media.js" />
     <Content Include="Content\editors\summernote\summernote-bs4.css" />
@@ -1015,6 +1024,7 @@
     <Content Include="Content\editors\summernote\font\summernote.eot" />
     <Content Include="Content\editors\summernote\font\summernote.ttf" />
     <Content Include="Content\editors\summernote\font\summernote.woff" />
+    <Content Include="Content\editors\summernote\plugin\image\LICENSE" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />

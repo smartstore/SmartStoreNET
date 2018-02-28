@@ -68,17 +68,16 @@
 // ------------------------------------------------------
 
 .btn,
-.menubar-link,
 .nav-link,
-.dropdown-item {
-	> i + span:not(:empty), 
+.menubar-link {
+	> i + span:not(:empty),
 	> i + em:not(:empty) {
-		padding-left: 0.4em;
+		padding-left: 0.5em;
 	}
 
-	> span:not(:empty) + i, 
+	> span:not(:empty) + i,
 	> em:not(:empty) + i {
-		margin-left: 0.4em;
+		margin-left: 0.5em;
 	}
 }
 

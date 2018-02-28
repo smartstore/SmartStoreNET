@@ -30,13 +30,15 @@ ul {
 	display: none;
 }
 
-	.contextMenu a:hover, #pnlFileList .selected, #pnlFileList .selected:hover, #menuFile a:hover {
-		background-color: #000099 !important;
-		color: #FFF;
+	#pnlFileList .selected,
+	#pnlFileList .selected:hover {
+		background-color: #37a0e6 !important;
+		color: #fff;
 	}
 
-#pnlDirList .selected, #pnlDirList div.selected:hover {
-	background-color: #DFD !important;
+#pnlDirList .selected, 
+#pnlDirList div.selected:hover {
+	background-color: #f8f9fa !important;
 }
 
 .dialog input {
@@ -66,24 +68,9 @@ ul {
 }
 
 .bottomLine {
-	background: #DDD;
-	border-top: 1px solid #CCC;
-}
-
-.pale {
-	opacity: 0.5;
-}
-/* Search and order fields */
-#txtSearch, #ddlOrder {
-	border: 1px solid #CCC;
-	border-radius: 3px;
-}
-
-#txtSearch {
-	padding: 0 22px 0 3px;
-	background: url(../images/sprite.png) no-repeat 87px -314px;
-	width: 80px;
-	height: 20px;
+	background: #f8f9fa;
+	border-top: 1px solid rgba(0,0,0, 0.12);
+	height: 30px;
 }
 
 input[type=text]::-ms-clear {
@@ -149,8 +136,9 @@ input[type=text]::-ms-clear {
 	cursor: pointer;
 }
 
-	#pnlFileList li:hover, #pnlDirList li div:hover {
-		background: #FFFFCC !important;
+	#pnlFileList li:hover, 
+	#pnlDirList li div:hover {
+		background: #f8f9fa !important;
 	}
 
 #pnlFileList .size {
@@ -209,127 +197,6 @@ hr {
 		border-right: none;
 	}
 
-	.actions input {
-		background-repeat: no-repeat;
-		background-position: 3px center;
-		padding: 0 3px 0 18px;
-		height: 22px;
-		font-size: 11px;
-		border: 1px solid #CCC;
-		background-color: #EEE;
-		border-radius: 3px;
-		margin-bottom: 3px;
-	}
-
-		.actions input[type=button]:hover, .actions input.selected {
-			background-color: #DFD;
-			cursor: pointer;
-		}
-
-#btnAddDir {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -213px;
-}
-
-#mnuCreateDir {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -210px;
-}
-
-#mnuDownloadDir {
-	background-image: url(../images/sprite.png);
-	background-position: 4px 7px;
-}
-
-#btnDeleteDir {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -237px;
-}
-
-#mnuDeleteDir {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -235px;
-}
-
-#btnAddFile {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -81px;
-}
-
-#btnDeleteFile {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -104px;
-}
-
-#mnuDeleteFile {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -102px;
-}
-
-#btnDownloadFile {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -128px;
-}
-
-#mnuDownload {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -126px;
-}
-
-#btnPreviewFile {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -285px;
-}
-
-#mnuPreview {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -283px;
-}
-
-#btnSelectFile {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -399px;
-}
-
-#mnuSelectFile {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -397px;
-}
-
-#btnThumbView {
-	background-image: url(../images/sprite.png);
-	background-position: center -447px;
-}
-
-#btnListView {
-	background-image: url(../images/sprite.png);
-	background-position: center -483px;
-}
-
-#btnRenameFile, #btnRenameDir {
-	background-image: url(../images/sprite.png);
-	background-position: 4px 4px;
-}
-
-#mnuRenameDir, #mnuRenameFile {
-	background-image: url(../images/sprite.png);
-	background-position: 4px 7px;
-}
-
-#mnuDirCut, #mnuFileCut {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -47px;
-}
-
-#mnuDirCopy, #mnuFileCopy {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -20px;
-}
-
-#mnuDirPaste, #mnuFilePaste {
-	background-image: url(../images/sprite.png);
-	background-position: 4px -370px;
-}
 
 .btn {
 	background-image: none !important;
@@ -348,10 +215,9 @@ ul#pnlFileList.thumbView li {
 	padding: 10px;
 	text-align: center;
 	vertical-align: middle;
-	border: 1px solid #EEE;
-	border-radius: 5px;
+	border: 1px solid transparent;
+	border-radius: 3px;
 	position: relative;
-	background: #EEE;
 }
 
 ul#pnlFileList.thumbView .name, ul#pnlFileList.thumbView .time {

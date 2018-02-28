@@ -61,10 +61,11 @@ function Directory(fullPath, numDirs, numFiles) {
 		}
 		el = el.children('div');
 		el.click(function (e) {
+			console.log(e);
 			selectDir(this);
 		});
 
-		el.bind('contextmenu', function (e) {
+		el.on('contextmenu', function (e) {
 			e.stopPropagation();
 			e.preventDefault();
 			closeMenus('file');

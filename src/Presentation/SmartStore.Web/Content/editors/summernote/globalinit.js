@@ -18,33 +18,6 @@ var summernote_image_upload_url;
 	});
 
 	summernote_global_config = {
-		codemirror: {
-			mode: "htmlmixed",
-			theme: "eclipse",
-			lineNumbers: true,
-			lineWrapping: true,
-			tabSize: 2,
-			smartIndent: true,
-			matchTags: true,
-			matchBrackets: true,
-			autoCloseTags: true,
-			autoCloseBrackets: true,
-			styleActiveLine: true,
-			extraKeys: {
-				"'.'": CodeMirror.hint.completeAfter,
-				"'<'": CodeMirror.hint.completeAfter,
-				"'/'": CodeMirror.hint.completeIfAfterLt,
-				"' '": CodeMirror.hint.completeIfAfterSpace,
-				"'='": CodeMirror.hint.completeIfInTag,
-				"Ctrl-Space": "autocomplete",
-				"F11": function (cm) { cm.setOption("fullScreen", !cm.getOption("fullScreen")); },
-				"Esc": function (cm) { if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false); }
-			},
-			hintOptions: {
-				closeCharacters: /[\s()\[\]{};:>,.|%]/,
-				completeSingle: false
-			}
-		},
 		disableDragAndDrop: false,
 		dialogsInBody: false,
 		dialogsFade: true,
@@ -69,13 +42,20 @@ var summernote_image_upload_url;
 			}
 		},
 		toolbar: [
-			
-			['text', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+			['text', ['bold', 'italic', 'underline', 'strikethrough', 'clear', 'cleaner']],
 			['font', ['fontname', 'color', 'fontsize']],
 			['para', ['style', 'ul', 'ol', 'paragraph']],
 			['insert', ['link', 'media',  'table', 'hr', 'video']],
 			['view', ['fullscreen', 'codeview', 'help']]
 		],
+		popover: {
+			image: [
+				['custom', ['imageAttributes']],
+				['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
+				['float', ['floatLeft', 'floatRight', 'floatNone']],
+				['remove', ['removeMedia']]
+			],
+		},
 		icons: {
 			'align': 'fa fa-align-left',
 			'alignCenter': 'fa fa-align-center',
@@ -121,6 +101,38 @@ var summernote_image_upload_url;
 			'undo': 'fa fa-undo',
 			'unorderedlist': 'fa fa-list-ul',
 			'video': 'fa fa-video-camera'
+		},
+		codemirror: {
+			mode: "htmlmixed",
+			theme: "eclipse",
+			lineNumbers: true,
+			lineWrapping: true,
+			tabSize: 2,
+			smartIndent: true,
+			matchTags: true,
+			matchBrackets: true,
+			autoCloseTags: true,
+			autoCloseBrackets: true,
+			styleActiveLine: true,
+			extraKeys: {
+				"'.'": CodeMirror.hint.completeAfter,
+				"'<'": CodeMirror.hint.completeAfter,
+				"'/'": CodeMirror.hint.completeIfAfterLt,
+				"' '": CodeMirror.hint.completeIfAfterSpace,
+				"'='": CodeMirror.hint.completeIfInTag,
+				"Ctrl-Space": "autocomplete",
+				"F11": function (cm) { cm.setOption("fullScreen", !cm.getOption("fullScreen")); },
+				"Esc": function (cm) { if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false); }
+			},
+			hintOptions: {
+				closeCharacters: /[\s()\[\]{};:>,.|%]/,
+				completeSingle: false
+			}
+		},
+		imageAttributes: {
+			icon: '<i class="fa fa-pencil"/>',
+			removeEmpty: true, // true = remove attributes | false = leave empty if present
+			disableUpload: true // true = don't display Upload Options | Display Upload Options
 		}
 	};
 

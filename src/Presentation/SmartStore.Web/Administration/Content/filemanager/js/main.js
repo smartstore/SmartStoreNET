@@ -481,9 +481,9 @@ function downloadDir() {
 
 function closeMenus(el) {
 	if (!el || el == 'dir')
-		$('#menuDir').fadeOut();
+		$('#menuDir').fadeOut(200);
 	if (!el || el == 'file')
-		$('#menuFile').fadeOut();
+		$('#menuFile').fadeOut(200);
 }
 
 function selectFirst() {
@@ -614,7 +614,7 @@ function cutDir() {
 	var d = getSelectedDir();
 	if (d) {
 		setClipboard('cut', d);
-		d.GetElement().addClass('pale');
+		d.GetElement().addClass('disabled');
 	}
 }
 
@@ -629,7 +629,7 @@ function cutFile() {
 	var f = getSelectedFile();
 	if (f) {
 		setClipboard('cut', f);
-		f.GetElement().addClass('pale');
+		f.GetElement().addClass('disabled');
 	}
 }
 
@@ -641,7 +641,7 @@ function copyFile() {
 }
 
 function pasteToFiles(e, el) {
-	if ($(el).hasClass('pale')) {
+	if ($(el).hasClass('disabled')) {
 		e.stopPropagation();
 		return false;
 	}
@@ -660,7 +660,7 @@ function pasteToFiles(e, el) {
 }
 
 function pasteToDirs(e, el) {
-	if ($(el).hasClass('pale')) {
+	if ($(el).hasClass('disabled')) {
 		e.stopPropagation();
 		return false;
 	}
@@ -681,17 +681,17 @@ function pasteToDirs(e, el) {
 }
 
 function clearClipboard() {
-	$('#pnlDirList li').removeClass('pale');
-	$('#pnlFileList li').removeClass('pale');
+	$('#pnlDirList li').removeClass('disabled');
+	$('#pnlFileList li').removeClass('disabled');
 	clipBoard = null;
-	$('.paste').addClass('pale');
+	$('.paste').addClass('disabled');
 }
 
 function setClipboard(a, obj) {
 	clearClipboard();
 	if (obj) {
 		clipBoard = new Clipboard(a, obj);
-		$('.paste').removeClass('pale');
+		$('.paste').removeClass('disabled');
 	}
 }
 

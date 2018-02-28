@@ -1,8 +1,8 @@
 /* RoxyFileman - web based file manager. Ready to use with CKEditor, TinyMCE. Can be easily integrated with any other WYSIWYG editor or CMS. Copyright (C) 2013, RoxyFileman.com - Lyubomir Arsov. All rights reserved. For licensing, see LICENSE.txt or http://RoxyFileman.com/license This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. Contact: Lyubomir Arsov, liubo (at) web-lobby.com */
 body {
-	font-family: Verdana;
-	font-size: 11px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size: 14px;
 	padding: 0;
 	margin: 0;
 	background: #FFF;
@@ -44,7 +44,7 @@ ul {
 }
 
 .filesize {
-	font-weight: bold;
+	font-weight: 600;
 	margin-top: 4px;
 	display: inline-block;
 }
@@ -174,7 +174,7 @@ input[type=text]::-ms-clear {
 	background-color: #DDD;
 	border: 1px solid #BBB;
 	min-width: 100px;
-	font-weight: bold;
+	font-weight: 600;
 	z-index: 1000 !important;
 }
 
@@ -196,6 +196,18 @@ hr {
 .actions {
 	padding: 3px 0 10px 5px;
 }
+
+	.actions > .btn-group {
+		padding-right: 5px;
+		margin-right: 5px;
+		border-right: 1px solid rgba(0, 0, 0, 0.12);
+	}
+
+	.actions > .btn-group:last-child {
+		padding-right: 0;
+		margin-right: 0;
+		border-right: none;
+	}
 
 	.actions input {
 		background-repeat: no-repeat;
@@ -252,10 +264,6 @@ hr {
 #mnuDeleteFile {
 	background-image: url(../images/sprite.png);
 	background-position: 4px -102px;
-}
-
-#btnDeleteFile {
-	margin-right: 15px;
 }
 
 #btnDownloadFile {
@@ -322,6 +330,11 @@ hr {
 	background-image: url(../images/sprite.png);
 	background-position: 4px -370px;
 }
+
+.btn {
+	background-image: none !important;
+}
+
 /* END OF Buttons */
 /* File list views */
 ul#pnlFileList.thumbView li {
@@ -360,8 +373,10 @@ ul#pnlFileList.thumbView .icon {
 
 ul#pnlFileList.thumbView .size {
 	display: block !important;
-	width: 95% !important;
+	width: 100% !important;
 	position: absolute;
+	left: 0;
+	right: 0;
 	bottom: 5px;
 	margin: 0;
 }
@@ -453,3 +468,11 @@ div.ui-tooltip {
 	cursor: pointer;
 }
 /* END OF Upload dialog */
+
+
+
+
+.actions {
+	background-color: #f8f9fa;
+	border-bottom: 1px solid rgba(0,0,0, 0.1);
+}

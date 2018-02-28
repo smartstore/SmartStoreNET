@@ -557,14 +557,14 @@ function switchView(t) {
 		return;
 	if (!t)
 		t = $('#hdViewType').val();
-	$('.btnView').removeClass('selected');
+	$('.btn-view').removeClass('active');
 	if (t == 'thumb') {
 		$('#pnlFileList .icon').attr('src', RoxyUtils.GetAssetPath('images/blank.gif'));
 		$('#pnlFileList').addClass('thumbView');
 		if ($('#dynStyle').length == 0) {
 			$('head').append('<style id="dynStyle" />');
-			var rules = 'ul#pnlFileList.thumbView li{width:' + RoxyFilemanConf.THUMBS_VIEW_WIDTH + 'px;}';
-			rules += 'ul#pnlFileList.thumbView li{height:' + (parseInt(RoxyFilemanConf.THUMBS_VIEW_HEIGHT) + 20) + 'px;}';
+			var rules = 'ul#pnlFileList.thumbView li{width:' + (parseInt(RoxyFilemanConf.THUMBS_VIEW_WIDTH) + 22) + 'px;}';
+			rules += 'ul#pnlFileList.thumbView li{height:' + (parseInt(RoxyFilemanConf.THUMBS_VIEW_HEIGHT) + 42) + 'px;}';
 			rules += 'ul#pnlFileList.thumbView .icon{width:' + RoxyFilemanConf.THUMBS_VIEW_WIDTH + 'px;}';
 			rules += 'ul#pnlFileList.thumbView .icon{height:' + RoxyFilemanConf.THUMBS_VIEW_HEIGHT + 'px;}';
 			$('#dynStyle').html(rules);
@@ -589,7 +589,7 @@ function switchView(t) {
 				delay: 50
 			});
 		});
-		$('#btnThumbView').addClass('selected');
+		$('#btnThumbView').addClass('active');
 	} else {
 		$('#pnlFileList').removeClass('thumbView');
 		$('#pnlFileList li').each(function () {
@@ -598,7 +598,7 @@ function switchView(t) {
 				delay: 500
 			});
 		});
-		$('#btnListView').addClass('selected');
+		$('#btnListView').addClass('active');
 	}
 	$('#hdViewType').val(t);
 	RoxyUtils.SetCookie('roxyview', t, 10);

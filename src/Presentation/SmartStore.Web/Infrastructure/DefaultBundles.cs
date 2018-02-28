@@ -84,7 +84,7 @@ namespace SmartStore.Web.Infrastructure
 			bundles.Add(scriptBundle);
 
 			var styleBundle = new CustomStyleBundle("~/css/roxyfm").Include(
-				roxy + "css/jquery-ui-1.10.4.custom.min.css",
+				roxy + "css/jquery-ui-1.10.4.custom.css",
 				roxy + "css/main.css");
 			styleBundle.Orderer = new NullOrderer();
 			bundles.Add(styleBundle);

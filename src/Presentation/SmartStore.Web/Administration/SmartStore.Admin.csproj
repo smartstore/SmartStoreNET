@@ -456,19 +456,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\filemanager\css\images\animated-overlay.gif" />
-    <Content Include="Content\filemanager\css\images\ui-bg_flat_0_aaaaaa_40x100.png" />
-    <Content Include="Content\filemanager\css\images\ui-bg_flat_75_ffffff_40x100.png" />
-    <Content Include="Content\filemanager\css\images\ui-bg_glass_55_fbf9ee_1x400.png" />
-    <Content Include="Content\filemanager\css\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="Content\filemanager\css\images\ui-bg_glass_75_dadada_1x400.png" />
-    <Content Include="Content\filemanager\css\images\ui-bg_glass_75_e6e6e6_1x400.png" />
-    <Content Include="Content\filemanager\css\images\ui-bg_glass_95_fef1ec_1x400.png" />
-    <Content Include="Content\filemanager\css\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_222222_256x240.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_2e83ff_256x240.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_454545_256x240.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_888888_256x240.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\filemanager\css\jquery-ui-1.10.4.custom.css" />
     <Content Include="Content\filemanager\css\jquery-ui-1.10.4.custom.min.css" />
     <Content Include="Content\filemanager\css\main.css" />
     <Content Include="Content\filemanager\images\action-folder-paste.png" />

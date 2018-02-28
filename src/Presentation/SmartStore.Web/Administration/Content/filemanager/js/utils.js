@@ -304,8 +304,14 @@ RoxyUtils.Translate = function () {
 		$(this).prop('title', t(key));
 	});
 	$('[data-lang-v]').each(function () {
-		var key = $(this).attr('data-lang-v');
-		$(this).prop('value', t(key));
+		var btn = $(this);
+		var key = btn.attr('data-lang-v');
+		if (btn.is('button')) {
+			btn.find('> span').text(t(key));
+		}
+		else {
+			btn.prop('value', t(key));
+		}	
 	});
 	$('[data-lang]').each(function () {
 		var key = $(this).attr('data-lang');

@@ -58,6 +58,15 @@ $btn-size-sm: $input-height-sm;
 }
 
 
+// Make icon font-size 13px in small buttons
+// (looks ugly otherwise)
+// -----------------------------------------------------
+
+.btn-sm > .fa {
+	font-size: 14px;
+}
+
+
 // btn-(outline-)(secondary|light)
 // looks really shitty in BS4, style it decently.
 // -----------------------------------------------------

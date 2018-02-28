@@ -1,5 +1,10 @@
 ﻿@{ 
-	Layout = null; 
+	Layout = null;
+
+	var vendorsRoot = "~/Content/vendors/";
+	Html.AppendCssFileParts(
+		vendorsRoot + "font-awesome/font-awesome.css",
+		"~/Administration/Content/theme.scss");
 }
 <!DOCTYPE html>
 <html>
@@ -32,6 +37,9 @@
          var roxy_assets_root = '@Url.Content("~/Administration/Content/filemanager/")';
 	</script>
 
+	@Html.SmartCssFiles(this.Url, ResourceLocation.Head)
+	@Html.SmartScripts(this.Url, ResourceLocation.Head)
+
 	@Styles.Render("~/css/roxyfm") 
 	@Scripts.Render("~/bundles/roxyfm")
 
@@ -42,10 +50,20 @@
 	<table cellpadding="0" cellspacing="0" id="wraper">
 		<tr>
 			<td valign="top" class="pnlDirs" id="dirActions">
-				<div class="actions">
-					<input type="button" id="btnAddDir" value="Create" title="Create new directory" onclick="addDir()" data-lang-v="CreateDir" data-lang-t="T_CreateDir" />
-					<input type="button" id="btnRenameDir" value="Rename" title="Rename directory" onclick="renameDir()" data-lang-v="RenameDir" data-lang-t="T_RenameDir" />
-					<input type="button" id="btnDeleteDir" value="Delete" title="Delete selected directory" onclick="deleteDir()" data-lang-v="DeleteDir" data-lang-t="T_DeleteDir" />
+				<div class="actions d-flex p-2">
+					<button type="button" class="btn btn-sm btn-light" id="btnAddDir" title="Create new directory" onclick="addDir()" data-lang-v="CreateDir" data-lang-t="T_CreateDir">
+						<i class="fa fa-plus"></i>
+						<span>Create</span>
+					</button>
+
+					<button type="button" class="btn btn-sm btn-light btn-icon ml-auto" id="btnRenameDir" title="Rename directory" onclick="renameDir()" data-lang-v="RenameDir" data-lang-t="T_RenameDir">
+						<i class="fa fa-pencil"></i>
+						<span class="d-none">Create</span>
+					</button>
+					<button type="button" class="btn btn-sm btn-light btn-to-danger btn-icon" id="btnDeleteDir" title="Delete selected directory" onclick="deleteDir()" data-lang-v="DeleteDir" data-lang-t="T_DeleteDir">
+						<i class="fa fa-trash"></i>
+						<span class="d-none">Delete</span>
+					</button>
 				</div>
 				<div id="pnlLoadingDirs">
 					<span>Loading directories...</span><br>
@@ -58,16 +76,51 @@
 			<td valign="top" id="fileActions">
 				<input type="hidden" id="hdViewType" value="list">
 				<input type="hidden" id="hdOrder" value="asc">
-				<div class="actions">
-					<input type="button" id="btnAddFile" value="Add file" title="Upload files" onclick="addFileClick()" data-lang-v="AddFile" data-lang-t="T_AddFile" />
-					<input type="button" id="btnPreviewFile" value="Preview" title="Preview selected file" onclick="previewFile()" data-lang-v="Preview" data-lang-t="T_Preview" />
-					<input type="button" id="btnRenameFile" value="Rename" title="Rename selected file" onclick="renameFile()" data-lang-v="RenameFile" data-lang-t="T_RenameFile" />
-					<input type="button" id="btnDownloadFile" value="Download" title="Download selected file" onclick="downloadFile()" data-lang-v="DownloadFile" data-lang-t="T_DownloadFile" />
-					<input type="button" id="btnDeleteFile" value="Delete" title="Delete selected file" onclick="deleteFile()" data-lang-v="DeleteFile" data-lang-t="T_DeleteFile" />
-					<input type="button" id="btnSelectFile" value="Select" title="Select highlighted file" onclick="setFile()" data-lang-v="SelectFile" data-lang-t="T_SelectFile" />
-					<br>
+				<div class="actions d-flex p-2">
+					<div class="btn-group">
+						<button type="button" class="btn btn-sm btn-light" id="btnAddFile" title="Upload files" onclick="addFileClick()" data-lang-v="AddFile" data-lang-t="T_AddFile">
+							<i class="fa fa-plus"></i>
+							<span>Add file</span>
+						</button>
+					</div>
+					<div class="btn-group">
+						<button type="button" class="btn btn-sm btn-light btn-icon" id="btnPreviewFile" title="Preview selected file" onclick="previewFile()" data-lang-v="Preview" data-lang-t="T_Preview">
+							<i class="fa fa-eye"></i>
+							<span class="d-none">Preview</span>
+						</button>
+						<button type="button" class="btn btn-sm btn-light btn-icon" id="btnRenameFile" title="Rename selected file" onclick="renameFile()" data-lang-v="RenameFile" data-lang-t="T_RenameFile">
+							<i class="fa fa-pencil"></i>
+							<span class="d-none">Rename</span>
+						</button>
+						<button type="button" class="btn btn-sm btn-light btn-icon" id="btnDownloadFile" title="Download selected file" onclick="downloadFile()" data-lang-v="DownloadFile" data-lang-t="T_DownloadFile">
+							<i class="fa fa-download"></i>
+							<span class="d-none">Download</span>
+						</button>
+						<button type="button" class="btn btn-sm btn-light btn-icon btn-to-danger" id="btnDeleteFile" title="Delete selected file" onclick="deleteFile()" data-lang-v="DeleteFile" data-lang-t="T_DeleteFile">
+							<i class="fa fa-trash"></i>
+							<span class="d-none">Delete</span>
+						</button>
+					</div>
+					<div class="btn-group">
+						<button type="button" class="btn btn-sm btn-light btn-icon btn-view" id="btnListView" title="List view" onclick="switchView('list')" data-lang-t="T_ListView">
+							<i class="fa fa-list"></i>
+							<span class="d-none">List view</span>
+						</button>
+						<button type="button" class="btn btn-sm btn-light btn-icon btn-view" id="btnThumbView" title="Thumbnails view" onclick="switchView('thumb')" data-lang-t="T_ThumbsView">
+							<i class="fa fa-th"></i>
+							<span class="d-none">Thumbnails view</span>
+						</button>
+					</div>
+					<div class="btn-group">
+						<button type="button" class="btn btn-sm btn-light btn-to-primary" id="btnSelectFile" title="Select highlighted file" onclick="setFile()" data-lang-v="SelectFile" data-lang-t="T_SelectFile">
+							<i class="fa fa-check"></i>
+							<span>Select</span>
+						</button>
+					</div>
+				</div>
+				<div class="sort-filter p-3">
 					<span data-lang="OrderBy">Order by</span>:
-					<select id="ddlOrder" onchange="sortFiles()">
+					<select id="ddlOrder" class="form-control form-control-sm" onchange="sortFiles()">
 						<option value="name" data-lang="Name_asc">&uarr;&nbsp;&nbsp;Name</option>
 						<option value="size" data-lang="Size_asc">&uarr;&nbsp;&nbsp;Size</option>
 						<option value="time" data-lang="Date_asc">&uarr;&nbsp;&nbsp;Date</option>
@@ -75,9 +128,7 @@
 						<option value="size_desc" data-lang="Size_desc">&darr;&nbsp;&nbsp;Size</option>
 						<option value="time_desc" data-lang="Date_desc">&darr;&nbsp;&nbsp;Date</option>
 					</select>
-					&nbsp;&nbsp;
-					<input type="button" id="btnListView" class="btnView" value=" " title="List view" onclick="switchView('list')" data-lang-t="T_ListView" />
-					<input type="button" id="btnThumbView" class="btnView" value=" " title="Thumbnails view" onclick="switchView('thumb')" data-lang-t="T_ThumbsView" />&nbsp;&nbsp;
+
 					<input type="text" id="txtSearch" onkeyup="filterFiles()" onchange="filterFiles()" />
 				</div>
 				<div class="pnlFiles">

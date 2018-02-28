@@ -4,17 +4,29 @@
     Layout = "";
 }
 
-<p class="text-muted">
-    @Html.Raw(Model.DescriptionText)
-</p>
-
 @Html.Hidden("OfflinePaymentMethodType", "DirectDebit")
+
+@if (Model.ThumbnailUrl.HasValue())
+{
+	<div class="media">
+		<img class="media-object img-fluid pr-2" src="@Model.ThumbnailUrl">
+		<div class="media-body">
+			@Html.Raw(Model.DescriptionText)
+		</div>
+	</div>
+}
+else
+{
+	<div class="text-muted">
+		@Html.Raw(Model.DescriptionText)
+	</div>
+}
 
 <div class="opt-form">
     <div class="form-group row">
         @Html.LabelFor(model => model.EnterIBAN, new { @class = "col-md-3 col-form-label" })
         <div class="col-md-9">
-			<div class="form-inline">
+			<div class="form-inline form-control-plaintext">
 				<div class="form-check form-check-inline">
 					<input type="radio" id="EnterIBAN_1" name="EnterIBAN" value="no-iban" @(Model.EnterIBAN == "no-iban" ? "checked=\"checked\"" : "") class="form-check-input" />
 					<label for="EnterIBAN_1" class="form-check-label">@T("Plugins.Payments.IPaymentDirectDebit.NoEnterIBAN")</label>

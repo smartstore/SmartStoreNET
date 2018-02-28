@@ -11,7 +11,8 @@ var AjaxMenu = (function ($, window, document, undefined) {
     var selectedMenuItemId = 0;
     var currentCategoryId = 0;
     var currentProductId = 0;
-    var currentManufacturerId = 0;
+	var currentManufacturerId = 0;
+	var publicStoreNavigationAllowed = true;
 
     var menu = $("#offcanvas-menu #menu-container");
 
@@ -194,23 +195,26 @@ var AjaxMenu = (function ($, window, document, undefined) {
             tabContent.tab('show');
             return;
         }
-
+		
 	    $.ajax({
 	        cache: false,
 	        url: menu.data("url-home"),
 	        type: 'POST',
 	        success: function (response) {
 	            if (isBackward) {
-	                response = response.replace("ocm-home-layer layer in", "ocm-home-layer layer");
+	                response = response.replace("ocm-home-layer layer show", "ocm-home-layer layer");
 	            }
-	            
-	            menu.prepend(response);
+
+		        menu.prepend(response);
 
 	            tabContent = menu.find("#category-tab");
 	            tabContent.tab('show');
 	            navigateToMenuItem(0);
 	            AjaxMenu.initFooter();
-	            tabContent.data("initialized", true);
+				tabContent.data("initialized", true);
+				
+				if (publicStoreNavigationAllowed == false)
+					navigateToService();
 	        },
 	        error: function (jqXHR, textStatus, errorThrown) {
 	            console.log(errorThrown);
@@ -310,14 +314,15 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        currentCategoryId = nav.data("current-category-id");
 	        currentProductId = nav.data("current-product-id");
 	        currentManufacturerId = nav.data("current-manufacturer-id");
-	        
-	        if (selectedMenuItemId == 0) {
-	            navigateToHomeLayer(false);
-	        }
-	        else {
-	            navigateToMenuItem(selectedMenuItemId);
-	        }
-
+			publicStoreNavigationAllowed = menu.data("public-store-navigation-allowed");
+			
+			if (selectedMenuItemId == 0) {
+				navigateToHomeLayer(false);
+			}
+			else {
+				navigateToMenuItem(selectedMenuItemId);
+			}
+	
 	        isInitialised = true;
 	        return;
 	    },

@@ -112,7 +112,8 @@
             <div id="menu-container" 
                  data-url-home="@(Url.Action("OffCanvasMenu", "Catalog"))" 
                  data-url-item="@(Url.Action("OffCanvasMenuCategories", "Catalog"))"
-                 data-url-manufacturer="@(Url.Action("OffCanvasMenuManufacturers", "Catalog"))">
+                 data-url-manufacturer="@(Url.Action("OffCanvasMenuManufacturers", "Catalog"))"
+				 data-public-store-navigation-allowed="@Model.PublicStoreNavigationAllowed.ToString().ToLower()">
                 <!-- AJAX -->
             </div>
         </div>

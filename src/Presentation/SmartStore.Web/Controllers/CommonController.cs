@@ -406,8 +406,9 @@ namespace SmartStore.Web.Controllers
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
 				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
 				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
-                CompareProductsEnabled = _catalogSettings.CompareProductsEnabled            
-            };
+                CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
+				PublicStoreNavigationAllowed = _services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation)
+			};
 
 			return PartialView(model);
         }

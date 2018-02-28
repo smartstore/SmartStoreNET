@@ -930,13 +930,23 @@ namespace SmartStore.Web.Controllers
         public ActionResult OffCanvasMenu()
         {
             ViewBag.ShowManufacturers = false;
+			ViewBag.ShowCategories = false;
 
-            if(_catalogSettings.ShowManufacturersInOffCanvas == true && _catalogSettings.ManufacturerItemsToDisplayInOffcanvasMenu > 0)
+			if (
+				_catalogSettings.ShowManufacturersInOffCanvas == true && 
+				_catalogSettings.ManufacturerItemsToDisplayInOffcanvasMenu > 0 &&
+				_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation)
+			)
             {
                 ViewBag.ShowManufacturers = true;
             }
-            
-            return PartialView();
+
+			if(_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation))
+			{
+				ViewBag.ShowCategories = true;
+			}
+			
+			return PartialView();
         }
         
         #endregion

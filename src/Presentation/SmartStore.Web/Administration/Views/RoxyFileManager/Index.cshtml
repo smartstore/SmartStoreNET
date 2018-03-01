@@ -5,6 +5,10 @@
 	Html.AppendCssFileParts(
 		vendorsRoot + "font-awesome/font-awesome.css",
 		"~/Administration/Content/theme.scss");
+
+	//Html.AppendScriptParts(
+	//	"~/Scripts/smartstore.viewport.js",
+	//	"~/Scripts/smartstore.common.js");
 }
 <!DOCTYPE html>
 <html>
@@ -70,7 +74,7 @@
 					<img src="~/Administration/Content/filemanager/images/loading.gif" title="Loading directory tree, please wait...">
 				</div>
 				<div class="scrollPane">
-					<ul id="pnlDirList"></ul>
+					<ul id="pnlDirList" class="clearfix mt-2"></ul>
 				</div>
 			</td>
 			<td valign="top" id="fileActions">
@@ -111,25 +115,31 @@
 							<span class="d-none">Thumbnails view</span>
 						</button>
 					</div>
+					<div class="sort-filter form-inline btn-group">
+						<div class="mf-dropdown mr-2">
+							<button class="btn btn-sm btn-light" title="Sortiere nach Name: Z bis A">
+								<i class="fa fa-sort d-xl-none"></i>
+								<span class="d-xl-none">Name: Z bis A</span>
+								<em class="d-none d-xl-inline">Sortiere nach <span>Name: Z bis A</span></em>
+								<i class="fa fa-caret-down"></i>
+							</button>
+							<select id="ddlOrder" class="form-control form-control-sm mr-1" onchange="sortFiles()">
+								<option value="name" data-lang="Name_asc">&uarr;&nbsp;&nbsp;Name</option>
+								<option value="size" data-lang="Size_asc">&uarr;&nbsp;&nbsp;Size</option>
+								<option value="time" data-lang="Date_asc">&uarr;&nbsp;&nbsp;Date</option>
+								<option value="name_desc" data-lang="Name_desc">&darr;&nbsp;&nbsp;Name</option>
+								<option value="size_desc" data-lang="Size_desc">&darr;&nbsp;&nbsp;Size</option>
+								<option value="time_desc" data-lang="Date_desc">&darr;&nbsp;&nbsp;Date</option>
+							</select>
+						</div>
+
+						<input type="text" class="form-control form-control-sm" id="txtSearch" onkeyup="filterFiles()" onchange="filterFiles()" />
+					</div>
 					<div class="btn-group">
 						<button type="button" class="btn btn-sm btn-light btn-to-primary" id="btnSelectFile" title="Select highlighted file" onclick="setFile()" data-lang-v="SelectFile" data-lang-t="T_SelectFile">
 							<i class="fa fa-check"></i>
 							<span>Select</span>
 						</button>
-					</div>
-
-					<div class="sort-filter form-inline btn-group">
-						<span data-lang="OrderBy">Order by</span>:
-						<select id="ddlOrder" class="form-control form-control-sm" onchange="sortFiles()">
-							<option value="name" data-lang="Name_asc">&uarr;&nbsp;&nbsp;Name</option>
-							<option value="size" data-lang="Size_asc">&uarr;&nbsp;&nbsp;Size</option>
-							<option value="time" data-lang="Date_asc">&uarr;&nbsp;&nbsp;Date</option>
-							<option value="name_desc" data-lang="Name_desc">&darr;&nbsp;&nbsp;Name</option>
-							<option value="size_desc" data-lang="Size_desc">&darr;&nbsp;&nbsp;Size</option>
-							<option value="time_desc" data-lang="Date_desc">&darr;&nbsp;&nbsp;Date</option>
-						</select>
-
-						<input type="text" class="form-control form-control-sm" id="txtSearch" onkeyup="filterFiles()" onchange="filterFiles()" />
 					</div>
 				</div>
 				<div class="pnlFiles">
@@ -249,5 +259,7 @@
 		<span class="name"></span><br>
 		<input type="text" id="txtDirName">
 	</div>
+
+	@Html.SmartScripts(this.Url, ResourceLocation.Foot)
 </body>
 </html>

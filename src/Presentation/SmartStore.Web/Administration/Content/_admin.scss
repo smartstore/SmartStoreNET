@@ -254,7 +254,7 @@ header {
 
 	&.sticky {
 		position: fixed;
-		z-index: 10;
+		z-index: 600;
 		left: $content-padding-x / 2;
 		right: $content-padding-x / 2;
 		margin-left: 0;
@@ -262,6 +262,11 @@ header {
 		background: $gray-100;
 		background: #fff;
 		border-bottom: 1px solid rgba(0,0,0, 0.08);
+
+		.modal-open & {
+			// add the killed scrollbar width
+			margin-right: 17px;
+		}
 	}
 
 	@include media-breakpoint-up(lg) {
@@ -1413,7 +1418,7 @@ table.payment-method-features td {
 		> .note-btn-group:last-of-type {
 			border-right-width: 0;
 			padding-right: 0;
-			margin-left: auto !important;
+			//margin-left: auto !important;
 		}
 
 		.dropdown-toggle:after {

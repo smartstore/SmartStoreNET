@@ -481,9 +481,9 @@ function downloadDir() {
 
 function closeMenus(el) {
 	if (!el || el == 'dir')
-		$('#menuDir').fadeOut(200);
+		$('#menuDir').hide();
 	if (!el || el == 'file')
-		$('#menuFile').fadeOut(200);
+		$('#menuFile').hide();
 }
 
 function selectFirst() {

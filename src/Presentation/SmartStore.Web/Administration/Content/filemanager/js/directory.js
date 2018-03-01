@@ -61,7 +61,6 @@ function Directory(fullPath, numDirs, numFiles) {
 		}
 		el = el.children('div');
 		el.click(function (e) {
-			console.log(e);
 			selectDir(this);
 		});
 
@@ -96,8 +95,9 @@ function Directory(fullPath, numDirs, numFiles) {
 	this.GetHtml = function () {
 		var html = '<li data-path="' + this.fullPath + '" data-dirs="' + this.dirs + '" data-files="' + this.files + '" class="directory">';
 		var path = RoxyUtils.GetAssetPath("images/" + (this.dirs > 0 ? "dir-plus.png" : "blank.gif"));
-		html += '<div><img src="' + path + '" class="dirPlus" width="9" height="9">';
-		html += '<img src="' + RoxyUtils.GetAssetPath("images/folder.png") + '" class="dir"><span class="name">' + this.name + ' (' + this.files + ')</span></div>';
+		html += '<div class="d-flex flex-nowrap align-items-baseline"><img src="' + path + '" class="dirPlus mr-2" width="9" height="9">';
+		//html += '<img src="' + RoxyUtils.GetAssetPath("images/folder.png") + '" class="dir"><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
+		html += '<i class="dir fa fa-folder-open mr-2 text-gray"></i><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
 		html += '</li>';
 		
 		return html;

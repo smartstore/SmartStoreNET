@@ -404,7 +404,6 @@
     <Compile Include="Media\IImageProcessor.cs" />
     <Compile Include="Media\ImageCache.cs" />
     <Compile Include="Media\ImageCacheExtensions.cs" />
-    <Compile Include="Media\ImageHeader.cs" />
     <Compile Include="Media\DefaultImageProcessor.cs" />
     <Compile Include="Media\ImageTypes.cs" />
     <Compile Include="Messages\NewsLetterSubscriptionService.cs" />

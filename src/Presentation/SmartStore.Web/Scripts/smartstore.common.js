@@ -38,15 +38,15 @@
 		if (modal.length === 0) {
 			var html = [
 				'<div id="' + id + '" class="modal fade" data-backdrop="' + opts.backdrop + '" role="dialog" aria-hidden="true" tabindex="-1" style="border-radius: 0">',
-					'<a href="javascript:void(0)" class="modal-closer" data-dismiss="modal" title="' + window.Res['Common.Close'] + '">&times;</a>',
-					'<div class="modal-dialog{0}" role="document">'.format(!!(sizeClass) ? " " + sizeClass : ""),
+					'<a href="javascript:void(0)" class="modal-closer d-none d-md-block" data-dismiss="modal" title="' + window.Res['Common.Close'] + '">&times;</a>',
+					'<div class="modal-dialog{0} modal-dialog-app" role="document">'.format(!!(sizeClass) ? " " + sizeClass : ""),
 						'<div class="modal-content">',
 							'<div class="modal-body" style="padding: 0">',
 								'<iframe class="modal-flex-fill-area" frameborder="0" src="' + opts.url + '" />',
 							'</div>',
-							//'<div class="modal-footer">',
-							//	'<button type="button" class="btn btn-secondary btn-default" data-dismiss="modal">' + window.Res['Common.Close'] + '</button>',
-							//'</div>',
+							'<div class="modal-footer d-md-none">',
+								'<button type="button" class="btn btn-secondary btn-sm btn-default" data-dismiss="modal">' + window.Res['Common.Close'] + '</button>',
+							'</div>',
 						'</div>',
 					'</div>',
 				'</div>'

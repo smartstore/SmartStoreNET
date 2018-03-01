@@ -267,16 +267,33 @@ namespace SmartStore.Admin.Controllers
 			return _fileSystem.GetStoragePath(path) ?? path;
 		}
 
-		private List<IFile> GetFiles(string path, string type)
+		private IEnumerable<IFile> GetFiles(string path, string type)
 		{
 			var files = _fileSystem.ListFiles(path);
 
 			if (type.IsEmpty() || type == "#")
-				return files.ToList();
+				return files;
 
-			return files
-				.Where(x => GetFileContentType(x.Extension).IsCaseInsensitiveEqual(type))
-				.ToList();
+			return files.Where(x => GetFileContentType(x.Extension).IsCaseInsensitiveEqual(type));
+		}
+
+		private long CountFiles(string path, string type)
+		{
+			if (_fileSystem.IsCloudStorage)
+			{
+				// Dont't count, it's expensive!
+				return 0;
+			}
+
+			Func<string, bool> predicate = null;
+
+			if (type.HasValue() && type != "#")
+			{
+				type = type.ToLowerInvariant();
+				predicate = x => GetFileContentType(Path.GetExtension(x)) == type;
+			}
+
+			return _fileSystem.CountFiles(path, "*", predicate, false);
 		}
 
 		private List<RoxyFolder> ListDirs(string path)
@@ -319,7 +336,7 @@ namespace SmartStore.Admin.Controllers
 				else
 					Response.Write(",");
 
-				var fileCount = GetFiles(folder.Folder.Path, type).Count;
+				var fileCount = CountFiles(folder.Folder.Path, type);
 
 				Response.Write(
 					"{\"p\":\"/" + folder.Folder.Path.Replace("\\", "/")
@@ -335,26 +352,19 @@ namespace SmartStore.Admin.Controllers
 		private void ListFiles(string path, string type)
 		{
 			var isFirstItem = true;
-			var size = Size.Empty;
 			var files = GetFiles(GetRelativePath(path), type);
 
 			Response.Write("[");
 
 			foreach (var file in files)
 			{
-				try
-				{
-					var mime = MimeTypes.MapNameToMimeType(file.Name);
-					size = ImageHeader.GetDimensions(file.OpenRead(), mime, false);
-				}
-				catch {	}
-
 				if (isFirstItem)
 					isFirstItem = false;
 				else
 					Response.Write(",");
 
 				var url = _fileSystem.GetPublicUrl(file.Path);
+				var size = file.Dimensions;
 
 				Response.Write("{");
 				Response.Write("\"p\":\"" + url + "\"");

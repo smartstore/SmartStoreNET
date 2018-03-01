@@ -63,6 +63,7 @@ ul {
 }
 
 .scrollPane {
+	x-width: 260px;
 	height: 400px;
 	overflow: auto;
 }
@@ -70,7 +71,7 @@ ul {
 .bottomLine {
 	background: #f8f9fa;
 	border-top: 1px solid rgba(0,0,0, 0.12);
-	height: 30px;
+	height: 36px;
 }
 
 input[type=text]::-ms-clear {
@@ -92,25 +93,22 @@ input[type=text]::-ms-clear {
 		padding: 0 0 0 20px;
 	}
 
-	#pnlDirList .dir {
-		line-height: 30px;
+	/*#pnlDirList .dir {
 		float: left;
-		margin-right: 5px;
 	}
 
 	#pnlDirList .dirPlus {
 		float: left;
-		margin: 3px 3px 0 0;
-	}
+	}*/
 
 	#pnlDirList li, #pnlDirList div {
 		float: left;
 		clear: both;
-		width: 98%;
+		width: 100%;
 	}
 
 	#pnlDirList div {
-		padding: 3px;
+		padding: 5px 3px;
 		cursor: pointer;
 	}
 

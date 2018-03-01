@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -40,6 +41,11 @@ namespace SmartStore.Core.IO
 		/// File extension including dot
 		/// </summary>
 		string Extension { get; }
+
+		/// <summary>
+		/// Dimensions, if the file is an image.
+		/// </summary>
+		Size Dimensions { get; }
 
 		bool Exists { get; }
 

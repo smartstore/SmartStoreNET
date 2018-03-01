@@ -7,6 +7,7 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media
 {

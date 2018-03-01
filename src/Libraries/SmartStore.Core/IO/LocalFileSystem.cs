@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -201,9 +202,23 @@ namespace SmartStore.Core.IO
 			return new LocalFolder(Fix(folderPath), fileInfo.Directory);
 		}
 
+		public long CountFiles(string path, string pattern, Func<string, bool> predicate, bool deep = true)
+		{
+			var files = SearchFiles(path, pattern, deep).AsParallel();
+
+			if (predicate != null)
+			{
+				return files.Count(predicate);
+			}
+			else
+			{
+				return files.Count();
+			}
+		}
+
 		public IEnumerable<string> SearchFiles(string path, string pattern, bool deep = true)
 		{
-			// get relative from absolute path
+			// Get relative from absolute path
 			var index = _storagePath.EmptyNull().Length;
 
 			return Directory.EnumerateFiles(MapStorage(path), pattern, deep ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
@@ -467,6 +482,7 @@ namespace SmartStore.Core.IO
 		{
 			private readonly string _path;
 			private readonly FileInfo _fileInfo;
+			private Size? _dimensions;
 
 			public LocalFile(string path, FileInfo fileInfo)
 			{
@@ -507,6 +523,27 @@ namespace SmartStore.Core.IO
 			public string Extension
 			{
 				get { return _fileInfo.Extension; }
+			}
+
+			public Size Dimensions
+			{
+				get
+				{
+					if (_dimensions == null)
+					{
+						try
+						{
+							var mime = MimeTypes.MapNameToMimeType(_fileInfo.Name);
+							_dimensions = ImageHeader.GetDimensions(OpenRead(), mime, false);
+						}
+						catch
+						{
+							_dimensions = new Size();
+						}
+					}
+
+					return _dimensions.Value;
+				}
 			}
 
 			public bool Exists

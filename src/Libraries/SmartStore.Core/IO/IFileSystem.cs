@@ -70,9 +70,20 @@ namespace SmartStore.Core.IO
 		IFolder GetFolderForFile(string path);
 
 		/// <summary>
+		/// Retrieves the count of files within a path.
+		/// </summary>
+		/// <param name="path">The relative path to the folder in which to retrieve file count.</param>
+		/// <param name="pattern">The file pattern to match</param>
+		/// <param name="predicate">Optional. Files matching the predicate are excluded.</param>
+		/// <param name="deep">Whether to count files in all subfolders also</param>
+		/// <returns>Total count of files.</returns>
+		long CountFiles(string path, string pattern, Func<string, bool> predicate, bool deep = true);
+
+		/// <summary>
 		/// Performs a deep search for files within a path.
 		/// </summary>
 		/// <param name="path">The relative path to the folder in which to process file search.</param>
+		/// <param name="pattern">The file pattern to match</param>
 		/// <param name="deep">Whether to search in all subfolders also</param>
 		/// <returns>Matching file names</returns>
 		IEnumerable<string> SearchFiles(string path, string pattern, bool deep = true);

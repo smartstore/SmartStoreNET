@@ -15,10 +15,10 @@ namespace SmartStore.OfflinePayment.Models
 		[SmartResourceDisplayName("Plugins.SmartStore.OfflinePayment.DescriptionText")]
 		public string DescriptionText { get; set; }
 
-		[SmartResourceDisplayName("Plugins.SmartStore.OfflinePayment.AdditionalFee")]
+		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
 
-		[SmartResourceDisplayName("Plugins.SmartStore.OfflinePayment.AdditionalFeePercentage")]
+		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.AdditionalFeePercentage")]
 		public bool AdditionalFeePercentage { get; set; }
 
 		[SmartResourceDisplayName("Plugins.SmartStore.OfflinePayment.PaymentMethodLogo")]

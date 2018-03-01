@@ -44,10 +44,10 @@ namespace SmartStore.PayPal.Models
 		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.WebhookId")]
 		public string WebhookId { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPal.AdditionalFee")]
+		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPal.AdditionalFeePercentage")]
+		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.AdditionalFeePercentage")]
 		public bool AdditionalFeePercentage { get; set; }
 	}
 

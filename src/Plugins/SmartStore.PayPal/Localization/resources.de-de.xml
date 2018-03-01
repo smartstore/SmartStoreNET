@@ -113,18 +113,6 @@
       <LocaleResource Name="Signature.Hint">
         <Value>Geben Sie Ihre Signatur ein.</Value>
       </LocaleResource>
-      <LocaleResource Name="AdditionalFee">
-        <Value>Zusätzliche Gebühren</Value>
-      </LocaleResource>
-      <LocaleResource Name="AdditionalFee.Hint">
-        <Value>Zusätzliche Gebühren, die dem Kunden berechnet werden sollen.</Value>
-      </LocaleResource>
-      <LocaleResource Name="AdditionalFeePercentage">
-        <Value>Zusätzliche Gebühren (prozentual)</Value>
-      </LocaleResource>
-      <LocaleResource Name="AdditionalFeePercentage.Hint">
-        <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-      </LocaleResource>
       <LocaleResource Name="UsePayPalAddress">
         <Value>PayPal Adresse anzeigen</Value>
       </LocaleResource>

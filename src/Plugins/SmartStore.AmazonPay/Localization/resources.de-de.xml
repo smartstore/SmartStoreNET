@@ -306,18 +306,6 @@ Textvorschläge:</div><ul>
 	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
 		<Value>Legt fest, ob der Amazon Pay Button auch im Miniwarenkorb angezeigt werden soll.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AdditionalFee">
-		<Value>Zusätzliche Gebühren</Value>
-	</LocaleResource>
-	<LocaleResource Name="AdditionalFee.Hint">
-		<Value>Zusätzliche Gebühren, die dem Kunden für die Inanspruchnahme des Dienstes berechnet werden sollen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="AdditionalFeePercentage">
-		<Value>Zusätzliche Gebühren (prozentual)</Value>
-	</LocaleResource>
-	<LocaleResource Name="AdditionalFeePercentage.Hint">
-		<Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-	</LocaleResource>
 	<LocaleResource Name="AddOrderNotes">
 		<Value>Auftragsnotizen anlegen</Value>
 	</LocaleResource>

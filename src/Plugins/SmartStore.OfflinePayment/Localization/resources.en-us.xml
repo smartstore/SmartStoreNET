@@ -19,18 +19,6 @@
   <LocaleResource Name="PaymentMethodLogo.Hint">
 	<Value>Upload an image which will be displayed as thumbnail of the payment method on the payment selection page.</Value>
   </LocaleResource>
-  <LocaleResource Name="AdditionalFee">
-    <Value>Additional fee</Value>
-  </LocaleResource>
-  <LocaleResource Name="AdditionalFee.Hint">
-    <Value>Determines the additional fee.</Value>
-  </LocaleResource>
-  <LocaleResource Name="AdditionalFeePercentage">
-    <Value>Additional fee. Use percentage</Value>
-  </LocaleResource>
-  <LocaleResource Name="AdditionalFeePercentage.Hint">
-    <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
-  </LocaleResource>
 
   <!-- CashOnDelivery -->
   <LocaleResource Name="Plugins.FriendlyName.Payments.CashOnDelivery" AppendRootKey="false">

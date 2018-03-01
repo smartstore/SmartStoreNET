@@ -330,6 +330,18 @@ namespace SmartStore.Data.Migrations
 				"Zuordnungen zu Exportfeldern",
 				"Allows to map attribute values to export fields. Each entry has to be entered in a new line.",
 				"Ermöglicht die Zuordnung von Attributwerten zu Exportfeldern. Jeder Eintrag muss in einer neuen Zeile erfolgen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.AdditionalFee",
+				"Additional fee",
+				"Zusätzliche Gebühr",
+				"Specifies an additional fee to be charged to the customer for using the payment method.",
+				"Legt eine zusätzliche Gebühr fest, die dem Kunden für die Inanspruchnahme der Zahlart berechnet wird.");
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.AdditionalFeePercentage",
+				"Additional fee percentage",
+				"Zusätzliche Gebühr prozentual",
+				"Specifies whether the additional fee should be calculated as a percentage. A fixed value is used if this option is disabled.",
+				"Legt fest, ob die zusätzliche Gebühr prozentual berechnet werden soll. Es wird ein fester Wert verwendet, falls diese Option deaktiviert ist.");
 		}
 	}
 }

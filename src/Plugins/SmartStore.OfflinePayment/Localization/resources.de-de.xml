@@ -19,18 +19,6 @@
   <LocaleResource Name="PaymentMethodLogo.Hint">
 	<Value>Laden Sie hier eine Grafik hoch, welche auf der Zahlartauswahlseite als Thumbnail der Zahlart angezeigt wird.</Value>
   </LocaleResource>
-  <LocaleResource Name="AdditionalFee">
-    <Value>Zusätzliche Gebühr</Value>
-  </LocaleResource>
-  <LocaleResource Name="AdditionalFee.Hint">
-    <Value>Bestimmt die Gebühr, die dem Kunden für die Nutzung dieser Zahlart berechnet wird.</Value>
-  </LocaleResource>
-  <LocaleResource Name="AdditionalFeePercentage">
-    <Value>Zusätzliche Gebühren (prozentual)</Value>
-  </LocaleResource>
-  <LocaleResource Name="AdditionalFeePercentage.Hint">
-    <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Ein fester Wert wird verwendet, falls diese Option nicht aktiviert ist.</Value>
-  </LocaleResource>
 
   <!-- CashOnDelivery -->
   <LocaleResource Name="Plugins.FriendlyName.Payments.CashOnDelivery" AppendRootKey="false">

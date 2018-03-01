@@ -116,18 +116,6 @@
       <LocaleResource Name="Signature.Hint">
         <Value>Enter the signature.</Value>
       </LocaleResource>
-      <LocaleResource Name="AdditionalFee">
-        <Value>Additional fee</Value>
-      </LocaleResource>
-      <LocaleResource Name="AdditionalFee.Hint">
-        <Value>Enter additional fee to charge your customers.</Value>
-      </LocaleResource>
-      <LocaleResource Name="AdditionalFeePercentage">
-        <Value>Additional fee. Use percentage.</Value>
-      </LocaleResource>
-      <LocaleResource Name="AdditionalFeePercentage.Hint">
-        <Value>Specifies whether to apply a percentage additional fee to the order total. A fixed value is used if not enabled.</Value>
-      </LocaleResource>
       <LocaleResource Name="UsePayPalAddress">
         <Value>Show PayPal address</Value>
       </LocaleResource>

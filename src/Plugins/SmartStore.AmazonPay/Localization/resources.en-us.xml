@@ -306,18 +306,6 @@ Text suggestions:</div><ul>
 	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
 		<Value>Specifies to show the Amazon Pay button in the mini shopping cart too.</Value>
 	</LocaleResource>
-	<LocaleResource Name="AdditionalFee">
-		<Value>Additional fee</Value>
-	</LocaleResource>
-	<LocaleResource Name="AdditionalFee.Hint">
-		<Value>Enter additional fee to charge your customers.</Value>
-	</LocaleResource>
-	<LocaleResource Name="AdditionalFeePercentage">
-		<Value>Additional fee percentage</Value>
-	</LocaleResource>
-	<LocaleResource Name="AdditionalFeePercentage.Hint">
-		<Value>Specifies whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
-	</LocaleResource>
 	<LocaleResource Name="AddOrderNotes">
 		<Value>Create order notes</Value>
 	</LocaleResource>

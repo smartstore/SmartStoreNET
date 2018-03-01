@@ -710,6 +710,7 @@
     <Content Include="Content\filemanager\js\jquery-ui-1.10.4.custom.min.js" />
     <Content Include="Content\filemanager\js\main.js" />
     <Content Include="Content\filemanager\js\utils.js" />
+    <Content Include="Content\filemanager\lang\en.js" />
     <Content Include="Content\filemanager\LICENSE.txt" />
     <Content Include="Content\filemanager\third-party.txt" />
     <Content Include="Content\images\ajax_loader_small.gif" />

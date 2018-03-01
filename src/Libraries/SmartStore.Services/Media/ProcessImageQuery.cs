@@ -46,6 +46,7 @@ namespace SmartStore.Services.Media
 
 			Source = source;
 			DisposeSource = true;
+			Notify = true;
 		}
 
 		public ProcessImageQuery(ProcessImageQuery query)
@@ -132,6 +133,7 @@ namespace SmartStore.Services.Media
 
 		public bool IsValidationMode { get; set; }
 
+		public bool Notify { get; set; }
 
 		private T Get<T>(string name)
 		{

@@ -155,7 +155,7 @@ namespace SmartStore.Services.Media
 			if (imagePath.IsEmpty())
                 return null;
 
-			return _fileSystem.GetPublicUrl(BuildPath(imagePath)).EmptyNull();
+			return _fileSystem.GetPublicUrl(BuildPath(imagePath), true).EmptyNull();
 		}
 
 		public virtual void RefreshInfo(CachedImageResult cachedImage)

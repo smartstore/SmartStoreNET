@@ -18,6 +18,9 @@ namespace SmartStore.Core.Logging
 
 		public void Add(NotifyType type, LocalizedString message, bool durable = true)
 		{
+			if (_entries.Count >= 20)
+				return;
+
 			_entries.Add(new NotifyEntry { Type = type, Message = message, Durable = durable });
 		}
 

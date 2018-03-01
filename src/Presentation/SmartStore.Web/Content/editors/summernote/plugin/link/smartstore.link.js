@@ -119,6 +119,7 @@
 							var url = context.$note.data('file-browser-url');
 							if (url) {
 								var modalId = "modal-browse-files";
+								url = modifyUrl(url, "type", "#");
 								url = modifyUrl(url, "field", "note-link-url");
 								url = modifyUrl(url, "mid", modalId);
 								openPopup({

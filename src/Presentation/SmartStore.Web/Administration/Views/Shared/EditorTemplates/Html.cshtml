@@ -49,7 +49,7 @@
 
 @Html.TextArea(string.Empty, /* Name suffix */
 	html, /* Initial value */
-	new { @class = "summernote-editor" + (lazy ? " d-none" : ""), data_file_browser_url = Url.Action("Index", "RoxyFileManager", new { type = "image", area = "admin" }) }
+	new { @class = "summernote-editor" + (lazy ? " d-none" : ""), data_file_browser_url = Url.Action("Index", "RoxyFileManager", new { area = "admin" }) }
 )
 
 <script>

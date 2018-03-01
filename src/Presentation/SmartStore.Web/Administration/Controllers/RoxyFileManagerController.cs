@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Core.Domain.Media;
@@ -155,7 +156,7 @@ namespace SmartStore.Admin.Controllers
 			return result;
 		}
 
-		private void ImageResize(string path, string dest, int maxWidth, int maxHeight)
+		private void ImageResize(string path, string dest, int maxWidth, int maxHeight, bool notify = true)
 		{
 			if (dest.IsEmpty())
 				return;
@@ -172,7 +173,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				Quality = _mediaSettings.Value.DefaultImageQuality,
 				Format = Path.GetExtension(path).Trim('.').ToLower(),
-				IsValidationMode = true
+				IsValidationMode = true,
+				Notify = notify
 			};
 
 			var originalSize = ImageHeader.GetDimensions(buffer, MimeTypes.MapNameToMimeType(path));
@@ -264,7 +266,7 @@ namespace SmartStore.Admin.Controllers
 				path = uri.PathAndQuery;
 			}
 
-			return _fileSystem.GetStoragePath(path) ?? path;
+			return (_fileSystem.GetStoragePath(path) ?? path).TrimStart('/', '\\');
 		}
 
 		private IEnumerable<IFile> GetFiles(string path, string type)
@@ -732,7 +734,7 @@ namespace SmartStore.Admin.Controllers
 			Response.Write(GetResultString());
 		}
 
-		private void Upload(string path, bool external = false)
+		private async Task UploadAsync(string path, bool external = false)
 		{
 			path = GetRelativePath(path);
 
@@ -749,6 +751,8 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
+				var notify = Request.Files.Count < 4;
+
 				// copy uploaded files to temp folder and resize them
 				for (var i = 0; i < Request.Files.Count; ++i)
 				{
@@ -762,7 +766,7 @@ namespace SmartStore.Admin.Controllers
 
 						if (GetFileContentType(extension).IsCaseInsensitiveEqual("image"))
 						{
-							ImageResize(dest, dest, width, height);
+							ImageResize(dest, dest, width, height, notify);
 						}
 					}
 					else
@@ -783,7 +787,7 @@ namespace SmartStore.Admin.Controllers
 							newPath = file.Path;
 						}
 
-						_fileSystem.SaveStream(newPath, stream);
+						await _fileSystem.SaveStreamAsync(newPath, stream);
 						url = _fileSystem.GetPublicUrl(newPath);
 					}
 				}
@@ -829,7 +833,7 @@ namespace SmartStore.Admin.Controllers
 
 		#endregion
 
-		public void ProcessRequest(string a = null, string d = null)
+		public async Task ProcessRequest(string a = null, string d = null)
 		{
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.UploadPictures))
 			{
@@ -841,7 +845,7 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
-				if (Request["a"] != null)
+				if (a == null && Request["a"] != null)
 				{
 					action = Request["a"];
 				}
@@ -888,7 +892,7 @@ namespace SmartStore.Admin.Controllers
 						RenameFile(Request["f"], Request["n"]);
 						break;
 					case "UPLOAD":
-						Upload(Request["d"] ?? d, Request["ext"].ToBool());
+						await UploadAsync(Request["d"] ?? d, Request["ext"].ToBool());
 						break;
 					default:
 						Response.Write(GetResultString("This action is not implemented.", "error"));

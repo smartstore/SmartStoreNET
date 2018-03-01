@@ -584,7 +584,7 @@ function switchView(t) {
 				imgUrl = RoxyUtils.AddParam(imgUrl, 'w', RoxyFilemanConf.THUMBS_VIEW_WIDTH);
 				imgUrl = RoxyUtils.AddParam(imgUrl, 'h', RoxyFilemanConf.THUMBS_VIEW_HEIGHT);
 			}
-			$(this).children('.icon').css('background-image', "url('" + encodeURI(imgUrl) + "')");
+			$(this).children('.icon').css('background-image', "url('" + imgUrl + "')");
 			$(this).tooltip('option', 'show', {
 				delay: 50
 			});

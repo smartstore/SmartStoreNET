@@ -342,6 +342,11 @@ namespace SmartStore.Data.Migrations
 				"Zusätzliche Gebühr prozentual",
 				"Specifies whether the additional fee should be calculated as a percentage. A fixed value is used if this option is disabled.",
 				"Legt fest, ob die zusätzliche Gebühr prozentual berechnet werden soll. Es wird ein fester Wert verwendet, falls diese Option deaktiviert ist.");
+			
+			builder.Delete("Common.Buttons.Default");
+			builder.AddOrUpdate("Common.Buttons.Secondary", "Secondary", "Secondary");
+			builder.AddOrUpdate("Common.Buttons.Light", "Light", "Light");
+			builder.AddOrUpdate("Common.Buttons.Dark", "Dark", "Dark");
 		}
 	}
 }

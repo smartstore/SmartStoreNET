@@ -18,7 +18,7 @@
 * OK	Fix color picker control
 * IStoreSelector, IAclSelector > refactor models & views and remove obsolete locale resources.
 * OK	Validation styling for form controls
-* Shared\EditorTemplates\ButtonType.cshtml > Type names
+* OK	Shared\EditorTemplates\ButtonType.cshtml > Type names
 * select2: .input-lg & .input-sm styling
 * OK	All tables (.table) must be wrapped in div.table-responsive
 * Apply .omega to all (last) table cells which contain action buttons to enable visibility toggling on hover. Apply .active-row to parent div to disable toggling, but keep other styling.

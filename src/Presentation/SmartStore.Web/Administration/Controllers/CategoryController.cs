@@ -185,13 +185,15 @@ namespace SmartStore.Admin.Controllers
             );
 
 			// add available badges
-			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "0", Text = "Default", Selected = model.BadgeStyle == 0 });
+			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "0", Text = "Secondary", Selected = model.BadgeStyle == 0 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "1", Text = "Primary", Selected = model.BadgeStyle == 1 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "2", Text = "Success", Selected = model.BadgeStyle == 2 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "3", Text = "Info", Selected = model.BadgeStyle == 3 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "4", Text = "Warning", Selected = model.BadgeStyle == 4 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "5", Text = "Danger", Selected = model.BadgeStyle == 5 });
-        }
+			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "6", Text = "Light", Selected = model.BadgeStyle == 6 });
+			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "7", Text = "Dark", Selected = model.BadgeStyle == 7});
+		}
 
         [NonAction]
         private void PrepareAclModel(CategoryModel model, Category category, bool excludeProperties)

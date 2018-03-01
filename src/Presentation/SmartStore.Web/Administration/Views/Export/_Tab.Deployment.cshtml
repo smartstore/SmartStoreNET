@@ -200,22 +200,13 @@ else
 	</div>
 }
 
-<div id="deployment-file-dialog" class="modal fade" tabindex="-1">
-	<div class="modal-dialog modal-flex modal-flex-sm" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">@T("Admin.DataExchange.Export.ExportFiles")</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body"></div>
-			<div class="modal-footer">
-				<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
-			</div>
-		</div>
-	</div>
-</div>
+@{Html.SmartStore().Window()
+	.Name("deployment-file-dialog")
+	.Title(T("Admin.DataExchange.Export.ExportFiles"))
+	.Size(WindowSize.Large)
+	.FooterContent(@<text><button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button></text>)
+	.Render();
+}
 
 @helper FileNamePatternDescription()
 {

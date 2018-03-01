@@ -64,7 +64,7 @@
 
                     <div class="form-group row">
                         @Html.LabelFor(model => model.PrivacyAgreement, new { @class = "col-sm-3 col-form-label required", @for = "PrivacyAgreement" })
-                        <div class="col-sm-9">
+                        <div class="col-sm-9 form-control-plaintext">
 							<div class="form-check">
 								@Html.CheckBoxFor(model => model.PrivacyAgreement, new { @class = "form-check-input" })
 								<label class="form-check-label" for="@Html.IdFor(model => model.PrivacyAgreement)">

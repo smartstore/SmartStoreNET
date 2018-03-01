@@ -70,17 +70,13 @@
 {
 	using (Html.BeginZoneContent("end", key: "backinstock-subscription-modal"))
 	{
-		<div id="backinstock-subscription-modal" class="modal fade" tabindex="-1">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-body">
-					</div>
-					<div class="modal-footer">
-						<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
-						<button class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
-					</div>
-				</div>
-			</div>
-		</div>
+		Html.SmartStore().Window()
+			.Name("backinstock-subscription-modal")
+			.Size(WindowSize.Medium)
+			.FooterContent(@<text>
+				<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
+				<button class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
+			</text>)
+			.Render();
 	}
 }

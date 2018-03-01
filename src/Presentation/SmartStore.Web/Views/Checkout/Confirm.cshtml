@@ -40,11 +40,11 @@
                         $(document).ready(function () {
                             $("#terms-of-service-trigger").on("click", function (event) {
                                 event.preventDefault();
-                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" />');
+                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" class="h-100" />');
                             });
                             $("#disclaimer-trigger").on("click", function (event) {
                                 event.preventDefault();
-                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" />');
+								$("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" class="h-100" />');
                             });
                         });
                     </script>
@@ -55,17 +55,12 @@
 
                     <!-- Terms of service -->
                     @using (Html.BeginZoneContent("end", key: "terms-of-service-modal"))
-                    {
-                        <div id="terms-of-service-modal" class="modal modal-flex fade" tabindex="-1">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-body p-0"></div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+					{
+						Html.SmartStore().Window()
+							.Name("terms-of-service-modal")
+							.Size(WindowSize.FlexSmall)
+							.FooterContent(@<text><button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button></text>)
+							.Render();
                     }
                 </div>
 			}

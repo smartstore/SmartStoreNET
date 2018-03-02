@@ -69,7 +69,12 @@ function Directory(fullPath, numDirs, numFiles) {
 			e.preventDefault();
 			closeMenus('file');
 			selectDir(this);
-			var t = e.pageY - $('#menuDir').height();
+			var t = e.pageY;
+			var menuEnd = t + $('#menuDir').height() + 30;
+			if (menuEnd > $(window).height()) {
+				offset = menuEnd - $(window).height() + 30;
+				t -= offset;
+			}
 			if (t < 0)
 				t = 0;
 			$('#menuDir').css({
@@ -95,9 +100,9 @@ function Directory(fullPath, numDirs, numFiles) {
 	this.GetHtml = function () {
 		var html = '<li data-path="' + this.fullPath + '" data-dirs="' + this.dirs + '" data-files="' + this.files + '" class="directory">';
 		var path = RoxyUtils.GetAssetPath("images/" + (this.dirs > 0 ? "dir-plus.png" : "blank.gif"));
-		html += '<div class="d-flex flex-nowrap align-items-baseline"><img src="' + path + '" class="dirPlus mr-2" width="9" height="9">';
-		//html += '<img src="' + RoxyUtils.GetAssetPath("images/folder.png") + '" class="dir"><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
-		html += '<i class="dir fa fa-folder-open mr-2 text-gray"></i><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
+		var dirClass = (this.dirs > 0 ? "" : " invisible");
+		html += '<div class="d-flex flex-row flex-nowrap align-items-center dir-item"><i class="fa fa-chevron-right dirPlus' + dirClass + '"></i>';
+		html += '<img src="' + RoxyUtils.GetAssetPath("images/folder.png") + '" class="dir mr-1"><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
 		html += '</li>';
 		
 		return html;
@@ -168,12 +173,15 @@ function Directory(fullPath, numDirs, numFiles) {
 	};
 	this.SetOpened = function () {
 		var li = this.GetElement();
+		var chevrons = li.children('div').children('.dirPlus');
 		if (li.find('li').length < 1)
-			li.children('div').children('.dirPlus').prop('src', RoxyUtils.GetAssetPath('images/blank.gif'));
+			chevrons.addClass('invisible');
 		else if (this.IsExpanded())
-			li.children('div').children('.dirPlus').prop('src', RoxyUtils.GetAssetPath('images/dir-minus.png'));
+			//chevrons.prop('src', RoxyUtils.GetAssetPath('images/dir-minus.png'));
+			chevrons.removeClass('invisible fa-chevron-right').addClass("fa-chevron-down");
 		else
-			li.children('div').children('.dirPlus').prop('src', RoxyUtils.GetAssetPath('images/dir-plus.png'));
+			//chevrons.prop('src', RoxyUtils.GetAssetPath('images/dir-plus.png'));
+			chevrons.removeClass('invisible fa-chevron-down').addClass("fa-chevron-right");
 	};
 	this.Update = function (newPath) {
 		var el = this.GetElement();
@@ -210,16 +218,16 @@ function Directory(fullPath, numDirs, numFiles) {
 			cache: false,
 			success: function (dirs) {
 				$('#pnlDirList').children('li').remove();
+				var d;
 				for (i = 0; i < dirs.length; i++) {
-					var d = new Directory(dirs[i].p, dirs[i].d, dirs[i].f);
+					d = new Directory(dirs[i].p, dirs[i].d, dirs[i].f);
 					d.Show();
 				}
 				$('#pnlLoadingDirs').hide();
 				$('#pnlDirList').show();
 				dir.RestoreExpanded(expanded);
-				var d = Directory.Parse(selectedDir);
-				if (d)
-					d.Select();
+				d = Directory.Parse(selectedDir);
+				if (d) d.Select();
 			},
 			error: function (data) {
 				$('#pnlLoadingDirs').hide();

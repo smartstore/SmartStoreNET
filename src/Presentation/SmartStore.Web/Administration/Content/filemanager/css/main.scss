@@ -1,0 +1,366 @@
+@import '../../_variables.scss';
+@import '../../../../Content/bs4/scss/_functions.scss';
+@import '../../../../Content/bs4/scss/_variables.scss';
+
+body {
+	background-color: #fff;
+}
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#wraper { 
+	width: 100%;
+	height: 100%;
+}
+
+#wraper, 
+#dlgNewDir, 
+#dlgFileProp, 
+#dlgAddFile, 
+#menuDir, 
+#menuFile, 
+#pnlRenameFile, 
+#pnlLoadingDirs, 
+#pnlDirName, 
+#pnlLoading, 
+#pnlEmptyDir, 
+#pnlSearchNoFiles, 
+#pnlFileProp, 
+#pnlDirList ul {
+	display: none;
+}
+
+#pnlFileList {
+	.selected,
+	.selected:hover {
+		background-color: #37a0e6 !important;
+		color: #fff;
+	}
+
+	.icon {
+		float: left;
+		margin-right: 3px;
+	}
+
+	li {
+		float: left;
+		padding: 3px;
+		clear: both;
+		width: 98%;
+		cursor: pointer;
+	}
+
+	.size {
+		float: right;
+		margin-left: 20px;
+	}
+
+	.time {
+		float: right;
+		margin-left: 15px;
+		width: 130px;
+	}
+
+	&.thumbView {
+		li {
+			//width:140px;
+			//height: 140px;
+			float: left !important;
+			clear: none;
+			margin: 0 6px 6px 0;
+			overflow: hidden;
+			padding: 10px;
+			text-align: center;
+			vertical-align: middle;
+			border: 1px solid transparent;
+			border-radius: 3px;
+			position: relative;
+		}
+
+		.name,
+		.time {
+			display: none;
+		}
+
+		.icon {
+			clear: both;
+			float: none;
+			margin: 0 !important;
+			text-align: center;
+			vertical-align: middle;
+			background-position: center center;
+			background-repeat: no-repeat;
+			//width:140px;
+			//height:120px;
+		}
+
+		.size {
+			display: block !important;
+			width: 100% !important;
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 5px;
+			margin: 0;
+		}
+	}
+}
+
+.filesize {
+	font-weight: 600;
+	margin-top: 4px;
+	display: inline-block;
+}
+
+.pnlDragFile, 
+.pnlDragDir {
+	background: #fff;
+	opacity: 0.8;
+	float: left;
+	width: auto !important;
+	z-index: 999999;
+	position: absolute;
+}
+
+#pnlStatus {
+	padding: 5px;
+}
+
+.scrollPane {
+	width: 100%;
+	height: 400px;
+	overflow: auto;
+	position: relative;
+}
+
+.bottomLine {
+	background: $gray-100;
+	border-top: 1px solid rgba(#000, 0.12);
+	height: 36px;
+}
+
+input[type=text]::-ms-clear {
+	display: none;
+}
+
+
+td.pnlDirs {
+	width: 260px;
+	border-right: 1px solid rgba(0,0,0, 0.12);
+
+	.scrollPane {
+		width: 260px;
+	}
+}
+
+#pnlDirList {
+	//width: initial;
+	position: relative;
+
+	.dir-item {
+		padding: 3px 0.4rem;
+		cursor: pointer;
+		position: relative;
+		float: left;
+		min-width: 100%;
+
+		.dirPlus {
+			font-size: 10px;
+			width: 12px;
+			height: 10px;
+			margin-top: 1px;
+			margin-right: 8px;
+			text-align: center;
+		}
+
+		.dir {
+			padding-top: 2px;
+		}
+
+		.name {
+			white-space: nowrap;
+			display: block;
+		}
+
+		&.selected {
+			background-color: $gray-300;
+		}
+
+		&.dragover {
+			background-color: $gray-100;
+		}
+	}
+
+	ul .dir-item {
+		padding-left: 1.4rem;
+	}
+
+	ul ul .dir-item {
+		padding-left: 2.4rem;
+	}
+
+	ul ul ul .dir-item {
+		padding-left: 3.4rem;
+	}
+
+	ul ul ul ul .dir-item {
+		padding-left: 4.4rem;
+	}
+
+	ul ul ul ul ul .dir-item {
+		padding-left: 5.4rem;
+	}
+
+	ul ul ul ul ul ul .dir-item {
+		padding-left: 6.4rem;
+	}
+
+	ul ul ul ul ul ul ul .dir-item {
+		padding-left: 7.4rem;
+	}
+
+	ul ul ul ul ul ul ul ul .dir-item {
+		padding-left: 8.4rem;
+	}
+
+	ul ul ul ul ul ul ul ul ul .dir-item {
+		padding-left: 9.4rem;
+	}
+}
+
+#pnlLoadingDirs {
+	margin-left: 5px;
+}
+
+.pnlFiles {
+	padding-left: 4px;
+}
+
+#pnlFileList li:hover, 
+#pnlDirList li div:hover {
+	background: $gray-100 !important;
+}
+
+
+.imgPreview {
+	max-width: 300px;
+}
+
+
+.actions {
+	padding: 3px 0 10px 5px;
+	background-color: $gray-100;
+	border-bottom: 1px solid rgba(0,0,0, 0.1);
+
+	> .btn-group {
+		padding-right: 5px;
+		margin-right: 5px;
+		border-right: 1px solid rgba(0, 0, 0, 0.12);
+	}
+
+	> .btn-group:last-child {
+		padding-right: 0;
+		margin-right: 0;
+		border-right: none;
+	}
+}
+
+
+.btn {
+	background-image: none !important;
+}
+
+
+#fileUploads {
+	width: 100%;
+}
+
+.uploadFilesList {
+	width: 100%;
+	height: 300px;
+	overflow: auto;
+}
+
+#uploadResult {
+}
+
+div.ui-tooltip {
+	max-width: 90%;
+}
+
+/* Upload dialog */
+.uploadFilesList {
+	font-size: 11px;
+}
+
+.fileUpload {
+	margin: 8px 0 0 0;
+	position: relative;
+	border: 1px solid #EEE;
+
+	.error {
+		font-weight: bold;
+	}
+}
+
+
+
+.fileName {
+	z-index: 2;
+	line-height: 20px;
+	height: 20px;
+	overflow: hidden;
+	padding: 0 13px 0 5px;
+}
+
+.progressPercent {
+	z-index: 2;
+}
+
+.stripes {
+	background: url('../images/stripes.gif') repeat-x;
+	opacity: 0.40;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	position: relative;
+}
+
+.uploadProgress {
+	position: absolute;
+	width: 0;
+	height: 100%;
+	top: 0;
+	left: 0;
+	z-index: -1;
+	background: #d3edff;
+	background: linear-gradient(to bottom, #d3edff 0%,#cbebff 47%,#a1dbff 100%);
+}
+
+.uploadError {
+	background: #ff8787;
+	background: linear-gradient(to bottom, #ff8787 0%,#ffa3a3 45%,#ff5e5e 100%);
+}
+
+.uploadComplete {
+	background: #dbff87;
+	background: linear-gradient(to bottom, #dbff87 0%,#e0f49c 45%,#bddd49 100%);
+}
+
+.uploadError .stripes, .uploadComplete .stripes {
+	display: none;
+}
+
+.removeUpload {
+	background: url(../images/sprite.png) no-repeat 6px -421px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 100%;
+	width: 20px;
+	cursor: pointer;
+}

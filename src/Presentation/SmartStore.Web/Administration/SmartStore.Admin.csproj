@@ -464,7 +464,7 @@
     <Content Include="Content\filemanager\css\images\ui-icons_ffffff_256x240.png" />
     <Content Include="Content\filemanager\css\jquery-ui-1.10.4.custom.css" />
     <Content Include="Content\filemanager\css\jquery-ui-1.10.4.custom.min.css" />
-    <Content Include="Content\filemanager\css\main.css" />
+    <None Include="Content\filemanager\css\main.scss" />
     <Content Include="Content\filemanager\images\action-folder-paste.png" />
     <Content Include="Content\filemanager\images\action-folder-rename.png" />
     <Content Include="Content\filemanager\images\arrow_down.png" />

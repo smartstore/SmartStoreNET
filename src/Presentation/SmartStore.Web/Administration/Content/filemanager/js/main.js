@@ -59,10 +59,12 @@ function startDragFile() {
 
 function dragFileOver() {
 	$(this).children('img.dir').attr('src', RoxyUtils.GetAssetPath('images/folder-green.png'));
+	$(this).addClass("dragover");
 }
 
 function dragFileOut() {
 	$('#pnlDirList').find('img.dir').attr('src', RoxyUtils.GetAssetPath('images/folder.png'));
+	$(this).removeClass("dragover");
 }
 
 function makeDragFile(e) {

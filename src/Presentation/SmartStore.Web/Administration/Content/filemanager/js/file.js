@@ -45,6 +45,8 @@ function File(filePath, fileSize, modTime, w, h) {
 			li.draggable({
 				helper: makeDragFile,
 				start: startDragFile,
+				addClasses: false,
+				appendTo: 'body',
 				cursorAt: {
 					left: 10,
 					top: 10
@@ -73,9 +75,12 @@ function File(filePath, fileSize, modTime, w, h) {
 			closeMenus('dir');
 			selectFile(this);
 			$(this).tooltip('close');
-			var t = e.pageY - $('#menuFile').height();
-			if (t < 0)
-				t = 0;
+			var t = e.pageY;
+			var menuEnd = t + $('#menuFile').height() + 30;
+			if (menuEnd > $(window).height()) {
+				offset = menuEnd - $(window).height() + 30;
+				t -= offset;
+			}
 			$('#menuFile').css({
 				top: t + 'px',
 				left: e.pageX + 'px'

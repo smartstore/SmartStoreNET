@@ -495,10 +495,15 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual RewardPointsHistory RedeemedRewardPointsEntry { get; set; }
 
-        /// <summary>
-        /// Gets or sets discount usage history
-        /// </summary>
-        public virtual ICollection<DiscountUsageHistory> DiscountUsageHistory
+		/// <summary>
+		/// Gets or sets the wallet history entry.
+		/// </summary>
+		public virtual WalletHistory WalletHistoryEntry { get; set; }
+
+		/// <summary>
+		/// Gets or sets discount usage history
+		/// </summary>
+		public virtual ICollection<DiscountUsageHistory> DiscountUsageHistory
         {
 			get { return _discountUsageHistory ?? (_discountUsageHistory = new HashSet<DiscountUsageHistory>()); }
             protected set { _discountUsageHistory = value; }

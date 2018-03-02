@@ -200,6 +200,8 @@
     <Compile Include="Customers\CustomerMessageFactoryExtensions.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
     <Compile Include="Customers\Importer\CustomerImporter.cs" />
+    <Compile Include="Customers\IWalletService.cs" />
+    <Compile Include="Customers\WalletService.cs" />
     <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
     <Compile Include="DataExchange\Export\Deployment\PublicFolderPublisher.cs" />
     <Compile Include="DataExchange\Import\ColumnMapping\ColumnMap.cs" />

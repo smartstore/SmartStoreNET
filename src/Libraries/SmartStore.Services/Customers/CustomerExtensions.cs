@@ -430,5 +430,66 @@ namespace SmartStore.Services.Customers
 		}
 
 		#endregion
-    }
+
+		#region Wallet
+
+		/// <summary>
+		/// Gets the current wallet amount balance for the customer.
+		/// </summary>
+		/// <param name="customer">The customer.</param>
+		/// <param name="storeId">The store identifier. Must not be zero.</param>
+		/// <returns>Current wallet amount balance.</returns>
+		public static decimal GetWalletAmountBalance(this Customer customer, int storeId)
+		{
+			Guard.NotNull(customer, nameof(customer));
+			Guard.NotZero(storeId, nameof(storeId));
+
+			var result = customer.WalletHistory
+				.Where(x => x.StoreId == storeId)
+				.OrderByDescending(x => x.CreatedOnUtc)
+				.ThenByDescending(x => x.Id)
+				.Select(x => x.AmountBalance)
+				.FirstOrDefault();
+
+			return result;
+		}
+
+		/// <summary>
+		/// Adds a wallet history entry.
+		/// </summary>
+		/// <param name="customer">The customer.</param>
+		/// <param name="amount"></param>
+		/// <param name="usageReason"></param>
+		/// <param name="storeId">The store identifier. Must not be zero.</param>
+		/// <param name="usedWithOrder">The associated order.</param>
+		/// <returns>The added wallet history entry.</returns>
+		public static WalletHistory AddWalletHistoryEntry(
+			this Customer customer,
+			decimal amount,
+			WalletUsageReason usageReason,
+			int storeId,
+			Order usedWithOrder = null)
+		{
+			Guard.NotNull(customer, nameof(customer));
+			Guard.NotZero(storeId, nameof(storeId));
+
+			var newAmountBalance = customer.GetWalletAmountBalance(storeId) + amount;
+
+			var entry = new WalletHistory
+			{
+				StoreId = storeId,
+				Amount = amount,
+				AmountBalance = newAmountBalance,
+				UsageReason = usageReason,
+				CreatedOnUtc = DateTime.UtcNow,
+				UsedWithOrder = usedWithOrder
+			};
+
+			customer.WalletHistory.Add(entry);
+
+			return entry;
+		}
+
+		#endregion
+	}
 }

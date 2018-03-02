@@ -507,21 +507,21 @@ function tooltipContent() {
 	var f = File.Parse($(this).attr('data-path'));
 	if ($('#hdViewType').val() == 'thumb' && f.IsImage()) {
 		html = f.fullPath + '<br><span class="filesize">' + t('Size') + ': ' + RoxyUtils.FormatFileSize(f.size) + ' ' + t('Dimensions') + ': ' + f.width + 'x' + f.height + '</span>';
-	} else if (f.IsImage()) {
+	}
+	else if (f.IsImage()) {
 		var imgUrl = f.fullPath;
 		if (RoxyFilemanConf.GENERATETHUMB) {
-			//   imgUrl = RoxyUtils.AddParam(RoxyFilemanConf.GENERATETHUMB, 'f', f.fullPath);
-			//   imgUrl = RoxyUtils.AddParam(imgUrl, 'width', RoxyFilemanConf.PREVIEW_THUMB_WIDTH);
-			//imgUrl = RoxyUtils.AddParam(imgUrl, 'height', RoxyFilemanConf.PREVIEW_THUMB_HEIGHT);
 			// Let the SMNET MediaController do the image resizing per ImageProcessor
 			imgUrl = RoxyUtils.AddParam(imgUrl, 'w', RoxyFilemanConf.PREVIEW_THUMB_WIDTH);
 			imgUrl = RoxyUtils.AddParam(imgUrl, 'h', RoxyFilemanConf.PREVIEW_THUMB_HEIGHT);
 		}
 		//else
-		//  imgUrl = f.fullPath;
-		html = '<img src="' + imgUrl + '" class="imgPreview"><br>' + f.name + ' <br><span class="filesize">' + t('Size') + ': ' + RoxyUtils.FormatFileSize(f.size) + ' ' + t('Dimensions') + ': ' + f.width + 'x' + f.height + '</span>';
-	} else
+		html = '<div class="text-center mb-3"><img src="' + imgUrl + '" class="imgPreview"></div>' + f.name + ' <br><span class="filesize">' + t('Size') + ': ' + RoxyUtils.FormatFileSize(f.size) + ' ' + t('Dimensions') + ': ' + f.width + 'x' + f.height + '</span>';
+	}
+	else {
 		html = f.fullPath + ' <span class="filesize">' + t('Size') + ': ' + RoxyUtils.FormatFileSize(f.size) + '</span>';
+	}	
+
 	return html;
 }
 
@@ -569,7 +569,6 @@ function switchView(t) {
 	$('.btn-view').removeClass('active');
 
 	if (t == 'thumb') {
-		$('.icon', pnlFileList).attr('src', RoxyUtils.GetAssetPath('images/blank.gif'));
 		pnlFileList.addClass('thumbView');
 		if ($('#dynStyle').length == 0) {
 			$('head').append('<style id="dynStyle" />');
@@ -580,24 +579,28 @@ function switchView(t) {
 			$('#dynStyle').html(rules);
 		}
 		$('li', pnlFileList).each(function () {
+			var isImage = RoxyUtils.IsImage($(this).attr('data-path'));
 			var imgUrl = $(this).attr('data-icon-big');
-			if (RoxyFilemanConf.GENERATETHUMB && RoxyUtils.IsImage($(this).attr('data-path'))) {
+			if (RoxyFilemanConf.GENERATETHUMB && isImage) {
 				// Let the SMNET MediaController do the image resizing per ImageProcessor
 				imgUrl = RoxyUtils.AddParam(imgUrl, 'w', RoxyFilemanConf.THUMBS_VIEW_WIDTH);
 				imgUrl = RoxyUtils.AddParam(imgUrl, 'h', RoxyFilemanConf.THUMBS_VIEW_HEIGHT);
 			}
-			$(this).children('.icon').css('background-image', "url('" + imgUrl + "')");
+			$(this).find('> .icon > img').attr('src', imgUrl).toggleClass("thumb", isImage);
 			$(this).tooltip('option', 'show', {
-				delay: 50
+				delay: 50,
+				duration: 200
 			});
 		});
 		$('#btnThumbView').addClass('active');
-	} else {
+	}
+	else {
 		pnlFileList.removeClass('thumbView');
 		$('li', pnlFileList).each(function () {
-			$(this).children('.icon').css('background-image', '').attr('src', $(this).attr('data-icon'));
+			$(this).find('> .icon > img').attr('src', $(this).data('icon')).removeClass("thumb");
 			$(this).tooltip('option', 'show', {
-				delay: 500
+				delay: 500,
+				duration: 200
 			});
 		});
 		$('#btnListView').addClass('active');

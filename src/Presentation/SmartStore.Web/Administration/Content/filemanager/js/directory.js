@@ -447,8 +447,10 @@ function Directory(fullPath, numDirs, numFiles) {
 		// Bind events
 		list.find('.file-item').tooltip({
 			show: {
-				delay: 700
+				delay: 700,
+				duration: 100
 			},
+			hide: 200,
 			track: true,
 			content: tooltipContent
 		});

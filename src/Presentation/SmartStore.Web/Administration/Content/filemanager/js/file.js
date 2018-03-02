@@ -29,6 +29,7 @@ $(function () {
 	});
 
 	$('#pnlFileList').on('contextmenu', '.file-item', function (e) {
+		return;
 		e.stopPropagation();
 		e.preventDefault();
 		closeMenus('dir');
@@ -91,7 +92,7 @@ function File(filePath, fileSize, modTime, w, h) {
 	this.GenerateHtml = function() {
 		var html = [
 			'<li class="file-item" data-path="' + this.fullPath + '" data-time="' + this.time + '" data-icon="' + this.icon + '" data-w="' + this.width + '" data-h="' + this.height + '" data-size="' + this.size + '" data-icon-big="' + (this.IsImage() ? this.fullPath : this.bigIcon) + '" title="' + this.name + '">',
-			'<img src="' + this.icon + '" class="icon">',
+			'<div class="icon"><img src="' + this.icon + '"></div>',
 			'<span class="time">' + RoxyUtils.FormatDate(new Date(this.time * 1000)) + '</span>',
 			'<span class="name">' + this.name + '</span>',
 			'<span class="size">' + RoxyUtils.FormatFileSize(this.size) + '</span>',

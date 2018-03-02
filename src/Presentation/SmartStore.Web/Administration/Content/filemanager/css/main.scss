@@ -45,26 +45,28 @@ ul {
 
 	.icon {
 		float: left;
-		margin-right: 3px;
+		margin-right: 4px;
 	}
 
 	li {
 		float: left;
-		padding: 3px;
+		padding: 4px 4px 4px 8px;
 		clear: both;
-		width: 98%;
+		width: 99%;
 		cursor: pointer;
 	}
 
 	.size {
 		float: right;
-		margin-left: 20px;
+		margin-left: 22px;
+		white-space: nowrap;
 	}
 
 	.time {
 		float: right;
-		margin-left: 15px;
+		margin-left: 22px;
 		width: 130px;
+		white-space: nowrap;
 	}
 
 	&.thumbView {
@@ -81,7 +83,7 @@ ul {
 			border: 1px solid transparent;
 			position: relative;
 
-			&:hover, 
+			&:hover,
 			&.selected {
 				border-color: rgba(#000, 0.08);
 			}
@@ -92,7 +94,7 @@ ul {
 			display: none;
 		}
 
-		.icon {
+		.x-icon {
 			clear: both;
 			float: none;
 			margin: 0 !important;
@@ -102,6 +104,27 @@ ul {
 			background-repeat: no-repeat;
 			//width:140px;
 			//height:120px;
+		}
+
+		.icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 140px;
+			height: 120px;
+			margin: 0;
+			padding: 0;
+			position: relative;
+			float: none;
+
+			> img {
+				max-width: 100%;
+				height: auto;
+			}
+
+			> img.thumb {
+				box-shadow: 2px 2px 6px rgba(#000, 0.25);
+			}
 		}
 
 		.name {
@@ -245,10 +268,6 @@ td.pnlDirs {
 
 #pnlLoadingDirs {
 	margin-left: 5px;
-}
-
-.pnlFiles {
-	padding-left: 4px;
 }
 
 #pnlFileList li:hover, 

@@ -432,22 +432,38 @@ function Directory(fullPath, numDirs, numFiles) {
 		this.LoadFiles(refresh, selectedFile);
 	};
 	this.FilesLoaded = function (filesList, selectedFile) {
+		var list = $('#pnlFileList');
 		filesList = this.SortFiles(filesList);
-		$('#pnlFileList').html('');
+		
+		var html = [];
 		for (i = 0; i < filesList.length; i++) {
 			var f = filesList[i];
-			f.Show();
+			html.push(f.GenerateHtml());
 		}
+
+		// Set Html
+		list.html(html.join(""));
+
+		// Bind events
+		list.find('.file-item').tooltip({
+			show: {
+				delay: 700
+			},
+			track: true,
+			content: tooltipContent
+		});
+
 		$('#hdDir').val(this.fullPath);
 		$('#pnlLoading').hide();
-		if ($('#pnlFileList').children('li').length == 0)
+		var liLen = list.children('li').length;
+		if (liLen == 0)
 			$('#pnlEmptyDir').show();
-		this.files = $('#pnlFileList').children('li').length;
+		this.files = liLen;
 		this.Update();
 		this.SetStatusBar();
 		filterFiles();
 		switchView();
-		$('#pnlFileList').show();
+		list.show();
 		this.SetSelectedFile(selectedFile);
 	};
 	this.LoadFiles = function (refresh, selectedFile) {
@@ -461,7 +477,6 @@ function Directory(fullPath, numDirs, numFiles) {
 		fileURL = RoxyUtils.AddParam(fileURL, 'type', RoxyUtils.GetUrlParam('type'));
 		var item = this;
 		if (!this.IsListed() || refresh) {
-
 			$.ajax({
 				url: fileURL,
 				type: 'POST',

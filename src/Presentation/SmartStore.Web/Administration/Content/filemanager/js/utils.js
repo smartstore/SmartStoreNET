@@ -232,7 +232,7 @@ RoxyUtils.GetFileSize = function (path) {
 };
 RoxyUtils.GetFileType = function (path) {
 	var ret = RoxyUtils.GetFileExt(path).toLowerCase();
-	if (ret == 'png' || ret == 'jpg' || ret == 'gif' || ret == 'jpeg')
+	if (ret == 'png' || ret == 'jpg' || ret == 'gif' || ret == 'jpeg' || ret == 'webp')
 		ret = 'image';
 
 	return ret;

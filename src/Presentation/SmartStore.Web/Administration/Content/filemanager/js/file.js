@@ -19,6 +19,62 @@
 
   Contact: Lyubomir Arsov, liubo (at) web-lobby.com
 */
+
+$(function () {
+	$(document).on('dblclick', '.file-item', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		selectFile(this);
+		setFile();
+	});
+
+	$('#pnlFileList').on('contextmenu', '.file-item', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		closeMenus('dir');
+		selectFile(this);
+		$(this).tooltip('close');
+		var t = e.pageY;
+		var menuEnd = t + $('#menuFile').height() + 30;
+		if (menuEnd > $(window).height()) {
+			offset = menuEnd - $(window).height() + 30;
+			t -= offset;
+		}
+		$('#menuFile').css({
+			top: t + 'px',
+			left: e.pageX + 'px'
+		}).show();
+
+		return false;
+	});
+
+	$(document).on('click', '.file-item', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+
+		selectFile(this);
+	});
+
+	$(document).on('mouseenter', '.file-item', function (e) {
+		var li = $(this);
+
+		// create draggable
+		if (!li.data('ui-draggable')) {
+			li.draggable({
+				helper: makeDragFile,
+				start: startDragFile,
+				addClasses: false,
+				appendTo: 'body',
+				cursorAt: {
+					left: 10,
+					top: 10
+				},
+				delay: 200
+			});
+		}
+	});
+});
+
 function File(filePath, fileSize, modTime, w, h) {
 	this.fullPath = filePath;
 	this.type = RoxyUtils.GetFileType(filePath);
@@ -32,62 +88,17 @@ function File(filePath, fileSize, modTime, w, h) {
 	this.time = modTime;
 	this.width = (w ? w : 0);
 	this.height = (h ? h : 0);
-	this.Show = function () {
-		html = '<li data-path="' + this.fullPath + '" data-time="' + this.time + '" data-icon="' + this.icon + '" data-w="' + this.width + '" data-h="' + this.height + '" data-size="' + this.size + '" data-icon-big="' + (this.IsImage() ? this.fullPath : this.bigIcon) + '" title="' + this.name + '">';
-		html += '<img src="' + this.icon + '" class="icon">';
-		html += '<span class="time">' + RoxyUtils.FormatDate(new Date(this.time * 1000)) + '</span>';
-		html += '<span class="name">' + this.name + '</span>';
-		html += '<span class="size">' + RoxyUtils.FormatFileSize(this.size) + '</span>';
-		html += '</li>';
-		$('#pnlFileList').append(html);
-		var li = $("#pnlFileList li:last");
-		if (RoxyFilemanConf.MOVEFILE) {
-			li.draggable({
-				helper: makeDragFile,
-				start: startDragFile,
-				addClasses: false,
-				appendTo: 'body',
-				cursorAt: {
-					left: 10,
-					top: 10
-				},
-				delay: 200
-			});
-		}
-		li.click(function (e) {
-			selectFile(this);
-		});
-		li.dblclick(function (e) {
-			selectFile(this);
-			setFile();
-		});
-		li.tooltip({
-			show: {
-				delay: 700
-			},
-			track: true,
-			content: tooltipContent
-		});
+	this.GenerateHtml = function() {
+		var html = [
+			'<li class="file-item" data-path="' + this.fullPath + '" data-time="' + this.time + '" data-icon="' + this.icon + '" data-w="' + this.width + '" data-h="' + this.height + '" data-size="' + this.size + '" data-icon-big="' + (this.IsImage() ? this.fullPath : this.bigIcon) + '" title="' + this.name + '">',
+			'<img src="' + this.icon + '" class="icon">',
+			'<span class="time">' + RoxyUtils.FormatDate(new Date(this.time * 1000)) + '</span>',
+			'<span class="name">' + this.name + '</span>',
+			'<span class="size">' + RoxyUtils.FormatFileSize(this.size) + '</span>',
+			'</li>'
+		].join("");
 
-		li.bind('contextmenu', function (e) {
-			e.stopPropagation();
-			e.preventDefault();
-			closeMenus('dir');
-			selectFile(this);
-			$(this).tooltip('close');
-			var t = e.pageY;
-			var menuEnd = t + $('#menuFile').height() + 30;
-			if (menuEnd > $(window).height()) {
-				offset = menuEnd - $(window).height() + 30;
-				t -= offset;
-			}
-			$('#menuFile').css({
-				top: t + 'px',
-				left: e.pageX + 'px'
-			}).show();
-
-			return false;
-		});
+		return html;
 	};
 	this.GetElement = function () {
 		return $('li[data-path="' + this.fullPath + '"]');
@@ -249,6 +260,7 @@ function File(filePath, fileSize, modTime, w, h) {
 		return ret;
 	};
 }
+
 File.Parse = function (path) {
 	var ret = false;
 	var li = $('#pnlFileList').find('li[data-path="' + path + '"]');

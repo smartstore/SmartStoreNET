@@ -2,6 +2,9 @@
 @import '../../../../Content/bs4/scss/_functions.scss';
 @import '../../../../Content/bs4/scss/_variables.scss';
 
+$fi-selected-bg: $gray-400;
+$fi-selected-bg: $component-active-bg;
+
 body {
 	background-color: #fff;
 }
@@ -37,8 +40,7 @@ ul {
 #pnlFileList {
 	.selected,
 	.selected:hover {
-		background-color: #37a0e6 !important;
-		color: #fff;
+		background-color: $fi-selected-bg !important;
 	}
 
 	.icon {
@@ -77,12 +79,16 @@ ul {
 			text-align: center;
 			vertical-align: middle;
 			border: 1px solid transparent;
-			border-radius: 3px;
 			position: relative;
+
+			&:hover, 
+			&.selected {
+				border-color: rgba(#000, 0.08);
+			}
 		}
 
-		.name,
-		.time {
+		.time,
+		.size {
 			display: none;
 		}
 
@@ -98,12 +104,16 @@ ul {
 			//height:120px;
 		}
 
-		.size {
+		.name {
 			display: block !important;
-			width: 100% !important;
+			font-size: 12px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			//width: 100% !important;
 			position: absolute;
-			left: 0;
-			right: 0;
+			left: 4px;
+			right: 4px;
 			bottom: 5px;
 			margin: 0;
 		}
@@ -186,12 +196,13 @@ td.pnlDirs {
 			display: block;
 		}
 
-		&.selected {
-			background-color: $gray-300;
+		&.selected, 
+		&.selected:hover {
+			background-color: $fi-selected-bg !important;
 		}
 
 		&.dragover {
-			background-color: $gray-100;
+			background-color: $gray-200 !important;
 		}
 	}
 
@@ -242,7 +253,7 @@ td.pnlDirs {
 
 #pnlFileList li:hover, 
 #pnlDirList li div:hover {
-	background: $gray-100 !important;
+	background: $gray-200 !important;
 }
 
 

@@ -25,7 +25,7 @@ $.ajaxSetup({
 
 function selectFile(item) {
 	$('#pnlFileList li').removeClass('selected');
-	$(item).prop('class', 'selected');
+	$(item).addClass('selected');
 	var html = RoxyUtils.GetFilename($(item).attr('data-path'));
 	html += ' (' + t('Size') + ': ' + RoxyUtils.FormatFileSize($(item).attr('data-size'));
 	if ($(item).attr('data-w') > 0)
@@ -82,6 +82,8 @@ function moveDir(e, ui, obj) {
 	var target = Directory.Parse($(obj).parent('li').attr('data-path'));
 	if (target.fullPath != dir.path)
 		dir.Move(target.fullPath);
+
+	$(obj).removeClass('dragover');
 }
 
 function moveFile(e, ui, obj) {
@@ -90,6 +92,8 @@ function moveFile(e, ui, obj) {
 	var src = Directory.Parse(f.path);
 	if (f.path != d.fullPath)
 		f.Move(d.fullPath);
+
+	$(obj).removeClass('dragover');
 }
 
 function moveObject(e, ui) {
@@ -559,10 +563,14 @@ function switchView(t) {
 		return;
 	if (!t)
 		t = $('#hdViewType').val();
+
+	var pnlFileList = $('#pnlFileList');
+
 	$('.btn-view').removeClass('active');
+
 	if (t == 'thumb') {
-		$('#pnlFileList .icon').attr('src', RoxyUtils.GetAssetPath('images/blank.gif'));
-		$('#pnlFileList').addClass('thumbView');
+		$('.icon', pnlFileList).attr('src', RoxyUtils.GetAssetPath('images/blank.gif'));
+		pnlFileList.addClass('thumbView');
 		if ($('#dynStyle').length == 0) {
 			$('head').append('<style id="dynStyle" />');
 			var rules = 'ul#pnlFileList.thumbView li{width:' + (parseInt(RoxyFilemanConf.THUMBS_VIEW_WIDTH) + 22) + 'px;}';
@@ -571,17 +579,9 @@ function switchView(t) {
 			rules += 'ul#pnlFileList.thumbView .icon{height:' + RoxyFilemanConf.THUMBS_VIEW_HEIGHT + 'px;}';
 			$('#dynStyle').html(rules);
 		}
-		$('#pnlFileList li').each(function () {
-
-			//$('ul#pnlFileList.thumbView li').css('width', RoxyFilemanConf.THUMBS_VIEW_WIDTH + 'px');
-			//$('ul#pnlFileList.thumbView li').css('height', (parseInt(RoxyFilemanConf.THUMBS_VIEW_HEIGHT) + 20) + 'px');
-			//$('ul#pnlFileList.thumbView .icon').css('width', RoxyFilemanConf.THUMBS_VIEW_WIDTH + 'px');
-			//$('ul#pnlFileList.thumbView .icon').css('height', RoxyFilemanConf.THUMBS_VIEW_HEIGHT + 'px');
+		$('li', pnlFileList).each(function () {
 			var imgUrl = $(this).attr('data-icon-big');
 			if (RoxyFilemanConf.GENERATETHUMB && RoxyUtils.IsImage($(this).attr('data-path'))) {
-				//imgUrl = RoxyUtils.AddParam(RoxyFilemanConf.GENERATETHUMB, 'f', imgUrl);
-				//imgUrl = RoxyUtils.AddParam(imgUrl, 'width', RoxyFilemanConf.THUMBS_VIEW_WIDTH);
-				//imgUrl = RoxyUtils.AddParam(imgUrl, 'height', RoxyFilemanConf.THUMBS_VIEW_HEIGHT);
 				// Let the SMNET MediaController do the image resizing per ImageProcessor
 				imgUrl = RoxyUtils.AddParam(imgUrl, 'w', RoxyFilemanConf.THUMBS_VIEW_WIDTH);
 				imgUrl = RoxyUtils.AddParam(imgUrl, 'h', RoxyFilemanConf.THUMBS_VIEW_HEIGHT);
@@ -593,8 +593,8 @@ function switchView(t) {
 		});
 		$('#btnThumbView').addClass('active');
 	} else {
-		$('#pnlFileList').removeClass('thumbView');
-		$('#pnlFileList li').each(function () {
+		pnlFileList.removeClass('thumbView');
+		$('li', pnlFileList).each(function () {
 			$(this).children('.icon').css('background-image', '').attr('src', $(this).attr('data-icon'));
 			$(this).tooltip('option', 'show', {
 				delay: 500
@@ -856,9 +856,6 @@ $(function () {
 		switchView(viewType);
 
 	ResizeLists();
-	$(".actions input").tooltip({
-		track: true
-	});
 	$(window).resize(ResizeLists);
 
 	document.oncontextmenu = function () {

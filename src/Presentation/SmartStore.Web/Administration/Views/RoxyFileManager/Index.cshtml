@@ -46,8 +46,8 @@
 						<span class="d-none">Delete</span>
 					</button>
 				</div>
-				<div id="pnlLoadingDirs">
-					<span>Loading directories...</span><br>
+				<div id="pnlLoadingDirs" class="p-3">
+					<div>Loading directories...</div>
 					<img src="~/Administration/Content/filemanager/images/loading.gif" title="Loading directory tree, please wait...">
 				</div>
 				<div class="scrollPane">
@@ -113,11 +113,13 @@
 				</div>
 				<div class="pnlFiles">
 					<div class="scrollPane">
-						<div id="pnlLoading">
-							<span data-lang="LoadingFiles">Loading files...</span><br>
-							<img src="~/Administration/Content/filemanager/images/loading.gif" title="Loading files, please wait...">
+						<div id="pnlLoading" class="p-2">
+							<div class="text-muted" data-lang="LoadingFiles">Loading files...</div>
+							<div class="progress mt-2" style="width: 200px">
+								<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+							</div>
 						</div>
-						<div id="pnlEmptyDir" data-lang="DirIsEmpty">
+						<div id="pnlEmptyDir" class="p-2 text-muted" data-lang="DirIsEmpty">
 							This folder is empty
 						</div>
 						<div id="pnlSearchNoFiles" data-lang="NoFilesFound">

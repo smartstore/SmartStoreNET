@@ -129,7 +129,7 @@ namespace SmartStore.Web.Framework.Localization
                 {
 					if (!requestContext.RouteData.Values.ContainsKey("StripInvalidSeoCode"))
 					{
-						data.VirtualPath = String.Concat(cultureCode, "/", data.VirtualPath);
+						data.VirtualPath = String.Concat(cultureCode, "/", data.VirtualPath).TrimEnd('/');
 					}
                 }
             }

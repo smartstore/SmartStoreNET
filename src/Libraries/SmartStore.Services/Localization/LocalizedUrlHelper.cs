@@ -100,7 +100,7 @@ namespace SmartStore.Services.Localization
                 }
             }
 
-            this.RelativePath = "{0}/{1}".FormatCurrent(seoCode, this.RelativePath);
+            this.RelativePath = "{0}/{1}".FormatCurrent(seoCode, this.RelativePath).TrimEnd('/');
             return this.RelativePath;
         }
 

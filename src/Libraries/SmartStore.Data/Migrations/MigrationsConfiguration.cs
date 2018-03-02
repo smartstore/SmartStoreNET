@@ -57,6 +57,18 @@ namespace SmartStore.Data.Migrations
 			{
 				setting.Value = "512000";
 			}
+
+			// Delete MessageTemplatesSettings
+			var settings = context.Set<Setting>();
+			var caseInvariantReplacementSetting = settings.FirstOrDefault(x => x.Name == "MessageTemplatesSettings.CaseInvariantReplacement");
+			var color1Setting = settings.FirstOrDefault(x => x.Name == "MessageTemplatesSettings.Color1");
+			var color2Setting = settings.FirstOrDefault(x => x.Name == "MessageTemplatesSettings.Color2");
+			var color3Setting = settings.FirstOrDefault(x => x.Name == "MessageTemplatesSettings.Color3");
+
+			if (caseInvariantReplacementSetting != null) settings.Remove(caseInvariantReplacementSetting);
+			if (color1Setting != null) settings.Remove(color1Setting);
+			if (color2Setting != null) settings.Remove(color2Setting);
+			if (color3Setting != null) settings.Remove(color3Setting);
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

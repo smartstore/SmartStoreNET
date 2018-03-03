@@ -29,7 +29,6 @@ $(function () {
 	});
 
 	$('#pnlFileList').on('contextmenu', '.file-item', function (e) {
-		return;
 		e.stopPropagation();
 		e.preventDefault();
 		closeMenus('dir');
@@ -76,23 +75,33 @@ $(function () {
 	});
 });
 
-function File(filePath, fileSize, modTime, w, h) {
+function File(filePath, fileSize, modTime, w, h, mime) {
 	this.fullPath = filePath;
-	this.type = RoxyUtils.GetFileType(filePath);
+	this.mime = mime;
+	this.type = RoxyUtils.GetFileType(filePath, mime);
+	this.icon = RoxyIconHints[this.type];
 	this.name = RoxyUtils.GetFilename(filePath);
 	this.ext = RoxyUtils.GetFileExt(filePath);
 	this.path = RoxyUtils.GetPath(filePath);
-	this.icon = RoxyUtils.GetFileIcon(filePath);
-	this.bigIcon = this.icon.replace('filetypes', 'filetypes/big');
 	this.image = filePath;
 	this.size = (fileSize ? fileSize : RoxyUtils.GetFileSize(filePath));
 	this.time = modTime;
 	this.width = (w ? w : 0);
 	this.height = (h ? h : 0);
-	this.GenerateHtml = function() {
+	this.thumb = this.type === 'image' ? filePath : RoxyUtils.GetAssetPath("images/blank.gif");
+	this.GenerateHtml = function () {
+		var attrs = [
+			'data-mime="' + this.mime + '"',
+			'data-path="' + this.fullPath + '"',
+			'data-time="' + this.time + '"',
+			'data-w="' + this.width + '"',
+			'data-h="' + this.height + '"',
+			'data-size="' + this.size + '"',
+			'title="' + this.name + '"'
+		];
 		var html = [
-			'<li class="file-item" data-path="' + this.fullPath + '" data-time="' + this.time + '" data-icon="' + this.icon + '" data-w="' + this.width + '" data-h="' + this.height + '" data-size="' + this.size + '" data-icon-big="' + (this.IsImage() ? this.fullPath : this.bigIcon) + '" title="' + this.name + '">',
-			'<div class="icon"><img src="' + this.icon + '"></div>',
+			'<li class="file-item' + (this.IsImage() ? ' file-image' : '') + '" ' + attrs.join(' ') + '>',
+			'<div class="icon"><img class="thumb" src="' + this.thumb + '"><i class="file-icon fa fa-fw fa-' + this.icon.name + '" style="color:' + this.icon.color + '"></i></div>',
 			'<span class="time">' + RoxyUtils.FormatDate(new Date(this.time * 1000)) + '</span>',
 			'<span class="name">' + this.name + '</span>',
 			'<span class="size">' + RoxyUtils.FormatFileSize(this.size) + '</span>',
@@ -105,10 +114,7 @@ function File(filePath, fileSize, modTime, w, h) {
 		return $('li[data-path="' + this.fullPath + '"]');
 	};
 	this.IsImage = function () {
-		var ret = false;
-		if (this.type == 'image')
-			ret = true;
-		return ret;
+		return this.type === 'image';
 	};
 	this.Delete = function () {
 		if (!RoxyFilemanConf.DELETEFILE) {
@@ -166,8 +172,12 @@ function File(filePath, fileSize, modTime, w, h) {
 			success: function (data) {
 				if (data.res.toLowerCase() == 'ok') {
 					var newPath = RoxyUtils.MakePath(this.path, newName);
-					$('li[data-path="' + item.fullPath + '"] .icon').attr('src', RoxyUtils.GetFileIcon(newName));
-					$('li[data-path="' + item.fullPath + '"] .name').text(newName);
+					var fileType = RoxyUtils.GetFileIcon(newName);
+					var icon = RoxyIconHints[fileType];
+					var li = $('li[data-path="' + item.fullPath + '"]');
+					li.toggleClass('file-image', fileType == 'image');
+					$('.file-icon', li).attr('class', "").addClass('file-icon fa fa-fw fa-' + icon.name).css('color', icon.color);
+					$('.name', li).text(newName);
 					$('li[data-path="' + newPath + '"]').attr('data-path', newPath);
 					ret = true;
 				}
@@ -266,7 +276,7 @@ File.Parse = function (path) {
 	var ret = false;
 	var li = $('#pnlFileList').find('li[data-path="' + path + '"]');
 	if (li.length > 0)
-		ret = new File(li.attr('data-path'), li.attr('data-size'), li.attr('data-time'), li.attr('data-w'), li.attr('data-h'));
+		ret = new File(li.data('path'), li.data('size'), li.data('time'), li.data('w'), li.data('h'));
 
 	return ret;
 };

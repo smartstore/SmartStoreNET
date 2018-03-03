@@ -46,6 +46,10 @@ ul {
 	.icon {
 		float: left;
 		margin-right: 4px;
+
+		> .thumb {
+			display: none;
+		}
 	}
 
 	li {
@@ -70,12 +74,14 @@ ul {
 	}
 
 	&.thumbView {
+		padding: 3px;
+
 		li {
 			//width:140px;
 			//height: 140px;
 			float: left !important;
 			clear: none;
-			margin: 0 6px 6px 0;
+			margin: 3px;
 			overflow: hidden;
 			padding: 10px;
 			text-align: center;
@@ -83,27 +89,33 @@ ul {
 			border: 1px solid transparent;
 			position: relative;
 
+			&:hover {
+				background-color: $gray-200;
+			}
+
 			&:hover,
 			&.selected {
 				border-color: rgba(#000, 0.08);
+			}
+
+			.file-icon {
+				font-size: 84px;
+			}
+
+			&.file-image {
+				.file-icon {
+					display: none;
+				}
+
+				.thumb {
+					display: inline-block;
+				}
 			}
 		}
 
 		.time,
 		.size {
 			display: none;
-		}
-
-		.x-icon {
-			clear: both;
-			float: none;
-			margin: 0 !important;
-			text-align: center;
-			vertical-align: middle;
-			background-position: center center;
-			background-repeat: no-repeat;
-			//width:140px;
-			//height:120px;
 		}
 
 		.icon {
@@ -219,9 +231,17 @@ td.pnlDirs {
 			display: block;
 		}
 
-		&.selected, 
+		&:hover {
+			background-color: $gray-200;
+		}
+
+		&.selected,
 		&.selected:hover {
 			background-color: $fi-selected-bg !important;
+		}
+
+		&.indeterm {
+			background-color: $gray-200 !important;
 		}
 
 		&.dragover {
@@ -270,11 +290,6 @@ td.pnlDirs {
 	margin-left: 5px;
 }
 
-#pnlFileList li:hover, 
-#pnlDirList li div:hover {
-	background: $gray-200 !important;
-}
-
 
 .imgPreview {
 	max-width: 300px;
@@ -319,7 +334,7 @@ div.ui-tooltip {
 
 /* Upload dialog */
 .uploadFilesList {
-	font-size: 11px;
+	font-size: 12px;
 }
 
 .fileUpload {
@@ -328,7 +343,7 @@ div.ui-tooltip {
 	border: 1px solid #EEE;
 
 	.error {
-		font-weight: bold;
+		font-weight: 600;
 	}
 }
 

@@ -362,6 +362,7 @@ namespace SmartStore.Admin.Controllers
 				Response.Write("{");
 				Response.Write("\"p\":\"" + url + "\"");
 				Response.Write(",\"t\":\"" + file.LastUpdated.ToUnixTime().ToString() + "\"");
+				Response.Write(",\"m\":\"" + MimeTypes.MapNameToMimeType(file.Name) + "\"");
 				Response.Write(",\"s\":\"" + file.Size.ToString() + "\"");
 				Response.Write(",\"w\":\"" + size.Width.ToString() + "\"");
 				Response.Write(",\"h\":\"" + size.Height.ToString() + "\"");

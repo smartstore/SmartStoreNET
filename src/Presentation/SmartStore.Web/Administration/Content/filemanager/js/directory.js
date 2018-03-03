@@ -19,6 +19,42 @@
 
   Contact: Lyubomir Arsov, liubo (at) web-lobby.com
 */
+
+$(function () {
+	$('#pnlDirList').on('contextmenu', '.dir-item', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		closeMenus('file');
+		selectDir(this, true);
+		var t = e.pageY;
+		var menuEnd = t + $('#menuDir').height() + 30;
+		if (menuEnd > $(window).height()) {
+			offset = menuEnd - $(window).height() + 30;
+			t -= offset;
+		}
+		if (t < 0)
+			t = 0;
+		$('#menuDir').css({
+			top: t + 'px',
+			left: e.pageX + 'px'
+		}).show();
+
+		return false;
+	});
+
+	$('#pnlDirList').on('click', '.dir-item', function (e) {
+		e.preventDefault();
+		selectDir(this);
+	});
+
+	$('#pnlDirList').on('click', '.dirPlus', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		var d = Directory.Parse($(this).closest('li').attr('data-path'));
+		d.Expand();
+	});
+});
+
 function Directory(fullPath, numDirs, numFiles) {
 	if (!fullPath) fullPath = '';
 	this.fullPath = fullPath;
@@ -48,59 +84,25 @@ function Directory(fullPath, numDirs, numFiles) {
 	};
 	this.SetEvents = function () {
 		var el = this.GetElement();
-		if (RoxyFilemanConf.MOVEDIR) {
-			el.draggable({
-				helper: makeDragDir,
-				start: startDragDir,
-				cursorAt: {
-					left: 10,
-					top: 10
-				},
-				delay: 200
-			});
-		}
-		el = el.children('div');
-		el.click(function (e) {
-			selectDir(this);
+		el.draggable({
+			helper: makeDragDir,
+			start: startDragDir,
+			cursorAt: {
+				left: 10,
+				top: 10
+			},
+			delay: 200
 		});
-
-		el.on('contextmenu', function (e) {
-			e.stopPropagation();
-			e.preventDefault();
-			closeMenus('file');
-			selectDir(this);
-			var t = e.pageY;
-			var menuEnd = t + $('#menuDir').height() + 30;
-			if (menuEnd > $(window).height()) {
-				offset = menuEnd - $(window).height() + 30;
-				t -= offset;
-			}
-			if (t < 0)
-				t = 0;
-			$('#menuDir').css({
-				top: t + 'px',
-				left: e.pageX + 'px'
-			}).show();
-
-			return false;
-		});
-
-		el.droppable({
+		el.find('> .dir-item').droppable({
 			drop: moveObject,
 			over: dragFileOver,
 			out: dragFileOut
 		});
-		el = el.children('.dirPlus');
-		el.click(function (e) {
-			e.stopPropagation();
-			var d = Directory.Parse($(this).closest('li').attr('data-path'));
-			d.Expand();
-		});
 	};
 	this.GetHtml = function () {
-		var html = '<li data-path="' + this.fullPath + '" data-dirs="' + this.dirs + '" data-files="' + this.files + '" class="directory">';
-		var path = RoxyUtils.GetAssetPath("images/" + (this.dirs > 0 ? "dir-plus.png" : "blank.gif"));
 		var dirClass = (this.dirs > 0 ? "" : " invisible");
+
+		var html = '<li data-path="' + this.fullPath + '" data-dirs="' + this.dirs + '" data-files="' + this.files + '" class="directory">';
 		html += '<div class="d-flex flex-row flex-nowrap align-items-center dir-item"><i class="fa fa-chevron-right dirPlus' + dirClass + '"></i>';
 		html += '<img src="' + RoxyUtils.GetAssetPath("images/folder.png") + '" class="dir mr-1"><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
 		html += '</li>';
@@ -118,20 +120,31 @@ function Directory(fullPath, numDirs, numFiles) {
 			}
 		}
 	};
-	this.Select = function (selectedFile) {
-		var el = this.GetElement();
-		el.children('div').addClass('selected');
-		$('#pnlDirList li[data-path!="' + this.fullPath + '"] > div').removeClass('selected');
-		el.children('img.dir').prop('src', RoxyUtils.GetAssetPath('images/folder.png'));
-		this.SetStatusBar();
-		var p = this.GetParent();
-		while (p) {
-			p.Expand(true);
-			p = p.GetParent();
+	this.Select = function (selectedFile, indeterm) {
+		var li = this.GetElement();
+		var dir = li.find('> .dir-item');
+		var currentSelected = getSelectedDir();
+
+		if (indeterm && currentSelected) {
+			if (currentSelected.fullPath != li.data('path')) {
+				$('#pnlDirList').data('indeterm', dir);
+				$('#pnlDirList .indeterm').removeClass('indeterm');
+				dir.addClass('indeterm');
+			}
 		}
-		this.Expand(true);
-		this.ListFiles(true, selectedFile);
-		setLastDir(this.fullPath);
+		else {
+			dir.addClass('selected');
+			$('#pnlDirList li[data-path!="' + this.fullPath + '"] > .dir-item').removeClass('selected');
+			this.SetStatusBar();
+
+			var p = this.GetParent();
+			while (p) {
+				p.Expand(true);
+				p = p.GetParent();
+			}
+			this.ListFiles(true, selectedFile);
+			setLastDir(this.fullPath);
+		}		
 	};
 	this.GetElement = function () {
 		return $('li[data-path="' + this.fullPath + '"]');
@@ -491,7 +504,8 @@ function Directory(fullPath, numDirs, numFiles) {
 				cache: false,
 				success: function (files) {
 					for (i = 0; i < files.length; i++) {
-						ret.push(new File(files[i].p, files[i].s, files[i].t, files[i].w, files[i].h));
+						var f = files[i];
+						ret.push(new File(f.p, f.s, f.t, f.w, f.h, f.m));
 					}
 					item.FilesLoaded(ret, selectedFile);
 				},

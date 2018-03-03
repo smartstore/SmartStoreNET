@@ -42,10 +42,10 @@ function setLastDir(path) {
 	RoxyUtils.SetCookie('roxyld', path, 10);
 }
 
-function selectDir(item) {
-	var d = Directory.Parse($(item).parent('li').attr('data-path'));
+function selectDir(item, indeterm) {
+	var d = Directory.Parse($(item).parent('li').data('path'));
 	if (d) {
-		d.Select();
+		d.Select(null, indeterm);
 	}
 }
 
@@ -68,8 +68,10 @@ function dragFileOut() {
 }
 
 function makeDragFile(e) {
-	var f = new File($(e.target).closest('li').attr('data-path'));
-	return '<div class="pnlDragFile" data-path="' + f.fullPath + '"><img src="' + f.bigIcon + '" align="absmiddle">&nbsp;' + f.name + '</div>';
+	var li = $(e.target).closest('li');
+	var f = new File(li.data('path'));
+	var i = li.find('.file-icon');
+	return '<div class="pnlDragFile" data-path="' + f.fullPath + '">' + i[0].outerHTML + '&nbsp;' + f.name + '</div>';
 }
 
 function makeDragDir(e) {
@@ -150,7 +152,17 @@ function showUploadList(files) {
 	filesPane.html('');
 	clearFileField();
 	for (i = 0; i < files.length; i++) {
-		filesPane.append('<div class="fileUpload"><div class="fileName">' + files[i].name + ' (' + RoxyUtils.FormatFileSize(files[i].size) + ')<span class="progressPercent"></span><div class="uploadProgress"><div class="stripes"></div></div></div><a class="removeUpload" onclick="removeUpload(' + i + ')"></a></div>');
+		var f = files[i];
+		var html = [
+			'<div class="fileUpload">',
+			'<div class="fileName">' + f.name + ' (' + RoxyUtils.FormatFileSize(f.size) + ')',
+			'<span class="progressPercent"></span>',
+			'<div class="uploadProgress"><div class="stripes"></div></div>',
+			'</div>',
+			'<a class="removeUpload" onclick="removeUpload(' + i + ')"></a>',
+			'</div>'
+		].join('');
+		filesPane.append(html);
 	}
 	if (files.length > 0)
 		$('#btnUpload').button('enable');
@@ -435,8 +447,14 @@ function getSelectedFile() {
 
 function getSelectedDir() {
 	var ret = null;
-	if ($('#pnlDirList .selected'))
-		ret = Directory.Parse($('#pnlDirList .selected').closest('li').attr('data-path'));
+	var indeterm = $('#pnlDirList').data('indeterm');
+
+	if (indeterm) {
+		ret = Directory.Parse(indeterm.closest('li').data('path'));
+	}
+	else if ($('#pnlDirList .selected')) {
+		ret = Directory.Parse($('#pnlDirList .selected').closest('li').data('path'));
+	}
 
 	return ret;
 }
@@ -486,10 +504,17 @@ function downloadDir() {
 }
 
 function closeMenus(el) {
-	if (!el || el == 'dir')
+	if (!el || el == 'dir') {
+		var indeterm = $('#pnlDirList').data('indeterm');
+		if (indeterm) {
+			$('#pnlDirList').data('indeterm', null);
+			$('#pnlDirList .indeterm').removeClass('indeterm');
+		}
 		$('#menuDir').hide();
-	if (!el || el == 'file')
+	}
+	if (!el || el == 'file') {
 		$('#menuFile').hide();
+	}
 }
 
 function selectFirst() {
@@ -580,13 +605,13 @@ function switchView(t) {
 		}
 		$('li', pnlFileList).each(function () {
 			var isImage = RoxyUtils.IsImage($(this).attr('data-path'));
-			var imgUrl = $(this).attr('data-icon-big');
+			var imgUrl = $(this).data('path');
 			if (RoxyFilemanConf.GENERATETHUMB && isImage) {
 				// Let the SMNET MediaController do the image resizing per ImageProcessor
 				imgUrl = RoxyUtils.AddParam(imgUrl, 'w', RoxyFilemanConf.THUMBS_VIEW_WIDTH);
 				imgUrl = RoxyUtils.AddParam(imgUrl, 'h', RoxyFilemanConf.THUMBS_VIEW_HEIGHT);
 			}
-			$(this).find('> .icon > img').attr('src', imgUrl).toggleClass("thumb", isImage);
+			$(this).find('> .icon > img').attr('src', imgUrl);
 			$(this).tooltip('option', 'show', {
 				delay: 50,
 				duration: 200
@@ -597,7 +622,7 @@ function switchView(t) {
 	else {
 		pnlFileList.removeClass('thumbView');
 		$('li', pnlFileList).each(function () {
-			$(this).find('> .icon > img').attr('src', $(this).data('icon')).removeClass("thumb");
+			//$(this).find('> .icon > img').attr('src', $(this).data('icon')).removeClass("thumb");
 			$(this).tooltip('option', 'show', {
 				delay: 500,
 				duration: 200
@@ -848,7 +873,7 @@ $(function () {
 	window.setTimeout('initSelection()', 100);
 
 	RoxyUtils.Translate();
-	$('body').click(function () {
+	$('body').on('click', function () {
 		closeMenus();
 	});
 
